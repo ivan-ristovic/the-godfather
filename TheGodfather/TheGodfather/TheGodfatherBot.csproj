@@ -41,6 +41,9 @@
     <Reference Include="DSharpPlus.Interactivity, Version=2.5.4.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\DSharpPlus.Interactivity.2.5.4\lib\net47\DSharpPlus.Interactivity.dll</HintPath>
     </Reference>
+    <Reference Include="DSharpPlus.VoiceNext, Version=2.5.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\DSharpPlus.VoiceNext.2.5.4\lib\net47\DSharpPlus.VoiceNext.dll</HintPath>
+    </Reference>
     <Reference Include="DSharpPlus.WebSocket.WebSocket4Net, Version=2.5.4.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\DSharpPlus.WebSocket.WebSocket4Net.2.5.4\lib\net47\DSharpPlus.WebSocket.WebSocket4Net.dll</HintPath>
     </Reference>
@@ -64,6 +67,7 @@
     <Compile Include="CommandsBase.cs" />
     <Compile Include="CommandsGamble.cs" />
     <Compile Include="CommandsMemes.cs" />
+    <Compile Include="CommandsVoice.cs" />
     <Compile Include="TheGodfather.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

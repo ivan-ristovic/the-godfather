@@ -5,6 +5,8 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Interactivity;
 using DSharpPlus.CommandsNext.Exceptions;
+using DSharpPlus.VoiceNext;
+
 
 namespace TheGodfatherBot
 {
@@ -13,6 +15,7 @@ namespace TheGodfatherBot
         static DiscordClient discord { get; set; }
         static CommandsNextModule commands { get; set; }
         static InteractivityModule interactivity { get; set; }
+        static VoiceNextClient voice { get; set; }
 
         public static void Main(string[] args) =>
             new TheGodfather().MainAsync(args).ConfigureAwait(false).GetAwaiter().GetResult();
@@ -41,10 +44,13 @@ namespace TheGodfatherBot
             commands.RegisterCommands<CommandsBase>();
             commands.RegisterCommands<CommandsGamble>();
             commands.RegisterCommands<CommandsMemes>();
+            commands.RegisterCommands<CommandsVoice>();
             commands.CommandExecuted += Commands_CommandExecuted;
             commands.CommandErrored += Commands_CommandErrored;
 
             interactivity = discord.UseInteractivity();
+
+            voice = discord.UseVoiceNext();
 
             discord.SetWebSocketClient<WebSocket4NetClient>();
             await discord.ConnectAsync();
