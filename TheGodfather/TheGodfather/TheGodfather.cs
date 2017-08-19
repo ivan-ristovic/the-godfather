@@ -45,8 +45,10 @@ namespace TheGodfatherBot
             commands.RegisterCommands<CommandsAdmin>();
             commands.RegisterCommands<CommandsBase>();
             commands.RegisterCommands<CommandsGamble>();
+            commands.RegisterCommands<CommandsImgur>();
             commands.RegisterCommands<CommandsMemes>();
-            //commands.RegisterCommands<CommandsVoice>();
+            commands.RegisterCommands<CommandsVoice>();
+            commands.RegisterCommands<CommandsSwat>();
             commands.CommandExecuted += Commands_CommandExecuted;
             commands.CommandErrored += Commands_CommandErrored;
 

@@ -11,7 +11,7 @@ namespace TheGodfatherBot
 {
     [Description("Base commands.")]
     public class CommandsBase
-    {
+    { 
         [Command("greet")]
         [Description("Greets a user and starts a conversation.")]
         [Aliases("hello", "hi", "halo", "hey")]
@@ -40,8 +40,14 @@ namespace TheGodfatherBot
         [Command("penis")]
         [Description("An accurate size of the user's manhood.")]
         [Aliases("size", "dick", "length", "manhood")]
-        public async Task Penis(CommandContext ctx, [Description("Who to measure")] DiscordUser u)
+        public async Task Penis(CommandContext ctx, [Description("Who to measure")] DiscordUser u = null)
         {
+            if (u == null)
+            {
+                await ctx.RespondAsync("You didn't give me anyone to measure.");
+                return;
+            }
+
             string msg = "Size: 8";
             for (var size = u.Id % 40; size > 0; size--)
                 msg += "=";
