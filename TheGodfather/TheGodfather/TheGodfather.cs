@@ -24,6 +24,8 @@ namespace TheGodfatherBot
         {
             discord = new DiscordClient(new DiscordConfig
             {
+                DiscordBranch = Branch.Stable,
+                LargeThreshold = 250,
                 Token = "",
                 TokenType = TokenType.Bot,
                 UseInternalLogHandler = true,
@@ -44,7 +46,7 @@ namespace TheGodfatherBot
             commands.RegisterCommands<CommandsBase>();
             commands.RegisterCommands<CommandsGamble>();
             commands.RegisterCommands<CommandsMemes>();
-            commands.RegisterCommands<CommandsVoice>();
+            //commands.RegisterCommands<CommandsVoice>();
             commands.CommandExecuted += Commands_CommandExecuted;
             commands.CommandErrored += Commands_CommandErrored;
 
