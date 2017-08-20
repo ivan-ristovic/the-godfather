@@ -1,4 +1,5 @@
-﻿using System;
+﻿#region USING_DIRECTIVES
+using System;
 using System.Threading.Tasks;
 
 using DSharpPlus;
@@ -7,6 +8,7 @@ using DSharpPlus.Interactivity;
 using DSharpPlus.CommandsNext.Exceptions;
 using DSharpPlus.VoiceNext;
 using System.IO;
+#endregion
 
 namespace TheGodfatherBot
 {
