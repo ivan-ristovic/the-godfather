@@ -12,17 +12,40 @@ namespace TheGodfatherBot
 {
     class TheGodfather
     {
+        #region STATIC_FIELDS
         static DiscordClient _client { get; set; }
         static CommandsNextModule _commands { get; set; }
         static InteractivityModule _interactivity { get; set; }
         static VoiceNextClient _voice { get; set; }
-
+        #endregion
 
         public static void Main(string[] args) =>
             new TheGodfather().MainAsync(args).ConfigureAwait(false).GetAwaiter().GetResult();
 
 
         public async Task MainAsync(string[] args)
+        {
+            SetupClient();
+            SetupCommands();
+            SetupInteractivity();
+            SetupVoice();
+
+            // Connect
+            _client.SetWebSocketClient<WebSocket4NetClient>();  // Windows 7 specific
+            await _client.ConnectAsync();
+            await Task.Delay(-1);
+        }
+
+        #region HELPER_FUNCTIONS
+        private string GetToken(string filename)
+        {
+            if (!File.Exists(filename))
+                return null;
+            else
+                return File.ReadAllLines("filename")[0].Trim();
+        }
+
+        private void SetupClient()
         {
             _client = new DiscordClient(new DiscordConfig {
                 DiscordBranch = Branch.Stable,
@@ -35,7 +58,10 @@ namespace TheGodfatherBot
             _client.Ready += Client_Ready;
             _client.GuildAvailable += Client_GuildAvailable;
             _client.ClientError += Client_ClientError;
+        }
 
+        private void SetupCommands()
+        {
             _commands = _client.UseCommandsNext(new CommandsNextConfiguration {
                 StringPrefix = "!",
                 EnableDms = false,
@@ -52,24 +78,20 @@ namespace TheGodfatherBot
             CommandsSwat.LoadServers();
             _commands.CommandExecuted += Commands_CommandExecuted;
             _commands.CommandErrored += Commands_CommandErrored;
-
-            _interactivity = _client.UseInteractivity();
-
-            _voice = _client.UseVoiceNext();
-
-            _client.SetWebSocketClient<WebSocket4NetClient>();
-            await _client.ConnectAsync();
-            await Task.Delay(-1);
         }
 
-        private string GetToken(string filename)
+        private void SetupInteractivity()
         {
-            if (!File.Exists(filename))
-                return null;
-            else
-                return File.ReadAllLines("filename")[0].Trim();
+            _interactivity = _client.UseInteractivity();
         }
 
+        private void SetupVoice()
+        {
+            _voice = _client.UseVoiceNext();
+        }
+        #endregion
+
+        #region CLIENT_EVENTS
         private Task Client_Ready(ReadyEventArgs e)
         {
             e.Client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", "Ready.", DateTime.Now);
@@ -87,7 +109,9 @@ namespace TheGodfatherBot
             e.Client.DebugLogger.LogMessage(LogLevel.Error, "TheGodfather", $"Exception occured: {e.Exception.GetType()}: {e.Exception.Message}", DateTime.Now);
             return Task.CompletedTask;
         }
+        #endregion
 
+        #region COMMAND_EVENTS
         private Task Commands_CommandExecuted(CommandExecutedEventArgs e)
         {
             e.Context.Client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", $"{e.Context.User.Username} successfully executed '{e.Command.QualifiedName}'", DateTime.Now);
@@ -109,6 +133,7 @@ namespace TheGodfatherBot
                 await e.Context.RespondAsync("", embed: embed);
             }
         }
+        #endregion
     }
 }
 
