@@ -13,7 +13,7 @@ namespace TheGodfatherBot
     [RequirePermissions(Permissions.ManageGuild)]
     public class CommandsAdmin
     {
-        #region SUDO
+        #region COMMAND_SUDO
         [Command("sudo"), Description("Executes a command as another user."), Hidden]
         [RequireOwner]
         public async Task Sudo(CommandContext ctx, [Description("Member to execute as.")] DiscordMember member, [RemainingText, Description("Command text to execute.")] string command)
@@ -24,7 +24,7 @@ namespace TheGodfatherBot
         }
         #endregion
 
-        #region NICK
+        #region COMMAND_NICK
         [Command("nick"), Description("Gives someone a new nickname.")]
         [RequirePermissions(Permissions.ManageNicknames)]
         public async Task ChangeNickname(CommandContext ctx, [Description("Member to change the nickname for.")] DiscordMember member, [RemainingText, Description("The nickname to give to that user.")] string newname)

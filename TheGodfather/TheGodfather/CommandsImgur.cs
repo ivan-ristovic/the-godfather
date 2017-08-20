@@ -1,4 +1,5 @@
-﻿using System;
+﻿#region USING_DIRECTIVES
+using System;
 using System.Threading.Tasks;
 
 using DSharpPlus;
@@ -7,19 +8,21 @@ using DSharpPlus.CommandsNext.Attributes;
 
 using Imgur.API.Authentication.Impl;
 using Imgur.API.Endpoints.Impl;
-using Imgur.API.Models.Impl;
 using Imgur.API.Enums;
+#endregion
 
 namespace TheGodfatherBot
 {
     [Description("Imgur commands.")]
     public class CommandsImgur
     {
-        static ImgurClient client = new ImgurClient("5222972687f2120");
-        static GalleryEndpoint endpoint = new GalleryEndpoint(client);
+        #region STATIC_FIELDS
+        static ImgurClient _imgurclient = new ImgurClient("5222972687f2120");
+        static GalleryEndpoint _endpoint = new GalleryEndpoint(_imgurclient);
+        #endregion
 
-        [Command("imgur")]
-        [Description("Search imgur.")]
+        #region COMMAND_IMGUR
+        [Command("imgur"), Description("Search imgur.")]
         [Aliases("img", "im")]
         public async Task Imgur(CommandContext ctx, [Description("Query (optional)")] string sub = null)
         {
@@ -28,10 +31,12 @@ namespace TheGodfatherBot
             else
                 await GetImagesFromSub(ctx, sub.Trim());
         }
+        #endregion
 
+        #region HELPER_FUNCTIONS
         private async Task GetImagesFromSub(CommandContext ctx, string sub)
         {
-            var images = await endpoint.GetSubredditGalleryAsync(sub, SubredditGallerySortOrder.Top, TimeWindow.Day);
+            var images = await _endpoint.GetSubredditGalleryAsync(sub, SubredditGallerySortOrder.Top, TimeWindow.Day);
 
             int i = 3;
             foreach (var im in images) {
@@ -45,5 +50,6 @@ namespace TheGodfatherBot
                 return;
             }
         }
+        #endregion
     }
 }

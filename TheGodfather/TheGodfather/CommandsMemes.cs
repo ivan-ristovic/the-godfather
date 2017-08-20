@@ -1,10 +1,11 @@
-﻿using System;
+﻿#region USING_DIRECTIVES
+using System;
 using System.Threading.Tasks;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-
+#endregion
 
 namespace TheGodfatherBot
 {
@@ -16,9 +17,8 @@ namespace TheGodfatherBot
         public async Task ExecuteGroup(CommandContext ctx)
         {
             var rnd = new Random();
-            var nxt = rnd.Next(0, 44);
-
-            switch (nxt) {
+            switch (rnd.Next(0, 44)) {
+                #region MEME_LIST
                 case 0: await FapGun(ctx); return;
                 case 1: await Dildo(ctx); return;
                 case 2: await SmileMask(ctx); return;
@@ -63,9 +63,11 @@ namespace TheGodfatherBot
                 case 41: await BravoKick4life(ctx); return;
                 case 42: await Rugi(ctx); return;
                 case 43: await ZyklonB(ctx); return;
+                #endregion
             }
         }
 
+        #region HELPER_FUNCTIONS
         private async Task SendMeme(CommandContext ctx, string url)
         {
             await ctx.TriggerTypingAsync();
@@ -77,7 +79,9 @@ namespace TheGodfatherBot
             };
             await ctx.RespondAsync("", embed: embed);
         }
+        #endregion
 
+        #region COMMANDS_MEMES
         [Command("fapgun")]
         public async Task FapGun(CommandContext ctx)
         {
@@ -336,5 +340,6 @@ namespace TheGodfatherBot
         {
             await SendMeme(ctx, "https://i.imgur.com/yHoUdvx.jpg");
         }
+        #endregion
     }
 }

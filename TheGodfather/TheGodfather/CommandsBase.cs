@@ -13,7 +13,7 @@ namespace TheGodfatherBot
     [Description("Base commands.")]
     public class CommandsBase
     {
-        #region GREET
+        #region COMMAND_GREET
         [Command("greet"), Description("Greets a user and starts a conversation.")]
         [Aliases("hello", "hi", "halo", "hey", "howdy", "sup")]
         public async Task Greet(CommandContext ctx)
@@ -39,7 +39,7 @@ namespace TheGodfatherBot
         }
         #endregion
 
-        #region PENIS
+        #region COMMAND_PENIS
         [Command("penis"), Description("An accurate size of the user's manhood.")]
         [Aliases("size", "length", "manhood")]
         public async Task Penis(CommandContext ctx, [Description("Who to measure")] DiscordUser u = null)

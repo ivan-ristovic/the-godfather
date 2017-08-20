@@ -12,7 +12,7 @@ namespace TheGodfatherBot
     [Description("Random number generation commands.")]
     public class CommandsGamble
     {
-        #region ROLL
+        #region COMMAND_ROLL
         [Command("roll"), Description("Rolls a dice.")]
         [Aliases("dice")]
         public async Task Roll(CommandContext ctx)
@@ -22,7 +22,7 @@ namespace TheGodfatherBot
         }
         #endregion
 
-        #region DUEL
+        #region COMMAND_DUEL
         [Command("duel"), Description("Starts a duel which I will commentate.")]
         [Aliases("fight", "vs")]
         public async Task Duel(CommandContext ctx, [Description("Who to fight")] DiscordUser u)
