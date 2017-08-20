@@ -39,9 +39,8 @@ namespace TheGodfatherBot
         #endregion
 
         #region COMMAND_ALIAS
-        [Command("a"), Description("Alias handling, usage: !a <aliasname> or !a add/del/save/clear <aliasname>.")]
-        [Aliases("alias")]
-        [RequirePermissions(Permissions.ManageGuild)]
+        [Command("alias"), Description("Alias handling, usage: !a <aliasname> or !a add/del/save/clear <aliasname>.")]
+        [Aliases("a")]
         public async Task AliasBaseHandle(CommandContext ctx, [RemainingTextAttribute, Description("args")] string cmd)
         {
             try {
@@ -120,7 +119,8 @@ namespace TheGodfatherBot
             foreach (var entry in _aliases) {
                 var item = new DiscordEmbedField() {
                     Name = entry.Key,
-                    Value = entry.Value
+                    Value = entry.Value,
+                    Inline = true
                 };
                 embed.Fields.Add(item);
             }

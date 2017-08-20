@@ -16,8 +16,8 @@ namespace TheGodfatherBot
     public class CommandsVoice
     {
         #region COMMAND_JOIN
-        [Command("join"), Description("Connects me to your voice channel.")]
-        [Aliases("connect", "voice")]
+        [Command("connect"), Description("Connects me to your voice channel.")]
+        [Aliases("join", "voice")]
         public async Task Join(CommandContext ctx, DiscordChannel chn = null)
         {
             var vnext = ctx.Client.GetVoiceNextClient();
@@ -48,8 +48,8 @@ namespace TheGodfatherBot
         #endregion
 
         #region COMMAND_LEAVE
-        [Command("leave"), Description("Disconnects from voice channel.")]
-        [Aliases("disconnect")]
+        [Command("disconnect"), Description("Disconnects from voice channel.")]
+        [Aliases("leave")]
         public async Task Leave(CommandContext ctx)
         {
             var vnext = ctx.Client.GetVoiceNextClient();
