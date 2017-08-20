@@ -32,26 +32,49 @@ namespace TheGodfatherBot
                 return;
             }
 
+            string[] weapons = { "sword", "axe", "keyboard", "stone", "cheeseburger", "belt from yo momma" };
+
             await ctx.RespondAsync($"Duel between {ctx.User.Mention} and {u.Mention} is about to start!");
 
             int hp1 = 100, hp2 = 100;
             var rnd = new Random();
             while (hp1 > 0 && hp2 > 0) {
-                int damage = rnd.Next(15, 30);
+                await ctx.RespondAsync($"HP: {ctx.User.Username} ({hp1}) : {u.Username} ({hp2})");
+                await Task.Delay(2000);
+                int damage = rnd.Next(20, 40);
                 if (rnd.Next() % 2 == 0) {
-                    await ctx.RespondAsync($"{ctx.User.Username} hits {u.Username} for ({damage}) damage!");
+                    await ctx.RespondAsync($"{ctx.User.Username} hits {u.Username} with a {weapons[rnd.Next(0, weapons.Length)]} for {damage} damage!");
                     hp2 -= damage;
                 } else {
-                    await ctx.RespondAsync($"{u.Username} hits {ctx.User.Username} for ({damage}) damage!");
+                    await ctx.RespondAsync($"{u.Username} hits {ctx.User.Username} with a {weapons[rnd.Next(0, weapons.Length)]} for {damage} damage!");
                     hp1 -= damage;
                 }
                 await Task.Delay(2000);
-                await ctx.RespondAsync($"HP: {ctx.User.Username} ({hp1}) : {u.Username} ({hp2})");
             }
             if (hp1 < 0)
                 await ctx.RespondAsync($"{u.Mention} wins!");
             else
                 await ctx.RespondAsync($"{ctx.User.Mention} wins!");
+        }
+        #endregion
+
+        #region COMMAND_RPS
+        [Command("rps"), Description("Rock, paper, scissors game.")]
+        [Aliases("rockpaperscissors")]
+        public async Task RPS(CommandContext ctx)
+        {
+            await ctx.RespondAsync("Get ready!");
+            for (int i = 3; i > 0; i--) {
+                await ctx.RespondAsync(i + "...");
+                await Task.Delay(1000);
+            }
+            
+            var rnd = new Random();
+            switch (rnd.Next(0, 3)) {
+                case 0: await ctx.RespondAsync($"{DiscordEmoji.FromName(ctx.Client, ":new_moon:")}"); break;
+                case 1: await ctx.RespondAsync($"{DiscordEmoji.FromName(ctx.Client, ":newspaper:")}"); break;
+                case 2: await ctx.RespondAsync($"{DiscordEmoji.FromName(ctx.Client, ":scissors:")}"); break;
+            }
         }
         #endregion
     }
