@@ -55,6 +55,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -72,6 +73,7 @@
     <Compile Include="CommandsGamble.cs" />
     <Compile Include="CommandsImgur.cs" />
     <Compile Include="CommandsMemes.cs" />
+    <Compile Include="CommandsRSS.cs" />
     <Compile Include="CommandsSwat.cs" />
     <Compile Include="CommandsVoice.cs" />
     <Compile Include="TheGodfather.cs" />

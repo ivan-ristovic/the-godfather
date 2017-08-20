@@ -11,7 +11,7 @@ namespace TheGodfatherBot
 {
     [Group("meme", CanInvokeWithoutSubcommand = true)]
     [Description("Contains some memes. When invoked without subcommand, returns a random one.")]
-    [Aliases("pic", "memes")]
+    [Aliases("pic", "memes", "m")]
     public class CommandsMemes
     {
         public async Task ExecuteGroup(CommandContext ctx)
@@ -69,268 +69,273 @@ namespace TheGodfatherBot
 
         #region COMMANDS_MEMES
             #region CLASSIC
-            
+                [Command("granny")]
+                [Aliases("finger")]
+                public async Task GrannyFinger(CommandContext ctx)
+                {
+                    await SendMeme(ctx, "http://i.imgur.com/xmdy9sJ.gif");
+                }
             #endregion
             #region 4LIFE
             [Command("fapgun")]
-            public async Task FapGun(CommandContext ctx)
-            {
-                await SendMeme(ctx, "https://i.imgur.com/dxbP3LS.gif");
-            }
+                public async Task FapGun(CommandContext ctx)
+                {
+                    await SendMeme(ctx, "https://i.imgur.com/dxbP3LS.gif");
+                }
 
-            [Command("dildo")]
-            public async Task Dildo(CommandContext ctx)
-            {
-                await SendMeme(ctx, "https://i.imgur.com/NBRCK4x.jpg");
-            }
+                [Command("dildo")]
+                public async Task Dildo(CommandContext ctx)
+                {
+                    await SendMeme(ctx, "https://i.imgur.com/NBRCK4x.jpg");
+                }
 
-            [Command("smilemask")]
-            public async Task SmileMask(CommandContext ctx)
-            {
-                await SendMeme(ctx, "https://i.imgur.com/NBRCK4x.jpg");
-            }
+                [Command("smilemask")]
+                public async Task SmileMask(CommandContext ctx)
+                {
+                    await SendMeme(ctx, "https://i.imgur.com/NBRCK4x.jpg");
+                }
 
-            [Command("soenotsoh")]
-            public async Task SoENotSoH(CommandContext ctx)
-            {
-                await SendMeme(ctx, "https://i.imgur.com/zhHfrHf.jpg");
-            }
+                [Command("soenotsoh")]
+                public async Task SoENotSoH(CommandContext ctx)
+                {
+                    await SendMeme(ctx, "https://i.imgur.com/zhHfrHf.jpg");
+                }
 
-            [Command("swatservers")]
-            public async Task SwatServers(CommandContext ctx)
-            {
-                await SendMeme(ctx, "https://i.imgur.com/DuBcuke.jpg");
-            }
+                [Command("swatservers")]
+                public async Task SwatServers(CommandContext ctx)
+                {
+                    await SendMeme(ctx, "https://i.imgur.com/DuBcuke.jpg");
+                }
 
-            [Command("4lifeserver")]
-            public async Task ForLifeServer(CommandContext ctx)
-            {
-                await SendMeme(ctx, "https://i.imgur.com/RGibyYl.jpg");
-            }
+                [Command("4lifeserver")]
+                public async Task ForLifeServer(CommandContext ctx)
+                {
+                    await SendMeme(ctx, "https://i.imgur.com/RGibyYl.jpg");
+                }
 
-            [Command("4lifememes")]
-            public async Task ForLifeMemes(CommandContext ctx)
-            {
-                await SendMeme(ctx, "https://i.imgur.com/wUC2o33.jpg");
-            }
+                [Command("4lifememes")]
+                public async Task ForLifeMemes(CommandContext ctx)
+                {
+                    await SendMeme(ctx, "https://i.imgur.com/wUC2o33.jpg");
+                }
 
-            [Command("banwm")]
-            public async Task BanWM(CommandContext ctx)
-            {
-                await SendMeme(ctx, "https://i.imgur.com/hnDB9UV.jpg");
-            }
+                [Command("banwm")]
+                public async Task BanWM(CommandContext ctx)
+                {
+                    await SendMeme(ctx, "https://i.imgur.com/hnDB9UV.jpg");
+                }
 
-            [Command("4uvsltm")]
-            public async Task FUvsLTM(CommandContext ctx)
-            {
-                await SendMeme(ctx, "https://i.imgur.com/IS6udqN.png");
-            }
+                [Command("4uvsltm")]
+                public async Task FUvsLTM(CommandContext ctx)
+                {
+                    await SendMeme(ctx, "https://i.imgur.com/IS6udqN.png");
+                }
 
-            [Command("8d")]
-            public async Task EightD(CommandContext ctx)
-            {
-                await SendMeme(ctx, "https://i.imgur.com/wMIWU9M.png");
-            }
+                [Command("8d")]
+                public async Task EightD(CommandContext ctx)
+                {
+                    await SendMeme(ctx, "https://i.imgur.com/wMIWU9M.png");
+                }
 
-            [Command("rebi")]
-            public async Task Rebi(CommandContext ctx)
-            {
-                await SendMeme(ctx, "https://i.imgur.com/sp9t0Vq.png");
-            }
+                [Command("rebi")]
+                public async Task Rebi(CommandContext ctx)
+                {
+                    await SendMeme(ctx, "https://i.imgur.com/sp9t0Vq.png");
+                }
 
-            [Command("abuse")]
-            public async Task Abuse(CommandContext ctx)
-            {
-                await SendMeme(ctx, "https://i.imgur.com/NfxP6ED.jpg");
-            }
+                [Command("abuse")]
+                public async Task Abuse(CommandContext ctx)
+                {
+                    await SendMeme(ctx, "https://i.imgur.com/NfxP6ED.jpg");
+                }
 
-            [Command("alex")]
-            public async Task Alex(CommandContext ctx)
-            {
-                await SendMeme(ctx, "https://i.imgur.com/mStaB9l.png");
-            }
+                [Command("alex")]
+                public async Task Alex(CommandContext ctx)
+                {
+                    await SendMeme(ctx, "https://i.imgur.com/mStaB9l.png");
+                }
 
-            [Command("maxjoin")]
-            public async Task MaxJoin(CommandContext ctx)
-            {
-                await SendMeme(ctx, "https://i.imgur.com/48G6SeI.png");
-            }
+                [Command("maxjoin")]
+                public async Task MaxJoin(CommandContext ctx)
+                {
+                    await SendMeme(ctx, "https://i.imgur.com/48G6SeI.png");
+                }
 
-            [Command("civilwar")]
-            public async Task CivilWar(CommandContext ctx)
-            {
-                await SendMeme(ctx, "https://i.imgur.com/CAv6g7B.jpg");
-            }
+                [Command("civilwar")]
+                public async Task CivilWar(CommandContext ctx)
+                {
+                    await SendMeme(ctx, "https://i.imgur.com/CAv6g7B.jpg");
+                }
 
-            [Command("cockcopter")]
-            public async Task Cockcopter(CommandContext ctx)
-            {
-                await SendMeme(ctx, "https://i.imgur.com/DwF9tc8.gif");
-            }
+                [Command("cockcopter")]
+                public async Task Cockcopter(CommandContext ctx)
+                {
+                    await SendMeme(ctx, "https://i.imgur.com/DwF9tc8.gif");
+                }
 
-            [Command("cojones")]
-            public async Task Cojones(CommandContext ctx)
-            {
-                await SendMeme(ctx, "https://i.imgur.com/kjC6rwV.jpg");
-            }
+                [Command("cojones")]
+                public async Task Cojones(CommandContext ctx)
+                {
+                    await SendMeme(ctx, "https://i.imgur.com/kjC6rwV.jpg");
+                }
 
-            [Command("titi")]
-            public async Task Titi(CommandContext ctx)
-            {
-                await SendMeme(ctx, "https://i.imgur.com/LtpTewU.jpg");
-            }
+                [Command("titi")]
+                public async Task Titi(CommandContext ctx)
+                {
+                    await SendMeme(ctx, "https://i.imgur.com/LtpTewU.jpg");
+                }
 
-            [Command("eyes")]
-            public async Task Eyes(CommandContext ctx)
-            {
-                await SendMeme(ctx, "https://i.imgur.com/RBJD5nh.jpg");
-            }
+                [Command("eyes")]
+                public async Task Eyes(CommandContext ctx)
+                {
+                    await SendMeme(ctx, "https://i.imgur.com/RBJD5nh.jpg");
+                }
 
-            [Command("4lifeleave")]
-            public async Task ForLifeLeave(CommandContext ctx)
-            {
-                await SendMeme(ctx, "https://i.imgur.com/gzLGPDd.jpg");
-            }
+                [Command("4lifeleave")]
+                public async Task ForLifeLeave(CommandContext ctx)
+                {
+                    await SendMeme(ctx, "https://i.imgur.com/gzLGPDd.jpg");
+                }
 
-            [Command("halo")]
-            public async Task Halo(CommandContext ctx)
-            {
-                await SendMeme(ctx, "https://i.imgur.com/bElaJ0D.png");
-            }
+                [Command("halo")]
+                public async Task Halo(CommandContext ctx)
+                {
+                    await SendMeme(ctx, "https://i.imgur.com/bElaJ0D.png");
+                }
 
-            [Command("vitesscake")]
-            public async Task VitessBdayCake(CommandContext ctx)
-            {
-                await SendMeme(ctx, "https://i.imgur.com/tqVbMbC.png");
-            }
+                [Command("vitesscake")]
+                public async Task VitessBdayCake(CommandContext ctx)
+                {
+                    await SendMeme(ctx, "https://i.imgur.com/tqVbMbC.png");
+                }
 
-            [Command("juicedpc")]
-            public async Task JuicedPC(CommandContext ctx)
-            {
-                await SendMeme(ctx, "https://i.imgur.com/KYwIfYR.jpg");
-            }
+                [Command("juicedpc")]
+                public async Task JuicedPC(CommandContext ctx)
+                {
+                    await SendMeme(ctx, "https://i.imgur.com/KYwIfYR.jpg");
+                }
 
-            [Command("jojoreply")]
-            public async Task JoJoReply(CommandContext ctx)
-            {
-                await SendMeme(ctx, "https://i.imgur.com/AUaaoiG.jpg");
-            }
+                [Command("jojoreply")]
+                public async Task JoJoReply(CommandContext ctx)
+                {
+                    await SendMeme(ctx, "https://i.imgur.com/AUaaoiG.jpg");
+                }
 
-            [Command("jojoreply2")]
-            public async Task JoJoReply2(CommandContext ctx)
-            {
-                await SendMeme(ctx, "https://i.imgur.com/qTUloRW.png");
-            }
+                [Command("jojoreply2")]
+                public async Task JoJoReply2(CommandContext ctx)
+                {
+                    await SendMeme(ctx, "https://i.imgur.com/qTUloRW.png");
+                }
 
-            [Command("kimjoun")]
-            public async Task KimJoUn(CommandContext ctx)
-            {
-                await SendMeme(ctx, "https://i.imgur.com/1rOiw00.png");
-            }
+                [Command("kimjoun")]
+                public async Task KimJoUn(CommandContext ctx)
+                {
+                    await SendMeme(ctx, "https://i.imgur.com/1rOiw00.png");
+                }
 
-            [Command("markie")]
-            public async Task Markie(CommandContext ctx)
-            {
-                await SendMeme(ctx, "https://i.imgur.com/wzLfO9y.png");
-            }
+                [Command("markie")]
+                public async Task Markie(CommandContext ctx)
+                {
+                    await SendMeme(ctx, "https://i.imgur.com/wzLfO9y.png");
+                }
 
-            [Command("mazso")]
-            public async Task Mazso(CommandContext ctx)
-            {
-                await SendMeme(ctx, "https://i.imgur.com/IrlGMGo.png");
-            }
+                [Command("mazso")]
+                public async Task Mazso(CommandContext ctx)
+                {
+                    await SendMeme(ctx, "https://i.imgur.com/IrlGMGo.png");
+                }
 
-            [Command("panter")]
-            [Aliases("view")]
-            public async Task Panter(CommandContext ctx)
-            {
-                await SendMeme(ctx, "https://i.imgur.com/yLkx2uK.png");
-            }
+                [Command("panter")]
+                [Aliases("view")]
+                public async Task Panter(CommandContext ctx)
+                {
+                    await SendMeme(ctx, "https://i.imgur.com/yLkx2uK.png");
+                }
 
-            [Command("pardon")]
-            public async Task Pardon(CommandContext ctx)
-            {
-                await SendMeme(ctx, "https://i.imgur.com/QttVUtZ.jpg");
-            }
+                [Command("pardon")]
+                public async Task Pardon(CommandContext ctx)
+                {
+                    await SendMeme(ctx, "https://i.imgur.com/QttVUtZ.jpg");
+                }
 
-            [Command("rugipayment")]
-            public async Task RugiPayment(CommandContext ctx)
-            {
-                await SendMeme(ctx, "https://i.imgur.com/vMhZVv3.jpg");
-            }
+                [Command("rugipayment")]
+                public async Task RugiPayment(CommandContext ctx)
+                {
+                    await SendMeme(ctx, "https://i.imgur.com/vMhZVv3.jpg");
+                }
 
-            [Command("rugiserver")]
-            public async Task RugiServer(CommandContext ctx)
-            {
-                await SendMeme(ctx, "https://i.imgur.com/IUlOdDl.jpg");
-            }
+                [Command("rugiserver")]
+                public async Task RugiServer(CommandContext ctx)
+                {
+                    await SendMeme(ctx, "https://i.imgur.com/IUlOdDl.jpg");
+                }
 
-            [Command("rugimakefun")]
-            public async Task RugiMakeFun(CommandContext ctx)
-            {
-                await SendMeme(ctx, "https://i.imgur.com/BeedXK9.jpg");
-            }
+                [Command("rugimakefun")]
+                public async Task RugiMakeFun(CommandContext ctx)
+                {
+                    await SendMeme(ctx, "https://i.imgur.com/BeedXK9.jpg");
+                }
 
-            [Command("peperage")]
-            public async Task PepeRage(CommandContext ctx)
-            {
-                await SendMeme(ctx, "https://i.imgur.com/nwRLMJT.gif");
-            }
+                [Command("peperage")]
+                public async Task PepeRage(CommandContext ctx)
+                {
+                    await SendMeme(ctx, "https://i.imgur.com/nwRLMJT.gif");
+                }
 
-            [Command("fap")]
-            public async Task Fap(CommandContext ctx)
-            {
-                await SendMeme(ctx, "https://i.imgur.com/aYEGsxh.gif");
-            }
+                [Command("fap")]
+                public async Task Fap(CommandContext ctx)
+                {
+                    await SendMeme(ctx, "https://i.imgur.com/aYEGsxh.gif");
+                }
 
-            [Command("fap2")]
-            public async Task Fap2(CommandContext ctx)
-            {
-                await SendMeme(ctx, "https://i.imgur.com/6rMWjeP.gif");
-            }
+                [Command("fap2")]
+                public async Task Fap2(CommandContext ctx)
+                {
+                    await SendMeme(ctx, "https://i.imgur.com/6rMWjeP.gif");
+                }
 
-            [Command("stfu4")]
-            public async Task Stfu4(CommandContext ctx)
-            {
-                await SendMeme(ctx, "https://i.imgur.com/hdl2FX8.jpg");
-            }
+                [Command("stfu4")]
+                public async Task Stfu4(CommandContext ctx)
+                {
+                    await SendMeme(ctx, "https://i.imgur.com/hdl2FX8.jpg");
+                }
 
-            [Command("banana")]
-            public async Task Banana(CommandContext ctx)
-            {
-                await SendMeme(ctx, "https://i.imgur.com/5Jn2ylk.jpg");
-            }
+                [Command("banana")]
+                public async Task Banana(CommandContext ctx)
+                {
+                    await SendMeme(ctx, "https://i.imgur.com/5Jn2ylk.jpg");
+                }
 
-            [Command("donations")]
-            public async Task Donations(CommandContext ctx)
-            {
-                await SendMeme(ctx, "https://i.imgur.com/Atcrimv.png");
-            }
+                [Command("donations")]
+                public async Task Donations(CommandContext ctx)
+                {
+                    await SendMeme(ctx, "https://i.imgur.com/Atcrimv.png");
+                }
 
-            [Command("calm")]
-            public async Task CalmBros(CommandContext ctx)
-            {
-                await SendMeme(ctx, "https://i.imgur.com/XnEhfha.png");
-            }
+                [Command("calm")]
+                public async Task CalmBros(CommandContext ctx)
+                {
+                    await SendMeme(ctx, "https://i.imgur.com/XnEhfha.png");
+                }
 
-            [Command("bravokick4life")]
-            public async Task BravoKick4life(CommandContext ctx)
-            {
-                await SendMeme(ctx, "https://i.imgur.com/c1BEVOD.png");
-            }
+                [Command("bravokick4life")]
+                public async Task BravoKick4life(CommandContext ctx)
+                {
+                    await SendMeme(ctx, "https://i.imgur.com/c1BEVOD.png");
+                }
 
-            [Command("rugi")]
-            public async Task Rugi(CommandContext ctx)
-            {
-                await SendMeme(ctx, "https://i.imgur.com/Y2VvPNs.jpg");
-            }
+                [Command("rugi")]
+                public async Task Rugi(CommandContext ctx)
+                {
+                    await SendMeme(ctx, "https://i.imgur.com/Y2VvPNs.jpg");
+                }
 
-            [Command("zyklon")]
-            public async Task ZyklonB(CommandContext ctx)
-            {
-                await SendMeme(ctx, "https://i.imgur.com/yHoUdvx.jpg");
-            }
-            #endregion
+                [Command("zyklon")]
+                public async Task ZyklonB(CommandContext ctx)
+                {
+                    await SendMeme(ctx, "https://i.imgur.com/yHoUdvx.jpg");
+                }
+                #endregion
         #endregion
         
         #region HELPER_FUNCTIONS

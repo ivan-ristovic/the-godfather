@@ -76,13 +76,14 @@ namespace TheGodfatherBot
             CommandsSwat.LoadServers();
             CommandsAlias.LoadAliases();
             _commands.RegisterCommands<CommandsAdmin>();
+            _commands.RegisterCommands<CommandsAlias>();
             _commands.RegisterCommands<CommandsBase>();
             _commands.RegisterCommands<CommandsGamble>();
             _commands.RegisterCommands<CommandsImgur>();
             _commands.RegisterCommands<CommandsMemes>();
-            _commands.RegisterCommands<CommandsVoice>();
+            _commands.RegisterCommands<CommandsRSS>();
             _commands.RegisterCommands<CommandsSwat>();
-            _commands.RegisterCommands<CommandsAlias>();
+            _commands.RegisterCommands<CommandsVoice>();
             _commands.CommandExecuted += Commands_CommandExecuted;
             _commands.CommandErrored += Commands_CommandErrored;
         }
