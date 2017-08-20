@@ -42,7 +42,7 @@ namespace TheGodfatherBot
             if (!File.Exists(filename))
                 return null;
             else
-                return File.ReadAllLines("filename")[0].Trim();
+                return File.ReadAllLines(filename)[0].Trim();
         }
 
         private void SetupClient()
