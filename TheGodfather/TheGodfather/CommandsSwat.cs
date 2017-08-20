@@ -190,25 +190,30 @@ namespace TheGodfatherBot
 
             if (index < 10) {
                 index++;
-                return new string[] { split[4], split[index], split[index + 2] };
+                return new string[] { split[4], split[index], split[index + 2], split[index + 8] };
             }
 
             return null;
         }
-
-
+        
         private async Task SendEmbedInfo(CommandContext ctx, string ip, string[] info)
         {
             var embed = new DiscordEmbed() {
                 Title = info[0],
                 Description = ip,
-                Timestamp = DateTime.Now
+                Timestamp = DateTime.Now,
+                Color = 0x00FF00    // Green
             };
-            var field = new DiscordEmbedField() {
+            var players = new DiscordEmbedField() {
                 Name = "Players",
                 Value = info[1] + "/" + info[2]
             };
-            embed.Fields.Add(field);
+            var map = new DiscordEmbedField() {
+                Name = "Map",
+                Value = info[3]
+            };
+            embed.Fields.Add(players);
+            embed.Fields.Add(map);
             await ctx.RespondAsync("", embed: embed);
         }
         #endregion
