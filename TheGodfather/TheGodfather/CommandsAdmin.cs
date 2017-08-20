@@ -30,14 +30,11 @@ namespace TheGodfatherBot
         {
             await ctx.TriggerTypingAsync();
 
-            try
-            {
+            try {
                 await member.ModifyAsync(new_nickname, reason: $"Changed by {ctx.User.Username} ({ctx.User.Id}).");
                 var emoji = DiscordEmoji.FromName(ctx.Client, ":+1:");
                 await ctx.RespondAsync(emoji.ToString());
-            }
-            catch (Exception)
-            {
+            } catch (Exception) {
                 var emoji = DiscordEmoji.FromName(ctx.Client, ":-1:");
                 await ctx.RespondAsync(emoji.ToString());
             }

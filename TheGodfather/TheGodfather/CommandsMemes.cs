@@ -18,8 +18,7 @@ namespace TheGodfatherBot
             var rnd = new Random();
             var nxt = rnd.Next(0, 44);
 
-            switch (nxt)
-            {
+            switch (nxt) {
                 case 0: await FapGun(ctx); return;
                 case 1: await Dildo(ctx); return;
                 case 2: await SmileMask(ctx); return;
@@ -71,10 +70,8 @@ namespace TheGodfatherBot
         {
             await ctx.TriggerTypingAsync();
 
-            var embed = new DiscordEmbed
-            {
-                Image = new DiscordEmbedImage
-                {
+            var embed = new DiscordEmbed {
+                Image = new DiscordEmbedImage {
                     Url = url
                 }
             };

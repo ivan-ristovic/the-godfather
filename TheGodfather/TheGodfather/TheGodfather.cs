@@ -22,8 +22,7 @@ namespace TheGodfatherBot
 
         public async Task MainAsync(string[] args)
         {
-            discord = new DiscordClient(new DiscordConfig
-            {
+            discord = new DiscordClient(new DiscordConfig {
                 DiscordBranch = Branch.Stable,
                 LargeThreshold = 250,
                 Token = "",
@@ -35,8 +34,7 @@ namespace TheGodfatherBot
             discord.GuildAvailable += Client_GuildAvailable;
             discord.ClientError += Client_ClientError;
 
-            commands = discord.UseCommandsNext(new CommandsNextConfiguration
-            {
+            commands = discord.UseCommandsNext(new CommandsNextConfiguration {
                 StringPrefix = "!",
                 EnableDms = false,
                 CaseSensitive = false,
@@ -49,6 +47,7 @@ namespace TheGodfatherBot
             commands.RegisterCommands<CommandsMemes>();
             commands.RegisterCommands<CommandsVoice>();
             commands.RegisterCommands<CommandsSwat>();
+            CommandsSwat.LoadServers();
             commands.CommandExecuted += Commands_CommandExecuted;
             commands.CommandErrored += Commands_CommandErrored;
 
@@ -90,11 +89,9 @@ namespace TheGodfatherBot
 
             e.Context.Client.DebugLogger.LogMessage(LogLevel.Error, "TheGodfather", $"{e.Context.User.Username} tried executing '{e.Command?.QualifiedName ?? "<unknown command>"}' but it errored: {e.Exception.GetType()}: {e.Exception.Message ?? "<no message>"}", DateTime.Now);
 
-            if (e.Exception is ChecksFailedException ex)
-            {
+            if (e.Exception is ChecksFailedException ex) {
                 var emoji = DiscordEmoji.FromName(e.Context.Client, ":no_entry:");
-                var embed = new DiscordEmbed
-                {
+                var embed = new DiscordEmbed {
                     Title = "Access denied",
                     Description = $"{emoji} You do not have the permissions required to execute this command.",
                     Color = 0xFF0000

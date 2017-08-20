@@ -34,15 +34,13 @@ namespace TheGodfatherBot
             var images = await endpoint.GetSubredditGalleryAsync(sub, SubredditGallerySortOrder.Top, TimeWindow.Day);
 
             int i = 3;
-            foreach (var im in images)
-            {
+            foreach (var im in images) {
                 if (i-- == 0)
                     break;
                 await ctx.RespondAsync(im.ToString());
             }
 
-            if (i == 3)
-            {
+            if (i == 3) {
                 await ctx.RespondAsync("Subreddit not found...");
                 return;
             }

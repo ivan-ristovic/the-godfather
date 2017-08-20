@@ -19,14 +19,13 @@ namespace TheGodfatherBot
             var rnd = new Random();
             await ctx.RespondAsync($"{DiscordEmoji.FromName(ctx.Client, ":game_die:")} {ctx.User.Mention} rolled a {rnd.Next(1, 7)} !");
         }
-        
+
         [Command("duel")]
         [Description("Starts a duel which I will commentate.")]
         [Aliases("fight", "vs")]
         public async Task Duel(CommandContext ctx, [Description("Who to fight")] DiscordUser u)
         {
-            if (u.Id == ctx.User.Id)
-            {
+            if (u.Id == ctx.User.Id) {
                 await ctx.RespondAsync("You can't duel yourself...");
                 return;
             }
@@ -35,16 +34,12 @@ namespace TheGodfatherBot
 
             int hp1 = 100, hp2 = 100;
             var rnd = new Random();
-            while (hp1 > 0 && hp2 > 0)
-            {
+            while (hp1 > 0 && hp2 > 0) {
                 int damage = rnd.Next(15, 30);
-                if (rnd.Next() % 2 == 0)
-                {
+                if (rnd.Next() % 2 == 0) {
                     await ctx.RespondAsync($"{ctx.User.Username} hits {u.Username} for ({damage}) damage!");
                     hp2 -= damage;
-                }
-                else
-                {
+                } else {
                     await ctx.RespondAsync($"{u.Username} hits {ctx.User.Username} for ({damage}) damage!");
                     hp1 -= damage;
                 }
