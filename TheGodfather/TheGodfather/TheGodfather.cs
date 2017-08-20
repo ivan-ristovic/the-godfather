@@ -34,6 +34,7 @@ namespace TheGodfatherBot
 
             // Connect
             _client.SetWebSocketClient<WebSocket4NetClient>();  // Windows 7 specific
+
             await _client.ConnectAsync();
             await Task.Delay(-1);
         }
@@ -60,6 +61,8 @@ namespace TheGodfatherBot
             _client.Ready += Client_Ready;
             _client.GuildAvailable += Client_GuildAvailable;
             _client.ClientError += Client_ClientError;
+            _client.GuildMemberAdd += Client_GuildMemberAdd;
+            _client.GuildMemberRemove += Client_GuildMemberRemove;
         }
 
         private void SetupCommands()
@@ -111,6 +114,18 @@ namespace TheGodfatherBot
         private Task Client_ClientError(ClientErrorEventArgs e)
         {
             e.Client.DebugLogger.LogMessage(LogLevel.Error, "TheGodfather", $"Exception occured: {e.Exception.GetType()}: {e.Exception.Message}", DateTime.Now);
+            return Task.CompletedTask;
+        }
+
+        private Task Client_GuildMemberAdd(GuildMemberAddEventArgs e)
+        {
+            e.Guild.DefaultChannel.SendMessageAsync($"Welcome to {e.Guild.Name}, {e.Member.Mention}!");
+            return Task.CompletedTask;
+        }
+
+        private Task Client_GuildMemberRemove(GuildMemberRemoveEventArgs e)
+        {
+            e.Guild.DefaultChannel.SendMessageAsync($"{e.Member.Username} left {e.Guild.Name}. Bye!");
             return Task.CompletedTask;
         }
         #endregion
