@@ -41,6 +41,7 @@ namespace TheGodfatherBot
         #region COMMAND_ALIAS
         [Command("a"), Description("Alias handling, usage: !a <aliasname> or !a add/del/save/clear <aliasname>.")]
         [Aliases("alias")]
+        [RequirePermissions(Permissions.ManageGuild)]
         public async Task AliasBaseHandle(CommandContext ctx, [RemainingTextAttribute, Description("args")] string cmd)
         {
             try {

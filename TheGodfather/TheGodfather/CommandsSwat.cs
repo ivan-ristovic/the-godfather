@@ -140,7 +140,7 @@ namespace TheGodfatherBot
                     await ctx.RespondAsync("Invalid IP format.");
                     await StopCheck(ctx);
                 }
-                await Task.Delay(1000);
+                await Task.Delay(3000);
             }
         }
         #endregion
