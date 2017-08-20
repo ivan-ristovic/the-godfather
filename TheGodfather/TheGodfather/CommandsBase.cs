@@ -1,27 +1,30 @@
-﻿using System;
+﻿#region USING_DIRECTIVES
+using System;
 using System.Threading.Tasks;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Interactivity;
-
+#endregion
 
 namespace TheGodfatherBot
 {
     [Description("Base commands.")]
     public class CommandsBase
     {
-        [Command("greet")]
-        [Description("Greets a user and starts a conversation.")]
-        [Aliases("hello", "hi", "halo", "hey")]
+        #region GREET
+        [Command("greet"), Description("Greets a user and starts a conversation.")]
+        [Aliases("hello", "hi", "halo", "hey", "howdy", "sup")]
         public async Task Greet(CommandContext ctx)
         {
             await ctx.RespondAsync($"{DiscordEmoji.FromName(ctx.Client, ":wave:")} Hi, {ctx.User.Mention}!");
             var interactivity = ctx.Client.GetInteractivityModule();
-            var msg = await interactivity.WaitForMessageAsync(xm =>
-                xm.Author.Id == ctx.User.Id && xm.Content.ToLower().StartsWith("how are you"), TimeSpan.FromMinutes(1)
+            var msg = await interactivity.WaitForMessageAsync(
+                xm => xm.Author.Id == ctx.User.Id && xm.Content.ToLower().StartsWith("how are you"), 
+                TimeSpan.FromMinutes(1)
             );
+
             if (msg != null) {
                 var rnd = new Random();
                 switch (rnd.Next(0, 5)) {
@@ -34,10 +37,11 @@ namespace TheGodfatherBot
                 }
             }
         }
+        #endregion
 
-        [Command("penis")]
-        [Description("An accurate size of the user's manhood.")]
-        [Aliases("size", "dick", "length", "manhood")]
+        #region PENIS
+        [Command("penis"), Description("An accurate size of the user's manhood.")]
+        [Aliases("size", "length", "manhood")]
         public async Task Penis(CommandContext ctx, [Description("Who to measure")] DiscordUser u = null)
         {
             if (u == null) {
@@ -50,5 +54,6 @@ namespace TheGodfatherBot
                 msg += "=";
             await ctx.RespondAsync(msg + "D");
         }
+        #endregion
     }
 }

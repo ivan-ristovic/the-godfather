@@ -13,6 +13,7 @@ namespace TheGodfatherBot
     [RequirePermissions(Permissions.ManageGuild)]
     public class CommandsAdmin
     {
+        #region SUDO
         [Command("sudo"), Description("Executes a command as another user."), Hidden]
         [RequireOwner]
         public async Task Sudo(CommandContext ctx, [Description("Member to execute as.")] DiscordMember member, [RemainingText, Description("Command text to execute.")] string command)
@@ -21,7 +22,9 @@ namespace TheGodfatherBot
             var cmds = ctx.Client.GetCommandsNext();
             await cmds.SudoAsync(member, ctx.Channel, command);
         }
+        #endregion
 
+        #region NICK
         [Command("nick"), Description("Gives someone a new nickname.")]
         [RequirePermissions(Permissions.ManageNicknames)]
         public async Task ChangeNickname(CommandContext ctx, [Description("Member to change the nickname for.")] DiscordMember member, [RemainingText, Description("The nickname to give to that user.")] string newname)
@@ -37,5 +40,6 @@ namespace TheGodfatherBot
                 await ctx.RespondAsync(emoji.ToString());
             }
         }
+        #endregion
     }
 }
