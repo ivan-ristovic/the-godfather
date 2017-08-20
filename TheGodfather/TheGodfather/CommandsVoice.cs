@@ -1,4 +1,5 @@
-﻿using System;
+﻿#region USING_DIRECTIVES
+using System;
 using System.IO;
 using System.Diagnostics;
 using System.Threading.Tasks;
@@ -7,15 +8,15 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.VoiceNext;
-
+#endregion
 
 namespace TheGodfatherBot
 {
     [Description("Voice & music commands.")]
     public class CommandsVoice
     {
-        [Command("join")]
-        [Description("Connects me to your voice channel.")]
+        #region COMMAND_JOIN
+        [Command("join"), Description("Connects me to your voice channel.")]
         [Aliases("connect", "voice")]
         public async Task Join(CommandContext ctx, DiscordChannel chn = null)
         {
@@ -44,9 +45,10 @@ namespace TheGodfatherBot
 
             await ctx.RespondAsync($"Connected to `{chn.Name}`.");
         }
+        #endregion
 
-        [Command("leave")]
-        [Description("Disconnects from voice channel.")]
+        #region COMMAND_LEAVE
+        [Command("leave"), Description("Disconnects from voice channel.")]
         [Aliases("disconnect")]
         public async Task Leave(CommandContext ctx)
         {
@@ -66,9 +68,10 @@ namespace TheGodfatherBot
 
             await ctx.RespondAsync($"Disconnected.");
         }
+        #endregion
 
-        [Command("play")]
-        [Description("Plays an audio file.")]
+        #region COMMAND_PLAY
+        [Command("play"), Description("Plays an audio file from server filesystem.")]
         public async Task Play(CommandContext ctx, [RemainingText, Description("Full path to the file to play.")] string filename)
         {
             var vnext = ctx.Client.GetVoiceNextClient();
@@ -127,6 +130,7 @@ namespace TheGodfatherBot
             if (exc != null)
                 await ctx.RespondAsync($"An exception occured during playback: `{exc.GetType()}: {exc.Message}`.");
         }
+        #endregion
     }
 }
 

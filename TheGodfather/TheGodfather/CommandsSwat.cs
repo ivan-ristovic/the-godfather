@@ -1,4 +1,5 @@
-﻿using System;
+﻿#region USING_DIRECTIVES
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
@@ -9,17 +10,22 @@ using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-
+#endregion
 
 namespace TheGodfatherBot
 {
     [Description("SWAT4 related commands.")]
     public class CommandsSwat
     {
-        private bool checking = false;
+        #region STATIC_FIELDS
         private static Dictionary<string, string> ServerList = new Dictionary<string, string>();
+        #endregion
+        
+        #region PRIVATE_MEMBERS
+        private bool checking = false;
+        #endregion
 
-
+        #region STATIC_FUNCTIONS
         public static void LoadServers()
         {
             string[] serverlist = {
@@ -55,19 +61,21 @@ namespace TheGodfatherBot
                 return;
             }
         }
+        #endregion
 
 
-        [Command("servers")]
-        [Description("Print the serverlist.")]
+        #region COMMAND_SERVERS
+        [Command("servers"), Description("Print the SWAT4 serverlist.")]
+        [Aliases("serverlist", "swat4servers", "swat4stats")]
         public async Task Servers(CommandContext ctx)
         {
             await ctx.RespondAsync("Not implemented yet.");
         }
+        #endregion
 
-
-        [Command("query")]
-        [Description("Return server information.")]
-        [Aliases("info")]
+        #region COMMAND_QUERY
+        [Command("query"), Description("Return server information.")]
+        [Aliases("info", "check")]
         public async Task Query(CommandContext ctx, [Description("IP to query.")] string ip = null)
         {
             if (ip == null || ip.Trim() == "") {
@@ -93,10 +101,10 @@ namespace TheGodfatherBot
                 await ctx.RespondAsync("Invalid IP format.");
             }
         }
+        #endregion
 
-
-        [Command("startcheck")]
-        [Description("Notifies of free space in server.")]
+        #region COMMAND_STARTCHECK
+        [Command("startcheck"), Description("Notifies of free space in server.")]
         [Aliases("checkspace", "spacecheck")]
         public async Task StartCheck(CommandContext ctx, [Description("IP to query.")] string ip = null)
         {
@@ -135,18 +143,20 @@ namespace TheGodfatherBot
                 await Task.Delay(1000);
             }
         }
+        #endregion
 
-
-        [Command("stopcheck")]
-        [Description("Stops space checking.")]
+        #region COMMAND_STOPCHECK
+        [Command("stopcheck"), Description("Stops space checking.")]
         [Aliases("checkstop")]
         public async Task StopCheck(CommandContext ctx)
         {
             checking = false;
             await ctx.RespondAsync("Checking stopped.");
         }
+        #endregion
 
 
+        #region HELPER_FUNCTIONS
         private string[] QueryIP(CommandContext ctx, string ip, int port)
         {
             var client = new UdpClient();
@@ -201,5 +211,6 @@ namespace TheGodfatherBot
             embed.Fields.Add(field);
             await ctx.RespondAsync("", embed: embed);
         }
+        #endregion
     }
 }
