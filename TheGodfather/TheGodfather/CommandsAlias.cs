@@ -39,7 +39,7 @@ namespace TheGodfatherBot
         #endregion
 
         #region COMMAND_ALIAS
-        [Command("a"), Description("Alias handling, usage: !a <aliasname> or !a add/del <aliasname>.")]
+        [Command("a"), Description("Alias handling, usage: !a <aliasname> or !a add/del/save/clear <aliasname>.")]
         [Aliases("alias")]
         public async Task AliasBaseHandle(CommandContext ctx, [RemainingTextAttribute, Description("args")] string cmd)
         {
@@ -50,6 +50,7 @@ namespace TheGodfatherBot
                     case "del":  await RemoveAlias(ctx, split[1]);          break;
                     case "save": await SaveAliases(ctx);                    break;
                     case "list": await ListAliases(ctx);                    break;
+                    case "clear": await ClearAliases(ctx);                  break;
                     default:
                         if (_aliases != null && _aliases.ContainsKey(split[0]))
                             await ctx.RespondAsync(_aliases[split[0]]);
@@ -125,6 +126,11 @@ namespace TheGodfatherBot
             await ctx.RespondAsync("", embed: embed);
         }
 
+        private async Task ClearAliases(CommandContext ctx)
+        {
+            _aliases.Clear();
+            await ctx.RespondAsync("All aliases successfully removed.");
+        }
         #endregion
     }
 }
