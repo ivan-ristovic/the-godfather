@@ -18,7 +18,7 @@ namespace TheGodfatherBot
     public class CommandsSwat
     {
         #region STATIC_FIELDS
-        private static Dictionary<string, string> ServerList = new Dictionary<string, string>();
+        private static Dictionary<string, string> _serverlist = new Dictionary<string, string>();
         #endregion
         
         #region PRIVATE_MEMBERS
@@ -55,7 +55,7 @@ namespace TheGodfatherBot
                     if (line.Trim() == "" || line[0] == '#')
                         continue;
                     var values = line.Split('$');
-                    ServerList.Add(values[0], values[1]);
+                    _serverlist.Add(values[0], values[1]);
                 }
             } catch (Exception) {
                 return;
@@ -83,8 +83,8 @@ namespace TheGodfatherBot
                 return;
             }
 
-            if (ServerList.ContainsKey(ip)) {
-                ip = ServerList[ip];
+            if (_serverlist.ContainsKey(ip)) {
+                ip = _serverlist[ip];
             } else {
                 await ctx.RespondAsync("Unknown short name.");
                 return;
@@ -118,8 +118,8 @@ namespace TheGodfatherBot
                 return;
             }
 
-            if (ServerList.ContainsKey(ip)) {
-                ip = ServerList[ip];
+            if (_serverlist.ContainsKey(ip)) {
+                ip = _serverlist[ip];
             } else {
                 await ctx.RespondAsync("Unknown short name.");
                 return;

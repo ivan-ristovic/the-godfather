@@ -67,6 +67,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CommandsAdmin.cs" />
+    <Compile Include="CommandsAlias.cs" />
     <Compile Include="CommandsBase.cs" />
     <Compile Include="CommandsGamble.cs" />
     <Compile Include="CommandsImgur.cs" />

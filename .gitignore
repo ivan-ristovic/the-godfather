@@ -288,3 +288,4 @@ __pycache__/
 *.xsd.cs
 *.mp3
 /TheGodfather/TheGodfather/Resources/token.txt
+/TheGodfather/TheGodfather/Resources/aliases.txt

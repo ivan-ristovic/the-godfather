@@ -70,6 +70,8 @@ namespace TheGodfatherBot
                 CaseSensitive = false,
                 EnableMentionPrefix = true
             });
+            CommandsSwat.LoadServers();
+            CommandsAlias.LoadAliases();
             _commands.RegisterCommands<CommandsAdmin>();
             _commands.RegisterCommands<CommandsBase>();
             _commands.RegisterCommands<CommandsGamble>();
@@ -77,7 +79,7 @@ namespace TheGodfatherBot
             _commands.RegisterCommands<CommandsMemes>();
             _commands.RegisterCommands<CommandsVoice>();
             _commands.RegisterCommands<CommandsSwat>();
-            CommandsSwat.LoadServers();
+            _commands.RegisterCommands<CommandsAlias>();
             _commands.CommandExecuted += Commands_CommandExecuted;
             _commands.CommandErrored += Commands_CommandErrored;
         }
