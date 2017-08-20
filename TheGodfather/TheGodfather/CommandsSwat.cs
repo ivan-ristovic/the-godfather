@@ -76,11 +76,15 @@ namespace TheGodfatherBot
                     if (info != null && int.Parse(info[1]) < int.Parse(info[2]))
                         await ctx.RespondAsync(ctx.User.Mention + ", there is space on " + info[0]);
                     else
+                    {
                         await ctx.RespondAsync("No reply from server.");
+                        await StopCheck(ctx);
+                    }
                 }
                 catch (Exception)
                 {
                     await ctx.RespondAsync("Invalid IP format.");
+                    await StopCheck(ctx);
                 }
                 await Task.Delay(1000);
             }
