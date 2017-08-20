@@ -1,27 +1,29 @@
-﻿using System;
+﻿#region USING_DIRECTIVES
+using System;
 using System.Threading.Tasks;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-
+#endregion
 
 namespace TheGodfatherBot
 {
     [Description("Random number generation commands.")]
     public class CommandsGamble
     {
-        [Command("roll")]
-        [Description("Rolls a dice.")]
+        #region ROLL
+        [Command("roll"), Description("Rolls a dice.")]
         [Aliases("dice")]
         public async Task Roll(CommandContext ctx)
         {
             var rnd = new Random();
             await ctx.RespondAsync($"{DiscordEmoji.FromName(ctx.Client, ":game_die:")} {ctx.User.Mention} rolled a {rnd.Next(1, 7)} !");
         }
+        #endregion
 
-        [Command("duel")]
-        [Description("Starts a duel which I will commentate.")]
+        #region DUEL
+        [Command("duel"), Description("Starts a duel which I will commentate.")]
         [Aliases("fight", "vs")]
         public async Task Duel(CommandContext ctx, [Description("Who to fight")] DiscordUser u)
         {
@@ -51,5 +53,6 @@ namespace TheGodfatherBot
             else
                 await ctx.RespondAsync($"{ctx.User.Mention} wins!");
         }
+        #endregion
     }
 }
