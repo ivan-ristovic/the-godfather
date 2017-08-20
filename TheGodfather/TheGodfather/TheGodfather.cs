@@ -6,58 +6,68 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.Interactivity;
 using DSharpPlus.CommandsNext.Exceptions;
 using DSharpPlus.VoiceNext;
-
+using System.IO;
 
 namespace TheGodfatherBot
 {
     class TheGodfather
     {
-        static DiscordClient discord { get; set; }
-        static CommandsNextModule commands { get; set; }
-        static InteractivityModule interactivity { get; set; }
-        static VoiceNextClient voice { get; set; }
+        static DiscordClient _client { get; set; }
+        static CommandsNextModule _commands { get; set; }
+        static InteractivityModule _interactivity { get; set; }
+        static VoiceNextClient _voice { get; set; }
+
 
         public static void Main(string[] args) =>
             new TheGodfather().MainAsync(args).ConfigureAwait(false).GetAwaiter().GetResult();
 
+
         public async Task MainAsync(string[] args)
         {
-            discord = new DiscordClient(new DiscordConfig {
+            _client = new DiscordClient(new DiscordConfig {
                 DiscordBranch = Branch.Stable,
                 LargeThreshold = 250,
-                Token = "",
+                Token = GetToken("token.txt"),
                 TokenType = TokenType.Bot,
                 UseInternalLogHandler = true,
                 LogLevel = LogLevel.Debug
             });
-            discord.Ready += Client_Ready;
-            discord.GuildAvailable += Client_GuildAvailable;
-            discord.ClientError += Client_ClientError;
+            _client.Ready += Client_Ready;
+            _client.GuildAvailable += Client_GuildAvailable;
+            _client.ClientError += Client_ClientError;
 
-            commands = discord.UseCommandsNext(new CommandsNextConfiguration {
+            _commands = _client.UseCommandsNext(new CommandsNextConfiguration {
                 StringPrefix = "!",
                 EnableDms = false,
                 CaseSensitive = false,
                 EnableMentionPrefix = true
             });
-            commands.RegisterCommands<CommandsAdmin>();
-            commands.RegisterCommands<CommandsBase>();
-            commands.RegisterCommands<CommandsGamble>();
-            commands.RegisterCommands<CommandsImgur>();
-            commands.RegisterCommands<CommandsMemes>();
-            commands.RegisterCommands<CommandsVoice>();
-            commands.RegisterCommands<CommandsSwat>();
+            _commands.RegisterCommands<CommandsAdmin>();
+            _commands.RegisterCommands<CommandsBase>();
+            _commands.RegisterCommands<CommandsGamble>();
+            _commands.RegisterCommands<CommandsImgur>();
+            _commands.RegisterCommands<CommandsMemes>();
+            _commands.RegisterCommands<CommandsVoice>();
+            _commands.RegisterCommands<CommandsSwat>();
             CommandsSwat.LoadServers();
-            commands.CommandExecuted += Commands_CommandExecuted;
-            commands.CommandErrored += Commands_CommandErrored;
+            _commands.CommandExecuted += Commands_CommandExecuted;
+            _commands.CommandErrored += Commands_CommandErrored;
 
-            interactivity = discord.UseInteractivity();
+            _interactivity = _client.UseInteractivity();
 
-            voice = discord.UseVoiceNext();
+            _voice = _client.UseVoiceNext();
 
-            discord.SetWebSocketClient<WebSocket4NetClient>();
-            await discord.ConnectAsync();
+            _client.SetWebSocketClient<WebSocket4NetClient>();
+            await _client.ConnectAsync();
             await Task.Delay(-1);
+        }
+
+        private string GetToken(string filename)
+        {
+            if (!File.Exists(filename))
+                return null;
+            else
+                return File.ReadAllLines("filename")[0].Trim();
         }
 
         private Task Client_Ready(ReadyEventArgs e)
