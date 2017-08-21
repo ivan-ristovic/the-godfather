@@ -37,7 +37,7 @@ namespace TheGodfatherBot
 
             await _client.ConnectAsync();
             
-            _client.PresenceUpdate += e => _client.UpdateStatusAsync(new Game("worldmafia.net"));
+            await _client.UpdateStatusAsync(new Game("worldmafia.net"));
 
             await Task.Delay(-1);
         }
@@ -66,6 +66,7 @@ namespace TheGodfatherBot
             _client.ClientError += Client_ClientError;
             _client.GuildMemberAdd += Client_GuildMemberAdd;
             _client.GuildMemberRemove += Client_GuildMemberRemove;
+            _client.MessageCreated += Client_MessageCreated;
         }
 
         private void SetupCommands()
@@ -130,6 +131,19 @@ namespace TheGodfatherBot
         private Task Client_GuildMemberRemove(GuildMemberRemoveEventArgs e)
         {
             e.Guild.DefaultChannel.SendMessageAsync($"{e.Member.Username} left {e.Guild.Name}. Bye!");
+            return Task.CompletedTask;
+        }
+
+        private Task Client_MessageCreated(MessageCreateEventArgs e)
+        {
+            if (e.Message.Author.IsBot)
+                return Task.CompletedTask;
+
+            // Check if message has an alias
+            var response = CommandsAlias.FindAlias(e.Message.Content);
+            if (response != null)
+                e.Channel.SendMessageAsync(response);
+
             return Task.CompletedTask;
         }
         #endregion

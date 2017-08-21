@@ -12,6 +12,7 @@ using DSharpPlus.CommandsNext.Attributes;
 namespace TheGodfatherBot
 {
     [Description("Custom response commands.")]
+    [RequirePermissions(Permissions.Administrator)]
     public class CommandsAlias
     {
         #region STATIC_FIELDS
@@ -35,6 +36,14 @@ namespace TheGodfatherBot
                     return;
                 }
             }
+        }
+
+        public static string FindAlias(string trigger)
+        {
+            if (_aliases.ContainsKey(trigger))
+                return _aliases[trigger];
+            else
+                return null;
         }
         #endregion
 

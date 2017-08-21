@@ -23,7 +23,7 @@ namespace TheGodfatherBot
 
         #region COMMAND_IMGUR
         [Command("imgur"), Description("Search imgur.")]
-        [Aliases("img", "im")]
+        [Aliases("img", "im", "i")]
         public async Task Imgur(CommandContext ctx, [Description("Query (optional)")] string sub = null)
         {
             if (sub == null || sub.Trim() == "")
@@ -36,18 +36,22 @@ namespace TheGodfatherBot
         #region HELPER_FUNCTIONS
         private async Task GetImagesFromSub(CommandContext ctx, string sub)
         {
-            var images = await _endpoint.GetSubredditGalleryAsync(sub, SubredditGallerySortOrder.Top, TimeWindow.Day);
+            try {
+                var images = await _endpoint.GetSubredditGalleryAsync(sub, SubredditGallerySortOrder.Top, TimeWindow.Day);
 
-            int i = 3;
-            foreach (var im in images) {
-                if (i-- == 0)
-                    break;
-                await ctx.RespondAsync(im.ToString());
-            }
+                int i = 3;
+                foreach (var im in images) {
+                    if (i-- == 0)
+                        break;
+                    await ctx.RespondAsync(im.Link);
+                }
 
-            if (i == 3) {
-                await ctx.RespondAsync("Subreddit not found...");
-                return;
+                if (i == 3) {
+                    await ctx.RespondAsync("No results...");
+                    return;
+                }
+            } catch (Exception) {
+                await ctx.RespondAsync("Something went wrong...");
             }
         }
         #endregion
