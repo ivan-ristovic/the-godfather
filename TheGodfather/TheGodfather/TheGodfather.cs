@@ -32,10 +32,13 @@ namespace TheGodfatherBot
             SetupInteractivity();
             SetupVoice();
 
-            // Connect
-            _client.SetWebSocketClient<WebSocket4NetClient>();  // Windows 7 specific
+            // Windows 7 specific
+            _client.SetWebSocketClient<WebSocket4NetClient>();
 
             await _client.ConnectAsync();
+            
+            _client.PresenceUpdate += e => _client.UpdateStatusAsync(new Game("worldmafia.net"));
+
             await Task.Delay(-1);
         }
 

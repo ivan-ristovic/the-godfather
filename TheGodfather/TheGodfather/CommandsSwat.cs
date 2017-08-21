@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Interactivity;
 #endregion
 
 namespace TheGodfatherBot
@@ -133,8 +134,15 @@ namespace TheGodfatherBot
                     if (info != null && int.Parse(info[1]) < int.Parse(info[2]))
                         await ctx.RespondAsync(ctx.User.Mention + ", there is space on " + info[0]);
                     else {
-                        await ctx.RespondAsync("No reply from server.");
-                        await StopCheck(ctx);
+                        await ctx.RespondAsync("No reply from server. Should I try again?");
+                        var interactivity = ctx.Client.GetInteractivityModule();
+                        var msg = await interactivity.WaitForMessageAsync(
+                            xm => xm.Author.Id == ctx.User.Id && 
+                                (xm.Content.ToLower().StartsWith("yes") || xm.Content.ToLower().StartsWith("no")),
+                            TimeSpan.FromMinutes(1)
+                        );
+                        if (msg == null || msg.Content.StartsWith("no"))
+                            await StopCheck(ctx);
                     }
                 } catch (Exception) {
                     await ctx.RespondAsync("Invalid IP format.");
