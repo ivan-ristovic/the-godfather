@@ -107,20 +107,19 @@ namespace TheGodfatherBot
                 };
                 var ffmpeg = Process.Start(ffmpeg_inf);
                 var ffout = ffmpeg.StandardOutput.BaseStream;
-
-                // lets buffer ffmpeg output
+                
                 using (var ms = new MemoryStream()) {
                     await ffout.CopyToAsync(ms);
                     ms.Position = 0;
 
-                    var buff = new byte[3840]; // buffer to hold the PCM data
+                    var buff = new byte[3840];
                     var br = 0;
                     while ((br = ms.Read(buff, 0, buff.Length)) > 0) {
-                        if (br < buff.Length) // it's possible we got less than expected, let's null the remaining part of the buffer
+                        if (br < buff.Length)
                             for (var i = br; i < buff.Length; i++)
                                 buff[i] = 0;
 
-                        await vnc.SendAsync(buff, 20); // we're sending 20ms of data
+                        await vnc.SendAsync(buff, 20);
                     }
                 }
             } catch (Exception ex) { exc = ex; } finally {

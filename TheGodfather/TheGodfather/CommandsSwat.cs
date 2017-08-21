@@ -119,31 +119,29 @@ namespace TheGodfatherBot
                 return;
             }
 
-            if (_serverlist.ContainsKey(ip)) {
+            if (_serverlist.ContainsKey(ip))
                 ip = _serverlist[ip];
-            } else {
-                await ctx.RespondAsync("Unknown short name.");
-                return;
-            }
 
             checking = true;
             while (checking) {
                 try {
                     var split = ip.Split(':');
                     var info = QueryIP(ctx, split[0], int.Parse(split[1]));
-                    if (info != null && int.Parse(info[1]) < int.Parse(info[2]))
-                        await ctx.RespondAsync(ctx.User.Mention + ", there is space on " + info[0]);
-                    else {
+                    if (info == null) {
                         await ctx.RespondAsync("No reply from server. Should I try again?");
                         var interactivity = ctx.Client.GetInteractivityModule();
                         var msg = await interactivity.WaitForMessageAsync(
-                            xm => xm.Author.Id == ctx.User.Id && 
+                            xm => xm.Author.Id == ctx.User.Id &&
                                 (xm.Content.ToLower().StartsWith("yes") || xm.Content.ToLower().StartsWith("no")),
                             TimeSpan.FromMinutes(1)
                         );
-                        if (msg == null || msg.Content.StartsWith("no"))
+                        if (msg == null || msg.Content.StartsWith("no")) {
                             await StopCheck(ctx);
+                            return;
+                        }
                     }
+                    if (int.Parse(info[1]) < int.Parse(info[2]))
+                        await ctx.RespondAsync(ctx.User.Mention + ", there is space on " + info[0]);
                 } catch (Exception) {
                     await ctx.RespondAsync("Invalid IP format.");
                     await StopCheck(ctx);
