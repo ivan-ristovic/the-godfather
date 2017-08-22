@@ -122,6 +122,8 @@ namespace TheGodfatherBot
             if (_serverlist.ContainsKey(ip))
                 ip = _serverlist[ip];
 
+            await ctx.RespondAsync("Starting check...");
+
             checking = true;
             while (checking) {
                 try {
