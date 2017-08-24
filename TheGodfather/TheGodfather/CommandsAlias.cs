@@ -12,11 +12,11 @@ using DSharpPlus.CommandsNext.Attributes;
 namespace TheGodfatherBot
 {
     [Description("Custom response commands.")]
-    [RequirePermissions(Permissions.Administrator)]
+    //[RequirePermissions(Permissions.Administrator)]
     public class CommandsAlias
     {
         #region STATIC_FIELDS
-        private static Dictionary<string, string> _aliases = new Dictionary<string, string>();
+        private static Dictionary<ulong, Dictionary<string, string>> _aliases = new Dictionary<ulong, Dictionary<string, string>>();
         #endregion
 
         #region STATIC_FUNCTIONS
@@ -29,7 +29,10 @@ namespace TheGodfatherBot
                         if (line.Trim() == "" || line[0] == '#')
                             continue;
                         var values = line.Split('$');
-                        _aliases.Add(values[0], values[1]);
+                        ulong gid = ulong.Parse(values[0]);
+                        if (!_aliases.ContainsKey(gid))
+                            _aliases.Add(gid, new Dictionary<string, string>());
+                        _aliases[gid].Add(values[1], values[2]);
                     }
                 } catch (Exception) {
                     _aliases.Clear();
@@ -38,19 +41,20 @@ namespace TheGodfatherBot
             }
         }
 
-        public static string FindAlias(string trigger)
+        public static string FindAlias(ulong gid, string trigger)
         {
-            if (_aliases.ContainsKey(trigger))
-                return _aliases[trigger];
+            trigger = trigger.ToLower();
+            if (_aliases.ContainsKey(gid) && _aliases[gid].ContainsKey(trigger))
+                return _aliases[gid][trigger];
             else
                 return null;
         }
         #endregion
 
         #region COMMAND_ALIAS
-        [Command("alias"), Description("Alias handling, usage: !a <aliasname> or !a add/del/save/clear <aliasname>.")]
+        [Command("alias"), Description("Alias handling, usage: <aliasname> or !a add/del/save/clear <aliasname>.")]
         [Aliases("a")]
-        public async Task AliasBaseHandle(CommandContext ctx, [RemainingTextAttribute, Description("args")] string cmd)
+        public async Task AliasBaseHandle(CommandContext ctx, [RemainingText, Description("args")] string cmd)
         {
             try {
                 var split = cmd.Split(' ');
@@ -61,8 +65,8 @@ namespace TheGodfatherBot
                     case "list": await ListAliases(ctx);                    break;
                     case "clear": await ClearAliases(ctx);                  break;
                     default:
-                        if (_aliases != null && _aliases.ContainsKey(split[0]))
-                            await ctx.RespondAsync(_aliases[split[0]]);
+                        if (_aliases != null && _aliases[ctx.Guild.Id].ContainsKey(split[0]))
+                            await ctx.RespondAsync(_aliases[ctx.Guild.Id][split[0]]);
                         else
                             await ctx.RespondAsync("Unknown alias.");
                         break;
@@ -76,17 +80,26 @@ namespace TheGodfatherBot
         #region HELPER_FUNCTIONS
         private async Task AddAlias(CommandContext ctx, string alias, string response)
         {
-            if (_aliases.ContainsKey(alias)) {
+            if (!_aliases.ContainsKey(ctx.Guild.Id))
+                _aliases.Add(ctx.Guild.Id, new Dictionary<string, string>());
+
+            alias = alias.ToLower();
+            if (_aliases[ctx.Guild.Id].ContainsKey(alias)) {
                 await ctx.RespondAsync("Alias already exists.");
             } else {
-                _aliases.Add(alias, response);
+                _aliases[ctx.Guild.Id].Add(alias, response.ToLower());
                 await ctx.RespondAsync("Alias " + alias + " successfully added.");
             }
         }
 
         private async Task RemoveAlias(CommandContext ctx, string alias)
         {
-            _aliases.Remove(alias);
+            if (!_aliases.ContainsKey(ctx.Guild.Id)) {
+                await ctx.RespondAsync("No aliases recorded in this guild.");
+                return;
+            }
+
+            _aliases[ctx.Guild.Id].Remove(alias);
             await ctx.RespondAsync("Alias " + alias + " successfully removed.");
         }
 
@@ -106,8 +119,9 @@ namespace TheGodfatherBot
                 ""
                 };
 
-                foreach (var entry in _aliases)
-                    aliaslist.Add(entry.Key + "$" + entry.Value);
+                foreach (var guild_aliases in _aliases)
+                    foreach (var alias in guild_aliases.Value)
+                        aliaslist.Add(guild_aliases.Key + "$" + alias.Key + alias.Value);
 
                 File.WriteAllLines("aliases.txt", aliaslist);
             } catch (Exception) {
@@ -120,15 +134,20 @@ namespace TheGodfatherBot
 
         private async Task ListAliases(CommandContext ctx)
         {
+            if (!_aliases.ContainsKey(ctx.Guild.Id)) {
+                await ctx.RespondAsync("No aliases registered.");
+                return;
+            }
+
             var embed = new DiscordEmbed() {
                 Title = "Available aliases",
                 Color = 0x00FF00    // Green
             };
 
-            foreach (var entry in _aliases) {
+            foreach (var alias in _aliases[ctx.Guild.Id]) {
                 var item = new DiscordEmbedField() {
-                    Name = entry.Key,
-                    Value = entry.Value,
+                    Name = alias.Key,
+                    Value = alias.Value,
                     Inline = true
                 };
                 embed.Fields.Add(item);
@@ -138,7 +157,8 @@ namespace TheGodfatherBot
 
         private async Task ClearAliases(CommandContext ctx)
         {
-            _aliases.Clear();
+            if (_aliases.ContainsKey(ctx.Guild.Id))
+                _aliases[ctx.Guild.Id].Clear();
             await ctx.RespondAsync("All aliases successfully removed.");
         }
         #endregion

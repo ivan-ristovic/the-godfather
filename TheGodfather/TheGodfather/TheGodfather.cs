@@ -85,7 +85,7 @@ namespace TheGodfatherBot
             _commands.RegisterCommands<CommandsGamble>();
             _commands.RegisterCommands<CommandsImgur>();
             _commands.RegisterCommands<CommandsMemes>();
-            _commands.RegisterCommands<CommandsReddit>();
+            //_commands.RegisterCommands<CommandsReddit>();
             _commands.RegisterCommands<CommandsRSS>();
             _commands.RegisterCommands<CommandsSwat>();
             _commands.RegisterCommands<CommandsVoice>();
@@ -141,7 +141,7 @@ namespace TheGodfatherBot
                 return Task.CompletedTask;
 
             // Check if message has an alias
-            var response = CommandsAlias.FindAlias(e.Message.Content);
+            var response = CommandsAlias.FindAlias(e.Guild.Id, e.Message.Content);
             if (response != null)
                 e.Channel.SendMessageAsync(response);
 
