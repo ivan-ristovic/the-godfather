@@ -12,7 +12,7 @@ using DSharpPlus.CommandsNext.Attributes;
 namespace TheGodfatherBot
 {
     [Description("Custom response commands.")]
-    //[RequirePermissions(Permissions.Administrator)]
+    [RequirePermissions(Permissions.ManageGuild)]
     public class CommandsAlias
     {
         #region STATIC_FIELDS
@@ -87,7 +87,7 @@ namespace TheGodfatherBot
             if (_aliases[ctx.Guild.Id].ContainsKey(alias)) {
                 await ctx.RespondAsync("Alias already exists.");
             } else {
-                _aliases[ctx.Guild.Id].Add(alias, response.ToLower());
+                _aliases[ctx.Guild.Id].Add(alias, response);
                 await ctx.RespondAsync("Alias " + alias + " successfully added.");
             }
         }
