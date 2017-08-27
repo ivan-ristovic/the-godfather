@@ -8,6 +8,7 @@ using DSharpPlus.Interactivity;
 using DSharpPlus.CommandsNext.Exceptions;
 using DSharpPlus.VoiceNext;
 using System.IO;
+using System.Collections.Generic;
 #endregion
 
 namespace TheGodfatherBot
@@ -21,9 +22,19 @@ namespace TheGodfatherBot
         static VoiceNextClient _voice { get; set; }
         #endregion
 
+        #region PRIVATE_FIELDS
+        private Dictionary<ulong, uint> _msgcount;
+        #endregion
+
+
         public static void Main(string[] args) =>
             new TheGodfather().MainAsync(args).ConfigureAwait(false).GetAwaiter().GetResult();
 
+
+        public TheGodfather()
+        {
+            _msgcount = new Dictionary<ulong, uint>();
+        }
 
         public async Task MainAsync(string[] args)
         {
@@ -139,6 +150,14 @@ namespace TheGodfatherBot
         {
             if (e.Message.Author.IsBot)
                 return Task.CompletedTask;
+
+            // Update message count
+            if (_msgcount.ContainsKey(e.Author.Id))
+                _msgcount[e.Author.Id]++;
+            else
+                _msgcount.Add(e.Author.Id, 1);
+            if (_msgcount[e.Author.Id] % 100 == 0)
+                e.Channel.SendMessageAsync($"GG {e.Author.Mention}!, you have reached level {_msgcount[e.Author.Id] / 100}!");
 
             // Check if message has an alias
             var response = CommandsAlias.FindAlias(e.Guild.Id, e.Message.Content);
