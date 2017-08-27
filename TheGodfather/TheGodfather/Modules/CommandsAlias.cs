@@ -121,7 +121,7 @@ namespace TheGodfatherBot
 
                 foreach (var guild_aliases in _aliases)
                     foreach (var alias in guild_aliases.Value)
-                        aliaslist.Add(guild_aliases.Key + "$" + alias.Key + alias.Value);
+                        aliaslist.Add(guild_aliases.Key + "$" + alias.Key + "$" + alias.Value);
 
                 File.WriteAllLines("aliases.txt", aliaslist);
             } catch (Exception) {
