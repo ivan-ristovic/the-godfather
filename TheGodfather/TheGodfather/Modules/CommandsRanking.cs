@@ -15,7 +15,7 @@ namespace TheGodfatherBot
     {
         #region PRIVATE_FIELDS
         private static Dictionary<ulong, uint> _msgcount = new Dictionary<ulong, uint>();
-        private const uint RANKUP_COUNT = 5;
+        private const uint RANKUP_COUNT = 100;
         #endregion
 
         #region COMMAND_RANK
@@ -23,21 +23,30 @@ namespace TheGodfatherBot
         [Aliases("level")]
         public async Task Rank(CommandContext ctx, [Description("User to check rank")] DiscordUser u = null)
         {
-            uint rank = 0;
+            uint msgcount = 0;
             if (u != null) {
                 if (_msgcount.ContainsKey(u.Id))
-                    rank = _msgcount[u.Id] / RANKUP_COUNT;
+                    msgcount = _msgcount[u.Id];
             } else {
                 if (_msgcount.ContainsKey(ctx.User.Id))
-                    rank = _msgcount[ctx.User.Id] / RANKUP_COUNT;
+                    msgcount = _msgcount[ctx.User.Id];
             }
 
             var embed = new DiscordEmbed() {
                 Title = u != null ? u.Username : ctx.User.Username,
-                Description = $"Rank: {rank}",
-                Timestamp = DateTime.Now,
-                Color = 0x00FF00    // Green
+                Description = "User status",
+                Color = 0x0022DD    // Blue-ish
             };
+            var rank = new DiscordEmbedField() {
+                Name = "Rank",
+                Value = $"{msgcount / RANKUP_COUNT}"
+            };
+            var xp = new DiscordEmbedField() {
+                Name = "XP",
+                Value = $"{msgcount}\n({(msgcount / RANKUP_COUNT + 1) * RANKUP_COUNT} needed for rankup)"
+            };
+            embed.Fields.Add(rank);
+            embed.Fields.Add(xp);
 
             await ctx.RespondAsync("", embed: embed);
         }
