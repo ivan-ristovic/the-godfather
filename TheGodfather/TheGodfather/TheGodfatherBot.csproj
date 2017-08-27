@@ -70,16 +70,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CommandsAdmin.cs" />
-    <Compile Include="CommandsAlias.cs" />
-    <Compile Include="CommandsBase.cs" />
-    <Compile Include="CommandsGamble.cs" />
-    <Compile Include="CommandsImgur.cs" />
-    <Compile Include="CommandsMemes.cs" />
-    <Compile Include="CommandsReddit.cs" />
-    <Compile Include="CommandsRSS.cs" />
-    <Compile Include="CommandsSwat.cs" />
-    <Compile Include="CommandsVoice.cs" />
+    <Compile Include="Modules\CommandsAdmin.cs" />
+    <Compile Include="Modules\CommandsAlias.cs" />
+    <Compile Include="Modules\CommandsBase.cs" />
+    <Compile Include="Modules\CommandsGamble.cs" />
+    <Compile Include="Modules\CommandsImgur.cs" />
+    <Compile Include="Modules\CommandsMemes.cs" />
+    <Compile Include="Modules\CommandsReddit.cs" />
+    <Compile Include="Modules\CommandsRSS.cs" />
+    <Compile Include="Modules\CommandsSwat.cs" />
+    <Compile Include="Modules\CommandsVoice.cs" />
     <Compile Include="TheGodfather.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
