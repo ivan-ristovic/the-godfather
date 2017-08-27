@@ -76,6 +76,7 @@
     <Compile Include="Modules\CommandsGamble.cs" />
     <Compile Include="Modules\CommandsImgur.cs" />
     <Compile Include="Modules\CommandsMemes.cs" />
+    <Compile Include="Modules\CommandsRanking.cs" />
     <Compile Include="Modules\CommandsReddit.cs" />
     <Compile Include="Modules\CommandsRSS.cs" />
     <Compile Include="Modules\CommandsSwat.cs" />
