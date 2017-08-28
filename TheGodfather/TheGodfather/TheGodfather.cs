@@ -82,10 +82,10 @@ namespace TheGodfatherBot
             CommandsAlias.LoadAliases();
             _commands.RegisterCommands<CommandsAdmin>();
             _commands.RegisterCommands<CommandsAlias>();
-            _commands.RegisterCommands<CommandsBase>();
             _commands.RegisterCommands<CommandsGamble>();
             _commands.RegisterCommands<CommandsImgur>();
             _commands.RegisterCommands<CommandsMemes>();
+            _commands.RegisterCommands<CommandsMisc>();
             _commands.RegisterCommands<CommandsRanking>();
             //_commands.RegisterCommands<CommandsReddit>();
             _commands.RegisterCommands<CommandsRSS>();
@@ -162,7 +162,6 @@ namespace TheGodfatherBot
 
         private async Task Commands_CommandErrored(CommandErrorEventArgs e)
         {
-
             e.Context.Client.DebugLogger.LogMessage(LogLevel.Error, "TheGodfather", $"{e.Context.User.Username} tried executing '{e.Command?.QualifiedName ?? "<unknown command>"}' but it errored: {e.Exception.GetType()}: {e.Exception.Message ?? "<no message>"}", DateTime.Now);
 
             if (e.Exception is ChecksFailedException ex) {
@@ -173,6 +172,8 @@ namespace TheGodfatherBot
                     Color = 0xFF0000
                 };
                 await e.Context.RespondAsync("", embed: embed);
+            } else {
+                await e.Context.RespondAsync(e.Exception.Message);
             }
         }
         #endregion

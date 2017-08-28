@@ -11,7 +11,7 @@ using DSharpPlus.Interactivity;
 namespace TheGodfatherBot
 {
     [Description("Base commands.")]
-    public class CommandsBase
+    public class CommandsMisc
     {
         #region COMMAND_GREET
         [Command("greet"), Description("Greets a user and starts a conversation.")]
@@ -21,7 +21,7 @@ namespace TheGodfatherBot
             await ctx.RespondAsync($"{DiscordEmoji.FromName(ctx.Client, ":wave:")} Hi, {ctx.User.Mention}!");
             var interactivity = ctx.Client.GetInteractivityModule();
             var msg = await interactivity.WaitForMessageAsync(
-                xm => xm.Author.Id == ctx.User.Id && xm.Content.ToLower().StartsWith("how are you"), 
+                xm => xm.Author.Id == ctx.User.Id && xm.Content.ToLower().StartsWith("how are you"),
                 TimeSpan.FromMinutes(1)
             );
 
@@ -83,6 +83,30 @@ namespace TheGodfatherBot
             for (var size = u.Id % 40; size > 0; size--)
                 msg += "=";
             await ctx.RespondAsync(msg + "D");
+        }
+        #endregion
+
+        #region COMMAND_REMIND
+        [Command("remind"), Description("Resend a message after some time.")]
+        [Aliases("repeat")]
+        public async Task Remind(
+            CommandContext ctx,
+            [Description("Time to wait before repeat.")] int time = 0,
+            [RemainingText, Description("What to repeat.")] string s = null)
+        {
+            if (time == 0 || s == null || (s = s.Trim()) == "") {
+                await ctx.RespondAsync("Usage: repeat <seconds> <text>");
+                return;
+            }
+
+            if (time < 0 || time > 604800) {
+                await ctx.RespondAsync("Time cannot be less than 0 or greater than 1 week.");
+                return;
+            }
+
+            await ctx.RespondAsync($"I will remind you to: \"{s}\" in {time} seconds.");
+            await Task.Delay(time * 1000);
+            await ctx.RespondAsync($"I was told to remind you to: \"{s}\".");
         }
         #endregion
     }
