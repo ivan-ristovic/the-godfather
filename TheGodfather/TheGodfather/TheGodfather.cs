@@ -37,8 +37,6 @@ namespace TheGodfatherBot
             _client.SetWebSocketClient<WebSocket4NetClient>();
 
             await _client.ConnectAsync();
-            
-            await _client.UpdateStatusAsync(new Game("worldmafia.net"));
 
             await Task.Delay(-1);
         }
@@ -107,10 +105,10 @@ namespace TheGodfatherBot
         #endregion
 
         #region CLIENT_EVENTS
-        private Task Client_Ready(ReadyEventArgs e)
+        private async Task Client_Ready(ReadyEventArgs e)
         {
             e.Client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", "Ready.", DateTime.Now);
-            return Task.CompletedTask;
+            await _client.UpdateStatusAsync(new Game("worldmafia.net") { StreamType = GameStreamType.NoStream });
         }
 
         private Task Client_GuildAvailable(GuildCreateEventArgs e)
