@@ -137,8 +137,10 @@ namespace TheGodfatherBot
 
         private Task Client_MessageCreated(MessageCreateEventArgs e)
         {
-            if (e.Message.Author.IsBot)
+            if (e.Message.Author.IsBot || e.Channel.IsPrivate) {
+                e.Client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", $"IGNORED: {e.Author.Username} : {e.Message}", DateTime.Now);
                 return Task.CompletedTask;
+            }
 
             CommandsRanking.UpdateMessageCount(e.Channel, e.Author);
 

@@ -95,7 +95,7 @@ namespace TheGodfatherBot
                 var split = ip.Split(':');
                 var info = QueryIP(ctx, split[0], int.Parse(split[1]));
                 if (info != null)
-                    await SendEmbedInfo(ctx, split[0], info);
+                    await SendEmbedInfo(ctx, split[0] + ":" + split[1], info);
                 else
                     await ctx.RespondAsync("No reply from server.");
             } catch (Exception) {
@@ -141,9 +141,9 @@ namespace TheGodfatherBot
                             await StopCheck(ctx);
                             return;
                         }
-                    }
-                    if (int.Parse(info[1]) < int.Parse(info[2]))
+                    } else if (int.Parse(info[1]) < int.Parse(info[2])) {
                         await ctx.RespondAsync(ctx.User.Mention + ", there is space on " + info[0]);
+                    }
                 } catch (Exception) {
                     await ctx.RespondAsync("Invalid IP format.");
                     await StopCheck(ctx);
@@ -178,7 +178,7 @@ namespace TheGodfatherBot
                 string query = "\\status\\";
                 client.Send(Encoding.ASCII.GetBytes(query), query.Length);
                 receivedData = client.Receive(ref ep);
-            } catch (Exception) {
+            } catch {
                 return null;
             }
 
@@ -191,15 +191,13 @@ namespace TheGodfatherBot
             var split = data.Split('\\');
             int index = 0;
             foreach (var s in split) {
-                if (s == "numplayers")
+                if (s == "hostname")
                     break;
                 index++;
             }
 
-            if (index < 10) {
-                index++;
-                return new string[] { split[4], split[index], split[index + 2], split[index + 8] };
-            }
+            if (index < 10)
+                return new string[] { split[index + 1], split[index + 3], split[index + 5], split[index + 7], split[index + 11] };
 
             return null;
         }
@@ -218,10 +216,15 @@ namespace TheGodfatherBot
             };
             var map = new DiscordEmbedField() {
                 Name = "Map",
+                Value = info[4]
+            };
+            var mode = new DiscordEmbedField() {
+                Name = "Game mode",
                 Value = info[3]
             };
             embed.Fields.Add(players);
             embed.Fields.Add(map);
+            embed.Fields.Add(mode);
             await ctx.RespondAsync("", embed: embed);
         }
         #endregion
