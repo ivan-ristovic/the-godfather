@@ -6,6 +6,8 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Interactivity;
+using System.Drawing;
+using System.IO;
 #endregion
 
 namespace TheGodfatherBot
@@ -109,6 +111,28 @@ namespace TheGodfatherBot
             for (var size = u.Id % 40; size > 0; size--)
                 msg += "=";
             await ctx.RespondAsync(msg + "D");
+        }
+        #endregion
+
+        #region COMMAND_RATE
+        [Command("rate"), Description("An accurate graph of a user's humanity.")]
+        [Aliases("score")]
+        public async Task Rate(CommandContext ctx, [Description("Who to measure")] DiscordUser u = null)
+        {
+            if (u == null) {
+                await ctx.RespondAsync("You didn't give me anyone to measure.");
+                return;
+            }
+
+            Bitmap chart = new Bitmap("graph.png");
+            int start_x = (int)(u.Id % 600) + 110;
+            int start_y = (int)(u.Id % 480) + 20;
+            for (int dx = 0; dx < 10; dx++)
+                for (int dy = 0; dy < 10; dy++)
+                    chart.SetPixel(start_x + dx, start_y + dy, Color.Red);
+            chart.Save("tmp.png");
+            await ctx.RespondWithFileAsync("tmp.png");
+            File.Delete("tmp.png");
         }
         #endregion
 
