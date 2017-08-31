@@ -72,7 +72,7 @@ namespace TheGodfatherBot
         #endregion
 
         #region COMMAND_LEET
-        [Command("leet"), Description("Wr1t3s m3ss@g3 1n 1337sp3@k.")]
+        [Command("leet"), Description("Wr1t3s m3ss@g3 1n 1337sp34k.")]
         public async Task Leet(CommandContext ctx, [RemainingText, Description("Text")] string s = null)
         {
             if (s == null || (s = s.Trim()) == "") {
@@ -80,16 +80,18 @@ namespace TheGodfatherBot
                 return;
             }
 
+            var rnd = new Random();
             string leet_s = "";
             foreach (char c in s) {
                 switch (c) {
-                    case 'i': case 'l': leet_s += '1'; break;
+                    case 'i':
+                    case 'l': leet_s += '1'; break;
                     case 'e': leet_s += '3'; break;
-                    case 'a': leet_s += '@'; break;
+                    case 'a': leet_s += (rnd.Next() % 2 == 0) ? '@' : '4' ; break;
                     case 't': leet_s += '7'; break;
                     case 'o': leet_s += '0'; break;
                     case 's': leet_s += '5'; break;
-                    default: leet_s += c; break;
+                    default: leet_s += (rnd.Next() % 2 == 0) ? Char.ToUpper(c) : Char.ToLower(c) ; break;
                 }
             }
 
