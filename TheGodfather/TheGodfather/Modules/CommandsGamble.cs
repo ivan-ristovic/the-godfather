@@ -1,5 +1,6 @@
 ﻿#region USING_DIRECTIVES
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using DSharpPlus;
@@ -106,6 +107,57 @@ namespace TheGodfatherBot
 
             var rnd = new Random();
             await ctx.RespondAsync(answers[rnd.Next(0, answers.Length)]);
+        }
+        #endregion
+    }
+
+    [Group("bank", CanInvokeWithoutSubcommand = true)]
+    [Description("$$$")]
+    public class CommandsBank
+    {
+        #region STATIC_FIELDS
+        private static Dictionary<ulong, ulong> _accounts = new Dictionary<ulong, ulong>();
+        #endregion
+
+        public async Task ExecuteGroup(CommandContext ctx)
+        {
+            await Status(ctx);
+        }
+
+        #region COMMAND_REGISTER
+        [Command("register")]
+        [Aliases("r", "signup", "activate")]
+        public async Task Register(CommandContext ctx)
+        {
+            if (_accounts.ContainsKey(ctx.User.Id)) {
+                await ctx.RespondAsync("You already own an account in WM bank!");
+            } else {
+                _accounts.Add(ctx.User.Id, 100);
+                await ctx.RespondAsync("Account opened! Since WM bank is so generous, you get 100 credits for free.");
+            }
+        }
+        #endregion
+
+        #region COMMAND_STATUS
+        [Command("status")]
+        [Aliases("s", "balance")]
+        public async Task Status(CommandContext ctx)
+        {
+            ulong ammount = 0;
+            if (_accounts.ContainsKey(ctx.User.Id))
+                ammount = _accounts[ctx.User.Id];
+
+            var embed = new DiscordEmbed() {
+                Title = "Account balance for " + ctx.User.Username,
+                Timestamp = DateTime.Now,
+                Color = 0xFFFF00    // Yellow
+            };
+            var balance = new DiscordEmbedField() {
+                Name = "Balance: ",
+                Value = ammount.ToString()
+            };
+            embed.Fields.Add(balance);
+            await ctx.RespondAsync("", embed: embed);
         }
         #endregion
     }

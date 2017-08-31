@@ -80,6 +80,7 @@ namespace TheGodfatherBot
             CommandsAlias.LoadAliases();
             _commands.RegisterCommands<CommandsAdmin>();
             _commands.RegisterCommands<CommandsAlias>();
+            _commands.RegisterCommands<CommandsBank>();
             _commands.RegisterCommands<CommandsGamble>();
             _commands.RegisterCommands<CommandsImgur>();
             _commands.RegisterCommands<CommandsMemes>();
