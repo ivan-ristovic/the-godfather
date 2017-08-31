@@ -69,6 +69,32 @@ namespace TheGodfatherBot
         }
         #endregion
 
+        #region COMMAND_LEET
+        [Command("leet"), Description("Wr1t3s m3ss@g3 1n 1337sp3@k.")]
+        public async Task Leet(CommandContext ctx, [RemainingText, Description("Text")] string s = null)
+        {
+            if (s == null || (s = s.Trim()) == "") {
+                await ctx.RespondAsync("Y0u d1dn'7 g1v3 m3 @ny 73x7...");
+                return;
+            }
+
+            string leet_s = "";
+            foreach (char c in s) {
+                switch (c) {
+                    case 'i': case 'l': leet_s += '1'; break;
+                    case 'e': leet_s += '3'; break;
+                    case 'a': leet_s += '@'; break;
+                    case 't': leet_s += '7'; break;
+                    case 'o': leet_s += '0'; break;
+                    case 's': leet_s += '5'; break;
+                    default: leet_s += c; break;
+                }
+            }
+
+            await ctx.RespondAsync(leet_s);
+        }
+        #endregion
+
         #region COMMAND_PENIS
         [Command("penis"), Description("An accurate size of the user's manhood.")]
         [Aliases("size", "length", "manhood")]
