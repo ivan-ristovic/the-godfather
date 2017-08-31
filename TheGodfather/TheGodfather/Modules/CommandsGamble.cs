@@ -111,37 +111,26 @@ namespace TheGodfatherBot
         #endregion
 
         #region COMMAND_SLOT
-        [Command("slot"), Description("Roll a slot machine for 5 credits")]
+        [Command("slot"), Description("Roll a slot machine.")]
         [Aliases("slotmachine")]
-        public async Task SlotMachine(CommandContext ctx)
+        public async Task SlotMachine(CommandContext ctx, [Description("Bid")] int bid = 5)
         {
-            if (!CommandsBank.RetrieveCreditsSucceeded(ctx.User.Id, 5)) {
+            if (bid < 5) {
+                await ctx.RespondAsync("5 is the minimum bid!");
+                return;
+            }
+
+            if (!CommandsBank.RetrieveCreditsSucceeded(ctx.User.Id, bid)) {
                 await ctx.RespondAsync("You do not have enough credits in WM bank!");
                 return;
             }
 
-            DiscordEmoji[] emoji = {
-                DiscordEmoji.FromName(ctx.Client, ":peach:"),
-                DiscordEmoji.FromName(ctx.Client, ":moneybag:"),
-                DiscordEmoji.FromName(ctx.Client, ":gift:"),
-                DiscordEmoji.FromName(ctx.Client, ":large_blue_diamond:"),
-                DiscordEmoji.FromName(ctx.Client, ":seven:"),
-                DiscordEmoji.FromName(ctx.Client, ":cherries:")
-            };
-
-            var rnd = new Random();
-            string result = "";
-            for (int i = 0; i < 3; i++) {
-                for (int j = 0; j < 3; j++)
-                    result += emoji[rnd.Next(0, emoji.Length)].ToString();
-                result += '\n';
-            }
-
-            int won = Evaluate(result);
+            var slot_res = RollSlot(ctx);
+            int won = EvaluateSlotResult(slot_res, bid);
 
             var embed = new DiscordEmbed() {
                 Title = "TOTALLY NOT RIGGED SLOT MACHINE",
-                Description = result,
+                Description = MakeStringFromResult(slot_res),
                 Color = 0xFFFF00    // Yellow
             };
             var res = new DiscordEmbedField() {
@@ -158,9 +147,70 @@ namespace TheGodfatherBot
         #endregion
 
         #region HELPER_FUNCTIONS
-        private int Evaluate(string slotres)
+        private DiscordEmoji[,] RollSlot(CommandContext ctx)
         {
-            return 5;
+            DiscordEmoji[] emoji = {
+                DiscordEmoji.FromName(ctx.Client, ":peach:"),
+                DiscordEmoji.FromName(ctx.Client, ":moneybag:"),
+                DiscordEmoji.FromName(ctx.Client, ":gift:"),
+                DiscordEmoji.FromName(ctx.Client, ":large_blue_diamond:"),
+                DiscordEmoji.FromName(ctx.Client, ":seven:"),
+                DiscordEmoji.FromName(ctx.Client, ":cherries:")
+            };
+
+            var rnd = new Random();
+            DiscordEmoji[,] result = new DiscordEmoji[3,3];
+            for (int i = 0; i < 3; i++)
+                for (int j = 0; j < 3; j++)
+                    result[i, j] = emoji[rnd.Next(0, emoji.Length)];
+
+            return result;
+        }
+
+        private string MakeStringFromResult(DiscordEmoji[,] res)
+        {
+            string s = "";
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++)
+                    s += res[i, j].ToString();
+                s += '\n';
+            }
+            return s;
+        }
+
+        private int EvaluateSlotResult(DiscordEmoji[,] res, int bid)
+        {
+            int pts = bid;
+
+            // Rows
+            for (int i = 0; i < 3; i++) {
+                if (res[i, 0] == res[i, 1] && res[i, 1] == res[i, 2]) {
+                    if (res[i, 0].ToString() == ":large_blue_diamond:")
+                        pts *= 50;
+                    else if (res[i, 0].ToString() == ":moneybag:")
+                        pts *= 25;
+                    else if (res[i, 0].ToString() == ":seven:")
+                        pts *= 10;
+                    else
+                        pts *= 5;
+                }
+            }
+
+            // Columns
+            for (int i = 0; i < 3; i++) {
+                if (res[0, i] == res[1, i] && res[1, i] == res[2, i]) {
+                    if (res[0, i].ToString() == ":large_blue_diamond:")
+                        pts *= 50;
+                    else if (res[0, i].ToString() == ":moneybag:")
+                        pts *= 25;
+                    else if (res[0, i].ToString() == ":seven:")
+                        pts *= 10;
+                    else
+                        pts *= 5;
+                }
+            }
+
+            return pts == bid ? 0 : pts;
         }
         #endregion
     }
@@ -187,7 +237,7 @@ namespace TheGodfatherBot
                 await ctx.RespondAsync("You already own an account in WM bank!");
             } else {
                 _accounts.Add(ctx.User.Id, 25);
-                await ctx.RespondAsync("Account opened! Since WM bank is so generous, you get 100 credits for free.");
+                await ctx.RespondAsync("Account opened! Since WM bank is so generous, you get 25 credits for free.");
             }
         }
         #endregion
@@ -220,7 +270,7 @@ namespace TheGodfatherBot
         {
             if (!_accounts.ContainsKey(id) || _accounts[id] < ammount)
                 return false;
-            _accounts[id] += ammount;
+            _accounts[id] -= ammount;
             return true;
         }
 
