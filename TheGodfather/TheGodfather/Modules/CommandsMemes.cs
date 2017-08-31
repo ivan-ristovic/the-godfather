@@ -11,7 +11,7 @@ namespace TheGodfatherBot
 {
     [Group("meme", CanInvokeWithoutSubcommand = true)]
     [Description("Contains some memes. When invoked without subcommand, returns a random one.")]
-    [Aliases("pic", "memes", "m")]
+    [Aliases("pic", "memes", "mm")]
     public class CommandsMemes
     {
         public async Task ExecuteGroup(CommandContext ctx)
