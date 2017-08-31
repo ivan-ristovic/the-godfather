@@ -10,7 +10,7 @@ using DSharpPlus.CommandsNext.Attributes;
 namespace TheGodfatherBot
 {
     [Group("admin"), Description("Administrative commands."), Hidden]
-    [RequirePermissions(Permissions.ManageGuild)]
+    [RequireOwner, RequirePermissions(Permissions.ManageGuild)]
     public class CommandsAdmin
     {
         #region COMMAND_SUDO

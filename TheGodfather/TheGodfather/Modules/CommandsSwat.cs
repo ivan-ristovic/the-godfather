@@ -1,6 +1,7 @@
 ﻿#region USING_DIRECTIVES
 using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
@@ -20,10 +21,7 @@ namespace TheGodfatherBot
     {
         #region STATIC_FIELDS
         private static Dictionary<string, string> _serverlist = new Dictionary<string, string>();
-        #endregion
-        
-        #region PRIVATE_MEMBERS
-        private bool checking = false;
+        private static ConcurrentDictionary<ulong, bool> _UserIDsCheckingForSpace = new ConcurrentDictionary<ulong, bool>();
         #endregion
 
         #region STATIC_FUNCTIONS
@@ -114,18 +112,23 @@ namespace TheGodfatherBot
                 return;
             }
 
-            if (checking) {
-                await ctx.RespondAsync("Already checking for space!");
+            if (_UserIDsCheckingForSpace.ContainsKey(ctx.User.Id)) {
+                await ctx.RespondAsync("Already checking space for you!");
+                return;
+            }
+
+            if (_UserIDsCheckingForSpace.Count > 10) {
+                await ctx.RespondAsync("Maximum number of checks reached, please try later!");
                 return;
             }
 
             if (_serverlist.ContainsKey(ip))
                 ip = _serverlist[ip];
 
-            await ctx.RespondAsync("Starting check...");
+            await ctx.RespondAsync("Starting check on " + ip + "...");
 
-            checking = true;
-            while (checking) {
+            _UserIDsCheckingForSpace.GetOrAdd(ctx.User.Id, true);
+            while (_UserIDsCheckingForSpace[ctx.User.Id]) {
                 try {
                     var split = ip.Split(':');
                     var info = QueryIP(ctx, split[0], int.Parse(split[1]));
@@ -150,6 +153,9 @@ namespace TheGodfatherBot
                 }
                 await Task.Delay(3000);
             }
+
+            bool outv;
+            _UserIDsCheckingForSpace.TryRemove(ctx.User.Id, out outv);
         }
         #endregion
 
@@ -158,7 +164,7 @@ namespace TheGodfatherBot
         [Aliases("checkstop")]
         public async Task StopCheck(CommandContext ctx)
         {
-            checking = false;
+            _UserIDsCheckingForSpace.TryUpdate(ctx.User.Id, false, true);
             await ctx.RespondAsync("Checking stopped.");
         }
         #endregion

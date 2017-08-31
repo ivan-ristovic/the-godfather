@@ -12,7 +12,7 @@ using DSharpPlus.CommandsNext.Attributes;
 namespace TheGodfatherBot
 {
     [Description("Custom response commands.")]
-    [RequirePermissions(Permissions.ManageGuild)]
+    [RequirePermissions(Permissions.ManageMessages)]
     public class CommandsAlias
     {
         #region STATIC_FIELDS
