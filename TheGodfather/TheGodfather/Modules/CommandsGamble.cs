@@ -13,13 +13,34 @@ namespace TheGodfatherBot
     [Description("Random number generation commands.")]
     public class CommandsGamble
     {
-        #region COMMAND_ROLL
-        [Command("roll"), Description("Rolls a dice.")]
-        [Aliases("dice")]
-        public async Task Roll(CommandContext ctx)
+        #region COMMAND_8BALL
+        [Command("8ball"), Description("An almighty ball which knows answer to everything.")]
+        [Aliases("question")]
+        public async Task EightBall(CommandContext ctx, [RemainingText, Description("A question for the almighty ball.")] string q = null)
         {
+            if (q == null || (q = q.Trim()) == "") {
+                await ctx.RespondAsync("The almighty ball requires a question.");
+                return;
+            }
+
+            if (q[q.Length - 1] != '?') {
+                await ctx.RespondAsync("That doesn't seem like a question...");
+                return;
+            }
+
+            string[] answers = {
+                "Yes.",
+                "Possibly.",
+                "No.",
+                "Maybe.",
+                "Definitely.",
+                "Perhaps.",
+                "More than you can imagine.",
+                "Definitely not."
+            };
+
             var rnd = new Random();
-            await ctx.RespondAsync($"{DiscordEmoji.FromName(ctx.Client, ":game_die:")} {ctx.User.Mention} rolled a {rnd.Next(1, 7)} !");
+            await ctx.RespondAsync(answers[rnd.Next(0, answers.Length)]);
         }
         #endregion
 
@@ -59,6 +80,16 @@ namespace TheGodfatherBot
         }
         #endregion
 
+        #region COMMAND_ROLL
+        [Command("roll"), Description("Rolls a dice.")]
+        [Aliases("dice")]
+        public async Task Roll(CommandContext ctx)
+        {
+            var rnd = new Random();
+            await ctx.RespondAsync($"{DiscordEmoji.FromName(ctx.Client, ":game_die:")} {ctx.User.Mention} rolled a {rnd.Next(1, 7)} !");
+        }
+        #endregion
+
         #region COMMAND_RPS
         [Command("rps"), Description("Rock, paper, scissors game.")]
         [Aliases("rockpaperscissors")]
@@ -79,34 +110,57 @@ namespace TheGodfatherBot
         }
         #endregion
 
-        #region COMMAND_8BALL
-        [Command("8ball"), Description("An almighty ball which knows answer to everything.")]
-        [Aliases("question")]
-        public async Task EightBall(CommandContext ctx, [RemainingText, Description("A question for the almighty ball.")] string q = null)
+        #region COMMAND_SLOT
+        [Command("slot"), Description("Roll a slot machine for 5 credits")]
+        [Aliases("slotmachine")]
+        public async Task SlotMachine(CommandContext ctx)
         {
-            if (q == null || (q = q.Trim()) == "") {
-                await ctx.RespondAsync("The almighty ball requires a question.");
-                return;
-            }
-            
-            if (q[q.Length - 1] != '?') {
-                await ctx.RespondAsync("That doesn't seem like a question...");
+            if (!CommandsBank.RetrieveCreditsSucceeded(ctx.User.Id, 5)) {
+                await ctx.RespondAsync("You do not have enough credits in WM bank!");
                 return;
             }
 
-            string[] answers = {
-                "Yes.",
-                "Possibly.",
-                "No.",
-                "Maybe.",
-                "Definitely.",
-                "Perhaps.",
-                "More than you can imagine.",
-                "Definitely not."
+            DiscordEmoji[] emoji = {
+                DiscordEmoji.FromName(ctx.Client, ":peach:"),
+                DiscordEmoji.FromName(ctx.Client, ":moneybag:"),
+                DiscordEmoji.FromName(ctx.Client, ":gift:"),
+                DiscordEmoji.FromName(ctx.Client, ":large_blue_diamond:"),
+                DiscordEmoji.FromName(ctx.Client, ":seven:"),
+                DiscordEmoji.FromName(ctx.Client, ":cherries:")
             };
 
             var rnd = new Random();
-            await ctx.RespondAsync(answers[rnd.Next(0, answers.Length)]);
+            string result = "";
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 3; j++)
+                    result += emoji[rnd.Next(0, emoji.Length)].ToString();
+                result += '\n';
+            }
+
+            int won = Evaluate(result);
+
+            var embed = new DiscordEmbed() {
+                Title = "TOTALLY NOT RIGGED SLOT MACHINE",
+                Description = result,
+                Color = 0xFFFF00    // Yellow
+            };
+            var res = new DiscordEmbedField() {
+                Name = "Result: ",
+                Value = $"You won {won} credits!"
+            };
+            embed.Fields.Add(res);
+
+            await ctx.RespondAsync("", embed: embed);
+
+            if (won > 0)
+                CommandsBank.IncreaseBalance(ctx.User.Id, won);
+        }
+        #endregion
+
+        #region HELPER_FUNCTIONS
+        private int Evaluate(string slotres)
+        {
+            return 5;
         }
         #endregion
     }
@@ -116,7 +170,7 @@ namespace TheGodfatherBot
     public class CommandsBank
     {
         #region STATIC_FIELDS
-        private static Dictionary<ulong, ulong> _accounts = new Dictionary<ulong, ulong>();
+        private static Dictionary<ulong, int> _accounts = new Dictionary<ulong, int>();
         #endregion
 
         public async Task ExecuteGroup(CommandContext ctx)
@@ -132,7 +186,7 @@ namespace TheGodfatherBot
             if (_accounts.ContainsKey(ctx.User.Id)) {
                 await ctx.RespondAsync("You already own an account in WM bank!");
             } else {
-                _accounts.Add(ctx.User.Id, 100);
+                _accounts.Add(ctx.User.Id, 25);
                 await ctx.RespondAsync("Account opened! Since WM bank is so generous, you get 100 credits for free.");
             }
         }
@@ -143,7 +197,7 @@ namespace TheGodfatherBot
         [Aliases("s", "balance")]
         public async Task Status(CommandContext ctx)
         {
-            ulong ammount = 0;
+            int ammount = 0;
             if (_accounts.ContainsKey(ctx.User.Id))
                 ammount = _accounts[ctx.User.Id];
 
@@ -158,6 +212,23 @@ namespace TheGodfatherBot
             };
             embed.Fields.Add(balance);
             await ctx.RespondAsync("", embed: embed);
+        }
+        #endregion
+
+        #region HELPER_FUNCTIONS
+        public static bool RetrieveCreditsSucceeded(ulong id, int ammount)
+        {
+            if (!_accounts.ContainsKey(id) || _accounts[id] < ammount)
+                return false;
+            _accounts[id] += ammount;
+            return true;
+        }
+
+        public static void IncreaseBalance(ulong id, int ammount)
+        {
+            if (!_accounts.ContainsKey(id))
+                _accounts.Add(id, 0);
+            _accounts[id] += ammount;
         }
         #endregion
     }
