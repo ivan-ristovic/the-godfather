@@ -24,33 +24,36 @@ namespace TheGodfatherBot
         #region COMMAND_IMGUR
         [Command("imgur"), Description("Search imgur.")]
         [Aliases("img", "im", "i")]
-        public async Task Imgur(CommandContext ctx, [Description("Query (optional)")] string sub = null)
+        public async Task Imgur(CommandContext ctx, 
+                                [Description("Number of images to print [1-10].")] int n = 1,
+                                [Description("Query (optional).")] string sub = null)
         {
-            if (sub == null || sub.Trim() == "")
-                await GetImagesFromSub(ctx, "pics");
+            if (sub == null || sub.Trim() == "" || n < 1 || n > 10)
+                await GetImagesFromSub(ctx, "pics", 1);
             else
-                await GetImagesFromSub(ctx, sub.Trim());
+                await GetImagesFromSub(ctx, sub.Trim(), n);
         }
         #endregion
 
         #region HELPER_FUNCTIONS
-        private async Task GetImagesFromSub(CommandContext ctx, string sub)
+        private async Task GetImagesFromSub(CommandContext ctx, string sub, int num)
         {
             try {
                 var images = await _endpoint.GetSubredditGalleryAsync(sub, SubredditGallerySortOrder.Top, TimeWindow.Day);
 
-                int i = 3;
+                int i = num;
                 foreach (var im in images) {
                     if (i-- == 0)
                         break;
                     await ctx.RespondAsync(im.Link);
+                    await Task.Delay(1000);
                 }
 
-                if (i == 3) {
+                if (i == num) {
                     await ctx.RespondAsync("No results...");
                     return;
                 }
-            } catch (Exception) {
+            } catch {
                 await ctx.RespondAsync("Something went wrong...");
             }
         }
