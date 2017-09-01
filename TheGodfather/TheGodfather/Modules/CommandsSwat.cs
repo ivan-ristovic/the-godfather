@@ -82,12 +82,8 @@ namespace TheGodfatherBot
                 return;
             }
 
-            if (_serverlist.ContainsKey(ip)) {
+            if (_serverlist.ContainsKey(ip))
                 ip = _serverlist[ip];
-            } else {
-                await ctx.RespondAsync("Unknown short name.");
-                return;
-            }
 
             try {
                 var split = ip.Split(':');
