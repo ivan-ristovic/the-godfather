@@ -15,6 +15,7 @@ namespace TheGodfatherBot
     [Aliases("m", "msg", "msgs")]
     public class CommandsMessages
     {
+        #region COMMAND_DELETE
         [Command("delete")]
         [Aliases("prune", "del", "d")]
         public async Task Delete(CommandContext ctx, [Description("Ammount")] int n = 0)
@@ -27,5 +28,6 @@ namespace TheGodfatherBot
                 async t => await ctx.Channel.DeleteMessagesAsync(t.Result)
             );
         }
+        #endregion
     }
 }

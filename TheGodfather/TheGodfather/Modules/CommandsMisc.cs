@@ -248,6 +248,19 @@ namespace TheGodfatherBot
         }
         #endregion
 
+        #region COMMAND_SAY
+        [Command("say"), Description("Repeats after you.")]
+        public async Task Say(CommandContext ctx, [RemainingText, Description("Text.")] string s = null)
+        {
+            if (s == null || (s = s.Trim()) == "") {
+                await ctx.RespondAsync("Text missing.");
+                return;
+            }
+            
+            await ctx.RespondAsync(s);
+        }
+        #endregion
+
         #region COMMAND_SHUTDOWN
         [Command("shutdown"), Description("Triggers the dying in the vineyard scene.")]
         [Aliases("disable", "poweroff", "exit", "quit")]
