@@ -26,6 +26,13 @@ namespace TheGodfatherBot
             new TheGodfather().MainAsync(args).ConfigureAwait(false).GetAwaiter().GetResult();
         
 
+        ~TheGodfather()
+        {
+            _client.DisconnectAsync();
+            _client.Dispose();
+        }
+
+
         public async Task MainAsync(string[] args)
         {
             SetupClient();
