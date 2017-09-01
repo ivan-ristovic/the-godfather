@@ -118,7 +118,6 @@ namespace TheGodfatherBot
         #endregion
 
         #region COMMAND_POLL
-        
         private int _opnum = 0;
         private int[] _votes;
         private HashSet<ulong> _idsvoted;
@@ -132,7 +131,13 @@ namespace TheGodfatherBot
                 await ctx.RespondAsync("Poll requires a yes or no question.");
                 return;
             }
-            
+
+            if (_opnum != 0) {
+                await ctx.RespondAsync("Another poll is already running.");
+                return;
+            }
+
+            // Get poll options interactively
             await ctx.RespondAsync("And what will be the possible answers? (separate with comma)");
             var interactivity = ctx.Client.GetInteractivityModule();
             var msg = await interactivity.WaitForMessageAsync(
@@ -144,12 +149,14 @@ namespace TheGodfatherBot
                 return;
             }
 
+            // Parse poll options
             var poll_options = msg.Content.Split(',');
             if (poll_options.Length < 2) {
                 await ctx.RespondAsync("Not enough poll options.");
                 return;
             }
 
+            // Write embed field representing the poll
             var embed = new DiscordEmbed() {
                 Title = s,
                 Color = 0x00FF22
@@ -164,14 +171,21 @@ namespace TheGodfatherBot
             }
             await ctx.RespondAsync("", embed: embed);
 
+            // Setup poll settings
             _opnum = poll_options.Length;
             _votes = new int[_opnum];
             _idsvoted = new HashSet<ulong>();
             _pollchannel = ctx.Channel;
             ctx.Client.MessageCreated += CheckForPollReply;
+
+            // Poll expiration time, 30s
             await Task.Delay(30000);
+
+            // Allow another poll and stop listening for votes
+            _opnum = 0;
             ctx.Client.MessageCreated -= CheckForPollReply;
 
+            // Write embedded result
             var res = new DiscordEmbed() {
                 Title = "Poll results",
                 Color = 0x00FF22
@@ -233,6 +247,7 @@ namespace TheGodfatherBot
             await ctx.RespondAsync($"I was told to remind you to: \"{s}\".");
         }
         #endregion
+
 
         #region HELPER_FUNCTIONS
         private Task CheckForPollReply(MessageCreateEventArgs e)
