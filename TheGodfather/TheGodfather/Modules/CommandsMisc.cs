@@ -1,13 +1,14 @@
 ﻿#region USING_DIRECTIVES
 using System;
+using System.Drawing;
+using System.IO;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Interactivity;
-using System.Drawing;
-using System.IO;
 #endregion
 
 namespace TheGodfatherBot
@@ -116,6 +117,77 @@ namespace TheGodfatherBot
         }
         #endregion
 
+        #region COMMAND_POLL
+        
+        private int _opnum = 0;
+        private int[] _votes;
+        private HashSet<ulong> _idsvoted;
+        private DiscordChannel _pollchannel;
+
+        [Command("poll")]
+        [Aliases("vote")]
+        public async Task Poll(CommandContext ctx, [RemainingText, Description("Question.")] string s = null)
+        {
+            if (s == null || (s = s.Trim()) == "") {
+                await ctx.RespondAsync("Poll requires a yes or no question.");
+                return;
+            }
+            
+            await ctx.RespondAsync("And what will be the possible answers? (separate with comma)");
+            var interactivity = ctx.Client.GetInteractivityModule();
+            var msg = await interactivity.WaitForMessageAsync(
+                xm => xm.Author.Id == ctx.User.Id,
+                TimeSpan.FromMinutes(1)
+            );
+            if (msg == null) {
+                await ctx.RespondAsync("Nevermind...");
+                return;
+            }
+
+            var poll_options = msg.Content.Split(',');
+            if (poll_options.Length < 2) {
+                await ctx.RespondAsync("Not enough poll options.");
+                return;
+            }
+
+            var embed = new DiscordEmbed() {
+                Title = s,
+                Color = 0x00FF22
+            };
+            for (int i = 0; i < poll_options.Length; i++) {
+                var o = new DiscordEmbedField() {
+                    Name = $"{i + 1}",
+                    Value = poll_options[i],
+                    Inline = true
+                };
+                embed.Fields.Add(o);
+            }
+            await ctx.RespondAsync("", embed: embed);
+
+            _opnum = poll_options.Length;
+            _votes = new int[_opnum];
+            _idsvoted = new HashSet<ulong>();
+            _pollchannel = ctx.Channel;
+            ctx.Client.MessageCreated += CheckForPollReply;
+            await Task.Delay(30000);
+            ctx.Client.MessageCreated -= CheckForPollReply;
+
+            var res = new DiscordEmbed() {
+                Title = "Poll results",
+                Color = 0x00FF22
+            };
+            for (int i = 0; i < poll_options.Length; i++) {
+                var o = new DiscordEmbedField() {
+                    Name = poll_options[i],
+                    Value = _votes[i].ToString(),
+                    Inline = true
+                };
+                res.Fields.Add(o);
+            }
+            await ctx.RespondAsync("", embed: res);
+        }
+        #endregion
+
         #region COMMAND_RATE
         [Command("rate"), Description("An accurate graph of a user's humanity.")]
         [Aliases("score")]
@@ -159,6 +231,35 @@ namespace TheGodfatherBot
             await ctx.RespondAsync($"I will remind you to: \"{s}\" in {time} seconds.");
             await Task.Delay(time * 1000);
             await ctx.RespondAsync($"I was told to remind you to: \"{s}\".");
+        }
+        #endregion
+
+        #region HELPER_FUNCTIONS
+        private Task CheckForPollReply(MessageCreateEventArgs e)
+        {
+            if (e.Message.Author.IsBot || e.Channel != _pollchannel)
+                return Task.CompletedTask;
+
+            int vote;
+            try {
+                vote = int.Parse(e.Message.Content);
+            } catch {
+                return Task.CompletedTask;
+            }
+
+            if (vote > 0 && vote <= _opnum) {
+                if (_idsvoted.Contains(e.Author.Id)) {
+                    e.Channel.SendMessageAsync("You have already voted.");
+                } else {
+                    _idsvoted.Add(e.Author.Id);
+                    _votes[vote - 1]++;
+                    e.Channel.SendMessageAsync($"{e.Author.Mention} voted for: " + vote);
+                }
+            } else {
+                e.Channel.SendMessageAsync("Invalid poll option");
+            }
+
+            return Task.CompletedTask;
         }
         #endregion
     }

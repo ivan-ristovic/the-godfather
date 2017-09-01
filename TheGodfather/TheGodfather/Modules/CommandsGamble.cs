@@ -265,6 +265,33 @@ namespace TheGodfatherBot
         }
         #endregion
 
+        #region COMMAND_TRANSFER
+        [Command("transfer")]
+        [Aliases("lend")]
+        public async Task Transfer(CommandContext ctx,
+                                  [Description("User to send credits to:")] DiscordUser u = null,
+                                  [Description("User to send credits to:")] int ammount = 0)
+        {
+            if (u == null) {
+                await ctx.RespondAsync("Account to transfer the credits to is missing.");
+                return;
+            }
+
+            if (!_accounts.ContainsKey(ctx.User.Id) || !_accounts.ContainsKey(u.Id)) {
+                await ctx.RespondAsync("One or more accounts not found in the bank.");
+                return;
+            }
+            
+            if (ammount <= 0 || _accounts[ctx.User.Id] < ammount) {
+                await ctx.RespondAsync("Invalid ammount (check your funds).");
+                return;
+            }
+
+            _accounts[ctx.User.Id] -= ammount;
+            _accounts[u.Id] += ammount;
+        }
+        #endregion
+
         #region HELPER_FUNCTIONS
         public static bool RetrieveCreditsSucceeded(ulong id, int ammount)
         {
