@@ -100,6 +100,27 @@ namespace TheGodfatherBot
         }
         #endregion
 
+        #region COMMAND_MEME_DELETE
+        [Command("delete")]
+        [Description("Deletes a meme from list.")]
+        [Aliases("del", "remove")]
+        public async Task DeleteMeme(CommandContext ctx, [Description("Short name (case insensitive).")] string name = null)
+        {
+            if (name == null || (name = name.Trim().ToLower()) == "") {
+                await ctx.RespondAsync("Name missing.");
+                return;
+            }
+
+            if (!_memes.ContainsKey(name)) {
+                await ctx.RespondAsync("Meme with that name doesn't exist!");
+                return;
+            }
+
+            _memes.Remove(name);
+            await ctx.RespondAsync($"Meme '{name}' successfully deleted!");
+        }
+        #endregion
+
         #region COMMAND_MEME_SAVE
         [Command("save")]
         [Description("Saves all the memes.")]
