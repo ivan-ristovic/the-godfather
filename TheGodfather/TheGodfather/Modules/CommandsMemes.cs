@@ -56,6 +56,7 @@ namespace TheGodfatherBot
             }
         }
 
+
         #region COMMAND_MEME_LIST
         [Command("list")]
         [Description("List all registered memes.")]
@@ -77,6 +78,26 @@ namespace TheGodfatherBot
         }
         #endregion
 
+        #region COMMAND_MEME_ADD
+        [Command("add")]
+        [Description("Add a new meme to the list.")]
+        public async Task AddMeme(CommandContext ctx,
+                                 [Description("Short name (case insensitive).")] string name = null,
+                                 [Description("URL")] string url = null)
+        {
+            if (name == null || url == null || (name = name.Trim().ToLower()) == "" || (url = url.Trim()) == "") {
+                await ctx.RespondAsync("Name or URL missing or invalid.");
+                return;
+            }
+
+            if (_memes.ContainsKey(name)) {
+                await ctx.RespondAsync("Name or URL missing or invalid.");
+            } else {
+                _memes.Add(name, url);
+                await ctx.RespondAsync($"Meme '{name}' successfully added!");
+            }
+        }
+        #endregion
 
         #region HELPER_FUNCTIONS
         private async Task ReturnRandomMeme(CommandContext ctx)
