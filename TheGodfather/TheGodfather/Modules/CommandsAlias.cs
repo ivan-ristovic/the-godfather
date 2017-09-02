@@ -70,7 +70,7 @@ namespace TheGodfatherBot
         }
         
 
-        #region ALIAS_ADD
+        #region COMMAND_ALIAS_ADD
         [Command("add")]
         [Description("Add alias to list.")]
         public async Task AddAlias(CommandContext ctx,
@@ -95,7 +95,7 @@ namespace TheGodfatherBot
         }
         #endregion
 
-        #region ALIAS_DELETE
+        #region COMMAND_ALIAS_DELETE
         [Command("delete")]
         [Description("Remove alias from list.")]
         [Aliases("remove", "del")]
@@ -116,11 +116,11 @@ namespace TheGodfatherBot
         }
         #endregion
 
-        #region ALIAS_SAVE
+        #region COMMAND_ALIAS_SAVE
         [Command("save")]
         [Description("Save aliases to file.")]
         [RequireOwner]
-        private async Task SaveAliases(CommandContext ctx)
+        public async Task SaveAliases(CommandContext ctx)
         {
             try {
                 FileStream f = File.Open("aliases.txt", FileMode.Create);
@@ -150,10 +150,10 @@ namespace TheGodfatherBot
         }
         #endregion
 
-        #region ALIAS_LIST
+        #region COMMAND_ALIAS_LIST
         [Command("list")]
         [Description("Show all aliases.")]
-        private async Task ListAliases(CommandContext ctx)
+        public async Task ListAliases(CommandContext ctx)
         {
             if (!_aliases.ContainsKey(ctx.Guild.Id)) {
                 await ctx.RespondAsync("No aliases registered.");
@@ -177,11 +177,11 @@ namespace TheGodfatherBot
         }
         #endregion
 
-        #region ALIAS_CLEAR
+        #region COMMAND_ALIAS_CLEAR
         [Command("clear")]
         [Description("Delete all aliases.")]
         [RequireOwner]
-        private async Task ClearAliases(CommandContext ctx)
+        public async Task ClearAliases(CommandContext ctx)
         {
             if (_aliases.ContainsKey(ctx.Guild.Id))
                 _aliases[ctx.Guild.Id].Clear();
