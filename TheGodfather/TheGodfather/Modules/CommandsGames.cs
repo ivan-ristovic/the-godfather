@@ -1,5 +1,6 @@
 ﻿#region USING_DIRECTIVES
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using DSharpPlus;
@@ -124,6 +125,65 @@ namespace TheGodfatherBot
         }
         #endregion
 
+        #endregion
+
+        #region COMMAND_GAMES_QUIZ
+        [Command("quiz")]
+        [Description("Starts a quiz.")]
+        [Aliases("trivia")]
+        public async Task Quiz(CommandContext ctx)
+        {
+            Dictionary<string, string> answers = LoadQuestionsAndAnswers();
+            var questions = new List<string>(answers.Keys);
+            var participants = new SortedDictionary<string, int>();
+
+            var rnd = new Random();
+            for (int i = 0; i < 5; i++) {
+                string question = questions[rnd.Next(questions.Count)];
+                await ctx.RespondAsync(question);
+
+                var interactivity = ctx.Client.GetInteractivityModule();
+                var msg = await interactivity.WaitForMessageAsync(
+                    xm => xm.Content.ToLower() == answers[question],
+                    TimeSpan.FromSeconds(10)
+                );
+                if (msg == null) {
+                    await ctx.RespondAsync($"Time is out! The correct answer was: {answers[question]}");
+                } else {
+                    await ctx.RespondAsync($"GG {msg.Author.Mention}, you got it right!");
+                    if (participants.ContainsKey(msg.Author.Username))
+                        participants[msg.Author.Username]++;
+                    else
+                        participants.Add(msg.Author.Username, 1);
+                }
+                questions.Remove(question);
+                await Task.Delay(2000);
+            }
+
+            var em = new DiscordEmbed() {
+                Title = "Results"
+            };
+            foreach (var participant in participants) {
+                var emf = new DiscordEmbedField() {
+                    Name = participant.Key,
+                    Value = participant.Value.ToString(),
+                    Inline = true
+                };
+                em.Fields.Add(emf);
+            }
+            await ctx.RespondAsync("", embed: em);
+        }
+
+        private Dictionary<string, string> LoadQuestionsAndAnswers()
+        {
+            var qna = new Dictionary<string, string>();
+            qna.Add("test 1?", "1");
+            qna.Add("test 2?", "2");
+            qna.Add("test 3?", "3");
+            qna.Add("test 4?", "4");
+            qna.Add("test 5?", "5");
+            return qna;
+        }
         #endregion
     }
 }
