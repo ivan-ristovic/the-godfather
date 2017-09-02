@@ -1,6 +1,7 @@
 ﻿#region USING_DIRECTIVES
 using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 
 using DSharpPlus;
@@ -8,7 +9,6 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.Interactivity;
 using DSharpPlus.CommandsNext.Exceptions;
 using DSharpPlus.VoiceNext;
-using System.Threading;
 #endregion
 
 namespace TheGodfatherBot
@@ -107,6 +107,7 @@ namespace TheGodfatherBot
             _commands.RegisterCommands<CommandsAlias>();
             _commands.RegisterCommands<CommandsBank>();
             _commands.RegisterCommands<CommandsGamble>();
+            _commands.RegisterCommands<CommandsGames>();
             _commands.RegisterCommands<CommandsImgur>();
             _commands.RegisterCommands<CommandsMemes>();
             //_commands.RegisterCommands<CommandsMessages>();

@@ -73,6 +73,7 @@
   <ItemGroup>
     <Compile Include="Modules\CommandsAdmin.cs" />
     <Compile Include="Modules\CommandsAlias.cs" />
+    <Compile Include="Modules\CommandsGames.cs" />
     <Compile Include="Modules\CommandsMessages.cs" />
     <Compile Include="Modules\CommandsMisc.cs" />
     <Compile Include="Modules\CommandsGamble.cs" />
