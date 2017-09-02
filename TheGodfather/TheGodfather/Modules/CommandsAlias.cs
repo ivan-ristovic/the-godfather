@@ -13,6 +13,7 @@ namespace TheGodfatherBot
 {
     [Group("alias", CanInvokeWithoutSubcommand = true)]
     [Description("Alias handling commands.")]
+    [Aliases("a")]
     [RequirePermissions(Permissions.ManageMessages)]
     public class CommandsAlias
     {
@@ -73,8 +74,8 @@ namespace TheGodfatherBot
         [Command("add")]
         [Description("Add alias to list.")]
         public async Task AddAlias(CommandContext ctx,
-                                 [Description("Short name (case insensitive).")] string alias = null,
-                                 [Description("URL")] string response = null)
+                                 [Description("Alias name (case sensitive).")] string alias = null,
+                                 [Description("Response")] string response = null)
         {
             if (alias == null || response == null || (alias = alias.Trim()) == "" || (response = response.Trim()) == "") {
                 await ctx.RespondAsync("Alias name or response missing or invalid.");
@@ -94,19 +95,24 @@ namespace TheGodfatherBot
         }
         #endregion
 
-        #region ALIAS_REMOVE
-        [Command("remove")]
+        #region ALIAS_DELETE
+        [Command("delete")]
         [Description("Remove alias from list.")]
-        [Aliases("delete", "del")]
-        private async Task RemoveAlias(CommandContext ctx, string alias)
+        [Aliases("remove", "del")]
+        public async Task DeleteAlias(CommandContext ctx, [Description("Alias to remove.")] string alias = null)
         {
+            if (alias == null || (alias = alias.Trim()) == "") {
+                await ctx.RespondAsync("Name missing.");
+                return;
+            }
+
             if (!_aliases.ContainsKey(ctx.Guild.Id)) {
                 await ctx.RespondAsync("No aliases recorded in this guild.");
                 return;
             }
 
             _aliases[ctx.Guild.Id].Remove(alias);
-            await ctx.RespondAsync("Alias " + alias + " successfully removed.");
+            await ctx.RespondAsync($"Alias '{alias}' successfully removed.");
         }
         #endregion
 
