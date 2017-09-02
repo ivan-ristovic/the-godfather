@@ -44,6 +44,7 @@ namespace TheGodfatherBot
         }
         #endregion
 
+
         public async Task ExecuteGroup(CommandContext ctx, [RemainingText, Description("Meme name")] string name = null)
         {
             if (name == null || (name = name.Trim().ToLower()) == "") {
@@ -91,13 +92,38 @@ namespace TheGodfatherBot
             }
 
             if (_memes.ContainsKey(name)) {
-                await ctx.RespondAsync("Name or URL missing or invalid.");
+                await ctx.RespondAsync("Meme with that name already exists!");
             } else {
                 _memes.Add(name, url);
                 await ctx.RespondAsync($"Meme '{name}' successfully added!");
             }
         }
         #endregion
+
+        #region COMMAND_MEME_SAVE
+        [Command("save")]
+        [Description("Saves all the memes.")]
+        [RequireOwner]
+        public async Task SaveMemes(CommandContext ctx)
+        {
+            try {
+                FileStream f = File.Open("memes.txt", FileMode.Create);
+                f.Close();
+
+                List<string> memelist = new List<string>();
+                foreach (var entry in _memes)
+                    memelist.Add(entry.Key + "$" + entry.Value);
+                
+                File.WriteAllLines("memes.txt", memelist);
+            } catch (Exception) {
+                await ctx.RespondAsync("Error while saving memes.");
+                return;
+            }
+
+            await ctx.RespondAsync("Memes successfully saved.");
+        }
+        #endregion
+
 
         #region HELPER_FUNCTIONS
         private async Task ReturnRandomMeme(CommandContext ctx)

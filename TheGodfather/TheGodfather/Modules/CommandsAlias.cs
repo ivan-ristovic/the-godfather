@@ -53,6 +53,7 @@ namespace TheGodfatherBot
         }
         #endregion
 
+
         #region COMMAND_ALIAS
         [Command("alias"), Description("Alias handling, usage: <aliasname> or !a add/del/save/clear <aliasname>.")]
         [Aliases("a")]
@@ -78,6 +79,7 @@ namespace TheGodfatherBot
             }
         }
         #endregion
+
 
         #region HELPER_FUNCTIONS
         private async Task AddAlias(CommandContext ctx, string alias, string response)
