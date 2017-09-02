@@ -83,8 +83,9 @@ namespace TheGodfatherBot
                 CaseSensitive = false,
                 EnableMentionPrefix = true
             });
+            CommandsAlias.LoadAliases(_client.DebugLogger);
+            CommandsMemes.LoadMemes(_client.DebugLogger);
             CommandsSwat.LoadServers();
-            CommandsAlias.LoadAliases();
             _commands.RegisterCommands<CommandsAdmin>();
             _commands.RegisterCommands<CommandsAlias>();
             _commands.RegisterCommands<CommandsBank>();

@@ -20,7 +20,7 @@ namespace TheGodfatherBot
         #endregion
 
         #region STATIC_FUNCTIONS
-        public static void LoadAliases()
+        public static void LoadAliases(DebugLogger log)
         {
             if (File.Exists("aliases.txt")) {
                 try {
@@ -38,6 +38,8 @@ namespace TheGodfatherBot
                     _aliases.Clear();
                     return;
                 }
+            } else {
+                log.LogMessage(LogLevel.Warning, "TheGodfather", "aliases.txt is missing.", DateTime.Now);
             }
         }
 
