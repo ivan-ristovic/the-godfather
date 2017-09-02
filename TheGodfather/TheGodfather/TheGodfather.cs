@@ -8,6 +8,7 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.Interactivity;
 using DSharpPlus.CommandsNext.Exceptions;
 using DSharpPlus.VoiceNext;
+using System.Threading;
 #endregion
 
 namespace TheGodfatherBot
@@ -21,13 +22,27 @@ namespace TheGodfatherBot
         static VoiceNextClient _voice { get; set; }
         #endregion
 
+        #region PRIVATE_FIELDS
+        private StreamWriter f;
+        private EventWaitHandle lck;
+        #endregion
+
 
         public static void Main(string[] args) =>
             new TheGodfather().MainAsync(args).ConfigureAwait(false).GetAwaiter().GetResult();
         
 
+        TheGodfather()
+        {
+            if (!File.Exists("log.txt"))
+                File.Create("log.txt");
+            f = new StreamWriter("log.txt");
+            lck = new EventWaitHandle(true, EventResetMode.AutoReset, "SHARED_BY_ALL_PROCESSES");
+        }
+
         ~TheGodfather()
         {
+            f.Close();
             _client.DisconnectAsync();
             _client.Dispose();
         }
@@ -47,6 +62,7 @@ namespace TheGodfatherBot
 
             await Task.Delay(-1);
         }
+
 
         #region HELPER_FUNCTIONS
         private string GetToken(string filename)
@@ -73,6 +89,7 @@ namespace TheGodfatherBot
             _client.GuildMemberAdd += Client_GuildMemberAdd;
             _client.GuildMemberRemove += Client_GuildMemberRemove;
             _client.MessageCreated += Client_MessageCreated;
+            _client.DebugLogger.LogMessageReceived += Client_LogMessage;
         }
 
         private void SetupCommands()
@@ -113,6 +130,7 @@ namespace TheGodfatherBot
             _voice = _client.UseVoiceNext();
         }
         #endregion
+
 
         #region CLIENT_EVENTS
         private async Task Client_Ready(ReadyEventArgs e)
@@ -164,7 +182,20 @@ namespace TheGodfatherBot
 
             return Task.CompletedTask;
         }
+
+        private void Client_LogMessage(object sender, DebugLogMessageEventArgs e)
+        {
+            try {
+                lck.WaitOne();
+                f.WriteLine($"*[{e.Timestamp}] [{e.Level}]\t{e.Message}");
+                f.Flush();
+                lck.Set();
+            } catch (Exception) {
+                return;
+            }
+        }
         #endregion
+
 
         #region COMMAND_EVENTS
         private Task Commands_CommandExecuted(CommandExecutedEventArgs e)
