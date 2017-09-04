@@ -24,9 +24,9 @@ namespace TheGodfatherBot
         #region COMMAND_IMGUR
         [Command("imgur"), Description("Search imgur.")]
         [Aliases("img", "im", "i")]
-        public async Task Imgur(CommandContext ctx, 
-                                [Description("Number of images to print [1-10].")] int n = 1,
-                                [Description("Query (optional).")] string sub = null)
+        public async Task Imgur(CommandContext ctx,
+                                [Description("Query (optional).")] string sub = null,
+                                [Description("Number of images to print [1-10].")] int n = 1)
         {
             if (string.IsNullOrWhiteSpace(sub) || n < 1 || n > 10)
                 await GetImagesFromSub(ctx, "pics", 1);
@@ -53,8 +53,12 @@ namespace TheGodfatherBot
                     await ctx.RespondAsync("No results...");
                     return;
                 }
+
+                if (i != 0) {
+                    await ctx.RespondAsync("These are all of the results returned.");
+                }
             } catch {
-                await ctx.RespondAsync("Something went wrong...");
+                await ctx.RespondAsync("Imgur API returned album which I can't show...");
             }
         }
         #endregion
