@@ -137,7 +137,7 @@ namespace TheGodfatherBot
         private async Task Client_Ready(ReadyEventArgs e)
         {
             e.Client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", "Ready.", DateTime.Now);
-            await _client.UpdateStatusAsync(new Game("worldmafia.net") { StreamType = GameStreamType.NoStream });
+            await _client.UpdateStatusAsync(new Game("worldmafia.net/discord") { StreamType = GameStreamType.NoStream });
         }
 
         private Task Client_GuildAvailable(GuildCreateEventArgs e)

@@ -222,7 +222,7 @@ namespace TheGodfatherBot
             await DrawHangman(ctx, guess, lives);
             while (lives > 0 && Array.IndexOf(guess, '?') != -1) {
                 var m = await interactivity.WaitForMessageAsync(
-                    xm => xm.Channel == ctx.Channel && !xm.Author.IsBot,
+                    xm => xm.Channel == ctx.Channel && !xm.Author.IsBot && xm.Content.Length == 1,
                     TimeSpan.FromMinutes(1)
                 );
                 if (m == null) {
