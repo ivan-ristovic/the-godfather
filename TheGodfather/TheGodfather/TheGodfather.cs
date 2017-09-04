@@ -23,8 +23,9 @@ namespace TheGodfatherBot
         #endregion
 
         #region PRIVATE_FIELDS
-        private StreamWriter f;
-        private EventWaitHandle lck;
+        private StreamWriter _logstream;
+        private EventWaitHandle _logwritelock;
+        private string[] _statuses = { "!help", "worldmafia.net", "worldmafia.net/discord" };
         #endregion
 
 
@@ -36,13 +37,13 @@ namespace TheGodfatherBot
         {
             if (!File.Exists("log.txt"))
                 File.Create("log.txt");
-            f = new StreamWriter("log.txt");
-            lck = new EventWaitHandle(true, EventResetMode.AutoReset, "SHARED_BY_ALL_PROCESSES");
+            _logstream = new StreamWriter("log.txt");
+            _logwritelock = new EventWaitHandle(true, EventResetMode.AutoReset, "SHARED_BY_ALL_PROCESSES");
         }
 
         ~TheGodfather()
         {
-            f.Close();
+            _logstream.Close();
             _client.DisconnectAsync();
             _client.Dispose();
         }
@@ -89,6 +90,7 @@ namespace TheGodfatherBot
             _client.GuildMemberAdd += Client_GuildMemberAdd;
             _client.GuildMemberRemove += Client_GuildMemberRemove;
             _client.MessageCreated += Client_MessageCreated;
+            _client.Heartbeated += Client_Heartbeated;
             _client.DebugLogger.LogMessageReceived += Client_LogMessage;
         }
 
@@ -137,7 +139,7 @@ namespace TheGodfatherBot
         private async Task Client_Ready(ReadyEventArgs e)
         {
             e.Client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", "Ready.", DateTime.Now);
-            await _client.UpdateStatusAsync(new Game("worldmafia.net/discord") { StreamType = GameStreamType.NoStream });
+            await _client.UpdateStatusAsync(new Game(_statuses[0]) { StreamType = GameStreamType.NoStream });
         }
 
         private Task Client_GuildAvailable(GuildCreateEventArgs e)
@@ -184,13 +186,19 @@ namespace TheGodfatherBot
             return Task.CompletedTask;
         }
 
+        private async Task Client_Heartbeated(HeartBeatEventArgs e)
+        {
+            var rnd = new Random();
+            await _client.UpdateStatusAsync(new Game(_statuses[rnd.Next(_statuses.Length)]) { StreamType = GameStreamType.NoStream });
+        }
+
         private void Client_LogMessage(object sender, DebugLogMessageEventArgs e)
         {
             try {
-                lck.WaitOne();
-                f.WriteLine($"*[{e.Timestamp}] [{e.Level}]\t{e.Message}");
-                f.Flush();
-                lck.Set();
+                _logwritelock.WaitOne();
+                _logstream.WriteLine($"*[{e.Timestamp}] [{e.Level}]\t{e.Message}");
+                _logstream.Flush();
+                _logwritelock.Set();
             } catch (Exception) {
                 return;
             }
