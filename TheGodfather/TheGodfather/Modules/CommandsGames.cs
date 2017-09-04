@@ -174,6 +174,7 @@ namespace TheGodfatherBot
             await ctx.RespondAsync("", embed: em);
         }
 
+        #region HELPER_FUNCTIONS
         private Dictionary<string, string> LoadQuestionsAndAnswers()
         {
             var qna = new Dictionary<string, string>();
@@ -184,6 +185,92 @@ namespace TheGodfatherBot
             qna.Add("test 5?", "5");
             return qna;
         }
+        #endregion
+        #endregion
+
+        #region COMMAND_GAMES_HANGMAN
+        [Command("hangman")]
+        [Description("Starts a hangman game.")]
+        public async Task Hangman(CommandContext ctx)
+        {
+            DiscordDmChannel dm;
+            try {
+                dm = await ctx.Client.CreateDmAsync(ctx.User);
+                await dm.SendMessageAsync("What is the secret word?");
+            } catch {
+                await ctx.RespondAsync("Please enable direct messages, so I can ask you about the word to guess.");
+                return;
+            }
+            var interactivity = ctx.Client.GetInteractivityModule();
+            var msg = await interactivity.WaitForMessageAsync(
+                xm => xm.Channel == dm && xm.Author.Id == ctx.User.Id,
+                TimeSpan.FromMinutes(1)
+            );
+            if (msg == null) {
+                await ctx.RespondAsync("Ok, nvm...");
+                return;
+            } else {
+                await dm.SendMessageAsync("Alright! The word is: " + msg.Content);
+            }
+            
+            int lives = 7;
+            string word = msg.Content.ToLower();
+            char[] guess = new char[word.Length];
+            for (int i = 0; i < guess.Length; i++)
+                guess[i] = '?';
+
+            await DrawHangman(ctx, guess, lives);
+            while (lives > 0 && Array.IndexOf(guess, '?') != -1) {
+                var m = await interactivity.WaitForMessageAsync(
+                    xm => xm.Channel == ctx.Channel && !xm.Author.IsBot,
+                    TimeSpan.FromMinutes(1)
+                );
+                if (m == null) {
+                    await ctx.RespondAsync("Ok, nvm, aborting game...");
+                    return;
+                }
+
+                if (word.IndexOf(m.Content[0]) != -1) {
+                    for (int i = 0; i < word.Length; i++)
+                        if (word[i] == m.Content[0])
+                            guess[i] = Char.ToUpper(word[i]);
+                } else {
+                    lives--;
+                }
+                await DrawHangman(ctx, guess, lives);
+            }
+            await ctx.RespondAsync("Game over! The word was : " + word);
+        }
+
+        #region HELPER_FUNCTIONS
+        private async Task DrawHangman(CommandContext ctx, char[] word, int lives)
+        {
+            string s = "\n-|-\n";
+            if (lives < 7) {
+                s += " O\n";
+                if (lives < 6) {
+                    s += "/";
+                    if (lives < 5) {
+                        s += "|";
+                        if (lives < 4) {
+                            s += "\\\n";
+                            if (lives < 3) {
+                                s += "/";
+                                if (lives < 2) {
+                                    s += "|";
+                                    if (lives < 1) {
+                                        s += "\\\n";
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            await ctx.RespondAsync("WORD: " + new string(word) + s);
+        }
+        #endregion
         #endregion
     }
 }
