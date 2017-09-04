@@ -16,6 +16,37 @@ namespace TheGodfatherBot
     [Description("Base commands.")]
     public class CommandsMisc
     {
+        #region COMMAND_8BALL
+        [Command("8ball"), Description("An almighty ball which knows answer to everything.")]
+        [Aliases("question")]
+        public async Task EightBall(CommandContext ctx, [RemainingText, Description("A question for the almighty ball.")] string q = null)
+        {
+            if (q == null || (q = q.Trim()) == "") {
+                await ctx.RespondAsync("The almighty ball requires a question.");
+                return;
+            }
+
+            if (q[q.Length - 1] != '?') {
+                await ctx.RespondAsync("That doesn't seem like a question...");
+                return;
+            }
+
+            string[] answers = {
+                "Yes.",
+                "Possibly.",
+                "No.",
+                "Maybe.",
+                "Definitely.",
+                "Perhaps.",
+                "More than you can imagine.",
+                "Definitely not."
+            };
+
+            var rnd = new Random();
+            await ctx.RespondAsync(answers[rnd.Next(0, answers.Length)]);
+        }
+        #endregion
+
         #region COMMAND_GREET
         [Command("greet"), Description("Greets a user and starts a conversation.")]
         [Aliases("hello", "hi", "halo", "hey", "howdy", "sup")]

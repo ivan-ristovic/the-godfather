@@ -16,6 +16,42 @@ namespace TheGodfatherBot
     [Aliases("game", "g")]
     public class CommandsGames
     {
+        #region COMMAND_DUEL
+        [Command("duel"), Description("Starts a duel which I will commentate.")]
+        [Aliases("fight", "vs")]
+        public async Task Duel(CommandContext ctx, [Description("Who to fight")] DiscordUser u)
+        {
+            if (u.Id == ctx.User.Id) {
+                await ctx.RespondAsync("You can't duel yourself...");
+                return;
+            }
+
+            string[] weapons = { "sword", "axe", "keyboard", "stone", "cheeseburger", "belt from yo momma" };
+
+            await ctx.RespondAsync($"Duel between {ctx.User.Mention} and {u.Mention} is about to start!");
+
+            int hp1 = 100, hp2 = 100;
+            var rnd = new Random();
+            while (hp1 > 0 && hp2 > 0) {
+                await ctx.RespondAsync($"HP: {ctx.User.Username} ({hp1}) : {u.Username} ({hp2})");
+                await Task.Delay(2000);
+                int damage = rnd.Next(20, 40);
+                if (rnd.Next() % 2 == 0) {
+                    await ctx.RespondAsync($"{ctx.User.Username} hits {u.Username} with a {weapons[rnd.Next(0, weapons.Length)]} for {damage} damage!");
+                    hp2 -= damage;
+                } else {
+                    await ctx.RespondAsync($"{u.Username} hits {ctx.User.Username} with a {weapons[rnd.Next(0, weapons.Length)]} for {damage} damage!");
+                    hp1 -= damage;
+                }
+                await Task.Delay(2000);
+            }
+            if (hp1 < 0)
+                await ctx.RespondAsync($"{u.Mention} wins!");
+            else
+                await ctx.RespondAsync($"{ctx.User.Mention} wins!");
+        }
+        #endregion
+
         #region COMMAND_GAMES_HANGMAN
         [Command("hangman")]
         [Description("Starts a hangman game.")]
