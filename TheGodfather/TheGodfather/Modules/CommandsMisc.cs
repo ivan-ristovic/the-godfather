@@ -261,18 +261,6 @@ namespace TheGodfatherBot
         }
         #endregion
 
-        #region COMMAND_SHUTDOWN
-        [Command("shutdown"), Description("Triggers the dying in the vineyard scene.")]
-        [Aliases("disable", "poweroff", "exit", "quit")]
-        [RequireOwner]
-        public async Task ShutDown(CommandContext ctx)
-        {
-            await ctx.RespondAsync("https://www.youtube.com/watch?v=4rbfuw0UN2A");
-            await ctx.Client.DisconnectAsync();
-            Environment.Exit(0);
-        }
-        #endregion
-
 
         #region HELPER_FUNCTIONS
         private Task CheckForPollReply(MessageCreateEventArgs e)
