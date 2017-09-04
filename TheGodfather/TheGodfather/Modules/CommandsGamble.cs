@@ -90,26 +90,6 @@ namespace TheGodfatherBot
         }
         #endregion
 
-        #region COMMAND_RPS
-        [Command("rps"), Description("Rock, paper, scissors game.")]
-        [Aliases("rockpaperscissors")]
-        public async Task RPS(CommandContext ctx)
-        {
-            await ctx.RespondAsync("Get ready!");
-            for (int i = 3; i > 0; i--) {
-                await ctx.RespondAsync(i + "...");
-                await Task.Delay(1000);
-            }
-            
-            var rnd = new Random();
-            switch (rnd.Next(0, 3)) {
-                case 0: await ctx.RespondAsync($"{DiscordEmoji.FromName(ctx.Client, ":new_moon:")}"); break;
-                case 1: await ctx.RespondAsync($"{DiscordEmoji.FromName(ctx.Client, ":newspaper:")}"); break;
-                case 2: await ctx.RespondAsync($"{DiscordEmoji.FromName(ctx.Client, ":scissors:")}"); break;
-            }
-        }
-        #endregion
-
         #region COMMAND_SLOT
         [Command("slot"), Description("Roll a slot machine.")]
         [Aliases("slotmachine")]
