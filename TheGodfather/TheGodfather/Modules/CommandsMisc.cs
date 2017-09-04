@@ -21,7 +21,7 @@ namespace TheGodfatherBot
         [Aliases("question")]
         public async Task EightBall(CommandContext ctx, [RemainingText, Description("A question for the almighty ball.")] string q = null)
         {
-            if (q == null || (q = q.Trim()) == "") {
+            if (string.IsNullOrWhiteSpace(q)) {
                 await ctx.RespondAsync("The almighty ball requires a question.");
                 return;
             }
@@ -52,7 +52,7 @@ namespace TheGodfatherBot
         [Aliases("select")]
         public async Task Choose(CommandContext ctx, [Description("Option list")] string s = null)
         {
-            if (s == null || (s = s.Trim()) == "") {
+            if (string.IsNullOrWhiteSpace(s)) {
                 await ctx.RespondAsync("Missing list to choose from.");
                 return;
             }
@@ -123,7 +123,7 @@ namespace TheGodfatherBot
         [Command("leet"), Description("Wr1t3s m3ss@g3 1n 1337sp34k.")]
         public async Task Leet(CommandContext ctx, [RemainingText, Description("Text")] string s = null)
         {
-            if (s == null || (s = s.Trim()) == "") {
+            if (string.IsNullOrWhiteSpace(s)) {
                 await ctx.RespondAsync("Y0u d1dn'7 g1v3 m3 @ny 73x7...");
                 return;
             }
@@ -174,7 +174,7 @@ namespace TheGodfatherBot
         [Aliases("vote")]
         public async Task Poll(CommandContext ctx, [RemainingText, Description("Question.")] string s = null)
         {
-            if (s == null || (s = s.Trim()) == "") {
+            if (string.IsNullOrWhiteSpace(s)) {
                 await ctx.RespondAsync("Poll requires a yes or no question.");
                 return;
             }
@@ -279,7 +279,7 @@ namespace TheGodfatherBot
             [Description("Time to wait before repeat.")] int time = 0,
             [RemainingText, Description("What to repeat.")] string s = null)
         {
-            if (time == 0 || s == null || (s = s.Trim()) == "") {
+            if (time == 0 || string.IsNullOrWhiteSpace(s)) {
                 await ctx.RespondAsync("Usage: repeat <seconds> <text>");
                 return;
             }
@@ -299,7 +299,7 @@ namespace TheGodfatherBot
         [Command("say"), Description("Repeats after you.")]
         public async Task Say(CommandContext ctx, [RemainingText, Description("Text.")] string s = null)
         {
-            if (s == null || (s = s.Trim()) == "") {
+            if (string.IsNullOrWhiteSpace(s)) {
                 await ctx.RespondAsync("Text missing.");
                 return;
             }

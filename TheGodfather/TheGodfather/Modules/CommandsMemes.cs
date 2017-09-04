@@ -27,7 +27,7 @@ namespace TheGodfatherBot
                 try {
                     var lines = File.ReadAllLines("memes.txt");
                     foreach (string line in lines) {
-                        if (line.Trim() == "" || line[0] == '#')
+                        if (string.IsNullOrWhiteSpace(line) || line[0] == '#')
                             continue;
                         var values = line.Split('$');
                         string name = values[0];
@@ -86,10 +86,13 @@ namespace TheGodfatherBot
                                  [Description("Short name (case insensitive).")] string name = null,
                                  [Description("URL")] string url = null)
         {
-            if (name == null || url == null || (name = name.Trim().ToLower()) == "" || (url = url.Trim()) == "") {
+            if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(url)) {
                 await ctx.RespondAsync("Name or URL missing or invalid.");
                 return;
             }
+
+            name = name.Trim().ToLower();
+            url = url.Trim();
 
             if (_memes.ContainsKey(name)) {
                 await ctx.RespondAsync("Meme with that name already exists!");
@@ -106,11 +109,12 @@ namespace TheGodfatherBot
         [Aliases("del", "remove")]
         public async Task DeleteMeme(CommandContext ctx, [Description("Short name (case insensitive).")] string name = null)
         {
-            if (name == null || (name = name.Trim().ToLower()) == "") {
+            if (string.IsNullOrWhiteSpace(name)) {
                 await ctx.RespondAsync("Name missing.");
                 return;
             }
 
+            name = name.Trim().ToLower();
             if (!_memes.ContainsKey(name)) {
                 await ctx.RespondAsync("Meme with that name doesn't exist!");
                 return;

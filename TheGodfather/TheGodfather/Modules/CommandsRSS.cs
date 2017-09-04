@@ -15,9 +15,9 @@ namespace TheGodfatherBot
     [Description("RSS feed operations.")]
     public class CommandsRSS
     {
-        public async Task ExecuteGroup(CommandContext ctx, [RemainingTextAttribute, Description("URL")] string url = null)
+        public async Task ExecuteGroup(CommandContext ctx, [RemainingText, Description("URL")] string url = null)
         {
-            if (url == null || url.Trim() == "")
+            if (string.IsNullOrWhiteSpace(url))
                 await WMRSS(ctx);
             else
                 await RSSFeedRead(ctx, url);

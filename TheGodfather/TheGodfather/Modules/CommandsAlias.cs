@@ -58,7 +58,7 @@ namespace TheGodfatherBot
         
         public async Task ExecuteGroup(CommandContext ctx, [RemainingText, Description("Alias name.")] string name)
         {
-            if (name == null || (name = name.Trim()) == "") {
+            if (string.IsNullOrWhiteSpace(name)) {
                 await ctx.RespondAsync("Alias name missing.");
                 return;
             }
@@ -77,7 +77,7 @@ namespace TheGodfatherBot
                                  [Description("Alias name (case sensitive).")] string alias = null,
                                  [Description("Response")] string response = null)
         {
-            if (alias == null || response == null || (alias = alias.Trim()) == "" || (response = response.Trim()) == "") {
+            if (string.IsNullOrWhiteSpace(alias) || string.IsNullOrWhiteSpace(response)) {
                 await ctx.RespondAsync("Alias name or response missing or invalid.");
                 return;
             }
@@ -101,7 +101,7 @@ namespace TheGodfatherBot
         [Aliases("remove", "del")]
         public async Task DeleteAlias(CommandContext ctx, [Description("Alias to remove.")] string alias = null)
         {
-            if (alias == null || (alias = alias.Trim()) == "") {
+            if (string.IsNullOrWhiteSpace(alias)) {
                 await ctx.RespondAsync("Name missing.");
                 return;
             }

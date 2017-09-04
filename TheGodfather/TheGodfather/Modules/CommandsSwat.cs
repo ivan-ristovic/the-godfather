@@ -77,7 +77,7 @@ namespace TheGodfatherBot
         [Aliases("info", "check")]
         public async Task Query(CommandContext ctx, [Description("IP to query.")] string ip = null)
         {
-            if (ip == null || ip.Trim() == "") {
+            if (string.IsNullOrWhiteSpace(ip)) {
                 await ctx.RespondAsync("IP missing.");
                 return;
             }
@@ -103,7 +103,7 @@ namespace TheGodfatherBot
         [Aliases("checkspace", "spacecheck")]
         public async Task StartCheck(CommandContext ctx, [Description("IP to query.")] string ip = null)
         {
-            if (ip == null || ip.Trim() == "") {
+            if (string.IsNullOrWhiteSpace(ip)) {
                 await ctx.RespondAsync("IP missing.");
                 return;
             }

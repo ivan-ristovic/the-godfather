@@ -20,7 +20,7 @@ namespace TheGodfatherBot
         static ImgurClient _imgurclient = new ImgurClient("5222972687f2120");
         static GalleryEndpoint _endpoint = new GalleryEndpoint(_imgurclient);
         #endregion
-
+        
         #region COMMAND_IMGUR
         [Command("imgur"), Description("Search imgur.")]
         [Aliases("img", "im", "i")]
@@ -28,7 +28,7 @@ namespace TheGodfatherBot
                                 [Description("Number of images to print [1-10].")] int n = 1,
                                 [Description("Query (optional).")] string sub = null)
         {
-            if (sub == null || sub.Trim() == "" || n < 1 || n > 10)
+            if (string.IsNullOrWhiteSpace(sub) || n < 1 || n > 10)
                 await GetImagesFromSub(ctx, "pics", 1);
             else
                 await GetImagesFromSub(ctx, sub.Trim(), n);
