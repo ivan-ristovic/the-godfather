@@ -47,6 +47,22 @@ namespace TheGodfatherBot
         }
         #endregion
 
+        #region COMMAND_CHOOSE
+        [Command("choose"), Description("!choose option1, option2, option3...")]
+        [Aliases("select")]
+        public async Task Choose(CommandContext ctx, [Description("Option list")] string s = null)
+        {
+            if (s == null || (s = s.Trim()) == "") {
+                await ctx.RespondAsync("Missing list to choose from.");
+                return;
+            }
+
+            var options = s.Split(',');
+            var rnd = new Random();
+            await ctx.RespondAsync(options[rnd.Next(options.Length)]);
+        }
+        #endregion
+
         #region COMMAND_GREET
         [Command("greet"), Description("Greets a user and starts a conversation.")]
         [Aliases("hello", "hi", "halo", "hey", "howdy", "sup")]
