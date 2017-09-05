@@ -18,6 +18,7 @@ namespace TheGodfatherBot
         #region COMMAND_DELETE
         [Command("delete")]
         [Aliases("prune", "del", "d")]
+        [RequirePermissions(Permissions.Administrator)]
         public async Task Delete(CommandContext ctx, [Description("Ammount")] int n = 0)
         {
             if (n <= 0 || n > 10000) {
