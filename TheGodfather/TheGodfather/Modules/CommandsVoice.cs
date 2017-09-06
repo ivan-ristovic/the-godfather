@@ -21,22 +21,16 @@ namespace TheGodfatherBot
         public async Task Join(CommandContext ctx, DiscordChannel chn = null)
         {
             var vnext = ctx.Client.GetVoiceNextClient();
-            if (vnext == null) {
-                await ctx.RespondAsync("VNext is not enabled or configured.");
-                return;
-            }
+            if (vnext == null)
+                throw new Exception("VNext is not enabled or configured.");
 
             var vnc = vnext.GetConnection(ctx.Guild);
-            if (vnc != null) {
-                await ctx.RespondAsync("Already connected in this guild.");
-                return;
-            }
+            if (vnc != null)
+                throw new Exception("Already connected in this guild.");
 
             var vstat = ctx.Member?.VoiceState;
-            if ((vstat == null || vstat.Channel == null) && chn == null) {
-                await ctx.RespondAsync("You are not in a voice channel.");
-                return;
-            }
+            if ((vstat == null || vstat.Channel == null) && chn == null)
+                throw new Exception("You are not in a voice channel.");
 
             if (chn == null)
                 chn = vstat.Channel;
@@ -53,20 +47,15 @@ namespace TheGodfatherBot
         public async Task Leave(CommandContext ctx)
         {
             var vnext = ctx.Client.GetVoiceNextClient();
-            if (vnext == null) {
-                await ctx.RespondAsync("VNext is not enabled or configured.");
-                return;
-            }
+            if (vnext == null) 
+                throw new Exception("VNext is not enabled or configured.");
 
             var vnc = vnext.GetConnection(ctx.Guild);
-            if (vnc == null) {
-                await ctx.RespondAsync("Not connected in this guild.");
-                return;
-            }
+            if (vnc == null)
+                throw new Exception("Not connected in this guild.");
 
             vnc.Disconnect();
-
-            await ctx.RespondAsync($"Disconnected.");
+            await ctx.RespondAsync("Disconnected.");
         }
         #endregion
 
@@ -75,21 +64,15 @@ namespace TheGodfatherBot
         public async Task Play(CommandContext ctx, [RemainingText, Description("Full path to the file to play.")] string filename)
         {
             var vnext = ctx.Client.GetVoiceNextClient();
-            if (vnext == null) {
-                await ctx.RespondAsync("VNext is not enabled or configured.");
-                return;
-            }
+            if (vnext == null)
+                throw new Exception("VNext is not enabled or configured.");
 
             var vnc = vnext.GetConnection(ctx.Guild);
-            if (vnc == null) {
-                await ctx.RespondAsync("Not connected in this guild.");
-                return;
-            }
+            if (vnc == null)
+                throw new Exception("Not connected in this guild.");
 
-            if (!File.Exists(filename)) {
-                await ctx.RespondAsync($"File `{filename}` does not exist.");
-                return;
-            }
+            if (!File.Exists(filename))
+                throw new FileNotFoundException($"File `{filename}` does not exist.");
 
             while (vnc.IsPlaying)
                 await vnc.WaitForPlaybackFinishAsync();
@@ -122,12 +105,14 @@ namespace TheGodfatherBot
                         await vnc.SendAsync(buff, 20);
                     }
                 }
-            } catch (Exception ex) { exc = ex; } finally {
+            } catch (Exception ex) {
+                exc = ex;
+            } finally {
                 await vnc.SendSpeakingAsync(false);
             }
 
             if (exc != null)
-                await ctx.RespondAsync($"An exception occured during playback: `{exc.GetType()}: {exc.Message}`.");
+                throw new Exception($"An exception occured during playback: `{exc.GetType()}: {exc.Message}`.");
         }
         #endregion
     }

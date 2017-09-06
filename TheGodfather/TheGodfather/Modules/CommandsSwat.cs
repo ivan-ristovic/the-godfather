@@ -77,10 +77,8 @@ namespace TheGodfatherBot
         [Aliases("info", "check")]
         public async Task Query(CommandContext ctx, [Description("IP to query.")] string ip = null)
         {
-            if (string.IsNullOrWhiteSpace(ip)) {
-                await ctx.RespondAsync("IP missing.");
-                return;
-            }
+            if (string.IsNullOrWhiteSpace(ip))
+                throw new Exception("IP missing.");
 
             if (_serverlist.ContainsKey(ip))
                 ip = _serverlist[ip];
@@ -103,20 +101,14 @@ namespace TheGodfatherBot
         [Aliases("checkspace", "spacecheck")]
         public async Task StartCheck(CommandContext ctx, [Description("IP to query.")] string ip = null)
         {
-            if (string.IsNullOrWhiteSpace(ip)) {
-                await ctx.RespondAsync("IP missing.");
-                return;
-            }
+            if (string.IsNullOrWhiteSpace(ip))
+                throw new Exception("IP missing.");
 
-            if (_UserIDsCheckingForSpace.ContainsKey(ctx.User.Id)) {
-                await ctx.RespondAsync("Already checking space for you!");
-                return;
-            }
+            if (_UserIDsCheckingForSpace.ContainsKey(ctx.User.Id))
+                throw new Exception("Already checking space for you!");
 
-            if (_UserIDsCheckingForSpace.Count > 10) {
-                await ctx.RespondAsync("Maximum number of checks reached, please try later!");
-                return;
-            }
+            if (_UserIDsCheckingForSpace.Count > 10)
+                throw new Exception("Maximum number of checks reached, please try later!");
 
             if (_serverlist.ContainsKey(ip))
                 ip = _serverlist[ip];
@@ -144,8 +136,8 @@ namespace TheGodfatherBot
                         await ctx.RespondAsync(ctx.User.Mention + ", there is space on " + info[0]);
                     }
                 } catch (Exception) {
-                    await ctx.RespondAsync("Invalid IP format.");
                     await StopCheck(ctx);
+                    throw new Exception("Invalid IP format.");
                 }
                 await Task.Delay(3000);
             }

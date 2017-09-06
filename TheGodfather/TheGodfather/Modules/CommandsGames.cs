@@ -62,8 +62,7 @@ namespace TheGodfatherBot
                 dm = await ctx.Client.CreateDmAsync(ctx.User);
                 await dm.SendMessageAsync("What is the secret word?");
             } catch {
-                await ctx.RespondAsync("Please enable direct messages, so I can ask you about the word to guess.");
-                return;
+                throw new Exception("Please enable direct messages, so I can ask you about the word to guess.");
             }
             var interactivity = ctx.Client.GetInteractivityModule();
             var msg = await interactivity.WaitForMessageAsync(

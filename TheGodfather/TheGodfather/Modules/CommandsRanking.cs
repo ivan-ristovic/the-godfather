@@ -18,6 +18,7 @@ namespace TheGodfatherBot
         private const uint RANKUP_COUNT = 100;
         #endregion
 
+
         #region COMMAND_RANK
         [Command("rank"), Description("Shows rank of a user.")]
         [Aliases("level")]
@@ -51,6 +52,7 @@ namespace TheGodfatherBot
             await ctx.RespondAsync("", embed: embed);
         }
         #endregion
+
 
         #region HELPER_FUNCTIONS
         public async static void UpdateMessageCount(DiscordChannel c, DiscordUser u)

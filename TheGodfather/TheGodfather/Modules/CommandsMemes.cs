@@ -34,9 +34,9 @@ namespace TheGodfatherBot
                         if (!_memes.ContainsKey(name))
                             _memes.Add(name, values[1]);
                     }
-                } catch (Exception) {
+                } catch (Exception e) {
+                    log.LogMessage(LogLevel.Error, "TheGodfather", "Meme loading failed: " + e.ToString(), DateTime.Now);
                     _memes.Clear();
-                    return;
                 }
             } else {
                 log.LogMessage(LogLevel.Warning, "TheGodfather", "memes.txt is missing.", DateTime.Now);
@@ -86,10 +86,8 @@ namespace TheGodfatherBot
                                  [Description("Short name (case insensitive).")] string name = null,
                                  [Description("URL")] string url = null)
         {
-            if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(url)) {
-                await ctx.RespondAsync("Name or URL missing or invalid.");
-                return;
-            }
+            if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(url))
+                throw new Exception("Name or URL missing or invalid.");
 
             name = name.Trim().ToLower();
             url = url.Trim();
@@ -109,16 +107,12 @@ namespace TheGodfatherBot
         [Aliases("del", "remove")]
         public async Task DeleteMeme(CommandContext ctx, [Description("Short name (case insensitive).")] string name = null)
         {
-            if (string.IsNullOrWhiteSpace(name)) {
-                await ctx.RespondAsync("Name missing.");
-                return;
-            }
+            if (string.IsNullOrWhiteSpace(name))
+                throw new Exception("Name missing.");
 
             name = name.Trim().ToLower();
-            if (!_memes.ContainsKey(name)) {
-                await ctx.RespondAsync("Meme with that name doesn't exist!");
-                return;
-            }
+            if (!_memes.ContainsKey(name))
+                throw new Exception("Meme with that name doesn't exist!");
 
             _memes.Remove(name);
             await ctx.RespondAsync($"Meme '{name}' successfully deleted!");
@@ -140,9 +134,9 @@ namespace TheGodfatherBot
                     memelist.Add(entry.Key + "$" + entry.Value);
                 
                 File.WriteAllLines("memes.txt", memelist);
-            } catch (Exception) {
-                await ctx.RespondAsync("Error while saving memes.");
-                return;
+            } catch (Exception e) {
+                ctx.Client.DebugLogger.LogMessage(LogLevel.Error, "TheGodfather", "Meme save error: " + e.ToString(), DateTime.Now);
+                throw new Exception("Error while saving memes.");
             }
 
             await ctx.RespondAsync("Memes successfully saved.");

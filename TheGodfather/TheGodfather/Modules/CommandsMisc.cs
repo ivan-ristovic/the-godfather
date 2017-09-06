@@ -21,15 +21,8 @@ namespace TheGodfatherBot
         [Aliases("question")]
         public async Task EightBall(CommandContext ctx, [RemainingText, Description("A question for the almighty ball.")] string q = null)
         {
-            if (string.IsNullOrWhiteSpace(q)) {
-                await ctx.RespondAsync("The almighty ball requires a question.");
-                return;
-            }
-
-            if (q[q.Length - 1] != '?') {
-                await ctx.RespondAsync("That doesn't seem like a question...");
-                return;
-            }
+            if (string.IsNullOrWhiteSpace(q))
+                throw new Exception("The almighty ball requires a question.");
 
             string[] answers = {
                 "Yes.",
@@ -52,10 +45,8 @@ namespace TheGodfatherBot
         [Aliases("select")]
         public async Task Choose(CommandContext ctx, [Description("Option list")] string s = null)
         {
-            if (string.IsNullOrWhiteSpace(s)) {
-                await ctx.RespondAsync("Missing list to choose from.");
-                return;
-            }
+            if (string.IsNullOrWhiteSpace(s))
+                throw new Exception("Missing list to choose from.");
 
             var options = s.Split(',');
             var rnd = new Random();
@@ -94,10 +85,8 @@ namespace TheGodfatherBot
         [Aliases("burn")]
         public async Task Insult(CommandContext ctx, [Description("User to insult")] DiscordUser u = null)
         {
-            if (u == null) {
-                await ctx.RespondAsync("Please provide me someone to roast.");
-                return;
-            }
+            if (u == null)
+                throw new Exception("Please provide me someone to roast.");
 
             string[] insults = {
                 "shut up, you'll never be the man your mother is.",
@@ -123,10 +112,8 @@ namespace TheGodfatherBot
         [Command("leet"), Description("Wr1t3s m3ss@g3 1n 1337sp34k.")]
         public async Task Leet(CommandContext ctx, [RemainingText, Description("Text")] string s = null)
         {
-            if (string.IsNullOrWhiteSpace(s)) {
-                await ctx.RespondAsync("Y0u d1dn'7 g1v3 m3 @ny 73x7...");
-                return;
-            }
+            if (string.IsNullOrWhiteSpace(s))
+                throw new Exception("Y0u d1dn'7 g1v3 m3 @ny 73x7...");
 
             var rnd = new Random();
             string leet_s = "";
@@ -152,10 +139,8 @@ namespace TheGodfatherBot
         [Aliases("size", "length", "manhood")]
         public async Task Penis(CommandContext ctx, [Description("Who to measure")] DiscordUser u = null)
         {
-            if (u == null) {
-                await ctx.RespondAsync("You didn't give me anyone to measure.");
-                return;
-            }
+            if (u == null)
+                throw new Exception("You didn't give me anyone to measure.");
 
             string msg = "Size: 8";
             for (var size = u.Id % 40; size > 0; size--)
@@ -174,15 +159,11 @@ namespace TheGodfatherBot
         [Aliases("vote")]
         public async Task Poll(CommandContext ctx, [RemainingText, Description("Question.")] string s = null)
         {
-            if (string.IsNullOrWhiteSpace(s)) {
-                await ctx.RespondAsync("Poll requires a yes or no question.");
-                return;
-            }
+            if (string.IsNullOrWhiteSpace(s))
+                throw new Exception("Poll requires a yes or no question.");
 
-            if (_opnum != 0) {
-                await ctx.RespondAsync("Another poll is already running.");
-                return;
-            }
+            if (_opnum != 0)
+                throw new Exception("Another poll is already running.");
 
             // Get poll options interactively
             await ctx.RespondAsync("And what will be the possible answers? (separate with comma)");
@@ -198,10 +179,8 @@ namespace TheGodfatherBot
 
             // Parse poll options
             var poll_options = msg.Content.Split(',');
-            if (poll_options.Length < 2) {
-                await ctx.RespondAsync("Not enough poll options.");
-                return;
-            }
+            if (poll_options.Length < 2)
+                throw new Exception("Not enough poll options.");
 
             // Write embed field representing the poll
             var embed = new DiscordEmbed() {
@@ -254,12 +233,17 @@ namespace TheGodfatherBot
         [Aliases("score")]
         public async Task Rate(CommandContext ctx, [Description("Who to measure")] DiscordUser u = null)
         {
-            if (u == null) {
-                await ctx.RespondAsync("You didn't give me anyone to measure.");
-                return;
+            if (u == null)
+                throw new Exception("You didn't give me anyone to measure.");
+
+            Bitmap chart;
+            try {
+                chart = new Bitmap("graph.png");
+            } catch (Exception e) {
+                ctx.Client.DebugLogger.LogMessage(LogLevel.Error, "TheGodfather", "graph.png load failed!", DateTime.Now);
+                throw new InvalidDataException("I can't find a graph on server machine, please contact owner and tell him.");
             }
 
-            Bitmap chart = new Bitmap("graph.png");
             int start_x = (int)(u.Id % 600) + 110;
             int start_y = (int)(u.Id % 480) + 20;
             for (int dx = 0; dx < 10; dx++)
@@ -279,15 +263,11 @@ namespace TheGodfatherBot
             [Description("Time to wait before repeat.")] int time = 0,
             [RemainingText, Description("What to repeat.")] string s = null)
         {
-            if (time == 0 || string.IsNullOrWhiteSpace(s)) {
-                await ctx.RespondAsync("Usage: repeat <seconds> <text>");
-                return;
-            }
+            if (time == 0 || string.IsNullOrWhiteSpace(s))
+                throw new Exception("Usage: repeat <seconds> <text>");
 
-            if (time < 0 || time > 604800) {
-                await ctx.RespondAsync("Time cannot be less than 0 or greater than 1 week.");
-                return;
-            }
+            if (time < 0 || time > 604800)
+                throw new Exception("Time cannot be less than 0 or greater than 1 week.");
 
             await ctx.RespondAsync($"I will remind you to: \"{s}\" in {time} seconds.");
             await Task.Delay(time * 1000);
@@ -299,10 +279,8 @@ namespace TheGodfatherBot
         [Command("say"), Description("Repeats after you.")]
         public async Task Say(CommandContext ctx, [RemainingText, Description("Text.")] string s = null)
         {
-            if (string.IsNullOrWhiteSpace(s)) {
-                await ctx.RespondAsync("Text missing.");
-                return;
-            }
+            if (string.IsNullOrWhiteSpace(s))
+                throw new Exception("Text missing.");
             
             await ctx.RespondAsync(s);
         }

@@ -21,6 +21,7 @@ namespace TheGodfatherBot
         static GalleryEndpoint _endpoint = new GalleryEndpoint(_imgurclient);
         #endregion
         
+
         #region COMMAND_IMGUR
         [Command("imgur"), Description("Search imgur.")]
         [Aliases("img", "im", "i")]
@@ -34,6 +35,7 @@ namespace TheGodfatherBot
                 await GetImagesFromSub(ctx, sub.Trim(), n);
         }
         #endregion
+
 
         #region HELPER_FUNCTIONS
         private async Task GetImagesFromSub(CommandContext ctx, string sub, int num)
@@ -49,16 +51,14 @@ namespace TheGodfatherBot
                     await Task.Delay(1000);
                 }
 
-                if (i == num) {
-                    await ctx.RespondAsync("No results...");
-                    return;
-                }
+                if (i == num)
+                    throw new Exception("No results...");
 
                 if (i != 0) {
                     await ctx.RespondAsync("These are all of the results returned.");
                 }
             } catch {
-                await ctx.RespondAsync("Imgur API returned album which I can't show...");
+                throw new Exception("Imgur API returned album which I can't show...");
             }
         }
         #endregion
