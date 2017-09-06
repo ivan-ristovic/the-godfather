@@ -16,8 +16,14 @@ namespace TheGodfatherBot
         #region COMMAND_NICK
         [Command("nick"), Description("Gives someone a new nickname.")]
         [RequirePermissions(Permissions.ManageNicknames)]
-        public async Task ChangeNickname(CommandContext ctx, [Description("Member to change the nickname for.")] DiscordMember member, [RemainingText, Description("The nickname to give to that user.")] string newname)
+        public async Task ChangeNickname(CommandContext ctx, 
+                                        [Description("Member to change the nickname for.")] DiscordMember member, 
+                                        [RemainingText, Description("The nickname to give to that user.")] string newname)
         {
+            ctx.Client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather",
+                $"{ctx.User.Username} attempts to execute !nick {member.Username} {newname}",
+                DateTime.Now);
+
             await ctx.TriggerTypingAsync();
 
             try {
@@ -46,8 +52,13 @@ namespace TheGodfatherBot
         #region COMMAND_SUDO
         [Command("sudo"), Description("Executes a command as another user."), Hidden]
         [RequireOwner]
-        public async Task Sudo(CommandContext ctx, [Description("Member to execute as.")] DiscordMember member, [RemainingText, Description("Command text to execute.")] string command)
+        public async Task Sudo(CommandContext ctx, 
+                              [Description("Member to execute as.")] DiscordMember member, 
+                              [RemainingText, Description("Command text to execute.")] string command)
         {
+            ctx.Client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather",
+                   $"{ctx.User.Username} attempts to execute !sudo {member.Username} {command}",
+                   DateTime.Now);
             await ctx.TriggerTypingAsync();
             var cmds = ctx.Client.GetCommandsNext();
             await cmds.SudoAsync(member, ctx.Channel, command);
