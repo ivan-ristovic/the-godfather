@@ -1,7 +1,7 @@
 ﻿#region USING_DIRECTIVES
 using System;
-using System.Collections.Generic;
 using System.IO;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using DSharpPlus;
@@ -36,9 +36,9 @@ namespace TheGodfatherBot
                             _aliases.Add(gid, new Dictionary<string, string>());
                         _aliases[gid].Add(values[1], values[2]);
                     }
-                } catch (Exception) {
+                } catch (Exception e) {
+                    log.LogMessage(LogLevel.Warning, "TheGodfather", "Exception occured, clearing aliases. Details : " + e.ToString(), DateTime.Now);
                     _aliases.Clear();
-                    return;
                 }
             } else {
                 log.LogMessage(LogLevel.Warning, "TheGodfather", "aliases.txt is missing.", DateTime.Now);
@@ -59,7 +59,7 @@ namespace TheGodfatherBot
         public async Task ExecuteGroup(CommandContext ctx, [RemainingText, Description("Alias name.")] string name = null)
         {
             if (string.IsNullOrWhiteSpace(name))
-                throw new InvalidDataException("Alias name is missing.");
+                throw new Exception("Alias name is missing.");
             
             if (_aliases != null && _aliases.ContainsKey(ctx.Guild.Id) && _aliases[ctx.Guild.Id].ContainsKey(name))
                 await ctx.RespondAsync(_aliases[ctx.Guild.Id][name]);
@@ -76,7 +76,7 @@ namespace TheGodfatherBot
                                  [Description("Response")] string response = null)
         {
             if (string.IsNullOrWhiteSpace(alias) || string.IsNullOrWhiteSpace(response))
-                throw new InvalidDataException("Alias name or response missing or invalid.");
+                throw new Exception("Alias name or response missing or invalid.");
 
             if (!_aliases.ContainsKey(ctx.Guild.Id))
                 _aliases.Add(ctx.Guild.Id, new Dictionary<string, string>());
@@ -98,10 +98,10 @@ namespace TheGodfatherBot
         public async Task DeleteAlias(CommandContext ctx, [Description("Alias to remove.")] string alias = null)
         {
             if (string.IsNullOrWhiteSpace(alias))
-                throw new InvalidDataException("Alias name missing.");
+                throw new Exception("Alias name missing.");
 
             if (!_aliases.ContainsKey(ctx.Guild.Id))
-                throw new InvalidDataException("No aliases recorded in this guild.");
+                throw new Exception("No aliases recorded in this guild.");
 
             _aliases[ctx.Guild.Id].Remove(alias);
             await ctx.RespondAsync($"Alias '{alias}' successfully removed.");
@@ -135,7 +135,7 @@ namespace TheGodfatherBot
                 File.WriteAllLines("aliases.txt", aliaslist);
             } catch (Exception e) {
                 ctx.Client.DebugLogger.LogMessage(LogLevel.Error, "TheGodfather", "IO Alias save error:" + e.ToString(), DateTime.Now);
-                throw new Exception("IO error while saving aliases.");
+                throw new InvalidDataException("IO error while saving aliases.");
             }
 
             await ctx.RespondAsync("Aliases successfully saved.");

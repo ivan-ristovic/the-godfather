@@ -1,5 +1,6 @@
 ﻿#region USING_DIRECTIVES
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -136,10 +137,12 @@ namespace TheGodfatherBot
         private static Dictionary<ulong, int> _accounts = new Dictionary<ulong, int>();
         #endregion
 
+
         public async Task ExecuteGroup(CommandContext ctx)
         {
             await Status(ctx);
         }
+
 
         #region COMMAND_REGISTER
         [Command("register")]
@@ -185,10 +188,8 @@ namespace TheGodfatherBot
                                   [Description("User to send credits to:")] DiscordUser u = null,
                                   [Description("User to send credits to:")] int ammount = 0)
         {
-            if (u == null) {
-                await ctx.RespondAsync("Account to transfer the credits to is missing.");
-                return;
-            }
+            if (u == null)
+                throw new Exception("Account to transfer the credits to is missing.");
 
             if (!_accounts.ContainsKey(ctx.User.Id) || !_accounts.ContainsKey(u.Id)) {
                 await ctx.RespondAsync("One or more accounts not found in the bank.");
@@ -204,6 +205,7 @@ namespace TheGodfatherBot
             _accounts[u.Id] += ammount;
         }
         #endregion
+
 
         #region HELPER_FUNCTIONS
         public static bool RetrieveCreditsSucceeded(ulong id, int ammount)
