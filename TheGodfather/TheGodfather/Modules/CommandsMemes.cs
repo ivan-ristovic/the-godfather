@@ -87,7 +87,7 @@ namespace TheGodfatherBot
                                  [Description("URL")] string url = null)
         {
             if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(url))
-                throw new Exception("Name or URL missing or invalid.");
+                throw new ArgumentException("Name or URL missing or invalid.");
 
             name = name.Trim().ToLower();
             url = url.Trim();
@@ -108,11 +108,11 @@ namespace TheGodfatherBot
         public async Task DeleteMeme(CommandContext ctx, [Description("Short name (case insensitive).")] string name = null)
         {
             if (string.IsNullOrWhiteSpace(name))
-                throw new Exception("Name missing.");
+                throw new ArgumentException("Name missing.");
 
             name = name.Trim().ToLower();
             if (!_memes.ContainsKey(name))
-                throw new Exception("Meme with that name doesn't exist!");
+                throw new KeyNotFoundException("Meme with that name doesn't exist!");
 
             _memes.Remove(name);
             await ctx.RespondAsync($"Meme '{name}' successfully deleted!");
@@ -136,7 +136,7 @@ namespace TheGodfatherBot
                 File.WriteAllLines("memes.txt", memelist);
             } catch (Exception e) {
                 ctx.Client.DebugLogger.LogMessage(LogLevel.Error, "TheGodfather", "Meme save error: " + e.ToString(), DateTime.Now);
-                throw new Exception("Error while saving memes.");
+                throw new IOException("Error while saving memes.");
             }
 
             await ctx.RespondAsync("Memes successfully saved.");

@@ -78,7 +78,7 @@ namespace TheGodfatherBot
         public async Task Query(CommandContext ctx, [Description("IP to query.")] string ip = null)
         {
             if (string.IsNullOrWhiteSpace(ip))
-                throw new Exception("IP missing.");
+                throw new ArgumentException("IP missing.");
 
             if (_serverlist.ContainsKey(ip))
                 ip = _serverlist[ip];
@@ -102,7 +102,7 @@ namespace TheGodfatherBot
         public async Task StartCheck(CommandContext ctx, [Description("IP to query.")] string ip = null)
         {
             if (string.IsNullOrWhiteSpace(ip))
-                throw new Exception("IP missing.");
+                throw new ArgumentException("IP missing.");
 
             if (_UserIDsCheckingForSpace.ContainsKey(ctx.User.Id))
                 throw new Exception("Already checking space for you!");

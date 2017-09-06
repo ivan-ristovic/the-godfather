@@ -21,10 +21,8 @@ namespace TheGodfatherBot
         [Aliases("fight", "vs")]
         public async Task Duel(CommandContext ctx, [Description("Who to fight")] DiscordUser u)
         {
-            if (u.Id == ctx.User.Id) {
-                await ctx.RespondAsync("You can't duel yourself...");
-                return;
-            }
+            if (u.Id == ctx.User.Id)
+                throw new ArgumentException("You can't duel yourself...");
 
             string[] weapons = { "sword", "axe", "keyboard", "stone", "cheeseburger", "belt from yo momma" };
 

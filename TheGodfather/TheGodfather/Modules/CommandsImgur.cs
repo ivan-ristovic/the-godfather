@@ -6,6 +6,7 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 
+using Imgur.API;
 using Imgur.API.Authentication.Impl;
 using Imgur.API.Endpoints.Impl;
 using Imgur.API.Enums;
@@ -58,7 +59,7 @@ namespace TheGodfatherBot
                     await ctx.RespondAsync("These are all of the results returned.");
                 }
             } catch {
-                throw new Exception("Imgur API returned album which I can't show...");
+                throw new ImgurException("Imgur API returned album which I can't show...");
             }
         }
         #endregion

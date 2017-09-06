@@ -22,7 +22,7 @@ namespace TheGodfatherBot
         public async Task Delete(CommandContext ctx, [Description("Ammount")] int n = 0)
         {
             if (n <= 0 || n > 10000)
-                throw new Exception("Invalid number of messages to delete (must be in range [1, 10000].");
+                throw new ArgumentOutOfRangeException("Invalid number of messages to delete (must be in range [1, 10000].");
 
             await ctx.Channel.GetMessagesAsync(n).ContinueWith(
                 async t => await ctx.Channel.DeleteMessagesAsync(t.Result)

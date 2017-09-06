@@ -29,10 +29,8 @@ namespace TheGodfatherBot
         [Aliases("slotmachine")]
         public async Task SlotMachine(CommandContext ctx, [Description("Bid")] int bid = 5)
         {
-            if (bid < 5) {
-                await ctx.RespondAsync("5 is the minimum bid!");
-                return;
-            }
+            if (bid < 5)
+                throw new ArgumentOutOfRangeException("5 is the minimum bid!");
 
             if (!CommandsBank.RetrieveCreditsSucceeded(ctx.User.Id, bid)) {
                 await ctx.RespondAsync("You do not have enough credits in WM bank!");
@@ -189,20 +187,18 @@ namespace TheGodfatherBot
                                   [Description("User to send credits to:")] int ammount = 0)
         {
             if (u == null)
-                throw new Exception("Account to transfer the credits to is missing.");
+                throw new ArgumentException("Account to transfer the credits to is missing.");
 
-            if (!_accounts.ContainsKey(ctx.User.Id) || !_accounts.ContainsKey(u.Id)) {
-                await ctx.RespondAsync("One or more accounts not found in the bank.");
-                return;
-            }
+            if (!_accounts.ContainsKey(ctx.User.Id) || !_accounts.ContainsKey(u.Id))
+                throw new KeyNotFoundException("One or more accounts not found in the bank.");
             
-            if (ammount <= 0 || _accounts[ctx.User.Id] < ammount) {
-                await ctx.RespondAsync("Invalid ammount (check your funds).");
-                return;
-            }
+            if (ammount <= 0 || _accounts[ctx.User.Id] < ammount)
+                throw new ArgumentOutOfRangeException("Invalid ammount (check your funds).");
 
             _accounts[ctx.User.Id] -= ammount;
             _accounts[u.Id] += ammount;
+
+            await ctx.RespondAsync($"Transfer from {ctx.User.Mention} to {u.Mention} is complete.");
         }
         #endregion
 
