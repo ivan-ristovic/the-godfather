@@ -1,8 +1,0 @@
-# Alias file
-#
-# How to use it:
-# Aliases consist of a name and text to be written when alias is triggered.
-# Lines in this file contain each one alias in the format: name$reply
-# When triggered with "!a name", the bot will reply with "reply"
-
-test$http://i.imgur.com/vN6biZB.gif
