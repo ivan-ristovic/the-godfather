@@ -21,7 +21,7 @@ namespace TheGodfatherBot
         #region COMMAND_CHANNEL_CREATE
         [Command("createtxt")]
         [Description("Create new txt channel.")]
-        [Aliases("+t", "make", "new", "add")]
+        [Aliases("create", "+", "+t", "make", "new", "add")]
         public async Task CreateTextChannel(CommandContext ctx, [Description("Name")] string name = null)
         {
             if (string.IsNullOrWhiteSpace(name))
@@ -41,6 +41,19 @@ namespace TheGodfatherBot
                 throw new ArgumentException("Missing channel name.");
 
             await ctx.Guild.CreateChannelAsync(name, ChannelType.Voice);
+        }
+        #endregion
+        
+        #region COMMAND_CHANNEL_DELETE
+        [Command("delete")]
+        [Description("Delete channel.")]
+        [Aliases("-", "del", "d", "remove")]
+        public async Task DeleteChannel(CommandContext ctx, [Description("Name")] DiscordChannel c = null)
+        {
+            if (c == null)
+                throw new ArgumentException("Can't find such channel.");
+
+            await c.DeleteAsync();
         }
         #endregion
     }

@@ -25,7 +25,7 @@ namespace TheGodfatherBot
         public async Task Ban(CommandContext ctx, [Description("User")] DiscordMember u = null)
         {
             if (u == null)
-                throw new ArgumentNullException("You need to mention a user to ban.");
+                throw new ArgumentException("You need to mention a user to ban.");
 
             await ctx.Guild.BanMemberAsync(u);
             await ctx.RespondAsync("http://i0.kym-cdn.com/entries/icons/original/000/000/615/BANHAMMER.png");
@@ -40,7 +40,7 @@ namespace TheGodfatherBot
         public async Task Deafen(CommandContext ctx, [Description("User")] DiscordMember u = null)
         {
             if (u == null)
-                throw new ArgumentNullException("You need to mention a user to deafen.");
+                throw new ArgumentException("You need to mention a user to deafen.");
 
             bool deafened = u.IsDeafened;
             await u.SetMuteAsync(!deafened);
@@ -71,7 +71,7 @@ namespace TheGodfatherBot
         public async Task Mute(CommandContext ctx, [Description("User")] DiscordMember u = null)
         {
             if (u == null)
-                throw new ArgumentNullException("You need to mention a user to mute/unmute.");
+                throw new ArgumentException("You need to mention a user to mute/unmute.");
 
             bool muted = u.IsMuted;
             await u.SetMuteAsync(!muted);
