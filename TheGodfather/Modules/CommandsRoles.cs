@@ -47,10 +47,26 @@ namespace TheGodfatherBot
         public async Task DeleteRole(CommandContext ctx, [Description("Role (mention)")] DiscordRole role = null)
         {
             if (role == null)
-                throw new ArgumentNullException("Missing role mention.");
+                throw new ArgumentNullException("Unknown role.");
 
             await ctx.Guild.DeleteRoleAsync(role);
             await ctx.RespondAsync("Successfully removed role " + role.Name);
+        }
+        #endregion
+
+        #region COMMAND_ROLES_SETCOLOR
+        [Command("setcolor")]
+        [Description("Set a color for the role.")]
+        [Aliases("clr", "c")]
+        public async Task SetColor(CommandContext ctx, 
+                                  [Description("Role name")] DiscordRole role = null,
+                                  [Description("Color")] string color = null)
+        {
+            if (role == null || string.IsNullOrWhiteSpace(color))
+                throw new ArgumentException("I need a valid role and a valid color.");
+
+            await ctx.Guild.UpdateRoleAsync(role, color: new DiscordColor(color));
+            await ctx.RespondAsync("Successfully changed role color.");
         }
         #endregion
 
