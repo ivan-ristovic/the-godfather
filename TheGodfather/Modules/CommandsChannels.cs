@@ -22,7 +22,7 @@ namespace TheGodfatherBot
         [Command("createtxt")]
         [Description("Create new txt channel.")]
         [Aliases("create", "+", "+t", "make", "new", "add")]
-        public async Task CreateTextChannel(CommandContext ctx, [Description("Name")] string name = null)
+        public async Task CreateTextChannel(CommandContext ctx, [RemainingText, Description("Name")] string name = null)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentException("Missing channel name.");
@@ -35,7 +35,7 @@ namespace TheGodfatherBot
         [Command("createvoice")]
         [Description("Create new voice channel.")]
         [Aliases("+v", "makev", "newv", "addv")]
-        public async Task CreateVoiceChannel(CommandContext ctx, [Description("Name")] string name = null)
+        public async Task CreateVoiceChannel(CommandContext ctx, [RemainingText, Description("Name")] string name = null)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentException("Missing channel name.");
@@ -63,7 +63,7 @@ namespace TheGodfatherBot
         [Aliases("r", "name")]
         public async Task RenameChannel(CommandContext ctx, 
                                        [Description("Channel")] DiscordChannel c = null,
-                                       [Description("New name")] string name = null)
+                                       [RemainingText, Description("New name")] string name = null)
         {
             if (c == null)
                 throw new ArgumentException("Can't find such channel.");
@@ -71,6 +71,23 @@ namespace TheGodfatherBot
                 throw new ArgumentException("Missing new channel name.");
 
             await c.ModifyAsync(name);
+        }
+        #endregion
+
+        #region COMMAND_CHANNEL_SETTOPIC
+        [Command("settopic")]
+        [Description("Set channel topic.")]
+        [Aliases("t", "topic")]
+        public async Task SetChannelTopic(CommandContext ctx,
+                                         [Description("Channel")] DiscordChannel c = null,
+                                         [RemainingText, Description("New name")] string topic = null)
+        {
+            if (c == null)
+                throw new ArgumentException("Can't find such channel.");
+            if (string.IsNullOrWhiteSpace(topic))
+                throw new ArgumentException("Missing topic.");
+
+            await c.ModifyAsync(topic: topic);
         }
         #endregion
     }
