@@ -10,6 +10,7 @@ using Imgur.API;
 using Imgur.API.Authentication.Impl;
 using Imgur.API.Endpoints.Impl;
 using Imgur.API.Enums;
+using Imgur.API.Models.Impl;
 #endregion
 
 namespace TheGodfatherBot
@@ -40,27 +41,34 @@ namespace TheGodfatherBot
 
         #region HELPER_FUNCTIONS
         private async Task GetImagesFromSub(CommandContext ctx, string sub, int num)
-        {/*
+        {
             try {
                 var images = await _endpoint.GetSubredditGalleryAsync(sub, SubredditGallerySortOrder.Top, TimeWindow.Day);
-
+                
                 int i = num;
                 foreach (var im in images) {
                     if (i-- == 0)
                         break;
-                    await ctx.RespondAsync(im.Link);    // TODO FIX
+                    if (im.GetType().Name == "GalleryImage")
+                        await ctx.RespondAsync(((GalleryImage)im).Link);
+                    else if (im.GetType().Name == "GalleryAlbum")
+                        await ctx.RespondAsync(((GalleryAlbum)im).Link);
+                    else
+                        throw new ImgurException("Imgur API error");
                     await Task.Delay(1000);
                 }
 
                 if (i == num)
                     throw new Exception("No results...");
 
-                if (i != 0) {
+                if (i > 0) {
                     await ctx.RespondAsync("These are all of the results returned.");
                 }
-            } catch {
-                throw new ImgurException("Imgur API returned album which I can't show...");
-            }*/
+            } catch (ImgurException ie) {
+                throw ie;
+            } catch (Exception e) {
+                throw e;
+            }
         }
         #endregion
     }
