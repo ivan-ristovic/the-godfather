@@ -36,7 +36,7 @@ namespace TheGodfatherBot
         [Command("deafen")]
         [Description("Deafen the user.")]
         [Aliases("deaf", "d")]
-        [RequirePermissions(Permissions.BanMembers)]
+        [RequirePermissions(Permissions.DeafenMembers)]
         public async Task Deafen(CommandContext ctx, [Description("User")] DiscordMember u = null)
         {
             if (u == null)
@@ -76,6 +76,32 @@ namespace TheGodfatherBot
             bool muted = u.IsMuted;
             await u.SetMuteAsync(!muted);
             await ctx.RespondAsync("Successfully " + (muted ? "unmuted " : "muted ") + u.Nickname);
+        }
+        #endregion
+
+        #region COMMAND_USER_SETROLE
+        [Command("setrole")]
+        [Description("Add a role to user.")]
+        [Aliases("sr")]
+        [RequirePermissions(Permissions.ManageRoles)]
+        public async Task SetRole(CommandContext ctx, 
+                                 [Description("User")] DiscordMember u = null,
+                                 [Description("Role")] string role_str = null)
+        {
+            if (u == null || string.IsNullOrWhiteSpace(role_str))
+                throw new ArgumentException("You need to mention a user to mute/unmute.");
+            role_str = role_str.ToLower();
+
+            var roles = ctx.Guild.Roles;
+            DiscordRole role = null;
+            foreach (var r in roles)
+                if (r.Name == role_str)
+                    role = r;
+            if (role == null)
+                throw new Exception("The specified role does not exist.");
+
+            await u.GrantRoleAsync(role);
+            await ctx.RespondAsync($"Successfully granted role {role.Name} to {u.DisplayName}.");
         }
         #endregion
     }
