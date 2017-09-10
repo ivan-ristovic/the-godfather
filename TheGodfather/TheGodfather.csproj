@@ -146,10 +146,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="Dependencies\x64\libopus.dll.checksums" />
-    <None Include="Dependencies\x64\libsodium.dll.checksums" />
-    <None Include="Dependencies\x86\libopus.dll.checksums" />
-    <None Include="Dependencies\x86\libsodium.dll.checksums" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -161,12 +157,6 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <Content Include="Dependencies\x64\ffmpeg.exe" />
-    <Content Include="Dependencies\x64\libopus.dll" />
-    <Content Include="Dependencies\x64\libsodium.dll" />
-    <Content Include="Dependencies\x86\ffmpeg.exe" />
-    <Content Include="Dependencies\x86\libopus.dll" />
-    <Content Include="Dependencies\x86\libsodium.dll" />
     <Content Include="Resources\graph.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
