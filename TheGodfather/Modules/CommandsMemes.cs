@@ -66,6 +66,8 @@ namespace TheGodfatherBot
         public async Task List(CommandContext ctx)
         {
             var embed = new DiscordEmbedBuilder() { Title = "Memes:" };
+            if (_memes.Count > 25)
+                throw new Exception("Too many memes for embedding...");
             foreach (var entry in _memes)
                 embed.AddField(entry.Key, entry.Value);
             await ctx.RespondAsync("", embed: embed);
@@ -152,7 +154,7 @@ namespace TheGodfatherBot
         private async Task SendMeme(CommandContext ctx, string url)
         {
             await ctx.TriggerTypingAsync();
-            await ctx.RespondAsync("", embed: new DiscordEmbedBuilder{ Url = url });
+            await ctx.RespondAsync("", embed: new DiscordEmbedBuilder{ ImageUrl = url });
         }
         #endregion
     }
