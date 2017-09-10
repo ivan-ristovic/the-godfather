@@ -27,6 +27,7 @@ namespace TheGodfatherBot
                 throw new ArgumentNullException("You need to mention a user to ban.");
 
             await ctx.Guild.BanMemberAsync(u);
+            await ctx.RespondAsync("http://i0.kym-cdn.com/entries/icons/original/000/000/615/BANHAMMER.png");
         }
         #endregion
 
@@ -41,6 +42,7 @@ namespace TheGodfatherBot
                 throw new ArgumentNullException("You need to mention a user to kick.");
 
             await ctx.Guild.RemoveMemberAsync(u);
+            await ctx.RespondAsync("https://i.imgflip.com/7wcxy.jpg");
         }
         #endregion
 
@@ -56,6 +58,7 @@ namespace TheGodfatherBot
 
             bool muted = u.IsMuted;
             await u.SetMuteAsync(!muted);
+            await ctx.RespondAsync("Successfully " + (muted ? "unmuted " : "muted ") + u.Nickname);
         }
         #endregion
     }
