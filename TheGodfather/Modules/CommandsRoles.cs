@@ -26,6 +26,18 @@ namespace TheGodfatherBot
             await ctx.RespondAsync("", embed: embed);
         }
 
+        #region COMMAND_ROLES_CREATE
+        [Command("create")]
+        [Description("Create a new role.")]
+        [Aliases("new", "add", "+")]
+        public async Task Ban(CommandContext ctx, [Description("Role name")] string name = null)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentNullException("Missing role name.");
 
+            await ctx.Guild.CreateRoleAsync(name);
+            await ctx.RespondAsync("Successfully created role " + name);
+        }
+        #endregion
     }
 }
