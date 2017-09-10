@@ -70,5 +70,21 @@ namespace TheGodfatherBot
         }
         #endregion
 
+        #region COMMAND_ROLES_SETNAME
+        [Command("setname")]
+        [Description("Set a name for the role.")]
+        [Aliases("name", "rename")]
+        public async Task RenameRole(CommandContext ctx,
+                                    [Description("Role")] DiscordRole role = null,
+                                    [Description("New name")] string name = null)
+        {
+            if (role == null || string.IsNullOrWhiteSpace(name))
+                throw new ArgumentException("I need a valid existing role and a new name.");
+
+            await ctx.Guild.UpdateRoleAsync(role, name: name);
+            await ctx.RespondAsync("Successfully changed role name.");
+        }
+        #endregion
+
     }
 }
