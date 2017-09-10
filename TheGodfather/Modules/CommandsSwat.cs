@@ -69,7 +69,14 @@ namespace TheGodfatherBot
         [Aliases("serverlist", "swat4servers", "swat4stats")]
         public async Task Servers(CommandContext ctx)
         {
-            await ctx.RespondAsync("Not implemented yet.");
+            var embed = new DiscordEmbedBuilder() { Title = "Servers" };
+            foreach (var server in _serverlist) {
+                var split = server.Value.Split(':');
+                var info = QueryIP(ctx, split[0], int.Parse(split[1]));
+                if (info != null)
+                    embed.AddField(info[0], $"IP: {split[0]}:{split[1]}\nPlayers: {info[1] + " / " + info[2]}");
+            }
+            await ctx.RespondAsync("", embed: embed);
         }
         #endregion
 
@@ -165,8 +172,8 @@ namespace TheGodfatherBot
             var client = new UdpClient();
             IPEndPoint ep = new IPEndPoint(IPAddress.Parse(ip), port + 1);
             client.Connect(ep);
-            client.Client.SendTimeout = 1000;
-            client.Client.ReceiveTimeout = 1000;
+            client.Client.SendTimeout = 500;
+            client.Client.ReceiveTimeout = 500;
 
             byte[] receivedData = null;
             try {
