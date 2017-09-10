@@ -128,6 +128,7 @@
   <ItemGroup>
     <Compile Include="Modules\CommandsAdmin.cs" />
     <Compile Include="Modules\CommandsAlias.cs" />
+    <Compile Include="Modules\CommandsChannels.cs" />
     <Compile Include="Modules\CommandsGamble.cs" />
     <Compile Include="Modules\CommandsGames.cs" />
     <Compile Include="Modules\CommandsImgur.cs" />
