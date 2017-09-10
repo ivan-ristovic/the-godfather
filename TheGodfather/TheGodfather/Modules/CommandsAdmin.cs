@@ -36,7 +36,7 @@ namespace TheGodfatherBot
             }
         }
         #endregion
-
+       
         #region COMMAND_SHUTDOWN
         [Command("shutdown"), Description("Triggers the dying in the vineyard scene.")]
         [Aliases("disable", "poweroff", "exit", "quit")]
