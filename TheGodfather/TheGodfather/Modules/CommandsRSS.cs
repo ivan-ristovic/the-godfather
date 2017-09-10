@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Entities;
 #endregion
 
 namespace TheGodfatherBot
@@ -15,7 +16,8 @@ namespace TheGodfatherBot
     [Description("RSS feed operations.")]
     public class CommandsRSS
     {
-        public async Task ExecuteGroup(CommandContext ctx, [RemainingText, Description("URL")] string url = null)
+        public async Task ExecuteGroupAsync(CommandContext ctx, 
+                                            [RemainingText, Description("URL")] string url = null)
         {
             if (string.IsNullOrWhiteSpace(url))
                 await WMRSS(ctx);
@@ -52,20 +54,16 @@ namespace TheGodfatherBot
                 return;
             }
 
-            var embed = new DiscordEmbed() {
+            var embed = new DiscordEmbedBuilder() {
                 Title = "Topics active recently",
-                Color = 0x00FF00    // Green
+                Color = DiscordColor.Green
             };
 
             int count = 5;
             foreach (SyndicationItem item in feed.Items) {
                 if (count-- == 0)
                     break;
-                var field = new DiscordEmbedField() {
-                    Name = item.Title.Text,
-                    Value = item.Links[0].Uri.ToString(),
-                };
-                embed.Fields.Add(field);
+                embed.AddField(item.Title.Text, item.Links[0].Uri.ToString());
             }
 
             await ctx.RespondAsync("", embed: embed);

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Entities;
 #endregion
 
 namespace TheGodfatherBot
@@ -40,16 +41,12 @@ namespace TheGodfatherBot
             var slot_res = RollSlot(ctx);
             int won = EvaluateSlotResult(slot_res, bid);
 
-            var embed = new DiscordEmbed() {
+            var embed = new DiscordEmbedBuilder() {
                 Title = "TOTALLY NOT RIGGED SLOT MACHINE",
                 Description = MakeStringFromResult(slot_res),
-                Color = 0xFFFF00    // Yellow
+                Color = DiscordColor.Yellow
             };
-            var res = new DiscordEmbedField() {
-                Name = "Result: ",
-                Value = $"You won {won} credits!"
-            };
-            embed.Fields.Add(res);
+            embed.AddField("Result", $"You won {won} credits!");
 
             await ctx.RespondAsync("", embed: embed);
 
@@ -136,7 +133,7 @@ namespace TheGodfatherBot
         #endregion
 
 
-        public async Task ExecuteGroup(CommandContext ctx)
+        public async Task ExecuteGroupAsync(CommandContext ctx)
         {
             await Status(ctx);
         }
@@ -165,16 +162,12 @@ namespace TheGodfatherBot
             if (_accounts.ContainsKey(ctx.User.Id))
                 ammount = _accounts[ctx.User.Id];
 
-            var embed = new DiscordEmbed() {
+            var embed = new DiscordEmbedBuilder() {
                 Title = "Account balance for " + ctx.User.Username,
                 Timestamp = DateTime.Now,
-                Color = 0xFFFF00    // Yellow
+                Color = DiscordColor.Yellow
             };
-            var balance = new DiscordEmbedField() {
-                Name = "Balance: ",
-                Value = ammount.ToString()
-            };
-            embed.Fields.Add(balance);
+            embed.AddField("Balance: ", ammount.ToString());
             await ctx.RespondAsync("", embed: embed);
         }
         #endregion

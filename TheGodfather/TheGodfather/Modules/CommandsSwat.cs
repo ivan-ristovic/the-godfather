@@ -12,6 +12,7 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Interactivity;
+using DSharpPlus.Entities;
 #endregion
 
 namespace TheGodfatherBot
@@ -128,7 +129,7 @@ namespace TheGodfatherBot
                                 (xm.Content.ToLower().StartsWith("yes") || xm.Content.ToLower().StartsWith("no")),
                             TimeSpan.FromMinutes(1)
                         );
-                        if (msg == null || msg.Content.StartsWith("no")) {
+                        if (msg == null || msg.Message.Content.StartsWith("no")) {
                             await StopCheck(ctx);
                             return;
                         }
@@ -198,27 +199,15 @@ namespace TheGodfatherBot
         
         private async Task SendEmbedInfo(CommandContext ctx, string ip, string[] info)
         {
-            var embed = new DiscordEmbed() {
+            var embed = new DiscordEmbedBuilder() {
                 Title = info[0],
                 Description = ip,
                 Timestamp = DateTime.Now,
-                Color = 0x00FF00    // Green
+                Color = DiscordColor.Gray
             };
-            var players = new DiscordEmbedField() {
-                Name = "Players",
-                Value = info[1] + "/" + info[2]
-            };
-            var map = new DiscordEmbedField() {
-                Name = "Map",
-                Value = info[4]
-            };
-            var mode = new DiscordEmbedField() {
-                Name = "Game mode",
-                Value = info[3]
-            };
-            embed.Fields.Add(players);
-            embed.Fields.Add(map);
-            embed.Fields.Add(mode);
+            embed.AddField("Players", info[1] + "/" + info[2]);
+            embed.AddField("Map", info[4]);
+            embed.AddField("Game mode", info[3]);
             await ctx.RespondAsync("", embed: embed);
         }
         #endregion
