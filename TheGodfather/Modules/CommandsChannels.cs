@@ -48,12 +48,29 @@ namespace TheGodfatherBot
         [Command("delete")]
         [Description("Delete channel.")]
         [Aliases("-", "del", "d", "remove")]
-        public async Task DeleteChannel(CommandContext ctx, [Description("Name")] DiscordChannel c = null)
+        public async Task DeleteChannel(CommandContext ctx, [Description("Channel")] DiscordChannel c = null)
         {
             if (c == null)
                 throw new ArgumentException("Can't find such channel.");
 
             await c.DeleteAsync();
+        }
+        #endregion
+
+        #region COMMAND_CHANNEL_RENAME
+        [Command("rename")]
+        [Description("Rename channel.")]
+        [Aliases("r", "name")]
+        public async Task RenameChannel(CommandContext ctx, 
+                                       [Description("Channel")] DiscordChannel c = null,
+                                       [Description("New name")] string name = null)
+        {
+            if (c == null)
+                throw new ArgumentException("Can't find such channel.");
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentException("Missing new channel name.");
+
+            await c.ModifyAsync(name);
         }
         #endregion
     }
