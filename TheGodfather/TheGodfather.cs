@@ -9,6 +9,9 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.Interactivity;
 using DSharpPlus.CommandsNext.Exceptions;
 using DSharpPlus.VoiceNext;
+using DSharpPlus.EventArgs;
+using DSharpPlus.Net.WebSocket;
+using DSharpPlus.Entities;
 #endregion
 
 namespace TheGodfatherBot
@@ -30,7 +33,7 @@ namespace TheGodfatherBot
 
 
         public static void Main(string[] args) =>
-            new TheGodfather().MainAsync(args).ConfigureAwait(false).GetAwaiter().GetResult();
+            new TheGodfather().MainAsync(args).GetAwaiter().GetResult();
         
 
         TheGodfather()
@@ -56,9 +59,6 @@ namespace TheGodfatherBot
             SetupInteractivity();
             SetupVoice();
 
-            // Windows 7 specific
-            _client.SetWebSocketClient<WebSocket4NetClient>();
-
             await _client.ConnectAsync();
 
             await Task.Delay(-1);
@@ -76,9 +76,9 @@ namespace TheGodfatherBot
 
         private void SetupClient()
         {
-            _client = new DiscordClient(new DiscordConfig {
-                DiscordBranch = Branch.Stable,
+            _client = new DiscordClient(new DiscordConfiguration {
                 LargeThreshold = 250,
+                AutoReconnect = true,
                 Token = GetToken("token.txt"),
                 TokenType = TokenType.Bot,
                 UseInternalLogHandler = true,
@@ -86,12 +86,15 @@ namespace TheGodfatherBot
             });
             _client.Ready += Client_Ready;
             _client.GuildAvailable += Client_GuildAvailable;
-            _client.ClientError += Client_ClientError;
-            _client.GuildMemberAdd += Client_GuildMemberAdd;
-            _client.GuildMemberRemove += Client_GuildMemberRemove;
+            _client.ClientErrored += Client_ClientError;
+            _client.GuildMemberAdded += Client_GuildMemberAdd;
+            _client.GuildMemberRemoved += Client_GuildMemberRemove;
             _client.MessageCreated += Client_MessageCreated;
             _client.Heartbeated += Client_Heartbeated;
             _client.DebugLogger.LogMessageReceived += Client_LogMessage;
+
+            // Windows 7 specific
+            _client.SetWebSocketClient<WebSocket4NetClient>();
         }
 
         private void SetupCommands()
@@ -157,13 +160,13 @@ namespace TheGodfatherBot
 
         private Task Client_GuildMemberAdd(GuildMemberAddEventArgs e)
         {
-            e.Guild.DefaultChannel.SendMessageAsync($"Welcome to {e.Guild.Name}, {e.Member.Mention}!");
+            e.Guild.GetDefaultChannel().SendMessageAsync($"Welcome to {e.Guild.Name}, {e.Member.Mention}!");
             return Task.CompletedTask;
         }
 
         private Task Client_GuildMemberRemove(GuildMemberRemoveEventArgs e)
         {
-            e.Guild.DefaultChannel.SendMessageAsync($"{e.Member.Username} left {e.Guild.Name}. Bye!");
+            e.Guild.GetDefaultChannel().SendMessageAsync($"{e.Member.Username} left {e.Guild.Name}. Bye!");
             return Task.CompletedTask;
         }
 
@@ -187,7 +190,7 @@ namespace TheGodfatherBot
             return Task.CompletedTask;
         }
 
-        private async Task Client_Heartbeated(HeartBeatEventArgs e)
+        private async Task Client_Heartbeated(HeartbeatEventArgs e)
         {
             var rnd = new Random();
             await _client.UpdateStatusAsync(new Game(_statuses[rnd.Next(_statuses.Length)]) { StreamType = GameStreamType.NoStream });
@@ -208,7 +211,7 @@ namespace TheGodfatherBot
 
 
         #region COMMAND_EVENTS
-        private Task Commands_CommandExecuted(CommandExecutedEventArgs e)
+        private Task Commands_CommandExecuted(CommandExecutionEventArgs e)
         {
             e.Context.Client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", $"{e.Context.User.Username} successfully executed '{e.Command.QualifiedName}'", DateTime.Now);
             return Task.CompletedTask;
@@ -220,10 +223,10 @@ namespace TheGodfatherBot
 
             if (e.Exception is ChecksFailedException ex) {
                 var emoji = DiscordEmoji.FromName(e.Context.Client, ":no_entry:");
-                var embed = new DiscordEmbed {
+                var embed = new DiscordEmbedBuilder {
                     Title = "Access denied",
                     Description = $"{emoji} You do not have the permissions required to execute this command.",
-                    Color = 0xFF0000
+                    Color = DiscordColor.Red
                 };
                 await e.Context.RespondAsync("", embed: embed);
             } else {

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Entities;
 #endregion
 
 namespace TheGodfatherBot
@@ -56,7 +57,8 @@ namespace TheGodfatherBot
         #endregion
 
         
-        public async Task ExecuteGroup(CommandContext ctx, [RemainingText, Description("Alias name.")] string name = null)
+        public async Task ExecuteGroupAsync(CommandContext ctx, 
+                                            [RemainingText, Description("Alias name.")] string name = null)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new Exception("Alias name is missing.");
@@ -152,19 +154,12 @@ namespace TheGodfatherBot
                 return;
             }
 
-            var embed = new DiscordEmbed() {
+            var embed = new DiscordEmbedBuilder() {
                 Title = "Available aliases",
-                Color = 0x00FF00    // Green
+                Color = DiscordColor.Green
             };
-
-            foreach (var alias in _aliases[ctx.Guild.Id]) {
-                var item = new DiscordEmbedField() {
-                    Name = alias.Key,
-                    Value = alias.Value,
-                    Inline = true
-                };
-                embed.Fields.Add(item);
-            }
+            foreach (var alias in _aliases[ctx.Guild.Id])
+                embed.AddField(alias.Key, alias.Value, inline: true);
             await ctx.RespondAsync("", embed: embed);
         }
         #endregion

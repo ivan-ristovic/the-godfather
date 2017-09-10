@@ -20,7 +20,7 @@ namespace TheGodfatherBot
     public class CommandsReddit
     {
         /*
-        public async Task ExecuteGroup(CommandContext ctx)
+        public async Task ExecuteGroupAsync(CommandContext ctx)
         {
             var wa = new BotWebAgent();
             var reddit = new Reddit(wa, false);

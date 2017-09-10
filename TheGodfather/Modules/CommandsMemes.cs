@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Entities;
 #endregion
 
 namespace TheGodfatherBot
@@ -45,7 +46,8 @@ namespace TheGodfatherBot
         #endregion
 
 
-        public async Task ExecuteGroup(CommandContext ctx, [RemainingText, Description("Meme name")] string name = null)
+        public async Task ExecuteGroupAsync(CommandContext ctx, 
+                                            [RemainingText, Description("Meme name")] string name = null)
         {
             if (name == null || (name = name.Trim().ToLower()) == "") {
                 await ReturnRandomMeme(ctx);
@@ -63,18 +65,9 @@ namespace TheGodfatherBot
         [Description("List all registered memes.")]
         public async Task List(CommandContext ctx)
         {
-            var embed = new DiscordEmbed() {
-                Title = "Memes:"
-            };
-
-            foreach (var entry in _memes) {
-                var embedfield = new DiscordEmbedField() {
-                    Name = entry.Key,
-                    Value = entry.Value
-                };
-                embed.Fields.Add(embedfield);
-            }
-
+            var embed = new DiscordEmbedBuilder() { Title = "Memes:" };
+            foreach (var entry in _memes)
+                embed.AddField(entry.Key, entry.Value);
             await ctx.RespondAsync("", embed: embed);
         }
         #endregion
@@ -159,13 +152,7 @@ namespace TheGodfatherBot
         private async Task SendMeme(CommandContext ctx, string url)
         {
             await ctx.TriggerTypingAsync();
-
-            var embed = new DiscordEmbed {
-                Image = new DiscordEmbedImage {
-                    Url = url
-                }
-            };
-            await ctx.RespondAsync("", embed: embed);
+            await ctx.RespondAsync("", embed: new DiscordEmbedBuilder{ Url = url });
         }
         #endregion
     }

@@ -9,6 +9,8 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Interactivity;
+using DSharpPlus.Entities;
+using DSharpPlus.EventArgs;
 #endregion
 
 namespace TheGodfatherBot
@@ -178,23 +180,17 @@ namespace TheGodfatherBot
             }
 
             // Parse poll options
-            var poll_options = msg.Content.Split(',');
+            var poll_options = msg.Message.Content.Split(',');
             if (poll_options.Length < 2)
                 throw new ArgumentException("Not enough poll options.");
 
             // Write embed field representing the poll
-            var embed = new DiscordEmbed() {
+            var embed = new DiscordEmbedBuilder() {
                 Title = s,
-                Color = 0x00FF22
+                Color = DiscordColor.Orange
             };
-            for (int i = 0; i < poll_options.Length; i++) {
-                var o = new DiscordEmbedField() {
-                    Name = $"{i + 1}",
-                    Value = poll_options[i],
-                    Inline = true
-                };
-                embed.Fields.Add(o);
-            }
+            for (int i = 0; i < poll_options.Length; i++)
+                embed.AddField($"{i + 1}", poll_options[i], inline: true);
             await ctx.RespondAsync("", embed: embed);
 
             // Setup poll settings
@@ -212,18 +208,12 @@ namespace TheGodfatherBot
             ctx.Client.MessageCreated -= CheckForPollReply;
 
             // Write embedded result
-            var res = new DiscordEmbed() {
+            var res = new DiscordEmbedBuilder() {
                 Title = "Poll results",
-                Color = 0x00FF22
+                Color = DiscordColor.Orange
             };
-            for (int i = 0; i < poll_options.Length; i++) {
-                var o = new DiscordEmbedField() {
-                    Name = poll_options[i],
-                    Value = _votes[i].ToString(),
-                    Inline = true
-                };
-                res.Fields.Add(o);
-            }
+            for (int i = 0; i < poll_options.Length; i++)
+                res.AddField(poll_options[i], _votes[i].ToString(), inline: true);
             await ctx.RespondAsync("", embed: res);
         }
         #endregion
@@ -239,7 +229,7 @@ namespace TheGodfatherBot
             Bitmap chart;
             try {
                 chart = new Bitmap("graph.png");
-            } catch (Exception e) {
+            } catch {
                 ctx.Client.DebugLogger.LogMessage(LogLevel.Error, "TheGodfather", "graph.png load failed!", DateTime.Now);
                 throw new IOException("I can't find a graph on server machine, please contact owner and tell him.");
             }
@@ -250,6 +240,7 @@ namespace TheGodfatherBot
                 for (int dy = 0; dy < 10; dy++)
                     chart.SetPixel(start_x + dx, start_y + dy, Color.Red);
             chart.Save("tmp.png");
+            await ctx.TriggerTypingAsync();
             await ctx.RespondWithFileAsync("tmp.png");
             File.Delete("tmp.png");
         }

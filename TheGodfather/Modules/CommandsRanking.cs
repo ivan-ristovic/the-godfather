@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Entities;
 #endregion
 
 namespace TheGodfatherBot
@@ -33,22 +34,13 @@ namespace TheGodfatherBot
                     msgcount = _msgcount[ctx.User.Id];
             }
 
-            var embed = new DiscordEmbed() {
+            var embed = new DiscordEmbedBuilder() {
                 Title = u != null ? u.Username : ctx.User.Username,
                 Description = "User status",
-                Color = 0x0022DD    // Blue-ish
+                Color = DiscordColor.Aquamarine
             };
-            var rank = new DiscordEmbedField() {
-                Name = "Rank",
-                Value = $"{msgcount / RANKUP_COUNT}"
-            };
-            var xp = new DiscordEmbedField() {
-                Name = "XP",
-                Value = $"{msgcount}\n({(msgcount / RANKUP_COUNT + 1) * RANKUP_COUNT} needed for rankup)"
-            };
-            embed.Fields.Add(rank);
-            embed.Fields.Add(xp);
-
+            embed.AddField("Rank", $"{msgcount / RANKUP_COUNT}");
+            embed.AddField("XP", $"{msgcount}\n({(msgcount / RANKUP_COUNT + 1) * RANKUP_COUNT} needed for rankup)");
             await ctx.RespondAsync("", embed: embed);
         }
         #endregion

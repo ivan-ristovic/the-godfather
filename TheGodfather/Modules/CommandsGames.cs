@@ -7,6 +7,7 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Interactivity;
+using DSharpPlus.Entities;
 #endregion
 
 namespace TheGodfatherBot
@@ -71,11 +72,11 @@ namespace TheGodfatherBot
                 await ctx.RespondAsync("Ok, nvm...");
                 return;
             } else {
-                await dm.SendMessageAsync("Alright! The word is: " + msg.Content);
+                await dm.SendMessageAsync("Alright! The word is: " + msg.Message.Content);
             }
 
             int lives = 7;
-            string word = msg.Content.ToLower();
+            string word = msg.Message.Content.ToLower();
             char[] guess = new char[word.Length];
             for (int i = 0; i < guess.Length; i++)
                 guess[i] = '?';
@@ -91,9 +92,9 @@ namespace TheGodfatherBot
                     return;
                 }
 
-                if (word.IndexOf(m.Content[0]) != -1) {
+                if (word.IndexOf(m.Message.Content[0]) != -1) {
                     for (int i = 0; i < word.Length; i++)
-                        if (word[i] == m.Content[0])
+                        if (word[i] == m.Message.Content[0])
                             guess[i] = Char.ToUpper(word[i]);
                 } else {
                     lives--;
@@ -169,12 +170,12 @@ namespace TheGodfatherBot
                     (xm.Content.ToLower().StartsWith("me") || xm.Content.ToLower().StartsWith("i ")),
                 TimeSpan.FromMinutes(1)
             );
-            if (msg == null || msg.Content.StartsWith("no")) {
+            if (msg == null || msg.Message.Content.StartsWith("no")) {
                 await ctx.RespondAsync($"{ctx.User.Mention} right now: http://i0.kym-cdn.com/entries/icons/mobile/000/003/619/ForeverAlone.jpg");
                 return;
             }
 
-            await ctx.RespondAsync($"Game between {ctx.User.Mention} and {msg.Author.Mention} begins!");
+            await ctx.RespondAsync($"Game between {ctx.User.Mention} and {msg.User.Mention} begins!");
 
             int[,] board = new int[3, 3];
             TTTInitializeBoard(board);
@@ -185,7 +186,7 @@ namespace TheGodfatherBot
                 var move = await interactivity.WaitForMessageAsync(
                     xm => {
                         if (player1plays && (xm.Author.Id != ctx.User.Id)) return false;
-                        if (!player1plays && (xm.Author.Id != msg.Author.Id)) return false;
+                        if (!player1plays && (xm.Author.Id != msg.User.Id)) return false;
                         try {
                             field = int.Parse(xm.Content);
                             if (field < 1 || field > 10)
@@ -256,10 +257,7 @@ namespace TheGodfatherBot
                     }
                 line += '\n';
             }
-            var embed = new DiscordEmbed() {
-                Description = line
-            };
-            await ctx.RespondAsync("", embed: embed);
+            await ctx.RespondAsync("", embed: new DiscordEmbedBuilder() { Description = line } );
         }
         #endregion
 
@@ -288,27 +286,19 @@ namespace TheGodfatherBot
                 if (msg == null) {
                     await ctx.RespondAsync($"Time is out! The correct answer was: {answers[question]}");
                 } else {
-                    await ctx.RespondAsync($"GG {msg.Author.Mention}, you got it right!");
-                    if (participants.ContainsKey(msg.Author.Username))
-                        participants[msg.Author.Username]++;
+                    await ctx.RespondAsync($"GG {msg.User.Mention}, you got it right!");
+                    if (participants.ContainsKey(msg.User.Username))
+                        participants[msg.User.Username]++;
                     else
-                        participants.Add(msg.Author.Username, 1);
+                        participants.Add(msg.User.Username, 1);
                 }
                 questions.Remove(question);
                 await Task.Delay(2000);
             }
 
-            var em = new DiscordEmbed() {
-                Title = "Results"
-            };
-            foreach (var participant in participants) {
-                var emf = new DiscordEmbedField() {
-                    Name = participant.Key,
-                    Value = participant.Value.ToString(),
-                    Inline = true
-                };
-                em.Fields.Add(emf);
-            }
+            var em = new DiscordEmbedBuilder() { Title = "Results" };
+            foreach (var participant in participants)
+                em.AddField(participant.Key, participant.Value.ToString(), inline: true);
             await ctx.RespondAsync("", embed: em);
         }
 

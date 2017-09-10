@@ -8,6 +8,7 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.VoiceNext;
+using DSharpPlus.Entities;
 #endregion
 
 namespace TheGodfatherBot
