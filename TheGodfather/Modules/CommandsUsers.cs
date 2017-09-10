@@ -32,6 +32,22 @@ namespace TheGodfatherBot
         }
         #endregion
 
+        #region COMMAND_USER_DEAFEN
+        [Command("deafen")]
+        [Description("Deafen the user.")]
+        [Aliases("deaf", "d")]
+        [RequirePermissions(Permissions.BanMembers)]
+        public async Task Deafen(CommandContext ctx, [Description("User")] DiscordMember u = null)
+        {
+            if (u == null)
+                throw new ArgumentNullException("You need to mention a user to deafen.");
+
+            bool deafened = u.IsDeafened;
+            await u.SetMuteAsync(!deafened);
+            await ctx.RespondAsync("Successfully " + (deafened ? "undeafened " : "deafened ") + u.Nickname);
+        }
+        #endregion
+
         #region COMMAND_USER_KICK
         [Command("kick")]
         [Description("Kicks the user from server.")]
