@@ -30,14 +30,29 @@ namespace TheGodfatherBot
         [Command("create")]
         [Description("Create a new role.")]
         [Aliases("new", "add", "+")]
-        public async Task Ban(CommandContext ctx, [Description("Role name")] string name = null)
+        public async Task CreateRole(CommandContext ctx, [Description("Role name")] string name = null)
         {
             if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentNullException("Missing role name.");
+                throw new ArgumentException("Missing role name.");
 
             await ctx.Guild.CreateRoleAsync(name);
             await ctx.RespondAsync("Successfully created role " + name);
         }
         #endregion
+
+        #region COMMAND_ROLES_DELETE
+        [Command("delete")]
+        [Description("Create a new role.")]
+        [Aliases("del", "remove", "d", "-")]
+        public async Task DeleteRole(CommandContext ctx, [Description("Role (mention)")] DiscordRole role = null)
+        {
+            if (role == null)
+                throw new ArgumentNullException("Missing role mention.");
+
+            await ctx.Guild.DeleteRoleAsync(role);
+            await ctx.RespondAsync("Successfully removed role " + role.Name);
+        }
+        #endregion
+
     }
 }
