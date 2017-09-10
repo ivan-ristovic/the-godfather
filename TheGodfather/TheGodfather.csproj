@@ -220,6 +220,7 @@
     <Compile Include="Modules\CommandsMisc.cs" />
     <Compile Include="Modules\CommandsRanking.cs" />
     <Compile Include="Modules\CommandsReddit.cs" />
+    <Compile Include="Modules\CommandsRoles.cs" />
     <Compile Include="Modules\CommandsRSS.cs" />
     <Compile Include="Modules\CommandsSwat.cs" />
     <Compile Include="Modules\CommandsUsers.cs" />
