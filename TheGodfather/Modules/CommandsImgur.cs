@@ -40,7 +40,7 @@ namespace TheGodfatherBot
 
         #region HELPER_FUNCTIONS
         private async Task GetImagesFromSub(CommandContext ctx, string sub, int num)
-        {
+        {/*
             try {
                 var images = await _endpoint.GetSubredditGalleryAsync(sub, SubredditGallerySortOrder.Top, TimeWindow.Day);
 
@@ -48,7 +48,7 @@ namespace TheGodfatherBot
                 foreach (var im in images) {
                     if (i-- == 0)
                         break;
-                    await ctx.RespondAsync(im.Link);
+                    await ctx.RespondAsync(im.Link);    // TODO FIX
                     await Task.Delay(1000);
                 }
 
@@ -60,7 +60,7 @@ namespace TheGodfatherBot
                 }
             } catch {
                 throw new ImgurException("Imgur API returned album which I can't show...");
-            }
+            }*/
         }
         #endregion
     }
