@@ -16,6 +16,20 @@ namespace TheGodfatherBot
     [Aliases("users", "u", "usr")]
     public class CommandsUsers
     {
+        #region COMMAND_USER_BAN
+        [Command("ban")]
+        [Description("Bans the user from server.")]
+        [Aliases("b")]
+        [RequirePermissions(Permissions.BanMembers)]
+        public async Task Ban(CommandContext ctx, [Description("User")] DiscordMember u = null)
+        {
+            if (u == null)
+                throw new ArgumentNullException("You need to mention a user to ban.");
+
+            await ctx.Guild.BanMemberAsync(u);
+        }
+        #endregion
+
         #region COMMAND_USER_KICK
         [Command("kick")]
         [Description("Kicks the user from server.")]
@@ -30,17 +44,18 @@ namespace TheGodfatherBot
         }
         #endregion
 
-        #region COMMAND_USER_BAN
-        [Command("ban")]
-        [Description("Bans the user from server.")]
-        [Aliases("b")]
-        [RequirePermissions(Permissions.KickMembers)]
-        public async Task Ban(CommandContext ctx, [Description("User")] DiscordMember u = null)
+        #region COMMAND_USER_MUTE
+        [Command("mute")]
+        [Description("Toggle user mute.")]
+        [Aliases("m")]
+        [RequirePermissions(Permissions.MuteMembers)]
+        public async Task Mute(CommandContext ctx, [Description("User")] DiscordMember u = null)
         {
             if (u == null)
-                throw new ArgumentNullException("You need to mention a user to ban.");
+                throw new ArgumentNullException("You need to mention a user to mute/unmute.");
 
-            await ctx.Guild.BanMemberAsync(u);
+            bool muted = u.IsMuted;
+            await u.SetMuteAsync(!muted);
         }
         #endregion
     }
