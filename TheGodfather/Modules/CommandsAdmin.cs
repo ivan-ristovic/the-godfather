@@ -1,5 +1,6 @@
 ﻿#region USING_DIRECTIVES
 using System;
+using System.IO;
 using System.Threading.Tasks;
 
 using DSharpPlus;
@@ -14,6 +15,25 @@ namespace TheGodfatherBot
     [RequireOwner, RequirePermissions(Permissions.Administrator)]
     public class CommandsAdmin
     {
+        #region COMMAND_CLEARLOG
+        [Command("clearlog"), Description("Clear application logs.")]
+        [Aliases("clearlogs", "deletelogs", "deletelog")]
+        [RequireOwner]
+        public async Task ChangeNickname(CommandContext ctx)
+        {
+            try {
+                TheGodfather.CloseLogFile();
+                File.Delete("log.txt");
+                TheGodfather.OpenLogFile();
+            } catch (Exception e) {
+                ctx.Client.DebugLogger.LogMessage(LogLevel.Error, "TheGodfather", e.Message, DateTime.Now);
+                throw e;
+            }
+
+            await ctx.RespondAsync("Logs cleared.");
+        }
+        #endregion
+
         #region COMMAND_NICK
         [Command("nick"), Description("Gives someone a new nickname.")]
         [RequirePermissions(Permissions.ManageNicknames)]

@@ -26,8 +26,8 @@ namespace TheGodfatherBot
         #endregion
 
         #region PRIVATE_FIELDS
-        private StreamWriter _logstream;
-        private EventWaitHandle _logwritelock;
+        private static StreamWriter _logstream = null;
+        private static EventWaitHandle _logwritelock = null;
         private string[] _statuses = { "!help", "worldmafia.net", "worldmafia.net/discord" };
         #endregion
 
@@ -38,7 +38,8 @@ namespace TheGodfatherBot
 
         ~TheGodfather()
         {
-            _logstream.Close();
+            if (_logstream != null)
+                _logstream.Close();
             _client.DisconnectAsync();
             _client.Dispose();
         }
@@ -59,11 +60,9 @@ namespace TheGodfatherBot
 
 
         #region HELPER_FUNCTIONS
-        private void OpenLogFile()
+        public static void OpenLogFile()
         {
             try {
-                if (!File.Exists("log.txt"))
-                    File.Create("log.txt");
                 _logstream = new StreamWriter("log.txt", append: true);
                 _logwritelock = new EventWaitHandle(true, EventResetMode.AutoReset, "SHARED_BY_ALL_PROCESSES");
             } catch (Exception e) {
@@ -80,6 +79,16 @@ namespace TheGodfatherBot
                 _logwritelock.Set();
             } catch (Exception e) {
                 _client.DebugLogger.LogMessage(LogLevel.Error, "TheGodfather", "Cannot write to log file. Details: " + e.Message, DateTime.Now);
+            }
+        }
+
+        public static void CloseLogFile()
+        {
+            if (_logwritelock != null && _logstream != null) {
+                _logstream.Close();
+                _logwritelock.Dispose();
+                _logstream = null;
+                _logwritelock = null;
             }
         }
 
@@ -217,13 +226,16 @@ namespace TheGodfatherBot
 
         private void Client_LogMessage(object sender, DebugLogMessageEventArgs e)
         {
+            if (_logstream == null)
+                return;
+
             try {
                 _logwritelock.WaitOne();
                 _logstream.WriteLine($"*[{e.Timestamp}] [{e.Level}]\t{e.Message}");
                 _logstream.Flush();
                 _logwritelock.Set();
-            } catch (Exception) {
-                OpenLogFile();
+            } catch (Exception ex) {
+                Console.WriteLine(ex.Message);
             }
         }
         #endregion
