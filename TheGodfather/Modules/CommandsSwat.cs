@@ -69,6 +69,7 @@ namespace TheGodfatherBot
         [Aliases("serverlist", "swat4servers", "swat4stats")]
         public async Task Servers(CommandContext ctx)
         {
+            await ctx.TriggerTypingAsync();
             var embed = new DiscordEmbedBuilder() { Title = "Servers" };
             foreach (var server in _serverlist) {
                 var split = server.Value.Split(':');

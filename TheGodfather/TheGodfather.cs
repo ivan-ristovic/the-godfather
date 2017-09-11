@@ -150,7 +150,7 @@ namespace TheGodfatherBot
             _commands.RegisterCommands<CommandsRSS>();
             _commands.RegisterCommands<CommandsSwat>();
             _commands.RegisterCommands<CommandsUsers>();
-            _commands.RegisterCommands<CommandsVoice>();
+            //_commands.RegisterCommands<CommandsVoice>();
             _commands.CommandExecuted += Commands_CommandExecuted;
             _commands.CommandErrored += Commands_CommandErrored;
         }
