@@ -15,7 +15,7 @@ namespace TheGodfatherBot
     [Group("alias", CanInvokeWithoutSubcommand = true)]
     [Description("Alias handling commands.")]
     [Aliases("a")]
-    [RequirePermissions(Permissions.ManageMessages)]
+    [RequireUserPermissions(Permissions.ManageMessages)]
     public class CommandsAlias
     {
         #region STATIC_FIELDS
@@ -114,7 +114,7 @@ namespace TheGodfatherBot
         #region COMMAND_ALIAS_SAVE
         [Command("save")]
         [Description("Save aliases to file.")]
-        [RequireOwner]
+        [RequireUserPermissions(Permissions.Administrator)]
         public async Task SaveAliases(CommandContext ctx)
         {
             try {
