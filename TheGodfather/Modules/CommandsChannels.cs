@@ -28,6 +28,7 @@ namespace TheGodfatherBot
                 throw new ArgumentException("Missing channel name.");
             
             await ctx.Guild.CreateChannelAsync(name, ChannelType.Text);
+            await ctx.RespondAsync("Channel successfully created.");
         }
         #endregion
 
@@ -41,6 +42,7 @@ namespace TheGodfatherBot
                 throw new ArgumentException("Missing channel name.");
 
             await ctx.Guild.CreateChannelAsync(name, ChannelType.Voice);
+            await ctx.RespondAsync("Channel successfully created.");
         }
         #endregion
         
@@ -54,6 +56,7 @@ namespace TheGodfatherBot
                 throw new ArgumentException("Can't find such channel.");
 
             await c.DeleteAsync();
+            await ctx.RespondAsync("Channel successfully deleted.");
         }
         #endregion
 
@@ -71,6 +74,7 @@ namespace TheGodfatherBot
                 throw new ArgumentException("Missing new channel name.");
 
             await c.ModifyAsync(name);
+            await ctx.RespondAsync("Channel successfully renamed.");
         }
         #endregion
 
@@ -88,6 +92,7 @@ namespace TheGodfatherBot
                 throw new ArgumentException("Missing topic.");
 
             await c.ModifyAsync(topic: topic);
+            await ctx.RespondAsync("Channel topic successfully changed.");
         }
         #endregion
     }
