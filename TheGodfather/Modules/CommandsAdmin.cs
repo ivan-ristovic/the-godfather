@@ -12,13 +12,13 @@ using DSharpPlus.Entities;
 namespace TheGodfatherBot
 {
     [Group("admin"), Description("Administrative commands."), Hidden]
-    [RequireOwner, RequirePermissions(Permissions.Administrator)]
+    [RequirePermissions(Permissions.Administrator)]
+    [RequireOwner]
     public class CommandsAdmin
     {
         #region COMMAND_CLEARLOG
         [Command("clearlog"), Description("Clear application logs.")]
         [Aliases("clearlogs", "deletelogs", "deletelog")]
-        [RequireOwner]
         public async Task ChangeNickname(CommandContext ctx)
         {
             try {
@@ -36,7 +36,6 @@ namespace TheGodfatherBot
 
         #region COMMAND_NICK
         [Command("nick"), Description("Gives someone a new nickname.")]
-        [RequirePermissions(Permissions.ManageNicknames)]
         public async Task ChangeNickname(CommandContext ctx, 
                                         [Description("Member to change the nickname for.")] DiscordMember member, 
                                         [RemainingText, Description("The nickname to give to that user.")] string newname)
@@ -61,7 +60,6 @@ namespace TheGodfatherBot
         #region COMMAND_SHUTDOWN
         [Command("shutdown"), Description("Triggers the dying in the vineyard scene.")]
         [Aliases("disable", "poweroff", "exit", "quit")]
-        [RequireOwner]
         public async Task ShutDown(CommandContext ctx)
         {
             await ctx.RespondAsync("https://www.youtube.com/watch?v=4rbfuw0UN2A");
@@ -72,7 +70,6 @@ namespace TheGodfatherBot
 
         #region COMMAND_SUDO
         [Command("sudo"), Description("Executes a command as another user."), Hidden]
-        [RequireOwner]
         public async Task Sudo(CommandContext ctx, 
                               [Description("Member to execute as.")] DiscordMember member, 
                               [RemainingText, Description("Command text to execute.")] string command)
