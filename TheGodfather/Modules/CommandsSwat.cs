@@ -23,6 +23,7 @@ namespace TheGodfatherBot
         #region STATIC_FIELDS
         private static Dictionary<string, string> _serverlist = new Dictionary<string, string>();
         private static ConcurrentDictionary<ulong, bool> _UserIDsCheckingForSpace = new ConcurrentDictionary<ulong, bool>();
+        private static int _checktimeout = 200;
         #endregion
 
         #region STATIC_FUNCTIONS
@@ -134,7 +135,18 @@ namespace TheGodfatherBot
 
                 await ctx.RespondAsync("Servers successfully saved.");
             }
-#endregion
+            #endregion
+
+            #region COMMAND_SERVERS_SETTIMEOUT
+            [Command("settimeout")]
+            [Description("Set checking timeout.")]
+            [RequireOwner]
+            public async Task SetTimeout(CommandContext ctx, [Description("Timeout")] int timeout = 200)
+            {
+                _checktimeout = timeout;
+                await ctx.RespondAsync("Timeout changed to: " + _checktimeout);
+            }
+            #endregion
         }
 
         #region COMMAND_SERVERLIST
@@ -248,8 +260,8 @@ namespace TheGodfatherBot
             var client = new UdpClient();
             IPEndPoint ep = new IPEndPoint(IPAddress.Parse(ip), port + 1);
             client.Connect(ep);
-            client.Client.SendTimeout = 500;
-            client.Client.ReceiveTimeout = 500;
+            client.Client.SendTimeout = _checktimeout;
+            client.Client.ReceiveTimeout = _checktimeout;
 
             byte[] receivedData = null;
             try {
