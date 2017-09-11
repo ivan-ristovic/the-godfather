@@ -17,6 +17,7 @@ namespace TheGodfatherBot
         #region PRIVATE_FIELDS
         private static Dictionary<ulong, uint> _msgcount = new Dictionary<ulong, uint>();
         private const uint RANKUP_COUNT = 100;
+        private string[] _ranks = { "PVT", "Gypsy", "German closet cleaner", "MNG" };
         #endregion
 
 
@@ -39,8 +40,9 @@ namespace TheGodfatherBot
                 Description = "User status",
                 Color = DiscordColor.Aquamarine
             };
-            embed.AddField("Rank", $"{msgcount / RANKUP_COUNT}");
-            embed.AddField("XP", $"{msgcount}\n({(msgcount / RANKUP_COUNT + 1) * RANKUP_COUNT} needed for rankup)");
+            uint rank = msgcount / RANKUP_COUNT;
+            embed.AddField("Rank", ((rank < _ranks.Length) ? _ranks[rank] : "GOD") + $" ({msgcount / RANKUP_COUNT})");
+            embed.AddField("XP", $"{msgcount}\n({(rank + 1) * RANKUP_COUNT} needed for rankup)");
             await ctx.RespondAsync("", embed: embed);
         }
         #endregion
