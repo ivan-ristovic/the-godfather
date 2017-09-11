@@ -66,9 +66,36 @@ namespace TheGodfatherBot
         #endregion
 
 
-        #region COMMAND_SERVERS
-        [Command("servers"), Description("Print the SWAT4 serverlist.")]
-        [Aliases("serverlist", "swat4servers", "swat4stats")]
+        [Group("servers", CanInvokeWithoutSubcommand = false)]
+        [Description("Print the SWAT4 serverlist if not given an argument. See !help servers")]
+        public class CommandsServers
+        {
+            #region COMMAND_SERVERS_ADD
+            [Command("add")]
+            [Aliases("+")]
+            public async Task Add(CommandContext ctx,
+                                 [Description("Name")] string name = null,
+                                 [Description("IP")] string ip = null)
+            {
+                if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(ip))
+                    throw new ArgumentException("Invalid name or IP.");
+
+                var split = ip.Split(':');
+                if (split.Length < 2)
+                    throw new ArgumentException("Invalid IP.");
+
+                if (split.Length < 3)
+                    ip += ":" + (int.Parse(split[1]) + 1).ToString();
+
+                _serverlist.Add(name, ip);
+                await ctx.RespondAsync("Server added. You can now query it using the name provided.");
+            }
+            #endregion
+        }
+
+        #region COMMAND_SERVERLIST
+        [Command("serverlist")]
+        [Aliases("slist", "swat4servers", "swat4stats")]
         public async Task Servers(CommandContext ctx)
         {
             await ctx.TriggerTypingAsync();
@@ -78,6 +105,8 @@ namespace TheGodfatherBot
                 var info = QueryIP(ctx, split[0], int.Parse(split[1]));
                 if (info != null)
                     embed.AddField(info[0], $"IP: {split[0]}:{split[1]}\nPlayers: {info[1] + " / " + info[2]}");
+                else
+                    embed.AddField(server.Key, $"IP: {split[0]}:{split[1]}\nPlayers: Offline");
             }
             await ctx.RespondAsync("", embed: embed);
         }
