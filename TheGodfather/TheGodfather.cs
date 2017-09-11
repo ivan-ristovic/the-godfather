@@ -36,14 +36,6 @@ namespace TheGodfatherBot
             new TheGodfather().MainAsync(args).GetAwaiter().GetResult();
         
 
-        TheGodfather()
-        {
-            if (!File.Exists("log.txt"))
-                File.Create("log.txt");
-            _logstream = new StreamWriter("log.txt");
-            _logwritelock = new EventWaitHandle(true, EventResetMode.AutoReset, "SHARED_BY_ALL_PROCESSES");
-        }
-
         ~TheGodfather()
         {
             _logstream.Close();
@@ -55,6 +47,7 @@ namespace TheGodfatherBot
         public async Task MainAsync(string[] args)
         {
             SetupClient();
+            OpenLogFile();
             SetupCommands();
             SetupInteractivity();
             SetupVoice();
@@ -66,6 +59,30 @@ namespace TheGodfatherBot
 
 
         #region HELPER_FUNCTIONS
+        private void OpenLogFile()
+        {
+            try {
+                if (!File.Exists("log.txt"))
+                    File.Create("log.txt");
+                _logstream = new StreamWriter("log.txt", append: true);
+                _logwritelock = new EventWaitHandle(true, EventResetMode.AutoReset, "SHARED_BY_ALL_PROCESSES");
+            } catch (Exception e) {
+                Console.WriteLine("Cannot open log file. Details: " + e.Message);
+                return;
+            }
+
+            try {
+                _logwritelock.WaitOne();
+                _logstream.WriteLine();
+                _logstream.WriteLine($"*** NEW INSTANCE STARTED AT {DateTime.Now.ToLongDateString()} : {DateTime.Now.ToLongTimeString()} ***");
+                _logstream.WriteLine();
+                _logstream.Flush();
+                _logwritelock.Set();
+            } catch (Exception e) {
+                _client.DebugLogger.LogMessage(LogLevel.Error, "TheGodfather", "Cannot write to log file. Details: " + e.Message, DateTime.Now);
+            }
+        }
+
         private string GetToken(string filename)
         {
             if (!File.Exists(filename))
@@ -206,7 +223,7 @@ namespace TheGodfatherBot
                 _logstream.Flush();
                 _logwritelock.Set();
             } catch (Exception) {
-                return;
+                OpenLogFile();
             }
         }
         #endregion
