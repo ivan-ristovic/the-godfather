@@ -110,6 +110,14 @@ namespace TheGodfatherBot
         }
         #endregion
 
+        #region COMMAND_LEAVE
+        [Command("leave"), Description("Makes Godfather leave the server.")]
+        public async Task Leet(CommandContext ctx)
+        {
+            await ctx.Guild.LeaveAsync();
+        }
+        #endregion
+
         #region COMMAND_LEET
         [Command("leet"), Description("Wr1t3s m3ss@g3 1n 1337sp34k.")]
         public async Task Leet(CommandContext ctx, [RemainingText, Description("Text")] string s = null)

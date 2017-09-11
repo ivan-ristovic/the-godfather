@@ -194,7 +194,7 @@ namespace TheGodfatherBot
 
         private Task Client_GuildMemberRemove(GuildMemberRemoveEventArgs e)
         {
-            e.Guild.GetDefaultChannel().SendMessageAsync($"{e.Member.Username} left {e.Guild.Name}. Bye!");
+            e.Guild.GetDefaultChannel().SendMessageAsync($"{e.Member?.Username ?? "<unknown>"} left {e.Guild?.Name ?? "<unknown>"}. Bye!");
             return Task.CompletedTask;
         }
 
