@@ -91,6 +91,23 @@ namespace TheGodfatherBot
                 await ctx.RespondAsync("Server added. You can now query it using the name provided.");
             }
             #endregion
+
+            #region COMMAND_SERVERS_DELETE
+            [Command("delete")]
+            [Aliases("-", "remove")]
+            public async Task Delete(CommandContext ctx,
+                                    [Description("Name")] string name = null)
+            {
+                if (string.IsNullOrWhiteSpace(name))
+                    throw new ArgumentException("Invalid name or IP.");
+
+                if (!_serverlist.ContainsKey(name))
+                    throw new KeyNotFoundException("There is no such server in the list!");
+
+                _serverlist.Remove(name);
+                await ctx.RespondAsync("Server added. You can now query it using the name provided.");
+            }
+            #endregion
         }
 
         #region COMMAND_SERVERLIST
