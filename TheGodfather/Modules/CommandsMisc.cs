@@ -112,6 +112,7 @@ namespace TheGodfatherBot
 
         #region COMMAND_LEAVE
         [Command("leave"), Description("Makes Godfather leave the server.")]
+        [RequireUserPermissions(Permissions.KickMembers)]
         public async Task Leet(CommandContext ctx)
         {
             await ctx.Guild.LeaveAsync();
