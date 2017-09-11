@@ -63,7 +63,7 @@ namespace TheGodfatherBot
         #region COMMAND_CHANNEL_RENAME
         [Command("rename")]
         [Description("Rename channel.")]
-        [Aliases("r", "name")]
+        [Aliases("r", "name", "setname")]
         public async Task RenameChannel(CommandContext ctx, 
                                        [Description("Channel")] DiscordChannel c = null,
                                        [RemainingText, Description("New name")] string name = null)
