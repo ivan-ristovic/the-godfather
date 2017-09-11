@@ -24,6 +24,7 @@ namespace TheGodfatherBot
         #region STATIC_FUNCTIONS
         public static void LoadMemes(DebugLogger log)
         {
+            log.LogMessage(LogLevel.Info, "TheGodfather", "Loading memes...", DateTime.Now);
             if (File.Exists("memes.txt")) {
                 try {
                     var lines = File.ReadAllLines("memes.txt");

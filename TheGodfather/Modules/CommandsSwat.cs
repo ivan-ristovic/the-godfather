@@ -26,8 +26,10 @@ namespace TheGodfatherBot
         #endregion
 
         #region STATIC_FUNCTIONS
-        public static void LoadServers()
+        public static void LoadServers(DebugLogger log)
         {
+            log.LogMessage(LogLevel.Info, "TheGodfather", "Loading SWAT servers...", DateTime.Now);
+
             string[] serverlist = {
                 "# Format: <name>$<IP>",
                 "# You can add your own servers and IPs and reorder them as you wish",

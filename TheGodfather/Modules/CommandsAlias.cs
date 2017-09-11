@@ -25,6 +25,7 @@ namespace TheGodfatherBot
         #region STATIC_FUNCTIONS
         public static void LoadAliases(DebugLogger log)
         {
+            log.LogMessage(LogLevel.Info, "TheGodfather", "Loading aliases...", DateTime.Now);
             if (File.Exists("aliases.txt")) {
                 try {
                     var lines = File.ReadAllLines("aliases.txt");
