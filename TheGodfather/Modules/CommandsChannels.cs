@@ -15,7 +15,7 @@ namespace TheGodfatherBot
     [Group("channel", CanInvokeWithoutSubcommand = false)]
     [Description("Miscellaneous channel control commands.")]
     [Aliases("channels", "c", "chn")]
-    [RequireUserPermissions(Permissions.ManageChannels)]
+    [RequirePermissions(Permissions.ManageChannels)]
     public class CommandsChannels
     {
         #region COMMAND_CHANNEL_CREATE
