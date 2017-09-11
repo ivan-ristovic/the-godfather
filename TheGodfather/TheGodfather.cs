@@ -12,6 +12,7 @@ using DSharpPlus.VoiceNext;
 using DSharpPlus.EventArgs;
 using DSharpPlus.Net.WebSocket;
 using DSharpPlus.Entities;
+using System.Collections.Generic;
 #endregion
 
 namespace TheGodfatherBot
@@ -23,12 +24,12 @@ namespace TheGodfatherBot
         static CommandsNextModule _commands { get; set; }
         static InteractivityModule _interactivity { get; set; }
         static VoiceNextClient _voice { get; set; }
+        public static List<string> _statuses = new List<string> { "!help" , "worldmafia.net", "worldmafia.net/discord" };
         #endregion
 
         #region PRIVATE_FIELDS
         private static StreamWriter _logstream = null;
         private static EventWaitHandle _logwritelock = null;
-        private string[] _statuses = { "!help", "worldmafia.net", "worldmafia.net/discord" };
         #endregion
 
 
@@ -221,7 +222,7 @@ namespace TheGodfatherBot
         private async Task Client_Heartbeated(HeartbeatEventArgs e)
         {
             var rnd = new Random();
-            await _client.UpdateStatusAsync(new Game(_statuses[rnd.Next(_statuses.Length)]) { StreamType = GameStreamType.NoStream });
+            await _client.UpdateStatusAsync(new Game(_statuses[rnd.Next(_statuses.Count)]) { StreamType = GameStreamType.NoStream });
         }
 
         private void Client_LogMessage(object sender, DebugLogMessageEventArgs e)
