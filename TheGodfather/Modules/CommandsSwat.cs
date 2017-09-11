@@ -67,11 +67,12 @@ namespace TheGodfatherBot
 
 
         [Group("servers", CanInvokeWithoutSubcommand = false)]
-        [Description("Print the SWAT4 serverlist if not given an argument. See !help servers")]
+        [RequireUserPermissions(Permissions.Administrator)]
         public class CommandsServers
         {
             #region COMMAND_SERVERS_ADD
             [Command("add")]
+            [Description("Add a server to serverlist.")]
             [Aliases("+")]
             public async Task Add(CommandContext ctx,
                                  [Description("Name")] string name = null,
@@ -94,6 +95,7 @@ namespace TheGodfatherBot
 
             #region COMMAND_SERVERS_DELETE
             [Command("delete")]
+            [Description("Remove a server from serverlist.")]
             [Aliases("-", "remove")]
             public async Task Delete(CommandContext ctx,
                                     [Description("Name")] string name = null)
@@ -108,6 +110,31 @@ namespace TheGodfatherBot
                 await ctx.RespondAsync("Server added. You can now query it using the name provided.");
             }
             #endregion
+            
+            #region COMMAND_SERVERS_SAVE
+            [Command("save")]
+            [Description("Saves all the servers in the list.")]
+            [RequireOwner]
+            public async Task SaveServers(CommandContext ctx)
+            {
+                ctx.Client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", "Saving servers...", DateTime.Now);
+                try {
+                    FileStream f = File.Open("servers.txt", FileMode.Create);
+                    f.Close();
+
+                    List<string> serverlist = new List<string>();
+                    foreach (var entry in _serverlist)
+                        serverlist.Add(entry.Key + "$" + entry.Value);
+
+                    File.WriteAllLines("servers.txt", serverlist);
+                } catch (Exception e) {
+                    ctx.Client.DebugLogger.LogMessage(LogLevel.Error, "TheGodfather", "Servers save error: " + e.ToString(), DateTime.Now);
+                    throw new IOException("Error while saving servers.");
+                }
+
+                await ctx.RespondAsync("Servers successfully saved.");
+            }
+#endregion
         }
 
         #region COMMAND_SERVERLIST
