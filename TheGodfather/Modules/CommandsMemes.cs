@@ -18,7 +18,7 @@ namespace TheGodfatherBot
     public class CommandsMemes
     {
         #region STATIC_FIELDS
-        private static Dictionary<string, string> _memes = new Dictionary<string, string>();
+        private static SortedDictionary<string, string> _memes = new SortedDictionary<string, string>();
         #endregion
         
         #region STATIC_FUNCTIONS
@@ -65,12 +65,10 @@ namespace TheGodfatherBot
         [Description("List all registered memes.")]
         public async Task List(CommandContext ctx)
         {
-            var embed = new DiscordEmbedBuilder() { Title = "Memes:" };
-            if (_memes.Count > 25)
-                throw new Exception("Too many memes for embedding...");
+            string s = "Memes:\n\n";
             foreach (var entry in _memes)
-                embed.AddField(entry.Key, entry.Value);
-            await ctx.RespondAsync("", embed: embed);
+                s += entry.Key + " ";
+            await ctx.RespondAsync(s);
         }
         #endregion
 
