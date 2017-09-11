@@ -119,6 +119,7 @@ namespace TheGodfatherBot
         [RequireOwner]
         public async Task SaveMemes(CommandContext ctx)
         {
+            ctx.Client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", "Saving memes...", DateTime.Now);
             try {
                 FileStream f = File.Open("memes.txt", FileMode.Create);
                 f.Close();

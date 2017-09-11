@@ -117,6 +117,7 @@ namespace TheGodfatherBot
         [RequireUserPermissions(Permissions.Administrator)]
         public async Task SaveAliases(CommandContext ctx)
         {
+            ctx.Client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", "Saving aliases...", DateTime.Now);
             try {
                 FileStream f = File.Open("aliases.txt", FileMode.Create);
                 f.Close();
