@@ -139,6 +139,22 @@ namespace TheGodfatherBot
         }
 
 
+        #region COMMAND_GRANT
+        [Command("grant")]
+        [Aliases("give")]
+        [RequirePermissions(Permissions.Administrator)]
+        public async Task Register(CommandContext ctx,
+                                  [Description("User")] DiscordUser u = null,
+                                  [Description("Ammount")] int ammount = 0)
+        {
+            if (u == null || ammount <= 0)
+                throw new ArgumentException("Invalid user or ammount.");
+
+            IncreaseBalance(u.Id, ammount);
+            await ctx.RespondAsync($"User {u.Username} won {ammount} credits on a lottery! (seems legit)");
+        }
+        #endregion
+
         #region COMMAND_REGISTER
         [Command("register")]
         [Aliases("r", "signup", "activate")]
