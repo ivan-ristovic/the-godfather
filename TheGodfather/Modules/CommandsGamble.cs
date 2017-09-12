@@ -273,7 +273,7 @@ namespace TheGodfatherBot
             }
             #endregion
 
-            #region COMMAND_RACE_NEW
+            #region COMMAND_RACE_JOIN
             [Command("join"), Description("Join a race.")]
             [Aliases("+", "compete")]
             public async Task JoinRace(CommandContext ctx)
@@ -281,8 +281,11 @@ namespace TheGodfatherBot
                 if (_participants.ContainsKey(ctx.User))
                     throw new Exception("You are already participating in the race!");
 
-                _participants.Add(ctx.User, );
-                await ctx.RespondAsync($"{ctx.User.Mention} joined the race as {}");
+                var rnd = new Random();
+                int index = rnd.Next(_animals.Count);
+                _participants.Add(ctx.User, DiscordEmoji.FromName(ctx.Client, _animals[index]));
+                _animals.RemoveAt(index);
+                await ctx.RespondAsync($"{ctx.User.Mention} joined the race as {_participants[ctx.User]}");
             }
             #endregion
 
