@@ -220,6 +220,17 @@ namespace TheGodfatherBot
         #region HELPER_FUNCTIONS
         private bool TTTGameOver(int[,] board)
         {
+            bool empty = false;
+            for (int i = 0; i < 3; i++)
+                for (int j = 0; i < 3; i++)
+                    if (board[i, j] == 0) {
+                        empty = true;
+                        break;
+                    }
+
+            if (!empty)
+                return true;
+
             for (int i = 0; i < 3; i++) {
                 if (board[i, 0] != 0 && board[i, 0] == board[i, 1] && board[i, 1] == board[i, 2])
                     return true;
