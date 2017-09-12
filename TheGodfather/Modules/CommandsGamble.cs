@@ -16,6 +16,40 @@ namespace TheGodfatherBot
     [Description("Random number generation commands.")]
     public class CommandsGamble
     {
+        [Group("deck", CanInvokeWithoutSubcommand = false)]
+        [Description("Deck manipulation commands")]
+        [Aliases("cards")]
+        public class CommandsBank
+        {
+            #region PRIVATE_FIELDS
+            private List<string> _deck = null;
+            #endregion
+
+            #region COMMAND_DECK_RESET
+            [Command("reset"), Description("Opens a brand new card deck.")]
+            [Aliases("new")]
+            public async Task Reset(CommandContext ctx)
+            {
+                _deck = new List<string>();
+                char[] suit = { '♠', '♥', '♦', '♣' };
+                foreach (char s in suit) {
+                    _deck.Add("A" + s);
+                    for (int i = 2; i < 10; i++) {
+                        _deck.Add(i.ToString() + s);
+                    }
+                    _deck.Add("T" + s);
+                    _deck.Add("J" + s);
+                    _deck.Add("Q" + s);
+                    _deck.Add("K" + s);
+                }
+
+                await ctx.RespondAsync("New deck opened!");
+            }
+            #endregion
+
+
+        }
+
         #region COMMAND_ROLL
         [Command("roll"), Description("Rolls a dice.")]
         [Aliases("dice")]
@@ -42,7 +76,6 @@ namespace TheGodfatherBot
             await ctx.RespondAsync("Raffled: " + online.ElementAt(rnd.Next(online.Count())).Mention);
         }
         #endregion
-
 
         #region COMMAND_SLOT
         [Command("slot"), Description("Roll a slot machine.")]
