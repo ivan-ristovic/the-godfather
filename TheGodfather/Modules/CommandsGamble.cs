@@ -9,6 +9,7 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using System.Linq;
+using System.Collections.Concurrent;
 #endregion
 
 namespace TheGodfatherBot
@@ -237,9 +238,9 @@ namespace TheGodfatherBot
         public class CommandsRace
         {
             #region PRIVATE_FIELDS
-            private Dictionary<ulong, List<Tuple<DiscordUser, DiscordEmoji>>> _participants = new Dictionary<ulong, List<Tuple<DiscordUser, DiscordEmoji>>>();
-            private Dictionary<ulong, List<string>> _animals = new Dictionary<ulong, List<string>>();
-            private Dictionary<ulong, bool> _started = new Dictionary<ulong, bool>();
+            private ConcurrentDictionary<ulong, List<Tuple<DiscordUser, DiscordEmoji>>> _participants = new ConcurrentDictionary<ulong, List<Tuple<DiscordUser, DiscordEmoji>>>();
+            private ConcurrentDictionary<ulong, List<string>> _animals = new ConcurrentDictionary<ulong, List<string>>();
+            private ConcurrentDictionary<ulong, bool> _started = new ConcurrentDictionary<ulong, bool>();
             #endregion
 
 
@@ -257,15 +258,19 @@ namespace TheGodfatherBot
                 if (_participants.ContainsKey(ctx.Channel.Id))
                     throw new Exception("Race already in progress!");
 
-                _animals.Add(ctx.Channel.Id, new List<string> {
+                _animals.TryAdd(ctx.Channel.Id, new List<string> {
                     ":dog:", ":cat:", ":mouse:", ":hamster:", ":rabbit:", ":bear:", ":pig:", ":cow:", ":koala:", ":tiger:"
                 });
-                _participants.Add(ctx.Channel.Id, new List<Tuple<DiscordUser, DiscordEmoji>>());
-                _started.Add(ctx.Channel.Id, false);
+                _participants.TryAdd(ctx.Channel.Id, new List<Tuple<DiscordUser, DiscordEmoji>>());
+                _started.TryAdd(ctx.Channel.Id, false);
 
                 await ctx.RespondAsync("Race will start in 30s or when there are 10 participants. Type ``!race join`` to join the race.");
                 await Task.Delay(30000);
-                await StartRace(ctx);
+
+                if (_participants[ctx.Channel.Id].Count > 1)
+                    await StartRace(ctx);
+                else
+                    await ctx.RespondAsync("Not enough users joined the race.");
             }
             #endregion
 
@@ -282,6 +287,9 @@ namespace TheGodfatherBot
 
                 if (_started[ctx.Channel.Id])
                     throw new Exception("Race already started, you can't join it.");
+
+                if (_participants[ctx.Channel.Id].Count >= 10)
+                    throw new Exception("Race full.");
 
                 var rnd = new Random();
                 int index = rnd.Next(_animals.Count);
@@ -307,10 +315,13 @@ namespace TheGodfatherBot
             private async Task StopRace(CommandContext ctx)
             {
                 await ctx.RespondAsync("Race ended!");
-                
-                _participants.Remove(ctx.Channel.Id);
-                _animals.Remove(ctx.Channel.Id);
-                _started.Remove(ctx.Channel.Id);
+
+                List<Tuple<DiscordUser, DiscordEmoji>> outl;
+                _participants.TryRemove(ctx.Channel.Id, out outl);
+                List<string> outls;
+                _animals.TryRemove(ctx.Channel.Id, out outls);
+                bool outb;
+                _started.TryRemove(ctx.Channel.Id, out outb);
             }
             #endregion
         }
