@@ -239,6 +239,7 @@ namespace TheGodfatherBot
             #region PRIVATE_FIELDS
             private Dictionary<ulong, List<Tuple<DiscordUser, DiscordEmoji>>> _participants = new Dictionary<ulong, List<Tuple<DiscordUser, DiscordEmoji>>>();
             private Dictionary<ulong, List<string>> _animals = new Dictionary<ulong, List<string>>();
+            private Dictionary<ulong, bool> _started = new Dictionary<ulong, bool>();
             #endregion
 
 
@@ -259,8 +260,8 @@ namespace TheGodfatherBot
                 _animals.Add(ctx.Channel.Id, new List<string> {
                     ":dog:", ":cat:", ":mouse:", ":hamster:", ":rabbit:", ":bear:", ":pig:", ":cow:", ":koala:", ":tiger:"
                 });
-
                 _participants.Add(ctx.Channel.Id, new List<Tuple<DiscordUser, DiscordEmoji>>());
+                _started.Add(ctx.Channel.Id, false);
 
                 await ctx.RespondAsync("Race will start in 30s or when there are 10 participants. Type ``!race join`` to join the race.");
                 await Task.Delay(30000);
@@ -279,6 +280,9 @@ namespace TheGodfatherBot
                 if (_participants[ctx.Channel.Id].Any(tup => tup.Item1.Id == ctx.User.Id))
                     throw new Exception("You are already participating in the race!");
 
+                if (_started[ctx.Channel.Id])
+                    throw new Exception("Race already started, you can't join it.");
+
                 var rnd = new Random();
                 int index = rnd.Next(_animals.Count);
                 var animal = DiscordEmoji.FromName(ctx.Client, _animals[ctx.Channel.Id][index]);
@@ -293,6 +297,7 @@ namespace TheGodfatherBot
             #region HELPER_FUNCTIONS
             private async Task StartRace(CommandContext ctx)
             {
+                _started[ctx.Channel.Id] = true;
                 await ctx.RespondAsync("Race started!");
 
                 await Task.Delay(30000);
@@ -304,6 +309,8 @@ namespace TheGodfatherBot
                 await ctx.RespondAsync("Race ended!");
                 
                 _participants.Remove(ctx.Channel.Id);
+                _animals.Remove(ctx.Channel.Id);
+                _started.Remove(ctx.Channel.Id);
             }
             #endregion
         }
