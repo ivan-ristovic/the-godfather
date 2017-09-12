@@ -73,6 +73,16 @@ namespace TheGodfatherBot
 
         }
 
+        #region COMMAND_COINFLIP
+        [Command("coinflip"), Description("Flips a coin.")]
+        [Aliases("coin", "flip")]
+        public async Task Coinflip(CommandContext ctx)
+        {
+            var rnd = new Random();
+            await ctx.RespondAsync(rnd.Next() % 2 == 0 ? "Heads." : "Tails");
+        }
+        #endregion
+
         #region COMMAND_ROLL
         [Command("roll"), Description("Rolls a dice.")]
         [Aliases("dice")]
