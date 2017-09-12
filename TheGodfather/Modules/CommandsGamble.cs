@@ -237,8 +237,9 @@ namespace TheGodfatherBot
         public class CommandsRace
         {
             #region PRIVATE_FIELDS
-            private List<DiscordMember> _participants = null;
+            private Dictionary<DiscordUser, DiscordEmoji> _participants = null;
             private List<ulong> _racing = new List<ulong>();
+            private List<string> _animals = null;
             #endregion
 
 
@@ -250,26 +251,51 @@ namespace TheGodfatherBot
 
             #region COMMAND_RACE_NEW
             [Command("new"), Description("Start a new race.")]
-            [Aliases("+", "create")]
+            [Aliases("create")]
             public async Task NewRace(CommandContext ctx)
             {
                 if (_racing.Contains(ctx.Channel.Id))
                     throw new Exception("Race already in progress!");
 
                 _racing.Add(ctx.Channel.Id);
-                _participants = new List<DiscordMember>();
+                _participants = new Dictionary<DiscordUser, DiscordEmoji>();
+                _animals = new List<string> {
+                    ":dog:", ":cat:", ":mouse:", ":hamster:", ":rabbit:", ":bear:", ":pig:", ":cow:", ":koala:", ":tiger:"
+                };
 
                 await ctx.RespondAsync("Race will start in 30s or when there are 10 participants. Type ``!race join`` to join the race.");
                 await Task.Delay(30000);
-                await StartRace();
+                await StartRace(ctx);
+                await Task.Delay(30000);
+                await StopRace(ctx);
+
+                _racing.Remove(ctx.Channel.Id);
+            }
+            #endregion
+
+            #region COMMAND_RACE_NEW
+            [Command("join"), Description("Join a race.")]
+            [Aliases("+", "compete")]
+            public async Task JoinRace(CommandContext ctx)
+            {
+                if (_participants.ContainsKey(ctx.User))
+                    throw new Exception("You are already participating in the race!");
+
+                _participants.Add(ctx.User, );
+                await ctx.RespondAsync($"{ctx.User.Mention} joined the race as {}");
             }
             #endregion
 
 
             #region HELPER_FUNCTIONS
-            private async Task StartRace()
+            private async Task StartRace(CommandContext ctx)
             {
-                
+                await ctx.RespondAsync("Race started!");
+            }
+
+            private async Task StopRace(CommandContext ctx)
+            {
+                await ctx.RespondAsync("Race ended!");
             }
             #endregion
         }
