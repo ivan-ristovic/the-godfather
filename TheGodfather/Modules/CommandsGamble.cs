@@ -26,6 +26,26 @@ namespace TheGodfatherBot
             #endregion
 
 
+            #region COMMAND_DECK_DEAL
+            [Command("deal"), Description("Deal hand from the top of the deck.")]
+            public async Task DealHand(CommandContext ctx, [Description("Ammount")] int ammount = 5)
+            {
+                if (_deck == null || _deck.Count == 0)
+                    throw new Exception("No deck to deal from. Use ``!deck new``");
+
+                if (ammount <= 0 || ammount >= 10 || _deck.Count < ammount)
+                    throw new ArgumentException("Cannot draw that ammount of cards...");
+
+                string hand = "";
+                for (int i = 0; i < ammount; i++) {
+                    hand += _deck[0] + " ";
+                    _deck.RemoveAt(0);
+                }
+
+                await ctx.RespondAsync(hand);
+            }
+            #endregion
+
             #region COMMAND_DECK_DRAW
             [Command("draw"), Description("Draw a card from the current deck.")]
             public async Task Draw(CommandContext ctx)
@@ -70,7 +90,7 @@ namespace TheGodfatherBot
                 await ctx.RespondAsync("Deck shuffled.");
             }
             #endregion
-
+        
         }
 
         #region COMMAND_COINFLIP
