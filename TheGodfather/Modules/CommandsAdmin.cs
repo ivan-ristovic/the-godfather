@@ -12,7 +12,6 @@ using DSharpPlus.Entities;
 namespace TheGodfatherBot
 {
     [Group("admin"), Description("Administrative owner commands."), Hidden]
-    [RequirePermissions(Permissions.Administrator)]
     [RequireOwner]
     public class CommandsAdmin
     {
@@ -51,12 +50,7 @@ namespace TheGodfatherBot
                               [Description("Member to execute as.")] DiscordMember member, 
                               [RemainingText, Description("Command text to execute.")] string command)
         {
-            ctx.Client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather",
-                   $"{ctx.User.Username} attempts to execute !sudo {member.Username} {command}",
-                   DateTime.Now);
-            await ctx.TriggerTypingAsync();
-            var cmds = ctx.Client.GetCommandsNext();
-            await cmds.SudoAsync(member, ctx.Channel, command);
+            await ctx.Client.GetCommandsNext().SudoAsync(member, ctx.Channel, command);
         }
         #endregion
 
