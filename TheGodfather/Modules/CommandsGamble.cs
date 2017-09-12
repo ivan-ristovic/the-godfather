@@ -19,10 +19,23 @@ namespace TheGodfatherBot
         [Group("deck", CanInvokeWithoutSubcommand = false)]
         [Description("Deck manipulation commands")]
         [Aliases("cards")]
-        public class CommandsBank
+        public class CommandsDeck
         {
             #region PRIVATE_FIELDS
             private List<string> _deck = null;
+            #endregion
+
+
+            #region COMMAND_DECK_DRAW
+            [Command("draw"), Description("Draw a card from the current deck.")]
+            public async Task Draw(CommandContext ctx)
+            {
+                if (_deck == null || _deck.Count == 0)
+                    throw new Exception("No deck to draw from.");
+
+                await ctx.RespondAsync(_deck[0]);
+                _deck.RemoveAt(0);
+            }
             #endregion
 
             #region COMMAND_DECK_RESET
@@ -47,6 +60,16 @@ namespace TheGodfatherBot
             }
             #endregion
 
+            #region COMMAND_DECK_SHUFFLE
+            [Command("shuffle"), Description("Shuffle current deck.")]
+            public async Task Shuffle(CommandContext ctx)
+            {
+                var shuffled = _deck.OrderBy(a => Guid.NewGuid()).ToList();
+                _deck.Clear();
+                _deck.AddRange(shuffled);
+                await ctx.RespondAsync("Deck shuffled.");
+            }
+            #endregion
 
         }
 
