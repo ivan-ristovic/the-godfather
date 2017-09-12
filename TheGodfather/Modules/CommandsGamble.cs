@@ -254,7 +254,7 @@ namespace TheGodfatherBot
                                   [Description("User")] DiscordUser u = null,
                                   [Description("Ammount")] int ammount = 0)
         {
-            if (u == null || ammount <= 0)
+            if (u == null || ammount <= 0 || ammount > 1000)
                 throw new ArgumentException("Invalid user or ammount.");
 
             IncreaseBalance(u.Id, ammount);
