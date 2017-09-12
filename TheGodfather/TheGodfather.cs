@@ -1,6 +1,7 @@
 ﻿#region USING_DIRECTIVES
 using System;
 using System.IO;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -12,7 +13,7 @@ using DSharpPlus.VoiceNext;
 using DSharpPlus.EventArgs;
 using DSharpPlus.Net.WebSocket;
 using DSharpPlus.Entities;
-using System.Collections.Generic;
+using DSharpPlus.Exceptions;
 #endregion
 
 namespace TheGodfatherBot
@@ -253,17 +254,20 @@ namespace TheGodfatherBot
         {
             e.Context.Client.DebugLogger.LogMessage(LogLevel.Error, "TheGodfather", $"{e.Context.User.Username} tried executing '{e.Command?.QualifiedName ?? "<unknown command>"}' but it errored: {e.Exception.GetType()}: {e.Exception.Message ?? "<no message>"}", DateTime.Now);
 
-            if (e.Exception is ChecksFailedException ex) {
-                var emoji = DiscordEmoji.FromName(e.Context.Client, ":no_entry:");
-                var embed = new DiscordEmbedBuilder {
-                    Title = "Access denied",
-                    Description = $"{emoji} You do not have the permissions required to execute this command.",
-                    Color = DiscordColor.Red
-                };
-                await e.Context.RespondAsync("", embed: embed);
-            } else {
-                await e.Context.RespondAsync(e.Exception.Message);
-            }
+            var emoji = DiscordEmoji.FromName(e.Context.Client, ":no_entry:");
+            var embed = new DiscordEmbedBuilder {
+                Title = "Error",
+                Color = DiscordColor.Red
+            };
+
+            if (e.Exception is ChecksFailedException ex)
+                embed.Description = $"{emoji} Either you or I don't have the permissions required to execute this command.";
+            else if (e.Exception is UnauthorizedException)
+                embed.Description = $"{emoji} I am not authorized to do that.";
+            else
+                embed.Description = $"{emoji} {e.Exception.Message}";
+
+            await e.Context.RespondAsync("", embed: embed);
         }
         #endregion
     }
