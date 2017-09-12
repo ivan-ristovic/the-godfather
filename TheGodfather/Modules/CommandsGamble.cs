@@ -8,6 +8,7 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using System.Linq;
 #endregion
 
 namespace TheGodfatherBot
@@ -54,6 +55,7 @@ namespace TheGodfatherBot
                 CommandsBank.IncreaseBalance(ctx.User.Id, won);
         }
         #endregion
+
 
         #region HELPER_FUNCTIONS
         private DiscordEmoji[,] RollSlot(CommandContext ctx)
@@ -126,6 +128,7 @@ namespace TheGodfatherBot
 
     [Group("bank", CanInvokeWithoutSubcommand = true)]
     [Description("$$$")]
+    [Aliases("$", "$$", "$$$")]
     public class CommandsBank
     {
         #region STATIC_FIELDS
@@ -184,6 +187,24 @@ namespace TheGodfatherBot
                 Color = DiscordColor.Yellow
             };
             embed.AddField("Balance: ", ammount.ToString());
+            await ctx.RespondAsync("", embed: embed);
+        }
+        #endregion
+
+        #region COMMAND_TOP
+        [Command("top")]
+        [Aliases("leaderboard")]
+        public async Task Top(CommandContext ctx)
+        {
+            var embed = new DiscordEmbedBuilder() { Title = "WEALTHIEST PEOPLE IN WM BANK:" };
+
+            int i = 10;
+            foreach (var pair in _accounts.ToList().OrderBy(key => key.Value))
+                if (i-- != 0) {
+                    var username = ctx.Guild.GetMemberAsync(pair.Key).Result.Username;
+                    embed.AddField(username, pair.Value.ToString(), inline: true);
+                }
+
             await ctx.RespondAsync("", embed: embed);
         }
         #endregion
