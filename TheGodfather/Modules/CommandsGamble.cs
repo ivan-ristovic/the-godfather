@@ -79,7 +79,7 @@ namespace TheGodfatherBot
         public async Task Coinflip(CommandContext ctx)
         {
             var rnd = new Random();
-            await ctx.RespondAsync(rnd.Next() % 2 == 0 ? "Heads." : "Tails");
+            await ctx.RespondAsync(rnd.Next() % 2 == 0 ? "Heads." : "Tails.");
         }
         #endregion
 
