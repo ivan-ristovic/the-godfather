@@ -26,6 +26,24 @@ namespace TheGodfatherBot
         }
         #endregion
 
+        #region COMMAND_RAFFLE
+        [Command("raffle"), Description("Choose a user from the online members list belonging to a given role.")]
+        public async Task Raffle(CommandContext ctx,
+                                [RemainingText, Description("Role")] DiscordRole role = null)
+        {
+            if (role == null)
+                throw new ArgumentException("Role missing");
+
+            var online = ctx.Guild.GetAllMembersAsync().Result.Where(
+                m => m.Roles.Contains(role) && m.Presence.Status != UserStatus.Offline
+            );
+
+            var rnd = new Random();
+            await ctx.RespondAsync("Raffled: " + online.ElementAt(rnd.Next(online.Count())).Mention);
+        }
+        #endregion
+
+
         #region COMMAND_SLOT
         [Command("slot"), Description("Roll a slot machine.")]
         [Aliases("slotmachine")]
