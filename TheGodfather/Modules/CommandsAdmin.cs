@@ -11,7 +11,7 @@ using DSharpPlus.Entities;
 
 namespace TheGodfatherBot
 {
-    [Group("admin"), Description("Administrative commands."), Hidden]
+    [Group("admin"), Description("Administrative owner commands."), Hidden]
     [RequirePermissions(Permissions.Administrator)]
     [RequireOwner]
     public class CommandsAdmin
@@ -31,29 +31,6 @@ namespace TheGodfatherBot
             }
 
             await ctx.RespondAsync("Logs cleared.");
-        }
-        #endregion
-
-        #region COMMAND_NICK
-        [Command("nick"), Description("Gives someone a new nickname.")]
-        public async Task ChangeNickname(CommandContext ctx, 
-                                        [Description("Member to change the nickname for.")] DiscordMember member, 
-                                        [RemainingText, Description("The nickname to give to that user.")] string newname)
-        {
-            ctx.Client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather",
-                $"{ctx.User.Username} attempts to execute !nick {member.Username} {newname}",
-                DateTime.Now);
-
-            await ctx.TriggerTypingAsync();
-
-            try {
-                await member.ModifyAsync(newname, reason: $"Changed by {ctx.User.Username} ({ctx.User.Id}).");
-                var emoji = DiscordEmoji.FromName(ctx.Client, ":+1:");
-                await ctx.RespondAsync(emoji.ToString());
-            } catch (Exception) {
-                var emoji = DiscordEmoji.FromName(ctx.Client, ":-1:");
-                await ctx.RespondAsync(emoji.ToString());
-            }
         }
         #endregion
        

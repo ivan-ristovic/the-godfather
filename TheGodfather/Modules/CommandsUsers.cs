@@ -103,7 +103,23 @@ namespace TheGodfatherBot
             await ctx.RespondAsync($"Successfully removed role {role.Name} from {u.DisplayName}.");
         }
         #endregion
-        
+
+        #region COMMAND_USER_SETNAME
+        [Command("setname"), Description("Gives someone a new nickname.")]
+        [Aliases("nick", "newname", "name")]
+        [RequirePermissions(Permissions.ManageNicknames)]
+        public async Task ChangeNickname(CommandContext ctx,
+                                        [Description("User")] DiscordMember member = null,
+                                        [RemainingText, Description("New name")] string newname = null)
+        {
+            if (member == null || string.IsNullOrWhiteSpace(newname))
+                throw new ArgumentException("Member or name invalid.");
+
+            await member.ModifyAsync(newname, reason: $"Changed by {ctx.User.Username} ({ctx.User.Id}).");
+            await ctx.RespondAsync("Successfully changed the name of the user.");
+        }
+        #endregion
+
         #region COMMAND_USER_SETROLE
         [Command("setrole")]
         [Description("Add a role to user.")]
@@ -128,6 +144,6 @@ namespace TheGodfatherBot
             await u.GrantRoleAsync(role);
             await ctx.RespondAsync($"Successfully granted role {role.Name} to {u.DisplayName}.");
         }
-#endregion
+        #endregion
     }
 }
