@@ -129,16 +129,18 @@ namespace TheGodfatherBot
             var rnd = new Random();
             string leet_s = "";
             foreach (char c in s) {
+                char add;
                 switch (c) {
-                    case 'i':
-                    case 'l': leet_s += '1'; break;
-                    case 'e': leet_s += '3'; break;
-                    case 'a': leet_s += (rnd.Next() % 2 == 0) ? '@' : '4' ; break;
-                    case 't': leet_s += '7'; break;
-                    case 'o': leet_s += '0'; break;
-                    case 's': leet_s += '5'; break;
-                    default: leet_s += (rnd.Next() % 2 == 0) ? Char.ToUpper(c) : Char.ToLower(c) ; break;
+                    case 'i': add = (rnd.Next() % 2 == 0) ? 'i' : '1'; break;
+                    case 'l': add = (rnd.Next() % 2 == 0) ? 'l' : '1'; break;
+                    case 'e': add = (rnd.Next() % 2 == 0) ? 'e' : '3'; break;
+                    case 'a': add = (rnd.Next() % 2 == 0) ? '@' : '4'; break;
+                    case 't': add = (rnd.Next() % 2 == 0) ? 't' : '7'; break;
+                    case 'o': add = (rnd.Next() % 2 == 0) ? 'o' : '0'; break;
+                    case 's': add = (rnd.Next() % 2 == 0) ? 's' : '5'; break;
+                    default: add = c ; break;
                 }
+                leet_s += (rnd.Next() % 2 == 0) ? Char.ToUpper(add) : Char.ToLower(add);
             }
 
             await ctx.RespondAsync(leet_s);
