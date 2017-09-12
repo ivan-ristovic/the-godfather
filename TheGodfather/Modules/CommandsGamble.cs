@@ -237,9 +237,8 @@ namespace TheGodfatherBot
         public class CommandsRace
         {
             #region PRIVATE_FIELDS
-            private Dictionary<DiscordUser, DiscordEmoji> _participants = null;
-            private List<ulong> _racing = new List<ulong>();
-            private List<string> _animals = null;
+            private Dictionary<ulong, List<Tuple<DiscordUser, DiscordEmoji>>> _participants = new Dictionary<ulong, List<Tuple<DiscordUser, DiscordEmoji>>>();
+            private Dictionary<ulong, List<string>> _animals = new Dictionary<ulong, List<string>>();
             #endregion
 
 
@@ -254,22 +253,18 @@ namespace TheGodfatherBot
             [Aliases("create")]
             public async Task NewRace(CommandContext ctx)
             {
-                if (_racing.Contains(ctx.Channel.Id))
+                if (_participants.ContainsKey(ctx.Channel.Id))
                     throw new Exception("Race already in progress!");
 
-                _racing.Add(ctx.Channel.Id);
-                _participants = new Dictionary<DiscordUser, DiscordEmoji>();
-                _animals = new List<string> {
+                _animals.Add(ctx.Channel.Id, new List<string> {
                     ":dog:", ":cat:", ":mouse:", ":hamster:", ":rabbit:", ":bear:", ":pig:", ":cow:", ":koala:", ":tiger:"
-                };
+                });
+
+                _participants.Add(ctx.Channel.Id, new List<Tuple<DiscordUser, DiscordEmoji>>());
 
                 await ctx.RespondAsync("Race will start in 30s or when there are 10 participants. Type ``!race join`` to join the race.");
                 await Task.Delay(30000);
                 await StartRace(ctx);
-                await Task.Delay(30000);
-                await StopRace(ctx);
-
-                _racing.Remove(ctx.Channel.Id);
             }
             #endregion
 
@@ -278,14 +273,19 @@ namespace TheGodfatherBot
             [Aliases("+", "compete")]
             public async Task JoinRace(CommandContext ctx)
             {
-                if (_participants.ContainsKey(ctx.User))
+                if (!_participants.ContainsKey(ctx.Channel.Id))
+                    throw new Exception("There is no race in this channel!");
+
+                if (_participants[ctx.Channel.Id].Any(tup => tup.Item1.Id == ctx.User.Id))
                     throw new Exception("You are already participating in the race!");
 
                 var rnd = new Random();
                 int index = rnd.Next(_animals.Count);
-                _participants.Add(ctx.User, DiscordEmoji.FromName(ctx.Client, _animals[index]));
-                _animals.RemoveAt(index);
-                await ctx.RespondAsync($"{ctx.User.Mention} joined the race as {_participants[ctx.User]}");
+                var animal = DiscordEmoji.FromName(ctx.Client, _animals[ctx.Channel.Id][index]);
+                _participants[ctx.Channel.Id].Add(new Tuple<DiscordUser, DiscordEmoji>(ctx.User, animal));
+                _animals[ctx.Channel.Id].RemoveAt(index);
+
+                await ctx.RespondAsync($"{ctx.User.Mention} joined the race as {animal}");
             }
             #endregion
 
@@ -294,11 +294,16 @@ namespace TheGodfatherBot
             private async Task StartRace(CommandContext ctx)
             {
                 await ctx.RespondAsync("Race started!");
+
+                await Task.Delay(30000);
+                await StopRace(ctx);
             }
 
             private async Task StopRace(CommandContext ctx)
             {
                 await ctx.RespondAsync("Race ended!");
+                
+                _participants.Remove(ctx.Channel.Id);
             }
             #endregion
         }
