@@ -246,13 +246,13 @@ namespace TheGodfatherBot
         #region COMMAND_EVENTS
         private Task Commands_CommandExecuted(CommandExecutionEventArgs e)
         {
-            e.Context.Client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", $"{e.Context.User.Username} successfully executed '{e.Command.QualifiedName}'", DateTime.Now);
+            e.Context.Client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", $"{e.Context.User.ToString()} successfully executed '{e.Command.QualifiedName}'", DateTime.Now);
             return Task.CompletedTask;
         }
 
         private async Task Commands_CommandErrored(CommandErrorEventArgs e)
         {
-            e.Context.Client.DebugLogger.LogMessage(LogLevel.Error, "TheGodfather", $"{e.Context.User.Username} tried executing '{e.Command?.QualifiedName ?? "<unknown command>"}' but it errored: {e.Exception.GetType()}: {e.Exception.Message ?? "<no message>"}", DateTime.Now);
+            e.Context.Client.DebugLogger.LogMessage(LogLevel.Error, "TheGodfather", $"{e.Context.User.ToString()} tried executing '{e.Command?.QualifiedName ?? "<unknown command>"}' but it errored: {e.Exception.GetType()}: {e.Exception.Message ?? "<no message>"}", DateTime.Now);
 
             var emoji = DiscordEmoji.FromName(e.Context.Client, ":no_entry:");
             var embed = new DiscordEmbedBuilder {
