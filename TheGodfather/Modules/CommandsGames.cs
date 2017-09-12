@@ -79,7 +79,10 @@ namespace TheGodfatherBot
             string word = msg.Message.Content.ToLower();
             char[] guess = new char[word.Length];
             for (int i = 0; i < guess.Length; i++)
-                guess[i] = '?';
+                if (word[i] == ' ')
+                    guess[i] = ' ';
+                else
+                    guess[i] = '?';
 
             await DrawHangman(ctx, guess, lives);
             while (lives > 0 && Array.IndexOf(guess, '?') != -1) {
@@ -92,9 +95,10 @@ namespace TheGodfatherBot
                     return;
                 }
 
-                if (word.IndexOf(m.Message.Content[0]) != -1) {
+                char guess_char = Char.ToLower(m.Message.Content[0]);
+                if (word.IndexOf(guess_char) != -1) {
                     for (int i = 0; i < word.Length; i++)
-                        if (word[i] == m.Message.Content[0])
+                        if (word[i] == guess_char)
                             guess[i] = Char.ToUpper(word[i]);
                 } else {
                     lives--;
