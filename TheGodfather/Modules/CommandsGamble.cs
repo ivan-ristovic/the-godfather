@@ -16,82 +16,6 @@ namespace TheGodfatherBot
     [Description("Random number generation commands.")]
     public class CommandsGamble
     {
-        [Group("deck", CanInvokeWithoutSubcommand = false)]
-        [Description("Deck manipulation commands")]
-        [Aliases("cards")]
-        public class CommandsDeck
-        {
-            #region PRIVATE_FIELDS
-            private List<string> _deck = null;
-            #endregion
-
-
-            #region COMMAND_DECK_DEAL
-            [Command("deal"), Description("Deal hand from the top of the deck.")]
-            public async Task DealHand(CommandContext ctx, [Description("Ammount")] int ammount = 5)
-            {
-                if (_deck == null || _deck.Count == 0)
-                    throw new Exception("No deck to deal from. Use ``!deck new``");
-
-                if (ammount <= 0 || ammount >= 10 || _deck.Count < ammount)
-                    throw new ArgumentException("Cannot draw that ammount of cards...");
-
-                string hand = "";
-                for (int i = 0; i < ammount; i++) {
-                    hand += _deck[0] + " ";
-                    _deck.RemoveAt(0);
-                }
-
-                await ctx.RespondAsync(hand);
-            }
-            #endregion
-
-            #region COMMAND_DECK_DRAW
-            [Command("draw"), Description("Draw a card from the current deck.")]
-            public async Task Draw(CommandContext ctx)
-            {
-                if (_deck == null || _deck.Count == 0)
-                    throw new Exception("No deck to draw from.");
-
-                await ctx.RespondAsync(_deck[0]);
-                _deck.RemoveAt(0);
-            }
-            #endregion
-
-            #region COMMAND_DECK_RESET
-            [Command("reset"), Description("Opens a brand new card deck.")]
-            [Aliases("new")]
-            public async Task Reset(CommandContext ctx)
-            {
-                _deck = new List<string>();
-                char[] suit = { '♠', '♥', '♦', '♣' };
-                foreach (char s in suit) {
-                    _deck.Add("A" + s);
-                    for (int i = 2; i < 10; i++) {
-                        _deck.Add(i.ToString() + s);
-                    }
-                    _deck.Add("T" + s);
-                    _deck.Add("J" + s);
-                    _deck.Add("Q" + s);
-                    _deck.Add("K" + s);
-                }
-
-                await ctx.RespondAsync("New deck opened!");
-            }
-            #endregion
-
-            #region COMMAND_DECK_SHUFFLE
-            [Command("shuffle"), Description("Shuffle current deck.")]
-            public async Task Shuffle(CommandContext ctx)
-            {
-                var shuffled = _deck.OrderBy(a => Guid.NewGuid()).ToList();
-                _deck.Clear();
-                _deck.AddRange(shuffled);
-                await ctx.RespondAsync("Deck shuffled.");
-            }
-            #endregion
-        
-        }
 
         #region COMMAND_COINFLIP
         [Command("coinflip"), Description("Flips a coin.")]
@@ -228,6 +152,127 @@ namespace TheGodfatherBot
             return pts == bid ? 0 : pts;
         }
         #endregion
+
+
+        [Group("deck", CanInvokeWithoutSubcommand = false)]
+        [Description("Deck manipulation commands")]
+        [Aliases("cards")]
+        public class CommandsDeck
+        {
+            #region PRIVATE_FIELDS
+            private List<string> _deck = null;
+            #endregion
+
+
+            #region COMMAND_DECK_DEAL
+            [Command("deal"), Description("Deal hand from the top of the deck.")]
+            public async Task DealHand(CommandContext ctx, [Description("Ammount")] int ammount = 5)
+            {
+                if (_deck == null || _deck.Count == 0)
+                    throw new Exception("No deck to deal from. Use ``!deck new``");
+
+                if (ammount <= 0 || ammount >= 10 || _deck.Count < ammount)
+                    throw new ArgumentException("Cannot draw that ammount of cards...");
+
+                string hand = "";
+                for (int i = 0; i < ammount; i++) {
+                    hand += _deck[0] + " ";
+                    _deck.RemoveAt(0);
+                }
+
+                await ctx.RespondAsync(hand);
+            }
+            #endregion
+
+            #region COMMAND_DECK_DRAW
+            [Command("draw"), Description("Draw a card from the current deck.")]
+            public async Task Draw(CommandContext ctx)
+            {
+                if (_deck == null || _deck.Count == 0)
+                    throw new Exception("No deck to draw from.");
+
+                await ctx.RespondAsync(_deck[0]);
+                _deck.RemoveAt(0);
+            }
+            #endregion
+
+            #region COMMAND_DECK_RESET
+            [Command("reset"), Description("Opens a brand new card deck.")]
+            [Aliases("new")]
+            public async Task Reset(CommandContext ctx)
+            {
+                _deck = new List<string>();
+                char[] suit = { '♠', '♥', '♦', '♣' };
+                foreach (char s in suit) {
+                    _deck.Add("A" + s);
+                    for (int i = 2; i < 10; i++) {
+                        _deck.Add(i.ToString() + s);
+                    }
+                    _deck.Add("T" + s);
+                    _deck.Add("J" + s);
+                    _deck.Add("Q" + s);
+                    _deck.Add("K" + s);
+                }
+
+                await ctx.RespondAsync("New deck opened!");
+            }
+            #endregion
+
+            #region COMMAND_DECK_SHUFFLE
+            [Command("shuffle"), Description("Shuffle current deck.")]
+            public async Task Shuffle(CommandContext ctx)
+            {
+                var shuffled = _deck.OrderBy(a => Guid.NewGuid()).ToList();
+                _deck.Clear();
+                _deck.AddRange(shuffled);
+                await ctx.RespondAsync("Deck shuffled.");
+            }
+            #endregion
+
+        }
+
+
+        [Group("race", CanInvokeWithoutSubcommand = true)]
+        [Description("Racing!")]
+        public class CommandsRace
+        {
+            #region PRIVATE_FIELDS
+            private List<DiscordMember> _participants = null;
+            private List<ulong> _racing = new List<ulong>();
+            #endregion
+
+
+            public async Task ExecuteGroupAsync(CommandContext ctx)
+            {
+                await NewRace(ctx);
+            }
+
+
+            #region COMMAND_RACE_NEW
+            [Command("new"), Description("Start a new race.")]
+            [Aliases("+", "create")]
+            public async Task NewRace(CommandContext ctx)
+            {
+                if (_racing.Contains(ctx.Channel.Id))
+                    throw new Exception("Race already in progress!");
+
+                _racing.Add(ctx.Channel.Id);
+                _participants = new List<DiscordMember>();
+
+                await ctx.RespondAsync("Race will start in 30s or when there are 10 participants. Type ``!race join`` to join the race.");
+                await Task.Delay(30000);
+                await StartRace();
+            }
+            #endregion
+
+
+            #region HELPER_FUNCTIONS
+            private async Task StartRace()
+            {
+                
+            }
+            #endregion
+        }
     }
 
     [Group("bank", CanInvokeWithoutSubcommand = true)]
