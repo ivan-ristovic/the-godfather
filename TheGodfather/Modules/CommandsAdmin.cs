@@ -59,5 +59,55 @@ namespace TheGodfatherBot
             await cmds.SudoAsync(member, ctx.Channel, command);
         }
         #endregion
+
+        [Group("status", CanInvokeWithoutSubcommand = false)]
+        [RequireOwner]
+        public class CommandsStatus
+        {
+            #region COMMAND_STATUS_ADD
+            [Command("add")]
+            [Description("Add a status to running queue.")]
+            [Aliases("+")]
+            public async Task AddStatus(CommandContext ctx,
+                                       [RemainingText, Description("Status.")] string status)
+            {
+                if (string.IsNullOrWhiteSpace(status))
+                    throw new ArgumentException("Invalid status");
+
+                TheGodfather._statuses.Add(status);
+                await ctx.RespondAsync("Status added!");
+            }
+            #endregion
+
+            #region COMMAND_STATUS_DELETE
+            [Command("delete")]
+            [Description("Remove status from running queue.")]
+            [Aliases("-", "remove")]
+            public async Task DeleteStatus(CommandContext ctx,
+                                          [RemainingText, Description("Status.")] string status)
+            {
+                if (string.IsNullOrWhiteSpace(status))
+                    throw new ArgumentException("Invalid status");
+
+                if (status == "!help")
+                    throw new ArgumentException("Cannot delete that status!");
+
+                TheGodfather._statuses.Remove(status);
+                await ctx.RespondAsync("Status removed!");
+            }
+            #endregion
+
+            #region COMMAND_STATUS_LIST
+            [Command("list")]
+            [Description("List all statuses.")]
+            public async Task ListStatuses(CommandContext ctx)
+            {
+                string s = "Statuses:\n\n";
+                foreach (var status in TheGodfather._statuses)
+                    s += status + " ";
+                await ctx.RespondAsync(s);
+            }
+            #endregion
+        }
     }
 }

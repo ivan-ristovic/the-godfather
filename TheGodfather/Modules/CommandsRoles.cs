@@ -47,7 +47,7 @@ namespace TheGodfatherBot
         public async Task DeleteRole(CommandContext ctx, [Description("Role (mention)")] DiscordRole role = null)
         {
             if (role == null)
-                throw new ArgumentNullException("Unknown role.");
+                throw new ArgumentException("Unknown role.");
 
             await ctx.Guild.DeleteRoleAsync(role);
             await ctx.RespondAsync("Successfully removed role " + role.Name);
