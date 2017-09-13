@@ -195,6 +195,7 @@ namespace TheGodfatherBot
         #region COMMAND_STARTCHECK
         [Command("startcheck"), Description("Notifies of free space in server.")]
         [Aliases("checkspace", "spacecheck")]
+        [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task StartCheck(CommandContext ctx, [Description("IP to query.")] string ip = null)
         {
             if (string.IsNullOrWhiteSpace(ip))
@@ -246,6 +247,7 @@ namespace TheGodfatherBot
         #region COMMAND_STOPCHECK
         [Command("stopcheck"), Description("Stops space checking.")]
         [Aliases("checkstop")]
+        [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task StopCheck(CommandContext ctx)
         {
             _UserIDsCheckingForSpace.TryUpdate(ctx.User.Id, false, true);
