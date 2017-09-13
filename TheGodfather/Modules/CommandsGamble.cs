@@ -316,8 +316,9 @@ namespace TheGodfatherBot
                 foreach (var p in _participants[ctx.Channel.Id])
                     progress.Add(p, 0);
 
+                var msg = await ctx.RespondAsync("Race starting...");
                 while (!progress.Any(e => e.Value > 100)) {
-                    await PrintRace(ctx, progress);
+                    await PrintRace(ctx, progress, msg);
 
                     foreach (var id in _participants[ctx.Channel.Id])
                         progress[id] += 10;
@@ -339,7 +340,7 @@ namespace TheGodfatherBot
                 _started.TryRemove(ctx.Channel.Id, out outb);
             }
 
-            private async Task PrintRace(CommandContext ctx, Dictionary<ulong, int> progress)
+            private async Task PrintRace(CommandContext ctx, Dictionary<ulong, int> progress, DiscordMessage msg)
             {
                 string s = "LIVE RACING BROADCAST\n| 🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🔚\n";
                 foreach (var id in _participants[ctx.Channel.Id]) {
@@ -352,7 +353,7 @@ namespace TheGodfatherBot
                         s += "‣";
                     s += "| " + participant.Mention;
                 }
-                await ctx.RespondAsync(s);    
+                await msg.ModifyAsync(s);
             }
             #endregion
         }
