@@ -311,10 +311,16 @@ namespace TheGodfatherBot
             private async Task StartRace(CommandContext ctx)
             {
                 _started[ctx.Channel.Id] = true;
-                
-                while (true) {
-                    await PrintRace(ctx);
-                    
+
+                Dictionary<ulong, int> progress = new Dictionary<ulong, int>();
+                foreach (var p in _participants[ctx.Channel.Id])
+                    progress.Add(p, 0);
+
+                while (!progress.Any(e => e.Value >= 100)) {
+                    await PrintRace(ctx, progress);
+
+                    foreach (var id in _participants[ctx.Channel.Id])
+                        progress[id] += 10;
 
                     await Task.Delay(5000);
                 }
@@ -333,10 +339,12 @@ namespace TheGodfatherBot
                 _started.TryRemove(ctx.Channel.Id, out outb);
             }
 
-            private async Task PrintRace(CommandContext ctx)
+            private async Task PrintRace(CommandContext ctx, Dictionary<ulong, int> progress)
             {
-                string s = "LIVE RACING BROADCAST\n**************************************************\n";
+                string s = "LIVE RACING BROADCAST\n------------------------------------------\n";
                 foreach (var id in _participants[ctx.Channel.Id]) {
+                    for (int p = progress[id]; p >= 0; p--)
+                        s += "-";
                     s += _emojis[ctx.Channel.Id][id] + "\n";
                 }
                 await ctx.RespondAsync(s);    
