@@ -386,7 +386,7 @@ namespace TheGodfatherBot
         #region COMMAND_GRANT
         [Command("grant")]
         [Aliases("give")]
-        [RequirePermissions(Permissions.Administrator)]
+        [RequireUserPermissions(Permissions.Administrator)]
         public async Task Register(CommandContext ctx,
                                   [Description("User")] DiscordUser u = null,
                                   [Description("Ammount")] int ammount = 0)
