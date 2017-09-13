@@ -267,9 +267,9 @@ namespace TheGodfatherBot
                 _started.TryAdd(ctx.Channel.Id, false);
 
                 await ctx.RespondAsync("Race will start in 30s or when there are 10 participants. Type ``!race join`` to join the race.");
-                await Task.Delay(5000 /*30000*/);
+                await Task.Delay(30000);
 
-                if (_participants[ctx.Channel.Id].Count > 0 /*1*/)
+                if (_participants[ctx.Channel.Id].Count > 1)
                     await StartRace(ctx);
                 else {
                     await ctx.RespondAsync("Not enough users joined the race.");
@@ -317,14 +317,19 @@ namespace TheGodfatherBot
                     progress.Add(p, 0);
 
                 var msg = await ctx.RespondAsync("Race starting...");
-                while (!progress.Any(e => e.Value > 100)) {
+                var rnd = new Random();
+                while (!progress.Any(e => e.Value >= 100)) {
                     await PrintRace(ctx, progress, msg);
 
-                    foreach (var id in _participants[ctx.Channel.Id])
-                        progress[id] += 10;
+                    foreach (var id in _participants[ctx.Channel.Id]) {
+                        progress[id] += rnd.Next(2, 5);
+                        if (progress[id] > 100)
+                            progress[id] = 100;
+                    }
 
-                    await Task.Delay(5000);
+                    await Task.Delay(2000);
                 }
+                await PrintRace(ctx, progress, msg);
 
                 await ctx.RespondAsync("Race ended!");
                 StopRace(ctx);
@@ -342,16 +347,19 @@ namespace TheGodfatherBot
 
             private async Task PrintRace(CommandContext ctx, Dictionary<ulong, int> progress, DiscordMessage msg)
             {
-                string s = "LIVE RACING BROADCAST\n| 🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🔚\n";
+                string s = "LIVE RACING BROADCAST\n| 🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🔚\n";
                 foreach (var id in _participants[ctx.Channel.Id]) {
                     var participant = await ctx.Guild.GetMemberAsync(id);
                     s += "|";
                     for (int p = progress[id]; p > 0; p--)
                         s += "‣";
                     s += _emojis[ctx.Channel.Id][id];
-                    for (int p = 96 - progress[id]; p > 0; p--)
+                    for (int p = 100 - progress[id]; p > 0; p--)
                         s += "‣";
                     s += "| " + participant.Mention;
+                    if (progress[id] == 100)
+                        s += " 🏆";
+                    s += '\n';
                 }
                 await msg.ModifyAsync(s);
             }
