@@ -89,6 +89,23 @@ namespace TheGodfatherBot
         }
         #endregion
 
+        #region COMMAND_USER_LISTPERMS
+        [Command("listperms")]
+        [Description("List user permissions.")]
+        [Aliases("permlist", "perms", "p")]
+        public async Task ListPerms(CommandContext ctx, [Description("User")] DiscordMember u = null)
+        {
+            if (u == null)
+                u = (DiscordMember)ctx.User;
+
+            var perms = ctx.Channel.PermissionsFor(u);
+            await ctx.RespondAsync("", embed: new DiscordEmbedBuilder() {
+                Title = u.Username + "'s permissions list:",
+                Description = perms.ToPermissionString()
+            });
+        }
+        #endregion
+
         #region COMMAND_USER_MUTE
         [Command("mute")]
         [Description("Toggle user mute.")]
