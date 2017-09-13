@@ -17,6 +17,32 @@ namespace TheGodfatherBot
     [Aliases("users", "u", "usr")]
     public class CommandsUsers
     {
+        #region COMMAND_USER_ADDROLE
+        [Command("addrole")]
+        [Description("Add a role to user.")]
+        [Aliases("+role", "ar", "grantrole")]
+        [RequirePermissions(Permissions.ManageRoles)]
+        public async Task SetRole(CommandContext ctx,
+                                 [Description("User")] DiscordMember u = null,
+                                 [RemainingText, Description("Role")] string role_str = null)
+        {
+            if (u == null || string.IsNullOrWhiteSpace(role_str))
+                throw new ArgumentException("You need to specify a user.");
+            role_str = role_str.ToLower();
+
+            DiscordRole role = null;
+            foreach (var r in ctx.Guild.Roles)
+                if (r.Name.ToLower() == role_str)
+                    role = r;
+
+            if (role == null)
+                throw new Exception("The specified role does not exist.");
+
+            await u.GrantRoleAsync(role);
+            await ctx.RespondAsync($"Successfully granted role {role.Name} to {u.DisplayName}.");
+        }
+        #endregion
+
         #region COMMAND_USER_BAN
         [Command("ban")]
         [Description("Bans the user from server.")]
@@ -117,32 +143,6 @@ namespace TheGodfatherBot
 
             await member.ModifyAsync(newname, reason: $"Changed by {ctx.User.Username} ({ctx.User.Id}).");
             await ctx.RespondAsync("Successfully changed the name of the user.");
-        }
-        #endregion
-
-        #region COMMAND_USER_SETROLE
-        [Command("setrole")]
-        [Description("Add a role to user.")]
-        [Aliases("sr", "addrole", "grantrole")]
-        [RequirePermissions(Permissions.ManageRoles)]
-        public async Task SetRole(CommandContext ctx,
-                                 [Description("User")] DiscordMember u = null,
-                                 [RemainingText, Description("Role")] string role_str = null)
-        {
-            if (u == null || string.IsNullOrWhiteSpace(role_str))
-                throw new ArgumentException("You need to specify a user.");
-            role_str = role_str.ToLower();
-
-            DiscordRole role = null;
-            foreach (var r in ctx.Guild.Roles)
-                if (r.Name.ToLower() == role_str)
-                    role = r;
-
-            if (role == null)
-                throw new Exception("The specified role does not exist.");
-
-            await u.GrantRoleAsync(role);
-            await ctx.RespondAsync($"Successfully granted role {role.Name} to {u.DisplayName}.");
         }
         #endregion
     }
