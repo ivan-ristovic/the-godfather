@@ -1,6 +1,5 @@
 ﻿#region USING_DIRECTIVES
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 using DSharpPlus;
@@ -58,26 +57,6 @@ namespace TheGodfatherBot
 
             await c.DeleteAsync();
             await ctx.RespondAsync("Channel successfully deleted.");
-        }
-        #endregion
-
-        #region COMMAND_CHANNEL_INVITE
-        [Command("invite")]
-        [Description("Get an instant invite link for the current channel.")]
-        [Aliases("r", "name", "setname")]
-        [RequirePermissions(Permissions.CreateInstantInvite)]
-        public async Task RenameChannel(CommandContext ctx)
-        {
-            var invites = ctx.Channel.GetInvitesAsync().Result.Where(
-                inv => (inv.Channel.Id == ctx.Channel.Id) && !inv.IsTemporary
-            );
-
-            if (invites.Count() > 0)
-                await ctx.RespondAsync(invites.ElementAt(0).ToString());
-            else {
-                var invite = await ctx.Channel.CreateInviteAsync(max_age: 3600, temporary: true);
-                await ctx.RespondAsync("This invite will expire in one hour!\n" + invite.ToString());
-            }
         }
         #endregion
 
