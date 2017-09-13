@@ -31,9 +31,10 @@ namespace TheGodfatherBot
                                 [Description("Query (optional).")] string sub = null,
                                 [Description("Number of images to print [1-10].")] int n = 1)
         {
-            if (string.IsNullOrWhiteSpace(sub) || n < 1 || n > 10)
+            if (string.IsNullOrWhiteSpace(sub) || n < 1 || n > 10) {
+                await ctx.RespondAsync("Invalid sub or number of images (must be less than 10). Here is a random pic!");
                 await GetImagesFromSub(ctx, "pics", 1);
-            else
+            } else
                 await GetImagesFromSub(ctx, sub.Trim(), n);
         }
         #endregion
