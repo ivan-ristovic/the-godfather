@@ -317,7 +317,7 @@ namespace TheGodfatherBot
                     progress.Add(p, 0);
 
                 var msg = await ctx.RespondAsync("Race starting...");
-                var rnd = new Random();
+                var rnd = new Random((int)DateTime.Now.Ticks);
                 while (!progress.Any(e => e.Value >= 100)) {
                     await PrintRace(ctx, progress, msg);
 
@@ -347,7 +347,7 @@ namespace TheGodfatherBot
 
             private async Task PrintRace(CommandContext ctx, Dictionary<ulong, int> progress, DiscordMessage msg)
             {
-                string s = "LIVE RACING BROADCAST\n| 🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🔚\n";
+                string s = "LIVE RACING BROADCAST\n| 🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🔚\n";
                 foreach (var id in _participants[ctx.Channel.Id]) {
                     var participant = await ctx.Guild.GetMemberAsync(id);
                     s += "|";
@@ -358,7 +358,7 @@ namespace TheGodfatherBot
                         s += "‣";
                     s += "| " + participant.Mention;
                     if (progress[id] == 100)
-                        s += " 🏆";
+                        s += " " + DiscordEmoji.FromName(ctx.Client, ":trophy:");
                     s += '\n';
                 }
                 await msg.ModifyAsync(s);
