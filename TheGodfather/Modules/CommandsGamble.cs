@@ -316,7 +316,7 @@ namespace TheGodfatherBot
                 foreach (var p in _participants[ctx.Channel.Id])
                     progress.Add(p, 0);
 
-                while (!progress.Any(e => e.Value >= 100)) {
+                while (!progress.Any(e => e.Value > 100)) {
                     await PrintRace(ctx, progress);
 
                     foreach (var id in _participants[ctx.Channel.Id])
@@ -341,11 +341,16 @@ namespace TheGodfatherBot
 
             private async Task PrintRace(CommandContext ctx, Dictionary<ulong, int> progress)
             {
-                string s = "LIVE RACING BROADCAST\n------------------------------------------\n";
+                string s = "LIVE RACING BROADCAST\n| 🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🔚\n";
                 foreach (var id in _participants[ctx.Channel.Id]) {
-                    for (int p = progress[id]; p >= 0; p--)
-                        s += "-";
-                    s += _emojis[ctx.Channel.Id][id] + "\n";
+                    var participant = await ctx.Guild.GetMemberAsync(id);
+                    s += "|";
+                    for (int p = progress[id]; p > 0; p--)
+                        s += "‣";
+                    s += _emojis[ctx.Channel.Id][id];
+                    for (int p = 96 - progress[id]; p > 0; p--)
+                        s += "‣";
+                    s += "| " + participant.Mention;
                 }
                 await ctx.RespondAsync(s);    
             }
