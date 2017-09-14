@@ -27,19 +27,17 @@ namespace TheGodfatherBot
 
             string[] weapons = { "sword", "axe", "keyboard", "stone", "cheeseburger", "belt from yo momma" };
 
-            await ctx.RespondAsync($"Duel between {ctx.User.Mention} and {u.Mention} is about to start!");
+            var m = await ctx.RespondAsync($"{ctx.User.Mention} VS {u.Mention}");
 
             int hp1 = 100, hp2 = 100;
             var rnd = new Random();
             while (hp1 > 0 && hp2 > 0) {
-                await ctx.RespondAsync($"HP: {ctx.User.Username} ({hp1}) : {u.Username} ({hp2})");
-                await Task.Delay(2000);
                 int damage = rnd.Next(20, 40);
                 if (rnd.Next() % 2 == 0) {
-                    await ctx.RespondAsync($"{ctx.User.Username} hits {u.Username} with a {weapons[rnd.Next(0, weapons.Length)]} for {damage} damage!");
+                    m = await m.ModifyAsync(m.Content + $"\n**{ctx.User.Username}** ({hp1}) hits **{u.Username}** ({hp2}) with a {weapons[rnd.Next(0, weapons.Length)]} for **{damage}** damage!");
                     hp2 -= damage;
                 } else {
-                    await ctx.RespondAsync($"{u.Username} hits {ctx.User.Username} with a {weapons[rnd.Next(0, weapons.Length)]} for {damage} damage!");
+                    m = await m.ModifyAsync(m.Content + $"\n**{u.Username}** ({hp2}) hits **{ctx.User.Username}** ({hp1}) with a {weapons[rnd.Next(0, weapons.Length)]} for **{damage}** damage!");
                     hp1 -= damage;
                 }
                 await Task.Delay(2000);
