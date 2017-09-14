@@ -122,9 +122,6 @@ namespace TheGodfatherBot
         {
             ctx.Client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", "Saving memes...", DateTime.Now);
             try {
-                FileStream f = File.Open("memes.txt", FileMode.Create);
-                f.Close();
-
                 List<string> memelist = new List<string>();
                 foreach (var entry in _memes)
                     memelist.Add(entry.Key + "$" + entry.Value);

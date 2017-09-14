@@ -120,9 +120,6 @@ namespace TheGodfatherBot
             {
                 ctx.Client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", "Saving servers...", DateTime.Now);
                 try {
-                    FileStream f = File.Open("servers.txt", FileMode.Create);
-                    f.Close();
-
                     List<string> serverlist = new List<string>();
                     foreach (var entry in _serverlist)
                         serverlist.Add(entry.Key + "$" + entry.Value);
