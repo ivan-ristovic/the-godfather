@@ -211,7 +211,6 @@ namespace TheGodfatherBot
             try {
                 split = ip.Split(':');
             } catch (Exception) {
-                await StopCheck(ctx);
                 throw new Exception("Invalid IP format.");
             }
             await ctx.RespondAsync($"Starting check on {split[0]}:{split[1]}...");
@@ -235,9 +234,9 @@ namespace TheGodfatherBot
                     } else if (int.Parse(info[1]) < int.Parse(info[2])) {
                         await ctx.RespondAsync(ctx.User.Mention + ", there is space on " + info[0]);
                     }
-                } catch (Exception) {
+                } catch (Exception e) {
                     await StopCheck(ctx);
-                    throw new Exception("Invalid IP format.");
+                    throw e;
                 }
                 await Task.Delay(3000);
             }
