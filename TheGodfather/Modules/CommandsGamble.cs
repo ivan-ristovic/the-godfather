@@ -267,7 +267,7 @@ namespace TheGodfatherBot
                 _started.TryAdd(ctx.Channel.Id, false);
 
                 await ctx.RespondAsync("Race will start in 30s or when there are 10 participants. Type ``!race join`` to join the race.");
-                await Task.Delay(60000);
+                await Task.Delay(30000);
 
                 if (_participants[ctx.Channel.Id].Count > 1)
                     await StartRace(ctx);

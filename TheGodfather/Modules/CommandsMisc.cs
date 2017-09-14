@@ -83,34 +83,6 @@ namespace TheGodfatherBot
         }
         #endregion
 
-        #region COMMAND_INSULT
-        [Command("insult"), Description("Burns a user.")]
-        [Aliases("burn")]
-        public async Task Insult(CommandContext ctx, [Description("User to insult")] DiscordUser u = null)
-        {
-            if (u == null)
-                throw new ArgumentException("Please provide me someone to roast.");
-
-            string[] insults = {
-                "shut up, you'll never be the man your mother is.",
-                "you're a failed abortion whose birth certificate is an apology from the condom factory.",
-                "you must have been born on a highway, because that's where most accidents happen.",
-                "you're so ugly Hello Kitty said goodbye to you.",
-                "you are so ugly that when your mama dropped you off at school she got a fine for littering.",
-                "it looks like your face caught on fire and someone tried to put it out with a fork.",
-                "your family tree is a cactus, because everybody on it is a prick.",
-                "do you have to leave so soon? I was just about to poison the tea...",
-                "dumbass.",
-                "is your ass jealous of the amount of shit that just came out of your mouth?",
-                "if I wanted to kill myself I'd climb your ego and jump to your IQ",
-                "I'd like to see things from your point of view but I can't seem to get my head that far up my ass."
-            };
-
-            var rnd = new Random();
-            await ctx.RespondAsync(u.Mention + ", " + insults[rnd.Next(0, insults.Length)]);
-        }
-        #endregion
-
         #region COMMAND_INVITE
         [Command("invite")]
         [Description("Get an instant invite link for the current channel.")]
@@ -338,5 +310,44 @@ namespace TheGodfatherBot
             return Task.CompletedTask;
         }
         #endregion
+
+        
+        [Group("insult", CanInvokeWithoutSubcommand = true)]
+        [Description("Burns a user!")]
+        [Aliases("burn")]
+        public class CommandsInsult
+        {
+            #region STATIC_FIELDS
+            private static List<string> _insults = new List<string>();
+            #endregion
+
+            #region STATIC_FUNCTIONS
+            public static void LoadInsults(DebugLogger log)
+            {
+                log.LogMessage(LogLevel.Info, "TheGodfather", "Loading insults...", DateTime.Now);
+                if (File.Exists("insults.txt")) {
+                    try {
+                        var lines = File.ReadAllLines("insults.txt");
+                        foreach (string line in lines) {
+                            if (line.Trim() == "" || line[0] == '#')
+                                continue;
+                            _insults.Add(line);
+                        }
+                    } catch (Exception e) {
+                        log.LogMessage(LogLevel.Warning, "TheGodfather", "Exception occured, clearing insults. Details : " + e.ToString(), DateTime.Now);
+                        _insults.Clear();
+                    }
+                } else {
+                    log.LogMessage(LogLevel.Warning, "TheGodfather", "insults.txt is missing.", DateTime.Now);
+                }
+            }
+            #endregion
+
+            public async Task ExecuteGroupAsync(CommandContext ctx)
+            {
+
+            }
+
+        }
     }
 }
