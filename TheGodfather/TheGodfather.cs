@@ -247,7 +247,14 @@ namespace TheGodfatherBot
         #region COMMAND_EVENTS
         private Task Commands_CommandExecuted(CommandExecutionEventArgs e)
         {
-            e.Context.Client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", $"{e.Context.User.ToString()} successfully executed '{e.Command.QualifiedName}'", DateTime.Now);
+            e.Context.Client.DebugLogger.LogMessage(
+                LogLevel.Info, 
+                "TheGodfather",
+                $"Executed: {e.Command.QualifiedName}\n" +
+                $"User: {e.Context.User.ToString()}\n" +
+                $"Location: '{e.Context.Guild.Name}' ({e.Context.Guild.Id}) ; {e.Context.Channel.ToString()}"
+                , DateTime.Now
+            );
             return Task.CompletedTask;
         }
 
