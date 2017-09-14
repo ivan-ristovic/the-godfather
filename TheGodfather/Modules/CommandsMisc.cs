@@ -314,7 +314,7 @@ namespace TheGodfatherBot
         
         [Group("insult", CanInvokeWithoutSubcommand = true)]
         [Description("Burns a user!")]
-        [Aliases("burn")]
+        [Aliases("burn", "insults")]
         public class CommandsInsult
         {
             #region STATIC_FIELDS
@@ -343,6 +343,7 @@ namespace TheGodfatherBot
             }
             #endregion
 
+
             public async Task ExecuteGroupAsync(CommandContext ctx, [Description("User")] DiscordUser u = null)
             {
                 if (u == null)
@@ -352,6 +353,25 @@ namespace TheGodfatherBot
                 var split = _insults[rnd.Next(_insults.Count)].Split('%');
                 await ctx.RespondAsync(split[0] + u.Mention + split[1]);
             }
+
+
+            #region COMMAND_INSULTS_ADD
+            [Command("add")]
+            [Description("Add alias to list.")]
+            [Aliases("+", "new")]
+            public async Task AddInsult(CommandContext ctx, 
+                                       [RemainingText, Description("Response")] string insult = null)
+            {
+                if (string.IsNullOrWhiteSpace(insult))
+                    throw new ArgumentException("Missing insult string.");
+
+                if (insult.Split().Count() < 2)
+                    throw new ArgumentException("Insult not in correct format (missing %)!");
+
+                _insults.Add(insult);
+                await ctx.RespondAsync("Insult added.");
+            }
+            #endregion
 
         }
     }
