@@ -239,7 +239,7 @@ namespace TheGodfatherBot
         {
             #region PRIVATE_FIELDS
             private ConcurrentDictionary<ulong, ConcurrentQueue<ulong>> _participants = new ConcurrentDictionary<ulong, ConcurrentQueue<ulong>>();
-            private ConcurrentDictionary<ulong, ConcurrentDictionary<ulong, DiscordEmoji>> _emojis = new ConcurrentDictionary<ulong, ConcurrentDictionary<ulong, DiscordEmoji>>();
+            private ConcurrentDictionary<ulong, ConcurrentDictionary<ulong, string>> _emojis = new ConcurrentDictionary<ulong, ConcurrentDictionary<ulong, string>>();
             private ConcurrentDictionary<ulong, ConcurrentBag<string>> _animals = new ConcurrentDictionary<ulong, ConcurrentBag<string>>();
             private ConcurrentDictionary<ulong, bool> _started = new ConcurrentDictionary<ulong, bool>();
             #endregion
@@ -263,7 +263,7 @@ namespace TheGodfatherBot
                     ":dog:", ":cat:", ":mouse:", ":hamster:", ":rabbit:", ":bear:", ":pig:", ":cow:", ":koala:", ":tiger:"
                 });
                 _participants.TryAdd(ctx.Channel.Id, new ConcurrentQueue<ulong>());
-                _emojis.TryAdd(ctx.Channel.Id, new ConcurrentDictionary<ulong, DiscordEmoji>());
+                _emojis.TryAdd(ctx.Channel.Id, new ConcurrentDictionary<ulong, string>());
                 _started.TryAdd(ctx.Channel.Id, false);
 
                 await ctx.RespondAsync("Race will start in 30s or when there are 10 participants. Type ``!race join`` to join the race.");
@@ -298,11 +298,10 @@ namespace TheGodfatherBot
                 var rnd = new Random();
                 string emoji;
                 _animals[ctx.Channel.Id].TryTake(out emoji);
-                var animal = DiscordEmoji.FromName(ctx.Client, emoji);
                 _participants[ctx.Channel.Id].Enqueue(ctx.User.Id);
-                _emojis[ctx.Channel.Id].TryAdd(ctx.User.Id, animal);
+                _emojis[ctx.Channel.Id].TryAdd(ctx.User.Id, emoji);
 
-                await ctx.RespondAsync($"{ctx.User.Mention} joined the race as {animal}");
+                await ctx.RespondAsync($"{ctx.User.Mention} joined the race as {DiscordEmoji.FromName(ctx.Client, emoji)}");
             }
             #endregion
 
@@ -353,7 +352,7 @@ namespace TheGodfatherBot
                     s += "|";
                     for (int p = progress[id]; p > 0; p--)
                         s += "‣";
-                    s += _emojis[ctx.Channel.Id][id];
+                    s += DiscordEmoji.FromName(ctx.Client, _emojis[ctx.Channel.Id][id]);
                     for (int p = 100 - progress[id]; p > 0; p--)
                         s += "‣";
                     s += "| " + participant.Mention;
