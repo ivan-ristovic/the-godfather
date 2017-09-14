@@ -423,13 +423,17 @@ namespace TheGodfatherBot
                 if (page < 1 || page > _insults.Count / 10 + 1)
                     throw new ArgumentException("No insults on that page.");
 
-                string s = $"Available insults (PAGE {page}):\n\n";
+                string s = "";
                 int starti = (page - 1) * 10;
                 int endi = starti + 10 < _insults.Count ? starti + 10 : _insults.Count;
                 for (int i = starti; i < endi; i++)
                     s += "**" + i.ToString() + "** : " + _insults[i] + "\n";
 
-                await ctx.RespondAsync(s);
+                await ctx.RespondAsync("", embed: new DiscordEmbedBuilder() {
+                    Title = $"Available insults (page {page}) :",
+                    Description = s,
+                    Color = DiscordColor.Turquoise
+                });
             }
             #endregion
 
