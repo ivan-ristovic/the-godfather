@@ -184,5 +184,16 @@ namespace TheGodfatherBot
             await ctx.RespondAsync("All aliases successfully removed.");
         }
         #endregion
+
+        #region COMMAND_ALIAS_CLEARALL
+        [Command("clear")]
+        [Description("Delete all aliases stored for ALL guilds.")]
+        [RequireOwner]
+        public async Task ClearAllAliases(CommandContext ctx)
+        {
+            _aliases.Clear();
+            await ctx.RespondAsync("All aliases successfully removed.");
+        }
+        #endregion
     }
 }
