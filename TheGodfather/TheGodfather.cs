@@ -136,6 +136,7 @@ namespace TheGodfatherBot
             CommandsAlias.LoadAliases(_client.DebugLogger);
             CommandsMemes.LoadMemes(_client.DebugLogger);
             CommandsSwat.LoadServers(_client.DebugLogger);
+            CommandsMisc.CommandsInsult.LoadInsults(_client.DebugLogger);
             _commands.RegisterCommands<CommandsAdmin>();
             _commands.RegisterCommands<CommandsAlias>();
             _commands.RegisterCommands<CommandsBank>();
