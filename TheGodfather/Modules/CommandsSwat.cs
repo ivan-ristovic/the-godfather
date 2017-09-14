@@ -207,12 +207,12 @@ namespace TheGodfatherBot
             if (_serverlist.ContainsKey(ip))
                 ip = _serverlist[ip];
 
-            await ctx.RespondAsync("Starting check on " + ip + "...");
+            var split = ip.Split(':');
+            await ctx.RespondAsync($"Starting check on {split[0]}:{split[1]}...");
 
             _UserIDsCheckingForSpace.GetOrAdd(ctx.User.Id, true);
             while (_UserIDsCheckingForSpace[ctx.User.Id]) {
                 try {
-                    var split = ip.Split(':');
                     var info = QueryIP(ctx, split[0], int.Parse(split[1]));
                     if (info == null) {
                         await ctx.RespondAsync("No reply from server. Should I try again?");
