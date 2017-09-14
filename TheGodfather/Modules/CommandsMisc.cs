@@ -415,14 +415,16 @@ namespace TheGodfatherBot
             #region COMMAND_INSULTS_LIST
             [Command("list")]
             [Description("Show all insults.")]
-            public async Task ListInsults(CommandContext ctx)
+            public async Task ListInsults(CommandContext ctx, [Description("Page")] int page = 1)
             {
-                string s = "Available insults:\n\n";
-                int i = 0;
-                foreach (var insult in _insults) {
-                    s += i.ToString() + " : " + insult + "\n";
-                    i++;
-                }
+                if (page < 1 || page > _insults.Count / 10 + 1)
+                    throw new ArgumentException("No insults on that page.");
+
+                string s = $"Available insults (PAGE {page}):\n\n";
+                int starti = (page - 1) * 10;
+                int endi = starti + 10 < _insults.Count ? starti + 10 : _insults.Count;
+                for (int i = starti; i < endi; i++)
+                    s += "**" + i.ToString() + "** : " + _insults[i] + "\n";
 
                 await ctx.RespondAsync(s);
             }
