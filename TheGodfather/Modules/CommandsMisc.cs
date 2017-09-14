@@ -357,7 +357,7 @@ namespace TheGodfatherBot
 
             #region COMMAND_INSULTS_ADD
             [Command("add")]
-            [Description("Add alias to list.")]
+            [Description("Add insult to list.")]
             [Aliases("+", "new")]
             public async Task AddInsult(CommandContext ctx, 
                                        [RemainingText, Description("Response")] string insult = null)
@@ -372,7 +372,22 @@ namespace TheGodfatherBot
                 await ctx.RespondAsync("Insult added.");
             }
             #endregion
+            
+            #region COMMAND_INSULTS_DELETE
+            [Command("delete")]
+            [Description("Remove insult with a given index from list. (use !insults list to view indexes)")]
+            [Aliases("-", "remove", "del")]
+            public async Task DeleteInsult(CommandContext ctx, [Description("Index")] int i = 0)
+            {
+                if (i < 0 || i > _insults.Count)
+                    throw new ArgumentException("There is no insult with such index.");
 
+                _insults.RemoveAt(i);
+                await ctx.RespondAsync("Insult successfully removed.");
+            }
+            #endregion
+
+            
         }
     }
 }
