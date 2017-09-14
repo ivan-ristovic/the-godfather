@@ -392,7 +392,7 @@ namespace TheGodfatherBot
             [Command("save")]
             [Description("Save insults to file.")]
             [RequireOwner]
-            public async Task SaveAliases(CommandContext ctx)
+            public async Task SaveInsults(CommandContext ctx)
             {
                 ctx.Client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", "Saving insults...", DateTime.Now);
                 try {
@@ -403,6 +403,22 @@ namespace TheGodfatherBot
                 }
 
                 await ctx.RespondAsync("Insults successfully saved.");
+            }
+            #endregion
+
+            #region COMMAND_INSULTS_LIST
+            [Command("list")]
+            [Description("Show all insults.")]
+            public async Task ListInsults(CommandContext ctx)
+            {
+                string s = "Available insults:\n\n";
+                int i = 0;
+                foreach (var insult in _insults) {
+                    s += i.ToString() + " : " + insult + "\n";
+                    i++;
+                }
+
+                await ctx.RespondAsync(s);
             }
             #endregion
 
