@@ -349,9 +349,15 @@ namespace TheGodfatherBot
                 if (u == null)
                     u = ctx.User;
 
+                if (_insults.Count == 0)
+                    throw new Exception("No available insults.");
+
                 var rnd = new Random();
                 var split = _insults[rnd.Next(_insults.Count)].Split('%');
-                await ctx.RespondAsync(split[0] + u.Mention + split[1]);
+                string response = split[0];
+                for (int i = 1; i < split.Length; i++)
+                    response += u.Mention + split[i];
+                await ctx.RespondAsync(response);
             }
 
 
