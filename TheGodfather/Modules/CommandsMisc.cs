@@ -377,6 +377,7 @@ namespace TheGodfatherBot
             [Command("delete")]
             [Description("Remove insult with a given index from list. (use !insults list to view indexes)")]
             [Aliases("-", "remove", "del")]
+            [RequireOwner]
             public async Task DeleteInsult(CommandContext ctx, [Description("Index")] int i = 0)
             {
                 if (i < 0 || i > _insults.Count)
@@ -387,7 +388,24 @@ namespace TheGodfatherBot
             }
             #endregion
 
-            
+            #region COMMAND_INSULTS_SAVE
+            [Command("save")]
+            [Description("Save insults to file.")]
+            [RequireOwner]
+            public async Task SaveAliases(CommandContext ctx)
+            {
+                ctx.Client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", "Saving insults...", DateTime.Now);
+                try {
+                    File.WriteAllLines("aliases.txt", _insults);
+                } catch (Exception e) {
+                    ctx.Client.DebugLogger.LogMessage(LogLevel.Error, "TheGodfather", "IO insults save error:" + e.ToString(), DateTime.Now);
+                    throw new IOException("IO error while saving insults.");
+                }
+
+                await ctx.RespondAsync("Insults successfully saved.");
+            }
+            #endregion
+
         }
     }
 }

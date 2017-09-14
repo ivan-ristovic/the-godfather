@@ -120,17 +120,14 @@ namespace TheGodfatherBot
         {
             ctx.Client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", "Saving aliases...", DateTime.Now);
             try {
-                FileStream f = File.Open("aliases.txt", FileMode.Create);
-                f.Close();
-
                 List<string> aliaslist = new List<string> {
-                "# Alias file",
-                "# ",
-                "# How to use it:",
-                "# Aliases consist of a name and text to be written when alias is triggered.",
-                "# Lines in this file contain each one alias in the format: name$reply",
-                "# When triggered with '!a name', the bot will reply with 'reply'",
-                ""
+                    "# Alias file",
+                    "# ",
+                    "# How to use it:",
+                    "# Aliases consist of a name and text to be written when alias is triggered.",
+                    "# Lines in this file contain each one alias in the format: name$reply",
+                    "# When triggered with '!a name', the bot will reply with 'reply'",
+                    ""
                 };
 
                 foreach (var guild_aliases in _aliases)
