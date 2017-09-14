@@ -1,6 +1,7 @@
 ﻿#region USING_DIRECTIVES
 using System;
 using System.IO;
+using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -147,20 +148,28 @@ namespace TheGodfatherBot
         #region COMMAND_ALIAS_LIST
         [Command("list")]
         [Description("Show all aliases.")]
-        public async Task ListAliases(CommandContext ctx)
+        public async Task ListAliases(CommandContext ctx, [Description("Page")] int page = 1)
         {
             if (!_aliases.ContainsKey(ctx.Guild.Id)) {
                 await ctx.RespondAsync("No aliases registered.");
                 return;
             }
 
-            var embed = new DiscordEmbedBuilder() {
-                Title = "Available aliases",
+            if (page < 1 || page > _aliases[ctx.Guild.Id].Count / 10 + 1)
+                throw new ArgumentException("No aliases on that page.");
+
+            string s = "";
+            int starti = (page - 1) * 10;
+            int endi = starti + 10 < _aliases[ctx.Guild.Id].Count ? starti + 10 : _aliases[ctx.Guild.Id].Count;
+            var keys = _aliases[ctx.Guild.Id].Keys.ToArray();
+            for (var i = starti; i < endi; i++)
+                s += $"**{keys[i]}** : {_aliases[ctx.Guild.Id][keys[i]]}\n";
+
+            await ctx.RespondAsync("", embed: new DiscordEmbedBuilder() {
+                Title = $"Available aliases (page {page}) :",
+                Description = s,
                 Color = DiscordColor.Green
-            };
-            foreach (var alias in _aliases[ctx.Guild.Id])
-                embed.AddField(alias.Key, alias.Value, inline: true);
-            await ctx.RespondAsync("", embed: embed);
+            });
         }
         #endregion
 
