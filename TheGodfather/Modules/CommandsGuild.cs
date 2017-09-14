@@ -12,7 +12,7 @@ namespace TheGodfatherBot
 {
     [Group("guild", CanInvokeWithoutSubcommand = false)]
     [Description("Miscellaneous guild control commands.")]
-    [Aliases("server", "g", "srv")]
+    [Aliases("server")]
     [RequirePermissions(Permissions.ManageGuild)]
     public class CommandsGuild
     {
