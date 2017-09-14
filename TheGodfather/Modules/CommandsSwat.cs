@@ -207,7 +207,13 @@ namespace TheGodfatherBot
             if (_serverlist.ContainsKey(ip))
                 ip = _serverlist[ip];
 
-            var split = ip.Split(':');
+            string[] split;
+            try {
+                split = ip.Split(':');
+            } catch (Exception) {
+                await StopCheck(ctx);
+                throw new Exception("Invalid IP format.");
+            }
             await ctx.RespondAsync($"Starting check on {split[0]}:{split[1]}...");
 
             _UserIDsCheckingForSpace.GetOrAdd(ctx.User.Id, true);
