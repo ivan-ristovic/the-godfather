@@ -371,6 +371,9 @@ namespace TheGodfatherBot
                 if (string.IsNullOrWhiteSpace(insult))
                     throw new ArgumentException("Missing insult string.");
 
+                if (insult.Length >= 200)
+                    throw new ArgumentException("Too long insult. I know it is hard, but keep it shorter than 200 please.");
+
                 if (insult.Split().Count() < 2)
                     throw new ArgumentException("Insult not in correct format (missing %)!");
 
