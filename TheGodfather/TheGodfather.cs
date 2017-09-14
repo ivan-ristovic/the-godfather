@@ -215,8 +215,17 @@ namespace TheGodfatherBot
 
             // Check if message has an alias
             var response = CommandsAlias.FindAlias(e.Guild.Id, e.Message.Content);
-            if (response != null)
+            if (response != null) {
+                e.Client.DebugLogger.LogMessage(
+                    LogLevel.Info,
+                    "TheGodfather",
+                    $"Alias triggered: {e.Message.Content}\n" +
+                    $" User: {e.Message.Author.ToString()}\n" +
+                    $" Location: '{e.Guild.Name}' ({e.Guild.Id}) ; {e.Channel.ToString()}"
+                    , DateTime.Now
+                );
                 e.Channel.SendMessageAsync(response);
+            }
 
             return Task.CompletedTask;
         }

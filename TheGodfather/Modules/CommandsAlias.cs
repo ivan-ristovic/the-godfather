@@ -175,8 +175,8 @@ namespace TheGodfatherBot
 
         #region COMMAND_ALIAS_CLEAR
         [Command("clear")]
-        [Description("Delete all aliases.")]
-        [RequireOwner]
+        [Description("Delete all aliases for the current guild.")]
+        [RequireUserPermissions(Permissions.Administrator)]
         public async Task ClearAliases(CommandContext ctx)
         {
             if (_aliases.ContainsKey(ctx.Guild.Id))
