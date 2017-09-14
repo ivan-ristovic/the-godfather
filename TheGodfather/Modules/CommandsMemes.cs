@@ -76,6 +76,7 @@ namespace TheGodfatherBot
         #region COMMAND_MEME_ADD
         [Command("add")]
         [Description("Add a new meme to the list.")]
+        [Aliases("+", "new")]
         public async Task AddMeme(CommandContext ctx,
                                  [Description("Short name (case insensitive).")] string name = null,
                                  [Description("URL")] string url = null)
@@ -98,7 +99,7 @@ namespace TheGodfatherBot
         #region COMMAND_MEME_DELETE
         [Command("delete")]
         [Description("Deletes a meme from list.")]
-        [Aliases("del", "remove")]
+        [Aliases("-", "del", "remove")]
         public async Task DeleteMeme(CommandContext ctx, [Description("Short name (case insensitive).")] string name = null)
         {
             if (string.IsNullOrWhiteSpace(name))
