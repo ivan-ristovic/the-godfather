@@ -179,13 +179,14 @@ namespace TheGodfatherBot
                 return;
             }
 
-            await ctx.RespondAsync($"Game between {ctx.User.Mention} and {msg.User.Mention} begins!");
+            var m = await ctx.RespondAsync($"Game between {ctx.User.Mention} and {msg.User.Mention} begins!");
 
             int[,] board = new int[3, 3];
             TTTInitializeBoard(board);
 
             bool player1plays = true;
-            while (!TTTGameOver(board)) {
+            int moves = 0;
+            while (moves < 9 && !TTTGameOver(board)) {
                 int field = 0;
                 var move = await interactivity.WaitForMessageAsync(
                     xm => {
@@ -209,9 +210,10 @@ namespace TheGodfatherBot
 
                 if (TTTPlaySuccessful(player1plays ? 1 : 2, board, field)) {
                     player1plays = !player1plays;
-                    await TTTPrintBoard(ctx, board);
+                    await TTTPrintBoard(ctx, board, m);
                 } else
                     await ctx.RespondAsync("Invalid move.");
+                moves++;
             }
 
             await ctx.RespondAsync("GG");
@@ -220,17 +222,6 @@ namespace TheGodfatherBot
         #region HELPER_FUNCTIONS
         private bool TTTGameOver(int[,] board)
         {
-            bool empty = false;
-            for (int i = 0; i < 3; i++)
-                for (int j = 0; i < 3; i++)
-                    if (board[i, j] == 0) {
-                        empty = true;
-                        break;
-                    }
-
-            if (!empty)
-                return true;
-
             for (int i = 0; i < 3; i++) {
                 if (board[i, 0] != 0 && board[i, 0] == board[i, 1] && board[i, 1] == board[i, 2])
                     return true;
@@ -260,19 +251,19 @@ namespace TheGodfatherBot
             return true;
         }
 
-        private async Task TTTPrintBoard(CommandContext ctx, int[,] board)
+        private async Task TTTPrintBoard(CommandContext ctx, int[,] board, DiscordMessage m)
         {
-            string line = "";
+            string s = "";
             for (int i = 0; i < 3; i++) {
                 for (int j = 0; j < 3; j++)
                     switch (board[i, j]) {
-                        case 0: line += $"{DiscordEmoji.FromName(ctx.Client, ":white_medium_square:")}"; break;
-                        case 1: line += $"{DiscordEmoji.FromName(ctx.Client, ":x:")}"; break;
-                        case 2: line += $"{DiscordEmoji.FromName(ctx.Client, ":o:")}"; break;
+                        case 0: s += $"{DiscordEmoji.FromName(ctx.Client, ":white_medium_square:")}"; break;
+                        case 1: s += $"{DiscordEmoji.FromName(ctx.Client, ":x:")}"; break;
+                        case 2: s += $"{DiscordEmoji.FromName(ctx.Client, ":o:")}"; break;
                     }
-                line += '\n';
+                s += '\n';
             }
-            await ctx.RespondAsync("", embed: new DiscordEmbedBuilder() { Description = line } );
+            await m.ModifyAsync("", embed: new DiscordEmbedBuilder() { Description = s } );
         }
         #endregion
 
