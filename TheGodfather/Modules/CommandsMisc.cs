@@ -343,9 +343,14 @@ namespace TheGodfatherBot
             }
             #endregion
 
-            public async Task ExecuteGroupAsync(CommandContext ctx)
+            public async Task ExecuteGroupAsync(CommandContext ctx, [Description("User")] DiscordUser u = null)
             {
+                if (u == null)
+                    u = ctx.User;
 
+                var rnd = new Random();
+                var split = _insults[rnd.Next(_insults.Count)].Split('%');
+                await ctx.RespondAsync(split[0] + u.Mention + split[1]);
             }
 
         }
