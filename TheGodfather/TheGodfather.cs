@@ -250,9 +250,9 @@ namespace TheGodfatherBot
             e.Context.Client.DebugLogger.LogMessage(
                 LogLevel.Info, 
                 "TheGodfather",
-                $"Executed: {e.Command.QualifiedName}\n" +
-                $"User: {e.Context.User.ToString()}\n" +
-                $"Location: '{e.Context.Guild.Name}' ({e.Context.Guild.Id}) ; {e.Context.Channel.ToString()}"
+                $"Executed: {e.Command?.QualifiedName ?? "<unknown command>"}\n" +
+                $" User: {e.Context.User.ToString()}\n" +
+                $" Location: '{e.Context.Guild.Name}' ({e.Context.Guild.Id}) ; {e.Context.Channel.ToString()}"
                 , DateTime.Now
             );
             return Task.CompletedTask;
@@ -260,7 +260,16 @@ namespace TheGodfatherBot
 
         private async Task Commands_CommandErrored(CommandErrorEventArgs e)
         {
-            e.Context.Client.DebugLogger.LogMessage(LogLevel.Error, "TheGodfather", $"{e.Context.User.ToString()} tried executing '{e.Command?.QualifiedName ?? "<unknown command>"}' but it errored: {e.Exception.GetType()}: {e.Exception.Message ?? "<no message>"}", DateTime.Now);
+            e.Context.Client.DebugLogger.LogMessage(
+                LogLevel.Error, 
+                "TheGodfather",
+                $"Tried executing: {e.Command?.QualifiedName ?? "<unknown command>"}\n" +
+                $" User: {e.Context.User.ToString()}\n" +
+                $" Location: '{e.Context.Guild.Name}' ({e.Context.Guild.Id}) ; {e.Context.Channel.ToString()}\n" +
+                $" Exception: {e.Exception.GetType()}\n" +
+                $" Message: {e.Exception.Message ?? "<no message>"}"
+                , DateTime.Now
+            );
 
             var emoji = DiscordEmoji.FromName(e.Context.Client, ":no_entry:");
             var embed = new DiscordEmbedBuilder {
