@@ -422,6 +422,16 @@ namespace TheGodfatherBot
             }
             #endregion
 
+            #region COMMAND_ALIAS_CLEAR
+            [Command("clear")]
+            [Description("Delete all insults.")]
+            [RequireOwner]
+            public async Task ClearAliases(CommandContext ctx)
+            {
+                _insults.Clear();
+                await ctx.RespondAsync("All insults successfully removed.");
+            }
+            #endregion
         }
     }
 }
