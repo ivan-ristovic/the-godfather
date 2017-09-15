@@ -126,24 +126,24 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Modules\CommandsAdmin.cs" />
-    <Compile Include="Modules\CommandsAlias.cs" />
-    <Compile Include="Modules\CommandsChannels.cs" />
-    <Compile Include="Modules\CommandsGamble.cs" />
-    <Compile Include="Modules\CommandsGames.cs" />
-    <Compile Include="Modules\CommandsGuild.cs" />
-    <Compile Include="Modules\CommandsImgur.cs" />
-    <Compile Include="Modules\CommandsInsult.cs" />
-    <Compile Include="Modules\CommandsMemes.cs" />
-    <Compile Include="Modules\CommandsMessages.cs" />
-    <Compile Include="Modules\CommandsMisc.cs" />
-    <Compile Include="Modules\CommandsRanking.cs" />
-    <Compile Include="Modules\CommandsReddit.cs" />
-    <Compile Include="Modules\CommandsRoles.cs" />
-    <Compile Include="Modules\CommandsRSS.cs" />
-    <Compile Include="Modules\CommandsSwat.cs" />
-    <Compile Include="Modules\CommandsUsers.cs" />
-    <Compile Include="Modules\CommandsVoice.cs" />
+    <Compile Include="Modules\Admin\CommandsAdmin.cs" />
+    <Compile Include="Modules\Messages\CommandsAlias.cs" />
+    <Compile Include="Modules\Admin\CommandsChannels.cs" />
+    <Compile Include="Modules\Games\CommandsGamble.cs" />
+    <Compile Include="Modules\Games\CommandsGames.cs" />
+    <Compile Include="Modules\Admin\CommandsGuild.cs" />
+    <Compile Include="Modules\Search\CommandsImgur.cs" />
+    <Compile Include="Modules\Messages\CommandsInsult.cs" />
+    <Compile Include="Modules\Messages\CommandsMemes.cs" />
+    <Compile Include="Modules\Messages\CommandsMessages.cs" />
+    <Compile Include="Modules\Messages\CommandsMisc.cs" />
+    <Compile Include="Modules\Messages\CommandsRanking.cs" />
+    <Compile Include="Modules\Search\CommandsReddit.cs" />
+    <Compile Include="Modules\Admin\CommandsRoles.cs" />
+    <Compile Include="Modules\Search\CommandsRSS.cs" />
+    <Compile Include="Modules\SWAT\CommandsSwat.cs" />
+    <Compile Include="Modules\Admin\CommandsUsers.cs" />
+    <Compile Include="Modules\Voice\CommandsVoice.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TheGodfather.cs" />
   </ItemGroup>

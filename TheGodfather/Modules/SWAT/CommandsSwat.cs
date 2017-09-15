@@ -146,6 +146,7 @@ namespace TheGodfatherBot
             #endregion
         }
 
+
         #region COMMAND_SERVERLIST
         [Command("serverlist")]
         [Aliases("slist", "swat4servers", "swat4stats")]
