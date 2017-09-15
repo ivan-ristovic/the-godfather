@@ -45,6 +45,34 @@ namespace TheGodfatherBot
         }
         #endregion
 
+        #region COMMAND_GUILD_GETLOGS
+        [Command("log")]
+        [Description("Get audit logs.")]
+        [Aliases("auditlog", "viewlog", "getlog", "getlogs")]
+        [RequirePermissions(Permissions.ViewAuditLog)]
+        public async Task GetAuditLogs(CommandContext ctx, [Description("Page")] int page = 1)
+        {
+            var log = await ctx.Guild.GetAuditLogsAsync();
+
+            if (page < 1 || page > log.Count / 20 + 1)
+                throw new ArgumentException("No members on that page.");
+
+            string s = "";
+            int starti = (page - 1) * 20;
+            int endi = starti + 20 < log.Count ? starti + 20 : log.Count;
+            var logarray = log.Take(page * 20).ToArray();
+            for (var i = starti; i < endi; i++)
+                s += $"**{logarray[i].CreationTimestamp.ToUniversalTime()}** UTC : Action " +
+                     $"**{logarray[i].ActionType.ToString()}** by **{logarray[i].UserResponsible.Username}**\n";
+
+            await ctx.RespondAsync("", embed: new DiscordEmbedBuilder() {
+                Title = $"Audit log (page {page}) :",
+                Description = s,
+                Color = DiscordColor.SapGreen
+            });
+        }
+        #endregion
+
         #region COMMAND_GUILD_PRUNE
         [Command("prune")]
         [Description("Prune guild members who weren't active in given ammount of days.")]
