@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
+using DSharpPlus.Interactivity;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 #endregion
@@ -44,6 +45,36 @@ namespace TheGodfatherBot
         }
         #endregion
 
+        #region COMMAND_GUILD_PRUNE
+        [Command("prune")]
+        [Description("Prune guild members who weren't active in given ammount of days.")]
+        [Aliases("p", "clean", "lm", "mem", "members")]
+        [RequireUserPermissions(Permissions.Administrator)]
+        [RequirePermissions(Permissions.KickMembers)]
+        public async Task PruneMembers(CommandContext ctx, [Description("Days")] int days = 365)
+        {
+            if (days <= 0 || days > 1000)
+                throw new ArgumentException("Number of days not in valid range! [1-1000]");
+            /*
+            int count = await ctx.Guild.GetPruneCountAsync(days);
+            await ctx.RespondAsync($"Pruning will remove **{count}** members. Continue?");
+            
+            var interactivity = ctx.Client.GetInteractivityModule();
+            var msg = await interactivity.WaitForMessageAsync(
+                            xm => xm.Author.Id == ctx.User.Id &&
+                                (xm.Content.ToLower().StartsWith("yes") || xm.Content.ToLower().StartsWith("no")),
+                            TimeSpan.FromMinutes(1)
+            );
+            if (msg == null || msg.Message.Content.StartsWith("no")) {
+                await ctx.RespondAsync("Alright, cancelling...");
+                return;
+            }
+            */
+            await ctx.Guild.PruneAsync(days);
+            await ctx.RespondAsync("Pruning complete!");
+        }
+        #endregion
+
         #region COMMAND_GUILD_RENAME
         [Command("rename")]
         [Description("Rename guild.")]
@@ -59,7 +90,6 @@ namespace TheGodfatherBot
         }
         #endregion
 
-        // todo prune
     }
 }
 
