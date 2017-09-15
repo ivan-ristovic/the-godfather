@@ -13,7 +13,7 @@ using Imgur.API.Enums;
 using Imgur.API.Models.Impl;
 #endregion
 
-namespace TheGodfatherBot
+namespace TheGodfatherBot.Modules.Search
 {
     [Description("Imgur commands.")]
     public class CommandsImgur

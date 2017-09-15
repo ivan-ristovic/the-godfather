@@ -133,32 +133,31 @@ namespace TheGodfatherBot
                 CaseSensitive = false,
                 EnableMentionPrefix = true
             });
-            CommandsAlias.LoadAliases(_client.DebugLogger);
-            CommandsMemes.LoadMemes(_client.DebugLogger);
-            CommandsSwat.LoadServers(_client.DebugLogger);
-            CommandsInsult.LoadInsults(_client.DebugLogger);
-            _commands.RegisterCommands<CommandsAdmin>();
-            _commands.RegisterCommands<CommandsAlias>();
-            _commands.RegisterCommands<CommandsBank>();
-            _commands.RegisterCommands<CommandsCards>();
-            _commands.RegisterCommands<CommandsChannels>();
-            _commands.RegisterCommands<CommandsGamble>();
-            _commands.RegisterCommands<CommandsGames>();
-            _commands.RegisterCommands<CommandsGuild>();
-            _commands.RegisterCommands<CommandsImgur>();
-            _commands.RegisterCommands<CommandsInsult>();
-            _commands.RegisterCommands<CommandsMemes>();
-            _commands.RegisterCommands<CommandsMessages>();
-            _commands.RegisterCommands<CommandsMisc>();
-            _commands.RegisterCommands<CommandsRace>();
-            _commands.RegisterCommands<CommandsRanking>();
-            //_commands.RegisterCommands<CommandsReddit>();
-            _commands.RegisterCommands<CommandsRoles>();
-            _commands.RegisterCommands<CommandsRSS>();
-            _commands.RegisterCommands<CommandsServers>();
-            _commands.RegisterCommands<CommandsSwat>();
-            _commands.RegisterCommands<CommandsUsers>();
-            //_commands.RegisterCommands<CommandsVoice>();
+            Modules.Messages.CommandsAlias.LoadAliases(_client.DebugLogger);
+            Modules.Messages.CommandsMemes.LoadMemes(_client.DebugLogger);
+            Modules.SWAT.CommandsSwat.LoadServers(_client.DebugLogger);
+            Modules.Messages.CommandsInsult.LoadInsults(_client.DebugLogger);
+            _commands.RegisterCommands<Modules.Admin.CommandsAdmin>();
+            _commands.RegisterCommands<Modules.Admin.CommandsChannels>();
+            _commands.RegisterCommands<Modules.Admin.CommandsGuild>();
+            _commands.RegisterCommands<Modules.Admin.CommandsRoles>();
+            _commands.RegisterCommands<Modules.Admin.CommandsUsers>();
+            _commands.RegisterCommands<Modules.Games.CommandsBank>();
+            _commands.RegisterCommands<Modules.Games.CommandsCards>();
+            _commands.RegisterCommands<Modules.Games.CommandsGamble>();
+            _commands.RegisterCommands<Modules.Games.CommandsGames>();
+            _commands.RegisterCommands<Modules.Games.CommandsRace>();
+            _commands.RegisterCommands<Modules.Messages.CommandsAlias>();
+            _commands.RegisterCommands<Modules.Messages.CommandsInsult>();
+            _commands.RegisterCommands<Modules.Messages.CommandsMemes>();
+            _commands.RegisterCommands<Modules.Messages.CommandsMessages>();
+            _commands.RegisterCommands<Modules.Messages.CommandsMisc>();
+            _commands.RegisterCommands<Modules.Messages.CommandsRanking>();
+            _commands.RegisterCommands<Modules.Search.CommandsImgur>();
+            //_commands.RegisterCommands<Modules.Search.CommandsReddit>();
+            _commands.RegisterCommands<Modules.Search.CommandsRSS>();
+            _commands.RegisterCommands<Modules.SWAT.CommandsSwat>();
+            //_commands.RegisterCommands<Modules.Voice.CommandsVoice>();
             _commands.CommandExecuted += Commands_CommandExecuted;
             _commands.CommandErrored += Commands_CommandErrored;
         }
@@ -216,10 +215,10 @@ namespace TheGodfatherBot
                 return Task.CompletedTask;
             }
 
-            CommandsRanking.UpdateMessageCount(e.Channel, e.Author);
+            Modules.Messages.CommandsRanking.UpdateMessageCount(e.Channel, e.Author);
 
             // Check if message has an alias
-            var response = CommandsAlias.FindAlias(e.Guild.Id, e.Message.Content);
+            var response = Modules.Messages.CommandsAlias.FindAlias(e.Guild.Id, e.Message.Content);
             if (response != null) {
                 e.Client.DebugLogger.LogMessage(
                     LogLevel.Info,

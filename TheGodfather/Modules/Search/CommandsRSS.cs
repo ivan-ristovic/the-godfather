@@ -10,7 +10,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 #endregion
 
-namespace TheGodfatherBot
+namespace TheGodfatherBot.Modules.Search
 {
     [Group("rss", CanInvokeWithoutSubcommand = true)]
     [Description("RSS feed operations.")]

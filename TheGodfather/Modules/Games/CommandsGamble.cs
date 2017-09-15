@@ -12,7 +12,7 @@ using System.Linq;
 using System.Collections.Concurrent;
 #endregion
 
-namespace TheGodfatherBot
+namespace TheGodfatherBot.Modules.Games
 {
     [Description("Random number generation commands.")]
     public class CommandsGamble

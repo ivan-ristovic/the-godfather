@@ -144,7 +144,6 @@
     <Compile Include="Modules\Search\CommandsReddit.cs" />
     <Compile Include="Modules\Admin\CommandsRoles.cs" />
     <Compile Include="Modules\Search\CommandsRSS.cs" />
-    <Compile Include="Modules\SWAT\CommandsServers.cs" />
     <Compile Include="Modules\SWAT\CommandsSwat.cs" />
     <Compile Include="Modules\Admin\CommandsUsers.cs" />
     <Compile Include="Modules\Voice\CommandsVoice.cs" />

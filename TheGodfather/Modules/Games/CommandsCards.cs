@@ -9,7 +9,7 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 #endregion
 
-namespace TheGodfatherBot
+namespace TheGodfatherBot.Modules.Games
 {
     [Group("cards", CanInvokeWithoutSubcommand = false)]
     [Description("Deck manipulation commands")]

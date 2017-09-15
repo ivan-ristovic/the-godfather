@@ -11,7 +11,7 @@ using DSharpPlus.Entities;
 #endregion
 
 
-namespace TheGodfatherBot
+namespace TheGodfatherBot.Modules.Games
 {
 
     [Group("bank", CanInvokeWithoutSubcommand = true)]

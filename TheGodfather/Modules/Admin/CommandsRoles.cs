@@ -10,7 +10,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 #endregion
 
-namespace TheGodfatherBot
+namespace TheGodfatherBot.Modules.Admin
 {
     [Group("roles", CanInvokeWithoutSubcommand = true)]
     [Description("Miscellaneous role control commands.")]

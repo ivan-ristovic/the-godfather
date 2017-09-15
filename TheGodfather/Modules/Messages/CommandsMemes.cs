@@ -11,7 +11,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 #endregion
 
-namespace TheGodfatherBot
+namespace TheGodfatherBot.Modules.Messages
 {
     [Group("meme", CanInvokeWithoutSubcommand = true)]
     [Description("Contains some memes. When invoked without name, returns a random one.")]

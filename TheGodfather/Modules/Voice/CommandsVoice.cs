@@ -11,7 +11,7 @@ using DSharpPlus.VoiceNext;
 using DSharpPlus.Entities;
 #endregion
 
-namespace TheGodfatherBot
+namespace TheGodfatherBot.Modules.Voice
 {
     [Description("Voice & music commands.")]
     public class CommandsVoice

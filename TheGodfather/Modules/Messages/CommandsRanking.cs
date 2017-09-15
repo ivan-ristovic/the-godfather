@@ -9,7 +9,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 #endregion
 
-namespace TheGodfatherBot
+namespace TheGodfatherBot.Modules.Messages
 {
     [Description("User ranking commands.")]
     public class CommandsRanking

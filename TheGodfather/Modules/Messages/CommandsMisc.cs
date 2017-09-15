@@ -14,7 +14,7 @@ using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 #endregion
 
-namespace TheGodfatherBot
+namespace TheGodfatherBot.Modules.Messages
 {
     [Description("Base commands.")]
     public class CommandsMisc

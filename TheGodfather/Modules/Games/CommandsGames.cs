@@ -10,7 +10,7 @@ using DSharpPlus.Interactivity;
 using DSharpPlus.Entities;
 #endregion
 
-namespace TheGodfatherBot
+namespace TheGodfatherBot.Modules.Games
 {
     [Group("games", CanInvokeWithoutSubcommand = false)]
     [Description("Starts a game for you to play!")]

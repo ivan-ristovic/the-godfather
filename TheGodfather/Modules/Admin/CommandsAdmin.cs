@@ -9,7 +9,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 #endregion
 
-namespace TheGodfatherBot
+namespace TheGodfatherBot.Modules.Admin
 {
     [Group("admin"), Description("Administrative owner commands."), Hidden]
     [RequireOwner]
@@ -53,6 +53,7 @@ namespace TheGodfatherBot
             await ctx.Client.GetCommandsNext().SudoAsync(member, ctx.Channel, command);
         }
         #endregion
+
 
         [Group("status", CanInvokeWithoutSubcommand = false)]
         [RequireOwner]

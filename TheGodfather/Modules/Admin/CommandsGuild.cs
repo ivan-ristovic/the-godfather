@@ -11,7 +11,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 #endregion
 
-namespace TheGodfatherBot
+namespace TheGodfatherBot.Modules.Admin
 {
     [Group("guild", CanInvokeWithoutSubcommand = false)]
     [Description("Miscellaneous guild control commands.")]

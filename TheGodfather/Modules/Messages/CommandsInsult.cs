@@ -11,7 +11,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 #endregion
 
-namespace TheGodfatherBot
+namespace TheGodfatherBot.Modules.Messages
 {
 
     [Group("insult", CanInvokeWithoutSubcommand = true)]
