@@ -136,7 +136,7 @@ namespace TheGodfatherBot
             CommandsAlias.LoadAliases(_client.DebugLogger);
             CommandsMemes.LoadMemes(_client.DebugLogger);
             CommandsSwat.LoadServers(_client.DebugLogger);
-            CommandsMisc.CommandsInsult.LoadInsults(_client.DebugLogger);
+            CommandsInsult.LoadInsults(_client.DebugLogger);
             _commands.RegisterCommands<CommandsAdmin>();
             _commands.RegisterCommands<CommandsAlias>();
             _commands.RegisterCommands<CommandsBank>();
@@ -145,6 +145,7 @@ namespace TheGodfatherBot
             _commands.RegisterCommands<CommandsGames>();
             _commands.RegisterCommands<CommandsGuild>();
             _commands.RegisterCommands<CommandsImgur>();
+            _commands.RegisterCommands<CommandsInsult>();
             _commands.RegisterCommands<CommandsMemes>();
             _commands.RegisterCommands<CommandsMessages>();
             _commands.RegisterCommands<CommandsMisc>();

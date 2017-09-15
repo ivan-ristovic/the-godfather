@@ -133,6 +133,7 @@
     <Compile Include="Modules\CommandsGames.cs" />
     <Compile Include="Modules\CommandsGuild.cs" />
     <Compile Include="Modules\CommandsImgur.cs" />
+    <Compile Include="Modules\CommandsInsult.cs" />
     <Compile Include="Modules\CommandsMemes.cs" />
     <Compile Include="Modules\CommandsMessages.cs" />
     <Compile Include="Modules\CommandsMisc.cs" />
