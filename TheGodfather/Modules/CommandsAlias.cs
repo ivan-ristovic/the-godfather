@@ -186,7 +186,7 @@ namespace TheGodfatherBot
         #endregion
 
         #region COMMAND_ALIAS_CLEARALL
-        [Command("clear")]
+        [Command("clearall")]
         [Description("Delete all aliases stored for ALL guilds.")]
         [RequireOwner]
         public async Task ClearAllAliases(CommandContext ctx)

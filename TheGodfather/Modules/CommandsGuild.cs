@@ -26,13 +26,13 @@ namespace TheGodfatherBot
         {
             var members = await ctx.Guild.GetAllMembersAsync();
 
-            if (page < 1 || page > members.Count / 10 + 1)
+            if (page < 1 || page > members.Count / 20 + 1)
                 throw new ArgumentException("No members on that page.");
 
             string s = "";
-            int starti = (page - 1) * 10;
-            int endi = starti + 10 < members.Count ? starti + 10 : members.Count;
-            var membersarray = members.ToArray();
+            int starti = (page - 1) * 20;
+            int endi = starti + 20 < members.Count ? starti + 10 : members.Count;
+            var membersarray = members.Take(page * 20).ToArray();
             for (var i = starti; i < endi; i++)
                 s += $"**{membersarray[i].Username}** , joined at: {membersarray[i].JoinedAt}\n";
 
@@ -58,6 +58,8 @@ namespace TheGodfatherBot
             await ctx.RespondAsync("Guild successfully renamed.");
         }
         #endregion
+
+        // todo prune
     }
 }
 
