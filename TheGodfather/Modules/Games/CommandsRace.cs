@@ -85,17 +85,6 @@ namespace TheGodfatherBot
             await ctx.RespondAsync($"{ctx.User.Mention} joined the race as {DiscordEmoji.FromName(ctx.Client, emoji)}");
         }
         #endregion
-        
-        #region COMMAND_RACE_STOP
-        [Command("stop"), Description("Stops a running race.")]
-        [Aliases("cancel")]
-        [RequireUserPermissions(Permissions.Administrator)]
-        public async Task CancelRace(CommandContext ctx)
-        {
-            StopRace(ctx);
-            await ctx.RespondAsync("Race cancelled.");
-        }
-        #endregion
 
 
         #region HELPER_FUNCTIONS

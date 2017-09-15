@@ -140,6 +140,7 @@ namespace TheGodfatherBot
             _commands.RegisterCommands<CommandsAdmin>();
             _commands.RegisterCommands<CommandsAlias>();
             _commands.RegisterCommands<CommandsBank>();
+            _commands.RegisterCommands<CommandsCards>();
             _commands.RegisterCommands<CommandsChannels>();
             _commands.RegisterCommands<CommandsGamble>();
             _commands.RegisterCommands<CommandsGames>();

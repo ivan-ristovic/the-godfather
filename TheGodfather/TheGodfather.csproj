@@ -127,6 +127,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Modules\Admin\CommandsAdmin.cs" />
+    <Compile Include="Modules\Games\CommandsCards.cs" />
     <Compile Include="Modules\Games\CommandsRace.cs" />
     <Compile Include="Modules\Messages\CommandsAlias.cs" />
     <Compile Include="Modules\Admin\CommandsChannels.cs" />
