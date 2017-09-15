@@ -161,7 +161,7 @@ namespace TheGodfatherBot
             string s = "";
             int starti = (page - 1) * 10;
             int endi = starti + 10 < _aliases[ctx.Guild.Id].Count ? starti + 10 : _aliases[ctx.Guild.Id].Count;
-            var keys = _aliases[ctx.Guild.Id].Keys.ToArray();
+            var keys = _aliases[ctx.Guild.Id].Keys.Take(page * 10).ToArray();
             for (var i = starti; i < endi; i++)
                 s += $"**{keys[i]}** : {_aliases[ctx.Guild.Id][keys[i]]}\n";
 
