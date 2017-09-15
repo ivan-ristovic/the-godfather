@@ -17,7 +17,7 @@ namespace TheGodfatherBot
         #region PRIVATE_FIELDS
         private static Dictionary<ulong, uint> _msgcount = new Dictionary<ulong, uint>();
         private const uint RANKUP_COUNT = 100;
-        private string[] _ranks = { "PVT", "Gypsy", "German closet cleaner", "MNG" };
+        private static string[] _ranks = { "PVT", "Gypsy", "German closet cleaner", "MNG" };
         #endregion
 
 
@@ -62,7 +62,8 @@ namespace TheGodfatherBot
 
         private async static Task PrintRankUpMessage(DiscordChannel c, DiscordUser u)
         {
-            await c.SendMessageAsync($"GG {u.Mention}! You have advanced to level {_msgcount[u.Id] / RANKUP_COUNT}!");
+            uint rank = _msgcount[u.Id] / RANKUP_COUNT;
+            await c.SendMessageAsync($"GG {u.Mention}! You have advanced to level {rank} ({(rank < _ranks.Length ? _ranks[rank] : "GOD")})!");
         }
         #endregion
     }

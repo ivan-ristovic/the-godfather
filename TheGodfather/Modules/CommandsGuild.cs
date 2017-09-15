@@ -68,7 +68,7 @@ namespace TheGodfatherBot
             await ctx.RespondAsync("", embed: new DiscordEmbedBuilder() {
                 Title = $"Audit log (page {page}) :",
                 Description = s,
-                Color = DiscordColor.SapGreen
+                Color = DiscordColor.Brown
             });
         }
         #endregion
