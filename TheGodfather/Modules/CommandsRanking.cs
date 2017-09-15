@@ -16,8 +16,7 @@ namespace TheGodfatherBot
     {
         #region PRIVATE_FIELDS
         private static Dictionary<ulong, uint> _msgcount = new Dictionary<ulong, uint>();
-        private const uint RANKUP_COUNT = 100;
-        private static string[] _ranks = { "PVT", "Gypsy", "German closet cleaner", "MNG" };
+        private static string[] _ranks = { "PVT", "Gypsy", "Michal's worker", "German closet cleaner", "MNG", "LDR" };
         #endregion
 
 
@@ -35,14 +34,16 @@ namespace TheGodfatherBot
                     msgcount = _msgcount[ctx.User.Id];
             }
 
+            uint rank = CalculateRank(msgcount);
+
             var embed = new DiscordEmbedBuilder() {
                 Title = u != null ? u.Username : ctx.User.Username,
                 Description = "User status",
                 Color = DiscordColor.Aquamarine
             };
-            uint rank = msgcount / RANKUP_COUNT;
-            embed.AddField("Rank", ((rank < _ranks.Length) ? _ranks[rank] : "GOD") + $" ({msgcount / RANKUP_COUNT})");
-            embed.AddField("XP", $"{msgcount}\n({(rank + 1) * RANKUP_COUNT} needed for rankup)");
+            embed.AddField("Rank", (rank < _ranks.Length) ? _ranks[rank] : "GOD");
+            embed.AddField("XP", $"{msgcount}", inline: true);
+            embed.AddField("XP needed for next rank", $"{(rank+1)*(rank+1)*10}", inline: true);
             await ctx.RespondAsync("", embed: embed);
         }
         #endregion
@@ -56,14 +57,19 @@ namespace TheGodfatherBot
             else
                 _msgcount.Add(u.Id, 1);
 
-            if (_msgcount[u.Id] % RANKUP_COUNT == 0)
+            if (CalculateRank(_msgcount[u.Id]) != CalculateRank(_msgcount[u.Id] - 1))
                 await PrintRankUpMessage(c, u);
         }
 
         private async static Task PrintRankUpMessage(DiscordChannel c, DiscordUser u)
         {
-            uint rank = _msgcount[u.Id] / RANKUP_COUNT;
+            uint rank = CalculateRank(_msgcount[u.Id]);
             await c.SendMessageAsync($"GG {u.Mention}! You have advanced to level {rank} ({(rank < _ranks.Length ? _ranks[rank] : "GOD")})!");
+        }
+
+        private static uint CalculateRank(uint msgcount)
+        {
+            return (uint)Math.Floor(Math.Sqrt(msgcount / 10));
         }
         #endregion
     }
