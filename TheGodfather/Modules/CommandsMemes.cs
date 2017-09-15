@@ -62,29 +62,6 @@ namespace TheGodfatherBot
         }
 
 
-        #region COMMAND_MEME_LIST
-        [Command("list")]
-        [Description("List all registered memes.")]
-        public async Task List(CommandContext ctx, [Description("Page")] int page = 1)
-        {
-            if (page < 1 || page > _memes.Count / 10 + 1)
-                throw new ArgumentException("No memes on that page.");
-
-            string s = "";
-            int starti = (page - 1) * 10;
-            int endi = starti + 10 < _memes.Count ? starti + 10 : _memes.Count;
-            var keys = _memes.Keys.ToArray();
-            for (var i = starti; i < endi; i++)
-                s += $"**{keys[i]}** : {_memes[keys[i]]}\n";
-
-            await ctx.RespondAsync("", embed: new DiscordEmbedBuilder() {
-                Title = $"Available aliases (page {page}) :",
-                Description = s,
-                Color = DiscordColor.Green
-            });
-        }
-        #endregion
-
         #region COMMAND_MEME_ADD
         [Command("add")]
         [Description("Add a new meme to the list.")]
@@ -123,6 +100,29 @@ namespace TheGodfatherBot
 
             _memes.Remove(name);
             await ctx.RespondAsync($"Meme '{name}' successfully deleted!");
+        }
+        #endregion
+
+        #region COMMAND_MEME_LIST
+        [Command("list")]
+        [Description("List all registered memes.")]
+        public async Task List(CommandContext ctx, [Description("Page")] int page = 1)
+        {
+            if (page < 1 || page > _memes.Count / 10 + 1)
+                throw new ArgumentException("No memes on that page.");
+
+            string s = "";
+            int starti = (page - 1) * 10;
+            int endi = starti + 10 < _memes.Count ? starti + 10 : _memes.Count;
+            var keys = _memes.Keys.Take(page * 10).ToArray();
+            for (var i = starti; i < endi; i++)
+                s += $"**{keys[i]}** : {_memes[keys[i]]}\n";
+
+            await ctx.RespondAsync("", embed: new DiscordEmbedBuilder() {
+                Title = $"Available aliases (page {page}) :",
+                Description = s,
+                Color = DiscordColor.Green
+            });
         }
         #endregion
 
