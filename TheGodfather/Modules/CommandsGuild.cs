@@ -22,7 +22,7 @@ namespace TheGodfatherBot
         #region COMMAND_GUILD_LISTMEMBERS
         [Command("listmembers")]
         [Description("Rename guild.")]
-        [Aliases("memberlist", "listm", "lm", "mem", "members")]
+        [Aliases("memberlist", "listm", "lm", "mem", "members", "memlist", "mlist")]
         public async Task ListMembers(CommandContext ctx, [Description("Page")] int page = 1)
         {
             var members = await ctx.Guild.GetAllMembersAsync();
@@ -32,7 +32,7 @@ namespace TheGodfatherBot
 
             string s = "";
             int starti = (page - 1) * 20;
-            int endi = starti + 20 < members.Count ? starti + 10 : members.Count;
+            int endi = starti + 20 < members.Count ? starti + 20 : members.Count;
             var membersarray = members.Take(page * 20).ToArray();
             for (var i = starti; i < endi; i++)
                 s += $"**{membersarray[i].Username}** , joined at: {membersarray[i].JoinedAt}\n";
@@ -48,7 +48,7 @@ namespace TheGodfatherBot
         #region COMMAND_GUILD_GETLOGS
         [Command("log")]
         [Description("Get audit logs.")]
-        [Aliases("auditlog", "viewlog", "getlog", "getlogs")]
+        [Aliases("auditlog", "viewlog", "getlog", "getlogs", "logs")]
         [RequirePermissions(Permissions.ViewAuditLog)]
         public async Task GetAuditLogs(CommandContext ctx, [Description("Page")] int page = 1)
         {
