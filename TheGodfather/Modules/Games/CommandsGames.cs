@@ -266,58 +266,5 @@ namespace TheGodfatherBot.Modules.Games
         #endregion
 
         #endregion
-
-        #region COMMAND_GAMES_QUIZ
-        [Command("quiz")]
-        [Description("Starts a quiz.")]
-        [Aliases("trivia")]
-        public async Task Quiz(CommandContext ctx)
-        {
-            Dictionary<string, string> answers = LoadQuestionsAndAnswers();
-            var questions = new List<string>(answers.Keys);
-            var participants = new SortedDictionary<string, int>();
-
-            var rnd = new Random();
-            for (int i = 0; i < 5; i++) {
-                string question = questions[rnd.Next(questions.Count)];
-                await ctx.RespondAsync(question);
-
-                var interactivity = ctx.Client.GetInteractivityModule();
-                var msg = await interactivity.WaitForMessageAsync(
-                    xm => xm.Content.ToLower() == answers[question],
-                    TimeSpan.FromSeconds(10)
-                );
-                if (msg == null) {
-                    await ctx.RespondAsync($"Time is out! The correct answer was: {answers[question]}");
-                } else {
-                    await ctx.RespondAsync($"GG {msg.User.Mention}, you got it right!");
-                    if (participants.ContainsKey(msg.User.Username))
-                        participants[msg.User.Username]++;
-                    else
-                        participants.Add(msg.User.Username, 1);
-                }
-                questions.Remove(question);
-                await Task.Delay(2000);
-            }
-
-            var em = new DiscordEmbedBuilder() { Title = "Results" };
-            foreach (var participant in participants)
-                em.AddField(participant.Key, participant.Value.ToString(), inline: true);
-            await ctx.RespondAsync("", embed: em);
-        }
-
-        #region HELPER_FUNCTIONS
-        private Dictionary<string, string> LoadQuestionsAndAnswers()
-        {
-            var qna = new Dictionary<string, string>();
-            qna.Add("test 1?", "1");
-            qna.Add("test 2?", "2");
-            qna.Add("test 3?", "3");
-            qna.Add("test 4?", "4");
-            qna.Add("test 5?", "5");
-            return qna;
-        }
-        #endregion
-        #endregion
     }
 }
