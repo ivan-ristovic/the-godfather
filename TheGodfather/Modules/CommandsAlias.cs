@@ -27,9 +27,9 @@ namespace TheGodfatherBot
         public static void LoadAliases(DebugLogger log)
         {
             log.LogMessage(LogLevel.Info, "TheGodfather", "Loading aliases...", DateTime.Now);
-            if (File.Exists("aliases.txt")) {
+            if (File.Exists("Resources/aliases.txt")) {
                 try {
-                    var lines = File.ReadAllLines("aliases.txt");
+                    var lines = File.ReadAllLines("Resources/aliases.txt");
                     foreach (string line in lines) {
                         if (line.Trim() == "" || line[0] == '#')
                             continue;

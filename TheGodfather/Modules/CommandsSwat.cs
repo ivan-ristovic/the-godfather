@@ -46,14 +46,14 @@ namespace TheGodfatherBot
                 "kos$31.186.250.32:10480:10481"
             };
 
-            if (!File.Exists("servers.txt")) {
-                FileStream f = File.Open("servers.txt", FileMode.CreateNew);
+            if (!File.Exists("Resources/servers.txt")) {
+                FileStream f = File.Open("Resources/servers.txt", FileMode.CreateNew);
                 f.Close();
-                File.WriteAllLines("servers.txt", serverlist);
+                File.WriteAllLines("Resources/servers.txt", serverlist);
             }
 
             try {
-                serverlist = File.ReadAllLines("servers.txt");
+                serverlist = File.ReadAllLines("Resources/servers.txt");
                 foreach (string line in serverlist) {
                     if (line.Trim() == "" || line[0] == '#')
                         continue;

@@ -325,9 +325,9 @@ namespace TheGodfatherBot
             public static void LoadInsults(DebugLogger log)
             {
                 log.LogMessage(LogLevel.Info, "TheGodfather", "Loading insults...", DateTime.Now);
-                if (File.Exists("insults.txt")) {
+                if (File.Exists("Resources/insults.txt")) {
                     try {
-                        var lines = File.ReadAllLines("insults.txt");
+                        var lines = File.ReadAllLines("Resources/insults.txt");
                         foreach (string line in lines) {
                             if (line.Trim() == "" || line[0] == '#')
                                 continue;

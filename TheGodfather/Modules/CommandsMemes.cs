@@ -26,9 +26,9 @@ namespace TheGodfatherBot
         public static void LoadMemes(DebugLogger log)
         {
             log.LogMessage(LogLevel.Info, "TheGodfather", "Loading memes...", DateTime.Now);
-            if (File.Exists("memes.txt")) {
+            if (File.Exists("Resources/memes.txt")) {
                 try {
-                    var lines = File.ReadAllLines("memes.txt");
+                    var lines = File.ReadAllLines("Resources/memes.txt");
                     foreach (string line in lines) {
                         if (string.IsNullOrWhiteSpace(line) || line[0] == '#')
                             continue;

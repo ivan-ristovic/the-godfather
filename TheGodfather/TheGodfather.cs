@@ -107,7 +107,7 @@ namespace TheGodfatherBot
             _client = new DiscordClient(new DiscordConfiguration {
                 LargeThreshold = 250,
                 AutoReconnect = true,
-                Token = GetToken("token.txt"),
+                Token = GetToken("Resources/token.txt"),
                 TokenType = TokenType.Bot,
                 UseInternalLogHandler = true,
                 LogLevel = LogLevel.Debug
