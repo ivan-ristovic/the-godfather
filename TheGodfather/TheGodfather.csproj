@@ -49,20 +49,20 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DSharpPlus, Version=3.1.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\DSharpPlus.3.1.1\lib\net47\DSharpPlus.dll</HintPath>
+    <Reference Include="DSharpPlus, Version=3.1.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\DSharpPlus.3.1.2\lib\net47\DSharpPlus.dll</HintPath>
     </Reference>
-    <Reference Include="DSharpPlus.CommandsNext, Version=3.1.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\DSharpPlus.CommandsNext.3.1.1\lib\net47\DSharpPlus.CommandsNext.dll</HintPath>
+    <Reference Include="DSharpPlus.CommandsNext, Version=3.1.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\DSharpPlus.CommandsNext.3.1.2\lib\net47\DSharpPlus.CommandsNext.dll</HintPath>
     </Reference>
-    <Reference Include="DSharpPlus.Interactivity, Version=3.1.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\DSharpPlus.Interactivity.3.1.1\lib\net47\DSharpPlus.Interactivity.dll</HintPath>
+    <Reference Include="DSharpPlus.Interactivity, Version=3.1.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\DSharpPlus.Interactivity.3.1.2\lib\net47\DSharpPlus.Interactivity.dll</HintPath>
     </Reference>
-    <Reference Include="DSharpPlus.VoiceNext, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\DSharpPlus.VoiceNext.3.0.0\lib\net47\DSharpPlus.VoiceNext.dll</HintPath>
+    <Reference Include="DSharpPlus.VoiceNext, Version=3.1.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\DSharpPlus.VoiceNext.3.1.2\lib\net47\DSharpPlus.VoiceNext.dll</HintPath>
     </Reference>
-    <Reference Include="DSharpPlus.WebSocket.WebSocket4Net, Version=3.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\DSharpPlus.WebSocket.WebSocket4Net.3.0.0\lib\net47\DSharpPlus.WebSocket.WebSocket4Net.dll</HintPath>
+    <Reference Include="DSharpPlus.WebSocket.WebSocket4Net, Version=3.1.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\DSharpPlus.WebSocket.WebSocket4Net.3.1.2\lib\net47\DSharpPlus.WebSocket.WebSocket4Net.dll</HintPath>
     </Reference>
     <Reference Include="Imgur.API, Version=5.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Imgur.API.5.0.0-beta1\lib\net45\Imgur.API.dll</HintPath>
