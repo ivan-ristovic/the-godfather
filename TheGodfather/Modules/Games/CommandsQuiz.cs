@@ -18,7 +18,10 @@ namespace TheGodfatherBot.Modules.Games
     [Aliases("trivia")]
     class CommandsQuiz
     {
+        #region PRIVATE_FIELDS
         private enum QuizType { Countries };
+        private Dictionary<string, string> _countries = null;
+        #endregion
 
 
         #region COMMAND_QUIZ_COUNTRIES
@@ -27,16 +30,17 @@ namespace TheGodfatherBot.Modules.Games
         [Aliases("flags")]
         public async Task CountriesQuiz(CommandContext ctx)
         {
-            Dictionary<string, string> qna = LoadCountries();
-            await StartQuiz(QuizType.Countries, ctx, qna);
+            if (_countries == null)
+                LoadCountries();
+            await StartQuiz(QuizType.Countries, ctx);
         }
         #endregion
 
 
         #region HELPER_FUNCTIONS
-        private async Task StartQuiz(QuizType t, CommandContext ctx, Dictionary<string, string> qna)
+        private async Task StartQuiz(QuizType t, CommandContext ctx)
         {
-            var questions = new List<string>(qna.Keys);
+            var questions = new List<string>(_countries.Keys);
             var participants = new SortedDictionary<string, int>();
 
             var rnd = new Random();
@@ -54,11 +58,11 @@ namespace TheGodfatherBot.Modules.Games
 
                 var interactivity = ctx.Client.GetInteractivityModule();
                 var msg = await interactivity.WaitForMessageAsync(
-                    xm => xm.Content.ToLower() == qna[question],
+                    xm => xm.Content.ToLower() == _countries[question].ToLower(),
                     TimeSpan.FromSeconds(10)
                 );
                 if (msg == null) {
-                    await ctx.RespondAsync($"Time is out! The correct answer was: {qna[question]}");
+                    await ctx.RespondAsync($"Time is out! The correct answer was: {_countries[question]}");
                 } else {
                     await ctx.RespondAsync($"GG {msg.User.Mention}, you got it right!");
                     if (participants.ContainsKey(msg.User.Username))
@@ -76,16 +80,13 @@ namespace TheGodfatherBot.Modules.Games
             await ctx.RespondAsync("", embed: em);
         }
         
-        private Dictionary<string, string> LoadCountries()
+        private void LoadCountries()
         {
-            var qna = new Dictionary<string, string>();
-
             DirectoryInfo di = new DirectoryInfo("Resources/quiz-flags");
             FileInfo[] files = di.GetFiles("*.png");
+            _countries = new Dictionary<string, string>();
             foreach (var f in files)
-                qna.Add(f.FullName, f.Name.Split('.')[0]);
-            
-            return qna;
+                _countries.Add(f.FullName, f.Name.Split('.')[0]);
         }
         #endregion
     }
