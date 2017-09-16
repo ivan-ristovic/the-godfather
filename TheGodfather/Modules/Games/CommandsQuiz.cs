@@ -59,10 +59,10 @@ namespace TheGodfatherBot.Modules.Games
                 var interactivity = ctx.Client.GetInteractivityModule();
                 var msg = await interactivity.WaitForMessageAsync(
                     xm => xm.Content.ToLower() == _countries[question].ToLower(),
-                    TimeSpan.FromSeconds(10)
+                    TimeSpan.FromSeconds(20)
                 );
                 if (msg == null) {
-                    await ctx.RespondAsync($"Time is out! The correct answer was: {_countries[question]}");
+                    await ctx.RespondAsync($"Time is out! The correct answer was: **{_countries[question]}**");
                 } else {
                     await ctx.RespondAsync($"GG {msg.User.Mention}, you got it right!");
                     if (participants.ContainsKey(msg.User.Username))
