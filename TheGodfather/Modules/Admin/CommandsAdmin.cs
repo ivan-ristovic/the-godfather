@@ -1,6 +1,8 @@
 ﻿#region USING_DIRECTIVES
 using System;
 using System.IO;
+using System.Reflection;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using DSharpPlus;
@@ -8,6 +10,9 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 #endregion
+
+using System.CodeDom.Compiler;
+using Microsoft.CSharp;
 
 namespace TheGodfatherBot.Modules.Admin
 {
@@ -32,7 +37,61 @@ namespace TheGodfatherBot.Modules.Admin
             await ctx.RespondAsync("Logs cleared.");
         }
         #endregion
-       
+
+        #region COMMAND_EVAL
+        [Command("eval"), Description("Compile and run the code snippet provided")]
+        [Aliases("evaluate", "compile", "run")]
+        public async Task Evaluate(CommandContext ctx, [RemainingText, Description("Code")] string code = null)
+        {
+            if (string.IsNullOrWhiteSpace(code))
+                throw new ArgumentException("Code missing.");
+
+            string[] split = null;
+            try {
+                split = code.Split(new string[] { "```" }, StringSplitOptions.RemoveEmptyEntries);
+            } catch (Exception e) {
+                throw e;
+            }
+
+            string source = @"
+                namespace Eval
+                {
+                    public class EvalClass
+                    {
+                        public int EvalMethod()
+                        {
+                            " + split[0] + @"
+                        }
+                    }
+                }
+            ";
+
+            Dictionary<string, string> providerOptions = new Dictionary<string, string> {
+                    {"CompilerVersion", "v3.5"}
+            };
+            CSharpCodeProvider provider = new CSharpCodeProvider(providerOptions);
+
+            CompilerParameters compilerParams = new CompilerParameters {
+                GenerateInMemory = true,
+                GenerateExecutable = false
+            };
+
+            CompilerResults results = provider.CompileAssemblyFromSource(compilerParams, source);
+
+            if (results.Errors.Count != 0) {
+                string s = "";
+                foreach (string err in results.Errors)
+                    s += err + '\n';
+                throw new Exception(s);
+            }
+
+            object o = results.CompiledAssembly.CreateInstance("Eval.EvalClass");
+            MethodInfo mi = o.GetType().GetMethod("EvalMethod");
+            int result = (int)mi.Invoke(o, null);
+            await ctx.RespondAsync(result.ToString());
+        }
+        #endregion
+
         #region COMMAND_SHUTDOWN
         [Command("shutdown"), Description("Triggers the dying in the vineyard scene.")]
         [Aliases("disable", "poweroff", "exit", "quit")]
