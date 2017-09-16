@@ -232,7 +232,7 @@ namespace TheGodfatherBot.Modules.Messages
 
             Bitmap chart;
             try {
-                chart = new Bitmap("graph.png");
+                chart = new Bitmap("Resources/graph.png");
             } catch {
                 ctx.Client.DebugLogger.LogMessage(LogLevel.Error, "TheGodfather", "graph.png load failed!", DateTime.Now);
                 throw new IOException("I can't find a graph on server machine, please contact owner and tell him.");
