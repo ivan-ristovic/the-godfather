@@ -57,9 +57,9 @@ namespace TheGodfatherBot.Modules.Messages
         }
         #endregion
 
-        #region COMMAND_RANK
-        [Command("ranks"), Description("Print all available ranks.")]
-        [Aliases("ranklist", "levels")]
+        #region COMMAND_RANKLIST
+        [Command("ranklist"), Description("Print all available ranks.")]
+        [Aliases("ranks", "levels")]
         public async Task RankList(CommandContext ctx, [Description("User to check rank")] DiscordUser u = null)
         {
             var em = new DiscordEmbedBuilder() {
@@ -73,6 +73,7 @@ namespace TheGodfatherBot.Modules.Messages
             await ctx.RespondAsync("", embed: em);
         }
         #endregion
+
 
         #region HELPER_FUNCTIONS
         public async static void UpdateMessageCount(DiscordChannel c, DiscordUser u)
