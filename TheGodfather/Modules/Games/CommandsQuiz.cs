@@ -75,7 +75,7 @@ namespace TheGodfatherBot.Modules.Games
                 await Task.Delay(2000);
             }
 
-            var em = new DiscordEmbedBuilder() { Title = "Results" };
+            var em = new DiscordEmbedBuilder() { Title = "Results", Color = DiscordColor.Azure };
             foreach (var participant in participants)
                 em.AddField(participant.Key, participant.Value.ToString(), inline: true);
             await ctx.RespondAsync("", embed: em);
