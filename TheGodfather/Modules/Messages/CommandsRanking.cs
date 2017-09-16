@@ -16,7 +16,16 @@ namespace TheGodfatherBot.Modules.Messages
     {
         #region PRIVATE_FIELDS
         private static Dictionary<ulong, uint> _msgcount = new Dictionary<ulong, uint>();
-        private static string[] _ranks = { "PVT", "Gypsy", "Michal's worker", "German closet cleaner", "MNG", "LDR" };
+        private static string[] _ranks = {
+            "PVT",
+            "Gypsy",
+            "Romanian wallet stealer",
+            "Serbian street cleaner",
+            "Michal's worker",
+            "German closet cleaner",
+            "Pakistani bomb carrier",
+            "LDR"
+        };
         #endregion
 
 
@@ -41,13 +50,29 @@ namespace TheGodfatherBot.Modules.Messages
                 Description = "User status",
                 Color = DiscordColor.Aquamarine
             };
-            embed.AddField("Rank", (rank < _ranks.Length) ? _ranks[rank] : "GOD");
+            embed.AddField("Rank", (rank < _ranks.Length) ? _ranks[rank] : "Low");
             embed.AddField("XP", $"{msgcount}", inline: true);
-            embed.AddField("XP needed for next rank", $"{(rank+1)*(rank+1)*10}", inline: true);
+            embed.AddField("XP needed for next rank", $"{(rank + 1) * (rank + 1) * 10}", inline: true);
             await ctx.RespondAsync("", embed: embed);
         }
         #endregion
 
+        #region COMMAND_RANK
+        [Command("ranks"), Description("Print all available ranks.")]
+        [Aliases("ranklist", "levels")]
+        public async Task RankList(CommandContext ctx, [Description("User to check rank")] DiscordUser u = null)
+        {
+            var em = new DiscordEmbedBuilder() {
+                Title = "Ranks: ",
+                Color = DiscordColor.IndianRed
+            };
+
+            for (int i = 0; i < _ranks.Length; i++)
+                em.AddField(_ranks[i], $"XP needed: {(i + 1) * (i + 1) * 10}");
+
+            await ctx.RespondAsync("", embed: em);
+        }
+        #endregion
 
         #region HELPER_FUNCTIONS
         public async static void UpdateMessageCount(DiscordChannel c, DiscordUser u)
