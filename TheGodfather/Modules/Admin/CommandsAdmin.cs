@@ -67,7 +67,7 @@ namespace TheGodfatherBot.Modules.Admin
             ";
 
             Dictionary<string, string> providerOptions = new Dictionary<string, string> {
-                    {"CompilerVersion", "v3.5"}
+                    { "CompilerVersion", "v3.5" }
             };
             CSharpCodeProvider provider = new CSharpCodeProvider(providerOptions);
 
