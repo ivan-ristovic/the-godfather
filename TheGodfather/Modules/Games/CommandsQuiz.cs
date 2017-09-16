@@ -44,12 +44,13 @@ namespace TheGodfatherBot.Modules.Games
             var participants = new SortedDictionary<string, int>();
 
             var rnd = new Random();
-            for (int i = 0; i < 5; i++) {
+            for (int i = 1; i < 10; i++) {
                 string question = questions[rnd.Next(questions.Count)];
 
                 if (t == QuizType.Countries)
                     try {
-                        await ctx.RespondWithFileAsync(new FileStream(question, FileMode.Open));
+                        await ctx.TriggerTypingAsync();
+                        await ctx.RespondWithFileAsync(new FileStream(question, FileMode.Open), content: $"Question {i}:");
                     } catch (IOException e) {
                         throw e;
                     }
