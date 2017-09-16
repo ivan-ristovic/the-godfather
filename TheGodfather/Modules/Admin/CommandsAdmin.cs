@@ -80,8 +80,8 @@ namespace TheGodfatherBot.Modules.Admin
 
             if (results.Errors.Count != 0) {
                 string s = "";
-                foreach (string err in results.Errors)
-                    s += err + '\n';
+                foreach (object err in results.Errors)
+                    s += err.ToString() + '\n';
                 throw new Exception(s);
             }
 
