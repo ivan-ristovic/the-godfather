@@ -50,17 +50,23 @@ namespace TheGodfatherBot.Modules.Search
                 foreach (var im in images) {
                     if (i-- == 0)
                         break;
-                    if (im.GetType().Name == "GalleryImage")
-                        await ctx.RespondAsync(((GalleryImage)im).Link);
-                    else if (im.GetType().Name == "GalleryAlbum")
-                        await ctx.RespondAsync(((GalleryAlbum)im).Link);
-                    else
+                    if (im.GetType().Name == "GalleryImage") {
+                        var img = ((GalleryImage)im);
+                        if ((img.Nsfw != null && img.Nsfw == true) && !ctx.Channel.IsNSFW)
+                            throw new Exception("This is not a NSFW channel!");
+                        await ctx.RespondAsync(img.Link);
+                    } else if (im.GetType().Name == "GalleryAlbum") {
+                        var img = ((GalleryAlbum)im);
+                        if ((img.Nsfw != null && img.Nsfw == true) && !ctx.Channel.IsNSFW)
+                            throw new Exception("This is not a NSFW channel!");
+                        await ctx.RespondAsync(img.Link);
+                    } else
                         throw new ImgurException("Imgur API error");
                     await Task.Delay(1000);
                 }
 
                 if (i == num)
-                    throw new Exception("No results...");
+                    await ctx.RespondAsync("No results...");
 
                 if (i > 0) {
                     await ctx.RespondAsync("These are all of the results returned.");
