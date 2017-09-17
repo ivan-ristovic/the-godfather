@@ -198,7 +198,8 @@ namespace TheGodfatherBot.Modules.Admin
         #endregion
 
         #region COMMAND_USER_SETNAME
-        [Command("setname"), Description("Gives someone a new nickname.")]
+        [Command("setname")]
+        [Description("Gives someone a new nickname.")]
         [Aliases("nick", "newname", "name")]
         [RequirePermissions(Permissions.ManageNicknames)]
         public async Task ChangeNickname(CommandContext ctx,
