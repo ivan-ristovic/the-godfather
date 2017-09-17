@@ -52,12 +52,12 @@ namespace TheGodfatherBot.Modules.Search
                         break;
                     if (im.GetType().Name == "GalleryImage") {
                         var img = ((GalleryImage)im);
-                        if ((img.Nsfw != null && img.Nsfw == true) && !ctx.Channel.IsNSFW)
+                        if (!ctx.Channel.IsNSFW && img.Nsfw != null && img.Nsfw == true)
                             throw new Exception("This is not a NSFW channel!");
                         await ctx.RespondAsync(img.Link);
                     } else if (im.GetType().Name == "GalleryAlbum") {
                         var img = ((GalleryAlbum)im);
-                        if ((img.Nsfw != null && img.Nsfw == true) && !ctx.Channel.IsNSFW)
+                        if (!ctx.Channel.IsNSFW && img.Nsfw != null && img.Nsfw == true)
                             throw new Exception("This is not a NSFW channel!");
                         await ctx.RespondAsync(img.Link);
                     } else

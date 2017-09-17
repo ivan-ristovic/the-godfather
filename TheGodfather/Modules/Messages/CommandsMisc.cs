@@ -280,7 +280,7 @@ namespace TheGodfatherBot.Modules.Messages
             await ctx.RespondAsync(s);
         }
         #endregion
-
+        
 
         #region HELPER_FUNCTIONS
         private Task CheckForPollReply(MessageCreateEventArgs e)
