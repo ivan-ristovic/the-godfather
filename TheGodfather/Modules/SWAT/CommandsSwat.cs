@@ -124,7 +124,7 @@ namespace TheGodfatherBot.Modules.SWAT
                     foreach (var entry in _serverlist)
                         serverlist.Add(entry.Key + "$" + entry.Value);
 
-                    File.WriteAllLines("servers.txt", serverlist);
+                    File.WriteAllLines("Resources/servers.txt", serverlist);
                 } catch (Exception e) {
                     ctx.Client.DebugLogger.LogMessage(LogLevel.Error, "TheGodfather", "Servers save error: " + e.ToString(), DateTime.Now);
                     throw new IOException("Error while saving servers.");

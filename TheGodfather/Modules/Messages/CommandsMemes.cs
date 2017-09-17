@@ -138,7 +138,7 @@ namespace TheGodfatherBot.Modules.Messages
                 foreach (var entry in _memes)
                     memelist.Add(entry.Key + "$" + entry.Value);
                 
-                File.WriteAllLines("memes.txt", memelist);
+                File.WriteAllLines("Resources/memes.txt", memelist);
             } catch (Exception e) {
                 ctx.Client.DebugLogger.LogMessage(LogLevel.Error, "TheGodfather", "Meme save error: " + e.ToString(), DateTime.Now);
                 throw new IOException("Error while saving memes.");

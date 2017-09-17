@@ -135,7 +135,7 @@ namespace TheGodfatherBot.Modules.Messages
                     foreach (var alias in guild_aliases.Value)
                         aliaslist.Add(guild_aliases.Key + "$" + alias.Key + "$" + alias.Value);
 
-                File.WriteAllLines("aliases.txt", aliaslist);
+                File.WriteAllLines("Resources/aliases.txt", aliaslist);
             } catch (Exception e) {
                 ctx.Client.DebugLogger.LogMessage(LogLevel.Error, "TheGodfather", "IO Alias save error:" + e.ToString(), DateTime.Now);
                 throw new IOException("IO error while saving aliases.");

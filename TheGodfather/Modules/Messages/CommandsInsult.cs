@@ -107,7 +107,7 @@ namespace TheGodfatherBot.Modules.Messages
         {
             ctx.Client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", "Saving insults...", DateTime.Now);
             try {
-                File.WriteAllLines("aliases.txt", _insults);
+                File.WriteAllLines("Resources/insults.txt", _insults);
             } catch (Exception e) {
                 ctx.Client.DebugLogger.LogMessage(LogLevel.Error, "TheGodfather", "IO insults save error:" + e.ToString(), DateTime.Now);
                 throw new IOException("IO error while saving insults.");
