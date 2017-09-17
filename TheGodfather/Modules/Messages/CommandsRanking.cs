@@ -34,21 +34,20 @@ namespace TheGodfatherBot.Modules.Messages
         [Aliases("level")]
         public async Task Rank(CommandContext ctx, [Description("User to check rank")] DiscordUser u = null)
         {
+            if (u == null)
+                u = ctx.User;
+
             uint msgcount = 0;
-            if (u != null) {
-                if (_msgcount.ContainsKey(u.Id))
-                    msgcount = _msgcount[u.Id];
-            } else {
-                if (_msgcount.ContainsKey(ctx.User.Id))
-                    msgcount = _msgcount[ctx.User.Id];
-            }
+            if (_msgcount.ContainsKey(u.Id))
+                msgcount = _msgcount[u.Id];
 
             uint rank = CalculateRank(msgcount);
 
             var embed = new DiscordEmbedBuilder() {
-                Title = u != null ? u.Username : ctx.User.Username,
+                Title = u.Username,
                 Description = "User status",
-                Color = DiscordColor.Aquamarine
+                Color = DiscordColor.Aquamarine,
+                ThumbnailUrl = u.AvatarUrl
             };
             embed.AddField("Rank", (rank < _ranks.Length) ? _ranks[rank] : "Low");
             embed.AddField("XP", $"{msgcount}", inline: true);
@@ -60,15 +59,15 @@ namespace TheGodfatherBot.Modules.Messages
         #region COMMAND_RANKLIST
         [Command("ranklist"), Description("Print all available ranks.")]
         [Aliases("ranks", "levels")]
-        public async Task RankList(CommandContext ctx, [Description("User to check rank")] DiscordUser u = null)
+        public async Task RankList(CommandContext ctx)
         {
             var em = new DiscordEmbedBuilder() {
                 Title = "Ranks: ",
                 Color = DiscordColor.IndianRed
             };
 
-            for (int i = 0; i < _ranks.Length; i++)
-                em.AddField(_ranks[i], $"XP needed: {(i + 1) * (i + 1) * 10}");
+            for (int i = 1; i < _ranks.Length; i++)
+                em.AddField(_ranks[i], $"XP needed: {i * i * 10}");
 
             await ctx.RespondAsync("", embed: em);
         }
