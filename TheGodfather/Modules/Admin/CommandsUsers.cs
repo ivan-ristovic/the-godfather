@@ -86,7 +86,10 @@ namespace TheGodfatherBot.Modules.Admin
                 throw new ArgumentNullException("You need to mention a user to kick.");
 
             await ctx.Guild.RemoveMemberAsync(u);
-            await ctx.RespondAsync("https://i.imgflip.com/7wcxy.jpg");
+            await ctx.RespondAsync("", embed: new DiscordEmbedBuilder() {
+                Title = $"**{ctx.User.Username}** kicked **{u.Username}** in cojones.",
+                ImageUrl = "https://i.imgflip.com/7wcxy.jpg"
+            });
         }
         #endregion
 

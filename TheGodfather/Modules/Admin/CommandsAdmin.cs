@@ -16,13 +16,16 @@ using Microsoft.CSharp;
 
 namespace TheGodfatherBot.Modules.Admin
 {
-    [Group("admin"), Description("Administrative owner commands."), Hidden]
-    [RequireOwner]
+    [Group("admin")]
+    [Description("Bot administration commands.")]
+    [Hidden]
     public class CommandsAdmin
     {
         #region COMMAND_CLEARLOG
-        [Command("clearlog"), Description("Clear application logs.")]
+        [Command("clearlog")]
+        [Description("Clear application logs.")]
         [Aliases("clearlogs", "deletelogs", "deletelog")]
+        [RequireOwner]
         public async Task ChangeNickname(CommandContext ctx)
         {
             try {
@@ -39,8 +42,10 @@ namespace TheGodfatherBot.Modules.Admin
         #endregion
 
         #region COMMAND_EVAL
-        [Command("eval"), Description("Compile and run the code snippet provided")]
+        [Command("eval")]
+        [Description("Compile and run the code snippet provided")]
         [Aliases("evaluate", "compile", "run")]
+        [RequireOwner]
         public async Task Evaluate(CommandContext ctx, [RemainingText, Description("Code")] string code = null)
         {
             if (string.IsNullOrWhiteSpace(code))
@@ -93,8 +98,10 @@ namespace TheGodfatherBot.Modules.Admin
         #endregion
 
         #region COMMAND_SHUTDOWN
-        [Command("shutdown"), Description("Triggers the dying in the vineyard scene.")]
+        [Command("shutdown")]
+        [Description("Triggers the dying in the vineyard scene.")]
         [Aliases("disable", "poweroff", "exit", "quit")]
+        [RequireUserPermissions(Permissions.Administrator)]
         public async Task ShutDown(CommandContext ctx)
         {
             await ctx.RespondAsync("https://www.youtube.com/watch?v=4rbfuw0UN2A");
@@ -104,7 +111,10 @@ namespace TheGodfatherBot.Modules.Admin
         #endregion
 
         #region COMMAND_SUDO
-        [Command("sudo"), Description("Executes a command as another user."), Hidden]
+        [Command("sudo")]
+        [Description("Executes a command as another user.")]
+        [Aliases("execas", "as")]
+        [RequireOwner]
         public async Task Sudo(CommandContext ctx, 
                               [Description("Member to execute as.")] DiscordMember member, 
                               [RemainingText, Description("Command text to execute.")] string command)
@@ -115,13 +125,14 @@ namespace TheGodfatherBot.Modules.Admin
 
 
         [Group("status", CanInvokeWithoutSubcommand = false)]
-        [RequireOwner]
+        [Description("Bot status manipulation.")]
         public class CommandsStatus
         {
             #region COMMAND_STATUS_ADD
             [Command("add")]
             [Description("Add a status to running queue.")]
             [Aliases("+")]
+            [RequireOwner]
             public async Task AddStatus(CommandContext ctx,
                                        [RemainingText, Description("Status.")] string status)
             {
@@ -137,6 +148,7 @@ namespace TheGodfatherBot.Modules.Admin
             [Command("delete")]
             [Description("Remove status from running queue.")]
             [Aliases("-", "remove")]
+            [RequireOwner]
             public async Task DeleteStatus(CommandContext ctx,
                                           [RemainingText, Description("Status.")] string status)
             {
@@ -154,6 +166,7 @@ namespace TheGodfatherBot.Modules.Admin
             #region COMMAND_STATUS_LIST
             [Command("list")]
             [Description("List all statuses.")]
+            [RequireUserPermissions(Permissions.Administrator)]
             public async Task ListStatuses(CommandContext ctx)
             {
                 string s = "Statuses:\n\n";

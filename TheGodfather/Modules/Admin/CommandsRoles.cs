@@ -15,7 +15,6 @@ namespace TheGodfatherBot.Modules.Admin
     [Group("roles", CanInvokeWithoutSubcommand = true)]
     [Description("Miscellaneous role control commands.")]
     [Aliases("role", "r", "rl")]
-    [RequirePermissions(Permissions.ManageRoles)]
     public class CommandsRoles
     {
         public async Task ExecuteGroupAsync(CommandContext ctx)
@@ -35,6 +34,7 @@ namespace TheGodfatherBot.Modules.Admin
         [Command("create")]
         [Description("Create a new role.")]
         [Aliases("new", "add", "+")]
+        [RequirePermissions(Permissions.ManageRoles)]
         public async Task CreateRole(CommandContext ctx, [Description("Role")] string name = null)
         {
             if (string.IsNullOrWhiteSpace(name))
@@ -49,6 +49,7 @@ namespace TheGodfatherBot.Modules.Admin
         [Command("delete")]
         [Description("Create a new role.")]
         [Aliases("del", "remove", "d", "-")]
+        [RequirePermissions(Permissions.ManageRoles)]
         public async Task DeleteRole(CommandContext ctx, [Description("Role")] DiscordRole role = null)
         {
             if (role == null)
@@ -63,6 +64,7 @@ namespace TheGodfatherBot.Modules.Admin
         [Command("setcolor")]
         [Description("Set a color for the role.")]
         [Aliases("clr", "c")]
+        [RequirePermissions(Permissions.ManageRoles)]
         public async Task SetColor(CommandContext ctx, 
                                   [Description("Role")] DiscordRole role = null,
                                   [Description("Color")] string color = null)
@@ -79,6 +81,7 @@ namespace TheGodfatherBot.Modules.Admin
         [Command("setname")]
         [Description("Set a name for the role.")]
         [Aliases("name", "rename", "n")]
+        [RequirePermissions(Permissions.ManageRoles)]
         public async Task RenameRole(CommandContext ctx,
                                     [Description("Role")] DiscordRole role = null,
                                     [Description("New name")] string name = null)
@@ -95,6 +98,7 @@ namespace TheGodfatherBot.Modules.Admin
         [Command("setmentionable")]
         [Description("Set role mentionable var.")]
         [Aliases("mentionable", "m", "setm")]
+        [RequirePermissions(Permissions.ManageRoles)]
         public async Task SetMentionable(CommandContext ctx,
                                         [Description("Role")] DiscordRole role = null,
                                         [Description("True/False")] bool b = true)
@@ -111,6 +115,7 @@ namespace TheGodfatherBot.Modules.Admin
         [Command("setvisible")]
         [Description("Set role hoist var (visibility in online list.")]
         [Aliases("separate", "h", "sets", "seth", "hoist", "sethoist")]
+        [RequirePermissions(Permissions.ManageRoles)]
         public async Task SetVisible(CommandContext ctx,
                                     [Description("Role")] DiscordRole role = null,
                                     [Description("True/False")] bool b = true)

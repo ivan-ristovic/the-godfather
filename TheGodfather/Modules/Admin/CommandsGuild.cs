@@ -16,13 +16,13 @@ namespace TheGodfatherBot.Modules.Admin
     [Group("guild", CanInvokeWithoutSubcommand = false)]
     [Description("Miscellaneous guild control commands.")]
     [Aliases("server")]
-    [RequirePermissions(Permissions.ManageGuild)]
     public class CommandsGuild
     {
         #region COMMAND_GUILD_LISTMEMBERS
         [Command("listmembers")]
         [Description("Rename guild.")]
         [Aliases("memberlist", "listm", "lm", "mem", "members", "memlist", "mlist")]
+        [RequirePermissions(Permissions.ManageGuild)]
         public async Task ListMembers(CommandContext ctx, [Description("Page")] int page = 1)
         {
             var members = await ctx.Guild.GetAllMembersAsync();
@@ -77,13 +77,13 @@ namespace TheGodfatherBot.Modules.Admin
         [Command("prune")]
         [Description("Prune guild members who weren't active in given ammount of days.")]
         [Aliases("p", "clean", "lm", "mem", "members")]
-        [RequireUserPermissions(Permissions.Administrator)]
         [RequirePermissions(Permissions.KickMembers)]
+        [RequireUserPermissions(Permissions.Administrator)]
         public async Task PruneMembers(CommandContext ctx, [Description("Days")] int days = 365)
         {
             if (days <= 0 || days > 1000)
                 throw new ArgumentException("Number of days not in valid range! [1-1000]");
-            /*
+            
             int count = await ctx.Guild.GetPruneCountAsync(days);
             await ctx.RespondAsync($"Pruning will remove **{count}** members. Continue?");
             
@@ -97,7 +97,7 @@ namespace TheGodfatherBot.Modules.Admin
                 await ctx.RespondAsync("Alright, cancelling...");
                 return;
             }
-            */
+            
             await ctx.Guild.PruneAsync(days);
             await ctx.RespondAsync("Pruning complete!");
         }
@@ -107,6 +107,7 @@ namespace TheGodfatherBot.Modules.Admin
         [Command("rename")]
         [Description("Rename guild.")]
         [Aliases("r", "name", "setname")]
+        [RequirePermissions(Permissions.ManageGuild)]
         public async Task RenameGuild(CommandContext ctx,
                                      [RemainingText, Description("New name")] string name = null)
         {
@@ -117,7 +118,6 @@ namespace TheGodfatherBot.Modules.Admin
             await ctx.RespondAsync("Guild successfully renamed.");
         }
         #endregion
-
     }
 }
 
