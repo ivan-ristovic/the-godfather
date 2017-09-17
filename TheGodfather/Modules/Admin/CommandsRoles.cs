@@ -93,11 +93,11 @@ namespace TheGodfatherBot.Modules.Admin
 
         #region COMMAND_ROLES_SETMENTIONABLE
         [Command("setmentionable")]
-        [Description("Role modification swiss-key.")]
+        [Description("Set role mentionable var.")]
         [Aliases("mentionable", "m", "setm")]
-        public async Task ModifyRole(CommandContext ctx,
-                                    [Description("Role")] DiscordRole role = null,
-                                    [Description("True/False")] bool b = true)
+        public async Task SetMentionable(CommandContext ctx,
+                                        [Description("Role")] DiscordRole role = null,
+                                        [Description("True/False")] bool b = true)
         {
             if (role == null)
                 throw new ArgumentException("Unknown role.");
@@ -106,6 +106,21 @@ namespace TheGodfatherBot.Modules.Admin
             await ctx.RespondAsync("Successfully set " + role.Name + "'s mentionable var to: " + b);
         }
         #endregion
+        
+        #region COMMAND_ROLES_SETVISIBILITY
+        [Command("setvisible")]
+        [Description("Set role hoist var (visibility in online list.")]
+        [Aliases("separate", "h", "sets", "seth", "hoist", "sethoist")]
+        public async Task SetVisible(CommandContext ctx,
+                                    [Description("Role")] DiscordRole role = null,
+                                    [Description("True/False")] bool b = true)
+        {
+            if (role == null)
+                throw new ArgumentException("Unknown role.");
 
+            await ctx.Guild.UpdateRoleAsync(role, hoist: b);
+            await ctx.RespondAsync("Successfully set " + role.Name + "'s hoist var to: " + b);
+        }
+        #endregion
     }
 }
