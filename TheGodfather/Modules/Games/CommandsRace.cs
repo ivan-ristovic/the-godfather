@@ -33,7 +33,8 @@ namespace TheGodfatherBot.Modules.Games
 
 
         #region COMMAND_RACE_NEW
-        [Command("new"), Description("Start a new race.")]
+        [Command("new")]
+        [Description("Start a new race.")]
         [Aliases("create")]
         public async Task NewRace(CommandContext ctx)
         {
@@ -60,7 +61,8 @@ namespace TheGodfatherBot.Modules.Games
         #endregion
 
         #region COMMAND_RACE_JOIN
-        [Command("join"), Description("Join a race.")]
+        [Command("join")]
+        [Description("Join a race.")]
         [Aliases("+", "compete")]
         public async Task JoinRace(CommandContext ctx)
         {

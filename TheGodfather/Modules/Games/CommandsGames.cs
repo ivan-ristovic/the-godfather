@@ -18,7 +18,8 @@ namespace TheGodfatherBot.Modules.Games
     public class CommandsGames
     {
         #region COMMAND_DUEL
-        [Command("duel"), Description("Starts a duel which I will commentate.")]
+        [Command("duel")]
+        [Description("Starts a duel which I will commentate.")]
         [Aliases("fight", "vs")]
         public async Task Duel(CommandContext ctx, [Description("Who to fight")] DiscordUser u)
         {
@@ -136,9 +137,10 @@ namespace TheGodfatherBot.Modules.Games
         }
         #endregion
         #endregion
-
+        
         #region COMMAND_GAMES_RPS
-        [Command("rps"), Description("Rock, paper, scissors game.")]
+        [Command("rps")]
+        [Description("Rock, paper, scissors game.")]
         [Aliases("rockpaperscissors")]
         public async Task RPS(CommandContext ctx)
         {
