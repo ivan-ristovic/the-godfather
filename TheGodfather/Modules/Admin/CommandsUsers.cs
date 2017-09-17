@@ -1,6 +1,6 @@
 ﻿#region USING_DIRECTIVES
 using System;
-using System.IO;
+using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -8,6 +8,7 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using DSharpPlus.Exceptions;
 #endregion
 
 namespace TheGodfatherBot.Modules.Admin
@@ -144,6 +145,34 @@ namespace TheGodfatherBot.Modules.Admin
 
             await u.RevokeRoleAsync(role);
             await ctx.RespondAsync($"Successfully removed role {role.Name} from {u.DisplayName}.");
+        }
+        #endregion
+
+        #region COMMAND_USER_REMOVEROLES
+        [Command("removeallroles")]
+        [Description("Revoke all roles from user.")]
+        [Aliases("remallroles", "delallroles", "droles")]
+        [RequirePermissions(Permissions.ManageRoles)]
+        public async Task RemoveAllRoles(CommandContext ctx,
+                                        [Description("User")] DiscordMember u = null)
+        {
+            if (u == null)
+                throw new ArgumentException("You need to specify a user.");
+
+            var roles = u.Roles.ToList();
+            var usermaxr = ctx.Member.Roles.Max();
+            foreach (var role in roles)
+                if (role.Position >= usermaxr.Position)
+                    throw new Exception("You are not authorised to remove roles from this user.");
+
+            try {
+                foreach (var role in roles)
+                    await u.RevokeRoleAsync(role);
+            } catch (UnauthorizedException e) {
+                throw new Exception("Failed to remove one of the roles from the user.", e);
+            }
+
+            await ctx.RespondAsync($"Successfully removed all roles from {u.DisplayName}.");
         }
         #endregion
 
