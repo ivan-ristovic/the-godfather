@@ -59,6 +59,24 @@ namespace TheGodfatherBot.Modules.Admin
             await ctx.RespondAsync("Successfully removed role " + role.Name);
         }
         #endregion
+        
+        #region COMMAND_ROLES_MENTIONALL
+        [Command("mentionall")]
+        [Description("Mention all users from given role.")]
+        [Aliases("mention", "@", "ma")]
+        public async Task MentionAllFromRole(CommandContext ctx, 
+                                            [Description("Role")] DiscordRole role = null)
+        {
+            if (role == null)
+                throw new ArgumentException("Unknown role.");
+
+            var users = ctx.Guild.GetAllMembersAsync().Result.Where(u => u.Roles.Contains(role));
+            string s = "";
+            foreach (var user in users)
+                s += user.Mention + " ";
+            await ctx.RespondAsync(s);
+        }
+        #endregion
 
         #region COMMAND_ROLES_SETCOLOR
         [Command("setcolor")]
