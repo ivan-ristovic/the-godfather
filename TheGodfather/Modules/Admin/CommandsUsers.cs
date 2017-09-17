@@ -107,6 +107,27 @@ namespace TheGodfatherBot.Modules.Admin
         }
         #endregion
 
+        #region COMMAND_USER_LISTROLES
+        [Command("listroles")]
+        [Description("List user permissions.")]
+        [Aliases("rolelist", "roles", "r")]
+        public async Task ListRoles(CommandContext ctx,
+                                   [Description("User")] DiscordMember u = null)
+        {
+            if (u == null)
+                u = ctx.Member;
+
+            string s = "";
+            foreach (var role in u.Roles.OrderBy(r => r.Position).Reverse())
+                s += role.Name + "\n";
+            await ctx.RespondAsync("", embed: new DiscordEmbedBuilder() {
+                Title = $"{u.Username}'s roles:",
+                Description = s,
+                Color = DiscordColor.Gold
+            });
+        }
+        #endregion
+
         #region COMMAND_USER_MUTE
         [Command("mute")]
         [Description("Toggle user mute.")]
@@ -148,7 +169,7 @@ namespace TheGodfatherBot.Modules.Admin
         }
         #endregion
 
-        #region COMMAND_USER_REMOVEROLES
+        #region COMMAND_USER_REMOVEALLROLES
         [Command("removeallroles")]
         [Description("Revoke all roles from user.")]
         [Aliases("remallroles", "delallroles", "droles")]
