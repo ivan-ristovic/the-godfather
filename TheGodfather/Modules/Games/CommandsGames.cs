@@ -144,14 +144,14 @@ namespace TheGodfatherBot.Modules.Games
         [Aliases("rockpaperscissors")]
         public async Task RPS(CommandContext ctx)
         {
-            await ctx.RespondAsync("Get ready!");
+            var msg = await ctx.RespondAsync("Get ready!");
             for (int i = 3; i > 0; i--) {
-                await ctx.RespondAsync(i + "...");
+                await msg.ModifyAsync(i + "...");
                 await Task.Delay(1000);
             }
-
-            var rnd = new Random();
-            switch (rnd.Next(0, 3)) {
+            await msg.ModifyAsync("GO!");
+            
+            switch (new Random().Next(0, 3)) {
                 case 0: await ctx.RespondAsync($"{DiscordEmoji.FromName(ctx.Client, ":new_moon:")}"); break;
                 case 1: await ctx.RespondAsync($"{DiscordEmoji.FromName(ctx.Client, ":newspaper:")}"); break;
                 case 2: await ctx.RespondAsync($"{DiscordEmoji.FromName(ctx.Client, ":scissors:")}"); break;
