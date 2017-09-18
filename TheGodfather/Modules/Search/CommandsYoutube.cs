@@ -24,7 +24,7 @@ namespace TheGodfatherBot.Modules.Search
     {
         
         public async Task ExecuteGroupAsync(CommandContext ctx, 
-                                           [Description("Search query.")] string query)
+                                           [RemainingText, Description("Search query.")] string query)
         {
             var results = await GetYoutubeResults(query, 5);
 
@@ -43,7 +43,7 @@ namespace TheGodfatherBot.Modules.Search
                         break;
 
                     case "youtube#playlist":
-                        em.AddField(r.Snippet.Title, "https://www.youtube.com/channel/" + r.Id.PlaylistId);
+                        em.AddField(r.Snippet.Title, "https://www.youtube.com/playlist?list=" + r.Id.PlaylistId);
                         break;
                 }
 
