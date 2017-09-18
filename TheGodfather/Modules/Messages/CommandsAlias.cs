@@ -20,7 +20,7 @@ namespace TheGodfatherBot.Modules.Messages
     public class CommandsAlias
     {
         #region STATIC_FIELDS
-        private static Dictionary<ulong, Dictionary<string, string>> _aliases = new Dictionary<ulong, Dictionary<string, string>>();
+        private static SortedDictionary<ulong, SortedDictionary<string, string>> _aliases = new SortedDictionary<ulong, SortedDictionary<string, string>>();
         #endregion
 
         #region STATIC_FUNCTIONS
@@ -36,7 +36,7 @@ namespace TheGodfatherBot.Modules.Messages
                         var values = line.Split('$');
                         ulong gid = ulong.Parse(values[0]);
                         if (!_aliases.ContainsKey(gid))
-                            _aliases.Add(gid, new Dictionary<string, string>());
+                            _aliases.Add(gid, new SortedDictionary<string, string>());
                         _aliases[gid].Add(values[1], values[2]);
                     }
                 } catch (Exception e) {
@@ -84,7 +84,7 @@ namespace TheGodfatherBot.Modules.Messages
                 throw new ArgumentException("Alias name or response missing or invalid.");
 
             if (!_aliases.ContainsKey(ctx.Guild.Id))
-                _aliases.Add(ctx.Guild.Id, new Dictionary<string, string>());
+                _aliases.Add(ctx.Guild.Id, new SortedDictionary<string, string>());
 
             alias = alias.ToLower();
             if (_aliases[ctx.Guild.Id].ContainsKey(alias)) {

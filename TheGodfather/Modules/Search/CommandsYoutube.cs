@@ -36,6 +36,9 @@ namespace TheGodfatherBot.Modules.Search
         }
 
 
+        // TODO add channel, video, playlist search
+
+
         #region HELPER_FUNCTIONS
         private async Task<List<SearchResult>> GetYoutubeResults(string query, int ammount)
         {

@@ -119,7 +119,7 @@ namespace TheGodfatherBot.Modules.Messages
                 s += $"**{keys[i]}** : {_memes[keys[i]]}\n";
 
             await ctx.RespondAsync("", embed: new DiscordEmbedBuilder() {
-                Title = $"Available aliases (page {page}) :",
+                Title = $"Available memes (page {page}) :",
                 Description = s,
                 Color = DiscordColor.Green
             });
