@@ -43,18 +43,22 @@ namespace TheGodfatherBot.Modules.Games
             var questions = new List<string>(_countries.Keys);
             var participants = new SortedDictionary<string, int>();
 
+            await ctx.RespondAsync("Quiz will start in 10s! Get ready!");
+            await Task.Delay(10000);
+
             var rnd = new Random();
             for (int i = 1; i < 10; i++) {
                 string question = questions[rnd.Next(questions.Count)];
 
-                if (t == QuizType.Countries)
+                await ctx.TriggerTypingAsync();
+
+                if (t == QuizType.Countries) {
                     try {
-                        await ctx.TriggerTypingAsync();
                         await ctx.RespondWithFileAsync(new FileStream(question, FileMode.Open), content: $"Question {i}:");
                     } catch (IOException e) {
                         throw e;
                     }
-                else
+                } else
                     await ctx.RespondAsync(question);
 
                 var interactivity = ctx.Client.GetInteractivityModule();
@@ -72,6 +76,7 @@ namespace TheGodfatherBot.Modules.Games
                         participants.Add(msg.User.Username, 1);
                 }
                 questions.Remove(question);
+
                 await Task.Delay(2000);
             }
 
