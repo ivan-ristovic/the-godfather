@@ -94,7 +94,7 @@ namespace TheGodfatherBot
             }
         }
 
-        private string GetToken(string filename)
+        public static string GetToken(string filename)
         {
             if (!File.Exists(filename))
                 return null;
@@ -158,6 +158,7 @@ namespace TheGodfatherBot
             _commands.RegisterCommands<Modules.Search.CommandsImgur>();
             //_commands.RegisterCommands<Modules.Search.CommandsReddit>();
             _commands.RegisterCommands<Modules.Search.CommandsRSS>();
+            _commands.RegisterCommands<Modules.Search.CommandsYoutube>();
             _commands.RegisterCommands<Modules.SWAT.CommandsSwat>();
             //_commands.RegisterCommands<Modules.Voice.CommandsVoice>();
             _commands.CommandExecuted += Commands_CommandExecuted;

@@ -31,7 +31,7 @@ namespace TheGodfatherBot.Modules.Games
 
 
 
-        #region COMMAND_RACE_NEW
+        #region COMMAND_NUNCHI_NEW
         [Command("new")]
         [Description("Start a new nunchi game.")]
         [Aliases("create")]
@@ -46,7 +46,7 @@ namespace TheGodfatherBot.Modules.Games
             await ctx.RespondAsync("Nunchi will start in 30s or when there are 10 participants. Type ``!nunchi join`` to join the game.");
             await Task.Delay(30000);
 
-            if (_participants[ctx.Channel.Id].Count > 0)
+            if (_participants[ctx.Channel.Id].Count > 1)
                 await StartGame(ctx);
             else {
                 await ctx.RespondAsync("Not enough users joined the game.");
@@ -55,7 +55,7 @@ namespace TheGodfatherBot.Modules.Games
         }
         #endregion
 
-        #region COMMAND_RACE_JOIN
+        #region COMMAND_NUNCHI_JOIN
         [Command("join")]
         [Description("Join a nunchi game.")]
         [Aliases("+", "compete")]
