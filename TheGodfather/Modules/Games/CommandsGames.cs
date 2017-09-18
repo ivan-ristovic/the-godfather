@@ -170,7 +170,7 @@ namespace TheGodfatherBot.Modules.Games
             var interactivity = ctx.Client.GetInteractivityModule();
             var msg = await interactivity.WaitForMessageAsync(
                 xm =>
-                    (xm.Author.Id != ctx.User.Id) &&
+                    (xm.Author.Id != ctx.User.Id) && (xm.Channel.Id == ctx.Channel.Id) &&
                     (xm.Content.ToLower().StartsWith("me") || xm.Content.ToLower().StartsWith("i ")),
                 TimeSpan.FromMinutes(1)
             );
@@ -190,6 +190,7 @@ namespace TheGodfatherBot.Modules.Games
                 int field = 0;
                 var move = await interactivity.WaitForMessageAsync(
                     xm => {
+                        if (xm.Channel.Id != ctx.Channel.Id) return false;
                         if (player1plays && (xm.Author.Id != ctx.User.Id)) return false;
                         if (!player1plays && (xm.Author.Id != msg.User.Id)) return false;
                         try {
