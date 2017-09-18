@@ -22,32 +22,17 @@ namespace TheGodfatherBot.Modules.Search
     [Aliases("y", "yt")]
     public class CommandsYoutube
     {
-        
-        public async Task ExecuteGroupAsync(CommandContext ctx, 
-                                           [RemainingText, Description("Search query.")] string query)
+
+        public async Task ExecuteGroupAsync(CommandContext ctx,
+                                           [Description("Search query.")] string query = null,
+                                           [Description("Number of results.")] int ammount = 1)
         {
-            var results = await GetYoutubeResults(query, 5);
+            if (string.IsNullOrWhiteSpace(query))
+                throw new ArgumentException("Search query missing.");
 
-            var em = new DiscordEmbedBuilder() {
-                Color = DiscordColor.Red
-            };
-
-            foreach (var r in results)
-                switch (r.Id.Kind) {
-                    case "youtube#video":
-                        em.AddField(r.Snippet.Title, "https://www.youtube.com/watch?v=" + r.Id.VideoId);
-                        break;
-
-                    case "youtube#channel":
-                        em.AddField(r.Snippet.Title, "https://www.youtube.com/channel/" + r.Id.ChannelId);
-                        break;
-
-                    case "youtube#playlist":
-                        em.AddField(r.Snippet.Title, "https://www.youtube.com/playlist?list=" + r.Id.PlaylistId);
-                        break;
-                }
-
-            await ctx.RespondAsync($"Search results for ***{query}***", embed: em);
+            var results = await GetYoutubeResults(query, ammount);
+            
+            await ctx.RespondAsync($"Search results for ***{query}***", embed: EmbedYouTubeResults(results));
         }
 
 
@@ -69,6 +54,30 @@ namespace TheGodfatherBot.Modules.Search
             videos.AddRange(searchListResponse.Items);
 
             return videos;
+        }
+        
+        private DiscordEmbed EmbedYouTubeResults(List<SearchResult> results)
+        {
+            var em = new DiscordEmbedBuilder() {
+                Color = DiscordColor.Red
+            };
+            foreach (var r in results) {
+                switch (r.Id.Kind) {
+                    case "youtube#video":
+                        em.AddField(r.Snippet.Title, "https://www.youtube.com/watch?v=" + r.Id.VideoId);
+                        break;
+
+                    case "youtube#channel":
+                        em.AddField(r.Snippet.Title, "https://www.youtube.com/channel/" + r.Id.ChannelId);
+                        break;
+
+                    case "youtube#playlist":
+                        em.AddField(r.Snippet.Title, "https://www.youtube.com/playlist?list=" + r.Id.PlaylistId);
+                        break;
+                }
+            }
+
+            return em;
         }
         #endregion
     }
