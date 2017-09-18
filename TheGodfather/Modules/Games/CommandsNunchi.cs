@@ -30,7 +30,7 @@ namespace TheGodfatherBot.Modules.Games
         }
 
 
-
+        
         #region COMMAND_NUNCHI_NEW
         [Command("new")]
         [Description("Start a new nunchi game.")]
@@ -87,11 +87,14 @@ namespace TheGodfatherBot.Modules.Games
             await ctx.RespondAsync(num.ToString());
 
             var interactivity = ctx.Client.GetInteractivityModule();
+            DiscordUser winner = null;
             while (_participants[ctx.Channel.Id].Count > 1) {
                 int n = 0;
                 var msg = await interactivity.WaitForMessageAsync(
                     xm => {
                         if (xm.Channel.Id != ctx.Channel.Id || xm.Author.IsBot)
+                            return false;
+                        if (!_participants[ctx.Channel.Id].Contains(xm.Author.Id))
                             return false;
                         try {
                             n = int.Parse(xm.Content);
@@ -100,22 +103,24 @@ namespace TheGodfatherBot.Modules.Games
                         }
                         return true;
                     },
-                    TimeSpan.FromMinutes(1)
+                    TimeSpan.FromSeconds(10)
                 );
-                await ctx.RespondAsync(n.ToString());
                 if (msg == null || n == 0) {
-                    await ctx.RespondAsync("No reply, aborting...");
+                    if (winner == null)
+                        await ctx.RespondAsync("No reply, aborting...");
+                    else
+                        await ctx.RespondAsync($"{winner.Mention} won!");
                     StopGame(ctx);
                     return;
                 } else if (n == num + 1) {
                     num++;
+                    winner = msg.User;
                 } else {
                     await ctx.RespondAsync(msg.User.Mention + " lost!");
                     _participants[ctx.Channel.Id].Remove(msg.User.Id);
                 }
             }
-
-            var winner = await ctx.Client.GetUserAsync(_participants[ctx.Channel.Id][0]);
+            
             await ctx.RespondAsync("Game over! Winner: " + winner.Mention);
             StopGame(ctx);
         }
