@@ -29,7 +29,7 @@ namespace TheGodfatherBot.Modules.Search
             var results = await GetYoutubeResults(query, 5);
 
             var em = new DiscordEmbedBuilder() {
-                Color = DiscordColor.Black
+                Color = DiscordColor.Red
             };
 
             foreach (var r in results)
