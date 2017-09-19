@@ -64,6 +64,21 @@ namespace TheGodfatherBot.Modules.SWAT
                 return;
             }
         }
+
+        public static void SaveServers(DebugLogger log)
+        {
+            log.LogMessage(LogLevel.Info, "TheGodfather", "Saving servers...", DateTime.Now);
+            try {
+                List<string> serverlist = new List<string>();
+                foreach (var entry in _serverlist)
+                    serverlist.Add(entry.Key + "$" + entry.Value);
+
+                File.WriteAllLines("Resources/servers.txt", serverlist);
+            } catch (Exception e) {
+                log.LogMessage(LogLevel.Error, "TheGodfather", "Servers save error: " + e.ToString(), DateTime.Now);
+                throw new IOException("Error while saving servers.");
+            }
+        }
         #endregion
 
 
@@ -118,18 +133,7 @@ namespace TheGodfatherBot.Modules.SWAT
             [RequireOwner]
             public async Task SaveServers(CommandContext ctx)
             {
-                ctx.Client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", "Saving servers...", DateTime.Now);
-                try {
-                    List<string> serverlist = new List<string>();
-                    foreach (var entry in _serverlist)
-                        serverlist.Add(entry.Key + "$" + entry.Value);
-
-                    File.WriteAllLines("Resources/servers.txt", serverlist);
-                } catch (Exception e) {
-                    ctx.Client.DebugLogger.LogMessage(LogLevel.Error, "TheGodfather", "Servers save error: " + e.ToString(), DateTime.Now);
-                    throw new IOException("Error while saving servers.");
-                }
-
+                CommandsSwat.SaveServers(ctx.Client.DebugLogger);
                 await ctx.RespondAsync("Servers successfully saved.");
             }
             #endregion
