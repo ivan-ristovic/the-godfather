@@ -43,6 +43,17 @@ namespace TheGodfatherBot.Modules.Messages
                 log.LogMessage(LogLevel.Warning, "TheGodfather", "insults.txt is missing.", DateTime.Now);
             }
         }
+
+        public static void SaveInsults(DebugLogger log)
+        {
+            log.LogMessage(LogLevel.Info, "TheGodfather", "Saving insults...", DateTime.Now);
+            try {
+                File.WriteAllLines("Resources/insults.txt", _insults);
+            } catch (Exception e) {
+                log.LogMessage(LogLevel.Error, "TheGodfather", "IO insults save error:" + e.ToString(), DateTime.Now);
+                throw new IOException("IO error while saving insults.");
+            }
+        }
         #endregion
 
 
@@ -105,14 +116,7 @@ namespace TheGodfatherBot.Modules.Messages
         [RequireOwner]
         public async Task SaveInsults(CommandContext ctx)
         {
-            ctx.Client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", "Saving insults...", DateTime.Now);
-            try {
-                File.WriteAllLines("Resources/insults.txt", _insults);
-            } catch (Exception e) {
-                ctx.Client.DebugLogger.LogMessage(LogLevel.Error, "TheGodfather", "IO insults save error:" + e.ToString(), DateTime.Now);
-                throw new IOException("IO error while saving insults.");
-            }
-
+            SaveInsults(ctx.Client.DebugLogger);
             await ctx.RespondAsync("Insults successfully saved.");
         }
         #endregion
