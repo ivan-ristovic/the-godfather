@@ -79,6 +79,19 @@ namespace TheGodfatherBot.Modules.Games
         }
         #endregion
 
+        #region COMMAND_NUNCHI_RULES
+        [Command("rules")]
+        [Description("Explain the game.")]
+        public async Task Rules(CommandContext ctx)
+        {
+            await ctx.RespondAsync(
+                "I will start by typing a number. Users have to count up by 1 from that number. " +
+                "If someone makes a mistake (types an incorrent number, or repeats the same number) " +
+                "they are out of the game. If nobody posts a number 10s after the last number was posted," +
+                "then the user that posted that number wins the game.");
+        }
+        #endregion
+
 
         #region HELPER_FUNCTIONS
         private async Task StartGame(CommandContext ctx)
@@ -109,7 +122,7 @@ namespace TheGodfatherBot.Modules.Games
                     if (winner == null)
                         await ctx.RespondAsync("No reply, aborting...");
                     else
-                        await ctx.RespondAsync($"{winner.Mention} won!");
+                        await ctx.RespondAsync($"{winner.Mention} won due to no replies from other users!");
                     StopGame(ctx);
                     return;
                 } else if (n == num + 1) {
