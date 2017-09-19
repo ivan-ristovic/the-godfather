@@ -30,6 +30,7 @@ namespace TheGodfatherBot.Modules.Search
     {
         #region PRIVATE_FIELDS
         private YouTubeService _yt = null;
+        private int _defammount = 50;
         #endregion
 
 
@@ -51,7 +52,7 @@ namespace TheGodfatherBot.Modules.Search
         [Aliases("s", "find", "query")]
         public async Task SearchYouTubeAdvanced(CommandContext ctx,
                                                [Description("Ammount of results.")] int ammount = 5,
-                                               [Description("Search query.")] string query = null)
+                                               [RemainingText, Description("Search query.")] string query = null)
         {
             if (string.IsNullOrWhiteSpace(query))
                 throw new ArgumentException("Search query missing.");
@@ -65,14 +66,14 @@ namespace TheGodfatherBot.Modules.Search
         #region COMMAND_YOUTUBE_SEARCHVIDEO
         [Command("searchv")]
         [Description("Advanced youtube search for videos only.")]
-        [Aliases("sv", "findv", "queryv")]
+        [Aliases("sv", "findv", "queryv", "searchvideo")]
         public async Task SearchYouTubeVideo(CommandContext ctx,
-                                            [Description("Search query.")] string query = null)
+                                            [RemainingText, Description("Search query.")] string query = null)
         {
             if (string.IsNullOrWhiteSpace(query))
                 throw new ArgumentException("Search query missing.");
 
-            var results = GetYoutubeResults(query, 10).Result.Where(r => r.Id.Kind == "youtube#video").ToList();
+            var results = GetYoutubeResults(query, _defammount).Result.Where(r => r.Id.Kind == "youtube#video").ToList();
 
             await ctx.RespondAsync($"Search results for ***{query}***", embed: EmbedYouTubeResults(results));
         }
@@ -81,14 +82,14 @@ namespace TheGodfatherBot.Modules.Search
         #region COMMAND_YOUTUBE_SEARCHCHANNEL
         [Command("searchc")]
         [Description("Advanced youtube search for channels only.")]
-        [Aliases("sc", "findc", "queryc")]
+        [Aliases("sc", "findc", "queryc", "searchchannel")]
         public async Task SearchYouTubeChannel(CommandContext ctx,
-                                              [Description("Search query.")] string query = null)
+                                              [RemainingText, Description("Search query.")] string query = null)
         {
             if (string.IsNullOrWhiteSpace(query))
                 throw new ArgumentException("Search query missing.");
 
-            var results = GetYoutubeResults(query, 10).Result.Where(r => r.Id.Kind == "youtube#channel").ToList();
+            var results = GetYoutubeResults(query, _defammount).Result.Where(r => r.Id.Kind == "youtube#channel").ToList();
 
             await ctx.RespondAsync($"Search results for ***{query}***", embed: EmbedYouTubeResults(results));
         }
@@ -97,14 +98,14 @@ namespace TheGodfatherBot.Modules.Search
         #region COMMAND_YOUTUBE_SEARCHPLAYLIST
         [Command("searchp")]
         [Description("Advanced youtube search for playlists only.")]
-        [Aliases("sp", "findp", "queryp")]
+        [Aliases("sp", "findp", "queryp", "searchplaylist")]
         public async Task SearchYouTubePlaylist(CommandContext ctx,
-                                               [Description("Search query.")] string query = null)
+                                               [RemainingText, Description("Search query.")] string query = null)
         {
             if (string.IsNullOrWhiteSpace(query))
                 throw new ArgumentException("Search query missing.");
 
-            var results = GetYoutubeResults(query, 10).Result.Where(r => r.Id.Kind == "youtube#playlist").ToList();
+            var results = GetYoutubeResults(query, _defammount).Result.Where(r => r.Id.Kind == "youtube#playlist").ToList();
 
             await ctx.RespondAsync($"Search results for ***{query}***", embed: EmbedYouTubeResults(results));
         }
