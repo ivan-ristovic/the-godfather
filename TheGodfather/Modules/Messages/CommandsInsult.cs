@@ -13,7 +13,6 @@ using DSharpPlus.Entities;
 
 namespace TheGodfatherBot.Modules.Messages
 {
-
     [Group("insult", CanInvokeWithoutSubcommand = true)]
     [Description("Burns a user!")]
     [Aliases("burn", "insults")]

@@ -45,6 +45,21 @@ namespace TheGodfatherBot.Modules.Messages
                 log.LogMessage(LogLevel.Warning, "TheGodfather", "memes.txt is missing.", DateTime.Now);
             }
         }
+
+        public static void SaveMemes(DebugLogger log)
+        {
+            log.LogMessage(LogLevel.Info, "TheGodfather", "Saving memes...", DateTime.Now);
+            try {
+                List<string> memelist = new List<string>();
+                foreach (var entry in _memes)
+                    memelist.Add(entry.Key + "$" + entry.Value);
+
+                File.WriteAllLines("Resources/memes.txt", memelist);
+            } catch (Exception e) {
+                log.LogMessage(LogLevel.Error, "TheGodfather", "Meme save error: " + e.ToString(), DateTime.Now);
+                throw new IOException("Error while saving memes.");
+            }
+        }
         #endregion
 
 
@@ -132,18 +147,7 @@ namespace TheGodfatherBot.Modules.Messages
         [RequireOwner]
         public async Task SaveMemes(CommandContext ctx)
         {
-            ctx.Client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", "Saving memes...", DateTime.Now);
-            try {
-                List<string> memelist = new List<string>();
-                foreach (var entry in _memes)
-                    memelist.Add(entry.Key + "$" + entry.Value);
-                
-                File.WriteAllLines("Resources/memes.txt", memelist);
-            } catch (Exception e) {
-                ctx.Client.DebugLogger.LogMessage(LogLevel.Error, "TheGodfather", "Meme save error: " + e.ToString(), DateTime.Now);
-                throw new IOException("Error while saving memes.");
-            }
-
+            SaveMemes(ctx.Client.DebugLogger);
             await ctx.RespondAsync("Memes successfully saved.");
         }
         #endregion
