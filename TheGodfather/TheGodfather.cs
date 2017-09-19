@@ -133,10 +133,6 @@ namespace TheGodfatherBot
                 CaseSensitive = false,
                 EnableMentionPrefix = true
             });
-            Modules.Messages.CommandsAlias.LoadAliases(_client.DebugLogger);
-            Modules.Messages.CommandsMemes.LoadMemes(_client.DebugLogger);
-            Modules.SWAT.CommandsSwat.LoadServers(_client.DebugLogger);
-            Modules.Messages.CommandsInsult.LoadInsults(_client.DebugLogger);
             _commands.RegisterCommands<Modules.Admin.CommandsAdmin>();
             _commands.RegisterCommands<Modules.Admin.CommandsChannels>();
             _commands.RegisterCommands<Modules.Admin.CommandsGuild>();
@@ -180,6 +176,12 @@ namespace TheGodfatherBot
         #region CLIENT_EVENTS
         private async Task Client_Ready(ReadyEventArgs e)
         {
+            Modules.Messages.CommandsAlias.LoadAliases(_client.DebugLogger);
+            Modules.Messages.CommandsMemes.LoadMemes(_client.DebugLogger);
+            Modules.Messages.CommandsRanking.LoadRanks(_client.DebugLogger);
+            Modules.SWAT.CommandsSwat.LoadServers(_client.DebugLogger);
+            Modules.Messages.CommandsInsult.LoadInsults(_client.DebugLogger);
+
             e.Client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", "Ready.", DateTime.Now);
             await _client.UpdateStatusAsync(new Game(_statuses[0]) { StreamType = GameStreamType.NoStream });
         }
