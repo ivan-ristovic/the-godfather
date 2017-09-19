@@ -87,7 +87,7 @@ namespace TheGodfatherBot.Modules.Games
             await ctx.RespondAsync(
                 "I will start by typing a number. Users have to count up by 1 from that number. " +
                 "If someone makes a mistake (types an incorrent number, or repeats the same number) " +
-                "they are out of the game. If nobody posts a number 10s after the last number was posted," +
+                "they are out of the game. If nobody posts a number 10s after the last number was posted, " +
                 "then the user that posted that number wins the game.");
         }
         #endregion

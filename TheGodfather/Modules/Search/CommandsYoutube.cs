@@ -34,13 +34,13 @@ namespace TheGodfatherBot.Modules.Search
 
 
         public async Task ExecuteGroupAsync(CommandContext ctx,
-                                           [Description("Search query.")] string query = null)
+                                           [RemainingText, Description("Search query.")] string query = null)
         {
             if (string.IsNullOrWhiteSpace(query))
                 throw new ArgumentException("Search query missing.");
 
             var results = await GetYoutubeResults(query, 5);
-            
+
             await ctx.RespondAsync($"Search results for ***{query}***", embed: EmbedYouTubeResults(results));
         }
 
@@ -49,14 +49,62 @@ namespace TheGodfatherBot.Modules.Search
         [Command("search")]
         [Description("Advanced youtube search.")]
         [Aliases("s", "find", "query")]
-        private async Task SearchYouTubeAdvanced(CommandContext ctx,
-                                                [Description("Ammount of results.")] int ammount = 5,
-                                                [Description("Search query.")] string query = null)
+        public async Task SearchYouTubeAdvanced(CommandContext ctx,
+                                               [Description("Ammount of results.")] int ammount = 5,
+                                               [Description("Search query.")] string query = null)
         {
             if (string.IsNullOrWhiteSpace(query))
                 throw new ArgumentException("Search query missing.");
 
             var results = await GetYoutubeResults(query, ammount);
+
+            await ctx.RespondAsync($"Search results for ***{query}***", embed: EmbedYouTubeResults(results));
+        }
+        #endregion
+
+        #region COMMAND_YOUTUBE_SEARCHVIDEO
+        [Command("searchv")]
+        [Description("Advanced youtube search for videos only.")]
+        [Aliases("sv", "findv", "queryv")]
+        public async Task SearchYouTubeVideo(CommandContext ctx,
+                                            [Description("Search query.")] string query = null)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+                throw new ArgumentException("Search query missing.");
+
+            var results = GetYoutubeResults(query, 10).Result.Where(r => r.Id.Kind == "youtube#video").ToList();
+
+            await ctx.RespondAsync($"Search results for ***{query}***", embed: EmbedYouTubeResults(results));
+        }
+        #endregion
+
+        #region COMMAND_YOUTUBE_SEARCHCHANNEL
+        [Command("searchc")]
+        [Description("Advanced youtube search for channels only.")]
+        [Aliases("sc", "findc", "queryc")]
+        public async Task SearchYouTubeChannel(CommandContext ctx,
+                                              [Description("Search query.")] string query = null)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+                throw new ArgumentException("Search query missing.");
+
+            var results = GetYoutubeResults(query, 10).Result.Where(r => r.Id.Kind == "youtube#channel").ToList();
+
+            await ctx.RespondAsync($"Search results for ***{query}***", embed: EmbedYouTubeResults(results));
+        }
+        #endregion
+
+        #region COMMAND_YOUTUBE_SEARCHPLAYLIST
+        [Command("searchp")]
+        [Description("Advanced youtube search for playlists only.")]
+        [Aliases("sp", "findp", "queryp")]
+        public async Task SearchYouTubePlaylist(CommandContext ctx,
+                                               [Description("Search query.")] string query = null)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+                throw new ArgumentException("Search query missing.");
+
+            var results = GetYoutubeResults(query, 10).Result.Where(r => r.Id.Kind == "youtube#playlist").ToList();
 
             await ctx.RespondAsync($"Search results for ***{query}***", embed: EmbedYouTubeResults(results));
         }
@@ -87,7 +135,8 @@ namespace TheGodfatherBot.Modules.Search
         private async Task<List<SearchResult>> GetYoutubeResults(string query, int ammount)
         {
             if (_yt == null)
-                /*await*/ SetupYouTubeService();
+                /*await*/
+                SetupYouTubeService();
 
             var searchListRequest = _yt.Search.List("snippet");
             searchListRequest.Q = query;
@@ -100,9 +149,12 @@ namespace TheGodfatherBot.Modules.Search
 
             return videos;
         }
-        
+
         private DiscordEmbed EmbedYouTubeResults(List<SearchResult> results)
         {
+            if (results == null || results.Count == 0)
+                return new DiscordEmbedBuilder() { Description = "No results...", Color = DiscordColor.Red };
+
             var em = new DiscordEmbedBuilder() {
                 Color = DiscordColor.Red
             };
