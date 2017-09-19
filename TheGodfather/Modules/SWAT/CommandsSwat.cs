@@ -83,13 +83,14 @@ namespace TheGodfatherBot.Modules.SWAT
 
 
         [Group("servers", CanInvokeWithoutSubcommand = false)]
-        [RequireUserPermissions(Permissions.Administrator)]
+        [Description("SWAT4 serverlist manipulation commands.")]
         public class CommandsServers
         {
             #region COMMAND_SERVERS_ADD
             [Command("add")]
             [Description("Add a server to serverlist.")]
             [Aliases("+")]
+            [RequireUserPermissions(Permissions.Administrator)]
             public async Task Add(CommandContext ctx,
                                  [Description("Name")] string name = null,
                                  [Description("IP")] string ip = null)
@@ -113,6 +114,7 @@ namespace TheGodfatherBot.Modules.SWAT
             [Command("delete")]
             [Description("Remove a server from serverlist.")]
             [Aliases("-", "remove")]
+            [RequireUserPermissions(Permissions.Administrator)]
             public async Task Delete(CommandContext ctx,
                                     [Description("Name")] string name = null)
             {
