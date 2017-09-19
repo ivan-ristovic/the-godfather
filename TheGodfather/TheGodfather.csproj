@@ -13,6 +13,7 @@
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
@@ -23,10 +24,10 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>0</ApplicationRevision>
-    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
-    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <ApplicationRevision>2</ApplicationRevision>
+    <ApplicationVersion>2.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
+    <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -47,6 +48,18 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestCertificateThumbprint>25102289A6A851F33EDD092D8E5E0CCE936EA3C2</ManifestCertificateThumbprint>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestKeyFile>TheGodfather_TemporaryKey.pfx</ManifestKeyFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GenerateManifests>true</GenerateManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignManifests>true</SignManifests>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="DSharpPlus, Version=3.1.2.0, Culture=neutral, processorArchitecture=MSIL">
@@ -174,6 +187,7 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+    <None Include="TheGodfather_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
@@ -184,7 +198,167 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <Content Include="Resources\def txt files\insults.txt" />
     <Content Include="Resources\graph.png" />
+    <Content Include="Resources\quiz-flags\Afghanistan.png" />
+    <Content Include="Resources\quiz-flags\Albania.png" />
+    <Content Include="Resources\quiz-flags\Algeria.png" />
+    <Content Include="Resources\quiz-flags\Andorra.png" />
+    <Content Include="Resources\quiz-flags\Angola.png" />
+    <Content Include="Resources\quiz-flags\Antigua and Barbuda.png" />
+    <Content Include="Resources\quiz-flags\Argentina.png" />
+    <Content Include="Resources\quiz-flags\Armenia.png" />
+    <Content Include="Resources\quiz-flags\Australia.png" />
+    <Content Include="Resources\quiz-flags\Austria.png" />
+    <Content Include="Resources\quiz-flags\Azerbaijan.png" />
+    <Content Include="Resources\quiz-flags\Bahamas.png" />
+    <Content Include="Resources\quiz-flags\Bahrain.png" />
+    <Content Include="Resources\quiz-flags\Bangladesh.png" />
+    <Content Include="Resources\quiz-flags\Barbados.png" />
+    <Content Include="Resources\quiz-flags\Belarus.png" />
+    <Content Include="Resources\quiz-flags\Belgium.png" />
+    <Content Include="Resources\quiz-flags\Belize.png" />
+    <Content Include="Resources\quiz-flags\Benin.png" />
+    <Content Include="Resources\quiz-flags\Bhutan.png" />
+    <Content Include="Resources\quiz-flags\Bolivia.png" />
+    <Content Include="Resources\quiz-flags\Bosnia and Herzegovina.png" />
+    <Content Include="Resources\quiz-flags\Botswana.png" />
+    <Content Include="Resources\quiz-flags\Brasil.png" />
+    <Content Include="Resources\quiz-flags\Brunei.png" />
+    <Content Include="Resources\quiz-flags\Bulgaria.png" />
+    <Content Include="Resources\quiz-flags\Burkina Faso.png" />
+    <Content Include="Resources\quiz-flags\Burundi.png" />
+    <Content Include="Resources\quiz-flags\Cambodia.png" />
+    <Content Include="Resources\quiz-flags\Cameroon.png" />
+    <Content Include="Resources\quiz-flags\Canada.png" />
+    <Content Include="Resources\quiz-flags\Cape Verde.png" />
+    <Content Include="Resources\quiz-flags\Central African Republic.png" />
+    <Content Include="Resources\quiz-flags\Chad.png" />
+    <Content Include="Resources\quiz-flags\Chile.png" />
+    <Content Include="Resources\quiz-flags\China.png" />
+    <Content Include="Resources\quiz-flags\Colombia.png" />
+    <Content Include="Resources\quiz-flags\Congo.png" />
+    <Content Include="Resources\quiz-flags\Costa Rica.png" />
+    <Content Include="Resources\quiz-flags\Cote d%27Ivoire.png" />
+    <Content Include="Resources\quiz-flags\Croatia.png" />
+    <Content Include="Resources\quiz-flags\Cuba.png" />
+    <Content Include="Resources\quiz-flags\Cyprus.png" />
+    <Content Include="Resources\quiz-flags\Czech Republic.png" />
+    <Content Include="Resources\quiz-flags\Denmark.png" />
+    <Content Include="Resources\quiz-flags\Djibouti.png" />
+    <Content Include="Resources\quiz-flags\Dominica.png" />
+    <Content Include="Resources\quiz-flags\Dominican Republic.png" />
+    <Content Include="Resources\quiz-flags\Ecuador.png" />
+    <Content Include="Resources\quiz-flags\Egypt.png" />
+    <Content Include="Resources\quiz-flags\Eritrea.png" />
+    <Content Include="Resources\quiz-flags\Estonia.png" />
+    <Content Include="Resources\quiz-flags\Ethiopia.png" />
+    <Content Include="Resources\quiz-flags\Fiji.png" />
+    <Content Include="Resources\quiz-flags\Finland.png" />
+    <Content Include="Resources\quiz-flags\France.png" />
+    <Content Include="Resources\quiz-flags\Gabon.png" />
+    <Content Include="Resources\quiz-flags\Gambia.png" />
+    <Content Include="Resources\quiz-flags\Georgia.png" />
+    <Content Include="Resources\quiz-flags\Germany.png" />
+    <Content Include="Resources\quiz-flags\Ghana.png" />
+    <Content Include="Resources\quiz-flags\Great Britain.png" />
+    <Content Include="Resources\quiz-flags\Greece.png" />
+    <Content Include="Resources\quiz-flags\Grenada.png" />
+    <Content Include="Resources\quiz-flags\Guatemala.png" />
+    <Content Include="Resources\quiz-flags\Guinea.png" />
+    <Content Include="Resources\quiz-flags\Haiti.png" />
+    <Content Include="Resources\quiz-flags\Honduras.png" />
+    <Content Include="Resources\quiz-flags\Hungary.png" />
+    <Content Include="Resources\quiz-flags\Iceland.png" />
+    <Content Include="Resources\quiz-flags\India.png" />
+    <Content Include="Resources\quiz-flags\Indonesia.png" />
+    <Content Include="Resources\quiz-flags\Iran.png" />
+    <Content Include="Resources\quiz-flags\Iraq.png" />
+    <Content Include="Resources\quiz-flags\Ireland.png" />
+    <Content Include="Resources\quiz-flags\Israel.png" />
+    <Content Include="Resources\quiz-flags\Italy.png" />
+    <Content Include="Resources\quiz-flags\Jamaica.png" />
+    <Content Include="Resources\quiz-flags\Japan.png" />
+    <Content Include="Resources\quiz-flags\Jordan.png" />
+    <Content Include="Resources\quiz-flags\Kazakhstan.png" />
+    <Content Include="Resources\quiz-flags\Kenya.png" />
+    <Content Include="Resources\quiz-flags\Kosovo.png" />
+    <Content Include="Resources\quiz-flags\Kuwait.png" />
+    <Content Include="Resources\quiz-flags\Kyrgyzstan.png" />
+    <Content Include="Resources\quiz-flags\Latvia.png" />
+    <Content Include="Resources\quiz-flags\Lebanon.png" />
+    <Content Include="Resources\quiz-flags\Lesotho.png" />
+    <Content Include="Resources\quiz-flags\Liberia.png" />
+    <Content Include="Resources\quiz-flags\Libya.png" />
+    <Content Include="Resources\quiz-flags\Liechtenstein.png" />
+    <Content Include="Resources\quiz-flags\Lithuania.png" />
+    <Content Include="Resources\quiz-flags\Luxembourg.png" />
+    <Content Include="Resources\quiz-flags\Macedonia.png" />
+    <Content Include="Resources\quiz-flags\Malaysia.png" />
+    <Content Include="Resources\quiz-flags\Maldives.png" />
+    <Content Include="Resources\quiz-flags\Mali.png" />
+    <Content Include="Resources\quiz-flags\Malta.png" />
+    <Content Include="Resources\quiz-flags\Mauritania.png" />
+    <Content Include="Resources\quiz-flags\Mauritius.png" />
+    <Content Include="Resources\quiz-flags\Mexico.png" />
+    <Content Include="Resources\quiz-flags\Micronesia.png" />
+    <Content Include="Resources\quiz-flags\Namibia.png" />
+    <Content Include="Resources\quiz-flags\Nepal.png" />
+    <Content Include="Resources\quiz-flags\Netherlands.png" />
+    <Content Include="Resources\quiz-flags\New Zealand.png" />
+    <Content Include="Resources\quiz-flags\Nicaragua.png" />
+    <Content Include="Resources\quiz-flags\Niger.png" />
+    <Content Include="Resources\quiz-flags\Nigeria.png" />
+    <Content Include="Resources\quiz-flags\North Korea.png" />
+    <Content Include="Resources\quiz-flags\Norway.png" />
+    <Content Include="Resources\quiz-flags\Oman.png" />
+    <Content Include="Resources\quiz-flags\Pakistan.png" />
+    <Content Include="Resources\quiz-flags\Panama.png" />
+    <Content Include="Resources\quiz-flags\Paraguay.png" />
+    <Content Include="Resources\quiz-flags\Peru.png" />
+    <Content Include="Resources\quiz-flags\Philippines.png" />
+    <Content Include="Resources\quiz-flags\Poland.png" />
+    <Content Include="Resources\quiz-flags\Portugal.png" />
+    <Content Include="Resources\quiz-flags\Qatar.png" />
+    <Content Include="Resources\quiz-flags\Romania.png" />
+    <Content Include="Resources\quiz-flags\Russia.png" />
+    <Content Include="Resources\quiz-flags\Rwanda.png" />
+    <Content Include="Resources\quiz-flags\Saint Lucia.png" />
+    <Content Include="Resources\quiz-flags\San Marino.png" />
+    <Content Include="Resources\quiz-flags\Saudi Arabia.png" />
+    <Content Include="Resources\quiz-flags\Senegal.png" />
+    <Content Include="Resources\quiz-flags\Serbia.png" />
+    <Content Include="Resources\quiz-flags\Seychelles.png" />
+    <Content Include="Resources\quiz-flags\Sierra Leone.png" />
+    <Content Include="Resources\quiz-flags\Singapore.png" />
+    <Content Include="Resources\quiz-flags\Slovakia.png" />
+    <Content Include="Resources\quiz-flags\Slovenia.png" />
+    <Content Include="Resources\quiz-flags\Somalia.png" />
+    <Content Include="Resources\quiz-flags\South Africa.png" />
+    <Content Include="Resources\quiz-flags\South Korea.png" />
+    <Content Include="Resources\quiz-flags\Spain.png" />
+    <Content Include="Resources\quiz-flags\Sri Lanka.png" />
+    <Content Include="Resources\quiz-flags\Sudan.png" />
+    <Content Include="Resources\quiz-flags\Sweden.png" />
+    <Content Include="Resources\quiz-flags\Switzerland.png" />
+    <Content Include="Resources\quiz-flags\Taiwan.png" />
+    <Content Include="Resources\quiz-flags\Tanzania.png" />
+    <Content Include="Resources\quiz-flags\Thailand.png" />
+    <Content Include="Resources\quiz-flags\Trinidad and Tobago.png" />
+    <Content Include="Resources\quiz-flags\Tunisia.png" />
+    <Content Include="Resources\quiz-flags\Turkey.png" />
+    <Content Include="Resources\quiz-flags\UAE.png" />
+    <Content Include="Resources\quiz-flags\Uganda.png" />
+    <Content Include="Resources\quiz-flags\Ukraine.png" />
+    <Content Include="Resources\quiz-flags\Uruguay.png" />
+    <Content Include="Resources\quiz-flags\USA.png" />
+    <Content Include="Resources\quiz-flags\Uzbekistan.png" />
+    <Content Include="Resources\quiz-flags\Vatican.png" />
+    <Content Include="Resources\quiz-flags\Venezuela.png" />
+    <Content Include="Resources\quiz-flags\Vietnam.png" />
+    <Content Include="Resources\quiz-flags\Yemen.png" />
+    <Content Include="Resources\quiz-flags\Zambia.png" />
+    <Content Include="Resources\quiz-flags\Zimbabwe.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\NETStandard.Library.2.0.0\build\netstandard2.0\NETStandard.Library.targets" Condition="Exists('..\packages\NETStandard.Library.2.0.0\build\netstandard2.0\NETStandard.Library.targets')" />
