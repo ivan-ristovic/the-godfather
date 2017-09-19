@@ -53,6 +53,22 @@ namespace TheGodfatherBot.Modules.Messages
                 log.LogMessage(LogLevel.Warning, "TheGodfather", "ranks.txt is missing.", DateTime.Now);
             }
         }
+
+        public static void SaveRanks(DebugLogger log)
+        {
+            log.LogMessage(LogLevel.Info, "TheGodfather", "Saving ranks...", DateTime.Now);
+            try {
+                List<string> lines = new List<string>();
+
+                foreach (var info in _msgcount)
+                    lines.Add(info.Key + "$" + info.Value);
+
+                File.WriteAllLines("Resources/ranks.txt", lines);
+            } catch (Exception e) {
+                log.LogMessage(LogLevel.Error, "TheGodfather", "IO Ranks save error:" + e.ToString(), DateTime.Now);
+                throw new IOException("IO error while saving ranks.");
+            }
+        }
         #endregion
 
 
@@ -116,19 +132,7 @@ namespace TheGodfatherBot.Modules.Messages
         [RequireOwner]
         public async Task SaveRanks(CommandContext ctx)
         {
-            ctx.Client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", "Saving ranks...", DateTime.Now);
-            try {
-                List<string> lines = new List<string>();
-
-                foreach (var info in _msgcount)
-                    lines.Add(info.Key + "$" + info.Value);
-
-                File.WriteAllLines("Resources/ranks.txt", lines);
-            } catch (Exception e) {
-                ctx.Client.DebugLogger.LogMessage(LogLevel.Error, "TheGodfather", "IO Ranks save error:" + e.ToString(), DateTime.Now);
-                throw new IOException("IO error while saving ranks.");
-            }
-
+            SaveRanks(ctx.Client.DebugLogger);
             await ctx.RespondAsync("Ranks successfully saved.");
         }
         #endregion
