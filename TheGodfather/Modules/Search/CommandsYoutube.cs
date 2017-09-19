@@ -45,7 +45,22 @@ namespace TheGodfatherBot.Modules.Search
         }
 
 
-        // TODO add channel, video, playlist search
+        #region COMMAND_YOUTUBE_SEARCH
+        [Command("search")]
+        [Description("Advanced youtube search.")]
+        [Aliases("s", "find", "query")]
+        private async Task SearchYouTubeAdvanced(CommandContext ctx,
+                                                [Description("Ammount of results.")] int ammount = 5,
+                                                [Description("Search query.")] string query = null)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+                throw new ArgumentException("Search query missing.");
+
+            var results = await GetYoutubeResults(query, ammount);
+
+            await ctx.RespondAsync($"Search results for ***{query}***", embed: EmbedYouTubeResults(results));
+        }
+        #endregion
 
 
         #region HELPER_FUNCTIONS
