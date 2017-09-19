@@ -40,6 +40,20 @@ namespace TheGodfatherBot
 
         ~TheGodfather()
         {
+            _client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", "Shutting down by demand...", DateTime.Now);
+
+            try {
+                Modules.Messages.CommandsAlias.SaveAliases(_client.DebugLogger);
+                /*Modules.Messages.CommandsMemes.SaveMemes(_client.DebugLogger);
+                Modules.Messages.CommandsRanking.SaveRanks(_client.DebugLogger);
+                Modules.SWAT.CommandsSwat.SaveServers(_client.DebugLogger);
+                Modules.Messages.CommandsInsult.SaveInsults(_client.DebugLogger);*/
+            } catch (Exception e) {
+                _client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", "Error: " + e.Message, DateTime.Now);
+            }
+
+            _client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", "Saved all, closing application...", DateTime.Now);
+
             if (_logstream != null)
                 _logstream.Close();
             _client.DisconnectAsync();

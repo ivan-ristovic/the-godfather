@@ -48,6 +48,23 @@ namespace TheGodfatherBot.Modules.Messages
             }
         }
 
+        public static void SaveAliases(DebugLogger log)
+        {
+            log.LogMessage(LogLevel.Info, "TheGodfather", "Saving aliases...", DateTime.Now);
+            try {
+                List<string> aliaslist = new List<string>();
+
+                foreach (var guild_aliases in _aliases)
+                    foreach (var alias in guild_aliases.Value)
+                        aliaslist.Add(guild_aliases.Key + "$" + alias.Key + "$" + alias.Value);
+
+                File.WriteAllLines("Resources/aliases.txt", aliaslist);
+            } catch (Exception e) {
+                log.LogMessage(LogLevel.Error, "TheGodfather", "IO Alias save error:" + e.ToString(), DateTime.Now);
+                throw new IOException("IO error while saving aliases.");
+            }
+        }
+
         public static string FindAlias(ulong gid, string trigger)
         {
             trigger = trigger.ToLower();
@@ -116,31 +133,10 @@ namespace TheGodfatherBot.Modules.Messages
         #region COMMAND_ALIAS_SAVE
         [Command("save")]
         [Description("Save aliases to file.")]
-        [RequireUserPermissions(Permissions.Administrator)]
+        [RequireOwner]
         public async Task SaveAliases(CommandContext ctx)
         {
-            ctx.Client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", "Saving aliases...", DateTime.Now);
-            try {
-                List<string> aliaslist = new List<string> {
-                    "# Alias file",
-                    "# ",
-                    "# How to use it:",
-                    "# Aliases consist of a name and text to be written when alias is triggered.",
-                    "# Lines in this file contain each one alias in the format: name$reply",
-                    "# When triggered with '!a name', the bot will reply with 'reply'",
-                    ""
-                };
-
-                foreach (var guild_aliases in _aliases)
-                    foreach (var alias in guild_aliases.Value)
-                        aliaslist.Add(guild_aliases.Key + "$" + alias.Key + "$" + alias.Value);
-
-                File.WriteAllLines("Resources/aliases.txt", aliaslist);
-            } catch (Exception e) {
-                ctx.Client.DebugLogger.LogMessage(LogLevel.Error, "TheGodfather", "IO Alias save error:" + e.ToString(), DateTime.Now);
-                throw new IOException("IO error while saving aliases.");
-            }
-
+            SaveAliases(ctx.Client.DebugLogger);
             await ctx.RespondAsync("Aliases successfully saved.");
         }
         #endregion
