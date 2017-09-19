@@ -48,8 +48,8 @@ namespace TheGodfatherBot
                 Modules.Messages.CommandsRanking.SaveRanks(_client.DebugLogger);
                 Modules.SWAT.CommandsSwat.SaveServers(_client.DebugLogger);
                 Modules.Messages.CommandsInsult.SaveInsults(_client.DebugLogger);*/
-            } catch (Exception e) {
-                _client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", "Error: " + e.Message, DateTime.Now);
+            } catch {
+
             }
 
             _client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", "Saved all, closing application...", DateTime.Now);
