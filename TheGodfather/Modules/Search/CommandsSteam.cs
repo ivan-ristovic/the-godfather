@@ -47,13 +47,13 @@ namespace TheGodfatherBot.Modules.Search
 
             var bans = await _steam.GetPlayerBansAsync(id);
 
-            await ctx.RespondAsync(result.Data.ProfileUrl, embed: EmbedSteamResult(result.Data, bans.Data.Count));
+            await ctx.RespondAsync(result.Data.ProfileUrl, embed: EmbedSteamResult(result.Data, bans));
         }
         #endregion
 
 
         #region HELPER_FUNCTIONS
-        private DiscordEmbed EmbedSteamResult(PlayerSummaryModel data, int bans)
+        private DiscordEmbed EmbedSteamResult(PlayerSummaryModel data, ISteamWebResponse<IReadOnlyCollection<PlayerBansModel>> bans)
         {
             var em = new DiscordEmbedBuilder() {
                 Title = data.Nickname,
@@ -68,6 +68,15 @@ namespace TheGodfatherBot.Modules.Search
                 em.AddField("Playing: ", $"{data.PlayingGameName} ({data.PlayingGameId})", inline: true);
 
             em.AddField("Last seen:" , data.LastLoggedOffDate.ToUniversalTime().ToString(), inline: true);
+            
+            if (bans != null) {
+                uint bancount = 0;
+
+                foreach (var b in bans.Data)
+                    bancount += b.NumberOfVACBans;
+
+                em.AddField("VAC Status:", $"**{bancount}** ban(s) on record.", inline: true);
+            }
 
             return em;
         }
