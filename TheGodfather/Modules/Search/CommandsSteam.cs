@@ -40,6 +40,10 @@ namespace TheGodfatherBot.Modules.Search
                 throw new ArgumentException("ID missing.");
 
             var result = await _steam.GetPlayerSummaryAsync(id);
+            if (result == null) {
+                await ctx.RespondAsync("No users found.");
+                return;
+            }
 
             await ctx.RespondAsync(result.Data.ProfileUrl, embed: EmbedSteamResult(result));
         }
