@@ -45,19 +45,27 @@ namespace TheGodfatherBot.Modules.Search
                 return;
             }
 
-            await ctx.RespondAsync(result.Data.ProfileUrl, embed: EmbedSteamResult(result));
+            await ctx.RespondAsync(result.Data.ProfileUrl, embed: EmbedSteamResult(result.Data));
         }
         #endregion
 
 
         #region HELPER_FUNCTIONS
-        private DiscordEmbed EmbedSteamResult(ISteamWebResponse<PlayerSummaryModel> result)
+        private DiscordEmbed EmbedSteamResult(PlayerSummaryModel data)
         {
-            return new DiscordEmbedBuilder() {
-                Title = result.Data.Nickname,
-                ImageUrl = result.Data.AvatarMediumUrl,
+            var em = new DiscordEmbedBuilder() {
+                Title = data.Nickname,
+                ImageUrl = data.AvatarMediumUrl,
                 Color = DiscordColor.Black
             };
+
+            if (data.ProfileVisibility == ProfileVisibility.Private)
+                em.Description = "This profile is private.";
+
+            if (!string.IsNullOrWhiteSpace(data.PlayingGameId))
+                em.AddField("Playing: ", $"{data.PlayingGameName} ({data.PlayingGameId})", inline: true);
+
+            return em;
         }
         #endregion
     }
