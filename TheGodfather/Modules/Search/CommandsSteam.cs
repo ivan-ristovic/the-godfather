@@ -45,13 +45,15 @@ namespace TheGodfatherBot.Modules.Search
                 return;
             }
 
-            await ctx.RespondAsync(result.Data.ProfileUrl, embed: EmbedSteamResult(result.Data));
+            var bans = await _steam.GetPlayerBansAsync(id);
+
+            await ctx.RespondAsync(result.Data.ProfileUrl, embed: EmbedSteamResult(result.Data, bans.Data.Count));
         }
         #endregion
 
 
         #region HELPER_FUNCTIONS
-        private DiscordEmbed EmbedSteamResult(PlayerSummaryModel data)
+        private DiscordEmbed EmbedSteamResult(PlayerSummaryModel data, int bans)
         {
             var em = new DiscordEmbedBuilder() {
                 Title = data.Nickname,
@@ -64,6 +66,8 @@ namespace TheGodfatherBot.Modules.Search
 
             if (!string.IsNullOrWhiteSpace(data.PlayingGameId))
                 em.AddField("Playing: ", $"{data.PlayingGameName} ({data.PlayingGameId})", inline: true);
+
+            em.AddField("Last seen:" , data.LastLoggedOffDate.ToUniversalTime().ToString(), inline: true);
 
             return em;
         }
