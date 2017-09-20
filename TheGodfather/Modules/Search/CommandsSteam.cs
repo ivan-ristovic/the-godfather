@@ -65,6 +65,7 @@ namespace TheGodfatherBot.Modules.Search
                 em.AddField("Playing: ", $"{summary.PlayingGameName} ({summary.PlayingGameId})", inline: true);
 
             em.AddField("Last seen:" , summary.LastLoggedOffDate.ToUniversalTime().ToString(), inline: true);
+            em.AddField("Game activity", $"{model.HoursPlayedLastTwoWeeks} hours past 2 weeks.");
 
             if (model.IsVacBanned) {
                 var bans = _steam.GetPlayerBansAsync(model.SteamID).Result.Data;
