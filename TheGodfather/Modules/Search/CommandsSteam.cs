@@ -36,14 +36,14 @@ namespace TheGodfatherBot.Modules.Search
             if (id == 0)
                 throw new ArgumentException("ID missing.");
 
-            var result = await _steam.GetCommunityProfileAsync(id);
-            if (result == null) {
+            var model = await _steam.GetCommunityProfileAsync(id);
+            if (model == null) {
                 await ctx.RespondAsync("No users found.");
                 return;
             }
             var summary = await _steam.GetPlayerSummaryAsync(id);
 
-            await ctx.RespondAsync(summary.Data.ProfileUrl, embed: EmbedSteamResult(result, summary.Data));
+            await ctx.RespondAsync(summary.Data.ProfileUrl, embed: EmbedSteamResult(model, summary.Data));
         }
         #endregion
 
@@ -54,7 +54,7 @@ namespace TheGodfatherBot.Modules.Search
             var em = new DiscordEmbedBuilder() {
                 Title = summary.Nickname,
                 Description = Regex.Replace(model.Summary, "<[^>]*>", ""),
-                ImageUrl = summary.AvatarMediumUrl,
+                ThumbnailUrl = summary.AvatarMediumUrl,
                 Color = DiscordColor.Black
             };
 
@@ -65,7 +65,7 @@ namespace TheGodfatherBot.Modules.Search
                 em.AddField("Playing: ", $"{summary.PlayingGameName} ({summary.PlayingGameId})", inline: true);
 
             em.AddField("Last seen:" , summary.LastLoggedOffDate.ToUniversalTime().ToString(), inline: true);
-            em.AddField("Game activity", $"{model.HoursPlayedLastTwoWeeks} hours past 2 weeks.");
+            em.AddField("Game activity", $"{model.HoursPlayedLastTwoWeeks} hours past 2 weeks.", inline: true);
 
             if (model.IsVacBanned) {
                 var bans = _steam.GetPlayerBansAsync(model.SteamID).Result.Data;
