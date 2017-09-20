@@ -37,8 +37,11 @@ namespace TheGodfatherBot.Modules.Messages
                         if (!_memes.ContainsKey(name))
                             _memes.Add(name, values[1]);
                     }
+                } catch (ArgumentException e) {
+                    log.LogMessage(LogLevel.Warning, "TheGodfather", "Meme loading interrupted. Exception : " + e.ToString(), DateTime.Now);
                 } catch (Exception e) {
-                    log.LogMessage(LogLevel.Error, "TheGodfather", "Meme loading failed: " + e.ToString(), DateTime.Now);
+                    log.LogMessage(LogLevel.Warning, "TheGodfather", "Exception occured. Details : " + e.ToString(), DateTime.Now);
+                    log.LogMessage(LogLevel.Warning, "TheGodfather", "Clearing memes...", DateTime.Now);
                     _memes.Clear();
                 }
             } else {
