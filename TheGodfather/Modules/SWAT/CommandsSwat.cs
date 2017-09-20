@@ -32,11 +32,6 @@ namespace TheGodfatherBot.Modules.SWAT
             log.LogMessage(LogLevel.Info, "TheGodfather", "Loading SWAT servers...", DateTime.Now);
 
             string[] serverlist = {
-                "# Format: <name>$<IP>",
-                "# You can add your own servers and IPs and reorder them as you wish",
-                "# The program doesn't require server names to be exact, you can rename them as you wish",
-                "# Every line starting with '#' is considered as a comment, blank lines are ignored",
-                "",
                 "wm$46.251.251.9:10880:10881",
                 "myt$51.15.152.220:10480:10481",
                 "4u$109.70.149.161:10480:10481",
@@ -60,8 +55,12 @@ namespace TheGodfatherBot.Modules.SWAT
                     var values = line.Split('$');
                     _serverlist.Add(values[0], values[1]);
                 }
-            } catch (Exception) {
-                return;
+            } catch (ArgumentException e) {
+                log.LogMessage(LogLevel.Warning, "TheGodfather", "Serverlist loading interrupted. Exception : " + e.ToString(), DateTime.Now);
+            } catch (Exception e) {
+                log.LogMessage(LogLevel.Warning, "TheGodfather", "Exception occured. Details : " + e.ToString(), DateTime.Now);
+                log.LogMessage(LogLevel.Warning, "TheGodfather", "Clearing serverlist...", DateTime.Now);
+                _serverlist.Clear();
             }
         }
 
