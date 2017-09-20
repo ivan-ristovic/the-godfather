@@ -168,6 +168,7 @@ namespace TheGodfatherBot
             _commands.RegisterCommands<Modules.Search.CommandsImgur>();
             //_commands.RegisterCommands<Modules.Search.CommandsReddit>();
             _commands.RegisterCommands<Modules.Search.CommandsRSS>();
+            _commands.RegisterCommands<Modules.Search.CommandsSteam>();
             _commands.RegisterCommands<Modules.Search.CommandsYoutube>();
             _commands.RegisterCommands<Modules.SWAT.CommandsSwat>();
             //_commands.RegisterCommands<Modules.Voice.CommandsVoice>();
