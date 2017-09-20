@@ -12,6 +12,8 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 
 using SteamWebAPI2.Interfaces;
+using Steam.Models.SteamCommunity;
+using SteamWebAPI2.Utilities;
 #endregion
 
 
@@ -39,11 +41,19 @@ namespace TheGodfatherBot.Modules.Search
 
             var result = await _steam.GetPlayerSummaryAsync(id);
 
-            await ctx.RespondAsync(result.Data.ProfileUrl, embed: new DiscordEmbedBuilder() {
+            await ctx.RespondAsync(result.Data.ProfileUrl, embed: EmbedSteamResult(result));
+        }
+        #endregion
+
+
+        #region HELPER_FUNCTIONS
+        private DiscordEmbed EmbedSteamResult(ISteamWebResponse<PlayerSummaryModel> result)
+        {
+            return new DiscordEmbedBuilder() {
                 Title = result.Data.Nickname,
                 ImageUrl = result.Data.AvatarMediumUrl,
                 Color = DiscordColor.Black
-            });
+            };
         }
         #endregion
     }
