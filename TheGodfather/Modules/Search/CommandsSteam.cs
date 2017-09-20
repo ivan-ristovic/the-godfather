@@ -29,7 +29,7 @@ namespace TheGodfatherBot.Modules.Search
 
         #region COMMAND_STEAM_PROFILE
         [Command("profile")]
-        [Description("Advanced youtube search.")]
+        [Description("Get Steam user information from ID.")]
         [Aliases("id")]
         public async Task SteamProfile(CommandContext ctx,
                                       [Description("ID.")] ulong id = 0)
