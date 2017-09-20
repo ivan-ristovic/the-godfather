@@ -63,11 +63,11 @@ namespace TheGodfatherBot.Modules.Search
                 return em;
             }
 
-            if (!string.IsNullOrWhiteSpace(summary.PlayingGameId))
-                em.AddField("Playing: ", $"{summary.PlayingGameName} ({summary.PlayingGameId})", inline: true);
+            if (model.InGameInfo != null && !string.IsNullOrWhiteSpace(model.InGameInfo.GameName))
+                em.AddField("Playing: ", $"{model.InGameInfo.GameName}\n{model.InGameInfo.GameLink}");
 
             em.AddField("Last seen:" , summary.LastLoggedOffDate.ToUniversalTime().ToString(), inline: true);
-            em.AddField("Game activity", $"{model.HoursPlayedLastTwoWeeks} hours past 2 weeks.", inline: true);
+            //em.AddField("Game activity", $"{model.HoursPlayedLastTwoWeeks} hours past 2 weeks.", inline: true);
             em.AddField("Member since", model.MemberSince, inline: true);
 
             if (model.IsVacBanned) {
