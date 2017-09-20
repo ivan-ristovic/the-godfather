@@ -135,7 +135,7 @@ namespace TheGodfatherBot.Modules.Messages
                 s += "**" + i.ToString() + "** : " + _insults[i] + "\n";
 
             await ctx.RespondAsync("", embed: new DiscordEmbedBuilder() {
-                Title = $"Available insults (page {page}) :",
+                Title = $"Available insults (page {page}/{_insults.Count / 10 + 1}) :",
                 Description = s,
                 Color = DiscordColor.Turquoise
             });

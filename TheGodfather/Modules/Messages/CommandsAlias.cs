@@ -162,7 +162,7 @@ namespace TheGodfatherBot.Modules.Messages
                 s += $"**{keys[i]}** : {_aliases[ctx.Guild.Id][keys[i]]}\n";
 
             await ctx.RespondAsync("", embed: new DiscordEmbedBuilder() {
-                Title = $"Available aliases (page {page}) :",
+                Title = $"Available aliases (page {page}/{_aliases[ctx.Guild.Id].Count / 10 + 1}) :",
                 Description = s,
                 Color = DiscordColor.Green
             });
