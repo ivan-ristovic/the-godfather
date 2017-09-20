@@ -1,9 +1,6 @@
 ﻿#region USING_DIRECTIVES
 using System;
-using System.IO;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 using DSharpPlus;
@@ -39,40 +36,41 @@ namespace TheGodfatherBot.Modules.Search
             if (id == 0)
                 throw new ArgumentException("ID missing.");
 
-            var result = await _steam.GetPlayerSummaryAsync(id);
+            var result = await _steam.GetCommunityProfileAsync(id);
             if (result == null) {
                 await ctx.RespondAsync("No users found.");
                 return;
             }
+            var summary = await _steam.GetPlayerSummaryAsync(id);
 
-            var bans = await _steam.GetPlayerBansAsync(id);
-
-            await ctx.RespondAsync(result.Data.ProfileUrl, embed: EmbedSteamResult(result.Data, bans));
+            await ctx.RespondAsync(summary.Data.ProfileUrl, embed: EmbedSteamResult(result, summary.Data));
         }
         #endregion
 
 
         #region HELPER_FUNCTIONS
-        private DiscordEmbed EmbedSteamResult(PlayerSummaryModel data, ISteamWebResponse<IReadOnlyCollection<PlayerBansModel>> bans)
+        private DiscordEmbed EmbedSteamResult(SteamCommunityProfileModel model, PlayerSummaryModel summary)
         {
             var em = new DiscordEmbedBuilder() {
-                Title = data.Nickname,
-                ImageUrl = data.AvatarMediumUrl,
+                Title = summary.Nickname,
+                Description = Regex.Replace(model.Summary, "<[^>]*>", ""),
+                ImageUrl = summary.AvatarMediumUrl,
                 Color = DiscordColor.Black
             };
 
-            if (data.ProfileVisibility == ProfileVisibility.Private)
+            if (summary.ProfileVisibility == ProfileVisibility.Private)
                 em.Description = "This profile is private.";
 
-            if (!string.IsNullOrWhiteSpace(data.PlayingGameId))
-                em.AddField("Playing: ", $"{data.PlayingGameName} ({data.PlayingGameId})", inline: true);
+            if (!string.IsNullOrWhiteSpace(summary.PlayingGameId))
+                em.AddField("Playing: ", $"{summary.PlayingGameName} ({summary.PlayingGameId})", inline: true);
 
-            em.AddField("Last seen:" , data.LastLoggedOffDate.ToUniversalTime().ToString(), inline: true);
-            
-            if (bans != null) {
+            em.AddField("Last seen:" , summary.LastLoggedOffDate.ToUniversalTime().ToString(), inline: true);
+
+            if (model.IsVacBanned) {
+                var bans = _steam.GetPlayerBansAsync(model.SteamID).Result.Data;
+
                 uint bancount = 0;
-
-                foreach (var b in bans.Data)
+                foreach (var b in bans)
                     bancount += b.NumberOfVACBans;
 
                 em.AddField("VAC Status:", $"**{bancount}** ban(s) on record.", inline: true);
