@@ -40,9 +40,31 @@ namespace TheGodfatherBot.Modules.Search
             if (string.IsNullOrWhiteSpace(query))
                 throw new ArgumentException("Search query missing.");
 
-            var results = await GetYoutubeResults(query, 5);
+            var results = await GetYoutubeResults(query, 1);
+            if (results == null || results.Count == 0) {
+                await ctx.RespondAsync("No results...");
+                return;
+            }
+            
+            string link = "";
+            switch (results[0].Id.Kind) {
+                case "youtube#video":
+                    link = "https://www.youtube.com/watch?v=" + results[0].Id.VideoId;
+                    break;
+                case "youtube#channel":
+                    link = "https://www.youtube.com/channel/" + results[0].Id.ChannelId;
+                    break;
+                case "youtube#playlist":
+                    link = "https://www.youtube.com/playlist?list=" + results[0].Id.PlaylistId;
+                    break;
+            }
 
-            await ctx.RespondAsync($"Search results for ***{query}***", embed: EmbedYouTubeResults(results));
+            await ctx.RespondAsync($"Search result for ***{query}*** : " + link, embed: new DiscordEmbedBuilder() {
+                Title = results[0].Snippet.Title,
+                Description = results[0].Snippet.Description,
+                ThumbnailUrl = results[0].Snippet.Thumbnails.Default__.Url,
+                Color = DiscordColor.Red
+            });
         }
 
 
