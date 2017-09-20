@@ -58,8 +58,10 @@ namespace TheGodfatherBot.Modules.Search
                 Color = DiscordColor.Black
             };
 
-            if (summary.ProfileVisibility == ProfileVisibility.Private)
+            if (summary.ProfileVisibility == ProfileVisibility.Private) {
                 em.Description = "This profile is private.";
+                return em;
+            }
 
             if (!string.IsNullOrWhiteSpace(summary.PlayingGameId))
                 em.AddField("Playing: ", $"{summary.PlayingGameName} ({summary.PlayingGameId})", inline: true);
