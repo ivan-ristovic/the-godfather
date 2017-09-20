@@ -39,8 +39,11 @@ namespace TheGodfatherBot.Modules.Messages
                             _aliases.Add(gid, new SortedDictionary<string, string>());
                         _aliases[gid].Add(values[1], values[2]);
                     }
+                } catch (ArgumentException e) {
+                    log.LogMessage(LogLevel.Warning, "TheGodfather", "Alias loading interrupted. Exception : " + e.ToString(), DateTime.Now);
                 } catch (Exception e) {
-                    log.LogMessage(LogLevel.Warning, "TheGodfather", "Exception occured, clearing aliases. Details : " + e.ToString(), DateTime.Now);
+                    log.LogMessage(LogLevel.Warning, "TheGodfather", "Exception occured. Details : " + e.ToString(), DateTime.Now);
+                    log.LogMessage(LogLevel.Warning, "TheGodfather", "Clearing aliases...", DateTime.Now);
                     _aliases.Clear();
                 }
             } else {
