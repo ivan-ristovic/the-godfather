@@ -20,13 +20,18 @@ namespace TheGodfatherBot.Modules.Messages
         #region PRIVATE_FIELDS
         private static Dictionary<ulong, uint> _msgcount = new Dictionary<ulong, uint>();
         private static string[] _ranks = {
-            "PVT",
+            "4U donor",
+            "SoH MNG",
             "Gypsy",
             "Romanian wallet stealer",
             "Serbian street cleaner",
-            "Michal's worker",
             "German closet cleaner",
+            "Swed's beer supplier",
+            "JoJo's harem cleaner",
+            "Torq's nurse",
             "Pakistani bomb carrier",
+            "Michal's worker (black)",
+            "Michal's worker (white)",
             "LDR"
         };
         #endregion
@@ -120,7 +125,7 @@ namespace TheGodfatherBot.Modules.Messages
             };
 
             for (int i = 1; i < _ranks.Length; i++)
-                em.AddField(_ranks[i], $"XP needed: {i * i * 10}");
+                em.AddField(_ranks[i], $"XP needed: {i * i * 10}", inline: true);
 
             await ctx.RespondAsync("", embed: em);
         }
