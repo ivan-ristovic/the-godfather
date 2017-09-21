@@ -120,7 +120,7 @@ namespace TheGodfatherBot.Modules.Games
                 );
                 if (msg == null || n == 0) {
                     if (winner == null)
-                        await ctx.RespondAsync("No reply, aborting...");
+                        await ctx.RespondAsync("No replies, aborting...");
                     else
                         await ctx.RespondAsync($"{winner.Mention} won due to no replies from other users!");
                     StopGame(ctx);
@@ -130,6 +130,8 @@ namespace TheGodfatherBot.Modules.Games
                     winner = msg.User;
                 } else {
                     await ctx.RespondAsync(msg.User.Mention + " lost!");
+                    if (winner.Id == msg.User.Id)
+                        winner = null;
                     _participants[ctx.Channel.Id].Remove(msg.User.Id);
                 }
             }

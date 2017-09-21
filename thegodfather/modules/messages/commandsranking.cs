@@ -125,7 +125,7 @@ namespace TheGodfatherBot.Modules.Messages
             };
 
             for (int i = 1; i < _ranks.Length; i++)
-                em.AddField(_ranks[i], $"XP needed: {i * i * 10}");
+                em.AddField(_ranks[i], $"XP needed: {i * i * 10}", inline: true);
 
             await ctx.RespondAsync("", embed: em);
         }
