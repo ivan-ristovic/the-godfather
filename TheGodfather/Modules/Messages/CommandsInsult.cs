@@ -64,6 +64,11 @@ namespace TheGodfatherBot.Modules.Messages
             if (_insults.Count == 0)
                 throw new Exception("No available insults.");
 
+            if (u.Id == ctx.Client.CurrentUser.Id) {
+                await ctx.RespondAsync("How original, trying to make me insult myself. Sadly it won't work.");
+                return;
+            }
+
             var rnd = new Random();
             var split = _insults[rnd.Next(_insults.Count)].Split('%');
             string response = split[0];
