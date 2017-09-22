@@ -131,7 +131,7 @@ namespace TheGodfatherBot.Modules.Games
                     winner = msg.User;
                 } else {
                     await ctx.RespondAsync(msg.User.Mention + " lost!");
-                    if (winner.Id == msg.User.Id)
+                    if (winner != null && winner.Id == msg.User.Id)
                         winner = null;
                     _participants[ctx.Channel.Id].Remove(msg.User.Id);
                 }
