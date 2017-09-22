@@ -20,7 +20,8 @@ namespace TheGodfatherBot.Modules.Messages
     public class CommandsMisc
     {
         #region COMMAND_8BALL
-        [Command("8ball"), Description("An almighty ball which knows answer to everything.")]
+        [Command("8ball")]
+        [Description("An almighty ball which knows answer to everything.")]
         [Aliases("question")]
         public async Task EightBall(CommandContext ctx, [RemainingText, Description("A question for the almighty ball.")] string q = null)
         {
@@ -44,7 +45,8 @@ namespace TheGodfatherBot.Modules.Messages
         #endregion
 
         #region COMMAND_CHOOSE
-        [Command("choose"), Description("!choose option1, option2, option3...")]
+        [Command("choose")]
+        [Description("!choose option1, option2, option3...")]
         [Aliases("select")]
         public async Task Choose(CommandContext ctx, [Description("Option list")] string s = null)
         {
@@ -58,7 +60,8 @@ namespace TheGodfatherBot.Modules.Messages
         #endregion
 
         #region COMMAND_GREET
-        [Command("greet"), Description("Greets a user and starts a conversation.")]
+        [Command("greet")]
+        [Description("Greets a user and starts a conversation.")]
         [Aliases("hello", "hi", "halo", "hey", "howdy", "sup")]
         public async Task Greet(CommandContext ctx)
         {
@@ -104,7 +107,8 @@ namespace TheGodfatherBot.Modules.Messages
         #endregion
 
         #region COMMAND_LEAVE
-        [Command("leave"), Description("Makes Godfather leave the server.")]
+        [Command("leave")]
+        [Description("Makes Godfather leave the server.")]
         [RequireUserPermissions(Permissions.KickMembers)]
         public async Task Leet(CommandContext ctx)
         {
@@ -113,7 +117,8 @@ namespace TheGodfatherBot.Modules.Messages
         #endregion
 
         #region COMMAND_LEET
-        [Command("leet"), Description("Wr1t3s m3ss@g3 1n 1337sp34k.")]
+        [Command("leet")]
+        [Description("Wr1t3s m3ss@g3 1n 1337sp34k.")]
         public async Task Leet(CommandContext ctx, [RemainingText, Description("Text")] string s = null)
         {
             if (string.IsNullOrWhiteSpace(s))
@@ -141,7 +146,8 @@ namespace TheGodfatherBot.Modules.Messages
         #endregion
 
         #region COMMAND_PENIS
-        [Command("penis"), Description("An accurate size of the user's manhood.")]
+        [Command("penis")]
+        [Description("An accurate size of the user's manhood.")]
         [Aliases("size", "length", "manhood")]
         public async Task Penis(CommandContext ctx, [Description("Who to measure")] DiscordUser u = null)
         {
@@ -223,7 +229,8 @@ namespace TheGodfatherBot.Modules.Messages
         #endregion
 
         #region COMMAND_RATE
-        [Command("rate"), Description("An accurate graph of a user's humanity.")]
+        [Command("rate")]
+        [Description("An accurate graph of a user's humanity.")]
         [Aliases("score")]
         public async Task Rate(CommandContext ctx, [Description("Who to measure")] DiscordUser u = null)
         {
@@ -251,7 +258,8 @@ namespace TheGodfatherBot.Modules.Messages
         #endregion
 
         #region COMMAND_REMIND
-        [Command("remind"), Description("Resend a message after some time.")]
+        [Command("remind")]
+        [Description("Resend a message after some time.")]
         [Aliases("repeat")]
         public async Task Remind(
             CommandContext ctx,
@@ -271,7 +279,9 @@ namespace TheGodfatherBot.Modules.Messages
         #endregion
 
         #region COMMAND_SAY
-        [Command("say"), Description("Repeats after you.")]
+        [Command("say")]
+        [Description("Repeats after you.")]
+        [Aliases("repeat")]
         public async Task Say(CommandContext ctx, [RemainingText, Description("Text.")] string s = null)
         {
             if (string.IsNullOrWhiteSpace(s))
