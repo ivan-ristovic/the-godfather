@@ -47,7 +47,7 @@ namespace TheGodfatherBot.Modules.Admin
         
         #region COMMAND_CHANNEL_DELETE
         [Command("delete")]
-        [Description("Delete channel.")]
+        [Description("Delete channel")]
         [Aliases("-", "del", "d", "remove")]
         [RequirePermissions(Permissions.ManageChannels)]
         public async Task DeleteChannel(CommandContext ctx, [Description("Channel")] DiscordChannel c = null)
@@ -56,7 +56,6 @@ namespace TheGodfatherBot.Modules.Admin
                 throw new ArgumentException("Can't find such channel.");
 
             await c.DeleteAsync();
-            await ctx.RespondAsync("Channel successfully deleted.");
         }
         #endregion
 
@@ -67,12 +66,16 @@ namespace TheGodfatherBot.Modules.Admin
         [RequirePermissions(Permissions.ManageChannels)]
         public async Task RenameChannel(CommandContext ctx, 
                                        [Description("Channel")] DiscordChannel c = null,
-                                       [RemainingText, Description("New name")] string name = null)
+                                       [Description("New name")] string name = null)
         {
             if (c == null)
                 throw new ArgumentException("Can't find such channel.");
+
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentException("Missing new channel name.");
+
+            if (name.Contains(" "))
+                throw new ArgumentException("Name cannot contain spaces.");
 
             await c.ModifyAsync(name);
             await ctx.RespondAsync("Channel successfully renamed.");
@@ -86,7 +89,7 @@ namespace TheGodfatherBot.Modules.Admin
         [RequirePermissions(Permissions.ManageChannels)]
         public async Task SetChannelTopic(CommandContext ctx,
                                          [Description("Channel")] DiscordChannel c = null,
-                                         [RemainingText, Description("New name")] string topic = null)
+                                         [RemainingText, Description("New topic")] string topic = null)
         {
             if (c == null)
                 throw new ArgumentException("Can't find such channel.");
@@ -97,5 +100,58 @@ namespace TheGodfatherBot.Modules.Admin
             await ctx.RespondAsync("Channel topic successfully changed.");
         }
         #endregion
+
+
+        [Group("this", CanInvokeWithoutSubcommand = false)]
+        [Description("Control over current channel.")]
+        [Aliases("current", "cur", "curr")]
+        public class CommandsThisChannel
+        {
+            #region COMMAND_CHANNEL_THIS_DELETE
+            [Command("delete")]
+            [Description("Delete this channel.")]
+            [Aliases("-", "del", "d", "remove")]
+            [RequirePermissions(Permissions.ManageChannels)]
+            public async Task DeleteChannel(CommandContext ctx)
+            {
+                await ctx.Channel.DeleteAsync();
+            }
+            #endregion
+
+            #region COMMAND_CHANNEL_THIS_RENAME
+            [Command("rename")]
+            [Description("Rename channel.")]
+            [Aliases("r", "name", "setname")]
+            [RequirePermissions(Permissions.ManageChannels)]
+            public async Task RenameChannel(CommandContext ctx,
+                                           [Description("New name")] string name = null)
+            {
+                if (string.IsNullOrWhiteSpace(name))
+                    throw new ArgumentException("Missing new channel name.");
+
+                if (name.Contains(" "))
+                    throw new ArgumentException("Name cannot contain spaces.");
+
+                await ctx.Channel.ModifyAsync(name);
+                await ctx.RespondAsync("Channel successfully renamed.");
+            }
+            #endregion
+
+            #region COMMAND_CHANNEL_THIS_SETTOPIC
+            [Command("settopic")]
+            [Description("Set channel topic.")]
+            [Aliases("t", "topic")]
+            [RequirePermissions(Permissions.ManageChannels)]
+            public async Task SetChannelTopic(CommandContext ctx,
+                                             [RemainingText, Description("New topic")] string topic = null)
+            {
+                if (string.IsNullOrWhiteSpace(topic))
+                    throw new ArgumentException("Missing topic.");
+
+                await ctx.Channel.ModifyAsync(topic: topic);
+                await ctx.RespondAsync("Channel topic successfully changed.");
+            }
+            #endregion
+        }
     }
 }
