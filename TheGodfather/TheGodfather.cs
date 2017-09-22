@@ -1,6 +1,7 @@
 ﻿#region USING_DIRECTIVES
 using System;
 using System.IO;
+using System.Linq;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -246,17 +247,22 @@ namespace TheGodfatherBot
             return Task.CompletedTask;
         }
 
-        private Task Client_MessageCreated(MessageCreateEventArgs e)
+        private async Task Client_MessageCreated(MessageCreateEventArgs e)
         {
             if (e.Message.Author.IsBot)
-                return Task.CompletedTask;
+                return;
 
             if (e.Channel.IsPrivate) {
                 e.Client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", $"IGNORED DM: {e.Author.Username} : {e.Message}", DateTime.Now);
-                return Task.CompletedTask;
+                return;
             }
 
             Modules.Messages.CommandsRanking.UpdateMessageCount(e.Channel, e.Author);
+
+            // React to random message
+            var r = new Random();
+            if (e.Guild.Emojis.Count > 0 && r.Next(10) == 0)
+                await e.Message.CreateReactionAsync(e.Guild.Emojis.ElementAt(r.Next(e.Guild.Emojis.Count)));
 
             // Check if message has an alias
             var response = Modules.Messages.CommandsAlias.FindAlias(e.Guild.Id, e.Message.Content);
@@ -269,10 +275,8 @@ namespace TheGodfatherBot
                     $" Location: '{e.Guild.Name}' ({e.Guild.Id}) ; {e.Channel.ToString()}"
                     , DateTime.Now
                 );
-                e.Channel.SendMessageAsync(response);
+                await e.Channel.SendMessageAsync(response);
             }
-
-            return Task.CompletedTask;
         }
 
         private async Task Client_Heartbeated(HeartbeatEventArgs e)
