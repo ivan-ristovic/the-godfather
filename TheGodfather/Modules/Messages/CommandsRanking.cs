@@ -1,4 +1,4 @@
-﻿#region USING_DIRECTIVES
+#region USING_DIRECTIVES
 using System;
 using System.IO;
 using System.Collections.Generic;

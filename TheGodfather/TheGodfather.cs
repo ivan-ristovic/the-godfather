@@ -68,6 +68,7 @@ namespace TheGodfatherBot
             SetupCommands();
             SetupInteractivity();
             SetupVoice();
+            LoadData();
 
             await _client.ConnectAsync();
 
@@ -185,18 +186,21 @@ namespace TheGodfatherBot
         {
             _voice = _client.UseVoiceNext();
         }
-        #endregion
 
-
-        #region CLIENT_EVENTS
-        private async Task Client_Ready(ReadyEventArgs e)
+        private void LoadData()
         {
             Modules.Messages.CommandsAlias.LoadAliases(_client.DebugLogger);
             Modules.Messages.CommandsMemes.LoadMemes(_client.DebugLogger);
             Modules.Messages.CommandsRanking.LoadRanks(_client.DebugLogger);
             Modules.SWAT.CommandsSwat.LoadServers(_client.DebugLogger);
             Modules.Messages.CommandsInsult.LoadInsults(_client.DebugLogger);
+        }
+        #endregion
 
+
+        #region CLIENT_EVENTS
+        private async Task Client_Ready(ReadyEventArgs e)
+        {
             e.Client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", "Ready.", DateTime.Now);
             await _client.UpdateStatusAsync(new Game(_statuses[0]) { StreamType = GameStreamType.NoStream });
         }
