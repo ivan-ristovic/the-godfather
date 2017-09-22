@@ -82,6 +82,7 @@ namespace TheGodfatherBot.Modules.Games
         #region COMMAND_NUNCHI_RULES
         [Command("rules")]
         [Description("Explain the game.")]
+        [Aliases("help")]
         public async Task Rules(CommandContext ctx)
         {
             await ctx.RespondAsync(
