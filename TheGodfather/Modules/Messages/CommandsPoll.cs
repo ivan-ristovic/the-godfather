@@ -3,6 +3,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
+using System.Threading;
 using System.Threading.Tasks;
 
 using DSharpPlus;
@@ -21,16 +22,17 @@ namespace TheGodfatherBot.Modules.Messages
     public class CommandsPoll
     {
         #region PRIVATE_FIELDS
-        private bool _eventset = false;
+        private volatile bool _eventset = false;
+        private Mutex _lock = new Mutex();
         private ConcurrentDictionary<ulong, int[]> _options = new ConcurrentDictionary<ulong, int[]>();
         private ConcurrentDictionary<ulong, List<ulong>> _idsvoted = new ConcurrentDictionary<ulong, List<ulong>>();
         #endregion
 
 
         public async Task ExecuteGroupAsync(CommandContext ctx, 
-                                           [RemainingText, Description("Question")] string s = null)
+                                           [RemainingText, Description("Question")] string q = null)
         {
-            if (string.IsNullOrWhiteSpace(s))
+            if (string.IsNullOrWhiteSpace(q))
                 throw new ArgumentException("Poll requires a yes or no question.");
 
             if (_options.ContainsKey(ctx.Channel.Id))
@@ -39,7 +41,7 @@ namespace TheGodfatherBot.Modules.Messages
             _options.TryAdd(ctx.Channel.Id, null);
 
             // Get poll options interactively
-            await ctx.RespondAsync("And what will be the possible answers? (separate with comma)");
+            await ctx.RespondAsync("And what will be the possible answers? (separate with semicolon ``;``)");
             var interactivity = ctx.Client.GetInteractivityModule();
             var msg = await interactivity.WaitForMessageAsync(
                 xm => xm.Author.Id == ctx.User.Id && xm.Channel.Id == ctx.Channel.Id,
@@ -47,48 +49,45 @@ namespace TheGodfatherBot.Modules.Messages
             );
             if (msg == null) {
                 await ctx.RespondAsync("Nevermind...");
+                int[] v;
+                _options.TryRemove(ctx.Channel.Id, out v);
                 return;
             }
 
             // Parse poll options
-            var poll_options = msg.Message.Content.Split(',').ToList();
+            List<string> poll_options = msg.Message.Content.Split(';').ToList();
             poll_options.RemoveAll(str => string.IsNullOrWhiteSpace(str));
             if (poll_options.Count < 2)
                 throw new ArgumentException("Not enough poll options.");
 
-            // Write embed field representing the poll
-            var embed = new DiscordEmbedBuilder() {
-                Title = s,
-                Color = DiscordColor.Orange
-            };
-            for (int i = 0; i < poll_options.Count; i++)
-                if (!string.IsNullOrWhiteSpace(poll_options[i]))
-                    embed.AddField($"{i + 1}", poll_options[i], inline: true);
-            await ctx.RespondAsync("", embed: embed);
+            await ctx.RespondAsync("", embed: EmbedPoll(q, poll_options));
 
-            // Setup poll settings
-            _options[ctx.Channel.Id] = new int[poll_options.Count];
-            _idsvoted.TryAdd(ctx.Channel.Id, new List<ulong>());
-            if (!_eventset) {
-                _eventset = true;
-                ctx.Client.MessageCreated += CheckForPollReply;
-            }
+            AddEntries(ctx.Channel.Id, poll_options.Count);
 
-            // Poll expiration time, 30s
+            TryToAddListenerEvent(ctx);
+
             await Task.Delay(30000);
 
-            // Write embedded result
-            var res = new DiscordEmbedBuilder() {
-                Title = "Poll results",
-                Color = DiscordColor.Orange
-            };
-            for (int i = 0; i < poll_options.Count; i++)
-                res.AddField(poll_options[i], _options[ctx.Channel.Id][i].ToString(), inline: true);
-            await ctx.RespondAsync("", embed: res);
+            await ctx.RespondAsync("", embed: EmbedPollResults(ctx.Channel.Id, poll_options));
+
+            RemoveEntries(ctx.Channel.Id);
         }
         
 
         #region HELPER_FUNCTIONS
+        private void TryToAddListenerEvent(CommandContext ctx)
+        {
+            _lock.WaitOne();
+            try {
+                if (!_eventset) {
+                    _eventset = true;
+                    ctx.Client.MessageCreated += CheckForPollReply;
+                }
+            } finally {
+                _lock.ReleaseMutex();
+            }
+        }
+
         private Task CheckForPollReply(MessageCreateEventArgs e)
         {
             if (e.Message.Author.IsBot || !_options.ContainsKey(e.Channel.Id))
@@ -114,6 +113,45 @@ namespace TheGodfatherBot.Modules.Messages
             }
 
             return Task.CompletedTask;
+        }
+
+        private void AddEntries(ulong id, int count)
+        {
+            _options[id] = new int[count];
+            _idsvoted.TryAdd(id, new List<ulong>());
+        }
+
+        private void RemoveEntries(ulong id)
+        {
+            int[] r;
+            _options.TryRemove(id, out r);
+            List<ulong> l;
+            _idsvoted.TryRemove(id, out l);
+        }
+
+        private DiscordEmbed EmbedPoll(string question, List<string> poll_options)
+        {
+            var embed = new DiscordEmbedBuilder() {
+                Title = question,
+                Color = DiscordColor.Orange
+            };
+            for (int i = 0; i < poll_options.Count; i++)
+                if (!string.IsNullOrWhiteSpace(poll_options[i]))
+                    embed.AddField($"{i + 1}", poll_options[i], inline: true);
+
+            return embed;
+        }
+
+        private DiscordEmbed EmbedPollResults(ulong id, List<string> poll_options)
+        {
+            var res = new DiscordEmbedBuilder() {
+                Title = "Poll results",
+                Color = DiscordColor.Orange
+            };
+            for (int i = 0; i < poll_options.Count; i++)
+                res.AddField(poll_options[i], _options[id][i].ToString(), inline: true);
+
+            return res;
         }
         #endregion
     }
