@@ -2,6 +2,7 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Threading.Tasks;
 
 using DSharpPlus;
@@ -21,6 +22,7 @@ namespace TheGodfatherBot.Modules.Games
         #region PRIVATE_FIELDS
         private enum QuizType { Countries };
         private Dictionary<string, string> _countries = null;
+        private ConcurrentDictionary<ulong, bool> _quizrunning = new ConcurrentDictionary<ulong, bool>();
         #endregion
 
 
@@ -32,7 +34,16 @@ namespace TheGodfatherBot.Modules.Games
         {
             if (_countries == null)
                 LoadCountries();
+
+            if (_quizrunning.ContainsKey(ctx.Channel.Id))
+                throw new Exception("Quiz is already running in this channel!");
+
+            _quizrunning.TryAdd(ctx.Channel.Id, true);
+
             await StartQuiz(QuizType.Countries, ctx);
+
+            bool b;
+            _quizrunning.TryRemove(ctx.Channel.Id, out b);
         }
         #endregion
 
@@ -41,13 +52,13 @@ namespace TheGodfatherBot.Modules.Games
         private async Task StartQuiz(QuizType t, CommandContext ctx)
         {
             var questions = new List<string>(_countries.Keys);
-            var participants = new SortedDictionary<string, int>();
+            var participants = new SortedDictionary<ulong, int>();
 
             await ctx.RespondAsync("Quiz will start in 10s! Get ready!");
             await Task.Delay(10000);
 
             var rnd = new Random();
-            for (int i = 1; i < 10; i++) {
+            for (int i = 1; i < 2; i++) {
                 string question = questions[rnd.Next(questions.Count)];
 
                 await ctx.TriggerTypingAsync();
@@ -63,6 +74,7 @@ namespace TheGodfatherBot.Modules.Games
 
                 var interactivity = ctx.Client.GetInteractivityModule();
                 var msg = await interactivity.WaitForMessageAsync(
+                    // TODO check enum when you add more quiz commands
                     xm => xm.Content.ToLower() == _countries[question].ToLower(),
                     TimeSpan.FromSeconds(20)
                 );
@@ -70,10 +82,10 @@ namespace TheGodfatherBot.Modules.Games
                     await ctx.RespondAsync($"Time is out! The correct answer was: **{_countries[question]}**");
                 } else {
                     await ctx.RespondAsync($"GG {msg.User.Mention}, you got it right!");
-                    if (participants.ContainsKey(msg.User.Username))
-                        participants[msg.User.Username]++;
+                    if (participants.ContainsKey(msg.User.Id))
+                        participants[msg.User.Id]++;
                     else
-                        participants.Add(msg.User.Username, 1);
+                        participants.Add(msg.User.Id, 1);
                 }
                 questions.Remove(question);
 
@@ -81,8 +93,10 @@ namespace TheGodfatherBot.Modules.Games
             }
 
             var em = new DiscordEmbedBuilder() { Title = "Results", Color = DiscordColor.Azure };
-            foreach (var participant in participants)
-                em.AddField(participant.Key, participant.Value.ToString(), inline: true);
+            foreach (var participant in participants) {
+                var m = await ctx.Guild.GetMemberAsync(participant.Key);
+                em.AddField(m.Username, participant.Value.ToString(), inline: true);
+            }
             await ctx.RespondAsync("", embed: em);
         }
         
