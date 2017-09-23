@@ -18,6 +18,24 @@ namespace TheGodfatherBot.Modules.Admin
     [Aliases("server")]
     public class CommandsGuild
     {
+        #region COMMAND_GUILD_EMOJI
+        [Command("emoji")]
+        [Description("Print list of guild emojis.")]
+        [Aliases("emojis")]
+        public async Task GetEmoji(CommandContext ctx)
+        {
+            string s = "";
+            foreach (var emoji in ctx.Guild.Emojis)
+                s += $"**{emoji.Name}** ";
+
+            await ctx.RespondAsync("", embed: new DiscordEmbedBuilder() {
+                Title = "Available emoji:",
+                Description = s,
+                Color = DiscordColor.CornflowerBlue
+            });
+        }
+        #endregion
+
         #region COMMAND_GUILD_LISTMEMBERS
         [Command("listmembers")]
         [Description("Rename guild.")]
