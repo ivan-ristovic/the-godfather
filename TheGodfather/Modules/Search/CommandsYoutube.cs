@@ -95,7 +95,11 @@ namespace TheGodfatherBot.Modules.Search
             if (string.IsNullOrWhiteSpace(query))
                 throw new ArgumentException("Search query missing.");
 
-            var results = GetYoutubeResults(query, _defammount).Result.Where(r => r.Id.Kind == "youtube#video").ToList();
+            var results = GetYoutubeResults(query, _defammount)
+                .Result
+                .Where(r => r.Id.Kind == "youtube#video")
+                .Take(5)
+                .ToList();
 
             await ctx.RespondAsync($"Search results for ***{query}***", embed: EmbedYouTubeResults(results));
         }
@@ -111,7 +115,11 @@ namespace TheGodfatherBot.Modules.Search
             if (string.IsNullOrWhiteSpace(query))
                 throw new ArgumentException("Search query missing.");
 
-            var results = GetYoutubeResults(query, _defammount).Result.Where(r => r.Id.Kind == "youtube#channel").ToList();
+            var results = GetYoutubeResults(query, _defammount)
+                .Result
+                .Where(r => r.Id.Kind == "youtube#channel")
+                .Take(5)
+                .ToList();
 
             await ctx.RespondAsync($"Search results for ***{query}***", embed: EmbedYouTubeResults(results));
         }
@@ -127,7 +135,10 @@ namespace TheGodfatherBot.Modules.Search
             if (string.IsNullOrWhiteSpace(query))
                 throw new ArgumentException("Search query missing.");
 
-            var results = GetYoutubeResults(query, _defammount).Result.Where(r => r.Id.Kind == "youtube#playlist").ToList();
+            var results = GetYoutubeResults(query, _defammount)
+                .Result
+                .Where(r => r.Id.Kind == "youtube#playlist")
+                .ToList();
 
             await ctx.RespondAsync($"Search results for ***{query}***", embed: EmbedYouTubeResults(results));
         }
@@ -177,6 +188,9 @@ namespace TheGodfatherBot.Modules.Search
         {
             if (results == null || results.Count == 0)
                 return new DiscordEmbedBuilder() { Description = "No results...", Color = DiscordColor.Red };
+
+            if (results.Count > 25)
+                results = results.Take(25).ToList();
 
             var em = new DiscordEmbedBuilder() {
                 Color = DiscordColor.Red
