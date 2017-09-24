@@ -122,18 +122,18 @@ namespace TheGodfatherBot.Modules.Messages
             await ctx.RespondAsync($"Alias '{alias}' successfully removed.");
         }
         #endregion
-
-        #region COMMAND_ALIAS_SAVE
+        */
+        #region COMMAND_FILTER_SAVE
         [Command("save")]
-        [Description("Save aliases to file.")]
+        [Description("Save filters to file.")]
         [RequireOwner]
-        public async Task SaveAliases(CommandContext ctx)
+        public async Task SaveFilters(CommandContext ctx)
         {
-            SaveAliases(ctx.Client.DebugLogger);
-            await ctx.RespondAsync("Aliases successfully saved.");
+            SaveFilters(ctx.Client.DebugLogger);
+            await ctx.RespondAsync("Filters successfully saved.");
         }
         #endregion
-        */
+        
         #region COMMAND_FILTER_LIST
         [Command("list")]
         [Description("Show all filters for this guild.")]

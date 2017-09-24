@@ -45,6 +45,7 @@ namespace TheGodfatherBot
 
             try {
                 Modules.Messages.CommandsAlias.SaveAliases(_client.DebugLogger);
+                Modules.Messages.CommandsFilter.SaveFilters(_client.DebugLogger);
                 Modules.Messages.CommandsMemes.SaveMemes(_client.DebugLogger);
                 Modules.Messages.CommandsRanking.SaveRanks(_client.DebugLogger);
                 Modules.SWAT.CommandsSwat.SaveServers(_client.DebugLogger);
