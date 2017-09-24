@@ -162,6 +162,7 @@ namespace TheGodfatherBot
             _commands.RegisterCommands<Modules.Games.CommandsRace>();
             _commands.RegisterCommands<Modules.Games.CommandsQuiz>();
             _commands.RegisterCommands<Modules.Messages.CommandsAlias>();
+            _commands.RegisterCommands<Modules.Messages.CommandsFilter>();
             _commands.RegisterCommands<Modules.Messages.CommandsInsult>();
             _commands.RegisterCommands<Modules.Messages.CommandsMemes>();
             _commands.RegisterCommands<Modules.Messages.CommandsMessages>();
@@ -192,6 +193,7 @@ namespace TheGodfatherBot
         private void LoadData()
         {
             Modules.Messages.CommandsAlias.LoadAliases(_client.DebugLogger);
+            Modules.Messages.CommandsFilter.LoadFilters(_client.DebugLogger);
             Modules.Messages.CommandsMemes.LoadMemes(_client.DebugLogger);
             Modules.Messages.CommandsRanking.LoadRanks(_client.DebugLogger);
             Modules.SWAT.CommandsSwat.LoadServers(_client.DebugLogger);
@@ -278,6 +280,9 @@ namespace TheGodfatherBot
                 );
                 await e.Channel.SendMessageAsync(response);
             }
+
+            if (Modules.Messages.CommandsFilter.ContainsFilter(e.Guild.Id, e.Message.Content))
+                await e.Channel.SendMessageAsync("FILTER DETECTED!");
         }
 
         private async Task Client_Heartbeated(HeartbeatEventArgs e)
