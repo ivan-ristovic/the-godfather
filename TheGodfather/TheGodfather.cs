@@ -226,7 +226,7 @@ namespace TheGodfatherBot
             return Task.CompletedTask;
         }
 
-        private Task Client_GuildMemberAdd(GuildMemberAddEventArgs e)
+        private async Task Client_GuildMemberAdd(GuildMemberAddEventArgs e)
         {
             e.Client.DebugLogger.LogMessage(
                    LogLevel.Info,
@@ -235,11 +235,10 @@ namespace TheGodfatherBot
                    $" Guild: '{e.Guild.Name}' ({e.Guild.Id})",
                    DateTime.Now);
 
-            e.Guild.GetDefaultChannel().SendMessageAsync($"Welcome to {e.Guild.Name}, {e.Member.Mention}!");
-            return Task.CompletedTask;
+            await e.Guild.GetDefaultChannel().SendMessageAsync($"Welcome to {e.Guild.Name}, {e.Member.Mention}!");
         }
 
-        private Task Client_GuildMemberRemove(GuildMemberRemoveEventArgs e)
+        private async Task Client_GuildMemberRemove(GuildMemberRemoveEventArgs e)
         {
             e.Client.DebugLogger.LogMessage(
                 LogLevel.Info, 
@@ -247,8 +246,8 @@ namespace TheGodfatherBot
                 $"Member leave: {e.Member.Username} ({e.Member.Id})\n" +
                 $" Guild: '{e.Guild.Name}' ({e.Guild.Id})", 
                 DateTime.Now);
-            e.Guild.GetDefaultChannel().SendMessageAsync($"{e.Member?.Username ?? "<unknown>"} left the server. Bye!");
-            return Task.CompletedTask;
+
+            await e.Guild.GetDefaultChannel().SendMessageAsync($"{e.Member?.Username ?? "<unknown>"} left the server. Bye!");
         }
 
         private async Task Client_MessageCreated(MessageCreateEventArgs e)
