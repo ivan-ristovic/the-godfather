@@ -114,7 +114,7 @@ namespace TheGodfatherBot.Modules.Messages
         }
         #endregion
 
-        #region COMMAND_RANKLIST
+        #region COMMAND_RANK_LIST
         [Command("list"), Description("Print all available ranks.")]
         [Aliases("levels")]
         public async Task RankList(CommandContext ctx)

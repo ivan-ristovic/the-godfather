@@ -180,7 +180,7 @@ namespace TheGodfatherBot.Modules.Messages
         public async Task ClearAliases(CommandContext ctx)
         {
             if (_aliases.ContainsKey(ctx.Guild.Id))
-                _aliases[ctx.Guild.Id].Clear();
+                _aliases.Remove(ctx.Guild.Id);
             await ctx.RespondAsync("All aliases successfully removed.");
         }
         #endregion

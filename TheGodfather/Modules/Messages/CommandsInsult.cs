@@ -147,11 +147,11 @@ namespace TheGodfatherBot.Modules.Messages
         }
         #endregion
 
-        #region COMMAND_ALIAS_CLEAR
-        [Command("clear")]
+        #region COMMAND_INSULTS_CLEARALL
+        [Command("clearall")]
         [Description("Delete all insults.")]
         [RequireOwner]
-        public async Task ClearAliases(CommandContext ctx)
+        public async Task ClearAllInsults(CommandContext ctx)
         {
             _insults.Clear();
             await ctx.RespondAsync("All insults successfully removed.");
