@@ -80,32 +80,31 @@ namespace TheGodfatherBot.Modules.Messages
         }
         #endregion
 
-        /*
-        #region COMMAND_ALIAS_ADD
+        
+        #region COMMAND_FILTER_ADD
         [Command("add")]
-        [Description("Add alias to list.")]
+        [Description("Add filter to list.")]
         [Aliases("+", "new")]
         [RequireUserPermissions(Permissions.ManageMessages)]
         public async Task AddAlias(CommandContext ctx,
-                                  [Description("Alias name (case sensitive).")] string alias = null,
-                                  [Description("Response")] string response = null)
+                                  [Description("Filter trigger word (case sensitive).")] string filter = null)
         {
-            if (string.IsNullOrWhiteSpace(alias) || string.IsNullOrWhiteSpace(response))
-                throw new ArgumentException("Alias name or response missing or invalid.");
+            if (string.IsNullOrWhiteSpace(filter))
+                throw new ArgumentException("Filter trigger missing.");
 
-            if (!_aliases.ContainsKey(ctx.Guild.Id))
-                _aliases.Add(ctx.Guild.Id, new SortedDictionary<string, string>());
+            if (!_filters.ContainsKey(ctx.Guild.Id))
+                _filters.Add(ctx.Guild.Id, new List<string>());
 
-            alias = alias.ToLower();
-            if (_aliases[ctx.Guild.Id].ContainsKey(alias)) {
-                await ctx.RespondAsync("Alias already exists.");
+            filter = filter.ToLower();
+            if (_filters[ctx.Guild.Id].Contains(filter)) {
+                await ctx.RespondAsync("Filter already exists.");
             } else {
-                _aliases[ctx.Guild.Id].Add(alias, response);
-                await ctx.RespondAsync("Alias " + alias + " successfully added.");
+                _filters[ctx.Guild.Id].Add(filter);
+                await ctx.RespondAsync($"Filter **{filter}** successfully added.");
             }
         }
         #endregion
-
+        /*
         #region COMMAND_ALIAS_DELETE
         [Command("delete")]
         [Description("Remove alias from list.")]
@@ -156,7 +155,7 @@ namespace TheGodfatherBot.Modules.Messages
                 s += $"**{filters[i]}**\n";
 
             await ctx.RespondAsync("", embed: new DiscordEmbedBuilder() {
-                Title = $"Available aliases (page {page}/{_filters[ctx.Guild.Id].Count / 10 + 1}) :",
+                Title = $"Available filters (page {page}/{_filters[ctx.Guild.Id].Count / 10 + 1}) :",
                 Description = s,
                 Color = DiscordColor.Green
             });

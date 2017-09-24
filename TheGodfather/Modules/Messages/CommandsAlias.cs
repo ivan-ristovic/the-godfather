@@ -111,7 +111,7 @@ namespace TheGodfatherBot.Modules.Messages
                 await ctx.RespondAsync("Alias already exists.");
             } else {
                 _aliases[ctx.Guild.Id].Add(alias, response);
-                await ctx.RespondAsync("Alias " + alias + " successfully added.");
+                await ctx.RespondAsync($"Alias **{alias}** successfully added.");
             }
         }
         #endregion
