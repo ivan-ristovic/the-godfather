@@ -283,7 +283,7 @@ namespace TheGodfatherBot
             }
 
             if (Modules.Messages.CommandsFilter.ContainsFilter(e.Guild.Id, e.Message.Content))
-                await e.Channel.SendMessageAsync("FILTER DETECTED!");
+                await e.Channel.DeleteMessageAsync(e.Message);
         }
 
         private async Task Client_Heartbeated(HeartbeatEventArgs e)
