@@ -86,8 +86,8 @@ namespace TheGodfatherBot.Modules.Messages
         [Description("Add filter to list.")]
         [Aliases("+", "new")]
         [RequireUserPermissions(Permissions.ManageMessages)]
-        public async Task AddAlias(CommandContext ctx,
-                                  [Description("Filter trigger word (case sensitive).")] string filter = null)
+        public async Task AddFilter(CommandContext ctx,
+                                   [Description("Filter trigger word (case sensitive).")] string filter = null)
         {
             if (string.IsNullOrWhiteSpace(filter))
                 throw new ArgumentException("Filter trigger missing.");
@@ -104,25 +104,25 @@ namespace TheGodfatherBot.Modules.Messages
             }
         }
         #endregion
-        /*
-        #region COMMAND_ALIAS_DELETE
+        
+        #region COMMAND_FILTER_DELETE
         [Command("delete")]
-        [Description("Remove alias from list.")]
+        [Description("Remove filter from list.")]
         [Aliases("-", "remove", "del")]
         [RequireUserPermissions(Permissions.ManageMessages)]
-        public async Task DeleteAlias(CommandContext ctx, [Description("Alias to remove.")] string alias = null)
+        public async Task DeleteFilter(CommandContext ctx, [Description("Filter to remove.")] string filter = null)
         {
-            if (string.IsNullOrWhiteSpace(alias))
+            if (string.IsNullOrWhiteSpace(filter))
                 throw new ArgumentException("Alias name missing.");
 
-            if (!_aliases.ContainsKey(ctx.Guild.Id))
+            if (!_filters.ContainsKey(ctx.Guild.Id))
                 throw new KeyNotFoundException("No aliases recorded in this guild.");
 
-            _aliases[ctx.Guild.Id].Remove(alias);
-            await ctx.RespondAsync($"Alias '{alias}' successfully removed.");
+            _filters[ctx.Guild.Id].Remove(filter);
+            await ctx.RespondAsync($"Filter **{filter}** successfully removed.");
         }
         #endregion
-        */
+        
         #region COMMAND_FILTER_SAVE
         [Command("save")]
         [Description("Save filters to file.")]

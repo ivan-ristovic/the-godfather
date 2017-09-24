@@ -130,7 +130,7 @@ namespace TheGodfatherBot.Modules.Messages
                 throw new KeyNotFoundException("No aliases recorded in this guild.");
 
             _aliases[ctx.Guild.Id].Remove(alias);
-            await ctx.RespondAsync($"Alias '{alias}' successfully removed.");
+            await ctx.RespondAsync($"Alias **{alias}** successfully removed.");
         }
         #endregion
 
