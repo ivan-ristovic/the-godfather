@@ -231,7 +231,7 @@ namespace TheGodfatherBot
             e.Client.DebugLogger.LogMessage(
                    LogLevel.Info,
                    "TheGodfather",
-                   $"Member join: {e.Member.Nickname} ({e.Member.Id})\n" +
+                   $"Member join: {e.Member.Username} ({e.Member.Id})\n" +
                    $" Guild: '{e.Guild.Name}' ({e.Guild.Id})",
                    DateTime.Now);
 
@@ -244,10 +244,10 @@ namespace TheGodfatherBot
             e.Client.DebugLogger.LogMessage(
                 LogLevel.Info, 
                 "TheGodfather", 
-                $"Member leave: {e.Member.Nickname} ({e.Member.Id})\n" +
+                $"Member leave: {e.Member.Username} ({e.Member.Id})\n" +
                 $" Guild: '{e.Guild.Name}' ({e.Guild.Id})", 
                 DateTime.Now);
-            e.Guild.GetDefaultChannel().SendMessageAsync($"{e.Member?.Username ?? "<unknown>"} left {e.Guild?.Name ?? "<unknown>"}. Bye!");
+            e.Guild.GetDefaultChannel().SendMessageAsync($"{e.Member?.Username ?? "<unknown>"} left the server. Bye!");
             return Task.CompletedTask;
         }
 
