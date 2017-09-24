@@ -137,7 +137,7 @@ namespace TheGodfatherBot.Modules.Messages
         #region COMMAND_FILTER_LIST
         [Command("list")]
         [Description("Show all filters for this guild.")]
-        public async Task ListAliases(CommandContext ctx, [Description("Page")] int page = 1)
+        public async Task ListFilters(CommandContext ctx, [Description("Page")] int page = 1)
         {
             if (!_filters.ContainsKey(ctx.Guild.Id)) {
                 await ctx.RespondAsync("No filters registered.");
@@ -161,29 +161,28 @@ namespace TheGodfatherBot.Modules.Messages
             });
         }
         #endregion
-        /*
-        #region COMMAND_ALIAS_CLEAR
+        
+        #region COMMAND_FILTERS_CLEAR
         [Command("clear")]
-        [Description("Delete all aliases for the current guild.")]
+        [Description("Delete all filters for the current guild.")]
         [RequireUserPermissions(Permissions.Administrator)]
-        public async Task ClearAliases(CommandContext ctx)
+        public async Task ClearFilters(CommandContext ctx)
         {
-            if (_aliases.ContainsKey(ctx.Guild.Id))
-                _aliases[ctx.Guild.Id].Clear();
-            await ctx.RespondAsync("All aliases successfully removed.");
+            if (_filters.ContainsKey(ctx.Guild.Id))
+                _filters.Remove(ctx.Guild.Id);
+            await ctx.RespondAsync("All filters successfully removed.");
         }
         #endregion
 
-        #region COMMAND_ALIAS_CLEARALL
+        #region COMMAND_FILTER_CLEARALL
         [Command("clearall")]
-        [Description("Delete all aliases stored for ALL guilds.")]
+        [Description("Delete all filters stored for ALL guilds.")]
         [RequireOwner]
-        public async Task ClearAllAliases(CommandContext ctx)
+        public async Task ClearAllFilters(CommandContext ctx)
         {
-            _aliases.Clear();
-            await ctx.RespondAsync("All aliases successfully removed.");
+            _filters.Clear();
+            await ctx.RespondAsync("All filters successfully removed.");
         }
         #endregion
-        */
     }
 }
