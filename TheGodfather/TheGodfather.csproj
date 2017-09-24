@@ -189,6 +189,7 @@
     <Compile Include="Modules\Games\CommandsGamble.cs" />
     <Compile Include="Modules\Games\CommandsGames.cs" />
     <Compile Include="Modules\Admin\CommandsGuild.cs" />
+    <Compile Include="Modules\Messages\CommandsFilter.cs" />
     <Compile Include="Modules\Messages\CommandsPoll.cs" />
     <Compile Include="Modules\Search\CommandsImgur.cs" />
     <Compile Include="Modules\Messages\CommandsInsult.cs" />

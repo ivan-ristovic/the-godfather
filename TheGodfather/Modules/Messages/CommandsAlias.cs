@@ -16,7 +16,6 @@ namespace TheGodfatherBot.Modules.Messages
     [Group("alias", CanInvokeWithoutSubcommand = true)]
     [Description("Alias handling commands.")]
     [Aliases("a", "aliases")]
-    [RequireUserPermissions(Permissions.ManageMessages)]
     public class CommandsAlias
     {
         #region STATIC_FIELDS
@@ -96,6 +95,7 @@ namespace TheGodfatherBot.Modules.Messages
         [Command("add")]
         [Description("Add alias to list.")]
         [Aliases("+", "new")]
+        [RequireUserPermissions(Permissions.ManageMessages)]
         public async Task AddAlias(CommandContext ctx,
                                   [Description("Alias name (case sensitive).")] string alias = null,
                                   [Description("Response")] string response = null)
@@ -120,6 +120,7 @@ namespace TheGodfatherBot.Modules.Messages
         [Command("delete")]
         [Description("Remove alias from list.")]
         [Aliases("-", "remove", "del")]
+        [RequireUserPermissions(Permissions.ManageMessages)]
         public async Task DeleteAlias(CommandContext ctx, [Description("Alias to remove.")] string alias = null)
         {
             if (string.IsNullOrWhiteSpace(alias))
