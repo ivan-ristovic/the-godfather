@@ -1,5 +1,6 @@
 ﻿#region USING_DIRECTIVES
 using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -8,9 +9,7 @@ using DSharpPlus.Entities;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 
-using SteamWebAPI2.Interfaces;
-using Steam.Models.SteamCommunity;
-using SteamWebAPI2.Utilities;
+using SteamSharp;
 #endregion
 
 
@@ -22,7 +21,9 @@ namespace TheGodfatherBot.Modules.Search
     public class CommandsSteam
     {
         #region PRIVATE_FIELDS
-        private SteamUser _steam = new SteamUser(TheGodfather.GetToken("Resources/steam.txt"));
+        private SteamClient _steam = new SteamClient() {
+            Authenticator = SteamSharp.Authenticators.APIKeyAuthenticator.ForProtectedResource(TheGodfather.GetToken("Resources/steam.txt"))
+        };
         #endregion
 
 
@@ -31,45 +32,47 @@ namespace TheGodfatherBot.Modules.Search
         [Description("Get Steam user information from ID.")]
         [Aliases("id")]
         public async Task SteamProfile(CommandContext ctx,
-                                      [Description("ID.")] ulong id = 0)
+                                      [Description("ID.")] string id = null)
         {
-            if (id == 0)
+            if (string.IsNullOrWhiteSpace(id))
                 throw new ArgumentException("ID missing.");
 
-            var model = await _steam.GetCommunityProfileAsync(id);
-            if (model == null) {
+            // TODO check format exception
+            var user = await SteamCommunity.GetUserAsync(_steam, new SteamID(id));
+
+            if (user == null) {
                 await ctx.RespondAsync("No users found.");
                 return;
             }
-            var summary = await _steam.GetPlayerSummaryAsync(id);
-
-            await ctx.RespondAsync(summary.Data.ProfileUrl, embed: EmbedSteamResult(model, summary.Data));
+            
+            await ctx.RespondAsync(user.PlayerInfo.ProfileURL, embed: EmbedSteamResult(user.PlayerInfo));
         }
         #endregion
 
 
         #region HELPER_FUNCTIONS
-        private DiscordEmbed EmbedSteamResult(SteamCommunityProfileModel model, PlayerSummaryModel summary)
+        private DiscordEmbed EmbedSteamResult(SteamCommunity.PlayerInfo info)
         {
             var em = new DiscordEmbedBuilder() {
-                Title = summary.Nickname,
-                Description = Regex.Replace(model.Summary, "<[^>]*>", ""),
-                ThumbnailUrl = summary.AvatarMediumUrl,
+                Title = info.PersonaName,
+                //Description = Regex.Replace(info., "<[^>]*>", ""),
+                ThumbnailUrl = info.AvatarMediumURL,
                 Color = DiscordColor.Black
             };
 
-            if (summary.ProfileVisibility == ProfileVisibility.Private) {
+            if (info.CommunityVisibilityState != CommunityVisibilityState.Public) {
                 em.Description = "This profile is private.";
                 return em;
             }
 
-            if (model.InGameInfo != null && !string.IsNullOrWhiteSpace(model.InGameInfo.GameName))
-                em.AddField("Playing: ", $"{model.InGameInfo.GameName}\n{model.InGameInfo.GameLink}");
+            if (!string.IsNullOrWhiteSpace(info.GameID))
+                em.AddField("Playing: ", $"{info.GameExtraInfo}");
 
-            em.AddField("Last seen:" , summary.LastLoggedOffDate.ToUniversalTime().ToString(), inline: true);
+            if (info.PersonaState == PersonaState.Offline)
+                em.AddField("Last seen:" , info.LastLogOff.ToUniversalTime().ToString(), inline: true);
             //em.AddField("Game activity", $"{model.HoursPlayedLastTwoWeeks} hours past 2 weeks.", inline: true);
-            em.AddField("Member since", model.MemberSince, inline: true);
-
+            em.AddField("Member since", info.DateTimeCreated.ToUniversalTime().ToString(), inline: true);
+            /*
             if (model.IsVacBanned) {
                 var bans = _steam.GetPlayerBansAsync(model.SteamID).Result.Data;
 
@@ -78,7 +81,7 @@ namespace TheGodfatherBot.Modules.Search
                     bancount += b.NumberOfVACBans;
 
                 em.AddField("VAC Status:", $"**{bancount}** ban(s) on record.", inline: true);
-            }
+            }*/
 
             return em;
         }
