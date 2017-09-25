@@ -133,6 +133,7 @@ namespace TheGodfatherBot
             _client.MessageCreated += Client_MessageCreated;
             _client.Heartbeated += Client_Heartbeated;
             _client.DebugLogger.LogMessageReceived += Client_LogMessage;
+            _client.MessageReactionAdded += Client_ReactToMessage;
 
             // Windows 7 specific
             _client.SetWebSocketClient<WebSocket4NetClient>();
@@ -310,6 +311,12 @@ namespace TheGodfatherBot
             } catch (Exception ex) {
                 Console.WriteLine(ex.Message);
             }
+        }
+
+        private async Task Client_ReactToMessage(MessageReactionAddEventArgs e)
+        {
+            if (new Random().Next(5) == 0)
+                await e.Message.CreateReactionAsync(e.Emoji);
         }
         #endregion
 
