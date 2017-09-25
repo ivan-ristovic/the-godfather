@@ -19,8 +19,8 @@ namespace TheGodfatherBot.Modules.Search
     public class CommandsImgur
     {
         #region STATIC_FIELDS
-        static ImgurClient _imgurclient = new ImgurClient("5222972687f2120");
-        static GalleryEndpoint _endpoint = new GalleryEndpoint(_imgurclient);
+        private static ImgurClient _imgurclient = new ImgurClient("5222972687f2120");
+        private static GalleryEndpoint _endpoint = new GalleryEndpoint(_imgurclient);
         #endregion
         
 
