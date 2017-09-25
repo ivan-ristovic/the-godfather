@@ -295,15 +295,28 @@ namespace TheGodfatherBot
 
             // Check if message contains filter
             if (Modules.Messages.CommandsFilter.ContainsFilter(e.Guild.Id, e.Message.Content)) {
-                _client.DebugLogger.LogMessage(
-                    LogLevel.Info,
-                    "TheGodfather",
-                    $"Filter triggered in message: '{e.Message.Content}'\n" +
-                    $" User: {e.Message.Author.ToString()}\n" +
-                    $" Location: '{e.Guild.Name}' ({e.Guild.Id}) ; {e.Channel.ToString()}"
-                    , DateTime.Now
-                );
-                await e.Channel.DeleteMessageAsync(e.Message);
+                try {
+                    await e.Channel.DeleteMessageAsync(e.Message);
+                    _client.DebugLogger.LogMessage(
+                        LogLevel.Info,
+                        "TheGodfather",
+                        $"Filter triggered in message: '{e.Message.Content}'\n" +
+                        $" User: {e.Message.Author.ToString()}\n" +
+                        $" Location: '{e.Guild.Name}' ({e.Guild.Id}) ; {e.Channel.ToString()}"
+                        , DateTime.Now
+                    );
+                } catch (UnauthorizedException) {
+                    _client.DebugLogger.LogMessage(
+                        LogLevel.Warning,
+                        "TheGodfather",
+                        $"Filter triggered in message but missing permissions to delete!\n" +
+                        $" Message: '{e.Message.Content}'\n" +
+                        $" User: {e.Message.Author.ToString()}\n" +
+                        $" Location: '{e.Guild.Name}' ({e.Guild.Id}) ; {e.Channel.ToString()}"
+                        , DateTime.Now
+                    );
+                    await e.Channel.SendMessageAsync("The message contains the filtered word but I do not have permissions to delete it.");
+                }
             }
         }
 
