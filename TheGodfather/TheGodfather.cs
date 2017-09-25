@@ -19,7 +19,7 @@ using DSharpPlus.Exceptions;
 
 namespace TheGodfatherBot
 {
-    class TheGodfather
+    public class TheGodfather
     {
         #region STATIC_FIELDS
         static DiscordClient _client { get; set; }
@@ -33,10 +33,6 @@ namespace TheGodfatherBot
         private static StreamWriter _logstream = null;
         private static EventWaitHandle _logwritelock = null;
         #endregion
-
-
-        public static void Main(string[] args) =>
-            new TheGodfather().MainAsync(args).GetAwaiter().GetResult();
         
 
         ~TheGodfather()

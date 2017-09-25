@@ -208,6 +208,7 @@
     <Compile Include="Modules\SWAT\CommandsSwat.cs" />
     <Compile Include="Modules\Admin\CommandsUsers.cs" />
     <Compile Include="Modules\Voice\CommandsVoice.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TheGodfather.cs" />
   </ItemGroup>
