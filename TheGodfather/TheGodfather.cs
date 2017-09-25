@@ -209,13 +209,13 @@ namespace TheGodfatherBot
 
         private Task Client_Error(ClientErrorEventArgs e)
         {
-            e.Client.DebugLogger.LogMessage(LogLevel.Error, "TheGodfather", $"Exception occured: {e.Exception.GetType()}: {e.Exception.Message}", DateTime.Now);
+            _client.DebugLogger.LogMessage(LogLevel.Error, "TheGodfather", $"Exception occured: {e.Exception.GetType()}: {e.Exception.Message}", DateTime.Now);
             return Task.CompletedTask;
         }
 
         private Task Client_GuildAvailable(GuildCreateEventArgs e)
         {
-            e.Client.DebugLogger.LogMessage(
+            _client.DebugLogger.LogMessage(
                 LogLevel.Info,
                 "TheGodfather",
                 $"Guild available: '{e.Guild.Name}' ({e.Guild.Id})",
@@ -225,7 +225,7 @@ namespace TheGodfatherBot
 
         private async Task Client_GuildMemberAdd(GuildMemberAddEventArgs e)
         {
-            e.Client.DebugLogger.LogMessage(
+            _client.DebugLogger.LogMessage(
                    LogLevel.Info,
                    "TheGodfather",
                    $"Member join: {e.Member.Username} ({e.Member.Id})\n" +
@@ -237,7 +237,7 @@ namespace TheGodfatherBot
 
         private async Task Client_GuildMemberRemove(GuildMemberRemoveEventArgs e)
         {
-            e.Client.DebugLogger.LogMessage(
+            _client.DebugLogger.LogMessage(
                 LogLevel.Info, 
                 "TheGodfather", 
                 $"Member leave: {e.Member.Username} ({e.Member.Id})\n" +
@@ -268,7 +268,7 @@ namespace TheGodfatherBot
                 return;
 
             if (e.Channel.IsPrivate) {
-                e.Client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", $"IGNORED DM: {e.Author.Username} : {e.Message}", DateTime.Now);
+                _client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", $"IGNORED DM: {e.Author.Username} : {e.Message}", DateTime.Now);
                 return;
             }
 
@@ -282,7 +282,7 @@ namespace TheGodfatherBot
             // Check if message has an alias
             var response = Modules.Messages.CommandsAlias.FindAlias(e.Guild.Id, e.Message.Content);
             if (response != null) {
-                e.Client.DebugLogger.LogMessage(
+                _client.DebugLogger.LogMessage(
                     LogLevel.Info,
                     "TheGodfather",
                     $"Alias triggered: {e.Message.Content}\n" +
@@ -295,7 +295,7 @@ namespace TheGodfatherBot
 
             // Check if message contains filter
             if (Modules.Messages.CommandsFilter.ContainsFilter(e.Guild.Id, e.Message.Content)) {
-                e.Client.DebugLogger.LogMessage(
+                _client.DebugLogger.LogMessage(
                     LogLevel.Info,
                     "TheGodfather",
                     $"Filter triggered in message: '{e.Message.Content}'\n" +
@@ -315,7 +315,7 @@ namespace TheGodfatherBot
 
         private async Task Client_Ready(ReadyEventArgs e)
         {
-            e.Client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", "Ready.", DateTime.Now);
+            _client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", "Ready.", DateTime.Now);
             await _client.UpdateStatusAsync(new Game(_statuses[0]) { StreamType = GameStreamType.NoStream });
         }
         #endregion
