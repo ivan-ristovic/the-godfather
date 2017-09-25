@@ -92,6 +92,9 @@ namespace TheGodfatherBot.Modules.Messages
             if (string.IsNullOrWhiteSpace(filter))
                 throw new ArgumentException("Filter trigger missing.");
 
+            if (CommandsAlias.FindAlias(ctx.Guild.Id, filter) != null)
+                throw new Exception("You cannot add a filter if an alias for that trigger exists!");
+
             if (!_filters.ContainsKey(ctx.Guild.Id))
                 _filters.Add(ctx.Guild.Id, new List<string>());
 
