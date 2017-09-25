@@ -281,8 +281,18 @@ namespace TheGodfatherBot
                 await e.Channel.SendMessageAsync(response);
             }
 
-            if (Modules.Messages.CommandsFilter.ContainsFilter(e.Guild.Id, e.Message.Content))
+            // Check if message contains filter
+            if (Modules.Messages.CommandsFilter.ContainsFilter(e.Guild.Id, e.Message.Content)) {
+                e.Client.DebugLogger.LogMessage(
+                    LogLevel.Info,
+                    "TheGodfather",
+                    $"Filter triggered in message: '{e.Message.Content}'\n" +
+                    $" User: {e.Message.Author.ToString()}\n" +
+                    $" Location: '{e.Guild.Name}' ({e.Guild.Id}) ; {e.Channel.ToString()}"
+                    , DateTime.Now
+                );
                 await e.Channel.DeleteMessageAsync(e.Message);
+            }
         }
 
         private async Task Client_Heartbeated(HeartbeatEventArgs e)
