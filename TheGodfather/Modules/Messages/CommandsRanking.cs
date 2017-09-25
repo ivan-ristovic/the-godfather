@@ -1,6 +1,7 @@
 #region USING_DIRECTIVES
 using System;
 using System.IO;
+using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -139,6 +140,22 @@ namespace TheGodfatherBot.Modules.Messages
         {
             SaveRanks(ctx.Client.DebugLogger);
             await ctx.RespondAsync("Ranks successfully saved.");
+        }
+        #endregion
+
+        #region COMMAND_RANK_TOP
+        [Command("top")]
+        [Description("Get rank leaderboard.")]
+        public async Task TopRanks(CommandContext ctx)
+        {
+            var top = _msgcount.OrderByDescending(v => v.Value).Take(10);
+            var em = new DiscordEmbedBuilder() { Title = "Top ranked users (globally): " };
+            foreach (var v in top) {
+                var u = await ctx.Client.GetUserAsync(v.Key);
+                em.AddField(u.Username, $"{CalculateRank(v.Value)} ({v.Value} XP)");
+            }
+
+            await ctx.RespondAsync("", embed: em);
         }
         #endregion
 
