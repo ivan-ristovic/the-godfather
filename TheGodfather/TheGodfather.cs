@@ -125,15 +125,15 @@ namespace TheGodfatherBot
                 UseInternalLogHandler = true,
                 LogLevel = LogLevel.Debug
             });
-            _client.Ready += Client_Ready;
+            _client.ClientErrored += Client_Error;
+            _client.DebugLogger.LogMessageReceived += Client_LogMessage;
             _client.GuildAvailable += Client_GuildAvailable;
-            _client.ClientErrored += Client_ClientError;
             _client.GuildMemberAdded += Client_GuildMemberAdd;
             _client.GuildMemberRemoved += Client_GuildMemberRemove;
-            _client.MessageCreated += Client_MessageCreated;
             _client.Heartbeated += Client_Heartbeated;
-            _client.DebugLogger.LogMessageReceived += Client_LogMessage;
+            _client.MessageCreated += Client_MessageCreated;
             _client.MessageReactionAdded += Client_ReactToMessage;
+            _client.Ready += Client_Ready;
 
             // Windows 7 specific
             _client.SetWebSocketClient<WebSocket4NetClient>();
@@ -201,25 +201,25 @@ namespace TheGodfatherBot
 
 
         #region CLIENT_EVENTS
-        private async Task Client_Ready(ReadyEventArgs e)
+        private async Task Client_Heartbeated(HeartbeatEventArgs e)
         {
-            e.Client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", "Ready.", DateTime.Now);
-            await _client.UpdateStatusAsync(new Game(_statuses[0]) { StreamType = GameStreamType.NoStream });
+            var rnd = new Random();
+            await _client.UpdateStatusAsync(new Game(_statuses[rnd.Next(_statuses.Count)]) { StreamType = GameStreamType.NoStream });
+        }
+
+        private Task Client_Error(ClientErrorEventArgs e)
+        {
+            e.Client.DebugLogger.LogMessage(LogLevel.Error, "TheGodfather", $"Exception occured: {e.Exception.GetType()}: {e.Exception.Message}", DateTime.Now);
+            return Task.CompletedTask;
         }
 
         private Task Client_GuildAvailable(GuildCreateEventArgs e)
         {
             e.Client.DebugLogger.LogMessage(
-                LogLevel.Info, 
-                "TheGodfather", 
+                LogLevel.Info,
+                "TheGodfather",
                 $"Guild available: '{e.Guild.Name}' ({e.Guild.Id})",
                 DateTime.Now);
-            return Task.CompletedTask;
-        }
-
-        private Task Client_ClientError(ClientErrorEventArgs e)
-        {
-            e.Client.DebugLogger.LogMessage(LogLevel.Error, "TheGodfather", $"Exception occured: {e.Exception.GetType()}: {e.Exception.Message}", DateTime.Now);
             return Task.CompletedTask;
         }
 
@@ -245,6 +245,21 @@ namespace TheGodfatherBot
                 DateTime.Now);
 
             await e.Guild.GetDefaultChannel().SendMessageAsync($"{e.Member?.Username ?? "<unknown>"} left the server. Bye!");
+        }
+
+        private void Client_LogMessage(object sender, DebugLogMessageEventArgs e)
+        {
+            if (_logstream == null)
+                return;
+
+            try {
+                _logwritelock.WaitOne();
+                _logstream.WriteLine($"*[{e.Timestamp}] [{e.Level}]\t{e.Message}");
+                _logstream.Flush();
+                _logwritelock.Set();
+            } catch (Exception ex) {
+                Console.WriteLine(ex.Message);
+            }
         }
 
         private async Task Client_MessageCreated(MessageCreateEventArgs e)
@@ -292,31 +307,16 @@ namespace TheGodfatherBot
             }
         }
 
-        private async Task Client_Heartbeated(HeartbeatEventArgs e)
-        {
-            var rnd = new Random();
-            await _client.UpdateStatusAsync(new Game(_statuses[rnd.Next(_statuses.Count)]) { StreamType = GameStreamType.NoStream });
-        }
-
-        private void Client_LogMessage(object sender, DebugLogMessageEventArgs e)
-        {
-            if (_logstream == null)
-                return;
-
-            try {
-                _logwritelock.WaitOne();
-                _logstream.WriteLine($"*[{e.Timestamp}] [{e.Level}]\t{e.Message}");
-                _logstream.Flush();
-                _logwritelock.Set();
-            } catch (Exception ex) {
-                Console.WriteLine(ex.Message);
-            }
-        }
-
         private async Task Client_ReactToMessage(MessageReactionAddEventArgs e)
         {
             if (new Random().Next(5) == 0)
                 await e.Message.CreateReactionAsync(e.Emoji);
+        }
+
+        private async Task Client_Ready(ReadyEventArgs e)
+        {
+            e.Client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", "Ready.", DateTime.Now);
+            await _client.UpdateStatusAsync(new Game(_statuses[0]) { StreamType = GameStreamType.NoStream });
         }
         #endregion
 
