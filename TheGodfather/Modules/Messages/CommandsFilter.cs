@@ -95,6 +95,9 @@ namespace TheGodfatherBot.Modules.Messages
             if (CommandsAlias.FindAlias(ctx.Guild.Id, filter) != null)
                 throw new Exception("You cannot add a filter if an alias for that trigger exists!");
 
+            if (ctx.Client.GetCommandsNext().RegisteredCommands.ContainsKey(filter))
+                throw new Exception("You cannot add a filter for one of my commands!");
+
             if (!_filters.ContainsKey(ctx.Guild.Id))
                 _filters.Add(ctx.Guild.Id, new List<string>());
 
