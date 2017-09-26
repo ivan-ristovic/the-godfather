@@ -149,10 +149,11 @@ namespace TheGodfatherBot.Modules.Messages
         public async Task TopRanks(CommandContext ctx)
         {
             var top = _msgcount.OrderByDescending(v => v.Value).Take(10);
-            var em = new DiscordEmbedBuilder() { Title = "Top ranked users (globally): " };
+            var em = new DiscordEmbedBuilder() { Title = "Top ranked users (globally): ", Color = DiscordColor.Purple };
             foreach (var v in top) {
                 var u = await ctx.Client.GetUserAsync(v.Key);
-                em.AddField(u.Username, $"{CalculateRank(v.Value)} ({v.Value} XP)");
+                var rank = CalculateRank(v.Value);
+                em.AddField(u.Username, $"{_ranks[rank]} ({rank}) ({v.Value} XP)");
             }
 
             await ctx.RespondAsync("", embed: em);
