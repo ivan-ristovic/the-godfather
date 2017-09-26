@@ -27,10 +27,13 @@ namespace TheGodfatherBot.Modules.Search
         
         
         public async Task ExecuteGroupAsync(CommandContext ctx,
-                                           [Description("Query (optional).")] string sub = null,
-                                           [Description("Number of images to print [1-10].")] int n = 1)
+                                           [Description("Number of images to print [1-10].")] int n = 1,
+                                           [Description("Query (optional).")] string sub = null)
         {
-            await ImgurTop(ctx, sub, n);
+            if (string.IsNullOrWhiteSpace(sub) || n < 1 || n > 10)
+                throw new ArgumentException("Invalid arguments.");
+
+            await PrintImagesFromSub(ctx, sub.Trim(), n, SubredditGallerySortOrder.Top, TimeWindow.Day);
         }
 
 
@@ -39,23 +42,36 @@ namespace TheGodfatherBot.Modules.Search
         [Description("Return most rated images for query.")]
         [Aliases("t")]
         public async Task ImgurTop(CommandContext ctx,
-                                  [Description("Query (optional).")] string sub = null,
-                                  [Description("Number of images to print [1-10].")] int n = 1)
+                                  [Description("Time window (day/month/week/year/all).")] string time = "day",
+                                  [Description("Number of images to print [1-10].")] int n = 1,
+                                  [Description("Query (optional).")] string sub = null)
         {
             if (string.IsNullOrWhiteSpace(sub) || n < 1 || n > 10)
-                throw new ArgumentException("Invalid sub or number of images (must be less than 10).");
-            
-            await GetImagesFromSub(ctx, sub.Trim(), n, SubredditGallerySortOrder.Top, TimeWindow.Day);
+                throw new ArgumentException("Invalid arguments.");
+
+            TimeWindow t = TimeWindow.Day;
+            if (time == "day" || time == "d")
+                t = TimeWindow.Day;
+            else if (time == "week" || time == "w")
+                t = TimeWindow.Week;
+            else if (time == "month" || time == "m")
+                t = TimeWindow.Month;
+            else if(time == "year" || time == "y")
+                t = TimeWindow.Year;
+            else if (time == "all" || time == "a")
+                t = TimeWindow.All;
+
+            await PrintImagesFromSub(ctx, sub.Trim(), n, SubredditGallerySortOrder.Top, t);
         }
         #endregion
 
 
         #region HELPER_FUNCTIONS
-        private async Task GetImagesFromSub(CommandContext ctx, 
-                                            string sub, 
-                                            int num, 
-                                            SubredditGallerySortOrder order,
-                                            TimeWindow time)
+        private async Task PrintImagesFromSub(CommandContext ctx, 
+                                              string sub, 
+                                              int num, 
+                                              SubredditGallerySortOrder order,
+                                              TimeWindow time)
         {
             try {
                 var images = await _endpoint.GetSubredditGalleryAsync(sub, order, time);
