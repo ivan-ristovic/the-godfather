@@ -42,20 +42,23 @@ namespace TheGodfatherBot.Modules.Search
                                   [Description("Query (optional).")] string sub = null,
                                   [Description("Number of images to print [1-10].")] int n = 1)
         {
-            if (string.IsNullOrWhiteSpace(sub) || n < 1 || n > 10) {
-                await ctx.RespondAsync("Invalid sub or number of images (must be less than 10). Here is a random pic!");
-                await GetImagesFromSub(ctx, "pics", 1);
-            } else
-                await GetImagesFromSub(ctx, sub.Trim(), n);
+            if (string.IsNullOrWhiteSpace(sub) || n < 1 || n > 10)
+                throw new ArgumentException("Invalid sub or number of images (must be less than 10).");
+            
+            await GetImagesFromSub(ctx, sub.Trim(), n, SubredditGallerySortOrder.Top, TimeWindow.Day);
         }
         #endregion
 
 
         #region HELPER_FUNCTIONS
-        private async Task GetImagesFromSub(CommandContext ctx, string sub, int num)
+        private async Task GetImagesFromSub(CommandContext ctx, 
+                                            string sub, 
+                                            int num, 
+                                            SubredditGallerySortOrder order,
+                                            TimeWindow time)
         {
             try {
-                var images = await _endpoint.GetSubredditGalleryAsync(sub, SubredditGallerySortOrder.Top, TimeWindow.Day);
+                var images = await _endpoint.GetSubredditGalleryAsync(sub, order, time);
                 
                 int i = num;
                 foreach (var im in images) {
