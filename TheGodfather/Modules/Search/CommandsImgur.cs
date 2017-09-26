@@ -15,7 +15,9 @@ using Imgur.API.Models.Impl;
 
 namespace TheGodfatherBot.Modules.Search
 {
-    [Description("Imgur commands.")]
+    [Group("imgur", CanInvokeWithoutSubcommand = true)]
+    [Description("Search imgur. Invoking without sub command searches top.")]
+    [Aliases("img", "im", "i")]
     public class CommandsImgur
     {
         #region STATIC_FIELDS
@@ -23,13 +25,10 @@ namespace TheGodfatherBot.Modules.Search
         private static GalleryEndpoint _endpoint = new GalleryEndpoint(_imgurclient);
         #endregion
         
-
-        #region COMMAND_IMGUR
-        [Command("imgur"), Description("Search imgur.")]
-        [Aliases("img", "im", "i")]
-        public async Task Imgur(CommandContext ctx,
-                                [Description("Query (optional).")] string sub = null,
-                                [Description("Number of images to print [1-10].")] int n = 1)
+        
+        public async Task ExecuteAsync(CommandContext ctx,
+                                      [Description("Query (optional).")] string sub = null,
+                                      [Description("Number of images to print [1-10].")] int n = 1)
         {
             if (string.IsNullOrWhiteSpace(sub) || n < 1 || n > 10) {
                 await ctx.RespondAsync("Invalid sub or number of images (must be less than 10). Here is a random pic!");
@@ -37,7 +36,7 @@ namespace TheGodfatherBot.Modules.Search
             } else
                 await GetImagesFromSub(ctx, sub.Trim(), n);
         }
-        #endregion
+
 
 
         #region HELPER_FUNCTIONS
