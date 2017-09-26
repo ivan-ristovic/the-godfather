@@ -26,9 +26,21 @@ namespace TheGodfatherBot.Modules.Search
         #endregion
         
         
-        public async Task ExecuteAsync(CommandContext ctx,
-                                      [Description("Query (optional).")] string sub = null,
-                                      [Description("Number of images to print [1-10].")] int n = 1)
+        public async Task ExecuteGroupAsync(CommandContext ctx,
+                                           [Description("Query (optional).")] string sub = null,
+                                           [Description("Number of images to print [1-10].")] int n = 1)
+        {
+            await ImgurTop(ctx, sub, n);
+        }
+
+
+        #region COMMAND_IMGUR_TOP
+        [Command("top")]
+        [Description("Return most rated images for query.")]
+        [Aliases("t")]
+        public async Task ImgurTop(CommandContext ctx,
+                                  [Description("Query (optional).")] string sub = null,
+                                  [Description("Number of images to print [1-10].")] int n = 1)
         {
             if (string.IsNullOrWhiteSpace(sub) || n < 1 || n > 10) {
                 await ctx.RespondAsync("Invalid sub or number of images (must be less than 10). Here is a random pic!");
@@ -36,7 +48,7 @@ namespace TheGodfatherBot.Modules.Search
             } else
                 await GetImagesFromSub(ctx, sub.Trim(), n);
         }
-
+        #endregion
 
 
         #region HELPER_FUNCTIONS
