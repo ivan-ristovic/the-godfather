@@ -222,5 +222,46 @@ namespace TheGodfatherBot.Modules.Messages
             await ctx.RespondAsync(s);
         }
         #endregion
+
+        #region COMMAND_ZUGIFY
+        [Command("zugify")]
+        [Description("I don't even...")]
+        [Aliases("z")]
+        public async Task Zugify(CommandContext ctx, [RemainingText, Description("Text.")] string text = null)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+                throw new ArgumentException("Text missing.");
+
+            text = text.ToLower();
+            string s = "";
+            foreach (char c in text) {
+                if (char.IsLetter(c)) {
+                    s += $":regional_indicator_{c}:";
+                } else if (char.IsDigit(c)) {
+                    switch (c) {
+                        case '0': s += ":zero:"; break;
+                        case '1': s += ":one:"; break;
+                        case '2': s += ":two:"; break;
+                        case '3': s += ":three:"; break;
+                        case '4': s += ":four:"; break;
+                        case '5': s += ":five:"; break;
+                        case '6': s += ":six:"; break;
+                        case '7': s += ":seven:"; break;
+                        case '8': s += ":eight:"; break;
+                        case '9': s += ":nine:"; break;
+                    }
+                } else if (c == ' ') {
+                    s += ":octagonal_sign:";
+                } else if (c == '?')
+                    s += ":question: ";
+                else if (c == '!')
+                    s += ":exclamation:";
+                else
+                    s += c;
+            }
+
+            await ctx.RespondAsync(s);
+        }
+        #endregion
     }
 }
