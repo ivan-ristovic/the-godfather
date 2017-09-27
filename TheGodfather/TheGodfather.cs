@@ -177,6 +177,8 @@ namespace TheGodfatherBot
             //_commands.RegisterCommands<Modules.Voice.CommandsVoice>();
             _commands.CommandExecuted += Commands_CommandExecuted;
             _commands.CommandErrored += Commands_CommandErrored;
+
+            _commands.SetHelpFormatter<GodfatherHelpFormatter>();
         }
 
         private void SetupInteractivity()
