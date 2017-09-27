@@ -37,6 +37,21 @@ namespace TheGodfatherBot.Modules.Search
         }
 
 
+        #region COMMAND_IMGUR_LATEST
+        [Command("latest")]
+        [Description("Return latest images for query.")]
+        [Aliases("l", "new", "newest")]
+        public async Task ImgurTop(CommandContext ctx,
+                                  [Description("Number of images to print [1-10].")] int n = 1,
+                                  [Description("Query (optional).")] string sub = null)
+        {
+            if (string.IsNullOrWhiteSpace(sub) || n < 1 || n > 10)
+                throw new ArgumentException("Invalid arguments.");
+
+            await PrintImagesFromSub(ctx, sub.Trim(), n, SubredditGallerySortOrder.Time, TimeWindow.Day);
+        }
+        #endregion
+
         #region COMMAND_IMGUR_TOP
         [Command("top")]
         [Description("Return most rated images for query.")]
