@@ -235,7 +235,7 @@ namespace TheGodfatherBot.Modules.Messages
             text = text.ToLower();
             string s = "";
             foreach (char c in text) {
-                if (char.IsLetter(c)) {
+                if (c >= 'a' && c <= 'z') {
                     s += $":regional_indicator_{c}:";
                 } else if (char.IsDigit(c)) {
                     switch (c) {
