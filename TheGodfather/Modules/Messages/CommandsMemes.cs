@@ -98,7 +98,7 @@ namespace TheGodfatherBot.Modules.Messages
                 await ctx.RespondAsync("Meme with that name already exists!");
             } else {
                 _memes.Add(name, url);
-                await ctx.RespondAsync($"Meme '{name}' successfully added!");
+                await ctx.RespondAsync($"Meme **{name}** successfully added!");
             }
         }
         #endregion
@@ -117,7 +117,7 @@ namespace TheGodfatherBot.Modules.Messages
                 throw new KeyNotFoundException("Meme with that name doesn't exist!");
 
             _memes.Remove(name);
-            await ctx.RespondAsync($"Meme '{name}' successfully deleted!");
+            await ctx.RespondAsync($"Meme **{name}** successfully deleted!");
         }
         #endregion
 
