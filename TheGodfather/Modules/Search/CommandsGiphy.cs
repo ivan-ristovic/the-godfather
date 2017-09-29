@@ -15,7 +15,9 @@ using GiphyDotNet.Model.Parameters;
 
 namespace TheGodfatherBot.Modules.Search
 {
-    [Description("Giphy commands.")]
+    [Group("gif", CanInvokeWithoutSubcommand = true)]
+    [Description("GIPHY commands.")]
+    [Aliases("giphy")]
     public class CommandsGiphy
     {
         #region PRIVATE_FIELDS
@@ -24,10 +26,8 @@ namespace TheGodfatherBot.Modules.Search
 
 
         #region COMMAND_GIPHY
-        [Command("giphy"), Description("Search GIPHY.")]
-        [Aliases("gif")]
-        public async Task Giphy(CommandContext ctx,
-                               [Description("Query.")] string q = null)
+        public async Task ExecuteGroupAsync(CommandContext ctx,
+                                           [Description("Query.")] string q = null)
         {
             if (string.IsNullOrWhiteSpace(q))
                 throw new ArgumentException("Query missing!");
