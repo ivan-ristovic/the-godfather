@@ -35,7 +35,8 @@ namespace TheGodfatherBot.Modules.Admin
         [Description("Create a new role.")]
         [Aliases("new", "add", "+")]
         [RequirePermissions(Permissions.ManageRoles)]
-        public async Task CreateRole(CommandContext ctx, [Description("Role")] string name = null)
+        public async Task CreateRole(CommandContext ctx, 
+                                    [Description("Role")] string name = null)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentException("Missing role name.");

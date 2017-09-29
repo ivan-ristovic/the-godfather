@@ -203,7 +203,7 @@ namespace TheGodfatherBot.Modules.Admin
                                        [RemainingText, Description("Status.")] string status = null)
             {
                 if (string.IsNullOrWhiteSpace(status))
-                    throw new InvalidCommandUsageException("Invalid status");
+                    throw new InvalidCommandUsageException("Invalid status.");
 
                 TheGodfather._statuses.Add(status);
                 await ctx.RespondAsync("Status added!");
@@ -219,7 +219,7 @@ namespace TheGodfatherBot.Modules.Admin
                                           [RemainingText, Description("Status.")] string status = null)
             {
                 if (string.IsNullOrWhiteSpace(status))
-                    throw new InvalidCommandUsageException("Invalid status");
+                    throw new InvalidCommandUsageException("Invalid status.");
 
                 if (status == "!help")
                     throw new InvalidCommandUsageException("Cannot delete help status!");

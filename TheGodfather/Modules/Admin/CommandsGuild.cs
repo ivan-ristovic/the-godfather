@@ -44,7 +44,7 @@ namespace TheGodfatherBot.Modules.Admin
         [Aliases("memberlist", "listm", "lm", "mem", "members", "memlist", "mlist")]
         [RequirePermissions(Permissions.ManageGuild)]
         public async Task ListMembers(CommandContext ctx, 
-                                     [Description("Page")] int page = 1)
+                                     [Description("Page.")] int page = 1)
         {
             var members = await ctx.Guild.GetAllMembersAsync();
 
@@ -72,7 +72,7 @@ namespace TheGodfatherBot.Modules.Admin
         [Aliases("auditlog", "viewlog", "getlog", "getlogs", "logs")]
         [RequirePermissions(Permissions.ViewAuditLog)]
         public async Task GetAuditLogs(CommandContext ctx, 
-                                      [Description("Page")] int page = 1)
+                                      [Description("Page.")] int page = 1)
         {
             var log = await ctx.Guild.GetAuditLogsAsync();
 
@@ -102,7 +102,7 @@ namespace TheGodfatherBot.Modules.Admin
         [RequirePermissions(Permissions.KickMembers)]
         [RequireUserPermissions(Permissions.Administrator)]
         public async Task PruneMembers(CommandContext ctx, 
-                                      [Description("Days")] int days = 365)
+                                      [Description("Days.")] int days = 365)
         {
             if (days <= 0 || days > 1000)
                 throw new InvalidCommandUsageException("Number of days not in valid range! [1-1000]");
@@ -132,7 +132,7 @@ namespace TheGodfatherBot.Modules.Admin
         [Aliases("r", "name", "setname")]
         [RequirePermissions(Permissions.ManageGuild)]
         public async Task RenameGuild(CommandContext ctx,
-                                     [RemainingText, Description("New name")] string name = null)
+                                     [RemainingText, Description("New name.")] string name = null)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new InvalidCommandUsageException("Missing new guild name.");

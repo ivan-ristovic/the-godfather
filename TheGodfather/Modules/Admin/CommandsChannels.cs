@@ -23,7 +23,7 @@ namespace TheGodfatherBot.Modules.Admin
         [Aliases("create", "+", "+t", "make", "new", "add")]
         [RequirePermissions(Permissions.ManageChannels)]
         public async Task CreateTextChannel(CommandContext ctx, 
-                                           [RemainingText, Description("Name")] string name = null)
+                                           [RemainingText, Description("Name.")] string name = null)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new InvalidCommandUsageException("Missing channel name.");
@@ -39,7 +39,7 @@ namespace TheGodfatherBot.Modules.Admin
         [Aliases("+v", "makev", "newv", "addv")]
         [RequirePermissions(Permissions.ManageChannels)]
         public async Task CreateVoiceChannel(CommandContext ctx, 
-                                            [RemainingText, Description("Name")] string name = null)
+                                            [RemainingText, Description("Name.")] string name = null)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new InvalidCommandUsageException("Missing channel name.");
@@ -55,7 +55,7 @@ namespace TheGodfatherBot.Modules.Admin
         [Aliases("-", "del", "d", "remove")]
         [RequirePermissions(Permissions.ManageChannels)]
         public async Task DeleteChannel(CommandContext ctx, 
-                                       [Description("Channel")] DiscordChannel c = null)
+                                       [Description("Channel.")] DiscordChannel c = null)
         {
             if (c == null)
                 throw new InvalidCommandUsageException("Can't find such channel.");
@@ -70,8 +70,8 @@ namespace TheGodfatherBot.Modules.Admin
         [Aliases("r", "name", "setname")]
         [RequirePermissions(Permissions.ManageChannels)]
         public async Task RenameChannel(CommandContext ctx, 
-                                       [Description("Channel")] DiscordChannel c = null,
-                                       [Description("New name")] string name = null)
+                                       [Description("Channel.")] DiscordChannel c = null,
+                                       [RemainingText, Description("New name.")] string name = null)
         {
             if (c == null)
                 throw new InvalidCommandUsageException("Can't find such channel.");
@@ -91,8 +91,8 @@ namespace TheGodfatherBot.Modules.Admin
         [Aliases("t", "topic")]
         [RequirePermissions(Permissions.ManageChannels)]
         public async Task SetChannelTopic(CommandContext ctx,
-                                         [Description("Channel")] DiscordChannel c = null,
-                                         [RemainingText, Description("New topic")] string topic = null)
+                                         [Description("Channel.")] DiscordChannel c = null,
+                                         [RemainingText, Description("New topic.")] string topic = null)
         {
             if (c == null)
                 throw new InvalidCommandUsageException("Can't find such channel.");
@@ -127,7 +127,7 @@ namespace TheGodfatherBot.Modules.Admin
             [Aliases("r", "name", "setname")]
             [RequirePermissions(Permissions.ManageChannels)]
             public async Task RenameChannel(CommandContext ctx,
-                                           [Description("New name")] string name = null)
+                                           [RemainingText, Description("New name.")] string name = null)
             {
                 if (string.IsNullOrWhiteSpace(name))
                     throw new InvalidCommandUsageException("Missing new channel name.");
@@ -146,7 +146,7 @@ namespace TheGodfatherBot.Modules.Admin
             [Aliases("t", "topic")]
             [RequirePermissions(Permissions.ManageChannels)]
             public async Task SetChannelTopic(CommandContext ctx,
-                                             [RemainingText, Description("New topic")] string topic = null)
+                                             [RemainingText, Description("New topic.")] string topic = null)
             {
                 if (string.IsNullOrWhiteSpace(topic))
                     throw new InvalidCommandUsageException("Missing topic.");
