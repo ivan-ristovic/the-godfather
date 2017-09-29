@@ -203,7 +203,7 @@
     <Compile Include="Modules\Messages\CommandsInsult.cs" />
     <Compile Include="Modules\Messages\CommandsMemes.cs" />
     <Compile Include="Modules\Messages\CommandsMessages.cs" />
-    <Compile Include="Modules\Messages\CommandsMisc.cs" />
+    <Compile Include="Modules\Main\CommandsMain.cs" />
     <Compile Include="Modules\Messages\CommandsRanking.cs" />
     <Compile Include="Modules\Search\CommandsReddit.cs" />
     <Compile Include="Modules\Admin\CommandsRoles.cs" />
@@ -903,6 +903,7 @@
     <Content Include="Resources\quiz-flags\Zambia.png" />
     <Content Include="Resources\quiz-flags\Zimbabwe.png" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\NETStandard.Library.2.0.0\build\netstandard2.0\NETStandard.Library.targets" Condition="Exists('..\packages\NETStandard.Library.2.0.0\build\netstandard2.0\NETStandard.Library.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

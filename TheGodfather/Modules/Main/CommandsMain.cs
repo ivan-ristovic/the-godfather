@@ -14,10 +14,10 @@ using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 #endregion
 
-namespace TheGodfatherBot.Modules.Messages
+namespace TheGodfatherBot.Modules.Main
 {
     [Description("Misc commands.")]
-    public class CommandsMisc
+    public class CommandsMain
     {
         #region COMMAND_8BALL
         [Command("8ball")]

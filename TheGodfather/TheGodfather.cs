@@ -159,12 +159,12 @@ namespace TheGodfatherBot
             _commands.RegisterCommands<Modules.Games.CommandsNunchi>();
             _commands.RegisterCommands<Modules.Games.CommandsRace>();
             _commands.RegisterCommands<Modules.Games.CommandsQuiz>();
+            _commands.RegisterCommands<Modules.Main.CommandsMain>();
             _commands.RegisterCommands<Modules.Messages.CommandsAlias>();
             _commands.RegisterCommands<Modules.Messages.CommandsFilter>();
             _commands.RegisterCommands<Modules.Messages.CommandsInsult>();
             _commands.RegisterCommands<Modules.Messages.CommandsMemes>();
             _commands.RegisterCommands<Modules.Messages.CommandsMessages>();
-            _commands.RegisterCommands<Modules.Messages.CommandsMisc>();
             _commands.RegisterCommands<Modules.Messages.CommandsPoll>();
             _commands.RegisterCommands<Modules.Messages.CommandsRanking>();
             _commands.RegisterCommands<Modules.Search.CommandsGiphy>();
