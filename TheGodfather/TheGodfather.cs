@@ -382,7 +382,7 @@ namespace TheGodfatherBot
             else if (e.Exception is Exceptions.InvalidCommandUsageException)
                 embed.Description = $"{emoji} Invalid use of command! {ex.Message}";
             else if (e.Exception is Exceptions.CommandFailedException)
-                embed.Description = $"{emoji} Command execution failed! {ex.Message}";
+                embed.Description = $"{emoji} {ex.Message}";
             else
                 embed.Description = $"Unknown error occured (probably because Serbian made this. Please **!report**.";
 
