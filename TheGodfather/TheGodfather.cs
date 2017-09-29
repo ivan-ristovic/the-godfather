@@ -160,6 +160,7 @@ namespace TheGodfatherBot
             _commands.RegisterCommands<Modules.Games.CommandsRace>();
             _commands.RegisterCommands<Modules.Games.CommandsQuiz>();
             _commands.RegisterCommands<Modules.Main.CommandsMain>();
+            _commands.RegisterCommands<Modules.Main.CommandsRandom>();
             _commands.RegisterCommands<Modules.Messages.CommandsAlias>();
             _commands.RegisterCommands<Modules.Messages.CommandsFilter>();
             _commands.RegisterCommands<Modules.Messages.CommandsInsult>();

@@ -191,6 +191,7 @@
     <Compile Include="Modules\Games\CommandsNunchi.cs" />
     <Compile Include="Modules\Games\CommandsQuiz.cs" />
     <Compile Include="Modules\Games\CommandsRace.cs" />
+    <Compile Include="Modules\Main\CommandsRandom.cs" />
     <Compile Include="Modules\Messages\CommandsAlias.cs" />
     <Compile Include="Modules\Admin\CommandsChannels.cs" />
     <Compile Include="Modules\Games\CommandsGamble.cs" />
