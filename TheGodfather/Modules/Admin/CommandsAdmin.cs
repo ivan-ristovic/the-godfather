@@ -2,20 +2,16 @@
 using System;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
-using System.CodeDom.Compiler;
-using Microsoft.CSharp;
 using Microsoft.CodeAnalysis.Scripting;
+using Microsoft.CodeAnalysis.CSharp.Scripting;
+using Microsoft.CodeAnalysis;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-using System.Diagnostics;
-using Microsoft.CodeAnalysis.CSharp.Scripting;
-using Microsoft.CodeAnalysis;
 #endregion
 
 

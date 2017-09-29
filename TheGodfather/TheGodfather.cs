@@ -379,8 +379,8 @@ namespace TheGodfatherBot
                 embed.Description = $"{emoji} Either you or I don't have the permissions required to execute this command.";
             else if (e.Exception is UnauthorizedException)
                 embed.Description = $"{emoji} I am not authorized to do that.";
-            else if (e.Exception is ArgumentException)
-                embed.Description = $"{emoji} Invalid command argument! {ex.Message}";
+            else if (e.Exception is Exceptions.CommandUsageException)
+                embed.Description = $"{emoji} Invalid use of command! {ex.Message}";
             else
                 embed.Description = $"{emoji} {ex.Message}";
 

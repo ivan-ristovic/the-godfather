@@ -229,6 +229,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Exceptions.cs" />
     <Compile Include="GodfatherHelpFormatter.cs" />
     <Compile Include="Modules\Admin\CommandsAdmin.cs" />
     <Compile Include="Modules\Games\CommandsBank.cs" />
