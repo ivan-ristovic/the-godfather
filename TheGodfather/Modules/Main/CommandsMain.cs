@@ -123,7 +123,7 @@ namespace TheGodfatherBot.Modules.Main
         [Description("Resend a message after some time.")]
         public async Task Remind(
             CommandContext ctx,
-            [Description("Time to wait before repeat.")] int time = 0,
+            [Description("Time to wait before repeat (in seconds).")] int time = 0,
             [RemainingText, Description("What to repeat.")] string s = null)
         {
             if (time == 0 || string.IsNullOrWhiteSpace(s))
@@ -135,6 +135,22 @@ namespace TheGodfatherBot.Modules.Main
             await ctx.RespondAsync($"I will remind you to: \"{s}\" in {time} seconds.");
             await Task.Delay(time * 1000);
             await ctx.RespondAsync($"I was told to remind you to: \"{s}\".");
+        }
+        #endregion
+
+        #region COMMAND_REPORT
+        [Command("report")]
+        [Description("Send a report message to owner about a bug (please don't abuse... please).")]
+        public async Task SendErrorReport(CommandContext ctx, 
+                                         [RemainingText, Description("Text.")] string msg = null)
+        {
+            if (string.IsNullOrWhiteSpace(msg))
+                throw new ArgumentException("Text missing.");
+
+            ctx.Client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", $"Report from {ctx.User.Username} ({ctx.User.Id}): {msg}", DateTime.Now);
+
+            var dm = await ctx.Client.CreateDmAsync(ctx.Client.CurrentApplication.Owner);
+            await dm.SendMessageAsync($":warning: Report from {ctx.User.Username} ({ctx.User.Id}): {msg}");
         }
         #endregion
 
