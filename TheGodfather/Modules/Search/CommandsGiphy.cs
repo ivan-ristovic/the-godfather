@@ -10,6 +10,7 @@ using DSharpPlus.Entities;
 
 using GiphyDotNet;
 using GiphyDotNet.Manager;
+using GiphyDotNet.Model.GiphyImage;
 using GiphyDotNet.Model.Parameters;
 #endregion
 
@@ -48,6 +49,31 @@ namespace TheGodfatherBot.Modules.Search
         {
             var res = await _giphy.RandomGif(new RandomParameter());
             await ctx.RespondAsync(res.Data.ImageUrl);
+        }
+        #endregion
+
+        #region COMMAND_GIPHY_TRENDING
+        [Command("trending")]
+        [Description("Return a random GIF.")]
+        [Aliases("t", "tr")]
+        public async Task TrendingGifs(CommandContext ctx,
+                                      [Description("Number of results (1-10)")] int n = 1)
+        {
+            if (n < 1 || n > 10)
+                throw new ArgumentException("Number of results must be 1-10.");
+
+            var res = await _giphy.TrendingGifs(new TrendingParameter());
+
+
+            string s = "";
+            foreach (var r in res.Data.Take(n))
+                s += r.Url + '\n';
+
+            await ctx.RespondAsync("", embed: new DiscordEmbedBuilder() {
+                Title = "Trending gifs:",
+                Description = s,
+                Color = DiscordColor.Gold
+            });
         }
         #endregion
     }
