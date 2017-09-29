@@ -2,7 +2,7 @@
 
 namespace TheGodfatherBot.Exceptions
 {
-    public class CommandUsageException : Exception
+    public class CommandUsageException : ArgumentException
     {
         public CommandUsageException(string m) : base(m)
         {
