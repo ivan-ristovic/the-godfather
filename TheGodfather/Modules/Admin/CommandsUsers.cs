@@ -1,8 +1,9 @@
 ﻿#region USING_DIRECTIVES
 using System;
 using System.Linq;
-using System.Collections.Generic;
 using System.Threading.Tasks;
+
+using TheGodfatherBot.Exceptions;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -24,23 +25,14 @@ namespace TheGodfatherBot.Modules.Admin
         [Aliases("+role", "ar", "grantrole")]
         [RequirePermissions(Permissions.ManageRoles)]
         public async Task SetRole(CommandContext ctx,
-                                 [Description("User")] DiscordMember u = null,
-                                 [RemainingText, Description("Role")] string role_str = null)
+                                 [Description("User.")] DiscordMember u = null,
+                                 [Description("Role.")] DiscordRole role = null)
         {
-            if (u == null || string.IsNullOrWhiteSpace(role_str))
-                throw new ArgumentException("You need to specify a user.");
-            role_str = role_str.ToLower();
-
-            DiscordRole role = null;
-            foreach (var r in ctx.Guild.Roles)
-                if (r.Name.ToLower() == role_str)
-                    role = r;
-
-            if (role == null)
-                throw new Exception("The specified role does not exist.");
+            if (u == null || role == null)
+                throw new InvalidCommandUsageException("You need to specify a user and an existing role.");
 
             await u.GrantRoleAsync(role);
-            await ctx.RespondAsync($"Successfully granted role {role.Name} to {u.DisplayName}.");
+            await ctx.RespondAsync($"Successfully granted role **{role.Name}** to **{u.DisplayName}**.");
         }
         #endregion
 
@@ -49,10 +41,11 @@ namespace TheGodfatherBot.Modules.Admin
         [Description("Bans the user from server.")]
         [Aliases("b")]
         [RequirePermissions(Permissions.BanMembers)]
-        public async Task Ban(CommandContext ctx, [Description("User")] DiscordMember u = null)
+        public async Task Ban(CommandContext ctx, 
+                             [Description("User.")] DiscordMember u = null)
         {
             if (u == null)
-                throw new ArgumentException("You need to mention a user to ban.");
+                throw new InvalidCommandUsageException("You need to mention a user to ban.");
 
             await ctx.Guild.BanMemberAsync(u);
             await ctx.RespondAsync("http://i0.kym-cdn.com/entries/icons/original/000/000/615/BANHAMMER.png");
@@ -64,14 +57,15 @@ namespace TheGodfatherBot.Modules.Admin
         [Description("Deafen the user.")]
         [Aliases("deaf", "d")]
         [RequirePermissions(Permissions.DeafenMembers)]
-        public async Task Deafen(CommandContext ctx, [Description("User")] DiscordMember u = null)
+        public async Task Deafen(CommandContext ctx, 
+                                [Description("User")] DiscordMember u = null)
         {
             if (u == null)
-                throw new ArgumentException("You need to mention a user to deafen.");
+                throw new InvalidCommandUsageException("You need to mention a user to deafen.");
 
             bool deafened = u.IsDeafened;
             await u.SetMuteAsync(!deafened);
-            await ctx.RespondAsync("Successfully " + (deafened ? "undeafened " : "deafened ") + u.Nickname);
+            await ctx.RespondAsync("Successfully " + (deafened ? "undeafened " : "deafened ") + $"**{u.DisplayName}**");
         }
         #endregion
 
@@ -80,14 +74,15 @@ namespace TheGodfatherBot.Modules.Admin
         [Description("Kicks the user from server.")]
         [Aliases("k")]
         [RequirePermissions(Permissions.KickMembers)]
-        public async Task Kick(CommandContext ctx, [Description("User")] DiscordMember u = null)
+        public async Task Kick(CommandContext ctx, 
+                              [Description("User.")] DiscordMember u = null)
         {
             if (u == null)
-                throw new ArgumentNullException("You need to mention a user to kick.");
+                throw new InvalidCommandUsageException("You need to mention a user to kick.");
 
             await ctx.Guild.RemoveMemberAsync(u);
             await ctx.RespondAsync("", embed: new DiscordEmbedBuilder() {
-                Title = $"**{ctx.User.Username}** kicked **{u.Username}** in cojones.",
+                Title = $"**{ctx.User.Username}** kicked **{u.DisplayName}** in the cojones.",
                 ImageUrl = "https://i.imgflip.com/7wcxy.jpg"
             });
         }
@@ -97,14 +92,15 @@ namespace TheGodfatherBot.Modules.Admin
         [Command("listperms")]
         [Description("List user permissions.")]
         [Aliases("permlist", "perms", "p")]
-        public async Task ListPerms(CommandContext ctx, [Description("User")] DiscordMember u = null)
+        public async Task ListPerms(CommandContext ctx, 
+                                   [Description("User.")] DiscordMember u = null)
         {
             if (u == null)
-                u = (DiscordMember)ctx.User;
+                u = ctx.Member;
 
             var perms = ctx.Channel.PermissionsFor(u);
             await ctx.RespondAsync("", embed: new DiscordEmbedBuilder() {
-                Title = u.Username + "'s permissions list:",
+                Title = $"**{u.DisplayName}**'s permissions list:",
                 Description = perms.ToPermissionString()
             });
         }
@@ -115,7 +111,7 @@ namespace TheGodfatherBot.Modules.Admin
         [Description("List user permissions.")]
         [Aliases("rolelist", "roles", "r")]
         public async Task ListRoles(CommandContext ctx,
-                                   [Description("User")] DiscordMember u = null)
+                                   [Description("User.")] DiscordMember u = null)
         {
             if (u == null)
                 u = ctx.Member;
@@ -124,7 +120,7 @@ namespace TheGodfatherBot.Modules.Admin
             foreach (var role in u.Roles.OrderBy(r => r.Position).Reverse())
                 s += role.Name + "\n";
             await ctx.RespondAsync("", embed: new DiscordEmbedBuilder() {
-                Title = $"{u.Username}'s roles:",
+                Title = $"**{u.DisplayName}**'s roles:",
                 Description = s,
                 Color = DiscordColor.Gold
             });
@@ -136,14 +132,15 @@ namespace TheGodfatherBot.Modules.Admin
         [Description("Toggle user mute.")]
         [Aliases("m")]
         [RequirePermissions(Permissions.MuteMembers)]
-        public async Task Mute(CommandContext ctx, [Description("User")] DiscordMember u = null)
+        public async Task Mute(CommandContext ctx,
+                              [Description("User.")] DiscordMember u = null)
         {
             if (u == null)
-                throw new ArgumentException("You need to mention a user to mute/unmute.");
+                throw new InvalidCommandUsageException("You need to mention a user to mute/unmute.");
 
             bool muted = u.IsMuted;
             await u.SetMuteAsync(!muted);
-            await ctx.RespondAsync("Successfully " + (muted ? "unmuted " : "muted ") + u.Nickname);
+            await ctx.RespondAsync("Successfully " + (muted ? "unmuted " : "muted ") + $"**{u.DisplayName}**");
         }
         #endregion
 
@@ -153,22 +150,22 @@ namespace TheGodfatherBot.Modules.Admin
         [Aliases("remrole", "delrole", "drole")]
         [RequirePermissions(Permissions.ManageRoles)]
         public async Task RemoveRole(CommandContext ctx, 
-                                    [Description("User")] DiscordMember u = null,
-                                    [RemainingText, Description("Role")] string role_str = null)
+                                    [Description("User.")] DiscordMember u = null,
+                                    [Description("Role.")] DiscordRole role = null)
         {
-            if (u == null || string.IsNullOrWhiteSpace(role_str))
-                throw new ArgumentException("You need to specify a user.");
-            role_str = role_str.ToLower();
-            
-            DiscordRole role = null;
+            if (u == null || role == null)
+                throw new InvalidCommandUsageException("You need to specify a user.");
+
+            bool found = false;
             foreach (var r in u.Roles)
-                if (r.Name.ToLower() == role_str)
-                    role = r;
-            if (role == null)
-                throw new Exception("User does not have that role.");
+                if (r.Id == role.Id)
+                    found = true;
+
+            if (!found)
+                throw new CommandFailedException("User does not have that role.");
 
             await u.RevokeRoleAsync(role);
-            await ctx.RespondAsync($"Successfully removed role {role.Name} from {u.DisplayName}.");
+            await ctx.RespondAsync($"Successfully removed role **{role.Name}** from **{u.DisplayName}**.");
         }
         #endregion
 
@@ -178,25 +175,26 @@ namespace TheGodfatherBot.Modules.Admin
         [Aliases("remallroles", "delallroles", "droles")]
         [RequirePermissions(Permissions.ManageRoles)]
         public async Task RemoveAllRoles(CommandContext ctx,
-                                        [Description("User")] DiscordMember u = null)
+                                        [Description("User.")] DiscordMember u = null)
         {
             if (u == null)
-                throw new ArgumentException("You need to specify a user.");
+                throw new InvalidCommandUsageException("You need to specify a user.");
 
             var roles = u.Roles.ToList();
             var usermaxr = ctx.Member.Roles.Max();
             foreach (var role in roles)
                 if (role.Position >= usermaxr.Position)
-                    throw new Exception("You are not authorised to remove roles from this user.");
+                    throw new CommandFailedException("You are not authorised to remove roles from this user.");
 
+            string reply = $"Successfully removed all roles from **{u.DisplayName}**.";
             try {
                 foreach (var role in roles)
                     await u.RevokeRoleAsync(role);
-            } catch (UnauthorizedException e) {
-                throw new Exception("Failed to remove one of the roles from the user.", e);
+            } catch {
+                reply = "Failed to remove some of the roles.";
             }
 
-            await ctx.RespondAsync($"Successfully removed all roles from {u.DisplayName}.");
+            await ctx.RespondAsync(reply);
         }
         #endregion
 
@@ -206,11 +204,11 @@ namespace TheGodfatherBot.Modules.Admin
         [Aliases("nick", "newname", "name")]
         [RequirePermissions(Permissions.ManageNicknames)]
         public async Task ChangeNickname(CommandContext ctx,
-                                        [Description("User")] DiscordMember member = null,
-                                        [RemainingText, Description("New name")] string newname = null)
+                                        [Description("User.")] DiscordMember member = null,
+                                        [RemainingText, Description("New name.")] string newname = null)
         {
             if (member == null || string.IsNullOrWhiteSpace(newname))
-                throw new ArgumentException("Member or name invalid.");
+                throw new InvalidCommandUsageException("Member or name invalid.");
 
             await member.ModifyAsync(newname, reason: $"Changed by {ctx.User.Username} ({ctx.User.Id}).");
             await ctx.RespondAsync("Successfully changed the name of the user.");

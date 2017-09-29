@@ -374,17 +374,21 @@ namespace TheGodfatherBot
                 Title = "Error",
                 Color = DiscordColor.Red
             };
-
-            if (ex is ChecksFailedException)
+            
+            if (e.Exception is CommandNotFoundException)
+                embed.Description = $"{emoji} The specified command does not exist.";
+            else if (e.Exception is Exceptions.InvalidCommandUsageException)
+                embed.Description = $"{emoji} Invalid usage! {ex.Message}";
+            else if (e.Exception is ArgumentException)
+                embed.Description = $"{emoji} Wrong argument format (please use **!help <command>**).";
+            else if (e.Exception is Exceptions.CommandFailedException)
+                embed.Description = $"{emoji} {ex.Message}";
+            else if (ex is ChecksFailedException)
                 embed.Description = $"{emoji} Either you or I don't have the permissions required to execute this command.";
             else if (e.Exception is UnauthorizedException)
                 embed.Description = $"{emoji} I am not authorized to do that.";
-            else if (e.Exception is Exceptions.InvalidCommandUsageException)
-                embed.Description = $"{emoji} Invalid usage! {ex.Message}";
-            else if (e.Exception is Exceptions.CommandFailedException)
-                embed.Description = $"{emoji} {ex.Message}";
             else
-                embed.Description = $"{emoji} Unknown error occured (probably because Serbian made this. Please **!report**.";
+                embed.Description = $"{emoji} Unknown error occured (probably because a Serbian made this bot). Please **!report**.";
 
             await e.Context.RespondAsync("", embed: embed);
         }
