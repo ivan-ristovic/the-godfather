@@ -24,8 +24,7 @@ namespace TheGodfatherBot.Modules.Search
         private Giphy _giphy = new Giphy(TheGodfather.GetToken("Resources/giphy.txt"));
         #endregion
 
-
-        #region COMMAND_GIPHY
+        
         public async Task ExecuteGroupAsync(CommandContext ctx,
                                            [Description("Query.")] string q = null)
         {
@@ -38,6 +37,17 @@ namespace TheGodfatherBot.Modules.Search
                 await ctx.RespondAsync(res.Data[0].Url);
             else
                 await ctx.RespondAsync("No results...");
+        }
+
+
+        #region COMMAND_GIPHY_RANDOM
+        [Command("random")]
+        [Description("Return a random GIF.")]
+        [Aliases("r", "rand", "rnd")]
+        public async Task RandomGif(CommandContext ctx)
+        {
+            var res = await _giphy.RandomGif(new RandomParameter());
+            await ctx.RespondAsync(res.Data.ImageUrl);
         }
         #endregion
     }
