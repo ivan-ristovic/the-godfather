@@ -380,11 +380,11 @@ namespace TheGodfatherBot
             else if (e.Exception is UnauthorizedException)
                 embed.Description = $"{emoji} I am not authorized to do that.";
             else if (e.Exception is Exceptions.InvalidCommandUsageException)
-                embed.Description = $"{emoji} Invalid use of command! {ex.Message}";
+                embed.Description = $"{emoji} Invalid usage! {ex.Message}";
             else if (e.Exception is Exceptions.CommandFailedException)
                 embed.Description = $"{emoji} {ex.Message}";
             else
-                embed.Description = $"Unknown error occured (probably because Serbian made this. Please **!report**.";
+                embed.Description = $"{emoji} Unknown error occured (probably because Serbian made this. Please **!report**.";
 
             await e.Context.RespondAsync("", embed: embed);
         }
