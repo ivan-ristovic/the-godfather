@@ -97,6 +97,27 @@ namespace TheGodfatherBot.Modules.Admin
         }
         #endregion
 
+        #region COMMAND_LEAVEGUILDS
+        [Command("leave")]
+        [Description("Leave guilds given as IDs.")]
+        [RequireOwner]
+        public async Task LeaveGuilds(CommandContext ctx,
+                                     [Description("Guild ID list.")] params ulong[] ids)
+        {
+            string s = $"Left:\n";
+            foreach (var id in ids) {
+                try {
+                    var guild = ctx.Client.Guilds[id];
+                    await guild.LeaveAsync();
+                    s += $"{guild.Name} owned by {guild.Owner.Username}#{guild.Owner.Discriminator}\n";
+                } catch {
+
+                }
+            }
+            await ctx.RespondAsync(s);
+        }
+        #endregion
+
         #region COMMAND_SHUTDOWN
         [Command("shutdown")]
         [Description("Triggers the dying in the vineyard scene.")]
