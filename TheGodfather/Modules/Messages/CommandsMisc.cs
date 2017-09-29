@@ -44,6 +44,19 @@ namespace TheGodfatherBot.Modules.Messages
         }
         #endregion
 
+        #region COMMAND_AVATAR
+        [Command("avatar")]
+        [Description("Get avatar from user.")]
+        public async Task AvatarAsync(CommandContext ctx,
+                                     [Description("User.")] DiscordUser u = null)
+        {
+            if (u == null)
+                throw new ArgumentException("User missing!");
+
+            await ctx.RespondAsync(u.AvatarUrl);
+        }
+        #endregion
+
         #region COMMAND_CHOOSE
         [Command("choose")]
         [Description("!choose option1, option2, option3...")]
