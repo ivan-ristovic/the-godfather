@@ -353,14 +353,18 @@ namespace TheGodfatherBot
 
         private async Task Commands_CommandErrored(CommandErrorEventArgs e)
         {
+            var ex = e.Exception;
+            while (ex is AggregateException)
+                ex = ex.InnerException;
+
             e.Context.Client.DebugLogger.LogMessage(
                 LogLevel.Error, 
                 "TheGodfather",
                 $"Tried executing: {e.Command?.QualifiedName ?? "<unknown command>"}\n" +
                 $" User: {e.Context.User.ToString()}\n" +
                 $" Location: '{e.Context.Guild.Name}' ({e.Context.Guild.Id}) ; {e.Context.Channel.ToString()}\n" +
-                $" Exception: {e.Exception.GetType()}\n" +
-                $" Message: {e.Exception.Message ?? "<no message>"}"
+                $" Exception: {ex.GetType()}\n" +
+                $" Message: {ex.Message ?? "<no message>"}"
                 , DateTime.Now
             );
 
@@ -370,12 +374,12 @@ namespace TheGodfatherBot
                 Color = DiscordColor.Red
             };
 
-            if (e.Exception is ChecksFailedException ex)
+            if (ex is ChecksFailedException)
                 embed.Description = $"{emoji} Either you or I don't have the permissions required to execute this command.";
             else if (e.Exception is UnauthorizedException)
                 embed.Description = $"{emoji} I am not authorized to do that.";
             else
-                embed.Description = $"{emoji} {e.Exception.Message}";
+                embed.Description = $"{emoji} {ex.Message}";
 
             await e.Context.RespondAsync("", embed: embed);
         }
