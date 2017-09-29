@@ -142,15 +142,33 @@ namespace TheGodfatherBot.Modules.Main
         [Command("report")]
         [Description("Send a report message to owner about a bug (please don't abuse... please).")]
         public async Task SendErrorReport(CommandContext ctx, 
-                                         [RemainingText, Description("Text.")] string msg = null)
+                                         [RemainingText, Description("Text.")] string issue = null)
         {
-            if (string.IsNullOrWhiteSpace(msg))
+            if (string.IsNullOrWhiteSpace(issue))
                 throw new ArgumentException("Text missing.");
-
-            ctx.Client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", $"Report from {ctx.User.Username} ({ctx.User.Id}): {msg}", DateTime.Now);
-
-            var dm = await ctx.Client.CreateDmAsync(ctx.Client.CurrentApplication.Owner);
-            await dm.SendMessageAsync($":warning: Report from {ctx.User.Username} ({ctx.User.Id}): {msg}");
+            
+            await ctx.RespondAsync("Are you okay with your user and guild info being sent for further inspection?" +
+                "\n\n*(Please either respond with 'yes' or wait 5 seconds for the prompt to time out)*");
+            var interactivity = ctx.Client.GetInteractivityModule();
+            var msg = await interactivity.WaitForMessageAsync(
+                x => x.Author.Id == ctx.User.Id && x.Channel.Id == ctx.Channel.Id && x.Content.ToLower() == "yes", 
+                TimeSpan.FromSeconds(5)
+            );
+            if (msg != null) {
+                ctx.Client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", $"Report from {ctx.User.Username} ({ctx.User.Id}): {msg}", DateTime.Now);
+                var dm = await ctx.Client.CreateDmAsync(ctx.Client.CurrentApplication.Owner);
+                
+                await dm.SendMessageAsync("A new issue has been reported!", embed: 
+                    new DiscordEmbedBuilder() {
+                        Title = "Issue",
+                        Description = issue,
+                    }.WithAuthor($"{ctx.User.Username}#{ctx.User.Discriminator}", icon_url: ctx.User.AvatarUrl ?? ctx.User.DefaultAvatarUrl)
+                    .AddField("Guild", $"{ctx.Guild.Name} ({ctx.Guild.Id}) owned by {ctx.Guild.Owner.Username}#{ctx.Guild.Owner.Discriminator}")
+                );
+                await ctx.RespondAsync("Your issue has been reported.");
+            } else {
+                await ctx.RespondAsync("Your issue has not been reported.");
+            }
         }
         #endregion
 
