@@ -2,6 +2,8 @@
 using System;
 using System.Threading.Tasks;
 
+using TheGodfatherBot.Exceptions;
+
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
@@ -20,10 +22,11 @@ namespace TheGodfatherBot.Modules.Admin
         [Description("Create new txt channel.")]
         [Aliases("create", "+", "+t", "make", "new", "add")]
         [RequirePermissions(Permissions.ManageChannels)]
-        public async Task CreateTextChannel(CommandContext ctx, [RemainingText, Description("Name")] string name = null)
+        public async Task CreateTextChannel(CommandContext ctx, 
+                                           [RemainingText, Description("Name")] string name = null)
         {
             if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentException("Missing channel name.");
+                throw new InvalidCommandUsageException("Missing channel name.");
             
             await ctx.Guild.CreateChannelAsync(name, ChannelType.Text);
             await ctx.RespondAsync("Channel successfully created.");
@@ -35,10 +38,11 @@ namespace TheGodfatherBot.Modules.Admin
         [Description("Create new voice channel.")]
         [Aliases("+v", "makev", "newv", "addv")]
         [RequirePermissions(Permissions.ManageChannels)]
-        public async Task CreateVoiceChannel(CommandContext ctx, [RemainingText, Description("Name")] string name = null)
+        public async Task CreateVoiceChannel(CommandContext ctx, 
+                                            [RemainingText, Description("Name")] string name = null)
         {
             if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentException("Missing channel name.");
+                throw new InvalidCommandUsageException("Missing channel name.");
 
             await ctx.Guild.CreateChannelAsync(name, ChannelType.Voice);
             await ctx.RespondAsync("Channel successfully created.");
@@ -50,10 +54,11 @@ namespace TheGodfatherBot.Modules.Admin
         [Description("Delete channel")]
         [Aliases("-", "del", "d", "remove")]
         [RequirePermissions(Permissions.ManageChannels)]
-        public async Task DeleteChannel(CommandContext ctx, [Description("Channel")] DiscordChannel c = null)
+        public async Task DeleteChannel(CommandContext ctx, 
+                                       [Description("Channel")] DiscordChannel c = null)
         {
             if (c == null)
-                throw new ArgumentException("Can't find such channel.");
+                throw new InvalidCommandUsageException("Can't find such channel.");
 
             await c.DeleteAsync();
         }
@@ -69,13 +74,11 @@ namespace TheGodfatherBot.Modules.Admin
                                        [Description("New name")] string name = null)
         {
             if (c == null)
-                throw new ArgumentException("Can't find such channel.");
-
+                throw new InvalidCommandUsageException("Can't find such channel.");
             if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentException("Missing new channel name.");
-
+                throw new InvalidCommandUsageException("Missing new channel name.");
             if (name.Contains(" "))
-                throw new ArgumentException("Name cannot contain spaces.");
+                throw new InvalidCommandUsageException("Name cannot contain spaces.");
 
             await c.ModifyAsync(name);
             await ctx.RespondAsync("Channel successfully renamed.");
@@ -92,9 +95,9 @@ namespace TheGodfatherBot.Modules.Admin
                                          [RemainingText, Description("New topic")] string topic = null)
         {
             if (c == null)
-                throw new ArgumentException("Can't find such channel.");
+                throw new InvalidCommandUsageException("Can't find such channel.");
             if (string.IsNullOrWhiteSpace(topic))
-                throw new ArgumentException("Missing topic.");
+                throw new InvalidCommandUsageException("Missing topic.");
 
             await c.ModifyAsync(topic: topic);
             await ctx.RespondAsync("Channel topic successfully changed.");
@@ -127,7 +130,7 @@ namespace TheGodfatherBot.Modules.Admin
                                            [Description("New name")] string name = null)
             {
                 if (string.IsNullOrWhiteSpace(name))
-                    throw new ArgumentException("Missing new channel name.");
+                    throw new InvalidCommandUsageException("Missing new channel name.");
 
                 if (name.Contains(" "))
                     throw new ArgumentException("Name cannot contain spaces.");
@@ -146,7 +149,7 @@ namespace TheGodfatherBot.Modules.Admin
                                              [RemainingText, Description("New topic")] string topic = null)
             {
                 if (string.IsNullOrWhiteSpace(topic))
-                    throw new ArgumentException("Missing topic.");
+                    throw new InvalidCommandUsageException("Missing topic.");
 
                 await ctx.Channel.ModifyAsync(topic: topic);
                 await ctx.RespondAsync("Channel topic successfully changed.");
