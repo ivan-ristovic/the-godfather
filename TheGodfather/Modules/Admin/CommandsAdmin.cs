@@ -8,6 +8,8 @@ using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis;
 
+using TheGodfatherBot.Exceptions;
+
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
@@ -47,18 +49,18 @@ namespace TheGodfatherBot.Modules.Admin
         [Command("eval")]
         [Description("Evaluates a snippet of C# code, in context.")]
         [RequireOwner]
-        public async Task EvaluateAsync(CommandContext ctx, 
+        public async Task EvaluateAsync(CommandContext ctx,
                                        [RemainingText, Description("Code to evaluate.")] string code)
         {
             if (string.IsNullOrWhiteSpace(code))
-                throw new ArgumentException("Code missing.");
+                throw new InvalidCommandUsageException("Code missing.");
 
             var cs1 = code.IndexOf("```") + 3;
             cs1 = code.IndexOf('\n', cs1) + 1;
             var cs2 = code.LastIndexOf("```");
 
             if (cs1 == -1 || cs2 == -1)
-                throw new ArgumentException("You need to wrap the code into a code block.");
+                throw new InvalidCommandUsageException("You need to wrap the code into a code block.");
 
             code = code.Substring(cs1, cs2 - cs1);
 
@@ -141,6 +143,9 @@ namespace TheGodfatherBot.Modules.Admin
         public async Task LeaveGuilds(CommandContext ctx,
                                      [Description("Guild ID list.")] params ulong[] ids)
         {
+            if (!ids.Any())
+                throw new InvalidCommandUsageException("IDs missing.");
+
             string s = $"Left:\n";
             foreach (var id in ids) {
                 try {
@@ -173,10 +178,13 @@ namespace TheGodfatherBot.Modules.Admin
         [Description("Executes a command as another user.")]
         [Aliases("execas", "as")]
         [RequireOwner]
-        public async Task Sudo(CommandContext ctx, 
-                              [Description("Member to execute as.")] DiscordMember member, 
-                              [RemainingText, Description("Command text to execute.")] string command)
+        public async Task Sudo(CommandContext ctx,
+                              [Description("Member to execute as.")] DiscordMember member = null,
+                              [RemainingText, Description("Command text to execute.")] string command = null)
         {
+            if (member == null || command == null)
+                throw new InvalidCommandUsageException();
+
             await ctx.Client.GetCommandsNext().SudoAsync(member, ctx.Channel, command);
         }
         #endregion
@@ -192,10 +200,10 @@ namespace TheGodfatherBot.Modules.Admin
             [Aliases("+")]
             [RequireOwner]
             public async Task AddStatus(CommandContext ctx,
-                                       [RemainingText, Description("Status.")] string status)
+                                       [RemainingText, Description("Status.")] string status = null)
             {
                 if (string.IsNullOrWhiteSpace(status))
-                    throw new ArgumentException("Invalid status");
+                    throw new InvalidCommandUsageException("Invalid status");
 
                 TheGodfather._statuses.Add(status);
                 await ctx.RespondAsync("Status added!");
@@ -208,13 +216,13 @@ namespace TheGodfatherBot.Modules.Admin
             [Aliases("-", "remove")]
             [RequireOwner]
             public async Task DeleteStatus(CommandContext ctx,
-                                          [RemainingText, Description("Status.")] string status)
+                                          [RemainingText, Description("Status.")] string status = null)
             {
                 if (string.IsNullOrWhiteSpace(status))
-                    throw new ArgumentException("Invalid status");
+                    throw new InvalidCommandUsageException("Invalid status");
 
                 if (status == "!help")
-                    throw new ArgumentException("Cannot delete that status!");
+                    throw new InvalidCommandUsageException("Cannot delete help status!");
 
                 TheGodfather._statuses.Remove(status);
                 await ctx.RespondAsync("Status removed!");

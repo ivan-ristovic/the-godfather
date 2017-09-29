@@ -2,9 +2,14 @@
 
 namespace TheGodfatherBot.Exceptions
 {
-    public class CommandUsageException : ArgumentException
+    public class InvalidCommandUsageException : ArgumentException
     {
-        public CommandUsageException(string m) : base(m)
+        public InvalidCommandUsageException() : base()
+        {
+
+        }
+
+        public InvalidCommandUsageException(string m) : base(m)
         {
             
         }
@@ -12,6 +17,11 @@ namespace TheGodfatherBot.Exceptions
 
     public class CommandFailedException : Exception
     {
+        public CommandFailedException() : base()
+        {
+
+        }
+
         public CommandFailedException(string m) : base(m)
         {
 
