@@ -5,6 +5,8 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
+using TheGodfatherBot.Exceptions;
+
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
@@ -79,7 +81,7 @@ namespace TheGodfatherBot.Modules.Messages
 
 
         public async Task ExecuteGroupAsync(CommandContext ctx,
-                                            [RemainingText, Description("User.")] DiscordUser u = null)
+                                           [Description("User.")] DiscordUser u = null)
         {
             if (u == null)
                 u = ctx.User;
@@ -89,9 +91,11 @@ namespace TheGodfatherBot.Modules.Messages
 
 
         #region COMMAND_RANK
-        [Command("rank"), Description("Shows rank of a user.")]
+        [Command("rank")]
+        [Description("Shows rank of a user.")]
         [Aliases("level")]
-        public async Task Rank(CommandContext ctx, [Description("User to check rank")] DiscordUser u = null)
+        public async Task Rank(CommandContext ctx, 
+                              [Description("User.")] DiscordUser u = null)
         {
             if (u == null)
                 u = ctx.User;
@@ -116,7 +120,8 @@ namespace TheGodfatherBot.Modules.Messages
         #endregion
 
         #region COMMAND_RANK_LIST
-        [Command("list"), Description("Print all available ranks.")]
+        [Command("list")]
+        [Description("Print all available ranks.")]
         [Aliases("levels")]
         public async Task RankList(CommandContext ctx)
         {
