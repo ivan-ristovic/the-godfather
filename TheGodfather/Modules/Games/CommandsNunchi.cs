@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
 
+using TheGodfatherBot.Exceptions;
+
 using DSharpPlus;
 using DSharpPlus.Interactivity;
 using DSharpPlus.CommandsNext;
@@ -38,7 +40,7 @@ namespace TheGodfatherBot.Modules.Games
         public async Task NewGame(CommandContext ctx)
         {
             if (_participants.ContainsKey(ctx.Channel.Id))
-                throw new Exception("Nunchi game already in progress!");
+                throw new CommandFailedException("Nunchi game already in progress!");
 
             _participants.TryAdd(ctx.Channel.Id, new List<ulong>());
             _started.TryAdd(ctx.Channel.Id, false);
@@ -62,16 +64,16 @@ namespace TheGodfatherBot.Modules.Games
         public async Task JoinGame(CommandContext ctx)
         {
             if (!_participants.ContainsKey(ctx.Channel.Id))
-                throw new Exception("There is no nunchi game in this channel!");
+                throw new CommandFailedException("There is no nunchi game in this channel!");
 
             if (_participants[ctx.Channel.Id].Any(id => id == ctx.User.Id))
-                throw new Exception("You are already participating in the game!");
+                throw new CommandFailedException("You are already participating in the game!");
 
             if (_started[ctx.Channel.Id])
-                throw new Exception("Game already started, you can't join it.");
+                throw new CommandFailedException("Game already started, you can't join it.");
 
             if (_participants[ctx.Channel.Id].Count >= 10)
-                throw new Exception("Game full.");
+                throw new CommandFailedException("Game is full, kthxbye.");
 
             _participants[ctx.Channel.Id].Add(ctx.User.Id);
 
@@ -89,7 +91,8 @@ namespace TheGodfatherBot.Modules.Games
                 "I will start by typing a number. Users have to count up by 1 from that number. " +
                 "If someone makes a mistake (types an incorrent number, or repeats the same number) " +
                 "they are out of the game. If nobody posts a number 10s after the last number was posted, " +
-                "then the user that posted that number wins the game.");
+                "then the user that posted that number wins the game."
+            );
         }
         #endregion
 
