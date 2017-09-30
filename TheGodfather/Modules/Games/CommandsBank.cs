@@ -43,7 +43,7 @@ namespace TheGodfatherBot.Modules.Games
                 throw new InvalidCommandUsageException("Invalid user or ammount.");
 
             IncreaseBalance(u.Id, ammount);
-            await ctx.RespondAsync($"User **{u.Username}** won **{ammount}** credits on a lottery! (seems legit)");
+            await ctx.RespondAsync($"User {Formatter.Bold(u.Username)} won {Formatter.Bold(ammount.ToString())} credits on a lottery! (seems legit)");
         }
         #endregion
 
@@ -73,7 +73,7 @@ namespace TheGodfatherBot.Modules.Games
                 ammount = _accounts[ctx.User.Id];
 
             var embed = new DiscordEmbedBuilder() {
-                Title = "Account balance for " + ctx.User.Username,
+                Title = "Account balance for " + Formatter.Bold(ctx.User.Username),
                 Timestamp = DateTime.Now,
                 Color = DiscordColor.Yellow
             };
