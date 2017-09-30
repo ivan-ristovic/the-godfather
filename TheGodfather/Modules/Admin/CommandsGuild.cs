@@ -28,7 +28,7 @@ namespace TheGodfatherBot.Modules.Admin
         {
             string s = "";
             foreach (var emoji in ctx.Guild.Emojis)
-                s += $"**{emoji.Name}** ";
+                s += $"{Formatter.Bold(emoji.Name)} ";
 
             await ctx.RespondAsync("", embed: new DiscordEmbedBuilder() {
                 Title = "Available emoji:",
@@ -56,10 +56,10 @@ namespace TheGodfatherBot.Modules.Admin
             int endi = starti + 20 < members.Count ? starti + 20 : members.Count;
             var membersarray = members.Take(page * 20).ToArray();
             for (var i = starti; i < endi; i++)
-                s += $"**{membersarray[i].Username}** , joined at: {membersarray[i].JoinedAt}\n";
+                s += $"{Formatter.Bold(membersarray[i].Username)} , joined at: {Formatter.Bold(membersarray[i].JoinedAt.ToString())}\n";
 
             await ctx.RespondAsync("", embed: new DiscordEmbedBuilder() {
-                Title = $"Members (page {page}) :",
+                Title = $"Members (page {Formatter.Bold(page.ToString())}) :",
                 Description = s,
                 Color = DiscordColor.SapGreen
             });
@@ -84,11 +84,11 @@ namespace TheGodfatherBot.Modules.Admin
             int endi = starti + 20 < log.Count ? starti + 20 : log.Count;
             var logarray = log.Take(page * 20).ToArray();
             for (var i = starti; i < endi; i++)
-                s += $"**{logarray[i].CreationTimestamp.ToUniversalTime()}** UTC : Action " +
-                     $"**{logarray[i].ActionType.ToString()}** by **{logarray[i].UserResponsible.Username}**\n";
+                s += $"{Formatter.Bold(logarray[i].CreationTimestamp.ToUniversalTime().ToString())} UTC : Action " +
+                     $"{Formatter.Bold(logarray[i].ActionType.ToString())} by {Formatter.Bold(logarray[i].UserResponsible.Username)}\n";
 
             await ctx.RespondAsync("", embed: new DiscordEmbedBuilder() {
-                Title = $"Audit log (page {page}) :",
+                Title = $"Audit log (page {Formatter.Bold(page.ToString())}) :",
                 Description = s,
                 Color = DiscordColor.Brown
             });
@@ -108,7 +108,7 @@ namespace TheGodfatherBot.Modules.Admin
                 throw new InvalidCommandUsageException("Number of days not in valid range! [1-1000]");
             
             int count = await ctx.Guild.GetPruneCountAsync(days);
-            await ctx.RespondAsync($"Pruning will remove **{count}** members. Continue?");
+            await ctx.RespondAsync($"Pruning will remove {Formatter.Bold(count.ToString())} members. Continue?");
             
             var interactivity = ctx.Client.GetInteractivityModule();
             var msg = await interactivity.WaitForMessageAsync(
