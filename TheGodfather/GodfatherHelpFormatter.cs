@@ -55,7 +55,7 @@ namespace TheGodfatherBot
         public IHelpFormatter WithAliases(IEnumerable<string> aliases)
         {
             if (aliases.Any())
-                _embed.AddField("Aliases", string.Join(", ", aliases), false);
+                _embed.AddField("Aliases", string.Join("\n", aliases), false);
             return this;
         }
 
@@ -65,24 +65,15 @@ namespace TheGodfatherBot
                 var sb = new StringBuilder();
 
                 foreach (var arg in arguments) {
-                    if (arg.IsOptional || arg.IsCatchAll)
-                        sb.Append("`[");
-                    else
-                        sb.Append("`<");
 
-                    sb.Append(arg.Name);
+                    sb.Append($"**{arg.Name}**");
 
-                    if (arg.IsCatchAll)
-                        sb.Append("...");
+                    if (arg.IsOptional && arg.DefaultValue != null)
+                        sb.Append(" (optional) ");
 
-                    if (arg.IsOptional || arg.IsCatchAll)
-                        sb.Append("]: ");
-                    else
-                        sb.Append(">: ");
+                    sb.Append($" [type: {arg.Type.ToUserFriendlyName()}] Description: ");
 
-                    sb.Append(arg.Type.ToUserFriendlyName()).Append("`: ");
-
-                    sb.Append(string.IsNullOrWhiteSpace(arg.Description) ? "No description provided." : arg.Description);
+                    sb.Append(string.IsNullOrWhiteSpace(arg.Description) ? "No description provided." : $"**{arg.Description}**");
 
                     if (arg.IsOptional && arg.DefaultValue != null)
                         sb.Append(" Default value: ").Append(arg.DefaultValue);
