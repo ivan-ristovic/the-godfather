@@ -39,11 +39,12 @@ namespace TheGodfatherBot.Modules.Search
                         Color = DiscordColor.CornflowerBlue
                     });
 
-                    var msg = interactivity.WaitForMessageAsync(
-                        m => m.Id == ctx.Channel.Id && m.Content.ToLower() == "next",
+                    var t = interactivity.WaitForMessageAsync(
+                        m => m.Channel.Id == ctx.Channel.Id && m.Content.ToLower() == "next",
                         TimeSpan.FromSeconds(10)
                     );
-                    if (msg == null)
+                    t.Wait();
+                    if (t.Result == null)
                         break;
                 }
             } else {

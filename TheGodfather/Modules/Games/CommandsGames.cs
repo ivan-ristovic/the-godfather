@@ -177,7 +177,7 @@ namespace TheGodfatherBot.Modules.Games
                     (xm.Content.ToLower().StartsWith("me") || xm.Content.ToLower().StartsWith("i ")),
                 TimeSpan.FromMinutes(1)
             );
-            if (msg == null || msg.Message.Content.StartsWith("no")) {
+            if (msg == null) {
                 await ctx.RespondAsync($"{ctx.User.Mention} right now: http://i0.kym-cdn.com/entries/icons/mobile/000/003/619/ForeverAlone.jpg");
                 return;
             }
