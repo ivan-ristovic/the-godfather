@@ -5,6 +5,8 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
+using TheGodfatherBot.Exceptions;
+
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
@@ -82,7 +84,7 @@ namespace TheGodfatherBot.Modules.Messages
                                             [RemainingText, Description("Alias name.")] string name = null)
         {
             if (string.IsNullOrWhiteSpace(name))
-                throw new Exception("Alias name is missing.");
+                throw new InvalidCommandUsageException("Alias name is missing.");
             
             if (_aliases != null && _aliases.ContainsKey(ctx.Guild.Id) && _aliases[ctx.Guild.Id].ContainsKey(name))
                 await ctx.RespondAsync(_aliases[ctx.Guild.Id][name]);
@@ -98,10 +100,10 @@ namespace TheGodfatherBot.Modules.Messages
         [RequireUserPermissions(Permissions.ManageMessages)]
         public async Task AddAlias(CommandContext ctx,
                                   [Description("Alias name (case sensitive).")] string alias = null,
-                                  [Description("Response")] string response = null)
+                                  [Description("Response.")] string response = null)
         {
             if (string.IsNullOrWhiteSpace(alias) || string.IsNullOrWhiteSpace(response))
-                throw new ArgumentException("Alias name or response missing or invalid.");
+                throw new InvalidCommandUsageException("Alias name or response missing or invalid.");
 
             if (!_aliases.ContainsKey(ctx.Guild.Id))
                 _aliases.Add(ctx.Guild.Id, new SortedDictionary<string, string>());
@@ -121,13 +123,14 @@ namespace TheGodfatherBot.Modules.Messages
         [Description("Remove alias from list.")]
         [Aliases("-", "remove", "del")]
         [RequireUserPermissions(Permissions.ManageMessages)]
-        public async Task DeleteAlias(CommandContext ctx, [Description("Alias to remove.")] string alias = null)
+        public async Task DeleteAlias(CommandContext ctx, 
+                                     [Description("Alias to remove.")] string alias = null)
         {
             if (string.IsNullOrWhiteSpace(alias))
-                throw new ArgumentException("Alias name missing.");
+                throw new InvalidCommandUsageException("Alias name missing.");
 
             if (!_aliases.ContainsKey(ctx.Guild.Id))
-                throw new KeyNotFoundException("No aliases recorded in this guild.");
+                throw new CommandFailedException("No aliases recorded in this guild.", new KeyNotFoundException());
 
             _aliases[ctx.Guild.Id].Remove(alias);
             await ctx.RespondAsync($"Alias **{alias}** successfully removed.");
@@ -148,7 +151,8 @@ namespace TheGodfatherBot.Modules.Messages
         #region COMMAND_ALIAS_LIST
         [Command("list")]
         [Description("Show all aliases.")]
-        public async Task ListAliases(CommandContext ctx, [Description("Page")] int page = 1)
+        public async Task ListAliases(CommandContext ctx, 
+                                     [Description("Page.")] int page = 1)
         {
             if (!_aliases.ContainsKey(ctx.Guild.Id)) {
                 await ctx.RespondAsync("No aliases registered.");
@@ -156,7 +160,7 @@ namespace TheGodfatherBot.Modules.Messages
             }
 
             if (page < 1 || page > _aliases[ctx.Guild.Id].Count / 10 + 1)
-                throw new ArgumentException("No aliases on that page.");
+                throw new CommandFailedException("No aliases on that page.");
 
             string s = "";
             int starti = (page - 1) * 10;
