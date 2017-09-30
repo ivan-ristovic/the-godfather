@@ -6,6 +6,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
+using TheGodfatherBot.Exceptions;
+
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.CommandsNext;
@@ -38,7 +40,7 @@ namespace TheGodfatherBot.Modules.Search
                                            [RemainingText, Description("Search query.")] string query = null)
         {
             if (string.IsNullOrWhiteSpace(query))
-                throw new ArgumentException("Search query missing.");
+                throw new InvalidCommandUsageException("Search query missing.");
 
             var results = await GetYoutubeResults(query, 1);
             if (results == null || results.Count == 0) {
@@ -73,11 +75,13 @@ namespace TheGodfatherBot.Modules.Search
         [Description("Advanced youtube search.")]
         [Aliases("s", "find", "query")]
         public async Task SearchYouTubeAdvanced(CommandContext ctx,
-                                               [Description("Ammount of results.")] int ammount = 5,
+                                               [Description("Ammount of results. [1-10]")] int ammount = 5,
                                                [RemainingText, Description("Search query.")] string query = null)
         {
             if (string.IsNullOrWhiteSpace(query))
-                throw new ArgumentException("Search query missing.");
+                throw new InvalidCommandUsageException("Search query missing.");
+            if (ammount < 1 || ammount > 10)
+                throw new CommandFailedException("Invalid ammount (must be 1-10).");
 
             var results = await GetYoutubeResults(query, ammount);
 
@@ -93,7 +97,7 @@ namespace TheGodfatherBot.Modules.Search
                                             [RemainingText, Description("Search query.")] string query = null)
         {
             if (string.IsNullOrWhiteSpace(query))
-                throw new ArgumentException("Search query missing.");
+                throw new InvalidCommandUsageException("Search query missing.");
 
             var results = GetYoutubeResults(query, _defammount)
                 .Result
@@ -113,7 +117,7 @@ namespace TheGodfatherBot.Modules.Search
                                               [RemainingText, Description("Search query.")] string query = null)
         {
             if (string.IsNullOrWhiteSpace(query))
-                throw new ArgumentException("Search query missing.");
+                throw new InvalidCommandUsageException("Search query missing.");
 
             var results = GetYoutubeResults(query, _defammount)
                 .Result
@@ -133,7 +137,7 @@ namespace TheGodfatherBot.Modules.Search
                                                [RemainingText, Description("Search query.")] string query = null)
         {
             if (string.IsNullOrWhiteSpace(query))
-                throw new ArgumentException("Search query missing.");
+                throw new InvalidCommandUsageException("Search query missing.");
 
             var results = GetYoutubeResults(query, _defammount)
                 .Result
