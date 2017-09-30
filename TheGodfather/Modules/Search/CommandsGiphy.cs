@@ -3,6 +3,8 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
+using TheGodfatherBot.Exceptions;
+
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
@@ -30,7 +32,7 @@ namespace TheGodfatherBot.Modules.Search
                                            [Description("Query.")] string q = null)
         {
             if (string.IsNullOrWhiteSpace(q))
-                throw new ArgumentException("Query missing!");
+                throw new InvalidCommandUsageException("Query missing!");
 
             var res = await _giphy.GifSearch(new SearchParameter() { Query = q });
 
@@ -57,10 +59,10 @@ namespace TheGodfatherBot.Modules.Search
         [Description("Return a random GIF.")]
         [Aliases("t", "tr")]
         public async Task TrendingGifs(CommandContext ctx,
-                                      [Description("Number of results (1-10)")] int n = 1)
+                                      [Description("Number of results (1-10).")] int n = 1)
         {
             if (n < 1 || n > 10)
-                throw new ArgumentException("Number of results must be 1-10.");
+                throw new CommandFailedException("Number of results must be 1-10.", new ArgumentOutOfRangeException());
 
             var res = await _giphy.TrendingGifs(new TrendingParameter());
 
