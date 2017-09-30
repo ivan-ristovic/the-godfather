@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
+using TheGodfatherBot.Exceptions;
+
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.CommandsNext;
@@ -35,7 +37,7 @@ namespace TheGodfatherBot.Modules.Search
                                       [Description("ID.")] string id = null)
         {
             if (string.IsNullOrWhiteSpace(id))
-                throw new ArgumentException("ID missing.");
+                throw new InvalidCommandUsageException("ID missing.");
 
             // TODO check format exception
             var user = await SteamCommunity.GetUserAsync(_steam, new SteamID(id));
