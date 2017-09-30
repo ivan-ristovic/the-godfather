@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
+using TheGodfatherBot.Exceptions;
+
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
@@ -21,10 +23,11 @@ namespace TheGodfatherBot.Modules.Games
         [Command("duel")]
         [Description("Starts a duel which I will commentate.")]
         [Aliases("fight", "vs")]
-        public async Task Duel(CommandContext ctx, [Description("Who to fight")] DiscordUser u)
+        public async Task Duel(CommandContext ctx, 
+                              [Description("Who to fight with?")] DiscordUser u)
         {
             if (u.Id == ctx.User.Id)
-                throw new ArgumentException("You can't duel yourself...");
+                throw new CommandFailedException("You can't duel yourself...");
 
             string[] weapons = { "sword", "axe", "keyboard", "stone", "cheeseburger", "belt from yo momma" };
 
