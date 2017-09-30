@@ -25,7 +25,7 @@ namespace TheGodfatherBot.Modules.Search
         [Description("Search Urban Dictionary for a query.")]
         [Aliases("ud")]
         public async Task UrbanDictAsync(CommandContext ctx,
-                                    [RemainingText, Description("Query.")] string q = null)
+                                        [RemainingText, Description("Query.")] string q = null)
         {
             if (string.IsNullOrWhiteSpace(q))
                 throw new InvalidCommandUsageException("Query missing.");
