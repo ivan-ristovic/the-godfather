@@ -18,6 +18,7 @@ namespace TheGodfatherBot.Modules.Admin
     [Aliases("role", "r", "rl")]
     public class CommandsRoles
     {
+
         public async Task ExecuteGroupAsync(CommandContext ctx)
         {
             string s = "";
@@ -43,7 +44,7 @@ namespace TheGodfatherBot.Modules.Admin
                 throw new InvalidCommandUsageException("Missing role name.");
 
             await ctx.Guild.CreateRoleAsync(name);
-            await ctx.RespondAsync($"Successfully created role **{name}**!");
+            await ctx.RespondAsync($"Successfully created role {Formatter.Bold(name)}!");
         }
         #endregion
 
@@ -58,8 +59,9 @@ namespace TheGodfatherBot.Modules.Admin
             if (role == null)
                 throw new InvalidCommandUsageException("Unknown role.");
 
+            string name = role.Name;
             await ctx.Guild.DeleteRoleAsync(role);
-            await ctx.RespondAsync($"Successfully removed role **{role.Name}**!");
+            await ctx.RespondAsync($"Successfully removed role {Formatter.Bold(name)}!");
         }
         #endregion
         
@@ -94,7 +96,7 @@ namespace TheGodfatherBot.Modules.Admin
                 throw new InvalidCommandUsageException("I need a valid role and a valid color in hex.");
 
             await ctx.Guild.UpdateRoleAsync(role, color: new DiscordColor(color));
-            await ctx.RespondAsync($"Successfully changed color for **{role.Name}**!");
+            await ctx.RespondAsync($"Successfully changed color for {Formatter.Bold(role.Name)}!");
         }
         #endregion
 
@@ -111,7 +113,7 @@ namespace TheGodfatherBot.Modules.Admin
                 throw new ArgumentException("I need a valid existing role and a new name.");
 
             await ctx.Guild.UpdateRoleAsync(role, name: name);
-            await ctx.RespondAsync("Successfully changed role name.");
+            await ctx.RespondAsync($"Successfully changed role name to {Formatter.Bold(name)}.");
         }
         #endregion
 
@@ -128,7 +130,7 @@ namespace TheGodfatherBot.Modules.Admin
                 throw new InvalidCommandUsageException("Unknown role.");
 
             await ctx.Guild.UpdateRoleAsync(role, mentionable: b);
-            await ctx.RespondAsync($"Successfully set mentionable var for **{role.Name}** to **{b}**");
+            await ctx.RespondAsync($"Successfully set mentionable var for {Formatter.Bold(role.Name)} to {Formatter.Bold(b.ToString())}");
         }
         #endregion
         
@@ -145,7 +147,7 @@ namespace TheGodfatherBot.Modules.Admin
                 throw new InvalidCommandUsageException("Unknown role.");
 
             await ctx.Guild.UpdateRoleAsync(role, hoist: b);
-            await ctx.RespondAsync($"Successfully set hoist var for **{role.Name}** to **{b}**");
+            await ctx.RespondAsync($"Successfully set hoist var for {Formatter.Bold(role.Name)} to {Formatter.Bold(b.ToString())}");
         }
         #endregion
     }
