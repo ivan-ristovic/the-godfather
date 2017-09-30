@@ -13,6 +13,11 @@ namespace TheGodfatherBot.Exceptions
         {
             
         }
+
+        public InvalidCommandUsageException(string m, Exception inner) : base(m, inner)
+        {
+
+        }
     }
 
     public class CommandFailedException : Exception
@@ -23,6 +28,11 @@ namespace TheGodfatherBot.Exceptions
         }
 
         public CommandFailedException(string m) : base(m)
+        {
+
+        }
+
+        public CommandFailedException(string m, Exception inner) : base(m, inner)
         {
 
         }

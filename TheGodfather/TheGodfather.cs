@@ -364,7 +364,8 @@ namespace TheGodfatherBot
                 $"Tried executing: {e.Command?.QualifiedName ?? "<unknown command>"}\n" +
                 $" User: {e.Context.User.ToString()}\n" +
                 $" Location: '{e.Context.Guild.Name}' ({e.Context.Guild.Id}) ; {e.Context.Channel.ToString()}\n" +
-                $" Exception: {ex.GetType()}\n" +
+                $" Exception: {ex.GetType()}\n" + 
+                (ex.InnerException != null ? $" Inner exception: {ex.InnerException.GetType()}\n" : "") +
                 $" Message: {ex.Message ?? "<no message>"}"
                 , DateTime.Now
             );
