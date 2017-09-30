@@ -31,7 +31,6 @@ namespace TheGodfatherBot.Modules.Games
             await NewGame(ctx);
         }
 
-
         
         #region COMMAND_NUNCHI_NEW
         [Command("new")]
