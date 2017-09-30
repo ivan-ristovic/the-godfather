@@ -1,17 +1,15 @@
 ﻿#region USING_DIRECTIVES
 using System;
-using System.Drawing;
-using System.IO;
 using System.Linq;
-using System.Collections.Generic;
 using System.Threading.Tasks;
+
+using TheGodfatherBot.Exceptions;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Entities;
-using DSharpPlus.EventArgs;
 #endregion
 
 namespace TheGodfatherBot.Modules.Main
@@ -26,7 +24,7 @@ namespace TheGodfatherBot.Modules.Main
                                      [Description("User.")] DiscordUser u = null)
         {
             if (u == null)
-                throw new ArgumentException("User missing!");
+                throw new InvalidCommandUsageException("User missing!");
 
             await ctx.RespondAsync(u.AvatarUrl);
         }
@@ -85,17 +83,30 @@ namespace TheGodfatherBot.Modules.Main
         [RequireUserPermissions(Permissions.KickMembers)]
         public async Task Leet(CommandContext ctx)
         {
-            await ctx.Guild.LeaveAsync();
+            var inter = ctx.Client.GetInteractivityModule();
+            await ctx.RespondAsync("Are you sure?");
+            var m = await inter.WaitForMessageAsync(x => x.Channel.Id == ctx.Channel.Id && x.Author.Id == ctx.User.Id && (x.Content.ToLower() == "yes" || x.Content.ToLower() == "no"), TimeSpan.FromSeconds(10));
+            if (m != null) {
+                if (m.Message.Content == "yes") {
+                    await ctx.RespondAsync("Go find a new bot, since this one is leaving!");
+                    await ctx.Guild.LeaveAsync();
+                } else {
+                    await ctx.RespondAsync("Jewsus Krest you scared me.");
+                }
+            } else {
+                await ctx.RespondAsync("No response? Guess I'll stay then.");
+            }
         }
         #endregion
 
         #region COMMAND_LEET
         [Command("leet")]
         [Description("Wr1t3s m3ss@g3 1n 1337sp34k.")]
-        public async Task Leet(CommandContext ctx, [RemainingText, Description("Text")] string s = null)
+        public async Task Leet(CommandContext ctx, 
+                              [RemainingText, Description("Text")] string s = null)
         {
             if (string.IsNullOrWhiteSpace(s))
-                throw new ArgumentException("Y0u d1dn'7 g1v3 m3 @ny 73x7...");
+                throw new InvalidCommandUsageException("Y0u d1dn'7 g1v3 m3 @ny 73x7...");
 
             var rnd = new Random();
             string leet_s = "";
@@ -121,18 +132,17 @@ namespace TheGodfatherBot.Modules.Main
         #region COMMAND_REMIND
         [Command("remind")]
         [Description("Resend a message after some time.")]
-        public async Task Remind(
-            CommandContext ctx,
-            [Description("Time to wait before repeat (in seconds).")] int time = 0,
-            [RemainingText, Description("What to repeat.")] string s = null)
+        public async Task Remind(CommandContext ctx,
+                                [Description("Time to wait before repeat (in seconds).")] int time = 0,
+                                [RemainingText, Description("What to repeat.")] string s = null)
         {
             if (time == 0 || string.IsNullOrWhiteSpace(s))
-                throw new ArgumentException("Usage: repeat <seconds> <text>");
+                throw new InvalidCommandUsageException("Usage: repeat <seconds> <text>");
 
             if (time < 0 || time > 604800)
-                throw new ArgumentOutOfRangeException("Time cannot be less than 0 or greater than 1 week.");
+                throw new CommandFailedException("Time cannot be less than 0 or greater than 1 week.", new ArgumentOutOfRangeException());
 
-            await ctx.RespondAsync($"I will remind you to: \"{s}\" in {time} seconds.");
+            await ctx.RespondAsync($"I will remind you to: \"{s}\" in **{time}** seconds.");
             await Task.Delay(time * 1000);
             await ctx.RespondAsync($"I was told to remind you to: \"{s}\".");
         }
@@ -145,7 +155,7 @@ namespace TheGodfatherBot.Modules.Main
                                          [RemainingText, Description("Text.")] string issue = null)
         {
             if (string.IsNullOrWhiteSpace(issue))
-                throw new ArgumentException("Text missing.");
+                throw new InvalidCommandUsageException("Text missing.");
             
             await ctx.RespondAsync("Are you okay with your user and guild info being sent for further inspection?" +
                 "\n\n*(Please either respond with 'yes' or wait 5 seconds for the prompt to time out)*");
@@ -176,10 +186,11 @@ namespace TheGodfatherBot.Modules.Main
         [Command("say")]
         [Description("Repeats after you.")]
         [Aliases("repeat")]
-        public async Task Say(CommandContext ctx, [RemainingText, Description("Text.")] string s = null)
+        public async Task Say(CommandContext ctx, 
+                             [RemainingText, Description("Text.")] string s = null)
         {
             if (string.IsNullOrWhiteSpace(s))
-                throw new ArgumentException("Text missing.");
+                throw new InvalidCommandUsageException("Text missing.");
             
             await ctx.RespondAsync(s);
         }
@@ -189,10 +200,11 @@ namespace TheGodfatherBot.Modules.Main
         [Command("zugify")]
         [Description("I don't even...")]
         [Aliases("z")]
-        public async Task Zugify(CommandContext ctx, [RemainingText, Description("Text.")] string text = null)
+        public async Task Zugify(CommandContext ctx, 
+                                [RemainingText, Description("Text.")] string text = null)
         {
             if (string.IsNullOrWhiteSpace(text))
-                throw new ArgumentException("Text missing.");
+                throw new InvalidCommandUsageException("Text missing.");
 
             text = text.ToLower();
             string s = "";
