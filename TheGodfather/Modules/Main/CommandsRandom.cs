@@ -132,8 +132,10 @@ namespace TheGodfatherBot.Modules.Main
         {
             private sealed class DeserializedData
             {
-                public string file { get; set; }
+                [JsonProperty("file")]
+                public string URL { get; set; }
             }
+
 
             #region COMMAND_CAT
             [Command("cat")]
@@ -143,7 +145,7 @@ namespace TheGodfatherBot.Modules.Main
                 try {
                     var wc = new WebClient();
                     var data = JsonConvert.DeserializeObject<DeserializedData>(wc.DownloadString("http://random.cat/meow"));
-                    await ctx.RespondAsync(data.file);
+                    await ctx.RespondAsync(data.URL);
                 } catch (WebException e) {
                     throw new CommandFailedException("Connection to random.cat failed!", e);
                 }
