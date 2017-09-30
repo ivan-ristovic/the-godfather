@@ -262,6 +262,7 @@
     <Compile Include="Modules\Admin\CommandsRoles.cs" />
     <Compile Include="Modules\Search\CommandsRSS.cs" />
     <Compile Include="Modules\Search\CommandsSteam.cs" />
+    <Compile Include="Modules\Search\CommandsUrbanDict.cs" />
     <Compile Include="Modules\Search\CommandsYoutube.cs" />
     <Compile Include="Modules\SWAT\CommandsSwat.cs" />
     <Compile Include="Modules\Admin\CommandsUsers.cs" />
