@@ -32,7 +32,7 @@ namespace TheGodfatherBot.Modules.Admin
                 throw new InvalidCommandUsageException("You need to specify a user and an existing role.");
 
             await u.GrantRoleAsync(role);
-            await ctx.RespondAsync($"Successfully granted role **{role.Name}** to **{u.DisplayName}**.");
+            await ctx.RespondAsync($"Successfully granted role {Formatter.Bold(role.Name)} to {Formatter.Bold(u.DisplayName)}.");
         }
         #endregion
 
@@ -48,7 +48,10 @@ namespace TheGodfatherBot.Modules.Admin
                 throw new InvalidCommandUsageException("You need to mention a user to ban.");
 
             await ctx.Guild.BanMemberAsync(u);
-            await ctx.RespondAsync("http://i0.kym-cdn.com/entries/icons/original/000/000/615/BANHAMMER.png");
+            await ctx.RespondAsync("", embed: new DiscordEmbedBuilder() {
+                Title = $"{Formatter.Bold(ctx.User.Username)} BANNED {Formatter.Bold(u.DisplayName)}!",
+                ImageUrl = "http://i0.kym-cdn.com/entries/icons/original/000/000/615/BANHAMMER.png"
+            });
         }
         #endregion
 
@@ -65,7 +68,7 @@ namespace TheGodfatherBot.Modules.Admin
 
             bool deafened = u.IsDeafened;
             await u.SetMuteAsync(!deafened);
-            await ctx.RespondAsync("Successfully " + (deafened ? "undeafened " : "deafened ") + $"**{u.DisplayName}**");
+            await ctx.RespondAsync("Successfully " + (deafened ? "undeafened " : "deafened ") + Formatter.Bold(u.DisplayName));
         }
         #endregion
 
@@ -82,7 +85,7 @@ namespace TheGodfatherBot.Modules.Admin
 
             await ctx.Guild.RemoveMemberAsync(u);
             await ctx.RespondAsync("", embed: new DiscordEmbedBuilder() {
-                Title = $"**{ctx.User.Username}** kicked **{u.DisplayName}** in the cojones.",
+                Title = $"{Formatter.Bold(ctx.User.Username)} kicked {Formatter.Bold(u.DisplayName)} in the cojones.",
                 ImageUrl = "https://i.imgflip.com/7wcxy.jpg"
             });
         }
@@ -100,7 +103,7 @@ namespace TheGodfatherBot.Modules.Admin
 
             var perms = ctx.Channel.PermissionsFor(u);
             await ctx.RespondAsync("", embed: new DiscordEmbedBuilder() {
-                Title = $"**{u.DisplayName}**'s permissions list:",
+                Title = $"{Formatter.Bold(u.DisplayName)}'s permissions list:",
                 Description = perms.ToPermissionString()
             });
         }
@@ -120,7 +123,7 @@ namespace TheGodfatherBot.Modules.Admin
             foreach (var role in u.Roles.OrderBy(r => r.Position).Reverse())
                 s += role.Name + "\n";
             await ctx.RespondAsync("", embed: new DiscordEmbedBuilder() {
-                Title = $"**{u.DisplayName}**'s roles:",
+                Title = $"{Formatter.Bold(u.DisplayName)}'s roles:",
                 Description = s,
                 Color = DiscordColor.Gold
             });
@@ -140,7 +143,7 @@ namespace TheGodfatherBot.Modules.Admin
 
             bool muted = u.IsMuted;
             await u.SetMuteAsync(!muted);
-            await ctx.RespondAsync("Successfully " + (muted ? "unmuted " : "muted ") + $"**{u.DisplayName}**");
+            await ctx.RespondAsync("Successfully " + (muted ? "unmuted " : "muted ") + Formatter.Bold(u.DisplayName));
         }
         #endregion
 
@@ -165,7 +168,7 @@ namespace TheGodfatherBot.Modules.Admin
                 throw new CommandFailedException("User does not have that role.");
 
             await u.RevokeRoleAsync(role);
-            await ctx.RespondAsync($"Successfully removed role **{role.Name}** from **{u.DisplayName}**.");
+            await ctx.RespondAsync($"Successfully removed role {Formatter.Bold(role.Name)} from {Formatter.Bold(u.DisplayName)}.");
         }
         #endregion
 
@@ -186,7 +189,7 @@ namespace TheGodfatherBot.Modules.Admin
                 if (role.Position >= usermaxr.Position)
                     throw new CommandFailedException("You are not authorised to remove roles from this user.");
 
-            string reply = $"Successfully removed all roles from **{u.DisplayName}**.";
+            string reply = $"Successfully removed all roles from {Formatter.Bold(u.DisplayName)}.";
             try {
                 foreach (var role in roles)
                     await u.RevokeRoleAsync(role);
