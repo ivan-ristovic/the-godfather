@@ -249,7 +249,7 @@
     <Compile Include="Modules\Search\CommandsImgur.cs" />
     <Compile Include="Modules\Messages\CommandsInsult.cs" />
     <Compile Include="Modules\Messages\CommandsMemes.cs" />
-    <Compile Include="Modules\Messages\CommandsMessages.cs" />
+    <Compile Include="Modules\Admin\CommandsMessages.cs" />
     <Compile Include="Modules\Main\CommandsMain.cs" />
     <Compile Include="Modules\Messages\CommandsRanking.cs" />
     <Compile Include="Modules\Search\CommandsReddit.cs" />

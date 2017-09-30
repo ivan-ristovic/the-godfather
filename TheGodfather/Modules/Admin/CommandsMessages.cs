@@ -11,7 +11,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 #endregion
 
-namespace TheGodfatherBot.Modules.Messages
+namespace TheGodfatherBot.Modules.Admin
 {
     [Group("messages", CanInvokeWithoutSubcommand = false)]
     [Description("Commands to manipulate messages on the channel.")]
