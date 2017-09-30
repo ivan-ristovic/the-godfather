@@ -1,9 +1,11 @@
 ﻿#region USING_DIRECTIVES
 using System;
-using System.Drawing;
 using System.IO;
+using System.Net;
 using System.Linq;
+using System.Drawing;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 using TheGodfatherBot.Exceptions;
 
@@ -22,7 +24,7 @@ namespace TheGodfatherBot.Modules.Main
         [Command("8ball")]
         [Description("An almighty ball which knows answer to everything.")]
         [Aliases("question")]
-        public async Task EightBall(CommandContext ctx, 
+        public async Task EightBall(CommandContext ctx,
                                    [RemainingText, Description("A question for the almighty ball.")] string q = null)
         {
             if (string.IsNullOrWhiteSpace(q))
@@ -47,7 +49,7 @@ namespace TheGodfatherBot.Modules.Main
         [Command("choose")]
         [Description("!choose option1, option2, option3...")]
         [Aliases("select")]
-        public async Task Choose(CommandContext ctx, 
+        public async Task Choose(CommandContext ctx,
                                 [Description("Option list.")] string s = null)
         {
             if (string.IsNullOrWhiteSpace(s))
@@ -96,7 +98,7 @@ namespace TheGodfatherBot.Modules.Main
         [Command("rate")]
         [Description("An accurate graph of a user's humanity.")]
         [Aliases("score")]
-        public async Task Rate(CommandContext ctx, 
+        public async Task Rate(CommandContext ctx,
                               [Description("Who to measure.")] DiscordUser u = null)
         {
             if (u == null)
@@ -121,5 +123,32 @@ namespace TheGodfatherBot.Modules.Main
             File.Delete("tmp.png");
         }
         #endregion
+
+
+        [Group("random", CanInvokeWithoutSubcommand = false)]
+        [Description("Return random things.")]
+        [Aliases("rnd", "rand")]
+        public class CommandsRandomGroup
+        {
+            private sealed class DeserializedData
+            {
+                public string file { get; set; }
+            }
+
+            #region COMMAND_CAT
+            [Command("cat")]
+            [Description("Get a random cat image.")]
+            public async Task RandomCatAsync(CommandContext ctx)
+            {
+                try {
+                    var wc = new WebClient();
+                    var data = JsonConvert.DeserializeObject<DeserializedData>(wc.DownloadString("http://random.cat/meow"));
+                    await ctx.RespondAsync(data.file);
+                } catch (WebException e) {
+                    throw new CommandFailedException("Connection to random.cat failed!", e);
+                }
+            }
+            #endregion
+        }
     }
 }
