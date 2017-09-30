@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
 
+using TheGodfatherBot.Exceptions;
+
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
@@ -36,7 +38,7 @@ namespace TheGodfatherBot.Modules.Games
                 LoadCountries();
 
             if (_quizrunning.ContainsKey(ctx.Channel.Id))
-                throw new Exception("Quiz is already running in this channel!");
+                throw new CommandFailedException("Quiz is already running in this channel!");
 
             _quizrunning.TryAdd(ctx.Channel.Id, true);
 

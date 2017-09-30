@@ -4,6 +4,8 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
+using TheGodfatherBot.Exceptions;
+
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
@@ -12,7 +14,7 @@ using DSharpPlus.CommandsNext.Attributes;
 namespace TheGodfatherBot.Modules.Games
 {
     [Group("cards", CanInvokeWithoutSubcommand = false)]
-    [Description("Deck manipulation commands")]
+    [Description("Deck manipulation commands.")]
     [Aliases("deck")]
     public class CommandsCards
     {
@@ -22,14 +24,17 @@ namespace TheGodfatherBot.Modules.Games
 
 
         #region COMMAND_DECK_DEAL
-        [Command("deal"), Description("Deal hand from the top of the deck.")]
-        public async Task DealHand(CommandContext ctx, [Description("Ammount")] int ammount = 5)
+        [Command("deal")]
+        [Description("Deal hand from the top of the deck.")]
+        [Aliases("dealhand")]
+        public async Task DealHand(CommandContext ctx, 
+                                  [Description("Ammount.")] int ammount = 5)
         {
             if (_deck == null || _deck.Count == 0)
-                throw new Exception("No deck to deal from. Use ``!deck new``");
+                throw new CommandFailedException("No deck to deal from. Use ``!deck new``");
 
             if (ammount <= 0 || ammount >= 10 || _deck.Count < ammount)
-                throw new ArgumentException("Cannot draw that ammount of cards...");
+                throw new InvalidCommandUsageException("Cannot draw that ammount of cards...", new ArgumentException());
 
             string hand = "";
             for (int i = 0; i < ammount; i++) {
@@ -42,11 +47,13 @@ namespace TheGodfatherBot.Modules.Games
         #endregion
 
         #region COMMAND_DECK_DRAW
-        [Command("draw"), Description("Draw a card from the current deck.")]
+        [Command("draw")]
+        [Description("Draw a card from the current deck.")]
+        [Aliases("dr")]
         public async Task Draw(CommandContext ctx)
         {
             if (_deck == null || _deck.Count == 0)
-                throw new Exception("No deck to draw from.");
+                throw new CommandFailedException("No deck to draw from.");
 
             await ctx.RespondAsync(_deck[0]);
             _deck.RemoveAt(0);
@@ -54,8 +61,9 @@ namespace TheGodfatherBot.Modules.Games
         #endregion
 
         #region COMMAND_DECK_RESET
-        [Command("reset"), Description("Opens a brand new card deck.")]
-        [Aliases("new")]
+        [Command("reset")]
+        [Description("Opens a brand new card deck.")]
+        [Aliases("new", "opennew")]
         public async Task Reset(CommandContext ctx)
         {
             _deck = new List<string>();
@@ -76,15 +84,19 @@ namespace TheGodfatherBot.Modules.Games
         #endregion
 
         #region COMMAND_DECK_SHUFFLE
-        [Command("shuffle"), Description("Shuffle current deck.")]
+        [Command("shuffle")]
+        [Description("Shuffle current deck.")]
+        [Aliases("s", "sh", "mix")]
         public async Task Shuffle(CommandContext ctx)
         {
+            if (_deck == null || _deck.Count == 0)
+                throw new CommandFailedException("No deck to shuffle.");
+
             var shuffled = _deck.OrderBy(a => Guid.NewGuid()).ToList();
             _deck.Clear();
             _deck.AddRange(shuffled);
             await ctx.RespondAsync("Deck shuffled.");
         }
         #endregion
-
     }
 }

@@ -1,49 +1,22 @@
 ﻿#region USING_DIRECTIVES
 using System;
-using System.Drawing;
-using System.IO;
 using System.Linq;
-using System.Collections.Generic;
 using System.Threading.Tasks;
+
+using TheGodfatherBot.Exceptions;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Entities;
-using DSharpPlus.EventArgs;
 #endregion
 
-namespace TheGodfatherBot.Modules.Messages
+namespace TheGodfatherBot.Modules.Main
 {
-    [Description("Misc commands.")]
-    public class CommandsMisc
+    [Description("Main bot commands.")]
+    public class CommandsMain
     {
-        #region COMMAND_8BALL
-        [Command("8ball")]
-        [Description("An almighty ball which knows answer to everything.")]
-        [Aliases("question")]
-        public async Task EightBall(CommandContext ctx, [RemainingText, Description("A question for the almighty ball.")] string q = null)
-        {
-            if (string.IsNullOrWhiteSpace(q))
-                throw new ArgumentException("The almighty ball requires a question.");
-
-            string[] answers = {
-                "Yes.",
-                "Possibly.",
-                "No.",
-                "Maybe.",
-                "Definitely.",
-                "Perhaps.",
-                "More than you can imagine.",
-                "Definitely not."
-            };
-
-            var rnd = new Random();
-            await ctx.RespondAsync(answers[rnd.Next(0, answers.Length)]);
-        }
-        #endregion
-
         #region COMMAND_AVATAR
         [Command("avatar")]
         [Description("Get avatar from user.")]
@@ -51,24 +24,9 @@ namespace TheGodfatherBot.Modules.Messages
                                      [Description("User.")] DiscordUser u = null)
         {
             if (u == null)
-                throw new ArgumentException("User missing!");
+                throw new InvalidCommandUsageException("User missing!");
 
             await ctx.RespondAsync(u.AvatarUrl);
-        }
-        #endregion
-
-        #region COMMAND_CHOOSE
-        [Command("choose")]
-        [Description("!choose option1, option2, option3...")]
-        [Aliases("select")]
-        public async Task Choose(CommandContext ctx, [Description("Option list")] string s = null)
-        {
-            if (string.IsNullOrWhiteSpace(s))
-                throw new ArgumentException("Missing list to choose from.");
-
-            var options = s.Split(',');
-            var rnd = new Random();
-            await ctx.RespondAsync(options[rnd.Next(options.Length)]);
         }
         #endregion
 
@@ -125,17 +83,30 @@ namespace TheGodfatherBot.Modules.Messages
         [RequireUserPermissions(Permissions.KickMembers)]
         public async Task Leet(CommandContext ctx)
         {
-            await ctx.Guild.LeaveAsync();
+            var inter = ctx.Client.GetInteractivityModule();
+            await ctx.RespondAsync("Are you sure?");
+            var m = await inter.WaitForMessageAsync(x => x.Channel.Id == ctx.Channel.Id && x.Author.Id == ctx.User.Id && (x.Content.ToLower() == "yes" || x.Content.ToLower() == "no"), TimeSpan.FromSeconds(10));
+            if (m != null) {
+                if (m.Message.Content == "yes") {
+                    await ctx.RespondAsync("Go find a new bot, since this one is leaving!");
+                    await ctx.Guild.LeaveAsync();
+                } else {
+                    await ctx.RespondAsync("Jewsus Krest you scared me.");
+                }
+            } else {
+                await ctx.RespondAsync("No response? Guess I'll stay then.");
+            }
         }
         #endregion
 
         #region COMMAND_LEET
         [Command("leet")]
         [Description("Wr1t3s m3ss@g3 1n 1337sp34k.")]
-        public async Task Leet(CommandContext ctx, [RemainingText, Description("Text")] string s = null)
+        public async Task Leet(CommandContext ctx, 
+                              [RemainingText, Description("Text")] string s = null)
         {
             if (string.IsNullOrWhiteSpace(s))
-                throw new ArgumentException("Y0u d1dn'7 g1v3 m3 @ny 73x7...");
+                throw new InvalidCommandUsageException("Y0u d1dn'7 g1v3 m3 @ny 73x7...");
 
             var rnd = new Random();
             string leet_s = "";
@@ -158,68 +129,56 @@ namespace TheGodfatherBot.Modules.Messages
         }
         #endregion
 
-        #region COMMAND_PENIS
-        [Command("penis")]
-        [Description("An accurate size of the user's manhood.")]
-        [Aliases("size", "length", "manhood")]
-        public async Task Penis(CommandContext ctx, [Description("Who to measure")] DiscordUser u = null)
-        {
-            if (u == null)
-                throw new ArgumentException("You didn't give me anyone to measure.");
-
-            string msg = "Size: 8";
-            for (var size = u.Id % 40; size > 0; size--)
-                msg += "=";
-            await ctx.RespondAsync(msg + "D");
-        }
-        #endregion
-
-        #region COMMAND_RATE
-        [Command("rate")]
-        [Description("An accurate graph of a user's humanity.")]
-        [Aliases("score")]
-        public async Task Rate(CommandContext ctx, [Description("Who to measure")] DiscordUser u = null)
-        {
-            if (u == null)
-                throw new ArgumentException("You didn't give me anyone to measure.");
-
-            Bitmap chart;
-            try {
-                chart = new Bitmap("Resources/graph.png");
-            } catch {
-                ctx.Client.DebugLogger.LogMessage(LogLevel.Error, "TheGodfather", "graph.png load failed!", DateTime.Now);
-                throw new IOException("I can't find a graph on server machine, please contact owner and tell him.");
-            }
-
-            int start_x = (int)(u.Id % 600) + 110;
-            int start_y = (int)(u.Id % 480) + 20;
-            for (int dx = 0; dx < 10; dx++)
-                for (int dy = 0; dy < 10; dy++)
-                    chart.SetPixel(start_x + dx, start_y + dy, Color.Red);
-            chart.Save("tmp.png");
-            await ctx.TriggerTypingAsync();
-            await ctx.RespondWithFileAsync("tmp.png");
-            File.Delete("tmp.png");
-        }
-        #endregion
-
         #region COMMAND_REMIND
         [Command("remind")]
         [Description("Resend a message after some time.")]
-        public async Task Remind(
-            CommandContext ctx,
-            [Description("Time to wait before repeat.")] int time = 0,
-            [RemainingText, Description("What to repeat.")] string s = null)
+        public async Task Remind(CommandContext ctx,
+                                [Description("Time to wait before repeat (in seconds).")] int time = 0,
+                                [RemainingText, Description("What to repeat.")] string s = null)
         {
             if (time == 0 || string.IsNullOrWhiteSpace(s))
-                throw new ArgumentException("Usage: repeat <seconds> <text>");
+                throw new InvalidCommandUsageException("Usage: repeat <seconds> <text>");
 
             if (time < 0 || time > 604800)
-                throw new ArgumentOutOfRangeException("Time cannot be less than 0 or greater than 1 week.");
+                throw new CommandFailedException("Time cannot be less than 0 or greater than 1 week.", new ArgumentOutOfRangeException());
 
-            await ctx.RespondAsync($"I will remind you to: \"{s}\" in {time} seconds.");
+            await ctx.RespondAsync($"I will remind you to: \"{s}\" in **{time}** seconds.");
             await Task.Delay(time * 1000);
             await ctx.RespondAsync($"I was told to remind you to: \"{s}\".");
+        }
+        #endregion
+
+        #region COMMAND_REPORT
+        [Command("report")]
+        [Description("Send a report message to owner about a bug (please don't abuse... please).")]
+        public async Task SendErrorReport(CommandContext ctx, 
+                                         [RemainingText, Description("Text.")] string issue = null)
+        {
+            if (string.IsNullOrWhiteSpace(issue))
+                throw new InvalidCommandUsageException("Text missing.");
+            
+            await ctx.RespondAsync("Are you okay with your user and guild info being sent for further inspection?" +
+                "\n\n*(Please either respond with 'yes' or wait 5 seconds for the prompt to time out)*");
+            var interactivity = ctx.Client.GetInteractivityModule();
+            var msg = await interactivity.WaitForMessageAsync(
+                x => x.Author.Id == ctx.User.Id && x.Channel.Id == ctx.Channel.Id && x.Content.ToLower() == "yes", 
+                TimeSpan.FromSeconds(5)
+            );
+            if (msg != null) {
+                ctx.Client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", $"Report from {ctx.User.Username} ({ctx.User.Id}): {msg}", DateTime.Now);
+                var dm = await ctx.Client.CreateDmAsync(ctx.Client.CurrentApplication.Owner);
+                
+                await dm.SendMessageAsync("A new issue has been reported!", embed: 
+                    new DiscordEmbedBuilder() {
+                        Title = "Issue",
+                        Description = issue,
+                    }.WithAuthor($"{ctx.User.Username}#{ctx.User.Discriminator}", icon_url: ctx.User.AvatarUrl ?? ctx.User.DefaultAvatarUrl)
+                    .AddField("Guild", $"{ctx.Guild.Name} ({ctx.Guild.Id}) owned by {ctx.Guild.Owner.Username}#{ctx.Guild.Owner.Discriminator}")
+                );
+                await ctx.RespondAsync("Your issue has been reported.");
+            } else {
+                await ctx.RespondAsync("Your issue has not been reported.");
+            }
         }
         #endregion
 
@@ -227,10 +186,11 @@ namespace TheGodfatherBot.Modules.Messages
         [Command("say")]
         [Description("Repeats after you.")]
         [Aliases("repeat")]
-        public async Task Say(CommandContext ctx, [RemainingText, Description("Text.")] string s = null)
+        public async Task Say(CommandContext ctx, 
+                             [RemainingText, Description("Text.")] string s = null)
         {
             if (string.IsNullOrWhiteSpace(s))
-                throw new ArgumentException("Text missing.");
+                throw new InvalidCommandUsageException("Text missing.");
             
             await ctx.RespondAsync(s);
         }
@@ -240,10 +200,11 @@ namespace TheGodfatherBot.Modules.Messages
         [Command("zugify")]
         [Description("I don't even...")]
         [Aliases("z")]
-        public async Task Zugify(CommandContext ctx, [RemainingText, Description("Text.")] string text = null)
+        public async Task Zugify(CommandContext ctx, 
+                                [RemainingText, Description("Text.")] string text = null)
         {
             if (string.IsNullOrWhiteSpace(text))
-                throw new ArgumentException("Text missing.");
+                throw new InvalidCommandUsageException("Text missing.");
 
             text = text.ToLower();
             string s = "";

@@ -1,15 +1,14 @@
 ﻿#region USING_DIRECTIVES
 using System;
-using System.IO;
-using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+
+using TheGodfatherBot.Exceptions;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-using System.Linq;
-using System.Collections.Concurrent;
 #endregion
 
 namespace TheGodfatherBot.Modules.Games
@@ -17,56 +16,38 @@ namespace TheGodfatherBot.Modules.Games
     [Description("Random number generation commands.")]
     public class CommandsGamble
     {
-
         #region COMMAND_COINFLIP
-        [Command("coinflip"), Description("Flips a coin.")]
+        [Command("coinflip")]
+        [ Description("Flips a coin.")]
         [Aliases("coin", "flip")]
         public async Task Coinflip(CommandContext ctx)
         {
-            var rnd = new Random();
-            await ctx.RespondAsync(ctx.User.Mention + " flipped **" + (rnd.Next() % 2 == 0 ? "Heads" : "Tails") + "** !");
+            await ctx.RespondAsync(ctx.User.Mention + " flipped **" + (new Random().Next(2) == 0 ? "Heads" : "Tails") + "** !");
         }
         #endregion
 
         #region COMMAND_ROLL
-        [Command("roll"), Description("Rolls a dice.")]
+        [Command("roll")]
+        [Description("Rolls a dice.")]
         [Aliases("dice")]
         public async Task Roll(CommandContext ctx)
         {
-            var rnd = new Random();
-            await ctx.RespondAsync($"{DiscordEmoji.FromName(ctx.Client, ":game_die:")} {ctx.User.Mention} rolled a {rnd.Next(1, 7)} !");
-        }
-        #endregion
-
-        #region COMMAND_RAFFLE
-        [Command("raffle"), Description("Choose a user from the online members list belonging to a given role.")]
-        public async Task Raffle(CommandContext ctx,
-                                [RemainingText, Description("Role")] DiscordRole role = null)
-        {
-            if (role == null)
-                throw new ArgumentException("Role missing");
-
-            var online = ctx.Guild.GetAllMembersAsync().Result.Where(
-                m => m.Roles.Contains(role) && m.Presence.Status != UserStatus.Offline
-            );
-
-            var rnd = new Random();
-            await ctx.RespondAsync("Raffled: " + online.ElementAt(rnd.Next(online.Count())).Mention);
+            await ctx.RespondAsync($":game_die: {ctx.User.Mention} rolled a **{new Random().Next(1, 7)}**!");
         }
         #endregion
 
         #region COMMAND_SLOT
-        [Command("slot"), Description("Roll a slot machine.")]
+        [Command("slot")]
+        [Description("Roll a slot machine.")]
         [Aliases("slotmachine")]
-        public async Task SlotMachine(CommandContext ctx, [Description("Bid")] int bid = 5)
+        public async Task SlotMachine(CommandContext ctx, 
+                                     [Description("Bid.")] int bid = 5)
         {
             if (bid < 5)
-                throw new ArgumentOutOfRangeException("5 is the minimum bid!");
+                throw new CommandFailedException("5 is the minimum bid!", new ArgumentOutOfRangeException());
 
-            if (!CommandsBank.RetrieveCreditsSucceeded(ctx.User.Id, bid)) {
-                await ctx.RespondAsync("You do not have enough credits in WM bank!");
-                return;
-            }
+            if (!CommandsBank.RetrieveCreditsSucceeded(ctx.User.Id, bid))
+                throw new CommandFailedException("You do not have enough credits in WM bank!");
 
             var slot_res = RollSlot(ctx);
             int won = EvaluateSlotResult(slot_res, bid);
@@ -76,7 +57,7 @@ namespace TheGodfatherBot.Modules.Games
                 Description = MakeStringFromResult(slot_res),
                 Color = DiscordColor.Yellow
             };
-            embed.AddField("Result", $"You won {won} credits!");
+            embed.AddField("Result", $"You won **{won}** credits!");
 
             await ctx.RespondAsync("", embed: embed);
 

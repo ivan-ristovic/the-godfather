@@ -2,6 +2,8 @@
 using System;
 using System.Threading.Tasks;
 
+using TheGodfatherBot.Exceptions;
+
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
@@ -28,10 +30,12 @@ namespace TheGodfatherBot.Modules.Search
         
         public async Task ExecuteGroupAsync(CommandContext ctx,
                                            [Description("Number of images to print [1-10].")] int n = 1,
-                                           [Description("Query (optional).")] string sub = null)
+                                           [Description("Query.")] string sub = null)
         {
-            if (string.IsNullOrWhiteSpace(sub) || n < 1 || n > 10)
-                throw new ArgumentException("Invalid arguments.");
+            if (string.IsNullOrWhiteSpace(sub))
+                throw new InvalidCommandUsageException("Missing search query.");
+            if (n < 1 || n > 10)
+                throw new CommandFailedException("Invalid ammount (must be 1-10).", new ArgumentOutOfRangeException());
 
             await PrintImagesFromSub(ctx, sub.Trim(), n, SubredditGallerySortOrder.Top, TimeWindow.Day);
         }
@@ -43,10 +47,12 @@ namespace TheGodfatherBot.Modules.Search
         [Aliases("l", "new", "newest")]
         public async Task ImgurTop(CommandContext ctx,
                                   [Description("Number of images to print [1-10].")] int n = 1,
-                                  [Description("Query (optional).")] string sub = null)
+                                  [Description("Query.")] string sub = null)
         {
-            if (string.IsNullOrWhiteSpace(sub) || n < 1 || n > 10)
-                throw new ArgumentException("Invalid arguments.");
+            if (string.IsNullOrWhiteSpace(sub))
+                throw new InvalidCommandUsageException("Missing search query.");
+            if (n < 1 || n > 10)
+                throw new CommandFailedException("Invalid ammount (must be 1-10).", new ArgumentOutOfRangeException());
 
             await PrintImagesFromSub(ctx, sub.Trim(), n, SubredditGallerySortOrder.Time, TimeWindow.Day);
         }
@@ -59,10 +65,12 @@ namespace TheGodfatherBot.Modules.Search
         public async Task ImgurTop(CommandContext ctx,
                                   [Description("Time window (day/month/week/year/all).")] string time = "day",
                                   [Description("Number of images to print [1-10].")] int n = 1,
-                                  [Description("Query (optional).")] string sub = null)
+                                  [Description("Query.")] string sub = null)
         {
-            if (string.IsNullOrWhiteSpace(sub) || n < 1 || n > 10)
-                throw new ArgumentException("Invalid arguments.");
+            if (string.IsNullOrWhiteSpace(sub))
+                throw new InvalidCommandUsageException("Missing search query.");
+            if (n < 1 || n > 10)
+                throw new CommandFailedException("Invalid ammount (must be 1-10).", new ArgumentOutOfRangeException());
 
             TimeWindow t = TimeWindow.Day;
             if (time == "day" || time == "d")

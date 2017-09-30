@@ -6,6 +6,8 @@ using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
 
+using TheGodfatherBot.Exceptions;
+
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
@@ -30,13 +32,13 @@ namespace TheGodfatherBot.Modules.Messages
 
 
         public async Task ExecuteGroupAsync(CommandContext ctx, 
-                                           [RemainingText, Description("Question")] string q = null)
+                                           [RemainingText, Description("Question.")] string q = null)
         {
             if (string.IsNullOrWhiteSpace(q))
-                throw new ArgumentException("Poll requires a yes or no question.");
+                throw new InvalidCommandUsageException("Poll requires a yes or no question.");
 
             if (_options.ContainsKey(ctx.Channel.Id))
-                throw new Exception("Another poll is already running.");
+                throw new CommandFailedException("Another poll is already running.");
 
             _options.TryAdd(ctx.Channel.Id, null);
 
@@ -58,7 +60,7 @@ namespace TheGodfatherBot.Modules.Messages
             List<string> poll_options = msg.Message.Content.Split(';').ToList();
             poll_options.RemoveAll(str => string.IsNullOrWhiteSpace(str));
             if (poll_options.Count < 2)
-                throw new ArgumentException("Not enough poll options.");
+                throw new InvalidCommandUsageException("Not enough poll options.");
 
             await ctx.RespondAsync("", embed: EmbedPoll(q, poll_options));
 
@@ -83,6 +85,8 @@ namespace TheGodfatherBot.Modules.Messages
                     _eventset = true;
                     ctx.Client.MessageCreated += CheckForPollReply;
                 }
+            } catch (Exception e) {
+                throw e;
             } finally {
                 _lock.ReleaseMutex();
             }

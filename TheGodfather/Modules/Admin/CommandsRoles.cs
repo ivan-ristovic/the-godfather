@@ -1,8 +1,9 @@
 ﻿#region USING_DIRECTIVES
 using System;
 using System.Linq;
-using System.Collections.Generic;
 using System.Threading.Tasks;
+
+using TheGodfatherBot.Exceptions;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -35,13 +36,14 @@ namespace TheGodfatherBot.Modules.Admin
         [Description("Create a new role.")]
         [Aliases("new", "add", "+")]
         [RequirePermissions(Permissions.ManageRoles)]
-        public async Task CreateRole(CommandContext ctx, [Description("Role")] string name = null)
+        public async Task CreateRole(CommandContext ctx, 
+                                    [RemainingText, Description("Role.")] string name = null)
         {
             if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentException("Missing role name.");
+                throw new InvalidCommandUsageException("Missing role name.");
 
             await ctx.Guild.CreateRoleAsync(name);
-            await ctx.RespondAsync("Successfully created role " + name);
+            await ctx.RespondAsync($"Successfully created role **{name}**!");
         }
         #endregion
 
@@ -50,13 +52,14 @@ namespace TheGodfatherBot.Modules.Admin
         [Description("Create a new role.")]
         [Aliases("del", "remove", "d", "-")]
         [RequirePermissions(Permissions.ManageRoles)]
-        public async Task DeleteRole(CommandContext ctx, [Description("Role")] DiscordRole role = null)
+        public async Task DeleteRole(CommandContext ctx,
+                                    [Description("Role.")] DiscordRole role = null)
         {
             if (role == null)
-                throw new ArgumentException("Unknown role.");
+                throw new InvalidCommandUsageException("Unknown role.");
 
             await ctx.Guild.DeleteRoleAsync(role);
-            await ctx.RespondAsync("Successfully removed role " + role.Name);
+            await ctx.RespondAsync($"Successfully removed role **{role.Name}**!");
         }
         #endregion
         
@@ -65,10 +68,10 @@ namespace TheGodfatherBot.Modules.Admin
         [Description("Mention all users from given role.")]
         [Aliases("mention", "@", "ma")]
         public async Task MentionAllFromRole(CommandContext ctx, 
-                                            [Description("Role")] DiscordRole role = null)
+                                            [Description("Role.")] DiscordRole role = null)
         {
             if (role == null)
-                throw new ArgumentException("Unknown role.");
+                throw new InvalidCommandUsageException("Unknown role.");
 
             var users = ctx.Guild.GetAllMembersAsync().Result.Where(u => u.Roles.Contains(role));
             string s = "";
@@ -84,14 +87,14 @@ namespace TheGodfatherBot.Modules.Admin
         [Aliases("clr", "c")]
         [RequirePermissions(Permissions.ManageRoles)]
         public async Task SetColor(CommandContext ctx, 
-                                  [Description("Role")] DiscordRole role = null,
-                                  [Description("Color")] string color = null)
+                                  [Description("Role.")] DiscordRole role = null,
+                                  [Description("Color.")] string color = null)
         {
             if (role == null || string.IsNullOrWhiteSpace(color))
-                throw new ArgumentException("I need a valid role and a valid color.");
+                throw new InvalidCommandUsageException("I need a valid role and a valid color in hex.");
 
             await ctx.Guild.UpdateRoleAsync(role, color: new DiscordColor(color));
-            await ctx.RespondAsync("Successfully changed role color.");
+            await ctx.RespondAsync($"Successfully changed color for **{role.Name}**!");
         }
         #endregion
 
@@ -101,8 +104,8 @@ namespace TheGodfatherBot.Modules.Admin
         [Aliases("name", "rename", "n")]
         [RequirePermissions(Permissions.ManageRoles)]
         public async Task RenameRole(CommandContext ctx,
-                                    [Description("Role")] DiscordRole role = null,
-                                    [Description("New name")] string name = null)
+                                    [Description("Role.")] DiscordRole role = null,
+                                    [RemainingText, Description("New name.")] string name = null)
         {
             if (role == null || string.IsNullOrWhiteSpace(name))
                 throw new ArgumentException("I need a valid existing role and a new name.");
@@ -118,14 +121,14 @@ namespace TheGodfatherBot.Modules.Admin
         [Aliases("mentionable", "m", "setm")]
         [RequirePermissions(Permissions.ManageRoles)]
         public async Task SetMentionable(CommandContext ctx,
-                                        [Description("Role")] DiscordRole role = null,
-                                        [Description("True/False")] bool b = true)
+                                        [Description("Role.")] DiscordRole role = null,
+                                        [Description("[true/false]")] bool b = true)
         {
             if (role == null)
-                throw new ArgumentException("Unknown role.");
+                throw new InvalidCommandUsageException("Unknown role.");
 
             await ctx.Guild.UpdateRoleAsync(role, mentionable: b);
-            await ctx.RespondAsync("Successfully set " + role.Name + "'s mentionable var to: " + b);
+            await ctx.RespondAsync($"Successfully set mentionable var for **{role.Name}** to **{b}**");
         }
         #endregion
         
@@ -135,14 +138,14 @@ namespace TheGodfatherBot.Modules.Admin
         [Aliases("separate", "h", "sets", "seth", "hoist", "sethoist")]
         [RequirePermissions(Permissions.ManageRoles)]
         public async Task SetVisible(CommandContext ctx,
-                                    [Description("Role")] DiscordRole role = null,
-                                    [Description("True/False")] bool b = true)
+                                    [Description("Role.")] DiscordRole role = null,
+                                    [Description("[true/false]")] bool b = true)
         {
             if (role == null)
-                throw new ArgumentException("Unknown role.");
+                throw new InvalidCommandUsageException("Unknown role.");
 
             await ctx.Guild.UpdateRoleAsync(role, hoist: b);
-            await ctx.RespondAsync("Successfully set " + role.Name + "'s hoist var to: " + b);
+            await ctx.RespondAsync($"Successfully set hoist var for **{role.Name}** to **{b}**");
         }
         #endregion
     }

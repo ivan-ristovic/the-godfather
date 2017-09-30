@@ -5,6 +5,8 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
+using TheGodfatherBot.Exceptions;
+
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
@@ -67,7 +69,7 @@ namespace TheGodfatherBot.Modules.Messages
 
 
         public async Task ExecuteGroupAsync(CommandContext ctx, 
-                                            [RemainingText, Description("Meme name")] string name = null)
+                                            [RemainingText, Description("Meme name.")] string name = null)
         {
             if (name == null || (name = name.Trim().ToLower()) == "") {
                 await ReturnRandomMeme(ctx);
@@ -86,10 +88,10 @@ namespace TheGodfatherBot.Modules.Messages
         [Aliases("+", "new")]
         public async Task AddMeme(CommandContext ctx,
                                  [Description("Short name (case insensitive).")] string name = null,
-                                 [Description("URL")] string url = null)
+                                 [Description("URL.")] string url = null)
         {
             if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(url))
-                throw new ArgumentException("Name or URL missing or invalid.");
+                throw new InvalidCommandUsageException("Name or URL missing or invalid.");
 
             name = name.Trim().ToLower();
             url = url.Trim();
@@ -107,14 +109,15 @@ namespace TheGodfatherBot.Modules.Messages
         [Command("delete")]
         [Description("Deletes a meme from list.")]
         [Aliases("-", "del", "remove")]
-        public async Task DeleteMeme(CommandContext ctx, [Description("Short name (case insensitive).")] string name = null)
+        public async Task DeleteMeme(CommandContext ctx, 
+                                    [Description("Short name (case insensitive).")] string name = null)
         {
             if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentException("Name missing.");
+                throw new InvalidCommandUsageException("Name missing.");
 
             name = name.Trim().ToLower();
             if (!_memes.ContainsKey(name))
-                throw new KeyNotFoundException("Meme with that name doesn't exist!");
+                throw new CommandFailedException("Meme with that name doesn't exist!", new KeyNotFoundException());
 
             _memes.Remove(name);
             await ctx.RespondAsync($"Meme **{name}** successfully deleted!");
@@ -124,10 +127,11 @@ namespace TheGodfatherBot.Modules.Messages
         #region COMMAND_MEME_LIST
         [Command("list")]
         [Description("List all registered memes.")]
-        public async Task List(CommandContext ctx, [Description("Page")] int page = 1)
+        public async Task List(CommandContext ctx, 
+                              [Description("Page.")] int page = 1)
         {
             if (page < 1 || page > _memes.Count / 10 + 1)
-                throw new ArgumentException("No memes on that page.");
+                throw new CommandFailedException("No memes on that page.", new ArgumentOutOfRangeException());
 
             string s = "";
             int starti = (page - 1) * 10;

@@ -8,6 +8,8 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
+using TheGodfatherBot.Exceptions;
+
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
@@ -91,15 +93,15 @@ namespace TheGodfatherBot.Modules.SWAT
             [Aliases("+")]
             [RequireUserPermissions(Permissions.Administrator)]
             public async Task Add(CommandContext ctx,
-                                 [Description("Name")] string name = null,
-                                 [Description("IP")] string ip = null)
+                                 [Description("Name.")] string name = null,
+                                 [Description("IP.")] string ip = null)
             {
                 if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(ip))
-                    throw new ArgumentException("Invalid name or IP.");
+                    throw new InvalidCommandUsageException("Invalid name or IP.");
 
                 var split = ip.Split(':');
                 if (split.Length < 2)
-                    throw new ArgumentException("Invalid IP.");
+                    throw new InvalidCommandUsageException("Invalid IP.");
 
                 if (split.Length < 3)
                     ip += ":" + (int.Parse(split[1]) + 1).ToString();
@@ -115,13 +117,13 @@ namespace TheGodfatherBot.Modules.SWAT
             [Aliases("-", "remove")]
             [RequireUserPermissions(Permissions.Administrator)]
             public async Task Delete(CommandContext ctx,
-                                    [Description("Name")] string name = null)
+                                    [Description("Name.")] string name = null)
             {
                 if (string.IsNullOrWhiteSpace(name))
-                    throw new ArgumentException("Invalid name or IP.");
+                    throw new InvalidCommandUsageException("Invalid name or IP.");
 
                 if (!_serverlist.ContainsKey(name))
-                    throw new KeyNotFoundException("There is no such server in the list!");
+                    throw new CommandFailedException("There is no such server in the list!", new KeyNotFoundException());
 
                 _serverlist.Remove(name);
                 await ctx.RespondAsync("Server added. You can now query it using the name provided.");
@@ -143,7 +145,8 @@ namespace TheGodfatherBot.Modules.SWAT
             [Command("settimeout")]
             [Description("Set checking timeout.")]
             [RequireOwner]
-            public async Task SetTimeout(CommandContext ctx, [Description("Timeout")] int timeout = 200)
+            public async Task SetTimeout(CommandContext ctx, 
+                                        [Description("Timeout.")] int timeout = 200)
             {
                 _checktimeout = timeout;
                 await ctx.RespondAsync("Timeout changed to: " + _checktimeout);
@@ -154,6 +157,7 @@ namespace TheGodfatherBot.Modules.SWAT
 
         #region COMMAND_SERVERLIST
         [Command("serverlist")]
+        [Description("Print the serverlist with current player numbers")]
         [Aliases("slist", "swat4servers", "swat4stats")]
         public async Task Servers(CommandContext ctx)
         {
@@ -172,12 +176,14 @@ namespace TheGodfatherBot.Modules.SWAT
         #endregion
 
         #region COMMAND_QUERY
-        [Command("query"), Description("Return server information.")]
+        [Command("query")]
+        [Description("Return server information.")]
         [Aliases("info", "check")]
-        public async Task Query(CommandContext ctx, [Description("IP to query.")] string ip = null)
+        public async Task Query(CommandContext ctx, 
+                               [Description("IP.")] string ip = null)
         {
             if (string.IsNullOrWhiteSpace(ip))
-                throw new ArgumentException("IP missing.");
+                throw new InvalidCommandUsageException("IP missing.");
 
             if (_serverlist.ContainsKey(ip))
                 ip = _serverlist[ip];
@@ -196,19 +202,21 @@ namespace TheGodfatherBot.Modules.SWAT
         #endregion
 
         #region COMMAND_STARTCHECK
-        [Command("startcheck"), Description("Notifies of free space in server.")]
+        [Command("startcheck")]
+        [Description("Notifies of free space in server.")]
         [Aliases("checkspace", "spacecheck")]
         [RequireUserPermissions(Permissions.ManageGuild)]
-        public async Task StartCheck(CommandContext ctx, [Description("IP to query.")] string ip = null)
+        public async Task StartCheck(CommandContext ctx, 
+                                    [Description("Registered name or IP.")] string ip = null)
         {
             if (string.IsNullOrWhiteSpace(ip))
-                throw new ArgumentException("IP missing.");
+                throw new InvalidCommandUsageException("Name/IP missing.");
 
             if (_UserIDsCheckingForSpace.ContainsKey(ctx.User.Id))
-                throw new Exception("Already checking space for you!");
+                throw new CommandFailedException("Already checking space for you!");
 
             if (_UserIDsCheckingForSpace.Count > 10)
-                throw new Exception("Maximum number of checks reached, please try later!");
+                throw new CommandFailedException("Maximum number of checks reached, please try later!");
 
             if (_serverlist.ContainsKey(ip))
                 ip = _serverlist[ip];
@@ -217,7 +225,7 @@ namespace TheGodfatherBot.Modules.SWAT
             try {
                 split = ip.Split(':');
             } catch (Exception) {
-                throw new Exception("Invalid IP format.");
+                throw new InvalidCommandUsageException("Invalid IP format.");
             }
             await ctx.RespondAsync($"Starting check on {split[0]}:{split[1]}...");
 
@@ -253,11 +261,14 @@ namespace TheGodfatherBot.Modules.SWAT
         #endregion
 
         #region COMMAND_STOPCHECK
-        [Command("stopcheck"), Description("Stops space checking.")]
+        [Command("stopcheck")]
+        [Description("Stops space checking.")]
         [Aliases("checkstop")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task StopCheck(CommandContext ctx)
         {
+            if (!_UserIDsCheckingForSpace.ContainsKey(ctx.User.Id))
+                throw new CommandFailedException("No checks started from you.", new KeyNotFoundException());
             _UserIDsCheckingForSpace.TryUpdate(ctx.User.Id, false, true);
             await ctx.RespondAsync("Checking stopped.");
         }

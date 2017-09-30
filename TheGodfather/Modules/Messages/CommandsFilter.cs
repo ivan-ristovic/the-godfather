@@ -5,6 +5,8 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
+using TheGodfatherBot.Exceptions;
+
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
@@ -90,20 +92,20 @@ namespace TheGodfatherBot.Modules.Messages
                                    [Description("Filter trigger word (case sensitive).")] string filter = null)
         {
             if (string.IsNullOrWhiteSpace(filter))
-                throw new ArgumentException("Filter trigger missing.");
+                throw new InvalidCommandUsageException("Filter trigger missing.");
 
             if (CommandsAlias.FindAlias(ctx.Guild.Id, filter) != null)
-                throw new Exception("You cannot add a filter if an alias for that trigger exists!");
+                throw new CommandFailedException("You cannot add a filter if an alias for that trigger exists!");
 
             if (ctx.Client.GetCommandsNext().RegisteredCommands.ContainsKey(filter))
-                throw new Exception("You cannot add a filter for one of my commands!");
+                throw new CommandFailedException("You cannot add a filter for one of my commands!");
 
             if (!_filters.ContainsKey(ctx.Guild.Id))
                 _filters.Add(ctx.Guild.Id, new List<string>());
 
             filter = filter.ToLower();
             if (_filters[ctx.Guild.Id].Contains(filter)) {
-                await ctx.RespondAsync("Filter already exists.");
+                await ctx.RespondAsync($"Filter **{filter}** already exists.");
             } else {
                 _filters[ctx.Guild.Id].Add(filter);
                 await ctx.RespondAsync($"Filter **{filter}** successfully added.");
@@ -116,13 +118,14 @@ namespace TheGodfatherBot.Modules.Messages
         [Description("Remove filter from list.")]
         [Aliases("-", "remove", "del")]
         [RequireUserPermissions(Permissions.ManageMessages)]
-        public async Task DeleteFilter(CommandContext ctx, [Description("Filter to remove.")] string filter = null)
+        public async Task DeleteFilter(CommandContext ctx, 
+                                      [Description("Filter to remove.")] string filter = null)
         {
             if (string.IsNullOrWhiteSpace(filter))
-                throw new ArgumentException("Alias name missing.");
+                throw new InvalidCommandUsageException("Alias name missing.");
 
             if (!_filters.ContainsKey(ctx.Guild.Id))
-                throw new KeyNotFoundException("No aliases recorded in this guild.");
+                throw new CommandFailedException("No aliases recorded in this guild.", new KeyNotFoundException());
 
             _filters[ctx.Guild.Id].Remove(filter);
             await ctx.RespondAsync($"Filter **{filter}** successfully removed.");
@@ -143,7 +146,8 @@ namespace TheGodfatherBot.Modules.Messages
         #region COMMAND_FILTER_LIST
         [Command("list")]
         [Description("Show all filters for this guild.")]
-        public async Task ListFilters(CommandContext ctx, [Description("Page")] int page = 1)
+        public async Task ListFilters(CommandContext ctx, 
+                                     [Description("Page")] int page = 1)
         {
             if (!_filters.ContainsKey(ctx.Guild.Id)) {
                 await ctx.RespondAsync("No filters registered.");
@@ -151,7 +155,7 @@ namespace TheGodfatherBot.Modules.Messages
             }
 
             if (page < 1 || page > _filters[ctx.Guild.Id].Count / 10 + 1)
-                throw new ArgumentException("No filters on that page.");
+                throw new CommandFailedException("No filters on that page.");
 
             string s = "";
             int starti = (page - 1) * 10;

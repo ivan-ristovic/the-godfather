@@ -150,6 +150,7 @@ namespace TheGodfatherBot
             _commands.RegisterCommands<Modules.Admin.CommandsAdmin>();
             _commands.RegisterCommands<Modules.Admin.CommandsChannels>();
             _commands.RegisterCommands<Modules.Admin.CommandsGuild>();
+            _commands.RegisterCommands<Modules.Admin.CommandsMessages>();
             _commands.RegisterCommands<Modules.Admin.CommandsRoles>();
             _commands.RegisterCommands<Modules.Admin.CommandsUsers>();
             _commands.RegisterCommands<Modules.Games.CommandsBank>();
@@ -159,12 +160,12 @@ namespace TheGodfatherBot
             _commands.RegisterCommands<Modules.Games.CommandsNunchi>();
             _commands.RegisterCommands<Modules.Games.CommandsRace>();
             _commands.RegisterCommands<Modules.Games.CommandsQuiz>();
+            _commands.RegisterCommands<Modules.Main.CommandsMain>();
+            _commands.RegisterCommands<Modules.Main.CommandsRandom>();
             _commands.RegisterCommands<Modules.Messages.CommandsAlias>();
             _commands.RegisterCommands<Modules.Messages.CommandsFilter>();
             _commands.RegisterCommands<Modules.Messages.CommandsInsult>();
             _commands.RegisterCommands<Modules.Messages.CommandsMemes>();
-            _commands.RegisterCommands<Modules.Messages.CommandsMessages>();
-            _commands.RegisterCommands<Modules.Messages.CommandsMisc>();
             _commands.RegisterCommands<Modules.Messages.CommandsPoll>();
             _commands.RegisterCommands<Modules.Messages.CommandsRanking>();
             _commands.RegisterCommands<Modules.Search.CommandsGiphy>();
@@ -363,7 +364,8 @@ namespace TheGodfatherBot
                 $"Tried executing: {e.Command?.QualifiedName ?? "<unknown command>"}\n" +
                 $" User: {e.Context.User.ToString()}\n" +
                 $" Location: '{e.Context.Guild.Name}' ({e.Context.Guild.Id}) ; {e.Context.Channel.ToString()}\n" +
-                $" Exception: {ex.GetType()}\n" +
+                $" Exception: {ex.GetType()}\n" + 
+                (ex.InnerException != null ? $" Inner exception: {ex.InnerException.GetType()}\n" : "") +
                 $" Message: {ex.Message ?? "<no message>"}"
                 , DateTime.Now
             );
@@ -373,13 +375,21 @@ namespace TheGodfatherBot
                 Title = "Error",
                 Color = DiscordColor.Red
             };
-
-            if (ex is ChecksFailedException)
+            
+            if (e.Exception is CommandNotFoundException)
+                embed.Description = $"{emoji} The specified command does not exist.";
+            else if (e.Exception is Exceptions.InvalidCommandUsageException)
+                embed.Description = $"{emoji} Invalid usage! {ex.Message}";
+            else if (e.Exception is ArgumentException)
+                embed.Description = $"{emoji} Wrong argument format (please use **!help <command>**).";
+            else if (e.Exception is Exceptions.CommandFailedException)
+                embed.Description = $"{emoji} {ex.Message}";
+            else if (ex is ChecksFailedException)
                 embed.Description = $"{emoji} Either you or I don't have the permissions required to execute this command.";
             else if (e.Exception is UnauthorizedException)
                 embed.Description = $"{emoji} I am not authorized to do that.";
             else
-                embed.Description = $"{emoji} {ex.Message}";
+                embed.Description = $"{emoji} Unknown error occured (probably because a Serbian made this bot). Please **!report**.";
 
             await e.Context.RespondAsync("", embed: embed);
         }

@@ -5,6 +5,8 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
+using TheGodfatherBot.Exceptions;
+
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
@@ -56,21 +58,21 @@ namespace TheGodfatherBot.Modules.Messages
         #endregion
 
 
-        public async Task ExecuteGroupAsync(CommandContext ctx, [Description("User")] DiscordUser u = null)
+        public async Task ExecuteGroupAsync(CommandContext ctx, 
+                                           [Description("User.")] DiscordUser u = null)
         {
             if (u == null)
                 u = ctx.User;
 
             if (_insults.Count == 0)
-                throw new Exception("No available insults.");
+                throw new CommandFailedException("No available insults.");
 
             if (u.Id == ctx.Client.CurrentUser.Id) {
                 await ctx.RespondAsync("How original, trying to make me insult myself. Sadly it won't work.");
                 return;
             }
-
-            var rnd = new Random();
-            var split = _insults[rnd.Next(_insults.Count)].Split('%');
+            
+            var split = _insults[new Random().Next(_insults.Count)].Split('%');
             string response = split[0];
             for (int i = 1; i < split.Length; i++)
                 response += u.Mention + split[i];
@@ -83,16 +85,16 @@ namespace TheGodfatherBot.Modules.Messages
         [Description("Add insult to list.")]
         [Aliases("+", "new")]
         public async Task AddInsult(CommandContext ctx,
-                                   [RemainingText, Description("Response")] string insult = null)
+                                   [RemainingText, Description("Response.")] string insult = null)
         {
             if (string.IsNullOrWhiteSpace(insult))
-                throw new ArgumentException("Missing insult string.");
+                throw new InvalidCommandUsageException("Missing insult string.");
 
             if (insult.Length >= 200)
-                throw new ArgumentException("Too long insult. I know it is hard, but keep it shorter than 200 please.");
+                throw new CommandFailedException("Too long insult. I know it is hard, but keep it shorter than 200 please.");
 
             if (insult.Split().Count() < 2)
-                throw new ArgumentException("Insult not in correct format (missing %)!");
+                throw new InvalidCommandUsageException("Insult not in correct format (missing %)!");
 
             _insults.Add(insult);
             await ctx.RespondAsync("Insult added.");
@@ -101,13 +103,14 @@ namespace TheGodfatherBot.Modules.Messages
 
         #region COMMAND_INSULTS_DELETE
         [Command("delete")]
-        [Description("Remove insult with a given index from list. (use !insults list to view indexes)")]
+        [Description("Remove insult with a given index from list. (use ``!insults list`` to view indexes)")]
         [Aliases("-", "remove", "del")]
         [RequireOwner]
-        public async Task DeleteInsult(CommandContext ctx, [Description("Index")] int i = 0)
+        public async Task DeleteInsult(CommandContext ctx, 
+                                      [Description("Index.")] int i = 0)
         {
             if (i < 0 || i > _insults.Count)
-                throw new ArgumentException("There is no insult with such index.");
+                throw new CommandFailedException("There is no insult with such index.", new ArgumentOutOfRangeException());
 
             _insults.RemoveAt(i);
             await ctx.RespondAsync("Insult successfully removed.");
@@ -128,10 +131,11 @@ namespace TheGodfatherBot.Modules.Messages
         #region COMMAND_INSULTS_LIST
         [Command("list")]
         [Description("Show all insults.")]
-        public async Task ListInsults(CommandContext ctx, [Description("Page")] int page = 1)
+        public async Task ListInsults(CommandContext ctx, 
+                                     [Description("Page.")] int page = 1)
         {
             if (page < 1 || page > _insults.Count / 10 + 1)
-                throw new ArgumentException("No insults on that page.");
+                throw new CommandFailedException("No insults on that page.", new ArgumentOutOfRangeException());
 
             string s = "";
             int starti = (page - 1) * 10;

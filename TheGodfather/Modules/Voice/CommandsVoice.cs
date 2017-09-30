@@ -4,6 +4,8 @@ using System.IO;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
+using TheGodfatherBot.Exceptions;
+
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
@@ -17,43 +19,46 @@ namespace TheGodfatherBot.Modules.Voice
     public class CommandsVoice
     {
         #region COMMAND_JOIN
-        [Command("connect"), Description("Connects me to your voice channel.")]
+        [Command("connect")]
+        [Description("Connects me to your voice channel.")]
         [Aliases("join", "voice")]
-        public async Task Join(CommandContext ctx, DiscordChannel chn = null)
+        public async Task Join(CommandContext ctx, 
+                              [Description("Channel.")] DiscordChannel c = null)
         {
             var vnext = ctx.Client.GetVoiceNextClient();
             if (vnext == null)
-                throw new Exception("VNext is not enabled or configured.");
+                throw new CommandFailedException("VNext is not enabled or configured.");
 
             var vnc = vnext.GetConnection(ctx.Guild);
             if (vnc != null)
-                throw new Exception("Already connected in this guild.");
+                throw new CommandFailedException("Already connected in this guild.");
 
             var vstat = ctx.Member?.VoiceState;
-            if ((vstat == null || vstat.Channel == null) && chn == null)
-                throw new Exception("You are not in a voice channel.");
+            if ((vstat == null || vstat.Channel == null) && c == null)
+                throw new CommandFailedException("You are not in a voice channel.");
 
-            if (chn == null)
-                chn = vstat.Channel;
+            if (c == null)
+                c = vstat.Channel;
 
-            vnc = await vnext.ConnectAsync(chn);
+            vnc = await vnext.ConnectAsync(c);
 
-            await ctx.RespondAsync($"Connected to `{chn.Name}`.");
+            await ctx.RespondAsync($"Connected to **{c.Name}**.");
         }
         #endregion
 
         #region COMMAND_LEAVE
-        [Command("disconnect"), Description("Disconnects from voice channel.")]
+        [Command("disconnect")]
+        [Description("Disconnects from voice channel.")]
         [Aliases("leave")]
         public async Task Leave(CommandContext ctx)
         {
             var vnext = ctx.Client.GetVoiceNextClient();
             if (vnext == null) 
-                throw new Exception("VNext is not enabled or configured.");
+                throw new CommandFailedException("VNext is not enabled or configured.");
 
             var vnc = vnext.GetConnection(ctx.Guild);
             if (vnc == null)
-                throw new Exception("Not connected in this guild.");
+                throw new CommandFailedException("Not connected in this guild.");
 
             vnc.Disconnect();
             await ctx.RespondAsync("Disconnected.");
@@ -61,19 +66,21 @@ namespace TheGodfatherBot.Modules.Voice
         #endregion
 
         #region COMMAND_PLAY
-        [Command("play"), Description("Plays an audio file from server filesystem.")]
-        public async Task Play(CommandContext ctx, [RemainingText, Description("Full path to the file to play.")] string filename)
+        [Command("play")]
+        [Description("Plays an audio file from server filesystem.")]
+        public async Task Play(CommandContext ctx, 
+                              [RemainingText, Description("Full path to the file to play.")] string filename)
         {
             var vnext = ctx.Client.GetVoiceNextClient();
             if (vnext == null)
-                throw new Exception("VNext is not enabled or configured.");
+                throw new CommandFailedException("VNext is not enabled or configured.");
 
             var vnc = vnext.GetConnection(ctx.Guild);
             if (vnc == null)
-                throw new Exception("Not connected in this guild.");
+                throw new CommandFailedException("Not connected in this guild.");
 
             if (!File.Exists(filename))
-                throw new FileNotFoundException($"File `{filename}` does not exist.");
+                throw new CommandFailedException($"File **{filename}** does not exist.", new FileNotFoundException());
 
             while (vnc.IsPlaying)
                 await vnc.WaitForPlaybackFinishAsync();
@@ -113,7 +120,7 @@ namespace TheGodfatherBot.Modules.Voice
             }
 
             if (exc != null)
-                throw new Exception($"An exception occured during playback: `{exc.GetType()}: {exc.Message}`.");
+                throw exc;
         }
         #endregion
     }
