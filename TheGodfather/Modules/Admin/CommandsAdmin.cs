@@ -151,7 +151,7 @@ namespace TheGodfatherBot.Modules.Admin
                 try {
                     var guild = ctx.Client.Guilds[id];
                     await guild.LeaveAsync();
-                    s += $"{guild.Name} owned by {guild.Owner.Username}#{guild.Owner.Discriminator}\n";
+                    s += $"{Formatter.Bold(guild.Name)} owned by {Formatter.Bold(guild.Owner.Username)}#{guild.Owner.Discriminator}\n";
                 } catch {
 
                 }

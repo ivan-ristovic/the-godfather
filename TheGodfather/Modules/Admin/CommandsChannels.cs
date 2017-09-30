@@ -29,7 +29,7 @@ namespace TheGodfatherBot.Modules.Admin
                 throw new InvalidCommandUsageException("Missing channel name.");
             
             await ctx.Guild.CreateChannelAsync(name, ChannelType.Text);
-            await ctx.RespondAsync("Channel successfully created.");
+            await ctx.RespondAsync($"Channel {Formatter.Bold(name)} successfully created.");
         }
         #endregion
 
@@ -45,7 +45,7 @@ namespace TheGodfatherBot.Modules.Admin
                 throw new InvalidCommandUsageException("Missing channel name.");
 
             await ctx.Guild.CreateChannelAsync(name, ChannelType.Voice);
-            await ctx.RespondAsync("Channel successfully created.");
+            await ctx.RespondAsync($"Channel {Formatter.Bold(name)} successfully created.");
         }
         #endregion
         
@@ -60,7 +60,9 @@ namespace TheGodfatherBot.Modules.Admin
             if (c == null)
                 throw new InvalidCommandUsageException("Can't find such channel.");
 
+            string name = c.Name;
             await c.DeleteAsync();
+            await ctx.RespondAsync($"Channel {Formatter.Bold(name)} successfully deleted.");
         }
         #endregion
 

@@ -26,8 +26,8 @@ namespace TheGodfatherBot.Modules.Search
         private static ImgurClient _imgurclient = new ImgurClient("5222972687f2120");
         private static GalleryEndpoint _endpoint = new GalleryEndpoint(_imgurclient);
         #endregion
-        
-        
+
+
         public async Task ExecuteGroupAsync(CommandContext ctx,
                                            [Description("Number of images to print [1-10].")] int n = 1,
                                            [Description("Query.")] string sub = null)
