@@ -75,6 +75,23 @@ namespace TheGodfatherBot.Modules.Main
         }
         #endregion
 
+        #region COMMAND_RAFFLE
+        [Command("raffle")]
+        [Description("Choose a user from the online members list belonging to a given role.")]
+        public async Task Raffle(CommandContext ctx,
+                                [Description("Role.")] DiscordRole role = null)
+        {
+            if (role == null)
+                role = ctx.Guild.EveryoneRole;
+
+            var online = ctx.Guild.GetAllMembersAsync().Result.Where(
+                m => m.Roles.Contains(role) && m.Presence.Status != UserStatus.Offline
+            );
+
+            await ctx.RespondAsync("Raffled: " + online.ElementAt(new Random().Next(online.Count())).Mention);
+        }
+        #endregion
+
         #region COMMAND_RATE
         [Command("rate")]
         [Description("An accurate graph of a user's humanity.")]
