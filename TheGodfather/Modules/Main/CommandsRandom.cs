@@ -149,6 +149,21 @@ namespace TheGodfatherBot.Modules.Main
                 }
             }
             #endregion
+
+            #region COMMAND_DOG
+            [Command("dog")]
+            [Description("Get a random dog image.")]
+            public async Task RandomDogAsync(CommandContext ctx)
+            {
+                try {
+                    var wc = new WebClient();
+                    var data = wc.DownloadString("https://random.dog/woof");
+                    await ctx.RespondAsync("https://random.dog/" + data);
+                } catch (WebException e) {
+                    throw new CommandFailedException("Connection to random.dog failed!", e);
+                }
+            }
+            #endregion
         }
     }
 }
