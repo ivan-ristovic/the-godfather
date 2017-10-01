@@ -75,7 +75,7 @@ namespace TheGodfatherBot.Modules.Main
 
             string msg = "8";
             for (var size = u.Id % 40; size > 0; size--)
-                msg += "=";
+                msg += "═";
             await ctx.RespondAsync("Size: " + Formatter.Bold(msg + "D"));
         }
         #endregion
