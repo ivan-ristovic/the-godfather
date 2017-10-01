@@ -100,7 +100,7 @@ namespace TheGodfatherBot.Modules.Messages
                 await ctx.RespondAsync("Meme with that name already exists!");
             } else {
                 _memes.Add(name, url);
-                await ctx.RespondAsync($"Meme **{name}** successfully added!");
+                await ctx.RespondAsync($"Meme {Formatter.Bold(name)} successfully added!");
             }
         }
         #endregion
@@ -120,7 +120,7 @@ namespace TheGodfatherBot.Modules.Messages
                 throw new CommandFailedException("Meme with that name doesn't exist!", new KeyNotFoundException());
 
             _memes.Remove(name);
-            await ctx.RespondAsync($"Meme **{name}** successfully deleted!");
+            await ctx.RespondAsync($"Meme {Formatter.Bold(name)} successfully deleted!");
         }
         #endregion
 
@@ -141,7 +141,7 @@ namespace TheGodfatherBot.Modules.Messages
                 s += $"**{keys[i]}** : {_memes[keys[i]]}\n";
 
             await ctx.RespondAsync("", embed: new DiscordEmbedBuilder() {
-                Title = $"Available memes (page {page}/{_memes.Count / 10 + 1}) :",
+                Title = $"Available memes (page {Formatter.Bold(page.ToString())}/{_memes.Count / 10 + 1}) :",
                 Description = s,
                 Color = DiscordColor.Green
             });
