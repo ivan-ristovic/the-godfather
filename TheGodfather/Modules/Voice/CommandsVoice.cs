@@ -42,7 +42,7 @@ namespace TheGodfatherBot.Modules.Voice
 
             vnc = await vnext.ConnectAsync(c);
 
-            await ctx.RespondAsync($"Connected to **{c.Name}**.");
+            await ctx.RespondAsync($"Connected to {Formatter.Bold(c.Name)}.");
         }
         #endregion
 
@@ -80,13 +80,13 @@ namespace TheGodfatherBot.Modules.Voice
                 throw new CommandFailedException("Not connected in this guild.");
 
             if (!File.Exists(filename))
-                throw new CommandFailedException($"File **{filename}** does not exist.", new FileNotFoundException());
+                throw new CommandFailedException($"File {Formatter.InlineCode(filename)} does not exist.", new FileNotFoundException());
 
             while (vnc.IsPlaying)
                 await vnc.WaitForPlaybackFinishAsync();
 
             Exception exc = null;
-            await ctx.Message.RespondAsync($"Playing `{filename}`.");
+            await ctx.Message.RespondAsync($"Playing {Formatter.InlineCode(filename)}.");
             await vnc.SendSpeakingAsync(true);
             try {
                 var ffmpeg_inf = new ProcessStartInfo {
