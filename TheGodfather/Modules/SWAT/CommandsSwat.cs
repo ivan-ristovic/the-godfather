@@ -149,7 +149,7 @@ namespace TheGodfatherBot.Modules.SWAT
                                         [Description("Timeout.")] int timeout = 200)
             {
                 _checktimeout = timeout;
-                await ctx.RespondAsync("Timeout changed to: " + _checktimeout);
+                await ctx.RespondAsync("Timeout changed to: " + Formatter.Bold(_checktimeout.ToString()));
             }
             #endregion
         }
@@ -167,7 +167,7 @@ namespace TheGodfatherBot.Modules.SWAT
                 var split = server.Value.Split(':');
                 var info = QueryIP(ctx, split[0], int.Parse(split[1]));
                 if (info != null)
-                    embed.AddField(info[0], $"IP: {split[0]}:{split[1]}\nPlayers: {info[1] + " / " + info[2]}");
+                    embed.AddField(info[0], $"IP: {split[0]}:{split[1]}\nPlayers: {Formatter.Bold(info[1] + " / " + info[2])}");
                 else
                     embed.AddField(server.Key, $"IP: {split[0]}:{split[1]}\nPlayers: Offline");
             }
