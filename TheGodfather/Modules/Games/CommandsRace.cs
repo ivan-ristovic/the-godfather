@@ -42,13 +42,14 @@ namespace TheGodfatherBot.Modules.Games
                 throw new Exception("Race already in progress!");
 
             _animals.TryAdd(ctx.Channel.Id, new ConcurrentBag<string> {
-                    ":dog:", ":cat:", ":mouse:", ":hamster:", ":rabbit:", ":bear:", ":pig:", ":cow:", ":koala:", ":tiger:"
-                });
+                ":dog:", ":cat:", ":mouse:", ":hamster:", ":rabbit:",
+                ":bear:", ":pig:", ":cow:", ":koala:", ":tiger:"
+            });
             _participants.TryAdd(ctx.Channel.Id, new ConcurrentQueue<ulong>());
             _emojis.TryAdd(ctx.Channel.Id, new ConcurrentDictionary<ulong, string>());
             _started.TryAdd(ctx.Channel.Id, false);
 
-            await ctx.RespondAsync("Race will start in 30s or when there are 10 participants. Type ``!race join`` to join the race.");
+            await ctx.RespondAsync("Race will start in 30s or when there are 10 participants. Type " + Formatter.InlineCode("!race join") + " to join the race.");
             await Task.Delay(30000);
 
             if (_participants[ctx.Channel.Id].Count > 1)
