@@ -122,6 +122,7 @@ namespace TheGodfatherBot
             _client.Heartbeated += Client_Heartbeated;
             _client.MessageCreated += Client_MessageCreated;
             _client.MessageReactionAdded += Client_ReactToMessage;
+            _client.MessageUpdated += Client_MessageUpdated;
             _client.Ready += Client_Ready;
 
             // Windows 7 specific
@@ -336,6 +337,36 @@ namespace TheGodfatherBot
         {
             if (new Random().Next(10) == 0)
                 await e.Message.CreateReactionAsync(e.Emoji);
+        }
+        
+        private async Task Client_MessageUpdated(MessageUpdateEventArgs e)
+        {
+            // Check if message contains filter
+            if (Modules.Messages.CommandsFilter.ContainsFilter(e.Guild.Id, e.Message.Content)) {
+                try {
+                    await e.Channel.DeleteMessageAsync(e.Message);
+                    _client.DebugLogger.LogMessage(
+                        LogLevel.Info,
+                        "TheGodfather",
+                        $"Filter triggered in edit of a message: '{e.Message.Content}'\n" +
+                        $" User: {e.Message.Author.ToString()}\n" +
+                        $" Location: '{e.Guild.Name}' ({e.Guild.Id}) ; {e.Channel.ToString()}"
+                        , DateTime.Now
+                    );
+                } catch (UnauthorizedException) {
+                    _client.DebugLogger.LogMessage(
+                        LogLevel.Warning,
+                        "TheGodfather",
+                        $"Filter triggered in edited message but missing permissions to delete!\n" +
+                        $" Message: '{e.Message.Content}'\n" +
+                        $" User: {e.Message.Author.ToString()}\n" +
+                        $" Location: '{e.Guild.Name}' ({e.Guild.Id}) ; {e.Channel.ToString()}"
+                        , DateTime.Now
+                    );
+                    await e.Channel.SendMessageAsync("The edited message contains the filtered word but I do not have permissions to delete it.");
+                }
+                await e.Channel.SendMessageAsync($"Nice try, {e.Author.Mention}! But I see throught it!");
+            }
         }
 
         private async Task Client_Ready(ReadyEventArgs e)
