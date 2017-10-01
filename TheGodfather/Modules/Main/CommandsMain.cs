@@ -44,8 +44,7 @@ namespace TheGodfatherBot.Modules.Main
             );
 
             if (msg != null) {
-                var rnd = new Random();
-                switch (rnd.Next(0, 5)) {
+                switch (new Random().Next(0, 5)) {
                     case 0: await ctx.RespondAsync($"I'm fine, thank you!"); break;
                     case 1: await ctx.RespondAsync($"Up and running, thanks for asking!"); break;
                     case 2: await ctx.RespondAsync($"Doing fine, thanks!"); break;
@@ -72,7 +71,7 @@ namespace TheGodfatherBot.Modules.Main
                 await ctx.RespondAsync(invites.ElementAt(0).ToString());
             else {
                 var invite = await ctx.Channel.CreateInviteAsync(max_age: 3600, temporary: true);
-                await ctx.RespondAsync("This invite will expire in one hour!\n" + invite.ToString());
+                await ctx.RespondAsync(invite.ToString() + Formatter.Italic("\n\nThis invite will expire in one hour!\n"));
             }
         }
         #endregion
@@ -137,12 +136,12 @@ namespace TheGodfatherBot.Modules.Main
                                 [RemainingText, Description("What to repeat.")] string s = null)
         {
             if (time == 0 || string.IsNullOrWhiteSpace(s))
-                throw new InvalidCommandUsageException("Usage: repeat <seconds> <text>");
+                throw new InvalidCommandUsageException("Missing time or repeat string.");
 
             if (time < 0 || time > 604800)
                 throw new CommandFailedException("Time cannot be less than 0 or greater than 1 week.", new ArgumentOutOfRangeException());
 
-            await ctx.RespondAsync($"I will remind you to: \"{s}\" in **{time}** seconds.");
+            await ctx.RespondAsync($"I will remind you to: \"{s}\" in {Formatter.Bold(time.ToString())} seconds.");
             await Task.Delay(time * 1000);
             await ctx.RespondAsync($"I was told to remind you to: \"{s}\".");
         }
@@ -158,7 +157,7 @@ namespace TheGodfatherBot.Modules.Main
                 throw new InvalidCommandUsageException("Text missing.");
             
             await ctx.RespondAsync("Are you okay with your user and guild info being sent for further inspection?" +
-                "\n\n*(Please either respond with 'yes' or wait 5 seconds for the prompt to time out)*");
+                Formatter.Italic("\n\n(Please either respond with 'yes' or wait 5 seconds for the prompt to time out)"));
             var interactivity = ctx.Client.GetInteractivityModule();
             var msg = await interactivity.WaitForMessageAsync(
                 x => x.Author.Id == ctx.User.Id && x.Channel.Id == ctx.Channel.Id && x.Content.ToLower() == "yes", 
@@ -210,28 +209,29 @@ namespace TheGodfatherBot.Modules.Main
             string s = "";
             foreach (char c in text) {
                 if (c >= 'a' && c <= 'z') {
-                    s += $":regional_indicator_{c}:";
+                    s += DiscordEmoji.FromName(ctx.Client, $":regional_indicator_{c}:");
                 } else if (char.IsDigit(c)) {
                     switch (c) {
-                        case '0': s += ":zero:"; break;
-                        case '1': s += ":one:"; break;
-                        case '2': s += ":two:"; break;
-                        case '3': s += ":three:"; break;
-                        case '4': s += ":four:"; break;
-                        case '5': s += ":five:"; break;
-                        case '6': s += ":six:"; break;
-                        case '7': s += ":seven:"; break;
-                        case '8': s += ":eight:"; break;
-                        case '9': s += ":nine:"; break;
+                        case '0': s += DiscordEmoji.FromName(ctx.Client, ":zero:");     break;
+                        case '1': s += DiscordEmoji.FromName(ctx.Client, ":one:");      break;
+                        case '2': s += DiscordEmoji.FromName(ctx.Client, ":two:");      break;
+                        case '3': s += DiscordEmoji.FromName(ctx.Client, ":three:");    break;
+                        case '4': s += DiscordEmoji.FromName(ctx.Client, ":four:");     break;
+                        case '5': s += DiscordEmoji.FromName(ctx.Client, ":five:");     break;
+                        case '6': s += DiscordEmoji.FromName(ctx.Client, ":six:");      break;
+                        case '7': s += DiscordEmoji.FromName(ctx.Client, ":seven:");    break;
+                        case '8': s += DiscordEmoji.FromName(ctx.Client, ":eight:");    break;
+                        case '9': s += DiscordEmoji.FromName(ctx.Client, ":nine:");     break;
                     }
                 } else if (c == ' ') {
-                    s += ":octagonal_sign:";
+                    s += DiscordEmoji.FromName(ctx.Client, ":large_blue_circle:");
                 } else if (c == '?')
-                    s += ":question: ";
+                    s += DiscordEmoji.FromName(ctx.Client, ":question:");
                 else if (c == '!')
-                    s += ":exclamation:";
+                    s += DiscordEmoji.FromName(ctx.Client, ":exclamation:");
                 else
                     s += c;
+                s += " ";
             }
 
             await ctx.RespondAsync(s);
