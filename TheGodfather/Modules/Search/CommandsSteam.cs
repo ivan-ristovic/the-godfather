@@ -38,7 +38,7 @@ namespace TheGodfatherBot.Modules.Search
         {
             if (string.IsNullOrWhiteSpace(id))
                 throw new InvalidCommandUsageException("ID missing.");
-            
+
             SteamUser user = null;
             try {
                 user = await SteamCommunity.GetUserAsync(_steam, new SteamID(id));
@@ -50,7 +50,7 @@ namespace TheGodfatherBot.Modules.Search
                 await ctx.RespondAsync("No users found.");
                 return;
             }
-            
+
             await ctx.RespondAsync(user.PlayerInfo.ProfileURL, embed: EmbedSteamResult(user.PlayerInfo));
         }
         #endregion
@@ -71,11 +71,14 @@ namespace TheGodfatherBot.Modules.Search
                 return em;
             }
 
+            if (info.PersonaState != PersonaState.Offline)
+                em.AddField("Status:", info.PersonaState.ToString(), inline: true);
+            else
+                em.AddField("Last seen:", info.LastLogOff.ToUniversalTime().ToString(), inline: true);
+
             if (!string.IsNullOrWhiteSpace(info.GameID))
                 em.AddField("Playing: ", $"{info.GameExtraInfo}");
 
-            if (info.PersonaState == PersonaState.Offline)
-                em.AddField("Last seen:" , info.LastLogOff.ToUniversalTime().ToString(), inline: true);
             //em.AddField("Game activity", $"{model.HoursPlayedLastTwoWeeks} hours past 2 weeks.", inline: true);
             em.AddField("Member since", info.DateTimeCreated.ToUniversalTime().ToString(), inline: true);
             /*
