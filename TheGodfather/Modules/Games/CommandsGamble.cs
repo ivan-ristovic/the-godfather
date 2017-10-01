@@ -22,7 +22,7 @@ namespace TheGodfatherBot.Modules.Games
         [Aliases("coin", "flip")]
         public async Task Coinflip(CommandContext ctx)
         {
-            await ctx.RespondAsync(ctx.User.Mention + " flipped **" + (new Random().Next(2) == 0 ? "Heads" : "Tails") + "** !");
+            await ctx.RespondAsync(ctx.User.Mention + " flipped " + Formatter.Bold(new Random().Next(2) == 0 ? "Heads" : "Tails") + "!");
         }
         #endregion
 
@@ -32,7 +32,7 @@ namespace TheGodfatherBot.Modules.Games
         [Aliases("dice")]
         public async Task Roll(CommandContext ctx)
         {
-            await ctx.RespondAsync($":game_die: {ctx.User.Mention} rolled a **{new Random().Next(1, 7)}**!");
+            await ctx.RespondAsync($"{DiscordEmoji.FromName(ctx.Client, ":game_die:")} {ctx.User.Mention} rolled a {Formatter.Bold(new Random().Next(1, 7).ToString())}!");
         }
         #endregion
 
@@ -57,7 +57,7 @@ namespace TheGodfatherBot.Modules.Games
                 Description = MakeStringFromResult(slot_res),
                 Color = DiscordColor.Yellow
             };
-            embed.AddField("Result", $"You won **{won}** credits!");
+            embed.AddField("Result", $"You won {Formatter.Bold(won.ToString())} credits!");
 
             await ctx.RespondAsync("", embed: embed);
 

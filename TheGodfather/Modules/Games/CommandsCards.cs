@@ -31,7 +31,7 @@ namespace TheGodfatherBot.Modules.Games
                                   [Description("Ammount.")] int ammount = 5)
         {
             if (_deck == null || _deck.Count == 0)
-                throw new CommandFailedException("No deck to deal from. Use ``!deck new``");
+                throw new CommandFailedException($"No deck to deal from. Use {Formatter.InlineCode("!deck new")}");
 
             if (ammount <= 0 || ammount >= 10 || _deck.Count < ammount)
                 throw new InvalidCommandUsageException("Cannot draw that ammount of cards...", new ArgumentException());
