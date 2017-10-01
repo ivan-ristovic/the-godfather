@@ -113,7 +113,7 @@ namespace TheGodfatherBot.Modules.Messages
                 await ctx.RespondAsync("Alias already exists.");
             } else {
                 _aliases[ctx.Guild.Id].Add(alias, response);
-                await ctx.RespondAsync($"Alias **{alias}** successfully added.");
+                await ctx.RespondAsync($"Alias {Formatter.Bold(alias)} successfully added.");
             }
         }
         #endregion
@@ -133,7 +133,7 @@ namespace TheGodfatherBot.Modules.Messages
                 throw new CommandFailedException("No aliases recorded in this guild.", new KeyNotFoundException());
 
             _aliases[ctx.Guild.Id].Remove(alias);
-            await ctx.RespondAsync($"Alias **{alias}** successfully removed.");
+            await ctx.RespondAsync($"Alias {Formatter.Bold(alias)} successfully removed.");
         }
         #endregion
 
@@ -170,7 +170,7 @@ namespace TheGodfatherBot.Modules.Messages
                 s += $"**{keys[i]}** : {_aliases[ctx.Guild.Id][keys[i]]}\n";
 
             await ctx.RespondAsync("", embed: new DiscordEmbedBuilder() {
-                Title = $"Available aliases (page {page}/{_aliases[ctx.Guild.Id].Count / 10 + 1}) :",
+                Title = $"Available aliases (page {Formatter.Bold(page.ToString())}/{_aliases[ctx.Guild.Id].Count / 10 + 1}) :",
                 Description = s,
                 Color = DiscordColor.Green
             });
