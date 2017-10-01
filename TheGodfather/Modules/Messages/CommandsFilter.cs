@@ -105,10 +105,10 @@ namespace TheGodfatherBot.Modules.Messages
 
             filter = filter.ToLower();
             if (_filters[ctx.Guild.Id].Contains(filter)) {
-                await ctx.RespondAsync($"Filter **{filter}** already exists.");
+                await ctx.RespondAsync($"Filter {Formatter.Bold(filter)} already exists.");
             } else {
                 _filters[ctx.Guild.Id].Add(filter);
-                await ctx.RespondAsync($"Filter **{filter}** successfully added.");
+                await ctx.RespondAsync($"Filter {Formatter.Bold(filter)} successfully added.");
             }
         }
         #endregion
@@ -128,7 +128,7 @@ namespace TheGodfatherBot.Modules.Messages
                 throw new CommandFailedException("No aliases recorded in this guild.", new KeyNotFoundException());
 
             _filters[ctx.Guild.Id].Remove(filter);
-            await ctx.RespondAsync($"Filter **{filter}** successfully removed.");
+            await ctx.RespondAsync($"Filter {Formatter.Bold(filter)} successfully removed.");
         }
         #endregion
         
@@ -165,7 +165,7 @@ namespace TheGodfatherBot.Modules.Messages
                 s += $"**{filters[i]}**\n";
 
             await ctx.RespondAsync("", embed: new DiscordEmbedBuilder() {
-                Title = $"Available filters (page {page}/{_filters[ctx.Guild.Id].Count / 10 + 1}) :",
+                Title = $"Available filters (page {Formatter.Bold(page.ToString())}/{_filters[ctx.Guild.Id].Count / 10 + 1}) :",
                 Description = s,
                 Color = DiscordColor.Green
             });
