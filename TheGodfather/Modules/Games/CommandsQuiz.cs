@@ -67,7 +67,7 @@ namespace TheGodfatherBot.Modules.Games
 
                 if (t == QuizType.Countries) {
                     try {
-                        await ctx.RespondWithFileAsync(new FileStream(question, FileMode.Open), content: $"Question {i}:");
+                        await ctx.RespondWithFileAsync(new FileStream(question, FileMode.Open), content: $"Question {Formatter.Bold(i.ToString())}:");
                     } catch (IOException e) {
                         throw e;
                     }
@@ -81,7 +81,7 @@ namespace TheGodfatherBot.Modules.Games
                     TimeSpan.FromSeconds(20)
                 );
                 if (msg == null) {
-                    await ctx.RespondAsync($"Time is out! The correct answer was: **{_countries[question]}**");
+                    await ctx.RespondAsync($"Time is out! The correct answer was: {Formatter.Bold(_countries[question])}");
                 } else {
                     await ctx.RespondAsync($"GG {msg.User.Mention}, you got it right!");
                     if (participants.ContainsKey(msg.User.Id))
