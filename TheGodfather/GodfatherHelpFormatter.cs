@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
+using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Converters;
 using DSharpPlus.CommandsNext.Entities;
@@ -66,14 +67,14 @@ namespace TheGodfatherBot
 
                 foreach (var arg in arguments) {
 
-                    sb.Append($"**{arg.Name}**");
+                    sb.Append($"{Formatter.Bold(arg.Name)}");
 
                     if (arg.IsOptional && arg.DefaultValue != null)
                         sb.Append(" (optional) ");
 
                     sb.Append($" [type: {arg.Type.ToUserFriendlyName()}] Description: ");
 
-                    sb.Append(string.IsNullOrWhiteSpace(arg.Description) ? "No description provided." : $"**{arg.Description}**");
+                    sb.Append(string.IsNullOrWhiteSpace(arg.Description) ? "No description provided." : Formatter.Bold(arg.Description));
 
                     if (arg.IsOptional && arg.DefaultValue != null)
                         sb.Append(" Default value: ").Append(arg.DefaultValue);
