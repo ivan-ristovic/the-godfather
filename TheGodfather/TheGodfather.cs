@@ -385,6 +385,8 @@ namespace TheGodfatherBot
             
             if (e.Exception is CommandNotFoundException)
                 embed.Description = $"{emoji} The specified command does not exist.";
+            else if (e.Exception is NotSupportedException)
+                embed.Description = $"{emoji} That command group is not executable without subcommands.";
             else if (e.Exception is Exceptions.InvalidCommandUsageException)
                 embed.Description = $"{emoji} Invalid usage! {ex.Message}";
             else if (e.Exception is ArgumentException)
