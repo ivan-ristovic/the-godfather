@@ -208,8 +208,7 @@ namespace TheGodfatherBot
         #region CLIENT_EVENTS
         private async Task Client_Heartbeated(HeartbeatEventArgs e)
         {
-            var rnd = new Random();
-            await _client.UpdateStatusAsync(new Game(_statuses[rnd.Next(_statuses.Count)]) { StreamType = GameStreamType.NoStream });
+            await _client.UpdateStatusAsync(new Game(_statuses[new Random().Next(_statuses.Count)]) { StreamType = GameStreamType.NoStream });
         }
 
         private Task Client_Error(ClientErrorEventArgs e)
@@ -237,7 +236,7 @@ namespace TheGodfatherBot
                    $" Guild: '{e.Guild.Name}' ({e.Guild.Id})",
                    DateTime.Now);
 
-            await e.Guild.GetDefaultChannel().SendMessageAsync($"Welcome to {e.Guild.Name}, {e.Member.Mention}!");
+            await e.Guild.GetDefaultChannel().SendMessageAsync($"Welcome to {Formatter.Bold(e.Guild.Name)}, {e.Member.Mention}!");
         }
 
         private async Task Client_GuildMemberRemove(GuildMemberRemoveEventArgs e)
@@ -249,7 +248,7 @@ namespace TheGodfatherBot
                 $" Guild: '{e.Guild.Name}' ({e.Guild.Id})", 
                 DateTime.Now);
 
-            await e.Guild.GetDefaultChannel().SendMessageAsync($"{e.Member?.Username ?? "<unknown>"} left the server. Bye!");
+            await e.Guild.GetDefaultChannel().SendMessageAsync($"{Formatter.Bold(e.Member?.Username ?? "<unknown>")} left the server. Bye!");
         }
 
         private void Client_LogMessage(object sender, DebugLogMessageEventArgs e)
@@ -327,7 +326,7 @@ namespace TheGodfatherBot
 
         private async Task Client_ReactToMessage(MessageReactionAddEventArgs e)
         {
-            if (new Random().Next(5) == 0)
+            if (new Random().Next(10) == 0)
                 await e.Message.CreateReactionAsync(e.Emoji);
         }
 
