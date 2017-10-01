@@ -39,19 +39,8 @@ namespace TheGodfatherBot
         {
             _client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", "Shutting down by demand...", DateTime.Now);
 
-            try {
-                Modules.Messages.CommandsAlias.SaveAliases(_client.DebugLogger);
-                Modules.Messages.CommandsFilter.SaveFilters(_client.DebugLogger);
-                Modules.Messages.CommandsMemes.SaveMemes(_client.DebugLogger);
-                Modules.Messages.CommandsRanking.SaveRanks(_client.DebugLogger);
-                Modules.SWAT.CommandsSwat.SaveServers(_client.DebugLogger);
-                Modules.Messages.CommandsInsult.SaveInsults(_client.DebugLogger);
-            } catch {
-
-            }
-
-            _client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", "Saved all, closing application...", DateTime.Now);
-
+            SaveData();
+            
             if (_logstream != null)
                 _logstream.Close();
             _client.DisconnectAsync();
@@ -202,6 +191,23 @@ namespace TheGodfatherBot
             Modules.SWAT.CommandsSwat.LoadServers(_client.DebugLogger);
             Modules.Messages.CommandsInsult.LoadInsults(_client.DebugLogger);
         }
+
+        private void SaveData()
+        {
+            try {
+                Modules.Messages.CommandsAlias.SaveAliases(_client.DebugLogger);
+                Modules.Messages.CommandsFilter.SaveFilters(_client.DebugLogger);
+                Modules.Messages.CommandsMemes.SaveMemes(_client.DebugLogger);
+                Modules.Messages.CommandsRanking.SaveRanks(_client.DebugLogger);
+                Modules.SWAT.CommandsSwat.SaveServers(_client.DebugLogger);
+                Modules.Messages.CommandsInsult.SaveInsults(_client.DebugLogger);
+            } catch {
+                _client.DebugLogger.LogMessage(LogLevel.Error, "TheGodfather", "Failed to save data.", DateTime.Now);
+                return;
+            }
+
+            _client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", "Data saved.", DateTime.Now);
+        }
         #endregion
 
 
@@ -209,6 +215,7 @@ namespace TheGodfatherBot
         private async Task Client_Heartbeated(HeartbeatEventArgs e)
         {
             await _client.UpdateStatusAsync(new Game(_statuses[new Random().Next(_statuses.Count)]) { StreamType = GameStreamType.NoStream });
+            SaveData();
         }
 
         private Task Client_Error(ClientErrorEventArgs e)
