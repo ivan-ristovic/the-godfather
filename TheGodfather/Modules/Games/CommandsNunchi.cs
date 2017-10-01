@@ -44,7 +44,7 @@ namespace TheGodfatherBot.Modules.Games
             _participants.TryAdd(ctx.Channel.Id, new List<ulong>());
             _started.TryAdd(ctx.Channel.Id, false);
 
-            await ctx.RespondAsync("Nunchi will start in 30s or when there are 10 participants. Type ``!nunchi join`` to join the game.");
+            await ctx.RespondAsync("Nunchi will start in 30s or when there are 10 participants. Type " + Formatter.InlineCode("!nunchi join") + " to join the game.");
             await Task.Delay(30000);
 
             if (_participants[ctx.Channel.Id].Count > 1)
