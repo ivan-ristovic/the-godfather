@@ -38,10 +38,18 @@ namespace TheGodfatherBot.Modules.Games
             while (hp1 > 0 && hp2 > 0) {
                 int damage = rnd.Next(20, 40);
                 if (rnd.Next() % 2 == 0) {
-                    m = await m.ModifyAsync(m.Content + $"\n**{ctx.User.Username}** ({hp1}) hits **{u.Username}** ({hp2}) with a {weapons[rnd.Next(0, weapons.Length)]} for **{damage}** damage!");
+                    m = await m.ModifyAsync(
+                        m.Content + $"\n{Formatter.Bold(ctx.User.Username)} ({hp1}) " +
+                        $"hits {Formatter.Bold(u.Username)} ({hp2}) with a {weapons[rnd.Next(0, weapons.Length)]} " +
+                        $"for {Formatter.Bold(damage.ToString())} damage!"
+                    );
                     hp2 -= damage;
                 } else {
-                    m = await m.ModifyAsync(m.Content + $"\n**{u.Username}** ({hp2}) hits **{ctx.User.Username}** ({hp1}) with a {weapons[rnd.Next(0, weapons.Length)]} for **{damage}** damage!");
+                    m = await m.ModifyAsync(
+                        m.Content + $"\n{Formatter.Bold(u.Username)} ({hp2}) " +
+                        $"hits {Formatter.Bold(ctx.User.Username)} ({hp1}) with a {weapons[rnd.Next(0, weapons.Length)]} " +
+                        $"for {Formatter.Bold(damage.ToString())} damage!"
+                    );
                     hp1 -= damage;
                 }
                 await Task.Delay(2000);
@@ -74,7 +82,7 @@ namespace TheGodfatherBot.Modules.Games
                 await ctx.RespondAsync("Ok, nvm...");
                 return;
             } else {
-                await dm.SendMessageAsync("Alright! The word is: " + msg.Message.Content);
+                await dm.SendMessageAsync("Alright! The word is: " + Formatter.Bold(msg.Message.Content));
             }
 
             int lives = 7;
@@ -107,7 +115,7 @@ namespace TheGodfatherBot.Modules.Games
                 }
                 await DrawHangman(ctx, guess, lives);
             }
-            await ctx.RespondAsync("Game over! The word was : " + word);
+            await ctx.RespondAsync("Game over! The word was : " + Formatter.Bold(word));
         }
 
         #region HELPER_FUNCTIONS
