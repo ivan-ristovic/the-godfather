@@ -283,27 +283,6 @@ namespace TheGodfatherBot
                 return;
             }
 
-            Modules.Messages.CommandsRanking.UpdateMessageCount(e.Channel, e.Author);
-
-            // React to random message
-            var r = new Random();
-            if (e.Guild.Emojis.Count > 0 && r.Next(10) == 0)
-                await e.Message.CreateReactionAsync(e.Guild.Emojis.ElementAt(r.Next(e.Guild.Emojis.Count)));
-
-            // Check if message has an alias
-            var response = Modules.Messages.CommandsAlias.FindAlias(e.Guild.Id, e.Message.Content);
-            if (response != null) {
-                _client.DebugLogger.LogMessage(
-                    LogLevel.Info,
-                    "TheGodfather",
-                    $"Alias triggered: {e.Message.Content}\n" +
-                    $" User: {e.Message.Author.ToString()}\n" +
-                    $" Location: '{e.Guild.Name}' ({e.Guild.Id}) ; {e.Channel.ToString()}"
-                    , DateTime.Now
-                );
-                await e.Channel.SendMessageAsync(response);
-            }
-
             // Check if message contains filter
             if (Modules.Messages.CommandsFilter.ContainsFilter(e.Guild.Id, e.Message.Content)) {
                 try {
@@ -328,6 +307,28 @@ namespace TheGodfatherBot
                     );
                     await e.Channel.SendMessageAsync("The message contains the filtered word but I do not have permissions to delete it.");
                 }
+                return;
+            }
+
+            Modules.Messages.CommandsRanking.UpdateMessageCount(e.Channel, e.Author);
+
+            // React to random message
+            var r = new Random();
+            if (e.Guild.Emojis.Count > 0 && r.Next(10) == 0)
+                await e.Message.CreateReactionAsync(e.Guild.Emojis.ElementAt(r.Next(e.Guild.Emojis.Count)));
+
+            // Check if message has an alias
+            var response = Modules.Messages.CommandsAlias.FindAlias(e.Guild.Id, e.Message.Content);
+            if (response != null) {
+                _client.DebugLogger.LogMessage(
+                    LogLevel.Info,
+                    "TheGodfather",
+                    $"Alias triggered: {e.Message.Content}\n" +
+                    $" User: {e.Message.Author.ToString()}\n" +
+                    $" Location: '{e.Guild.Name}' ({e.Guild.Id}) ; {e.Channel.ToString()}"
+                    , DateTime.Now
+                );
+                await e.Channel.SendMessageAsync(response);
             }
         }
 
