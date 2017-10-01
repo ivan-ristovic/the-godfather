@@ -185,16 +185,31 @@ namespace TheGodfatherBot
 
         private void LoadData()
         {
-            Modules.Messages.CommandsAlias.LoadAliases(_client.DebugLogger);
-            Modules.Messages.CommandsFilter.LoadFilters(_client.DebugLogger);
-            Modules.Messages.CommandsMemes.LoadMemes(_client.DebugLogger);
-            Modules.Messages.CommandsRanking.LoadRanks(_client.DebugLogger);
-            Modules.SWAT.CommandsSwat.LoadServers(_client.DebugLogger);
-            Modules.Messages.CommandsInsult.LoadInsults(_client.DebugLogger);
+            _client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", "Loading data...", DateTime.Now);
+
+            Exception exc = null;
+            try {
+                Modules.Messages.CommandsAlias.LoadAliases(_client.DebugLogger);
+                Modules.Messages.CommandsFilter.LoadFilters(_client.DebugLogger);
+                Modules.Messages.CommandsMemes.LoadMemes(_client.DebugLogger);
+                Modules.Messages.CommandsRanking.LoadRanks(_client.DebugLogger);
+                Modules.SWAT.CommandsSwat.LoadServers(_client.DebugLogger);
+                Modules.Messages.CommandsInsult.LoadInsults(_client.DebugLogger);
+            } catch (Exception e) {
+                exc = e;
+            }
+
+            if (exc == null)
+                _client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", "Data loaded.", DateTime.Now);
+            else
+                _client.DebugLogger.LogMessage(LogLevel.Error, "TheGodfather", "Errors occured during data load.", DateTime.Now);
         }
 
         private void SaveData()
         {
+            _client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", "Saving data...", DateTime.Now);
+
+            Exception exc = null;
             try {
                 Modules.Messages.CommandsAlias.SaveAliases(_client.DebugLogger);
                 Modules.Messages.CommandsFilter.SaveFilters(_client.DebugLogger);
@@ -202,12 +217,15 @@ namespace TheGodfatherBot
                 Modules.Messages.CommandsRanking.SaveRanks(_client.DebugLogger);
                 Modules.SWAT.CommandsSwat.SaveServers(_client.DebugLogger);
                 Modules.Messages.CommandsInsult.SaveInsults(_client.DebugLogger);
-            } catch {
-                _client.DebugLogger.LogMessage(LogLevel.Error, "TheGodfather", "Failed to save data.", DateTime.Now);
-                return;
+            } catch (Exception e) {
+                exc = e;
             }
 
-            _client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", "Data saved.", DateTime.Now);
+            if (exc == null)
+                _client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", "Data saved.", DateTime.Now);
+            else
+                _client.DebugLogger.LogMessage(LogLevel.Error, "TheGodfather", "Errors occured during data save.", DateTime.Now);
+
         }
         #endregion
 
