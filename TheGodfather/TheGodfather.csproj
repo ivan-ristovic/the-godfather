@@ -146,9 +146,6 @@
     <Reference Include="Steam.Models, Version=3.0.3.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Steam.Models.3.0.3\lib\netstandard2.0\Steam.Models.dll</HintPath>
     </Reference>
-    <Reference Include="SteamSharp, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SteamSharp.1.0.1.0\lib\portable-net451+win81+wpa81\SteamSharp.dll</HintPath>
-    </Reference>
     <Reference Include="SteamWebAPI2, Version=4.0.2.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\SteamWebAPI2.4.0.2\lib\netstandard2.0\SteamWebAPI2.dll</HintPath>
     </Reference>

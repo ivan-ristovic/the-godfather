@@ -11,7 +11,15 @@ using DSharpPlus.Entities;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 
-using SteamSharp;
+//using SteamSharp;
+using SteamWebAPI2;
+using SteamWebAPI2.Models;
+using SteamWebAPI2.Utilities;
+using SteamWebAPI2.Exceptions;
+using SteamWebAPI2.Interfaces;
+using Steam.Models.SteamCommunity;
+using Steam.Models.SteamStore;
+using Steam.Models.SteamPlayer;
 #endregion
 
 
@@ -23,9 +31,7 @@ namespace TheGodfatherBot.Modules.Search
     public class CommandsSteam
     {
         #region PRIVATE_FIELDS
-        private SteamClient _steam = new SteamClient() {
-            Authenticator = SteamSharp.Authenticators.APIKeyAuthenticator.ForProtectedResource(TheGodfather.GetToken("Resources/steam.txt"))
-        };
+        private SteamUser _steam = new SteamUser(TheGodfather.GetToken("Resources/steam.txt"));
         #endregion
 
 
@@ -34,54 +40,46 @@ namespace TheGodfatherBot.Modules.Search
         [Description("Get Steam user information from ID.")]
         [Aliases("id")]
         public async Task SteamProfile(CommandContext ctx,
-                                      [Description("ID.")] string id = null)
+                                      [Description("ID.")] ulong id = 0)
         {
-            if (string.IsNullOrWhiteSpace(id))
-                throw new InvalidCommandUsageException("ID missing.");
+            var model = await _steam.GetCommunityProfileAsync(id);
+            if (model == null)
+                throw new CommandFailedException("No users found!");
 
-            SteamUser user = null;
-            try {
-                user = await SteamCommunity.GetUserAsync(_steam, new SteamID(id));
-            } catch (FormatException e) {
-                throw new CommandFailedException("Invalid ID format.", e);
-            }
+            var summary = await _steam.GetPlayerSummaryAsync(id);
 
-            if (user == null) {
-                await ctx.RespondAsync("No users found.");
-                return;
-            }
-
-            await ctx.RespondAsync(user.PlayerInfo.ProfileURL, embed: EmbedSteamResult(user.PlayerInfo));
+            await ctx.RespondAsync($"http://steamcommunity.com/id/{model.SteamID}/", embed: EmbedSteamResult(model, summary.Data));
         }
         #endregion
 
 
         #region HELPER_FUNCTIONS
-        private DiscordEmbed EmbedSteamResult(SteamCommunity.PlayerInfo info)
+        private DiscordEmbed EmbedSteamResult(SteamCommunityProfileModel model, PlayerSummaryModel summary)
         {
             var em = new DiscordEmbedBuilder() {
-                Title = info.PersonaName,
-                //Description = Regex.Replace(info., "<[^>]*>", ""),
-                ThumbnailUrl = info.AvatarMediumURL,
+                Title = summary.Nickname,
+                Description = Regex.Replace(model.Summary, "<[^>]*>", ""),
+                ThumbnailUrl = model.AvatarFull.ToString(),
                 Color = DiscordColor.Black
             };
 
-            if (info.CommunityVisibilityState != CommunityVisibilityState.Public) {
+            if (summary.ProfileVisibility != ProfileVisibility.Public) {
                 em.Description = "This profile is private.";
                 return em;
             }
 
-            if (info.PersonaState != PersonaState.Offline)
-                em.AddField("Status:", info.PersonaState.ToString(), inline: true);
+            em.AddField("Member since", summary.AccountCreatedDate.ToUniversalTime().ToString(), inline: true);
+
+            if (summary.UserStatus != Steam.Models.SteamCommunity.UserStatus.Offline)
+                em.AddField("Status:", summary.UserStatus.ToString(), inline: true);
             else
-                em.AddField("Last seen:", info.LastLogOff.ToUniversalTime().ToString(), inline: true);
+                em.AddField("Last seen:", summary.LastLoggedOffDate.ToUniversalTime().ToString(), inline: true);
 
-            if (!string.IsNullOrWhiteSpace(info.GameID))
-                em.AddField("Playing: ", $"{info.GameExtraInfo}");
+            if (summary.PlayingGameName != null)
+                em.AddField("Playing: ", $"{summary.PlayingGameName}");
 
-            //em.AddField("Game activity", $"{model.HoursPlayedLastTwoWeeks} hours past 2 weeks.", inline: true);
-            em.AddField("Member since", info.DateTimeCreated.ToUniversalTime().ToString(), inline: true);
-            /*
+            //em.AddField("Game activity", $"{model.HoursPlayedLastTwoWeeks.ToString()} hours past 2 weeks.", inline: true);
+            
             if (model.IsVacBanned) {
                 var bans = _steam.GetPlayerBansAsync(model.SteamID).Result.Data;
 
@@ -90,7 +88,7 @@ namespace TheGodfatherBot.Modules.Search
                     bancount += b.NumberOfVACBans;
 
                 em.AddField("VAC Status:", $"**{bancount}** ban(s) on record.", inline: true);
-            }*/
+            }
 
             return em;
         }
