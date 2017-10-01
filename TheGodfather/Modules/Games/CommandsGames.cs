@@ -199,7 +199,7 @@ namespace TheGodfatherBot.Modules.Games
             int moves = 0;
             while (moves < 9 && !TTTGameOver(board)) {
                 int field = 0;
-                var move = await interactivity.WaitForMessageAsync(
+                var t = interactivity.WaitForMessageAsync(
                     xm => {
                         if (xm.Channel.Id != ctx.Channel.Id) return false;
                         if (player1plays && (xm.Author.Id != ctx.User.Id)) return false;
@@ -215,7 +215,8 @@ namespace TheGodfatherBot.Modules.Games
                     },
                     TimeSpan.FromMinutes(1)
                 );
-                if (move == null || field == 0) {
+                t.Wait();
+                if (t.Result == null || field == 0) {
                     await ctx.RespondAsync("No reply, aborting...");
                     return;
                 }
