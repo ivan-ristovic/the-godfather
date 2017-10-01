@@ -27,7 +27,6 @@ namespace TheGodfatherBot.Modules.Messages
         #region STATIC_FUNCTIONS
         public static void LoadInsults(DebugLogger log)
         {
-            log.LogMessage(LogLevel.Info, "TheGodfather", "Loading insults...", DateTime.Now);
             if (File.Exists("Resources/insults.txt")) {
                 try {
                     var lines = File.ReadAllLines("Resources/insults.txt");
@@ -37,7 +36,7 @@ namespace TheGodfatherBot.Modules.Messages
                         _insults.Add(line);
                     }
                 } catch (Exception e) {
-                    log.LogMessage(LogLevel.Warning, "TheGodfather", "Exception occured, clearing insults. Details : " + e.ToString(), DateTime.Now);
+                    log.LogMessage(LogLevel.Error, "TheGodfather", "Insult loading error, clearing insults. Details : " + e.ToString(), DateTime.Now);
                     _insults.Clear();
                 }
             } else {
@@ -47,7 +46,6 @@ namespace TheGodfatherBot.Modules.Messages
 
         public static void SaveInsults(DebugLogger log)
         {
-            log.LogMessage(LogLevel.Info, "TheGodfather", "Saving insults...", DateTime.Now);
             try {
                 File.WriteAllLines("Resources/insults.txt", _insults);
             } catch (Exception e) {

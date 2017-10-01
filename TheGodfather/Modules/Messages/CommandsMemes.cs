@@ -27,7 +27,6 @@ namespace TheGodfatherBot.Modules.Messages
         #region STATIC_FUNCTIONS
         public static void LoadMemes(DebugLogger log)
         {
-            log.LogMessage(LogLevel.Info, "TheGodfather", "Loading memes...", DateTime.Now);
             if (File.Exists("Resources/memes.txt")) {
                 try {
                     var lines = File.ReadAllLines("Resources/memes.txt");
@@ -39,11 +38,8 @@ namespace TheGodfatherBot.Modules.Messages
                         if (!_memes.ContainsKey(name))
                             _memes.Add(name, values[1]);
                     }
-                } catch (ArgumentException e) {
-                    log.LogMessage(LogLevel.Warning, "TheGodfather", "Meme loading interrupted. Exception : " + e.ToString(), DateTime.Now);
                 } catch (Exception e) {
-                    log.LogMessage(LogLevel.Warning, "TheGodfather", "Exception occured. Details : " + e.ToString(), DateTime.Now);
-                    log.LogMessage(LogLevel.Warning, "TheGodfather", "Clearing memes...", DateTime.Now);
+                    log.LogMessage(LogLevel.Error, "TheGodfather", "Meme loading error, clearing memes. Details : " + e.ToString(), DateTime.Now);
                     _memes.Clear();
                 }
             } else {
@@ -53,7 +49,6 @@ namespace TheGodfatherBot.Modules.Messages
 
         public static void SaveMemes(DebugLogger log)
         {
-            log.LogMessage(LogLevel.Info, "TheGodfather", "Saving memes...", DateTime.Now);
             try {
                 List<string> memelist = new List<string>();
                 foreach (var entry in _memes)

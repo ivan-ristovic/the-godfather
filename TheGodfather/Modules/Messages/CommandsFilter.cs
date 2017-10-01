@@ -27,7 +27,6 @@ namespace TheGodfatherBot.Modules.Messages
         #region STATIC_FUNCTIONS
         public static void LoadFilters(DebugLogger log)
         {
-            log.LogMessage(LogLevel.Info, "TheGodfather", "Loading filters...", DateTime.Now);
             if (File.Exists("Resources/filters.txt")) {
                 try {
                     var lines = File.ReadAllLines("Resources/filters.txt");
@@ -40,11 +39,8 @@ namespace TheGodfatherBot.Modules.Messages
                             _filters.Add(gid, new List<string>());
                         _filters[gid].AddRange(values.Skip(1));
                     }
-                } catch (ArgumentException e) {
-                    log.LogMessage(LogLevel.Warning, "TheGodfather", "Filter loading interrupted. Exception : " + e.ToString(), DateTime.Now);
-                } catch (Exception e) {
-                    log.LogMessage(LogLevel.Warning, "TheGodfather", "Exception occured. Details : " + e.ToString(), DateTime.Now);
-                    log.LogMessage(LogLevel.Warning, "TheGodfather", "Clearing filters...", DateTime.Now);
+                } catch(Exception e) {
+                    log.LogMessage(LogLevel.Error, "TheGodfather", "Filter loading error, clearing filters. Details : " + e.ToString(), DateTime.Now);
                     _filters.Clear();
                 }
             } else {
@@ -54,7 +50,6 @@ namespace TheGodfatherBot.Modules.Messages
 
         public static void SaveFilters(DebugLogger log)
         {
-            log.LogMessage(LogLevel.Info, "TheGodfather", "Saving filters...", DateTime.Now);
             try {
                 List<string> filterlist = new List<string>();
 

@@ -42,7 +42,6 @@ namespace TheGodfatherBot.Modules.Messages
         #region STATIC_FUNCTIONS
         public static void LoadRanks(DebugLogger log)
         {
-            log.LogMessage(LogLevel.Info, "TheGodfather", "Loading ranks...", DateTime.Now);
             if (File.Exists("Resources/ranks.txt")) {
                 try {
                     var lines = File.ReadAllLines("Resources/ranks.txt");
@@ -54,7 +53,7 @@ namespace TheGodfatherBot.Modules.Messages
                             _msgcount.Add(ulong.Parse(values[0]), uint.Parse(values[1]));
                     }
                 } catch (Exception e) {
-                    log.LogMessage(LogLevel.Warning, "TheGodfather", "Exception occured, clearing ranks. Details : " + e.ToString(), DateTime.Now);
+                    log.LogMessage(LogLevel.Error, "TheGodfather", "Rank loading error, clearing rank. Details : " + e.ToString(), DateTime.Now);
                     _msgcount.Clear();
                 }
             } else {
@@ -64,7 +63,6 @@ namespace TheGodfatherBot.Modules.Messages
 
         public static void SaveRanks(DebugLogger log)
         {
-            log.LogMessage(LogLevel.Info, "TheGodfather", "Saving ranks...", DateTime.Now);
             try {
                 List<string> lines = new List<string>();
 

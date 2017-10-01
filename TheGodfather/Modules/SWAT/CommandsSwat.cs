@@ -31,8 +31,6 @@ namespace TheGodfatherBot.Modules.SWAT
         #region STATIC_FUNCTIONS
         public static void LoadServers(DebugLogger log)
         {
-            log.LogMessage(LogLevel.Info, "TheGodfather", "Loading SWAT servers...", DateTime.Now);
-
             string[] serverlist = {
                 "wm$46.251.251.9:10880:10881",
                 "myt$51.15.152.220:10480:10481",
@@ -57,18 +55,14 @@ namespace TheGodfatherBot.Modules.SWAT
                     var values = line.Split('$');
                     _serverlist.Add(values[0], values[1]);
                 }
-            } catch (ArgumentException e) {
-                log.LogMessage(LogLevel.Warning, "TheGodfather", "Serverlist loading interrupted. Exception : " + e.ToString(), DateTime.Now);
             } catch (Exception e) {
-                log.LogMessage(LogLevel.Warning, "TheGodfather", "Exception occured. Details : " + e.ToString(), DateTime.Now);
-                log.LogMessage(LogLevel.Warning, "TheGodfather", "Clearing serverlist...", DateTime.Now);
+                log.LogMessage(LogLevel.Error, "TheGodfather", "Serverlist loading error, clearing list. Details : " + e.ToString(), DateTime.Now);
                 _serverlist.Clear();
             }
         }
 
         public static void SaveServers(DebugLogger log)
         {
-            log.LogMessage(LogLevel.Info, "TheGodfather", "Saving servers...", DateTime.Now);
             try {
                 List<string> serverlist = new List<string>();
                 foreach (var entry in _serverlist)

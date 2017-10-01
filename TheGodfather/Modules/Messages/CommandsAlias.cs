@@ -27,7 +27,6 @@ namespace TheGodfatherBot.Modules.Messages
         #region STATIC_FUNCTIONS
         public static void LoadAliases(DebugLogger log)
         {
-            log.LogMessage(LogLevel.Info, "TheGodfather", "Loading aliases...", DateTime.Now);
             if (File.Exists("Resources/aliases.txt")) {
                 try {
                     var lines = File.ReadAllLines("Resources/aliases.txt");
@@ -40,11 +39,8 @@ namespace TheGodfatherBot.Modules.Messages
                             _aliases.Add(gid, new SortedDictionary<string, string>());
                         _aliases[gid].Add(values[1], values[2]);
                     }
-                } catch (ArgumentException e) {
-                    log.LogMessage(LogLevel.Warning, "TheGodfather", "Alias loading interrupted. Exception : " + e.ToString(), DateTime.Now);
                 } catch (Exception e) {
-                    log.LogMessage(LogLevel.Warning, "TheGodfather", "Exception occured. Details : " + e.ToString(), DateTime.Now);
-                    log.LogMessage(LogLevel.Warning, "TheGodfather", "Clearing aliases...", DateTime.Now);
+                    log.LogMessage(LogLevel.Error, "TheGodfather", "Alias loading error, clearing aliases. Details : " + e.ToString(), DateTime.Now);
                     _aliases.Clear();
                 }
             } else {
@@ -54,7 +50,6 @@ namespace TheGodfatherBot.Modules.Messages
 
         public static void SaveAliases(DebugLogger log)
         {
-            log.LogMessage(LogLevel.Info, "TheGodfather", "Saving aliases...", DateTime.Now);
             try {
                 List<string> aliaslist = new List<string>();
 
