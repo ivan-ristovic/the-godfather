@@ -180,7 +180,7 @@ namespace TheGodfatherBot
             _commands.CommandExecuted += Commands_CommandExecuted;
             _commands.CommandErrored += Commands_CommandErrored;
 
-            _commands.SetHelpFormatter<GodfatherHelpFormatter>();
+            _commands.SetHelpFormatter<HelpFormatter.GodfatherHelpFormatter>();
         }
 
         private void SetupInteractivity()
