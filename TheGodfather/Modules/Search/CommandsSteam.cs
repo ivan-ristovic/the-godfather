@@ -38,9 +38,13 @@ namespace TheGodfatherBot.Modules.Search
         {
             if (string.IsNullOrWhiteSpace(id))
                 throw new InvalidCommandUsageException("ID missing.");
-
-            // TODO check format exception
-            var user = await SteamCommunity.GetUserAsync(_steam, new SteamID(id));
+            
+            SteamUser user = null;
+            try {
+                user = await SteamCommunity.GetUserAsync(_steam, new SteamID(id));
+            } catch (FormatException e) {
+                throw new CommandFailedException("Invalid ID format.", e);
+            }
 
             if (user == null) {
                 await ctx.RespondAsync("No users found.");
