@@ -41,7 +41,10 @@ namespace TheGodfatherBot.Modules.Main
                 "Definitely not."
             };
 
-            await ctx.RespondAsync(answers[new Random().Next(answers.Length)]);
+            await ctx.RespondAsync("", embed: new DiscordEmbedBuilder() {
+                Title = DiscordEmoji.FromName(ctx.Client, ":8ball:").ToString(),
+                Description = answers[new Random().Next(answers.Length)]
+            });
         }
         #endregion
 
@@ -50,13 +53,13 @@ namespace TheGodfatherBot.Modules.Main
         [Description("!choose option1, option2, option3...")]
         [Aliases("select")]
         public async Task Choose(CommandContext ctx,
-                                [Description("Option list.")] string s = null)
+                                [Description("Option list (split with a comma).")] string s = null)
         {
             if (string.IsNullOrWhiteSpace(s))
                 throw new InvalidCommandUsageException("Missing list to choose from.");
 
             var options = s.Split(',');
-            await ctx.RespondAsync(options[new Random().Next(options.Length)]);
+            await ctx.RespondAsync(options[new Random().Next(options.Length)].Trim());
         }
         #endregion
 
@@ -70,10 +73,10 @@ namespace TheGodfatherBot.Modules.Main
             if (u == null)
                 throw new InvalidCommandUsageException("You didn't give me anyone to measure.");
 
-            string msg = "Size: 8";
+            string msg = "8";
             for (var size = u.Id % 40; size > 0; size--)
                 msg += "=";
-            await ctx.RespondAsync(msg + "D");
+            await ctx.RespondAsync("Size: " + Formatter.Bold(msg + "D"));
         }
         #endregion
 
