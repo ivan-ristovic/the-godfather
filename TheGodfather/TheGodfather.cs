@@ -6,6 +6,9 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
+using TheGodfatherBot.Exceptions;
+using TheGodfatherBot.Helpers;
+
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Interactivity;
@@ -96,20 +99,12 @@ namespace TheGodfatherBot
             }
         }
 
-        public static string GetToken(string filename)
-        {
-            if (!File.Exists(filename))
-                return null;
-            else
-                return File.ReadAllLines(filename)[0].Trim();
-        }
-
         private void SetupClient()
         {
             _client = new DiscordClient(new DiscordConfiguration {
                 LargeThreshold = 250,
                 AutoReconnect = true,
-                Token = GetToken("Resources/token.txt"),
+                Token = TokenReader.GetToken("Resources/token.txt"),
                 TokenType = TokenType.Bot,
                 UseInternalLogHandler = true,
                 LogLevel = LogLevel.Debug
@@ -464,11 +459,11 @@ namespace TheGodfatherBot
                 embed.Description = $"{emoji} The specified command does not exist.";
             else if (e.Exception is NotSupportedException)
                 embed.Description = $"{emoji} That command group is not executable without subcommands.";
-            else if (e.Exception is Exceptions.InvalidCommandUsageException)
+            else if (e.Exception is InvalidCommandUsageException)
                 embed.Description = $"{emoji} Invalid usage! {ex.Message}";
             else if (e.Exception is ArgumentException)
                 embed.Description = $"{emoji} Wrong argument format (please use **!help <command>**).";
-            else if (e.Exception is Exceptions.CommandFailedException)
+            else if (e.Exception is CommandFailedException)
                 embed.Description = $"{emoji} {ex.Message}";
             else if (ex is ChecksFailedException)
                 embed.Description = $"{emoji} Either you or I don't have the permissions required to execute this command.";

@@ -5,13 +5,13 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 using TheGodfatherBot.Exceptions;
+using TheGodfatherBot.Helpers;
 
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 
-//using SteamSharp;
 using SteamWebAPI2;
 using SteamWebAPI2.Models;
 using SteamWebAPI2.Utilities;
@@ -31,7 +31,7 @@ namespace TheGodfatherBot.Modules.Search
     public class CommandsSteam
     {
         #region PRIVATE_FIELDS
-        private SteamUser _steam = new SteamUser(TheGodfather.GetToken("Resources/steam.txt"));
+        private SteamUser _steam = new SteamUser(TokenReader.GetToken("Resources/steam.txt"));
         #endregion
 
 

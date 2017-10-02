@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using TheGodfatherBot.Exceptions;
+using TheGodfatherBot.Helpers;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -24,7 +25,7 @@ namespace TheGodfatherBot.Modules.Search
     public class CommandsGiphy
     {
         #region PRIVATE_FIELDS
-        private Giphy _giphy = new Giphy(TheGodfather.GetToken("Resources/giphy.txt"));
+        private Giphy _giphy = new Giphy(TokenReader.GetToken("Resources/giphy.txt"));
         #endregion
 
         

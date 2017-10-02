@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using TheGodfatherBot.Exceptions;
+using TheGodfatherBot.Helpers;
 
 using DSharpPlus;
 using DSharpPlus.Entities;
@@ -164,7 +165,7 @@ namespace TheGodfatherBot.Modules.Search
             */
 
             _yt = new YouTubeService(new BaseClientService.Initializer() {
-                ApiKey = TheGodfather.GetToken("Resources/youtube.txt"),
+                ApiKey = TokenReader.GetToken("Resources/youtube.txt"),
                 ApplicationName = "TheGodfather"
                 // HttpClientInitializer = credential
             });
