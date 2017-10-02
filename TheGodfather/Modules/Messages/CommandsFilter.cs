@@ -34,7 +34,7 @@ namespace TheGodfatherBot.Modules.Messages
                     foreach (string line in lines) {
                         if (line.Trim() == "" || line[0] == '#')
                             continue;
-                        var values = line.Split('$');
+                        var values = line.Split('%');
                         ulong gid = ulong.Parse(values[0]);
                         if (!_filters.ContainsKey(gid))
                             _filters.Add(gid, new List<Regex>());
@@ -56,8 +56,10 @@ namespace TheGodfatherBot.Modules.Messages
 
                 foreach (var guild_filter in _filters) {
                     string line = guild_filter.Key.ToString();
-                    foreach (var filter in guild_filter.Value)
-                        line += "$" + filter.ToString();
+                    foreach (var filter in guild_filter.Value) {
+                        var f = filter.ToString();
+                        line += "%" + f.Substring(1, f.Length - 2);
+                    }
                     filterlist.Add(line);
                 }
 
@@ -157,8 +159,10 @@ namespace TheGodfatherBot.Modules.Messages
             int starti = (page - 1) * 10;
             int endi = starti + 10 < _filters[ctx.Guild.Id].Count ? starti + 10 : _filters[ctx.Guild.Id].Count;
             var filters = _filters[ctx.Guild.Id].Take(page * 10).ToArray();
-            for (var i = starti; i < endi; i++)
-                s += $"**{filters[i]}**\n";
+            for (var i = starti; i < endi; i++) {
+                var filter = filters[i].ToString();
+                s += filter.Substring(1, filter.Length - 2) + "\n";
+            }
 
             await ctx.RespondAsync("", embed: new DiscordEmbedBuilder() {
                 Title = $"Available filters (page {page}/{_filters[ctx.Guild.Id].Count / 10 + 1}) :",
