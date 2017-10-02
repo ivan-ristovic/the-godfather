@@ -245,10 +245,10 @@ namespace TheGodfatherBot
             string prefix = _prefixes.ContainsKey(m.ChannelId) ? _prefixes[m.ChannelId] : Config.DefaultPrefix;
             int pos = m.Content.IndexOf(prefix);
             
-            if (pos == -1)
+            if (pos != 0)
                 return Task.FromResult(-1);
             else
-                return Task.FromResult(pos + prefix.Length);
+                return Task.FromResult(prefix.Length);
         }
         #endregion
 
