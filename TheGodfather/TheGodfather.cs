@@ -30,13 +30,19 @@ namespace TheGodfatherBot
         static InteractivityModule _interactivity { get; set; }
         static VoiceNextClient _voice { get; set; }
         public static List<string> _statuses = new List<string> { "!help" , "worldmafia.net", "worldmafia.net/discord" };
-        #endregion
-
-        #region PRIVATE_FIELDS
         private static StreamWriter _logstream = null;
         private static EventWaitHandle _logwritelock = null;
         #endregion
+
+        #region PRIVATE_FIELDS
+        private Dictionary<ulong, string> _prefixes = new Dictionary<ulong, string>();
+        #endregion
         
+
+        public TheGodfather()
+        {
+            _prefixes = new Dictionary<ulong, string>();
+        }
 
         ~TheGodfather()
         {
@@ -127,10 +133,10 @@ namespace TheGodfatherBot
         private void SetupCommands()
         {
             _commands = _client.UseCommandsNext(new CommandsNextConfiguration {
-                StringPrefix = "!",
                 EnableDms = false,
                 CaseSensitive = false,
-                EnableMentionPrefix = true
+                EnableMentionPrefix = true,
+                CustomPrefixPredicate = async m => await CheckMessageForPrefix(m)
             });
 
             _commands.SetHelpFormatter<HelpFormatter>();
@@ -222,6 +228,17 @@ namespace TheGodfatherBot
             else
                 _client.DebugLogger.LogMessage(LogLevel.Error, "TheGodfather", "Errors occured during data save.", DateTime.Now);
 
+        }
+
+        private Task<int> CheckMessageForPrefix(DiscordMessage m)
+        {
+            string prefix = _prefixes.ContainsKey(m.ChannelId) ? _prefixes[m.ChannelId] : "!";
+            int pos = m.Content.IndexOf(prefix);
+            
+            if (pos == -1)
+                return Task.FromResult(-1);
+            else
+                return Task.FromResult(pos + prefix.Length);
         }
         #endregion
 
