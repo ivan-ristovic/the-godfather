@@ -326,7 +326,7 @@ namespace TheGodfatherBot
             }
 
             // Check if message contains filter
-            if (Modules.Messages.CommandsFilter.ContainsFilter(e.Guild.Id, e.Message.Content)) {
+            if (e.Message.Content.Split(' ').Any(s => Modules.Messages.CommandsFilter.ContainsFilter(e.Guild.Id, s))) {
                 try {
                     await e.Channel.DeleteMessageAsync(e.Message);
                     _client.DebugLogger.LogMessage(

@@ -2,6 +2,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -21,7 +22,7 @@ namespace TheGodfatherBot.Modules.Messages
     public class CommandsFilter
     {
         #region STATIC_FIELDS
-        private static SortedDictionary<ulong, List<string>> _filters = new SortedDictionary<ulong, List<string>>();
+        private static SortedDictionary<ulong, List<Regex>> _filters = new SortedDictionary<ulong, List<Regex>>();
         #endregion
 
         #region STATIC_FUNCTIONS
@@ -36,8 +37,8 @@ namespace TheGodfatherBot.Modules.Messages
                         var values = line.Split('$');
                         ulong gid = ulong.Parse(values[0]);
                         if (!_filters.ContainsKey(gid))
-                            _filters.Add(gid, new List<string>());
-                        _filters[gid].AddRange(values.Skip(1));
+                            _filters.Add(gid, new List<Regex>());
+                        _filters[gid].AddRange(values.Skip(1).Select(s => new Regex($"^{s}$", RegexOptions.IgnoreCase)));
                     }
                 } catch(Exception e) {
                     log.LogMessage(LogLevel.Error, "TheGodfather", "Filter loading error, clearing filters. Details : " + e.ToString(), DateTime.Now);
@@ -56,7 +57,7 @@ namespace TheGodfatherBot.Modules.Messages
                 foreach (var guild_filter in _filters) {
                     string line = guild_filter.Key.ToString();
                     foreach (var filter in guild_filter.Value)
-                        line += "$" + filter;
+                        line += "$" + filter.ToString();
                     filterlist.Add(line);
                 }
 
@@ -70,7 +71,7 @@ namespace TheGodfatherBot.Modules.Messages
         public static bool ContainsFilter(ulong gid, string message)
         {
             message = message.ToLower();
-            if (_filters.ContainsKey(gid) && _filters[gid].Any(f => message.Contains(f)))
+            if (_filters.ContainsKey(gid) && _filters[gid].Any(f => f.Match(message).Success))
                 return true;
             else
                 return false;
@@ -84,7 +85,7 @@ namespace TheGodfatherBot.Modules.Messages
         [Aliases("+", "new")]
         [RequireUserPermissions(Permissions.ManageMessages)]
         public async Task AddFilter(CommandContext ctx,
-                                   [Description("Filter trigger word (case sensitive).")] string filter = null)
+                                   [Description("Filter. Can be a regex (case insensitive).")] string filter = null)
         {
             if (string.IsNullOrWhiteSpace(filter))
                 throw new InvalidCommandUsageException("Filter trigger missing.");
@@ -96,13 +97,13 @@ namespace TheGodfatherBot.Modules.Messages
                 throw new CommandFailedException("You cannot add a filter for one of my commands!");
 
             if (!_filters.ContainsKey(ctx.Guild.Id))
-                _filters.Add(ctx.Guild.Id, new List<string>());
+                _filters.Add(ctx.Guild.Id, new List<Regex>());
 
-            filter = filter.ToLower();
-            if (_filters[ctx.Guild.Id].Contains(filter)) {
+            var regex = new Regex($"^{filter}$", RegexOptions.IgnoreCase);
+            if (_filters[ctx.Guild.Id].Any(r => r.ToString() == regex.ToString())) {
                 await ctx.RespondAsync($"Filter {Formatter.Bold(filter)} already exists.");
             } else {
-                _filters[ctx.Guild.Id].Add(filter);
+                _filters[ctx.Guild.Id].Add(regex);
                 await ctx.RespondAsync($"Filter {Formatter.Bold(filter)} successfully added.");
             }
         }
@@ -122,7 +123,7 @@ namespace TheGodfatherBot.Modules.Messages
             if (!_filters.ContainsKey(ctx.Guild.Id))
                 throw new CommandFailedException("No aliases recorded in this guild.", new KeyNotFoundException());
 
-            _filters[ctx.Guild.Id].Remove(filter);
+            _filters[ctx.Guild.Id].RemoveAll(r => r.ToString() == filter);
             await ctx.RespondAsync($"Filter {Formatter.Bold(filter)} successfully removed.");
         }
         #endregion
