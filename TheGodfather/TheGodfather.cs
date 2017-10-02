@@ -260,9 +260,23 @@ namespace TheGodfatherBot
                    "TheGodfather",
                    $"Member join: {e.Member.Username} ({e.Member.Id})\n" +
                    $" Guild: '{e.Guild.Name}' ({e.Guild.Id})",
-                   DateTime.Now);
+                   DateTime.Now
+            );
 
-            await e.Guild.GetDefaultChannel().SendMessageAsync($"Welcome to {Formatter.Bold(e.Guild.Name)}, {e.Member.Mention}!");
+            try {
+                await e.Guild.GetDefaultChannel().SendMessageAsync($"Welcome to {Formatter.Bold(e.Guild.Name)}, {e.Member.Mention}!");
+            } catch (Exception exc) {
+                while (exc is AggregateException)
+                    exc = exc.InnerException;
+                _client.DebugLogger.LogMessage(
+                   LogLevel.Error,
+                   "TheGodfather",
+                   $"Failed to send a welcome message!\n" +
+                   $"Member leave: {e.Member.Username} ({e.Member.Id})\n" +
+                   $" Guild: '{e.Guild.Name}' ({e.Guild.Id})",
+                   DateTime.Now
+                );
+            }
         }
 
         private async Task Client_GuildMemberRemove(GuildMemberRemoveEventArgs e)
@@ -272,9 +286,22 @@ namespace TheGodfatherBot
                 "TheGodfather", 
                 $"Member leave: {e.Member.Username} ({e.Member.Id})\n" +
                 $" Guild: '{e.Guild.Name}' ({e.Guild.Id})", 
-                DateTime.Now);
-
-            await e.Guild.GetDefaultChannel().SendMessageAsync($"{Formatter.Bold(e.Member?.Username ?? "<unknown>")} left the server. Bye!");
+                DateTime.Now
+            );
+            try {
+                await e.Guild.GetDefaultChannel().SendMessageAsync($"{Formatter.Bold(e.Member?.Username ?? "<unknown>")} left the server. Bye!");
+            } catch (Exception exc) {
+                while (exc is AggregateException)
+                    exc = exc.InnerException;
+                _client.DebugLogger.LogMessage(
+                   LogLevel.Error,
+                   "TheGodfather",
+                   $"Failed to send a leaving message!\n" +
+                   $"Member leave: {e.Member.Username} ({e.Member.Id})\n" +
+                   $" Guild: '{e.Guild.Name}' ({e.Guild.Id})",
+                   DateTime.Now
+                );
+            }
         }
 
         private void Client_LogMessage(object sender, DebugLogMessageEventArgs e)
