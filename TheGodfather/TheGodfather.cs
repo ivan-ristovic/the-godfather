@@ -81,11 +81,6 @@ namespace TheGodfatherBot
             await Task.Delay(-1);
         }
 
-        private Task ReadConfig()
-        {
-            throw new NotImplementedException();
-        }
-
 
         #region HELPER_FUNCTIONS
         public static void OpenLogFile()
