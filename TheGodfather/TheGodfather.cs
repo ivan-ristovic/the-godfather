@@ -132,6 +132,9 @@ namespace TheGodfatherBot
                 CaseSensitive = false,
                 EnableMentionPrefix = true
             });
+
+            _commands.SetHelpFormatter<HelpFormatter>();
+
             _commands.RegisterCommands<Modules.Admin.CommandsAdmin>();
             _commands.RegisterCommands<Modules.Admin.CommandsChannels>();
             _commands.RegisterCommands<Modules.Admin.CommandsGuild>();
@@ -164,8 +167,6 @@ namespace TheGodfatherBot
             //_commands.RegisterCommands<Modules.Voice.CommandsVoice>();
             _commands.CommandExecuted += Commands_CommandExecuted;
             _commands.CommandErrored += Commands_CommandErrored;
-
-            _commands.SetHelpFormatter<HelpFormatter.GodfatherHelpFormatter>();
         }
 
         private void SetupInteractivity()

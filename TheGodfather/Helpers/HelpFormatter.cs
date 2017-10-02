@@ -11,9 +11,9 @@ using DSharpPlus.CommandsNext.Entities;
 using DSharpPlus.Entities;
 #endregion
 
-namespace TheGodfatherBot.HelpFormatter
+namespace TheGodfatherBot.Helpers
 {
-    public class GodfatherHelpFormatter : IHelpFormatter
+    public class HelpFormatter : IHelpFormatter
     {
         #region PRIVATE_FIELDS
         private DiscordEmbedBuilder _embed;
@@ -22,7 +22,7 @@ namespace TheGodfatherBot.HelpFormatter
         #endregion
 
 
-        public GodfatherHelpFormatter()
+        public HelpFormatter()
         {
             _embed = new DiscordEmbedBuilder();
             _name = null;
