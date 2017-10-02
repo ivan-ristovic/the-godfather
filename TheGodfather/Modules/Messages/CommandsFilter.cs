@@ -160,7 +160,7 @@ namespace TheGodfatherBot.Modules.Messages
                 s += $"**{filters[i]}**\n";
 
             await ctx.RespondAsync("", embed: new DiscordEmbedBuilder() {
-                Title = $"Available filters (page {Formatter.Bold(page.ToString())}/{_filters[ctx.Guild.Id].Count / 10 + 1}) :",
+                Title = $"Available filters (page {page}/{_filters[ctx.Guild.Id].Count / 10 + 1}) :",
                 Description = s,
                 Color = DiscordColor.Green
             });

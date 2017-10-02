@@ -133,10 +133,10 @@ namespace TheGodfatherBot.Modules.Messages
             int endi = starti + 10 < _memes.Count ? starti + 10 : _memes.Count;
             var keys = _memes.Keys.Take(page * 10).ToArray();
             for (var i = starti; i < endi; i++)
-                s += $"**{keys[i]}** : {_memes[keys[i]]}\n";
+                s += $"{Formatter.Bold(keys[i])} : {_memes[keys[i]]}\n";
 
             await ctx.RespondAsync("", embed: new DiscordEmbedBuilder() {
-                Title = $"Available memes (page {Formatter.Bold(page.ToString())}/{_memes.Count / 10 + 1}) :",
+                Title = $"Available memes (page {page}/{_memes.Count / 10 + 1}) :",
                 Description = s,
                 Color = DiscordColor.Green
             });
