@@ -25,7 +25,7 @@ namespace TheGodfatherBot.Modules.Search
     public class CommandsGiphy
     {
         #region PRIVATE_FIELDS
-        private Giphy _giphy = new Giphy(TokenReader.GetToken("Resources/giphy.txt"));
+        private Giphy _giphy = new Giphy(TheGodfather.Config.GiphyKey);
         #endregion
 
         

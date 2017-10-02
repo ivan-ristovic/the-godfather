@@ -31,7 +31,7 @@ namespace TheGodfatherBot.Modules.Search
     public class CommandsSteam
     {
         #region PRIVATE_FIELDS
-        private SteamUser _steam = new SteamUser(TokenReader.GetToken("Resources/steam.txt"));
+        private SteamUser _steam = new SteamUser(TheGodfather.Config.SteamKey);
         #endregion
 
 

@@ -165,7 +165,7 @@ namespace TheGodfatherBot.Modules.Search
             */
 
             _yt = new YouTubeService(new BaseClientService.Initializer() {
-                ApiKey = TokenReader.GetToken("Resources/youtube.txt"),
+                ApiKey = TheGodfather.Config.YoutubeKey,
                 ApplicationName = "TheGodfather"
                 // HttpClientInitializer = credential
             });

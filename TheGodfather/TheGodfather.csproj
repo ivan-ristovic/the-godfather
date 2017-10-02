@@ -232,8 +232,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Config.cs" />
     <Compile Include="Exceptions.cs" />
-    <Compile Include="Helpers\TokenReader.cs" />
     <Compile Include="Helpers\HelpFormatter.cs" />
     <Compile Include="Modules\Admin\CommandsAdmin.cs" />
     <Compile Include="Modules\Games\CommandsBank.cs" />

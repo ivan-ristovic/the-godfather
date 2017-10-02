@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 using TheGodfatherBot.Exceptions;
 using TheGodfatherBot.Helpers;
@@ -19,6 +20,7 @@ using DSharpPlus.EventArgs;
 using DSharpPlus.Net.WebSocket;
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
+using System.Text;
 #endregion
 
 namespace TheGodfatherBot
@@ -36,6 +38,8 @@ namespace TheGodfatherBot
 
         public static List<string> _statuses = new List<string> { "!help" , "worldmafia.net", "worldmafia.net/discord" };
         private static ConcurrentDictionary<ulong, string> _prefixes = new ConcurrentDictionary<ulong, string>();
+        
+        public static GodfatherConfig Config = null;
         #endregion
 
 
@@ -54,6 +58,17 @@ namespace TheGodfatherBot
 
         public async Task MainAsync(string[] args)
         {
+            try {
+                string data = "";
+                using (var fs = File.OpenRead("Resources/config.json"))
+                using (var sr = new StreamReader(fs, new UTF8Encoding(false)))
+                    data = await sr.ReadToEndAsync();
+                Config = JsonConvert.DeserializeObject<GodfatherConfig>(data);
+            } catch (Exception e) {
+                _client.DebugLogger.LogMessage(LogLevel.Error, "TheGodfather", $"Settings loading error: {e.GetType()}: {e.Message}", DateTime.Now);
+                Environment.Exit(1);
+            }
+
             SetupClient();
             OpenLogFile();
             SetupCommands();
@@ -64,6 +79,11 @@ namespace TheGodfatherBot
             await _client.ConnectAsync();
 
             await Task.Delay(-1);
+        }
+
+        private Task ReadConfig()
+        {
+            throw new NotImplementedException();
         }
 
 
@@ -227,7 +247,7 @@ namespace TheGodfatherBot
 
         private Task<int> CheckMessageForPrefix(DiscordMessage m)
         {
-            string prefix = _prefixes.ContainsKey(m.ChannelId) ? _prefixes[m.ChannelId] : "!";
+            string prefix = _prefixes.ContainsKey(m.ChannelId) ? _prefixes[m.ChannelId] : Config.DefaultPrefix;
             int pos = m.Content.IndexOf(prefix);
             
             if (pos == -1)
@@ -496,7 +516,7 @@ namespace TheGodfatherBot
             if (_prefixes.ContainsKey(cid))
                 return _prefixes[cid];
             else
-                return "!";
+                return Config.DefaultPrefix;
         }
 
         public static void SetPrefix(ulong cid, string prefix)

@@ -23,7 +23,7 @@ namespace TheGodfatherBot.Modules.Search
     public class CommandsImgur
     {
         #region STATIC_FIELDS
-        private static ImgurClient _imgurclient = new ImgurClient("5222972687f2120");
+        private static ImgurClient _imgurclient = new ImgurClient(TheGodfather.Config.ImgurKey);
         private static GalleryEndpoint _endpoint = new GalleryEndpoint(_imgurclient);
         #endregion
 
@@ -118,8 +118,10 @@ namespace TheGodfatherBot.Modules.Search
                     await Task.Delay(1000);
                 }
 
-                if (i == num)
+                if (i == num) {
                     await ctx.RespondAsync("No results...");
+                    return;
+                }
 
                 if (i > 0) {
                     await ctx.RespondAsync("These are all of the results returned.");
