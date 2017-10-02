@@ -233,7 +233,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Exceptions.cs" />
-    <Compile Include="Helpers.cs" />
+    <Compile Include="Helpers\TokenReader.cs" />
     <Compile Include="HelpFormatter.cs" />
     <Compile Include="Modules\Admin\CommandsAdmin.cs" />
     <Compile Include="Modules\Games\CommandsBank.cs" />
