@@ -26,24 +26,18 @@ namespace TheGodfatherBot
     public class TheGodfather
     {
         #region STATIC_FIELDS
-        static DiscordClient _client { get; set; }
-        static CommandsNextModule _commands { get; set; }
-        static InteractivityModule _interactivity { get; set; }
-        static VoiceNextClient _voice { get; set; }
-        public static List<string> _statuses = new List<string> { "!help" , "worldmafia.net", "worldmafia.net/discord" };
+        private static DiscordClient _client { get; set; }
+        private static CommandsNextModule _commands { get; set; }
+        private static InteractivityModule _interactivity { get; set; }
+        private static VoiceNextClient _voice { get; set; }
+
         private static StreamWriter _logstream = null;
         private static EventWaitHandle _logwritelock = null;
+
+        public static List<string> _statuses = new List<string> { "!help" , "worldmafia.net", "worldmafia.net/discord" };
+        private static ConcurrentDictionary<ulong, string> _prefixes = new ConcurrentDictionary<ulong, string>();
         #endregion
 
-        #region PRIVATE_FIELDS
-        private ConcurrentDictionary<ulong, string> _prefixes = new ConcurrentDictionary<ulong, string>();
-        #endregion
-        
-
-        public TheGodfather()
-        {
-            _prefixes = new ConcurrentDictionary<ulong, string>();
-        }
 
         ~TheGodfather()
         {
@@ -497,16 +491,19 @@ namespace TheGodfatherBot
 
 
         #region GETTERS_AND_SETTERS
-        public ConcurrentDictionary<ulong, string> Prefixes()
+        public static string PrefixFor(ulong cid)
         {
-            return _prefixes;
+            if (_prefixes.ContainsKey(cid))
+                return _prefixes[cid];
+            else
+                return "!";
         }
 
-        public void SetPrefix(ulong gid, string prefix)
+        public static void SetPrefix(ulong cid, string prefix)
         {
-            if (_prefixes.ContainsKey(gid))
-                _prefixes[gid] = prefix;
-            _prefixes.TryAdd(gid, prefix);
+            if (_prefixes.ContainsKey(cid))
+                _prefixes[cid] = prefix;
+            _prefixes.TryAdd(cid, prefix);
         }
         #endregion
     }

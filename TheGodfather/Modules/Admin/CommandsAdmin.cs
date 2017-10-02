@@ -159,6 +159,24 @@ namespace TheGodfatherBot.Modules.Admin
             await ctx.RespondAsync(s);
         }
         #endregion
+        
+        #region COMMAND_PREFIX
+        [Command("prefix")]
+        [Description("Get channel prefix, or set it to given value.")]
+        [Aliases("setprefix")]
+        [RequireUserPermissions(Permissions.Administrator)]
+        public async Task Prefix(CommandContext ctx,
+                                [Description("Prefix to set.")] string prefix = null)
+        {
+            if (string.IsNullOrWhiteSpace(prefix)) {
+                await ctx.RespondAsync("Current prefix for this channel is: " + Formatter.Bold(TheGodfather.PrefixFor(ctx.Channel.Id)));
+                return;
+            }
+
+            TheGodfather.SetPrefix(ctx.Channel.Id, prefix);
+            await ctx.RespondAsync("Successfully changed the prefix for this channel to: " + Formatter.Bold(prefix));
+        }
+        #endregion
 
         #region COMMAND_SHUTDOWN
         [Command("shutdown")]
