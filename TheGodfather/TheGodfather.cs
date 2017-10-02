@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -35,13 +36,13 @@ namespace TheGodfatherBot
         #endregion
 
         #region PRIVATE_FIELDS
-        private Dictionary<ulong, string> _prefixes = new Dictionary<ulong, string>();
+        private ConcurrentDictionary<ulong, string> _prefixes = new ConcurrentDictionary<ulong, string>();
         #endregion
         
 
         public TheGodfather()
         {
-            _prefixes = new Dictionary<ulong, string>();
+            _prefixes = new ConcurrentDictionary<ulong, string>();
         }
 
         ~TheGodfather()
@@ -491,6 +492,21 @@ namespace TheGodfatherBot
                 embed.Description = $"{emoji} Unknown error occured (probably because a Serbian made this bot). Please **!report**.";
 
             await e.Context.RespondAsync("", embed: embed);
+        }
+        #endregion
+
+
+        #region GETTERS_AND_SETTERS
+        public ConcurrentDictionary<ulong, string> Prefixes()
+        {
+            return _prefixes;
+        }
+
+        public void SetPrefix(ulong gid, string prefix)
+        {
+            if (_prefixes.ContainsKey(gid))
+                _prefixes[gid] = prefix;
+            _prefixes.TryAdd(gid, prefix);
         }
         #endregion
     }
