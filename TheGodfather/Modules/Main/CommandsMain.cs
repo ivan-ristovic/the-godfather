@@ -127,6 +127,15 @@ namespace TheGodfatherBot.Modules.Main
             await ctx.RespondAsync(leet_s);
         }
         #endregion
+        
+        #region COMMAND_PING
+        [Command("ping")]
+        [Description("Ping the bot.")]
+        public async Task Ping(CommandContext ctx)
+        {
+            await ctx.RespondAsync($"Pong! {ctx.Client.Ping}ms");
+        }
+        #endregion
 
         #region COMMAND_REMIND
         [Command("remind")]
