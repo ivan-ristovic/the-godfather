@@ -223,7 +223,7 @@ namespace TheGodfatherBot.Modules.Admin
                 if (string.IsNullOrWhiteSpace(status))
                     throw new InvalidCommandUsageException("Invalid status.");
 
-                TheGodfather._statuses.Add(status);
+                TheGodfather.Statuses.Add(status);
                 await ctx.RespondAsync("Status added!");
             }
             #endregion
@@ -242,7 +242,7 @@ namespace TheGodfatherBot.Modules.Admin
                 if (status == "!help")
                     throw new InvalidCommandUsageException("Cannot delete help status!");
 
-                TheGodfather._statuses.Remove(status);
+                TheGodfather.Statuses.Remove(status);
                 await ctx.RespondAsync("Status removed!");
             }
             #endregion
@@ -253,10 +253,7 @@ namespace TheGodfatherBot.Modules.Admin
             [RequireUserPermissions(Permissions.Administrator)]
             public async Task ListStatuses(CommandContext ctx)
             {
-                string s = "Statuses:\n\n";
-                foreach (var status in TheGodfather._statuses)
-                    s += status + " ";
-                await ctx.RespondAsync(s);
+                await ctx.RespondAsync("My current statuses:\n" + string.Join("\n", TheGodfather.Statuses));
             }
             #endregion
         }

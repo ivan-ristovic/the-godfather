@@ -36,9 +36,9 @@ namespace TheGodfatherBot
         private static StreamWriter _logstream = null;
         private static EventWaitHandle _logwritelock = null;
 
-        public static List<string> _statuses = new List<string> { "!help" , "worldmafia.net", "worldmafia.net/discord" };
         private static ConcurrentDictionary<ulong, string> _prefixes = new ConcurrentDictionary<ulong, string>();
-        
+
+        public static List<string> Statuses = new List<string> { "!help", "worldmafia.net", "worldmafia.net/discord" };
         public static GodfatherConfig Config = null;
         #endregion
 
@@ -256,7 +256,7 @@ namespace TheGodfatherBot
         #region CLIENT_EVENTS
         private async Task Client_Heartbeated(HeartbeatEventArgs e)
         {
-            await _client.UpdateStatusAsync(new Game(_statuses[new Random().Next(_statuses.Count)]) { StreamType = GameStreamType.NoStream });
+            await _client.UpdateStatusAsync(new Game(Statuses[new Random().Next(Statuses.Count)]) { StreamType = GameStreamType.NoStream });
             SaveData();
         }
 
@@ -440,7 +440,7 @@ namespace TheGodfatherBot
         private async Task Client_Ready(ReadyEventArgs e)
         {
             _client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", "Ready.", DateTime.Now);
-            await _client.UpdateStatusAsync(new Game(_statuses[0]) { StreamType = GameStreamType.NoStream });
+            await _client.UpdateStatusAsync(new Game(Statuses[0]) { StreamType = GameStreamType.NoStream });
         }
         #endregion
 
