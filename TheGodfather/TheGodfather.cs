@@ -118,12 +118,12 @@ namespace TheGodfatherBot
         private void SetupClient()
         {
             _client = new DiscordClient(new DiscordConfiguration {
+                LogLevel = LogLevel.Debug,
                 LargeThreshold = 250,
                 AutoReconnect = true,
                 Token = Config.Token,
                 TokenType = TokenType.Bot,
                 UseInternalLogHandler = true,
-                LogLevel = LogLevel.Debug
             });
             _client.ClientErrored += Client_Error;
             _client.DebugLogger.LogMessageReceived += Client_LogMessage;
@@ -197,8 +197,6 @@ namespace TheGodfatherBot
 
         private void LoadData()
         {
-            _client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", "Loading data...", DateTime.Now);
-
             Exception exc = null;
             try {
                 Modules.Messages.CommandsAlias.LoadAliases(_client.DebugLogger);
@@ -219,8 +217,6 @@ namespace TheGodfatherBot
 
         private void SaveData()
         {
-            _client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", "Saving data...", DateTime.Now);
-
             Exception exc = null;
             try {
                 Modules.Messages.CommandsAlias.SaveAliases(_client.DebugLogger);
