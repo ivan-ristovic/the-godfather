@@ -35,7 +35,7 @@ namespace TheGodfatherBot.Modules.Search
             if (string.IsNullOrWhiteSpace(q))
                 throw new InvalidCommandUsageException("Query missing!");
 
-            var res = await _giphy.GifSearch(new SearchParameter() { Query = q });
+            var res = await _giphy.GifSearch(new SearchParameter() { Query = q, Limit = 1 });
 
             if (res.Data.Count() != 0)
                 await ctx.RespondAsync(res.Data[0].Url);
@@ -60,21 +60,16 @@ namespace TheGodfatherBot.Modules.Search
         [Description("Return a random GIF.")]
         [Aliases("t", "tr")]
         public async Task TrendingGifs(CommandContext ctx,
-                                      [Description("Number of results (1-10).")] int n = 1)
+                                      [Description("Number of results (1-10).")] int n = 5)
         {
             if (n < 1 || n > 10)
                 throw new CommandFailedException("Number of results must be 1-10.", new ArgumentOutOfRangeException());
 
-            var res = await _giphy.TrendingGifs(new TrendingParameter());
-
-
-            string s = "";
-            foreach (var r in res.Data.Take(n))
-                s += r.Url + '\n';
-
+            var res = await _giphy.TrendingGifs(new TrendingParameter() { Limit = n });
+            
             await ctx.RespondAsync("", embed: new DiscordEmbedBuilder() {
                 Title = "Trending gifs:",
-                Description = s,
+                Description = res.Data.Aggregate("", (string s, Data r) => s += r.Url + '\n'),
                 Color = DiscordColor.Gold
             });
         }
