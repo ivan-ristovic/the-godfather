@@ -54,7 +54,7 @@ namespace TheGodfatherBot.Modules.Search
     }
 
     #region HELPER_CLASSES
-    public class List
+    public class UrbanDictList
     {
         [JsonProperty("definition")]
         public string Definition { get; set; }
@@ -84,7 +84,7 @@ namespace TheGodfatherBot.Modules.Search
         public int ThumbsDown { get; set; }
     }
 
-    public class Data
+    public class UrbanDictData
     {
         [JsonProperty("tags")]
         public string[] Tags { get; set; }
@@ -93,7 +93,7 @@ namespace TheGodfatherBot.Modules.Search
         public string ResultType { get; set; }
 
         [JsonProperty("list")]
-        public List[] List { get; set; }
+        public UrbanDictList[] List { get; set; }
 
         [JsonProperty("sounds")]
         public string[] Sounds { get; set; }
@@ -101,13 +101,13 @@ namespace TheGodfatherBot.Modules.Search
 
     public class UrbanDict
     {
-        public async static Task<KeyValuePair<bool, Data>> GetDataAsync(string query)
+        public async static Task<KeyValuePair<bool, UrbanDictData>> GetDataAsync(string query)
         {
             using (var http = new HttpClient()) {
                 var result = await http.GetStringAsync($"http://api.urbandictionary.com/v0/define?term={ WebUtility.UrlEncode(query) }");
-                var data = JsonConvert.DeserializeObject<Data>(result);
+                var data = JsonConvert.DeserializeObject<UrbanDictData>(result);
 
-                return new KeyValuePair<bool, Data>(data.ResultType == "no_results" ? false : true, data);
+                return new KeyValuePair<bool, UrbanDictData>(data.ResultType == "no_results" ? false : true, data);
             }
         }
     }
