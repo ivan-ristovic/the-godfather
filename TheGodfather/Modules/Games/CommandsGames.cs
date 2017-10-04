@@ -1,5 +1,6 @@
 ﻿#region USING_DIRECTIVES
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -280,6 +281,33 @@ namespace TheGodfatherBot.Modules.Games
         }
         #endregion
 
+        #endregion
+
+        #region COMMAND_GAMES_TYPING
+        [Command("typing")]
+        [Description("Typing race.")]
+        [Aliases("type", "typerace", "typingrace")]
+        public async Task TypingRace(CommandContext ctx)
+        {
+            await ctx.RespondAsync("I will send a random string in 5s. First one to types it wins. FOCUS!");
+            await Task.Delay(5000);
+
+            const string chars = "abcdefghijklmnopqrstuvwxyz0123456789";
+            var rnd = new Random();
+            var msg = new string(Enumerable.Repeat(chars, 20).Select(s => s[rnd.Next(s.Length)]).ToArray());
+            await ctx.RespondAsync(Formatter.Bold(msg) + " (you have 60s)");
+
+            var interactivity = ctx.Client.GetInteractivityModule();
+            var response = await interactivity.WaitForMessageAsync(
+                m => m.ChannelId == ctx.Channel.Id && m.Content == msg,
+                TimeSpan.FromSeconds(60)
+            );
+
+            if (response != null)
+                await ctx.RespondAsync($"And the winner is {response.User.Mention}!");
+            else
+                await ctx.RespondAsync("ROFL what a nabs...");
+        }
         #endregion
     }
 }
