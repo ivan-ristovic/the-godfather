@@ -156,7 +156,10 @@ namespace TheGodfatherBot.Modules.Messages
             foreach (var v in top) {
                 var u = await ctx.Client.GetUserAsync(v.Key);
                 var rank = CalculateRank(v.Value);
-                em.AddField(u.Username, $"{_ranks[rank]} ({rank}) ({v.Value} XP)");
+                if (rank < _ranks.Length)
+                    em.AddField(u.Username, $"{_ranks[rank]} ({rank}) ({v.Value} XP)");
+                else
+                    em.AddField(u.Username, $"Low ({v.Value} XP)");
             }
 
             await ctx.RespondAsync("", embed: em);
