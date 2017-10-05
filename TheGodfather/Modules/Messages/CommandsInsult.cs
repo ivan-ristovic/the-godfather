@@ -69,8 +69,8 @@ namespace TheGodfatherBot.Modules.Messages
                 await ctx.RespondAsync("How original, trying to make me insult myself. Sadly it won't work.");
                 return;
             }
-            
-            var split = _insults[new Random().Next(_insults.Count)].Split('%');
+
+            var split = _insults[new Random().Next(_insults.Count)].Split(new string[] { "%user%" }, StringSplitOptions.None);
             string response = split[0];
             for (int i = 1; i < split.Length; i++)
                 response += u.Mention + split[i];
@@ -92,10 +92,22 @@ namespace TheGodfatherBot.Modules.Messages
                 throw new CommandFailedException("Too long insult. I know it is hard, but keep it shorter than 200 please.");
 
             if (insult.Split().Count() < 2)
-                throw new InvalidCommandUsageException("Insult not in correct format (missing %)!");
+                throw new InvalidCommandUsageException($"Insult not in correct format (missing {Formatter.Bold("%user%")})!");
 
             _insults.Add(insult);
             await ctx.RespondAsync("Insult added.");
+        }
+        #endregion
+        
+        #region COMMAND_INSULTS_CLEAR
+        [Command("clear")]
+        [Description("Delete all insults.")]
+        [Aliases("clearall")]
+        [RequireOwner]
+        public async Task ClearAllInsults(CommandContext ctx)
+        {
+            _insults.Clear();
+            await ctx.RespondAsync("All insults successfully removed.");
         }
         #endregion
 
@@ -146,17 +158,6 @@ namespace TheGodfatherBot.Modules.Messages
                 Description = s,
                 Color = DiscordColor.Turquoise
             });
-        }
-        #endregion
-
-        #region COMMAND_INSULTS_CLEARALL
-        [Command("clearall")]
-        [Description("Delete all insults.")]
-        [RequireOwner]
-        public async Task ClearAllInsults(CommandContext ctx)
-        {
-            _insults.Clear();
-            await ctx.RespondAsync("All insults successfully removed.");
         }
         #endregion
     }
