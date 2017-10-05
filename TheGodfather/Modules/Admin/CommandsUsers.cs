@@ -22,7 +22,7 @@ namespace TheGodfatherBot.Modules.Admin
         #region COMMAND_USER_ADDROLE
         [Command("addrole")]
         [Description("Add a role to user.")]
-        [Aliases("+role", "ar", "grantrole")]
+        [Aliases("+role", "+r", "ar", "grantrole")]
         [RequirePermissions(Permissions.ManageRoles)]
         public async Task SetRole(CommandContext ctx,
                                  [Description("User.")] DiscordMember u = null,
@@ -75,7 +75,7 @@ namespace TheGodfatherBot.Modules.Admin
         #region COMMAND_USER_KICK
         [Command("kick")]
         [Description("Kicks the user from server.")]
-        [Aliases("k")]
+        [Aliases("k", "gtfo")]
         [RequirePermissions(Permissions.KickMembers)]
         public async Task Kick(CommandContext ctx, 
                               [Description("User.")] DiscordMember u = null)
@@ -133,7 +133,7 @@ namespace TheGodfatherBot.Modules.Admin
         #region COMMAND_USER_MUTE
         [Command("mute")]
         [Description("Toggle user mute.")]
-        [Aliases("m")]
+        [Aliases("m", "stfu")]
         [RequirePermissions(Permissions.MuteMembers)]
         public async Task Mute(CommandContext ctx,
                               [Description("User.")] DiscordMember u = null)
@@ -150,7 +150,7 @@ namespace TheGodfatherBot.Modules.Admin
         #region COMMAND_USER_REMOVEROLE
         [Command("removerole")]
         [Description("Revoke a role from user.")]
-        [Aliases("remrole", "delrole", "drole")]
+        [Aliases("remrole", "-role", "-r", "delrole", "drole")]
         [RequirePermissions(Permissions.ManageRoles)]
         public async Task RemoveRole(CommandContext ctx, 
                                     [Description("User.")] DiscordMember u = null,
@@ -175,7 +175,7 @@ namespace TheGodfatherBot.Modules.Admin
         #region COMMAND_USER_REMOVEALLROLES
         [Command("removeallroles")]
         [Description("Revoke all roles from user.")]
-        [Aliases("remallroles", "delallroles", "droles")]
+        [Aliases("remallroles", "delallroles", "droles", "-allr")]
         [RequirePermissions(Permissions.ManageRoles)]
         public async Task RemoveAllRoles(CommandContext ctx,
                                         [Description("User.")] DiscordMember u = null)
