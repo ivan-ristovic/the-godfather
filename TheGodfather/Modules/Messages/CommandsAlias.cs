@@ -80,11 +80,13 @@ namespace TheGodfatherBot.Modules.Messages
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new InvalidCommandUsageException("Alias name is missing.");
-            
-            if (_aliases != null && _aliases.ContainsKey(ctx.Guild.Id) && _aliases[ctx.Guild.Id].ContainsKey(name))
-                await ctx.RespondAsync(_aliases[ctx.Guild.Id][name]);
-            else
+
+            if (_aliases != null && _aliases.ContainsKey(ctx.Guild.Id) && _aliases[ctx.Guild.Id].ContainsKey(name)) {
+                var split = _aliases[ctx.Guild.Id][name].Split(new string[] { "%user%" }, StringSplitOptions.None);
+                await ctx.RespondAsync(string.Join(ctx.User.Mention, split));
+            } else {
                 await ctx.RespondAsync("Unknown alias.");
+            }
         }
         
 

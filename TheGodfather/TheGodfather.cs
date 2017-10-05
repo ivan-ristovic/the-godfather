@@ -397,7 +397,8 @@ namespace TheGodfatherBot
                     $" Location: '{e.Guild.Name}' ({e.Guild.Id}) ; {e.Channel.ToString()}"
                     , DateTime.Now
                 );
-                await e.Channel.SendMessageAsync(response);
+                var split = response.Split(new string[] { "%user%" }, StringSplitOptions.None);
+                await e.Channel.SendMessageAsync(string.Join(e.Author.Mention, split));
             }
         }
 

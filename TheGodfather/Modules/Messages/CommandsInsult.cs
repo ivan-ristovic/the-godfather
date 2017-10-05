@@ -71,10 +71,7 @@ namespace TheGodfatherBot.Modules.Messages
             }
 
             var split = _insults[new Random().Next(_insults.Count)].Split(new string[] { "%user%" }, StringSplitOptions.None);
-            string response = split[0];
-            for (int i = 1; i < split.Length; i++)
-                response += u.Mention + split[i];
-            await ctx.RespondAsync(response);
+            await ctx.RespondAsync(string.Join(u.Mention, split));
         }
 
 
