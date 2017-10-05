@@ -97,7 +97,7 @@ namespace TheGodfatherBot.Modules.Messages
         [RequireUserPermissions(Permissions.ManageMessages)]
         public async Task AddAlias(CommandContext ctx,
                                   [Description("Alias name (case sensitive).")] string alias = null,
-                                  [Description("Response.")] string response = null)
+                                  [RemainingText, Description("Response.")] string response = null)
         {
             if (string.IsNullOrWhiteSpace(alias) || string.IsNullOrWhiteSpace(response))
                 throw new InvalidCommandUsageException("Alias name or response missing or invalid.");
@@ -121,7 +121,7 @@ namespace TheGodfatherBot.Modules.Messages
         [Aliases("-", "remove", "del")]
         [RequireUserPermissions(Permissions.ManageMessages)]
         public async Task DeleteAlias(CommandContext ctx, 
-                                     [Description("Alias to remove.")] string alias = null)
+                                     [RemainingText, Description("Alias to remove.")] string alias = null)
         {
             if (string.IsNullOrWhiteSpace(alias))
                 throw new InvalidCommandUsageException("Alias name missing.");
