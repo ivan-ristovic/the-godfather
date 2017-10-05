@@ -267,7 +267,7 @@ namespace TheGodfatherBot
             _client.DebugLogger.LogMessage(
                 LogLevel.Info,
                 "TheGodfather",
-                $"Guild available: '{e.Guild.Name}' ({e.Guild.Id})",
+                $"Guild available: {e.Guild.Name} ({e.Guild.Id})",
                 DateTime.Now);
             return Task.CompletedTask;
         }
@@ -277,8 +277,8 @@ namespace TheGodfatherBot
             _client.DebugLogger.LogMessage(
                    LogLevel.Info,
                    "TheGodfather",
-                   $"Member join: {e.Member.Username} ({e.Member.Id})\n" +
-                   $" Guild: '{e.Guild.Name}' ({e.Guild.Id})",
+                   $"Member joined: {e.Member.Username} ({e.Member.Id})\n" +
+                   $" Guild: {e.Guild.Name} ({e.Guild.Id})",
                    DateTime.Now
             );
 
@@ -291,8 +291,10 @@ namespace TheGodfatherBot
                    LogLevel.Error,
                    "TheGodfather",
                    $"Failed to send a welcome message!\n" +
-                   $"Member leave: {e.Member.Username} ({e.Member.Id})\n" +
-                   $" Guild: '{e.Guild.Name}' ({e.Guild.Id})",
+                   $" Member joined: {e.Member.Username} ({e.Member.Id})\n" +
+                   $" Guild: {e.Guild.Name} ({e.Guild.Id})" +
+                   $" Exception: {exc.GetType()}" +
+                   $" Message: {exc.Message}",
                    DateTime.Now
                 );
             }
@@ -303,8 +305,8 @@ namespace TheGodfatherBot
             _client.DebugLogger.LogMessage(
                 LogLevel.Info, 
                 "TheGodfather", 
-                $"Member leave: {e.Member.Username} ({e.Member.Id})\n" +
-                $" Guild: '{e.Guild.Name}' ({e.Guild.Id})", 
+                $"Member left: {e.Member.Username} ({e.Member.Id})\n" +
+                $" Guild: {e.Guild.Name} ({e.Guild.Id})", 
                 DateTime.Now
             );
             try {
@@ -316,8 +318,10 @@ namespace TheGodfatherBot
                    LogLevel.Error,
                    "TheGodfather",
                    $"Failed to send a leaving message!\n" +
-                   $"Member leave: {e.Member.Username} ({e.Member.Id})\n" +
-                   $" Guild: '{e.Guild.Name}' ({e.Guild.Id})",
+                   $" Member left: {e.Member.Username} ({e.Member.Id})\n" +
+                   $" Guild: {e.Guild.Name} ({e.Guild.Id})" +
+                   $" Exception: {exc.GetType()}" +
+                   $" Message: {exc.Message}",
                    DateTime.Now
                 );
             }
@@ -397,12 +401,6 @@ namespace TheGodfatherBot
             }
         }
 
-        private async Task Client_ReactToMessage(MessageReactionAddEventArgs e)
-        {
-            if (new Random().Next(10) == 0)
-                await e.Message.CreateReactionAsync(e.Emoji);
-        }
-        
         private async Task Client_MessageUpdated(MessageUpdateEventArgs e)
         {
             // Check if message contains filter
@@ -431,6 +429,12 @@ namespace TheGodfatherBot
                 }
                 await e.Channel.SendMessageAsync($"Nice try, {e.Author.Mention}! But I see throught it!");
             }
+        }
+
+        private async Task Client_ReactToMessage(MessageReactionAddEventArgs e)
+        {
+            if (new Random().Next(10) == 0)
+                await e.Message.CreateReactionAsync(e.Emoji);
         }
 
         private async Task Client_Ready(ReadyEventArgs e)
