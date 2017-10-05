@@ -80,7 +80,7 @@ namespace TheGodfatherBot.Modules.Messages
 
         #region COMMAND_INSULTS_ADD
         [Command("add")]
-        [Description("Add insult to list.")]
+        [Description("Add insult to list (Use % to code mention).")]
         [Aliases("+", "new")]
         public async Task AddInsult(CommandContext ctx,
                                    [RemainingText, Description("Response.")] string insult = null)
