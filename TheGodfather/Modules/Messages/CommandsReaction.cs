@@ -74,7 +74,7 @@ namespace TheGodfatherBot.Modules.Messages
                         try {
                             emojis.Add(DiscordEmoji.FromName(cl, _reactions[gid][word]));
                         } catch (ArgumentException) {
-                            // cl.DebugLogger.LogMessage( ... );
+                            cl.DebugLogger.LogMessage(LogLevel.Error, "TheGodfather", "Emoji name is not valid!", DateTime.Now);
                         }
                     }
                 }
