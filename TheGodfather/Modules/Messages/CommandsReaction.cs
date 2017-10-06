@@ -16,9 +16,9 @@ using DSharpPlus.Entities;
 
 namespace TheGodfatherBot.Modules.Messages
 {
-    [Group("reactions", CanInvokeWithoutSubcommand = false)]
+    [Group("reactions", CanInvokeWithoutSubcommand = false /*true*/)]
     [Description("Reaction handling commands.")]
-    [Aliases("react")]
+    [Aliases("react", "reaction")]
     public class CommandsReaction
     {
         #region STATIC_FIELDS
@@ -75,6 +75,15 @@ namespace TheGodfatherBot.Modules.Messages
             return emojis;
         }
         #endregion
+
+        /*
+        public async Task ExecuteGroupAsync(CommandContext ctx,
+                                           [Description("Emoji to send.")] DiscordEmoji emoji = null,
+                                           [RemainingText, Description("Trigger word list.")] params string[] triggers)
+        {
+            await AddReaction(ctx, emoji, triggers);
+        }
+        */
 
         /*
         #region COMMAND_REACTIONS_ADD
