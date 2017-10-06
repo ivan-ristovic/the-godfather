@@ -151,36 +151,36 @@ namespace TheGodfatherBot
 
             _commands.SetHelpFormatter<HelpFormatter>();
 
-            _commands.RegisterCommands<Modules.Admin.CommandsAdmin>();
-            _commands.RegisterCommands<Modules.Admin.CommandsChannels>();
-            _commands.RegisterCommands<Modules.Admin.CommandsGuild>();
-            _commands.RegisterCommands<Modules.Admin.CommandsMessages>();
-            _commands.RegisterCommands<Modules.Admin.CommandsRoles>();
-            _commands.RegisterCommands<Modules.Admin.CommandsUsers>();
-            _commands.RegisterCommands<Modules.Games.CommandsBank>();
-            _commands.RegisterCommands<Modules.Games.CommandsCards>();
-            _commands.RegisterCommands<Modules.Games.CommandsGamble>();
-            _commands.RegisterCommands<Modules.Games.CommandsGames>();
-            _commands.RegisterCommands<Modules.Games.CommandsNunchi>();
-            _commands.RegisterCommands<Modules.Games.CommandsRace>();
-            _commands.RegisterCommands<Modules.Games.CommandsQuiz>();
-            _commands.RegisterCommands<Modules.Main.CommandsMain>();
-            _commands.RegisterCommands<Modules.Main.CommandsRandom>();
-            _commands.RegisterCommands<Modules.Messages.CommandsAlias>();
-            _commands.RegisterCommands<Modules.Messages.CommandsFilter>();
-            _commands.RegisterCommands<Modules.Messages.CommandsInsult>();
-            _commands.RegisterCommands<Modules.Messages.CommandsMemes>();
-            _commands.RegisterCommands<Modules.Messages.CommandsPoll>();
-            _commands.RegisterCommands<Modules.Messages.CommandsRanking>();
-            _commands.RegisterCommands<Modules.Messages.CommandsReaction>();
-            _commands.RegisterCommands<Modules.Search.CommandsGiphy>();
-            _commands.RegisterCommands<Modules.Search.CommandsImgur>();
+            _commands.RegisterCommands<Commands.Admin.CommandsAdmin>();
+            _commands.RegisterCommands<Commands.Admin.CommandsChannels>();
+            _commands.RegisterCommands<Commands.Admin.CommandsGuild>();
+            _commands.RegisterCommands<Commands.Admin.CommandsMessages>();
+            _commands.RegisterCommands<Commands.Admin.CommandsRoles>();
+            _commands.RegisterCommands<Commands.Admin.CommandsUsers>();
+            _commands.RegisterCommands<Commands.Games.CommandsBank>();
+            _commands.RegisterCommands<Commands.Games.CommandsCards>();
+            _commands.RegisterCommands<Commands.Games.CommandsGamble>();
+            _commands.RegisterCommands<Commands.Games.CommandsGames>();
+            _commands.RegisterCommands<Commands.Games.CommandsNunchi>();
+            _commands.RegisterCommands<Commands.Games.CommandsRace>();
+            _commands.RegisterCommands<Commands.Games.CommandsQuiz>();
+            _commands.RegisterCommands<Commands.Main.CommandsMain>();
+            _commands.RegisterCommands<Commands.Main.CommandsRandom>();
+            _commands.RegisterCommands<Commands.Messages.CommandsAlias>();
+            _commands.RegisterCommands<Commands.Messages.CommandsFilter>();
+            _commands.RegisterCommands<Commands.Messages.CommandsInsult>();
+            _commands.RegisterCommands<Commands.Messages.CommandsMemes>();
+            _commands.RegisterCommands<Commands.Messages.CommandsPoll>();
+            _commands.RegisterCommands<Commands.Messages.CommandsRanking>();
+            _commands.RegisterCommands<Commands.Messages.CommandsReaction>();
+            _commands.RegisterCommands<Commands.Search.CommandsGiphy>();
+            _commands.RegisterCommands<Commands.Search.CommandsImgur>();
             //_commands.RegisterCommands<Modules.Search.CommandsReddit>();
-            _commands.RegisterCommands<Modules.Search.CommandsRSS>();
-            _commands.RegisterCommands<Modules.Search.CommandsSteam>();
-            _commands.RegisterCommands<Modules.Search.CommandsUrbanDict>();
-            _commands.RegisterCommands<Modules.Search.CommandsYoutube>();
-            _commands.RegisterCommands<Modules.SWAT.CommandsSwat>();
+            _commands.RegisterCommands<Commands.Search.CommandsRSS>();
+            _commands.RegisterCommands<Commands.Search.CommandsSteam>();
+            _commands.RegisterCommands<Commands.Search.CommandsUrbanDict>();
+            _commands.RegisterCommands<Commands.Search.CommandsYoutube>();
+            _commands.RegisterCommands<Commands.SWAT.CommandsSwat>();
             //_commands.RegisterCommands<Modules.Voice.CommandsVoice>();
             _commands.CommandExecuted += Commands_CommandExecuted;
             _commands.CommandErrored += Commands_CommandErrored;
@@ -200,13 +200,13 @@ namespace TheGodfatherBot
         {
             Exception exc = null;
             try {
-                Modules.Messages.CommandsAlias.LoadAliases(_client.DebugLogger);
-                Modules.Messages.CommandsFilter.LoadFilters(_client.DebugLogger);
-                Modules.Messages.CommandsMemes.LoadMemes(_client.DebugLogger);
-                Modules.Messages.CommandsRanking.LoadRanks(_client.DebugLogger);
-                Modules.Messages.CommandsReaction.LoadReactions(_client.DebugLogger);
-                Modules.SWAT.CommandsSwat.LoadServers(_client.DebugLogger);
-                Modules.Messages.CommandsInsult.LoadInsults(_client.DebugLogger);
+                Commands.Messages.CommandsAlias.LoadAliases(_client.DebugLogger);
+                Commands.Messages.CommandsFilter.LoadFilters(_client.DebugLogger);
+                Commands.Messages.CommandsMemes.LoadMemes(_client.DebugLogger);
+                Commands.Messages.CommandsRanking.LoadRanks(_client.DebugLogger);
+                Commands.Messages.CommandsReaction.LoadReactions(_client.DebugLogger);
+                Commands.SWAT.CommandsSwat.LoadServers(_client.DebugLogger);
+                Commands.Messages.CommandsInsult.LoadInsults(_client.DebugLogger);
             } catch (Exception e) {
                 exc = e;
             }
@@ -221,13 +221,13 @@ namespace TheGodfatherBot
         {
             Exception exc = null;
             try {
-                Modules.Messages.CommandsAlias.SaveAliases(_client.DebugLogger);
-                Modules.Messages.CommandsFilter.SaveFilters(_client.DebugLogger);
-                Modules.Messages.CommandsMemes.SaveMemes(_client.DebugLogger);
-                Modules.Messages.CommandsRanking.SaveRanks(_client.DebugLogger);
-                Modules.Messages.CommandsReaction.SaveReactions(_client.DebugLogger);
-                Modules.SWAT.CommandsSwat.SaveServers(_client.DebugLogger);
-                Modules.Messages.CommandsInsult.SaveInsults(_client.DebugLogger);
+                Commands.Messages.CommandsAlias.SaveAliases(_client.DebugLogger);
+                Commands.Messages.CommandsFilter.SaveFilters(_client.DebugLogger);
+                Commands.Messages.CommandsMemes.SaveMemes(_client.DebugLogger);
+                Commands.Messages.CommandsRanking.SaveRanks(_client.DebugLogger);
+                Commands.Messages.CommandsReaction.SaveReactions(_client.DebugLogger);
+                Commands.SWAT.CommandsSwat.SaveServers(_client.DebugLogger);
+                Commands.Messages.CommandsInsult.SaveInsults(_client.DebugLogger);
             } catch (Exception e) {
                 exc = e;
             }
@@ -356,7 +356,7 @@ namespace TheGodfatherBot
             }
 
             // Check if message contains filter
-            if (!e.Author.IsBot && e.Message.Content.Split(' ').Any(s => Modules.Messages.CommandsFilter.ContainsFilter(e.Guild.Id, s))) {
+            if (!e.Author.IsBot && e.Message.Content.Split(' ').Any(s => Commands.Messages.CommandsFilter.ContainsFilter(e.Guild.Id, s))) {
                 try {
                     await e.Channel.DeleteMessageAsync(e.Message);
                     _client.DebugLogger.LogMessage(
@@ -383,10 +383,10 @@ namespace TheGodfatherBot
             }
 
             // Update message count for the user that sent the message
-            Modules.Messages.CommandsRanking.UpdateMessageCount(e.Channel, e.Author);
+            Commands.Messages.CommandsRanking.UpdateMessageCount(e.Channel, e.Author);
 
             // Check if message has an alias
-            var response = Modules.Messages.CommandsAlias.FindAlias(e.Guild.Id, e.Message.Content);
+            var response = Commands.Messages.CommandsAlias.FindAlias(e.Guild.Id, e.Message.Content);
             if (response != null) {
                 _client.DebugLogger.LogMessage(
                     LogLevel.Info,
@@ -401,7 +401,7 @@ namespace TheGodfatherBot
             }
 
             // Check if message has react trigger
-            var emojilist = Modules.Messages.CommandsReaction.GetReactionEmojis(_client, e.Guild.Id, e.Message.Content);
+            var emojilist = Commands.Messages.CommandsReaction.GetReactionEmojis(_client, e.Guild.Id, e.Message.Content);
             if (emojilist.Count > 0) {
                 _client.DebugLogger.LogMessage(
                     LogLevel.Info,
@@ -425,7 +425,7 @@ namespace TheGodfatherBot
         private async Task Client_MessageUpdated(MessageUpdateEventArgs e)
         {
             // Check if message contains filter
-            if (!e.Author.IsBot && e.Message.Content.Split(' ').Any(s => Modules.Messages.CommandsFilter.ContainsFilter(e.Guild.Id, s))) {
+            if (!e.Author.IsBot && e.Message.Content.Split(' ').Any(s => Commands.Messages.CommandsFilter.ContainsFilter(e.Guild.Id, s))) {
                 try {
                     await e.Channel.DeleteMessageAsync(e.Message);
                     _client.DebugLogger.LogMessage(
