@@ -249,6 +249,7 @@
     <Compile Include="Modules\Admin\CommandsGuild.cs" />
     <Compile Include="Modules\Messages\CommandsFilter.cs" />
     <Compile Include="Modules\Messages\CommandsPoll.cs" />
+    <Compile Include="Modules\Messages\CommandsReaction.cs" />
     <Compile Include="Modules\Search\CommandsGiphy.cs" />
     <Compile Include="Modules\Search\CommandsImgur.cs" />
     <Compile Include="Modules\Messages\CommandsInsult.cs" />

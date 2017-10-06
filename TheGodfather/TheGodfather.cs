@@ -172,6 +172,7 @@ namespace TheGodfatherBot
             _commands.RegisterCommands<Modules.Messages.CommandsMemes>();
             _commands.RegisterCommands<Modules.Messages.CommandsPoll>();
             _commands.RegisterCommands<Modules.Messages.CommandsRanking>();
+            _commands.RegisterCommands<Modules.Messages.CommandsReaction>();
             _commands.RegisterCommands<Modules.Search.CommandsGiphy>();
             _commands.RegisterCommands<Modules.Search.CommandsImgur>();
             //_commands.RegisterCommands<Modules.Search.CommandsReddit>();
@@ -203,6 +204,7 @@ namespace TheGodfatherBot
                 Modules.Messages.CommandsFilter.LoadFilters(_client.DebugLogger);
                 Modules.Messages.CommandsMemes.LoadMemes(_client.DebugLogger);
                 Modules.Messages.CommandsRanking.LoadRanks(_client.DebugLogger);
+                Modules.Messages.CommandsReaction.LoadReactions(_client.DebugLogger);
                 Modules.SWAT.CommandsSwat.LoadServers(_client.DebugLogger);
                 Modules.Messages.CommandsInsult.LoadInsults(_client.DebugLogger);
             } catch (Exception e) {
@@ -223,6 +225,7 @@ namespace TheGodfatherBot
                 Modules.Messages.CommandsFilter.SaveFilters(_client.DebugLogger);
                 Modules.Messages.CommandsMemes.SaveMemes(_client.DebugLogger);
                 Modules.Messages.CommandsRanking.SaveRanks(_client.DebugLogger);
+                Modules.Messages.CommandsReaction.SaveReactions(_client.DebugLogger);
                 Modules.SWAT.CommandsSwat.SaveServers(_client.DebugLogger);
                 Modules.Messages.CommandsInsult.SaveInsults(_client.DebugLogger);
             } catch (Exception e) {
@@ -379,12 +382,8 @@ namespace TheGodfatherBot
                 return;
             }
 
+            // Update message count for the user that sent the message
             Modules.Messages.CommandsRanking.UpdateMessageCount(e.Channel, e.Author);
-
-            // React to random message
-            var r = new Random();
-            if (e.Guild.Emojis.Count > 0 && r.Next(10) == 0)
-                await e.Message.CreateReactionAsync(e.Guild.Emojis.ElementAt(r.Next(e.Guild.Emojis.Count)));
 
             // Check if message has an alias
             var response = Modules.Messages.CommandsAlias.FindAlias(e.Guild.Id, e.Message.Content);
@@ -399,6 +398,29 @@ namespace TheGodfatherBot
                 );
                 var split = response.Split(new string[] { "%user%" }, StringSplitOptions.None);
                 await e.Channel.SendMessageAsync(string.Join(e.Author.Mention, split));
+            }
+
+            // Check if message has react trigger
+            var emojilist = Modules.Messages.CommandsReaction.GetReactionEmojis(_client, e.Guild.Id, e.Message.Content);
+            if (emojilist.Count > 0) {
+                foreach (var emoji in emojilist) {
+                    _client.DebugLogger.LogMessage(
+                        LogLevel.Info,
+                        "TheGodfather",
+                        $"Reaction triggered: {e.Message.Content}\n" +
+                        $" User: {e.Message.Author.ToString()}\n" +
+                        $" Location: '{e.Guild.Name}' ({e.Guild.Id}) ; {e.Channel.ToString()}"
+                        , DateTime.Now
+                    );
+
+                    try {
+                        await e.Message.CreateReactionAsync(emoji);
+                    } catch (ArgumentException) {
+                        await e.Channel.SendMessageAsync($"I have a reaction for that message set up ({emoji}) but that emoji doesn't exits. Fix your shit pls.");
+                    }
+
+                    await Task.Delay(500);
+                }
             }
         }
 

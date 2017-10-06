@@ -164,7 +164,7 @@ namespace TheGodfatherBot.Modules.Messages
             int endi = starti + 10 < _aliases[ctx.Guild.Id].Count ? starti + 10 : _aliases[ctx.Guild.Id].Count;
             var keys = _aliases[ctx.Guild.Id].Keys.Take(page * 10).ToArray();
             for (var i = starti; i < endi; i++)
-                s += $"**{keys[i]}** : {_aliases[ctx.Guild.Id][keys[i]]}\n";
+                s += $"{Formatter.Bold(keys[i])} : {_aliases[ctx.Guild.Id][keys[i]]}\n";
 
             await ctx.RespondAsync("", embed: new DiscordEmbedBuilder() {
                 Title = $"Available aliases (page {page}/{_aliases[ctx.Guild.Id].Count / 10 + 1}) :",
