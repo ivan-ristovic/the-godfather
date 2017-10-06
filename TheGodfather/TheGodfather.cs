@@ -482,6 +482,9 @@ namespace TheGodfatherBot
 
         private async Task Commands_CommandErrored(CommandErrorEventArgs e)
         {
+            if (e.Exception == null)
+                return;
+
             var ex = e.Exception;
             while (ex is AggregateException)
                 ex = ex.InnerException;
