@@ -177,7 +177,7 @@ namespace TheGodfatherBot.Commands.Messages
         private async static Task PrintRankUpMessage(DiscordChannel c, DiscordUser u)
         {
             uint rank = CalculateRank(_msgcount[u.Id]);
-            await c.SendMessageAsync($"GG {u.Mention}! You have advanced to level {rank} ({(rank < _ranks.Length ? _ranks[rank] : "GOD")})!");
+            await c.SendMessageAsync($"GG {u.Mention}! You have advanced to level {rank} ({(rank < _ranks.Length ? _ranks[rank] : "Low")})!");
         }
 
         private static uint CalculateRank(uint msgcount)
