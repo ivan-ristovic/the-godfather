@@ -22,8 +22,9 @@ namespace TheGodfatherBot.Modules.Messages
     {
         #region STATIC_FIELDS
         private static SortedDictionary<string, string> _memes = new SortedDictionary<string, string>();
+        private static bool _error = false;
         #endregion
-        
+
         #region STATIC_FUNCTIONS
         public static void LoadMemes(DebugLogger log)
         {
@@ -39,8 +40,8 @@ namespace TheGodfatherBot.Modules.Messages
                             _memes.Add(name, values[1]);
                     }
                 } catch (Exception e) {
-                    log.LogMessage(LogLevel.Error, "TheGodfather", "Meme loading error, clearing memes. Details : " + e.ToString(), DateTime.Now);
-                    _memes.Clear();
+                    log.LogMessage(LogLevel.Error, "TheGodfather", "Meme loading error, check file formatting.\n Details : " + e.ToString(), DateTime.Now);
+                    _error = true;
                 }
             } else {
                 log.LogMessage(LogLevel.Warning, "TheGodfather", "memes.txt is missing.", DateTime.Now);
@@ -49,6 +50,11 @@ namespace TheGodfatherBot.Modules.Messages
 
         public static void SaveMemes(DebugLogger log)
         {
+            if (_error) {
+                log.LogMessage(LogLevel.Warning, "TheGodfather", "Memes saving skipped until file conflicts are resolved!", DateTime.Now);
+                return;
+            }
+
             try {
                 List<string> memelist = new List<string>();
                 foreach (var entry in _memes)
@@ -64,7 +70,7 @@ namespace TheGodfatherBot.Modules.Messages
 
 
         public async Task ExecuteGroupAsync(CommandContext ctx, 
-                                            [RemainingText, Description("Meme name.")] string name = null)
+                                           [RemainingText, Description("Meme name.")] string name = null)
         {
             if (name == null || (name = name.Trim().ToLower()) == "") {
                 await ReturnRandomMeme(ctx);

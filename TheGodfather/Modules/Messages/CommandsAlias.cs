@@ -22,6 +22,7 @@ namespace TheGodfatherBot.Modules.Messages
     {
         #region STATIC_FIELDS
         private static SortedDictionary<ulong, SortedDictionary<string, string>> _aliases = new SortedDictionary<ulong, SortedDictionary<string, string>>();
+        private static bool _error = false;
         #endregion
 
         #region STATIC_FUNCTIONS
@@ -40,8 +41,8 @@ namespace TheGodfatherBot.Modules.Messages
                         _aliases[gid].Add(values[1], values[2]);
                     }
                 } catch (Exception e) {
-                    log.LogMessage(LogLevel.Error, "TheGodfather", "Alias loading error, clearing aliases. Details : " + e.ToString(), DateTime.Now);
-                    _aliases.Clear();
+                    log.LogMessage(LogLevel.Error, "TheGodfather", "Alias loading error, check file formatting.\n Details : " + e.ToString(), DateTime.Now);
+                    _error = true;
                 }
             } else {
                 log.LogMessage(LogLevel.Warning, "TheGodfather", "aliases.txt is missing.", DateTime.Now);
@@ -50,6 +51,11 @@ namespace TheGodfatherBot.Modules.Messages
 
         public static void SaveAliases(DebugLogger log)
         {
+            if (_error) {
+                log.LogMessage(LogLevel.Warning, "TheGodfather", "Alias saving skipped until file conflicts are resolved!", DateTime.Now);
+                return;
+            }
+
             try {
                 List<string> aliaslist = new List<string>();
 

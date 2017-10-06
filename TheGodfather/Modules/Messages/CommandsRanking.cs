@@ -20,8 +20,9 @@ namespace TheGodfatherBot.Modules.Messages
     [Aliases("ranks")]
     public class CommandsRanking
     {
-        #region PRIVATE_FIELDS
+        #region STATIC_FIELDS
         private static Dictionary<ulong, uint> _msgcount = new Dictionary<ulong, uint>();
+        private static bool _error = false;
         private static string[] _ranks = {
             "4U donor",
             "SoH MNG",
@@ -53,8 +54,8 @@ namespace TheGodfatherBot.Modules.Messages
                             _msgcount.Add(ulong.Parse(values[0]), uint.Parse(values[1]));
                     }
                 } catch (Exception e) {
-                    log.LogMessage(LogLevel.Error, "TheGodfather", "Rank loading error, clearing rank. Details : " + e.ToString(), DateTime.Now);
-                    _msgcount.Clear();
+                    log.LogMessage(LogLevel.Error, "TheGodfather", "Rank loading error, check file formatting.\n Details : " + e.ToString(), DateTime.Now);
+                    _error = true;
                 }
             } else {
                 log.LogMessage(LogLevel.Warning, "TheGodfather", "ranks.txt is missing.", DateTime.Now);
@@ -63,6 +64,11 @@ namespace TheGodfatherBot.Modules.Messages
 
         public static void SaveRanks(DebugLogger log)
         {
+            if (_error) {
+                log.LogMessage(LogLevel.Warning, "TheGodfather", "Ranks saving skipped until file conflicts are resolved!", DateTime.Now);
+                return;
+            }
+
             try {
                 List<string> lines = new List<string>();
 

@@ -23,6 +23,7 @@ namespace TheGodfatherBot.Modules.Messages
     {
         #region STATIC_FIELDS
         private static SortedDictionary<ulong, List<Regex>> _filters = new SortedDictionary<ulong, List<Regex>>();
+        private static bool _error = false;
         #endregion
 
         #region STATIC_FUNCTIONS
@@ -41,8 +42,8 @@ namespace TheGodfatherBot.Modules.Messages
                         _filters[gid].AddRange(values.Skip(1).Select(s => new Regex($"^{s}$", RegexOptions.IgnoreCase)));
                     }
                 } catch(Exception e) {
-                    log.LogMessage(LogLevel.Error, "TheGodfather", "Filter loading error, clearing filters. Details : " + e.ToString(), DateTime.Now);
-                    _filters.Clear();
+                    log.LogMessage(LogLevel.Error, "TheGodfather", "Filter loading error, check file formatting.\n Details : " + e.ToString(), DateTime.Now);
+                    _error = true;
                 }
             } else {
                 log.LogMessage(LogLevel.Warning, "TheGodfather", "filters.txt is missing.", DateTime.Now);
@@ -51,6 +52,11 @@ namespace TheGodfatherBot.Modules.Messages
 
         public static void SaveFilters(DebugLogger log)
         {
+            if (_error) {
+                log.LogMessage(LogLevel.Warning, "TheGodfather", "Filter saving skipped until file conflicts are resolved!", DateTime.Now);
+                return;
+            }
+
             try {
                 List<string> filterlist = new List<string>();
 

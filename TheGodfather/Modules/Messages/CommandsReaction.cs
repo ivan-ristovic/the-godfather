@@ -22,6 +22,7 @@ namespace TheGodfatherBot.Modules.Messages
     {
         #region STATIC_FIELDS
         private static SortedDictionary<ulong, SortedDictionary<string, string>> _reactions = new SortedDictionary<ulong, SortedDictionary<string, string>>();
+        private static bool _error = false;
         #endregion
 
         #region STATIC_FUNCTIONS
@@ -40,8 +41,8 @@ namespace TheGodfatherBot.Modules.Messages
                         _reactions[gid].Add(values[1], values[2]);
                     }
                 } catch (Exception e) {
-                    log.LogMessage(LogLevel.Error, "TheGodfather", "Reaction loading error, clearing reactions. Details : " + e.ToString(), DateTime.Now);
-                    _reactions.Clear();
+                    log.LogMessage(LogLevel.Error, "TheGodfather", "Reaction loading error, check file formatting.\n Details : " + e.ToString(), DateTime.Now);
+                    _error = true;
                 }
             } else {
                 log.LogMessage(LogLevel.Warning, "TheGodfather", "reactions.txt is missing.", DateTime.Now);
@@ -50,6 +51,11 @@ namespace TheGodfatherBot.Modules.Messages
 
         public static void SaveReactions(DebugLogger log)
         {
+            if (_error) {
+                log.LogMessage(LogLevel.Warning, "TheGodfather", "Reactions saving skipped until file conflicts are resolved!", DateTime.Now);
+                return;
+            }
+
             try {
                 List<string> reactionlist = new List<string>();
 
