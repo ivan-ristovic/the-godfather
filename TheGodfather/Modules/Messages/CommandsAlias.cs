@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 using TheGodfatherBot.Exceptions;
 
@@ -28,24 +29,15 @@ namespace TheGodfatherBot.Modules.Messages
         #region STATIC_FUNCTIONS
         public static void LoadAliases(DebugLogger log)
         {
-            if (File.Exists("Resources/aliases.txt")) {
+            if (File.Exists("Resources/aliases.json")) {
                 try {
-                    var lines = File.ReadAllLines("Resources/aliases.txt");
-                    foreach (string line in lines) {
-                        if (line.Trim() == "" || line[0] == '#')
-                            continue;
-                        var values = line.Split('$');
-                        ulong gid = ulong.Parse(values[0]);
-                        if (!_aliases.ContainsKey(gid))
-                            _aliases.Add(gid, new SortedDictionary<string, string>());
-                        _aliases[gid].Add(values[1], values[2]);
-                    }
+                    _aliases = JsonConvert.DeserializeObject<SortedDictionary<ulong, SortedDictionary<string, string>>>(File.ReadAllText("Resources/aliases.json"));
                 } catch (Exception e) {
-                    log.LogMessage(LogLevel.Error, "TheGodfather", "Alias loading error, check file formatting.\n Details : " + e.ToString(), DateTime.Now);
+                    log.LogMessage(LogLevel.Error, "TheGodfather", "Alias loading error, check file formatting. Details:\n" + e.ToString(), DateTime.Now);
                     _error = true;
                 }
             } else {
-                log.LogMessage(LogLevel.Warning, "TheGodfather", "aliases.txt is missing.", DateTime.Now);
+                log.LogMessage(LogLevel.Warning, "TheGodfather", "aliases.json is missing.", DateTime.Now);
             }
         }
 
@@ -57,15 +49,9 @@ namespace TheGodfatherBot.Modules.Messages
             }
 
             try {
-                List<string> aliaslist = new List<string>();
-
-                foreach (var guild_aliases in _aliases)
-                    foreach (var alias in guild_aliases.Value)
-                        aliaslist.Add(guild_aliases.Key + "$" + alias.Key + "$" + alias.Value);
-
-                File.WriteAllLines("Resources/aliases.txt", aliaslist);
+                File.WriteAllText("Resources/aliases.json", JsonConvert.SerializeObject(_aliases));
             } catch (Exception e) {
-                log.LogMessage(LogLevel.Error, "TheGodfather", "IO Alias save error:" + e.ToString(), DateTime.Now);
+                log.LogMessage(LogLevel.Error, "TheGodfather", "IO Alias save error. Details:\n" + e.ToString(), DateTime.Now);
                 throw new IOException("IO error while saving aliases.");
             }
         }

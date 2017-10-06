@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 using TheGodfatherBot.Exceptions;
 
@@ -28,23 +29,15 @@ namespace TheGodfatherBot.Modules.Messages
         #region STATIC_FUNCTIONS
         public static void LoadMemes(DebugLogger log)
         {
-            if (File.Exists("Resources/memes.txt")) {
+            if (File.Exists("Resources/memes.json")) {
                 try {
-                    var lines = File.ReadAllLines("Resources/memes.txt");
-                    foreach (string line in lines) {
-                        if (string.IsNullOrWhiteSpace(line) || line[0] == '#')
-                            continue;
-                        var values = line.Split('$');
-                        string name = values[0];
-                        if (!_memes.ContainsKey(name))
-                            _memes.Add(name, values[1]);
-                    }
+                    _memes = JsonConvert.DeserializeObject<SortedDictionary<string, string>>(File.ReadAllText("Resources/memes.json"));
                 } catch (Exception e) {
-                    log.LogMessage(LogLevel.Error, "TheGodfather", "Meme loading error, check file formatting.\n Details : " + e.ToString(), DateTime.Now);
+                    log.LogMessage(LogLevel.Error, "TheGodfather", "Meme loading error, check file formatting. Details:\n" + e.ToString(), DateTime.Now);
                     _error = true;
                 }
             } else {
-                log.LogMessage(LogLevel.Warning, "TheGodfather", "memes.txt is missing.", DateTime.Now);
+                log.LogMessage(LogLevel.Warning, "TheGodfather", "memes.json is missing.", DateTime.Now);
             }
         }
 
@@ -56,13 +49,9 @@ namespace TheGodfatherBot.Modules.Messages
             }
 
             try {
-                List<string> memelist = new List<string>();
-                foreach (var entry in _memes)
-                    memelist.Add(entry.Key + "$" + entry.Value);
-
-                File.WriteAllLines("Resources/memes.txt", memelist);
+                File.WriteAllText("Resources/memes.json", JsonConvert.SerializeObject(_memes));
             } catch (Exception e) {
-                log.LogMessage(LogLevel.Error, "TheGodfather", "Meme save error: " + e.ToString(), DateTime.Now);
+                log.LogMessage(LogLevel.Error, "TheGodfather", "Meme save error. Details:\n" + e.ToString(), DateTime.Now);
                 throw new IOException("Error while saving memes.");
             }
         }

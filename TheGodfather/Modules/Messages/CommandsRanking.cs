@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 using TheGodfatherBot.Exceptions;
 
@@ -43,22 +44,15 @@ namespace TheGodfatherBot.Modules.Messages
         #region STATIC_FUNCTIONS
         public static void LoadRanks(DebugLogger log)
         {
-            if (File.Exists("Resources/ranks.txt")) {
+            if (File.Exists("Resources/ranks.json")) {
                 try {
-                    var lines = File.ReadAllLines("Resources/ranks.txt");
-                    foreach (string line in lines) {
-                        if (line.Trim() == "" || line[0] == '#')
-                            continue;
-                        var values = line.Split('$');
-                        if (!_msgcount.ContainsKey(ulong.Parse(values[0])))
-                            _msgcount.Add(ulong.Parse(values[0]), uint.Parse(values[1]));
-                    }
+                    _msgcount = JsonConvert.DeserializeObject<Dictionary<ulong, uint>>(File.ReadAllText("Resources/ranks.json"));
                 } catch (Exception e) {
-                    log.LogMessage(LogLevel.Error, "TheGodfather", "Rank loading error, check file formatting.\n Details : " + e.ToString(), DateTime.Now);
+                    log.LogMessage(LogLevel.Error, "TheGodfather", "Rank loading error, check file formatting. Details:\n" + e.ToString(), DateTime.Now);
                     _error = true;
                 }
             } else {
-                log.LogMessage(LogLevel.Warning, "TheGodfather", "ranks.txt is missing.", DateTime.Now);
+                log.LogMessage(LogLevel.Warning, "TheGodfather", "ranks.json is missing.", DateTime.Now);
             }
         }
 
@@ -70,14 +64,9 @@ namespace TheGodfatherBot.Modules.Messages
             }
 
             try {
-                List<string> lines = new List<string>();
-
-                foreach (var info in _msgcount)
-                    lines.Add(info.Key + "$" + info.Value);
-
-                File.WriteAllLines("Resources/ranks.txt", lines);
+                File.WriteAllText("Resources/ranks.json", JsonConvert.SerializeObject(_msgcount));
             } catch (Exception e) {
-                log.LogMessage(LogLevel.Error, "TheGodfather", "IO Ranks save error:" + e.ToString(), DateTime.Now);
+                log.LogMessage(LogLevel.Error, "TheGodfather", "IO Ranks save error. Details:\n" + e.ToString(), DateTime.Now);
                 throw new IOException("IO error while saving ranks.");
             }
         }

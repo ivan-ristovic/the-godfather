@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 using TheGodfatherBot.Exceptions;
 
@@ -29,24 +30,15 @@ namespace TheGodfatherBot.Modules.Messages
         #region STATIC_FUNCTIONS
         public static void LoadFilters(DebugLogger log)
         {
-            if (File.Exists("Resources/filters.txt")) {
+            if (File.Exists("Resources/filters.json")) {
                 try {
-                    var lines = File.ReadAllLines("Resources/filters.txt");
-                    foreach (string line in lines) {
-                        if (line.Trim() == "" || line[0] == '#')
-                            continue;
-                        var values = line.Split('%');
-                        ulong gid = ulong.Parse(values[0]);
-                        if (!_filters.ContainsKey(gid))
-                            _filters.Add(gid, new List<Regex>());
-                        _filters[gid].AddRange(values.Skip(1).Select(s => new Regex($"^{s}$", RegexOptions.IgnoreCase)));
-                    }
-                } catch(Exception e) {
-                    log.LogMessage(LogLevel.Error, "TheGodfather", "Filter loading error, check file formatting.\n Details : " + e.ToString(), DateTime.Now);
+                    _filters = JsonConvert.DeserializeObject<SortedDictionary<ulong, List<Regex>>>(File.ReadAllText("Resources/filters.json"));
+                } catch (Exception e) {
+                    log.LogMessage(LogLevel.Error, "TheGodfather", "Filter loading error, check file formatting. Details:\n" + e.ToString(), DateTime.Now);
                     _error = true;
                 }
             } else {
-                log.LogMessage(LogLevel.Warning, "TheGodfather", "filters.txt is missing.", DateTime.Now);
+                log.LogMessage(LogLevel.Warning, "TheGodfather", "filters.json is missing.", DateTime.Now);
             }
         }
 
@@ -58,20 +50,9 @@ namespace TheGodfatherBot.Modules.Messages
             }
 
             try {
-                List<string> filterlist = new List<string>();
-
-                foreach (var guild_filter in _filters) {
-                    string line = guild_filter.Key.ToString();
-                    foreach (var filter in guild_filter.Value) {
-                        var f = filter.ToString();
-                        line += "%" + f.Substring(1, f.Length - 2);
-                    }
-                    filterlist.Add(line);
-                }
-
-                File.WriteAllLines("Resources/filters.txt", filterlist);
+                File.WriteAllText("Resources/filters.json", JsonConvert.SerializeObject(_filters));
             } catch (Exception e) {
-                log.LogMessage(LogLevel.Error, "TheGodfather", "IO Filter save error:" + e.ToString(), DateTime.Now);
+                log.LogMessage(LogLevel.Error, "TheGodfather", "IO Filter save error. Details:\n" + e.ToString(), DateTime.Now);
                 throw new IOException("IO error while saving filters.");
             }
         }

@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 using TheGodfatherBot.Exceptions;
 
@@ -28,24 +29,15 @@ namespace TheGodfatherBot.Modules.Messages
         #region STATIC_FUNCTIONS
         public static void LoadReactions(DebugLogger log)
         {
-            if (File.Exists("Resources/reactions.txt")) {
+            if (File.Exists("Resources/reactions.json")) {
                 try {
-                    var lines = File.ReadAllLines("Resources/reactions.txt");
-                    foreach (string line in lines) {
-                        if (line.Trim() == "" || line[0] == '#')
-                            continue;
-                        var values = line.Split('$');
-                        ulong gid = ulong.Parse(values[0]);
-                        if (!_reactions.ContainsKey(gid))
-                            _reactions.Add(gid, new SortedDictionary<string, string>());
-                        _reactions[gid].Add(values[1], values[2]);
-                    }
+                    _reactions = JsonConvert.DeserializeObject<SortedDictionary<ulong, SortedDictionary<string, string>>>(File.ReadAllText("Resources/reactions.json"));
                 } catch (Exception e) {
-                    log.LogMessage(LogLevel.Error, "TheGodfather", "Reaction loading error, check file formatting.\n Details : " + e.ToString(), DateTime.Now);
+                    log.LogMessage(LogLevel.Error, "TheGodfather", "Reaction loading error, check file formatting. Details:\n" + e.ToString(), DateTime.Now);
                     _error = true;
                 }
             } else {
-                log.LogMessage(LogLevel.Warning, "TheGodfather", "reactions.txt is missing.", DateTime.Now);
+                log.LogMessage(LogLevel.Warning, "TheGodfather", "reactions.json is missing.", DateTime.Now);
             }
         }
 
@@ -57,15 +49,9 @@ namespace TheGodfatherBot.Modules.Messages
             }
 
             try {
-                List<string> reactionlist = new List<string>();
-
-                foreach (var guild_reactions in _reactions)
-                    foreach (var reaction in guild_reactions.Value)
-                        reactionlist.Add(guild_reactions.Key + "$" + reaction.Key + "$" + reaction.Value);
-
-                File.WriteAllLines("Resources/reactions.txt", reactionlist);
+                File.WriteAllText("Resources/reactions.json", JsonConvert.SerializeObject(_reactions));
             } catch (Exception e) {
-                log.LogMessage(LogLevel.Error, "TheGodfather", "IO Reactions save error:" + e.ToString(), DateTime.Now);
+                log.LogMessage(LogLevel.Error, "TheGodfather", "Reactions save error. Details:\n" + e.ToString(), DateTime.Now);
                 throw new IOException("IO error while saving reactions.");
             }
         }

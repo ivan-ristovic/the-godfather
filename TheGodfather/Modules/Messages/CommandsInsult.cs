@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 using TheGodfatherBot.Exceptions;
 
@@ -27,16 +28,11 @@ namespace TheGodfatherBot.Modules.Messages
         #region STATIC_FUNCTIONS
         public static void LoadInsults(DebugLogger log)
         {
-            if (File.Exists("Resources/insults.txt")) {
+            if (File.Exists("Resources/insults.json")) {
                 try {
-                    var lines = File.ReadAllLines("Resources/insults.txt");
-                    foreach (string line in lines) {
-                        if (line.Trim() == "" || line[0] == '#')
-                            continue;
-                        _insults.Add(line);
-                    }
+                    _insults = JsonConvert.DeserializeObject<List<string>>(File.ReadAllText("Resources/insults.json"));
                 } catch (Exception e) {
-                    log.LogMessage(LogLevel.Error, "TheGodfather", "Insult loading error, clearing insults. Details : " + e.ToString(), DateTime.Now);
+                    log.LogMessage(LogLevel.Error, "TheGodfather", "Insult loading error, clearing insults. Details:\n" + e.ToString(), DateTime.Now);
                     _insults.Clear();
                 }
             } else {
@@ -47,9 +43,9 @@ namespace TheGodfatherBot.Modules.Messages
         public static void SaveInsults(DebugLogger log)
         {
             try {
-                File.WriteAllLines("Resources/insults.txt", _insults);
+                File.WriteAllText("Resources/insults.json", JsonConvert.SerializeObject(_insults));
             } catch (Exception e) {
-                log.LogMessage(LogLevel.Error, "TheGodfather", "IO insults save error:" + e.ToString(), DateTime.Now);
+                log.LogMessage(LogLevel.Error, "TheGodfather", "IO insults save error. Details:\n" + e.ToString(), DateTime.Now);
                 throw new IOException("IO error while saving insults.");
             }
         }
