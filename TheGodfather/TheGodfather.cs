@@ -403,23 +403,21 @@ namespace TheGodfatherBot
             // Check if message has react trigger
             var emojilist = Modules.Messages.CommandsReaction.GetReactionEmojis(_client, e.Guild.Id, e.Message.Content);
             if (emojilist.Count > 0) {
+                _client.DebugLogger.LogMessage(
+                    LogLevel.Info,
+                    "TheGodfather",
+                    $"Reactions triggered in message: {e.Message.Content}\n" +
+                    $" User: {e.Message.Author.ToString()}\n" +
+                    $" Location: '{e.Guild.Name}' ({e.Guild.Id}) ; {e.Channel.ToString()}"
+                    , DateTime.Now
+                );
                 foreach (var emoji in emojilist) {
-                    _client.DebugLogger.LogMessage(
-                        LogLevel.Info,
-                        "TheGodfather",
-                        $"Reaction triggered: {e.Message.Content}\n" +
-                        $" User: {e.Message.Author.ToString()}\n" +
-                        $" Location: '{e.Guild.Name}' ({e.Guild.Id}) ; {e.Channel.ToString()}"
-                        , DateTime.Now
-                    );
-
                     try {
                         await e.Message.CreateReactionAsync(emoji);
                     } catch (ArgumentException) {
                         await e.Channel.SendMessageAsync($"I have a reaction for that message set up ({emoji}) but that emoji doesn't exits. Fix your shit pls.");
                     }
-
-                    await Task.Delay(500);
+                    await Task.Delay(1000);
                 }
             }
         }
