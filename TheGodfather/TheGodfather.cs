@@ -188,7 +188,7 @@ namespace TheGodfatherBot
 
         private void SetupInteractivity()
         {
-            _interactivity = _client.UseInteractivity();
+            _interactivity = _client.UseInteractivity(new InteractivityConfiguration());
         }
 
         private void SetupVoice()
@@ -255,7 +255,7 @@ namespace TheGodfatherBot
         #region CLIENT_EVENTS
         private async Task Client_Heartbeated(HeartbeatEventArgs e)
         {
-            await _client.UpdateStatusAsync(new Game(Statuses[new Random().Next(Statuses.Count)]) { StreamType = GameStreamType.NoStream });
+            await _client.UpdateStatusAsync(new DiscordGame(Statuses[new Random().Next(Statuses.Count)]) { StreamType = GameStreamType.NoStream });
             SaveData();
         }
 
@@ -461,7 +461,7 @@ namespace TheGodfatherBot
         private async Task Client_Ready(ReadyEventArgs e)
         {
             _client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", "Ready.", DateTime.Now);
-            await _client.UpdateStatusAsync(new Game(Statuses[0]) { StreamType = GameStreamType.NoStream });
+            await _client.UpdateStatusAsync(new DiscordGame(Statuses[0]) { StreamType = GameStreamType.NoStream });
         }
         #endregion
 
