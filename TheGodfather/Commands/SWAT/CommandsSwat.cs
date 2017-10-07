@@ -311,6 +311,7 @@ namespace TheGodfatherBot.Commands.SWAT
         private async Task SendEmbedInfo(CommandContext ctx, string ip, string[] info)
         {
             var embed = new DiscordEmbedBuilder() {
+                Url = "https://swat4stats.com/servers/" + ip,
                 Title = info[0],
                 Description = ip,
                 Timestamp = DateTime.Now,
