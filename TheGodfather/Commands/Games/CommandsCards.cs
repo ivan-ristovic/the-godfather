@@ -16,6 +16,7 @@ namespace TheGodfatherBot.Commands.Games
     [Group("cards", CanInvokeWithoutSubcommand = false)]
     [Description("Deck manipulation commands.")]
     [Aliases("deck")]
+    [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
     public class CommandsCards
     {
         #region PRIVATE_FIELDS

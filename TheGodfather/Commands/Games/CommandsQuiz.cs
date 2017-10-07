@@ -19,6 +19,7 @@ namespace TheGodfatherBot.Commands.Games
     [Group("quiz", CanInvokeWithoutSubcommand = false)]
     [Description("Start a quiz!")]
     [Aliases("trivia")]
+    [Cooldown(2, 5, CooldownBucketType.User), Cooldown(3, 5, CooldownBucketType.Channel)]
     class CommandsQuiz
     {
         #region PRIVATE_FIELDS

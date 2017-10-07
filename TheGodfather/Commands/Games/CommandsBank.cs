@@ -17,6 +17,7 @@ namespace TheGodfatherBot.Commands.Games
     [Group("bank", CanInvokeWithoutSubcommand = true)]
     [Description("$$$")]
     [Aliases("$", "$$", "$$$")]
+    [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
     public class CommandsBank
     {
         #region STATIC_FIELDS
