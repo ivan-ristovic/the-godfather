@@ -188,7 +188,11 @@ namespace TheGodfatherBot
 
         private void SetupInteractivity()
         {
-            _interactivity = _client.UseInteractivity(new InteractivityConfiguration());
+            _interactivity = _client.UseInteractivity(new InteractivityConfiguration() {
+                PaginationBehaviour = TimeoutBehaviour.Delete,
+                PaginationTimeout = TimeSpan.FromSeconds(30),
+                Timeout = TimeSpan.FromSeconds(30)
+            });
         }
 
         private void SetupVoice()
