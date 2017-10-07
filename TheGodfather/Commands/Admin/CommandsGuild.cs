@@ -18,6 +18,7 @@ namespace TheGodfatherBot.Commands.Admin
     [Group("guild", CanInvokeWithoutSubcommand = false)]
     [Description("Miscellaneous guild control commands.")]
     [Aliases("server")]
+    [Cooldown(3, 5, CooldownBucketType.Channel)]
     public class CommandsGuild
     {
         #region COMMAND_GUILD_EMOJI

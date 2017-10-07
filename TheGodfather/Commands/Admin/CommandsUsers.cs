@@ -17,6 +17,7 @@ namespace TheGodfatherBot.Commands.Admin
     [Group("user", CanInvokeWithoutSubcommand = false)]
     [Description("Miscellaneous user control commands.")]
     [Aliases("users", "u", "usr")]
+    [Cooldown(3, 5, CooldownBucketType.User)]
     public class CommandsUsers
     {
         #region COMMAND_USER_ADDROLE

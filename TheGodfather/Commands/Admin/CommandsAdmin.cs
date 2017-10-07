@@ -23,6 +23,7 @@ namespace TheGodfatherBot.Commands.Admin
     [Group("admin")]
     [Description("Bot administration commands.")]
     [Hidden]
+    [Cooldown(3, 5, CooldownBucketType.Channel)]
     public class CommandsAdmin
     {
         #region COMMAND_CLEARLOG

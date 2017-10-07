@@ -15,6 +15,7 @@ namespace TheGodfatherBot.Commands.Admin
     [Group("channel", CanInvokeWithoutSubcommand = false)]
     [Description("Miscellaneous channel control commands.")]
     [Aliases("channels", "c", "chn")]
+    [Cooldown(3, 5, CooldownBucketType.Channel)]
     public class CommandsChannels
     {
         #region COMMAND_CHANNEL_CREATECATEGORY
@@ -126,6 +127,7 @@ namespace TheGodfatherBot.Commands.Admin
         [Group("this", CanInvokeWithoutSubcommand = false)]
         [Description("Control over current channel.")]
         [Aliases("current", "cur", "curr")]
+        [Cooldown(3, 5, CooldownBucketType.Channel)]
         public class CommandsThisChannel
         {
             #region COMMAND_CHANNEL_THIS_DELETE
