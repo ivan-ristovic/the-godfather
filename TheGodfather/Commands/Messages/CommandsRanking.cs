@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
@@ -23,7 +24,7 @@ namespace TheGodfatherBot.Commands.Messages
     public class CommandsRanking
     {
         #region STATIC_FIELDS
-        private static Dictionary<ulong, uint> _msgcount = new Dictionary<ulong, uint>();
+        private static ConcurrentDictionary<ulong, uint> _msgcount = new ConcurrentDictionary<ulong, uint>();
         private static bool _error = false;
         private static string[] _ranks = {
             "4U donor",
@@ -47,7 +48,7 @@ namespace TheGodfatherBot.Commands.Messages
         {
             if (File.Exists("Resources/ranks.json")) {
                 try {
-                    _msgcount = JsonConvert.DeserializeObject<Dictionary<ulong, uint>>(File.ReadAllText("Resources/ranks.json"));
+                    _msgcount = JsonConvert.DeserializeObject<ConcurrentDictionary<ulong, uint>>(File.ReadAllText("Resources/ranks.json"));
                 } catch (Exception e) {
                     log.LogMessage(LogLevel.Error, "TheGodfather", "Rank loading error, check file formatting. Details:\n" + e.ToString(), DateTime.Now);
                     _error = true;
@@ -169,7 +170,7 @@ namespace TheGodfatherBot.Commands.Messages
             if (_msgcount.ContainsKey(u.Id))
                 _msgcount[u.Id]++;
             else
-                _msgcount.Add(u.Id, 1);
+                _msgcount.TryAdd(u.Id, 1);
 
             if (CalculateRank(_msgcount[u.Id]) != CalculateRank(_msgcount[u.Id] - 1))
                 await PrintRankUpMessage(c, u);
