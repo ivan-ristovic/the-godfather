@@ -15,6 +15,7 @@ using DSharpPlus.Entities;
 namespace TheGodfatherBot.Commands.Main
 {
     [Description("Main bot commands.")]
+    [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
     public class CommandsMain
     {
         #region COMMAND_AVATAR

@@ -18,6 +18,7 @@ using DSharpPlus.Entities;
 namespace TheGodfatherBot.Commands.Main
 {
     [Description("Commands that use random numbers to generate their output.")]
+    [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
     public class CommandsRandom
     {
         #region COMMAND_8BALL
