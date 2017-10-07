@@ -17,6 +17,7 @@ namespace TheGodfatherBot.Commands.Search
     [Group("reddit", CanInvokeWithoutSubcommand = true)]
     [Description("Reddit commands.")]
     [Aliases("r")]
+    [Cooldown(2, 5, CooldownBucketType.User), Cooldown(4, 5, CooldownBucketType.Channel)]
     public class CommandsReddit
     {
         /*

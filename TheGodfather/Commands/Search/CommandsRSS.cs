@@ -14,6 +14,7 @@ namespace TheGodfatherBot.Commands.Search
 {
     [Group("rss", CanInvokeWithoutSubcommand = true)]
     [Description("RSS feed operations.")]
+    [Cooldown(2, 5, CooldownBucketType.User), Cooldown(4, 5, CooldownBucketType.Channel)]
     public class CommandsRSS
     {
         public async Task ExecuteGroupAsync(CommandContext ctx, 

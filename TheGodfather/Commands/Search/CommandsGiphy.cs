@@ -22,6 +22,7 @@ namespace TheGodfatherBot.Commands.Search
     [Group("gif", CanInvokeWithoutSubcommand = true)]
     [Description("GIPHY commands.")]
     [Aliases("giphy")]
+    [Cooldown(2, 5, CooldownBucketType.User), Cooldown(4, 5, CooldownBucketType.Channel)]
     public class CommandsGiphy
     {
         #region PRIVATE_FIELDS
