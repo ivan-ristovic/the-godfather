@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
@@ -23,7 +24,7 @@ namespace TheGodfatherBot.Commands.Messages
     public class CommandsMemes
     {
         #region STATIC_FIELDS
-        private static SortedDictionary<string, string> _memes = new SortedDictionary<string, string>();
+        private static ConcurrentDictionary<string, string> _memes = new ConcurrentDictionary<string, string>();
         private static bool _error = false;
         #endregion
 
@@ -32,7 +33,7 @@ namespace TheGodfatherBot.Commands.Messages
         {
             if (File.Exists("Resources/memes.json")) {
                 try {
-                    _memes = JsonConvert.DeserializeObject<SortedDictionary<string, string>>(File.ReadAllText("Resources/memes.json"));
+                    _memes = JsonConvert.DeserializeObject<ConcurrentDictionary<string, string>>(File.ReadAllText("Resources/memes.json"));
                 } catch (Exception e) {
                     log.LogMessage(LogLevel.Error, "TheGodfather", "Meme loading error, check file formatting. Details:\n" + e.ToString(), DateTime.Now);
                     _error = true;
@@ -77,6 +78,7 @@ namespace TheGodfatherBot.Commands.Messages
         [Command("add")]
         [Description("Add a new meme to the list.")]
         [Aliases("+", "new")]
+        [RequireOwner]
         public async Task AddMeme(CommandContext ctx,
                                  [Description("Short name (case insensitive).")] string name = null,
                                  [Description("URL.")] string url = null)
@@ -90,7 +92,8 @@ namespace TheGodfatherBot.Commands.Messages
             if (_memes.ContainsKey(name)) {
                 await ctx.RespondAsync("Meme with that name already exists!");
             } else {
-                _memes.Add(name, url);
+                if (!_memes.TryAdd(name, url))
+                    throw new CommandFailedException("Meme adding failed.");
                 await ctx.RespondAsync($"Meme {Formatter.Bold(name)} successfully added!");
             }
         }
@@ -100,6 +103,7 @@ namespace TheGodfatherBot.Commands.Messages
         [Command("delete")]
         [Description("Deletes a meme from list.")]
         [Aliases("-", "del", "remove")]
+        [RequireOwner]
         public async Task DeleteMeme(CommandContext ctx, 
                                     [Description("Short name (case insensitive).")] string name = null)
         {
@@ -110,8 +114,10 @@ namespace TheGodfatherBot.Commands.Messages
             if (!_memes.ContainsKey(name))
                 throw new CommandFailedException("Meme with that name doesn't exist!", new KeyNotFoundException());
 
-            _memes.Remove(name);
-            await ctx.RespondAsync($"Meme {Formatter.Bold(name)} successfully deleted!");
+            string url;
+            if (!_memes.TryRemove(name, out url))
+                throw new CommandFailedException("Meme removing failed.");
+            await ctx.RespondAsync($"Meme {Formatter.Bold(name)} ({url}) successfully deleted!");
         }
         #endregion
 
