@@ -232,6 +232,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Commands\Admin\Helpers\EvaluationEnvironment.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Exceptions.cs" />
     <Compile Include="Helpers\HelpFormatter.cs" />

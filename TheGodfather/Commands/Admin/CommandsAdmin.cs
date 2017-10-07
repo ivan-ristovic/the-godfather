@@ -9,6 +9,7 @@ using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis;
 
 using TheGodfatherBot.Exceptions;
+using TheGodfatherBot.Commands.Admin.Helpers;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -256,23 +257,6 @@ namespace TheGodfatherBot.Commands.Admin
                 await ctx.RespondAsync("My current statuses:\n" + string.Join("\n", TheGodfather.Statuses));
             }
             #endregion
-        }
-    }
-
-    public sealed class EvaluationEnvironment
-    {
-        public CommandContext Context { get; }
-        public DiscordMessage Message { get { return this.Context.Message; } }
-        public DiscordChannel Channel { get { return this.Context.Channel; } }
-        public DiscordGuild Guild { get { return this.Context.Guild; } }
-        public DiscordUser User { get { return this.Context.User; } }
-        public DiscordMember Member { get { return this.Context.Member; } }
-        public DiscordClient Client { get { return this.Context.Client; } }
-        public TheGodfather Godfather { get { return Context.Dependencies.GetDependency<TheGodfather>(); } }
-
-        public EvaluationEnvironment(CommandContext ctx)
-        {
-            this.Context = ctx;
         }
     }
 }
