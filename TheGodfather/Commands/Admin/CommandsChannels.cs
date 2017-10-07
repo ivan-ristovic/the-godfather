@@ -17,10 +17,26 @@ namespace TheGodfatherBot.Commands.Admin
     [Aliases("channels", "c", "chn")]
     public class CommandsChannels
     {
-        #region COMMAND_CHANNEL_CREATE
-        [Command("createtxt")]
+        #region COMMAND_CHANNEL_CREATECATEGORY
+        [Command("createcategory")]
+        [Description("Create new channel category.")]
+        [Aliases("createc", "+c", "makec", "newc", "addc")]
+        [RequirePermissions(Permissions.ManageChannels)]
+        public async Task CreateCategory(CommandContext ctx,
+                                        [RemainingText, Description("Name.")] string name = null)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new InvalidCommandUsageException("Missing category name.");
+
+            await ctx.Guild.CreateChannelAsync(name, ChannelType.Category);
+            await ctx.RespondAsync($"Category {Formatter.Bold(name)} successfully created.");
+        }
+        #endregion
+
+        #region COMMAND_CHANNEL_CREATETEXT
+        [Command("createtext")]
         [Description("Create new txt channel.")]
-        [Aliases("create", "+", "+t", "make", "new", "add")]
+        [Aliases("createtxt", "createt", "+", "+t", "maket", "newt", "addt")]
         [RequirePermissions(Permissions.ManageChannels)]
         public async Task CreateTextChannel(CommandContext ctx, 
                                            [RemainingText, Description("Name.")] string name = null)
@@ -36,7 +52,7 @@ namespace TheGodfatherBot.Commands.Admin
         #region COMMAND_CHANNEL_CREATEVOICE
         [Command("createvoice")]
         [Description("Create new voice channel.")]
-        [Aliases("+v", "makev", "newv", "addv")]
+        [Aliases("createv", "+v", "makev", "newv", "addv")]
         [RequirePermissions(Permissions.ManageChannels)]
         public async Task CreateVoiceChannel(CommandContext ctx, 
                                             [RemainingText, Description("Name.")] string name = null)
