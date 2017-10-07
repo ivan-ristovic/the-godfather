@@ -2,6 +2,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Threading;
@@ -15,12 +16,12 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Interactivity;
 using DSharpPlus.CommandsNext.Exceptions;
+using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.VoiceNext;
 using DSharpPlus.EventArgs;
 using DSharpPlus.Net.WebSocket;
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
-using System.Text;
 #endregion
 
 namespace TheGodfatherBot
@@ -522,7 +523,7 @@ namespace TheGodfatherBot
             else if (e.Exception is CommandFailedException)
                 embed.Description = $"{emoji} {ex.Message}";
             else if (ex is ChecksFailedException)
-                embed.Description = $"{emoji} Either you or I don't have the permissions required to execute this command.";
+                embed.Description = $"{emoji} Not allowed to execute this command.";
             else if (e.Exception is UnauthorizedException)
                 embed.Description = $"{emoji} I am not authorized to do that.";
             else
