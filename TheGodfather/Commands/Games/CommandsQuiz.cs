@@ -77,8 +77,7 @@ namespace TheGodfatherBot.Commands.Games
                 var interactivity = ctx.Client.GetInteractivityModule();
                 var msg = await interactivity.WaitForMessageAsync(
                     // TODO check enum when you add more quiz commands
-                    xm => xm.Content.ToLower() == _countries[question].ToLower(),
-                    TimeSpan.FromSeconds(20)
+                    xm => xm.Content.ToLower() == _countries[question].ToLower()
                 );
                 if (msg == null) {
                     await ctx.RespondAsync($"Time is out! The correct answer was: {Formatter.Bold(_countries[question])}");

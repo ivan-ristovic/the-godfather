@@ -181,10 +181,8 @@ namespace TheGodfatherBot.Commands.Games
 
             var interactivity = ctx.Client.GetInteractivityModule();
             var msg = await interactivity.WaitForMessageAsync(
-                xm =>
-                    (xm.Author.Id != ctx.User.Id) && (xm.Channel.Id == ctx.Channel.Id) &&
-                    (xm.Content.ToLower().StartsWith("me") || xm.Content.ToLower().StartsWith("i ")),
-                TimeSpan.FromMinutes(1)
+                xm => (xm.Author.Id != ctx.User.Id) && (xm.Channel.Id == ctx.Channel.Id) &&
+                      (xm.Content.ToLower().StartsWith("me") || xm.Content.ToLower().StartsWith("i "))
             );
             if (msg == null) {
                 await ctx.RespondAsync($"{ctx.User.Mention} right now: http://i0.kym-cdn.com/entries/icons/mobile/000/003/619/ForeverAlone.jpg");
