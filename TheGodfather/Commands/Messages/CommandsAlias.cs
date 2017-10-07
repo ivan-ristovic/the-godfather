@@ -19,6 +19,7 @@ namespace TheGodfatherBot.Commands.Messages
     [Group("alias", CanInvokeWithoutSubcommand = true)]
     [Description("Alias handling commands.")]
     [Aliases("a", "aliases")]
+    [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
     public class CommandsAlias
     {
         #region STATIC_FIELDS

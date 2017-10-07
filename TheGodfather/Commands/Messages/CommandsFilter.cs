@@ -20,6 +20,7 @@ namespace TheGodfatherBot.Commands.Messages
     [Group("filter", CanInvokeWithoutSubcommand = false)]
     [Description("Message filtering commands.")]
     [Aliases("f", "filters")]
+    [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
     public class CommandsFilter
     {
         #region STATIC_FIELDS

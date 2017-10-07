@@ -19,6 +19,7 @@ namespace TheGodfatherBot.Commands.Messages
     [Group("reactions", CanInvokeWithoutSubcommand = false /*true*/)]
     [Description("Reaction handling commands.")]
     [Aliases("react", "reaction")]
+    [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
     public class CommandsReaction
     {
         #region STATIC_FIELDS

@@ -19,6 +19,7 @@ namespace TheGodfatherBot.Commands.Messages
     [Group("rank", CanInvokeWithoutSubcommand = true)]
     [Description("User ranking commands.")]
     [Aliases("ranks")]
+    [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
     public class CommandsRanking
     {
         #region STATIC_FIELDS

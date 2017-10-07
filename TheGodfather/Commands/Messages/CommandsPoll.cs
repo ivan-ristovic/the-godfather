@@ -21,6 +21,7 @@ namespace TheGodfatherBot.Commands.Messages
     [Group("poll", CanInvokeWithoutSubcommand = true)]
     [Description("Starts a poll in the channel.")]
     [Aliases("vote")]
+    [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
     public class CommandsPoll
     {
         #region PRIVATE_FIELDS

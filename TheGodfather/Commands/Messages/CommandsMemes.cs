@@ -19,6 +19,7 @@ namespace TheGodfatherBot.Commands.Messages
     [Group("meme", CanInvokeWithoutSubcommand = true)]
     [Description("Contains some memes. When invoked without name, returns a random one.")]
     [Aliases("pic", "memes", "mm")]
+    [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
     public class CommandsMemes
     {
         #region STATIC_FIELDS
