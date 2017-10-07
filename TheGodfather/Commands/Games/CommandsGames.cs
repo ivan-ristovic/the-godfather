@@ -19,7 +19,7 @@ namespace TheGodfatherBot.Commands.Games
     [Description("Starts a game for you to play!")]
     [Aliases("game", "g")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
-    public class CommandsGames
+    public partial class CommandsGames
     {
         #region COMMAND_DUEL
         [Command("duel")]

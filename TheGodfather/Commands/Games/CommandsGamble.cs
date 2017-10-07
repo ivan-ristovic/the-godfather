@@ -13,9 +13,11 @@ using DSharpPlus.Entities;
 
 namespace TheGodfatherBot.Commands.Games
 {
-    [Description("Random number generation commands.")]
+    [Group("gamble", CanInvokeWithoutSubcommand = false)]
+    [Description("Random betting and gambling commands.")]
+    [Aliases("gambling", "betting", "bet")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
-    public class CommandsGamble
+    public partial class CommandsGamble
     {
         #region COMMAND_COINFLIP
         [Command("coinflip")]

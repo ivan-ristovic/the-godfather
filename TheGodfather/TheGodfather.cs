@@ -159,12 +159,8 @@ namespace TheGodfatherBot
             _commands.RegisterCommands<Commands.Admin.CommandsRoles>();
             _commands.RegisterCommands<Commands.Admin.CommandsUsers>();
             _commands.RegisterCommands<Commands.Games.CommandsBank>();
-            _commands.RegisterCommands<Commands.Games.CommandsCards>();
             _commands.RegisterCommands<Commands.Games.CommandsGamble>();
             _commands.RegisterCommands<Commands.Games.CommandsGames>();
-            _commands.RegisterCommands<Commands.Games.CommandsNunchi>();
-            _commands.RegisterCommands<Commands.Games.CommandsRace>();
-            _commands.RegisterCommands<Commands.Games.CommandsQuiz>();
             _commands.RegisterCommands<Commands.Main.CommandsMain>();
             _commands.RegisterCommands<Commands.Main.CommandsRandom>();
             _commands.RegisterCommands<Commands.Messages.CommandsAlias>();
