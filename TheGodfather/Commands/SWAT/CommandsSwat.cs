@@ -20,6 +20,7 @@ using DSharpPlus.Entities;
 namespace TheGodfatherBot.Commands.SWAT
 {
     [Description("SWAT4 related commands.")]
+    [Cooldown(2, 5, CooldownBucketType.User), Cooldown(4, 5, CooldownBucketType.Channel)]
     public class CommandsSwat
     {
         #region STATIC_FIELDS
