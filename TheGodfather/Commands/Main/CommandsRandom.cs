@@ -67,7 +67,7 @@ namespace TheGodfatherBot.Commands.Main
         #region COMMAND_PENIS
         [Command("penis")]
         [Description("An accurate size of the user's manhood.")]
-        [Aliases("size", "length", "manhood")]
+        [Aliases("size", "length", "manhood", "dick")]
         public async Task Penis(CommandContext ctx,
                                [Description("Who to measure")] DiscordUser u = null)
         {
