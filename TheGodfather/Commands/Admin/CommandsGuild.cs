@@ -1,6 +1,9 @@
 ﻿#region USING_DIRECTIVES
 using System;
 using System.Linq;
+using System.Net;
+using System.IO;
+using System.Drawing;
 using System.Collections;
 using System.Threading.Tasks;
 
@@ -33,6 +36,43 @@ namespace TheGodfatherBot.Commands.Admin
             }
 
 
+            #region COMMAND_GUILD_EMOJI_ADD
+            [Command("add")]
+            [Description("Add emoji.")]
+            [Aliases("create", "a", "+")]
+            [RequirePermissions(Permissions.ManageEmojis)]
+            public async Task AddEmoji(CommandContext ctx,
+                                      [Description("Name.")] string name = null,
+                                      [Description("URL.")] string url = null)
+            {
+                if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(url))
+                    throw new InvalidCommandUsageException("Name or URL missing or invalid.");
+
+                try {
+                    using (WebClient webClient = new WebClient()) {
+                        byte[] data = webClient.DownloadData(url);
+
+                        using (MemoryStream mem = new MemoryStream(data)) {
+                            using (Image image = Image.FromStream(mem)) {
+                                long ticks = DateTime.Now.Ticks;
+                                image.Save($"tmp{ticks}.png", System.Drawing.Imaging.ImageFormat.Png);
+                                FileStream fs = new FileStream($"tmp{ticks}.png", FileMode.Open);
+                                await ctx.Guild.CreateEmojiAsync(name, fs, reason: $"Made by Godfather ({ctx.User.Username})");
+                                await ctx.RespondAsync($"Emoji {Formatter.Bold(name)} successfully added!");
+                                File.Delete($"tmp{ticks}.png");
+                            }
+                        }
+                    }
+                } catch (WebException e) {
+                    throw new CommandFailedException("URL error.", e);
+                } catch (BadRequestException e) {
+                    throw new CommandFailedException("Bad request. Probably emoji slots are full?", e);
+                } catch (Exception e) {
+                    throw new CommandFailedException("IO error.", e);
+                }
+            }
+            #endregion
+
             #region COMMAND_GUILD_EMOJI_DELETE
             [Command("delete")]
             [Description("Remove emoji.")]
@@ -46,7 +86,9 @@ namespace TheGodfatherBot.Commands.Admin
 
                 try {
                     var emoji = await ctx.Guild.GetEmojiAsync(e.Id);
+                    string name = emoji.Name;
                     await ctx.Guild.DeleteEmojiAsync(emoji, $"TheGodfather ({ctx.User.Username})");
+                    await ctx.RespondAsync($"Emoji {Formatter.Bold(name)} successfully deleted!");
                 } catch (NotFoundException ex) {
                     throw new CommandFailedException("Can't find that emoji in list of emoji that I made for this guild.", ex);
                 }
