@@ -57,7 +57,7 @@ namespace TheGodfatherBot.Commands.Admin
                             using (Image image = Image.FromStream(mem)) {
                                 image.Save(filename, System.Drawing.Imaging.ImageFormat.Png);
                                 FileStream fs = new FileStream(filename, FileMode.Open);
-                                await ctx.Guild.CreateEmojiAsync(name, fs, reason: $"Made by Godfather ({ctx.User.Username})");
+                                await ctx.Guild.CreateEmojiAsync(name, fs, reason: $"TheGodfather add ({ctx.User.Username})");
                                 await ctx.RespondAsync($"Emoji {Formatter.Bold(name)} successfully added!");
                                 File.Delete(filename);
                             }
@@ -90,7 +90,7 @@ namespace TheGodfatherBot.Commands.Admin
                 try {
                     var emoji = await ctx.Guild.GetEmojiAsync(e.Id);
                     string name = emoji.Name;
-                    await ctx.Guild.DeleteEmojiAsync(emoji, $"TheGodfather ({ctx.User.Username})");
+                    await ctx.Guild.DeleteEmojiAsync(emoji, $"TheGodfather delete ({ctx.User.Username})");
                     await ctx.RespondAsync($"Emoji {Formatter.Bold(name)} successfully deleted!");
                 } catch (NotFoundException ex) {
                     throw new CommandFailedException("Can't find that emoji in list of emoji that I made for this guild.", ex);
@@ -113,6 +113,31 @@ namespace TheGodfatherBot.Commands.Admin
                     Description = s,
                     Color = DiscordColor.CornflowerBlue
                 });
+            }
+            #endregion
+
+            #region COMMAND_GUILD_EMOJI_MODIFY
+            [Command("modify")]
+            [Description("Remove emoji.")]
+            [Aliases("edit", "mod", "e", "m", "rename")]
+            [RequirePermissions(Permissions.ManageEmojis)]
+            public async Task EditEmoji(CommandContext ctx,
+                                       [Description("Emoji.")] DiscordEmoji e = null,
+                                       [Description("Name.")] string name = null)
+            {
+                if (e == null)
+                    throw new InvalidCommandUsageException("Emoji missing.");
+
+                if (string.IsNullOrWhiteSpace(name))
+                    throw new InvalidCommandUsageException("Name missing.");
+
+                try {
+                    var emoji = await ctx.Guild.GetEmojiAsync(e.Id);
+                    await ctx.Guild.ModifyEmojiAsync(emoji, name: name, reason: $"TheGodfather edit ({ctx.User.Username})");
+                    await ctx.RespondAsync("Emoji successfully edited!");
+                } catch (NotFoundException ex) {
+                    throw new CommandFailedException("Can't find that emoji in list of emoji that I made for this guild.", ex);
+                }
             }
             #endregion
         }
