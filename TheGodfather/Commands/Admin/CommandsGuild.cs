@@ -11,13 +11,14 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.Interactivity;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using DSharpPlus.Exceptions;
 #endregion
 
 namespace TheGodfatherBot.Commands.Admin
 {
     [Group("guild", CanInvokeWithoutSubcommand = false)]
     [Description("Miscellaneous guild control commands.")]
-    [Aliases("server")]
+    [Aliases("server", "g")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public class CommandsGuild
     {
@@ -30,6 +31,27 @@ namespace TheGodfatherBot.Commands.Admin
             {
                 await ListEmoji(ctx);
             }
+
+
+            #region COMMAND_GUILD_EMOJI_DELETE
+            [Command("delete")]
+            [Description("Remove emoji.")]
+            [Aliases("remove", "del", "-", "d")]
+            [RequirePermissions(Permissions.ManageEmojis)]
+            public async Task DeleteEmoji(CommandContext ctx,
+                                         [Description("Emoji.")] DiscordEmoji e = null)
+            {
+                if (e == null)
+                    throw new InvalidCommandUsageException("Emoji missing.");
+
+                try {
+                    var emoji = await ctx.Guild.GetEmojiAsync(e.Id);
+                    await ctx.Guild.DeleteEmojiAsync(emoji, $"TheGodfather ({ctx.User.Username})");
+                } catch (NotFoundException ex) {
+                    throw new CommandFailedException("Can't find that emoji in list of emoji that I made for this guild.", ex);
+                }
+            }
+            #endregion
 
             #region COMMAND_GUILD_EMOJI_LIST
             [Command("list")]

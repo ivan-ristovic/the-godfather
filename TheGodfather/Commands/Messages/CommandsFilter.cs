@@ -75,7 +75,7 @@ namespace TheGodfatherBot.Commands.Messages
         [Aliases("+", "new")]
         [RequireUserPermissions(Permissions.ManageMessages)]
         public async Task AddFilter(CommandContext ctx,
-                                   [Description("Filter. Can be a regex (case insensitive).")] string filter = null)
+                                   [RemainingText, Description("Filter. Can be a regex (case insensitive).")] string filter = null)
         {
             if (string.IsNullOrWhiteSpace(filter))
                 throw new InvalidCommandUsageException("Filter trigger missing.");

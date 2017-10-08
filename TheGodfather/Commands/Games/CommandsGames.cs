@@ -17,7 +17,7 @@ namespace TheGodfatherBot.Commands.Games
 {
     [Group("games", CanInvokeWithoutSubcommand = false)]
     [Description("Starts a game for you to play!")]
-    [Aliases("game", "g")]
+    [Aliases("game", "gm")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
     public partial class CommandsGames
     {
