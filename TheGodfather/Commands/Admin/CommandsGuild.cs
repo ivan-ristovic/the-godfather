@@ -21,23 +21,34 @@ namespace TheGodfatherBot.Commands.Admin
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public class CommandsGuild
     {
-        #region COMMAND_GUILD_EMOJI
-        [Command("emoji")]
-        [Description("Print list of guild emojis.")]
-        [Aliases("emojis")]
-        public async Task GetEmoji(CommandContext ctx)
+        [Group("emoji", CanInvokeWithoutSubcommand = true)]
+        [Description("Manipulate guild emoji.")]
+        [Aliases("emojis", "e")]
+        public class CommandsGuildEmoji
         {
-            string s = "";
-            foreach (var emoji in ctx.Guild.Emojis)
-                s += $"{Formatter.Bold(emoji.Name)} ";
+            public async Task ExecuteGroupAsync(CommandContext ctx)
+            {
+                await ListEmoji(ctx);
+            }
 
-            await ctx.RespondAsync("", embed: new DiscordEmbedBuilder() {
-                Title = "Available emoji:",
-                Description = s,
-                Color = DiscordColor.CornflowerBlue
-            });
+            #region COMMAND_GUILD_EMOJI_LIST
+            [Command("list")]
+            [Description("Print list of guild emojis.")]
+            [Aliases("print", "show", "l", "p")]
+            public async Task ListEmoji(CommandContext ctx)
+            {
+                string s = "";
+                foreach (var emoji in ctx.Guild.Emojis)
+                    s += $"{Formatter.Bold(emoji.Name)} ";
+
+                await ctx.RespondAsync("", embed: new DiscordEmbedBuilder() {
+                    Title = "Available emoji:",
+                    Description = s,
+                    Color = DiscordColor.CornflowerBlue
+                });
+            }
+            #endregion
         }
-        #endregion
 
         #region COMMAND_GUILD_LISTMEMBERS
         [Command("listmembers")]
