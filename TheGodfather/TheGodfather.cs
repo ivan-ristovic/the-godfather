@@ -49,7 +49,7 @@ namespace TheGodfatherBot
             _client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", "Shutting down by demand...", DateTime.Now);
 
             SaveData();
-            
+
             if (_logstream != null)
                 _logstream.Close();
             _client.DisconnectAsync();
@@ -244,7 +244,7 @@ namespace TheGodfatherBot
         {
             string prefix = _prefixes.ContainsKey(m.ChannelId) ? _prefixes[m.ChannelId] : Config.DefaultPrefix;
             int pos = m.Content.IndexOf(prefix);
-            
+
             if (pos != 0)
                 return Task.FromResult(-1);
             else
@@ -307,10 +307,10 @@ namespace TheGodfatherBot
         private async Task Client_GuildMemberRemove(GuildMemberRemoveEventArgs e)
         {
             _client.DebugLogger.LogMessage(
-                LogLevel.Info, 
-                "TheGodfather", 
+                LogLevel.Info,
+                "TheGodfather",
                 $"Member left: {e.Member.Username} ({e.Member.Id})\n" +
-                $" Guild: {e.Guild.Name} ({e.Guild.Id})", 
+                $" Guild: {e.Guild.Name} ({e.Guild.Id})",
                 DateTime.Now
             );
             try {
@@ -471,7 +471,7 @@ namespace TheGodfatherBot
         private Task Commands_CommandExecuted(CommandExecutionEventArgs e)
         {
             e.Context.Client.DebugLogger.LogMessage(
-                LogLevel.Info, 
+                LogLevel.Info,
                 "TheGodfather",
                 $"Executed: {e.Command?.QualifiedName ?? "<unknown command>"}\n" +
                 $" User: {e.Context.User.ToString()}\n" +
@@ -491,12 +491,12 @@ namespace TheGodfatherBot
                 ex = ex.InnerException;
 
             e.Context.Client.DebugLogger.LogMessage(
-                LogLevel.Error, 
+                LogLevel.Error,
                 "TheGodfather",
                 $"Tried executing: {e.Command?.QualifiedName ?? "<unknown command>"}\n" +
                 $" User: {e.Context.User.ToString()}\n" +
                 $" Location: '{e.Context.Guild.Name}' ({e.Context.Guild.Id}) ; {e.Context.Channel.ToString()}\n" +
-                $" Exception: {ex.GetType()}\n" + 
+                $" Exception: {ex.GetType()}\n" +
                 (ex.InnerException != null ? $" Inner exception: {ex.InnerException.GetType()}\n" : "") +
                 $" Message: {ex.Message ?? "<no message>"}"
                 , DateTime.Now
@@ -519,9 +519,13 @@ namespace TheGodfatherBot
             else if (e.Exception is CommandFailedException)
                 embed.Description = $"{emoji} {ex.Message}";
             else if (ex is ChecksFailedException exc) {
-                //foreach (var a in exc.FailedChecks)
-                //    Console.WriteLine(a.GetType().ToString());
-                embed.Description = $"{emoji} Not allowed to execute this command.";
+                var attr = exc.FailedChecks.First();
+                if (attr is CooldownAttribute)
+                    embed.Description = $"{emoji} CHILL!";
+                else if (attr is RequireUserPermissionsAttribute)
+                    embed.Description = $"{emoji} You do not have the required permissions to run this command!";
+                else if (attr is RequirePermissionsAttribute)
+                    embed.Description = $"{emoji} Permissions to execute that command aren't met!";
             } else if (e.Exception is UnauthorizedException)
                 embed.Description = $"{emoji} I am not authorized to do that.";
             else
