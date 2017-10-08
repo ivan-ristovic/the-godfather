@@ -17,7 +17,7 @@ namespace TheGodfatherBot.Commands.Admin
     [Description("Commands to manipulate messages on the channel.")]
     [RequirePermissions(Permissions.ManageMessages)]
     [Aliases("m", "msg", "msgs")]
-    [Cooldown(1, 5, CooldownBucketType.User)]
+    [Cooldown(2, 5, CooldownBucketType.User)]
     public class CommandsMessages
     {
         #region COMMAND_DELETE
