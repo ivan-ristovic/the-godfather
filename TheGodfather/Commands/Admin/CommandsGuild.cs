@@ -48,18 +48,18 @@ namespace TheGodfatherBot.Commands.Admin
                 if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(url))
                     throw new InvalidCommandUsageException("Name or URL missing or invalid.");
 
+                string filename = $"tmp{DateTime.Now.Ticks}.png";
                 try {
                     using (WebClient webClient = new WebClient()) {
                         byte[] data = webClient.DownloadData(url);
 
                         using (MemoryStream mem = new MemoryStream(data)) {
                             using (Image image = Image.FromStream(mem)) {
-                                long ticks = DateTime.Now.Ticks;
-                                image.Save($"tmp{ticks}.png", System.Drawing.Imaging.ImageFormat.Png);
-                                FileStream fs = new FileStream($"tmp{ticks}.png", FileMode.Open);
+                                image.Save(filename, System.Drawing.Imaging.ImageFormat.Png);
+                                FileStream fs = new FileStream(filename, FileMode.Open);
                                 await ctx.Guild.CreateEmojiAsync(name, fs, reason: $"Made by Godfather ({ctx.User.Username})");
                                 await ctx.RespondAsync($"Emoji {Formatter.Bold(name)} successfully added!");
-                                File.Delete($"tmp{ticks}.png");
+                                File.Delete(filename);
                             }
                         }
                     }
@@ -69,6 +69,9 @@ namespace TheGodfatherBot.Commands.Admin
                     throw new CommandFailedException("Bad request. Probably emoji slots are full?", e);
                 } catch (Exception e) {
                     throw new CommandFailedException("IO error.", e);
+                } finally {
+                    if (File.Exists(filename))
+                        File.Delete(filename);
                 }
             }
             #endregion
