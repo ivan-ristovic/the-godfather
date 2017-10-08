@@ -109,16 +109,16 @@ namespace TheGodfatherBot.Commands.Messages
         [Aliases("-", "remove", "del")]
         [RequireUserPermissions(Permissions.ManageMessages)]
         public async Task DeleteFilter(CommandContext ctx, 
-                                      [Description("Filter to remove.")] string filter = null)
+                                      [Description("Filter index.")] int i = 0)
         {
-            if (string.IsNullOrWhiteSpace(filter))
-                throw new InvalidCommandUsageException("Alias name missing.");
-
             if (!_filters.ContainsKey(ctx.Guild.Id))
-                throw new CommandFailedException("No aliases recorded in this guild.", new KeyNotFoundException());
+                throw new CommandFailedException("No filters recorded in this guild.", new KeyNotFoundException());
 
-            _filters[ctx.Guild.Id].RemoveAll(r => r.ToString() == filter);
-            await ctx.RespondAsync($"Filter {Formatter.Bold(filter)} successfully removed.");
+            if (i < 0 || i > _filters[ctx.Guild.Id].Count)
+                throw new CommandFailedException("There is no filter with such index.", new ArgumentOutOfRangeException());
+
+            _filters[ctx.Guild.Id].RemoveAt(i);
+            await ctx.RespondAsync("Filter successfully removed.");
         }
         #endregion
         
@@ -153,7 +153,7 @@ namespace TheGodfatherBot.Commands.Messages
             var filters = _filters[ctx.Guild.Id].Take(page * 10).ToArray();
             for (var i = starti; i < endi; i++) {
                 var filter = filters[i].ToString();
-                s += filter.Substring(1, filter.Length - 2) + "\n";
+                s += $"{Formatter.Bold(i.ToString())} : {filter.Substring(1, filter.Length - 2)}\n";
             }
 
             await ctx.RespondAsync("", embed: new DiscordEmbedBuilder() {

@@ -121,21 +121,10 @@ namespace TheGodfatherBot.Commands.Messages
         }
         #endregion
 
-        #region COMMAND_INSULTS_SAVE
-        [Command("save")]
-        [Description("Save insults to file.")]
-        [RequireOwner]
-        public async Task SaveInsults(CommandContext ctx)
-        {
-            SaveInsults(ctx.Client.DebugLogger);
-            await ctx.RespondAsync("Insults successfully saved.");
-        }
-        #endregion
-
         #region COMMAND_INSULTS_LIST
         [Command("list")]
         [Description("Show all insults.")]
-        public async Task ListInsults(CommandContext ctx, 
+        public async Task ListInsults(CommandContext ctx,
                                      [Description("Page.")] int page = 1)
         {
             if (page < 1 || page > _insults.Count / 10 + 1)
@@ -145,13 +134,24 @@ namespace TheGodfatherBot.Commands.Messages
             int starti = (page - 1) * 10;
             int endi = starti + 10 < _insults.Count ? starti + 10 : _insults.Count;
             for (int i = starti; i < endi; i++)
-                s += "**" + i.ToString() + "** : " + _insults[i] + "\n";
+                s += $"{Formatter.Bold(i.ToString())} : {_insults[i]}\n";
 
             await ctx.RespondAsync("", embed: new DiscordEmbedBuilder() {
                 Title = $"Available insults (page {page}/{_insults.Count / 10 + 1}) :",
                 Description = s,
                 Color = DiscordColor.Turquoise
             });
+        }
+        #endregion
+
+        #region COMMAND_INSULTS_SAVE
+        [Command("save")]
+        [Description("Save insults to file.")]
+        [RequireOwner]
+        public async Task SaveInsults(CommandContext ctx)
+        {
+            SaveInsults(ctx.Client.DebugLogger);
+            await ctx.RespondAsync("Insults successfully saved.");
         }
         #endregion
     }
