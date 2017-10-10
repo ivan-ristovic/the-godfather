@@ -24,7 +24,7 @@ namespace TheGodfather.Commands.Messages
     {
         #region STATIC_FIELDS
         private static List<string> _insults = new List<string>();
-        private object _lock;
+        private static object _lock = new object();
         #endregion
 
         #region STATIC_FUNCTIONS

@@ -35,7 +35,7 @@ namespace TheGodfather
         private static VoiceNextClient _voice { get; set; }
 
         private static StreamWriter _logstream = null;
-        private static EventWaitHandle _logwritelock = null;
+        private static object _lock = new object();
 
         private static ConcurrentDictionary<ulong, string> _prefixes = new ConcurrentDictionary<ulong, string>();
 
@@ -88,19 +88,16 @@ namespace TheGodfather
         {
             try {
                 _logstream = new StreamWriter("log.txt", append: true);
-                _logwritelock = new EventWaitHandle(true, EventResetMode.AutoReset, "SHARED_BY_ALL_PROCESSES");
             } catch (Exception e) {
                 Console.WriteLine("Cannot open log file. Details: " + e.Message);
                 return;
             }
 
             try {
-                _logwritelock.WaitOne();
-                _logstream.WriteLine();
-                _logstream.WriteLine($"*** NEW INSTANCE STARTED AT {DateTime.Now.ToLongDateString()} : {DateTime.Now.ToLongTimeString()} ***");
-                _logstream.WriteLine();
-                _logstream.Flush();
-                _logwritelock.Set();
+                lock (_lock) {
+                    _logstream.WriteLine($"\n*** NEW INSTANCE STARTED AT {DateTime.Now.ToLongDateString()} : {DateTime.Now.ToLongTimeString()} ***\n");
+                    _logstream.Flush();
+                }
             } catch (Exception e) {
                 _client.DebugLogger.LogMessage(LogLevel.Error, "TheGodfather", "Cannot write to log file. Details: " + e.Message, DateTime.Now);
             }
@@ -108,11 +105,9 @@ namespace TheGodfather
 
         public static void CloseLogFile()
         {
-            if (_logwritelock != null && _logstream != null) {
+            if (_logstream != null) {
                 _logstream.Close();
-                _logwritelock.Dispose();
                 _logstream = null;
-                _logwritelock = null;
             }
         }
 
@@ -337,10 +332,10 @@ namespace TheGodfather
                 return;
 
             try {
-                _logwritelock.WaitOne();
-                _logstream.WriteLine($"*[{e.Timestamp}] [{e.Level}]\t{e.Message}");
-                _logstream.Flush();
-                _logwritelock.Set();
+                lock (_lock) {
+                    _logstream.WriteLine($"[{e.Timestamp}] [{e.Level}]{Environment.NewLine}{e.Message}");
+                    _logstream.Flush();
+                }
             } catch (Exception ex) {
                 Console.WriteLine(ex.Message);
             }
@@ -473,8 +468,8 @@ namespace TheGodfather
             e.Context.Client.DebugLogger.LogMessage(
                 LogLevel.Info,
                 "TheGodfather",
-                $"Executed: {e.Command?.QualifiedName ?? "<unknown command>"}\n" +
-                $" User: {e.Context.User.ToString()}\n" +
+                $" Executed: {e.Command?.QualifiedName ?? "<unknown command>"}" + Environment.NewLine +
+                $" User: {e.Context.User.ToString()}" + Environment.NewLine +
                 $" Location: '{e.Context.Guild.Name}' ({e.Context.Guild.Id}) ; {e.Context.Channel.ToString()}"
                 , DateTime.Now
             );
@@ -493,11 +488,11 @@ namespace TheGodfather
             e.Context.Client.DebugLogger.LogMessage(
                 LogLevel.Error,
                 "TheGodfather",
-                $"Tried executing: {e.Command?.QualifiedName ?? "<unknown command>"}\n" +
-                $" User: {e.Context.User.ToString()}\n" +
-                $" Location: '{e.Context.Guild.Name}' ({e.Context.Guild.Id}) ; {e.Context.Channel.ToString()}\n" +
-                $" Exception: {ex.GetType()}\n" +
-                (ex.InnerException != null ? $" Inner exception: {ex.InnerException.GetType()}\n" : "") +
+                $" Tried executing: {e.Command?.QualifiedName ?? "<unknown command>"}" + Environment.NewLine +
+                $" User: {e.Context.User.ToString()}" + Environment.NewLine +
+                $" Location: '{e.Context.Guild.Name}' ({e.Context.Guild.Id}) ; {e.Context.Channel.ToString()}" + Environment.NewLine +
+                $" Exception: {ex.GetType()}" + Environment.NewLine +
+                (ex.InnerException != null ? $" Inner exception: {ex.InnerException.GetType()}" + Environment.NewLine : "") +
                 $" Message: {ex.Message ?? "<no message>"}"
                 , DateTime.Now
             );
