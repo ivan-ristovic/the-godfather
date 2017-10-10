@@ -147,12 +147,12 @@ namespace TheGodfather
 
             _commands.SetHelpFormatter<HelpFormatter>();
 
-            _commands.RegisterCommands<Commands.Admin.CommandsAdmin>();
-            _commands.RegisterCommands<Commands.Admin.CommandsChannels>();
-            _commands.RegisterCommands<Commands.Admin.CommandsGuild>();
-            _commands.RegisterCommands<Commands.Admin.CommandsMessages>();
-            _commands.RegisterCommands<Commands.Admin.CommandsRoles>();
-            _commands.RegisterCommands<Commands.Admin.CommandsUsers>();
+            _commands.RegisterCommands<Commands.Administration.CommandsAdmin>();
+            _commands.RegisterCommands<Commands.Administration.CommandsChannels>();
+            _commands.RegisterCommands<Commands.Administration.CommandsGuild>();
+            _commands.RegisterCommands<Commands.Administration.CommandsMessages>();
+            _commands.RegisterCommands<Commands.Administration.CommandsRoles>();
+            _commands.RegisterCommands<Commands.Administration.CommandsUsers>();
             _commands.RegisterCommands<Commands.Games.CommandsBank>();
             _commands.RegisterCommands<Commands.Games.CommandsGamble>();
             _commands.RegisterCommands<Commands.Games.CommandsGames>();

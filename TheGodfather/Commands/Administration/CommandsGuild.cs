@@ -17,7 +17,7 @@ using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
 #endregion
 
-namespace TheGodfather.Commands.Admin
+namespace TheGodfather.Commands.Administration
 {
     [Group("guild", CanInvokeWithoutSubcommand = false)]
     [Description("Miscellaneous guild control commands.")]

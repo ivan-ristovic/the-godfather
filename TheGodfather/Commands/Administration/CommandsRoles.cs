@@ -11,7 +11,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 #endregion
 
-namespace TheGodfather.Commands.Admin
+namespace TheGodfather.Commands.Administration
 {
     [Group("roles", CanInvokeWithoutSubcommand = true)]
     [Description("Miscellaneous role control commands.")]

@@ -12,7 +12,7 @@ using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
 #endregion
 
-namespace TheGodfather.Commands.Admin
+namespace TheGodfather.Commands.Administration
 {
     [Group("user", CanInvokeWithoutSubcommand = false)]
     [Description("Miscellaneous user control commands.")]

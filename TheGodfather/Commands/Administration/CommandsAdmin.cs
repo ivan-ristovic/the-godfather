@@ -9,7 +9,7 @@ using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis;
 
 using TheGodfather.Exceptions;
-using TheGodfather.Commands.Admin.Helpers;
+using TheGodfather.Commands.Administration.Helpers;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -18,7 +18,7 @@ using DSharpPlus.Entities;
 #endregion
 
 
-namespace TheGodfather.Commands.Admin
+namespace TheGodfather.Commands.Administration
 {
     [Group("admin")]
     [Description("Bot administration commands.")]

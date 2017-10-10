@@ -10,7 +10,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 #endregion
 
-namespace TheGodfather.Commands.Admin
+namespace TheGodfather.Commands.Administration
 {
     [Group("channel", CanInvokeWithoutSubcommand = false)]
     [Description("Miscellaneous channel control commands.")]
