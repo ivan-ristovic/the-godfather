@@ -24,16 +24,16 @@ namespace TheGodfather.Commands.Administration
         [Command("delete")]
         [Description("Deletes the specified ammount of most-recent messages from the channel.")]
         [Aliases("-", "prune", "del", "d")]
-        [RequirePermissions(Permissions.Administrator)]
+        [RequirePermissions(Permissions.ManageMessages)]
+        [RequireUserPermissions(Permissions.Administrator)]
         public async Task Delete(CommandContext ctx, 
                                 [Description("Ammount.")] int n = 1)
         {
             if (n <= 0 || n > 10000)
                 throw new CommandFailedException("Invalid number of messages to delete (must be in range [1, 10000].", new ArgumentOutOfRangeException());
 
-            await ctx.Channel.GetMessagesAsync(n).ContinueWith(
-                async t => await ctx.Channel.DeleteMessagesAsync(t.Result)
-            );
+            var msgs = await ctx.Channel.GetMessagesAsync(n);
+            await ctx.Channel.DeleteMessagesAsync(msgs);
         }
         #endregion
 
@@ -41,7 +41,8 @@ namespace TheGodfather.Commands.Administration
         [Command("deletefrom")]
         [Description("Deletes given ammount of most-recent messages from given user.")]
         [Aliases("-user", "deluser", "du", "delfrom", "deleteu")]
-        [RequirePermissions(Permissions.Administrator)]
+        [RequirePermissions(Permissions.ManageMessages)]
+        [RequireUserPermissions(Permissions.Administrator)]
         public async Task DeleteUserMessages(CommandContext ctx, 
                                             [Description("User.")] DiscordUser u = null,
                                             [Description("Ammount.")] int n = 1)
