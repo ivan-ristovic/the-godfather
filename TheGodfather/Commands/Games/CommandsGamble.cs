@@ -37,9 +37,9 @@ namespace TheGodfather.Commands.Games
                 bet = bet.ToLower();
 
                 int guess;
-                if (bet == "heads" || bet == "h")
+                if (bet == "heads" || bet == "head" || bet == "h")
                     guess = 0;
-                else if (bet == "tails" || bet == "t")
+                else if (bet == "tails" || bet == "tail" || bet == "t")
                     guess = 1;
                 else
                     throw new CommandFailedException($"Invalid coin outcome call (has to be {Formatter.Bold("h")} or {Formatter.Bold("t")})");
