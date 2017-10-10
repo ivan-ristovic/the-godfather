@@ -94,6 +94,26 @@ namespace TheGodfather.Commands.Administration
             } catch (BadRequestException e) {
                 throw new CommandFailedException("That message cannot be pinned!", e);
             }
+
+            await ctx.RespondAsync("Message successfully pinned!");
+        }
+        #endregion
+
+        #region COMMAND_MESSAGES_UNPIN
+        [Command("unpin")]
+        [Description("Unpins the message at given index (starting from 0).")]
+        [Aliases("up")]
+        [RequirePermissions(Permissions.ManageMessages)]
+        public async Task Unpin(CommandContext ctx,
+                               [Description("Index (starting from 0")] int i = 0)
+        {
+            var pinned = await ctx.Channel.GetPinnedMessagesAsync();
+
+            if (i < 0 || i > pinned.Count)
+                throw new CommandFailedException("Invalid index (must be in range 0-" + (pinned.Count - 1) + "!");
+
+            await pinned.ElementAt(i).UnpinAsync();
+            await ctx.RespondAsync("Message successfully unpinned!");
         }
         #endregion
     }
