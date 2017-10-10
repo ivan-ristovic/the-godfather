@@ -47,8 +47,7 @@ namespace TheGodfather.Commands.Games
 
                 await StartQuiz(QuizType.Countries, ctx);
 
-                bool b;
-                _quizrunning.TryRemove(ctx.Channel.Id, out b);
+                _quizrunning.TryRemove(ctx.Channel.Id, out _);
             }
             #endregion
 

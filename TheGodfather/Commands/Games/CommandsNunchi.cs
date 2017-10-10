@@ -148,10 +148,8 @@ namespace TheGodfather.Commands.Games
 
             private void StopGame(CommandContext ctx)
             {
-                List<ulong> outl;
-                _participants.TryRemove(ctx.Channel.Id, out outl);
-                bool outb;
-                _started.TryRemove(ctx.Channel.Id, out outb);
+                _participants.TryRemove(ctx.Channel.Id, out _);
+                _started.TryRemove(ctx.Channel.Id, out _);
             }
             #endregion
         }

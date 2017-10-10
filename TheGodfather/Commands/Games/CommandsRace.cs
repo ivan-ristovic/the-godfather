@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
 
+using TheGodfather.Exceptions;
+
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
@@ -43,13 +45,18 @@ namespace TheGodfather.Commands.Games
                 if (_participants.ContainsKey(ctx.Channel.Id))
                     throw new Exception("Race already in progress!");
 
-                _animals.TryAdd(ctx.Channel.Id, new ConcurrentBag<string> {
-                ":dog:", ":cat:", ":mouse:", ":hamster:", ":rabbit:",
-                ":bear:", ":pig:", ":cow:", ":koala:", ":tiger:"
-            });
-                _participants.TryAdd(ctx.Channel.Id, new ConcurrentQueue<ulong>());
-                _emojis.TryAdd(ctx.Channel.Id, new ConcurrentDictionary<ulong, string>());
-                _started.TryAdd(ctx.Channel.Id, false);
+                bool succ = true;
+                succ &= _animals.TryAdd(ctx.Channel.Id, new ConcurrentBag<string> {
+                    ":dog:", ":cat:", ":mouse:", ":hamster:", ":rabbit:",
+                    ":bear:", ":pig:", ":cow:", ":koala:", ":tiger:"
+                });
+                succ &= _participants.TryAdd(ctx.Channel.Id, new ConcurrentQueue<ulong>());
+                succ &= _emojis.TryAdd(ctx.Channel.Id, new ConcurrentDictionary<ulong, string>());
+                succ &= _started.TryAdd(ctx.Channel.Id, false);
+                if (!succ) {
+                    StopRace(ctx.Channel.Id);
+                    throw new CommandFailedException("Race starting failed.");
+                }
 
                 await ctx.RespondAsync("Race will start in 30s or when there are 10 participants. Type " + Formatter.InlineCode("!race join") + " to join the race.");
                 await Task.Delay(30000);
@@ -58,7 +65,7 @@ namespace TheGodfather.Commands.Games
                     await StartRace(ctx);
                 else {
                     await ctx.RespondAsync("Not enough users joined the race.");
-                    StopRace(ctx);
+                    StopRace(ctx.Channel.Id);
                 }
             }
             #endregion
@@ -81,11 +88,12 @@ namespace TheGodfather.Commands.Games
                 if (_participants[ctx.Channel.Id].Count >= 10)
                     throw new Exception("Race full.");
 
-                var rnd = new Random();
                 string emoji;
-                _animals[ctx.Channel.Id].TryTake(out emoji);
+                if (!_animals[ctx.Channel.Id].TryTake(out emoji))
+                    throw new CommandFailedException("Failed granting emoji to player.");
                 _participants[ctx.Channel.Id].Enqueue(ctx.User.Id);
-                _emojis[ctx.Channel.Id].TryAdd(ctx.User.Id, emoji);
+                if (!_emojis[ctx.Channel.Id].TryAdd(ctx.User.Id, emoji))
+                    throw new CommandFailedException("Failed granting emoji to player.");
 
                 await ctx.RespondAsync($"{ctx.User.Mention} joined the race as {DiscordEmoji.FromName(ctx.Client, emoji)}");
             }
@@ -107,7 +115,7 @@ namespace TheGodfather.Commands.Games
                     await PrintRace(ctx, progress, msg);
 
                     foreach (var id in _participants[ctx.Channel.Id]) {
-                        progress[id] += rnd.Next(2, 5);
+                        progress[id] += rnd.Next(2, 7);
                         if (progress[id] > 100)
                             progress[id] = 100;
                     }
@@ -117,17 +125,14 @@ namespace TheGodfather.Commands.Games
                 await PrintRace(ctx, progress, msg);
 
                 await ctx.RespondAsync("Race ended!");
-                StopRace(ctx);
+                StopRace(ctx.Channel.Id);
             }
 
-            private void StopRace(CommandContext ctx)
+            private void StopRace(ulong id)
             {
-                ConcurrentQueue<ulong> outl;
-                _participants.TryRemove(ctx.Channel.Id, out outl);
-                ConcurrentBag<string> outbag;
-                _animals.TryRemove(ctx.Channel.Id, out outbag);
-                bool outb;
-                _started.TryRemove(ctx.Channel.Id, out outb);
+                _participants.TryRemove(id, out _);
+                _animals.TryRemove(id, out _);
+                _started.TryRemove(id, out _);
             }
 
             private async Task PrintRace(CommandContext ctx, Dictionary<ulong, int> progress, DiscordMessage msg)
