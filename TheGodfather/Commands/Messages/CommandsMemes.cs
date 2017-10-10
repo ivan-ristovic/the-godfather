@@ -114,10 +114,9 @@ namespace TheGodfather.Commands.Messages
             if (!_memes.ContainsKey(name))
                 throw new CommandFailedException("Meme with that name doesn't exist!", new KeyNotFoundException());
 
-            string url;
-            if (!_memes.TryRemove(name, out url))
+            if (!_memes.TryRemove(name, out _))
                 throw new CommandFailedException("Meme removing failed.");
-            await ctx.RespondAsync($"Meme {Formatter.Bold(name)} ({url}) successfully deleted!");
+            await ctx.RespondAsync($"Meme {Formatter.Bold(name)} successfully removed!");
         }
         #endregion
 
