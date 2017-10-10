@@ -2,6 +2,7 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Threading.Tasks;
 
 using TheGodfather.Exceptions;
@@ -21,7 +22,7 @@ namespace TheGodfather.Commands.Games
     public class CommandsBank
     {
         #region STATIC_FIELDS
-        private static Dictionary<ulong, int> _accounts = new Dictionary<ulong, int>();
+        private static ConcurrentDictionary<ulong, int> _accounts = new ConcurrentDictionary<ulong, int>();
         #endregion
 
 
@@ -57,7 +58,8 @@ namespace TheGodfather.Commands.Games
             if (_accounts.ContainsKey(ctx.User.Id)) {
                 throw new CommandFailedException("You already own an account in WM bank!");
             } else {
-                _accounts.Add(ctx.User.Id, 25);
+                if (!_accounts.TryAdd(ctx.User.Id, 25))
+                    throw new CommandFailedException("Account opening failed.");
                 await ctx.RespondAsync($"Account opened for you, {ctx.User.Mention}! Since WM bank is so generous, you get 25 credits for free.");
             }
         }
@@ -138,7 +140,8 @@ namespace TheGodfather.Commands.Games
         public static void IncreaseBalance(ulong id, int ammount)
         {
             if (!_accounts.ContainsKey(id))
-                _accounts.Add(id, 0);
+                if (!_accounts.TryAdd(id, 0))
+                    return;
             _accounts[id] += ammount;
         }
         #endregion
