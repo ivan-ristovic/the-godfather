@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
@@ -23,7 +24,7 @@ namespace TheGodfather.Commands.Messages
     public class CommandsReaction
     {
         #region STATIC_FIELDS
-        private static SortedDictionary<ulong, SortedDictionary<string, string>> _reactions = new SortedDictionary<ulong, SortedDictionary<string, string>>();
+        private static ConcurrentDictionary<ulong, SortedDictionary<string, string>> _reactions = new ConcurrentDictionary<ulong, SortedDictionary<string, string>>();
         private static bool _error = false;
         #endregion
 
@@ -32,7 +33,7 @@ namespace TheGodfather.Commands.Messages
         {
             if (File.Exists("Resources/reactions.json")) {
                 try {
-                    _reactions = JsonConvert.DeserializeObject<SortedDictionary<ulong, SortedDictionary<string, string>>>(File.ReadAllText("Resources/reactions.json"));
+                    _reactions = JsonConvert.DeserializeObject<ConcurrentDictionary<ulong, SortedDictionary<string, string>>>(File.ReadAllText("Resources/reactions.json"));
                 } catch (Exception e) {
                     log.LogMessage(LogLevel.Error, "TheGodfather", "Reaction loading error, check file formatting. Details:\n" + e.ToString(), DateTime.Now);
                     _error = true;
@@ -187,7 +188,8 @@ namespace TheGodfather.Commands.Messages
         public async Task ClearReactions(CommandContext ctx)
         {
             if (_reactions.ContainsKey(ctx.Guild.Id))
-                _reactions.Remove(ctx.Guild.Id);
+                if (!_reactions.TryRemove(ctx.Guild.Id, out _))
+                    throw new CommandFailedException("Clearing reactions failed.");
             await ctx.RespondAsync("All reactions successfully removed.");
         }
         #endregion
