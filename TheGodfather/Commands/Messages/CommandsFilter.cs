@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
@@ -24,7 +25,7 @@ namespace TheGodfather.Commands.Messages
     public class CommandsFilter
     {
         #region STATIC_FIELDS
-        private static SortedDictionary<ulong, List<Regex>> _filters = new SortedDictionary<ulong, List<Regex>>();
+        private static ConcurrentDictionary<ulong, List<Regex>> _filters = new ConcurrentDictionary<ulong, List<Regex>>();
         private static bool _error = false;
         #endregion
 
@@ -33,7 +34,7 @@ namespace TheGodfather.Commands.Messages
         {
             if (File.Exists("Resources/filters.json")) {
                 try {
-                    _filters = JsonConvert.DeserializeObject<SortedDictionary<ulong, List<Regex>>>(File.ReadAllText("Resources/filters.json"));
+                    _filters = JsonConvert.DeserializeObject<ConcurrentDictionary<ulong, List<Regex>>>(File.ReadAllText("Resources/filters.json"));
                 } catch (Exception e) {
                     log.LogMessage(LogLevel.Error, "TheGodfather", "Filter loading error, check file formatting. Details:\n" + e.ToString(), DateTime.Now);
                     _error = true;
@@ -87,7 +88,8 @@ namespace TheGodfather.Commands.Messages
                 throw new CommandFailedException($"Filter must not contain {Formatter.Bold("%")} or have less than 3 characters.");
 
             if (!_filters.ContainsKey(ctx.Guild.Id))
-                _filters.Add(ctx.Guild.Id, new List<Regex>());
+                if (!_filters.TryAdd(ctx.Guild.Id, new List<Regex>()))
+                    throw new CommandFailedException("Adding filter failed.");
 
             var regex = new Regex($"^{filter}$", RegexOptions.IgnoreCase);
 
@@ -171,7 +173,8 @@ namespace TheGodfather.Commands.Messages
         public async Task ClearFilters(CommandContext ctx)
         {
             if (_filters.ContainsKey(ctx.Guild.Id))
-                _filters.Remove(ctx.Guild.Id);
+                if (!_filters.TryRemove(ctx.Guild.Id, out _))
+                    throw new CommandFailedException("Filter clear failed");
             await ctx.RespondAsync("All filters successfully removed.");
         }
         #endregion

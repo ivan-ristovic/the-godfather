@@ -175,9 +175,8 @@ namespace TheGodfather.Commands.Messages
         [RequireUserPermissions(Permissions.Administrator)]
         public async Task ClearAliases(CommandContext ctx)
         {
-            SortedDictionary<string, string> guild_aliases;
             if (_aliases.ContainsKey(ctx.Guild.Id))
-                if (!_aliases.TryRemove(ctx.Guild.Id, out guild_aliases))
+                if (!_aliases.TryRemove(ctx.Guild.Id, out _))
                     throw new CommandFailedException("Clearing guild aliases failed");
             await ctx.RespondAsync("All aliases successfully removed.");
         }
