@@ -116,5 +116,19 @@ namespace TheGodfather.Commands.Administration
             await ctx.RespondAsync("Message successfully unpinned!");
         }
         #endregion
+
+        #region COMMAND_MESSAGES_UNPINALL
+        [Command("unpinall")]
+        [Description("Unpins all pinned messages.")]
+        [Aliases("upa")]
+        [RequirePermissions(Permissions.ManageMessages)]
+        public async Task UnpinAll(CommandContext ctx)
+        {
+            var pinned = await ctx.Channel.GetPinnedMessagesAsync();
+            foreach (var m in pinned)
+                await m.UnpinAsync();
+            await ctx.RespondAsync("All messages successfully unpinned!");
+        }
+        #endregion
     }
 }
