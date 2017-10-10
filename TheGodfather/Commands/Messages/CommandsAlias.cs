@@ -24,7 +24,7 @@ namespace TheGodfather.Commands.Messages
     public class CommandsAlias
     {
         #region STATIC_FIELDS
-        private static ConcurrentDictionary<ulong, ConcurrentDictionary<string, string>> _aliases = new ConcurrentDictionary<ulong, ConcurrentDictionary<string, string>>();
+        private static ConcurrentDictionary<ulong, SortedDictionary<string, string>> _aliases = new ConcurrentDictionary<ulong, SortedDictionary<string, string>>();
         private static bool _error = false;
         #endregion
 
@@ -33,7 +33,7 @@ namespace TheGodfather.Commands.Messages
         {
             if (File.Exists("Resources/aliases.json")) {
                 try {
-                    _aliases = JsonConvert.DeserializeObject<ConcurrentDictionary<ulong, ConcurrentDictionary<string, string>>>(File.ReadAllText("Resources/aliases.json"));
+                    _aliases = JsonConvert.DeserializeObject<ConcurrentDictionary<ulong, SortedDictionary<string, string>>>(File.ReadAllText("Resources/aliases.json"));
                 } catch (Exception e) {
                     log.LogMessage(LogLevel.Error, "TheGodfather", "Alias loading error, check file formatting. Details:\n" + e.ToString(), DateTime.Now);
                     _error = true;
@@ -97,15 +97,14 @@ namespace TheGodfather.Commands.Messages
                 throw new InvalidCommandUsageException("Alias name or response missing or invalid.");
 
             if (!_aliases.ContainsKey(ctx.Guild.Id))
-                if (!_aliases.TryAdd(ctx.Guild.Id, new ConcurrentDictionary<string, string>()))
+                if (!_aliases.TryAdd(ctx.Guild.Id, new SortedDictionary<string, string>()))
                     throw new CommandFailedException("Adding alias failed.");
 
             alias = alias.ToLower();
             if (_aliases[ctx.Guild.Id].ContainsKey(alias)) {
                 await ctx.RespondAsync("Alias already exists.");
             } else {
-                if (!_aliases[ctx.Guild.Id].TryAdd(alias, response))
-                    throw new CommandFailedException("Adding alias failed.");
+                _aliases[ctx.Guild.Id].Add(alias, response);
                 await ctx.RespondAsync($"Alias {Formatter.Bold(alias)} successfully added.");
             }
         }
@@ -125,10 +124,8 @@ namespace TheGodfather.Commands.Messages
             if (!_aliases.ContainsKey(ctx.Guild.Id))
                 throw new CommandFailedException("No aliases recorded in this guild.", new KeyNotFoundException());
 
-            string response;
-            if (!_aliases[ctx.Guild.Id].TryRemove(alias, out response))
-                throw new CommandFailedException("Removing alias failed.");
-            await ctx.RespondAsync($"Alias {Formatter.Bold(alias)} ({Formatter.Bold(response)}) successfully removed.");
+            _aliases[ctx.Guild.Id].Remove(alias);
+            await ctx.RespondAsync($"Alias {Formatter.Bold(alias)} successfully removed.");
         }
         #endregion
 
@@ -178,7 +175,7 @@ namespace TheGodfather.Commands.Messages
         [RequireUserPermissions(Permissions.Administrator)]
         public async Task ClearAliases(CommandContext ctx)
         {
-            ConcurrentDictionary<string, string> guild_aliases;
+            SortedDictionary<string, string> guild_aliases;
             if (_aliases.ContainsKey(ctx.Guild.Id))
                 if (!_aliases.TryRemove(ctx.Guild.Id, out guild_aliases))
                     throw new CommandFailedException("Clearing guild aliases failed");
