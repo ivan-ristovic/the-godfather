@@ -232,11 +232,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Commands\Admin\Helpers\EvaluationEnvironment.cs" />
+    <Compile Include="Commands\Administration\Helpers\EvaluationEnvironment.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Exceptions.cs" />
     <Compile Include="Helpers\HelpFormatter.cs" />
-    <Compile Include="Commands\Admin\CommandsAdmin.cs" />
+    <Compile Include="Commands\Administration\CommandsAdmin.cs" />
     <Compile Include="Commands\Games\CommandsBank.cs" />
     <Compile Include="Commands\Games\CommandsCards.cs" />
     <Compile Include="Commands\Games\CommandsNunchi.cs" />
@@ -244,10 +244,10 @@
     <Compile Include="Commands\Games\CommandsRace.cs" />
     <Compile Include="Commands\Main\CommandsRandom.cs" />
     <Compile Include="Commands\Messages\CommandsAlias.cs" />
-    <Compile Include="Commands\Admin\CommandsChannels.cs" />
+    <Compile Include="Commands\Administration\CommandsChannels.cs" />
     <Compile Include="Commands\Games\CommandsGamble.cs" />
     <Compile Include="Commands\Games\CommandsGames.cs" />
-    <Compile Include="Commands\Admin\CommandsGuild.cs" />
+    <Compile Include="Commands\Administration\CommandsGuild.cs" />
     <Compile Include="Commands\Messages\CommandsFilter.cs" />
     <Compile Include="Commands\Messages\CommandsPoll.cs" />
     <Compile Include="Commands\Messages\CommandsReaction.cs" />
@@ -255,17 +255,17 @@
     <Compile Include="Commands\Search\CommandsImgur.cs" />
     <Compile Include="Commands\Messages\CommandsInsult.cs" />
     <Compile Include="Commands\Messages\CommandsMemes.cs" />
-    <Compile Include="Commands\Admin\CommandsMessages.cs" />
+    <Compile Include="Commands\Administration\CommandsMessages.cs" />
     <Compile Include="Commands\Main\CommandsMain.cs" />
     <Compile Include="Commands\Messages\CommandsRanking.cs" />
     <Compile Include="Commands\Search\CommandsReddit.cs" />
-    <Compile Include="Commands\Admin\CommandsRoles.cs" />
+    <Compile Include="Commands\Administration\CommandsRoles.cs" />
     <Compile Include="Commands\Search\CommandsRSS.cs" />
     <Compile Include="Commands\Search\CommandsSteam.cs" />
     <Compile Include="Commands\Search\CommandsUrbanDict.cs" />
     <Compile Include="Commands\Search\CommandsYoutube.cs" />
     <Compile Include="Commands\SWAT\CommandsSwat.cs" />
-    <Compile Include="Commands\Admin\CommandsUsers.cs" />
+    <Compile Include="Commands\Administration\CommandsUsers.cs" />
     <Compile Include="Commands\Voice\CommandsVoice.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
