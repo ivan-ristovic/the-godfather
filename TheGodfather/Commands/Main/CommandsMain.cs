@@ -31,6 +31,24 @@ namespace TheGodfatherBot.Commands.Main
         }
         #endregion
 
+        #region COMMAND_EMBED
+        [Command("embed")]
+        [Description("Embed an image given as an URL.")]
+        [RequirePermissions(Permissions.AttachFiles)]
+        public async Task EmbedURL(CommandContext ctx,
+                                  [Description("Image URL.")] string url = null)
+        {
+            if (string.IsNullOrWhiteSpace(url))
+                throw new InvalidCommandUsageException("URL missing!");
+
+            try {
+                await ctx.RespondAsync("", embed: new DiscordEmbedBuilder() { ImageUrl = url });
+            } catch (UriFormatException e) {
+                throw new CommandFailedException("URL is not in correct format!", e);
+            }
+        }
+        #endregion
+
         #region COMMAND_GREET
         [Command("greet")]
         [Description("Greets a user and starts a conversation.")]

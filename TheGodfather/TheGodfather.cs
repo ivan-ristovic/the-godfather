@@ -426,7 +426,7 @@ namespace TheGodfatherBot
         private async Task Client_MessageUpdated(MessageUpdateEventArgs e)
         {
             // Check if message contains filter
-            if (!e.Author.IsBot && e.Message.Content.Split(' ').Any(s => Commands.Messages.CommandsFilter.ContainsFilter(e.Guild.Id, s))) {
+            if (!e.Author.IsBot && e.Message.Content != null && e.Message.Content.Split(' ').Any(s => Commands.Messages.CommandsFilter.ContainsFilter(e.Guild.Id, s))) {
                 try {
                     await e.Channel.DeleteMessageAsync(e.Message);
                     _client.DebugLogger.LogMessage(

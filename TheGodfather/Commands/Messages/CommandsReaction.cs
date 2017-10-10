@@ -84,9 +84,9 @@ namespace TheGodfatherBot.Commands.Messages
         {
             await AddReaction(ctx, emoji, triggers);
         }
-        */
+        
 
-        /*
+        
         #region COMMAND_REACTIONS_ADD
         [Command("add")]
         [Description("Add reactions to list.")]
