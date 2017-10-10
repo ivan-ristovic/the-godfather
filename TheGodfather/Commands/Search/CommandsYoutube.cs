@@ -6,8 +6,8 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-using TheGodfatherBot.Exceptions;
-using TheGodfatherBot.Helpers;
+using TheGodfather.Exceptions;
+using TheGodfather.Helpers;
 
 using DSharpPlus;
 using DSharpPlus.Entities;
@@ -24,7 +24,7 @@ using Google.Apis.Util.Store;
 #endregion
 
 
-namespace TheGodfatherBot.Commands.Search
+namespace TheGodfather.Commands.Search
 {
     [Group("youtube", CanInvokeWithoutSubcommand = true)]
     [Description("Youtube search commands.")]

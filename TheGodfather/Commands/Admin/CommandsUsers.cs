@@ -3,7 +3,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-using TheGodfatherBot.Exceptions;
+using TheGodfather.Exceptions;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -12,7 +12,7 @@ using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
 #endregion
 
-namespace TheGodfatherBot.Commands.Admin
+namespace TheGodfather.Commands.Admin
 {
     [Group("user", CanInvokeWithoutSubcommand = false)]
     [Description("Miscellaneous user control commands.")]

@@ -4,14 +4,14 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-using TheGodfatherBot.Exceptions;
+using TheGodfather.Exceptions;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 #endregion
 
-namespace TheGodfatherBot.Commands.Games
+namespace TheGodfather.Commands.Games
 {
     public partial class CommandsGamble
     {

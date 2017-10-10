@@ -3,7 +3,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-using TheGodfatherBot.Exceptions;
+using TheGodfather.Exceptions;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -12,7 +12,7 @@ using DSharpPlus.Interactivity;
 using DSharpPlus.Entities;
 #endregion
 
-namespace TheGodfatherBot.Commands.Main
+namespace TheGodfather.Commands.Main
 {
     [Description("Main bot commands.")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]

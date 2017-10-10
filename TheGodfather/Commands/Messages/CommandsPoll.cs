@@ -6,7 +6,7 @@ using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
 
-using TheGodfatherBot.Exceptions;
+using TheGodfather.Exceptions;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -16,7 +16,7 @@ using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 #endregion
 
-namespace TheGodfatherBot.Commands.Messages
+namespace TheGodfather.Commands.Messages
 {
     [Group("poll", CanInvokeWithoutSubcommand = true)]
     [Description("Starts a poll in the channel.")]

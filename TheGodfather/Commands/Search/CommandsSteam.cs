@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-using TheGodfatherBot.Exceptions;
-using TheGodfatherBot.Helpers;
+using TheGodfather.Exceptions;
+using TheGodfather.Helpers;
 
 using DSharpPlus;
 using DSharpPlus.Entities;
@@ -23,7 +23,7 @@ using Steam.Models.SteamPlayer;
 #endregion
 
 
-namespace TheGodfatherBot.Commands.Search
+namespace TheGodfather.Commands.Search
 {
     [Group("steam", CanInvokeWithoutSubcommand = false)]
     [Description("Youtube search commands.")]

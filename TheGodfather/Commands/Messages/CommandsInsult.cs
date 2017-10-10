@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-using TheGodfatherBot.Exceptions;
+using TheGodfather.Exceptions;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -14,7 +14,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 #endregion
 
-namespace TheGodfatherBot.Commands.Messages
+namespace TheGodfather.Commands.Messages
 {
     [Group("insult", CanInvokeWithoutSubcommand = true)]
     [Description("Burns a user!")]

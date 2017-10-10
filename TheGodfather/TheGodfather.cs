@@ -9,8 +9,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-using TheGodfatherBot.Exceptions;
-using TheGodfatherBot.Helpers;
+using TheGodfather.Exceptions;
+using TheGodfather.Helpers;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -24,7 +24,7 @@ using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
 #endregion
 
-namespace TheGodfatherBot
+namespace TheGodfather
 {
     public class TheGodfather
     {
@@ -40,7 +40,7 @@ namespace TheGodfatherBot
         private static ConcurrentDictionary<ulong, string> _prefixes = new ConcurrentDictionary<ulong, string>();
 
         public static List<string> Statuses = new List<string> { "!help", "worldmafia.net", "worldmafia.net/discord" };
-        public static GodfatherConfig Config = null;
+        public static BotConfig Config = null;
         #endregion
 
 
@@ -64,7 +64,7 @@ namespace TheGodfatherBot
                 using (var fs = File.OpenRead("Resources/config.json"))
                 using (var sr = new StreamReader(fs, new UTF8Encoding(false)))
                     data = await sr.ReadToEndAsync();
-                Config = JsonConvert.DeserializeObject<GodfatherConfig>(data);
+                Config = JsonConvert.DeserializeObject<BotConfig>(data);
             } catch (Exception e) {
                 _client.DebugLogger.LogMessage(LogLevel.Error, "TheGodfather", $"Settings loading error: {e.GetType()}: {e.Message}", DateTime.Now);
                 Environment.Exit(1);

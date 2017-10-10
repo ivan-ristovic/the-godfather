@@ -11,7 +11,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 #endregion
 
-namespace TheGodfatherBot.Commands.Games
+namespace TheGodfather.Commands.Games
 {
     public partial class CommandsGames
     {

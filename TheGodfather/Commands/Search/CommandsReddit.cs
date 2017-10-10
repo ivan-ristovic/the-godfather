@@ -12,7 +12,7 @@ using static RedditSharp.Things.VotableThing;
 #endregion
 
 
-namespace TheGodfatherBot.Commands.Search
+namespace TheGodfather.Commands.Search
 {
     [Group("reddit", CanInvokeWithoutSubcommand = true)]
     [Description("Reddit commands.")]

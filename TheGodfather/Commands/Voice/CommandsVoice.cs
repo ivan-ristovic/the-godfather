@@ -4,7 +4,7 @@ using System.IO;
 using System.Diagnostics;
 using System.Threading.Tasks;
 
-using TheGodfatherBot.Exceptions;
+using TheGodfather.Exceptions;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -13,7 +13,7 @@ using DSharpPlus.VoiceNext;
 using DSharpPlus.Entities;
 #endregion
 
-namespace TheGodfatherBot.Commands.Voice
+namespace TheGodfather.Commands.Voice
 {
     [Description("Voice & music commands.")]
     public class CommandsVoice

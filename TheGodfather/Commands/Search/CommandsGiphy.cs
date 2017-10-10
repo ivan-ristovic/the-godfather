@@ -3,8 +3,8 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-using TheGodfatherBot.Exceptions;
-using TheGodfatherBot.Helpers;
+using TheGodfather.Exceptions;
+using TheGodfather.Helpers;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -17,7 +17,7 @@ using GiphyDotNet.Model.GiphyImage;
 using GiphyDotNet.Model.Parameters;
 #endregion
 
-namespace TheGodfatherBot.Commands.Search
+namespace TheGodfather.Commands.Search
 {
     [Group("gif", CanInvokeWithoutSubcommand = true)]
     [Description("GIPHY commands.")]

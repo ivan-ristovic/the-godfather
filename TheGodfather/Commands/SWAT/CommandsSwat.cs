@@ -8,7 +8,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-using TheGodfatherBot.Exceptions;
+using TheGodfather.Exceptions;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -17,7 +17,7 @@ using DSharpPlus.Interactivity;
 using DSharpPlus.Entities;
 #endregion
 
-namespace TheGodfatherBot.Commands.SWAT
+namespace TheGodfather.Commands.SWAT
 {
     [Description("SWAT4 related commands.")]
     [Cooldown(2, 5, CooldownBucketType.User), Cooldown(4, 5, CooldownBucketType.Channel)]

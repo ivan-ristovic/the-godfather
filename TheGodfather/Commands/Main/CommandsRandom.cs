@@ -7,7 +7,7 @@ using System.Drawing;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-using TheGodfatherBot.Exceptions;
+using TheGodfather.Exceptions;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -15,7 +15,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 #endregion
 
-namespace TheGodfatherBot.Commands.Main
+namespace TheGodfather.Commands.Main
 {
     [Description("Commands that use random numbers to generate their output.")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]

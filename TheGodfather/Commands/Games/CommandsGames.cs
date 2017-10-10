@@ -4,7 +4,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-using TheGodfatherBot.Exceptions;
+using TheGodfather.Exceptions;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -13,7 +13,7 @@ using DSharpPlus.Interactivity;
 using DSharpPlus.Entities;
 #endregion
 
-namespace TheGodfatherBot.Commands.Games
+namespace TheGodfather.Commands.Games
 {
     [Group("games", CanInvokeWithoutSubcommand = false)]
     [Description("Starts a game for you to play!")]

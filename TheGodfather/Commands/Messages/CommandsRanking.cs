@@ -7,7 +7,7 @@ using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-using TheGodfatherBot.Exceptions;
+using TheGodfather.Exceptions;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -15,7 +15,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 #endregion
 
-namespace TheGodfatherBot.Commands.Messages
+namespace TheGodfather.Commands.Messages
 {
     [Group("rank", CanInvokeWithoutSubcommand = true)]
     [Description("User ranking commands.")]

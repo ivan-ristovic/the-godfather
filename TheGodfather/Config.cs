@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 #endregion
 
-namespace TheGodfatherBot
+namespace TheGodfather
 {
-    public class GodfatherConfig
+    public class BotConfig
     {
         [JsonProperty("token")]
         public string Token { get; private set; }

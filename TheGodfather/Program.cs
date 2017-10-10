@@ -1,6 +1,4 @@
-﻿
-
-namespace TheGodfatherBot
+﻿namespace TheGodfather
 {
     class Program
     {

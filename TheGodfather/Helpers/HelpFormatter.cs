@@ -11,7 +11,7 @@ using DSharpPlus.CommandsNext.Entities;
 using DSharpPlus.Entities;
 #endregion
 
-namespace TheGodfatherBot.Helpers
+namespace TheGodfather.Helpers
 {
     public class HelpFormatter : IHelpFormatter
     {

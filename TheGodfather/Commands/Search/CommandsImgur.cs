@@ -2,7 +2,7 @@
 using System;
 using System.Threading.Tasks;
 
-using TheGodfatherBot.Exceptions;
+using TheGodfather.Exceptions;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -15,7 +15,7 @@ using Imgur.API.Enums;
 using Imgur.API.Models.Impl;
 #endregion
 
-namespace TheGodfatherBot.Commands.Search
+namespace TheGodfather.Commands.Search
 {
     [Group("imgur", CanInvokeWithoutSubcommand = true)]
     [Description("Search imgur. Invoking without sub command searches top.")]

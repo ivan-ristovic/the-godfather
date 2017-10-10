@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TheGodfatherBot.Exceptions
+namespace TheGodfather.Exceptions
 {
     public class InvalidCommandUsageException : ArgumentException
     {
