@@ -24,6 +24,7 @@ namespace TheGodfather.Commands.Messages
     {
         #region STATIC_FIELDS
         private static List<string> _insults = new List<string>();
+        private object _lock;
         #endregion
 
         #region STATIC_FUNCTIONS
@@ -88,7 +89,10 @@ namespace TheGodfather.Commands.Messages
             if (insult.Split().Count() < 2)
                 throw new InvalidCommandUsageException($"Insult not in correct format (missing {Formatter.Bold("%user%")})!");
 
-            _insults.Add(insult);
+            lock (_lock) {
+                _insults.Add(insult);
+            }
+
             await ctx.RespondAsync("Insult added.");
         }
         #endregion
@@ -100,7 +104,9 @@ namespace TheGodfather.Commands.Messages
         [RequireOwner]
         public async Task ClearAllInsults(CommandContext ctx)
         {
-            _insults.Clear();
+            lock (_lock) {
+                _insults.Clear();
+            }
             await ctx.RespondAsync("All insults successfully removed.");
         }
         #endregion
@@ -113,10 +119,12 @@ namespace TheGodfather.Commands.Messages
         public async Task DeleteInsult(CommandContext ctx, 
                                       [Description("Index.")] int i = 0)
         {
-            if (i < 0 || i > _insults.Count)
-                throw new CommandFailedException("There is no insult with such index.", new ArgumentOutOfRangeException());
+            lock (_lock) {
+                if (i < 0 || i > _insults.Count)
+                    throw new CommandFailedException("There is no insult with such index.", new ArgumentOutOfRangeException());
+                _insults.RemoveAt(i);
+            }
 
-            _insults.RemoveAt(i);
             await ctx.RespondAsync("Insult successfully removed.");
         }
         #endregion
