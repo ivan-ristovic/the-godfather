@@ -58,7 +58,7 @@ namespace TheGodfather.Commands.Games
                 throw new CommandFailedException("You already own an account in WM bank!");
             } else {
                 _accounts.Add(ctx.User.Id, 25);
-                await ctx.RespondAsync("Account opened! Since WM bank is so generous, you get 25 credits for free.");
+                await ctx.RespondAsync($"Account opened for you, {ctx.User.Mention}! Since WM bank is so generous, you get 25 credits for free.");
             }
         }
         #endregion
@@ -73,13 +73,11 @@ namespace TheGodfather.Commands.Games
             if (_accounts.ContainsKey(ctx.User.Id))
                 ammount = _accounts[ctx.User.Id];
 
-            var embed = new DiscordEmbedBuilder() {
-                Title = "Account balance for " + Formatter.Bold(ctx.User.Username),
-                Timestamp = DateTime.Now,
+            await ctx.RespondAsync("", embed: new DiscordEmbedBuilder() {
+                Title = $"Account balance for {ctx.User.Username}",
+                Description = $"{Formatter.Bold(ammount != 0 ? ammount.ToString() : "No existing account!")}",
                 Color = DiscordColor.Yellow
-            };
-            embed.AddField("Balance: ", ammount.ToString());
-            await ctx.RespondAsync("", embed: embed);
+            });
         }
         #endregion
 

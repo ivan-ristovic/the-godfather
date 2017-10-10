@@ -21,11 +21,42 @@ namespace TheGodfather.Commands.Games
     {
         #region COMMAND_COINFLIP
         [Command("coinflip")]
-        [ Description("Flips a coin.")]
+        [Description("Flips a coin.")]
         [Aliases("coin", "flip")]
-        public async Task Coinflip(CommandContext ctx)
+        public async Task Coinflip(CommandContext ctx,
+                                  [Description("Bid.")] int bid = 0,
+                                  [Description("Heads/Tails (h/t).")] string bet = null)
         {
-            await ctx.RespondAsync(ctx.User.Mention + " flipped " + Formatter.Bold(new Random().Next(2) == 0 ? "Heads" : "Tails") + "!");
+            if (bid != 0) {
+
+                if (bid < 0)
+                    throw new InvalidCommandUsageException("Invalid bid ammount!");
+
+                if (string.IsNullOrWhiteSpace(bet))
+                    throw new InvalidCommandUsageException("Missing heads or tails call.");
+                bet = bet.ToLower();
+
+                int guess;
+                if (bet == "heads" || bet == "h")
+                    guess = 0;
+                else if (bet == "tails" || bet == "t")
+                    guess = 1;
+                else
+                    throw new CommandFailedException($"Invalid coin outcome call (has to be {Formatter.Bold("h")} or {Formatter.Bold("t")})");
+
+                if (!CommandsBank.RetrieveCreditsSucceeded(ctx.User.Id, bid))
+                    throw new CommandFailedException("You do not have enough credits in WM bank!");
+
+                int rnd = new Random().Next(2);
+                if (rnd == guess)
+                    CommandsBank.IncreaseBalance(ctx.User.Id, bid * 2);
+                await ctx.RespondAsync($"{ctx.User.Mention} flipped " +
+                    $"{(Formatter.Bold(rnd == 0 ? "Heads" : "Tails"))} " +
+                    $"{(guess == rnd ? $"and won {bid} credits" : $"and lost {bid} credits")} !"
+                );
+            } else {
+                await ctx.RespondAsync($"{ctx.User.Mention} flipped " + $"{(Formatter.Bold(new Random().Next(2) == 0 ? "Heads" : "Tails"))} !");
+            }
         }
         #endregion
 
@@ -43,7 +74,7 @@ namespace TheGodfather.Commands.Games
         [Command("slot")]
         [Description("Roll a slot machine.")]
         [Aliases("slotmachine")]
-        public async Task SlotMachine(CommandContext ctx, 
+        public async Task SlotMachine(CommandContext ctx,
                                      [Description("Bid.")] int bid = 5)
         {
             if (bid < 5)
