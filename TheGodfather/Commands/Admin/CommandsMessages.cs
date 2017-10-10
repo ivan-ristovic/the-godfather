@@ -15,12 +15,11 @@ namespace TheGodfather.Commands.Admin
 {
     [Group("messages", CanInvokeWithoutSubcommand = false)]
     [Description("Commands to manipulate messages on the channel.")]
-    [RequirePermissions(Permissions.ManageMessages)]
     [Aliases("m", "msg", "msgs")]
     [Cooldown(2, 5, CooldownBucketType.User)]
     public class CommandsMessages
     {
-        #region COMMAND_DELETE
+        #region COMMAND_MESSAGES_DELETE
         [Command("delete")]
         [Description("Deletes the specified ammount of most-recent messages from the channel.")]
         [Aliases("-", "prune", "del", "d")]
@@ -37,10 +36,10 @@ namespace TheGodfather.Commands.Admin
         }
         #endregion
 
-        #region COMMAND_DELETE_FROM
-        [Command("deleteu")]
+        #region COMMAND_MESSAGES_DELETE_FROM
+        [Command("deletefrom")]
         [Description("Deletes given ammount of most-recent messages from given user.")]
-        [Aliases("-user", "deluser", "du")]
+        [Aliases("-user", "deluser", "du", "delfrom", "deleteu")]
         [RequirePermissions(Permissions.Administrator)]
         public async Task DeleteUserMessages(CommandContext ctx, 
                                             [Description("User.")] DiscordUser u = null,
@@ -54,6 +53,18 @@ namespace TheGodfather.Commands.Admin
             await ctx.Channel.DeleteMessagesAsync(
                 ctx.Channel.GetMessagesAsync().Result.Where(m => m.Author.Id == u.Id).Take(n)
             );
+        }
+        #endregion
+
+        #region COMMAND_MESSAGES_PIN
+        [Command("pin")]
+        [Description("Pins the last sent message.")]
+        [Aliases("p")]
+        [RequirePermissions(Permissions.ManageMessages)]
+        public async Task Pin(CommandContext ctx)
+        {
+            var msg = ctx.Channel.GetMessagesAsync(2).Result.Last();
+            await msg.PinAsync();
         }
         #endregion
     }
