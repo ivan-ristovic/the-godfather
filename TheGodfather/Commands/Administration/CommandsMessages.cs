@@ -9,6 +9,7 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using DSharpPlus.Exceptions;
 #endregion
 
 namespace TheGodfather.Commands.Administration
@@ -56,6 +57,30 @@ namespace TheGodfather.Commands.Administration
         }
         #endregion
 
+        #region COMMAND_MESSAGES_LISTPINNED
+        [Command("listpinned")]
+        [Description("List latest ammount of pinned messages.")]
+        [Aliases("lp", "listpins", "listpin", "pinned")]
+        [RequirePermissions(Permissions.ManageMessages)]
+        public async Task ListPinned(CommandContext ctx,
+                                    [Description("Ammount.")] int n = 5)
+        {
+            if (n < 1 || n > 20)
+                throw new CommandFailedException("Invalid ammount (1-20).");
+
+            var pinned = await ctx.Channel.GetPinnedMessagesAsync();
+
+            var em = new DiscordEmbedBuilder() {
+                Title = $"Pinned messages in {ctx.Channel.Name}:"
+            };
+            
+            foreach (var msg in pinned.Take(n))
+                em.AddField($"{msg.Author.Username} ({msg.CreationTimestamp})", msg.Content != null && msg.Content.Trim() != "" ? msg.Content : "<embed>");
+
+            await ctx.RespondAsync("", embed: em);
+        }
+        #endregion
+        
         #region COMMAND_MESSAGES_PIN
         [Command("pin")]
         [Description("Pins the last sent message.")]
@@ -64,7 +89,11 @@ namespace TheGodfather.Commands.Administration
         public async Task Pin(CommandContext ctx)
         {
             var msg = ctx.Channel.GetMessagesAsync(2).Result.Last();
-            await msg.PinAsync();
+            try {
+                await msg.PinAsync();
+            } catch (BadRequestException e) {
+                throw new CommandFailedException("That message cannot be pinned!", e);
+            }
         }
         #endregion
     }
