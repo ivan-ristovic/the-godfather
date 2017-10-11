@@ -37,6 +37,19 @@ namespace TheGodfather.Commands.Administration
         }
         #endregion
 
+        #region COMMAND_AVATAR
+        [Command("avatar")]
+        [Description("Get avatar from user.")]
+        public async Task AvatarAsync(CommandContext ctx,
+                                     [Description("User.")] DiscordUser u = null)
+        {
+            if (u == null)
+                throw new InvalidCommandUsageException("User missing!");
+
+            await ctx.RespondAsync(u.AvatarUrl);
+        }
+        #endregion
+
         #region COMMAND_USER_BAN
         [Command("ban")]
         [Description("Bans the user from server.")]

@@ -18,19 +18,6 @@ namespace TheGodfather.Commands.Main
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
     public class CommandsMain
     {
-        #region COMMAND_AVATAR
-        [Command("avatar")]
-        [Description("Get avatar from user.")]
-        public async Task AvatarAsync(CommandContext ctx,
-                                     [Description("User.")] DiscordUser u = null)
-        {
-            if (u == null)
-                throw new InvalidCommandUsageException("User missing!");
-
-            await ctx.RespondAsync(u.AvatarUrl);
-        }
-        #endregion
-
         #region COMMAND_EMBED
         [Command("embed")]
         [Description("Embed an image given as an URL.")]
