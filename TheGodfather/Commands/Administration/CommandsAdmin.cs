@@ -225,7 +225,7 @@ namespace TheGodfather.Commands.Administration
                 if (string.IsNullOrWhiteSpace(status))
                     throw new InvalidCommandUsageException("Invalid status.");
 
-                TheGodfather.Statuses.Add(status);
+                TheGodfather.AddStatus(status);
                 await ctx.RespondAsync("Status added!");
             }
             #endregion
@@ -244,7 +244,7 @@ namespace TheGodfather.Commands.Administration
                 if (status == "!help")
                     throw new InvalidCommandUsageException("Cannot delete help status!");
 
-                TheGodfather.Statuses.Remove(status);
+                TheGodfather.DeleteStatus(status);
                 await ctx.RespondAsync("Status removed!");
             }
             #endregion

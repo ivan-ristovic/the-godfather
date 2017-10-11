@@ -34,14 +34,25 @@ namespace TheGodfather
         private static InteractivityModule _interactivity { get; set; }
         private static VoiceNextClient _voice { get; set; }
 
-        private static StreamWriter _logstream = null;
-        private static object _lock = new object();
+        private static StreamWriter _logstream { get; set; }
+        private static object _lock { get; set; }
 
-        private static ConcurrentDictionary<ulong, string> _prefixes = new ConcurrentDictionary<ulong, string>();
+        private static ConcurrentDictionary<ulong, string> _prefixes { get; set; }
 
-        public static List<string> Statuses = new List<string> { "!help", "worldmafia.net", "worldmafia.net/discord" };
-        public static BotConfig Config = null;
+        public static IReadOnlyList<string> Statuses => _statuses;
+        private static List<string> _statuses;
+        public static BotConfig Config { get; internal set; }
+
         #endregion
+
+
+        public TheGodfather()
+        {
+            _lock = new object();
+            _logstream = null;
+            _prefixes = new ConcurrentDictionary<ulong, string>();
+            _statuses = new List<string> { "!help", "worldmafia.net", "worldmafia.net/discord" };
+        }
 
 
         ~TheGodfather()
@@ -545,6 +556,24 @@ namespace TheGodfather
             if (_prefixes.ContainsKey(cid))
                 _prefixes[cid] = prefix;
             _prefixes.TryAdd(cid, prefix);
+        }
+
+        public static void AddStatus(string status)
+        {
+            if (_statuses.Contains(status))
+                return;
+            _statuses.Add(status);
+        }
+
+        public static void DeleteStatus(string status)
+        {
+            _statuses.RemoveAll(s => s.ToLower() == status.ToLower());
+        }
+
+        public static void ClearAllStatuses()
+        {
+            _statuses.Clear();
+            _statuses = new List<string> { "!help", "worldmafia.net", "worldmafia.net/discord" };
         }
         #endregion
     }
