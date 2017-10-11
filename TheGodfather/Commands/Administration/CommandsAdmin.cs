@@ -225,7 +225,8 @@ namespace TheGodfather.Commands.Administration
                 if (string.IsNullOrWhiteSpace(status))
                     throw new InvalidCommandUsageException("Invalid status.");
 
-                TheGodfather.AddStatus(status);
+                ctx.Dependencies.GetDependency<TheGodfather>().AddStatus(status);
+
                 await ctx.RespondAsync("Status added!");
             }
             #endregion
@@ -244,7 +245,7 @@ namespace TheGodfather.Commands.Administration
                 if (status == "!help")
                     throw new InvalidCommandUsageException("Cannot delete help status!");
 
-                TheGodfather.DeleteStatus(status);
+                ctx.Dependencies.GetDependency<TheGodfather>().DeleteStatus(status);
                 await ctx.RespondAsync("Status removed!");
             }
             #endregion
@@ -255,7 +256,7 @@ namespace TheGodfather.Commands.Administration
             [RequireUserPermissions(Permissions.Administrator)]
             public async Task ListStatuses(CommandContext ctx)
             {
-                await ctx.RespondAsync("My current statuses:\n" + string.Join("\n", TheGodfather.Statuses));
+                await ctx.RespondAsync("My current statuses:\n" + string.Join("\n", ctx.Dependencies.GetDependency<TheGodfather>().Statuses));
             }
             #endregion
         }

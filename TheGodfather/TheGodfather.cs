@@ -39,8 +39,8 @@ namespace TheGodfather
 
         private static ConcurrentDictionary<ulong, string> _prefixes { get; set; }
 
-        public static IReadOnlyList<string> Statuses => _statuses;
-        private static List<string> _statuses;
+        public IReadOnlyList<string> Statuses => _statuses;
+        private List<string> _statuses;
         public static BotConfig Config { get; internal set; }
 
         #endregion
@@ -560,22 +560,16 @@ namespace TheGodfather
             _prefixes.TryAdd(cid, prefix);
         }
 
-        public static void AddStatus(string status)
+        public void AddStatus(string status)
         {
             if (_statuses.Contains(status))
                 return;
             _statuses.Add(status);
         }
 
-        public static void DeleteStatus(string status)
+        public void DeleteStatus(string status)
         {
             _statuses.RemoveAll(s => s.ToLower() == status.ToLower());
-        }
-
-        public static void ClearAllStatuses()
-        {
-            _statuses.Clear();
-            _statuses = new List<string> { "!help", "worldmafia.net", "worldmafia.net/discord" };
         }
         #endregion
     }
