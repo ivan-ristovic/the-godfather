@@ -22,28 +22,39 @@ namespace TheGodfather.Commands.Search
     [Cooldown(2, 5, CooldownBucketType.User), Cooldown(4, 5, CooldownBucketType.Channel)]
     public class CommandsJokes
     {
+        #region PRIVATE_FIELDS
+        private const string _randjokeurl = "https://icanhazdadjoke.com/";
+        private const string _yomommaurl = "https://icanhazdadjoke.com/";
+        #endregion
+
 
         public async Task ExecuteGroupAsync(CommandContext ctx)
         {
             string data = string.Empty;
-            string url = "https://icanhazdadjoke.com/";
 
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
+            HttpWebRequest request = (HttpWebRequest)WebRequest.Create(_randjokeurl);
             request.AutomaticDecompression = DecompressionMethods.GZip;
             request.Accept = "application/json";
 
-            using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
-                using (Stream stream = response.GetResponseStream()) {
-                    using (StreamReader reader = new StreamReader(stream)) {
-                        data = reader.ReadToEnd();
+            try {
+                using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
+                    using (Stream stream = response.GetResponseStream()) {
+                        using (StreamReader reader = new StreamReader(stream)) {
+                            data = reader.ReadToEnd();
+                        }
                     }
                 }
+            } catch (WebException e) {
+                throw new CommandFailedException("Connection to remote site failed!", e);
+            } catch (Exception e) {
+                throw new CommandFailedException("Exception occured!", e);
             }
 
             await ctx.RespondAsync(JObject.Parse(data)["joke"].ToString());
         }
 
 
+        #region COMMAND_JOKE_YOURMOM
         [Command("yourmom")]
         [Description("Yo mama so...")]
         [Aliases("mama", "m", "yomomma", "yomom", "yourmom")]
@@ -51,11 +62,14 @@ namespace TheGodfather.Commands.Search
         {
             try {
                 var wc = new WebClient();
-                var data = wc.DownloadString("http://api.yomomma.info/");
+                var data = wc.DownloadString(_yomommaurl);
                 await ctx.RespondAsync(JObject.Parse(data)["joke"].ToString());
             } catch (WebException e) {
-                throw new CommandFailedException("Connection to api.yomomma.info failed!", e);
+                throw new CommandFailedException("Connection to remote site failed!", e);
+            } catch (Exception e) {
+                throw new CommandFailedException("Exception occured!", e);
             }
         }
+        #endregion
     }
 }
