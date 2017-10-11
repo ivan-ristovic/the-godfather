@@ -31,12 +31,10 @@ namespace TheGodfather.Commands.Administration
         [Description("Clear application logs.")]
         [Aliases("clearlogs", "deletelogs", "deletelog")]
         [RequireOwner]
-        public async Task ChangeNickname(CommandContext ctx)
+        public async Task ClearLog(CommandContext ctx)
         {
             try {
-                TheGodfather.CloseLogFile();
-                File.Delete("log.txt");
-                TheGodfather.OpenLogFile();
+                ctx.Dependencies.GetDependency<TheGodfather>().ClearLogFile();
             } catch (Exception e) {
                 ctx.Client.DebugLogger.LogMessage(LogLevel.Error, "TheGodfather", e.Message, DateTime.Now);
                 throw e;

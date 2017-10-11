@@ -28,17 +28,19 @@ namespace TheGodfather
 {
     public class TheGodfather
     {
-        #region STATIC_FIELDS
-        private static DiscordClient _client { get; set; }
-        private static CommandsNextModule _commands { get; set; }
-        private static InteractivityModule _interactivity { get; set; }
-        private static VoiceNextClient _voice { get; set; }
+        #region PRIVATE_FIELDS
+        private DiscordClient _client { get; set; }
+        private CommandsNextModule _commands { get; set; }
+        private InteractivityModule _interactivity { get; set; }
+        private VoiceNextClient _voice { get; set; }
 
-        private static StreamWriter _logstream = null;
-        private static object _lock = new object ();
+        private StreamWriter _logstream = null;
+        private object _lock = new object ();
 
         private ConcurrentDictionary<ulong, string> _prefixes = new ConcurrentDictionary<ulong, string>();
+        #endregion
 
+        #region PUBLIC_FIELDS
         public IReadOnlyList<string> Statuses => _statuses;
         private List<string> _statuses = new List<string> { "!help", "worldmafia.net", "worldmafia.net/discord" };
         public static BotConfig Config { get; private set; }
@@ -84,8 +86,8 @@ namespace TheGodfather
         }
 
 
-        #region HELPER_FUNCTIONS
-        public static void OpenLogFile()
+        #region LOGGING_FUNCTIONS
+        private void OpenLogFile()
         {
             try {
                 _logstream = new StreamWriter("log.txt", append: true);
@@ -104,7 +106,7 @@ namespace TheGodfather
             }
         }
 
-        public static void CloseLogFile()
+        private void CloseLogFile()
         {
             if (_logstream != null) {
                 _logstream.Close();
@@ -112,6 +114,15 @@ namespace TheGodfather
             }
         }
 
+        public void ClearLogFile()
+        {
+            CloseLogFile();
+            File.Delete("log.txt");
+            OpenLogFile();
+        }
+        #endregion
+        
+        #region BOT_SETUP_FUNCTIONS
         private void SetupClient()
         {
             _client = new DiscordClient(new DiscordConfiguration {
@@ -463,7 +474,6 @@ namespace TheGodfather
             await _client.UpdateStatusAsync(new DiscordGame(Statuses[0]) { StreamType = GameStreamType.NoStream });
         }
         #endregion
-
 
         #region COMMAND_EVENTS
         private Task Commands_CommandExecuted(CommandExecutionEventArgs e)
