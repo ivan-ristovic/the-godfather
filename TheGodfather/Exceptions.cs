@@ -9,12 +9,12 @@ namespace TheGodfather.Exceptions
 
         }
 
-        public InvalidCommandUsageException(string message) : base(m)
+        public InvalidCommandUsageException(string message) : base(message)
         {
             
         }
 
-        public InvalidCommandUsageException(string message, Exception inner) : base(m, inner)
+        public InvalidCommandUsageException(string message, Exception inner) : base(message, inner)
         {
 
         }
@@ -27,12 +27,12 @@ namespace TheGodfather.Exceptions
 
         }
 
-        public CommandFailedException(string message) : base(m)
+        public CommandFailedException(string message) : base(message)
         {
 
         }
 
-        public CommandFailedException(string message, Exception inner) : base(m, inner)
+        public CommandFailedException(string message, Exception inner) : base(message, inner)
         {
 
         }

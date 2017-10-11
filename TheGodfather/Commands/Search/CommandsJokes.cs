@@ -24,18 +24,17 @@ namespace TheGodfather.Commands.Search
     {
         #region PRIVATE_FIELDS
         private const string _randjokeurl = "https://icanhazdadjoke.com/";
-        private const string _yomommaurl = "https://icanhazdadjoke.com/";
+        private const string _yomommaurl = "http://api.yomomma.info/";
         #endregion
 
 
         public async Task ExecuteGroupAsync(CommandContext ctx)
         {
-            string data = string.Empty;
-
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(_randjokeurl);
             request.AutomaticDecompression = DecompressionMethods.GZip;
-            request.Accept = "application/json";
+            request.Accept = "text/plain";
 
+            string data = string.Empty;
             try {
                 using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
                     using (Stream stream = response.GetResponseStream()) {
@@ -44,20 +43,20 @@ namespace TheGodfather.Commands.Search
                         }
                     }
                 }
+                await ctx.RespondAsync(data);
             } catch (WebException e) {
                 throw new CommandFailedException("Connection to remote site failed!", e);
             } catch (Exception e) {
                 throw new CommandFailedException("Exception occured!", e);
             }
 
-            await ctx.RespondAsync(JObject.Parse(data)["joke"].ToString());
         }
 
 
         #region COMMAND_JOKE_YOURMOM
         [Command("yourmom")]
         [Description("Yo mama so...")]
-        [Aliases("mama", "m", "yomomma", "yomom", "yourmom")]
+        [Aliases("mama", "m", "yomomma", "yomom", "yourmom", "yomoma")]
         public async Task YomamaJoke(CommandContext ctx)
         {
             try {
