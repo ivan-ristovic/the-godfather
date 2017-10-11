@@ -155,6 +155,26 @@ namespace TheGodfather.Commands.Main
             await ctx.RespondAsync($"Pong! {ctx.Client.Ping}ms");
         }
         #endregion
+        
+        #region COMMAND_PREFIX
+        [Command("prefix")]
+        [Description("Get channel prefix, or set it to given value.")]
+        [Aliases("setprefix")]
+        [RequireUserPermissions(Permissions.Administrator)]
+        public async Task Prefix(CommandContext ctx,
+                                [Description("Prefix to set.")] string prefix = null)
+        {
+            var gf = ctx.Dependencies.GetDependency<TheGodfather>();
+
+            if (string.IsNullOrWhiteSpace(prefix)) {
+                await ctx.RespondAsync("Current prefix for this channel is: " + Formatter.Bold(gf.PrefixFor(ctx.Channel.Id)));
+                return;
+            }
+
+            gf.SetPrefix(ctx.Channel.Id, prefix);
+            await ctx.RespondAsync("Successfully changed the prefix for this channel to: " + Formatter.Bold(prefix));
+        }
+        #endregion
 
         #region COMMAND_REMIND
         [Command("remind")]
