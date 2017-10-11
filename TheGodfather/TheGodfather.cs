@@ -41,8 +41,7 @@ namespace TheGodfather
 
         public IReadOnlyList<string> Statuses => _statuses;
         private List<string> _statuses = new List<string> { "!help", "worldmafia.net", "worldmafia.net/discord" };
-        public static BotConfig Config { get; internal set; }
-
+        public static BotConfig Config { get; private set; }
         #endregion
 
 
