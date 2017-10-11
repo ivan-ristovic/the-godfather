@@ -118,7 +118,7 @@ namespace TheGodfather.Commands.Games
             };
             embed.AddField("Result", $"You won {Formatter.Bold(won.ToString())} credits!");
 
-            await ctx.RespondAsync("", embed: embed);
+            await ctx.RespondAsync(embed: embed);
 
             if (won > 0)
                 CommandsBank.IncreaseBalance(ctx.User.Id, won);

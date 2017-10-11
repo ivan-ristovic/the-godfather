@@ -100,7 +100,7 @@ namespace TheGodfather.Commands.Games
                     var m = await ctx.Guild.GetMemberAsync(participant.Key);
                     em.AddField(m.Username, participant.Value.ToString(), inline: true);
                 }
-                await ctx.RespondAsync("", embed: em);
+                await ctx.RespondAsync(embed: em);
             }
 
             private void LoadCountries()

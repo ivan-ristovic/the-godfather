@@ -67,7 +67,7 @@ namespace TheGodfather.Commands.Search
                 embed.AddField(item.Title.Text, item.Links[0].Uri.ToString());
             }
 
-            await ctx.RespondAsync("", embed: embed);
+            await ctx.RespondAsync(embed: embed);
         }
         #endregion
     }

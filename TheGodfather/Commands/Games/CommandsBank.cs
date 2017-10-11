@@ -75,7 +75,7 @@ namespace TheGodfather.Commands.Games
             if (_accounts.ContainsKey(ctx.User.Id))
                 ammount = _accounts[ctx.User.Id];
 
-            await ctx.RespondAsync("", embed: new DiscordEmbedBuilder() {
+            await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
                 Title = $"Account balance for {ctx.User.Username}",
                 Description = $"{Formatter.Bold(ammount != 0 ? ammount.ToString() : "No existing account!")}",
                 Color = DiscordColor.Yellow
@@ -99,7 +99,7 @@ namespace TheGodfather.Commands.Games
                 }
             }
 
-            await ctx.RespondAsync("", embed: embed);
+            await ctx.RespondAsync(embed: embed);
         }
         #endregion
 

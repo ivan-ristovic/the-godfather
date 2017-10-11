@@ -63,7 +63,7 @@ namespace TheGodfather.Commands.Messages
             if (poll_options.Count < 2)
                 throw new InvalidCommandUsageException("Not enough poll options.");
 
-            await ctx.RespondAsync("", embed: EmbedPoll(q, poll_options));
+            await ctx.RespondAsync(embed: EmbedPoll(q, poll_options));
 
             AddEntries(ctx.Channel.Id, poll_options.Count);
 
@@ -71,7 +71,7 @@ namespace TheGodfather.Commands.Messages
 
             await Task.Delay(30000);
 
-            await ctx.RespondAsync("", embed: EmbedPollResults(ctx.Channel.Id, poll_options));
+            await ctx.RespondAsync(embed: EmbedPollResults(ctx.Channel.Id, poll_options));
 
             RemoveEntries(ctx.Channel.Id);
         }

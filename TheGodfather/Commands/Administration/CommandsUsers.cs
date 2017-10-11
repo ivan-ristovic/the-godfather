@@ -49,7 +49,7 @@ namespace TheGodfather.Commands.Administration
                 throw new InvalidCommandUsageException("You need to mention a user to ban.");
 
             await ctx.Guild.BanMemberAsync(u);
-            await ctx.RespondAsync("", embed: new DiscordEmbedBuilder() {
+            await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
                 Title = $"{Formatter.Bold(ctx.User.Username)} BANNED {Formatter.Bold(u.DisplayName)}!",
                 ImageUrl = "http://i0.kym-cdn.com/entries/icons/original/000/000/615/BANHAMMER.png"
             });
@@ -85,7 +85,7 @@ namespace TheGodfather.Commands.Administration
                 throw new InvalidCommandUsageException("You need to mention a user to kick.");
 
             await ctx.Guild.RemoveMemberAsync(u);
-            await ctx.RespondAsync("", embed: new DiscordEmbedBuilder() {
+            await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
                 Title = $"{Formatter.Bold(ctx.User.Username)} kicked {Formatter.Bold(u.DisplayName)} in the cojones.",
                 ImageUrl = "https://i.imgflip.com/7wcxy.jpg"
             });
@@ -103,7 +103,7 @@ namespace TheGodfather.Commands.Administration
                 u = ctx.Member;
 
             var perms = ctx.Channel.PermissionsFor(u);
-            await ctx.RespondAsync("", embed: new DiscordEmbedBuilder() {
+            await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
                 Title = $"{Formatter.Bold(u.DisplayName)}'s permissions list:",
                 Description = perms.ToPermissionString()
             });
@@ -123,7 +123,7 @@ namespace TheGodfather.Commands.Administration
             string s = "";
             foreach (var role in u.Roles.OrderBy(r => r.Position).Reverse())
                 s += role.Name + "\n";
-            await ctx.RespondAsync("", embed: new DiscordEmbedBuilder() {
+            await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
                 Title = $"{Formatter.Bold(u.DisplayName)}'s roles:",
                 Description = s,
                 Color = DiscordColor.Gold

@@ -166,7 +166,7 @@ namespace TheGodfather.Commands.SWAT
                 else
                     embed.AddField(server.Key, $"IP: {split[0]}:{split[1]}\nPlayers: Offline");
             }
-            await ctx.RespondAsync("", embed: embed);
+            await ctx.RespondAsync(embed: embed);
         }
         #endregion
 
@@ -320,7 +320,7 @@ namespace TheGodfather.Commands.SWAT
             embed.AddField("Players", info[1] + "/" + info[2]);
             embed.AddField("Map", info[4]);
             embed.AddField("Game mode", info[3]);
-            await ctx.RespondAsync("", embed: embed);
+            await ctx.RespondAsync(embed: embed);
         }
         #endregion
     }

@@ -110,7 +110,7 @@ namespace TheGodfather.Commands.Messages
             embed.AddField("Rank", (rank < _ranks.Length) ? _ranks[rank] : "Low");
             embed.AddField("XP", $"{msgcount}", inline: true);
             embed.AddField("XP needed for next rank", $"{(rank + 1) * (rank + 1) * 10}", inline: true);
-            await ctx.RespondAsync("", embed: embed);
+            await ctx.RespondAsync(embed: embed);
         }
         #endregion
 
@@ -128,7 +128,7 @@ namespace TheGodfather.Commands.Messages
             for (int i = 1; i < _ranks.Length; i++)
                 em.AddField(_ranks[i], $"XP needed: {i * i * 10}", inline: true);
 
-            await ctx.RespondAsync("", embed: em);
+            await ctx.RespondAsync(embed: em);
         }
         #endregion
 
@@ -159,7 +159,7 @@ namespace TheGodfather.Commands.Messages
                     em.AddField(u.Username, $"Low ({v.Value} XP)");
             }
 
-            await ctx.RespondAsync("", embed: em);
+            await ctx.RespondAsync(embed: em);
         }
         #endregion
 

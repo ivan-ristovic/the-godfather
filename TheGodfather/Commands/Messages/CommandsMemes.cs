@@ -136,7 +136,7 @@ namespace TheGodfather.Commands.Messages
             for (var i = starti; i < endi; i++)
                 s += $"{Formatter.Bold(keys[i])} : {_memes[keys[i]]}\n";
 
-            await ctx.RespondAsync("", embed: new DiscordEmbedBuilder() {
+            await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
                 Title = $"Available memes (page {page}/{_memes.Count / 10 + 1}) :",
                 Description = s,
                 Color = DiscordColor.Green
@@ -171,7 +171,7 @@ namespace TheGodfather.Commands.Messages
         private async Task SendMeme(CommandContext ctx, string url)
         {
             await ctx.TriggerTypingAsync();
-            await ctx.RespondAsync("", embed: new DiscordEmbedBuilder{ ImageUrl = url });
+            await ctx.RespondAsync(embed: new DiscordEmbedBuilder{ ImageUrl = url });
         }
         #endregion
     }

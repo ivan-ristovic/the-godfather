@@ -78,7 +78,7 @@ namespace TheGodfather.Commands.Administration
             foreach (var msg in pinned.Take(n))
                 em.AddField($"{msg.Author.Username} ({msg.CreationTimestamp})", msg.Content != null && msg.Content.Trim() != "" ? msg.Content : "<embed>");
 
-            await ctx.RespondAsync("", embed: em);
+            await ctx.RespondAsync(embed: em);
         }
         #endregion
         

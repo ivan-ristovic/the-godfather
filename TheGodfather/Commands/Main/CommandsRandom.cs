@@ -42,7 +42,7 @@ namespace TheGodfather.Commands.Main
                 "Definitely not."
             };
 
-            await ctx.RespondAsync("", embed: new DiscordEmbedBuilder() {
+            await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
                 Title = DiscordEmoji.FromName(ctx.Client, ":8ball:").ToString(),
                 Description = answers[new Random().Next(answers.Length)]
             });

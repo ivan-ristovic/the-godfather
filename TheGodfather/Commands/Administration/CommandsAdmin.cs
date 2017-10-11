@@ -68,7 +68,7 @@ namespace TheGodfather.Commands.Administration
                 Title = "Evaluating...",
                 Color = DiscordColor.Aquamarine
             };
-            var msg = await ctx.RespondAsync("", embed: embed.Build()).ConfigureAwait(false);
+            var msg = await ctx.RespondAsync(embed: embed.Build()).ConfigureAwait(false);
 
             var globals = new EvaluationEnvironment(ctx);
             var sopts = ScriptOptions.Default

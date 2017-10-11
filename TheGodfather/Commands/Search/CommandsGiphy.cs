@@ -68,7 +68,7 @@ namespace TheGodfather.Commands.Search
 
             var res = await _giphy.TrendingGifs(new TrendingParameter() { Limit = n });
             
-            await ctx.RespondAsync("", embed: new DiscordEmbedBuilder() {
+            await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
                 Title = "Trending gifs:",
                 Description = res.Data.Aggregate("", (string s, Data r) => s += r.Url + '\n'),
                 Color = DiscordColor.Gold

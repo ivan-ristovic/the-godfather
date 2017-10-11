@@ -173,7 +173,7 @@ namespace TheGodfather.Commands.Messages
             for (var i = starti; i < endi; i++)
                 s += $"{Formatter.Bold(keys[i])} : {_reactions[ctx.Guild.Id][keys[i]]}\n";
 
-            await ctx.RespondAsync("", embed: new DiscordEmbedBuilder() {
+            await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
                 Title = $"Available reactions (page {page}/{_reactions[ctx.Guild.Id].Count / 10 + 1}) :",
                 Description = s,
                 Color = DiscordColor.Yellow

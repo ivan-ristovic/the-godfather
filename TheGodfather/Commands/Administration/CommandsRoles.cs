@@ -25,7 +25,7 @@ namespace TheGodfather.Commands.Administration
             string s = "";
             foreach (var role in ctx.Guild.Roles.OrderBy(r => r.Position).Reverse())
                 s += role.Name + "\n";
-            await ctx.RespondAsync("", embed: new DiscordEmbedBuilder() {
+            await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
                 Title = "Roles:",
                 Description = s,
                 Color = DiscordColor.Gold

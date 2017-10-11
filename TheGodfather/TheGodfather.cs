@@ -38,11 +38,11 @@ namespace TheGodfather
         private object _lock = new object ();
 
         private ConcurrentDictionary<ulong, string> _prefixes = new ConcurrentDictionary<ulong, string>();
+        private List<string> _statuses = new List<string> { "!help", "worldmafia.net", "worldmafia.net/discord" };
         #endregion
 
         #region PUBLIC_FIELDS
         public IReadOnlyList<string> Statuses => _statuses;
-        private List<string> _statuses = new List<string> { "!help", "worldmafia.net", "worldmafia.net/discord" };
         public static BotConfig Config { get; private set; }
         #endregion
 
@@ -539,7 +539,7 @@ namespace TheGodfather
             else
                 embed.Description = $"{emoji} Unknown error occured (probably because a Serbian made this bot). Please **!report**.";
 
-            await e.Context.RespondAsync("", embed: embed);
+            await e.Context.RespondAsync(embed: embed);
         }
         #endregion
 

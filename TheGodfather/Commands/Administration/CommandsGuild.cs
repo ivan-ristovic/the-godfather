@@ -108,7 +108,7 @@ namespace TheGodfather.Commands.Administration
                 foreach (var emoji in ctx.Guild.Emojis)
                     s += $"{Formatter.Bold(emoji.Name)} ";
 
-                await ctx.RespondAsync("", embed: new DiscordEmbedBuilder() {
+                await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
                     Title = "Available emoji:",
                     Description = s,
                     Color = DiscordColor.CornflowerBlue
@@ -162,7 +162,7 @@ namespace TheGodfather.Commands.Administration
             for (var i = starti; i < endi; i++)
                 s += $"{Formatter.Bold(membersarray[i].Username)} , joined at: {Formatter.Bold(membersarray[i].JoinedAt.ToString())}\n";
 
-            await ctx.RespondAsync("", embed: new DiscordEmbedBuilder() {
+            await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
                 Title = $"Members (page {Formatter.Bold(page.ToString())}) :",
                 Description = s,
                 Color = DiscordColor.SapGreen
@@ -191,7 +191,7 @@ namespace TheGodfather.Commands.Administration
                 s += $"{Formatter.Bold(logarray[i].CreationTimestamp.ToUniversalTime().ToString())} UTC : Action " +
                      $"{Formatter.Bold(logarray[i].ActionType.ToString())} by {Formatter.Bold(logarray[i].UserResponsible.Username)}\n";
 
-            await ctx.RespondAsync("", embed: new DiscordEmbedBuilder() {
+            await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
                 Title = $"Audit log (page {Formatter.Bold(page.ToString())}) :",
                 Description = s,
                 Color = DiscordColor.Brown

@@ -42,7 +42,7 @@ namespace TheGodfather.Commands.Main
                 throw new InvalidCommandUsageException("URL missing!");
 
             try {
-                await ctx.RespondAsync("", embed: new DiscordEmbedBuilder() { ImageUrl = url });
+                await ctx.RespondAsync(embed: new DiscordEmbedBuilder() { ImageUrl = url });
             } catch (UriFormatException e) {
                 throw new CommandFailedException("URL is not in correct format!", e);
             }

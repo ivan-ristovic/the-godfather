@@ -276,7 +276,7 @@ namespace TheGodfather.Commands.Games
                     }
                 s += '\n';
             }
-            await m.ModifyAsync("", embed: new DiscordEmbedBuilder() { Description = s } );
+            await m.ModifyAsync(embed: new DiscordEmbedBuilder() { Description = s } );
         }
         #endregion
 
