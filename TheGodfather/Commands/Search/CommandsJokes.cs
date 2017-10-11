@@ -43,7 +43,7 @@ namespace TheGodfather.Commands.Search
                         }
                     }
                 }
-                await ctx.RespondAsync(data);
+                await ctx.RespondAsync(embed: new DiscordEmbedBuilder() { Description = data });
             } catch (WebException e) {
                 throw new CommandFailedException("Connection to remote site failed!", e);
             } catch (Exception e) {
@@ -62,7 +62,9 @@ namespace TheGodfather.Commands.Search
             try {
                 var wc = new WebClient();
                 var data = wc.DownloadString(_yomommaurl);
-                await ctx.RespondAsync(JObject.Parse(data)["joke"].ToString());
+                await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
+                    Description = JObject.Parse(data)["joke"].ToString()
+                });
             } catch (WebException e) {
                 throw new CommandFailedException("Connection to remote site failed!", e);
             } catch (Exception e) {
