@@ -180,6 +180,7 @@ namespace TheGodfather
             _commands.RegisterCommands<Commands.Messages.CommandsReaction>();
             _commands.RegisterCommands<Commands.Search.CommandsGiphy>();
             _commands.RegisterCommands<Commands.Search.CommandsImgur>();
+            _commands.RegisterCommands<Commands.Search.CommandsJokes>();
             //_commands.RegisterCommands<Modules.Search.CommandsReddit>();
             _commands.RegisterCommands<Commands.Search.CommandsRSS>();
             _commands.RegisterCommands<Commands.Search.CommandsSteam>();

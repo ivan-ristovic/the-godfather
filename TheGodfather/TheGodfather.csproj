@@ -233,6 +233,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Commands\Administration\Helpers\EvaluationEnvironment.cs" />
+    <Compile Include="Commands\Search\CommandsJokes.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Exceptions.cs" />
     <Compile Include="Helpers\HelpFormatter.cs" />
