@@ -153,7 +153,8 @@ namespace TheGodfather
                 EnableDms = false,
                 CaseSensitive = false,
                 EnableMentionPrefix = true,
-                CustomPrefixPredicate = async m => await CheckMessageForPrefix(m)
+                CustomPrefixPredicate = async m => await CheckMessageForPrefix(m),
+                Dependencies = new DependencyCollectionBuilder().AddInstance(this).Build()
             });
 
             _commands.SetHelpFormatter<HelpFormatter>();
@@ -185,6 +186,7 @@ namespace TheGodfather
             _commands.RegisterCommands<Commands.Search.CommandsYoutube>();
             _commands.RegisterCommands<Commands.SWAT.CommandsSwat>();
             //_commands.RegisterCommands<Modules.Voice.CommandsVoice>();
+
             _commands.CommandExecuted += Commands_CommandExecuted;
             _commands.CommandErrored += Commands_CommandErrored;
         }
