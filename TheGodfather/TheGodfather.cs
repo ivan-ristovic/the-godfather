@@ -34,25 +34,16 @@ namespace TheGodfather
         private static InteractivityModule _interactivity { get; set; }
         private static VoiceNextClient _voice { get; set; }
 
-        private static StreamWriter _logstream { get; set; }
-        private static object _lock { get; set; }
+        private static StreamWriter _logstream = null;
+        private static object _lock = new object ();
 
-        private static ConcurrentDictionary<ulong, string> _prefixes { get; set; }
+        private ConcurrentDictionary<ulong, string> _prefixes = new ConcurrentDictionary<ulong, string>();
 
         public IReadOnlyList<string> Statuses => _statuses;
-        private List<string> _statuses;
+        private List<string> _statuses = new List<string> { "!help", "worldmafia.net", "worldmafia.net/discord" };
         public static BotConfig Config { get; internal set; }
 
         #endregion
-
-
-        public TheGodfather()
-        {
-            _lock = new object();
-            _logstream = null;
-            _prefixes = new ConcurrentDictionary<ulong, string>();
-            _statuses = new List<string> { "!help", "worldmafia.net", "worldmafia.net/discord" };
-        }
 
 
         ~TheGodfather()
@@ -545,7 +536,7 @@ namespace TheGodfather
 
 
         #region GETTERS_AND_SETTERS
-        public static string PrefixFor(ulong cid)
+        public string PrefixFor(ulong cid)
         {
             if (_prefixes.ContainsKey(cid))
                 return _prefixes[cid];
@@ -553,7 +544,7 @@ namespace TheGodfather
                 return Config.DefaultPrefix;
         }
 
-        public static void SetPrefix(ulong cid, string prefix)
+        public void SetPrefix(ulong cid, string prefix)
         {
             if (_prefixes.ContainsKey(cid))
                 _prefixes[cid] = prefix;

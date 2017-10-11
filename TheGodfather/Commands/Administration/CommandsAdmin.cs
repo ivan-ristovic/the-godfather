@@ -170,12 +170,14 @@ namespace TheGodfather.Commands.Administration
         public async Task Prefix(CommandContext ctx,
                                 [Description("Prefix to set.")] string prefix = null)
         {
+            var gf = ctx.Dependencies.GetDependency<TheGodfather>();
+
             if (string.IsNullOrWhiteSpace(prefix)) {
-                await ctx.RespondAsync("Current prefix for this channel is: " + Formatter.Bold(TheGodfather.PrefixFor(ctx.Channel.Id)));
+                await ctx.RespondAsync("Current prefix for this channel is: " + Formatter.Bold(gf.PrefixFor(ctx.Channel.Id)));
                 return;
             }
 
-            TheGodfather.SetPrefix(ctx.Channel.Id, prefix);
+            gf.SetPrefix(ctx.Channel.Id, prefix);
             await ctx.RespondAsync("Successfully changed the prefix for this channel to: " + Formatter.Bold(prefix));
         }
         #endregion
