@@ -36,7 +36,7 @@ namespace TheGodfather.Commands.Search
                 var interactivity = ctx.Client.GetInteractivityModule();
                 foreach (var v in data.Value.List) {
                     await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
-                        Description = v.Definition,
+                        Description = v.Definition.Length < 1000 ? v.Definition : v.Definition.Take(1000) + "...",
                         Color = DiscordColor.CornflowerBlue
                     });
 
