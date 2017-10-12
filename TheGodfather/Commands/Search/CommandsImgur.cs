@@ -31,7 +31,7 @@ namespace TheGodfather.Commands.Search
 
         public async Task ExecuteGroupAsync(CommandContext ctx,
                                            [Description("Number of images to print [1-10].")] int n = 1,
-                                           [Description("Query.")] string sub = null)
+                                           [RemainingText, Description("Query.")] string sub = null)
         {
             if (string.IsNullOrWhiteSpace(sub))
                 throw new InvalidCommandUsageException("Missing search query.");
@@ -66,7 +66,7 @@ namespace TheGodfather.Commands.Search
         public async Task ImgurTop(CommandContext ctx,
                                   [Description("Time window (day/month/week/year/all).")] string time = "day",
                                   [Description("Number of images to print [1-10].")] int n = 1,
-                                  [Description("Query.")] string sub = null)
+                                  [RemainingText, Description("Query.")] string sub = null)
         {
             if (string.IsNullOrWhiteSpace(sub))
                 throw new InvalidCommandUsageException("Missing search query.");
