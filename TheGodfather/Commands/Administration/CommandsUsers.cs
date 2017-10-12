@@ -86,6 +86,28 @@ namespace TheGodfather.Commands.Administration
         }
         #endregion
 
+        #region COMMAND_USER_INFO
+        [Command("info")]
+        [Description("Print the user information.")]
+        [Aliases("i", "information")]
+        public async Task Info(CommandContext ctx,
+                              [Description("User.")] DiscordUser u = null)
+        {
+            if (u == null)
+                u = ctx.User;
+
+            var em = new DiscordEmbedBuilder() {
+                Title = $"{Formatter.Bold(u.Username)}",
+                ThumbnailUrl = u.AvatarUrl,
+                Color = DiscordColor.MidnightBlue
+            };
+            em.AddField("Status", u.Presence.Status.ToString());
+            em.AddField("Discriminator", u.Discriminator);
+
+            await ctx.RespondAsync(embed: em);
+        }
+        #endregion
+
         #region COMMAND_USER_KICK
         [Command("kick")]
         [Description("Kicks the user from server.")]
