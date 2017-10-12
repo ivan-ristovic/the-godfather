@@ -142,6 +142,26 @@ namespace TheGodfather.Commands.Administration
             #endregion
         }
 
+        #region COMMAND_GUILD_RENAME
+        [Command("info")]
+        [Description("Get guild information.")]
+        [Aliases("i", "information")]
+        public async Task GuildInfo(CommandContext ctx)
+        {
+            var em = new DiscordEmbedBuilder() {
+                Title = ctx.Guild.Name,
+                ThumbnailUrl = ctx.Guild.IconUrl,
+                Color = DiscordColor.MidnightBlue
+            };
+            em.AddField("Members", ctx.Guild.MemberCount.ToString(), inline: true);
+            em.AddField("Owner", ctx.Guild.Owner.Username, inline: true);
+            em.AddField("Region ID", ctx.Guild.RegionId, inline: true);
+            em.AddField("Creation date", ctx.Guild.CreationTimestamp.ToString(), inline: true);
+
+            await ctx.RespondAsync(embed: em);
+        }
+        #endregion
+
         #region COMMAND_GUILD_LISTMEMBERS
         [Command("listmembers")]
         [Description("Rename guild.")]
