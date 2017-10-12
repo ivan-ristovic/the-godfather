@@ -68,18 +68,46 @@ namespace TheGodfather.Commands.Administration
         
         #region COMMAND_CHANNEL_DELETE
         [Command("delete")]
-        [Description("Delete channel")]
+        [Description("Delete channel.")]
         [Aliases("-", "del", "d", "remove")]
         [RequirePermissions(Permissions.ManageChannels)]
         public async Task DeleteChannel(CommandContext ctx, 
                                        [Description("Channel.")] DiscordChannel c = null)
         {
             if (c == null)
-                throw new InvalidCommandUsageException("Can't find such channel.");
+                throw new InvalidCommandUsageException("Channel missing.");
 
             string name = c.Name;
             await c.DeleteAsync();
             await ctx.RespondAsync($"Channel {Formatter.Bold(name)} successfully deleted.");
+        }
+        #endregion
+
+        #region COMMAND_CHANNEL_INFO
+        [Command("info")]
+        [Description("Get channel information.")]
+        [Aliases("i", "information")]
+        [RequirePermissions(Permissions.ManageChannels)]
+        public async Task ChannelInfo(CommandContext ctx,
+                                     [Description("Channel.")] DiscordChannel c = null)
+        {
+            if (c == null)
+                throw new InvalidCommandUsageException("Channel missing.");
+
+            var em = new DiscordEmbedBuilder() {
+                Title = "Details for channel: " + c.Name,
+                Description = c.Topic,
+                Color = DiscordColor.Goldenrod
+            };
+            em.AddField("Type", c.Type.ToString(), inline: true);
+            em.AddField("NSFW", c.IsNSFW ? "Yes" : "No", inline: true);
+            em.AddField("Private", c.IsPrivate ? "Yes" : "No", inline: true);
+            if (c.Type == ChannelType.Voice)
+                em.AddField("Bitrate", c.Bitrate.ToString(), inline: true);
+            em.AddField("User limit", c.UserLimit == 0 ? "No limit." : c.UserLimit.ToString(), inline: true);
+            em.AddField("Created", c.CreationTimestamp.ToString(), inline: true);
+
+            await ctx.RespondAsync(embed: em);
         }
         #endregion
 
@@ -93,7 +121,7 @@ namespace TheGodfather.Commands.Administration
                                        [RemainingText, Description("New name.")] string name = null)
         {
             if (c == null)
-                throw new InvalidCommandUsageException("Can't find such channel.");
+                throw new InvalidCommandUsageException("Channel missing.");
             if (string.IsNullOrWhiteSpace(name))
                 throw new InvalidCommandUsageException("Missing new channel name.");
             if (name.Contains(" "))
@@ -114,7 +142,7 @@ namespace TheGodfather.Commands.Administration
                                          [RemainingText, Description("New topic.")] string topic = null)
         {
             if (c == null)
-                throw new InvalidCommandUsageException("Can't find such channel.");
+                throw new InvalidCommandUsageException("Channel missing.");
             if (string.IsNullOrWhiteSpace(topic))
                 throw new InvalidCommandUsageException("Missing topic.");
 
