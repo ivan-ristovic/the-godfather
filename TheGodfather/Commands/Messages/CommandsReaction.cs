@@ -17,7 +17,7 @@ using DSharpPlus.Entities;
 
 namespace TheGodfather.Commands.Messages
 {
-    [Group("reactions", CanInvokeWithoutSubcommand = false /*true*/)]
+    [Group("reactions", CanInvokeWithoutSubcommand = true)]
     [Description("Reaction handling commands.")]
     [Aliases("react", "reaction")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
@@ -78,7 +78,7 @@ namespace TheGodfather.Commands.Messages
         }
         #endregion
 
-        /*
+        
         public async Task ExecuteGroupAsync(CommandContext ctx,
                                            [Description("Emoji to send.")] DiscordEmoji emoji = null,
                                            [RemainingText, Description("Trigger word list.")] params string[] triggers)
@@ -98,14 +98,15 @@ namespace TheGodfather.Commands.Messages
                                      [RemainingText, Description("Trigger word list.")] params string[] triggers)
         {
             if (!_reactions.ContainsKey(ctx.Guild.Id))
-                _reactions.Add(ctx.Guild.Id, new SortedDictionary<string, string>());
+                if (!_reactions.TryAdd(ctx.Guild.Id, new SortedDictionary<string, string>()))
+                    throw new CommandFailedException("Adding reaction failed!");
 
             bool conflict_exists = false;
             foreach (var word in triggers) {
                 if (_reactions[ctx.Guild.Id].ContainsKey(word))
                     conflict_exists = true;
                 else
-                    _reactions[ctx.Guild.Id].Add(word, $":{emoji.Name}:");
+                    _reactions[ctx.Guild.Id].Add(word, emoji.GetDiscordName());
             }
 
             if (conflict_exists)
@@ -114,7 +115,7 @@ namespace TheGodfather.Commands.Messages
                 await ctx.RespondAsync("Done."); 
         }
         #endregion
-        */
+        
         #region COMMAND_REACTIONS_DELETE
         [Command("delete")]
         [Description("Remove trigger word (can be more than one) from list.")]
@@ -148,7 +149,7 @@ namespace TheGodfather.Commands.Messages
         public async Task SaveReactions(CommandContext ctx)
         {
             SaveReactions(ctx.Client.DebugLogger);
-            await ctx.RespondAsync("Aliases successfully saved.");
+            await ctx.RespondAsync("Reactions successfully saved.");
         }
         #endregion
 
