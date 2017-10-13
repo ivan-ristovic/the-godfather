@@ -100,7 +100,7 @@ namespace TheGodfather
 
             try {
                 lock (_lock) {
-                    _logstream.WriteLine($"\n*** NEW INSTANCE STARTED AT {DateTime.Now.ToLongDateString()} : {DateTime.Now.ToLongTimeString()} ***\n");
+                    _logstream.WriteLine($"{Environment.NewLine}*** NEW INSTANCE STARTED AT {DateTime.Now.ToLongDateString()} : {DateTime.Now.ToLongTimeString()} ***{Environment.NewLine}");
                     _logstream.Flush();
                 }
             } catch (Exception e) {
@@ -293,22 +293,25 @@ namespace TheGodfather
             _client.DebugLogger.LogMessage(
                    LogLevel.Info,
                    LOG_TAG,
-                   $"Member joined: {e.Member.Username} ({e.Member.Id})\n" +
+                   $"Member joined: {e.Member.Username} ({e.Member.Id})" + Environment.NewLine +
                    $" Guild: {e.Guild.Name} ({e.Guild.Id})",
                    DateTime.Now
             );
 
+            ulong cid = Commands.Administration.CommandsGuild.GetWelcomeChannelId(e.Guild.Id);
+            if (cid == 0)
+                return;
+
             try {
-                await e.Guild.GetDefaultChannel().SendMessageAsync($"Welcome to {Formatter.Bold(e.Guild.Name)}, {e.Member.Mention}!");
+                await e.Guild.GetChannel(cid).SendMessageAsync($"Welcome to {Formatter.Bold(e.Guild.Name)}, {e.Member.Mention}!");
             } catch (Exception exc) {
                 while (exc is AggregateException)
                     exc = exc.InnerException;
                 _client.DebugLogger.LogMessage(
                    LogLevel.Error,
                    LOG_TAG,
-                   $"Failed to send a welcome message!\n" +
-                   $" Member joined: {e.Member.Username} ({e.Member.Id})\n" +
-                   $" Guild: {e.Guild.Name} ({e.Guild.Id})" +
+                   $"Failed to send a welcome message!" + Environment.NewLine +
+                   $" Channel ID: {cid}" + Environment.NewLine +
                    $" Exception: {exc.GetType()}" +
                    $" Message: {exc.Message}",
                    DateTime.Now
@@ -321,22 +324,26 @@ namespace TheGodfather
             _client.DebugLogger.LogMessage(
                 LogLevel.Info,
                 LOG_TAG,
-                $"Member left: {e.Member.Username} ({e.Member.Id})\n" +
+                $"Member left: {e.Member.Username} ({e.Member.Id})" + Environment.NewLine +
                 $" Guild: {e.Guild.Name} ({e.Guild.Id})",
                 DateTime.Now
             );
+
+            ulong cid = Commands.Administration.CommandsGuild.GetWelcomeChannelId(e.Guild.Id);
+            if (cid == 0)
+                return;
+
             try {
-                await e.Guild.GetDefaultChannel().SendMessageAsync($"{Formatter.Bold(e.Member?.Username ?? "<unknown>")} left the server. Bye!");
+                await e.Guild.GetChannel(cid).SendMessageAsync($"{Formatter.Bold(e.Member?.Username ?? "<unknown>")} left the server. Bye!");
             } catch (Exception exc) {
                 while (exc is AggregateException)
                     exc = exc.InnerException;
                 _client.DebugLogger.LogMessage(
                    LogLevel.Error,
                    LOG_TAG,
-                   $"Failed to send a leaving message!\n" +
-                   $" Member left: {e.Member.Username} ({e.Member.Id})\n" +
-                   $" Guild: {e.Guild.Name} ({e.Guild.Id})" +
-                   $" Exception: {exc.GetType()}" +
+                   $"Failed to send a leaving message!" + Environment.NewLine +
+                   $" Channel ID: {cid}" + Environment.NewLine +
+                   $" Exception: {exc.GetType()}" + Environment.NewLine +
                    $" Message: {exc.Message}",
                    DateTime.Now
                 );
@@ -375,8 +382,8 @@ namespace TheGodfather
                     _client.DebugLogger.LogMessage(
                         LogLevel.Info,
                         LOG_TAG,
-                        $"Filter triggered in message: '{e.Message.Content}'\n" +
-                        $" User: {e.Message.Author.ToString()}\n" +
+                        $"Filter triggered in message: '{e.Message.Content}'" + Environment.NewLine +
+                        $" User: {e.Message.Author.ToString()}" + Environment.NewLine +
                         $" Location: '{e.Guild.Name}' ({e.Guild.Id}) ; {e.Channel.ToString()}"
                         , DateTime.Now
                     );
@@ -384,9 +391,9 @@ namespace TheGodfather
                     _client.DebugLogger.LogMessage(
                         LogLevel.Warning,
                         LOG_TAG,
-                        $"Filter triggered in message but missing permissions to delete!\n" +
-                        $" Message: '{e.Message.Content}'\n" +
-                        $" User: {e.Message.Author.ToString()}\n" +
+                        $"Filter triggered in message but missing permissions to delete!" + Environment.NewLine +
+                        $" Message: '{e.Message.Content}'" + Environment.NewLine +
+                        $" User: {e.Message.Author.ToString()}" + Environment.NewLine +
                         $" Location: '{e.Guild.Name}' ({e.Guild.Id}) ; {e.Channel.ToString()}"
                         , DateTime.Now
                     );
@@ -404,8 +411,8 @@ namespace TheGodfather
                 _client.DebugLogger.LogMessage(
                     LogLevel.Info,
                     LOG_TAG,
-                    $"Alias triggered: {e.Message.Content}\n" +
-                    $" User: {e.Message.Author.ToString()}\n" +
+                    $"Alias triggered: {e.Message.Content}" + Environment.NewLine +
+                    $" User: {e.Message.Author.ToString()}" + Environment.NewLine +
                     $" Location: '{e.Guild.Name}' ({e.Guild.Id}) ; {e.Channel.ToString()}"
                     , DateTime.Now
                 );
@@ -419,8 +426,8 @@ namespace TheGodfather
                 _client.DebugLogger.LogMessage(
                     LogLevel.Info,
                     LOG_TAG,
-                    $"Reactions triggered in message: {e.Message.Content}\n" +
-                    $" User: {e.Message.Author.ToString()}\n" +
+                    $"Reactions triggered in message: {e.Message.Content}" + Environment.NewLine +
+                    $" User: {e.Message.Author.ToString()}" + Environment.NewLine +
                     $" Location: '{e.Guild.Name}' ({e.Guild.Id}) ; {e.Channel.ToString()}"
                     , DateTime.Now
                 );
@@ -444,8 +451,8 @@ namespace TheGodfather
                     _client.DebugLogger.LogMessage(
                         LogLevel.Info,
                         LOG_TAG,
-                        $"Filter triggered in edit of a message: '{e.Message.Content}'\n" +
-                        $" User: {e.Message.Author.ToString()}\n" +
+                        $"Filter triggered in edit of a message: '{e.Message.Content}'" + Environment.NewLine +
+                        $" User: {e.Message.Author.ToString()}" + Environment.NewLine +
                         $" Location: '{e.Guild.Name}' ({e.Guild.Id}) ; {e.Channel.ToString()}"
                         , DateTime.Now
                     );
@@ -453,9 +460,9 @@ namespace TheGodfather
                     _client.DebugLogger.LogMessage(
                         LogLevel.Warning,
                         LOG_TAG,
-                        $"Filter triggered in edited message but missing permissions to delete!\n" +
-                        $" Message: '{e.Message.Content}'\n" +
-                        $" User: {e.Message.Author.ToString()}\n" +
+                        $"Filter triggered in edited message but missing permissions to delete!" + Environment.NewLine +
+                        $" Message: '{e.Message.Content}'" + Environment.NewLine +
+                        $" User: {e.Message.Author.ToString()}" + Environment.NewLine +
                         $" Location: '{e.Guild.Name}' ({e.Guild.Id}) ; {e.Channel.ToString()}"
                         , DateTime.Now
                     );

@@ -26,23 +26,23 @@ namespace TheGodfather.Commands.Administration
     public class CommandsGuild
     {
         #region STATIC_FIELDS
-        private static ConcurrentDictionary<ulong, ulong> _welcomeChannel = new ConcurrentDictionary<ulong, ulong>();
-        private static ConcurrentDictionary<ulong, ulong> _leaveChannel = new ConcurrentDictionary<ulong, ulong>();
+        private static ConcurrentDictionary<ulong, ulong> _welcomeChannelIds = new ConcurrentDictionary<ulong, ulong>();
+        private static ConcurrentDictionary<ulong, ulong> _leaveChannelIds = new ConcurrentDictionary<ulong, ulong>();
         #endregion
 
         #region STATIC_FUNCTIONS
         public static ulong GetWelcomeChannelId(ulong gid)
         {
-            if (_welcomeChannel.ContainsKey(gid))
-                return _welcomeChannel[gid];
+            if (_welcomeChannelIds.ContainsKey(gid))
+                return _welcomeChannelIds[gid];
             else
                 return 0;
         }
 
         public static ulong GetLeaveChannelId(ulong gid)
         {
-            if (_leaveChannel.ContainsKey(gid))
-                return _leaveChannel[gid];
+            if (_leaveChannelIds.ContainsKey(gid))
+                return _leaveChannelIds[gid];
             else
                 return 0;
         }
@@ -184,11 +184,11 @@ namespace TheGodfather.Commands.Administration
             if (c == null)
                 c = ctx.Channel;
 
-            if (!_welcomeChannel.ContainsKey(ctx.Guild.Id)) {
-                if (!_welcomeChannel.TryAdd(ctx.Guild.Id, c.Id))
+            if (!_welcomeChannelIds.ContainsKey(ctx.Guild.Id)) {
+                if (!_welcomeChannelIds.TryAdd(ctx.Guild.Id, c.Id))
                     throw new CommandFailedException("Failed to set default welcome channel.");
             } else {
-                _welcomeChannel[ctx.Guild.Id] = c.Id;
+                _welcomeChannelIds[ctx.Guild.Id] = c.Id;
             }
 
             await ctx.RespondAsync($"Default welcome message channel set to {Formatter.Bold(c.Name)}.");
@@ -206,11 +206,11 @@ namespace TheGodfather.Commands.Administration
             if (c == null)
                 c = ctx.Channel;
 
-            if (!_leaveChannel.ContainsKey(ctx.Guild.Id)) {
-                if (!_leaveChannel.TryAdd(ctx.Guild.Id, c.Id))
+            if (!_leaveChannelIds.ContainsKey(ctx.Guild.Id)) {
+                if (!_leaveChannelIds.TryAdd(ctx.Guild.Id, c.Id))
                     throw new CommandFailedException("Failed to set default leave channel.");
             } else {
-                _leaveChannel[ctx.Guild.Id] = c.Id;
+                _leaveChannelIds[ctx.Guild.Id] = c.Id;
             }
 
             await ctx.RespondAsync($"Default leave message channel set to {Formatter.Bold(c.Name)}.");
