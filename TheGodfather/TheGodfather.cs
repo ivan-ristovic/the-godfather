@@ -423,8 +423,7 @@ namespace TheGodfather
                     $" Location: '{e.Guild.Name}' ({e.Guild.Id}) ; {e.Channel.ToString()}"
                     , DateTime.Now
                 );
-                var split = response.Split(new string[] { "%user%" }, StringSplitOptions.None);
-                await e.Channel.SendMessageAsync(string.Join(e.Author.Mention, split));
+                await e.Channel.SendMessageAsync(response.Replace("%user%", e.Author.Mention));
             }
 
             // Check if message has react trigger
