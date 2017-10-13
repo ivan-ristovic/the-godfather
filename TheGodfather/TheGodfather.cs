@@ -42,7 +42,7 @@ namespace TheGodfather
 
         private readonly string LOG_TAG = "TheGodfather";
 
-        private AliasList _aliases = new AliasList();
+        private BotDependencyList _dependecies = new BotDependencyList();
         #endregion
 
         #region PUBLIC_FIELDS
@@ -154,17 +154,12 @@ namespace TheGodfather
 
         private void SetupCommands()
         {
-            var dependencies = new DependencyCollectionBuilder()
-                .AddInstance(this)
-                .AddInstance(_aliases)
-                .Build();
-
             _commands = _client.UseCommandsNext(new CommandsNextConfiguration {
                 EnableDms = false,
                 CaseSensitive = false,
                 EnableMentionPrefix = true,
                 CustomPrefixPredicate = async m => await CheckMessageForPrefix(m),
-                Dependencies = dependencies
+                Dependencies = _dependecies.GetDependencyCollectionBuilder().AddInstance(this).Build()
             });
 
             _commands.SetHelpFormatter<HelpFormatter>();
@@ -220,7 +215,7 @@ namespace TheGodfather
         {
             Exception exc = null;
             try {
-                _aliases.Load(_client.DebugLogger);
+                _dependecies.LoadData(_client.DebugLogger);
                 Commands.Messages.CommandsFilter.LoadFilters(_client.DebugLogger);
                 Commands.Messages.CommandsMemes.LoadMemes(_client.DebugLogger);
                 Commands.Messages.CommandsRanking.LoadRanks(_client.DebugLogger);
@@ -241,7 +236,7 @@ namespace TheGodfather
         {
             Exception exc = null;
             try {
-                _aliases.Save(_client.DebugLogger);
+                _dependecies.SaveData(_client.DebugLogger);
                 Commands.Messages.CommandsFilter.SaveFilters(_client.DebugLogger);
                 Commands.Messages.CommandsMemes.SaveMemes(_client.DebugLogger);
                 Commands.Messages.CommandsRanking.SaveRanks(_client.DebugLogger);
@@ -413,7 +408,7 @@ namespace TheGodfather
             Commands.Messages.CommandsRanking.UpdateMessageCount(e.Channel, e.Author);
 
             // Check if message has an alias
-            var response = _aliases.GetResponse(e.Guild.Id, e.Message.Content);
+            var response = _dependecies.Aliases.GetResponse(e.Guild.Id, e.Message.Content);
             if (response != null) {
                 _client.DebugLogger.LogMessage(
                     LogLevel.Info,

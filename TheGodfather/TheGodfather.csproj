@@ -198,11 +198,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BotConfig.cs" />
     <Compile Include="Commands\Administration\Helpers\EvaluationEnvironment.cs" />
     <Compile Include="Commands\Search\CommandsJokes.cs" />
-    <Compile Include="Config.cs" />
     <Compile Include="Exceptions.cs" />
     <Compile Include="Helpers\AliasList.cs" />
+    <Compile Include="Helpers\BotDependencyList.cs" />
     <Compile Include="Helpers\HelpFormatter.cs" />
     <Compile Include="Commands\Administration\CommandsAdmin.cs" />
     <Compile Include="Commands\Games\CommandsBank.cs" />
