@@ -199,7 +199,7 @@
     <Compile Include="Commands\Administration\Helpers\EvaluationEnvironment.cs" />
     <Compile Include="Commands\Search\CommandsJokes.cs" />
     <Compile Include="Exceptions.cs" />
-    <Compile Include="Helpers\AliasManager.cs" />
+    <Compile Include="Helpers\DataManagers\AliasManager.cs" />
     <Compile Include="Helpers\BotDependencyList.cs" />
     <Compile Include="Helpers\HelpFormatter.cs" />
     <Compile Include="Commands\Administration\CommandsAdmin.cs" />
@@ -234,8 +234,8 @@
     <Compile Include="Commands\Administration\CommandsUsers.cs" />
     <Compile Include="Commands\Voice\CommandsVoice.cs" />
     <Compile Include="Helpers\Logger.cs" />
-    <Compile Include="Helpers\PrefixManager.cs" />
-    <Compile Include="Helpers\StatusManager.cs" />
+    <Compile Include="Helpers\DataManagers\PrefixManager.cs" />
+    <Compile Include="Helpers\DataManagers\StatusManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TheGodfather.cs" />

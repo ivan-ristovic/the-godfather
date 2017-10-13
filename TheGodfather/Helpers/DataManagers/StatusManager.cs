@@ -14,7 +14,7 @@ using DSharpPlus.CommandsNext.Entities;
 using DSharpPlus.Entities;
 #endregion
 
-namespace TheGodfather.Helpers
+namespace TheGodfather.Helpers.DataManagers
 {
     public class StatusManager
     {

@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 
+using TheGodfather.Helpers.DataManagers;
+
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Converters;

@@ -8,7 +8,7 @@ using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-using TheGodfather.Helpers;
+using TheGodfather.Helpers.DataManagers;
 using TheGodfather.Exceptions;
 
 using DSharpPlus;
