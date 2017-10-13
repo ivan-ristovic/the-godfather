@@ -180,7 +180,6 @@ namespace TheGodfather
             try {
                 _dependecies.LoadData(_client.DebugLogger);
                 Commands.Messages.CommandsFilter.LoadFilters(_client.DebugLogger);
-                Commands.Messages.CommandsMemes.LoadMemes(_client.DebugLogger);
                 Commands.Messages.CommandsRanking.LoadRanks(_client.DebugLogger);
                 Commands.Messages.CommandsReaction.LoadReactions(_client.DebugLogger);
                 Commands.SWAT.CommandsSwat.LoadServers(_client.DebugLogger);
@@ -201,7 +200,6 @@ namespace TheGodfather
             try {
                 _dependecies.SaveData(_client.DebugLogger);
                 Commands.Messages.CommandsFilter.SaveFilters(_client.DebugLogger);
-                Commands.Messages.CommandsMemes.SaveMemes(_client.DebugLogger);
                 Commands.Messages.CommandsRanking.SaveRanks(_client.DebugLogger);
                 Commands.Messages.CommandsReaction.SaveReactions(_client.DebugLogger);
                 Commands.SWAT.CommandsSwat.SaveServers(_client.DebugLogger);

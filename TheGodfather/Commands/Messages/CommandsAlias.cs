@@ -81,6 +81,7 @@ namespace TheGodfather.Commands.Messages
                                      [Description("Page.")] int page = 1)
         {
             var aliases = ctx.Dependencies.GetDependency<AliasManager>().Aliases;
+
             if (!aliases.ContainsKey(ctx.Guild.Id)) {
                 await ctx.RespondAsync("No aliases registered.");
                 return;
