@@ -35,10 +35,12 @@ namespace TheGodfather
         private VoiceNextClient _voice { get; set; }
 
         private StreamWriter _logstream = null;
-        private object _lock = new object ();
+        private readonly object _lock = new object ();
 
         private ConcurrentDictionary<ulong, string> _prefixes = new ConcurrentDictionary<ulong, string>();
         private List<string> _statuses = new List<string> { "!help", "worldmafia.net", "worldmafia.net/discord" };
+
+        private readonly string LOG_TAG = "TheGodfather";
         #endregion
 
         #region PUBLIC_FIELDS
@@ -49,7 +51,7 @@ namespace TheGodfather
 
         ~TheGodfather()
         {
-            _client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", "Shutting down by demand...", DateTime.Now);
+            _client.DebugLogger.LogMessage(LogLevel.Info, LOG_TAG, "Shutting down by demand...", DateTime.Now);
 
             SaveData();
 
@@ -69,7 +71,7 @@ namespace TheGodfather
                     data = await sr.ReadToEndAsync();
                 Config = JsonConvert.DeserializeObject<BotConfig>(data);
             } catch (Exception e) {
-                _client.DebugLogger.LogMessage(LogLevel.Error, "TheGodfather", $"Settings loading error: {e.GetType()}: {e.Message}", DateTime.Now);
+                _client.DebugLogger.LogMessage(LogLevel.Error, LOG_TAG, $"Settings loading error: {e.GetType()}: {e.Message}", DateTime.Now);
                 Environment.Exit(1);
             }
 
@@ -102,7 +104,7 @@ namespace TheGodfather
                     _logstream.Flush();
                 }
             } catch (Exception e) {
-                _client.DebugLogger.LogMessage(LogLevel.Error, "TheGodfather", "Cannot write to log file. Details: " + e.Message, DateTime.Now);
+                _client.DebugLogger.LogMessage(LogLevel.Error, LOG_TAG, "Cannot write to log file. Details: " + e.Message, DateTime.Now);
             }
         }
 
@@ -223,9 +225,9 @@ namespace TheGodfather
             }
 
             if (exc == null)
-                _client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", "Data loaded.", DateTime.Now);
+                _client.DebugLogger.LogMessage(LogLevel.Info, LOG_TAG, "Data loaded.", DateTime.Now);
             else
-                _client.DebugLogger.LogMessage(LogLevel.Error, "TheGodfather", "Errors occured during data load.", DateTime.Now);
+                _client.DebugLogger.LogMessage(LogLevel.Error, LOG_TAG, "Errors occured during data load.", DateTime.Now);
         }
 
         private void SaveData()
@@ -244,9 +246,9 @@ namespace TheGodfather
             }
 
             if (exc == null)
-                _client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", "Data saved.", DateTime.Now);
+                _client.DebugLogger.LogMessage(LogLevel.Info, LOG_TAG, "Data saved.", DateTime.Now);
             else
-                _client.DebugLogger.LogMessage(LogLevel.Error, "TheGodfather", "Errors occured during data save.", DateTime.Now);
+                _client.DebugLogger.LogMessage(LogLevel.Error, LOG_TAG, "Errors occured during data save.", DateTime.Now);
 
         }
 
@@ -272,7 +274,7 @@ namespace TheGodfather
 
         private Task Client_Error(ClientErrorEventArgs e)
         {
-            _client.DebugLogger.LogMessage(LogLevel.Error, "TheGodfather", $"Exception occured: {e.Exception.GetType()}: {e.Exception.Message}", DateTime.Now);
+            _client.DebugLogger.LogMessage(LogLevel.Error, LOG_TAG, $"Exception occured: {e.Exception.GetType()}: {e.Exception.Message}", DateTime.Now);
             return Task.CompletedTask;
         }
 
@@ -280,7 +282,7 @@ namespace TheGodfather
         {
             _client.DebugLogger.LogMessage(
                 LogLevel.Info,
-                "TheGodfather",
+                LOG_TAG,
                 $"Guild available: {e.Guild.Name} ({e.Guild.Id})",
                 DateTime.Now);
             return Task.CompletedTask;
@@ -290,7 +292,7 @@ namespace TheGodfather
         {
             _client.DebugLogger.LogMessage(
                    LogLevel.Info,
-                   "TheGodfather",
+                   LOG_TAG,
                    $"Member joined: {e.Member.Username} ({e.Member.Id})\n" +
                    $" Guild: {e.Guild.Name} ({e.Guild.Id})",
                    DateTime.Now
@@ -303,7 +305,7 @@ namespace TheGodfather
                     exc = exc.InnerException;
                 _client.DebugLogger.LogMessage(
                    LogLevel.Error,
-                   "TheGodfather",
+                   LOG_TAG,
                    $"Failed to send a welcome message!\n" +
                    $" Member joined: {e.Member.Username} ({e.Member.Id})\n" +
                    $" Guild: {e.Guild.Name} ({e.Guild.Id})" +
@@ -318,7 +320,7 @@ namespace TheGodfather
         {
             _client.DebugLogger.LogMessage(
                 LogLevel.Info,
-                "TheGodfather",
+                LOG_TAG,
                 $"Member left: {e.Member.Username} ({e.Member.Id})\n" +
                 $" Guild: {e.Guild.Name} ({e.Guild.Id})",
                 DateTime.Now
@@ -330,7 +332,7 @@ namespace TheGodfather
                     exc = exc.InnerException;
                 _client.DebugLogger.LogMessage(
                    LogLevel.Error,
-                   "TheGodfather",
+                   LOG_TAG,
                    $"Failed to send a leaving message!\n" +
                    $" Member left: {e.Member.Username} ({e.Member.Id})\n" +
                    $" Guild: {e.Guild.Name} ({e.Guild.Id})" +
@@ -362,7 +364,7 @@ namespace TheGodfather
                 return;
 
             if (e.Channel.IsPrivate) {
-                _client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", $"IGNORED DM: {e.Author.Username} : {e.Message}", DateTime.Now);
+                _client.DebugLogger.LogMessage(LogLevel.Info, LOG_TAG, $"IGNORED DM: {e.Author.Username} : {e.Message}", DateTime.Now);
                 return;
             }
 
@@ -372,7 +374,7 @@ namespace TheGodfather
                     await e.Channel.DeleteMessageAsync(e.Message);
                     _client.DebugLogger.LogMessage(
                         LogLevel.Info,
-                        "TheGodfather",
+                        LOG_TAG,
                         $"Filter triggered in message: '{e.Message.Content}'\n" +
                         $" User: {e.Message.Author.ToString()}\n" +
                         $" Location: '{e.Guild.Name}' ({e.Guild.Id}) ; {e.Channel.ToString()}"
@@ -381,7 +383,7 @@ namespace TheGodfather
                 } catch (UnauthorizedException) {
                     _client.DebugLogger.LogMessage(
                         LogLevel.Warning,
-                        "TheGodfather",
+                        LOG_TAG,
                         $"Filter triggered in message but missing permissions to delete!\n" +
                         $" Message: '{e.Message.Content}'\n" +
                         $" User: {e.Message.Author.ToString()}\n" +
@@ -401,7 +403,7 @@ namespace TheGodfather
             if (response != null) {
                 _client.DebugLogger.LogMessage(
                     LogLevel.Info,
-                    "TheGodfather",
+                    LOG_TAG,
                     $"Alias triggered: {e.Message.Content}\n" +
                     $" User: {e.Message.Author.ToString()}\n" +
                     $" Location: '{e.Guild.Name}' ({e.Guild.Id}) ; {e.Channel.ToString()}"
@@ -416,7 +418,7 @@ namespace TheGodfather
             if (emojilist.Count > 0) {
                 _client.DebugLogger.LogMessage(
                     LogLevel.Info,
-                    "TheGodfather",
+                    LOG_TAG,
                     $"Reactions triggered in message: {e.Message.Content}\n" +
                     $" User: {e.Message.Author.ToString()}\n" +
                     $" Location: '{e.Guild.Name}' ({e.Guild.Id}) ; {e.Channel.ToString()}"
@@ -441,7 +443,7 @@ namespace TheGodfather
                     await e.Channel.DeleteMessageAsync(e.Message);
                     _client.DebugLogger.LogMessage(
                         LogLevel.Info,
-                        "TheGodfather",
+                        LOG_TAG,
                         $"Filter triggered in edit of a message: '{e.Message.Content}'\n" +
                         $" User: {e.Message.Author.ToString()}\n" +
                         $" Location: '{e.Guild.Name}' ({e.Guild.Id}) ; {e.Channel.ToString()}"
@@ -450,7 +452,7 @@ namespace TheGodfather
                 } catch (UnauthorizedException) {
                     _client.DebugLogger.LogMessage(
                         LogLevel.Warning,
-                        "TheGodfather",
+                        LOG_TAG,
                         $"Filter triggered in edited message but missing permissions to delete!\n" +
                         $" Message: '{e.Message.Content}'\n" +
                         $" User: {e.Message.Author.ToString()}\n" +
@@ -471,7 +473,7 @@ namespace TheGodfather
 
         private async Task Client_Ready(ReadyEventArgs e)
         {
-            _client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", "Ready.", DateTime.Now);
+            _client.DebugLogger.LogMessage(LogLevel.Info, LOG_TAG, "Ready.", DateTime.Now);
             await _client.UpdateStatusAsync(new DiscordGame(Statuses[0]) { StreamType = GameStreamType.NoStream });
         }
         #endregion
@@ -481,7 +483,7 @@ namespace TheGodfather
         {
             e.Context.Client.DebugLogger.LogMessage(
                 LogLevel.Info,
-                "TheGodfather",
+                LOG_TAG,
                 $" Executed: {e.Command?.QualifiedName ?? "<unknown command>"}" + Environment.NewLine +
                 $" User: {e.Context.User.ToString()}" + Environment.NewLine +
                 $" Location: '{e.Context.Guild.Name}' ({e.Context.Guild.Id}) ; {e.Context.Channel.ToString()}"
@@ -501,7 +503,7 @@ namespace TheGodfather
 
             e.Context.Client.DebugLogger.LogMessage(
                 LogLevel.Error,
-                "TheGodfather",
+                LOG_TAG,
                 $" Tried executing: {e.Command?.QualifiedName ?? "<unknown command>"}" + Environment.NewLine +
                 $" User: {e.Context.User.ToString()}" + Environment.NewLine +
                 $" Location: '{e.Context.Guild.Name}' ({e.Context.Guild.Id}) ; {e.Context.Channel.ToString()}" + Environment.NewLine +
