@@ -44,19 +44,21 @@ namespace TheGodfather.Helpers.DataManagers
             }
         }
 
-        public void Save(DebugLogger log)
+        public bool Save(DebugLogger log)
         {
             if (_ioerr) {
                 log.LogMessage(LogLevel.Warning, "TheGodfather", "Filter saving skipped until file conflicts are resolved!", DateTime.Now);
-                return;
+                return false;
             }
 
             try {
                 File.WriteAllText("Resources/filters.json", JsonConvert.SerializeObject(_filters));
             } catch (Exception e) {
                 log.LogMessage(LogLevel.Error, "TheGodfather", "IO Filter save error. Details:\n" + e.ToString(), DateTime.Now);
-                throw new IOException("IO error while saving filters.");
+                return false;
             }
+
+            return true;
         }
 
         public bool Contains(ulong gid, string message)

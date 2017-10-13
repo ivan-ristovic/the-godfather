@@ -112,8 +112,10 @@ namespace TheGodfather.Commands.Messages
         [RequireOwner]
         public async Task SaveMemes(CommandContext ctx)
         {
-            ctx.Dependencies.GetDependency<MemeManager>().Save(ctx.Client.DebugLogger);
-            await ctx.RespondAsync("Memes successfully saved.");
+            if (ctx.Dependencies.GetDependency<MemeManager>().Save(ctx.Client.DebugLogger))
+                await ctx.RespondAsync("Memes successfully saved.");
+            else
+                throw new CommandFailedException("Failed saving memes.", new IOException());
         }
         #endregion
 

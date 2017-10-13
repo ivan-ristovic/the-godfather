@@ -49,7 +49,6 @@ namespace TheGodfather
             _dependecies = new BotDependencyList();
         }
 
-
         ~TheGodfather()
         {
             LogHandle.Log(LogLevel.Info, "Shutting down by demand...");
@@ -182,7 +181,6 @@ namespace TheGodfather
                 Commands.Messages.CommandsRanking.LoadRanks(_client.DebugLogger);
                 Commands.Messages.CommandsReaction.LoadReactions(_client.DebugLogger);
                 Commands.SWAT.CommandsSwat.LoadServers(_client.DebugLogger);
-                Commands.Messages.CommandsInsult.LoadInsults(_client.DebugLogger);
             } catch (Exception e) {
                 exc = e;
             }
@@ -201,7 +199,6 @@ namespace TheGodfather
                 Commands.Messages.CommandsRanking.SaveRanks(_client.DebugLogger);
                 Commands.Messages.CommandsReaction.SaveReactions(_client.DebugLogger);
                 Commands.SWAT.CommandsSwat.SaveServers(_client.DebugLogger);
-                Commands.Messages.CommandsInsult.SaveInsults(_client.DebugLogger);
             } catch (Exception e) {
                 exc = e;
             }

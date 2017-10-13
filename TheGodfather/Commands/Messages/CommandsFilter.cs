@@ -75,8 +75,10 @@ namespace TheGodfather.Commands.Messages
         [RequireOwner]
         public async Task SaveFilters(CommandContext ctx)
         {
-            ctx.Dependencies.GetDependency<FilterManager>().Save(ctx.Client.DebugLogger);
-            await ctx.RespondAsync("Filters successfully saved.");
+            if (ctx.Dependencies.GetDependency<FilterManager>().Save(ctx.Client.DebugLogger))
+                await ctx.RespondAsync("Filters successfully saved.");
+            else
+                throw new CommandFailedException("Failed saving filters.", new IOException());
         }
         #endregion
         

@@ -43,19 +43,21 @@ namespace TheGodfather.Helpers.DataManagers
             }
         }
 
-        public void Save(DebugLogger log)
+        public bool Save(DebugLogger log)
         {
             if (_ioerr) {
                 log.LogMessage(LogLevel.Warning, "TheGodfather", "Memes saving skipped until file conflicts are resolved!", DateTime.Now);
-                return;
+                return false;
             }
 
             try {
                 File.WriteAllText("Resources/memes.json", JsonConvert.SerializeObject(_memes));
             } catch (Exception e) {
                 log.LogMessage(LogLevel.Error, "TheGodfather", "Meme save error. Details:\n" + e.ToString(), DateTime.Now);
-                throw new IOException("Error while saving memes.");
+                return false;
             }
+
+            return true;
         }
 
         public string GetRandomMeme()

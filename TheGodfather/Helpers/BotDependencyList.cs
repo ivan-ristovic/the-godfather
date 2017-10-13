@@ -22,6 +22,7 @@ namespace TheGodfather.Helpers
     {
         internal AliasManager AliasControl { get; private set; }
         internal FilterManager FilterControl { get; private set; }
+        internal InsultManager InsultControl { get; private set; }
         internal MemeManager MemeControl { get; private set; }
         internal PrefixManager PrefixControl { get; private set; }
         internal StatusManager StatusControl { get; private set; }
@@ -31,6 +32,7 @@ namespace TheGodfather.Helpers
         {
             AliasControl = new AliasManager();
             FilterControl = new FilterManager();
+            InsultControl = new InsultManager();
             MemeControl = new MemeManager();
             PrefixControl = new PrefixManager();
             StatusControl = new StatusManager();
@@ -41,6 +43,7 @@ namespace TheGodfather.Helpers
         {
             AliasControl.Load(log);
             FilterControl.Load(log);
+            InsultControl.Load(log);
             MemeControl.Load(log);
             PrefixControl.Load(log);
             StatusControl.Load(log);
@@ -50,6 +53,7 @@ namespace TheGodfather.Helpers
         {
             AliasControl.Save(log);
             FilterControl.Save(log);
+            InsultControl.Save(log);
             MemeControl.Save(log);
             PrefixControl.Save(log);
             StatusControl.Save(log);
@@ -60,6 +64,7 @@ namespace TheGodfather.Helpers
             return new DependencyCollectionBuilder()
                 .AddInstance(AliasControl)
                 .AddInstance(FilterControl)
+                .AddInstance(InsultControl)
                 .AddInstance(MemeControl)
                 .AddInstance(PrefixControl)
                 .AddInstance(StatusControl);
