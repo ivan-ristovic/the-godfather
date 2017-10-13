@@ -30,6 +30,24 @@ namespace TheGodfather.Commands.Administration
         private static ConcurrentDictionary<ulong, ulong> _leaveChannel = new ConcurrentDictionary<ulong, ulong>();
         #endregion
 
+        #region STATIC_FUNCTIONS
+        public static ulong GetWelcomeChannelId(ulong gid)
+        {
+            if (_welcomeChannel.ContainsKey(gid))
+                return _welcomeChannel[gid];
+            else
+                return 0;
+        }
+
+        public static ulong GetLeaveChannelId(ulong gid)
+        {
+            if (_leaveChannel.ContainsKey(gid))
+                return _leaveChannel[gid];
+            else
+                return 0;
+        }
+        #endregion
+
 
         #region COMMAND_GUILD_RENAME
         [Command("info")]
