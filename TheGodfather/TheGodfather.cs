@@ -37,7 +37,6 @@ namespace TheGodfather
         private StreamWriter _logstream = null;
         private readonly object _lock = new object ();
 
-        private ConcurrentDictionary<ulong, string> _prefixes = new ConcurrentDictionary<ulong, string>();
         private List<string> _statuses = new List<string> { "!help", "worldmafia.net", "worldmafia.net/discord" };
 
         private readonly string LOG_TAG = "TheGodfather";
@@ -256,7 +255,7 @@ namespace TheGodfather
 
         private Task<int> CheckMessageForPrefix(DiscordMessage m)
         {
-            string prefix = _prefixes.ContainsKey(m.ChannelId) ? _prefixes[m.ChannelId] : Config.DefaultPrefix;
+            string prefix = _dependecies.PrefixControl.Prefixes.ContainsKey(m.ChannelId) ? _dependecies.PrefixControl.Prefixes[m.ChannelId] : Config.DefaultPrefix;
             int pos = m.Content.IndexOf(prefix);
 
             if (pos != 0)
@@ -408,7 +407,7 @@ namespace TheGodfather
             Commands.Messages.CommandsRanking.UpdateMessageCount(e.Channel, e.Author);
 
             // Check if message has an alias
-            var response = _dependecies.Aliases.GetResponse(e.Guild.Id, e.Message.Content);
+            var response = _dependecies.AliasControl.GetResponse(e.Guild.Id, e.Message.Content);
             if (response != null) {
                 _client.DebugLogger.LogMessage(
                     LogLevel.Info,
@@ -558,21 +557,6 @@ namespace TheGodfather
 
 
         #region GETTERS_AND_SETTERS
-        public string PrefixFor(ulong cid)
-        {
-            if (_prefixes.ContainsKey(cid))
-                return _prefixes[cid];
-            else
-                return Config.DefaultPrefix;
-        }
-
-        public void SetPrefix(ulong cid, string prefix)
-        {
-            if (_prefixes.ContainsKey(cid))
-                _prefixes[cid] = prefix;
-            _prefixes.TryAdd(cid, prefix);
-        }
-
         public void AddStatus(string status)
         {
             if (_statuses.Contains(status))
