@@ -26,7 +26,8 @@ namespace TheGodfather.Commands.Administration
     public class CommandsGuild
     {
         #region STATIC_FIELDS
-        private static ConcurrentDictionary<ulong, ulong> _defchannels = new ConcurrentDictionary<ulong, ulong>();
+        private static ConcurrentDictionary<ulong, ulong> _welcomeChannel = new ConcurrentDictionary<ulong, ulong>();
+        private static ConcurrentDictionary<ulong, ulong> _leaveChannel = new ConcurrentDictionary<ulong, ulong>();
         #endregion
 
 
@@ -165,14 +166,36 @@ namespace TheGodfather.Commands.Administration
             if (c == null)
                 c = ctx.Channel;
 
-            if (!_defchannels.ContainsKey(ctx.Guild.Id)) {
-                if (!_defchannels.TryAdd(ctx.Guild.Id, c.Id))
+            if (!_welcomeChannel.ContainsKey(ctx.Guild.Id)) {
+                if (!_welcomeChannel.TryAdd(ctx.Guild.Id, c.Id))
                     throw new CommandFailedException("Failed to set default welcome channel.");
             } else {
-                _defchannels[ctx.Guild.Id] = c.Id;
+                _welcomeChannel[ctx.Guild.Id] = c.Id;
             }
 
             await ctx.RespondAsync($"Default welcome message channel set to {Formatter.Bold(c.Name)}.");
+        }
+        #endregion
+
+        #region COMMAND_GUILD_SETLEAVECHANNEL
+        [Command("setleavechannel")]
+        [Description("Set leave message channel.")]
+        [Aliases("leavec", "setlc", "setleave")]
+        [RequirePermissions(Permissions.ManageGuild)]
+        public async Task SetLeaveChannel(CommandContext ctx,
+                                         [Description("Channel.")] DiscordChannel c = null)
+        {
+            if (c == null)
+                c = ctx.Channel;
+
+            if (!_leaveChannel.ContainsKey(ctx.Guild.Id)) {
+                if (!_leaveChannel.TryAdd(ctx.Guild.Id, c.Id))
+                    throw new CommandFailedException("Failed to set default leave channel.");
+            } else {
+                _leaveChannel[ctx.Guild.Id] = c.Id;
+            }
+
+            await ctx.RespondAsync($"Default leave message channel set to {Formatter.Bold(c.Name)}.");
         }
         #endregion
 
