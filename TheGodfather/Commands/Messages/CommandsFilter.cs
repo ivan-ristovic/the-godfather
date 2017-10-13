@@ -8,6 +8,7 @@ using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
+using TheGodfather.Helpers;
 using TheGodfather.Exceptions;
 
 using DSharpPlus;
@@ -81,7 +82,7 @@ namespace TheGodfather.Commands.Messages
             if (string.IsNullOrWhiteSpace(filter))
                 throw new InvalidCommandUsageException("Filter trigger missing.");
             
-            if (CommandsAlias.FindAlias(ctx.Guild.Id, filter) != null)
+            if (ctx.Dependencies.GetDependency<AliasList>().GetResponse(ctx.Guild.Id, filter) != null)
                 throw new CommandFailedException("You cannot add a filter if an alias for that trigger exists!");
 
             if (filter.Contains("%") || filter.Length < 3)

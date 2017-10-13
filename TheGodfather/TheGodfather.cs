@@ -41,6 +41,8 @@ namespace TheGodfather
         private List<string> _statuses = new List<string> { "!help", "worldmafia.net", "worldmafia.net/discord" };
 
         private readonly string LOG_TAG = "TheGodfather";
+
+        private AliasList _aliases = new AliasList();
         #endregion
 
         #region PUBLIC_FIELDS
@@ -152,12 +154,17 @@ namespace TheGodfather
 
         private void SetupCommands()
         {
+            var dependencies = new DependencyCollectionBuilder()
+                .AddInstance(this)
+                .AddInstance(_aliases)
+                .Build();
+
             _commands = _client.UseCommandsNext(new CommandsNextConfiguration {
                 EnableDms = false,
                 CaseSensitive = false,
                 EnableMentionPrefix = true,
                 CustomPrefixPredicate = async m => await CheckMessageForPrefix(m),
-                Dependencies = new DependencyCollectionBuilder().AddInstance(this).Build()
+                Dependencies = dependencies
             });
 
             _commands.SetHelpFormatter<HelpFormatter>();
@@ -213,7 +220,7 @@ namespace TheGodfather
         {
             Exception exc = null;
             try {
-                Commands.Messages.CommandsAlias.LoadAliases(_client.DebugLogger);
+                _aliases.Load(_client.DebugLogger);
                 Commands.Messages.CommandsFilter.LoadFilters(_client.DebugLogger);
                 Commands.Messages.CommandsMemes.LoadMemes(_client.DebugLogger);
                 Commands.Messages.CommandsRanking.LoadRanks(_client.DebugLogger);
@@ -234,7 +241,7 @@ namespace TheGodfather
         {
             Exception exc = null;
             try {
-                Commands.Messages.CommandsAlias.SaveAliases(_client.DebugLogger);
+                _aliases.Save(_client.DebugLogger);
                 Commands.Messages.CommandsFilter.SaveFilters(_client.DebugLogger);
                 Commands.Messages.CommandsMemes.SaveMemes(_client.DebugLogger);
                 Commands.Messages.CommandsRanking.SaveRanks(_client.DebugLogger);
@@ -406,7 +413,7 @@ namespace TheGodfather
             Commands.Messages.CommandsRanking.UpdateMessageCount(e.Channel, e.Author);
 
             // Check if message has an alias
-            var response = Commands.Messages.CommandsAlias.FindAlias(e.Guild.Id, e.Message.Content);
+            var response = _aliases.GetResponse(e.Guild.Id, e.Message.Content);
             if (response != null) {
                 _client.DebugLogger.LogMessage(
                     LogLevel.Info,
