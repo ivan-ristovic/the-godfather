@@ -34,7 +34,7 @@ namespace TheGodfather.Commands.Administration
         public async Task ClearLog(CommandContext ctx)
         {
             try {
-                ctx.Dependencies.GetDependency<TheGodfather>().ClearLogFile();
+                ctx.Dependencies.GetDependency<TheGodfather>().LogHandle.ClearLogFile();
             } catch (Exception e) {
                 ctx.Client.DebugLogger.LogMessage(LogLevel.Error, "TheGodfather", e.Message, DateTime.Now);
                 throw e;
