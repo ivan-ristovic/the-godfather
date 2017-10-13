@@ -274,7 +274,7 @@ namespace TheGodfather
 
         private Task Client_Error(ClientErrorEventArgs e)
         {
-            _client.DebugLogger.LogMessage(LogLevel.Error, LOG_TAG, $"Exception occured: {e.Exception.GetType()}: {e.Exception.Message}", DateTime.Now);
+            _client.DebugLogger.LogMessage(LogLevel.Error, LOG_TAG, $"Client errored: {e.Exception.GetType()}: {e.Exception.Message}", DateTime.Now);
             return Task.CompletedTask;
         }
 
@@ -354,7 +354,7 @@ namespace TheGodfather
                     _logstream.Flush();
                 }
             } catch (Exception ex) {
-                Console.WriteLine(ex.Message);
+                Console.WriteLine("Cannot write to log file. Details: " + ex.GetType() + " : " + ex.Message);
             }
         }
 
@@ -544,7 +544,7 @@ namespace TheGodfather
             else
                 embed.Description = $"{emoji} Unknown error occured (probably because a Serbian made this bot). Please **!report**.";
 
-            await e.Context.RespondAsync(embed: embed);
+            await e.Context.RespondAsync(embed: embed.Build()).ConfigureAwait(false);
         }
         #endregion
 
