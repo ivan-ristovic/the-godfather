@@ -36,7 +36,7 @@ namespace TheGodfather.Commands.Messages
             if (string.IsNullOrWhiteSpace(alias) || string.IsNullOrWhiteSpace(response))
                 throw new InvalidCommandUsageException("Alias name or response missing or invalid.");
 
-            if (ctx.Dependencies.GetDependency<AliasList>().TryAdd(ctx.Guild.Id, alias, response))
+            if (ctx.Dependencies.GetDependency<AliasTable>().TryAdd(ctx.Guild.Id, alias, response))
                 await ctx.RespondAsync($"Alias {Formatter.Bold(alias)} successfully added.");
             else
                 throw new CommandFailedException("Alias already exists!");
@@ -54,7 +54,7 @@ namespace TheGodfather.Commands.Messages
             if (string.IsNullOrWhiteSpace(alias))
                 throw new InvalidCommandUsageException("Alias name missing.");
 
-            if (ctx.Dependencies.GetDependency<AliasList>().TryRemove(ctx.Guild.Id, alias))
+            if (ctx.Dependencies.GetDependency<AliasTable>().TryRemove(ctx.Guild.Id, alias))
                 await ctx.RespondAsync($"Alias {Formatter.Bold(alias)} successfully removed.");
             else
                 throw new CommandFailedException("No such alias found!", new KeyNotFoundException());
@@ -67,7 +67,7 @@ namespace TheGodfather.Commands.Messages
         [RequireOwner]
         public async Task SaveAliases(CommandContext ctx)
         {
-            if (ctx.Dependencies.GetDependency<AliasList>().Save(ctx.Client.DebugLogger))
+            if (ctx.Dependencies.GetDependency<AliasTable>().Save(ctx.Client.DebugLogger))
                 await ctx.RespondAsync("Aliases successfully saved.");
             else
                 throw new CommandFailedException("Failed saving aliases.", new IOException());
@@ -80,7 +80,7 @@ namespace TheGodfather.Commands.Messages
         public async Task ListAliases(CommandContext ctx, 
                                      [Description("Page.")] int page = 1)
         {
-            var aliases = ctx.Dependencies.GetDependency<AliasList>().Aliases;
+            var aliases = ctx.Dependencies.GetDependency<AliasTable>().Aliases;
             if (!aliases.ContainsKey(ctx.Guild.Id)) {
                 await ctx.RespondAsync("No aliases registered.");
                 return;
@@ -110,7 +110,7 @@ namespace TheGodfather.Commands.Messages
         [RequireUserPermissions(Permissions.Administrator)]
         public async Task ClearAliases(CommandContext ctx)
         {
-            if (ctx.Dependencies.GetDependency<AliasList>().ClearGuildAliases(ctx.Guild.Id))
+            if (ctx.Dependencies.GetDependency<AliasTable>().ClearGuildAliases(ctx.Guild.Id))
                 await ctx.RespondAsync("All aliases for this guild successfully removed.");
             else
                 throw new CommandFailedException("Clearing guild aliases failed");
@@ -123,7 +123,7 @@ namespace TheGodfather.Commands.Messages
         [RequireOwner]
         public async Task ClearAllAliases(CommandContext ctx)
         {
-            ctx.Dependencies.GetDependency<AliasList>().ClearAllAliases();
+            ctx.Dependencies.GetDependency<AliasTable>().ClearAllAliases();
             await ctx.RespondAsync("All aliases successfully removed.");
         }
         #endregion

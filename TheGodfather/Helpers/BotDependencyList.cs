@@ -18,12 +18,12 @@ namespace TheGodfather.Helpers
 {
     internal class BotDependencyList
     {
-        internal AliasList Aliases { get; private set; }
+        internal AliasTable Aliases { get; private set; }
 
 
         internal BotDependencyList()
         {
-            Aliases = new AliasList();
+            Aliases = new AliasTable();
         }
 
 

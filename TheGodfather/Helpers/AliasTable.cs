@@ -16,14 +16,14 @@ using DSharpPlus.Entities;
 
 namespace TheGodfather.Helpers
 {
-    public class AliasList
+    public class AliasTable
     {
         public IReadOnlyDictionary<ulong, SortedDictionary<string, string>> Aliases => _aliases;
         private ConcurrentDictionary<ulong, SortedDictionary<string, string>> _aliases = new ConcurrentDictionary<ulong, SortedDictionary<string, string>>();
         private bool _ioerr = false;
 
 
-        public AliasList()
+        public AliasTable()
         {
 
         }
