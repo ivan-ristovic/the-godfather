@@ -21,6 +21,7 @@ namespace TheGodfather.Helpers
     internal class BotDependencyList
     {
         internal AliasManager AliasControl { get; private set; }
+        internal FilterManager FilterControl { get; private set; }
         internal MemeManager MemeControl { get; private set; }
         internal PrefixManager PrefixControl { get; private set; }
         internal StatusManager StatusControl { get; private set; }
@@ -29,6 +30,7 @@ namespace TheGodfather.Helpers
         internal BotDependencyList()
         {
             AliasControl = new AliasManager();
+            FilterControl = new FilterManager();
             MemeControl = new MemeManager();
             PrefixControl = new PrefixManager();
             StatusControl = new StatusManager();
@@ -38,6 +40,7 @@ namespace TheGodfather.Helpers
         internal void LoadData(DebugLogger log)
         {
             AliasControl.Load(log);
+            FilterControl.Load(log);
             MemeControl.Load(log);
             PrefixControl.Load(log);
             StatusControl.Load(log);
@@ -46,6 +49,7 @@ namespace TheGodfather.Helpers
         internal void SaveData(DebugLogger log)
         {
             AliasControl.Save(log);
+            FilterControl.Save(log);
             MemeControl.Save(log);
             PrefixControl.Save(log);
             StatusControl.Save(log);
@@ -55,6 +59,7 @@ namespace TheGodfather.Helpers
         {
             return new DependencyCollectionBuilder()
                 .AddInstance(AliasControl)
+                .AddInstance(FilterControl)
                 .AddInstance(MemeControl)
                 .AddInstance(PrefixControl)
                 .AddInstance(StatusControl);

@@ -201,6 +201,7 @@
     <Compile Include="Exceptions.cs" />
     <Compile Include="Helpers\DataManagers\AliasManager.cs" />
     <Compile Include="Helpers\BotDependencyList.cs" />
+    <Compile Include="Helpers\DataManagers\FilterManager.cs" />
     <Compile Include="Helpers\DataManagers\MemeManager.cs" />
     <Compile Include="Helpers\HelpFormatter.cs" />
     <Compile Include="Commands\Administration\CommandsAdmin.cs" />

@@ -179,7 +179,6 @@ namespace TheGodfather
             Exception exc = null;
             try {
                 _dependecies.LoadData(_client.DebugLogger);
-                Commands.Messages.CommandsFilter.LoadFilters(_client.DebugLogger);
                 Commands.Messages.CommandsRanking.LoadRanks(_client.DebugLogger);
                 Commands.Messages.CommandsReaction.LoadReactions(_client.DebugLogger);
                 Commands.SWAT.CommandsSwat.LoadServers(_client.DebugLogger);
@@ -199,7 +198,6 @@ namespace TheGodfather
             Exception exc = null;
             try {
                 _dependecies.SaveData(_client.DebugLogger);
-                Commands.Messages.CommandsFilter.SaveFilters(_client.DebugLogger);
                 Commands.Messages.CommandsRanking.SaveRanks(_client.DebugLogger);
                 Commands.Messages.CommandsReaction.SaveReactions(_client.DebugLogger);
                 Commands.SWAT.CommandsSwat.SaveServers(_client.DebugLogger);
@@ -311,7 +309,7 @@ namespace TheGodfather
             }
 
             // Check if message contains filter
-            if (!e.Author.IsBot && e.Message.Content != null && e.Message.Content.Split(' ').Any(s => Commands.Messages.CommandsFilter.ContainsFilter(e.Guild.Id, s))) {
+            if (!e.Author.IsBot && e.Message.Content != null && e.Message.Content.Split(' ').Any(s => _dependecies.FilterControl.Contains(e.Guild.Id, s))) {
                 try {
                     await e.Channel.DeleteMessageAsync(e.Message);
                     LogHandle.Log(LogLevel.Info,
@@ -367,7 +365,7 @@ namespace TheGodfather
         private async Task Client_MessageUpdated(MessageUpdateEventArgs e)
         {
             // Check if message contains filter
-            if (!e.Author.IsBot && e.Message.Content != null && e.Message.Content.Split(' ').Any(s => Commands.Messages.CommandsFilter.ContainsFilter(e.Guild.Id, s))) {
+            if (!e.Author.IsBot && e.Message.Content != null && e.Message.Content.Split(' ').Any(s => _dependecies.FilterControl.Contains(e.Guild.Id, s))) {
                 try {
                     await e.Channel.DeleteMessageAsync(e.Message);
                     LogHandle.Log(LogLevel.Info,

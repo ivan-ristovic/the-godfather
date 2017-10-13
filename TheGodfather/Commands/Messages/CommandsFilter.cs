@@ -24,53 +24,7 @@ namespace TheGodfather.Commands.Messages
     [Aliases("f", "filters")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
     public class CommandsFilter
-    {
-        #region STATIC_FIELDS
-        private static ConcurrentDictionary<ulong, List<Regex>> _filters = new ConcurrentDictionary<ulong, List<Regex>>();
-        private static bool _error = false;
-        #endregion
-
-        #region STATIC_FUNCTIONS
-        public static void LoadFilters(DebugLogger log)
-        {
-            if (File.Exists("Resources/filters.json")) {
-                try {
-                    _filters = JsonConvert.DeserializeObject<ConcurrentDictionary<ulong, List<Regex>>>(File.ReadAllText("Resources/filters.json"));
-                } catch (Exception e) {
-                    log.LogMessage(LogLevel.Error, "TheGodfather", "Filter loading error, check file formatting. Details:\n" + e.ToString(), DateTime.Now);
-                    _error = true;
-                }
-            } else {
-                log.LogMessage(LogLevel.Warning, "TheGodfather", "filters.json is missing.", DateTime.Now);
-            }
-        }
-
-        public static void SaveFilters(DebugLogger log)
-        {
-            if (_error) {
-                log.LogMessage(LogLevel.Warning, "TheGodfather", "Filter saving skipped until file conflicts are resolved!", DateTime.Now);
-                return;
-            }
-
-            try {
-                File.WriteAllText("Resources/filters.json", JsonConvert.SerializeObject(_filters));
-            } catch (Exception e) {
-                log.LogMessage(LogLevel.Error, "TheGodfather", "IO Filter save error. Details:\n" + e.ToString(), DateTime.Now);
-                throw new IOException("IO error while saving filters.");
-            }
-        }
-
-        public static bool ContainsFilter(ulong gid, string message)
-        {
-            message = message.ToLower();
-            if (_filters.ContainsKey(gid) && _filters[gid].Any(f => f.Match(message).Success))
-                return true;
-            else
-                return false;
-        }
-        #endregion
-
-        
+    {        
         #region COMMAND_FILTER_ADD
         [Command("add")]
         [Description("Add filter to list.")]
@@ -88,21 +42,15 @@ namespace TheGodfather.Commands.Messages
             if (filter.Contains("%") || filter.Length < 3)
                 throw new CommandFailedException($"Filter must not contain {Formatter.Bold("%")} or have less than 3 characters.");
 
-            if (!_filters.ContainsKey(ctx.Guild.Id))
-                if (!_filters.TryAdd(ctx.Guild.Id, new List<Regex>()))
-                    throw new CommandFailedException("Adding filter failed.");
-
             var regex = new Regex($"^{filter}$", RegexOptions.IgnoreCase);
 
             if (ctx.Client.GetCommandsNext().RegisteredCommands.Any(kv => regex.Match(kv.Key).Success))
                 throw new CommandFailedException("You cannot add a filter that matches one of the commands!");
             
-            if (_filters[ctx.Guild.Id].Any(r => r.ToString() == regex.ToString())) {
-                await ctx.RespondAsync($"Filter {Formatter.Bold(filter)} already exists.");
-            } else {
-                _filters[ctx.Guild.Id].Add(regex);
-                await ctx.RespondAsync($"Filter {Formatter.Bold(filter)} successfully added.");
-            }
+            if (ctx.Dependencies.GetDependency<FilterManager>().TryAdd(ctx.Guild.Id, regex))
+                await ctx.RespondAsync($"Filter successfully added.");
+            else
+                throw new CommandFailedException("Filter already exists!");
         }
         #endregion
         
@@ -114,14 +62,10 @@ namespace TheGodfather.Commands.Messages
         public async Task DeleteFilter(CommandContext ctx, 
                                       [Description("Filter index.")] int i = 0)
         {
-            if (!_filters.ContainsKey(ctx.Guild.Id))
-                throw new CommandFailedException("No filters recorded in this guild.", new KeyNotFoundException());
-
-            if (i < 0 || i > _filters[ctx.Guild.Id].Count)
-                throw new CommandFailedException("There is no filter with such index.", new ArgumentOutOfRangeException());
-
-            _filters[ctx.Guild.Id].RemoveAt(i);
-            await ctx.RespondAsync("Filter successfully removed.");
+            if (ctx.Dependencies.GetDependency<FilterManager>().TryRemoveAt(ctx.Guild.Id, i))
+                await ctx.RespondAsync("Filter successfully removed.");
+            else
+                throw new CommandFailedException("Filter at that index does not exist.");
         }
         #endregion
         
@@ -131,7 +75,7 @@ namespace TheGodfather.Commands.Messages
         [RequireOwner]
         public async Task SaveFilters(CommandContext ctx)
         {
-            SaveFilters(ctx.Client.DebugLogger);
+            ctx.Dependencies.GetDependency<FilterManager>().Save(ctx.Client.DebugLogger);
             await ctx.RespondAsync("Filters successfully saved.");
         }
         #endregion
@@ -142,25 +86,27 @@ namespace TheGodfather.Commands.Messages
         public async Task ListFilters(CommandContext ctx, 
                                      [Description("Page")] int page = 1)
         {
-            if (!_filters.ContainsKey(ctx.Guild.Id)) {
+            var filters = ctx.Dependencies.GetDependency<FilterManager>().Filters;
+
+            if (!filters.ContainsKey(ctx.Guild.Id)) {
                 await ctx.RespondAsync("No filters registered.");
                 return;
             }
 
-            if (page < 1 || page > _filters[ctx.Guild.Id].Count / 10 + 1)
+            if (page < 1 || page > filters[ctx.Guild.Id].Count / 10 + 1)
                 throw new CommandFailedException("No filters on that page.");
 
             string s = "";
             int starti = (page - 1) * 10;
-            int endi = starti + 10 < _filters[ctx.Guild.Id].Count ? starti + 10 : _filters[ctx.Guild.Id].Count;
-            var filters = _filters[ctx.Guild.Id].Take(page * 10).ToArray();
+            int endi = starti + 10 < filters[ctx.Guild.Id].Count ? starti + 10 : filters[ctx.Guild.Id].Count;
+            var pagefilters = filters[ctx.Guild.Id].Take(page * 10).ToArray();
             for (var i = starti; i < endi; i++) {
-                var filter = filters[i].ToString();
+                var filter = pagefilters[i].ToString();
                 s += $"{Formatter.Bold(i.ToString())} : {filter.Substring(1, filter.Length - 2)}\n";
             }
 
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
-                Title = $"Available filters (page {page}/{_filters[ctx.Guild.Id].Count / 10 + 1}) :",
+                Title = $"Available filters (page {page}/{filters[ctx.Guild.Id].Count / 10 + 1}) :",
                 Description = s,
                 Color = DiscordColor.Green
             });
@@ -173,10 +119,10 @@ namespace TheGodfather.Commands.Messages
         [RequireUserPermissions(Permissions.Administrator)]
         public async Task ClearFilters(CommandContext ctx)
         {
-            if (_filters.ContainsKey(ctx.Guild.Id))
-                if (!_filters.TryRemove(ctx.Guild.Id, out _))
-                    throw new CommandFailedException("Filter clear failed");
-            await ctx.RespondAsync("All filters successfully removed.");
+            if (ctx.Dependencies.GetDependency<FilterManager>().ClearGuildFilters(ctx.Guild.Id))
+                await ctx.RespondAsync("All filters for this guild successfully removed.");
+            else
+                throw new CommandFailedException("Clearing guild filters failed");
         }
         #endregion
 
@@ -186,7 +132,7 @@ namespace TheGodfather.Commands.Messages
         [RequireOwner]
         public async Task ClearAllFilters(CommandContext ctx)
         {
-            _filters.Clear();
+            ctx.Dependencies.GetDependency<FilterManager>().ClearAllFilters();
             await ctx.RespondAsync("All filters successfully removed.");
         }
         #endregion

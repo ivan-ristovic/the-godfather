@@ -98,6 +98,9 @@ namespace TheGodfather.Helpers.DataManagers
 
         public bool ClearGuildAliases(ulong gid)
         {
+            if (!_aliases.ContainsKey(gid))
+                return false;
+            
             return _aliases.TryRemove(gid, out _);
         }
 
