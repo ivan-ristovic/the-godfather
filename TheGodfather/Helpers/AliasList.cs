@@ -60,6 +60,11 @@ namespace TheGodfather.Helpers
             return true;
         }
 
+        public bool Contains(ulong gid, string trigger)
+        {
+            return _aliases.ContainsKey(gid) && _aliases[gid].ContainsKey(trigger);
+        }
+
         public string GetResponse(ulong gid, string trigger)
         {
             trigger = trigger.ToLower();
