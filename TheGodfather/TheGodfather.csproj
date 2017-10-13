@@ -237,6 +237,7 @@
     <Compile Include="Commands\Administration\CommandsUsers.cs" />
     <Compile Include="Commands\Voice\CommandsVoice.cs" />
     <Compile Include="Helpers\PrefixManager.cs" />
+    <Compile Include="Helpers\StatusManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TheGodfather.cs" />

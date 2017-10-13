@@ -36,16 +36,13 @@ namespace TheGodfather
 
         private StreamWriter _logstream = null;
         private readonly object _lock = new object ();
-
-        private List<string> _statuses = new List<string> { "!help", "worldmafia.net", "worldmafia.net/discord" };
-
+        
         private readonly string LOG_TAG = "TheGodfather";
 
         private BotDependencyList _dependecies = new BotDependencyList();
         #endregion
 
         #region PUBLIC_FIELDS
-        public IReadOnlyList<string> Statuses => _statuses;
         public static BotConfig Config { get; private set; }
         #endregion
 
@@ -269,7 +266,7 @@ namespace TheGodfather
         #region CLIENT_EVENTS
         private async Task Client_Heartbeated(HeartbeatEventArgs e)
         {
-            await _client.UpdateStatusAsync(new DiscordGame(Statuses[new Random().Next(Statuses.Count)]) { StreamType = GameStreamType.NoStream });
+            await _client.UpdateStatusAsync(new DiscordGame(_dependecies.StatusControl.GetRandomStatus()) { StreamType = GameStreamType.NoStream });
             SaveData();
         }
 
@@ -481,7 +478,7 @@ namespace TheGodfather
         private async Task Client_Ready(ReadyEventArgs e)
         {
             _client.DebugLogger.LogMessage(LogLevel.Info, LOG_TAG, "Ready.", DateTime.Now);
-            await _client.UpdateStatusAsync(new DiscordGame(Statuses[0]) { StreamType = GameStreamType.NoStream });
+            await _client.UpdateStatusAsync(new DiscordGame(_dependecies.StatusControl.GetRandomStatus()) { StreamType = GameStreamType.NoStream });
         }
         #endregion
 
@@ -552,21 +549,6 @@ namespace TheGodfather
                 embed.Description = $"{emoji} Unknown error occured (probably because a Serbian made this bot). Please **!report**.";
 
             await e.Context.RespondAsync(embed: embed.Build()).ConfigureAwait(false);
-        }
-        #endregion
-
-
-        #region GETTERS_AND_SETTERS
-        public void AddStatus(string status)
-        {
-            if (_statuses.Contains(status))
-                return;
-            _statuses.Add(status);
-        }
-
-        public void DeleteStatus(string status)
-        {
-            _statuses.RemoveAll(s => s.ToLower() == status.ToLower());
         }
         #endregion
     }

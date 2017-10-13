@@ -20,12 +20,14 @@ namespace TheGodfather.Helpers
     {
         internal AliasManager AliasControl { get; private set; }
         internal PrefixManager PrefixControl { get; private set; }
+        internal StatusManager StatusControl { get; private set; }
 
 
         internal BotDependencyList()
         {
             AliasControl = new AliasManager();
             PrefixControl = new PrefixManager();
+            StatusControl = new StatusManager();
         }
 
 
@@ -33,19 +35,22 @@ namespace TheGodfather.Helpers
         {
             AliasControl.Load(log);
             PrefixControl.Load(log);
+            StatusControl.Load(log);
         }
 
         internal void SaveData(DebugLogger log)
         {
             AliasControl.Save(log);
             PrefixControl.Save(log);
+            StatusControl.Save(log);
         }
 
         internal DependencyCollectionBuilder GetDependencyCollectionBuilder()
         {
             return new DependencyCollectionBuilder()
                 .AddInstance(AliasControl)
-                .AddInstance(PrefixControl);
+                .AddInstance(PrefixControl)
+                .AddInstance(StatusControl);
         }
     }
 }
