@@ -19,7 +19,7 @@ namespace TheGodfather.Helpers.DataManagers
     public class MemeManager
     {
         public IReadOnlyDictionary<string, string> Memes => _memes;
-        private static ConcurrentDictionary<string, string> _memes = new ConcurrentDictionary<string, string>();
+        private ConcurrentDictionary<string, string> _memes = new ConcurrentDictionary<string, string>();
         private bool _ioerr = false;
 
 

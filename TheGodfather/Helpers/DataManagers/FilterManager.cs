@@ -20,7 +20,7 @@ namespace TheGodfather.Helpers.DataManagers
     public class FilterManager
     {
         public IReadOnlyDictionary<ulong, List<Regex>> Filters => _filters;
-        private static ConcurrentDictionary<ulong, List<Regex>> _filters = new ConcurrentDictionary<ulong, List<Regex>>();
+        private ConcurrentDictionary<ulong, List<Regex>> _filters = new ConcurrentDictionary<ulong, List<Regex>>();
         private bool _ioerr = false;
 
 

@@ -25,8 +25,12 @@ namespace TheGodfather.Helpers
         internal InsultManager InsultControl { get; private set; }
         internal MemeManager MemeControl { get; private set; }
         internal PrefixManager PrefixControl { get; private set; }
+        internal RankManager RankControl { get; private set; }
         internal StatusManager StatusControl { get; private set; }
-
+        // channels in CommandsGuild
+        // reactions
+        // swat servers
+        // hmm... there has to be something else, check files please
 
         internal BotDependencyList()
         {
@@ -35,6 +39,7 @@ namespace TheGodfather.Helpers
             InsultControl = new InsultManager();
             MemeControl = new MemeManager();
             PrefixControl = new PrefixManager();
+            RankControl = new RankManager();
             StatusControl = new StatusManager();
         }
 
@@ -46,6 +51,7 @@ namespace TheGodfather.Helpers
             InsultControl.Load(log);
             MemeControl.Load(log);
             PrefixControl.Load(log);
+            RankControl.Load(log);
             StatusControl.Load(log);
         }
 
@@ -56,6 +62,7 @@ namespace TheGodfather.Helpers
             InsultControl.Save(log);
             MemeControl.Save(log);
             PrefixControl.Save(log);
+            RankControl.Save(log);
             StatusControl.Save(log);
         }
 
@@ -67,6 +74,7 @@ namespace TheGodfather.Helpers
                 .AddInstance(InsultControl)
                 .AddInstance(MemeControl)
                 .AddInstance(PrefixControl)
+                .AddInstance(RankControl)
                 .AddInstance(StatusControl);
         }
     }

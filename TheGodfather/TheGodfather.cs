@@ -178,7 +178,6 @@ namespace TheGodfather
             Exception exc = null;
             try {
                 _dependecies.LoadData(_client.DebugLogger);
-                Commands.Messages.CommandsRanking.LoadRanks(_client.DebugLogger);
                 Commands.Messages.CommandsReaction.LoadReactions(_client.DebugLogger);
                 Commands.SWAT.CommandsSwat.LoadServers(_client.DebugLogger);
             } catch (Exception e) {
@@ -196,7 +195,6 @@ namespace TheGodfather
             Exception exc = null;
             try {
                 _dependecies.SaveData(_client.DebugLogger);
-                Commands.Messages.CommandsRanking.SaveRanks(_client.DebugLogger);
                 Commands.Messages.CommandsReaction.SaveReactions(_client.DebugLogger);
                 Commands.SWAT.CommandsSwat.SaveServers(_client.DebugLogger);
             } catch (Exception e) {
@@ -327,7 +325,11 @@ namespace TheGodfather
             }
 
             // Update message count for the user that sent the message
-            Commands.Messages.CommandsRanking.UpdateMessageCount(e.Channel, e.Author);
+            int rank = _dependecies.RankControl.UpdateMessageCount(e.Author.Id);
+            if (rank != -1) {
+                var ranks = _dependecies.RankControl.Ranks;
+                await e.Channel.SendMessageAsync($"GG {e.Author.Mention}! You have advanced to level {rank} ({(rank < ranks.Count ? ranks[rank] : "Low")})!");
+            }
 
             // Check if message has an alias
             var response = _dependecies.AliasControl.GetResponse(e.Guild.Id, e.Message.Content);
