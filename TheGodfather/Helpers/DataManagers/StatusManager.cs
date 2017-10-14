@@ -20,6 +20,7 @@ namespace TheGodfather.Helpers.DataManagers
     {
         public IReadOnlyList<string> Statuses => _statuses;
         private List<string> _statuses = new List<string> { "!help", "worldmafia.net", "worldmafia.net/discord" };
+        private bool _ioerr = false;
 
 
         public StatusManager()
@@ -30,12 +31,32 @@ namespace TheGodfather.Helpers.DataManagers
 
         public void Load(DebugLogger log)
         {
-            // TODO
+            if (File.Exists("Resources/statuses.json")) {
+                try {
+                    _statuses = JsonConvert.DeserializeObject<List<string>>(File.ReadAllText("Resources/statuses.json"));
+                } catch (Exception e) {
+                    log.LogMessage(LogLevel.Error, "TheGodfather", "Status loading error, check file formatting. Details:\n" + e.ToString(), DateTime.Now);
+                    _ioerr = true;
+                }
+            } else {
+                log.LogMessage(LogLevel.Warning, "TheGodfather", "statuses.json is missing.", DateTime.Now);
+            }
         }
 
         public bool Save(DebugLogger log)
         {
-            // TODO
+            if (_ioerr) {
+                log.LogMessage(LogLevel.Warning, "TheGodfather", "Status saving skipped until file conflicts are resolved!", DateTime.Now);
+                return false;
+            }
+
+            try {
+                File.WriteAllText("Resources/statuses.json", JsonConvert.SerializeObject(_statuses));
+            } catch (Exception e) {
+                log.LogMessage(LogLevel.Error, "TheGodfather", "IO Status save error. Details:\n" + e.ToString(), DateTime.Now);
+                return false;
+            }
+
             return true;
         }
 

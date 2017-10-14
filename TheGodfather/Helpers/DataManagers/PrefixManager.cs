@@ -20,6 +20,7 @@ namespace TheGodfather.Helpers.DataManagers
     {
         public IReadOnlyDictionary<ulong, string> Prefixes => _prefixes;
         private ConcurrentDictionary<ulong, string> _prefixes = new ConcurrentDictionary<ulong, string>();
+        private bool _ioerr = false;
 
 
         public PrefixManager()
@@ -30,12 +31,32 @@ namespace TheGodfather.Helpers.DataManagers
 
         public void Load(DebugLogger log)
         {
-            // TODO
+            if (File.Exists("Resources/prefixes.json")) {
+                try {
+                    _prefixes = JsonConvert.DeserializeObject<ConcurrentDictionary<ulong, string>>(File.ReadAllText("Resources/prefixes.json"));
+                } catch (Exception e) {
+                    log.LogMessage(LogLevel.Error, "TheGodfather", "Prefix loading error, check file formatting. Details:\n" + e.ToString(), DateTime.Now);
+                    _ioerr = true;
+                }
+            } else {
+                log.LogMessage(LogLevel.Warning, "TheGodfather", "prefixes.json is missing.", DateTime.Now);
+            }
         }
 
         public bool Save(DebugLogger log)
         {
-            // TODO
+            if (_ioerr) {
+                log.LogMessage(LogLevel.Warning, "TheGodfather", "Prefix saving skipped until file conflicts are resolved!", DateTime.Now);
+                return false;
+            }
+
+            try {
+                File.WriteAllText("Resources/prefixes.json", JsonConvert.SerializeObject(_prefixes));
+            } catch (Exception e) {
+                log.LogMessage(LogLevel.Error, "TheGodfather", "IO Prefix save error. Details:\n" + e.ToString(), DateTime.Now);
+                return false;
+            }
+
             return true;
         }
 
