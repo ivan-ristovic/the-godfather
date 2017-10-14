@@ -195,12 +195,12 @@ namespace TheGodfather.Commands.Main
             if (string.IsNullOrWhiteSpace(issue))
                 throw new InvalidCommandUsageException("Text missing.");
             
-            await ctx.RespondAsync("Are you okay with your user and guild info being sent for further inspection?" +
-                Formatter.Italic("\n\n(Please either respond with 'yes' or wait 5 seconds for the prompt to time out)"));
+            await ctx.RespondAsync("Are you okay with your user and guild info being sent for further inspection?\n\n" +
+                Formatter.Italic("(Please either respond with 'yes' or wait 15 seconds for the prompt to time out)"));
             var interactivity = ctx.Client.GetInteractivityModule();
             var msg = await interactivity.WaitForMessageAsync(
                 x => x.Author.Id == ctx.User.Id && x.Channel.Id == ctx.Channel.Id && x.Content.ToLower() == "yes", 
-                TimeSpan.FromSeconds(5)
+                TimeSpan.FromSeconds(15)
             );
             if (msg != null) {
                 ctx.Client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", $"Report from {ctx.User.Username} ({ctx.User.Id}): {msg}", DateTime.Now);
