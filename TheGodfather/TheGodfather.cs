@@ -445,6 +445,8 @@ namespace TheGodfather
                     embed.Description = $"{emoji} You do not have the required permissions to run this command!";
                 else if (attr is RequirePermissionsAttribute)
                     embed.Description = $"{emoji} Permissions to execute that command aren't met!";
+                else
+                    embed.Description = $"{emoji} That command is reserved for the bot owner only!";
             } else if (e.Exception is UnauthorizedException)
                 embed.Description = $"{emoji} I am not authorized to do that.";
             else
