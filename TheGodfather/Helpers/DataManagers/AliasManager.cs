@@ -90,7 +90,7 @@ namespace TheGodfather.Helpers.DataManagers
 
         public bool TryRemove(ulong gid, string alias)
         {
-            if (_aliases.ContainsKey(gid) || _aliases[gid].ContainsKey(alias))
+            if (!_aliases.ContainsKey(gid) || !_aliases[gid].ContainsKey(alias))
                 return false;
 
             return _aliases[gid].Remove(alias);
