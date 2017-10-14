@@ -78,7 +78,7 @@ namespace TheGodfather.Helpers
 
         public void WriteToFile(DebugLogMessageEventArgs e)
         {
-            if (_valid)
+            if (!_valid)
                 return;
 
             try {
