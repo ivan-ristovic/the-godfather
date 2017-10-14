@@ -8,15 +8,15 @@ using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis;
 
+using TheGodfather.Helpers;
+using TheGodfather.Helpers.DataManagers;
 using TheGodfather.Exceptions;
-using TheGodfather.Commands.Administration.Helpers;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 #endregion
-
 
 namespace TheGodfather.Commands.Administration
 {
@@ -34,7 +34,7 @@ namespace TheGodfather.Commands.Administration
         public async Task ClearLog(CommandContext ctx)
         {
             try {
-                ctx.Dependencies.GetDependency<TheGodfather>().ClearLogFile();
+                ctx.Dependencies.GetDependency<TheGodfather>().LogHandle.ClearLogFile();
             } catch (Exception e) {
                 ctx.Client.DebugLogger.LogMessage(LogLevel.Error, "TheGodfather", e.Message, DateTime.Now);
                 throw e;
@@ -205,7 +205,7 @@ namespace TheGodfather.Commands.Administration
                 if (string.IsNullOrWhiteSpace(status))
                     throw new InvalidCommandUsageException("Invalid status.");
 
-                ctx.Dependencies.GetDependency<TheGodfather>().AddStatus(status);
+                ctx.Dependencies.GetDependency<StatusManager>().AddStatus(status);
 
                 await ctx.RespondAsync("Status added!");
             }
@@ -225,7 +225,7 @@ namespace TheGodfather.Commands.Administration
                 if (status == "!help")
                     throw new InvalidCommandUsageException("Cannot delete help status!");
 
-                ctx.Dependencies.GetDependency<TheGodfather>().DeleteStatus(status);
+                ctx.Dependencies.GetDependency<StatusManager>().DeleteStatus(status);
                 await ctx.RespondAsync("Status removed!");
             }
             #endregion
@@ -236,7 +236,7 @@ namespace TheGodfather.Commands.Administration
             [RequireUserPermissions(Permissions.Administrator)]
             public async Task ListStatuses(CommandContext ctx)
             {
-                await ctx.RespondAsync("My current statuses:\n" + string.Join("\n", ctx.Dependencies.GetDependency<TheGodfather>().Statuses));
+                await ctx.RespondAsync("My current statuses:\n" + string.Join("\n", ctx.Dependencies.GetDependency<StatusManager>().Statuses));
             }
             #endregion
         }

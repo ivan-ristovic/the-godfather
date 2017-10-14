@@ -3,6 +3,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
+using TheGodfather.Helpers.DataManagers;
 using TheGodfather.Exceptions;
 
 using DSharpPlus;
@@ -151,14 +152,14 @@ namespace TheGodfather.Commands.Main
         public async Task Prefix(CommandContext ctx,
                                 [Description("Prefix to set.")] string prefix = null)
         {
-            var gf = ctx.Dependencies.GetDependency<TheGodfather>();
+            var prefixes = ctx.Dependencies.GetDependency<PrefixManager>();
 
             if (string.IsNullOrWhiteSpace(prefix)) {
-                await ctx.RespondAsync("Current prefix for this channel is: " + Formatter.Bold(gf.PrefixFor(ctx.Channel.Id)));
+                await ctx.RespondAsync("Current prefix for this channel is: " + Formatter.Bold(prefixes.GetPrefixForChannelId(ctx.Channel.Id)));
                 return;
             }
 
-            gf.SetPrefix(ctx.Channel.Id, prefix);
+            prefixes.SetPrefixForChannelId(ctx.Channel.Id, prefix);
             await ctx.RespondAsync("Successfully changed the prefix for this channel to: " + Formatter.Bold(prefix));
         }
         #endregion

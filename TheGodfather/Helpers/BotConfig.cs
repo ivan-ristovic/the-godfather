@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 #endregion
 
-namespace TheGodfather
+namespace TheGodfather.Helpers
 {
     public class BotConfig
     {
