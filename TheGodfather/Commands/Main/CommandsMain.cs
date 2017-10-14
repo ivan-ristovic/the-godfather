@@ -203,7 +203,7 @@ namespace TheGodfather.Commands.Main
                 TimeSpan.FromSeconds(15)
             );
             if (msg != null) {
-                ctx.Client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", $"Report from {ctx.User.Username} ({ctx.User.Id}): {msg}", DateTime.Now);
+                ctx.Client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", $"Report from {ctx.User.Username} ({ctx.User.Id}): {issue}", DateTime.Now);
                 var dm = await ctx.Client.CreateDmAsync(ctx.Client.CurrentApplication.Owner);
                 
                 await dm.SendMessageAsync("A new issue has been reported!", embed: 
