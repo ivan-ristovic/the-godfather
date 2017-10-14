@@ -8,9 +8,9 @@ using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis;
 
+using TheGodfather.Helpers;
 using TheGodfather.Helpers.DataManagers;
 using TheGodfather.Exceptions;
-using TheGodfather.Commands.Administration.Helpers;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;

@@ -196,7 +196,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Helpers\BotConfig.cs" />
-    <Compile Include="Commands\Administration\Helpers\EvaluationEnvironment.cs" />
+    <Compile Include="Helpers\EvaluationEnvironment.cs" />
     <Compile Include="Commands\Search\CommandsJokes.cs" />
     <Compile Include="Exceptions.cs" />
     <Compile Include="Helpers\DataManagers\AliasManager.cs" />
