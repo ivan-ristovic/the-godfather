@@ -86,11 +86,13 @@ namespace TheGodfather.Helpers.DataManagers
                     return false;
 
             bool conflict_exists = false;
-            foreach (var word in triggers) {
-                if (_reactions[gid].ContainsKey(word))
+            foreach (var trigger in triggers) {
+                if (string.IsNullOrWhiteSpace(trigger))
+                    continue;
+                if (_reactions[gid].ContainsKey(trigger))
                     conflict_exists = true;
                 else
-                    _reactions[gid].Add(word, emoji.GetDiscordName());
+                    _reactions[gid].Add(trigger, emoji.GetDiscordName());
             }
 
             return !conflict_exists;
@@ -98,15 +100,18 @@ namespace TheGodfather.Helpers.DataManagers
 
         public bool TryRemove(ulong gid, string[] triggers)
         {
+            Console.WriteLine(string.Join(", ", triggers));
             if (!_reactions.ContainsKey(gid))
                 return false;
 
             bool found = true;
             foreach (var trigger in triggers) {
-                if (!_reactions[gid].ContainsKey(trigger))
-                    found = false;
-                else
+                if (string.IsNullOrWhiteSpace(trigger))
+                    continue;
+                if (_reactions[gid].ContainsKey(trigger))
                     _reactions[gid].Remove(trigger);
+                else
+                    found = false;
             }
 
             return found;

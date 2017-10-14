@@ -58,9 +58,9 @@ namespace TheGodfather.Commands.Messages
                                         [RemainingText, Description("Trigger word list.")] params string[] triggers)
         {
             if (ctx.Dependencies.GetDependency<ReactionManager>().TryRemove(ctx.Guild.Id, triggers))
-                await ctx.RespondAsync("Done. Some triggers were not in list anyway though.");
-            else
                 await ctx.RespondAsync("Triggers removed.");
+            else
+                await ctx.RespondAsync("Done. Some triggers were not in list anyway though.");
         }
         #endregion
 
