@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 using TheGodfather.Exceptions;
-using TheGodfather.Helpers;
+using TheGodfather.Helpers.DataManagers;
 
 using DSharpPlus;
 using DSharpPlus.Entities;
@@ -32,7 +32,7 @@ namespace TheGodfather.Commands.Search
     public class CommandsSteam
     {
         #region PRIVATE_FIELDS
-        private SteamUser _steam = new SteamUser(TheGodfather.Config.SteamKey);
+        private SteamUser _steam = null;
         #endregion
 
 
@@ -43,6 +43,8 @@ namespace TheGodfather.Commands.Search
         public async Task SteamProfile(CommandContext ctx,
                                       [Description("ID.")] ulong id = 0)
         {
+            InitializeSteamService(ctx);
+
             var model = await _steam.GetCommunityProfileAsync(id);
             if (model == null)
                 throw new CommandFailedException("No users found!");
@@ -55,6 +57,12 @@ namespace TheGodfather.Commands.Search
 
 
         #region HELPER_FUNCTIONS
+        private void InitializeSteamService(CommandContext ctx)
+        {
+            if (_steam == null)
+                _steam = new SteamUser(ctx.Dependencies.GetDependency<BotConfigManager>().CurrentConfig.SteamKey);
+        }
+
         private DiscordEmbed EmbedSteamResult(SteamCommunityProfileModel model, PlayerSummaryModel summary)
         {
             var em = new DiscordEmbedBuilder() {

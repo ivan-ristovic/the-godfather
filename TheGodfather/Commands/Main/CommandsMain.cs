@@ -155,7 +155,10 @@ namespace TheGodfather.Commands.Main
             var prefixes = ctx.Dependencies.GetDependency<PrefixManager>();
 
             if (string.IsNullOrWhiteSpace(prefix)) {
-                await ctx.RespondAsync("Current prefix for this channel is: " + Formatter.Bold(prefixes.GetPrefixForChannelId(ctx.Channel.Id)));
+                string p = prefixes.GetPrefixForChannelId(ctx.Channel.Id);
+                if (p == null)
+                    p = ctx.Dependencies.GetDependency<BotConfigManager>().CurrentConfig.DefaultPrefix;
+                await ctx.RespondAsync("Current prefix for this channel is: " + Formatter.Bold(p));
                 return;
             }
 

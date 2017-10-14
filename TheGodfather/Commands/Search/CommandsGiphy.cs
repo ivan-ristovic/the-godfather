@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using TheGodfather.Exceptions;
-using TheGodfather.Helpers;
+using TheGodfather.Helpers.DataManagers;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -26,7 +26,7 @@ namespace TheGodfather.Commands.Search
     public class CommandsGiphy
     {
         #region PRIVATE_FIELDS
-        private Giphy _giphy = new Giphy(TheGodfather.Config.GiphyKey);
+        private Giphy _giphy = null;
         #endregion
 
         
@@ -35,6 +35,8 @@ namespace TheGodfather.Commands.Search
         {
             if (string.IsNullOrWhiteSpace(q))
                 throw new InvalidCommandUsageException("Query missing!");
+
+            InitializeGiphyService(ctx);
 
             var res = await _giphy.GifSearch(new SearchParameter() { Query = q, Limit = 1 });
 
@@ -51,6 +53,8 @@ namespace TheGodfather.Commands.Search
         [Aliases("r", "rand", "rnd")]
         public async Task RandomGif(CommandContext ctx)
         {
+            InitializeGiphyService(ctx);
+
             var res = await _giphy.RandomGif(new RandomParameter());
             await ctx.RespondAsync(res.Data.ImageUrl);
         }
@@ -66,6 +70,8 @@ namespace TheGodfather.Commands.Search
             if (n < 1 || n > 10)
                 throw new CommandFailedException("Number of results must be 1-10.", new ArgumentOutOfRangeException());
 
+            InitializeGiphyService(ctx);
+
             var res = await _giphy.TrendingGifs(new TrendingParameter() { Limit = n });
             
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
@@ -73,6 +79,15 @@ namespace TheGodfather.Commands.Search
                 Description = res.Data.Aggregate("", (string s, Data r) => s += r.Url + '\n'),
                 Color = DiscordColor.Gold
             });
+        }
+        #endregion
+
+
+        #region HELPER_FUNCTIONS
+        private void InitializeGiphyService(CommandContext ctx)
+        {
+            if (_giphy == null)
+                _giphy = new Giphy(ctx.Dependencies.GetDependency<BotConfigManager>().CurrentConfig.GiphyKey);
         }
         #endregion
     }

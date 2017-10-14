@@ -2,6 +2,7 @@
 using System;
 using System.Threading.Tasks;
 
+using TheGodfather.Helpers.DataManagers;
 using TheGodfather.Exceptions;
 
 using DSharpPlus;
@@ -23,9 +24,9 @@ namespace TheGodfather.Commands.Search
     [Cooldown(2, 5, CooldownBucketType.User), Cooldown(4, 5, CooldownBucketType.Channel)]
     public class CommandsImgur
     {
-        #region STATIC_FIELDS
-        private static ImgurClient _imgurclient = new ImgurClient(TheGodfather.Config.ImgurKey);
-        private static GalleryEndpoint _endpoint = new GalleryEndpoint(_imgurclient);
+        #region PRIVATE_FIELDS
+        private ImgurClient _imgur = null;
+        private GalleryEndpoint _endpoint = null;
         #endregion
 
 
@@ -38,6 +39,7 @@ namespace TheGodfather.Commands.Search
             if (n < 1 || n > 10)
                 throw new CommandFailedException("Invalid ammount (must be 1-10).", new ArgumentOutOfRangeException());
 
+            InitializeImgurService(ctx);
             await PrintImagesFromSub(ctx, sub.Trim(), n, SubredditGallerySortOrder.Top, TimeWindow.Day);
         }
 
@@ -55,6 +57,7 @@ namespace TheGodfather.Commands.Search
             if (n < 1 || n > 10)
                 throw new CommandFailedException("Invalid ammount (must be 1-10).", new ArgumentOutOfRangeException());
 
+            InitializeImgurService(ctx);
             await PrintImagesFromSub(ctx, sub.Trim(), n, SubredditGallerySortOrder.Time, TimeWindow.Day);
         }
         #endregion
@@ -85,12 +88,21 @@ namespace TheGodfather.Commands.Search
             else if (time == "all" || time == "a")
                 t = TimeWindow.All;
 
+            InitializeImgurService(ctx);
             await PrintImagesFromSub(ctx, sub.Trim(), n, SubredditGallerySortOrder.Top, t);
         }
         #endregion
 
 
         #region HELPER_FUNCTIONS
+        private void InitializeImgurService(CommandContext ctx)
+        {
+            if (_imgur == null || _endpoint == null) {
+                _imgur = new ImgurClient(ctx.Dependencies.GetDependency<BotConfigManager>().CurrentConfig.ImgurKey);
+                _endpoint = new GalleryEndpoint(_imgur);
+            }
+        }
+
         private async Task PrintImagesFromSub(CommandContext ctx, 
                                               string sub, 
                                               int num, 

@@ -17,6 +17,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using Google.Apis.Services;
 using Google.Apis.YouTube.v3;
 using Google.Apis.YouTube.v3.Data;
+using TheGodfather.Helpers.DataManagers;
 /*
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Util.Store;
@@ -43,6 +44,8 @@ namespace TheGodfather.Commands.Search
         {
             if (string.IsNullOrWhiteSpace(query))
                 throw new InvalidCommandUsageException("Search query missing.");
+
+            /*await*/ InitializeYtService(ctx);
 
             var results = await GetYoutubeResults(query, 1);
             if (results == null || results.Count == 0) {
@@ -85,6 +88,7 @@ namespace TheGodfather.Commands.Search
             if (ammount < 1 || ammount > 10)
                 throw new CommandFailedException("Invalid ammount (must be 1-10).");
 
+            /*await*/ InitializeYtService(ctx);
             var results = await GetYoutubeResults(query, ammount);
 
             await ctx.RespondAsync($"Search results for ***{query}***", embed: EmbedYouTubeResults(results));
@@ -101,6 +105,7 @@ namespace TheGodfather.Commands.Search
             if (string.IsNullOrWhiteSpace(query))
                 throw new InvalidCommandUsageException("Search query missing.");
 
+            /*await*/ InitializeYtService(ctx);
             var results = GetYoutubeResults(query, _defammount)
                 .Result
                 .Where(r => r.Id.Kind == "youtube#video")
@@ -121,6 +126,7 @@ namespace TheGodfather.Commands.Search
             if (string.IsNullOrWhiteSpace(query))
                 throw new InvalidCommandUsageException("Search query missing.");
 
+            /*await*/ InitializeYtService(ctx);
             var results = GetYoutubeResults(query, _defammount)
                 .Result
                 .Where(r => r.Id.Kind == "youtube#channel")
@@ -141,6 +147,7 @@ namespace TheGodfather.Commands.Search
             if (string.IsNullOrWhiteSpace(query))
                 throw new InvalidCommandUsageException("Search query missing.");
 
+            /*await*/ InitializeYtService(ctx);
             var results = GetYoutubeResults(query, _defammount)
                 .Result
                 .Where(r => r.Id.Kind == "youtube#playlist")
@@ -152,7 +159,7 @@ namespace TheGodfather.Commands.Search
 
 
         #region HELPER_FUNCTIONS
-        private /*async Task*/ void SetupYouTubeService()
+        private /*async Task*/ void InitializeYtService(CommandContext ctx)
         {
             /*
             UserCredential credential;
@@ -165,19 +172,17 @@ namespace TheGodfather.Commands.Search
             }
             */
 
-            _yt = new YouTubeService(new BaseClientService.Initializer() {
-                ApiKey = TheGodfather.Config.YoutubeKey,
-                ApplicationName = "TheGodfather"
-                // HttpClientInitializer = credential
-            });
+            if (_yt == null) {
+                _yt = new YouTubeService(new BaseClientService.Initializer() {
+                    ApiKey = ctx.Dependencies.GetDependency<BotConfigManager>().CurrentConfig.YoutubeKey,
+                    ApplicationName = "TheGodfather"
+                    // HttpClientInitializer = credential
+                });
+            }
         }
 
         private async Task<List<SearchResult>> GetYoutubeResults(string query, int ammount)
         {
-            if (_yt == null)
-                /*await*/
-                SetupYouTubeService();
-
             var searchListRequest = _yt.Search.List("snippet");
             searchListRequest.Q = query;
             searchListRequest.MaxResults = ammount;

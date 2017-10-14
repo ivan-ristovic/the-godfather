@@ -1,16 +1,11 @@
 ﻿#region USING_DIRECTIVES
 using System;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Collections.Generic;
-using System.Collections.Concurrent;
-using System.Threading;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 
 using TheGodfather.Exceptions;
 using TheGodfather.Helpers;
+using TheGodfather.Helpers.DataManagers;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -34,18 +29,16 @@ namespace TheGodfather
         private InteractivityModule _interactivity { get; set; }
         private VoiceNextClient _voice { get; set; }
 
+        private BotConfigManager _config { get; set; }
         private BotDependencyList _dependecies { get; set; }
 
         internal Logger LogHandle { get; private set; }
         #endregion
 
-        #region PUBLIC_FIELDS
-        public static BotConfig Config { get; private set; }
-        #endregion
-
 
         public TheGodfather()
         {
+            _config = new BotConfigManager();
             _dependecies = new BotDependencyList();
         }
 
@@ -62,16 +55,7 @@ namespace TheGodfather
 
         public async Task MainAsync(string[] args)
         {
-            try {
-                string data = "";
-                using (var fs = File.OpenRead("Resources/config.json"))
-                using (var sr = new StreamReader(fs, new UTF8Encoding(false)))
-                    data = await sr.ReadToEndAsync();
-                Config = JsonConvert.DeserializeObject<BotConfig>(data);
-            } catch (Exception e) {
-                LogHandle.Log(LogLevel.Error, $"Settings loading error: {e.GetType()}: {e.Message}");
-                Environment.Exit(1);
-            }
+            _config.Load();
 
             SetupClient();
             SetupCommands();
@@ -92,7 +76,7 @@ namespace TheGodfather
                 LogLevel = LogLevel.Debug,
                 LargeThreshold = 250,
                 AutoReconnect = true,
-                Token = Config.Token,
+                Token = _config.CurrentConfig.Token,
                 TokenType = TokenType.Bot,
                 UseInternalLogHandler = true,
             });
@@ -121,7 +105,10 @@ namespace TheGodfather
                 CaseSensitive = false,
                 EnableMentionPrefix = true,
                 CustomPrefixPredicate = async m => await CheckMessageForPrefix(m),
-                Dependencies = _dependecies.GetDependencyCollectionBuilder().AddInstance(this).Build()
+                Dependencies = _dependecies.GetDependencyCollectionBuilder()
+                                           .AddInstance(this)
+                                           .AddInstance(_config)
+                                           .Build()
             });
 
             _commands.SetHelpFormatter<HelpFormatter>();
@@ -209,7 +196,12 @@ namespace TheGodfather
 
         private Task<int> CheckMessageForPrefix(DiscordMessage m)
         {
-            string prefix = _dependecies.PrefixControl.Prefixes.ContainsKey(m.ChannelId) ? _dependecies.PrefixControl.Prefixes[m.ChannelId] : Config.DefaultPrefix;
+            string prefix;
+            if (_dependecies.PrefixControl.Prefixes.ContainsKey(m.ChannelId))
+                prefix = _dependecies.PrefixControl.Prefixes[m.ChannelId];
+            else
+                prefix = _config.CurrentConfig.DefaultPrefix;
+
             int pos = m.Content.IndexOf(prefix);
 
             if (pos != 0)

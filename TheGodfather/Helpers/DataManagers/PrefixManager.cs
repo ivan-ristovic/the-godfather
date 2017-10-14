@@ -44,7 +44,7 @@ namespace TheGodfather.Helpers.DataManagers
             if (_prefixes.ContainsKey(cid))
                 return _prefixes[cid];
             else
-                return TheGodfather.Config.DefaultPrefix;
+                return null;
         }
 
         public void SetPrefixForChannelId(ulong cid, string prefix)
