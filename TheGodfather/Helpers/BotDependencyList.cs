@@ -30,7 +30,7 @@ namespace TheGodfather.Helpers
         internal ReactionManager    ReactionControl     { get; private set; }
         internal StatusManager      StatusControl       { get; private set; }
         internal SwatServerManager  SwatServerControl   { get; private set; }
-        // hmm... there has to be something else, check files please
+        // bank manager
 
 
         internal BotDependencyList()

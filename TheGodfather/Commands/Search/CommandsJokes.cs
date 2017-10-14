@@ -86,7 +86,7 @@ namespace TheGodfather.Commands.Search
         #region COMMAND_JOKE_YOURMOM
         [Command("yourmom")]
         [Description("Yo mama so...")]
-        [Aliases("mama", "m", "yomomma", "yomom", "yourmom", "yomoma")]
+        [Aliases("mama", "m", "yomomma", "yomom", "yourmom", "yomoma", "yomamma", "yomama")]
         public async Task YomamaJoke(CommandContext ctx)
         {
             try {
