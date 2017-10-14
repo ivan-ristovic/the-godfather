@@ -178,7 +178,6 @@ namespace TheGodfather
             Exception exc = null;
             try {
                 _dependecies.LoadData(_client.DebugLogger);
-                Commands.Messages.CommandsReaction.LoadReactions(_client.DebugLogger);
                 Commands.SWAT.CommandsSwat.LoadServers(_client.DebugLogger);
             } catch (Exception e) {
                 exc = e;
@@ -195,7 +194,6 @@ namespace TheGodfather
             Exception exc = null;
             try {
                 _dependecies.SaveData(_client.DebugLogger);
-                Commands.Messages.CommandsReaction.SaveReactions(_client.DebugLogger);
                 Commands.SWAT.CommandsSwat.SaveServers(_client.DebugLogger);
             } catch (Exception e) {
                 exc = e;
@@ -343,7 +341,7 @@ namespace TheGodfather
             }
 
             // Check if message has react trigger
-            var emojilist = Commands.Messages.CommandsReaction.GetReactionEmojis(_client, e.Guild.Id, e.Message.Content);
+            var emojilist = _dependecies.ReactionControl.GetReactionEmojis(_client, e.Guild.Id, e.Message.Content);
             if (emojilist.Count > 0) {
                 LogHandle.Log(LogLevel.Info,
                     $"Reactions triggered in message: {e.Message.Content}" + Environment.NewLine +
@@ -356,7 +354,7 @@ namespace TheGodfather
                     } catch (ArgumentException) {
                         await e.Channel.SendMessageAsync($"I have a reaction for that message set up ({emoji}) but that emoji doesn't exits. Fix your shit pls.");
                     }
-                    await Task.Delay(1000);
+                    await Task.Delay(500);
                 }
             }
         }

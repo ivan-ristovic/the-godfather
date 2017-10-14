@@ -7,6 +7,7 @@ using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
+using TheGodfather.Helpers.DataManagers;
 using TheGodfather.Exceptions;
 
 using DSharpPlus;
@@ -23,61 +24,6 @@ namespace TheGodfather.Commands.Messages
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
     public class CommandsReaction
     {
-        #region STATIC_FIELDS
-        private static ConcurrentDictionary<ulong, SortedDictionary<string, string>> _reactions = new ConcurrentDictionary<ulong, SortedDictionary<string, string>>();
-        private static bool _error = false;
-        #endregion
-
-        #region STATIC_FUNCTIONS
-        public static void LoadReactions(DebugLogger log)
-        {
-            if (File.Exists("Resources/reactions.json")) {
-                try {
-                    _reactions = JsonConvert.DeserializeObject<ConcurrentDictionary<ulong, SortedDictionary<string, string>>>(File.ReadAllText("Resources/reactions.json"));
-                } catch (Exception e) {
-                    log.LogMessage(LogLevel.Error, "TheGodfather", "Reaction loading error, check file formatting. Details:\n" + e.ToString(), DateTime.Now);
-                    _error = true;
-                }
-            } else {
-                log.LogMessage(LogLevel.Warning, "TheGodfather", "reactions.json is missing.", DateTime.Now);
-            }
-        }
-
-        public static void SaveReactions(DebugLogger log)
-        {
-            if (_error) {
-                log.LogMessage(LogLevel.Warning, "TheGodfather", "Reactions saving skipped until file conflicts are resolved!", DateTime.Now);
-                return;
-            }
-
-            try {
-                File.WriteAllText("Resources/reactions.json", JsonConvert.SerializeObject(_reactions));
-            } catch (Exception e) {
-                log.LogMessage(LogLevel.Error, "TheGodfather", "Reactions save error. Details:\n" + e.ToString(), DateTime.Now);
-                throw new IOException("IO error while saving reactions.");
-            }
-        }
-
-        public static List<DiscordEmoji> GetReactionEmojis(DiscordClient cl, ulong gid, string message)
-        {
-            var emojis = new List<DiscordEmoji>();
-            
-            if (_reactions.ContainsKey(gid)) {
-                foreach (var word in message.ToLower().Split(' ')) {
-                    if (_reactions[gid].ContainsKey(word)) {
-                        try {
-                            emojis.Add(DiscordEmoji.FromName(cl, _reactions[gid][word]));
-                        } catch (ArgumentException) {
-                            cl.DebugLogger.LogMessage(LogLevel.Error, "TheGodfather", "Emoji name is not valid!", DateTime.Now);
-                        }
-                    }
-                }
-            }
-            
-            return emojis;
-        }
-        #endregion
-
         
         public async Task ExecuteGroupAsync(CommandContext ctx,
                                            [Description("Emoji to send.")] DiscordEmoji emoji = null,
@@ -86,7 +32,6 @@ namespace TheGodfather.Commands.Messages
             await AddReaction(ctx, emoji, triggers);
         }
         
-
         
         #region COMMAND_REACTIONS_ADD
         [Command("add")]
@@ -97,22 +42,10 @@ namespace TheGodfather.Commands.Messages
                                      [Description("Emoji to send.")] DiscordEmoji emoji = null,
                                      [RemainingText, Description("Trigger word list.")] params string[] triggers)
         {
-            if (!_reactions.ContainsKey(ctx.Guild.Id))
-                if (!_reactions.TryAdd(ctx.Guild.Id, new SortedDictionary<string, string>()))
-                    throw new CommandFailedException("Adding reaction failed!");
-
-            bool conflict_exists = false;
-            foreach (var word in triggers) {
-                if (_reactions[ctx.Guild.Id].ContainsKey(word))
-                    conflict_exists = true;
-                else
-                    _reactions[ctx.Guild.Id].Add(word, emoji.GetDiscordName());
-            }
-
-            if (conflict_exists)
-                await ctx.RespondAsync("Done. Some triggers were already present in list so I skipped those.");
+            if (ctx.Dependencies.GetDependency<ReactionManager>().TryAdd(ctx.Guild.Id, emoji, triggers))
+                await ctx.RespondAsync("Failed adding some triggers (probably due to ambiguity).");
             else
-                await ctx.RespondAsync("Done."); 
+                await ctx.RespondAsync("Reaction added."); 
         }
         #endregion
         
@@ -124,21 +57,10 @@ namespace TheGodfather.Commands.Messages
         public async Task DeleteReaction(CommandContext ctx,
                                         [RemainingText, Description("Trigger word list.")] params string[] triggers)
         {
-            if (!_reactions.ContainsKey(ctx.Guild.Id))
-                throw new CommandFailedException("No reactions recorded in this guild.", new KeyNotFoundException());
-
-            bool not_found = false;
-            foreach (var trigger in triggers) {
-                if (!_reactions[ctx.Guild.Id].ContainsKey(trigger))
-                    not_found = true;
-                else
-                    _reactions[ctx.Guild.Id].Remove(trigger);
-            }
-
-            if (not_found)
+            if (ctx.Dependencies.GetDependency<ReactionManager>().TryRemove(ctx.Guild.Id, triggers))
                 await ctx.RespondAsync("Done. Some triggers were not in list anyway though.");
             else
-                await ctx.RespondAsync("Done.");
+                await ctx.RespondAsync("Triggers removed.");
         }
         #endregion
 
@@ -148,7 +70,7 @@ namespace TheGodfather.Commands.Messages
         [RequireOwner]
         public async Task SaveReactions(CommandContext ctx)
         {
-            SaveReactions(ctx.Client.DebugLogger);
+            ctx.Dependencies.GetDependency<ReactionManager>().Save(ctx.Client.DebugLogger);
             await ctx.RespondAsync("Reactions successfully saved.");
         }
         #endregion
@@ -159,23 +81,25 @@ namespace TheGodfather.Commands.Messages
         public async Task ListReactions(CommandContext ctx,
                                        [Description("Page.")] int page = 1)
         {
-            if (!_reactions.ContainsKey(ctx.Guild.Id)) {
+            var reactions = ctx.Dependencies.GetDependency<ReactionManager>().Reactions;
+
+            if (!reactions.ContainsKey(ctx.Guild.Id)) {
                 await ctx.RespondAsync("No reactions registered.");
                 return;
             }
 
-            if (page < 1 || page > _reactions[ctx.Guild.Id].Count / 10 + 1)
+            if (page < 1 || page > reactions[ctx.Guild.Id].Count / 10 + 1)
                 throw new CommandFailedException("No reactions on that page.");
 
             string s = "";
             int starti = (page - 1) * 10;
-            int endi = starti + 10 < _reactions[ctx.Guild.Id].Count ? starti + 10 : _reactions[ctx.Guild.Id].Count;
-            var keys = _reactions[ctx.Guild.Id].Keys.Take(page * 10).ToArray();
+            int endi = starti + 10 < reactions[ctx.Guild.Id].Count ? starti + 10 : reactions[ctx.Guild.Id].Count;
+            var keys = reactions[ctx.Guild.Id].Keys.Take(page * 10).ToArray();
             for (var i = starti; i < endi; i++)
-                s += $"{Formatter.Bold(keys[i])} : {_reactions[ctx.Guild.Id][keys[i]]}\n";
+                s += $"{Formatter.Bold(keys[i])} : {reactions[ctx.Guild.Id][keys[i]]}\n";
 
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
-                Title = $"Available reactions (page {page}/{_reactions[ctx.Guild.Id].Count / 10 + 1}) :",
+                Title = $"Available reactions (page {page}/{reactions[ctx.Guild.Id].Count / 10 + 1}) :",
                 Description = s,
                 Color = DiscordColor.Yellow
             });
@@ -188,10 +112,10 @@ namespace TheGodfather.Commands.Messages
         [RequireUserPermissions(Permissions.Administrator)]
         public async Task ClearReactions(CommandContext ctx)
         {
-            if (_reactions.ContainsKey(ctx.Guild.Id))
-                if (!_reactions.TryRemove(ctx.Guild.Id, out _))
-                    throw new CommandFailedException("Clearing reactions failed.");
-            await ctx.RespondAsync("All reactions successfully removed.");
+            if (ctx.Dependencies.GetDependency<ReactionManager>().ClearGuildReactions(ctx.Guild.Id))
+                await ctx.RespondAsync("All reactions successfully removed.");
+            else
+                throw new CommandFailedException("Clearing guild reactions failed");
         }
         #endregion
 
@@ -201,7 +125,7 @@ namespace TheGodfather.Commands.Messages
         [RequireOwner]
         public async Task ClearAllReactions(CommandContext ctx)
         {
-            _reactions.Clear();
+            ctx.Dependencies.GetDependency<ReactionManager>().ClearAllReactions();
             await ctx.RespondAsync("All reactions successfully removed.");
         }
         #endregion

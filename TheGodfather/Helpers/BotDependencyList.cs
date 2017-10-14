@@ -26,9 +26,9 @@ namespace TheGodfather.Helpers
         internal MemeManager MemeControl { get; private set; }
         internal PrefixManager PrefixControl { get; private set; }
         internal RankManager RankControl { get; private set; }
+        internal ReactionManager ReactionControl { get; private set; }
         internal StatusManager StatusControl { get; private set; }
         // channels in CommandsGuild
-        // reactions
         // swat servers
         // hmm... there has to be something else, check files please
 
@@ -40,6 +40,7 @@ namespace TheGodfather.Helpers
             MemeControl = new MemeManager();
             PrefixControl = new PrefixManager();
             RankControl = new RankManager();
+            ReactionControl = new ReactionManager();
             StatusControl = new StatusManager();
         }
 
@@ -52,6 +53,7 @@ namespace TheGodfather.Helpers
             MemeControl.Load(log);
             PrefixControl.Load(log);
             RankControl.Load(log);
+            ReactionControl.Load(log);
             StatusControl.Load(log);
         }
 
@@ -63,6 +65,7 @@ namespace TheGodfather.Helpers
             MemeControl.Save(log);
             PrefixControl.Save(log);
             RankControl.Save(log);
+            ReactionControl.Save(log);
             StatusControl.Save(log);
         }
 
@@ -75,6 +78,7 @@ namespace TheGodfather.Helpers
                 .AddInstance(MemeControl)
                 .AddInstance(PrefixControl)
                 .AddInstance(RankControl)
+                .AddInstance(ReactionControl)
                 .AddInstance(StatusControl);
         }
     }
