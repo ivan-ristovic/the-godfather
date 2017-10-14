@@ -8,6 +8,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
+using TheGodfather.Helpers.DataManagers;
 using TheGodfather.Exceptions;
 
 using DSharpPlus;
@@ -23,132 +24,11 @@ namespace TheGodfather.Commands.SWAT
     [Cooldown(2, 5, CooldownBucketType.User), Cooldown(4, 5, CooldownBucketType.Channel)]
     public class CommandsSwat
     {
-        #region STATIC_FIELDS
-        private static Dictionary<string, string> _serverlist = new Dictionary<string, string>();
-        private static ConcurrentDictionary<ulong, bool> _UserIDsCheckingForSpace = new ConcurrentDictionary<ulong, bool>();
-        private static int _checktimeout = 200;
+        #region PRIVATE_FIELDS
+        private ConcurrentDictionary<ulong, bool> _UserIDsCheckingForSpace = new ConcurrentDictionary<ulong, bool>();
+        private int _checktimeout = 200;
         #endregion
-
-        #region STATIC_FUNCTIONS
-        public static void LoadServers(DebugLogger log)
-        {
-            string[] serverlist = {
-                "wm$46.251.251.9:10880:10881",
-                "myt$51.15.152.220:10480:10481",
-                "4u$109.70.149.161:10480:10481",
-                "soh$158.58.173.64:16480:10481",
-                "sh$5.9.50.39:8480:8481",
-                "esa$77.250.71.231:11180:11181",
-                "kos$31.186.250.32:10480:10481"
-            };
-
-            if (!File.Exists("Resources/servers.txt")) {
-                FileStream f = File.Open("Resources/servers.txt", FileMode.CreateNew);
-                f.Close();
-                File.WriteAllLines("Resources/servers.txt", serverlist);
-            }
-
-            try {
-                serverlist = File.ReadAllLines("Resources/servers.txt");
-                foreach (string line in serverlist) {
-                    if (line.Trim() == "" || line[0] == '#')
-                        continue;
-                    var values = line.Split('$');
-                    _serverlist.Add(values[0], values[1]);
-                }
-            } catch (Exception e) {
-                log.LogMessage(LogLevel.Error, "TheGodfather", "Serverlist loading error, clearing list. Details : " + e.ToString(), DateTime.Now);
-                _serverlist.Clear();
-            }
-        }
-
-        public static void SaveServers(DebugLogger log)
-        {
-            try {
-                List<string> serverlist = new List<string>();
-                foreach (var entry in _serverlist)
-                    serverlist.Add(entry.Key + "$" + entry.Value);
-
-                File.WriteAllLines("Resources/servers.txt", serverlist);
-            } catch (Exception e) {
-                log.LogMessage(LogLevel.Error, "TheGodfather", "Servers save error: " + e.ToString(), DateTime.Now);
-                throw new IOException("Error while saving servers.");
-            }
-        }
-        #endregion
-
-
-        [Group("servers", CanInvokeWithoutSubcommand = false)]
-        [Description("SWAT4 serverlist manipulation commands.")]
-        public class CommandsServers
-        {
-            #region COMMAND_SERVERS_ADD
-            [Command("add")]
-            [Description("Add a server to serverlist.")]
-            [Aliases("+")]
-            [RequireUserPermissions(Permissions.Administrator)]
-            public async Task Add(CommandContext ctx,
-                                 [Description("Name.")] string name = null,
-                                 [Description("IP.")] string ip = null)
-            {
-                if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(ip))
-                    throw new InvalidCommandUsageException("Invalid name or IP.");
-
-                var split = ip.Split(':');
-                if (split.Length < 2)
-                    throw new InvalidCommandUsageException("Invalid IP.");
-
-                if (split.Length < 3)
-                    ip += ":" + (int.Parse(split[1]) + 1).ToString();
-
-                _serverlist.Add(name, ip);
-                await ctx.RespondAsync("Server added. You can now query it using the name provided.");
-            }
-            #endregion
-
-            #region COMMAND_SERVERS_DELETE
-            [Command("delete")]
-            [Description("Remove a server from serverlist.")]
-            [Aliases("-", "remove")]
-            [RequireUserPermissions(Permissions.Administrator)]
-            public async Task Delete(CommandContext ctx,
-                                    [Description("Name.")] string name = null)
-            {
-                if (string.IsNullOrWhiteSpace(name))
-                    throw new InvalidCommandUsageException("Invalid name or IP.");
-
-                if (!_serverlist.ContainsKey(name))
-                    throw new CommandFailedException("There is no such server in the list!", new KeyNotFoundException());
-
-                _serverlist.Remove(name);
-                await ctx.RespondAsync("Server added. You can now query it using the name provided.");
-            }
-            #endregion
-
-            #region COMMAND_SERVERS_SAVE
-            [Command("save")]
-            [Description("Saves all the servers in the list.")]
-            [RequireOwner]
-            public async Task SaveServers(CommandContext ctx)
-            {
-                CommandsSwat.SaveServers(ctx.Client.DebugLogger);
-                await ctx.RespondAsync("Servers successfully saved.");
-            }
-            #endregion
-
-            #region COMMAND_SERVERS_SETTIMEOUT
-            [Command("settimeout")]
-            [Description("Set checking timeout.")]
-            [RequireOwner]
-            public async Task SetTimeout(CommandContext ctx, 
-                                        [Description("Timeout.")] int timeout = 200)
-            {
-                _checktimeout = timeout;
-                await ctx.RespondAsync("Timeout changed to: " + Formatter.Bold(_checktimeout.ToString()));
-            }
-            #endregion
-        }
-
+        
 
         #region COMMAND_SERVERLIST
         [Command("serverlist")]
@@ -158,7 +38,7 @@ namespace TheGodfather.Commands.SWAT
         {
             await ctx.TriggerTypingAsync();
             var embed = new DiscordEmbedBuilder() { Title = "Servers" };
-            foreach (var server in _serverlist) {
+            foreach (var server in ctx.Dependencies.GetDependency<SwatServerManager>().Servers) {
                 var split = server.Value.Split(':');
                 var info = QueryIP(ctx, split[0], int.Parse(split[1]));
                 if (info != null)
@@ -180,8 +60,9 @@ namespace TheGodfather.Commands.SWAT
             if (string.IsNullOrWhiteSpace(ip))
                 throw new InvalidCommandUsageException("IP missing.");
 
-            if (_serverlist.ContainsKey(ip))
-                ip = _serverlist[ip];
+            var servers = ctx.Dependencies.GetDependency<SwatServerManager>().Servers;
+            if (servers.ContainsKey(ip))
+                ip = servers[ip];
 
             try {
                 var split = ip.Split(':');
@@ -193,6 +74,19 @@ namespace TheGodfather.Commands.SWAT
             } catch (Exception) {
                 await ctx.RespondAsync("Invalid IP format.");
             }
+        }
+        #endregion
+
+        #region COMMAND_SETTIMEOUT
+        [Command("settimeout")]
+        [Description("Set checking timeout.")]
+        [RequireOwner]
+        [Hidden]
+        public async Task SetTimeout(CommandContext ctx,
+                                    [Description("Timeout.")] int timeout = 200)
+        {
+            _checktimeout = timeout;
+            await ctx.RespondAsync("Timeout changed to: " + Formatter.Bold(_checktimeout.ToString()));
         }
         #endregion
 
@@ -213,8 +107,9 @@ namespace TheGodfather.Commands.SWAT
             if (_UserIDsCheckingForSpace.Count > 10)
                 throw new CommandFailedException("Maximum number of checks reached, please try later!");
 
-            if (_serverlist.ContainsKey(ip))
-                ip = _serverlist[ip];
+            var servers = ctx.Dependencies.GetDependency<SwatServerManager>().Servers;
+            if (servers.ContainsKey(ip))
+                ip = servers[ip];
 
             string[] split;
             try {
@@ -323,5 +218,64 @@ namespace TheGodfather.Commands.SWAT
             await ctx.RespondAsync(embed: embed);
         }
         #endregion
+
+
+        [Group("servers", CanInvokeWithoutSubcommand = false)]
+        [Description("SWAT4 serverlist manipulation commands.")]
+        public class CommandsServers
+        {
+            #region COMMAND_SERVERS_ADD
+            [Command("add")]
+            [Description("Add a server to serverlist.")]
+            [Aliases("+")]
+            [RequireUserPermissions(Permissions.Administrator)]
+            public async Task Add(CommandContext ctx,
+                                 [Description("Name.")] string name = null,
+                                 [Description("IP.")] string ip = null)
+            {
+                if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(ip))
+                    throw new InvalidCommandUsageException("Invalid name or IP.");
+
+                var split = ip.Split(':');
+                if (split.Length < 2)
+                    throw new InvalidCommandUsageException("Invalid IP format.");
+
+                if (split.Length < 3)
+                    ip += ":" + (int.Parse(split[1]) + 1).ToString();
+
+                if (ctx.Dependencies.GetDependency<SwatServerManager>().TryAdd(name, ip))
+                    await ctx.RespondAsync("Server added. You can now query it using the name provided.");
+                else
+                    throw new CommandFailedException("Failed to add server to serverlist.");
+            }
+            #endregion
+
+            #region COMMAND_SERVERS_DELETE
+            [Command("delete")]
+            [Description("Remove a server from serverlist.")]
+            [Aliases("-", "remove")]
+            [RequireUserPermissions(Permissions.Administrator)]
+            public async Task Delete(CommandContext ctx,
+                                    [Description("Name.")] string name = null)
+            {
+                if (string.IsNullOrWhiteSpace(name))
+                    throw new InvalidCommandUsageException("Name missing.");
+
+                if (ctx.Dependencies.GetDependency<SwatServerManager>().TryRemove(name))
+                    await ctx.RespondAsync("Server removed.");
+            }
+            #endregion
+
+            #region COMMAND_SERVERS_SAVE
+            [Command("save")]
+            [Description("Saves all the servers in the list.")]
+            [RequireOwner]
+            public async Task SaveServers(CommandContext ctx)
+            {
+                ctx.Dependencies.GetDependency<SwatServerManager>().Save(ctx.Client.DebugLogger);
+                await ctx.RespondAsync("Servers successfully saved.");
+            }
+            #endregion
+        }
     }
 }

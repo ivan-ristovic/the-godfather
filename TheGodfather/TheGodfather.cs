@@ -175,34 +175,36 @@ namespace TheGodfather
 
         private void LoadData()
         {
-            Exception exc = null;
             try {
                 _dependecies.LoadData(_client.DebugLogger);
-                Commands.SWAT.CommandsSwat.LoadServers(_client.DebugLogger);
             } catch (Exception e) {
-                exc = e;
+                LogHandle.Log(LogLevel.Error,
+                    $"Errors occured during data load: " + Environment.NewLine +
+                    $" Exception: {e.GetType()}" + Environment.NewLine +
+                    (e.InnerException != null ? $" Inner exception: {e.GetType()}" + Environment.NewLine : "") +
+                    $" Message: {e.Message}" 
+                );
+                return;
             }
 
-            if (exc == null)
-                LogHandle.Log(LogLevel.Info, "Data loaded.");
-            else
-                LogHandle.Log(LogLevel.Error, "Errors occured during data load.");
+            LogHandle.Log(LogLevel.Info, "Data loaded.");
         }
 
         private void SaveData()
         {
-            Exception exc = null;
             try {
                 _dependecies.SaveData(_client.DebugLogger);
-                Commands.SWAT.CommandsSwat.SaveServers(_client.DebugLogger);
             } catch (Exception e) {
-                exc = e;
+                LogHandle.Log(LogLevel.Error,
+                    $"Errors occured during data save: " + Environment.NewLine +
+                    $" Exception: {e.GetType()}" + Environment.NewLine +
+                    (e.InnerException != null ? $" Inner exception: {e.GetType()}" + Environment.NewLine : "") +
+                    $" Message: {e.Message}"
+                );
+                return;
             }
 
-            if (exc == null)
-                LogHandle.Log(LogLevel.Info, "Data saved.");
-            else
-                LogHandle.Log(LogLevel.Error, "Errors occured during data save.");
+            LogHandle.Log(LogLevel.Info, "Data saved.");
         }
 
         private Task<int> CheckMessageForPrefix(DiscordMessage m)
@@ -255,7 +257,7 @@ namespace TheGodfather
                 LogHandle.Log(LogLevel.Error,
                     $"Failed to send a welcome message!" + Environment.NewLine +
                     $" Channel ID: {cid}" + Environment.NewLine +
-                    $" Exception: {exc.GetType()}" +
+                    $" Exception: {exc.GetType()}" + Environment.NewLine +
                     $" Message: {exc.Message}"
                 );
             }

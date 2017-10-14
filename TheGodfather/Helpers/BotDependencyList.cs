@@ -28,8 +28,8 @@ namespace TheGodfather.Helpers
         internal RankManager RankControl { get; private set; }
         internal ReactionManager ReactionControl { get; private set; }
         internal StatusManager StatusControl { get; private set; }
+        internal SwatServerManager SwatServerControl { get; private set; }
         // channels in CommandsGuild
-        // swat servers
         // hmm... there has to be something else, check files please
 
         internal BotDependencyList()
@@ -42,6 +42,7 @@ namespace TheGodfather.Helpers
             RankControl = new RankManager();
             ReactionControl = new ReactionManager();
             StatusControl = new StatusManager();
+            SwatServerControl = new SwatServerManager();
         }
 
 
@@ -55,6 +56,7 @@ namespace TheGodfather.Helpers
             RankControl.Load(log);
             ReactionControl.Load(log);
             StatusControl.Load(log);
+            SwatServerControl.Load(log);
         }
 
         internal void SaveData(DebugLogger log)
@@ -67,6 +69,7 @@ namespace TheGodfather.Helpers
             RankControl.Save(log);
             ReactionControl.Save(log);
             StatusControl.Save(log);
+            SwatServerControl.Save(log);
         }
 
         internal DependencyCollectionBuilder GetDependencyCollectionBuilder()
@@ -79,7 +82,8 @@ namespace TheGodfather.Helpers
                 .AddInstance(PrefixControl)
                 .AddInstance(RankControl)
                 .AddInstance(ReactionControl)
-                .AddInstance(StatusControl);
+                .AddInstance(StatusControl)
+                .AddInstance(SwatServerControl);
         }
     }
 }
