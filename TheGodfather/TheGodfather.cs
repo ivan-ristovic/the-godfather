@@ -237,7 +237,7 @@ namespace TheGodfather
                 $" Guild: {e.Guild.Name} ({e.Guild.Id})"
             );
 
-            ulong cid = Commands.Administration.CommandsGuild.GetWelcomeChannelId(e.Guild.Id);
+            ulong cid = _dependecies.ChannelControl.GetWelcomeChannelId(e.Guild.Id);
             if (cid == 0)
                 return;
 
@@ -252,6 +252,9 @@ namespace TheGodfather
                     $" Exception: {exc.GetType()}" + Environment.NewLine +
                     $" Message: {exc.Message}"
                 );
+
+                if (exc is UnauthorizedException)
+                    await e.Guild.Owner.SendMessageAsync("You have set a welcome message channel for me to post in, but I do not have permissions to do so. Please consider changing it. Guild: " + e.Guild.Name + " , Channel: " + e.Guild.GetChannel(cid).Name);
             }
         }
 
@@ -262,7 +265,7 @@ namespace TheGodfather
                 $" Guild: {e.Guild.Name} ({e.Guild.Id})"
             );
 
-            ulong cid = Commands.Administration.CommandsGuild.GetWelcomeChannelId(e.Guild.Id);
+            ulong cid = _dependecies.ChannelControl.GetLeaveChannelId(e.Guild.Id);
             if (cid == 0)
                 return;
 
@@ -277,6 +280,8 @@ namespace TheGodfather
                     $" Exception: {exc.GetType()}" + Environment.NewLine +
                     $" Message: {exc.Message}"
                 );
+                if (exc is UnauthorizedException)
+                    await e.Guild.Owner.SendMessageAsync("You have set a leave message channel for me to post in, but I do not have permissions to do so. Please consider changing it. Guild: " + e.Guild.Name + " , Channel: " + e.Guild.GetChannel(cid).Name);
             }
         }
 

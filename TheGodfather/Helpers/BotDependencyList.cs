@@ -20,21 +20,23 @@ namespace TheGodfather.Helpers
 {
     internal class BotDependencyList
     {
-        internal AliasManager AliasControl { get; private set; }
-        internal FilterManager FilterControl { get; private set; }
-        internal InsultManager InsultControl { get; private set; }
-        internal MemeManager MemeControl { get; private set; }
-        internal PrefixManager PrefixControl { get; private set; }
-        internal RankManager RankControl { get; private set; }
-        internal ReactionManager ReactionControl { get; private set; }
-        internal StatusManager StatusControl { get; private set; }
-        internal SwatServerManager SwatServerControl { get; private set; }
-        // channels in CommandsGuild
+        internal AliasManager       AliasControl        { get; private set; }
+        internal ChannelManager     ChannelControl      { get; private set; }
+        internal FilterManager      FilterControl       { get; private set; }
+        internal InsultManager      InsultControl       { get; private set; }
+        internal MemeManager        MemeControl         { get; private set; }
+        internal PrefixManager      PrefixControl       { get; private set; }
+        internal RankManager        RankControl         { get; private set; }
+        internal ReactionManager    ReactionControl     { get; private set; }
+        internal StatusManager      StatusControl       { get; private set; }
+        internal SwatServerManager  SwatServerControl   { get; private set; }
         // hmm... there has to be something else, check files please
+
 
         internal BotDependencyList()
         {
             AliasControl = new AliasManager();
+            ChannelControl = new ChannelManager();
             FilterControl = new FilterManager();
             InsultControl = new InsultManager();
             MemeControl = new MemeManager();
@@ -49,6 +51,7 @@ namespace TheGodfather.Helpers
         internal void LoadData(DebugLogger log)
         {
             AliasControl.Load(log);
+            ChannelControl.Load(log);
             FilterControl.Load(log);
             InsultControl.Load(log);
             MemeControl.Load(log);
@@ -62,6 +65,7 @@ namespace TheGodfather.Helpers
         internal void SaveData(DebugLogger log)
         {
             AliasControl.Save(log);
+            ChannelControl.Save(log);
             FilterControl.Save(log);
             InsultControl.Save(log);
             MemeControl.Save(log);
@@ -76,6 +80,7 @@ namespace TheGodfather.Helpers
         {
             return new DependencyCollectionBuilder()
                 .AddInstance(AliasControl)
+                .AddInstance(ChannelControl)
                 .AddInstance(FilterControl)
                 .AddInstance(InsultControl)
                 .AddInstance(MemeControl)
