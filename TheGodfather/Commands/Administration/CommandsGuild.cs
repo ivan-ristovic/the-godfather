@@ -149,9 +149,39 @@ namespace TheGodfather.Commands.Administration
         }
         #endregion
 
+        #region COMMAND_GUILD_GETWELCOMECHANNEL
+        [Command("getwelcomechannel")]
+        [Description("Get current welcome message channel for this guild.")]
+        [Aliases("getwelcomec", "getwc", "getwelcome", "welcomechannel", "wc")]
+        [RequirePermissions(Permissions.ManageGuild)]
+        public async Task GetWelcomeChannel(CommandContext ctx)
+        {
+            ulong cid = ctx.Dependencies.GetDependency<ChannelManager>().GetWelcomeChannelId(ctx.Guild.Id);
+            if (cid != 0)
+                await ctx.RespondAsync($"Default welcome message channel: {Formatter.Bold(ctx.Guild.GetChannel(cid).Name)}.");
+            else
+                await ctx.RespondAsync("Default welcome message channel isn't set for this guild.");
+        }
+        #endregion
+
+        #region COMMAND_GUILD_GETLEAVECHANNEL
+        [Command("getleavechannel")]
+        [Description("Get current leave message channel for this guild.")]
+        [Aliases("getleavec", "getlc", "getleave", "leavechannel", "lc")]
+        [RequirePermissions(Permissions.ManageGuild)]
+        public async Task GetLeaveChannel(CommandContext ctx)
+        {
+            ulong cid = ctx.Dependencies.GetDependency<ChannelManager>().GetLeaveChannelId(ctx.Guild.Id);
+            if (cid != 0)
+                await ctx.RespondAsync($"Default leave message channel: {Formatter.Bold(ctx.Guild.GetChannel(cid).Name)}.");
+            else
+                await ctx.RespondAsync("Default leave message channel isn't set for this guild.");
+        }
+        #endregion
+
         #region COMMAND_GUILD_SETWELCOMECHANNEL
         [Command("setwelcomechannel")]
-        [Description("Set welcome message channel.")]
+        [Description("Set welcome message channel for this guild.")]
         [Aliases("welcomec", "setwc", "setwelcome")]
         [RequirePermissions(Permissions.ManageGuild)]
         public async Task SetWelcomeChannel(CommandContext ctx,
@@ -163,13 +193,13 @@ namespace TheGodfather.Commands.Administration
             if (ctx.Dependencies.GetDependency<ChannelManager>().TryAddWelcomeChannel(ctx.Guild.Id, c.Id))
                 await ctx.RespondAsync($"Default welcome message channel set to {Formatter.Bold(c.Name)}.");
             else
-                throw new CommandFailedException("Failed to set default welcome channel.");
+                throw new CommandFailedException("Failed to set welcome channel.");
         }
         #endregion
 
         #region COMMAND_GUILD_SETLEAVECHANNEL
         [Command("setleavechannel")]
-        [Description("Set leave message channel.")]
+        [Description("Set leave message channel for this guild.")]
         [Aliases("leavec", "setlc", "setleave")]
         [RequirePermissions(Permissions.ManageGuild)]
         public async Task SetLeaveChannel(CommandContext ctx,
@@ -181,7 +211,35 @@ namespace TheGodfather.Commands.Administration
             if (ctx.Dependencies.GetDependency<ChannelManager>().TryAddLeaveChannel(ctx.Guild.Id, c.Id))
                 await ctx.RespondAsync($"Default leave message channel set to {Formatter.Bold(c.Name)}.");
             else
-                throw new CommandFailedException("Failed to set default welcome channel.");
+                throw new CommandFailedException("Failed to set welcome channel.");
+        }
+        #endregion
+
+        #region COMMAND_GUILD_DELETEWELCOMECHANNEL
+        [Command("removewelcomechannel")]
+        [Description("Remove welcome message channel for this guild.")]
+        [Aliases("delwelcomec", "delwc", "delwelcome", "deletewelcomechannel")]
+        [RequirePermissions(Permissions.ManageGuild)]
+        public async Task RemoveWelcomeChannel(CommandContext ctx)
+        {
+            if (ctx.Dependencies.GetDependency<ChannelManager>().TryRemoveWelcomeChannel(ctx.Guild.Id))
+                await ctx.RespondAsync("Default welcome message removed.");
+            else
+                throw new CommandFailedException("Failed to remove welcome channel.");
+        }
+        #endregion
+
+        #region COMMAND_GUILD_DELETELEAVECHANNEL
+        [Command("removeleavechannel")]
+        [Description("Remove leave message channel for this guild.")]
+        [Aliases("delleavec", "dellc", "delleave", "deleteleavechannel")]
+        [RequirePermissions(Permissions.ManageGuild)]
+        public async Task DeleteLeaveChannel(CommandContext ctx)
+        {
+            if (ctx.Dependencies.GetDependency<ChannelManager>().TryRemoveLeaveChannel(ctx.Guild.Id))
+                await ctx.RespondAsync("Default leave message removed.");
+            else
+                throw new CommandFailedException("Failed to remove leave channel.");
         }
         #endregion
 
