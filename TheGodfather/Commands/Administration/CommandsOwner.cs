@@ -22,7 +22,7 @@ namespace TheGodfather.Commands.Administration
 {
     [Group("admin")]
     [Description("Owner-only administration commands.")]
-    [Aliases("Owner")]
+    [Aliases("owner")]
     [RequireOwner]
     [Hidden]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
@@ -157,6 +157,31 @@ namespace TheGodfather.Commands.Administration
                 }
             }
             await ctx.RespondAsync(s);
+        }
+        #endregion
+
+        #region COMMAND_SENDMESSAGE
+        [Command("sendmessage")]
+        [Description("Sends a message to a user or channel.")]
+        [Aliases("send")]
+        public async Task Send(CommandContext ctx,
+                              [Description("u/c (for user or channel.)")] string desc = "u",
+                              [Description("User/Channel ID.")] ulong xid = 0,
+                              [RemainingText, Description("Message.")] string message = null)
+        {
+            if (string.IsNullOrWhiteSpace(message))
+                throw new InvalidCommandUsageException();
+
+            if (desc == "u") {
+                var user = await ctx.Client.GetUserAsync(xid);
+                var dm = await ctx.Client.CreateDmAsync(user);
+                await ctx.Client.SendMessageAsync(dm, content: message);
+            } else if (desc == "c") {
+                var channel = await ctx.Client.GetChannelAsync(xid);
+                await ctx.Client.SendMessageAsync(channel, content: message);
+            } else {
+                throw new InvalidCommandUsageException("Descriptor can only be 'u' or 'c'.");
+            }
         }
         #endregion
 
