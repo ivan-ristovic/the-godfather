@@ -292,7 +292,7 @@ namespace TheGodfather
 
         private async Task Client_MessageCreated(MessageCreateEventArgs e)
         {
-            if (e.Message.Author.IsBot)
+            if (e.Author.IsBot)
                 return;
 
             if (e.Channel.IsPrivate) {
@@ -301,7 +301,7 @@ namespace TheGodfather
             }
 
             // Check if message contains filter
-            if (!e.Author.IsBot && e.Message.Content != null && e.Message.Content.Split(' ').Any(s => _dependecies.FilterControl.Contains(e.Guild.Id, s))) {
+            if (e.Message.Content != null && e.Message.Content.Split(' ').Any(s => _dependecies.FilterControl.Contains(e.Guild.Id, s))) {
                 try {
                     await e.Channel.DeleteMessageAsync(e.Message);
                     LogHandle.Log(LogLevel.Info,
