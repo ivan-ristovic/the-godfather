@@ -78,7 +78,7 @@ namespace TheGodfather
                 AutoReconnect = true,
                 Token = _config.CurrentConfig.Token,
                 TokenType = TokenType.Bot,
-                UseInternalLogHandler = true,
+                UseInternalLogHandler = true
             });
 
             LogHandle = new Logger(_client.DebugLogger);
@@ -295,7 +295,7 @@ namespace TheGodfather
             if (e.Message.Author.IsBot)
                 return;
 
-            if (e.Channel.IsPrivate) {
+            if (e.Channel.IsPrivate && e.Author != _client.CurrentApplication.Owner) {
                 LogHandle.Log(LogLevel.Info, $"IGNORED DM FROM {e.Author.Username} ({e.Author.Id}): {e.Message}");
                 return;
             }

@@ -182,6 +182,8 @@ namespace TheGodfather.Commands.Administration
             } else {
                 throw new InvalidCommandUsageException("Descriptor can only be 'u' or 'c'.");
             }
+
+            await ctx.RespondAsync("Message sent.");
         }
         #endregion
 
