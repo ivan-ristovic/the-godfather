@@ -295,7 +295,7 @@ namespace TheGodfather
             if (e.Message.Author.IsBot)
                 return;
 
-            if (e.Channel.IsPrivate && e.Author != _client.CurrentApplication.Owner) {
+            if (e.Channel.IsPrivate) {
                 LogHandle.Log(LogLevel.Info, $"IGNORED DM FROM {e.Author.Username} ({e.Author.Id}): {e.Message}");
                 return;
             }
