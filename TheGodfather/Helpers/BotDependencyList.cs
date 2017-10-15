@@ -21,6 +21,7 @@ namespace TheGodfather.Helpers
     internal class BotDependencyList
     {
         internal AliasManager       AliasControl        { get; private set; }
+        internal BankManager        BankControl         { get; private set; }
         internal ChannelManager     ChannelControl      { get; private set; }
         internal FilterManager      FilterControl       { get; private set; }
         internal InsultManager      InsultControl       { get; private set; }
@@ -30,12 +31,12 @@ namespace TheGodfather.Helpers
         internal ReactionManager    ReactionControl     { get; private set; }
         internal StatusManager      StatusControl       { get; private set; }
         internal SwatServerManager  SwatServerControl   { get; private set; }
-        // bank manager
 
-
+        
         internal BotDependencyList()
         {
             AliasControl = new AliasManager();
+            BankControl = new BankManager();
             ChannelControl = new ChannelManager();
             FilterControl = new FilterManager();
             InsultControl = new InsultManager();
@@ -51,6 +52,7 @@ namespace TheGodfather.Helpers
         internal void LoadData(DebugLogger log)
         {
             AliasControl.Load(log);
+            BankControl.Load(log);
             ChannelControl.Load(log);
             FilterControl.Load(log);
             InsultControl.Load(log);
@@ -65,6 +67,7 @@ namespace TheGodfather.Helpers
         internal void SaveData(DebugLogger log)
         {
             AliasControl.Save(log);
+            BankControl.Save(log);
             ChannelControl.Save(log);
             FilterControl.Save(log);
             InsultControl.Save(log);
@@ -80,6 +83,7 @@ namespace TheGodfather.Helpers
         {
             return new DependencyCollectionBuilder()
                 .AddInstance(AliasControl)
+                .AddInstance(BankControl)
                 .AddInstance(ChannelControl)
                 .AddInstance(FilterControl)
                 .AddInstance(InsultControl)

@@ -198,6 +198,7 @@
     <Compile Include="Helpers\BotConfig.cs" />
     <Compile Include="Helpers\DataManagers\BotConfigManager.cs" />
     <Compile Include="Helpers\DataManagers\ChannelManager.cs" />
+    <Compile Include="Helpers\DataManagers\BankManager.cs" />
     <Compile Include="Helpers\DataManagers\ReactionManager.cs" />
     <Compile Include="Helpers\DataManagers\SwatServerManager.cs" />
     <Compile Include="Helpers\EvaluationEnvironment.cs" />

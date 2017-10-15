@@ -2,9 +2,9 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
-using System.Collections.Concurrent;
 using System.Threading.Tasks;
 
+using TheGodfather.Helpers.DataManagers;
 using TheGodfather.Exceptions;
 
 using DSharpPlus;
@@ -21,10 +21,6 @@ namespace TheGodfather.Commands.Games
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
     public class CommandsBank
     {
-        #region STATIC_FIELDS
-        private static ConcurrentDictionary<ulong, int> _accounts = new ConcurrentDictionary<ulong, int>();
-        #endregion
-
 
         public async Task ExecuteGroupAsync(CommandContext ctx)
         {
@@ -44,7 +40,7 @@ namespace TheGodfather.Commands.Games
             if (u == null || ammount <= 0 || ammount > 1000)
                 throw new InvalidCommandUsageException("Invalid user or ammount.");
 
-            IncreaseBalance(u.Id, ammount);
+            ctx.Dependencies.GetDependency<BankManager>().IncreaseBalance(u.Id, ammount);
             await ctx.RespondAsync($"User {Formatter.Bold(u.Username)} won {Formatter.Bold(ammount.ToString())} credits on a lottery! (seems legit)");
         }
         #endregion
@@ -55,13 +51,13 @@ namespace TheGodfather.Commands.Games
         [Aliases("r", "signup", "activate")]
         public async Task Register(CommandContext ctx)
         {
-            if (_accounts.ContainsKey(ctx.User.Id)) {
+            if (ctx.Dependencies.GetDependency<BankManager>().Accounts.ContainsKey(ctx.User.Id))
                 throw new CommandFailedException("You already own an account in WM bank!");
-            } else {
-                if (!_accounts.TryAdd(ctx.User.Id, 25))
-                    throw new CommandFailedException("Account opening failed.");
+
+            if (ctx.Dependencies.GetDependency<BankManager>().OpenAccount(ctx.User.Id))
                 await ctx.RespondAsync($"Account opened for you, {ctx.User.Mention}! Since WM bank is so generous, you get 25 credits for free.");
-            }
+            else
+                throw new CommandFailedException("Account opening failed.");
         }
         #endregion
 
@@ -71,13 +67,14 @@ namespace TheGodfather.Commands.Games
         [Aliases("s", "balance")]
         public async Task Status(CommandContext ctx)
         {
-            int ammount = 0;
-            if (_accounts.ContainsKey(ctx.User.Id))
-                ammount = _accounts[ctx.User.Id];
+            var accounts = ctx.Dependencies.GetDependency<BankManager>().Accounts;
+            int? ammount = null;
+            if (accounts.ContainsKey(ctx.User.Id))
+                ammount = accounts[ctx.User.Id];
 
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
                 Title = $"Account balance for {ctx.User.Username}",
-                Description = $"{Formatter.Bold(ammount != 0 ? ammount.ToString() : "No existing account!")}",
+                Description = $"{Formatter.Bold(ammount != null ? ammount.ToString() : "No existing account!")}",
                 Color = DiscordColor.Yellow
             });
         }
@@ -92,7 +89,7 @@ namespace TheGodfather.Commands.Games
             var embed = new DiscordEmbedBuilder() { Title = "WEALTHIEST PEOPLE IN WM BANK:" };
 
             int i = 10;
-            foreach (var pair in _accounts.ToList().OrderBy(key => key.Value)) {
+            foreach (var pair in ctx.Dependencies.GetDependency<BankManager>().Accounts.ToList().OrderBy(key => key.Value)) {
                 if (i-- != 0) {
                     var username = ctx.Guild.GetMemberAsync(pair.Key).Result.Username;
                     embed.AddField(username, pair.Value.ToString(), inline: true);
@@ -114,35 +111,18 @@ namespace TheGodfather.Commands.Games
             if (u == null)
                 throw new InvalidCommandUsageException("Account to transfer the credits to is missing.");
 
-            if (!_accounts.ContainsKey(ctx.User.Id) || !_accounts.ContainsKey(u.Id))
+            var accounts = ctx.Dependencies.GetDependency<BankManager>().Accounts;
+
+            if (!accounts.ContainsKey(ctx.User.Id) || !accounts.ContainsKey(u.Id))
                 throw new CommandFailedException("One or more accounts not found in the bank.", new KeyNotFoundException());
 
-            if (ammount <= 0 || _accounts[ctx.User.Id] < ammount)
+            if (ammount <= 0 || accounts[ctx.User.Id] < ammount)
                 throw new CommandFailedException("Invalid ammount (check your funds).", new ArgumentOutOfRangeException());
 
-            _accounts[ctx.User.Id] -= ammount;
-            _accounts[u.Id] += ammount;
+            ctx.Dependencies.GetDependency<BankManager>().RetrieveCredits(ctx.User.Id, ammount);
+            ctx.Dependencies.GetDependency<BankManager>().IncreaseBalance(u.Id, ammount);
 
             await ctx.RespondAsync($"Transfer from {ctx.User.Mention} to {u.Mention} is complete.");
-        }
-        #endregion
-
-
-        #region HELPER_FUNCTIONS
-        public static bool RetrieveCreditsSucceeded(ulong id, int ammount)
-        {
-            if (!_accounts.ContainsKey(id) || _accounts[id] < ammount)
-                return false;
-            _accounts[id] -= ammount;
-            return true;
-        }
-
-        public static void IncreaseBalance(ulong id, int ammount)
-        {
-            if (!_accounts.ContainsKey(id))
-                if (!_accounts.TryAdd(id, 0))
-                    return;
-            _accounts[id] += ammount;
         }
         #endregion
     }

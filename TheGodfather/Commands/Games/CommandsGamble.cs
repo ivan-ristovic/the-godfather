@@ -1,8 +1,8 @@
 ﻿#region USING_DIRECTIVES
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 
+using TheGodfather.Helpers.DataManagers;
 using TheGodfather.Exceptions;
 
 using DSharpPlus;
@@ -44,12 +44,12 @@ namespace TheGodfather.Commands.Games
                 else
                     throw new CommandFailedException($"Invalid coin outcome call (has to be {Formatter.Bold("h")} or {Formatter.Bold("t")})");
 
-                if (!CommandsBank.RetrieveCreditsSucceeded(ctx.User.Id, bid))
+                if (!ctx.Dependencies.GetDependency<BankManager>().RetrieveCredits(ctx.User.Id, bid))
                     throw new CommandFailedException("You do not have enough credits in WM bank!");
 
                 int rnd = new Random().Next(2);
                 if (rnd == guess)
-                    CommandsBank.IncreaseBalance(ctx.User.Id, bid * 2);
+                    ctx.Dependencies.GetDependency<BankManager>().IncreaseBalance(ctx.User.Id, bid * 2);
                 await ctx.RespondAsync($"{ctx.User.Mention} flipped " +
                     $"{(Formatter.Bold(rnd == 0 ? "Heads" : "Tails"))} " +
                     $"{(guess == rnd ? $"and won {bid} credits" : $"and lost {bid} credits")} !"
@@ -79,12 +79,12 @@ namespace TheGodfather.Commands.Games
                 if (guess < 1 || guess > 6)
                     throw new CommandFailedException($"Invalid guess. Has to be a number from {Formatter.Bold("1")} to {Formatter.Bold("6")})");
 
-                if (!CommandsBank.RetrieveCreditsSucceeded(ctx.User.Id, bid))
+                if (!ctx.Dependencies.GetDependency<BankManager>().RetrieveCredits(ctx.User.Id, bid))
                     throw new CommandFailedException("You do not have enough credits in WM bank!");
 
                 int rnd = new Random().Next(1, 7);
                 if (rnd == guess)
-                    CommandsBank.IncreaseBalance(ctx.User.Id, bid * 6);
+                    ctx.Dependencies.GetDependency<BankManager>().IncreaseBalance(ctx.User.Id, bid * 6);
 
                 await ctx.RespondAsync($"{DiscordEmoji.FromName(ctx.Client, ":game_die:")} {ctx.User.Mention} rolled a " +
                     $"{rnd} {(guess == rnd ? $"and won {bid * 5} credits" : $"and lost {bid * 5} credits")} !"
@@ -105,7 +105,7 @@ namespace TheGodfather.Commands.Games
             if (bid < 5)
                 throw new CommandFailedException("5 is the minimum bid!", new ArgumentOutOfRangeException());
 
-            if (!CommandsBank.RetrieveCreditsSucceeded(ctx.User.Id, bid))
+            if (!ctx.Dependencies.GetDependency<BankManager>().RetrieveCredits(ctx.User.Id, bid))
                 throw new CommandFailedException("You do not have enough credits in WM bank!");
 
             var slot_res = RollSlot(ctx);
@@ -121,7 +121,7 @@ namespace TheGodfather.Commands.Games
             await ctx.RespondAsync(embed: embed);
 
             if (won > 0)
-                CommandsBank.IncreaseBalance(ctx.User.Id, won);
+                ctx.Dependencies.GetDependency<BankManager>().IncreaseBalance(ctx.User.Id, won);
         }
         #endregion
 
