@@ -113,7 +113,7 @@ namespace TheGodfather
 
             _commands.SetHelpFormatter<HelpFormatter>();
 
-            _commands.RegisterCommands<Commands.Administration.CommandsAdmin>();
+            _commands.RegisterCommands<Commands.Administration.CommandsOwner>();
             _commands.RegisterCommands<Commands.Administration.CommandsChannels>();
             _commands.RegisterCommands<Commands.Administration.CommandsGuild>();
             _commands.RegisterCommands<Commands.Administration.CommandsMessages>();

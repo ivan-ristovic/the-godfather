@@ -21,16 +21,17 @@ using DSharpPlus.Entities;
 namespace TheGodfather.Commands.Administration
 {
     [Group("admin")]
-    [Description("Bot administration commands.")]
+    [Description("Owner-only administration commands.")]
+    [Aliases("Owner")]
+    [RequireOwner]
     [Hidden]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    public class CommandsAdmin
+    public class CommandsOwner
     {
         #region COMMAND_CLEARLOG
         [Command("clearlog")]
         [Description("Clear application logs.")]
         [Aliases("clearlogs", "deletelogs", "deletelog")]
-        [RequireOwner]
         public async Task ClearLog(CommandContext ctx)
         {
             try {
@@ -48,7 +49,7 @@ namespace TheGodfather.Commands.Administration
         // Code created by Emzi
         [Command("eval")]
         [Description("Evaluates a snippet of C# code, in context.")]
-        [RequireOwner]
+        [Aliases("compile", "run")]
         public async Task EvaluateAsync(CommandContext ctx,
                                        [RemainingText, Description("Code to evaluate.")] string code)
         {
@@ -137,9 +138,8 @@ namespace TheGodfather.Commands.Administration
         #endregion
 
         #region COMMAND_LEAVEGUILDS
-        [Command("leave")]
+        [Command("leaveguilds")]
         [Description("Leave guilds given as IDs.")]
-        [RequireOwner]
         public async Task LeaveGuilds(CommandContext ctx,
                                      [Description("Guild ID list.")] params ulong[] ids)
         {
@@ -164,7 +164,6 @@ namespace TheGodfather.Commands.Administration
         [Command("shutdown")]
         [Description("Triggers the dying in the vineyard scene.")]
         [Aliases("disable", "poweroff", "exit", "quit")]
-        [RequireUserPermissions(Permissions.Administrator)]
         public async Task ShutDown(CommandContext ctx)
         {
             await ctx.RespondAsync("https://www.youtube.com/watch?v=4rbfuw0UN2A");
@@ -177,7 +176,6 @@ namespace TheGodfather.Commands.Administration
         [Command("sudo")]
         [Description("Executes a command as another user.")]
         [Aliases("execas", "as")]
-        [RequireOwner]
         public async Task Sudo(CommandContext ctx,
                               [Description("Member to execute as.")] DiscordMember member = null,
                               [RemainingText, Description("Command text to execute.")] string command = null)
@@ -198,7 +196,6 @@ namespace TheGodfather.Commands.Administration
             [Command("add")]
             [Description("Add a status to running queue.")]
             [Aliases("+")]
-            [RequireOwner]
             public async Task AddStatus(CommandContext ctx,
                                        [RemainingText, Description("Status.")] string status = null)
             {
@@ -215,7 +212,6 @@ namespace TheGodfather.Commands.Administration
             [Command("delete")]
             [Description("Remove status from running queue.")]
             [Aliases("-", "remove")]
-            [RequireOwner]
             public async Task DeleteStatus(CommandContext ctx,
                                           [RemainingText, Description("Status.")] string status = null)
             {
@@ -233,7 +229,6 @@ namespace TheGodfather.Commands.Administration
             #region COMMAND_STATUS_LIST
             [Command("list")]
             [Description("List all statuses.")]
-            [RequireUserPermissions(Permissions.Administrator)]
             public async Task ListStatuses(CommandContext ctx)
             {
                 await ctx.RespondAsync("My current statuses:\n" + string.Join("\n", ctx.Dependencies.GetDependency<StatusManager>().Statuses));
