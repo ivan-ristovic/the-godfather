@@ -40,7 +40,7 @@ namespace TheGodfather.Commands.SWAT
             var embed = new DiscordEmbedBuilder() { Title = "Servers" };
             foreach (var server in ctx.Dependencies.GetDependency<SwatServerManager>().Servers) {
                 var split = server.Value.Split(':');
-                var info = QueryIP(ctx, split[0], int.Parse(split[1]));
+                var info = await QueryIP(ctx, split[0], int.Parse(split[1]));
                 if (info != null)
                     embed.AddField(info[0], $"IP: {split[0]}:{split[1]}\nPlayers: {Formatter.Bold(info[1] + " / " + info[2])}");
                 else
@@ -66,7 +66,7 @@ namespace TheGodfather.Commands.SWAT
 
             try {
                 var split = ip.Split(':');
-                var info = QueryIP(ctx, split[0], int.Parse(split[1]));
+                var info = await QueryIP(ctx, split[0], int.Parse(split[1]));
                 if (info != null)
                     await SendEmbedInfo(ctx, split[0] + ":" + split[1], info);
                 else
@@ -122,7 +122,7 @@ namespace TheGodfather.Commands.SWAT
             _UserIDsCheckingForSpace.GetOrAdd(ctx.User.Id, true);
             while (_UserIDsCheckingForSpace[ctx.User.Id]) {
                 try {
-                    var info = QueryIP(ctx, split[0], int.Parse(split[1]));
+                    var info = await QueryIP(ctx, split[0], int.Parse(split[1]));
                     if (info == null) {
                         await ctx.RespondAsync("No reply from server. Should I try again?");
                         var interactivity = ctx.Client.GetInteractivityModule();
@@ -166,7 +166,7 @@ namespace TheGodfather.Commands.SWAT
 
 
         #region HELPER_FUNCTIONS
-        private string[] QueryIP(CommandContext ctx, string ip, int port)
+        private async Task<string[]> QueryIP(CommandContext ctx, string ip, int port)
         {
             var client = new UdpClient();
             IPEndPoint ep = new IPEndPoint(IPAddress.Parse(ip), port + 1);
@@ -177,8 +177,9 @@ namespace TheGodfather.Commands.SWAT
             byte[] receivedData = null;
             try {
                 string query = "\\status\\";
-                client.Send(Encoding.ASCII.GetBytes(query), query.Length);
-                receivedData = client.Receive(ref ep);
+                await client.SendAsync(Encoding.ASCII.GetBytes(query), query.Length);
+                var datagram = await client.ReceiveAsync();
+                receivedData = datagram.Buffer;
             } catch {
                 return null;
             }
