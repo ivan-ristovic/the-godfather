@@ -43,9 +43,9 @@ namespace TheGodfather.Commands.Messages
                                      [RemainingText, Description("Trigger word list.")] params string[] triggers)
         {
             if (ctx.Dependencies.GetDependency<ReactionManager>().TryAdd(ctx.Guild.Id, emoji, triggers))
-                await ctx.RespondAsync("Failed adding some triggers (probably due to ambiguity).");
+                await ctx.RespondAsync("Reaction added.");
             else
-                await ctx.RespondAsync("Reaction added."); 
+                await ctx.RespondAsync("Failed adding some triggers (probably due to ambiguity).");
         }
         #endregion
         
