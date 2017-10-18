@@ -60,7 +60,7 @@ namespace TheGodfather.Commands.Search
                 Color = DiscordColor.Green
             };
 
-            foreach (var res in results.Take(5))
+            foreach (var res in results)
                 embed.AddField(res.Title.Text, res.Links[0].Uri.ToString());
 
             await ctx.RespondAsync(embed: embed);

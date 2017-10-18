@@ -21,14 +21,13 @@ namespace TheGodfather.Helpers.DataManagers
 {
     public class FeedManager
     {
-        public IReadOnlyDictionary<string, ulong> Prefixes => _feeds;
-        private ConcurrentDictionary<string, ulong> _feeds = new ConcurrentDictionary<string, ulong>();
+        private ConcurrentDictionary<string, FeedInfo> _feeds = new ConcurrentDictionary<string, FeedInfo>();
         private bool _ioerr = false;
 
 
         public FeedManager()
         {
-            Task.Run(async () => await CheckFeedsForChanges());
+            Task.Run(async () => await CheckFeedsForChangesContinuousAsync());
         }
 
         
@@ -36,7 +35,7 @@ namespace TheGodfather.Helpers.DataManagers
         {
             if (File.Exists("Resources/feeds.json")) {
                 try {
-                    _feeds = JsonConvert.DeserializeObject<ConcurrentDictionary<string, ulong>>(File.ReadAllText("Resources/feeds.json"));
+                    _feeds = JsonConvert.DeserializeObject<ConcurrentDictionary<string, FeedInfo>>(File.ReadAllText("Resources/feeds.json"));
                 } catch (Exception e) {
                     log.LogMessage(LogLevel.Error, "TheGodfather", "Feed loading error, check file formatting. Details:\n" + e.ToString(), DateTime.Now);
                     _ioerr = true;
@@ -77,17 +76,28 @@ namespace TheGodfather.Helpers.DataManagers
                 reader?.Close();
             }
 
-            return feed.Items;
+            return feed.Items.Take(5);
         }
 
-        private async Task CheckFeedsForChanges()
+        private async Task CheckFeedsForChangesContinuousAsync()
         {
             while (true) {
                 foreach (var feed in _feeds) {
-                    // TODO
+                    var newest = GetFeedResults(feed.Key).First();
+                    if (newest.Title.Text != feed.Value.SavedTitle) {
+                        feed.Value.SavedTitle = newest.Title.Text;
+                        // Send message
+                    }
                 }
                 await Task.Delay(TimeSpan.FromMinutes(1));
             }
+        }
+
+
+        private sealed class FeedInfo
+        {
+            public ulong ChannelId { get; internal set; }
+            public string SavedTitle { get; internal set; }
         }
     }
 }
