@@ -28,6 +28,7 @@ namespace TheGodfather.Commands.Main
         #endregion
 
 
+        #region COMMAND_POLL
         [Command("poll")]
         [Description("Starts a poll in the channel.")]
         [Aliases("vote")]
@@ -75,7 +76,8 @@ namespace TheGodfather.Commands.Main
 
             RemoveEntries(ctx.Channel.Id);
         }
-        
+        #endregion
+
 
         #region HELPER_FUNCTIONS
         private void TryToAddListenerEvent(CommandContext ctx)
