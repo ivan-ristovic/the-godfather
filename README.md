@@ -1,6 +1,8 @@
 # the-godfather
 Just another Discord bot. Written using DSharpPlus.
 
+[Project website](https://ivan-ristovic.github.io/the-godfather/)
+
 ---
 
 # Command list
