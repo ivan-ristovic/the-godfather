@@ -18,22 +18,22 @@ using DSharpPlus.EventArgs;
 
 namespace TheGodfather.Commands.Main
 {
-    [Group("poll", CanInvokeWithoutSubcommand = true)]
-    [Description("Starts a poll in the channel.")]
-    [Aliases("vote")]
-    [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
     public class CommandsPoll
     {
         #region PRIVATE_FIELDS
-        private volatile bool _eventset = false;
-        private Mutex _lock = new Mutex();
+        private bool _eventset = false;
+        private object _lock = new object();
         private ConcurrentDictionary<ulong, int[]> _options = new ConcurrentDictionary<ulong, int[]>();
         private ConcurrentDictionary<ulong, List<ulong>> _idsvoted = new ConcurrentDictionary<ulong, List<ulong>>();
         #endregion
 
 
-        public async Task ExecuteGroupAsync(CommandContext ctx, 
-                                           [RemainingText, Description("Question.")] string q = null)
+        [Command("poll")]
+        [Description("Starts a poll in the channel.")]
+        [Aliases("vote")]
+        [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
+        public async Task Poll(CommandContext ctx, 
+                              [RemainingText, Description("Question.")] string q = null)
         {
             if (string.IsNullOrWhiteSpace(q))
                 throw new InvalidCommandUsageException("Poll requires a yes or no question.");
@@ -71,7 +71,7 @@ namespace TheGodfather.Commands.Main
 
             await Task.Delay(30000);
 
-            await ctx.RespondAsync(embed: EmbedPollResults(ctx.Channel.Id, poll_options));
+            await ctx.RespondAsync(embed: EmbedPollResults(ctx.Channel.Id, q, poll_options));
 
             RemoveEntries(ctx.Channel.Id);
         }
@@ -80,16 +80,11 @@ namespace TheGodfather.Commands.Main
         #region HELPER_FUNCTIONS
         private void TryToAddListenerEvent(CommandContext ctx)
         {
-            _lock.WaitOne();
-            try {
+            lock (_lock) {
                 if (!_eventset) {
                     _eventset = true;
                     ctx.Client.MessageCreated += CheckForPollReply;
                 }
-            } catch (Exception e) {
-                throw e;
-            } finally {
-                _lock.ReleaseMutex();
             }
         }
 
@@ -147,10 +142,10 @@ namespace TheGodfather.Commands.Main
             return embed;
         }
 
-        private DiscordEmbed EmbedPollResults(ulong id, List<string> poll_options)
+        private DiscordEmbed EmbedPollResults(ulong id, string question, List<string> poll_options)
         {
             var res = new DiscordEmbedBuilder() {
-                Title = "Poll results",
+                Title = question + " (results)",
                 Color = DiscordColor.Orange
             };
             for (int i = 0; i < poll_options.Count; i++)
