@@ -178,8 +178,7 @@ namespace TheGodfather.Commands.SWAT
             try {
                 string query = "\\status\\";
                 await client.SendAsync(Encoding.ASCII.GetBytes(query), query.Length);
-                var datagram = await client.ReceiveAsync();
-                receivedData = datagram.Buffer;
+                receivedData = client.Receive(ref ep);
             } catch {
                 return null;
             }
