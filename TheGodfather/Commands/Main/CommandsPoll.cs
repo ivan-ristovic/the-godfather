@@ -16,7 +16,7 @@ using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 #endregion
 
-namespace TheGodfather.Commands.Messages
+namespace TheGodfather.Commands.Main
 {
     [Group("poll", CanInvokeWithoutSubcommand = true)]
     [Description("Starts a poll in the channel.")]

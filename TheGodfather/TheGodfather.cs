@@ -122,13 +122,13 @@ namespace TheGodfather
             _commands.RegisterCommands<Commands.Games.CommandsBank>();
             _commands.RegisterCommands<Commands.Games.CommandsGamble>();
             _commands.RegisterCommands<Commands.Games.CommandsGames>();
+            _commands.RegisterCommands<Commands.Main.CommandsInsult>();
             _commands.RegisterCommands<Commands.Main.CommandsMain>();
+            _commands.RegisterCommands<Commands.Main.CommandsMemes>();
+            _commands.RegisterCommands<Commands.Main.CommandsPoll>();
             _commands.RegisterCommands<Commands.Main.CommandsRandom>();
             _commands.RegisterCommands<Commands.Messages.CommandsAlias>();
             _commands.RegisterCommands<Commands.Messages.CommandsFilter>();
-            _commands.RegisterCommands<Commands.Messages.CommandsInsult>();
-            _commands.RegisterCommands<Commands.Messages.CommandsMemes>();
-            _commands.RegisterCommands<Commands.Messages.CommandsPoll>();
             _commands.RegisterCommands<Commands.Messages.CommandsRanking>();
             _commands.RegisterCommands<Commands.Messages.CommandsReaction>();
             _commands.RegisterCommands<Commands.Search.CommandsGiphy>();

@@ -224,12 +224,12 @@
     <Compile Include="Commands\Games\CommandsGames.cs" />
     <Compile Include="Commands\Administration\CommandsGuild.cs" />
     <Compile Include="Commands\Messages\CommandsFilter.cs" />
-    <Compile Include="Commands\Messages\CommandsPoll.cs" />
+    <Compile Include="Commands\Main\CommandsPoll.cs" />
     <Compile Include="Commands\Messages\CommandsReaction.cs" />
     <Compile Include="Commands\Search\CommandsGiphy.cs" />
     <Compile Include="Commands\Search\CommandsImgur.cs" />
-    <Compile Include="Commands\Messages\CommandsInsult.cs" />
-    <Compile Include="Commands\Messages\CommandsMemes.cs" />
+    <Compile Include="Commands\Main\CommandsInsult.cs" />
+    <Compile Include="Commands\Main\CommandsMemes.cs" />
     <Compile Include="Commands\Administration\CommandsMessages.cs" />
     <Compile Include="Commands\Main\CommandsMain.cs" />
     <Compile Include="Commands\Messages\CommandsRanking.cs" />

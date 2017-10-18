@@ -16,7 +16,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 #endregion
 
-namespace TheGodfather.Commands.Messages
+namespace TheGodfather.Commands.Main
 {
     [Group("meme", CanInvokeWithoutSubcommand = true)]
     [Description("Contains some memes. When invoked without name, returns a random one.")]
