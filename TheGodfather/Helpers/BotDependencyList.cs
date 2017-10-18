@@ -23,6 +23,7 @@ namespace TheGodfather.Helpers
         internal AliasManager       AliasControl        { get; private set; }
         internal BankManager        BankControl         { get; private set; }
         internal ChannelManager     ChannelControl      { get; private set; }
+        internal FeedManager        FeedControl         { get; private set; }
         internal FilterManager      FilterControl       { get; private set; }
         internal InsultManager      InsultControl       { get; private set; }
         internal MemeManager        MemeControl         { get; private set; }
@@ -38,6 +39,7 @@ namespace TheGodfather.Helpers
             AliasControl = new AliasManager();
             BankControl = new BankManager();
             ChannelControl = new ChannelManager();
+            FeedControl = new FeedManager();
             FilterControl = new FilterManager();
             InsultControl = new InsultManager();
             MemeControl = new MemeManager();
@@ -54,6 +56,7 @@ namespace TheGodfather.Helpers
             AliasControl.Load(log);
             BankControl.Load(log);
             ChannelControl.Load(log);
+            FeedControl.Load(log);
             FilterControl.Load(log);
             InsultControl.Load(log);
             MemeControl.Load(log);
@@ -69,6 +72,7 @@ namespace TheGodfather.Helpers
             AliasControl.Save(log);
             BankControl.Save(log);
             ChannelControl.Save(log);
+            FeedControl.Save(log);
             FilterControl.Save(log);
             InsultControl.Save(log);
             MemeControl.Save(log);
@@ -85,6 +89,7 @@ namespace TheGodfather.Helpers
                 .AddInstance(AliasControl)
                 .AddInstance(BankControl)
                 .AddInstance(ChannelControl)
+                .AddInstance(FeedControl)
                 .AddInstance(FilterControl)
                 .AddInstance(InsultControl)
                 .AddInstance(MemeControl)

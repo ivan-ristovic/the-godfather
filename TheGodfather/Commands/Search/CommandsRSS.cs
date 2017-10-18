@@ -31,6 +31,7 @@ namespace TheGodfather.Commands.Search
             }
         }
 
+
         #region COMMAND_WM
         [Command("wm"), Description("Get newest topics from WM forum.")]
         public async Task WMRSS(CommandContext ctx)
@@ -46,6 +47,7 @@ namespace TheGodfather.Commands.Search
             await SendFeedResults(ctx, GetFeedResults("https://news.google.com/news/rss/headlines/section/topic/WORLD?ned=us&hl=en"));
         }
         #endregion
+
 
         #region HELPER_FUNCTIONS
         private IEnumerable<SyndicationItem> GetFeedResults(string url)
