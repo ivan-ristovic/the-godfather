@@ -1,8 +1,10 @@
 ﻿#region USING_DIRECTIVES
 using System;
 using System.IO;
+using System.Xml;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
+using System.ServiceModel.Syndication;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -59,6 +61,23 @@ namespace TheGodfather.Helpers.DataManagers
             }
 
             return true;
+        }
+
+        public IEnumerable<SyndicationItem> GetFeedResults(string url)
+        {
+            SyndicationFeed feed = null;
+            XmlReader reader = null;
+            try {
+                reader = XmlReader.Create(url);
+                feed = SyndicationFeed.Load(reader);
+                reader.Close();
+            } catch (Exception) {
+                return null;
+            } finally {
+                reader?.Close();
+            }
+
+            return feed.Items;
         }
 
         private async Task CheckFeedsForChanges()

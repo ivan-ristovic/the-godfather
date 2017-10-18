@@ -1,11 +1,11 @@
 ﻿#region USING_DIRECTIVES
 using System;
-using System.Xml;
 using System.Linq;
 using System.Collections.Generic;
 using System.ServiceModel.Syndication;
 using System.Threading.Tasks;
 
+using TheGodfather.Helpers.DataManagers;
 using TheGodfather.Exceptions;
 
 using DSharpPlus;
@@ -27,7 +27,7 @@ namespace TheGodfather.Commands.Search
             if (string.IsNullOrWhiteSpace(url)) {
                 await WMRSS(ctx);
             } else {
-                await SendFeedResults(ctx, GetFeedResults(url));
+                await SendFeedResults(ctx, ctx.Dependencies.GetDependency<FeedManager>().GetFeedResults(url));
             }
         }
 
@@ -36,7 +36,7 @@ namespace TheGodfather.Commands.Search
         [Command("wm"), Description("Get newest topics from WM forum.")]
         public async Task WMRSS(CommandContext ctx)
         {
-            await SendFeedResults(ctx, GetFeedResults("http://worldmafia.net/forum/forums/-/index.rss"));
+            await SendFeedResults(ctx, ctx.Dependencies.GetDependency<FeedManager>().GetFeedResults("http://worldmafia.net/forum/forums/-/index.rss"));
         }
         #endregion
 
@@ -44,29 +44,12 @@ namespace TheGodfather.Commands.Search
         [Command("news"), Description("Get newest world news.")]
         public async Task NewsRSS(CommandContext ctx)
         {
-            await SendFeedResults(ctx, GetFeedResults("https://news.google.com/news/rss/headlines/section/topic/WORLD?ned=us&hl=en"));
+            await SendFeedResults(ctx, ctx.Dependencies.GetDependency<FeedManager>().GetFeedResults("https://news.google.com/news/rss/headlines/section/topic/WORLD?ned=us&hl=en"));
         }
         #endregion
 
 
         #region HELPER_FUNCTIONS
-        private IEnumerable<SyndicationItem> GetFeedResults(string url)
-        {
-            SyndicationFeed feed = null;
-            XmlReader reader = null;
-            try {
-                reader = XmlReader.Create(url);
-                feed = SyndicationFeed.Load(reader);
-                reader.Close();
-            } catch (Exception) {
-                return null;
-            } finally {
-                reader?.Close();
-            }
-
-            return feed.Items;
-        }
-
         private async Task SendFeedResults(CommandContext ctx, IEnumerable<SyndicationItem> results)
         {
             if (results == null)
