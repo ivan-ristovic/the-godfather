@@ -62,6 +62,28 @@ namespace TheGodfather.Helpers.DataManagers
             return true;
         }
 
+        public bool TryAdd(ulong cid, string url)
+        {
+            url = url.ToLower();
+            if (_feeds.ContainsKey(url))
+                return false;
+
+            var res = GetFeedResults(url);
+            if (res == null)
+                return false;
+
+            return _feeds.TryAdd(url, new FeedInfo(cid, res.First().Title.Text));
+        }
+
+        public bool TryRemove(string url)
+        {
+            url = url.ToLower();
+            if (!_feeds.ContainsKey(url))
+                return false;
+
+            return _feeds.TryRemove(url, out _);
+        }
+
         public IEnumerable<SyndicationItem> GetFeedResults(string url)
         {
             SyndicationFeed feed = null;
@@ -83,13 +105,22 @@ namespace TheGodfather.Helpers.DataManagers
         {
             while (true) {
                 foreach (var feed in _feeds) {
-                    var newest = GetFeedResults(feed.Key).First();
-                    if (newest.Title.Text != feed.Value.SavedTitle) {
-                        feed.Value.SavedTitle = newest.Title.Text;
-                        var chn = await TheGodfather.Client.GetChannelAsync(feed.Value.ChannelId);
-                        await chn.SendMessageAsync($"update for {feed.Key} : {newest.Title.Text}");
+                    try {
+                        var newest = GetFeedResults(feed.Key).First();
+                        if (newest.Title.Text != feed.Value.SavedTitle) {
+                            feed.Value.SavedTitle = newest.Title.Text;
+                            var chn = await TheGodfather.Client.GetChannelAsync(feed.Value.ChannelId);
+                            await chn.SendMessageAsync(embed : new DiscordEmbedBuilder() {
+                                Title = $"New post: {newest.Title.Text}",
+                                Description = $"(from {(feed.Value.QualifiedName != null ? feed.Value.QualifiedName : feed.Key)})",
+                                Url = newest.Links[0].Uri.ToString(),
+                                Color = DiscordColor.Orange
+                            });
+                        }
+                    } catch {
+
                     }
-                    await Task.Delay(TimeSpan.FromMinutes(1000));
+                    await Task.Delay(TimeSpan.FromSeconds(1));
                 }
             }
         }
@@ -97,8 +128,22 @@ namespace TheGodfather.Helpers.DataManagers
 
         private sealed class FeedInfo
         {
-            public ulong ChannelId { get; internal set; }
-            public string SavedTitle { get; internal set; }
+            [JsonProperty("ChannelId")]
+            public ulong ChannelId { get; set; }
+
+            [JsonProperty("SavedTitle")]
+            public string SavedTitle { get; set; }
+            
+            [JsonProperty("QualifiedName")]
+            public string QualifiedName { get; set; }
+
+
+            public FeedInfo(ulong cid, string title, string qname = null)
+            {
+                ChannelId = cid;
+                SavedTitle = title;
+                QualifiedName = qname;
+            }
         }
     }
 }
