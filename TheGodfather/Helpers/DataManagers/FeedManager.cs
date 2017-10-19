@@ -86,10 +86,11 @@ namespace TheGodfather.Helpers.DataManagers
                     var newest = GetFeedResults(feed.Key).First();
                     if (newest.Title.Text != feed.Value.SavedTitle) {
                         feed.Value.SavedTitle = newest.Title.Text;
-                        // Send message
+                        var chn = await TheGodfather.Client.GetChannelAsync(feed.Value.ChannelId);
+                        await chn.SendMessageAsync($"update for {feed.Key} : {newest.Title.Text}");
                     }
+                    await Task.Delay(TimeSpan.FromMinutes(1000));
                 }
-                await Task.Delay(TimeSpan.FromMinutes(1));
             }
         }
 

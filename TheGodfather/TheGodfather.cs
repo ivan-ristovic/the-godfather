@@ -23,8 +23,9 @@ namespace TheGodfather
 {
     public class TheGodfather
     {
+        public static DiscordClient Client { get; private set; }
+
         #region PRIVATE_FIELDS
-        private DiscordClient _client { get; set; }
         private CommandsNextModule _commands { get; set; }
         private InteractivityModule _interactivity { get; set; }
         private VoiceNextClient _voice { get; set; }
@@ -48,8 +49,8 @@ namespace TheGodfather
 
             SaveData();
             LogHandle.ClearLogFile();
-            _client.DisconnectAsync();
-            _client.Dispose();
+            Client.DisconnectAsync();
+            Client.Dispose();
         }
 
 
@@ -63,7 +64,7 @@ namespace TheGodfather
             SetupVoice();
             LoadData();
 
-            await _client.ConnectAsync();
+            await Client.ConnectAsync();
 
             await Task.Delay(-1);
         }
@@ -72,7 +73,7 @@ namespace TheGodfather
         #region BOT_SETUP_FUNCTIONS
         private void SetupClient()
         {
-            _client = new DiscordClient(new DiscordConfiguration {
+            Client = new DiscordClient(new DiscordConfiguration {
                 LogLevel = LogLevel.Debug,
                 LargeThreshold = 250,
                 AutoReconnect = true,
@@ -81,26 +82,26 @@ namespace TheGodfather
                 UseInternalLogHandler = true
             });
 
-            LogHandle = new Logger(_client.DebugLogger);
+            LogHandle = new Logger(Client.DebugLogger);
 
-            _client.ClientErrored += Client_Error;
-            _client.DebugLogger.LogMessageReceived += Client_LogMessage;
-            _client.GuildAvailable += Client_GuildAvailable;
-            _client.GuildMemberAdded += Client_GuildMemberAdd;
-            _client.GuildMemberRemoved += Client_GuildMemberRemove;
-            _client.Heartbeated += Client_Heartbeated;
-            _client.MessageCreated += Client_MessageCreated;
-            _client.MessageReactionAdded += Client_ReactToMessage;
-            _client.MessageUpdated += Client_MessageUpdated;
-            _client.Ready += Client_Ready;
+            Client.ClientErrored += Client_Error;
+            Client.DebugLogger.LogMessageReceived += Client_LogMessage;
+            Client.GuildAvailable += Client_GuildAvailable;
+            Client.GuildMemberAdded += Client_GuildMemberAdd;
+            Client.GuildMemberRemoved += Client_GuildMemberRemove;
+            Client.Heartbeated += Client_Heartbeated;
+            Client.MessageCreated += Client_MessageCreated;
+            Client.MessageReactionAdded += Client_ReactToMessage;
+            Client.MessageUpdated += Client_MessageUpdated;
+            Client.Ready += Client_Ready;
 
             // Windows 7 specific
-            _client.SetWebSocketClient<WebSocket4NetClient>();
+            Client.SetWebSocketClient<WebSocket4NetClient>();
         }
 
         private void SetupCommands()
         {
-            _commands = _client.UseCommandsNext(new CommandsNextConfiguration {
+            _commands = Client.UseCommandsNext(new CommandsNextConfiguration {
                 EnableDms = false,
                 CaseSensitive = false,
                 EnableMentionPrefix = true,
@@ -148,7 +149,7 @@ namespace TheGodfather
 
         private void SetupInteractivity()
         {
-            _interactivity = _client.UseInteractivity(new InteractivityConfiguration() {
+            _interactivity = Client.UseInteractivity(new InteractivityConfiguration() {
                 PaginationBehaviour = TimeoutBehaviour.Delete,
                 PaginationTimeout = TimeSpan.FromSeconds(30),
                 Timeout = TimeSpan.FromSeconds(30)
@@ -157,13 +158,13 @@ namespace TheGodfather
 
         private void SetupVoice()
         {
-            _voice = _client.UseVoiceNext();
+            _voice = Client.UseVoiceNext();
         }
 
         private void LoadData()
         {
             try {
-                _dependecies.LoadData(_client.DebugLogger);
+                _dependecies.LoadData(Client.DebugLogger);
             } catch (Exception e) {
                 LogHandle.Log(LogLevel.Error,
                     $"Errors occured during data load: " + Environment.NewLine +
@@ -180,7 +181,7 @@ namespace TheGodfather
         private void SaveData()
         {
             try {
-                _dependecies.SaveData(_client.DebugLogger);
+                _dependecies.SaveData(Client.DebugLogger);
             } catch (Exception e) {
                 LogHandle.Log(LogLevel.Error,
                     $"Errors occured during data save: " + Environment.NewLine +
@@ -214,7 +215,7 @@ namespace TheGodfather
         #region CLIENT_EVENTS
         private async Task Client_Heartbeated(HeartbeatEventArgs e)
         {
-            await _client.UpdateStatusAsync(new DiscordGame(_dependecies.StatusControl.GetRandomStatus()) { StreamType = GameStreamType.NoStream });
+            await Client.UpdateStatusAsync(new DiscordGame(_dependecies.StatusControl.GetRandomStatus()) { StreamType = GameStreamType.NoStream });
             SaveData();
         }
 
@@ -340,7 +341,7 @@ namespace TheGodfather
             }
 
             // Check if message has react trigger
-            var emojilist = _dependecies.ReactionControl.GetReactionEmojis(_client, e.Guild.Id, e.Message.Content);
+            var emojilist = _dependecies.ReactionControl.GetReactionEmojis(Client, e.Guild.Id, e.Message.Content);
             if (emojilist.Count > 0) {
                 LogHandle.Log(LogLevel.Info,
                     $"Reactions triggered in message: {e.Message.Content}" + Environment.NewLine +
@@ -391,7 +392,7 @@ namespace TheGodfather
         private async Task Client_Ready(ReadyEventArgs e)
         {
             LogHandle.Log(LogLevel.Info, "Client ready.");
-            await _client.UpdateStatusAsync(new DiscordGame(_dependecies.StatusControl.GetRandomStatus()) { StreamType = GameStreamType.NoStream });
+            await Client.UpdateStatusAsync(new DiscordGame(_dependecies.StatusControl.GetRandomStatus()) { StreamType = GameStreamType.NoStream });
         }
         #endregion
 
