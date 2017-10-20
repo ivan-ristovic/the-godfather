@@ -168,25 +168,30 @@ namespace TheGodfather.Commands.Search
                     await ctx.RespondAsync("Either the channel URL you is invalid or you are already subscribed to it!");
             }
             #endregion
-  /*
+  
             #region COMMAND_RSS_YOUTUBE_REMOVE
             [Command("remove")]
-            [Description("Remove a subreddit feed.")]
+            [Description("Remove a YouTube channel feed.")]
             [Aliases("delete", "d", "rem", "-", "unsub", "unsubscribe")]
             [RequirePermissions(Permissions.ManageChannels)]
-            public async Task DelSubreddit(CommandContext ctx,
-                                          [Description("Subreddit.")] string sub = null)
+            public async Task DelYoutubeFeed(CommandContext ctx,
+                                            [Description("Channel URL.")] string url = null)
             {
-                if (string.IsNullOrWhiteSpace(sub))
-                    throw new InvalidCommandUsageException("Subreddit missing.");
+                if (string.IsNullOrWhiteSpace(url))
+                    throw new InvalidCommandUsageException("Channel URL missing.");
 
-                if (ctx.Dependencies.GetDependency<FeedManager>().TryRemoveUsingQualified(ctx.Channel.Id, "/r/" + sub))
-                    await ctx.RespondAsync($"Unsubscribed from {Formatter.Bold(sub)} !");
+                var chid = await GetYoutubeIdAsync(ctx, url);
+                if (chid == null)
+                    throw new CommandFailedException("Failed retrieving channel ID for that URL.");
+
+                var feedurl = YoutubeRSSFeedLink(chid);
+                if (ctx.Dependencies.GetDependency<FeedManager>().TryRemove(ctx.Channel.Id, feedurl))
+                    await ctx.RespondAsync($"Unsubscribed!");
                 else
                     await ctx.RespondAsync("Failed to remove some subscriptions!");
             }
             #endregion
-    */        
+          
 
             #region HELPER_FUNCTIONS_AND_CLASSES
             private string YoutubeRSSFeedLink(string id)

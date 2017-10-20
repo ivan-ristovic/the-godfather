@@ -81,7 +81,6 @@ namespace TheGodfather.Helpers.DataManagers
 
         public bool TryRemove(ulong cid, string url)
         {
-            url = url.ToLower();
             if (!_feeds.ContainsKey(url))
                 return false;
 
