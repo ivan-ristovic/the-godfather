@@ -49,7 +49,7 @@ namespace TheGodfather.Commands.Search
             if (ctx.Dependencies.GetDependency<FeedManager>().TryAdd(ctx.Channel.Id, url))
                 await ctx.RespondAsync($"Subscribed to {url} !");
             else
-                await ctx.RespondAsync("Either URL you gave is invalid or you are already subscribed to that url!");
+                await ctx.RespondAsync("Either URL you gave is invalid or you are already subscribed to it!");
         }
         #endregion
 
@@ -145,26 +145,30 @@ namespace TheGodfather.Commands.Search
                 await SendFeedResults(ctx, res);
             }
 
-/*                        
+
             #region COMMAND_RSS_YOUTUBE_ADD
             [Command("add")]
             [Description("Add new feed for a YouTube channel.")]
             [Aliases("a", "+", "sub", "subscribe")]
             [RequirePermissions(Permissions.ManageChannels)]
-            public async Task AddSubreddit(CommandContext ctx,
-                                          [Description(".")] string sub = null)
+            public async Task AddChannelFeed(CommandContext ctx,
+                                            [Description("Channel URL.")] string url = null)
             {
-                if (string.IsNullOrWhiteSpace(sub))
-                    throw new InvalidCommandUsageException("Subreddit missing.");
+                if (string.IsNullOrWhiteSpace(url))
+                    throw new InvalidCommandUsageException("Channel URL missing.");
 
-                string url = "https://www.youtube.com/feeds/videos.xml?channel_id=" + shortname;
-                if (ctx.Dependencies.GetDependency<FeedManager>().TryAdd(ctx.Channel.Id, url, "/r/" + sub))
-                    await ctx.RespondAsync($"Subscribed to {Formatter.Bold(sub)} !");
+                var chid = await GetYoutubeIdAsync(ctx, url);
+                if (chid == null)
+                    throw new CommandFailedException("Failed retrieving channel ID for that URL.");
+
+                var feedurl = YoutubeRSSFeedLink(chid);
+                if (ctx.Dependencies.GetDependency<FeedManager>().TryAdd(ctx.Channel.Id, feedurl))
+                    await ctx.RespondAsync($"Subscribed!");
                 else
-                    await ctx.RespondAsync("Either the subreddit you gave doesn't exist or you are already subscribed to it!");
+                    await ctx.RespondAsync("Either the channel URL you is invalid or you are already subscribed to it!");
             }
             #endregion
-  
+  /*
             #region COMMAND_RSS_YOUTUBE_REMOVE
             [Command("remove")]
             [Description("Remove a subreddit feed.")]
@@ -182,7 +186,7 @@ namespace TheGodfather.Commands.Search
                     await ctx.RespondAsync("Failed to remove some subscriptions!");
             }
             #endregion
-            */
+    */        
 
             #region HELPER_FUNCTIONS_AND_CLASSES
             private string YoutubeRSSFeedLink(string id)

@@ -62,9 +62,8 @@ namespace TheGodfather.Helpers.DataManagers
             return true;
         }
 
-        public bool TryAdd(ulong cid, string url, string sub = null)
+        public bool TryAdd(ulong cid, string url, string qname = null)
         {
-            url = url.ToLower();
             var res = GetFeedResults(url);
             if (res == null)
                 return false;
@@ -77,7 +76,7 @@ namespace TheGodfather.Helpers.DataManagers
                 return true;
             }
 
-            return _feeds.TryAdd(url, new FeedInfo(new List<ulong> { cid }, res.First().Title.Text, sub));
+            return _feeds.TryAdd(url, new FeedInfo(new List<ulong> { cid }, res.First().Title.Text, qname));
         }
 
         public bool TryRemove(ulong cid, string url)
