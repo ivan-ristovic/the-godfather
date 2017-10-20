@@ -53,6 +53,17 @@ namespace TheGodfather.Commands.Search
         }
         #endregion
 
+        #region COMMAND_FEED_LIST
+        [Command("listfeeds")]
+        [Description("Get feed list for the current channel.")]
+        [Aliases("listsubs", "listfeed", "lf", "list")]
+        public async Task FeedList(CommandContext ctx)
+        {
+            var feeds = ctx.Dependencies.GetDependency<FeedManager>().GetFeedListForChannel(ctx.Channel.Id);
+            await ctx.RespondAsync("Subscriptions for this channel:\n" + string.Join("\n", feeds));
+        }
+        #endregion
+
         #region COMMAND_RSS_WM
         [Command("wm")]
         [Description("Get newest topics from WM forum.")]

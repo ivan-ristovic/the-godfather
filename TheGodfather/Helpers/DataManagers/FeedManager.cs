@@ -104,6 +104,11 @@ namespace TheGodfather.Helpers.DataManagers
             return succ;
         }
 
+        public IReadOnlyList<string> GetFeedListForChannel(ulong cid)
+        {
+            return _feeds.Where(kvp => kvp.Value.ChannelIds.Contains(cid)).Select(kvp => kvp.Key).ToList();
+        }
+
         public IEnumerable<SyndicationItem> GetFeedResults(string url)
         {
             SyndicationFeed feed = null;
