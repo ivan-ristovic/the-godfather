@@ -138,7 +138,7 @@ namespace TheGodfather.Helpers.DataManagers
                                 var chn = await TheGodfather.Client.GetChannelAsync(cid);
                                 await chn.SendMessageAsync(embed: new DiscordEmbedBuilder() {
                                     Title = $"{newest.Title.Text}",
-                                    Description = $"(Update from {(feed.Value.QualifiedName != null ? feed.Value.QualifiedName : feed.Key)})",
+                                    Description = $"Update from {Formatter.Bold(feed.Value.QualifiedName != null ? feed.Value.QualifiedName : feed.Key)}",
                                     Url = newest.Links[0].Uri.ToString(),
                                     Timestamp = newest.LastUpdatedTime, 
                                     Color = DiscordColor.Orange
