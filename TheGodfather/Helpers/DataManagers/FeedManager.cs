@@ -137,9 +137,10 @@ namespace TheGodfather.Helpers.DataManagers
                             foreach (var cid in feed.Value.ChannelIds) {
                                 var chn = await TheGodfather.Client.GetChannelAsync(cid);
                                 await chn.SendMessageAsync(embed: new DiscordEmbedBuilder() {
-                                    Title = $"New post: {newest.Title.Text}",
-                                    Description = $"(from {(feed.Value.QualifiedName != null ? feed.Value.QualifiedName : feed.Key)})",
+                                    Title = $"{newest.Title.Text}",
+                                    Description = $"(Update from {(feed.Value.QualifiedName != null ? feed.Value.QualifiedName : feed.Key)})",
                                     Url = newest.Links[0].Uri.ToString(),
+                                    Timestamp = newest.LastUpdatedTime, 
                                     Color = DiscordColor.Orange
                                 });
                             }
