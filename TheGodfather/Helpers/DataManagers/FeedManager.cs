@@ -65,23 +65,39 @@ namespace TheGodfather.Helpers.DataManagers
         public bool TryAdd(ulong cid, string url, string sub = null)
         {
             url = url.ToLower();
-            if (_feeds.ContainsKey(url))
-                return false;
-
             var res = GetFeedResults(url);
             if (res == null)
                 return false;
 
-            return _feeds.TryAdd(url, new FeedInfo(cid, res.First().Title.Text, sub));
+            if (_feeds.ContainsKey(url)) {
+                if (_feeds[url].ChannelIds.Contains(cid))
+                    return false;
+                else
+                    _feeds[url].ChannelIds.Add(cid);
+                return true;
+            }
+
+            return _feeds.TryAdd(url, new FeedInfo(new List<ulong> { cid }, res.First().Title.Text, sub));
         }
 
-        public bool TryRemove(string url)
+        public bool TryRemove(ulong cid, string url)
         {
             url = url.ToLower();
             if (!_feeds.ContainsKey(url))
                 return false;
 
-            return _feeds.TryRemove(url, out _);
+            return _feeds[url].ChannelIds.Remove(cid);
+        }
+
+        public bool TryRemoveUsingQualified(ulong cid, string qname)
+        {
+            qname = qname.ToLower();
+            var res = _feeds.Where(kvp => kvp.Value.QualifiedName != qname);
+            bool succ = true;
+            foreach (var r in res)
+                succ &= _feeds[r.Key].ChannelIds.Remove(cid);
+
+            return succ;
         }
 
         public IEnumerable<SyndicationItem> GetFeedResults(string url)
@@ -109,13 +125,15 @@ namespace TheGodfather.Helpers.DataManagers
                         var newest = GetFeedResults(feed.Key).First();
                         if (newest.Title.Text != feed.Value.SavedTitle) {
                             feed.Value.SavedTitle = newest.Title.Text;
-                            var chn = await TheGodfather.Client.GetChannelAsync(feed.Value.ChannelId);
-                            await chn.SendMessageAsync(embed : new DiscordEmbedBuilder() {
-                                Title = $"New post: {newest.Title.Text}",
-                                Description = $"(from {(feed.Value.QualifiedName != null ? feed.Value.QualifiedName : feed.Key)})",
-                                Url = newest.Links[0].Uri.ToString(),
-                                Color = DiscordColor.Orange
-                            });
+                            foreach (var cid in feed.Value.ChannelIds) {
+                                var chn = await TheGodfather.Client.GetChannelAsync(cid);
+                                await chn.SendMessageAsync(embed: new DiscordEmbedBuilder() {
+                                    Title = $"New post: {newest.Title.Text}",
+                                    Description = $"(from {(feed.Value.QualifiedName != null ? feed.Value.QualifiedName : feed.Key)})",
+                                    Url = newest.Links[0].Uri.ToString(),
+                                    Color = DiscordColor.Orange
+                                });
+                            }
                         }
                     } catch {
 
@@ -128,19 +146,19 @@ namespace TheGodfather.Helpers.DataManagers
 
         private sealed class FeedInfo
         {
-            [JsonProperty("ChannelId")]
-            public ulong ChannelId { get; set; }
+            [JsonProperty("ChannelIds")]
+            public List<ulong> ChannelIds { get; set; }
 
             [JsonProperty("SavedTitle")]
-            public string SavedTitle { get; set; }
+            public string SavedTitle { get; internal set; }
             
             [JsonProperty("QualifiedName")]
-            public string QualifiedName { get; set; }
+            public string QualifiedName { get; private set; }
 
 
-            public FeedInfo(ulong cid, string title, string qname = null)
+            public FeedInfo(List<ulong> cids, string title, string qname = null)
             {
-                ChannelId = cid;
+                ChannelIds = cids;
                 SavedTitle = title;
                 QualifiedName = qname;
             }

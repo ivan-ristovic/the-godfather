@@ -92,7 +92,6 @@ namespace TheGodfather.Commands.Search
             [RequirePermissions(Permissions.ManageChannels)]
             public async Task AddSubreddit(CommandContext ctx,
                                           [Description("Subreddit.")] string sub = null)
-                // TODO add qualifiers, like new top etc
             {
                 if (string.IsNullOrWhiteSpace(sub))
                     throw new InvalidCommandUsageException("Subreddit missing.");
@@ -102,6 +101,24 @@ namespace TheGodfather.Commands.Search
                     await ctx.RespondAsync($"Subscribed to {Formatter.Bold(sub)} !");
                 else
                     await ctx.RespondAsync("Either the subreddit you gave doesn't exist or you are already subscribed to it!");
+            }
+            #endregion
+
+            #region COMMAND_RSS_REDDIT_REMOVE
+            [Command("remove")]
+            [Description("Remove a subreddit feed.")]
+            [Aliases("delete", "d", "rem", "-", "unsub", "unsubscribe")]
+            [RequirePermissions(Permissions.ManageChannels)]
+            public async Task DelSubreddit(CommandContext ctx,
+                                          [Description("Subreddit.")] string sub = null)
+            {
+                if (string.IsNullOrWhiteSpace(sub))
+                    throw new InvalidCommandUsageException("Subreddit missing.");
+
+                if (ctx.Dependencies.GetDependency<FeedManager>().TryRemoveUsingQualified(ctx.Channel.Id, sub))
+                    await ctx.RespondAsync($"Unsubscribed from {Formatter.Bold(sub)} !");
+                else
+                    await ctx.RespondAsync("Failed to remove some subscriptions!");
             }
             #endregion
         }
