@@ -140,32 +140,77 @@ namespace TheGodfather.Commands.Search
                 if (string.IsNullOrWhiteSpace(url))
                     throw new InvalidCommandUsageException("Channel URL missing.");
 
-                var res = await GetRSSFeedForYoutubeUrl(ctx, url);
+                var ytid = await GetYoutubeIdAsync(ctx, url);
+                var res = ctx.Dependencies.GetDependency<FeedManager>().GetFeedResults(YoutubeRSSFeedLink(ytid));
                 await SendFeedResults(ctx, res);
             }
 
-            
-            
-            #region HELPER_FUNCTIONS_AND_CLASSES
-            private async Task<IEnumerable<SyndicationItem>> GetRSSFeedForYoutubeUrl(CommandContext ctx, string url)
+/*                        
+            #region COMMAND_RSS_YOUTUBE_ADD
+            [Command("add")]
+            [Description("Add new feed for a YouTube channel.")]
+            [Aliases("a", "+", "sub", "subscribe")]
+            [RequirePermissions(Permissions.ManageChannels)]
+            public async Task AddSubreddit(CommandContext ctx,
+                                          [Description(".")] string sub = null)
             {
-                string shortname = url.Split('/').Last();
+                if (string.IsNullOrWhiteSpace(sub))
+                    throw new InvalidCommandUsageException("Subreddit missing.");
 
-                var results = ctx.Dependencies.GetDependency<FeedManager>().GetFeedResults("https://www.youtube.com/feeds/videos.xml?channel_id=" + shortname);
+                string url = "https://www.youtube.com/feeds/videos.xml?channel_id=" + shortname;
+                if (ctx.Dependencies.GetDependency<FeedManager>().TryAdd(ctx.Channel.Id, url, "/r/" + sub))
+                    await ctx.RespondAsync($"Subscribed to {Formatter.Bold(sub)} !");
+                else
+                    await ctx.RespondAsync("Either the subreddit you gave doesn't exist or you are already subscribed to it!");
+            }
+            #endregion
+  
+            #region COMMAND_RSS_YOUTUBE_REMOVE
+            [Command("remove")]
+            [Description("Remove a subreddit feed.")]
+            [Aliases("delete", "d", "rem", "-", "unsub", "unsubscribe")]
+            [RequirePermissions(Permissions.ManageChannels)]
+            public async Task DelSubreddit(CommandContext ctx,
+                                          [Description("Subreddit.")] string sub = null)
+            {
+                if (string.IsNullOrWhiteSpace(sub))
+                    throw new InvalidCommandUsageException("Subreddit missing.");
+
+                if (ctx.Dependencies.GetDependency<FeedManager>().TryRemoveUsingQualified(ctx.Channel.Id, "/r/" + sub))
+                    await ctx.RespondAsync($"Unsubscribed from {Formatter.Bold(sub)} !");
+                else
+                    await ctx.RespondAsync("Failed to remove some subscriptions!");
+            }
+            #endregion
+            */
+
+            #region HELPER_FUNCTIONS_AND_CLASSES
+            private string YoutubeRSSFeedLink(string id)
+            {
+                return "https://www.youtube.com/feeds/videos.xml?channel_id=" + id;
+            }
+
+            private async Task<string> GetYoutubeIdAsync(CommandContext ctx, string url)
+            {
+                string id = url.Split('/').Last();
+
+                var results = ctx.Dependencies.GetDependency<FeedManager>().GetFeedResults(YoutubeRSSFeedLink(id));
                 if (results == null) {
                     var ytkey = ctx.Dependencies.GetDependency<BotConfigManager>().CurrentConfig.YoutubeKey;
                     try {
                         var wc = new WebClient();
-                        var jsondata = await wc.DownloadStringTaskAsync("https://www.googleapis.com/youtube/v3/channels?key=" + ytkey + "&forUsername=" + shortname + "&part=id");
+                        var jsondata = await wc.DownloadStringTaskAsync("https://www.googleapis.com/youtube/v3/channels?key=" + ytkey + "&forUsername=" + id + "&part=id");
                         var data = JsonConvert.DeserializeObject<DeserializedData>(jsondata);
                         if (data.Items != null)
-                            results = ctx.Dependencies.GetDependency<FeedManager>().GetFeedResults("https://www.youtube.com/feeds/videos.xml?channel_id=" + data.Items[0]["id"]);
+                            return data.Items[0]["id"];
                     } catch {
 
                     }
+                } else {
+                    return id;
                 }
 
-                return results;
+                return null;
             }
 
 
