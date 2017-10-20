@@ -112,8 +112,8 @@ namespace TheGodfather.Commands.Search
                     throw new InvalidCommandUsageException("Subreddit missing.");
 
                 string url = $"https://www.reddit.com/r/{ sub.ToLower() }/new/.rss";
-                if (ctx.Dependencies.GetDependency<FeedManager>().TryAdd(ctx.Channel.Id, url, "/r/" + sub))
-                    await ctx.RespondAsync($"Subscribed to {Formatter.Bold(sub)} !");
+                if (ctx.Dependencies.GetDependency<FeedManager>().TryAdd(ctx.Channel.Id, url, sub))
+                    await ctx.RespondAsync($"Subscribed to {Formatter.Bold("/r/" + sub)} !");
                 else
                     await ctx.RespondAsync("Either the subreddit you gave doesn't exist or you are already subscribed to it!");
             }
@@ -130,8 +130,8 @@ namespace TheGodfather.Commands.Search
                 if (string.IsNullOrWhiteSpace(sub))
                     throw new InvalidCommandUsageException("Subreddit missing.");
 
-                if (ctx.Dependencies.GetDependency<FeedManager>().TryRemoveUsingQualified(ctx.Channel.Id, "/r/" + sub))
-                    await ctx.RespondAsync($"Unsubscribed from {Formatter.Bold(sub)} !");
+                if (ctx.Dependencies.GetDependency<FeedManager>().TryRemoveUsingQualified(ctx.Channel.Id, sub))
+                    await ctx.RespondAsync($"Unsubscribed from {Formatter.Bold("/r/" + sub)} !");
                 else
                     await ctx.RespondAsync("Failed to remove some subscriptions!");
             }
