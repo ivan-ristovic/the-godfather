@@ -23,7 +23,7 @@ namespace TheGodfather.Commands.Search
     public class CommandsRSS
     {
         public async Task ExecuteGroupAsync(CommandContext ctx, 
-                                           [RemainingText, Description("URL")] string url = null)
+                                           [RemainingText, Description("URL.")] string url = null)
         {
             if (string.IsNullOrWhiteSpace(url)) {
                 await WMRSS(ctx);
@@ -33,21 +33,21 @@ namespace TheGodfather.Commands.Search
         }
 
 
-
-        #region COMMAND_RSS_ADD
         [Command("subscribe")]
         [Description("Subscribe to given url.")]
         [Aliases("sub", "add", "+")]
         [RequirePermissions(Permissions.ManageChannels)]
-        public async Task AddFeed(CommandContext ctx,
-                                 [RemainingText, Description("URL")] string url = null)
+        public async Task AddURLFeed(CommandContext ctx,
+                                    [RemainingText, Description("URL.")] string url = null)
         {
+            if (string.IsNullOrWhiteSpace(url))
+                throw new InvalidCommandUsageException("URL missing.");
+
             if (ctx.Dependencies.GetDependency<FeedManager>().TryAdd(ctx.Channel.Id, url))
                 await ctx.RespondAsync($"Subscribed to {url} !");
             else
                 await ctx.RespondAsync("Either URL you gave is invalid or you are already subscribed to that url!");
         }
-        #endregion
 
         #region COMMAND_RSS_WM
         [Command("wm")]
@@ -68,8 +68,48 @@ namespace TheGodfather.Commands.Search
         #endregion
 
 
+        #region GROUP_RSS_REDDIT
+        [Group("reddit", CanInvokeWithoutSubcommand = true)]
+        [Description("Reddit feed manipulation.")]
+        [Aliases("subreddit", "r")]
+        public class CommandsRSSReddit : CommandsRSS
+        {
+            public new async Task ExecuteGroupAsync(CommandContext ctx,
+                                                   [Description("Subreddit.")] string sub = null)
+            {
+                if (string.IsNullOrWhiteSpace(sub))
+                    throw new InvalidCommandUsageException("Subreddit missing.");
+
+                string url = $"https://www.reddit.com/r/{ sub.ToLower() }/new/.rss";
+                await SendFeedResults(ctx, ctx.Dependencies.GetDependency<FeedManager>().GetFeedResults(url));
+            }
+
+
+            #region COMMAND_RSS_REDDIT_ADD
+            [Command("add")]
+            [Description("Add new feed for a subreddit.")]
+            [Aliases("a", "+", "sub", "subscribe")]
+            [RequirePermissions(Permissions.ManageChannels)]
+            public async Task AddSubreddit(CommandContext ctx,
+                                          [Description("Subreddit.")] string sub = null)
+                // TODO add qualifiers, like new top etc
+            {
+                if (string.IsNullOrWhiteSpace(sub))
+                    throw new InvalidCommandUsageException("Subreddit missing.");
+
+                string url = $"https://www.reddit.com/r/{ sub.ToLower() }/new/.rss";
+                if (ctx.Dependencies.GetDependency<FeedManager>().TryAdd(ctx.Channel.Id, url, sub))
+                    await ctx.RespondAsync($"Subscribed to {Formatter.Bold(sub)} !");
+                else
+                    await ctx.RespondAsync("Either the subreddit you gave doesn't exist or you are already subscribed to it!");
+            }
+            #endregion
+        }
+        #endregion
+
+
         #region HELPER_FUNCTIONS
-        private async Task SendFeedResults(CommandContext ctx, IEnumerable<SyndicationItem> results)
+        protected async Task SendFeedResults(CommandContext ctx, IEnumerable<SyndicationItem> results)
         {
             if (results == null)
                 throw new CommandFailedException("Error getting RSS feed.");

@@ -62,7 +62,7 @@ namespace TheGodfather.Helpers.DataManagers
             return true;
         }
 
-        public bool TryAdd(ulong cid, string url)
+        public bool TryAdd(ulong cid, string url, string sub = null)
         {
             url = url.ToLower();
             if (_feeds.ContainsKey(url))
@@ -72,7 +72,7 @@ namespace TheGodfather.Helpers.DataManagers
             if (res == null)
                 return false;
 
-            return _feeds.TryAdd(url, new FeedInfo(cid, res.First().Title.Text));
+            return _feeds.TryAdd(url, new FeedInfo(cid, res.First().Title.Text, sub));
         }
 
         public bool TryRemove(string url)
