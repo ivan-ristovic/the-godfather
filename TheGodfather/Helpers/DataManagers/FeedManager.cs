@@ -86,16 +86,22 @@ namespace TheGodfather.Helpers.DataManagers
             if (!_feeds.ContainsKey(url))
                 return false;
 
-            return _feeds[url].ChannelIds.Remove(cid);
+            bool succ = _feeds[url].ChannelIds.Remove(cid);
+            if (_feeds[url].ChannelIds.Count == 0)
+                _feeds.TryRemove(url, out _);
+            return succ;
         }
 
         public bool TryRemoveUsingQualified(ulong cid, string qname)
         {
             qname = qname.ToLower();
-            var res = _feeds.Where(kvp => kvp.Value.QualifiedName != qname);
+            var mathes = _feeds.Where(kvp => kvp.Value.QualifiedName == qname);
             bool succ = true;
-            foreach (var r in res)
-                succ &= _feeds[r.Key].ChannelIds.Remove(cid);
+            foreach (var feedkvp in mathes) {
+                succ &= _feeds[feedkvp.Key].ChannelIds.Remove(cid);
+                if (_feeds[feedkvp.Key].ChannelIds.Count == 0)
+                    _feeds.TryRemove(feedkvp.Key, out _);
+            }
 
             return succ;
         }
