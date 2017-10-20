@@ -361,6 +361,9 @@ namespace TheGodfather
 
         private async Task Client_MessageUpdated(MessageUpdateEventArgs e)
         {
+            if (e.Author == null || e.Message == null)
+                return;
+
             // Check if message contains filter
             if (!e.Author.IsBot && e.Message.Content != null && e.Message.Content.Split(' ').Any(s => _dependecies.FilterControl.Contains(e.Guild.Id, s))) {
                 try {
