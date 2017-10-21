@@ -39,7 +39,7 @@ namespace TheGodfather.Commands.Messages
             if (ctx.Dependencies.GetDependency<AliasManager>().TryAdd(ctx.Guild.Id, alias, response))
                 await ctx.RespondAsync($"Alias {Formatter.Bold(alias)} successfully added.");
             else
-                throw new CommandFailedException("Alias already exists!");
+                throw new CommandFailedException($"Alias {Formatter.Bold(alias)} already exists!");
         }
         #endregion
 
