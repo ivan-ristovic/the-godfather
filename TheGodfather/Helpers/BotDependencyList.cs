@@ -34,12 +34,12 @@ namespace TheGodfather.Helpers
         internal SwatServerManager  SwatServerControl   { get; private set; }
 
         
-        internal BotDependencyList()
+        internal BotDependencyList(DiscordClient client)
         {
             AliasControl = new AliasManager();
             BankControl = new BankManager();
             ChannelControl = new ChannelManager();
-            FeedControl = new FeedManager();
+            FeedControl = new FeedManager(client);
             FilterControl = new FilterManager();
             InsultControl = new InsultManager();
             MemeControl = new MemeManager();

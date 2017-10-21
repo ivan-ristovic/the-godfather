@@ -25,9 +25,9 @@ namespace TheGodfather.Helpers.DataManagers
         private bool _ioerr = false;
 
 
-        public FeedManager()
+        public FeedManager(DiscordClient client)
         {
-            Task.Run(async () => await CheckFeedsForChangesContinuousAsync());
+            Task.Run(async () => await CheckFeedsForChangesContinuousAsync(client));
         }
 
         
@@ -126,7 +126,7 @@ namespace TheGodfather.Helpers.DataManagers
             return feed.Items.Take(5);
         }
 
-        private async Task CheckFeedsForChangesContinuousAsync()
+        private async Task CheckFeedsForChangesContinuousAsync(DiscordClient client)
         {
             while (true) {
                 foreach (var feed in _feeds) {
@@ -135,7 +135,7 @@ namespace TheGodfather.Helpers.DataManagers
                         if (newest.Title.Text != feed.Value.SavedTitle) {
                             feed.Value.SavedTitle = newest.Title.Text;
                             foreach (var cid in feed.Value.ChannelIds) {
-                                var chn = await TheGodfather.Client.GetChannelAsync(cid);
+                                var chn = await client.GetChannelAsync(cid);
                                 await chn.SendMessageAsync(embed: new DiscordEmbedBuilder() {
                                     Title = $"{newest.Title.Text}",
                                     Description = $"Update from {Formatter.Bold(feed.Value.QualifiedName != null ? feed.Value.QualifiedName : feed.Key)}",
