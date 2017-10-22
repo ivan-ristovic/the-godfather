@@ -68,7 +68,7 @@ namespace TheGodfather.Commands.Main
         [Description("Get an instant invite link for the current channel.")]
         [Aliases("getinvite")]
         [RequirePermissions(Permissions.CreateInstantInvite)]
-        public async Task RenameChannel(CommandContext ctx)
+        public async Task SendInstantInviteAsync(CommandContext ctx)
         {
             var invites = ctx.Channel.GetInvitesAsync().Result.Where(
                 inv => (inv.Channel.Id == ctx.Channel.Id) && !inv.IsTemporary
@@ -78,7 +78,7 @@ namespace TheGodfather.Commands.Main
                 await ctx.RespondAsync(invites.ElementAt(0).ToString());
             else {
                 var invite = await ctx.Channel.CreateInviteAsync(max_age: 3600, temporary: true);
-                await ctx.RespondAsync(invite.ToString() + Formatter.Italic("\n\nThis invite will expire in one hour!\n"));
+                await ctx.RespondAsync(invite.ToString() + "\n\n" + Formatter.Italic("This invite will expire in one hour!"));
             }
         }
         #endregion
