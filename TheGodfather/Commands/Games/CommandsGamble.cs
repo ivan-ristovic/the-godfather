@@ -87,7 +87,7 @@ namespace TheGodfather.Commands.Games
                     ctx.Dependencies.GetDependency<BankManager>().IncreaseBalance(ctx.User.Id, bid * 6);
 
                 await ctx.RespondAsync($"{DiscordEmoji.FromName(ctx.Client, ":game_die:")} {ctx.User.Mention} rolled a " +
-                    $"{rnd} {(guess == rnd ? $"and won {bid * 5} credits" : $"and lost {bid * 5} credits")} !"
+                    $"{rnd} {(guess == rnd ? $"and won {bid * 5} credits" : $"and lost {bid} credits")} !"
                 );
             } else {
                 await ctx.RespondAsync($"{DiscordEmoji.FromName(ctx.Client, ":game_die:")} {ctx.User.Mention} rolled a {Formatter.Bold(new Random().Next(1, 7).ToString())}!");
