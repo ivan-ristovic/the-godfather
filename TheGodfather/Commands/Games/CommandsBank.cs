@@ -16,7 +16,7 @@ using DSharpPlus.Entities;
 namespace TheGodfather.Commands.Games
 {
     [Group("bank", CanInvokeWithoutSubcommand = true)]
-    [Description("$$$")]
+    [Description("Bank manipulation.")]
     [Aliases("$", "$$", "$$$")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
     public class CommandsBank
@@ -24,7 +24,7 @@ namespace TheGodfather.Commands.Games
 
         public async Task ExecuteGroupAsync(CommandContext ctx)
         {
-            await Status(ctx);
+            await GetStatusAsync(ctx);
         }
 
 
@@ -33,15 +33,16 @@ namespace TheGodfather.Commands.Games
         [Description("Magically give funds to a user.")]
         [Aliases("give")]
         [RequireUserPermissions(Permissions.Administrator)]
-        public async Task Register(CommandContext ctx,
-                                  [Description("User.")] DiscordUser u = null,
-                                  [Description("Ammount.")] int ammount = 0)
+        public async Task GrantAsync(CommandContext ctx,
+                                    [Description("User.")] DiscordUser u = null,
+                                    [Description("Ammount.")] int ammount = 0)
         {
             if (u == null || ammount <= 0 || ammount > 1000)
                 throw new InvalidCommandUsageException("Invalid user or ammount.");
 
             ctx.Dependencies.GetDependency<BankManager>().IncreaseBalance(u.Id, ammount);
-            await ctx.RespondAsync($"User {Formatter.Bold(u.Username)} won {Formatter.Bold(ammount.ToString())} credits on a lottery! (seems legit)");
+            await ctx.RespondAsync($"User {Formatter.Bold(u.Username)} won {Formatter.Bold(ammount.ToString())} credits on a lottery! (seems legit)")
+                .ConfigureAwait(false);
         }
         #endregion
 
@@ -49,24 +50,30 @@ namespace TheGodfather.Commands.Games
         [Command("register")]
         [Description("Create an account in WM bank.")]
         [Aliases("r", "signup", "activate")]
-        public async Task Register(CommandContext ctx)
+        public async Task RegisterAsync(CommandContext ctx)
         {
             if (ctx.Dependencies.GetDependency<BankManager>().Accounts.ContainsKey(ctx.User.Id))
                 throw new CommandFailedException("You already own an account in WM bank!");
 
-            if (ctx.Dependencies.GetDependency<BankManager>().OpenAccount(ctx.User.Id))
-                await ctx.RespondAsync($"Account opened for you, {ctx.User.Mention}! Since WM bank is so generous, you get 25 credits for free.");
-            else
+            if (ctx.Dependencies.GetDependency<BankManager>().OpenAccount(ctx.User.Id)) { 
+                await ctx.RespondAsync($"Account opened for you, {ctx.User.Mention}! Since WM bank is so generous, you get 25 credits for free.")
+                    .ConfigureAwait(false);
+            } else {
                 throw new CommandFailedException("Account opening failed.");
+            }
         }
         #endregion
 
         #region COMMAND_STATUS
         [Command("status")]
-        [Description("View your account balance.")]
+        [Description("View account balance for user.")]
         [Aliases("s", "balance")]
-        public async Task Status(CommandContext ctx)
+        public async Task GetStatusAsync(CommandContext ctx,
+                                        [Description("User.")] DiscordUser u = null)
         {
+            if (u == null)
+                u = ctx.User;
+
             var accounts = ctx.Dependencies.GetDependency<BankManager>().Accounts;
             int? ammount = null;
             if (accounts.ContainsKey(ctx.User.Id))
@@ -76,7 +83,7 @@ namespace TheGodfather.Commands.Games
                 Title = $"Account balance for {ctx.User.Username}",
                 Description = $"{Formatter.Bold(ammount != null ? ammount.ToString() : "No existing account!")}",
                 Color = DiscordColor.Yellow
-            });
+            }.Build()).ConfigureAwait(false);
         }
         #endregion
 
@@ -84,19 +91,22 @@ namespace TheGodfather.Commands.Games
         [Command("top")]
         [Description("Print the richest users.")]
         [Aliases("leaderboard")]
-        public async Task Top(CommandContext ctx)
+        public async Task GetLeaderboardAsync(CommandContext ctx)
         {
-            var embed = new DiscordEmbedBuilder() { Title = "WEALTHIEST PEOPLE IN WM BANK:" };
+            var em = new DiscordEmbedBuilder() {
+                Title = "WEALTHIEST PEOPLE IN WM BANK:",
+                Color = DiscordColor.Yellow
+            };
 
-            int i = 10;
-            foreach (var pair in ctx.Dependencies.GetDependency<BankManager>().Accounts.ToList().OrderBy(key => key.Value)) {
-                if (i-- != 0) {
-                    var username = ctx.Guild.GetMemberAsync(pair.Key).Result.Username;
-                    embed.AddField(username, pair.Value.ToString(), inline: true);
-                }
+            var leaderboard = ctx.Dependencies.GetDependency<BankManager>().Accounts.ToList().OrderBy(key => key.Value).Take(10);
+            foreach (var pair in leaderboard) {
+                var member = await ctx.Guild.GetMemberAsync(pair.Key)
+                    .ConfigureAwait(false);
+                em.AddField(member.Username, pair.Value.ToString(), inline: true);
             }
 
-            await ctx.RespondAsync(embed: embed);
+            await ctx.RespondAsync(embed: em.Build())
+                .ConfigureAwait(false);
         }
         #endregion
 
@@ -104,9 +114,9 @@ namespace TheGodfather.Commands.Games
         [Command("transfer")]
         [Description("Transfer funds from one account to another.")]
         [Aliases("lend")]
-        public async Task Transfer(CommandContext ctx,
-                                  [Description("User to send credits to.")] DiscordUser u = null,
-                                  [Description("Ammount.")] int ammount = 0)
+        public async Task TransferCreditsAsync(CommandContext ctx,
+                                              [Description("User to send credits to.")] DiscordUser u = null,
+                                              [Description("Ammount.")] int ammount = 0)
         {
             if (u == null)
                 throw new InvalidCommandUsageException("Account to transfer the credits to is missing.");
@@ -122,7 +132,8 @@ namespace TheGodfather.Commands.Games
             ctx.Dependencies.GetDependency<BankManager>().RetrieveCredits(ctx.User.Id, ammount);
             ctx.Dependencies.GetDependency<BankManager>().IncreaseBalance(u.Id, ammount);
 
-            await ctx.RespondAsync($"Transfer from {ctx.User.Mention} to {u.Mention} is complete.");
+            await ctx.RespondAsync($"Transfer from {ctx.User.Mention} to {u.Mention} is complete.")
+                .ConfigureAwait(false);
         }
         #endregion
     }

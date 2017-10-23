@@ -111,6 +111,19 @@ Commands use the following types:
 | ``user``<br>``users``<br>``u``<br>``usr`` | ``setname``<br>``nick``<br>``rename``<br>``name``<br>``newname`` | Manage Nicknames | ``[user] User``<br><br>``[text] New name`` | Change ``User``'s nickname to ``New name`` (for this server). | ``!user setname @SomeUser Some new name`` |
 |   |   |   |   |   |   |
 
+## Gambling
+
+| Command group (with synonyms) | Command name (with synonyms) | Required Permissions | Command arguments | Command Description | Example of use |
+|---|---|---|---|---|---|
+|   |   |   |   |   |   |
+| ``bank``<br>``$``<br>``$$``<br>``$$$`` |  |  |  | Prints the account balance for sender. | ``!bank`` |
+| ``bank``<br>``$``<br>``$$``<br>``$$$`` | ``grant``<br>``give`` | Administrator | ``[user] User``<br><br>``[int] Ammount`` | Add ``Ammount`` credits to ``User``'s account. | ``!bank grant 100 @LuckyGuy`` |
+| ``bank``<br>``$``<br>``$$``<br>``$$$`` | ``register``<br>``r``<br>``activate``<br>``signup`` |  |  | Opens an account for sender in WM bank. | ``!bank register`` |
+| ``bank``<br>``$``<br>``$$``<br>``$$$`` | ``status``<br>``balance``<br>``s`` |  | ``(optional) [user] User (def: sender)`` | Prints the account balance for a user. | ``!bank balance``<br><br>``!bank balance @BillGates`` |
+| ``bank``<br>``$``<br>``$$``<br>``$$$`` | ``top``<br>``leaderboard`` |  |  | Prints a list of richest users (globally). | ``!bank top`` |
+| ``bank``<br>``$``<br>``$$``<br>``$$$`` | ``transfer``<br>``lend`` |  | ``[user] User``<br><br>``[int] Ammount`` | Give ``Ammount`` credits from your account to ``User``'s account. | ``!bank transfer @MyFriend 100`` |
+|   |   |   |   |   |   |
+
 
 **(Command list is incomplete)**
 
