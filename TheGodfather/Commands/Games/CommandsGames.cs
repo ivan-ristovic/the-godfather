@@ -25,15 +25,16 @@ namespace TheGodfather.Commands.Games
         [Command("duel")]
         [Description("Starts a duel which I will commentate.")]
         [Aliases("fight", "vs")]
-        public async Task Duel(CommandContext ctx, 
-                              [Description("Who to fight with?")] DiscordUser u)
+        public async Task DuelAsync(CommandContext ctx,
+                                   [Description("Who to fight with?")] DiscordUser u)
         {
             if (u.Id == ctx.User.Id)
                 throw new CommandFailedException("You can't duel yourself...");
 
             string[] weapons = { "sword", "axe", "keyboard", "stone", "cheeseburger", "belt from yo momma" };
 
-            var m = await ctx.RespondAsync($"{ctx.User.Mention} VS {u.Mention}");
+            var m = await ctx.RespondAsync($"{ctx.User.Mention} VS {u.Mention}")
+                .ConfigureAwait(false);
 
             int hp1 = 100, hp2 = 100;
             var rnd = new Random();
@@ -42,36 +43,42 @@ namespace TheGodfather.Commands.Games
                 if (rnd.Next() % 2 == 0) {
                     m = await m.ModifyAsync(
                         m.Content + $"\n{Formatter.Bold(ctx.User.Username)} ({hp1}) " +
-                        $"hits {Formatter.Bold(u.Username)} ({hp2}) with a {weapons[rnd.Next(0, weapons.Length)]} " +
+                        $"hits {Formatter.Bold(u.Username)} ({hp2}) with a {Formatter.Bold(weapons[rnd.Next(0, weapons.Length)])} " +
                         $"for {Formatter.Bold(damage.ToString())} damage!"
-                    );
+                    ).ConfigureAwait(false);
                     hp2 -= damage;
                 } else {
                     m = await m.ModifyAsync(
                         m.Content + $"\n{Formatter.Bold(u.Username)} ({hp2}) " +
-                        $"hits {Formatter.Bold(ctx.User.Username)} ({hp1}) with a {weapons[rnd.Next(0, weapons.Length)]} " +
+                        $"hits {Formatter.Bold(ctx.User.Username)} ({hp1}) with a {Formatter.Bold(weapons[rnd.Next(0, weapons.Length)])} " +
                         $"for {Formatter.Bold(damage.ToString())} damage!"
-                    );
+                    ).ConfigureAwait(false);
                     hp1 -= damage;
                 }
-                await Task.Delay(2000);
+                await Task.Delay(2000)
+                    .ConfigureAwait(false);
             }
-            if (hp1 < 0)
-                await ctx.RespondAsync($"{u.Mention} wins!");
-            else
-                await ctx.RespondAsync($"{ctx.User.Mention} wins!");
+            if (hp1 < 0) {
+                await ctx.RespondAsync($"{u.Mention} wins!")
+                    .ConfigureAwait(false);
+            } else {
+                await ctx.RespondAsync($"{ctx.User.Mention} wins!")
+                    .ConfigureAwait(false);
+            }
         }
         #endregion
 
         #region COMMAND_GAMES_HANGMAN
         [Command("hangman")]
         [Description("Starts a hangman game.")]
-        public async Task Hangman(CommandContext ctx)
+        public async Task HangmanAsync(CommandContext ctx)
         {
             DiscordDmChannel dm;
             try {
-                dm = await ctx.Client.CreateDmAsync(ctx.User);
-                await dm.SendMessageAsync("What is the secret word?");
+                dm = await ctx.Client.CreateDmAsync(ctx.User)
+                    .ConfigureAwait(false);
+                await dm.SendMessageAsync("What is the secret word?")
+                    .ConfigureAwait(false);
             } catch {
                 throw new Exception("Please enable direct messages, so I can ask you about the word to guess.");
             }
@@ -79,31 +86,30 @@ namespace TheGodfather.Commands.Games
             var msg = await interactivity.WaitForMessageAsync(
                 xm => xm.Channel == dm && xm.Author.Id == ctx.User.Id,
                 TimeSpan.FromMinutes(1)
-            );
+            ).ConfigureAwait(false);
             if (msg == null) {
-                await ctx.RespondAsync("Ok, nvm...");
+                await ctx.RespondAsync("Ok, nvm...")
+                    .ConfigureAwait(false);
                 return;
             } else {
-                await dm.SendMessageAsync("Alright! The word is: " + Formatter.Bold(msg.Message.Content));
+                await dm.SendMessageAsync("Alright! The word is: " + Formatter.Bold(msg.Message.Content))
+                    .ConfigureAwait(false);
             }
 
             int lives = 7;
             string word = msg.Message.Content.ToLower();
-            char[] guess = new char[word.Length];
-            for (int i = 0; i < guess.Length; i++)
-                if (word[i] == ' ')
-                    guess[i] = ' ';
-                else
-                    guess[i] = '?';
+            char[] guess_str = word.Select(c => (c == ' ') ? ' ' : '?').ToArray();
 
-            await DrawHangman(ctx, guess, lives);
-            while (lives > 0 && Array.IndexOf(guess, '?') != -1) {
+            await DrawHangmanAsync(ctx, guess_str, lives)
+                .ConfigureAwait(false);
+            while (lives > 0 && Array.IndexOf(guess_str, '?') != -1) {
                 var m = await interactivity.WaitForMessageAsync(
                     xm => xm.Channel == ctx.Channel && !xm.Author.IsBot && xm.Content.Length == 1,
                     TimeSpan.FromMinutes(1)
-                );
+                ).ConfigureAwait(false);
                 if (m == null) {
-                    await ctx.RespondAsync("Ok, nvm, aborting game...");
+                    await ctx.RespondAsync("Ok, nvm, aborting game...")
+                        .ConfigureAwait(false);
                     return;
                 }
 
@@ -111,17 +117,19 @@ namespace TheGodfather.Commands.Games
                 if (word.IndexOf(guess_char) != -1) {
                     for (int i = 0; i < word.Length; i++)
                         if (word[i] == guess_char)
-                            guess[i] = Char.ToUpper(word[i]);
+                            guess_str[i] = Char.ToUpper(word[i]);
                 } else {
                     lives--;
                 }
-                await DrawHangman(ctx, guess, lives);
+                await DrawHangmanAsync(ctx, guess_str, lives)
+                    .ConfigureAwait(false);
             }
-            await ctx.RespondAsync("Game over! The word was : " + Formatter.Bold(word));
+            await ctx.RespondAsync("Game over! The word was : " + Formatter.Bold(word))
+                .ConfigureAwait(false);
         }
 
         #region HELPER_FUNCTIONS
-        private async Task DrawHangman(CommandContext ctx, char[] word, int lives)
+        private async Task DrawHangmanAsync(CommandContext ctx, char[] word, int lives)
         {
             string s = "\n-|-\n";
             if (lives < 7) {
@@ -155,19 +163,32 @@ namespace TheGodfather.Commands.Games
         [Command("rps")]
         [Description("Rock, paper, scissors game.")]
         [Aliases("rockpaperscissors")]
-        public async Task RPS(CommandContext ctx)
+        public async Task RpsAsync(CommandContext ctx)
         {
-            var msg = await ctx.RespondAsync("Get ready!");
+            var msg = await ctx.RespondAsync("Get ready!")
+                .ConfigureAwait(false);
             for (int i = 3; i > 0; i--) {
-                await msg.ModifyAsync(i + "...");
-                await Task.Delay(1000);
+                await msg.ModifyAsync(i + "...")
+                    .ConfigureAwait(false);
+                await Task.Delay(1000)
+                    .ConfigureAwait(false);
             }
-            await msg.ModifyAsync("GO!");
+            await msg.ModifyAsync("GO!")
+                .ConfigureAwait(false);
             
             switch (new Random().Next(0, 3)) {
-                case 0: await ctx.RespondAsync($"{DiscordEmoji.FromName(ctx.Client, ":new_moon:")}"); break;
-                case 1: await ctx.RespondAsync($"{DiscordEmoji.FromName(ctx.Client, ":newspaper:")}"); break;
-                case 2: await ctx.RespondAsync($"{DiscordEmoji.FromName(ctx.Client, ":scissors:")}"); break;
+                case 0:
+                    await ctx.RespondAsync($"{DiscordEmoji.FromName(ctx.Client, ":new_moon:")}")
+                        .ConfigureAwait(false);
+                    break;
+                case 1:
+                    await ctx.RespondAsync($"{DiscordEmoji.FromName(ctx.Client, ":newspaper:")}")
+                        .ConfigureAwait(false);
+                    break;
+                case 2:
+                    await ctx.RespondAsync($"{DiscordEmoji.FromName(ctx.Client, ":scissors:")}")
+                        .ConfigureAwait(false);
+                    break;
             }
         }
         #endregion
@@ -176,21 +197,24 @@ namespace TheGodfather.Commands.Games
         [Command("tictactoe")]
         [Description("Starts a game of tic-tac-toe.")]
         [Aliases("ttt")]
-        public async Task TicTacToe(CommandContext ctx)
+        public async Task TicTacToeAsync(CommandContext ctx)
         {
-            await ctx.RespondAsync($"Who wants to play tic-tac-toe with {ctx.User.Username}?");
+            await ctx.RespondAsync($"Who wants to play tic-tac-toe with {ctx.User.Username}?")
+                .ConfigureAwait(false);
 
             var interactivity = ctx.Client.GetInteractivityModule();
             var msg = await interactivity.WaitForMessageAsync(
                 xm => (xm.Author.Id != ctx.User.Id) && (xm.Channel.Id == ctx.Channel.Id) &&
                       (xm.Content.ToLower().StartsWith("me") || xm.Content.ToLower().StartsWith("i "))
-            );
+            ).ConfigureAwait(false);
             if (msg == null) {
-                await ctx.RespondAsync($"{ctx.User.Mention} right now: http://i0.kym-cdn.com/entries/icons/mobile/000/003/619/ForeverAlone.jpg");
+                await ctx.RespondAsync($"{ctx.User.Mention} right now: http://i0.kym-cdn.com/entries/icons/mobile/000/003/619/ForeverAlone.jpg")
+                    .ConfigureAwait(false);
                 return;
             }
 
-            var m = await ctx.RespondAsync($"Game between {ctx.User.Mention} and {msg.User.Mention} begins!");
+            var m = await ctx.RespondAsync($"Game between {ctx.User.Mention} and {msg.User.Mention} begins!")
+                .ConfigureAwait(false);
 
             int[,] board = new int[3, 3];
             TTTInitializeBoard(board);
@@ -199,7 +223,7 @@ namespace TheGodfather.Commands.Games
             int moves = 0;
             while (moves < 9 && !TTTGameOver(board)) {
                 int field = 0;
-                var t = interactivity.WaitForMessageAsync(
+                var t = await interactivity.WaitForMessageAsync(
                     xm => {
                         if (xm.Channel.Id != ctx.Channel.Id) return false;
                         if (player1plays && (xm.Author.Id != ctx.User.Id)) return false;
@@ -214,22 +238,25 @@ namespace TheGodfather.Commands.Games
                         return true;
                     },
                     TimeSpan.FromMinutes(1)
-                );
-                t.Wait();
-                if (t.Result == null || field == 0) {
+                ).ConfigureAwait(false);
+                if (field == 0) {
                     await ctx.RespondAsync("No reply, aborting...");
                     return;
                 }
 
                 if (TTTPlaySuccessful(player1plays ? 1 : 2, board, field)) {
                     player1plays = !player1plays;
-                    await TTTPrintBoard(ctx, board, m);
-                } else
-                    await ctx.RespondAsync("Invalid move.");
+                    await TTTPrintBoard(ctx, board, m)
+                        .ConfigureAwait(false);
+                } else {
+                    await ctx.RespondAsync("Invalid move.")
+                        .ConfigureAwait(false);
+                }
                 moves++;
             }
 
-            await ctx.RespondAsync("GG");
+            await ctx.RespondAsync("GG")
+                .ConfigureAwait(false);
         }
 
         #region HELPER_FUNCTIONS
@@ -286,26 +313,32 @@ namespace TheGodfather.Commands.Games
         [Command("typing")]
         [Description("Typing race.")]
         [Aliases("type", "typerace", "typingrace")]
-        public async Task TypingRace(CommandContext ctx)
+        public async Task TypingRaceAsync(CommandContext ctx)
         {
-            await ctx.RespondAsync("I will send a random string in 5s. First one to types it wins. FOCUS!");
-            await Task.Delay(5000);
+            await ctx.RespondAsync("I will send a random string in 5s. First one to types it wins. FOCUS!")
+                .ConfigureAwait(false);
+            await Task.Delay(5000)
+                .ConfigureAwait(false);
 
             const string chars = "abcdefghijklmnopqrstuvwxyz0123456789";
             var rnd = new Random();
             var msg = new string(Enumerable.Repeat(chars, 20).Select(s => s[rnd.Next(s.Length)]).ToArray());
-            await ctx.RespondAsync(Formatter.Bold(msg) + " (you have 60s)");
+            await ctx.RespondAsync(Formatter.Bold(msg) + " (you have 60s)")
+                .ConfigureAwait(false);
 
             var interactivity = ctx.Client.GetInteractivityModule();
             var response = await interactivity.WaitForMessageAsync(
                 m => m.ChannelId == ctx.Channel.Id && m.Content == msg,
                 TimeSpan.FromSeconds(60)
-            );
+            ).ConfigureAwait(false);
 
-            if (response != null)
-                await ctx.RespondAsync($"And the winner is {response.User.Mention}!");
-            else
-                await ctx.RespondAsync("ROFL what a nabs...");
+            if (response != null) {
+                await ctx.RespondAsync($"And the winner is {response.User.Mention}!")
+                    .ConfigureAwait(false); ;
+            } else {
+                await ctx.RespondAsync("ROFL what a nabs...")
+                    .ConfigureAwait(false); ;
+            }
         }
         #endregion
     }
