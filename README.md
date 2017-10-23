@@ -21,10 +21,12 @@ Commands use the following types:
 * ``int`` : Integer (positive or negative number)
 * ``double`` : Decimal point number (positive or negative), can also be integer
 * ``string`` : Word consisting of Unicode characters WITHOUT spaces. If you want to include spaces, then surround it with ``"``
+* ``bool`` : ``true`` or ``false``
 * ``text`` : Some Unicode text, can include spaces
 * ``user`` : Discord user, given by ``@mention``
 * ``channel`` : Discord channel, given by ``name`` or ``#name``
 * ``emoji`` : Emoji, either Unicode or Discord representation
+* ``role`` : An existing role. Can be given with ``@mentionrole`` or ``Role name``
 
 
 ### Command table
@@ -32,8 +34,11 @@ Commands use the following types:
 *Note: Required permissions are permissions required for both bot and user to run the command (if not specified otherwise in table)*
 <br><br>
 
+## Misc commands
+
 | Command group (with synonyms) | Command name (with synonyms) | Required Permissions | Command arguments | Command Description | Example of use |
 |---|---|---|---|---|---|
+|   |   |   |   |   |   |
 |   | ``embed`` | Attach files (user) | ``[string] URL`` | Embeds image given as URL and sends a embed frame. | ``!embed https://img.memecdn.com/feelium_o_1007518.jpg``  |
 |   | ``greet``<br>``hello``<br>``hi``<br>``halo``<br>``hey``<br>``howdy``<br>``sup`` |  |  | Greets a user and starts a conversation | ``!greet`` |
 |   | ``invite``<br>``getinvite`` | Create instant invite |  | Get an instant invite link for the current channel. | ``!invite`` |
@@ -45,7 +50,12 @@ Commands use the following types:
 |   | ``report`` |   | ``[text] Report message`` | Send message to owner (hopefully about a bug, I can see it being abused) | ``!report Your bot sucks!`` |
 |  | ``say``  |   | ``[text] What to say`` | Make Godfather say something! | ``!say Luke, I am your father!`` |
 |   | ``zugify`` |   | ``[text] Text`` | Requested by Zugi. It is so stupid it isn't worth describing... | ``!zugify Some text`` |
-|   |   |   |   |   |   |   |
+
+## Administration commands
+
+| Command group (with synonyms) | Command name (with synonyms) | Required Permissions | Command arguments | Command Description | Example of use |
+|---|---|---|---|---|---|
+|   |   |   |   |   |   |
 | ``channel``<br>``channels``<br>``c``<br>``chn`` | ``createcategory``<br>``createc``<br>``+c``<br>``makec``<br>``newc``<br>``addc`` | Manage Channels | ``[text] Name`` | Create new channel category. | ``!channel createcategory My Category`` |
 | ``channel``<br>``channels``<br>``c``<br>``chn`` | ``createtext``<br>``createt``<br>``+``<br>``+t``<br>``maket``<br>``newt``<br>``addt`` | Manage Channels | ``[string] Name`` | Create new text channel. *Note: Discord does not allow spaces in text channel name.* | ``!channel createtext spam`` |
 | ``channel``<br>``channels``<br>``c``<br>``chn`` | ``createvoice``<br>``createv``<br>``+v``<br>``makev``<br>``newv``<br>``addv`` | Manage Channels | ``[text] Name`` | Create new voice channel. | ``!channel createvoice My Voice Channel`` |
@@ -78,6 +88,14 @@ Commands use the following types:
 | ``messages``<br>``m``<br>``msg``<br>``msgs`` | ``unpin``<br>``up`` | Manage Messages  | ``[int] Index (starting from 0)`` | Unpin pinned message with index ``Index`` in pinned message list. | ``!messages unpin 3`` |
 | ``messages``<br>``m``<br>``msg``<br>``msgs`` | ``unpinall``<br>``upa`` | Manage Messages  |  | Unpin all pinned messages. | ``!messages unpinall`` |
 |   |   |   |   |   |   |
+| ``roles``<br>``role``<br>``r``<br>``rl`` |  |  |  | List all roles for this guild. | ``!roles`` |
+| ``roles``<br>``role``<br>``r``<br>``rl`` | ``create``<br>``new``<br>``add``<br>``+`` | Manage Roles | ``[text] Name`` | Create new role with name ``Name`` | ``!roles create My new role`` |
+| ``roles``<br>``role``<br>``r``<br>``rl`` | ``delete``<br>``del``<br>``d``<br>``-``<br>``remove``<br>``rm`` | Manage Roles | ``[role] Role`` | Delete role ``Role``. | ``!roles delete @role``<br><br>``!roles delete Some Role`` |
+| ``roles``<br>``role``<br>``r``<br>``rl`` | ``mentionall``<br>``@``<br>``ma`` | Mention everyone | ``[role] Role`` | Mention everyone from role ``Role``. | ``!roles mentionall @role``<br><br>``!roles mentionall Some Role`` |
+| ``roles``<br>``role``<br>``r``<br>``rl`` | ``setcolor``<br>``clr``<br>``c``<br>``sc`` | Manage Roles | ``[string] Color (hex code)``<br><br>``[role] Role`` | Set ``Role`` color to ``Color``. | ``!roles setcolor #800000 @role``<br><br>``!roles setcolor #800000 Some Role`` |
+| ``roles``<br>``role``<br>``r``<br>``rl`` | ``setname``<br>``rename``<br>``name``<br>``n`` | Manage Roles | ``[role] Role``<br><br>``[text] Name`` | Change ``Role`` name to ``Name``. | ``!role rename @somerole New Name``<br><br>``!role rename "Unmentionable role" Some new name`` |
+| ``roles``<br>``role``<br>``r``<br>``rl`` | ``setmentionable``<br>``mentionable``<br>``m``<br>``setm`` | Manage Roles | ``[role] Role``<br><br>``[bool] Mentionable`` | Set ``Role`` to be mentionable or not. | ``!role mentionable @somerole false``<br><br>``!role mentionable "Unmentionable role" true`` |
+| ``roles``<br>``role``<br>``r``<br>``rl`` | ``setvisible``<br>``separate``<br>``h``<br>``seth``<br>``hoist``<br>``sethoist`` | Manage Roles | ``[role] Role``<br><br>``[bool] Visible`` | Set ``Role`` to be visible (hoisted) or not. Visible roles appear separated in memberlist. | ``!role hoist @somerole false``<br><br>``!role hoist "Unmentionable role" true`` |
 
 
 **(Command list is incomplete)**
