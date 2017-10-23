@@ -28,8 +28,8 @@ namespace TheGodfather.Commands.Messages
         [Command("add")]
         [Description("Add alias to list.")]
         [Aliases("+", "new")]
-        [RequireUserPermissions(Permissions.ManageMessages)]
-        public async Task AddAlias(CommandContext ctx,
+        [RequireUserPermissions(Permissions.Administrator)]
+        public async Task AddAsync(CommandContext ctx,
                                   [Description("Alias name (case sensitive).")] string alias = null,
                                   [RemainingText, Description("Response.")] string response = null)
         {
@@ -37,7 +37,7 @@ namespace TheGodfather.Commands.Messages
                 throw new InvalidCommandUsageException("Alias name or response missing or invalid.");
 
             if (ctx.Dependencies.GetDependency<AliasManager>().TryAdd(ctx.Guild.Id, alias, response))
-                await ctx.RespondAsync($"Alias {Formatter.Bold(alias)} successfully added.");
+                await ctx.RespondAsync($"Alias {Formatter.Bold(alias)} successfully added.").ConfigureAwait(false);
             else
                 throw new CommandFailedException($"Alias {Formatter.Bold(alias)} already exists!");
         }
@@ -46,16 +46,16 @@ namespace TheGodfather.Commands.Messages
         #region COMMAND_ALIAS_DELETE
         [Command("delete")]
         [Description("Remove alias from list.")]
-        [Aliases("-", "remove", "del")]
+        [Aliases("-", "remove", "del", "rm")]
         [RequireUserPermissions(Permissions.ManageMessages)]
-        public async Task DeleteAlias(CommandContext ctx, 
+        public async Task DeleteAsync(CommandContext ctx, 
                                      [RemainingText, Description("Alias to remove.")] string alias = null)
         {
             if (string.IsNullOrWhiteSpace(alias))
                 throw new InvalidCommandUsageException("Alias name missing.");
 
             if (ctx.Dependencies.GetDependency<AliasManager>().TryRemove(ctx.Guild.Id, alias))
-                await ctx.RespondAsync($"Alias {Formatter.Bold(alias)} successfully removed.");
+                await ctx.RespondAsync($"Alias {Formatter.Bold(alias)} successfully removed.").ConfigureAwait(false);
             else
                 throw new CommandFailedException("No such alias found!", new KeyNotFoundException());
         }
@@ -65,10 +65,10 @@ namespace TheGodfather.Commands.Messages
         [Command("save")]
         [Description("Save aliases to file.")]
         [RequireOwner]
-        public async Task SaveAliases(CommandContext ctx)
+        public async Task SaveAsync(CommandContext ctx)
         {
             if (ctx.Dependencies.GetDependency<AliasManager>().Save(ctx.Client.DebugLogger))
-                await ctx.RespondAsync("Aliases successfully saved.");
+                await ctx.RespondAsync("Aliases successfully saved.").ConfigureAwait(false);
             else
                 throw new CommandFailedException("Failed saving aliases.", new IOException());
         }
@@ -77,8 +77,8 @@ namespace TheGodfather.Commands.Messages
         #region COMMAND_ALIAS_LIST
         [Command("list")]
         [Description("Show all aliases.")]
-        public async Task ListAliases(CommandContext ctx, 
-                                     [Description("Page.")] int page = 1)
+        public async Task ListAsync(CommandContext ctx, 
+                                   [Description("Page.")] int page = 1)
         {
             var aliases = ctx.Dependencies.GetDependency<AliasManager>().Aliases;
 
@@ -90,18 +90,18 @@ namespace TheGodfather.Commands.Messages
             if (page < 1 || page > aliases[ctx.Guild.Id].Count / 10 + 1)
                 throw new CommandFailedException("No aliases on that page.");
 
-            string s = "";
+            string desc = "";
             int starti = (page - 1) * 10;
             int endi = starti + 10 < aliases[ctx.Guild.Id].Count ? starti + 10 : aliases[ctx.Guild.Id].Count;
             var keys = aliases[ctx.Guild.Id].Keys.Take(page * 10).ToArray();
             for (var i = starti; i < endi; i++)
-                s += $"{Formatter.Bold(keys[i])} : {aliases[ctx.Guild.Id][keys[i]]}\n";
+                desc += $"{Formatter.Bold(keys[i])} : {aliases[ctx.Guild.Id][keys[i]]}\n";
 
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
                 Title = $"Available aliases (page {page}/{aliases[ctx.Guild.Id].Count / 10 + 1}) :",
-                Description = s,
+                Description = desc,
                 Color = DiscordColor.Green
-            });
+            }.Build()).ConfigureAwait(false);
         }
         #endregion
 
@@ -109,10 +109,10 @@ namespace TheGodfather.Commands.Messages
         [Command("clear")]
         [Description("Delete all aliases for the current guild.")]
         [RequireUserPermissions(Permissions.Administrator)]
-        public async Task ClearAliases(CommandContext ctx)
+        public async Task ClearAsync(CommandContext ctx)
         {
             if (ctx.Dependencies.GetDependency<AliasManager>().ClearGuildAliases(ctx.Guild.Id))
-                await ctx.RespondAsync("All aliases for this guild successfully removed.");
+                await ctx.RespondAsync("All aliases for this guild successfully removed.").ConfigureAwait(false);
             else
                 throw new CommandFailedException("Clearing guild aliases failed");
         }
@@ -122,10 +122,11 @@ namespace TheGodfather.Commands.Messages
         [Command("clearall")]
         [Description("Delete all aliases stored for ALL guilds.")]
         [RequireOwner]
-        public async Task ClearAllAliases(CommandContext ctx)
+        public async Task ClearAllAsync(CommandContext ctx)
         {
             ctx.Dependencies.GetDependency<AliasManager>().ClearAllAliases();
-            await ctx.RespondAsync("All aliases successfully removed.");
+            await ctx.RespondAsync("All aliases successfully removed.")
+                .ConfigureAwait(false);
         }
         #endregion
     }

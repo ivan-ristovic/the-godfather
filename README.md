@@ -57,6 +57,13 @@ Commands use the following types:
 |   | ``say``  |   | ``[text] What to say`` | Make Godfather say something! | ``!say Luke, I am your father!`` |
 |   | ``zugify`` |   | ``[text] Text`` | Requested by Zugi. It is so stupid it isn't worth describing... | ``!zugify Some text`` |
 |   |   |   |   |   |   |
+| ``alias``<br>``aliases``<br>``a`` | ``add``<br>``+``<br>``new`` | Administrator (user) | ``[string] Trigger``<br><br>``[text] Response`` | Add a new alias to alias guild list. Whenever someone sends a message ``Trigger``, bot will repond with ``Response``. You can also use ``%user%`` as a replacement for sender mention. | ``!alias add "hi" Hey, %user%!`` |
+| ``alias``<br>``aliases``<br>``a`` | ``clear`` | Administrator (user) |  | Delete all aliases for the current guild. | ``!alias clear`` |
+| ``alias``<br>``aliases``<br>``a`` | ``clearall`` | Owner Only |  | Delete all aliases (for all guilds). | ``!alias clearall`` |
+| ``alias``<br>``aliases``<br>``a`` | ``delete``<br>``-``<br>``remove``<br>``del``<br>``rm`` | Administrator (user) | ``[string] Trigger`` | Remove alias with a given trigger from guild alias list. Use ``!alias list`` to view aliases. | ``!alias delete hi`` |
+| ``alias``<br>``aliases``<br>``a`` | ``list``<br> |  | ``(optional) [int] Page (def: 1)`` | List guild aliases on page ``Page``. | ``!alias list 3`` |
+| ``alias``<br>``aliases``<br>``a`` | ``save``<br> | Owner Only |  | Save all aliases. | ``!alias save`` |
+|   |   |   |   |   |   |
 | ``insult``<br>``burn`` |   |   | ``(optional) [user] User (def: sender)`` | Insult ``User``. | ``!insult``<br><br>``!insult @Someone`` |
 | ``insult``<br>``burn`` | ``add``<br>``+``<br>``new`` | Owner Only | ``[text] Insult`` | Add a new insult to global insult list. You can use ``%user%`` in your insult text as a replacement for the user mention who will be insulted. | ``!insult add Your age is greater than your IQ, %user%!`` |
 | ``insult``<br>``burn`` | ``clear``<br>``clearall`` | Owner Only |  | Delete all insults. | ``!insult clear`` |
