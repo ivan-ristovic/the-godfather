@@ -54,9 +54,15 @@ Commands use the following types:
 | ``insult``<br>``burn`` |   |   | ``(optional) [user] User (def: sender)`` | Insult ``User``. | ``!insult``<br><br>``!insult @Someone`` |
 | ``insult``<br>``burn`` | ``add``<br>``+``<br>``new`` | Owner Only | ``[text] Insult`` | Add a new insult to global insult list. You can use ``%user%`` in your insult text as a replacement for the user mention who will be insulted. | ``!insult add Your age is greater than your IQ, %user%!`` |
 | ``insult``<br>``burn`` | ``clear``<br>``clearall`` | Owner Only |  | Delete all insults. | ``!insult clear`` |
-| ``insult``<br>``burn`` | ``delete``<br>``-``<br>``remove``<br>``del``<br>``rm`` | Owner Only |  | Remove insult with a given index from list. Use ``!insults list`` to view indexes. | ``!insult delete 5`` |
+| ``insult``<br>``burn`` | ``delete``<br>``-``<br>``remove``<br>``del``<br>``rm`` | Owner Only | ``[int] Index`` | Remove insult with a given index from list. Use ``!insults list`` to view indexes. | ``!insult delete 5`` |
 | ``insult``<br>``burn`` | ``list``<br> |  | ``(optional) [int] Page (def: 1)`` | List insults on page ``Page``. | ``!insult list 3`` |
 | ``insult``<br>``burn`` | ``save``<br> | Owner Only |  | Save all insults. | ``!insult save`` |
+|   |   |   |   |   |   |
+| ``meme``<br>``memes``<br>``mm`` |   |   | ``(optional) [text] Meme name`` | Send a meme with name ``Meme name``. If name isn't given, sends random one. | ``!meme``<br><br>``!meme fap`` |
+| ``meme``<br>``memes``<br>``mm`` | ``add``<br>``+``<br>``new`` | Owner Only | ``[text] Name``<br><br>``[string] URL`` | Add a new meme to global meme list. | ``!meme add Name http://url.png`` |
+| ``meme``<br>``memes``<br>``mm`` | ``delete``<br>``-``<br>``remove``<br>``del``<br>``rm`` | Owner Only | ``[text] Name`` | Remove meme with a given name from the list. Use ``!meme list`` to view all memes. | ``!meme delete fap`` |
+| ``meme``<br>``memes``<br>``mm`` | ``list``<br> |  | ``(optional) [int] Page (def: 1)`` | List memes on page ``Page``. | ``!meme list 3`` |
+| ``meme``<br>``memes``<br>``mm`` | ``save``<br> | Owner Only |  | Save all memes. | ``!meme save`` |
 
 ## Administration
 
