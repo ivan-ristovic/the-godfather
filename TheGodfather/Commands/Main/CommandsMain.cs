@@ -23,14 +23,15 @@ namespace TheGodfather.Commands.Main
         [Command("embed")]
         [Description("Embed an image given as an URL.")]
         [RequirePermissions(Permissions.AttachFiles)]
-        public async Task EmbedURL(CommandContext ctx,
-                                  [Description("Image URL.")] string url = null)
+        public async Task EmbedUrlAsync(CommandContext ctx,
+                                       [Description("Image URL.")] string url = null)
         {
             if (string.IsNullOrWhiteSpace(url))
                 throw new InvalidCommandUsageException("URL missing!");
 
             try {
-                await ctx.RespondAsync(embed: new DiscordEmbedBuilder() { ImageUrl = url });
+                await ctx.RespondAsync(embed: new DiscordEmbedBuilder() { ImageUrl = url })
+                    .ConfigureAwait(false);
             } catch (UriFormatException e) {
                 throw new CommandFailedException("URL is not in correct format!", e);
             }
@@ -43,20 +44,21 @@ namespace TheGodfather.Commands.Main
         [Aliases("hello", "hi", "halo", "hey", "howdy", "sup")]
         public async Task Greet(CommandContext ctx)
         {
-            await ctx.RespondAsync($"{DiscordEmoji.FromName(ctx.Client, ":wave:")} Hi, {ctx.User.Mention}!");
+            await ctx.RespondAsync($"{DiscordEmoji.FromName(ctx.Client, ":wave:")} Hi, {ctx.User.Mention}!")
+                .ConfigureAwait(false);
             var interactivity = ctx.Client.GetInteractivityModule();
             var msg = await interactivity.WaitForMessageAsync(
                 xm => xm.Author.Id == ctx.User.Id && xm.Content.ToLower().StartsWith("how are you"),
                 TimeSpan.FromMinutes(1)
-            );
+            ).ConfigureAwait(false);
 
             if (msg != null) {
                 switch (new Random().Next(0, 5)) {
-                    case 0: await ctx.RespondAsync($"I'm fine, thank you!"); break;
-                    case 1: await ctx.RespondAsync($"Up and running, thanks for asking!"); break;
-                    case 2: await ctx.RespondAsync($"Doing fine, thanks!"); break;
-                    case 3: await ctx.RespondAsync($"Wonderful, thanks!"); break;
-                    case 4: await ctx.RespondAsync($"Awesome, thank you!"); break;
+                    case 0: await ctx.RespondAsync($"I'm fine, thank you!").ConfigureAwait(false); break;
+                    case 1: await ctx.RespondAsync($"Up and running, thanks for asking!").ConfigureAwait(false); break;
+                    case 2: await ctx.RespondAsync($"Doing fine, thanks!").ConfigureAwait(false); break;
+                    case 3: await ctx.RespondAsync($"Wonderful, thanks!").ConfigureAwait(false); break;
+                    case 4: await ctx.RespondAsync($"Awesome, thank you!").ConfigureAwait(false); break;
                     default: break;
                 }
             }
@@ -68,17 +70,23 @@ namespace TheGodfather.Commands.Main
         [Description("Get an instant invite link for the current channel.")]
         [Aliases("getinvite")]
         [RequirePermissions(Permissions.CreateInstantInvite)]
-        public async Task SendInstantInviteAsync(CommandContext ctx)
+        public async Task GetInstantInviteAsync(CommandContext ctx)
         {
-            var invites = ctx.Channel.GetInvitesAsync().Result.Where(
+            var invites = await ctx.Channel.GetInvitesAsync()
+                .ConfigureAwait(false);
+            
+            var permanent = invites.Where(
                 inv => (inv.Channel.Id == ctx.Channel.Id) && !inv.IsTemporary
             );
 
-            if (invites.Count() > 0)
-                await ctx.RespondAsync(invites.ElementAt(0).ToString());
-            else {
-                var invite = await ctx.Channel.CreateInviteAsync(max_age: 3600, temporary: true);
-                await ctx.RespondAsync(invite.ToString() + "\n\n" + Formatter.Italic("This invite will expire in one hour!"));
+            if (permanent.Count() > 0) {
+                await ctx.RespondAsync(permanent.ElementAt(0).ToString())
+                    .ConfigureAwait(false);
+            } else {
+                var invite = await ctx.Channel.CreateInviteAsync(max_age: 3600, temporary: true)
+                    .ConfigureAwait(false);
+                await ctx.RespondAsync(invite.ToString() + "\n\n" + Formatter.Italic("This invite will expire in one hour!"))
+                    .ConfigureAwait(false);
             }
         }
         #endregion
@@ -87,20 +95,28 @@ namespace TheGodfather.Commands.Main
         [Command("leave")]
         [Description("Makes Godfather leave the server.")]
         [RequireUserPermissions(Permissions.KickMembers)]
-        public async Task Leet(CommandContext ctx)
+        public async Task LeaveAsync(CommandContext ctx)
         {
             var inter = ctx.Client.GetInteractivityModule();
-            await ctx.RespondAsync("Are you sure?");
-            var m = await inter.WaitForMessageAsync(x => x.Channel.Id == ctx.Channel.Id && x.Author.Id == ctx.User.Id && (x.Content.ToLower() == "yes" || x.Content.ToLower() == "no"), TimeSpan.FromSeconds(10));
+            await ctx.RespondAsync("Are you sure?")
+                .ConfigureAwait(false);
+            var m = await inter.WaitForMessageAsync(
+                x => x.Channel.Id == ctx.Channel.Id && x.Author.Id == ctx.User.Id && (x.Content.ToLower() == "yes" || x.Content.ToLower() == "no")
+                , TimeSpan.FromSeconds(10)
+            ).ConfigureAwait(false);
             if (m != null) {
                 if (m.Message.Content == "yes") {
-                    await ctx.RespondAsync("Go find a new bot, since this one is leaving!");
-                    await ctx.Guild.LeaveAsync();
+                    await ctx.RespondAsync("Go find a new bot, since this one is leaving!")
+                        .ConfigureAwait(false);
+                    await ctx.Guild.LeaveAsync()
+                        .ConfigureAwait(false);
                 } else {
-                    await ctx.RespondAsync("Jewsus Krest you scared me.");
+                    await ctx.RespondAsync("Jewsus Krest you scared me.")
+                        .ConfigureAwait(false);
                 }
             } else {
-                await ctx.RespondAsync("No response? Guess I'll stay then.");
+                await ctx.RespondAsync("No response? Guess I'll stay then.")
+                    .ConfigureAwait(false);
             }
         }
         #endregion
@@ -108,8 +124,8 @@ namespace TheGodfather.Commands.Main
         #region COMMAND_LEET
         [Command("leet")]
         [Description("Wr1t3s m3ss@g3 1n 1337sp34k.")]
-        public async Task Leet(CommandContext ctx, 
-                              [RemainingText, Description("Text")] string s = null)
+        public async Task L33tAsync(CommandContext ctx, 
+                                   [RemainingText, Description("Text")] string s = null)
         {
             if (string.IsNullOrWhiteSpace(s))
                 throw new InvalidCommandUsageException("Y0u d1dn'7 g1v3 m3 @ny 73x7...");
@@ -131,16 +147,18 @@ namespace TheGodfather.Commands.Main
                 leet_s += (rnd.Next() % 2 == 0) ? Char.ToUpper(add) : Char.ToLower(add);
             }
 
-            await ctx.RespondAsync(leet_s);
+            await ctx.RespondAsync(leet_s)
+                .ConfigureAwait(false);
         }
         #endregion
         
         #region COMMAND_PING
         [Command("ping")]
         [Description("Ping the bot.")]
-        public async Task Ping(CommandContext ctx)
+        public async Task PingAsync(CommandContext ctx)
         {
-            await ctx.RespondAsync($"Pong! {ctx.Client.Ping}ms");
+            await ctx.RespondAsync($"Pong! {ctx.Client.Ping}ms")
+                .ConfigureAwait(false);
         }
         #endregion
         
@@ -149,8 +167,8 @@ namespace TheGodfather.Commands.Main
         [Description("Get channel prefix, or set it to given value.")]
         [Aliases("setprefix")]
         [RequireUserPermissions(Permissions.Administrator)]
-        public async Task Prefix(CommandContext ctx,
-                                [Description("Prefix to set.")] string prefix = null)
+        public async Task GetOrSetPrefixAsync(CommandContext ctx,
+                                             [Description("Prefix to set.")] string prefix = null)
         {
             var prefixes = ctx.Dependencies.GetDependency<PrefixManager>();
 
@@ -158,21 +176,23 @@ namespace TheGodfather.Commands.Main
                 string p = prefixes.GetPrefixForChannelId(ctx.Channel.Id);
                 if (p == null)
                     p = ctx.Dependencies.GetDependency<BotConfigManager>().CurrentConfig.DefaultPrefix;
-                await ctx.RespondAsync("Current prefix for this channel is: " + Formatter.Bold(p));
+                await ctx.RespondAsync("Current prefix for this channel is: " + Formatter.Bold(p))
+                    .ConfigureAwait(false);
                 return;
             }
 
             prefixes.SetPrefixForChannelId(ctx.Channel.Id, prefix);
-            await ctx.RespondAsync("Successfully changed the prefix for this channel to: " + Formatter.Bold(prefix));
+            await ctx.RespondAsync("Successfully changed the prefix for this channel to: " + Formatter.Bold(prefix))
+                .ConfigureAwait(false);
         }
         #endregion
 
         #region COMMAND_REMIND
         [Command("remind")]
         [Description("Resend a message after some time.")]
-        public async Task Remind(CommandContext ctx,
-                                [Description("Time to wait before repeat (in seconds).")] int time = 0,
-                                [RemainingText, Description("What to repeat.")] string s = null)
+        public async Task RemindAsync(CommandContext ctx,
+                                     [Description("Time to wait before repeat (in seconds).")] int time = 0,
+                                     [RemainingText, Description("What to repeat.")] string s = null)
         {
             if (time == 0 || string.IsNullOrWhiteSpace(s))
                 throw new InvalidCommandUsageException("Missing time or repeat string.");
@@ -180,42 +200,50 @@ namespace TheGodfather.Commands.Main
             if (time < 0 || time > 604800)
                 throw new CommandFailedException("Time cannot be less than 0 or greater than 1 week.", new ArgumentOutOfRangeException());
 
-            await ctx.RespondAsync($"I will remind you to: \"{s}\" in {Formatter.Bold(time.ToString())} seconds.");
-            await Task.Delay(time * 1000);
-            await ctx.RespondAsync($"I was told to remind you to: \"{s}\".");
+            await ctx.RespondAsync($"I will remind you to: \"{s}\" in {Formatter.Bold(time.ToString())} seconds.")
+                .ConfigureAwait(false);
+            await Task.Delay(TimeSpan.FromSeconds(time))
+                .ConfigureAwait(false);
+            await ctx.RespondAsync($"I was told to remind you to: \"{s}\".")
+                .ConfigureAwait(false);
         }
         #endregion
 
         #region COMMAND_REPORT
         [Command("report")]
         [Description("Send a report message to owner about a bug (please don't abuse... please).")]
-        public async Task SendErrorReport(CommandContext ctx, 
-                                         [RemainingText, Description("Text.")] string issue = null)
+        public async Task SendErrorReportAsync(CommandContext ctx, 
+                                              [RemainingText, Description("Text.")] string issue = null)
         {
             if (string.IsNullOrWhiteSpace(issue))
                 throw new InvalidCommandUsageException("Text missing.");
             
             await ctx.RespondAsync("Are you okay with your user and guild info being sent for further inspection?\n\n" +
-                Formatter.Italic("(Please either respond with 'yes' or wait 15 seconds for the prompt to time out)"));
+                Formatter.Italic("(Please either respond with 'yes' or wait 15 seconds for the prompt to time out)"))
+                .ConfigureAwait(false);
             var interactivity = ctx.Client.GetInteractivityModule();
             var msg = await interactivity.WaitForMessageAsync(
-                x => x.Author.Id == ctx.User.Id && x.Channel.Id == ctx.Channel.Id && x.Content.ToLower() == "yes", 
-                TimeSpan.FromSeconds(15)
-            );
+                x => x.Author.Id == ctx.User.Id && x.Channel.Id == ctx.Channel.Id && x.Content.ToLower() == "yes"
+                , TimeSpan.FromSeconds(15)
+            ).ConfigureAwait(false);
             if (msg != null) {
                 ctx.Client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", $"Report from {ctx.User.Username} ({ctx.User.Id}): {issue}", DateTime.Now);
-                var dm = await ctx.Client.CreateDmAsync(ctx.Client.CurrentApplication.Owner);
-                
-                await dm.SendMessageAsync("A new issue has been reported!", embed: 
+                var dm = await ctx.Client.CreateDmAsync(ctx.Client.CurrentApplication.Owner)
+                    .ConfigureAwait(false);
+
+                await dm.SendMessageAsync("A new issue has been reported!", embed:
                     new DiscordEmbedBuilder() {
                         Title = "Issue",
                         Description = issue,
                     }.WithAuthor($"{ctx.User.Username}#{ctx.User.Discriminator}", icon_url: ctx.User.AvatarUrl ?? ctx.User.DefaultAvatarUrl)
-                    .AddField("Guild", $"{ctx.Guild.Name} ({ctx.Guild.Id}) owned by {ctx.Guild.Owner.Username}#{ctx.Guild.Owner.Discriminator}")
-                );
-                await ctx.RespondAsync("Your issue has been reported.");
+                     .AddField("Guild", $"{ctx.Guild.Name} ({ctx.Guild.Id}) owned by {ctx.Guild.Owner.Username}#{ctx.Guild.Owner.Discriminator}")
+                     .Build()
+                ).ConfigureAwait(false);
+                await ctx.RespondAsync("Your issue has been reported.")
+                    .ConfigureAwait(false);
             } else {
-                await ctx.RespondAsync("Your issue has not been reported.");
+                await ctx.RespondAsync("Your issue has not been reported.")
+                    .ConfigureAwait(false);
             }
         }
         #endregion
@@ -224,13 +252,14 @@ namespace TheGodfather.Commands.Main
         [Command("say")]
         [Description("Repeats after you.")]
         [Aliases("repeat")]
-        public async Task Say(CommandContext ctx, 
-                             [RemainingText, Description("Text.")] string s = null)
+        public async Task SayAsync(CommandContext ctx, 
+                                  [RemainingText, Description("Text.")] string s = null)
         {
             if (string.IsNullOrWhiteSpace(s))
                 throw new InvalidCommandUsageException("Text missing.");
             
-            await ctx.RespondAsync(s);
+            await ctx.RespondAsync(s)
+                .ConfigureAwait(false);
         }
         #endregion
 
@@ -238,8 +267,8 @@ namespace TheGodfather.Commands.Main
         [Command("zugify")]
         [Description("I don't even...")]
         [Aliases("z")]
-        public async Task Zugify(CommandContext ctx, 
-                                [RemainingText, Description("Text.")] string text = null)
+        public async Task ZugifyAsync(CommandContext ctx, 
+                                     [RemainingText, Description("Text.")] string text = null)
         {
             if (string.IsNullOrWhiteSpace(text))
                 throw new InvalidCommandUsageException("Text missing.");
@@ -273,7 +302,8 @@ namespace TheGodfather.Commands.Main
                 s += " ";
             }
 
-            await ctx.RespondAsync(s);
+            await ctx.RespondAsync(s)
+                .ConfigureAwait(false);
         }
         #endregion
     }
