@@ -29,7 +29,7 @@ Commands use the following types:
 * ``emoji`` : Emoji, either Unicode or Discord representation
 
 
-### Command table
+## Command table
 
 *Note: Required permissions are permissions required for both bot and user to run the command (if not specified otherwise in table)*
 <br><br>
@@ -51,7 +51,7 @@ Commands use the following types:
 |   | ``say``  |   | ``[text] What to say`` | Make Godfather say something! | ``!say Luke, I am your father!`` |
 |   | ``zugify`` |   | ``[text] Text`` | Requested by Zugi. It is so stupid it isn't worth describing... | ``!zugify Some text`` |
 
-## Administration commands
+## Administration
 
 | Command group (with synonyms) | Command name (with synonyms) | Required Permissions | Command arguments | Command Description | Example of use |
 |---|---|---|---|---|---|
@@ -123,6 +123,9 @@ Commands use the following types:
 | ``bank``<br>``$``<br>``$$``<br>``$$$`` | ``top``<br>``leaderboard`` |  |  | Prints a list of richest users (globally). | ``!bank top`` |
 | ``bank``<br>``$``<br>``$$``<br>``$$$`` | ``transfer``<br>``lend`` |  | ``[user] User``<br><br>``[int] Ammount`` | Give ``Ammount`` credits from your account to ``User``'s account. | ``!bank transfer @MyFriend 100`` |
 |   |   |   |   |   |   |
+| ``gamble``<br>``bet`` | ``coinflip``<br>``coin``<br>``flip`` |   | ``[int] Bid``<br><br>``[string] Heads/Tails`` | Bet on a coin flip outcome! Can be invoked without both arguments if you do not wish to bet. | ``!bet coinflip 5 heads`` |
+| ``gamble``<br>``bet`` | ``roll``<br>``dice``<br>``die`` |   | ``[int] Bid``<br><br>``[int] Guess [1-6]`` | Bet on a dice roll outcome! Can be invoked without both arguments if you do not wish to bet. | ``!bet dice 50 6`` |
+| ``gamble``<br>``bet`` | ``slot``<br>``slotmachine`` |   | ``[int] Bid (min: 5)`` | Bet on a slot machine outcome! | ``!bet slot 5`` |
 
 
 **(Command list is incomplete)**

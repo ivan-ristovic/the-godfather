@@ -15,7 +15,7 @@ namespace TheGodfather.Commands.Games
 {
     [Group("gamble", CanInvokeWithoutSubcommand = false)]
     [Description("Random betting and gambling commands.")]
-    [Aliases("gambling", "betting", "bet")]
+    [Aliases("bet")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
     public partial class CommandsGamble
     {
@@ -23,9 +23,9 @@ namespace TheGodfather.Commands.Games
         [Command("coinflip")]
         [Description("Flips a coin.")]
         [Aliases("coin", "flip")]
-        public async Task Coinflip(CommandContext ctx,
-                                  [Description("Bid.")] int bid = 0,
-                                  [Description("Heads/Tails (h/t).")] string bet = null)
+        public async Task CoinflipAsync(CommandContext ctx,
+                                       [Description("Bid.")] int bid = 0,
+                                       [Description("Heads/Tails (h/t).")] string bet = null)
         {
             if (bid != 0) {
 
@@ -53,9 +53,10 @@ namespace TheGodfather.Commands.Games
                 await ctx.RespondAsync($"{ctx.User.Mention} flipped " +
                     $"{(Formatter.Bold(rnd == 0 ? "Heads" : "Tails"))} " +
                     $"{(guess == rnd ? $"and won {bid} credits" : $"and lost {bid} credits")} !"
-                );
+                ).ConfigureAwait(false);
             } else {
-                await ctx.RespondAsync($"{ctx.User.Mention} flipped " + $"{(Formatter.Bold(new Random().Next(2) == 0 ? "Heads" : "Tails"))} !");
+                await ctx.RespondAsync($"{ctx.User.Mention} flipped " + $"{(Formatter.Bold(new Random().Next(2) == 0 ? "Heads" : "Tails"))} !")
+                    .ConfigureAwait(false);
             }
         }
         #endregion
@@ -64,9 +65,9 @@ namespace TheGodfather.Commands.Games
         [Command("roll")]
         [Description("Rolls a dice.")]
         [Aliases("dice", "die")]
-        public async Task RollDice(CommandContext ctx,
-                                  [Description("Bid.")] int bid = 0,
-                                  [Description("Number guess.")] int guess = 0)
+        public async Task RollDiceAsync(CommandContext ctx,
+                                       [Description("Bid.")] int bid = 0,
+                                       [Description("Number guess.")] int guess = 0)
         {
             if (bid != 0) {
 
@@ -88,9 +89,10 @@ namespace TheGodfather.Commands.Games
 
                 await ctx.RespondAsync($"{DiscordEmoji.FromName(ctx.Client, ":game_die:")} {ctx.User.Mention} rolled a " +
                     $"{rnd} {(guess == rnd ? $"and won {bid * 5} credits" : $"and lost {bid} credits")} !"
-                );
+                ).ConfigureAwait(false);
             } else {
-                await ctx.RespondAsync($"{DiscordEmoji.FromName(ctx.Client, ":game_die:")} {ctx.User.Mention} rolled a {Formatter.Bold(new Random().Next(1, 7).ToString())}!");
+                await ctx.RespondAsync($"{DiscordEmoji.FromName(ctx.Client, ":game_die:")} {ctx.User.Mention} rolled a {Formatter.Bold(new Random().Next(1, 7).ToString())}!")
+                    .ConfigureAwait(false);
             }
         }
         #endregion
@@ -111,14 +113,15 @@ namespace TheGodfather.Commands.Games
             var slot_res = RollSlot(ctx);
             int won = EvaluateSlotResult(slot_res, bid);
 
-            var embed = new DiscordEmbedBuilder() {
+            var em = new DiscordEmbedBuilder() {
                 Title = "TOTALLY NOT RIGGED SLOT MACHINE",
                 Description = MakeStringFromResult(slot_res),
                 Color = DiscordColor.Yellow
             };
-            embed.AddField("Result", $"You won {Formatter.Bold(won.ToString())} credits!");
+            em.AddField("Result", $"You won {Formatter.Bold(won.ToString())} credits!");
 
-            await ctx.RespondAsync(embed: embed);
+            await ctx.RespondAsync(embed: em.Build())
+                .ConfigureAwait(false);
 
             if (won > 0)
                 ctx.Dependencies.GetDependency<BankManager>().IncreaseBalance(ctx.User.Id, won);
