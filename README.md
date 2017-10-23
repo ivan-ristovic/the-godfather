@@ -39,15 +39,20 @@ Commands use the following types:
 | Command group (with synonyms) | Command name (with synonyms) | Required Permissions | Command arguments | Command Description | Example of use |
 |---|---|---|---|---|---|
 |   |   |   |   |   |   |
+|   | ``8ball`` |   | ``[text] Question`` | Get an answer to your question from an almighty magic ball. | ``!8ball Are mirrors real?`` |
+|   | ``choose``<br>``select`` |   | ``[text] List`` | Randomly select one option from given list. Separate options with a ``,``. | ``!choose red, dark green, blue`` |
 |   | ``embed`` | Attach files (user) | ``[string] URL`` | Embeds image given as URL and sends a embed frame. | ``!embed https://img.memecdn.com/feelium_o_1007518.jpg``  |
 |   | ``greet``<br>``hello``<br>``hi``<br>``halo``<br>``hey``<br>``howdy``<br>``sup`` |  |  | Greets a user and starts a conversation | ``!greet`` |
 |   | ``invite``<br>``getinvite`` | Create instant invite |  | Get an instant invite link for the current channel. | ``!invite`` |
 |   | ``leave`` | Kick members (user) |   | Makes Godfather leave the server. | ``!leave`` |
 |   | ``leet`` |   | ``[text] Text`` | Wr1t3s m3ss@g3 1n 1337sp34k. | ``!leet This is so cool`` |
+|   | ``penis``<br>``size``<br>``length``<br>``manhood``<br>``dick`` |   | ``(optional) [user] User (def: sender)`` | An accurate measurement of ``User``'s manhood. | ``!penis @Someone`` |
 |   | ``ping`` |   |   | Ping the bot. | ``!ping`` |
 |   | ``poll``<br>``vote`` |   | ``[text] Question`` | Starts a poll in the channel. The bot will ask for poll options, which you give separated with ``;``, for example: ``option1;option2;option3`` | ``!poll`` |
 |   | ``prefix``<br>``setprefix`` | Administrator (user) | ``(optional) [string] New prefix`` | If invoked without arguments, gives current prefix for this channel, otherwise sets the prefix to ``New prefix``. If for example ``New prefix`` is ``;``, all commands in that channel from that point must be invoked using ``;``, for example ``;greet``. | ``!prefix``<br><br>``!prefix .`` |
-|   | ``remind`` |  | ``[int] Time to wait before repeat (in seconds)``<br><br>``[text] What to repeat`` | Repeat given text after given time. | ``!repeat 3600 I was told to remind you to do something`` |
+|   | ``raffle`` |   | ``[role] Role`` | Randomly select one user from given role. | ``!raffle @Admins`` |
+|   | ``rate``<br>``score``<br>``graph`` |   | ``[user] User`` | An accurate graphical representatin of ``User``'s humanity. | ``!rate @Someone`` |
+|   | ``remind`` |   | ``[int] Time to wait before repeat (in seconds)``<br><br>``[text] What to repeat`` | Repeat given text after given time. | ``!repeat 3600 I was told to remind you to do something`` |
 |   | ``report`` |   | ``[text] Report message`` | Send message to owner (hopefully about a bug, I can see it being abused) | ``!report Your bot sucks!`` |
 |   | ``say``  |   | ``[text] What to say`` | Make Godfather say something! | ``!say Luke, I am your father!`` |
 |   | ``zugify`` |   | ``[text] Text`` | Requested by Zugi. It is so stupid it isn't worth describing... | ``!zugify Some text`` |
@@ -64,6 +69,10 @@ Commands use the following types:
 | ``meme``<br>``memes``<br>``mm`` | ``delete``<br>``-``<br>``remove``<br>``del``<br>``rm`` | Owner Only | ``[text] Name`` | Remove meme with a given name from the list. Use ``!meme list`` to view all memes. | ``!meme delete fap`` |
 | ``meme``<br>``memes``<br>``mm`` | ``list``<br> |  | ``(optional) [int] Page (def: 1)`` | List memes on page ``Page``. | ``!meme list 3`` |
 | ``meme``<br>``memes``<br>``mm`` | ``save``<br> | Owner Only |  | Save all memes. | ``!meme save`` |
+|   |   |   |   |   |   |
+| ``random``<br>``rand``<br>``rnd`` | ``cat``  |   |   | Send a random cat image. | ``!random cat`` |
+| ``random``<br>``rand``<br>``rnd`` | ``dog``  |   |   | Send a random dog image. | ``!random dog`` |
+
 
 ## Administration
 

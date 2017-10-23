@@ -24,14 +24,14 @@ namespace TheGodfather.Commands.Main
         #region COMMAND_8BALL
         [Command("8ball")]
         [Description("An almighty ball which knows answer to everything.")]
-        [Aliases("question")]
-        public async Task EightBall(CommandContext ctx,
-                                   [RemainingText, Description("A question for the almighty ball.")] string q = null)
+        public async Task EightBallAsync(CommandContext ctx,
+                                        [RemainingText, Description("A question for the almighty ball.")] string q = null)
         {
             if (string.IsNullOrWhiteSpace(q))
                 throw new InvalidCommandUsageException("The almighty ball requires a question.");
 
             string[] answers = {
+                #region ANSWERS
                 "Yes.",
                 "Possibly.",
                 "No.",
@@ -40,12 +40,14 @@ namespace TheGodfather.Commands.Main
                 "Perhaps.",
                 "More than you can imagine.",
                 "Definitely not."
+                #endregion
             };
 
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
                 Title = DiscordEmoji.FromName(ctx.Client, ":8ball:").ToString(),
-                Description = answers[new Random().Next(answers.Length)]
-            });
+                Description = answers[new Random().Next(answers.Length)],
+                Color = DiscordColor.Black
+            }.Build()).ConfigureAwait(false);
         }
         #endregion
 
@@ -53,14 +55,15 @@ namespace TheGodfather.Commands.Main
         [Command("choose")]
         [Description("!choose option1, option2, option3...")]
         [Aliases("select")]
-        public async Task Choose(CommandContext ctx,
-                                [Description("Option list (split with a comma).")] string s = null)
+        public async Task ChooseAsync(CommandContext ctx,
+                                     [RemainingText, Description("Option list (separated with a comma).")] string s = null)
         {
             if (string.IsNullOrWhiteSpace(s))
                 throw new InvalidCommandUsageException("Missing list to choose from.");
 
-            var options = s.Split(',');
-            await ctx.RespondAsync(options[new Random().Next(options.Length)].Trim());
+            var options = s.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+            await ctx.RespondAsync(options[new Random().Next(options.Length)].Trim())
+                .ConfigureAwait(false);
         }
         #endregion
 
@@ -68,42 +71,43 @@ namespace TheGodfather.Commands.Main
         [Command("penis")]
         [Description("An accurate size of the user's manhood.")]
         [Aliases("size", "length", "manhood", "dick")]
-        public async Task Penis(CommandContext ctx,
-                               [Description("Who to measure")] DiscordUser u = null)
+        public async Task PenisAsync(CommandContext ctx,
+                                    [Description("Who to measure")] DiscordUser u = null)
         {
             if (u == null)
                 throw new InvalidCommandUsageException("You didn't give me anyone to measure.");
-
-            string msg = "8";
-            for (var size = u.Id % 40; size > 0; size--)
-                msg += "═";
-            await ctx.RespondAsync("Size: " + Formatter.Bold(msg + "D"));
+            
+            await ctx.RespondAsync("Size: " + Formatter.Bold("8" + new string('=', (int)(u.Id % 40)) + 'D'))
+                .ConfigureAwait(false);
         }
         #endregion
 
         #region COMMAND_RAFFLE
         [Command("raffle")]
         [Description("Choose a user from the online members list belonging to a given role.")]
-        public async Task Raffle(CommandContext ctx,
-                                [Description("Role.")] DiscordRole role = null)
+        public async Task RaffleAsync(CommandContext ctx,
+                                     [Description("Role.")] DiscordRole role = null)
         {
             if (role == null)
                 role = ctx.Guild.EveryoneRole;
 
-            var online = ctx.Guild.GetAllMembersAsync().Result.Where(
+            var members = await ctx.Guild.GetAllMembersAsync()
+                .ConfigureAwait(false);
+            var online = members.Where(
                 m => m.Roles.Contains(role) && m.Presence.Status != UserStatus.Offline
             );
 
-            await ctx.RespondAsync("Raffled: " + online.ElementAt(new Random().Next(online.Count())).Mention);
+            await ctx.RespondAsync("Raffled: " + online.ElementAt(new Random().Next(online.Count())).Mention)
+                .ConfigureAwait(false);
         }
         #endregion
 
         #region COMMAND_RATE
         [Command("rate")]
         [Description("An accurate graph of a user's humanity.")]
-        [Aliases("score")]
-        public async Task Rate(CommandContext ctx,
-                              [Description("Who to measure.")] DiscordUser u = null)
+        [Aliases("score", "graph")]
+        public async Task RateAsync(CommandContext ctx,
+                                   [Description("Who to measure.")] DiscordUser u = null)
         {
             if (u == null)
                 throw new InvalidCommandUsageException("You didn't give me anyone to measure.");
@@ -121,10 +125,19 @@ namespace TheGodfather.Commands.Main
             for (int dx = 0; dx < 10; dx++)
                 for (int dy = 0; dy < 10; dy++)
                     chart.SetPixel(start_x + dx, start_y + dy, Color.Red);
-            chart.Save("tmp.png");
-            await ctx.TriggerTypingAsync();
-            await ctx.RespondWithFileAsync("tmp.png");
-            File.Delete("tmp.png");
+
+            string filename = $"tmp{DateTime.Now.Ticks}.png";
+            try {
+                chart.Save(filename);
+                await ctx.TriggerTypingAsync()
+                    .ConfigureAwait(false);
+                await ctx.RespondWithFileAsync(filename)
+                    .ConfigureAwait(false);
+                if (File.Exists(filename))
+                    File.Delete(filename);
+            } catch (Exception e) {
+                throw new CommandFailedException("Error loading graph, contact owner please.", e);
+            } 
         }
         #endregion
 
@@ -134,13 +147,6 @@ namespace TheGodfather.Commands.Main
         [Aliases("rnd", "rand")]
         public class CommandsRandomGroup
         {
-            private sealed class DeserializedData
-            {
-                [JsonProperty("file")]
-                public string URL { get; set; }
-            }
-
-
             #region COMMAND_CAT
             [Command("cat")]
             [Description("Get a random cat image.")]
@@ -148,8 +154,9 @@ namespace TheGodfather.Commands.Main
             {
                 try {
                     var wc = new WebClient();
-                    var data = JsonConvert.DeserializeObject<DeserializedData>(wc.DownloadString("http://random.cat/meow"));
-                    await ctx.RespondAsync(data.URL);
+                    var jsondata = JsonConvert.DeserializeObject<DeserializedData>(wc.DownloadString("http://random.cat/meow"));
+                    await ctx.RespondAsync(jsondata.URL)
+                        .ConfigureAwait(false);
                 } catch (WebException e) {
                     throw new CommandFailedException("Connection to random.cat failed!", e);
                 }
@@ -164,12 +171,19 @@ namespace TheGodfather.Commands.Main
                 try {
                     var wc = new WebClient();
                     var data = wc.DownloadString("https://random.dog/woof");
-                    await ctx.RespondAsync("https://random.dog/" + data);
+                    await ctx.RespondAsync("https://random.dog/" + data)
+                        .ConfigureAwait(false);
                 } catch (WebException e) {
                     throw new CommandFailedException("Connection to random.dog failed!", e);
                 }
             }
             #endregion
+
+            private sealed class DeserializedData
+            {
+                [JsonProperty("file")]
+                public string URL { get; set; }
+            }
         }
     }
 }

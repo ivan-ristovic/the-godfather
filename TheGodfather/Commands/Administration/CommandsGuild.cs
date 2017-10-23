@@ -320,15 +320,14 @@ namespace TheGodfather.Commands.Administration
                             }
                         }
                     }
+                    if (File.Exists(filename))
+                        File.Delete(filename);
                 } catch (WebException e) {
                     throw new CommandFailedException("URL error.", e);
                 } catch (BadRequestException e) {
                     throw new CommandFailedException("Bad request. Possibly emoji slots are full for this guild?", e);
                 } catch (Exception e) {
-                    throw new CommandFailedException("IO error.", e);
-                } finally {
-                    if (File.Exists(filename))
-                        File.Delete(filename);
+                    throw new CommandFailedException("IO error. Contact owner please.", e);
                 }
             }
             #endregion
