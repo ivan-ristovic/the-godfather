@@ -129,6 +129,9 @@ Commands use the following types:
 
 ## Games
 
+| Command group (with synonyms) | Command name (with synonyms) | Required Permissions | Command arguments | Command Description | Example of use |
+|---|---|---|---|---|---|
+|   |   |   |   |   |   |
 | ``cards``<br>``deck`` | ``draw``<br>``take`` |   | ``(optional) [int] Ammount (def: 1)`` | Draw ``Ammount`` of cards from the top of the deck. | ``!deck draw 5`` |
 | ``cards``<br>``deck`` | ``reset``<br>``opennew``<br>``new`` |   |   | Open new deck of cards (unshuffled). | ``!deck new`` |
 | ``cards``<br>``deck`` | ``shuffle``<br>``s``<br>``sh``<br>``mix`` |   |   | Shuffle current card deck. | ``!deck shuffle`` |
