@@ -35,7 +35,7 @@ namespace TheGodfather.Commands.Games
             [Command("countries")]
             [Description("Country flags quiz.")]
             [Aliases("flags")]
-            public async Task CountriesQuiz(CommandContext ctx)
+            public async Task CountriesQuizAsync(CommandContext ctx)
             {
                 if (_countries == null)
                     LoadCountries();
@@ -45,7 +45,8 @@ namespace TheGodfather.Commands.Games
 
                 _quizrunning.TryAdd(ctx.Channel.Id, true);
 
-                await StartQuiz(QuizType.Countries, ctx);
+                await StartQuizAsync(QuizType.Countries, ctx)
+                    .ConfigureAwait(false);
 
                 _quizrunning.TryRemove(ctx.Channel.Id, out _);
             }
@@ -53,38 +54,46 @@ namespace TheGodfather.Commands.Games
 
 
             #region HELPER_FUNCTIONS
-            private async Task StartQuiz(QuizType t, CommandContext ctx)
+            private async Task StartQuizAsync(QuizType t, CommandContext ctx)
             {
                 var questions = new List<string>(_countries.Keys);
                 var participants = new SortedDictionary<ulong, int>();
 
-                await ctx.RespondAsync("Quiz will start in 10s! Get ready!");
-                await Task.Delay(10000);
+                await ctx.RespondAsync("Quiz will start in 10s! Get ready!")
+                    .ConfigureAwait(false);
+                await Task.Delay(10000)
+                    .ConfigureAwait(false);
 
                 var rnd = new Random();
-                for (int i = 1; i < 2; i++) {
+                for (int i = 1; i < 10; i++) {
                     string question = questions[rnd.Next(questions.Count)];
 
-                    await ctx.TriggerTypingAsync();
+                    await ctx.TriggerTypingAsync()
+                        .ConfigureAwait(false);
 
                     if (t == QuizType.Countries) {
                         try {
-                            await ctx.RespondWithFileAsync(new FileStream(question, FileMode.Open), content: $"Question {Formatter.Bold(i.ToString())}:");
+                            await ctx.RespondWithFileAsync(new FileStream(question, FileMode.Open), content: $"Question {Formatter.Bold(i.ToString())}:")
+                                .ConfigureAwait(false); ;
                         } catch (IOException e) {
                             throw e;
                         }
-                    } else
-                        await ctx.RespondAsync(question);
+                    } else {
+                        await ctx.RespondAsync(question)
+                            .ConfigureAwait(false);
+                    }
 
                     var interactivity = ctx.Client.GetInteractivityModule();
                     var msg = await interactivity.WaitForMessageAsync(
                         // TODO check enum when you add more quiz commands
                         xm => xm.Content.ToLower() == _countries[question].ToLower()
-                    );
+                    ).ConfigureAwait(false);
                     if (msg == null) {
-                        await ctx.RespondAsync($"Time is out! The correct answer was: {Formatter.Bold(_countries[question])}");
+                        await ctx.RespondAsync($"Time is out! The correct answer was: {Formatter.Bold(_countries[question])}")
+                            .ConfigureAwait(false);
                     } else {
-                        await ctx.RespondAsync($"GG {msg.User.Mention}, you got it right!");
+                        await ctx.RespondAsync($"GG {msg.User.Mention}, you got it right!")
+                            .ConfigureAwait(false);
                         if (participants.ContainsKey(msg.User.Id))
                             participants[msg.User.Id]++;
                         else
@@ -92,7 +101,8 @@ namespace TheGodfather.Commands.Games
                     }
                     questions.Remove(question);
 
-                    await Task.Delay(2000);
+                    await Task.Delay(2000)
+                        .ConfigureAwait(false);
                 }
 
                 var em = new DiscordEmbedBuilder() { Title = "Results", Color = DiscordColor.Azure };
@@ -100,7 +110,8 @@ namespace TheGodfather.Commands.Games
                     var m = await ctx.Guild.GetMemberAsync(participant.Key);
                     em.AddField(m.Username, participant.Value.ToString(), inline: true);
                 }
-                await ctx.RespondAsync(embed: em);
+                await ctx.RespondAsync(embed: em.Build())
+                    .ConfigureAwait(false);
             }
 
             private void LoadCountries()

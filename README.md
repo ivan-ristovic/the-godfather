@@ -145,6 +145,7 @@ Commands use the following types:
 | ``game nunchi`` | ``new``<br>``create`` |   |   | Identical result as to above command. | ``!game nunchi new`` |
 | ``game nunchi`` | ``join``<br>``+``<br>``compete`` |   |   | Join a pending nunchi game. | ``!game nunchi join`` |
 | ``game nunchi`` | ``rules``<br>``help`` |   |   | How to play? | ``!game nunchi rules`` |
+| ``game quiz``<br>``game trivia`` | ``countries``<br>``flags`` |   |   | Start a new countries quiz. | ``!game quiz countries`` |
 
 
 **(Command list is incomplete)**
