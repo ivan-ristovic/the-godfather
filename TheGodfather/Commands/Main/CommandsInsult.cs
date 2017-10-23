@@ -19,7 +19,7 @@ namespace TheGodfather.Commands.Main
 {
     [Group("insult", CanInvokeWithoutSubcommand = true)]
     [Description("Burns a user!")]
-    [Aliases("burn", "insults")]
+    [Aliases("burn")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
     public class CommandsInsult
     {
@@ -31,7 +31,8 @@ namespace TheGodfather.Commands.Main
                 u = ctx.User;
 
             if (u.Id == ctx.Client.CurrentUser.Id) {
-                await ctx.RespondAsync("How original, trying to make me insult myself. Sadly it won't work.");
+                await ctx.RespondAsync("How original, trying to make me insult myself. Sadly it won't work.")
+                    .ConfigureAwait(false);
                 return;
             }
 
@@ -39,7 +40,8 @@ namespace TheGodfather.Commands.Main
             if (insult == null)
                 throw new CommandFailedException("No available insults.");
 
-            await ctx.RespondAsync(insult.Replace("%user%", u.Mention));
+            await ctx.RespondAsync(insult.Replace("%user%", u.Mention))
+                .ConfigureAwait(false);
         }
 
 
@@ -47,8 +49,9 @@ namespace TheGodfather.Commands.Main
         [Command("add")]
         [Description("Add insult to list (Use % to code mention).")]
         [Aliases("+", "new")]
-        public async Task AddInsult(CommandContext ctx,
-                                   [RemainingText, Description("Response.")] string insult = null)
+        [RequireOwner]
+        public async Task AddInsultAsync(CommandContext ctx,
+                                        [RemainingText, Description("Response.")] string insult = null)
         {
             if (string.IsNullOrWhiteSpace(insult))
                 throw new InvalidCommandUsageException("Missing insult string.");
@@ -61,7 +64,8 @@ namespace TheGodfather.Commands.Main
 
             ctx.Dependencies.GetDependency<InsultManager>().Add(insult);
 
-            await ctx.RespondAsync("Insult added.");
+            await ctx.RespondAsync("Insult added.")
+                .ConfigureAwait(false);
         }
         #endregion
         
@@ -70,23 +74,24 @@ namespace TheGodfather.Commands.Main
         [Description("Delete all insults.")]
         [Aliases("clearall")]
         [RequireOwner]
-        public async Task ClearAllInsults(CommandContext ctx)
+        public async Task ClearAllInsultsAsync(CommandContext ctx)
         {
             ctx.Dependencies.GetDependency<InsultManager>().ClearInsults();
-            await ctx.RespondAsync("All insults successfully removed.");
+            await ctx.RespondAsync("All insults successfully removed.")
+                .ConfigureAwait(false);
         }
         #endregion
 
         #region COMMAND_INSULTS_DELETE
         [Command("delete")]
         [Description("Remove insult with a given index from list. (use ``!insults list`` to view indexes)")]
-        [Aliases("-", "remove", "del")]
+        [Aliases("-", "remove", "del", "rm")]
         [RequireOwner]
-        public async Task DeleteInsult(CommandContext ctx, 
-                                      [Description("Index.")] int i = 0)
+        public async Task DeleteInsultAsync(CommandContext ctx, 
+                                           [Description("Index.")] int i = 0)
         {
             if (ctx.Dependencies.GetDependency<InsultManager>().RemoveAt(i))
-                await ctx.RespondAsync("Insult successfully removed.");
+                await ctx.RespondAsync("Insult successfully removed.").ConfigureAwait(false);
             else
                 throw new CommandFailedException("No insults at such index.");
         }
@@ -95,25 +100,25 @@ namespace TheGodfather.Commands.Main
         #region COMMAND_INSULTS_LIST
         [Command("list")]
         [Description("Show all insults.")]
-        public async Task ListInsults(CommandContext ctx,
-                                     [Description("Page.")] int page = 1)
+        public async Task ListInsultsAsync(CommandContext ctx,
+                                          [Description("Page.")] int page = 1)
         {
             var insults = ctx.Dependencies.GetDependency<InsultManager>().Insults;
 
             if (page < 1 || page > insults.Count / 10 + 1)
                 throw new CommandFailedException("No insults on that page.", new ArgumentOutOfRangeException());
 
-            string s = "";
+            string desc = "";
             int starti = (page - 1) * 10;
             int endi = starti + 10 < insults.Count ? starti + 10 : insults.Count;
             for (int i = starti; i < endi; i++)
-                s += $"{Formatter.Bold(i.ToString())} : {insults[i]}\n";
+                desc += $"{Formatter.Bold(i.ToString())} : {insults[i]}\n";
 
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
                 Title = $"Available insults (page {page}/{insults.Count / 10 + 1}) :",
-                Description = s,
+                Description = desc,
                 Color = DiscordColor.Turquoise
-            });
+            }.Build()).ConfigureAwait(false);
         }
         #endregion
 
@@ -121,10 +126,10 @@ namespace TheGodfather.Commands.Main
         [Command("save")]
         [Description("Save insults to file.")]
         [RequireOwner]
-        public async Task SaveInsults(CommandContext ctx)
+        public async Task SaveInsultsAsync(CommandContext ctx)
         {
             if (ctx.Dependencies.GetDependency<InsultManager>().Save(ctx.Client.DebugLogger))
-                await ctx.RespondAsync("Insults successfully saved.");
+                await ctx.RespondAsync("Insults successfully saved.").ConfigureAwait(false);
             else
                 throw new CommandFailedException("Failed saving insults.", new IOException());
         }

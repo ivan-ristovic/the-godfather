@@ -34,7 +34,7 @@ Commands use the following types:
 *Note: Required permissions are permissions required for both bot and user to run the command (if not specified otherwise in table)*
 <br><br>
 
-## Misc commands
+## Main commands
 
 | Command group (with synonyms) | Command name (with synonyms) | Required Permissions | Command arguments | Command Description | Example of use |
 |---|---|---|---|---|---|
@@ -50,6 +50,13 @@ Commands use the following types:
 |   | ``report`` |   | ``[text] Report message`` | Send message to owner (hopefully about a bug, I can see it being abused) | ``!report Your bot sucks!`` |
 |   | ``say``  |   | ``[text] What to say`` | Make Godfather say something! | ``!say Luke, I am your father!`` |
 |   | ``zugify`` |   | ``[text] Text`` | Requested by Zugi. It is so stupid it isn't worth describing... | ``!zugify Some text`` |
+|   |   |   |   |   |   |
+| ``insult``<br>``burn`` |   |   | ``(optional) [user] User (def: sender)`` | Insult ``User``. | ``!insult``<br><br>``!insult @Someone`` |
+| ``insult``<br>``burn`` | ``add``<br>``+``<br>``new`` | Owner Only | ``[text] Insult`` | Add a new insult to global insult list. You can use ``%user%`` in your insult text as a replacement for the user mention who will be insulted. | ``!insult add Your age is greater than your IQ, %user%!`` |
+| ``insult``<br>``burn`` | ``clear``<br>``clearall`` | Owner Only |  | Delete all insults. | ``!insult clear`` |
+| ``insult``<br>``burn`` | ``delete``<br>``-``<br>``remove``<br>``del``<br>``rm`` | Owner Only |  | Remove insult with a given index from list. Use ``!insults list`` to view indexes. | ``!insult delete 5`` |
+| ``insult``<br>``burn`` | ``list``<br> |  | ``(optional) [int] Page (def: 1)`` | List insults on page ``Page``. | ``!insult list 3`` |
+| ``insult``<br>``burn`` | ``save``<br> | Owner Only |  | Save all insults. | ``!insult save`` |
 
 ## Administration
 
