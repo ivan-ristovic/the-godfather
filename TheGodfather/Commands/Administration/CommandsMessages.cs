@@ -26,35 +26,38 @@ namespace TheGodfather.Commands.Administration
         [Aliases("-", "prune", "del", "d")]
         [RequirePermissions(Permissions.ManageMessages)]
         [RequireUserPermissions(Permissions.Administrator)]
-        public async Task Delete(CommandContext ctx, 
-                                [Description("Ammount.")] int n = 1)
+        public async Task DeleteMessagesAsync(CommandContext ctx, 
+                                             [Description("Ammount.")] int n = 5)
         {
-            if (n <= 0 || n > 10000)
-                throw new CommandFailedException("Invalid number of messages to delete (must be in range [1, 10000].", new ArgumentOutOfRangeException());
+            if (n <= 0 || n > 1000)
+                throw new CommandFailedException("Invalid number of messages to delete (must be in range [1, 1000].", new ArgumentOutOfRangeException());
 
-            var msgs = await ctx.Channel.GetMessagesAsync(n);
-            await ctx.Channel.DeleteMessagesAsync(msgs);
+            var msgs = await ctx.Channel.GetMessagesAsync(n)
+                .ConfigureAwait(false);
+            await ctx.Channel.DeleteMessagesAsync(msgs)
+                .ConfigureAwait(false);
         }
         #endregion
 
         #region COMMAND_MESSAGES_DELETE_FROM
         [Command("deletefrom")]
         [Description("Deletes given ammount of most-recent messages from given user.")]
-        [Aliases("-user", "deluser", "du", "delfrom", "deleteu")]
+        [Aliases("-user", "deluser", "du", "dfu", "delfrom")]
         [RequirePermissions(Permissions.ManageMessages)]
         [RequireUserPermissions(Permissions.Administrator)]
-        public async Task DeleteUserMessages(CommandContext ctx, 
-                                            [Description("User.")] DiscordUser u = null,
-                                            [Description("Ammount.")] int n = 1)
+        public async Task DeleteMessagesFromUserAsync(CommandContext ctx, 
+                                                     [Description("User.")] DiscordUser u = null,
+                                                     [Description("Ammount.")] int n = 5)
         {
             if (u == null)
                 throw new InvalidCommandUsageException("User missing.");
-            if (n <= 0 || n > 10000)
-                throw new CommandFailedException("Invalid number of messages to delete (must be in range [1, 10000].", new ArgumentOutOfRangeException());
+            if (n <= 0 || n > 1000)
+                throw new CommandFailedException("Invalid number of messages to delete (must be in range [1, 1000].", new ArgumentOutOfRangeException());
 
-            await ctx.Channel.DeleteMessagesAsync(
-                ctx.Channel.GetMessagesAsync().Result.Where(m => m.Author.Id == u.Id).Take(n)
-            );
+            var msgs = await ctx.Channel.GetMessagesAsync()
+                .ConfigureAwait(false);
+            await ctx.Channel.DeleteMessagesAsync(msgs.Where(m => m.Author.Id == u.Id).Take(n))
+                .ConfigureAwait(false);
         }
         #endregion
 
@@ -62,23 +65,23 @@ namespace TheGodfather.Commands.Administration
         [Command("listpinned")]
         [Description("List latest ammount of pinned messages.")]
         [Aliases("lp", "listpins", "listpin", "pinned")]
-        [RequirePermissions(Permissions.ManageMessages)]
-        public async Task ListPinned(CommandContext ctx,
-                                    [Description("Ammount.")] int n = 5)
+        public async Task ListPinnedMessagesAsync(CommandContext ctx,
+                                                 [Description("Ammount.")] int n = 1)
         {
             if (n < 1 || n > 20)
                 throw new CommandFailedException("Invalid ammount (1-20).");
 
-            var pinned = await ctx.Channel.GetPinnedMessagesAsync();
+            var pinned = await ctx.Channel.GetPinnedMessagesAsync()
+                .ConfigureAwait(false);
 
             var em = new DiscordEmbedBuilder() {
                 Title = $"Pinned messages in {ctx.Channel.Name}:"
             };
-            
             foreach (var msg in pinned.Take(n))
                 em.AddField($"{msg.Author.Username} ({msg.CreationTimestamp})", msg.Content != null && msg.Content.Trim() != "" ? msg.Content : "<embed>");
 
-            await ctx.RespondAsync(embed: em);
+            await ctx.RespondAsync(embed: em.Build())
+                .ConfigureAwait(false);
         }
         #endregion
         
@@ -87,16 +90,16 @@ namespace TheGodfather.Commands.Administration
         [Description("Pins the last sent message.")]
         [Aliases("p")]
         [RequirePermissions(Permissions.ManageMessages)]
-        public async Task Pin(CommandContext ctx)
+        public async Task PinMessageAsync(CommandContext ctx)
         {
-            var msg = ctx.Channel.GetMessagesAsync(2).Result.Last();
+            var msgs = await ctx.Channel.GetMessagesAsync(2)
+                .ConfigureAwait(false);
             try {
-                await msg.PinAsync();
+                await msgs.Last().PinAsync()
+                    .ConfigureAwait(false);
             } catch (BadRequestException e) {
                 throw new CommandFailedException("That message cannot be pinned!", e);
             }
-
-            await ctx.RespondAsync("Message successfully pinned!");
         }
         #endregion
 
@@ -105,16 +108,19 @@ namespace TheGodfather.Commands.Administration
         [Description("Unpins the message at given index (starting from 0).")]
         [Aliases("up")]
         [RequirePermissions(Permissions.ManageMessages)]
-        public async Task Unpin(CommandContext ctx,
-                               [Description("Index (starting from 0")] int i = 0)
+        public async Task UnpinMessageAsync(CommandContext ctx,
+                                           [Description("Index (starting from 0")] int i = 0)
         {
-            var pinned = await ctx.Channel.GetPinnedMessagesAsync();
+            var pinned = await ctx.Channel.GetPinnedMessagesAsync()
+                .ConfigureAwait(false);
 
             if (i < 0 || i > pinned.Count)
-                throw new CommandFailedException("Invalid index (must be in range 0-" + (pinned.Count - 1) + "!");
+                throw new CommandFailedException("Invalid index (must be in range [0-" + (pinned.Count - 1) + "]!");
 
-            await pinned.ElementAt(i).UnpinAsync();
-            await ctx.RespondAsync("Message successfully unpinned!");
+            await pinned.ElementAt(i).UnpinAsync()
+                .ConfigureAwait(false);
+            await ctx.RespondAsync("Message successfully unpinned!")
+                .ConfigureAwait(false);
         }
         #endregion
 
@@ -123,12 +129,15 @@ namespace TheGodfather.Commands.Administration
         [Description("Unpins all pinned messages.")]
         [Aliases("upa")]
         [RequirePermissions(Permissions.ManageMessages)]
-        public async Task UnpinAll(CommandContext ctx)
+        public async Task UnpinAllMessagesAsync(CommandContext ctx)
         {
-            var pinned = await ctx.Channel.GetPinnedMessagesAsync();
+            var pinned = await ctx.Channel.GetPinnedMessagesAsync()
+                .ConfigureAwait(false);
             foreach (var m in pinned)
-                await m.UnpinAsync();
-            await ctx.RespondAsync("All messages successfully unpinned!");
+                await m.UnpinAsync()
+                    .ConfigureAwait(false);
+            await ctx.RespondAsync("All messages successfully unpinned!")
+                .ConfigureAwait(false);
         }
         #endregion
     }

@@ -70,7 +70,14 @@ Commands use the following types:
 | ``g emoji``<br>``g emojis``<br>``g e`` | ``delete``<br>``-``<br>``del``<br>``d``<br>``remove`` | Manage emojis | ``[emoji] Emoji`` | Remove emoji from guild emoji list.<br>*Note: Bots can only remove emoji which they created!* | ``!guild emoji del :pepe:`` |
 | ``g emoji``<br>``g emojis``<br>``g e`` | ``list``<br>``print``<br>``show``<br>``print``<br>``l``<br>``p`` |  |  | List guild emoji. | ``!guild emoji list`` |
 | ``g emoji``<br>``g emojis``<br>``g e`` | ``modify``<br>``edit``<br>``mod``<br>``e``<br>``m`` | Manage emojis | ``[emoji] Emoji``<br>``[string] New name`` | Modify guild emoji. | ``!guild emoji edit :pepe: pepenewname`` |
-
+|   |   |   |   |   |   |   |
+| ``messages``<br>``m``<br>``msg``<br>``msgs`` | ``delete``<br>``-``<br>``d``<br>``del``<br>``prune`` | Administrator (user)<br><br>Manage messages (bot) | ``[int] Ammount (def: 5)`` | Delete ``Ammount`` messages from the current channel. | ``!messages delete 100`` |
+| ``messages``<br>``m``<br>``msg``<br>``msgs`` | ``deletefrom``<br>``-user``<br>``du``<br>``deluser``<br>``dfu`` | Administrator (user)<br><br>Manage messages (bot) | ``[user] User``<br><br>``[int] Ammount (def: 5)`` | Delete ``Ammount`` messages from ``User`` in the current channel. | ``!messages deletefrom @Someone 100`` |
+| ``messages``<br>``m``<br>``msg``<br>``msgs`` | ``listpinned``<br>``lp``<br>``listpins``<br>``listpin``<br>``pinned`` |  | ``[int] Ammount (def: 1)`` | List ``Ammount`` pinned messages. | ``!messages listpinned 5`` |
+| ``messages``<br>``m``<br>``msg``<br>``msgs`` | ``pin``<br>``p`` | Manage Messages  |  | Pin last sent message (before ``pin`` command). | ``!messages pin`` |
+| ``messages``<br>``m``<br>``msg``<br>``msgs`` | ``unpin``<br>``up`` | Manage Messages  | ``[int] Index (starting from 0)`` | Unpin pinned message with index ``Index`` in pinned message list. | ``!messages unpin 3`` |
+| ``messages``<br>``m``<br>``msg``<br>``msgs`` | ``unpinall``<br>``upa`` | Manage Messages  |  | Unpin all pinned messages. | ``!messages unpinall`` |
+|   |   |   |   |   |   |
 
 
 **(Command list is incomplete)**
