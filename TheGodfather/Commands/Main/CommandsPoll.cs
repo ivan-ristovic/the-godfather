@@ -45,34 +45,37 @@ namespace TheGodfather.Commands.Main
             _options.TryAdd(ctx.Channel.Id, null);
 
             // Get poll options interactively
-            await ctx.RespondAsync("And what will be the possible answers? (separate with semicolon ``;``)");
+            await ctx.RespondAsync("And what will be the possible answers? (separate with semicolon ``;``)")
+                .ConfigureAwait(false);
             var interactivity = ctx.Client.GetInteractivityModule();
             var msg = await interactivity.WaitForMessageAsync(
                 xm => xm.Author.Id == ctx.User.Id && xm.Channel.Id == ctx.Channel.Id,
                 TimeSpan.FromMinutes(1)
-            );
+            ).ConfigureAwait(false);
             if (msg == null) {
-                await ctx.RespondAsync("Nevermind...");
-                int[] v;
-                _options.TryRemove(ctx.Channel.Id, out v);
+                await ctx.RespondAsync("Nevermind...")
+                    .ConfigureAwait(false);
+                _options.TryRemove(ctx.Channel.Id, out _);
                 return;
             }
 
             // Parse poll options
-            List<string> poll_options = msg.Message.Content.Split(';').ToList();
-            poll_options.RemoveAll(str => string.IsNullOrWhiteSpace(str));
+            List<string> poll_options = msg.Message.Content.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries).ToList();
             if (poll_options.Count < 2)
                 throw new InvalidCommandUsageException("Not enough poll options.");
 
-            await ctx.RespondAsync(embed: EmbedPoll(q, poll_options));
+            await ctx.RespondAsync(embed: EmbedPoll(q, poll_options))
+                .ConfigureAwait(false);
 
             AddEntries(ctx.Channel.Id, poll_options.Count);
 
             TryToAddListenerEvent(ctx);
 
-            await Task.Delay(30000);
+            await Task.Delay(TimeSpan.FromSeconds(30))
+                .ConfigureAwait(false);
 
-            await ctx.RespondAsync(embed: EmbedPollResults(ctx.Channel.Id, q, poll_options));
+            await ctx.RespondAsync(embed: EmbedPollResults(ctx.Channel.Id, q, poll_options))
+                .ConfigureAwait(false);
 
             RemoveEntries(ctx.Channel.Id);
         }
@@ -90,31 +93,32 @@ namespace TheGodfather.Commands.Main
             }
         }
 
-        private Task CheckForPollReply(MessageCreateEventArgs e)
+        private async Task CheckForPollReply(MessageCreateEventArgs e)
         {
             if (e.Message.Author.IsBot || !_options.ContainsKey(e.Channel.Id))
-                return Task.CompletedTask;
+                return;
 
             int vote;
             try {
                 vote = int.Parse(e.Message.Content);
             } catch {
-                return Task.CompletedTask;
+                return;
             }
 
             if (vote > 0 && vote <= _options[e.Channel.Id].Length) {
                 if (_idsvoted[e.Channel.Id].Contains(e.Author.Id)) {
-                    e.Channel.SendMessageAsync("You have already voted.");
+                    await e.Channel.SendMessageAsync("You have already voted.")
+                        .ConfigureAwait(false);
                 } else {
                     _idsvoted[e.Channel.Id].Add(e.Author.Id);
                     _options[e.Channel.Id][vote - 1]++;
-                    e.Channel.SendMessageAsync($"{e.Author.Mention} voted for: **{vote}**!");
+                    await e.Channel.SendMessageAsync($"{e.Author.Mention} voted for: **{vote}**!")
+                        .ConfigureAwait(false);
                 }
             } else {
-                e.Channel.SendMessageAsync("Invalid poll option");
+                await e.Channel.SendMessageAsync("Invalid poll option")
+                    .ConfigureAwait(false);
             }
-
-            return Task.CompletedTask;
         }
 
         private void AddEntries(ulong id, int count)

@@ -45,6 +45,7 @@ Commands use the following types:
 |   | ``leave`` | Kick members (user) |   | Makes Godfather leave the server. | ``!leave`` |
 |   | ``leet`` |   | ``[text] Text`` | Wr1t3s m3ss@g3 1n 1337sp34k. | ``!leet This is so cool`` |
 |   | ``ping`` |   |   | Ping the bot. | ``!ping`` |
+|   | ``poll``<br>``vote`` |   | ``[text] Question`` | Starts a poll in the channel. The bot will ask for poll options, which you give separated with ``;``, for example: ``option1;option2;option3`` | ``!poll`` |
 |   | ``prefix``<br>``setprefix`` | Administrator (user) | ``(optional) [string] New prefix`` | If invoked without arguments, gives current prefix for this channel, otherwise sets the prefix to ``New prefix``. If for example ``New prefix`` is ``;``, all commands in that channel from that point must be invoked using ``;``, for example ``;greet``. | ``!prefix``<br><br>``!prefix .`` |
 |   | ``remind`` |  | ``[int] Time to wait before repeat (in seconds)``<br><br>``[text] What to repeat`` | Repeat given text after given time. | ``!repeat 3600 I was told to remind you to do something`` |
 |   | ``report`` |   | ``[text] Report message`` | Send message to owner (hopefully about a bug, I can see it being abused) | ``!report Your bot sucks!`` |
