@@ -120,6 +120,7 @@ namespace TheGodfather
             _commands.RegisterCommands<Commands.Administration.CommandsRoles>();
             _commands.RegisterCommands<Commands.Administration.CommandsUsers>();
             _commands.RegisterCommands<Commands.Games.CommandsBank>();
+            _commands.RegisterCommands<Commands.Games.CommandsCards>();
             _commands.RegisterCommands<Commands.Games.CommandsGamble>();
             _commands.RegisterCommands<Commands.Games.CommandsGames>();
             _commands.RegisterCommands<Commands.Main.CommandsInsult>();

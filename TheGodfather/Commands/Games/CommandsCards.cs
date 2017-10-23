@@ -13,8 +13,8 @@ using DSharpPlus.CommandsNext.Attributes;
 
 namespace TheGodfather.Commands.Games
 {
-    public partial class CommandsGamble
-    {
+    //public partial class CommandsGamble
+    //{
         [Group("cards", CanInvokeWithoutSubcommand = false)]
         [Description("Deck manipulation commands.")]
         [Aliases("deck")]
@@ -26,12 +26,12 @@ namespace TheGodfather.Commands.Games
             #endregion
 
 
-            #region COMMAND_DECK_DEAL
-            [Command("deal")]
-            [Description("Deal hand from the top of the deck.")]
-            [Aliases("dealhand")]
-            public async Task DealHand(CommandContext ctx,
-                                      [Description("Ammount.")] int ammount = 5)
+            #region COMMAND_DECK_DRAW
+            [Command("draw")]
+            [Description("Draw cards from the top of the deck.")]
+            [Aliases("take")]
+            public async Task DrawAsync(CommandContext ctx,
+                                       [Description("Ammount.")] int ammount = 1)
             {
                 if (_deck == null || _deck.Count == 0)
                     throw new CommandFailedException($"No deck to deal from. Use {Formatter.InlineCode("!deck new")}");
@@ -39,27 +39,11 @@ namespace TheGodfather.Commands.Games
                 if (ammount <= 0 || ammount >= 10 || _deck.Count < ammount)
                     throw new InvalidCommandUsageException("Cannot draw that ammount of cards...", new ArgumentException());
 
-                string hand = "";
-                for (int i = 0; i < ammount; i++) {
-                    hand += _deck[0] + " ";
-                    _deck.RemoveAt(0);
-                }
+                string hand = string.Join(" ", _deck.Take(ammount));
+                _deck.RemoveRange(0, ammount);
 
-                await ctx.RespondAsync(hand);
-            }
-            #endregion
-
-            #region COMMAND_DECK_DRAW
-            [Command("draw")]
-            [Description("Draw a card from the current deck.")]
-            [Aliases("dr")]
-            public async Task Draw(CommandContext ctx)
-            {
-                if (_deck == null || _deck.Count == 0)
-                    throw new CommandFailedException("No deck to draw from.");
-
-                await ctx.RespondAsync(_deck[0]);
-                _deck.RemoveAt(0);
+                await ctx.RespondAsync(hand)
+                    .ConfigureAwait(false);
             }
             #endregion
 
@@ -67,7 +51,7 @@ namespace TheGodfather.Commands.Games
             [Command("reset")]
             [Description("Opens a brand new card deck.")]
             [Aliases("new", "opennew")]
-            public async Task Reset(CommandContext ctx)
+            public async Task ResetDeckAsync(CommandContext ctx)
             {
                 _deck = new List<string>();
                 char[] suit = { '♠', '♥', '♦', '♣' };
@@ -82,7 +66,8 @@ namespace TheGodfather.Commands.Games
                     _deck.Add("K" + s);
                 }
 
-                await ctx.RespondAsync("New deck opened!");
+                await ctx.RespondAsync("New deck opened!")
+                    .ConfigureAwait(false);
             }
             #endregion
 
@@ -90,18 +75,17 @@ namespace TheGodfather.Commands.Games
             [Command("shuffle")]
             [Description("Shuffle current deck.")]
             [Aliases("s", "sh", "mix")]
-            public async Task Shuffle(CommandContext ctx)
+            public async Task ShuffleDeckAsync(CommandContext ctx)
             {
                 if (_deck == null || _deck.Count == 0)
                     throw new CommandFailedException("No deck to shuffle.");
 
-                var shuffled = _deck.OrderBy(a => Guid.NewGuid()).ToList();
-                _deck.Clear();
-                _deck.AddRange(shuffled);
-                await ctx.RespondAsync("Deck shuffled.");
+                _deck = _deck.OrderBy(a => Guid.NewGuid()).ToList();
+                await ctx.RespondAsync("Deck shuffled.")
+                    .ConfigureAwait(false);
             }
             #endregion
         }
 
-    }
+    //}
 }

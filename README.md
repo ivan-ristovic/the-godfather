@@ -109,7 +109,6 @@ Commands use the following types:
 | ``user``<br>``users``<br>``u``<br>``usr`` | ``removerole``<br>``remrole``<br>``rmrole``<br>``-role``<br>``-r``<br>``rr`` | Manage Roles | ``[user] User``<br><br>``[role] Role`` | Remove ``Role`` from ``User``. | ``!user remrole @SomeUser @admins``<br><br>``!user remrole @SomeUser "Unmentionable role"`` |
 | ``user``<br>``users``<br>``u``<br>``usr`` | ``removeallroles``<br>``remallroles``<br>``rmallroles``<br>``-ra``<br>``-rall``<br>``-allr`` | Manage Roles | ``[user] User`` | Remove all roles for ``User``. | ``!user rmallroles @SomeUser`` |
 | ``user``<br>``users``<br>``u``<br>``usr`` | ``setname``<br>``nick``<br>``rename``<br>``name``<br>``newname`` | Manage Nicknames | ``[user] User``<br><br>``[text] New name`` | Change ``User``'s nickname to ``New name`` (for this server). | ``!user setname @SomeUser Some new name`` |
-|   |   |   |   |   |   |
 
 ## Gambling
 
@@ -126,6 +125,11 @@ Commands use the following types:
 | ``gamble``<br>``bet`` | ``coinflip``<br>``coin``<br>``flip`` |   | ``[int] Bid``<br><br>``[string] Heads/Tails`` | Bet on a coin flip outcome! Can be invoked without both arguments if you do not wish to bet. | ``!bet coinflip 5 heads`` |
 | ``gamble``<br>``bet`` | ``roll``<br>``dice``<br>``die`` |   | ``[int] Bid``<br><br>``[int] Guess [1-6]`` | Bet on a dice roll outcome! Can be invoked without both arguments if you do not wish to bet. | ``!bet dice 50 6`` |
 | ``gamble``<br>``bet`` | ``slot``<br>``slotmachine`` |   | ``[int] Bid (min: 5)`` | Bet on a slot machine outcome! | ``!bet slot 5`` |
+|   |   |   |   |   |   |
+| ``cards``<br>``deck`` | ``draw``<br>``take`` |   | ``(optional) [int] Ammount (def: 1)`` | Draw ``Ammount`` of cards from the top of the deck. | ``!deck draw 5`` |
+| ``cards``<br>``deck`` | ``reset``<br>``opennew``<br>``new`` |   |   | Open new deck of cards (unshuffled). | ``!deck new`` |
+| ``cards``<br>``deck`` | ``shuffle``<br>``s``<br>``sh``<br>``mix`` |   |   | Shuffle current card deck. | ``!deck shuffle`` |
+
 
 
 **(Command list is incomplete)**
