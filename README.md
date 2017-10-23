@@ -138,6 +138,10 @@ Commands use the following types:
 | ``games``<br>``game``<br>``gm`` | ``rps``<br>``rockpaperscissors`` |   |   | Make Godfather play rock-paper-scissors! | ``!game rps`` |
 | ``games``<br>``game``<br>``gm`` | ``tictactoe``<br>``ttt`` |   |   | Challenge friends to a tictactoe game! First who replies with ``me`` or ``i`` will join your game. | ``!game ttt`` |
 | ``games``<br>``game``<br>``gm`` | ``typing``<br>``type``<br>``typerace``<br>``typingrace`` |   |   | Start a typing race game. | ``!game typerace`` |
+| ``game nunchi`` |  |   |   | Start a signup process for a new nunchi game! | ``!game nunchi`` |
+| ``game nunchi`` | ``new``<br>``create`` |   |   | Identical result as to above command. | ``!game nunchi new`` |
+| ``game nunchi`` | ``join``<br>``+``<br>``compete`` |   |   | Join a pending nunchi game. | ``!game nunchi join`` |
+| ``game nunchi`` | ``rules``<br>``help`` |   |   | How to play? | ``!game nunchi rules`` |
 
 
 **(Command list is incomplete)**
