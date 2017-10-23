@@ -146,6 +146,9 @@ Commands use the following types:
 | ``game nunchi`` | ``join``<br>``+``<br>``compete`` |   |   | Join a pending nunchi game. | ``!game nunchi join`` |
 | ``game nunchi`` | ``rules``<br>``help`` |   |   | How to play? | ``!game nunchi rules`` |
 | ``game quiz``<br>``game trivia`` | ``countries``<br>``flags`` |   |   | Start a new countries quiz. | ``!game quiz countries`` |
+| ``game race`` |  |   |   | Start a signup process for a new race! | ``!game race`` |
+| ``game race`` | ``new``<br>``create`` |   |   | Identical result as to above command. | ``!game race new`` |
+| ``game race`` | ``join``<br>``+``<br>``compete`` |   |   | Join a pending race. | ``!game race join`` |
 
 
 **(Command list is incomplete)**

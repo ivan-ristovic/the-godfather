@@ -32,7 +32,7 @@ namespace TheGodfather.Commands.Games
 
             public async Task ExecuteGroupAsync(CommandContext ctx)
             {
-                await NewRace(ctx);
+                await NewRaceAsync(ctx);
             }
 
 
@@ -40,7 +40,7 @@ namespace TheGodfather.Commands.Games
             [Command("new")]
             [Description("Start a new race.")]
             [Aliases("create")]
-            public async Task NewRace(CommandContext ctx)
+            public async Task NewRaceAsync(CommandContext ctx)
             {
                 if (_participants.ContainsKey(ctx.Channel.Id))
                     throw new Exception("Race already in progress!");
@@ -58,13 +58,17 @@ namespace TheGodfather.Commands.Games
                     throw new CommandFailedException("Race starting failed.");
                 }
 
-                await ctx.RespondAsync("Race will start in 30s or when there are 10 participants. Type " + Formatter.InlineCode("!race join") + " to join the race.");
-                await Task.Delay(30000);
+                await ctx.RespondAsync("Race will start in 30s or when there are 10 participants. Type " + Formatter.InlineCode("!game race join") + " to join the race.")
+                    .ConfigureAwait(false);
+                await Task.Delay(30000)
+                    .ConfigureAwait(false);
 
-                if (_participants[ctx.Channel.Id].Count > 1)
-                    await StartRace(ctx);
-                else {
-                    await ctx.RespondAsync("Not enough users joined the race.");
+                if (_participants[ctx.Channel.Id].Count > 1) {
+                    await StartRaceAsync(ctx)
+                        .ConfigureAwait(false);
+                } else {
+                    await ctx.RespondAsync("Not enough users joined the race.")
+                        .ConfigureAwait(false);
                     StopRace(ctx.Channel.Id);
                 }
             }
@@ -74,7 +78,7 @@ namespace TheGodfather.Commands.Games
             [Command("join")]
             [Description("Join a race.")]
             [Aliases("+", "compete")]
-            public async Task JoinRace(CommandContext ctx)
+            public async Task JoinRaceAsync(CommandContext ctx)
             {
                 if (!_participants.ContainsKey(ctx.Channel.Id))
                     throw new Exception("There is no race in this channel!");
@@ -95,13 +99,14 @@ namespace TheGodfather.Commands.Games
                 if (!_emojis[ctx.Channel.Id].TryAdd(ctx.User.Id, emoji))
                     throw new CommandFailedException("Failed granting emoji to player.");
 
-                await ctx.RespondAsync($"{ctx.User.Mention} joined the race as {DiscordEmoji.FromName(ctx.Client, emoji)}");
+                await ctx.RespondAsync($"{ctx.User.Mention} joined the race as {DiscordEmoji.FromName(ctx.Client, emoji)}")
+                    .ConfigureAwait(false);
             }
             #endregion
 
 
             #region HELPER_FUNCTIONS
-            private async Task StartRace(CommandContext ctx)
+            private async Task StartRaceAsync(CommandContext ctx)
             {
                 _started[ctx.Channel.Id] = true;
 
@@ -109,10 +114,12 @@ namespace TheGodfather.Commands.Games
                 foreach (var p in _participants[ctx.Channel.Id])
                     progress.Add(p, 0);
 
-                var msg = await ctx.RespondAsync("Race starting...");
+                var msg = await ctx.RespondAsync("Race starting...")
+                    .ConfigureAwait(false);
                 var rnd = new Random((int)DateTime.Now.Ticks);
                 while (!progress.Any(e => e.Value >= 100)) {
-                    await PrintRace(ctx, progress, msg);
+                    await PrintRaceAsync(ctx, progress, msg)
+                        .ConfigureAwait(false);
 
                     foreach (var id in _participants[ctx.Channel.Id]) {
                         progress[id] += rnd.Next(2, 7);
@@ -120,11 +127,14 @@ namespace TheGodfather.Commands.Games
                             progress[id] = 100;
                     }
 
-                    await Task.Delay(2000);
+                    await Task.Delay(2000)
+                        .ConfigureAwait(false);
                 }
-                await PrintRace(ctx, progress, msg);
+                await PrintRaceAsync(ctx, progress, msg)
+                    .ConfigureAwait(false);
 
-                await ctx.RespondAsync("Race ended!");
+                await ctx.RespondAsync("Race ended!")
+                    .ConfigureAwait(false);
                 StopRace(ctx.Channel.Id);
             }
 
@@ -135,7 +145,7 @@ namespace TheGodfather.Commands.Games
                 _started.TryRemove(id, out _);
             }
 
-            private async Task PrintRace(CommandContext ctx, Dictionary<ulong, int> progress, DiscordMessage msg)
+            private async Task PrintRaceAsync(CommandContext ctx, Dictionary<ulong, int> progress, DiscordMessage msg)
             {
                 string s = "LIVE RACING BROADCAST\n| 🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🔚\n";
                 foreach (var id in _participants[ctx.Channel.Id]) {
@@ -151,7 +161,8 @@ namespace TheGodfather.Commands.Games
                         s += " " + DiscordEmoji.FromName(ctx.Client, ":trophy:");
                     s += '\n';
                 }
-                await msg.ModifyAsync(s);
+                await msg.ModifyAsync(s)
+                    .ConfigureAwait(false);
             }
             #endregion
         }
