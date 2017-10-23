@@ -29,9 +29,9 @@ namespace TheGodfather.Commands.Messages
         [Command("add")]
         [Description("Add filter to list.")]
         [Aliases("+", "new")]
-        [RequireUserPermissions(Permissions.ManageMessages)]
-        public async Task AddFilter(CommandContext ctx,
-                                   [RemainingText, Description("Filter. Can be a regex (case insensitive).")] string filter = null)
+        [RequireUserPermissions(Permissions.ManageGuild)]
+        public async Task AddAsync(CommandContext ctx,
+                                  [RemainingText, Description("Filter. Can be a regex (case insensitive).")] string filter = null)
         {
             if (string.IsNullOrWhiteSpace(filter))
                 throw new InvalidCommandUsageException("Filter trigger missing.");
@@ -48,7 +48,7 @@ namespace TheGodfather.Commands.Messages
                 throw new CommandFailedException("You cannot add a filter that matches one of the commands!");
             
             if (ctx.Dependencies.GetDependency<FilterManager>().TryAdd(ctx.Guild.Id, regex))
-                await ctx.RespondAsync($"Filter successfully added.");
+                await ctx.RespondAsync($"Filter successfully added.").ConfigureAwait(false);
             else
                 throw new CommandFailedException("Filter already exists!");
         }
@@ -58,12 +58,12 @@ namespace TheGodfather.Commands.Messages
         [Command("delete")]
         [Description("Remove filter from list.")]
         [Aliases("-", "remove", "del")]
-        [RequireUserPermissions(Permissions.ManageMessages)]
-        public async Task DeleteFilter(CommandContext ctx, 
-                                      [Description("Filter index.")] int i = 0)
+        [RequireUserPermissions(Permissions.ManageGuild)]
+        public async Task DeleteAsync(CommandContext ctx, 
+                                     [Description("Filter index.")] int i = 0)
         {
             if (ctx.Dependencies.GetDependency<FilterManager>().TryRemoveAt(ctx.Guild.Id, i))
-                await ctx.RespondAsync("Filter successfully removed.");
+                await ctx.RespondAsync("Filter successfully removed.").ConfigureAwait(false);
             else
                 throw new CommandFailedException("Filter at that index does not exist.");
         }
@@ -73,10 +73,10 @@ namespace TheGodfather.Commands.Messages
         [Command("save")]
         [Description("Save filters to file.")]
         [RequireOwner]
-        public async Task SaveFilters(CommandContext ctx)
+        public async Task SaveAsync(CommandContext ctx)
         {
             if (ctx.Dependencies.GetDependency<FilterManager>().Save(ctx.Client.DebugLogger))
-                await ctx.RespondAsync("Filters successfully saved.");
+                await ctx.RespondAsync("Filters successfully saved.").ConfigureAwait(false);
             else
                 throw new CommandFailedException("Failed saving filters.", new IOException());
         }
@@ -85,8 +85,8 @@ namespace TheGodfather.Commands.Messages
         #region COMMAND_FILTER_LIST
         [Command("list")]
         [Description("Show all filters for this guild.")]
-        public async Task ListFilters(CommandContext ctx, 
-                                     [Description("Page")] int page = 1)
+        public async Task ListAsync(CommandContext ctx, 
+                                   [Description("Page")] int page = 1)
         {
             var filters = ctx.Dependencies.GetDependency<FilterManager>().Filters;
 
@@ -98,20 +98,20 @@ namespace TheGodfather.Commands.Messages
             if (page < 1 || page > filters[ctx.Guild.Id].Count / 10 + 1)
                 throw new CommandFailedException("No filters on that page.");
 
-            string s = "";
+            string desc = "";
             int starti = (page - 1) * 10;
             int endi = starti + 10 < filters[ctx.Guild.Id].Count ? starti + 10 : filters[ctx.Guild.Id].Count;
             var pagefilters = filters[ctx.Guild.Id].Take(page * 10).ToArray();
             for (var i = starti; i < endi; i++) {
                 var filter = pagefilters[i].ToString();
-                s += $"{Formatter.Bold(i.ToString())} : {filter.Substring(1, filter.Length - 2)}\n";
+                desc += $"{Formatter.Bold(i.ToString())} : {filter.Substring(1, filter.Length - 2)}\n";
             }
 
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
                 Title = $"Available filters (page {page}/{filters[ctx.Guild.Id].Count / 10 + 1}) :",
-                Description = s,
+                Description = desc,
                 Color = DiscordColor.Green
-            });
+            }.Build()).ConfigureAwait(false);
         }
         #endregion
         
@@ -119,10 +119,10 @@ namespace TheGodfather.Commands.Messages
         [Command("clear")]
         [Description("Delete all filters for the current guild.")]
         [RequireUserPermissions(Permissions.Administrator)]
-        public async Task ClearFilters(CommandContext ctx)
+        public async Task ClearAsync(CommandContext ctx)
         {
             if (ctx.Dependencies.GetDependency<FilterManager>().ClearGuildFilters(ctx.Guild.Id))
-                await ctx.RespondAsync("All filters for this guild successfully removed.");
+                await ctx.RespondAsync("All filters for this guild successfully removed.").ConfigureAwait(false);
             else
                 throw new CommandFailedException("Clearing guild filters failed");
         }
@@ -132,10 +132,11 @@ namespace TheGodfather.Commands.Messages
         [Command("clearall")]
         [Description("Delete all filters stored for ALL guilds.")]
         [RequireOwner]
-        public async Task ClearAllFilters(CommandContext ctx)
+        public async Task ClearAllAsync(CommandContext ctx)
         {
             ctx.Dependencies.GetDependency<FilterManager>().ClearAllFilters();
-            await ctx.RespondAsync("All filters successfully removed.");
+            await ctx.RespondAsync("All filters successfully removed.")
+                .ConfigureAwait(false);
         }
         #endregion
     }

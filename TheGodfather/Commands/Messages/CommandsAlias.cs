@@ -28,7 +28,7 @@ namespace TheGodfather.Commands.Messages
         [Command("add")]
         [Description("Add alias to list.")]
         [Aliases("+", "new")]
-        [RequireUserPermissions(Permissions.Administrator)]
+        [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task AddAsync(CommandContext ctx,
                                   [Description("Alias name (case sensitive).")] string alias = null,
                                   [RemainingText, Description("Response.")] string response = null)
@@ -47,7 +47,7 @@ namespace TheGodfather.Commands.Messages
         [Command("delete")]
         [Description("Remove alias from list.")]
         [Aliases("-", "remove", "del", "rm")]
-        [RequireUserPermissions(Permissions.ManageMessages)]
+        [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task DeleteAsync(CommandContext ctx, 
                                      [RemainingText, Description("Alias to remove.")] string alias = null)
         {

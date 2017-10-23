@@ -57,25 +57,32 @@ Commands use the following types:
 |   | ``say``  |   | ``[text] What to say`` | Make Godfather say something! | ``!say Luke, I am your father!`` |
 |   | ``zugify`` |   | ``[text] Text`` | Requested by Zugi. It is so stupid it isn't worth describing... | ``!zugify Some text`` |
 |   |   |   |   |   |   |
-| ``alias``<br>``aliases``<br>``a`` | ``add``<br>``+``<br>``new`` | Administrator (user) | ``[string] Trigger``<br><br>``[text] Response`` | Add a new alias to alias guild list. Whenever someone sends a message ``Trigger``, bot will repond with ``Response``. You can also use ``%user%`` as a replacement for sender mention. | ``!alias add "hi" Hey, %user%!`` |
+| ``alias``<br>``aliases``<br>``a`` | ``add``<br>``+``<br>``new`` | Manage Guild (user) | ``[string] Trigger``<br><br>``[text] Response`` | Add a new alias to alias guild list. Whenever someone sends a message ``Trigger``, bot will repond with ``Response``. You can also use ``%user%`` as a replacement for sender mention. | ``!alias add "hi" Hey, %user%!`` |
 | ``alias``<br>``aliases``<br>``a`` | ``clear`` | Administrator (user) |  | Delete all aliases for the current guild. | ``!alias clear`` |
 | ``alias``<br>``aliases``<br>``a`` | ``clearall`` | Owner Only |  | Delete all aliases (for all guilds). | ``!alias clearall`` |
-| ``alias``<br>``aliases``<br>``a`` | ``delete``<br>``-``<br>``remove``<br>``del``<br>``rm`` | Administrator (user) | ``[string] Trigger`` | Remove alias with a given trigger from guild alias list. Use ``!alias list`` to view aliases. | ``!alias delete hi`` |
-| ``alias``<br>``aliases``<br>``a`` | ``list``<br> |  | ``(optional) [int] Page (def: 1)`` | List guild aliases on page ``Page``. | ``!alias list 3`` |
-| ``alias``<br>``aliases``<br>``a`` | ``save``<br> | Owner Only |  | Save all aliases. | ``!alias save`` |
+| ``alias``<br>``aliases``<br>``a`` | ``delete``<br>``-``<br>``remove``<br>``del``<br>``rm`` | Manage Guild (user) | ``[string] Trigger`` | Remove alias with a given trigger from guild alias list. Use ``!alias list`` to view aliases. | ``!alias delete hi`` |
+| ``alias``<br>``aliases``<br>``a`` | ``list`` |  | ``(optional) [int] Page (def: 1)`` | List guild aliases on page ``Page``. | ``!alias list 3`` |
+| ``alias``<br>``aliases``<br>``a`` | ``save`` | Owner Only |  | Save all aliases. | ``!alias save`` |
+|   |   |   |   |   |   |
+| ``filter``<br>``filters``<br>``f`` | ``add``<br>``+``<br>``new`` | Manage Guild (user) | ``[string] Trigger`` | Add a new filter to filter guild list. Whenever someone sends a message containing ``Trigger``, bot will delete it. Triggers can also be regular expressions (case ignored). | ``!filter add fuck`` |
+| ``filter``<br>``filters``<br>``f`` | ``clear`` | Administrator (user) |  | Delete all filters for the current guild. | ``!filter clear`` |
+| ``filter``<br>``filters``<br>``f`` | ``clearall`` | Owner Only |  | Delete all filters (for all guilds). | ``!filter clearall`` |
+| ``filter``<br>``filters``<br>``f`` | ``delete``<br>``-``<br>``remove``<br>``del``<br>``rm`` | Manage Guild (user) | ``[string] Trigger`` | Remove filter with a given index from guild filter list. Use ``!filter list`` to view filters. | ``!filter delete 5`` |
+| ``filter``<br>``filters``<br>``f`` | ``list`` |  | ``(optional) [int] Page (def: 1)`` | List guild filters on page ``Page``. | ``!filter list 3`` |
+| ``filter``<br>``filters``<br>``f`` | ``save`` | Owner Only |  | Save all filters. | ``!filter save`` |
 |   |   |   |   |   |   |
 | ``insult``<br>``burn`` |   |   | ``(optional) [user] User (def: sender)`` | Insult ``User``. | ``!insult``<br><br>``!insult @Someone`` |
 | ``insult``<br>``burn`` | ``add``<br>``+``<br>``new`` | Owner Only | ``[text] Insult`` | Add a new insult to global insult list. You can use ``%user%`` in your insult text as a replacement for the user mention who will be insulted. | ``!insult add Your age is greater than your IQ, %user%!`` |
 | ``insult``<br>``burn`` | ``clear``<br>``clearall`` | Owner Only |  | Delete all insults. | ``!insult clear`` |
 | ``insult``<br>``burn`` | ``delete``<br>``-``<br>``remove``<br>``del``<br>``rm`` | Owner Only | ``[int] Index`` | Remove insult with a given index from list. Use ``!insults list`` to view indexes. | ``!insult delete 5`` |
-| ``insult``<br>``burn`` | ``list``<br> |  | ``(optional) [int] Page (def: 1)`` | List insults on page ``Page``. | ``!insult list 3`` |
-| ``insult``<br>``burn`` | ``save``<br> | Owner Only |  | Save all insults. | ``!insult save`` |
+| ``insult``<br>``burn`` | ``list`` |  | ``(optional) [int] Page (def: 1)`` | List insults on page ``Page``. | ``!insult list 3`` |
+| ``insult``<br>``burn`` | ``save`` | Owner Only |  | Save all insults. | ``!insult save`` |
 |   |   |   |   |   |   |
 | ``meme``<br>``memes``<br>``mm`` |   |   | ``(optional) [text] Meme name`` | Send a meme with name ``Meme name``. If name isn't given, sends random one. | ``!meme``<br><br>``!meme fap`` |
 | ``meme``<br>``memes``<br>``mm`` | ``add``<br>``+``<br>``new`` | Owner Only | ``[text] Name``<br><br>``[string] URL`` | Add a new meme to global meme list. | ``!meme add Name http://url.png`` |
 | ``meme``<br>``memes``<br>``mm`` | ``delete``<br>``-``<br>``remove``<br>``del``<br>``rm`` | Owner Only | ``[text] Name`` | Remove meme with a given name from the list. Use ``!meme list`` to view all memes. | ``!meme delete fap`` |
-| ``meme``<br>``memes``<br>``mm`` | ``list``<br> |  | ``(optional) [int] Page (def: 1)`` | List memes on page ``Page``. | ``!meme list 3`` |
-| ``meme``<br>``memes``<br>``mm`` | ``save``<br> | Owner Only |  | Save all memes. | ``!meme save`` |
+| ``meme``<br>``memes``<br>``mm`` | ``list`` |  | ``(optional) [int] Page (def: 1)`` | List memes on page ``Page``. | ``!meme list 3`` |
+| ``meme``<br>``memes``<br>``mm`` | ``save`` | Owner Only |  | Save all memes. | ``!meme save`` |
 |   |   |   |   |   |   |
 | ``random``<br>``rand``<br>``rnd`` | ``cat``  |   |   | Send a random cat image. | ``!random cat`` |
 | ``random``<br>``rand``<br>``rnd`` | ``dog``  |   |   | Send a random dog image. | ``!random dog`` |
