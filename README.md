@@ -84,9 +84,14 @@ Commands use the following types:
 | ``meme``<br>``memes``<br>``mm`` | ``list`` |  | ``(optional) [int] Page (def: 1)`` | List memes on page ``Page``. | ``!meme list 3`` |
 | ``meme``<br>``memes``<br>``mm`` | ``save`` | Owner Only |  | Save all memes. | ``!meme save`` |
 |   |   |   |   |   |   |
-| ``random``<br>``rand``<br>``rnd`` | ``cat``  |   |   | Send a random cat image. | ``!random cat`` |
-| ``random``<br>``rand``<br>``rnd`` | ``dog``  |   |   | Send a random dog image. | ``!random dog`` |
-
+| ``random``<br>``rand``<br>``rnd`` | ``cat`` |   |   | Send a random cat image. | ``!random cat`` |
+| ``random``<br>``rand``<br>``rnd`` | ``dog`` |   |   | Send a random dog image. | ``!random dog`` |
+|   |   |   |   |   |   |
+| ``rank``<br>``ranks``<br>``ranking`` |   |   |   | Show user rank. One message gives 1XP. | ``!rank`` |
+| ``rank``<br>``ranks``<br>``ranking`` | ``list``<br>``levels`` |   |   | Show all ranks and XP needed. | ``!rank list`` |
+| ``rank``<br>``ranks``<br>``ranking`` | ``save`` | Owner Only |   | Save ranks. | ``!rank save`` |
+| ``rank``<br>``ranks``<br>``ranking`` | ``top`` |  |   | Print global rank leaderboard. | ``!rank top`` |
+|   |   |   |   |   |   |
 
 ## Administration
 
@@ -146,6 +151,7 @@ Commands use the following types:
 | ``user``<br>``users``<br>``u``<br>``usr`` | ``removerole``<br>``remrole``<br>``rmrole``<br>``-role``<br>``-r``<br>``rr`` | Manage Roles | ``[user] User``<br><br>``[role] Role`` | Remove ``Role`` from ``User``. | ``!user remrole @SomeUser @admins``<br><br>``!user remrole @SomeUser "Unmentionable role"`` |
 | ``user``<br>``users``<br>``u``<br>``usr`` | ``removeallroles``<br>``remallroles``<br>``rmallroles``<br>``-ra``<br>``-rall``<br>``-allr`` | Manage Roles | ``[user] User`` | Remove all roles for ``User``. | ``!user rmallroles @SomeUser`` |
 | ``user``<br>``users``<br>``u``<br>``usr`` | ``setname``<br>``nick``<br>``rename``<br>``name``<br>``newname`` | Manage Nicknames | ``[user] User``<br><br>``[text] New name`` | Change ``User``'s nickname to ``New name`` (for this server). | ``!user setname @SomeUser Some new name`` |
+|   |   |   |   |   |   |
 
 ## Gambling
 
@@ -186,7 +192,7 @@ Commands use the following types:
 | ``game race`` |  |   |   | Start a signup process for a new race! | ``!game race`` |
 | ``game race`` | ``new``<br>``create`` |   |   | Identical result as to above command. | ``!game race new`` |
 | ``game race`` | ``join``<br>``+``<br>``compete`` |   |   | Join a pending race. | ``!game race join`` |
-
+|   |   |   |   |   |   |
 
 **(Command list is incomplete)**
 
