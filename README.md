@@ -233,7 +233,13 @@ Commands use the following types:
 |   |   |   |   |   |   |
 | ``steam``<br>``st``<br>``s`` | ``profile``<br>``id``<br>`` |   | ``[int] Steam ID`` | Get Steam information for given ID. | ``!steam profile 76561198106475313`` |
 |   |   |   |   |   |   |
-| ``urban``<br>``u`` |  |   | ``[text] Query`` | Search Urban Dictionary for a given query. | ``!urban Snowflake`` |
+| ``urban``<br>``u`` |   |   | ``[text] Query`` | Search Urban Dictionary for a given query. | ``!urban Snowflake`` |
+|   |   |   |   |   |   |
+| ``youtube``<br>``y``<br>``yt`` |   |   | ``[text] Query`` | Search YouTube for a given query. | ``!yt Snowflake falling`` |
+| ``youtube``<br>``y``<br>``yt`` | ``search``<br>``s`` |   | ``[text] Query`` | Search YouTube for a given query. | ``!yt Snowflake falling`` |
+| ``youtube``<br>``y``<br>``yt`` | ``searchvideo``<br>``searchv``<br>``sv`` |   | ``[text] Query`` | Search YouTube for a given query. Returns videos only | ``!yt searchv Snowflake falling`` |
+| ``youtube``<br>``y``<br>``yt`` | ``searchchannel``<br>``searchc``<br>``sc`` |   | ``[text] Query`` | Search YouTube for a given query. Returns channels only | ``!yt searchc Snowflake falling`` |
+| ``youtube``<br>``y``<br>``yt`` | ``searchplaylist``<br>``searchp``<br>``sp`` |   | ``[text] Query`` | Search YouTube for a given query. Returns playlists only | ``!yt searchp Snowflake falling`` |
 
 
 **(Command list is incomplete)**

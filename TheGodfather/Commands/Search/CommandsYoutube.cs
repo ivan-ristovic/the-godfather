@@ -47,9 +47,11 @@ namespace TheGodfather.Commands.Search
 
             /*await*/ InitializeYtService(ctx);
 
-            var results = await GetYoutubeResults(query, 1);
+            var results = await GetResultsAsync(query, 1)
+                .ConfigureAwait(false);
             if (results == null || results.Count == 0) {
-                await ctx.RespondAsync("No results...");
+                await ctx.RespondAsync("No results...")
+                    .ConfigureAwait(false);
                 return;
             }
             
@@ -71,17 +73,17 @@ namespace TheGodfather.Commands.Search
                 Description = results[0].Snippet.Description,
                 ThumbnailUrl = results[0].Snippet.Thumbnails.Default__.Url,
                 Color = DiscordColor.Red
-            });
+            }.Build()).ConfigureAwait(false);
         }
 
 
         #region COMMAND_YOUTUBE_SEARCH
         [Command("search")]
         [Description("Advanced youtube search.")]
-        [Aliases("s", "find", "query")]
-        public async Task SearchYouTubeAdvanced(CommandContext ctx,
-                                               [Description("Ammount of results. [1-10]")] int ammount = 5,
-                                               [RemainingText, Description("Search query.")] string query = null)
+        [Aliases("s")]
+        public async Task AdvancedSearchAsync(CommandContext ctx,
+                                             [Description("Ammount of results. [1-10]")] int ammount = 5,
+                                             [RemainingText, Description("Search query.")] string query = null)
         {
             if (string.IsNullOrWhiteSpace(query))
                 throw new InvalidCommandUsageException("Search query missing.");
@@ -89,71 +91,68 @@ namespace TheGodfather.Commands.Search
                 throw new CommandFailedException("Invalid ammount (must be 1-10).");
 
             /*await*/ InitializeYtService(ctx);
-            var results = await GetYoutubeResults(query, ammount);
+            var results = await GetResultsAsync(query, ammount)
+                .ConfigureAwait(false);
 
-            await ctx.RespondAsync($"Search results for ***{query}***", embed: EmbedYouTubeResults(results));
+            await ctx.RespondAsync($"Search results for ***{query}***", embed: EmbedYouTubeResults(results))
+                .ConfigureAwait(false);
         }
         #endregion
 
         #region COMMAND_YOUTUBE_SEARCHVIDEO
         [Command("searchv")]
         [Description("Advanced youtube search for videos only.")]
-        [Aliases("sv", "findv", "queryv", "searchvideo")]
-        public async Task SearchYouTubeVideo(CommandContext ctx,
-                                            [RemainingText, Description("Search query.")] string query = null)
+        [Aliases("sv", "searchvideo")]
+        public async Task SearchVideoAsync(CommandContext ctx,
+                                          [RemainingText, Description("Search query.")] string query = null)
         {
             if (string.IsNullOrWhiteSpace(query))
                 throw new InvalidCommandUsageException("Search query missing.");
 
             /*await*/ InitializeYtService(ctx);
-            var results = GetYoutubeResults(query, _defammount)
-                .Result
-                .Where(r => r.Id.Kind == "youtube#video")
-                .Take(5)
-                .ToList();
+            var results = await GetResultsAsync(query, _defammount)
+                .ConfigureAwait(false);
 
-            await ctx.RespondAsync($"Search results for ***{query}***", embed: EmbedYouTubeResults(results));
+            var em = EmbedYouTubeResults(results.Where(r => r.Id.Kind == "youtube#video").Take(5).ToList());
+            await ctx.RespondAsync($"Search results for ***{query}***", embed: em);
         }
         #endregion
 
         #region COMMAND_YOUTUBE_SEARCHCHANNEL
         [Command("searchc")]
         [Description("Advanced youtube search for channels only.")]
-        [Aliases("sc", "findc", "queryc", "searchchannel")]
-        public async Task SearchYouTubeChannel(CommandContext ctx,
-                                              [RemainingText, Description("Search query.")] string query = null)
+        [Aliases("sc", "searchchannel")]
+        public async Task SearchChannelAsync(CommandContext ctx,
+                                            [RemainingText, Description("Search query.")] string query = null)
         {
             if (string.IsNullOrWhiteSpace(query))
                 throw new InvalidCommandUsageException("Search query missing.");
 
             /*await*/ InitializeYtService(ctx);
-            var results = GetYoutubeResults(query, _defammount)
-                .Result
-                .Where(r => r.Id.Kind == "youtube#channel")
-                .Take(5)
-                .ToList();
+            var results = await GetResultsAsync(query, _defammount)
+                .ConfigureAwait(false);
 
-            await ctx.RespondAsync($"Search results for ***{query}***", embed: EmbedYouTubeResults(results));
+            var em = EmbedYouTubeResults(results.Where(r => r.Id.Kind == "youtube#channel").Take(5).ToList());
+            await ctx.RespondAsync($"Search results for ***{query}***", embed: em);
         }
         #endregion
 
         #region COMMAND_YOUTUBE_SEARCHPLAYLIST
         [Command("searchp")]
         [Description("Advanced youtube search for playlists only.")]
-        [Aliases("sp", "findp", "queryp", "searchplaylist")]
-        public async Task SearchYouTubePlaylist(CommandContext ctx,
-                                               [RemainingText, Description("Search query.")] string query = null)
+        [Aliases("sp", "searchplaylist")]
+        public async Task SearchPlaylistAsync(CommandContext ctx,
+                                             [RemainingText, Description("Search query.")] string query = null)
         {
             if (string.IsNullOrWhiteSpace(query))
                 throw new InvalidCommandUsageException("Search query missing.");
 
             /*await*/ InitializeYtService(ctx);
-            var results = GetYoutubeResults(query, _defammount)
-                .Result
-                .Where(r => r.Id.Kind == "youtube#playlist")
-                .ToList();
+            var results = await GetResultsAsync(query, _defammount)
+                .ConfigureAwait(false);
 
-            await ctx.RespondAsync($"Search results for ***{query}***", embed: EmbedYouTubeResults(results));
+            var em = EmbedYouTubeResults(results.Where(r => r.Id.Kind == "youtube#playlist").ToList());
+            await ctx.RespondAsync($"Search results for ***{query}***", embed: em);
         }
         #endregion
 
@@ -181,13 +180,13 @@ namespace TheGodfather.Commands.Search
             }
         }
 
-        private async Task<List<SearchResult>> GetYoutubeResults(string query, int ammount)
+        private async Task<List<SearchResult>> GetResultsAsync(string query, int ammount)
         {
             var searchListRequest = _yt.Search.List("snippet");
             searchListRequest.Q = query;
             searchListRequest.MaxResults = ammount;
 
-            var searchListResponse = await searchListRequest.ExecuteAsync();
+            var searchListResponse = await searchListRequest.ExecuteAsync().ConfigureAwait(false);
 
             List<SearchResult> videos = new List<SearchResult>();
             videos.AddRange(searchListResponse.Items);
@@ -222,7 +221,7 @@ namespace TheGodfather.Commands.Search
                 }
             }
 
-            return em;
+            return em.Build();
         }
         #endregion
     }
