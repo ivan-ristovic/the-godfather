@@ -232,6 +232,8 @@ Commands use the following types:
 | ``feed youtube``<br>``feed yt``<br>``feed y`` | ``unsubscribe``<br>``unsub``<br>``del``<br>``d``<br>``-``<br>``rm`` | Manage Guild (user) | ``[string] Channel URL`` | Unsubscribe from given YouTube channel. | ``!feed yt unsubscribe http://youtu.be/SomeChannel`` |
 |   |   |   |   |   |   |
 | ``steam``<br>``st``<br>``s`` | ``profile``<br>``id``<br>`` |   | ``[int] Steam ID`` | Get Steam information for given ID. | ``!steam profile 76561198106475313`` |
+|   |   |   |   |   |   |
+| ``urban``<br>``u`` |  |   | ``[text] Query`` | Search Urban Dictionary for a given query. | ``!urban Snowflake`` |
 
 
 **(Command list is incomplete)**

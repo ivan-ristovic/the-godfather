@@ -31,25 +31,26 @@ namespace TheGodfather.Commands.Search
             if (string.IsNullOrWhiteSpace(q))
                 throw new InvalidCommandUsageException("Query missing.");
 
-            var data = await UrbanDict.GetDataAsync(q);
+            var data = await UrbanDict.GetDataAsync(q)
+                .ConfigureAwait(false);
             if (data.Key) {
                 var interactivity = ctx.Client.GetInteractivityModule();
                 foreach (var v in data.Value.List) {
                     await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
                         Description = v.Definition.Length < 1000 ? v.Definition : v.Definition.Take(1000) + "...",
                         Color = DiscordColor.CornflowerBlue
-                    });
+                    }.Build()).ConfigureAwait(false);
 
-                    var t = interactivity.WaitForMessageAsync(
-                        m => m.Channel.Id == ctx.Channel.Id && m.Content.ToLower() == "next",
-                        TimeSpan.FromSeconds(10)
-                    );
-                    t.Wait();
-                    if (t.Result == null)
+                    var msg = await interactivity.WaitForMessageAsync(
+                        m => m.Channel.Id == ctx.Channel.Id && m.Content.ToLower() == "next"
+                        , TimeSpan.FromSeconds(10)
+                    ).ConfigureAwait(false);
+                    if (msg == null)
                         break;
                 }
             } else {
-                await ctx.RespondAsync("No results found!");
+                await ctx.RespondAsync("No results found!")
+                    .ConfigureAwait(false);
             }
         }
     }
