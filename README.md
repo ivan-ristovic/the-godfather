@@ -101,7 +101,7 @@ Commands use the following types:
 | ``reaction``<br>``reactions``<br>``react`` | ``save`` | Owner Only |  | Save all reactions. | ``!reaction save`` |
 |   |   |   |   |   |   |
 
-## Administration
+## Administration commands
 
 | Command group (with synonyms) | Command name (with synonyms) | Required Permissions | Command arguments | Command Description | Example of use |
 |---|---|---|---|---|---|
@@ -161,7 +161,7 @@ Commands use the following types:
 | ``user``<br>``users``<br>``u``<br>``usr`` | ``setname``<br>``nick``<br>``rename``<br>``name``<br>``newname`` | Manage Nicknames | ``[user] User``<br><br>``[text] New name`` | Change ``User``'s nickname to ``New name`` (for this server). | ``!user setname @SomeUser Some new name`` |
 |   |   |   |   |   |   |
 
-## Gambling
+## Gambling commands
 
 | Command group (with synonyms) | Command name (with synonyms) | Required Permissions | Command arguments | Command Description | Example of use |
 |---|---|---|---|---|---|
@@ -178,7 +178,7 @@ Commands use the following types:
 | ``gamble``<br>``bet`` | ``slot``<br>``slotmachine`` |   | ``[int] Bid (min: 5)`` | Bet on a slot machine outcome! | ``!bet slot 5`` |
 |   |   |   |   |   |   |
 
-## Games
+## Game commands
 
 | Command group (with synonyms) | Command name (with synonyms) | Required Permissions | Command arguments | Command Description | Example of use |
 |---|---|---|---|---|---|
@@ -202,7 +202,7 @@ Commands use the following types:
 | ``game race`` | ``join``<br>``+``<br>``compete`` |   |   | Join a pending race. | ``!game race join`` |
 |   |   |   |   |   |   |
 
-## Search
+## Search commands
 
 | Command group (with synonyms) | Command name (with synonyms) | Required Permissions | Command arguments | Command Description | Example of use |
 |---|---|---|---|---|---|
@@ -240,6 +240,21 @@ Commands use the following types:
 | ``youtube``<br>``y``<br>``yt`` | ``searchvideo``<br>``searchv``<br>``sv`` |   | ``[text] Query`` | Search YouTube for a given query. Returns videos only | ``!yt searchv Snowflake falling`` |
 | ``youtube``<br>``y``<br>``yt`` | ``searchchannel``<br>``searchc``<br>``sc`` |   | ``[text] Query`` | Search YouTube for a given query. Returns channels only | ``!yt searchc Snowflake falling`` |
 | ``youtube``<br>``y``<br>``yt`` | ``searchplaylist``<br>``searchp``<br>``sp`` |   | ``[text] Query`` | Search YouTube for a given query. Returns playlists only | ``!yt searchp Snowflake falling`` |
+|   |   |   |   |   |   |
+
+## SWAT4 commands
+
+| Command group (with synonyms) | Command name (with synonyms) | Required Permissions | Command arguments | Command Description | Example of use |
+|---|---|---|---|---|---|
+|   |   |   |   |   |   |
+| ``swat4``<br>``swat``<br>``s4`` | ``serverlist`` |   |   | Player count for SWAT4 servers in database. | ``!s4 serverlist`` |
+| ``swat4``<br>``swat``<br>``s4`` | ``query``<br>``info``<br>``q``<br>``i`` |   | ``[string] IP/Shortname`` | Get info for SWAT4 server with given IP or short name (you can add these manually, popular servers are already added). | ``!s4 query 13.95.232.189:10480``<br<br>``!s4 query soh`` |
+| ``swat4``<br>``swat``<br>``s4`` | ``settimeout`` | Owner Only | ``[int] Time (in ms)`` | Set spacecheck ping time. | ``!s4 settimeout 200`` |
+| ``swat4``<br>``swat``<br>``s4`` | ``spacecheck``<br>``startcheck``<br>``checkspace`` |   | ``[string] IP/Shortname`` | Start checking for space on SWAT4 server given with IP/Name. Bot will send a message when there is space on the server. One check per user at a time is allowed. | ``!s4 spacecheck 13.95.232.189:10480``<br<br>``!s4 spacecheck soh`` |
+| ``swat4``<br>``swat``<br>``s4`` | ``stopcheck``<br>``checkstop`` |   |   | Stops your issued spacecheck. | ``!s4 stopcheck |
+| ``s4 servers`` | ``add``<br>``+``<br>``a`` | Administrator (user) | ``[string] Shortname``<br><br>``[string] IP`` | Add a new server to database. If the server uses a non-default query port, add it after IP like in example. | ``!s4 servers + soh 13.95.232.189:10480``<br><br>``!s4 servers + soh 13.95.232.189:10480:10488`` |
+| ``s4 servers`` | ``delete``<br>``-``<br>``del``<br>``d`` | Administrator (user) | ``[string] Shortname`` | Remove a server from database. | ``!s4 servers - soh`` |
+| ``s4 servers`` | ``save`` | Owner Only |   | Save server list. | ``!s4 servers save`` |
 
 
 **(Command list is incomplete)**

@@ -20,7 +20,9 @@ using DSharpPlus.Entities;
 
 namespace TheGodfather.Commands.SWAT
 {
+    [Group("swat")]
     [Description("SWAT4 related commands.")]
+    [Aliases("s4", "swat4")]
     [Cooldown(2, 5, CooldownBucketType.User), Cooldown(4, 5, CooldownBucketType.Channel)]
     public class CommandsSwat
     {
@@ -33,29 +35,31 @@ namespace TheGodfather.Commands.SWAT
         #region COMMAND_SERVERLIST
         [Command("serverlist")]
         [Description("Print the serverlist with current player numbers")]
-        [Aliases("slist", "swat4servers", "swat4stats")]
-        public async Task Servers(CommandContext ctx)
+        public async Task ServerlistAsync(CommandContext ctx)
         {
-            await ctx.TriggerTypingAsync();
-            var embed = new DiscordEmbedBuilder() { Title = "Servers" };
+            await ctx.TriggerTypingAsync()
+                .ConfigureAwait(false);
+            var em = new DiscordEmbedBuilder() { Title = "Servers" };
             foreach (var server in ctx.Dependencies.GetDependency<SwatServerManager>().Servers) {
                 var split = server.Value.Split(':');
-                var info = await QueryIP(ctx, split[0], int.Parse(split[1]));
+                var info = await QueryIPAsync(ctx, split[0], int.Parse(split[1]))
+                    .ConfigureAwait(false);
                 if (info != null)
-                    embed.AddField(info[0], $"IP: {split[0]}:{split[1]}\nPlayers: {Formatter.Bold(info[1] + " / " + info[2])}");
+                    em.AddField(info[0], $"IP: {split[0]}:{split[1]}\nPlayers: {Formatter.Bold(info[1] + " / " + info[2])}");
                 else
-                    embed.AddField(server.Key, $"IP: {split[0]}:{split[1]}\nPlayers: Offline");
+                    em.AddField(server.Key, $"IP: {split[0]}:{split[1]}\nPlayers: Offline");
             }
-            await ctx.RespondAsync(embed: embed);
+            await ctx.RespondAsync(embed: em.Build())
+                .ConfigureAwait(false);
         }
         #endregion
 
         #region COMMAND_QUERY
         [Command("query")]
         [Description("Return server information.")]
-        [Aliases("info", "check")]
-        public async Task Query(CommandContext ctx, 
-                               [Description("IP.")] string ip = null)
+        [Aliases("q", "info", "i")]
+        public async Task QueryAsync(CommandContext ctx, 
+                                    [Description("IP.")] string ip = null)
         {
             if (string.IsNullOrWhiteSpace(ip))
                 throw new InvalidCommandUsageException("IP missing.");
@@ -66,13 +70,14 @@ namespace TheGodfather.Commands.SWAT
 
             try {
                 var split = ip.Split(':');
-                var info = await QueryIP(ctx, split[0], int.Parse(split[1]));
+                var info = await QueryIPAsync(ctx, split[0], int.Parse(split[1]));
                 if (info != null)
-                    await SendEmbedInfo(ctx, split[0] + ":" + split[1], info);
+                    await SendEmbedInfoAsync(ctx, split[0] + ":" + split[1], info).ConfigureAwait(false);
                 else
-                    await ctx.RespondAsync("No reply from server.");
+                    await ctx.RespondAsync("No reply from server.").ConfigureAwait(false);
             } catch (Exception) {
-                await ctx.RespondAsync("Invalid IP format.");
+                await ctx.RespondAsync("Invalid IP format.")
+                    .ConfigureAwait(false);
             }
         }
         #endregion
@@ -82,11 +87,12 @@ namespace TheGodfather.Commands.SWAT
         [Description("Set checking timeout.")]
         [RequireOwner]
         [Hidden]
-        public async Task SetTimeout(CommandContext ctx,
-                                    [Description("Timeout.")] int timeout = 200)
+        public async Task SetTimeoutAsync(CommandContext ctx,
+                                         [Description("Timeout.")] int timeout = 200)
         {
             _checktimeout = timeout;
-            await ctx.RespondAsync("Timeout changed to: " + Formatter.Bold(_checktimeout.ToString()));
+            await ctx.RespondAsync("Timeout changed to: " + Formatter.Bold(_checktimeout.ToString()))
+                .ConfigureAwait(false);
         }
         #endregion
 
@@ -94,9 +100,8 @@ namespace TheGodfather.Commands.SWAT
         [Command("startcheck")]
         [Description("Notifies of free space in server.")]
         [Aliases("checkspace", "spacecheck")]
-        [RequireUserPermissions(Permissions.ManageGuild)]
-        public async Task StartCheck(CommandContext ctx, 
-                                    [Description("Registered name or IP.")] string ip = null)
+        public async Task StartCheckAsync(CommandContext ctx, 
+                                         [Description("Registered name or IP.")] string ip = null)
         {
             if (string.IsNullOrWhiteSpace(ip))
                 throw new InvalidCommandUsageException("Name/IP missing.");
@@ -117,36 +122,42 @@ namespace TheGodfather.Commands.SWAT
             } catch (Exception) {
                 throw new InvalidCommandUsageException("Invalid IP format.");
             }
-            await ctx.RespondAsync($"Starting check on {split[0]}:{split[1]}...");
+            await ctx.RespondAsync($"Starting check on {split[0]}:{split[1]}...")
+                .ConfigureAwait(false);
 
             _UserIDsCheckingForSpace.GetOrAdd(ctx.User.Id, true);
             while (_UserIDsCheckingForSpace[ctx.User.Id]) {
                 try {
-                    var info = await QueryIP(ctx, split[0], int.Parse(split[1]));
+                    var info = await QueryIPAsync(ctx, split[0], int.Parse(split[1]))
+                        .ConfigureAwait(false);
                     if (info == null) {
-                        await ctx.RespondAsync("No reply from server. Should I try again?");
+                        await ctx.RespondAsync("No reply from server. Should I try again?")
+                            .ConfigureAwait(false);
                         var interactivity = ctx.Client.GetInteractivityModule();
                         var msg = await interactivity.WaitForMessageAsync(
                             xm => xm.Author.Id == ctx.User.Id &&
                                 (xm.Content.ToLower().StartsWith("yes") || xm.Content.ToLower().StartsWith("no")),
                             TimeSpan.FromMinutes(1)
-                        );
+                        ).ConfigureAwait(false);
                         if (msg == null || msg.Message.Content.StartsWith("no")) {
-                            await StopCheck(ctx);
+                            await StopCheckAsync(ctx)
+                                .ConfigureAwait(false);
                             return;
                         }
                     } else if (int.Parse(info[1]) < int.Parse(info[2])) {
-                        await ctx.RespondAsync(ctx.User.Mention + ", there is space on " + info[0]);
+                        await ctx.RespondAsync(ctx.User.Mention + ", there is space on " + info[0])
+                            .ConfigureAwait(false);
                     }
                 } catch (Exception e) {
-                    await StopCheck(ctx);
+                    await StopCheckAsync(ctx)
+                        .ConfigureAwait(false);
                     throw e;
                 }
-                await Task.Delay(3000);
+                await Task.Delay(TimeSpan.FromSeconds(3))
+                    .ConfigureAwait(false);
             }
-
-            bool outv;
-            _UserIDsCheckingForSpace.TryRemove(ctx.User.Id, out outv);
+            
+            _UserIDsCheckingForSpace.TryRemove(ctx.User.Id, out _);
         }
         #endregion
 
@@ -154,19 +165,19 @@ namespace TheGodfather.Commands.SWAT
         [Command("stopcheck")]
         [Description("Stops space checking.")]
         [Aliases("checkstop")]
-        [RequireUserPermissions(Permissions.ManageGuild)]
-        public async Task StopCheck(CommandContext ctx)
+        public async Task StopCheckAsync(CommandContext ctx)
         {
             if (!_UserIDsCheckingForSpace.ContainsKey(ctx.User.Id))
                 throw new CommandFailedException("No checks started from you.", new KeyNotFoundException());
             _UserIDsCheckingForSpace.TryUpdate(ctx.User.Id, false, true);
-            await ctx.RespondAsync("Checking stopped.");
+            await ctx.RespondAsync("Checking stopped.")
+                .ConfigureAwait(false);
         }
         #endregion
 
 
         #region HELPER_FUNCTIONS
-        private async Task<string[]> QueryIP(CommandContext ctx, string ip, int port)
+        private async Task<string[]> QueryIPAsync(CommandContext ctx, string ip, int port)
         {
             var client = new UdpClient();
             IPEndPoint ep = new IPEndPoint(IPAddress.Parse(ip), port + 1);
@@ -177,7 +188,8 @@ namespace TheGodfather.Commands.SWAT
             byte[] receivedData = null;
             try {
                 string query = "\\status\\";
-                await client.SendAsync(Encoding.ASCII.GetBytes(query), query.Length);
+                await client.SendAsync(Encoding.ASCII.GetBytes(query), query.Length)
+                    .ConfigureAwait(false);
                 receivedData = client.Receive(ref ep);
             } catch {
                 return null;
@@ -203,19 +215,21 @@ namespace TheGodfather.Commands.SWAT
             return null;
         }
         
-        private async Task SendEmbedInfo(CommandContext ctx, string ip, string[] info)
+        private async Task SendEmbedInfoAsync(CommandContext ctx, string ip, string[] info)
         {
-            var embed = new DiscordEmbedBuilder() {
+            var em = new DiscordEmbedBuilder() {
                 Url = "https://swat4stats.com/servers/" + ip,
                 Title = info[0],
                 Description = ip,
                 Timestamp = DateTime.Now,
                 Color = DiscordColor.Gray
             };
-            embed.AddField("Players", info[1] + "/" + info[2]);
-            embed.AddField("Map", info[4]);
-            embed.AddField("Game mode", info[3]);
-            await ctx.RespondAsync(embed: embed);
+            em.AddField("Players", info[1] + "/" + info[2]);
+            em.AddField("Map", info[4]);
+            em.AddField("Game mode", info[3]);
+
+            await ctx.RespondAsync(embed: em.Build())
+                .ConfigureAwait(false);
         }
         #endregion
 
@@ -227,11 +241,11 @@ namespace TheGodfather.Commands.SWAT
             #region COMMAND_SERVERS_ADD
             [Command("add")]
             [Description("Add a server to serverlist.")]
-            [Aliases("+")]
+            [Aliases("+", "a")]
             [RequireUserPermissions(Permissions.Administrator)]
-            public async Task Add(CommandContext ctx,
-                                 [Description("Name.")] string name = null,
-                                 [Description("IP.")] string ip = null)
+            public async Task AddAsync(CommandContext ctx,
+                                      [Description("Name.")] string name = null,
+                                      [Description("IP.")] string ip = null)
             {
                 if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(ip))
                     throw new InvalidCommandUsageException("Invalid name or IP.");
@@ -244,7 +258,7 @@ namespace TheGodfather.Commands.SWAT
                     ip += ":" + (int.Parse(split[1]) + 1).ToString();
 
                 if (ctx.Dependencies.GetDependency<SwatServerManager>().TryAdd(name, ip))
-                    await ctx.RespondAsync("Server added. You can now query it using the name provided.");
+                    await ctx.RespondAsync("Server added. You can now query it using the name provided.").ConfigureAwait(false);
                 else
                     throw new CommandFailedException("Failed to add server to serverlist.");
             }
@@ -253,16 +267,16 @@ namespace TheGodfather.Commands.SWAT
             #region COMMAND_SERVERS_DELETE
             [Command("delete")]
             [Description("Remove a server from serverlist.")]
-            [Aliases("-", "remove")]
+            [Aliases("-", "del", "d")]
             [RequireUserPermissions(Permissions.Administrator)]
-            public async Task Delete(CommandContext ctx,
-                                    [Description("Name.")] string name = null)
+            public async Task DeleteAsync(CommandContext ctx,
+                                         [Description("Name.")] string name = null)
             {
                 if (string.IsNullOrWhiteSpace(name))
                     throw new InvalidCommandUsageException("Name missing.");
 
                 if (ctx.Dependencies.GetDependency<SwatServerManager>().TryRemove(name))
-                    await ctx.RespondAsync("Server removed.");
+                    await ctx.RespondAsync("Server removed.").ConfigureAwait(false);
             }
             #endregion
 
@@ -270,10 +284,11 @@ namespace TheGodfather.Commands.SWAT
             [Command("save")]
             [Description("Saves all the servers in the list.")]
             [RequireOwner]
-            public async Task SaveServers(CommandContext ctx)
+            public async Task SaveAsync(CommandContext ctx)
             {
                 ctx.Dependencies.GetDependency<SwatServerManager>().Save(ctx.Client.DebugLogger);
-                await ctx.RespondAsync("Servers successfully saved.");
+                await ctx.RespondAsync("Servers successfully saved.")
+                    .ConfigureAwait(false);
             }
             #endregion
         }
