@@ -255,7 +255,7 @@ Commands use the following types:
 | ``s4 servers`` | ``add``<br>``+``<br>``a`` | Administrator (user) | ``[string] Shortname``<br><br>``[string] IP`` | Add a new server to database. If the server uses a non-default query port, add it after IP like in example. | ``!s4 servers + soh 13.95.232.189:10480``<br><br>``!s4 servers + soh 13.95.232.189:10480:10488`` |
 | ``s4 servers`` | ``delete``<br>``-``<br>``del``<br>``d`` | Administrator (user) | ``[string] Shortname`` | Remove a server from database. | ``!s4 servers - soh`` |
 | ``s4 servers`` | ``save`` | Owner Only |   | Save server list. | ``!s4 servers save`` |
-
+|   |   |   |   |   |   |
 
 **(Command list is incomplete)**
 

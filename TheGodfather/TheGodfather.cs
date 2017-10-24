@@ -215,7 +215,9 @@ namespace TheGodfather
         #region CLIENT_EVENTS
         private async Task Client_Heartbeated(HeartbeatEventArgs e)
         {
-            await _client.UpdateStatusAsync(new DiscordGame(_dependecies.StatusControl.GetRandomStatus()) { StreamType = GameStreamType.NoStream });
+            await _client.UpdateStatusAsync(new DiscordGame(_dependecies.StatusControl.GetRandomStatus()) {
+                StreamType = GameStreamType.NoStream
+            }).ConfigureAwait(false);
             SaveData();
         }
 
@@ -243,7 +245,8 @@ namespace TheGodfather
                 return;
 
             try {
-                await e.Guild.GetChannel(cid).SendMessageAsync($"Welcome to {Formatter.Bold(e.Guild.Name)}, {e.Member.Mention}!");
+                await e.Guild.GetChannel(cid).SendMessageAsync($"Welcome to {Formatter.Bold(e.Guild.Name)}, {e.Member.Mention}!")
+                    .ConfigureAwait(false);
             } catch (Exception exc) {
                 while (exc is AggregateException)
                     exc = exc.InnerException;
@@ -255,7 +258,8 @@ namespace TheGodfather
                 );
 
                 if (exc is UnauthorizedException)
-                    await e.Guild.Owner.SendMessageAsync("You have set a welcome message channel for me to post in, but I do not have permissions to do so. Please consider changing it. Guild: " + e.Guild.Name + " , Channel: " + e.Guild.GetChannel(cid).Name);
+                    await e.Guild.Owner.SendMessageAsync("You have set a welcome message channel for me to post in, but I do not have permissions to do so. Please consider changing it. Guild: " + e.Guild.Name + " , Channel: " + e.Guild.GetChannel(cid).Name)
+                        .ConfigureAwait(false);
             }
         }
 
@@ -271,7 +275,8 @@ namespace TheGodfather
                 return;
 
             try {
-                await e.Guild.GetChannel(cid).SendMessageAsync($"{Formatter.Bold(e.Member?.Username ?? "<unknown>")} left the server. Bye!");
+                await e.Guild.GetChannel(cid).SendMessageAsync($"{Formatter.Bold(e.Member?.Username ?? "<unknown>")} left the server. Bye!")
+                    .ConfigureAwait(false);
             } catch (Exception exc) {
                 while (exc is AggregateException)
                     exc = exc.InnerException;
@@ -282,7 +287,8 @@ namespace TheGodfather
                     $" Message: {exc.Message}"
                 );
                 if (exc is UnauthorizedException)
-                    await e.Guild.Owner.SendMessageAsync("You have set a leave message channel for me to post in, but I do not have permissions to do so. Please consider changing it. Guild: " + e.Guild.Name + " , Channel: " + e.Guild.GetChannel(cid).Name);
+                    await e.Guild.Owner.SendMessageAsync("You have set a leave message channel for me to post in, but I do not have permissions to do so. Please consider changing it. Guild: " + e.Guild.Name + " , Channel: " + e.Guild.GetChannel(cid).Name)
+                        .ConfigureAwait(false);
             }
         }
 
@@ -304,7 +310,8 @@ namespace TheGodfather
             // Check if message contains filter
             if (e.Message.Content != null && e.Message.Content.Split(' ').Any(s => _dependecies.FilterControl.Contains(e.Guild.Id, s))) {
                 try {
-                    await e.Channel.DeleteMessageAsync(e.Message);
+                    await e.Channel.DeleteMessageAsync(e.Message)
+                        .ConfigureAwait(false);
                     LogHandle.Log(LogLevel.Info,
                         $"Filter triggered in message: '{e.Message.Content}'" + Environment.NewLine +
                         $" User: {e.Message.Author.ToString()}" + Environment.NewLine +
@@ -317,7 +324,8 @@ namespace TheGodfather
                         $" User: {e.Message.Author.ToString()}" + Environment.NewLine +
                         $" Location: '{e.Guild.Name}' ({e.Guild.Id}) ; {e.Channel.ToString()}"
                     );
-                    await e.Channel.SendMessageAsync("The message contains the filtered word but I do not have permissions to delete it.");
+                    await e.Channel.SendMessageAsync("The message contains the filtered word but I do not have permissions to delete it.")
+                        .ConfigureAwait(false);
                 }
                 return;
             }
@@ -367,7 +375,8 @@ namespace TheGodfather
             // Check if message contains filter
             if (!e.Author.IsBot && e.Message.Content != null && e.Message.Content.Split(' ').Any(s => _dependecies.FilterControl.Contains(e.Guild.Id, s))) {
                 try {
-                    await e.Channel.DeleteMessageAsync(e.Message);
+                    await e.Channel.DeleteMessageAsync(e.Message)
+                        .ConfigureAwait(false);
                     LogHandle.Log(LogLevel.Info,
                         $"Filter triggered in edit of a message: '{e.Message.Content}'" + Environment.NewLine +
                         $" User: {e.Message.Author.ToString()}" + Environment.NewLine +
@@ -380,22 +389,26 @@ namespace TheGodfather
                         $" User: {e.Message.Author.ToString()}" + Environment.NewLine +
                         $" Location: '{e.Guild.Name}' ({e.Guild.Id}) ; {e.Channel.ToString()}"
                     );
-                    await e.Channel.SendMessageAsync("The edited message contains the filtered word but I do not have permissions to delete it.");
+                    await e.Channel.SendMessageAsync("The edited message contains the filtered word but I do not have permissions to delete it.")
+                        .ConfigureAwait(false);
                 }
-                await e.Channel.SendMessageAsync($"Nice try, {e.Author.Mention}! But I see throught it!");
+                await e.Channel.SendMessageAsync($"Nice try, {e.Author.Mention}! But I see throught it!")
+                    .ConfigureAwait(false);
             }
         }
 
         private async Task Client_ReactToMessage(MessageReactionAddEventArgs e)
         {
             if (new Random().Next(10) == 0)
-                await e.Message.CreateReactionAsync(e.Emoji);
+                await e.Message.CreateReactionAsync(e.Emoji).ConfigureAwait(false);
         }
 
         private async Task Client_Ready(ReadyEventArgs e)
         {
             LogHandle.Log(LogLevel.Info, "Client ready.");
-            await _client.UpdateStatusAsync(new DiscordGame(_dependecies.StatusControl.GetRandomStatus()) { StreamType = GameStreamType.NoStream });
+            await _client.UpdateStatusAsync(new DiscordGame(_dependecies.StatusControl.GetRandomStatus()) {
+                StreamType = GameStreamType.NoStream
+            }).ConfigureAwait(false);
         }
         #endregion
 
@@ -461,7 +474,8 @@ namespace TheGodfather
             else
                 embed.Description = $"{emoji} Unknown error occured (probably because a Serbian made this bot). Please **!report**.";
 
-            await e.Context.RespondAsync(embed: embed.Build()).ConfigureAwait(false);
+            await e.Context.RespondAsync(embed: embed.Build())
+                .ConfigureAwait(false);
         }
         #endregion
     }
