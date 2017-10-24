@@ -62,7 +62,8 @@ namespace TheGodfather
             SetupVoice();
             LoadData();
 
-            await _client.ConnectAsync();
+            await _client.ConnectAsync()
+                .ConfigureAwait(false);
 
             await Task.Delay(-1);
         }
