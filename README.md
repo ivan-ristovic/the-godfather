@@ -220,17 +220,18 @@ Commands use the following types:
 | ``joke``<br>``jokes``<br>``j`` | ``yomomma``<br>``yourmom``<br>``yomama`` |   |   | Send a yomomma joke. | ``!joke yomomma`` |
 |   |   |   |   |   |   |
 | ``rss``<br>``feed`` |   |   | ``[text] Feed URL`` | Get feed from URL. | ``!feed http://somefeedurl.rss`` |
-| ``rss``<br>``feed`` | ``subscribe``<br>``add``<br>``+``<br>``sub`` | Manage Guild | ``[text] Feed URL`` | Subscribe to given feed URL. Bot will send messages whenever it detects updates. | ``!feed subscribe http://somefeedurl.rss`` |
+| ``rss``<br>``feed`` | ``subscribe``<br>``add``<br>``+``<br>``sub`` | Manage Guild (user) | ``[text] Feed URL`` | Subscribe to given feed URL. Bot will send messages whenever it detects updates. | ``!feed subscribe http://somefeedurl.rss`` |
 | ``rss``<br>``feed`` | ``listsubs``<br>``list``<br>``ls`` |   |   | List all subscribed feeds. | ``!feed list`` |
 | ``rss``<br>``feed`` | ``wm`` |   |   | Get latest topics from WM forum. | ``!feed wm`` |
 | ``rss``<br>``feed`` | ``news`` |   |   | Get latest worldwide news. | ``!feed news`` |
 | ``feed reddit``<br>``feed r`` |   |   | ``[string] Subreddit`` | Get latest topics from ``Subreddit``. | ``!feed reddit aww`` |
-| ``feed reddit``<br>``feed r`` | ``subscribe``<br>``sub``<br>``add``<br>``a``<br>``+`` | Manage Guild | ``[string] Subreddit`` | Subscribe to given subreddit. Bot will send messages when new post appears. | ``!feed reddit subscribe aww`` |
-| ``feed reddit``<br>``feed r`` | ``unsubscribe``<br>``unsub``<br>``del``<br>``d``<br>``-``<br>``rm`` | Manage Guild | ``[string] Subreddit`` | Unsubscribe from given subreddit. | ``!feed reddit unsubscribe aww`` |
+| ``feed reddit``<br>``feed r`` | ``subscribe``<br>``sub``<br>``add``<br>``a``<br>``+`` | Manage Guild (user) | ``[string] Subreddit`` | Subscribe to given subreddit. Bot will send messages when new post appears. | ``!feed reddit subscribe aww`` |
+| ``feed reddit``<br>``feed r`` | ``unsubscribe``<br>``unsub``<br>``del``<br>``d``<br>``-``<br>``rm`` | Manage Guild (user) | ``[string] Subreddit`` | Unsubscribe from given subreddit. | ``!feed reddit unsubscribe aww`` |
 | ``feed youtube``<br>``feed yt``<br>``feed y`` |   |   | ``[string] Channel URL`` | Get latest videos from YouTube channel. | ``!feed youtube http://youtu.be/SomeChannel`` |
-| ``feed youtube``<br>``feed yt``<br>``feed y`` | ``subscribe``<br>``sub``<br>``add``<br>``a``<br>``+`` | Manage Guild | ``[string] Channel URL`` | Subscribe to given YouTube channel. Bot will send messages when new video is uploaded. | ``!feed yt subscribe http://youtu.be/SomeChannel`` |
-| ``feed youtube``<br>``feed yt``<br>``feed y`` | ``unsubscribe``<br>``unsub``<br>``del``<br>``d``<br>``-``<br>``rm`` | Manage Guild | ``[string] Channel URL`` | Unsubscribe from given YouTube channel. | ``!feed yt unsubscribe http://youtu.be/SomeChannel`` |
-
+| ``feed youtube``<br>``feed yt``<br>``feed y`` | ``subscribe``<br>``sub``<br>``add``<br>``a``<br>``+`` | Manage Guild (user) | ``[string] Channel URL`` | Subscribe to given YouTube channel. Bot will send messages when new video is uploaded. | ``!feed yt subscribe http://youtu.be/SomeChannel`` |
+| ``feed youtube``<br>``feed yt``<br>``feed y`` | ``unsubscribe``<br>``unsub``<br>``del``<br>``d``<br>``-``<br>``rm`` | Manage Guild (user) | ``[string] Channel URL`` | Unsubscribe from given YouTube channel. | ``!feed yt unsubscribe http://youtu.be/SomeChannel`` |
+|   |   |   |   |   |   |
+| ``steam``<br>``st``<br>``s`` | ``profile``<br>``id``<br>`` |   | ``[int] Steam ID`` | Get Steam information for given ID. | ``!steam profile 76561198106475313`` |
 
 
 **(Command list is incomplete)**

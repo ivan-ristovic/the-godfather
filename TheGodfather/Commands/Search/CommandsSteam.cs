@@ -40,18 +40,21 @@ namespace TheGodfather.Commands.Search
         [Command("profile")]
         [Description("Get Steam user information from ID.")]
         [Aliases("id")]
-        public async Task SteamProfile(CommandContext ctx,
+        public async Task InfoAsync(CommandContext ctx,
                                       [Description("ID.")] ulong id = 0)
         {
             InitializeSteamService(ctx);
 
-            var model = await _steam.GetCommunityProfileAsync(id);
+            var model = await _steam.GetCommunityProfileAsync(id)
+                .ConfigureAwait(false);
             if (model == null)
                 throw new CommandFailedException("No users found!");
 
-            var summary = await _steam.GetPlayerSummaryAsync(id);
+            var summary = await _steam.GetPlayerSummaryAsync(id)
+                .ConfigureAwait(false);
 
-            await ctx.RespondAsync($"http://steamcommunity.com/id/{model.SteamID}/", embed: EmbedSteamResult(model, summary.Data));
+            await ctx.RespondAsync($"http://steamcommunity.com/id/{model.SteamID}/", embed: EmbedSteamResult(model, summary.Data))
+                .ConfigureAwait(false);
         }
         #endregion
 
@@ -99,7 +102,7 @@ namespace TheGodfather.Commands.Search
                 em.AddField("VAC Status:", $"**{bancount}** ban(s) on record.", inline: true);
             }
 
-            return em;
+            return em.Build();
         }
         #endregion
     }
