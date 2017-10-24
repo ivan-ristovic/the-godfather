@@ -41,12 +41,14 @@ namespace TheGodfather.Commands.Search
         [Aliases("sub", "add", "+")]
         [RequirePermissions(Permissions.ManageGuild)]
         public async Task AddUrlFeedAsync(CommandContext ctx,
-                                         [RemainingText, Description("URL.")] string url = null)
+                                         [RemainingText, Description("URL.")] string url = null,
+                                         [Description("Friendly name.")] string name = null)
         {
             if (string.IsNullOrWhiteSpace(url))
                 throw new InvalidCommandUsageException("URL missing.");
 
-            if (ctx.Dependencies.GetDependency<FeedManager>().TryAdd(ctx.Channel.Id, url))
+            bool nameset = string.IsNullOrWhiteSpace(name);
+            if (ctx.Dependencies.GetDependency<FeedManager>().TryAdd(ctx.Channel.Id, url, nameset ? name : url))
                 await ctx.RespondAsync($"Subscribed to {url} !").ConfigureAwait(false);
             else
                 await ctx.RespondAsync("Either URL you gave is invalid or you are already subscribed to it!").ConfigureAwait(false);

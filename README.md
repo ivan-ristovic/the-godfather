@@ -220,14 +220,14 @@ Commands use the following types:
 | ``joke``<br>``jokes``<br>``j`` | ``yomomma``<br>``yourmom``<br>``yomama`` |   |   | Send a yomomma joke. | ``!joke yomomma`` |
 |   |   |   |   |   |   |
 | ``rss``<br>``feed`` |   |   | ``[text] Feed URL`` | Get feed from URL. | ``!feed http://somefeedurl.rss`` |
-| ``rss``<br>``feed`` | ``subscribe``<br>``add``<br>``+``<br>``sub`` | Manage Guild (user) | ``[text] Feed URL`` | Subscribe to given feed URL. Bot will send messages whenever it detects updates. | ``!feed subscribe http://somefeedurl.rss`` |
+| ``rss``<br>``feed`` | ``subscribe``<br>``add``<br>``+``<br>``sub`` | Manage Guild (user) | ``[text] Feed URL``<br><br>``(optional) [text] Friendly Name`` | Subscribe to given feed URL. Bot will send messages whenever it detects updates. ``Friendly Name`` will be shown instead of feed URL (if set). | ``!feed subscribe http://somefeedurl.rss``<br><br>``!feed subscribe http://somefeedurl.rss My site RSS`` |
 | ``rss``<br>``feed`` | ``listsubs``<br>``list``<br>``ls`` |   |   | List all subscribed feeds. | ``!feed list`` |
 | ``rss``<br>``feed`` | ``wm`` |   |   | Get latest topics from WM forum. | ``!feed wm`` |
 | ``rss``<br>``feed`` | ``news`` |   |   | Get latest worldwide news. | ``!feed news`` |
 | ``feed reddit``<br>``feed r`` |   |   | ``[string] Subreddit`` | Get latest topics from ``Subreddit``. | ``!feed reddit aww`` |
 | ``feed reddit``<br>``feed r`` | ``subscribe``<br>``sub``<br>``add``<br>``a``<br>``+`` | Manage Guild (user) | ``[string] Subreddit`` | Subscribe to given subreddit. Bot will send messages when new post appears. | ``!feed reddit subscribe aww`` |
 | ``feed reddit``<br>``feed r`` | ``unsubscribe``<br>``unsub``<br>``del``<br>``d``<br>``-``<br>``rm`` | Manage Guild (user) | ``[string] Subreddit`` | Unsubscribe from given subreddit. | ``!feed reddit unsubscribe aww`` |
-| ``feed youtube``<br>``feed yt``<br>``feed y`` |   |   | ``[string] Channel URL`` | Get latest videos from YouTube channel. | ``!feed youtube http://youtu.be/SomeChannel`` |
+| ``feed youtube``<br>``feed yt``<br>``feed y`` |   |   | ``[string] Channel URL``<br><br>``(optional) [text] Friendly Name``  | Get latest videos from YouTube channel. ``Friendly Name`` will be shown instead of feed URL (if set). | ``!feed youtube http://youtu.be/SomeChannel``<br><br>``!feed youtube http://youtu.be/SomeChannel My Videos`` |
 | ``feed youtube``<br>``feed yt``<br>``feed y`` | ``subscribe``<br>``sub``<br>``add``<br>``a``<br>``+`` | Manage Guild (user) | ``[string] Channel URL`` | Subscribe to given YouTube channel. Bot will send messages when new video is uploaded. | ``!feed yt subscribe http://youtu.be/SomeChannel`` |
 | ``feed youtube``<br>``feed yt``<br>``feed y`` | ``unsubscribe``<br>``unsub``<br>``del``<br>``d``<br>``-``<br>``rm`` | Manage Guild (user) | ``[string] Channel URL`` | Unsubscribe from given YouTube channel. | ``!feed yt unsubscribe http://youtu.be/SomeChannel`` |
 |   |   |   |   |   |   |
