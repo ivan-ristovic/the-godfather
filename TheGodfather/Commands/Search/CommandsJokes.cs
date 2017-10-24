@@ -29,12 +29,13 @@ namespace TheGodfather.Commands.Search
             request.AutomaticDecompression = DecompressionMethods.GZip;
             request.Accept = "text/plain";
 
-            string data = string.Empty;
+            string data = null;
             try {
-                using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
-                    using (Stream stream = response.GetResponseStream()) {
-                        using (StreamReader reader = new StreamReader(stream)) {
-                            data = reader.ReadToEnd();
+                using (var response = await request.GetResponseAsync().ConfigureAwait(false)) {
+                    using (var stream = response.GetResponseStream()) {
+                        using (var reader = new StreamReader(stream)) {
+                            data = await reader.ReadToEndAsync()
+                                .ConfigureAwait(false);
                         }
                     }
                 }
@@ -44,7 +45,8 @@ namespace TheGodfather.Commands.Search
                 throw new CommandFailedException("Exception occured!", e);
             }
 
-            await ctx.RespondAsync(embed: new DiscordEmbedBuilder() { Description = data });
+            await ctx.RespondAsync(embed: new DiscordEmbedBuilder() { Description = data }.Build())
+                .ConfigureAwait(false);
         }
 
 
@@ -52,8 +54,8 @@ namespace TheGodfather.Commands.Search
         [Command("search")]
         [Description("Search for the joke containing the query.")]
         [Aliases("s")]
-        public async Task SearchJoke(CommandContext ctx,
-                                    [RemainingText, Description("Query.")] string query = null)
+        public async Task SearchAsync(CommandContext ctx,
+                                     [RemainingText, Description("Query.")] string query = null)
         {
             if (string.IsNullOrWhiteSpace(query))
                 throw new InvalidCommandUsageException("Query missing.");
@@ -62,7 +64,7 @@ namespace TheGodfather.Commands.Search
             request.AutomaticDecompression = DecompressionMethods.GZip;
             request.Accept = "text/plain";
 
-            string data = string.Empty;
+            string data = null;
             try {
                 using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
                     using (Stream stream = response.GetResponseStream()) {
@@ -79,7 +81,9 @@ namespace TheGodfather.Commands.Search
                 throw new CommandFailedException("Exception occured!", e);
             }
 
-            await ctx.RespondAsync(embed: new DiscordEmbedBuilder() { Description = string.Join("\n\n", data.Split('\n').Take(10)) });
+            await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
+                Description = string.Join("\n\n", data.Split('\n').Take(10))
+            }.Build()).ConfigureAwait(false);
         }
         #endregion
 
@@ -87,14 +91,14 @@ namespace TheGodfather.Commands.Search
         [Command("yourmom")]
         [Description("Yo mama so...")]
         [Aliases("mama", "m", "yomomma", "yomom", "yourmom", "yomoma", "yomamma", "yomama")]
-        public async Task YomamaJoke(CommandContext ctx)
+        public async Task YomamaAsync(CommandContext ctx)
         {
             try {
                 var wc = new WebClient();
                 var data = wc.DownloadString("http://api.yomomma.info/");
                 await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
                     Description = JObject.Parse(data)["joke"].ToString()
-                });
+                }.Build()).ConfigureAwait(false);
             } catch (WebException e) {
                 throw new CommandFailedException("Connection to remote site failed!", e);
             } catch (Exception e) {

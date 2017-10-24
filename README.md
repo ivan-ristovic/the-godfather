@@ -214,7 +214,22 @@ Commands use the following types:
 | ``imgur``<br>``i`` |   |   | ``[int] Ammount``<br><br>``[text] Gallery`` | Search Imgur gallery group with name ``Gallery`` and send top ``Ammount`` of result images for this day. | ``!imgur 5 aww`` |
 | ``imgur``<br>``i`` | ``latest``<br>``l``<br>``new``<br>``newest`` |   | ``[int] Ammount``<br><br>``[text] Gallery`` | Search Imgur gallery group with name ``Gallery`` and send ``Ammount`` of newest posted images. | ``!imgur latest 5 aww`` |
 | ``imgur``<br>``i`` | ``top``<br>``t`` |   | ``[string] Time Window``<br><br>``[int] Ammount``<br><br>``[text] Gallery`` | Send ``Ammount`` of top images in gallery group with name ``Gallery`` for given ``Time Window``. ``TimeWindow`` must be one of the following words: ``day/month/week/year/all``. | ``!imgur top month 10 aww`` |
-
+|   |   |   |   |   |   |
+| ``joke``<br>``jokes``<br>``j`` |   |   |   | Send a random joke. | ``!joke`` |
+| ``joke``<br>``jokes``<br>``j`` | ``search``<br>``s`` |   | ``[text] Query`` | Search for the joke containing ``Query``. | ``!joke blonde`` |
+| ``joke``<br>``jokes``<br>``j`` | ``yomomma``<br>``yourmom``<br>``yomama`` |   |   | Send a yomomma joke. | ``!joke yomomma`` |
+|   |   |   |   |   |   |
+| ``rss``<br>``feed`` |   |   | ``[text] Feed URL`` | Get feed from URL. | ``!feed http://somefeedurl.rss`` |
+| ``rss``<br>``feed`` | ``subscribe``<br>``add``<br>``+``<br>``sub`` | Manage Guild | ``[text] Feed URL`` | Subscribe to given feed URL. Bot will send messages whenever it detects updates. | ``!feed subscribe http://somefeedurl.rss`` |
+| ``rss``<br>``feed`` | ``listsubs``<br>``list``<br>``ls`` |   |   | List all subscribed feeds. | ``!feed list`` |
+| ``rss``<br>``feed`` | ``wm`` |   |   | Get latest topics from WM forum. | ``!feed wm`` |
+| ``rss``<br>``feed`` | ``news`` |   |   | Get latest worldwide news. | ``!feed news`` |
+| ``feed reddit``<br>``feed r`` |   |   | ``[string] Subreddit`` | Get latest topics from ``Subreddit``. | ``!feed reddit aww`` |
+| ``feed reddit``<br>``feed r`` | ``subscribe``<br>``sub``<br>``add``<br>``a``<br>``+`` | Manage Guild | ``[string] Subreddit`` | Subscribe to given subreddit. Bot will send messages when new post appears. | ``!feed reddit subscribe aww`` |
+| ``feed reddit``<br>``feed r`` | ``unsubscribe``<br>``unsub``<br>``del``<br>``d``<br>``-``<br>``rm`` | Manage Guild | ``[string] Subreddit`` | Unsubscribe from given subreddit. | ``!feed reddit unsubscribe aww`` |
+| ``feed youtube``<br>``feed yt``<br>``feed y`` |   |   | ``[string] Channel URL`` | Get latest videos from YouTube channel. | ``!feed youtube http://youtu.be/SomeChannel`` |
+| ``feed youtube``<br>``feed yt``<br>``feed y`` | ``subscribe``<br>``sub``<br>``add``<br>``a``<br>``+`` | Manage Guild | ``[string] Channel URL`` | Subscribe to given YouTube channel. Bot will send messages when new video is uploaded. | ``!feed yt subscribe http://youtu.be/SomeChannel`` |
+| ``feed youtube``<br>``feed yt``<br>``feed y`` | ``unsubscribe``<br>``unsub``<br>``del``<br>``d``<br>``-``<br>``rm`` | Manage Guild | ``[string] Channel URL`` | Unsubscribe from given YouTube channel. | ``!feed yt unsubscribe http://youtu.be/SomeChannel`` |
 
 
 

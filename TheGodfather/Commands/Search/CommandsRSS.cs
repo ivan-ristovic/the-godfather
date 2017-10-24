@@ -27,11 +27,11 @@ namespace TheGodfather.Commands.Search
         public async Task ExecuteGroupAsync(CommandContext ctx, 
                                            [RemainingText, Description("URL.")] string url = null)
         {
-            if (string.IsNullOrWhiteSpace(url)) {
-                await WMRSS(ctx);
-            } else {
-                await SendFeedResults(ctx, ctx.Dependencies.GetDependency<FeedManager>().GetFeedResults(url));
-            }
+            if (string.IsNullOrWhiteSpace(url))
+                throw new InvalidCommandUsageException("URL missing.");
+
+            await SendFeedResultsAsync(ctx, ctx.Dependencies.GetDependency<FeedManager>().GetFeedResults(url))
+                .ConfigureAwait(false);
         }
 
 
@@ -39,46 +39,49 @@ namespace TheGodfather.Commands.Search
         [Command("subscribe")]
         [Description("Subscribe to given url.")]
         [Aliases("sub", "add", "+")]
-        [RequirePermissions(Permissions.ManageChannels)]
-        public async Task AddURLFeed(CommandContext ctx,
-                                    [RemainingText, Description("URL.")] string url = null)
+        [RequirePermissions(Permissions.ManageGuild)]
+        public async Task AddUrlFeedAsync(CommandContext ctx,
+                                         [RemainingText, Description("URL.")] string url = null)
         {
             if (string.IsNullOrWhiteSpace(url))
                 throw new InvalidCommandUsageException("URL missing.");
 
             if (ctx.Dependencies.GetDependency<FeedManager>().TryAdd(ctx.Channel.Id, url))
-                await ctx.RespondAsync($"Subscribed to {url} !");
+                await ctx.RespondAsync($"Subscribed to {url} !").ConfigureAwait(false);
             else
-                await ctx.RespondAsync("Either URL you gave is invalid or you are already subscribed to it!");
+                await ctx.RespondAsync("Either URL you gave is invalid or you are already subscribed to it!").ConfigureAwait(false);
         }
         #endregion
 
         #region COMMAND_FEED_LIST
-        [Command("listfeeds")]
+        [Command("listsubs")]
         [Description("Get feed list for the current channel.")]
-        [Aliases("listsubs", "listfeed", "lf", "list")]
-        public async Task FeedList(CommandContext ctx)
+        [Aliases("ls", "list")]
+        public async Task FeedListAsync(CommandContext ctx)
         {
             var feeds = ctx.Dependencies.GetDependency<FeedManager>().GetFeedListForChannel(ctx.Channel.Id);
-            await ctx.RespondAsync("Subscriptions for this channel:\n" + string.Join("\n", feeds));
+            await ctx.RespondAsync("Subscriptions for this channel:\n" + string.Join("\n", feeds))
+                .ConfigureAwait(false);
         }
         #endregion
 
         #region COMMAND_RSS_WM
         [Command("wm")]
         [Description("Get newest topics from WM forum.")]
-        public async Task WMRSS(CommandContext ctx)
+        public async Task WmRssAsync(CommandContext ctx)
         {
-            await SendFeedResults(ctx, ctx.Dependencies.GetDependency<FeedManager>().GetFeedResults("http://worldmafia.net/forum/forums/-/index.rss"));
+            await SendFeedResultsAsync(ctx, ctx.Dependencies.GetDependency<FeedManager>().GetFeedResults("http://worldmafia.net/forum/forums/-/index.rss"))
+                .ConfigureAwait(false);
         }
         #endregion
 
         #region COMMAND_RSS_NEWS
         [Command("news")]
         [Description("Get newest world news.")]
-        public async Task NewsRSS(CommandContext ctx)
+        public async Task NewsRssAsync(CommandContext ctx)
         {
-            await SendFeedResults(ctx, ctx.Dependencies.GetDependency<FeedManager>().GetFeedResults("https://news.google.com/news/rss/headlines/section/topic/WORLD?ned=us&hl=en"));
+            await SendFeedResultsAsync(ctx, ctx.Dependencies.GetDependency<FeedManager>().GetFeedResults("https://news.google.com/news/rss/headlines/section/topic/WORLD?ned=us&hl=en"))
+                .ConfigureAwait(false);
         }
         #endregion
 
@@ -86,7 +89,7 @@ namespace TheGodfather.Commands.Search
         #region GROUP_RSS_REDDIT
         [Group("reddit", CanInvokeWithoutSubcommand = true)]
         [Description("Reddit feed manipulation.")]
-        [Aliases("subreddit", "r")]
+        [Aliases("r")]
         public class CommandsRSSReddit : CommandsRSS
         {
             public new async Task ExecuteGroupAsync(CommandContext ctx,
@@ -96,44 +99,45 @@ namespace TheGodfather.Commands.Search
                     throw new InvalidCommandUsageException("Subreddit missing.");
 
                 string url = $"https://www.reddit.com/r/{ sub.ToLower() }/new/.rss";
-                await SendFeedResults(ctx, ctx.Dependencies.GetDependency<FeedManager>().GetFeedResults(url));
+                await SendFeedResultsAsync(ctx, ctx.Dependencies.GetDependency<FeedManager>().GetFeedResults(url))
+                    .ConfigureAwait(false);
             }
 
 
-            #region COMMAND_RSS_REDDIT_ADD
-            [Command("add")]
+            #region COMMAND_RSS_REDDIT_SUBSCRIBE
+            [Command("subscribe")]
             [Description("Add new feed for a subreddit.")]
-            [Aliases("a", "+", "sub", "subscribe")]
-            [RequirePermissions(Permissions.ManageChannels)]
-            public async Task AddSubreddit(CommandContext ctx,
-                                          [Description("Subreddit.")] string sub = null)
+            [Aliases("add", "a", "+", "sub")]
+            [RequirePermissions(Permissions.ManageGuild)]
+            public async Task SubscribeAsync(CommandContext ctx,
+                                            [Description("Subreddit.")] string sub = null)
             {
                 if (string.IsNullOrWhiteSpace(sub))
                     throw new InvalidCommandUsageException("Subreddit missing.");
 
                 string url = $"https://www.reddit.com/r/{ sub.ToLower() }/new/.rss";
                 if (ctx.Dependencies.GetDependency<FeedManager>().TryAdd(ctx.Channel.Id, url, "/r/" + sub))
-                    await ctx.RespondAsync($"Subscribed to {Formatter.Bold("/r/" + sub)} !");
+                    await ctx.RespondAsync($"Subscribed to {Formatter.Bold("/r/" + sub)} !").ConfigureAwait(false);
                 else
-                    await ctx.RespondAsync("Either the subreddit you gave doesn't exist or you are already subscribed to it!");
+                    await ctx.RespondAsync("Either the subreddit you gave doesn't exist or you are already subscribed to it!").ConfigureAwait(false);
             }
             #endregion
 
-            #region COMMAND_RSS_REDDIT_REMOVE
-            [Command("remove")]
+            #region COMMAND_RSS_REDDIT_UNSUBSCRIBE
+            [Command("unsubscribe")]
             [Description("Remove a subreddit feed.")]
-            [Aliases("delete", "d", "rem", "-", "unsub", "unsubscribe")]
-            [RequirePermissions(Permissions.ManageChannels)]
-            public async Task DelSubreddit(CommandContext ctx,
-                                          [Description("Subreddit.")] string sub = null)
+            [Aliases("del", "d", "rm", "-", "unsub")]
+            [RequirePermissions(Permissions.ManageGuild)]
+            public async Task UnsubscribeAsync(CommandContext ctx,
+                                              [Description("Subreddit.")] string sub = null)
             {
                 if (string.IsNullOrWhiteSpace(sub))
                     throw new InvalidCommandUsageException("Subreddit missing.");
 
                 if (ctx.Dependencies.GetDependency<FeedManager>().TryRemoveUsingQualified(ctx.Channel.Id, "/r/" + sub))
-                    await ctx.RespondAsync($"Unsubscribed from {Formatter.Bold("/r/" + sub)} !");
+                    await ctx.RespondAsync($"Unsubscribed from {Formatter.Bold("/r/" + sub)} !").ConfigureAwait(false);
                 else
-                    await ctx.RespondAsync("Failed to remove some subscriptions!");
+                    await ctx.RespondAsync("Failed to remove some subscriptions!").ConfigureAwait(false);
             }
             #endregion
         }
@@ -153,53 +157,55 @@ namespace TheGodfather.Commands.Search
 
                 var ytid = await GetYoutubeIdAsync(ctx, url);
                 var res = ctx.Dependencies.GetDependency<FeedManager>().GetFeedResults(YoutubeRSSFeedLink(ytid));
-                await SendFeedResults(ctx, res);
+                await SendFeedResultsAsync(ctx, res);
             }
 
 
-            #region COMMAND_RSS_YOUTUBE_ADD
-            [Command("add")]
+            #region COMMAND_RSS_YOUTUBE_SUBSCRIBE
+            [Command("subscribe")]
             [Description("Add new feed for a YouTube channel.")]
-            [Aliases("a", "+", "sub", "subscribe")]
-            [RequirePermissions(Permissions.ManageChannels)]
-            public async Task AddChannelFeed(CommandContext ctx,
+            [Aliases("add", "a", "+", "sub")]
+            [RequirePermissions(Permissions.ManageGuild)]
+            public async Task SubscribeAsync(CommandContext ctx,
                                             [Description("Channel URL.")] string url = null)
             {
                 if (string.IsNullOrWhiteSpace(url))
                     throw new InvalidCommandUsageException("Channel URL missing.");
 
-                var chid = await GetYoutubeIdAsync(ctx, url);
+                var chid = await GetYoutubeIdAsync(ctx, url)
+                    .ConfigureAwait(false);
                 if (chid == null)
                     throw new CommandFailedException("Failed retrieving channel ID for that URL.");
 
                 var feedurl = YoutubeRSSFeedLink(chid);
                 if (ctx.Dependencies.GetDependency<FeedManager>().TryAdd(ctx.Channel.Id, feedurl))
-                    await ctx.RespondAsync($"Subscribed!");
+                    await ctx.RespondAsync("Subscribed!").ConfigureAwait(false);
                 else
-                    await ctx.RespondAsync("Either the channel URL you is invalid or you are already subscribed to it!");
+                    await ctx.RespondAsync("Either the channel URL you is invalid or you are already subscribed to it!").ConfigureAwait(false);
             }
             #endregion
   
-            #region COMMAND_RSS_YOUTUBE_REMOVE
-            [Command("remove")]
+            #region COMMAND_RSS_YOUTUBE_UNSUBSCRIBE
+            [Command("unsubscribe")]
             [Description("Remove a YouTube channel feed.")]
-            [Aliases("delete", "d", "rem", "-", "unsub", "unsubscribe")]
-            [RequirePermissions(Permissions.ManageChannels)]
-            public async Task DelYoutubeFeed(CommandContext ctx,
-                                            [Description("Channel URL.")] string url = null)
+            [Aliases("del", "d", "rm", "-", "unsub")]
+            [RequirePermissions(Permissions.ManageGuild)]
+            public async Task UnsubscribeAsync(CommandContext ctx,
+                                              [Description("Channel URL.")] string url = null)
             {
                 if (string.IsNullOrWhiteSpace(url))
                     throw new InvalidCommandUsageException("Channel URL missing.");
 
-                var chid = await GetYoutubeIdAsync(ctx, url);
+                var chid = await GetYoutubeIdAsync(ctx, url)
+                    .ConfigureAwait(false);
                 if (chid == null)
                     throw new CommandFailedException("Failed retrieving channel ID for that URL.");
 
                 var feedurl = YoutubeRSSFeedLink(chid);
                 if (ctx.Dependencies.GetDependency<FeedManager>().TryRemove(ctx.Channel.Id, feedurl))
-                    await ctx.RespondAsync($"Unsubscribed!");
+                    await ctx.RespondAsync("Unsubscribed!").ConfigureAwait(false);
                 else
-                    await ctx.RespondAsync("Failed to remove some subscriptions!");
+                    await ctx.RespondAsync("Failed to remove some subscriptions!").ConfigureAwait(false);
             }
             #endregion
           
@@ -219,7 +225,8 @@ namespace TheGodfather.Commands.Search
                     var ytkey = ctx.Dependencies.GetDependency<BotConfigManager>().CurrentConfig.YoutubeKey;
                     try {
                         var wc = new WebClient();
-                        var jsondata = await wc.DownloadStringTaskAsync("https://www.googleapis.com/youtube/v3/channels?key=" + ytkey + "&forUsername=" + id + "&part=id");
+                        var jsondata = await wc.DownloadStringTaskAsync("https://www.googleapis.com/youtube/v3/channels?key=" + ytkey + "&forUsername=" + id + "&part=id")
+                            .ConfigureAwait(false);
                         var data = JsonConvert.DeserializeObject<DeserializedData>(jsondata);
                         if (data.Items != null)
                             return data.Items[0]["id"];
@@ -245,20 +252,21 @@ namespace TheGodfather.Commands.Search
 
 
         #region HELPER_FUNCTIONS
-        protected async Task SendFeedResults(CommandContext ctx, IEnumerable<SyndicationItem> results)
+        protected async Task SendFeedResultsAsync(CommandContext ctx, IEnumerable<SyndicationItem> results)
         {
             if (results == null)
                 throw new CommandFailedException("Error getting RSS feed.");
 
-            var embed = new DiscordEmbedBuilder() {
+            var em = new DiscordEmbedBuilder() {
                 Title = "Topics active recently",
                 Color = DiscordColor.Green
             };
 
             foreach (var res in results)
-                embed.AddField(res.Title.Text, res.Links[0].Uri.ToString());
+                em.AddField(res.Title.Text, res.Links[0].Uri.ToString());
 
-            await ctx.RespondAsync(embed: embed);
+            await ctx.RespondAsync(embed: em.Build())
+                .ConfigureAwait(false);
         }
         #endregion
     }
