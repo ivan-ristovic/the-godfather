@@ -43,7 +43,7 @@ namespace TheGodfather.Commands.Search
 
                     var msg = await interactivity.WaitForMessageAsync(
                         m => m.Channel.Id == ctx.Channel.Id && m.Content.ToLower() == "next"
-                        , TimeSpan.FromSeconds(10)
+                        , TimeSpan.FromSeconds(5)
                     ).ConfigureAwait(false);
                     if (msg == null)
                         break;

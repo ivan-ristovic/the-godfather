@@ -66,20 +66,22 @@ namespace TheGodfather.Commands.Search
 
             string data = null;
             try {
-                using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
-                    using (Stream stream = response.GetResponseStream()) {
-                        using (StreamReader reader = new StreamReader(stream)) {
-                            data = reader.ReadToEnd();
+                using (var response = await request.GetResponseAsync().ConfigureAwait(false)) {
+                    using (var stream = response.GetResponseStream()) {
+                        using (var reader = new StreamReader(stream)) {
+                            data = await reader.ReadToEndAsync()
+                                .ConfigureAwait(false);
                         }
                     }
                 }
-                if (string.IsNullOrWhiteSpace(data))
-                    data = "No results...";
             } catch (WebException e) {
                 throw new CommandFailedException("Connection to remote site failed!", e);
             } catch (Exception e) {
                 throw new CommandFailedException("Exception occured!", e);
             }
+
+            if (string.IsNullOrWhiteSpace(data))
+                data = "No results...";
 
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
                 Description = string.Join("\n\n", data.Split('\n').Take(10))
