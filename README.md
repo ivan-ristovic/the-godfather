@@ -202,6 +202,17 @@ Commands use the following types:
 | ``game race`` | ``join``<br>``+``<br>``compete`` |   |   | Join a pending race. | ``!game race join`` |
 |   |   |   |   |   |   |
 
+## Search
+
+| Command group (with synonyms) | Command name (with synonyms) | Required Permissions | Command arguments | Command Description | Example of use |
+|---|---|---|---|---|---|
+|   |   |   |   |   |   |
+| ``gif``<br>``giphy`` |   |   | ``[text] Query`` | Search GIPHY for ``Query`` and send a GIF result. | ``!gif deal with it`` |
+| ``gif``<br>``giphy`` | ``random``<br>``r``<br>``rnd``<br>``rand`` |   |   | Send a random GIF from GIPHY. | ``!gif random`` |
+| ``gif``<br>``giphy`` | ``trending``<br>``trend``<br>``tr``<br>``t`` |   | ``(optional) [int] Ammount (def: 5)`` | Print out ``Ammount`` of trending GIFs. | ``!gif trending 5`` |
+
+
+
 **(Command list is incomplete)**
 
 

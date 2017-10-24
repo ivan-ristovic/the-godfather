@@ -38,12 +38,13 @@ namespace TheGodfather.Commands.Search
 
             InitializeGiphyService(ctx);
 
-            var res = await _giphy.GifSearch(new SearchParameter() { Query = q, Limit = 1 });
+            var res = await _giphy.GifSearch(new SearchParameter() { Query = q, Limit = 1 })
+                .ConfigureAwait(false);
 
             if (res.Data.Count() != 0)
-                await ctx.RespondAsync(res.Data[0].Url);
+                await ctx.RespondAsync(res.Data[0].Url).ConfigureAwait(false);
             else
-                await ctx.RespondAsync("No results...");
+                await ctx.RespondAsync("No results...").ConfigureAwait(false);
         }
 
 
@@ -51,34 +52,37 @@ namespace TheGodfather.Commands.Search
         [Command("random")]
         [Description("Return a random GIF.")]
         [Aliases("r", "rand", "rnd")]
-        public async Task RandomGif(CommandContext ctx)
+        public async Task RandomAsync(CommandContext ctx)
         {
             InitializeGiphyService(ctx);
 
-            var res = await _giphy.RandomGif(new RandomParameter());
-            await ctx.RespondAsync(res.Data.ImageUrl);
+            var res = await _giphy.RandomGif(new RandomParameter())
+                .ConfigureAwait(false);
+            await ctx.RespondAsync(res.Data.ImageUrl)
+                .ConfigureAwait(false);
         }
         #endregion
 
         #region COMMAND_GIPHY_TRENDING
         [Command("trending")]
-        [Description("Return a random GIF.")]
-        [Aliases("t", "tr")]
-        public async Task TrendingGifs(CommandContext ctx,
-                                      [Description("Number of results (1-10).")] int n = 5)
+        [Description("Return an ammount of trending GIFs.")]
+        [Aliases("t", "tr", "trend")]
+        public async Task TrendingAsync(CommandContext ctx,
+                                       [Description("Number of results (1-10).")] int n = 5)
         {
             if (n < 1 || n > 10)
                 throw new CommandFailedException("Number of results must be 1-10.", new ArgumentOutOfRangeException());
 
             InitializeGiphyService(ctx);
 
-            var res = await _giphy.TrendingGifs(new TrendingParameter() { Limit = n });
+            var res = await _giphy.TrendingGifs(new TrendingParameter() { Limit = n })
+                .ConfigureAwait(false);
             
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
                 Title = "Trending gifs:",
                 Description = res.Data.Aggregate("", (string s, Data r) => s += r.Url + '\n'),
                 Color = DiscordColor.Gold
-            });
+            }.Build()).ConfigureAwait(false);
         }
         #endregion
 
