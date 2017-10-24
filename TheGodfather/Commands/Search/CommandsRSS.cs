@@ -155,9 +155,11 @@ namespace TheGodfather.Commands.Search
                 if (string.IsNullOrWhiteSpace(url))
                     throw new InvalidCommandUsageException("Channel URL missing.");
 
-                var ytid = await GetYoutubeIdAsync(ctx, url);
+                var ytid = await GetYoutubeIdAsync(ctx, url)
+                    .ConfigureAwait(false);
                 var res = ctx.Dependencies.GetDependency<FeedManager>().GetFeedResults(YoutubeRSSFeedLink(ytid));
-                await SendFeedResultsAsync(ctx, res);
+                await SendFeedResultsAsync(ctx, res)
+                    .ConfigureAwait(false);
             }
 
 
@@ -167,7 +169,8 @@ namespace TheGodfather.Commands.Search
             [Aliases("add", "a", "+", "sub")]
             [RequirePermissions(Permissions.ManageGuild)]
             public async Task SubscribeAsync(CommandContext ctx,
-                                            [Description("Channel URL.")] string url = null)
+                                            [Description("Channel URL.")] string url = null,
+                                            [Description("Friendly name.")] string name = null)
             {
                 if (string.IsNullOrWhiteSpace(url))
                     throw new InvalidCommandUsageException("Channel URL missing.");
@@ -178,7 +181,8 @@ namespace TheGodfather.Commands.Search
                     throw new CommandFailedException("Failed retrieving channel ID for that URL.");
 
                 var feedurl = YoutubeRSSFeedLink(chid);
-                if (ctx.Dependencies.GetDependency<FeedManager>().TryAdd(ctx.Channel.Id, feedurl))
+                bool nameset = string.IsNullOrWhiteSpace(name);
+                if (ctx.Dependencies.GetDependency<FeedManager>().TryAdd(ctx.Channel.Id, feedurl, nameset ? name : url))
                     await ctx.RespondAsync("Subscribed!").ConfigureAwait(false);
                 else
                     await ctx.RespondAsync("Either the channel URL you is invalid or you are already subscribed to it!").ConfigureAwait(false);

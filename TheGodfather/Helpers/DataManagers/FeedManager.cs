@@ -135,20 +135,25 @@ namespace TheGodfather.Helpers.DataManagers
                         if (newest.Title.Text != feed.Value.SavedTitle) {
                             feed.Value.SavedTitle = newest.Title.Text;
                             foreach (var cid in feed.Value.ChannelIds) {
-                                var chn = await client.GetChannelAsync(cid);
-                                await chn.SendMessageAsync(embed: new DiscordEmbedBuilder() {
+                                var chn = await client.GetChannelAsync(cid)
+                                    .ConfigureAwait(false);
+                                var em = new DiscordEmbedBuilder() {
                                     Title = $"{newest.Title.Text}",
-                                    Description = $"Update from {Formatter.Bold(feed.Value.QualifiedName != null ? feed.Value.QualifiedName : feed.Key)}",
                                     Url = newest.Links[0].Uri.ToString(),
-                                    Timestamp = newest.LastUpdatedTime, 
+                                    Timestamp = newest.LastUpdatedTime,
                                     Color = DiscordColor.Orange
-                                });
+                                };
+                                em.AddField("From", feed.Value.QualifiedName != null ? feed.Value.QualifiedName : feed.Key);
+                                em.AddField("Link to content", newest.Links[0].Uri.ToString());
+                                await chn.SendMessageAsync(embed: em.Build())
+                                    .ConfigureAwait(false);
                             }
                         }
                     } catch {
 
                     }
-                    await Task.Delay(TimeSpan.FromSeconds(1));
+                    await Task.Delay(TimeSpan.FromSeconds(1))
+                        .ConfigureAwait(false);
                 }
             }
         }
