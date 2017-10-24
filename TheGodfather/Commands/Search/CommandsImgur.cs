@@ -40,7 +40,8 @@ namespace TheGodfather.Commands.Search
                 throw new CommandFailedException("Invalid ammount (must be 1-10).", new ArgumentOutOfRangeException());
 
             InitializeImgurService(ctx);
-            await PrintImagesFromSub(ctx, sub.Trim(), n, SubredditGallerySortOrder.Top, TimeWindow.Day);
+            await PrintImagesFromSubAsync(ctx, sub.Trim(), n, SubredditGallerySortOrder.Top, TimeWindow.Day)
+                .ConfigureAwait(false);
         }
 
 
@@ -48,9 +49,9 @@ namespace TheGodfather.Commands.Search
         [Command("latest")]
         [Description("Return latest images for query.")]
         [Aliases("l", "new", "newest")]
-        public async Task ImgurTop(CommandContext ctx,
-                                  [Description("Number of images to print [1-10].")] int n = 1,
-                                  [Description("Query.")] string sub = null)
+        public async Task LatestAsync(CommandContext ctx,
+                                     [Description("Number of images to print [1-10].")] int n = 1,
+                                     [Description("Query.")] string sub = null)
         {
             if (string.IsNullOrWhiteSpace(sub))
                 throw new InvalidCommandUsageException("Missing search query.");
@@ -58,7 +59,8 @@ namespace TheGodfather.Commands.Search
                 throw new CommandFailedException("Invalid ammount (must be 1-10).", new ArgumentOutOfRangeException());
 
             InitializeImgurService(ctx);
-            await PrintImagesFromSub(ctx, sub.Trim(), n, SubredditGallerySortOrder.Time, TimeWindow.Day);
+            await PrintImagesFromSubAsync(ctx, sub.Trim(), n, SubredditGallerySortOrder.Time, TimeWindow.Day)
+                .ConfigureAwait(false);
         }
         #endregion
 
@@ -66,7 +68,7 @@ namespace TheGodfather.Commands.Search
         [Command("top")]
         [Description("Return most rated images for query.")]
         [Aliases("t")]
-        public async Task ImgurTop(CommandContext ctx,
+        public async Task TopAsync(CommandContext ctx,
                                   [Description("Time window (day/month/week/year/all).")] string time = "day",
                                   [Description("Number of images to print [1-10].")] int n = 1,
                                   [RemainingText, Description("Query.")] string sub = null)
@@ -89,7 +91,8 @@ namespace TheGodfather.Commands.Search
                 t = TimeWindow.All;
 
             InitializeImgurService(ctx);
-            await PrintImagesFromSub(ctx, sub.Trim(), n, SubredditGallerySortOrder.Top, t);
+            await PrintImagesFromSubAsync(ctx, sub.Trim(), n, SubredditGallerySortOrder.Top, t)
+                .ConfigureAwait(false);
         }
         #endregion
 
@@ -103,14 +106,15 @@ namespace TheGodfather.Commands.Search
             }
         }
 
-        private async Task PrintImagesFromSub(CommandContext ctx, 
-                                              string sub, 
-                                              int num, 
-                                              SubredditGallerySortOrder order,
-                                              TimeWindow time)
+        private async Task PrintImagesFromSubAsync(CommandContext ctx, 
+                                                   string sub,
+                                                   int num,
+                                                   SubredditGallerySortOrder order,
+                                                   TimeWindow time)
         {
             try {
-                var images = await _endpoint.GetSubredditGalleryAsync(sub, order, time);
+                var images = await _endpoint.GetSubredditGalleryAsync(sub, order, time)
+                    .ConfigureAwait(false);
                 
                 int i = num;
                 foreach (var im in images) {
@@ -120,24 +124,30 @@ namespace TheGodfather.Commands.Search
                         var img = ((GalleryImage)im);
                         if (!ctx.Channel.IsNSFW && img.Nsfw != null && img.Nsfw == true)
                             throw new Exception("This is not a NSFW channel!");
-                        await ctx.RespondAsync(img.Link);
+                        await ctx.RespondAsync(img.Link)
+                            .ConfigureAwait(false);
                     } else if (im.GetType().Name == "GalleryAlbum") {
                         var img = ((GalleryAlbum)im);
                         if (!ctx.Channel.IsNSFW && img.Nsfw != null && img.Nsfw == true)
                             throw new Exception("This is not a NSFW channel!");
-                        await ctx.RespondAsync(img.Link);
+                        await ctx.RespondAsync(img.Link)
+                            .ConfigureAwait(false);
                     } else
                         throw new ImgurException("Imgur API error");
-                    await Task.Delay(1000);
+
+                    await Task.Delay(1000)
+                        .ConfigureAwait(false);
                 }
 
                 if (i == num) {
-                    await ctx.RespondAsync("No results...");
+                    await ctx.RespondAsync("No results...")
+                        .ConfigureAwait(false);
                     return;
                 }
 
                 if (i > 0) {
-                    await ctx.RespondAsync("These are all of the results returned.");
+                    await ctx.RespondAsync("These are all of the results returned.")
+                        .ConfigureAwait(false);
                 }
             } catch (ImgurException ie) {
                 throw ie;

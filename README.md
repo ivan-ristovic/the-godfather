@@ -209,7 +209,12 @@ Commands use the following types:
 |   |   |   |   |   |   |
 | ``gif``<br>``giphy`` |   |   | ``[text] Query`` | Search GIPHY for ``Query`` and send a GIF result. | ``!gif deal with it`` |
 | ``gif``<br>``giphy`` | ``random``<br>``r``<br>``rnd``<br>``rand`` |   |   | Send a random GIF from GIPHY. | ``!gif random`` |
-| ``gif``<br>``giphy`` | ``trending``<br>``trend``<br>``tr``<br>``t`` |   | ``(optional) [int] Ammount (def: 5)`` | Print out ``Ammount`` of trending GIFs. | ``!gif trending 5`` |
+| ``gif``<br>``giphy`` | ``trending``<br>``trend``<br>``tr``<br>``t`` |   | ``(optional) [int] Ammount (def: 5)`` | Send ``Ammount`` of trending GIFs. | ``!gif trending 5`` |
+|   |   |   |   |   |   |
+| ``imgur``<br>``i`` |   |   | ``[int] Ammount``<br><br>``[text] Gallery`` | Search Imgur gallery group with name ``Gallery`` and send top ``Ammount`` of result images for this day. | ``!imgur 5 aww`` |
+| ``imgur``<br>``i`` | ``latest``<br>``l``<br>``new``<br>``newest`` |   | ``[int] Ammount``<br><br>``[text] Gallery`` | Search Imgur gallery group with name ``Gallery`` and send ``Ammount`` of newest posted images. | ``!imgur latest 5 aww`` |
+| ``imgur``<br>``i`` | ``top``<br>``t`` |   | ``[string] Time Window``<br><br>``[int] Ammount``<br><br>``[text] Gallery`` | Send ``Ammount`` of top images in gallery group with name ``Gallery`` for given ``Time Window``. ``TimeWindow`` must be one of the following words: ``day/month/week/year/all``. | ``!imgur top month 10 aww`` |
+
 
 
 
