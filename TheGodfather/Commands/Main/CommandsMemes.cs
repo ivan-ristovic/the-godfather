@@ -3,9 +3,10 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Collections.Generic;
-using System.Collections.Concurrent;
+using System.Drawing;
+using System.Drawing.Text;
+using System.Drawing.Drawing2D;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 
 using TheGodfather.Helpers.DataManagers;
 using TheGodfather.Exceptions;
@@ -64,6 +65,69 @@ namespace TheGodfather.Commands.Main
                 await ctx.RespondAsync($"Meme {Formatter.Bold(name)} successfully added!").ConfigureAwait(false);
             else
                 await ctx.RespondAsync("Meme with that name already exists!").ConfigureAwait(false);
+        }
+        #endregion
+
+        #region COMMAND_MEME_CREATE
+        [Command("create")]
+        [Description("Creates a new meme from blank template.")]
+        [Aliases("create", "maker", "c", "make", "m")]
+        public async Task CreateMemeAsync(CommandContext ctx,
+                                         [Description("Template.")] string template = null,
+                                         [Description("Top Text.")] string topText = null,
+                                         [Description("Bottom Text.")] string bottomText = null)
+        {
+            if (string.IsNullOrWhiteSpace(template))
+                throw new InvalidCommandUsageException("Missing template name.");
+
+            await ctx.TriggerTypingAsync()
+                .ConfigureAwait(false);
+
+            try {
+                Bitmap image = new Bitmap($"Resources/meme-templates/{template}.jpg");
+                Rectangle topLayout = new Rectangle(0, 0, image.Width, image.Height / 2);
+                Rectangle botLayout = new Rectangle(0, image.Height / 2, image.Width, image.Height / 2);
+                using (Graphics g = Graphics.FromImage(image)) {
+                    g.InterpolationMode = InterpolationMode.High;
+                    g.SmoothingMode = SmoothingMode.HighQuality;
+                    g.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
+                    g.CompositingQuality = CompositingQuality.HighQuality;
+                    using (GraphicsPath p = new GraphicsPath()) {
+                        p.AddString(topText, FontFamily.GenericSansSerif, (int)FontStyle.Regular, 70, topLayout, new StringFormat() {
+                            Alignment = StringAlignment.Center,
+                            LineAlignment = StringAlignment.Near,
+                            FormatFlags = StringFormatFlags.FitBlackBox
+                        });
+                        g.DrawPath(new Pen(Color.Black, 5), p);
+                        g.FillPath(Brushes.White, p);
+                    }
+                    using (GraphicsPath p = new GraphicsPath()) {
+                        p.AddString(bottomText, FontFamily.GenericSansSerif, (int)FontStyle.Regular, 70, botLayout, new StringFormat() {
+                            Alignment = StringAlignment.Center,
+                            LineAlignment = StringAlignment.Far,
+                            FormatFlags = StringFormatFlags.FitBlackBox
+                        });
+                        g.DrawPath(new Pen(Color.Black, 5), p);
+                        g.FillPath(Brushes.White, p);
+                    }
+                    g.Flush();
+                }
+
+                string filename = $"Temp/{template}-{DateTime.Now.Ticks}.jpg";
+                image.Save(filename, System.Drawing.Imaging.ImageFormat.Jpeg);
+
+                await ctx.RespondWithFileAsync(new FileStream(filename, FileMode.Open))
+                    .ConfigureAwait(false);
+
+                if (File.Exists(filename))
+                    File.Delete(filename);
+            } catch (FileNotFoundException e) {
+                throw new CommandFailedException("Unknown template name.", e);
+            } catch (IOException e) {
+                throw new CommandFailedException("Failed to load/save a meme template. Please report this.", e);
+            } catch {
+                // TODO catch long text exception, or maybe check text length and limit it?
+            }
         }
         #endregion
 
