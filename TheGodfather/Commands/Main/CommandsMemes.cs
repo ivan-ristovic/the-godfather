@@ -25,7 +25,7 @@ namespace TheGodfather.Commands.Main
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
     public class CommandsMemes
     {
-        public async Task ExecuteGroupAsync(CommandContext ctx, 
+        public async Task ExecuteGroupAsync(CommandContext ctx,
                                            [RemainingText, Description("Meme name.")] string name = null)
         {
             if (string.IsNullOrWhiteSpace(name)) {
@@ -37,7 +37,7 @@ namespace TheGodfather.Commands.Main
             string url = ctx.Dependencies.GetDependency<MemeManager>().GetUrl(name);
             if (url == null) {
                 await ctx.RespondAsync("No meme registered with that name, here is a random one: ")
-                    .ConfigureAwait(false); 
+                    .ConfigureAwait(false);
                 await Task.Delay(500)
                     .ConfigureAwait(false);
                 await SendMemeAsync(ctx, ctx.Dependencies.GetDependency<MemeManager>().GetRandomMeme())
@@ -80,34 +80,47 @@ namespace TheGodfather.Commands.Main
             if (string.IsNullOrWhiteSpace(template))
                 throw new InvalidCommandUsageException("Missing template name.");
 
+            if (string.IsNullOrWhiteSpace(topText))
+                topText = "";
+            else
+                topText = topText.ToUpper();
+            if (string.IsNullOrWhiteSpace(bottomText))
+                bottomText = "";
+            else
+                bottomText = bottomText.ToUpper();
+
             await ctx.TriggerTypingAsync()
                 .ConfigureAwait(false);
 
             try {
                 Bitmap image = new Bitmap($"Resources/meme-templates/{template}.jpg");
-                Rectangle topLayout = new Rectangle(0, 0, image.Width, image.Height / 2);
-                Rectangle botLayout = new Rectangle(0, image.Height / 2, image.Width, image.Height / 2);
+                Rectangle topLayout = new Rectangle(0, 0, image.Width, image.Height / 3);
+                Rectangle botLayout = new Rectangle(0, (int)(0.66 * image.Height), image.Width, image.Height / 3);
                 using (Graphics g = Graphics.FromImage(image)) {
                     g.InterpolationMode = InterpolationMode.High;
                     g.SmoothingMode = SmoothingMode.HighQuality;
                     g.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
                     g.CompositingQuality = CompositingQuality.HighQuality;
                     using (GraphicsPath p = new GraphicsPath()) {
-                        p.AddString(topText, FontFamily.GenericSansSerif, (int)FontStyle.Regular, 70, topLayout, new StringFormat() {
+                        var font = GetBestFittingFont(g, topText, topLayout.Size, new Font("Impact", 70));
+                        var fmt = new StringFormat() {
                             Alignment = StringAlignment.Center,
                             LineAlignment = StringAlignment.Near,
                             FormatFlags = StringFormatFlags.FitBlackBox
-                        });
-                        g.DrawPath(new Pen(Color.Black, 5), p);
+                        };
+                        p.AddString(topText, font.FontFamily, (int)FontStyle.Regular, font.Size, topLayout, fmt);
+                        g.DrawPath(new Pen(Color.Black, 3), p);
                         g.FillPath(Brushes.White, p);
                     }
                     using (GraphicsPath p = new GraphicsPath()) {
-                        p.AddString(bottomText, FontFamily.GenericSansSerif, (int)FontStyle.Regular, 70, botLayout, new StringFormat() {
+                        var font = GetBestFittingFont(g, bottomText, botLayout.Size, new Font("Impact", 70));
+                        var fmt = new StringFormat() {
                             Alignment = StringAlignment.Center,
                             LineAlignment = StringAlignment.Far,
                             FormatFlags = StringFormatFlags.FitBlackBox
-                        });
-                        g.DrawPath(new Pen(Color.Black, 5), p);
+                        };
+                        p.AddString(bottomText, font.FontFamily, (int)FontStyle.Regular, font.Size, botLayout, fmt);
+                        g.DrawPath(new Pen(Color.Black, 3), p);
                         g.FillPath(Brushes.White, p);
                     }
                     g.Flush();
@@ -115,19 +128,32 @@ namespace TheGodfather.Commands.Main
 
                 string filename = $"Temp/{template}-{DateTime.Now.Ticks}.jpg";
                 image.Save(filename, System.Drawing.Imaging.ImageFormat.Jpeg);
+                image.Dispose();
 
-                await ctx.RespondWithFileAsync(new FileStream(filename, FileMode.Open))
+                var fs = new FileStream(filename, FileMode.Open);
+                await ctx.RespondWithFileAsync(fs)
                     .ConfigureAwait(false);
+                fs.Close();
 
                 if (File.Exists(filename))
                     File.Delete(filename);
-            } catch (FileNotFoundException e) {
+            } catch (ArgumentException e) {
                 throw new CommandFailedException("Unknown template name.", e);
             } catch (IOException e) {
                 throw new CommandFailedException("Failed to load/save a meme template. Please report this.", e);
-            } catch {
-                // TODO catch long text exception, or maybe check text length and limit it?
             }
+        }
+
+        private Font GetBestFittingFont(Graphics g, string text, Size rect, Font font)
+        {
+            SizeF realSize = g.MeasureString(text, font);
+            if ((realSize.Width <= rect.Width) && (realSize.Height <= rect.Height))
+                return font;
+
+            var rows = Math.Ceiling(realSize.Width / rect.Width);
+
+            float ScaleFontSize = font.Size / ((float)Math.Log(rows) + 1) * 2f;
+            return new Font(font.FontFamily, ScaleFontSize, font.Style);
         }
         #endregion
 
@@ -136,7 +162,7 @@ namespace TheGodfather.Commands.Main
         [Description("Deletes a meme from list.")]
         [Aliases("-", "del", "remove", "rm")]
         [RequireOwner]
-        public async Task DeleteMemeAsync(CommandContext ctx, 
+        public async Task DeleteMemeAsync(CommandContext ctx,
                                          [Description("Short name (case insensitive).")] string name = null)
         {
             if (string.IsNullOrWhiteSpace(name))
@@ -152,7 +178,7 @@ namespace TheGodfather.Commands.Main
         #region COMMAND_MEME_LIST
         [Command("list")]
         [Description("List all registered memes.")]
-        public async Task ListAsync(CommandContext ctx, 
+        public async Task ListAsync(CommandContext ctx,
                                    [Description("Page.")] int page = 1)
         {
             var memes = ctx.Dependencies.GetDependency<MemeManager>().Memes;
@@ -194,7 +220,7 @@ namespace TheGodfather.Commands.Main
         {
             await ctx.TriggerTypingAsync()
                 .ConfigureAwait(false);
-            await ctx.RespondAsync(embed: new DiscordEmbedBuilder{ ImageUrl = url }.Build())
+            await ctx.RespondAsync(embed: new DiscordEmbedBuilder { ImageUrl = url }.Build())
                 .ConfigureAwait(false);
         }
         #endregion
