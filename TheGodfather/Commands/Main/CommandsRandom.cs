@@ -126,8 +126,10 @@ namespace TheGodfather.Commands.Main
                 for (int dy = 0; dy < 10; dy++)
                     chart.SetPixel(start_x + dx, start_y + dy, Color.Red);
 
-            string filename = $"tmp{DateTime.Now.Ticks}.png";
+            string filename = $"Temp/tmp-rate-{DateTime.Now.Ticks}.png";
             try {
+                if (!Directory.Exists("Temp"))
+                    Directory.CreateDirectory("Temp");
                 chart.Save(filename);
                 await ctx.TriggerTypingAsync()
                     .ConfigureAwait(false);

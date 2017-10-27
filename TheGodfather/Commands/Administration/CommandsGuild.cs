@@ -304,20 +304,21 @@ namespace TheGodfather.Commands.Administration
                 if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(url))
                     throw new InvalidCommandUsageException("Name or URL missing or invalid.");
 
-                string filename = $"tmp{DateTime.Now.Ticks}.png";
+                string filename = $"Temp/tmp-emoji-{DateTime.Now.Ticks}.png";
                 try {
+                    if (!Directory.Exists("Temp"))
+                        Directory.CreateDirectory("Temp");
                     using (WebClient webClient = new WebClient()) {
                         byte[] data = webClient.DownloadData(url);
 
-                        using (MemoryStream mem = new MemoryStream(data)) {
-                            using (Image image = Image.FromStream(mem)) {
-                                image.Save(filename, System.Drawing.Imaging.ImageFormat.Png);
-                                FileStream fs = new FileStream(filename, FileMode.Open);
-                                await ctx.Guild.CreateEmojiAsync(name, fs, reason: $"Added by Godfather : {ctx.User.Username} ({ctx.User.Id})")
-                                    .ConfigureAwait(false);
-                                await ctx.RespondAsync($"Emoji {Formatter.Bold(name)} successfully added!")
-                                    .ConfigureAwait(false);
-                            }
+                        using (MemoryStream mem = new MemoryStream(data))
+                        using (Image image = Image.FromStream(mem)) {
+                            image.Save(filename, System.Drawing.Imaging.ImageFormat.Png);
+                            FileStream fs = new FileStream(filename, FileMode.Open);
+                            await ctx.Guild.CreateEmojiAsync(name, fs, reason: $"Added by Godfather : {ctx.User.Username} ({ctx.User.Id})")
+                                .ConfigureAwait(false);
+                            await ctx.RespondAsync($"Emoji {Formatter.Bold(name)} successfully added!")
+                                .ConfigureAwait(false);
                         }
                     }
                     if (File.Exists(filename))

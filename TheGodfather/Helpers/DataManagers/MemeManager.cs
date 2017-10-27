@@ -113,7 +113,9 @@ namespace TheGodfather.Helpers.DataManagers
 
         public IReadOnlyList<string> GetAllTemplateNames()
         {
-            var templates = Directory.GetFiles(TemplateDirectory).Select(s => s.Substring(TemplateDirectory.Length, s.Length - TemplateDirectory.Length - 4)).ToList();
+            var templates = Directory.GetFiles(TemplateDirectory)
+                .Select(s => s.Substring(TemplateDirectory.Length, s.Length - TemplateDirectory.Length - 4))
+                .ToList();
             templates.Sort();
             return templates;
         }

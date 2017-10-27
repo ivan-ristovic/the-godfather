@@ -1,5 +1,6 @@
 ﻿#region USING_DIRECTIVES
 using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -49,6 +50,8 @@ namespace TheGodfather
             LogHandle.ClearLogFile();
             _client.DisconnectAsync();
             _client.Dispose();
+            if (Directory.Exists("Temp"))
+                Directory.Delete("Temp");
         }
 
 

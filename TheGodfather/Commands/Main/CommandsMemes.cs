@@ -127,7 +127,7 @@ namespace TheGodfather.Commands.Main
                     g.Flush();
                 }
 
-                string filename = $"Temp/{template}-{DateTime.Now.Ticks}.jpg";
+                string filename = $"Temp/memegen-{template}-{DateTime.Now.Ticks}.jpg";
                 image.Save(filename, System.Drawing.Imaging.ImageFormat.Jpeg);
                 image.Dispose();
 
@@ -255,7 +255,6 @@ namespace TheGodfather.Commands.Main
             }
             #endregion
         }
-
 
 
         #region HELPER_FUNCTIONS
