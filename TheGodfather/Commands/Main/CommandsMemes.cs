@@ -88,12 +88,13 @@ namespace TheGodfather.Commands.Main
                 bottomText = "";
             else
                 bottomText = bottomText.ToUpper();
+            template = template.ToLower();
 
             await ctx.TriggerTypingAsync()
                 .ConfigureAwait(false);
 
             try {
-                Bitmap image = new Bitmap($"Resources/meme-templates/{template}.jpg");
+                Bitmap image = new Bitmap(ctx.Dependencies.GetDependency<MemeManager>().TemplateDirectory + $"{template}.jpg");
                 Rectangle topLayout = new Rectangle(0, 0, image.Width, image.Height / 3);
                 Rectangle botLayout = new Rectangle(0, (int)(0.66 * image.Height), image.Width, image.Height / 3);
                 using (Graphics g = Graphics.FromImage(image)) {
@@ -213,6 +214,48 @@ namespace TheGodfather.Commands.Main
                 throw new CommandFailedException("Failed saving memes.", new IOException());
         }
         #endregion
+
+
+        [Group("templates", CanInvokeWithoutSubcommand = true)]
+        [Description("Manipulate meme templates.")]
+        [Aliases("template", "t")]
+        [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
+        public class CommandsMemeTemplates
+        {
+            public async Task ExecuteGroupAsync(CommandContext ctx,
+                                               [Description("Page.")] int page = 1)
+            {
+                await ListAsync(ctx, page)
+                    .ConfigureAwait(false);
+            }
+
+
+            #region COMMAND_MEME_TEMPLATE_LIST
+            [Command("list")]
+            [Description("List all registered memes.")]
+            public async Task ListAsync(CommandContext ctx,
+                                       [Description("Page.")] int page = 1)
+            {
+                var templates = ctx.Dependencies.GetDependency<MemeManager>().GetAllTemplateNames();
+
+                if (page < 1 || page > templates.Count / 10 + 1)
+                    throw new CommandFailedException("No memes on that page.", new ArgumentOutOfRangeException());
+
+                string desc = "";
+                int starti = (page - 1) * 10;
+                int endi = starti + 10 < templates.Count ? starti + 10 : templates.Count;
+                for (var i = starti; i < endi; i++)
+                    desc += templates[i] + "\n";
+
+                await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
+                    Title = $"Available memes (page {page}/{templates.Count / 10 + 1}) :",
+                    Description = desc,
+                    Color = DiscordColor.Green
+                }.Build()).ConfigureAwait(false);
+            }
+            #endregion
+        }
+
 
 
         #region HELPER_FUNCTIONS

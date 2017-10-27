@@ -19,6 +19,7 @@ namespace TheGodfather.Helpers.DataManagers
     public class MemeManager
     {
         public IReadOnlyDictionary<string, string> Memes => _memes;
+        public readonly string TemplateDirectory = "Resources/meme-templates/";
         private ConcurrentDictionary<string, string> _memes = new ConcurrentDictionary<string, string>();
         private bool _ioerr = false;
 
@@ -108,6 +109,13 @@ namespace TheGodfather.Helpers.DataManagers
         public void ClearAllMemes()
         {
             _memes.Clear();
+        }
+
+        public IReadOnlyList<string> GetAllTemplateNames()
+        {
+            var templates = Directory.GetFiles(TemplateDirectory).Select(s => s.Substring(TemplateDirectory.Length, s.Length - TemplateDirectory.Length - 4)).ToList();
+            templates.Sort();
+            return templates;
         }
     }
 }
