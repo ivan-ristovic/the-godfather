@@ -128,6 +128,8 @@ namespace TheGodfather.Commands.Main
                 }
 
                 string filename = $"Temp/memegen-{template}-{DateTime.Now.Ticks}.jpg";
+                if (!Directory.Exists("Temp"))
+                    Directory.CreateDirectory("Temp");
                 image.Save(filename, System.Drawing.Imaging.ImageFormat.Jpeg);
                 image.Dispose();
 
