@@ -232,7 +232,7 @@ Commands use the following types:
 | ``feed youtube``<br>``feed yt``<br>``feed y`` | ``subscribe``<br>``sub``<br>``add``<br>``a``<br>``+`` | Manage Guild (user) | ``[string] Channel URL`` | Subscribe to given YouTube channel. Bot will send messages when new video is uploaded. | ``!feed yt subscribe http://youtu.be/SomeChannel`` |
 | ``feed youtube``<br>``feed yt``<br>``feed y`` | ``unsubscribe``<br>``unsub``<br>``del``<br>``d``<br>``-``<br>``rm`` | Manage Guild (user) | ``[string] Channel URL`` | Unsubscribe from given YouTube channel. | ``!feed yt unsubscribe http://youtu.be/SomeChannel`` |
 |   |   |   |   |   |   |
-| ``steam``<br>``st``<br>``s`` | ``profile``<br>``id``<br>`` |   | ``[int] Steam ID`` | Get Steam information for given ID. | ``!steam profile 76561198106475313`` |
+| ``steam``<br>``st``<br>``s`` | ``profile``<br>``id`` |   | ``[int] Steam ID`` | Get Steam information for given ID. | ``!steam profile 76561198106475313`` |
 |   |   |   |   |   |   |
 | ``urban``<br>``u`` |   |   | ``[text] Query`` | Search Urban Dictionary for a given query. | ``!urban Snowflake`` |
 |   |   |   |   |   |   |
@@ -257,6 +257,7 @@ Commands use the following types:
 | ``s4 servers`` | ``delete``<br>``-``<br>``del``<br>``d`` | Administrator (user) | ``[string] Shortname`` | Remove a server from database. | ``!s4 servers - soh`` |
 | ``s4 servers`` | ``save`` | Owner Only |   | Save server list. | ``!s4 servers save`` |
 |   |   |   |   |   |   |
+
 
 **(Command list is incomplete)**
 
