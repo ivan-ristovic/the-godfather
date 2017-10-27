@@ -80,6 +80,7 @@ Commands use the following types:
 |   |   |   |   |   |   |
 | ``meme``<br>``memes``<br>``mm`` |   |   | ``(optional) [text] Meme name`` | Send a meme with name ``Meme name``. If name isn't given, sends random one. | ``!meme``<br><br>``!meme fap`` |
 | ``meme``<br>``memes``<br>``mm`` | ``add``<br>``+``<br>``new`` | Owner Only | ``[text] Name``<br><br>``[string] URL`` | Add a new meme to global meme list. | ``!meme add Name http://url.png`` |
+| ``meme``<br>``memes``<br>``mm`` | ``create``<br>``maker``<br>``make``<br>``c``<br>``m`` |  | ``[string] Template``<br><br>``[string] Top Text``<br><br>``[string] Bottom Text`` | Creates a new meme with ``Template`` as background and ``Top Text`` and ``Bottom Text`` on it. Use ``!meme template list`` to view all templates. | ``!meme create successkid "I tried to create a meme" "I succeeded!"`` |
 | ``meme``<br>``memes``<br>``mm`` | ``delete``<br>``-``<br>``remove``<br>``del``<br>``rm`` | Owner Only | ``[text] Name`` | Remove meme with a given name from the list. Use ``!meme list`` to view all memes. | ``!meme delete fap`` |
 | ``meme``<br>``memes``<br>``mm`` | ``list`` |  | ``(optional) [int] Page (def: 1)`` | List memes on page ``Page``. | ``!meme list 3`` |
 | ``meme``<br>``memes``<br>``mm`` | ``save`` | Owner Only |  | Save all memes. | ``!meme save`` |
