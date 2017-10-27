@@ -102,7 +102,7 @@ namespace TheGodfather.Commands.Main
                     g.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
                     g.CompositingQuality = CompositingQuality.HighQuality;
                     using (GraphicsPath p = new GraphicsPath()) {
-                        var font = GetBestFittingFont(g, topText, topLayout.Size, new Font("Impact", 70));
+                        var font = GetBestFittingFont(g, topText, topLayout.Size, new Font("Impact", 60));
                         var fmt = new StringFormat() {
                             Alignment = StringAlignment.Center,
                             LineAlignment = StringAlignment.Near,
@@ -113,7 +113,7 @@ namespace TheGodfather.Commands.Main
                         g.FillPath(Brushes.White, p);
                     }
                     using (GraphicsPath p = new GraphicsPath()) {
-                        var font = GetBestFittingFont(g, bottomText, botLayout.Size, new Font("Impact", 70));
+                        var font = GetBestFittingFont(g, bottomText, botLayout.Size, new Font("Impact", 60));
                         var fmt = new StringFormat() {
                             Alignment = StringAlignment.Center,
                             LineAlignment = StringAlignment.Far,
