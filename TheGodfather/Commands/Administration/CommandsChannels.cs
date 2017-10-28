@@ -31,7 +31,7 @@ namespace TheGodfather.Commands.Administration
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new InvalidCommandUsageException("Missing category name.");
-            
+
             bool checkspassed = await HandleChannelExistsAsync(ctx, name)
                 .ConfigureAwait(false);
             if (!checkspassed)
@@ -49,7 +49,7 @@ namespace TheGodfather.Commands.Administration
         [Description("Create new txt channel.")]
         [Aliases("createtxt", "createt", "+", "+t", "maket", "newt", "addt")]
         [RequirePermissions(Permissions.ManageChannels)]
-        public async Task CreateTextChannelAsync(CommandContext ctx, 
+        public async Task CreateTextChannelAsync(CommandContext ctx,
                                                 [Description("Name.")] string name = null,
                                                 [Description("Parent channel")] DiscordChannel parent = null)
         {
@@ -63,16 +63,11 @@ namespace TheGodfather.Commands.Administration
             if (!checkspassed)
                 return;
 
-            if (parent != null) {
-                if (parent.Type == ChannelType.Category)
-                    await ctx.Guild.CreateChannelAsync(name, ChannelType.Text, parent: parent, reason: $"Created by Godfather: {ctx.User.Username} ({ctx.User.Id})")
-                        .ConfigureAwait(false);
-                else
-                    throw new CommandFailedException("Parent channel must be a category!");
-            } else {
-                await ctx.Guild.CreateChannelAsync(name, ChannelType.Text, reason: $"Created by Godfather: {ctx.User.Username} ({ctx.User.Id})")
-                    .ConfigureAwait(false);
-            }
+            bool channelcreated = await TryCreateChannelAsync(ctx, name, parent, ChannelType.Text)
+                .ConfigureAwait(false);
+            if (!channelcreated)
+                throw new CommandFailedException("Channel parent must be a category!");
+
             await ctx.RespondAsync($"Channel {Formatter.Bold(name)} successfully created.")
                 .ConfigureAwait(false);
         }
@@ -83,8 +78,9 @@ namespace TheGodfather.Commands.Administration
         [Description("Create new voice channel.")]
         [Aliases("createv", "+v", "makev", "newv", "addv")]
         [RequirePermissions(Permissions.ManageChannels)]
-        public async Task CreateVoiceChannelAsync(CommandContext ctx, 
-                                                 [RemainingText, Description("Name.")] string name = null)
+        public async Task CreateVoiceChannelAsync(CommandContext ctx,
+                                                 [Description("Name.")] string name = null,
+                                                 [Description("Parent channel")] DiscordChannel parent = null)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new InvalidCommandUsageException("Missing channel name.");
@@ -93,20 +89,23 @@ namespace TheGodfather.Commands.Administration
                 .ConfigureAwait(false);
             if (!checkspassed)
                 return;
-
-            await ctx.Guild.CreateChannelAsync(name, ChannelType.Voice, reason: $"Created by Godfather: {ctx.User.Username} ({ctx.User.Id})")
+            
+            bool channelcreated = await TryCreateChannelAsync(ctx, name, parent, ChannelType.Voice)
                 .ConfigureAwait(false);
+            if (!channelcreated)
+                throw new CommandFailedException("Channel parent must be a category!");
+
             await ctx.RespondAsync($"Channel {Formatter.Bold(name)} successfully created.")
                 .ConfigureAwait(false);
         }
         #endregion
-        
+
         #region COMMAND_CHANNEL_DELETE
         [Command("delete")]
         [Description("Delete channel.")]
         [Aliases("-", "del", "d", "remove")]
         [RequirePermissions(Permissions.ManageChannels)]
-        public async Task DeleteChannelAsync(CommandContext ctx, 
+        public async Task DeleteChannelAsync(CommandContext ctx,
                                             [Description("Channel.")] DiscordChannel c = null)
         {
             if (c == null)
@@ -155,7 +154,7 @@ namespace TheGodfather.Commands.Administration
         [Description("Rename channel.")]
         [Aliases("r", "name", "setname")]
         [RequirePermissions(Permissions.ManageChannels)]
-        public async Task RenameChannelAsync(CommandContext ctx, 
+        public async Task RenameChannelAsync(CommandContext ctx,
                                             [Description("New name.")] string name = null,
                                             [Description("Channel.")] DiscordChannel c = null)
         {
@@ -184,7 +183,7 @@ namespace TheGodfather.Commands.Administration
         [Aliases("t", "topic", "sett")]
         [RequirePermissions(Permissions.ManageChannels)]
         public async Task SetChannelTopicAsync(CommandContext ctx,
-                                              [Description("New topic.")] string topic = null, 
+                                              [Description("New topic.")] string topic = null,
                                               [Description("Channel.")] DiscordChannel c = null)
         {
             if (string.IsNullOrWhiteSpace(topic))
@@ -214,6 +213,16 @@ namespace TheGodfather.Commands.Administration
                     return false;
             }
 
+            return true;
+        }
+
+        private async Task<bool> TryCreateChannelAsync(CommandContext ctx, string cname, DiscordChannel parent, ChannelType type)
+        {
+            if (parent != null && parent.Type != ChannelType.Category)
+                return false;
+
+            await ctx.Guild.CreateChannelAsync(cname, type, parent: parent, reason: $"Created by Godfather: {ctx.User.Username} ({ctx.User.Id})")
+                        .ConfigureAwait(false);
             return true;
         }
         #endregion
