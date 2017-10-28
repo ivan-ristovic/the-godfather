@@ -460,7 +460,7 @@ namespace TheGodfather
             else if (e.Exception is InvalidCommandUsageException)
                 embed.Description = $"{emoji} Invalid usage! {ex.Message}";
             else if (e.Exception is ArgumentException)
-                embed.Description = $"{emoji} Wrong argument format (please use {Formatter.Bold("!help <command>")}.";
+                embed.Description = $"{emoji} Wrong argument format (please use {Formatter.Bold("!help <command>")}).";
             else if (e.Exception is CommandFailedException)
                 embed.Description = $"{emoji} {ex.Message}";
             else if (ex is ChecksFailedException exc) {

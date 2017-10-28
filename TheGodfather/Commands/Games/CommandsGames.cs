@@ -33,12 +33,12 @@ namespace TheGodfather.Commands.Games
 
             string[] weapons = { ":hammer:", ":dagger:", ":pick:", ":bomb:", ":guitar:", ":fire:" };
 
-            int hp1 = 10, hp2 = 10;
+            int hp1 = 5, hp2 = 5;
             var rnd = new Random();
             string feed = "";
 
-            var hp1bar = string.Join("", Enumerable.Repeat(DiscordEmoji.FromName(ctx.Client, ":white_large_square:"), hp1)) + string.Join("", Enumerable.Repeat(DiscordEmoji.FromName(ctx.Client, ":black_large_square:"), 10 - hp1));
-            var hp2bar = string.Join("", Enumerable.Repeat(DiscordEmoji.FromName(ctx.Client, ":black_large_square:"), 10 - hp2)) + string.Join("", Enumerable.Repeat(DiscordEmoji.FromName(ctx.Client, ":white_large_square:"), hp2));
+            var hp1bar = string.Join("", Enumerable.Repeat(DiscordEmoji.FromName(ctx.Client, ":white_large_square:"), hp1)) + string.Join("", Enumerable.Repeat(DiscordEmoji.FromName(ctx.Client, ":black_large_square:"), 5 - hp1));
+            var hp2bar = string.Join("", Enumerable.Repeat(DiscordEmoji.FromName(ctx.Client, ":black_large_square:"), 5 - hp2)) + string.Join("", Enumerable.Repeat(DiscordEmoji.FromName(ctx.Client, ":white_large_square:"), hp2));
             var m = await ctx.RespondAsync($"{ctx.User.Mention} {hp1bar} :crossed_swords: {hp2bar} {u.Mention}")
                 .ConfigureAwait(false);
 
