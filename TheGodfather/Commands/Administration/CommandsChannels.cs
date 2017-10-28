@@ -111,6 +111,19 @@ namespace TheGodfather.Commands.Administration
             if (c == null)
                 c = ctx.Channel;
 
+            if (c.Type == ChannelType.Category) {
+                await ctx.RespondAsync("The channel specified is a category. Delete all channels in it? (y/n)");
+                var interactivity = ctx.Client.GetInteractivityModule();
+                string[] answers = new string[] { "yes", "y", "no", "n" };
+                var msg = await interactivity.WaitForMessageAsync(
+                    m => m.ChannelId == ctx.Channel.Id && m.Author.Id == ctx.User.Id && answers.Contains(m.Content)
+                ).ConfigureAwait(false);
+                if (msg != null && (msg.Message.Content == "yes" || msg.Message.Content == "y"))
+                    foreach (var chn in c.Children)
+                        await chn.DeleteAsync(reason: $"Deleted by Godfather: {ctx.User.Username} ({ctx.User.Id})")
+                            .ConfigureAwait(false);
+            }
+
             string name = c.Name;
             await c.DeleteAsync(reason: $"Deleted by Godfather: {ctx.User.Username} ({ctx.User.Id})")
                 .ConfigureAwait(false);
@@ -203,7 +216,7 @@ namespace TheGodfather.Commands.Administration
         private async Task<bool> HandleChannelExistsAsync(CommandContext ctx, string cname)
         {
             if (ctx.Guild.Channels.Any(chn => chn.Name == cname.ToLower())) {
-                await ctx.RespondAsync("A channel with that name already exists? Continue (y/n)?");
+                await ctx.RespondAsync("A channel with that name already exists? Continue? (y/n)");
                 var interactivity = ctx.Client.GetInteractivityModule();
                 string[] answers = new string[] { "yes", "y", "no", "n" };
                 var msg = await interactivity.WaitForMessageAsync(
