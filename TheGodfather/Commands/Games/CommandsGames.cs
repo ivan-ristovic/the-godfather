@@ -31,34 +31,35 @@ namespace TheGodfather.Commands.Games
             if (u.Id == ctx.User.Id)
                 throw new CommandFailedException("You can't duel yourself...");
 
-            string[] weapons = { "sword", "axe", "keyboard", "stone", "cheeseburger", "belt from yo momma" };
+            string[] weapons = { ":hammer:", ":dagger:", ":pick:", ":bomb:", ":guitar:", ":fire:" };
 
-            var m = await ctx.RespondAsync($"{ctx.User.Mention} VS {u.Mention}")
+            int hp1 = 10, hp2 = 10;
+            var rnd = new Random();
+            string feed = "";
+
+            var hp1bar = string.Join("", Enumerable.Repeat(DiscordEmoji.FromName(ctx.Client, ":white_large_square:"), hp1)) + string.Join("", Enumerable.Repeat(DiscordEmoji.FromName(ctx.Client, ":black_large_square:"), 10 - hp1));
+            var hp2bar = string.Join("", Enumerable.Repeat(DiscordEmoji.FromName(ctx.Client, ":black_large_square:"), 10 - hp2)) + string.Join("", Enumerable.Repeat(DiscordEmoji.FromName(ctx.Client, ":white_large_square:"), hp2));
+            var m = await ctx.RespondAsync($"{ctx.User.Mention} {hp1bar} :crossed_swords: {hp2bar} {u.Mention}")
                 .ConfigureAwait(false);
 
-            int hp1 = 100, hp2 = 100;
-            var rnd = new Random();
             while (hp1 > 0 && hp2 > 0) {
-                int damage = rnd.Next(20, 40);
+                int damage = rnd.Next(1, 3);
                 if (rnd.Next() % 2 == 0) {
-                    m = await m.ModifyAsync(
-                        m.Content + $"\n{Formatter.Bold(ctx.User.Username)} ({hp1}) " +
-                        $"hits {Formatter.Bold(u.Username)} ({hp2}) with a {Formatter.Bold(weapons[rnd.Next(0, weapons.Length)])} " +
-                        $"for {Formatter.Bold(damage.ToString())} damage!"
-                    ).ConfigureAwait(false);
+                    feed += $"\n{ctx.User.Mention} {weapons[rnd.Next(weapons.Length)]} {u.Mention}"; 
                     hp2 -= damage;
                 } else {
-                    m = await m.ModifyAsync(
-                        m.Content + $"\n{Formatter.Bold(u.Username)} ({hp2}) " +
-                        $"hits {Formatter.Bold(ctx.User.Username)} ({hp1}) with a {Formatter.Bold(weapons[rnd.Next(0, weapons.Length)])} " +
-                        $"for {Formatter.Bold(damage.ToString())} damage!"
-                    ).ConfigureAwait(false);
+                    feed += $"\n{u.Mention} {weapons[rnd.Next(weapons.Length)]} {ctx.User.Mention}";
                     hp1 -= damage;
                 }
+                hp1bar = string.Join("", Enumerable.Repeat(DiscordEmoji.FromName(ctx.Client, ":white_large_square:"), hp1)) + string.Join("", Enumerable.Repeat(DiscordEmoji.FromName(ctx.Client, ":black_large_square:"), 10 - hp1));
+                hp2bar = string.Join("", Enumerable.Repeat(DiscordEmoji.FromName(ctx.Client, ":black_large_square:"), 10 - hp2)) + string.Join("", Enumerable.Repeat(DiscordEmoji.FromName(ctx.Client, ":white_large_square:"), hp2));
+                m = await m.ModifyAsync($"{ctx.User.Mention} {hp1bar} :crossed_swords: {hp2bar} {u.Mention}" + feed)
+                    .ConfigureAwait(false);
+
                 await Task.Delay(2000)
                     .ConfigureAwait(false);
             }
-            if (hp1 < 0) {
+            if (hp1 <= 0) {
                 await ctx.RespondAsync($"{u.Mention} wins!")
                     .ConfigureAwait(false);
             } else {
@@ -158,7 +159,7 @@ namespace TheGodfather.Commands.Games
         }
         #endregion
         #endregion
-        
+
         #region COMMAND_GAMES_RPS
         [Command("rps")]
         [Description("Rock, paper, scissors game.")]
@@ -175,7 +176,7 @@ namespace TheGodfather.Commands.Games
             }
             await msg.ModifyAsync("GO!")
                 .ConfigureAwait(false);
-            
+
             switch (new Random().Next(0, 3)) {
                 case 0:
                     await ctx.RespondAsync($"{DiscordEmoji.FromName(ctx.Client, ":new_moon:")}")
@@ -303,7 +304,7 @@ namespace TheGodfather.Commands.Games
                     }
                 s += '\n';
             }
-            await m.ModifyAsync(embed: new DiscordEmbedBuilder() { Description = s } );
+            await m.ModifyAsync(embed: new DiscordEmbedBuilder() { Description = s });
         }
         #endregion
 
