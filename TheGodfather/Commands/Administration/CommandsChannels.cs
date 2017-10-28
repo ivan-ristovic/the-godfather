@@ -1,5 +1,6 @@
 ﻿#region USING_DIRECTIVES
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 
 using TheGodfather.Exceptions;
@@ -9,6 +10,7 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
+using DSharpPlus.Interactivity;
 #endregion
 
 namespace TheGodfather.Commands.Administration
@@ -29,6 +31,11 @@ namespace TheGodfather.Commands.Administration
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new InvalidCommandUsageException("Missing category name.");
+            
+            bool checkspassed = await HandleChannelExistsAsync(ctx, name)
+                .ConfigureAwait(false);
+            if (!checkspassed)
+                return;
 
             await ctx.Guild.CreateChannelAsync(name, ChannelType.Category, reason: $"Created by Godfather: {ctx.User.Username} ({ctx.User.Id})")
                 .ConfigureAwait(false);
@@ -50,6 +57,11 @@ namespace TheGodfather.Commands.Administration
             if (name.Contains(" "))
                 throw new InvalidCommandUsageException("Name cannot contain spaces.");
 
+            bool checkspassed = await HandleChannelExistsAsync(ctx, name)
+                .ConfigureAwait(false);
+            if (!checkspassed)
+                return;
+
             await ctx.Guild.CreateChannelAsync(name, ChannelType.Text, reason: $"Created by Godfather: {ctx.User.Username} ({ctx.User.Id})")
                 .ConfigureAwait(false);
             await ctx.RespondAsync($"Channel {Formatter.Bold(name)} successfully created.")
@@ -67,6 +79,11 @@ namespace TheGodfather.Commands.Administration
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new InvalidCommandUsageException("Missing channel name.");
+
+            bool checkspassed = await HandleChannelExistsAsync(ctx, name)
+                .ConfigureAwait(false);
+            if (!checkspassed)
+                return;
 
             await ctx.Guild.CreateChannelAsync(name, ChannelType.Voice, reason: $"Created by Godfather: {ctx.User.Username} ({ctx.User.Id})")
                 .ConfigureAwait(false);
@@ -170,6 +187,25 @@ namespace TheGodfather.Commands.Administration
                 .ConfigureAwait(false);
             await ctx.RespondAsync("Channel topic successfully changed.")
                 .ConfigureAwait(false);
+        }
+        #endregion
+
+
+        #region HELPER_FUNCTIONS
+        private async Task<bool> HandleChannelExistsAsync(CommandContext ctx, string cname)
+        {
+            if (ctx.Guild.Channels.Any(chn => chn.Name == cname.ToLower())) {
+                await ctx.RespondAsync("A channel with that name already exists? Continue (y/n)?");
+                var interactivity = ctx.Client.GetInteractivityModule();
+                string[] answers = new string[] { "yes", "y", "no", "n" };
+                var msg = await interactivity.WaitForMessageAsync(
+                    m => m.ChannelId == ctx.Channel.Id && m.Author.Id == ctx.User.Id && answers.Contains(m.Content)
+                ).ConfigureAwait(false);
+                if (msg != null && (msg.Message.Content == "no" || msg.Message.Content == "n"))
+                    return false;
+            }
+
+            return true;
         }
         #endregion
     }

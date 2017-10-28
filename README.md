@@ -84,7 +84,7 @@ Commands use the following types:
 | ``meme``<br>``memes``<br>``mm`` | ``delete``<br>``-``<br>``remove``<br>``del``<br>``rm`` | Owner Only | ``[text] Name`` | Remove meme with a given name from the list. Use ``!meme list`` to view all memes. | ``!meme delete fap`` |
 | ``meme``<br>``memes``<br>``mm`` | ``list`` |  | ``(optional) [int] Page (def: 1)`` | List memes on page ``Page``. | ``!meme list 3`` |
 | ``meme``<br>``memes``<br>``mm`` | ``save`` | Owner Only |  | Save all memes. | ``!meme save`` |
-| ``meme templates``<br>``meme template``<br>``meme t`` | ``list`` |   | ``(optional) [int] Page (def: 1)`` | List templates on page. | ``!meme templates list 4`` |
+| ``meme templates``<br>``meme template``<br>``meme t`` | ``list`` |   | ``(optional) [int] Page (def: 1)`` | List templates on page ``Page``. | ``!meme templates list 4`` |
 |   |   |   |   |   |   |
 | ``random``<br>``rand``<br>``rnd`` | ``cat`` |   |   | Send a random cat image. | ``!random cat`` |
 | ``random``<br>``rand``<br>``rnd`` | ``dog`` |   |   | Send a random dog image. | ``!random dog`` |
@@ -119,7 +119,7 @@ Commands use the following types:
 | ``guild``<br>``server``<br>``g`` | ``info``<br>``i``<br>``information`` |  |  | Get guild information. | ``!guild info`` |
 | ``guild``<br>``server``<br>``g`` | ``listmembers``<br>``memberlist``<br>``lm``<br>``members`` | Manage Guild | ``(optional) [int] page (def: 1)`` | Get guild member list. | ``!guild memberlist``<br>``!guild memberlist 3`` |
 | ``guild``<br>``server``<br>``g`` | ``log``<br>``auditlog``<br>``viewlog``<br>``getlog``<br>``getlogs``<br>``logs`` | View Audit Log | ``(optional) [int] page (def: 1)`` | Get guild audit logs. | ``!guild log``<br>``!guild log 3`` |
-| ``guild``<br>``server``<br>``g`` | ``prune``<br>``p``<br>``clean`` | Administrator (user)<br><br>KickMembers (bot) | ``(optional) [int] page (def: 7)`` | Kick members who weren't active in given ammount of days (1-7). | ``!guild prune``<br>``!guild prune 5`` |
+| ``guild``<br>``server``<br>``g`` | ``prune``<br>``p``<br>``clean`` | Administrator (user)<br><br>Kick Members (bot) | ``(optional) [int] page (def: 7)`` | Kick members who weren't active in given ammount of days (1-7). | ``!guild prune``<br>``!guild prune 5`` |
 | ``guild``<br>``server``<br>``g`` | ``rename``<br>``r``<br>``name``<br>``setname`` | Manage guild | ``[text] Name`` | Rename guild. | ``!guild rename New guild name`` |
 | ``guild``<br>``server``<br>``g`` | ``getwelcomechannel``<br>``getwelcomec``<br>``getwc``<br>``getwelcome``<br>``welcomechannel``<br>``wc`` | Manage guild (user) |  | Get current welcome message channel for this guild. | ``!guild getwc`` |
 | ``guild``<br>``server``<br>``g`` | ``getleavechannel``<br>``getleavec``<br>``getlc``<br>``getleave``<br>``leavechannel``<br>``lc`` | Manage guild (user) |  | Get current leave message channel for this guild. | ``!guild getlc`` |
@@ -250,9 +250,9 @@ Commands use the following types:
 |---|---|---|---|---|---|
 |   |   |   |   |   |   |
 | ``swat4``<br>``swat``<br>``s4`` | ``serverlist`` |   |   | Player count for SWAT4 servers in database. | ``!s4 serverlist`` |
-| ``swat4``<br>``swat``<br>``s4`` | ``query``<br>``info``<br>``q``<br>``i`` |   | ``[string] IP/Shortname`` | Get info for SWAT4 server with given IP or short name (you can add these manually, popular servers are already added). | ``!s4 query 13.95.232.189:10480``<br<br>``!s4 query soh`` |
+| ``swat4``<br>``swat``<br>``s4`` | ``query``<br>``info``<br>``q``<br>``i`` |   | ``[string] IP/Shortname`` | Get info for SWAT4 server with given IP or short name (you can add these manually, popular servers are already added). | ``!s4 query 13.95.232.189:10480``<br><br>``!s4 query soh`` |
 | ``swat4``<br>``swat``<br>``s4`` | ``settimeout`` | Owner Only | ``[int] Time (in ms)`` | Set spacecheck ping time. | ``!s4 settimeout 200`` |
-| ``swat4``<br>``swat``<br>``s4`` | ``spacecheck``<br>``startcheck``<br>``checkspace`` |   | ``[string] IP/Shortname`` | Start checking for space on SWAT4 server given with IP/Name. Bot will send a message when there is space on the server. One check per user at a time is allowed. | ``!s4 spacecheck 13.95.232.189:10480``<br<br>``!s4 spacecheck soh`` |
+| ``swat4``<br>``swat``<br>``s4`` | ``spacecheck``<br>``startcheck``<br>``checkspace`` |   | ``[string] IP/Shortname`` | Start checking for space on SWAT4 server given with IP/Name. Bot will send a message when there is space on the server. One check per user at a time is allowed. | ``!s4 spacecheck 13.95.232.189:10480``<br><br>``!s4 spacecheck soh`` |
 | ``swat4``<br>``swat``<br>``s4`` | ``stopcheck``<br>``checkstop`` |   |   | Stops your issued spacecheck. | ``!s4 stopcheck |
 | ``s4 servers`` | ``add``<br>``+``<br>``a`` | Administrator (user) | ``[string] Shortname``<br><br>``[string] IP`` | Add a new server to database. If the server uses a non-default query port, add it after IP like in example. | ``!s4 servers + soh 13.95.232.189:10480``<br><br>``!s4 servers + soh 13.95.232.189:10480:10488`` |
 | ``s4 servers`` | ``delete``<br>``-``<br>``del``<br>``d`` | Administrator (user) | ``[string] Shortname`` | Remove a server from database. | ``!s4 servers - soh`` |
