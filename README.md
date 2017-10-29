@@ -189,7 +189,7 @@ Commands use the following types:
 | ``cards``<br>``deck`` | ``reset``<br>``opennew``<br>``new`` |   |   | Open new deck of cards (unshuffled). | ``!deck new`` |
 | ``cards``<br>``deck`` | ``shuffle``<br>``s``<br>``sh``<br>``mix`` |   |   | Shuffle current card deck. | ``!deck shuffle`` |
 |   |   |   |   |   |   |
-| ``games``<br>``game``<br>``gm`` | ``duel``<br>``fight``<br>``vs`` |   | ``[user] Opponent`` | Call ``Opponent`` to a death battle! | ``!game duel @TheRock`` |
+| ``games``<br>``game``<br>``gm`` | ``duel``<br>``fight``<br>``vs`` |   | ``[user] Opponent`` | Call ``Opponent`` to a death battle! Type ``hp`` while the duel is on to drink a health potion. | ``!game duel @TheRock`` |
 | ``games``<br>``game``<br>``gm`` | ``hangman`` |   |   | Start a new hangman game! | ``!game hangman`` |
 | ``games``<br>``game``<br>``gm`` | ``rps``<br>``rockpaperscissors`` |   |   | Make Godfather play rock-paper-scissors! | ``!game rps`` |
 | ``games``<br>``game``<br>``gm`` | ``tictactoe``<br>``ttt`` |   |   | Challenge friends to a tictactoe game! First who replies with ``me`` or ``i`` will join your game. | ``!game ttt`` |
