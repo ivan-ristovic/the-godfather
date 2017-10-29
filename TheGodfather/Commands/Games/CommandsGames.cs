@@ -34,6 +34,7 @@ namespace TheGodfather.Commands.Games
             string[] weapons = { ":hammer:", ":dagger:", ":pick:", ":bomb:", ":guitar:", ":fire:" };
 
             int hp1 = 5, hp2 = 5;
+            bool pot1used = false, pot2used = false;
             var rnd = new Random();
             string feed = "";
 
@@ -43,20 +44,35 @@ namespace TheGodfather.Commands.Games
                 .ConfigureAwait(false);
 
             while (hp1 > 0 && hp2 > 0) {
-                int damage = rnd.Next(1, 3);
+                int damage = 1;
                 if (rnd.Next() % 2 == 0) {
-                    feed += $"\n{ctx.User.Mention} {weapons[rnd.Next(weapons.Length)]} {u.Mention}"; 
+                    feed += $"\n{ctx.User.Mention} {weapons[rnd.Next(weapons.Length)]} {u.Mention}";
                     hp2 -= damage;
                 } else {
                     feed += $"\n{u.Mention} {weapons[rnd.Next(weapons.Length)]} {ctx.User.Mention}";
                     hp1 -= damage;
                 }
+
+                var interactivity = ctx.Client.GetInteractivityModule();
+                var reply = await interactivity.WaitForMessageAsync(
+                    msg => msg.ChannelId == ctx.Channel.Id && msg.Content.ToLower() == "hp" && (msg.Author.Id == ctx.User.Id || msg.Author.Id == u.Id)
+                    , TimeSpan.FromSeconds(2)
+                ).ConfigureAwait(false);
+                if (reply != null) {
+                    if (reply.User.Id == ctx.User.Id && !pot1used) {
+                        hp1 = (hp1 + 1 > 5) ? 5 : hp1 + 1;
+                        pot1used = false;
+                        feed += $"\n{ctx.User.Mention} :syringe:";
+                    } else if (reply.User.Id == u.Id && !pot2used) {
+                        hp2 = (hp2 + 1 > 5) ? 5 : hp2 + 1;
+                        pot2used = false;
+                        feed += $"\n{u.Mention} :syringe:";
+                    }
+                }
+
                 hp1bar = string.Join("", Enumerable.Repeat(DiscordEmoji.FromName(ctx.Client, ":white_large_square:"), hp1)) + string.Join("", Enumerable.Repeat(DiscordEmoji.FromName(ctx.Client, ":black_large_square:"), 5 - hp1));
                 hp2bar = string.Join("", Enumerable.Repeat(DiscordEmoji.FromName(ctx.Client, ":black_large_square:"), 5 - hp2)) + string.Join("", Enumerable.Repeat(DiscordEmoji.FromName(ctx.Client, ":white_large_square:"), hp2));
                 m = await m.ModifyAsync($"{ctx.User.Mention} {hp1bar} :crossed_swords: {hp2bar} {u.Mention}" + feed)
-                    .ConfigureAwait(false);
-
-                await Task.Delay(2000)
                     .ConfigureAwait(false);
             }
             if (hp1 <= 0) {

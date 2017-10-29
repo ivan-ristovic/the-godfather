@@ -48,7 +48,7 @@ Commands use the following types:
 |   | ``leet`` |   | ``[text] Text`` | Wr1t3s m3ss@g3 1n 1337sp34k. | ``!leet This is so cool`` |
 |   | ``penis``<br>``size``<br>``length``<br>``manhood``<br>``dick`` |   | ``(optional) [user] User (def: sender)`` | An accurate measurement of ``User``'s manhood. | ``!penis @Someone`` |
 |   | ``ping`` |   |   | Ping the bot. | ``!ping`` |
-|   | ``poll``<br>``vote`` |   | ``[text] Question`` | Starts a poll in the channel. The bot will ask for poll options, which you give separated with ``;``, for example: ``option1;option2;option3`` | ``!poll`` |
+|   | ``poll``<br>``vote`` |   | ``[text] Question`` | Starts a poll in the channel. The bot will ask for poll options, which you give separated with ``;``, for example: ``option1;option2;option3`` | ``!poll "Do you want to kick Godfather?"`` |
 |   | ``prefix``<br>``setprefix`` | Administrator (user) | ``(optional) [string] New prefix`` | If invoked without arguments, gives current prefix for this channel, otherwise sets the prefix to ``New prefix``. If for example ``New prefix`` is ``;``, all commands in that channel from that point must be invoked using ``;``, for example ``;greet``. | ``!prefix``<br><br>``!prefix .`` |
 |   | ``raffle`` |   | ``[role] Role`` | Randomly select one user from given role. | ``!raffle @Admins`` |
 |   | ``rate``<br>``score``<br>``graph`` |   | ``[user] User`` | An accurate graphical representatin of ``User``'s humanity. | ``!rate @Someone`` |
