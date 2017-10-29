@@ -24,6 +24,10 @@ namespace TheGodfather
 {
     public class TheGodfather
     {
+        #region PUBLIC_FIELDS
+        public bool Listening { get; private set; }
+        #endregion
+
         #region PRIVATE_FIELDS
         private DiscordClient _client { get; set; }
         private CommandsNextModule _commands { get; set; }
@@ -39,6 +43,7 @@ namespace TheGodfather
 
         public TheGodfather()
         {
+            Listening = true;
             _config = new BotConfigManager();
         }
 
@@ -70,8 +75,8 @@ namespace TheGodfather
 
             await Task.Delay(-1);
         }
-        
-        
+
+
         #region BOT_SETUP_FUNCTIONS
         private void SetupClient()
         {
@@ -174,7 +179,7 @@ namespace TheGodfather
                     $"Errors occured during data load: " + Environment.NewLine +
                     $" Exception: {e.GetType()}" + Environment.NewLine +
                     (e.InnerException != null ? $" Inner exception: {e.GetType()}" + Environment.NewLine : "") +
-                    $" Message: {e.Message}" 
+                    $" Message: {e.Message}"
                 );
                 return;
             }
@@ -215,7 +220,7 @@ namespace TheGodfather
                 return Task.FromResult(prefix.Length);
         }
         #endregion
-        
+
         #region CLIENT_EVENTS
         private async Task Client_Heartbeated(HeartbeatEventArgs e)
         {
@@ -436,6 +441,9 @@ namespace TheGodfather
             while (ex is AggregateException)
                 ex = ex.InnerException;
 
+            if (ex is ChecksFailedException chke && chke.FailedChecks.Any(c => c is CommandCheckAttribute))
+                return;
+
             LogHandle.Log(LogLevel.Error,
                 $" Tried executing: {e.Command?.QualifiedName ?? "<unknown command>"}" + Environment.NewLine +
                 $" User: {e.Context.User.ToString()}" + Environment.NewLine +
@@ -471,8 +479,10 @@ namespace TheGodfather
                     embed.Description = $"{emoji} You do not have the required permissions to run this command!";
                 else if (attr is RequirePermissionsAttribute)
                     embed.Description = $"{emoji} Permissions to execute that command aren't met!";
-                else
+                else if (attr is RequireOwnerAttribute)
                     embed.Description = $"{emoji} That command is reserved for the bot owner only!";
+                else
+                    embed.Description = $"{emoji} Command execution checks failed!";
             } else if (e.Exception is UnauthorizedException)
                 embed.Description = $"{emoji} I am not authorized to do that.";
             else
@@ -480,6 +490,13 @@ namespace TheGodfather
 
             await e.Context.RespondAsync(embed: embed.Build())
                 .ConfigureAwait(false);
+        }
+        #endregion
+
+        #region GETTERS_AND_SETTERS
+        internal void ToggleListening()
+        {
+            Listening = !Listening;
         }
         #endregion
     }

@@ -32,7 +32,7 @@ namespace TheGodfather.Commands.Administration
         [Command("clearlog")]
         [Description("Clear application logs.")]
         [Aliases("clearlogs", "deletelogs", "deletelog")]
-        public async Task ClearLog(CommandContext ctx)
+        public async Task ClearLogAsync(CommandContext ctx)
         {
             try {
                 ctx.Dependencies.GetDependency<TheGodfather>().LogHandle.ClearLogFile();
@@ -41,7 +41,8 @@ namespace TheGodfather.Commands.Administration
                 throw e;
             }
 
-            await ctx.RespondAsync("Logs cleared.");
+            await ctx.RespondAsync("Logs cleared.")
+                .ConfigureAwait(false);
         }
         #endregion
 
@@ -140,8 +141,8 @@ namespace TheGodfather.Commands.Administration
         #region COMMAND_LEAVEGUILDS
         [Command("leaveguilds")]
         [Description("Leave guilds given as IDs.")]
-        public async Task LeaveGuilds(CommandContext ctx,
-                                     [Description("Guild ID list.")] params ulong[] ids)
+        public async Task LeaveGuildsAsync(CommandContext ctx,
+                                          [Description("Guild ID list.")] params ulong[] ids)
         {
             if (!ids.Any())
                 throw new InvalidCommandUsageException("IDs missing.");
@@ -156,7 +157,8 @@ namespace TheGodfather.Commands.Administration
 
                 }
             }
-            await ctx.RespondAsync(s);
+            await ctx.RespondAsync(s)
+                .ConfigureAwait(false);
         }
         #endregion
 
@@ -164,10 +166,10 @@ namespace TheGodfather.Commands.Administration
         [Command("sendmessage")]
         [Description("Sends a message to a user or channel.")]
         [Aliases("send")]
-        public async Task Send(CommandContext ctx,
-                              [Description("u/c (for user or channel.)")] string desc = "u",
-                              [Description("User/Channel ID.")] ulong xid = 0,
-                              [RemainingText, Description("Message.")] string message = null)
+        public async Task SendAsync(CommandContext ctx,
+                                   [Description("u/c (for user or channel.)")] string desc = "u",
+                                   [Description("User/Channel ID.")] ulong xid = 0,
+                                   [RemainingText, Description("Message.")] string message = null)
         {
             if (string.IsNullOrWhiteSpace(message))
                 throw new InvalidCommandUsageException();
@@ -175,15 +177,19 @@ namespace TheGodfather.Commands.Administration
             if (desc == "u") {
                 var user = await ctx.Client.GetUserAsync(xid);
                 var dm = await ctx.Client.CreateDmAsync(user);
-                await ctx.Client.SendMessageAsync(dm, content: message);
+                await ctx.Client.SendMessageAsync(dm, content: message)
+                    .ConfigureAwait(false);
             } else if (desc == "c") {
-                var channel = await ctx.Client.GetChannelAsync(xid);
-                await ctx.Client.SendMessageAsync(channel, content: message);
+                var channel = await ctx.Client.GetChannelAsync(xid)
+                    .ConfigureAwait(false);
+                await ctx.Client.SendMessageAsync(channel, content: message)
+                    .ConfigureAwait(false);
             } else {
                 throw new InvalidCommandUsageException("Descriptor can only be 'u' or 'c'.");
             }
 
-            await ctx.RespondAsync("Message sent.");
+            await ctx.RespondAsync("Message sent.")
+                .ConfigureAwait(false);
         }
         #endregion
 
@@ -191,10 +197,12 @@ namespace TheGodfather.Commands.Administration
         [Command("shutdown")]
         [Description("Triggers the dying in the vineyard scene.")]
         [Aliases("disable", "poweroff", "exit", "quit")]
-        public async Task ShutDown(CommandContext ctx)
+        public async Task ExitAsync(CommandContext ctx)
         {
-            await ctx.RespondAsync("https://www.youtube.com/watch?v=4rbfuw0UN2A");
-            await ctx.Client.DisconnectAsync();
+            await ctx.RespondAsync("https://www.youtube.com/watch?v=4rbfuw0UN2A")
+                .ConfigureAwait(false);
+            await ctx.Client.DisconnectAsync()
+                .ConfigureAwait(false);
             Environment.Exit(0);
         }
         #endregion
@@ -203,14 +211,26 @@ namespace TheGodfather.Commands.Administration
         [Command("sudo")]
         [Description("Executes a command as another user.")]
         [Aliases("execas", "as")]
-        public async Task Sudo(CommandContext ctx,
-                              [Description("Member to execute as.")] DiscordMember member = null,
-                              [RemainingText, Description("Command text to execute.")] string command = null)
+        public async Task SudoAsync(CommandContext ctx,
+                                   [Description("Member to execute as.")] DiscordMember member = null,
+                                   [RemainingText, Description("Command text to execute.")] string command = null)
         {
             if (member == null || command == null)
                 throw new InvalidCommandUsageException();
 
-            await ctx.Client.GetCommandsNext().SudoAsync(member, ctx.Channel, command);
+            await ctx.Client.GetCommandsNext().SudoAsync(member, ctx.Channel, command)
+                .ConfigureAwait(false);
+        }
+        #endregion
+        
+        #region COMMAND_TOGGLEIGNORE
+        [Command("toggleignore")]
+        [Description("Toggle bot's reaction to commands.")]
+        public async Task ToggleIgnoreAsync(CommandContext ctx)
+        {
+            ctx.Dependencies.GetDependency<TheGodfather>().ToggleListening();
+            await ctx.RespondAsync("Done!")
+                .ConfigureAwait(false);
         }
         #endregion
 
@@ -223,15 +243,16 @@ namespace TheGodfather.Commands.Administration
             [Command("add")]
             [Description("Add a status to running queue.")]
             [Aliases("+")]
-            public async Task AddStatus(CommandContext ctx,
-                                       [RemainingText, Description("Status.")] string status = null)
+            public async Task AddAsync(CommandContext ctx,
+                                      [RemainingText, Description("Status.")] string status = null)
             {
                 if (string.IsNullOrWhiteSpace(status))
                     throw new InvalidCommandUsageException("Invalid status.");
 
                 ctx.Dependencies.GetDependency<StatusManager>().AddStatus(status);
 
-                await ctx.RespondAsync("Status added!");
+                await ctx.RespondAsync("Status added!")
+                    .ConfigureAwait(false);
             }
             #endregion
 
@@ -239,8 +260,8 @@ namespace TheGodfather.Commands.Administration
             [Command("delete")]
             [Description("Remove status from running queue.")]
             [Aliases("-", "remove")]
-            public async Task DeleteStatus(CommandContext ctx,
-                                          [RemainingText, Description("Status.")] string status = null)
+            public async Task DeleteAsync(CommandContext ctx,
+                                         [RemainingText, Description("Status.")] string status = null)
             {
                 if (string.IsNullOrWhiteSpace(status))
                     throw new InvalidCommandUsageException("Invalid status.");
@@ -249,16 +270,18 @@ namespace TheGodfather.Commands.Administration
                     throw new InvalidCommandUsageException("Cannot delete help status!");
 
                 ctx.Dependencies.GetDependency<StatusManager>().DeleteStatus(status);
-                await ctx.RespondAsync("Status removed!");
+                await ctx.RespondAsync("Status removed!")
+                    .ConfigureAwait(false);
             }
             #endregion
 
             #region COMMAND_STATUS_LIST
             [Command("list")]
             [Description("List all statuses.")]
-            public async Task ListStatuses(CommandContext ctx)
+            public async Task ListAsync(CommandContext ctx)
             {
-                await ctx.RespondAsync("My current statuses:\n" + string.Join("\n", ctx.Dependencies.GetDependency<StatusManager>().Statuses));
+                await ctx.RespondAsync("My current statuses:\n" + string.Join("\n", ctx.Dependencies.GetDependency<StatusManager>().Statuses))
+                    .ConfigureAwait(false);
             }
             #endregion
         }

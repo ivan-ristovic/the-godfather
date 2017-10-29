@@ -211,6 +211,7 @@
     <Compile Include="Helpers\DataManagers\InsultManager.cs" />
     <Compile Include="Helpers\DataManagers\MemeManager.cs" />
     <Compile Include="Helpers\DataManagers\RankManager.cs" />
+    <Compile Include="Helpers\CommandCheckAttribute.cs" />
     <Compile Include="Helpers\HelpFormatter.cs" />
     <Compile Include="Commands\Administration\CommandsOwner.cs" />
     <Compile Include="Commands\Games\CommandsBank.cs" />
