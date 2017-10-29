@@ -31,6 +31,16 @@ namespace TheGodfather.Commands.Games
             if (u.Id == ctx.User.Id)
                 throw new CommandFailedException("You can't duel yourself...");
 
+            if (u.Id == ctx.Client.CurrentUser.Id) {
+                await ctx.RespondAsync(
+                    $"{ctx.User.Mention} {string.Join("", Enumerable.Repeat(DiscordEmoji.FromName(ctx.Client, ":black_large_square:"), 5))} :crossed_swords: " +
+                    $"{string.Join("", Enumerable.Repeat(DiscordEmoji.FromName(ctx.Client, ":white_large_square:"), 5))} {u.Mention}" +
+                    $"\n{ctx.Client.CurrentUser.Mention} {DiscordEmoji.FromName(ctx.Client, ":zap:")} {ctx.User.Mention}"
+                ).ConfigureAwait(false);
+                return;
+            }
+
+
             string[] weapons = { ":hammer:", ":dagger:", ":pick:", ":bomb:", ":guitar:", ":fire:" };
 
             int hp1 = 5, hp2 = 5;
@@ -62,11 +72,11 @@ namespace TheGodfather.Commands.Games
                     if (reply.User.Id == ctx.User.Id && !pot1used) {
                         hp1 = (hp1 + 1 > 5) ? 5 : hp1 + 1;
                         pot1used = false;
-                        feed += $"\n{ctx.User.Mention} :syringe:";
+                        feed += $"\n{ctx.User.Mention} {DiscordEmoji.FromName(ctx.Client, ":syringe:")}";
                     } else if (reply.User.Id == u.Id && !pot2used) {
                         hp2 = (hp2 + 1 > 5) ? 5 : hp2 + 1;
                         pot2used = false;
-                        feed += $"\n{u.Mention} :syringe:";
+                        feed += $"\n{u.Mention} {DiscordEmoji.FromName(ctx.Client, ":syringe:")}";
                     }
                 }
 
