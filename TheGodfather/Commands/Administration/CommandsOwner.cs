@@ -22,7 +22,7 @@ namespace TheGodfather.Commands.Administration
 {
     [Group("admin")]
     [Description("Owner-only administration commands.")]
-    [Aliases("owner")]
+    [Aliases("owner", "o")]
     [RequireOwner]
     [Hidden]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
@@ -232,6 +232,7 @@ namespace TheGodfather.Commands.Administration
         #region COMMAND_TOGGLEIGNORE
         [Command("toggleignore")]
         [Description("Toggle bot's reaction to commands.")]
+        [Aliases("ti")]
         public async Task ToggleIgnoreAsync(CommandContext ctx)
         {
             ctx.Dependencies.GetDependency<TheGodfather>().ToggleListening();
