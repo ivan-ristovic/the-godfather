@@ -8,7 +8,7 @@ using DSharpPlus.CommandsNext.Attributes;
 
 namespace TheGodfather
 {
-    public class CommandCheckAttribute : CheckBaseAttribute
+    public class CheckIgnoreAttribute : CheckBaseAttribute
     {
         public override Task<bool> CanExecute(CommandContext ctx, bool help)
         {

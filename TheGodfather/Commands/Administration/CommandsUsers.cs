@@ -18,6 +18,7 @@ namespace TheGodfather.Commands.Administration
     [Description("Miscellaneous user control commands.")]
     [Aliases("users", "u", "usr")]
     [Cooldown(3, 5, CooldownBucketType.User)]
+    [CheckIgnore]
     public class CommandsUsers
     {
         #region COMMAND_USER_ADDROLE

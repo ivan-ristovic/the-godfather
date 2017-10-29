@@ -25,6 +25,7 @@ namespace TheGodfather.Commands.Search
         [Description("Search Urban Dictionary for a query.")]
         [Aliases("ud")]
         [Cooldown(2, 5, CooldownBucketType.User), Cooldown(4, 5, CooldownBucketType.Channel)]
+        [CheckIgnore]
         public async Task UrbanDictAsync(CommandContext ctx,
                                         [RemainingText, Description("Query.")] string q = null)
         {

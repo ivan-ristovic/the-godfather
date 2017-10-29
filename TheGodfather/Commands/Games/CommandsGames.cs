@@ -19,6 +19,7 @@ namespace TheGodfather.Commands.Games
     [Description("Starts a game for you to play!")]
     [Aliases("game", "gm")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
+    [CheckIgnore]
     public partial class CommandsGames
     {
         #region COMMAND_DUEL

@@ -19,6 +19,7 @@ namespace TheGodfather.Commands.Administration
     [Description("Miscellaneous channel control commands.")]
     [Aliases("channels", "c", "chn")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
+    [CheckIgnore]
     public class CommandsChannels
     {
         #region COMMAND_CHANNEL_CREATECATEGORY

@@ -33,6 +33,7 @@ namespace TheGodfather.Commands.Main
         [Description("Starts a poll in the channel.")]
         [Aliases("vote")]
         [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
+        [CheckIgnore]
         public async Task Poll(CommandContext ctx, 
                               [RemainingText, Description("Question.")] string q = null)
         {

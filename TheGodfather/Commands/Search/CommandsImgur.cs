@@ -22,6 +22,7 @@ namespace TheGodfather.Commands.Search
     [Description("Search imgur. Invoking without sub command searches top.")]
     [Aliases("img", "im", "i")]
     [Cooldown(2, 5, CooldownBucketType.User), Cooldown(4, 5, CooldownBucketType.Channel)]
+    [CheckIgnore]
     public class CommandsImgur
     {
         #region PRIVATE_FIELDS

@@ -23,6 +23,7 @@ namespace TheGodfather.Commands.Search
     [Description("GIPHY commands.")]
     [Aliases("giphy")]
     [Cooldown(2, 5, CooldownBucketType.User), Cooldown(4, 5, CooldownBucketType.Channel)]
+    [CheckIgnore]
     public class CommandsGiphy
     {
         #region PRIVATE_FIELDS

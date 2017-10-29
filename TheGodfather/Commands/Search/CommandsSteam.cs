@@ -29,6 +29,7 @@ namespace TheGodfather.Commands.Search
     [Description("Youtube search commands.")]
     [Aliases("s", "st")]
     [Cooldown(2, 5, CooldownBucketType.User), Cooldown(4, 5, CooldownBucketType.Channel)]
+    [CheckIgnore]
     public class CommandsSteam
     {
         #region PRIVATE_FIELDS

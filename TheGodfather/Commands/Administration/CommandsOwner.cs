@@ -32,6 +32,7 @@ namespace TheGodfather.Commands.Administration
         [Command("clearlog")]
         [Description("Clear application logs.")]
         [Aliases("clearlogs", "deletelogs", "deletelog")]
+        [CheckIgnore]
         public async Task ClearLogAsync(CommandContext ctx)
         {
             try {
@@ -51,6 +52,7 @@ namespace TheGodfather.Commands.Administration
         [Command("eval")]
         [Description("Evaluates a snippet of C# code, in context.")]
         [Aliases("compile", "run")]
+        [CheckIgnore]
         public async Task EvaluateAsync(CommandContext ctx,
                                        [RemainingText, Description("Code to evaluate.")] string code)
         {
@@ -141,6 +143,7 @@ namespace TheGodfather.Commands.Administration
         #region COMMAND_LEAVEGUILDS
         [Command("leaveguilds")]
         [Description("Leave guilds given as IDs.")]
+        [CheckIgnore]
         public async Task LeaveGuildsAsync(CommandContext ctx,
                                           [Description("Guild ID list.")] params ulong[] ids)
         {
@@ -166,6 +169,7 @@ namespace TheGodfather.Commands.Administration
         [Command("sendmessage")]
         [Description("Sends a message to a user or channel.")]
         [Aliases("send")]
+        [CheckIgnore]
         public async Task SendAsync(CommandContext ctx,
                                    [Description("u/c (for user or channel.)")] string desc = "u",
                                    [Description("User/Channel ID.")] ulong xid = 0,
@@ -197,6 +201,7 @@ namespace TheGodfather.Commands.Administration
         [Command("shutdown")]
         [Description("Triggers the dying in the vineyard scene.")]
         [Aliases("disable", "poweroff", "exit", "quit")]
+        [CheckIgnore]
         public async Task ExitAsync(CommandContext ctx)
         {
             await ctx.RespondAsync("https://www.youtube.com/watch?v=4rbfuw0UN2A")
@@ -211,6 +216,7 @@ namespace TheGodfather.Commands.Administration
         [Command("sudo")]
         [Description("Executes a command as another user.")]
         [Aliases("execas", "as")]
+        [CheckIgnore]
         public async Task SudoAsync(CommandContext ctx,
                                    [Description("Member to execute as.")] DiscordMember member = null,
                                    [RemainingText, Description("Command text to execute.")] string command = null)
@@ -237,6 +243,7 @@ namespace TheGodfather.Commands.Administration
 
         [Group("status", CanInvokeWithoutSubcommand = false)]
         [Description("Bot status manipulation.")]
+        [CheckIgnore]
         public class CommandsStatus
         {
             #region COMMAND_STATUS_ADD
