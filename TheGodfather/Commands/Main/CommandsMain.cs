@@ -182,6 +182,9 @@ namespace TheGodfather.Commands.Main
                 return;
             }
 
+            if (prefix.Length > 10)
+                throw new CommandFailedException("Prefix length cannot be longer than 10 characters.");
+
             prefixes.SetPrefixForChannelId(ctx.Channel.Id, prefix);
             await ctx.RespondAsync("Successfully changed the prefix for this channel to: " + Formatter.Bold(prefix))
                 .ConfigureAwait(false);
