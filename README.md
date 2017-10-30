@@ -1,4 +1,5 @@
 # the-godfather
+
 Just another Discord bot. Written using DSharpPlus.
 
 [Project website](https://ivan-ristovic.github.io/the-godfather/)
@@ -7,10 +8,10 @@ Just another Discord bot. Written using DSharpPlus.
 
 # Command list
 
-Commands are separated into groups. For example, ``!user`` is a group of commands which allow manipulation of users and it has subcommands ``kick`` , ``ban`` etc. So if you want to call the ``kick`` command, you do it like ``!user kick ...``.
+Commands are separated into groups. For example, ``!user`` is a group of commands which allow manipulation of users and it has subcommands ``kick`` , ``ban`` etc. So, calling the ``kick`` command is done by typing ``!user kick ...``.
 
 The default prefix for the bot is ``!``, however you can change that using ``!prefix`` command. Also you can trigger commands by mentioning the bot. For example:
-``!greet`` is the same as ``@TheGodfather greet``
+``!greet`` is the same as ``@TheGodfather greet``.
 
 
 ### Argument type explanation:
@@ -19,14 +20,14 @@ Commands receive **only** arguments of the specified type, so for example if com
 
 Commands use the following types:
 * ``int`` : Integer (positive or negative number)
-* ``double`` : Decimal point number (positive or negative), can also be integer
+* ``double`` : Floating point number (positive or negative), can also be integer (for example 5.64)
 * ``string`` : Word consisting of Unicode characters WITHOUT spaces. If you want to include spaces, then surround it with ``"``
 * ``bool`` : ``true`` or ``false``
-* ``text`` : Some Unicode text, can include spaces
-* ``user`` : Discord user, given by ``@mention`` or ``Username``
-* ``channel`` : Discord channel, given by ``name`` or ``#name``
+* ``text`` : Some Unicode text, can include spaces. Can be surrounded with ``"``
+* ``user`` : Discord user, given by ``@mention``, ``Username`` or UID
+* ``channel`` : Discord channel, given by ``name``, ``#name`` of CID
 * ``role`` : An existing role, given with ``@mentionrole`` or ``Role name``
-* ``emoji`` : Emoji, either Unicode or Discord representation
+* ``emoji`` : Emoji, either Unicode or Discord representation (using ``:``)
 
 
 ## Command table
@@ -110,21 +111,21 @@ Commands use the following types:
 |   |   |   |   |   |   |
 | ``channel``<br>``channels``<br>``c``<br>``chn`` | ``createcategory``<br>``createc``<br>``+c``<br>``makec``<br>``newc``<br>``addc`` | Manage Channels | ``[text] Name`` | Create new channel category. | ``!channels +c My Category`` |
 | ``channel``<br>``channels``<br>``c``<br>``chn`` | ``createtext``<br>``createt``<br>``+``<br>``+t``<br>``maket``<br>``newt``<br>``addt`` | Manage Channels | ``[string] Name``<br><br>``(optional) [channel] Parent Channel (def: none)`` | Create new text channel. *Note: Discord does not allow spaces in text channel name.* | ``!channels +t spam``<br><br>``!channels +t spam public`` |
-| ``channel``<br>``channels``<br>``c``<br>``chn`` | ``createvoice``<br>``createv``<br>``+v``<br>``makev``<br>``newv``<br>``addv`` | Manage Channels | ``[string] Name``<br><br>``(optional) [channel] Parent Channel (def: none)`` | Create new voice channel. | ``!channel createvoice "My Voice Channel"``<br><br>``!channels +v "My Voice Channel" "My category" |
+| ``channel``<br>``channels``<br>``c``<br>``chn`` | ``createvoice``<br>``createv``<br>``+v``<br>``makev``<br>``newv``<br>``addv`` | Manage Channels | ``[string] Name``<br><br>``(optional) [channel] Parent Channel (def: none)`` | Create new voice channel. | ``!channel createvoice "My Voice Channel"``<br><br>``!channels +v "My Voice Channel" "My category"`` |
 | ``channel``<br>``channels``<br>``c``<br>``chn`` | ``delete``<br>``-``<br>``d``<br>``del``<br>``remove`` | Manage Channels | ``(optional) [channel] Channel/Category`` | Delete channel or category. If channel is not given as argument, deletes the current channel. | ``!channels delete``<br><br>``!channels delete #afkchannel`` |
 | ``channel``<br>``channels``<br>``c``<br>``chn`` | ``info``<br>``i``<br>``information`` | Manage Channels | ``(optional) [channel] Channel/Category`` | Get channel information. | ``!channel info``<br><br>``!channel info #afkchannel`` |
 | ``channel``<br>``channels``<br>``c``<br>``chn`` | ``rename``<br>``r``<br>``name``<br>``setname`` | Manage Channels | ``[string] Name``<br><br>``(optional) [channel] Channel/Category`` | Rename channel. If channel is not given as argument, renames the current channel. | ``!channel rename New Name``<br><br>``!channel rename "New Name" "Some Channel Name"`` |
 | ``channel``<br>``channels``<br>``c``<br>``chn`` | ``settopic``<br>``t``<br>``sett``<br>``topic`` | Manage Channels | ``[string] Topic``<br><br>``(optional) [channel] Channel/Category`` | Set a new channel topic. If channel is not given as argument, modifies the current channel. | ``!channel settopic Welcome to my channel!``<br><br>``!channel settopic "My topic" "Some Channel Name"`` |
 |   |   |   |   |   |   |   |
 | ``guild``<br>``server``<br>``g`` | ``info``<br>``i``<br>``information`` |  |  | Get guild information. | ``!guild info`` |
-| ``guild``<br>``server``<br>``g`` | ``listmembers``<br>``memberlist``<br>``lm``<br>``members`` | Manage Guild | ``(optional) [int] page (def: 1)`` | Get guild member list. | ``!guild memberlist``<br>``!guild memberlist 3`` |
-| ``guild``<br>``server``<br>``g`` | ``log``<br>``auditlog``<br>``viewlog``<br>``getlog``<br>``getlogs``<br>``logs`` | View Audit Log | ``(optional) [int] page (def: 1)`` | Get guild audit logs. | ``!guild log``<br>``!guild log 3`` |
-| ``guild``<br>``server``<br>``g`` | ``prune``<br>``p``<br>``clean`` | Administrator (user)<br><br>Kick Members (bot) | ``(optional) [int] page (def: 7)`` | Kick members who weren't active in given ammount of days (1-7). | ``!guild prune``<br>``!guild prune 5`` |
+| ``guild``<br>``server``<br>``g`` | ``listmembers``<br>``memberlist``<br>``lm``<br>``members`` | Manage Guild | ``(optional) [int] page (def: 1)`` | Get guild member list. | ``!guild memberlist``<br><br>``!guild memberlist 3`` |
+| ``guild``<br>``server``<br>``g`` | ``log``<br>``auditlog``<br>``viewlog``<br>``getlog``<br>``getlogs``<br>``logs`` | View Audit Log | ``(optional) [int] page (def: 1)`` | Get guild audit logs. | ``!guild log``<br><br>``!guild log 3`` |
+| ``guild``<br>``server``<br>``g`` | ``prune``<br>``p``<br>``clean`` | Administrator (user)<br><br>Kick Members (bot) | ``(optional) [int] page (def: 7)`` | Kick members who weren't active in given ammount of days (1-7). | ``!guild prune``<br><br>``!guild prune 5`` |
 | ``guild``<br>``server``<br>``g`` | ``rename``<br>``r``<br>``name``<br>``setname`` | Manage guild | ``[text] Name`` | Rename guild. | ``!guild rename New guild name`` |
 | ``guild``<br>``server``<br>``g`` | ``getwelcomechannel``<br>``getwelcomec``<br>``getwc``<br>``getwelcome``<br>``welcomechannel``<br>``wc`` | Manage guild (user) |  | Get current welcome message channel for this guild. | ``!guild getwc`` |
 | ``guild``<br>``server``<br>``g`` | ``getleavechannel``<br>``getleavec``<br>``getlc``<br>``getleave``<br>``leavechannel``<br>``lc`` | Manage guild (user) |  | Get current leave message channel for this guild. | ``!guild getlc`` |
-| ``guild``<br>``server``<br>``g`` | ``setwelcomechannel``<br>``setwelcomec``<br>``setwc``<br>``setwelcome`` | Manage guild (user) | ``(optional) [channel] Channel`` | Set current welcome message channel for this guild. If not specified, the current channel is set. | ``!guild setwc``<br>``!guild setwc #welcome`` |
-| ``guild``<br>``server``<br>``g`` | ``setleavechannel``<br>``setleavec``<br>``setwc``<br>``setleave`` | Manage guild (user) | ``(optional) [channel] Channel`` | Set current leave message channel for this guild. If not specified, the current channel is set. | ``!guild setlc``<br>``!guild setlc #general`` |
+| ``guild``<br>``server``<br>``g`` | ``setwelcomechannel``<br>``setwelcomec``<br>``setwc``<br>``setwelcome`` | Manage guild (user) | ``(optional) [channel] Channel`` | Set current welcome message channel for this guild. If not specified, the current channel is set. | ``!guild setwc``<br><br>``!guild setwc #welcome`` |
+| ``guild``<br>``server``<br>``g`` | ``setleavechannel``<br>``setleavec``<br>``setwc``<br>``setleave`` | Manage guild (user) | ``(optional) [channel] Channel`` | Set current leave message channel for this guild. If not specified, the current channel is set. | ``!guild setlc``<br><br>``!guild setlc #general`` |
 | ``guild``<br>``server``<br>``g`` | ``deletewelcomechannel``<br>``delwelcomec``<br>``delwc``<br>``deletewc``<br>``delwelcome``<br>``dwc`` | Manage guild (user) |  | Delete current welcome message channel for this guild. | ``!guild deletewc`` |
 | ``guild``<br>``server``<br>``g`` | ``deleteleavechannel``<br>``delleavec``<br>``dellc``<br>``deletelc``<br>``delleave``<br>``dlc`` | Manage guild (user) |  | Delete current leave message channel for this guild. | ``!guild deletelc`` |
 | ``g emoji``<br>``g emojis``<br>``g e`` |  |  |  | List guild emoji. | ``!guild emoji`` |
@@ -253,14 +254,11 @@ Commands use the following types:
 | ``swat4``<br>``swat``<br>``s4`` | ``query``<br>``info``<br>``q``<br>``i`` |   | ``[string] IP/Shortname`` | Get info for SWAT4 server with given IP or short name (you can add these manually, popular servers are already added). | ``!s4 query 13.95.232.189:10480``<br><br>``!s4 query soh`` |
 | ``swat4``<br>``swat``<br>``s4`` | ``settimeout`` | Owner Only | ``[int] Time (in ms)`` | Set spacecheck ping time. | ``!s4 settimeout 200`` |
 | ``swat4``<br>``swat``<br>``s4`` | ``spacecheck``<br>``startcheck``<br>``checkspace`` |   | ``[string] IP/Shortname`` | Start checking for space on SWAT4 server given with IP/Name. Bot will send a message when there is space on the server. One check per user at a time is allowed. | ``!s4 spacecheck 13.95.232.189:10480``<br><br>``!s4 spacecheck soh`` |
-| ``swat4``<br>``swat``<br>``s4`` | ``stopcheck``<br>``checkstop`` |   |   | Stops your issued spacecheck. | ``!s4 stopcheck |
+| ``swat4``<br>``swat``<br>``s4`` | ``stopcheck``<br>``checkstop`` |   |   | Stops your issued spacecheck. | ``!s4 stopcheck`` |
 | ``s4 servers`` | ``add``<br>``+``<br>``a`` | Administrator (user) | ``[string] Shortname``<br><br>``[string] IP`` | Add a new server to database. If the server uses a non-default query port, add it after IP like in example. | ``!s4 servers + soh 13.95.232.189:10480``<br><br>``!s4 servers + soh 13.95.232.189:10480:10488`` |
 | ``s4 servers`` | ``delete``<br>``-``<br>``del``<br>``d`` | Administrator (user) | ``[string] Shortname`` | Remove a server from database. | ``!s4 servers - soh`` |
 | ``s4 servers`` | ``save`` | Owner Only |   | Save server list. | ``!s4 servers save`` |
 |   |   |   |   |   |   |
-
-
-**(Command list is incomplete)**
 
 
 ---
