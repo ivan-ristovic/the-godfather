@@ -51,7 +51,7 @@ namespace TheGodfather.Helpers.DataManagers
             }
 
             try {
-                File.WriteAllText("Resources/statuses.json", JsonConvert.SerializeObject(_statuses));
+                File.WriteAllText("Resources/statuses.json", JsonConvert.SerializeObject(_statuses, Formatting.Indented));
             } catch (Exception e) {
                 log.LogMessage(LogLevel.Error, "TheGodfather", "IO Status save error. Details:\n" + e.ToString(), DateTime.Now);
                 return false;

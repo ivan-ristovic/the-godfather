@@ -51,7 +51,7 @@ namespace TheGodfather.Helpers.DataManagers
             }
 
             try {
-                File.WriteAllText("Resources/aliases.json", JsonConvert.SerializeObject(_aliases));
+                File.WriteAllText("Resources/aliases.json", JsonConvert.SerializeObject(_aliases, Formatting.Indented));
             } catch (Exception e) {
                 log.LogMessage(LogLevel.Error, "TheGodfather", "IO Alias save error. Details:\n" + e.ToString(), DateTime.Now);
                 return false;

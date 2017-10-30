@@ -52,7 +52,7 @@ namespace TheGodfather.Helpers.DataManagers
             }
 
             try {
-                File.WriteAllText("Resources/memes.json", JsonConvert.SerializeObject(_memes));
+                File.WriteAllText("Resources/memes.json", JsonConvert.SerializeObject(_memes, Formatting.Indented));
             } catch (Exception e) {
                 log.LogMessage(LogLevel.Error, "TheGodfather", "Meme save error. Details:\n" + e.ToString(), DateTime.Now);
                 return false;

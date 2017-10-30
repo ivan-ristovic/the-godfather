@@ -51,7 +51,7 @@ namespace TheGodfather.Helpers.DataManagers
             }
 
             try {
-                File.WriteAllText("Resources/reactions.json", JsonConvert.SerializeObject(_reactions));
+                File.WriteAllText("Resources/reactions.json", JsonConvert.SerializeObject(_reactions, Formatting.Indented));
             } catch (Exception e) {
                 log.LogMessage(LogLevel.Error, "TheGodfather", "Reactions save error. Details:\n" + e.ToString(), DateTime.Now);
                 return false;

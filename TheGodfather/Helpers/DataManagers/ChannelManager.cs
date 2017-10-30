@@ -79,7 +79,7 @@ namespace TheGodfather.Helpers.DataManagers
             }
 
             try {
-                File.WriteAllText("Resources/welcomechannels.json", JsonConvert.SerializeObject(_welcomeChannelIds));
+                File.WriteAllText("Resources/welcomechannels.json", JsonConvert.SerializeObject(_welcomeChannelIds, Formatting.Indented));
             } catch (Exception e) {
                 log.LogMessage(LogLevel.Error, "TheGodfather", "IO WelcomeChannels save error. Details:\n" + e.ToString(), DateTime.Now);
                 return false;
@@ -96,7 +96,7 @@ namespace TheGodfather.Helpers.DataManagers
             }
 
             try {
-                File.WriteAllText("Resources/leavechannels.json", JsonConvert.SerializeObject(_welcomeChannelIds));
+                File.WriteAllText("Resources/leavechannels.json", JsonConvert.SerializeObject(_leaveChannelIds, Formatting.Indented));
             } catch (Exception e) {
                 log.LogMessage(LogLevel.Error, "TheGodfather", "IO LeaveChannels save error. Details:\n" + e.ToString(), DateTime.Now);
                 return false;

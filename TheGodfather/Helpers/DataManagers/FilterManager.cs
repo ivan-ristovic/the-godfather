@@ -52,7 +52,7 @@ namespace TheGodfather.Helpers.DataManagers
             }
 
             try {
-                File.WriteAllText("Resources/filters.json", JsonConvert.SerializeObject(_filters));
+                File.WriteAllText("Resources/filters.json", JsonConvert.SerializeObject(_filters, Formatting.Indented));
             } catch (Exception e) {
                 log.LogMessage(LogLevel.Error, "TheGodfather", "IO Filter save error. Details:\n" + e.ToString(), DateTime.Now);
                 return false;

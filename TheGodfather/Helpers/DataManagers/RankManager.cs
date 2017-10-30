@@ -69,7 +69,7 @@ namespace TheGodfather.Helpers.DataManagers
             }
 
             try {
-                File.WriteAllText("Resources/ranks.json", JsonConvert.SerializeObject(_msgcount));
+                File.WriteAllText("Resources/ranks.json", JsonConvert.SerializeObject(_msgcount, Formatting.Indented));
             } catch (Exception e) {
                 log.LogMessage(LogLevel.Error, "TheGodfather", "IO Ranks save error. Details:\n" + e.ToString(), DateTime.Now);
                 return false;

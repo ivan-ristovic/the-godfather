@@ -53,7 +53,7 @@ namespace TheGodfather.Helpers.DataManagers
             }
 
             try {
-                File.WriteAllText("Resources/feeds.json", JsonConvert.SerializeObject(_feeds));
+                File.WriteAllText("Resources/feeds.json", JsonConvert.SerializeObject(_feeds, Newtonsoft.Json.Formatting.Indented));
             } catch (Exception e) {
                 log.LogMessage(LogLevel.Error, "TheGodfather", "IO Feed save error. Details:\n" + e.ToString(), DateTime.Now);
                 return false;

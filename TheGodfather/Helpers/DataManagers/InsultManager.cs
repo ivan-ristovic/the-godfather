@@ -53,7 +53,7 @@ namespace TheGodfather.Helpers.DataManagers
             }
 
             try {
-                File.WriteAllText("Resources/insults.json", JsonConvert.SerializeObject(_insults));
+                File.WriteAllText("Resources/insults.json", JsonConvert.SerializeObject(_insults, Formatting.Indented));
             } catch (Exception e) {
                 log.LogMessage(LogLevel.Error, "TheGodfather", "IO insults save error. Details:\n" + e.ToString(), DateTime.Now);
                 return false;

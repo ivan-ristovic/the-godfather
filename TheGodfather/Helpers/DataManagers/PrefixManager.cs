@@ -51,7 +51,7 @@ namespace TheGodfather.Helpers.DataManagers
             }
 
             try {
-                File.WriteAllText("Resources/prefixes.json", JsonConvert.SerializeObject(_prefixes));
+                File.WriteAllText("Resources/prefixes.json", JsonConvert.SerializeObject(_prefixes, Formatting.Indented));
             } catch (Exception e) {
                 log.LogMessage(LogLevel.Error, "TheGodfather", "IO Prefix save error. Details:\n" + e.ToString(), DateTime.Now);
                 return false;

@@ -51,7 +51,7 @@ namespace TheGodfather.Helpers.DataManagers
             }
 
             try {
-                File.WriteAllText("Resources/bankaccounts.json", JsonConvert.SerializeObject(_accounts));
+                File.WriteAllText("Resources/bankaccounts.json", JsonConvert.SerializeObject(_accounts, Formatting.Indented));
             } catch (Exception e) {
                 log.LogMessage(LogLevel.Error, "TheGodfather", "IO Bank accounts save error. Details:\n" + e.ToString(), DateTime.Now);
                 return false;
