@@ -64,12 +64,19 @@ namespace TheGodfather.Commands.Administration
         [Aliases("b")]
         [RequirePermissions(Permissions.BanMembers)]
         public async Task BanAsync(CommandContext ctx, 
-                                  [Description("User.")] DiscordMember u = null)
+                                  [Description("User.")] DiscordMember u = null,
+                                  [RemainingText, Description("Reason.")] string reason = null)
         {
             if (u == null)
                 throw new InvalidCommandUsageException("You need to mention a user to ban.");
 
-            await ctx.Guild.BanMemberAsync(u, reason: $"Banned by Godfather : {ctx.User.Username} ({ctx.User.Id})")
+            if (u.Id == ctx.User.Id)
+                throw new CommandFailedException("You can't ban yourself.");
+
+            if (string.IsNullOrWhiteSpace(reason))
+                reason = "No reason provided.";
+
+            await ctx.Guild.BanMemberAsync(u, reason: $"{ctx.User.Username} ({ctx.User.Id}): {reason}")
                 .ConfigureAwait(false);
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
                 Title = $"{Formatter.Bold(ctx.User.Username)} BANNED {Formatter.Bold(u.DisplayName)}!",
