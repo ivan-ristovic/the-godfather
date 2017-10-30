@@ -40,7 +40,7 @@ namespace TheGodfather.Commands.Administration
         }
         #endregion
 
-        #region COMMAND_AVATAR
+        #region COMMAND_USER_AVATAR
         [Command("avatar")]
         [Description("Get avatar from user.")]
         [Aliases("a", "pic")]

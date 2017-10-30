@@ -475,13 +475,13 @@ namespace TheGodfather
             else if (e.Exception is InvalidCommandUsageException)
                 embed.Description = $"{emoji} Invalid usage! {ex.Message}";
             else if (e.Exception is ArgumentException)
-                embed.Description = $"{emoji} Wrong argument format (please use {Formatter.Bold("!help <command>")}).";
+                embed.Description = $"{emoji} Argument specified is invalid (please use {Formatter.Bold("!help <command>")}).";
             else if (e.Exception is CommandFailedException)
                 embed.Description = $"{emoji} {ex.Message}";
             else if (ex is ChecksFailedException exc) {
                 var attr = exc.FailedChecks.First();
                 if (attr is CooldownAttribute)
-                    embed.Description = $"{emoji} CHILL!";
+                    return;
                 else if (attr is RequireUserPermissionsAttribute)
                     embed.Description = $"{emoji} You do not have the required permissions to run this command!";
                 else if (attr is RequirePermissionsAttribute)
