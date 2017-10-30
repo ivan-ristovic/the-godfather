@@ -436,19 +436,22 @@ namespace TheGodfather
         #endregion
 
         #region COMMAND_EVENTS
-        private Task Commands_CommandExecuted(CommandExecutionEventArgs e)
+        private async Task Commands_CommandExecuted(CommandExecutionEventArgs e)
         {
+            await Task.Yield();
+
             LogHandle.Log(LogLevel.Info,
                 $" Executed: {e.Command?.QualifiedName ?? "<unknown command>"}" + Environment.NewLine +
                 $" User: {e.Context.User.ToString()}" + Environment.NewLine +
                 $" Location: '{e.Context.Guild.Name}' ({e.Context.Guild.Id}) ; {e.Context.Channel.ToString()}"
             );
-            return Task.CompletedTask;
         }
 
         private async Task Commands_CommandErrored(CommandErrorEventArgs e)
         {
-            if (e.Exception == null)
+            await Task.Yield();
+
+            if (!Listening || e.Exception == null)
                 return;
 
             var ex = e.Exception;
