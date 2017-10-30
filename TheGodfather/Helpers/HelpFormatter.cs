@@ -33,10 +33,10 @@ namespace TheGodfather.Helpers
 
         public CommandHelpMessage Build()
         {
-            _embed.Title = "Help";
-            _embed.Color = DiscordColor.Azure;
+            _embed.WithTitle("Help");
+            _embed.WithColor(DiscordColor.SpringGreen);
 
-            var desc = "Listing all top-level commands and groups. Use ``!help <command>`` to see more information.";
+            var desc = "Listing all commands and groups. Use ``!help <command>`` for detailed information.";
             if (_name != null) {
                 var sb = new StringBuilder();
                 sb.Append(_name)
@@ -48,7 +48,8 @@ namespace TheGodfather.Helpers
 
                 desc = sb.ToString();
             }
-            _embed.Description = desc;
+            _embed.WithDescription(desc);
+            _embed.WithFooter("Detailed info @ https://ivan-ristovic.github.io/the-godfather/");
 
             return new CommandHelpMessage(embed: _embed);
         }
@@ -56,7 +57,7 @@ namespace TheGodfather.Helpers
         public IHelpFormatter WithAliases(IEnumerable<string> aliases)
         {
             if (aliases.Any())
-                _embed.AddField("Aliases", string.Join("\n", aliases), false);
+                _embed.AddField("Aliases", string.Join(", ", aliases.Select(a => Formatter.InlineCode(a))));
             return this;
         }
 
@@ -66,22 +67,20 @@ namespace TheGodfather.Helpers
                 var sb = new StringBuilder();
 
                 foreach (var arg in arguments) {
-
-                    sb.Append($"{Formatter.Bold(arg.Name)}");
-
                     if (arg.IsOptional && arg.DefaultValue != null)
                         sb.Append(" (optional) ");
 
-                    sb.Append($" [type: {arg.Type.ToUserFriendlyName()}] Description: ");
+                    sb.Append($"[{Formatter.InlineCode(arg.Type.ToUserFriendlyName())}] ");
 
                     sb.Append(string.IsNullOrWhiteSpace(arg.Description) ? "No description provided." : Formatter.Bold(arg.Description));
 
                     if (arg.IsOptional && arg.DefaultValue != null)
-                        sb.Append(" Default value: ").Append(arg.DefaultValue);
+                        sb.Append(" (def: ").Append(arg.DefaultValue).Append(")");
 
                     sb.AppendLine();
                 }
-                _embed.AddField("Arguments", sb.ToString(), false);
+
+                _embed.AddField("Arguments", sb.ToString());
             }
             return this;
         }
@@ -107,7 +106,7 @@ namespace TheGodfather.Helpers
         public IHelpFormatter WithSubcommands(IEnumerable<Command> subcommands)
         {
             if (subcommands.Any())
-                _embed.AddField(_name != null ? "Subcommands" : "Commands", string.Join(", ", subcommands.Select(c => c.Name)), false);
+                _embed.AddField(_name != null ? "Subcommands" : "Commands", string.Join(", ", subcommands.Select(c => Formatter.InlineCode(c.Name))));
             return this;
         }
     }
