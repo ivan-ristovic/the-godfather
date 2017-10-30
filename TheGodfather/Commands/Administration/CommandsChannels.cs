@@ -38,7 +38,7 @@ namespace TheGodfather.Commands.Administration
             if (!checkspassed)
                 return;
 
-            await ctx.Guild.CreateChannelAsync(name, ChannelType.Category, reason: $"Created by Godfather: {ctx.User.Username} ({ctx.User.Id})")
+            await ctx.Guild.CreateChannelAsync(name, ChannelType.Category, reason: $"{ctx.User.Username} ({ctx.User.Id})")
                 .ConfigureAwait(false);
             await ctx.RespondAsync($"Category {Formatter.Bold(name)} successfully created.")
                 .ConfigureAwait(false);
@@ -107,10 +107,14 @@ namespace TheGodfather.Commands.Administration
         [Aliases("-", "del", "d", "remove")]
         [RequirePermissions(Permissions.ManageChannels)]
         public async Task DeleteChannelAsync(CommandContext ctx,
-                                            [Description("Channel.")] DiscordChannel c = null)
+                                            [Description("Channel.")] DiscordChannel c = null,
+                                            [RemainingText, Description("Reason.")] string reason = null)
         {
             if (c == null)
                 c = ctx.Channel;
+
+            if (string.IsNullOrWhiteSpace(reason))
+                reason = "No reason provided.";
 
             if (c.Type == ChannelType.Category && c.Children.Count() > 0) {
                 await ctx.RespondAsync("The channel specified is a non-empty category. Delete all channels in it? (y/n)");
@@ -121,12 +125,12 @@ namespace TheGodfather.Commands.Administration
                 ).ConfigureAwait(false);
                 if (msg != null && (msg.Message.Content == "yes" || msg.Message.Content == "y"))
                     foreach (var chn in c.Children)
-                        await chn.DeleteAsync(reason: $"Deleted by Godfather: {ctx.User.Username} ({ctx.User.Id})")
+                        await chn.DeleteAsync(reason: $"{ctx.User.Username} ({ctx.User.Id}): {reason}")
                             .ConfigureAwait(false);
             }
 
             string name = c.Name;
-            await c.DeleteAsync(reason: $"Deleted by Godfather: {ctx.User.Username} ({ctx.User.Id})")
+            await c.DeleteAsync(reason: $"{ctx.User.Username} ({ctx.User.Id}): {reason}")
                 .ConfigureAwait(false);
             if (c.Id != ctx.Channel.Id)
                 await ctx.RespondAsync($"Channel {Formatter.Bold(name)} successfully deleted.")
@@ -180,7 +184,7 @@ namespace TheGodfather.Commands.Administration
                 c = ctx.Channel;
 
             try {
-                await c.ModifyAsync(name, reason: $"Renamed by Godfather: {ctx.User.Username} ({ctx.User.Id})")
+                await c.ModifyAsync(name, reason: $"{ctx.User.Username} ({ctx.User.Id})")
                     .ConfigureAwait(false);
             } catch (BadRequestException e) {
                 throw new CommandFailedException("Error occured. Possibly the name entered contains invalid characters...", e);
@@ -205,7 +209,7 @@ namespace TheGodfather.Commands.Administration
             if (c == null)
                 c = ctx.Channel;
 
-            await c.ModifyAsync(topic: topic, reason: $"Modified by Godfather: {ctx.User.Username} ({ctx.User.Id})")
+            await c.ModifyAsync(topic: topic, reason: $"{ctx.User.Username} ({ctx.User.Id})")
                 .ConfigureAwait(false);
             await ctx.RespondAsync("Channel topic successfully changed.")
                 .ConfigureAwait(false);
@@ -235,7 +239,7 @@ namespace TheGodfather.Commands.Administration
             if (parent != null && parent.Type != ChannelType.Category)
                 return false;
 
-            await ctx.Guild.CreateChannelAsync(cname, type, parent: parent, reason: $"Created by Godfather: {ctx.User.Username} ({ctx.User.Id})")
+            await ctx.Guild.CreateChannelAsync(cname, type, parent: parent, reason: $"{ctx.User.Username} ({ctx.User.Id})")
                         .ConfigureAwait(false);
             return true;
         }

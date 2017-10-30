@@ -127,7 +127,7 @@ namespace TheGodfather.Commands.Administration
             if (role == null || string.IsNullOrWhiteSpace(name))
                 throw new ArgumentException("I need a valid existing role and a new name.");
 
-            await ctx.Guild.UpdateRoleAsync(role, name: name, reason: $"Renamed by Godfather : {ctx.User.Username} ({ctx.User.Id})")
+            await ctx.Guild.UpdateRoleAsync(role, name: name, reason: $"{ctx.User.Username} ({ctx.User.Id})")
                 .ConfigureAwait(false);
             await ctx.RespondAsync($"Successfully changed role name to {Formatter.Bold(name)}.")
                 .ConfigureAwait(false);
@@ -146,7 +146,7 @@ namespace TheGodfather.Commands.Administration
             if (role == null)
                 throw new InvalidCommandUsageException("Unknown role.");
 
-            await ctx.Guild.UpdateRoleAsync(role, mentionable: b, reason: $"Set by Godfather : {ctx.User.Username} ({ctx.User.Id})")
+            await ctx.Guild.UpdateRoleAsync(role, mentionable: b, reason: $"{ctx.User.Username} ({ctx.User.Id})")
                 .ConfigureAwait(false);
             await ctx.RespondAsync($"Successfully set mentionable var for {Formatter.Bold(role.Name)} to {Formatter.Bold(b.ToString())}.")
                 .ConfigureAwait(false);
@@ -165,7 +165,7 @@ namespace TheGodfather.Commands.Administration
             if (role == null)
                 throw new InvalidCommandUsageException("Unknown role.");
 
-            await ctx.Guild.UpdateRoleAsync(role, hoist: b, reason: $"Set by Godfather : {ctx.User.Username} ({ctx.User.Id})")
+            await ctx.Guild.UpdateRoleAsync(role, hoist: b, reason: $"{ctx.User.Username} ({ctx.User.Id})")
                 .ConfigureAwait(false);
             await ctx.RespondAsync($"Successfully set hoist var for {Formatter.Bold(role.Name)} to {Formatter.Bold(b.ToString())}.")
                 .ConfigureAwait(false);

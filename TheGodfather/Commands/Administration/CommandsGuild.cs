@@ -316,7 +316,7 @@ namespace TheGodfather.Commands.Administration
                         using (Image image = Image.FromStream(mem)) {
                             image.Save(filename, System.Drawing.Imaging.ImageFormat.Png);
                             FileStream fs = new FileStream(filename, FileMode.Open);
-                            await ctx.Guild.CreateEmojiAsync(name, fs, reason: $"Added by Godfather : {ctx.User.Username} ({ctx.User.Id})")
+                            await ctx.Guild.CreateEmojiAsync(name, fs, reason: $"{ctx.User.Username} ({ctx.User.Id})")
                                 .ConfigureAwait(false);
                             await ctx.RespondAsync($"Emoji {Formatter.Bold(name)} successfully added!")
                                 .ConfigureAwait(false);
@@ -395,7 +395,7 @@ namespace TheGodfather.Commands.Administration
                 try {
                     var emoji = await ctx.Guild.GetEmojiAsync(e.Id)
                         .ConfigureAwait(false);
-                    await ctx.Guild.ModifyEmojiAsync(emoji, name: name, reason: $"Edited by Godfather : {ctx.User.Username} ({ctx.User.Id})")
+                    await ctx.Guild.ModifyEmojiAsync(emoji, name: name, reason: $"{ctx.User.Username} ({ctx.User.Id})")
                         .ConfigureAwait(false);
                     await ctx.RespondAsync("Emoji successfully edited!")
                         .ConfigureAwait(false);
