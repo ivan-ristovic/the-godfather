@@ -220,18 +220,10 @@ namespace TheGodfather
 
         private Task<int> CheckMessageForPrefix(DiscordMessage m)
         {
-            string prefix;
             if (_dependecies.PrefixControl.Prefixes.ContainsKey(m.ChannelId))
-                prefix = _dependecies.PrefixControl.Prefixes[m.ChannelId];
+                return Task.FromResult(m.GetStringPrefixLength(_dependecies.PrefixControl.Prefixes[m.ChannelId]));
             else
-                prefix = _config.CurrentConfig.DefaultPrefix;
-
-            int pos = m.Content.IndexOf(prefix);
-
-            if (pos != 0)
-                return Task.FromResult(-1);
-            else
-                return Task.FromResult(prefix.Length);
+                return Task.FromResult(m.GetStringPrefixLength(_config.CurrentConfig.DefaultPrefix));
         }
         #endregion
 
@@ -449,8 +441,6 @@ namespace TheGodfather
 
         private async Task Commands_CommandErrored(CommandErrorEventArgs e)
         {
-            await Task.Yield();
-
             if (!Listening || e.Exception == null)
                 return;
 
