@@ -49,20 +49,24 @@ namespace TheGodfather
 
         ~TheGodfather()
         {
-            LogHandle.Log(LogLevel.Info, "Shutting down by demand...");
-
-            SaveData();
-            LogHandle.ClearLogFile();
-            _client.DisconnectAsync();
-            _client.Dispose();
-            if (Directory.Exists("Temp"))
-                Directory.Delete("Temp");
+            if (_client != null && LogHandle != null) {
+                LogHandle.Log(LogLevel.Info, "Shutting down...");
+                SaveData();
+                _client.DisconnectAsync();
+                _client.Dispose();
+                if (Directory.Exists("Temp"))
+                    Directory.Delete("Temp");
+            }
         }
 
 
         public async Task MainAsync(string[] args)
         {
-            _config.Load();
+            if (!_config.Load()) {
+                Console.WriteLine("Config file corrupted or missing.");
+                Console.ReadKey();
+                return;
+            };
 
             SetupClient();
             SetupCommands();
@@ -70,8 +74,18 @@ namespace TheGodfather
             SetupVoice();
             LoadData();
 
-            await _client.ConnectAsync()
-                .ConfigureAwait(false);
+            try {
+                await _client.ConnectAsync()
+                    .ConfigureAwait(false);
+            } catch (Exception ex) {
+                LogHandle.Log(LogLevel.Error, "Exception occured during connection: " + Environment.NewLine +
+                    $" Exception: {ex.GetType()}" + Environment.NewLine +
+                    (ex.InnerException != null ? $" Inner exception: {ex.InnerException.GetType()}" + Environment.NewLine : "") +
+                    $" Message: {ex.Message ?? "<no message>"}"
+                );
+                Console.ReadKey();
+                return;
+            }
 
             await Task.Delay(-1);
         }

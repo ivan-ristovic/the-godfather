@@ -37,7 +37,6 @@ namespace TheGodfather.Helpers.DataManagers
                     return false;
                 }
             } else {
-                Console.WriteLine("config.json is missing!");
                 return false;
             }
 
