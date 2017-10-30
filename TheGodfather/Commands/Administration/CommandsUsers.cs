@@ -91,13 +91,17 @@ namespace TheGodfather.Commands.Administration
         [Aliases("deaf", "d")]
         [RequirePermissions(Permissions.DeafenMembers)]
         public async Task DeafenAsync(CommandContext ctx, 
-                                     [Description("User")] DiscordMember u = null)
+                                     [Description("User")] DiscordMember u = null,
+                                     [RemainingText, Description("Reason.")] string reason = null)
         {
             if (u == null)
                 throw new InvalidCommandUsageException("You need to mention a user to deafen.");
 
+            if (string.IsNullOrWhiteSpace(reason))
+                reason = "No reason provided.";
+
             bool deafened = u.IsDeafened;
-            await u.SetDeafAsync(!deafened, reason: $"Toggle deaf by Godfather : {ctx.User.Username} ({ctx.User.Id})")
+            await u.SetDeafAsync(!deafened, reason: $"{ctx.User.Username} ({ctx.User.Id}): {reason}")
                 .ConfigureAwait(false);
             await ctx.RespondAsync("Successfully " + (deafened ? "undeafened " : "deafened ") + Formatter.Bold(u.DisplayName))
                 .ConfigureAwait(false);
@@ -133,12 +137,19 @@ namespace TheGodfather.Commands.Administration
         [Aliases("k")]
         [RequirePermissions(Permissions.KickMembers)]
         public async Task KickAsync(CommandContext ctx, 
-                                   [Description("User.")] DiscordMember u = null)
+                                   [Description("User.")] DiscordMember u = null,
+                                   [RemainingText, Description("Reason.")] string reason = null)
         {
             if (u == null)
                 throw new InvalidCommandUsageException("You need to mention a user to kick.");
 
-            await ctx.Guild.RemoveMemberAsync(u, reason: $"Kicked by Godfather : {ctx.User.Username} ({ctx.User.Id})")
+            if (u.Id == ctx.User.Id)
+                throw new CommandFailedException("You can't kick yourself.");
+
+            if (string.IsNullOrWhiteSpace(reason))
+                reason = "No reason provided.";
+
+            await ctx.Guild.RemoveMemberAsync(u, reason: $"{ctx.User.Username} ({ctx.User.Id}): {reason}")
                 .ConfigureAwait(false);
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
                 Title = $"{Formatter.Bold(ctx.User.Username)} kicked {Formatter.Bold(u.DisplayName)} in the cojones.",
@@ -191,13 +202,17 @@ namespace TheGodfather.Commands.Administration
         [Aliases("m")]
         [RequirePermissions(Permissions.MuteMembers)]
         public async Task MuteAsync(CommandContext ctx,
-                                   [Description("User.")] DiscordMember u = null)
+                                   [Description("User.")] DiscordMember u = null,
+                                   [RemainingText, Description("Reason.")] string reason = null)
         {
             if (u == null)
                 throw new InvalidCommandUsageException("You need to mention a user to mute/unmute.");
 
+            if (string.IsNullOrWhiteSpace(reason))
+                reason = "No reason provided.";
+
             bool muted = u.IsMuted;
-            await u.SetMuteAsync(!muted, reason: $"Muted by Godfather : {ctx.User.Username} ({ctx.User.Id})")
+            await u.SetMuteAsync(!muted, reason: $"{ctx.User.Username} ({ctx.User.Id}): {reason}")
                 .ConfigureAwait(false);
             await ctx.RespondAsync("Successfully " + (muted ? "unmuted " : "muted ") + Formatter.Bold(u.DisplayName))
                 .ConfigureAwait(false);
@@ -216,7 +231,7 @@ namespace TheGodfather.Commands.Administration
             if (u == null || role == null)
                 throw new InvalidCommandUsageException("You need to specify a user.");
             
-            await u.RevokeRoleAsync(role, reason: $"Revoked by Godfather : {ctx.User.Username} ({ctx.User.Id})")
+            await u.RevokeRoleAsync(role, reason: $"{ctx.User.Username} ({ctx.User.Id})")
                 .ConfigureAwait(false);
             await ctx.RespondAsync($"Successfully removed role {Formatter.Bold(role.Name)} from {Formatter.Bold(u.DisplayName)}.")
                 .ConfigureAwait(false);
@@ -243,7 +258,7 @@ namespace TheGodfather.Commands.Administration
             string reply = $"Successfully removed all roles from {Formatter.Bold(u.Username)}.";
             try {
                 foreach (var role in roles)
-                    await u.RevokeRoleAsync(role)
+                    await u.RevokeRoleAsync(role, reason: $"{ctx.User.Username} ({ctx.User.Id})")
                         .ConfigureAwait(false);
             } catch {
                 reply = "Failed to remove some of the roles.";
@@ -266,7 +281,7 @@ namespace TheGodfather.Commands.Administration
             if (member == null || string.IsNullOrWhiteSpace(newname))
                 throw new InvalidCommandUsageException("Member or name invalid.");
 
-            await member.ModifyAsync(newname, reason: $"Renamed by Godfather : {ctx.User.Username} ({ctx.User.Id}).")
+            await member.ModifyAsync(newname, reason: $"{ctx.User.Username} ({ctx.User.Id}).")
                 .ConfigureAwait(false);
             await ctx.RespondAsync("Successfully changed the name of the user.")
                 .ConfigureAwait(false);
