@@ -287,5 +287,26 @@ namespace TheGodfather.Commands.Administration
                 .ConfigureAwait(false);
         }
         #endregion
+
+        #region COMMAND_USER_WARN
+        [Command("warn")]
+        [Description("Warn a user.")]
+        [Aliases("w")]
+        [RequirePermissions(Permissions.KickMembers)]
+        public async Task WarnAsync(CommandContext ctx,
+                                   [Description("User.")] DiscordMember u = null)
+        {
+            if (u == null)
+                throw new InvalidCommandUsageException("User missing.");
+
+            await u.SendMessageAsync(embed: new DiscordEmbedBuilder() {
+                Title = "Warning received!",
+                Description = $"Guild {Formatter.Bold(ctx.Guild.Name)} issued a warning to you through me.",
+                Color = DiscordColor.Red
+            }.Build()).ConfigureAwait(false);
+            await ctx.RespondAsync($"Successfully warned {Formatter.Bold(u.Username)}.")
+                .ConfigureAwait(false);
+        }
+        #endregion
     }
 }
