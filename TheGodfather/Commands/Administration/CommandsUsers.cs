@@ -76,7 +76,7 @@ namespace TheGodfather.Commands.Administration
             if (string.IsNullOrWhiteSpace(reason))
                 reason = "No reason provided.";
 
-            await ctx.Guild.BanMemberAsync(u, reason: $"{ctx.User.Username} ({ctx.User.Id}): {reason}")
+            await ctx.Guild.BanMemberAsync(u, delete_message_days: 7, reason: $"{ctx.User.Username} ({ctx.User.Id}): {reason}")
                 .ConfigureAwait(false);
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
                 Title = $"{Formatter.Bold(ctx.User.Username)} BANNED {Formatter.Bold(u.DisplayName)}!",
