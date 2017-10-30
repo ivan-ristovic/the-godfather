@@ -162,6 +162,7 @@ Commands use the following types:
 | ``user``<br>``users``<br>``u``<br>``usr`` | ``removerole``<br>``remrole``<br>``rmrole``<br>``-role``<br>``-r``<br>``rr`` | Manage Roles | ``[user] User``<br><br>``[role] Role`` | Remove ``Role`` from ``User``. | ``!user remrole @SomeUser @admins``<br><br>``!user remrole @SomeUser "Unmentionable role"`` |
 | ``user``<br>``users``<br>``u``<br>``usr`` | ``removeallroles``<br>``remallroles``<br>``rmallroles``<br>``-ra``<br>``-rall``<br>``-allr`` | Manage Roles | ``[user] User`` | Remove all roles for ``User``. | ``!user rmallroles @SomeUser`` |
 | ``user``<br>``users``<br>``u``<br>``usr`` | ``setname``<br>``nick``<br>``rename``<br>``name``<br>``newname`` | Manage Nicknames | ``[user] User``<br><br>``[text] New name`` | Change ``User``'s nickname to ``New name`` (for this server). | ``!user setname @SomeUser Some new name`` |
+| ``user``<br>``users``<br>``u``<br>``usr`` | ``warn``<br>``w`` | Kick Members | ``[user] User`` | Send a warning message to ``User``. | ``!user warn @Troublemaker`` |
 |   |   |   |   |   |   |
 
 ## Gambling commands
