@@ -56,8 +56,8 @@ namespace TheGodfather.Commands.Main
         [Aliases("+", "new")]
         [RequireOwner]
         public async Task AddMemeAsync(CommandContext ctx,
-                                      [Description("Short name (case insensitive).")] string name = null,
-                                      [Description("URL.")] string url = null)
+                                      [Description("Short name (case insensitive).")] string name,
+                                      [Description("URL.")] string url)
         {
             if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(url))
                 throw new InvalidCommandUsageException("Name or URL missing or invalid.");
@@ -74,9 +74,9 @@ namespace TheGodfather.Commands.Main
         [Description("Creates a new meme from blank template.")]
         [Aliases("create", "maker", "c", "make", "m")]
         public async Task CreateMemeAsync(CommandContext ctx,
-                                         [Description("Template.")] string template = null,
-                                         [Description("Top Text.")] string topText = null,
-                                         [Description("Bottom Text.")] string bottomText = null)
+                                         [Description("Template.")] string template,
+                                         [Description("Top Text.")] string topText,
+                                         [Description("Bottom Text.")] string bottomText)
         {
             if (string.IsNullOrWhiteSpace(template))
                 throw new InvalidCommandUsageException("Missing template name.");
@@ -167,7 +167,7 @@ namespace TheGodfather.Commands.Main
         [Aliases("-", "del", "remove", "rm")]
         [RequireOwner]
         public async Task DeleteMemeAsync(CommandContext ctx,
-                                         [Description("Short name (case insensitive).")] string name = null)
+                                         [Description("Short name (case insensitive).")] string name)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new InvalidCommandUsageException("Name missing.");

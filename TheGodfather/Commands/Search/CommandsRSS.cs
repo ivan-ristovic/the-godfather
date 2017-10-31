@@ -26,7 +26,7 @@ namespace TheGodfather.Commands.Search
     public class CommandsRSS
     {
         public async Task ExecuteGroupAsync(CommandContext ctx, 
-                                           [RemainingText, Description("URL.")] string url = null)
+                                           [RemainingText, Description("URL.")] string url)
         {
             if (string.IsNullOrWhiteSpace(url))
                 throw new InvalidCommandUsageException("URL missing.");
@@ -42,7 +42,7 @@ namespace TheGodfather.Commands.Search
         [Aliases("sub", "add", "+")]
         [RequirePermissions(Permissions.ManageGuild)]
         public async Task AddUrlFeedAsync(CommandContext ctx,
-                                         [RemainingText, Description("URL.")] string url = null,
+                                         [RemainingText, Description("URL.")] string url,
                                          [Description("Friendly name.")] string name = null)
         {
             if (string.IsNullOrWhiteSpace(url))
@@ -96,7 +96,7 @@ namespace TheGodfather.Commands.Search
         public class CommandsRSSReddit : CommandsRSS
         {
             public new async Task ExecuteGroupAsync(CommandContext ctx,
-                                                   [Description("Subreddit.")] string sub = null)
+                                                   [Description("Subreddit.")] string sub = "all")
             {
                 if (string.IsNullOrWhiteSpace(sub))
                     throw new InvalidCommandUsageException("Subreddit missing.");
@@ -113,7 +113,7 @@ namespace TheGodfather.Commands.Search
             [Aliases("add", "a", "+", "sub")]
             [RequirePermissions(Permissions.ManageGuild)]
             public async Task SubscribeAsync(CommandContext ctx,
-                                            [Description("Subreddit.")] string sub = null)
+                                            [Description("Subreddit.")] string sub)
             {
                 if (string.IsNullOrWhiteSpace(sub))
                     throw new InvalidCommandUsageException("Subreddit missing.");
@@ -132,7 +132,7 @@ namespace TheGodfather.Commands.Search
             [Aliases("del", "d", "rm", "-", "unsub")]
             [RequirePermissions(Permissions.ManageGuild)]
             public async Task UnsubscribeAsync(CommandContext ctx,
-                                              [Description("Subreddit.")] string sub = null)
+                                              [Description("Subreddit.")] string sub)
             {
                 if (string.IsNullOrWhiteSpace(sub))
                     throw new InvalidCommandUsageException("Subreddit missing.");
@@ -153,7 +153,7 @@ namespace TheGodfather.Commands.Search
         public class CommandsRSSYoutube : CommandsRSS
         {
             public new async Task ExecuteGroupAsync(CommandContext ctx,
-                                                   [Description("Channel URL.")] string url = null)
+                                                   [Description("Channel URL.")] string url)
             {
                 if (string.IsNullOrWhiteSpace(url))
                     throw new InvalidCommandUsageException("Channel URL missing.");
@@ -172,7 +172,7 @@ namespace TheGodfather.Commands.Search
             [Aliases("add", "a", "+", "sub")]
             [RequirePermissions(Permissions.ManageGuild)]
             public async Task SubscribeAsync(CommandContext ctx,
-                                            [Description("Channel URL.")] string url = null,
+                                            [Description("Channel URL.")] string url,
                                             [Description("Friendly name.")] string name = null)
             {
                 if (string.IsNullOrWhiteSpace(url))
@@ -198,7 +198,7 @@ namespace TheGodfather.Commands.Search
             [Aliases("del", "d", "rm", "-", "unsub")]
             [RequirePermissions(Permissions.ManageGuild)]
             public async Task UnsubscribeAsync(CommandContext ctx,
-                                              [Description("Channel URL.")] string url = null)
+                                              [Description("Channel URL.")] string url)
             {
                 if (string.IsNullOrWhiteSpace(url))
                     throw new InvalidCommandUsageException("Channel URL missing.");

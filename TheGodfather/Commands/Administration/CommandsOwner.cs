@@ -171,9 +171,9 @@ namespace TheGodfather.Commands.Administration
         [Aliases("send")]
         [CheckIgnore]
         public async Task SendAsync(CommandContext ctx,
-                                   [Description("u/c (for user or channel.)")] string desc = "u",
-                                   [Description("User/Channel ID.")] ulong xid = 0,
-                                   [RemainingText, Description("Message.")] string message = null)
+                                   [Description("u/c (for user or channel.)")] string desc,
+                                   [Description("User/Channel ID.")] ulong xid,
+                                   [RemainingText, Description("Message.")] string message)
         {
             if (string.IsNullOrWhiteSpace(message))
                 throw new InvalidCommandUsageException();
@@ -218,8 +218,8 @@ namespace TheGodfather.Commands.Administration
         [Aliases("execas", "as")]
         [CheckIgnore]
         public async Task SudoAsync(CommandContext ctx,
-                                   [Description("Member to execute as.")] DiscordMember member = null,
-                                   [RemainingText, Description("Command text to execute.")] string command = null)
+                                   [Description("Member to execute as.")] DiscordMember member,
+                                   [RemainingText, Description("Command text to execute.")] string command)
         {
             if (member == null || command == null)
                 throw new InvalidCommandUsageException();
@@ -252,7 +252,7 @@ namespace TheGodfather.Commands.Administration
             [Description("Add a status to running queue.")]
             [Aliases("+")]
             public async Task AddAsync(CommandContext ctx,
-                                      [RemainingText, Description("Status.")] string status = null)
+                                      [RemainingText, Description("Status.")] string status)
             {
                 if (string.IsNullOrWhiteSpace(status))
                     throw new InvalidCommandUsageException("Invalid status.");
@@ -269,7 +269,7 @@ namespace TheGodfather.Commands.Administration
             [Description("Remove status from running queue.")]
             [Aliases("-", "remove")]
             public async Task DeleteAsync(CommandContext ctx,
-                                         [RemainingText, Description("Status.")] string status = null)
+                                         [RemainingText, Description("Status.")] string status)
             {
                 if (string.IsNullOrWhiteSpace(status))
                     throw new InvalidCommandUsageException("Invalid status.");

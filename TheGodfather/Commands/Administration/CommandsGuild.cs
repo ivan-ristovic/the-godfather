@@ -148,7 +148,7 @@ namespace TheGodfather.Commands.Administration
         [Aliases("r", "name", "setname")]
         [RequirePermissions(Permissions.ManageGuild)]
         public async Task RenameGuildAsync(CommandContext ctx,
-                                          [RemainingText, Description("New name.")] string name = null)
+                                          [RemainingText, Description("New name.")] string name)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new InvalidCommandUsageException("Missing new guild name.");
@@ -299,8 +299,8 @@ namespace TheGodfather.Commands.Administration
             [Aliases("create", "a", "+")]
             [RequirePermissions(Permissions.ManageEmojis)]
             public async Task AddEmojiAsync(CommandContext ctx,
-                                           [Description("Name.")] string name = null,
-                                           [Description("URL.")] string url = null)
+                                           [Description("Name.")] string name,
+                                           [Description("URL.")] string url)
             {
                 if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(url))
                     throw new InvalidCommandUsageException("Name or URL missing or invalid.");
@@ -340,7 +340,7 @@ namespace TheGodfather.Commands.Administration
             [Aliases("remove", "del", "-", "d")]
             [RequirePermissions(Permissions.ManageEmojis)]
             public async Task DeleteEmojiAsync(CommandContext ctx,
-                                              [Description("Emoji.")] DiscordEmoji e = null)
+                                              [Description("Emoji.")] DiscordEmoji e)
             {
                 if (e == null)
                     throw new InvalidCommandUsageException("Emoji missing.");
@@ -383,8 +383,8 @@ namespace TheGodfather.Commands.Administration
             [Aliases("edit", "mod", "e", "m")]
             [RequirePermissions(Permissions.ManageEmojis)]
             public async Task ModifyEmojiAsync(CommandContext ctx,
-                                              [Description("Emoji.")] DiscordEmoji e = null,
-                                              [Description("Name.")] string name = null)
+                                              [Description("Emoji.")] DiscordEmoji e,
+                                              [Description("Name.")] string name)
             {
                 if (e == null)
                     throw new InvalidCommandUsageException("Emoji missing.");

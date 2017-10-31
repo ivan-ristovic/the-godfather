@@ -60,7 +60,7 @@ namespace TheGodfather.Commands.SWAT
         [Description("Return server information.")]
         [Aliases("q", "info", "i")]
         public async Task QueryAsync(CommandContext ctx, 
-                                    [Description("IP.")] string ip = null)
+                                    [Description("Registered name or IP.")] string ip)
         {
             if (string.IsNullOrWhiteSpace(ip))
                 throw new InvalidCommandUsageException("IP missing.");
@@ -89,7 +89,7 @@ namespace TheGodfather.Commands.SWAT
         [RequireOwner]
         [Hidden]
         public async Task SetTimeoutAsync(CommandContext ctx,
-                                         [Description("Timeout.")] int timeout = 200)
+                                         [Description("Timeout.")] int timeout)
         {
             _checktimeout = timeout;
             await ctx.RespondAsync("Timeout changed to: " + Formatter.Bold(_checktimeout.ToString()))
@@ -102,7 +102,7 @@ namespace TheGodfather.Commands.SWAT
         [Description("Notifies of free space in server.")]
         [Aliases("checkspace", "spacecheck")]
         public async Task StartCheckAsync(CommandContext ctx, 
-                                         [Description("Registered name or IP.")] string ip = null)
+                                         [Description("Registered name or IP.")] string ip)
         {
             if (string.IsNullOrWhiteSpace(ip))
                 throw new InvalidCommandUsageException("Name/IP missing.");
@@ -245,8 +245,8 @@ namespace TheGodfather.Commands.SWAT
             [Aliases("+", "a")]
             [RequireUserPermissions(Permissions.Administrator)]
             public async Task AddAsync(CommandContext ctx,
-                                      [Description("Name.")] string name = null,
-                                      [Description("IP.")] string ip = null)
+                                      [Description("Name.")] string name,
+                                      [Description("IP.")] string ip)
             {
                 if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(ip))
                     throw new InvalidCommandUsageException("Invalid name or IP.");
@@ -261,7 +261,7 @@ namespace TheGodfather.Commands.SWAT
                 if (ctx.Dependencies.GetDependency<SwatServerManager>().TryAdd(name, ip))
                     await ctx.RespondAsync("Server added. You can now query it using the name provided.").ConfigureAwait(false);
                 else
-                    throw new CommandFailedException("Failed to add server to serverlist.");
+                    throw new CommandFailedException("Failed to add server to serverlist. Check if it already exists?");
             }
             #endregion
 
@@ -271,13 +271,15 @@ namespace TheGodfather.Commands.SWAT
             [Aliases("-", "del", "d")]
             [RequireUserPermissions(Permissions.Administrator)]
             public async Task DeleteAsync(CommandContext ctx,
-                                         [Description("Name.")] string name = null)
+                                         [Description("Name.")] string name)
             {
                 if (string.IsNullOrWhiteSpace(name))
                     throw new InvalidCommandUsageException("Name missing.");
 
                 if (ctx.Dependencies.GetDependency<SwatServerManager>().TryRemove(name))
                     await ctx.RespondAsync("Server removed.").ConfigureAwait(false);
+                else
+                    await ctx.RespondAsync("Failed to remove server.").ConfigureAwait(false);
             }
             #endregion
 

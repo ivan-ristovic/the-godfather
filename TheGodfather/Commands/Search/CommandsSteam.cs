@@ -42,7 +42,7 @@ namespace TheGodfather.Commands.Search
         [Description("Get Steam user information from ID.")]
         [Aliases("id")]
         public async Task InfoAsync(CommandContext ctx,
-                                      [Description("ID.")] ulong id = 0)
+                                      [Description("ID.")] ulong id)
         {
             InitializeSteamService(ctx);
 

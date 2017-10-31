@@ -27,7 +27,7 @@ namespace TheGodfather.Commands.Search
         [Cooldown(2, 5, CooldownBucketType.User), Cooldown(4, 5, CooldownBucketType.Channel)]
         [CheckIgnore]
         public async Task UrbanDictAsync(CommandContext ctx,
-                                        [RemainingText, Description("Query.")] string q = null)
+                                        [RemainingText, Description("Query.")] string q)
         {
             if (string.IsNullOrWhiteSpace(q))
                 throw new InvalidCommandUsageException("Query missing.");

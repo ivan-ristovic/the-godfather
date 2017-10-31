@@ -32,8 +32,8 @@ namespace TheGodfather.Commands.Search
 
 
         public async Task ExecuteGroupAsync(CommandContext ctx,
-                                           [Description("Number of images to print [1-10].")] int n = 1,
-                                           [RemainingText, Description("Query.")] string sub = null)
+                                           [Description("Number of images to print [1-10].")] int n,
+                                           [RemainingText, Description("Query.")] string sub)
         {
             if (string.IsNullOrWhiteSpace(sub))
                 throw new InvalidCommandUsageException("Missing search query.");
@@ -51,8 +51,8 @@ namespace TheGodfather.Commands.Search
         [Description("Return latest images for query.")]
         [Aliases("l", "new", "newest")]
         public async Task LatestAsync(CommandContext ctx,
-                                     [Description("Number of images to print [1-10].")] int n = 1,
-                                     [Description("Query.")] string sub = null)
+                                     [Description("Number of images to print [1-10].")] int n,
+                                     [Description("Query.")] string sub)
         {
             if (string.IsNullOrWhiteSpace(sub))
                 throw new InvalidCommandUsageException("Missing search query.");

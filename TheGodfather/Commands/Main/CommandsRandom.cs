@@ -26,7 +26,7 @@ namespace TheGodfather.Commands.Main
         [Command("8ball")]
         [Description("An almighty ball which knows answer to everything.")]
         public async Task EightBallAsync(CommandContext ctx,
-                                        [RemainingText, Description("A question for the almighty ball.")] string q = null)
+                                        [RemainingText, Description("A question for the almighty ball.")] string q)
         {
             if (string.IsNullOrWhiteSpace(q))
                 throw new InvalidCommandUsageException("The almighty ball requires a question.");
@@ -57,7 +57,7 @@ namespace TheGodfather.Commands.Main
         [Description("!choose option1, option2, option3...")]
         [Aliases("select")]
         public async Task ChooseAsync(CommandContext ctx,
-                                     [RemainingText, Description("Option list (separated with a comma).")] string s = null)
+                                     [RemainingText, Description("Option list (separated with a comma).")] string s)
         {
             if (string.IsNullOrWhiteSpace(s))
                 throw new InvalidCommandUsageException("Missing list to choose from.");
@@ -73,7 +73,7 @@ namespace TheGodfather.Commands.Main
         [Description("An accurate size of the user's manhood.")]
         [Aliases("size", "length", "manhood", "dick")]
         public async Task PenisAsync(CommandContext ctx,
-                                    [Description("Who to measure")] DiscordUser u = null)
+                                    [Description("Who to measure")] DiscordUser u)
         {
             if (u == null)
                 throw new InvalidCommandUsageException("You didn't give me anyone to measure.");
@@ -108,7 +108,7 @@ namespace TheGodfather.Commands.Main
         [Description("An accurate graph of a user's humanity.")]
         [Aliases("score", "graph")]
         public async Task RateAsync(CommandContext ctx,
-                                   [Description("Who to measure.")] DiscordUser u = null)
+                                   [Description("Who to measure.")] DiscordUser u)
         {
             if (u == null)
                 throw new InvalidCommandUsageException("You didn't give me anyone to measure.");

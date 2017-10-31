@@ -35,7 +35,7 @@ namespace TheGodfather.Commands.Main
         [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
         [CheckIgnore]
         public async Task Poll(CommandContext ctx, 
-                              [RemainingText, Description("Question.")] string q = null)
+                              [RemainingText, Description("Question.")] string q)
         {
             if (string.IsNullOrWhiteSpace(q))
                 throw new InvalidCommandUsageException("Poll requires a yes or no question.");

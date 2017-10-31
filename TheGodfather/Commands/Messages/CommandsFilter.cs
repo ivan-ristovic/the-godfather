@@ -32,7 +32,7 @@ namespace TheGodfather.Commands.Messages
         [Aliases("+", "new")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task AddAsync(CommandContext ctx,
-                                  [RemainingText, Description("Filter. Can be a regex (case insensitive).")] string filter = null)
+                                  [RemainingText, Description("Filter. Can be a regex (case insensitive).")] string filter)
         {
             if (string.IsNullOrWhiteSpace(filter))
                 throw new InvalidCommandUsageException("Filter trigger missing.");
@@ -61,7 +61,7 @@ namespace TheGodfather.Commands.Messages
         [Aliases("-", "remove", "del")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task DeleteAsync(CommandContext ctx, 
-                                     [Description("Filter index.")] int i = 0)
+                                     [Description("Filter index.")] int i)
         {
             if (ctx.Dependencies.GetDependency<FilterManager>().TryRemoveAt(ctx.Guild.Id, i))
                 await ctx.RespondAsync("Filter successfully removed.").ConfigureAwait(false);

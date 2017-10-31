@@ -25,7 +25,7 @@ namespace TheGodfather.Commands.Main
         [Description("Embed an image given as an URL.")]
         [RequirePermissions(Permissions.AttachFiles)]
         public async Task EmbedUrlAsync(CommandContext ctx,
-                                       [Description("Image URL.")] string url = null)
+                                       [Description("Image URL.")] string url)
         {
             if (string.IsNullOrWhiteSpace(url))
                 throw new InvalidCommandUsageException("URL missing!");
@@ -126,7 +126,7 @@ namespace TheGodfather.Commands.Main
         [Command("leet")]
         [Description("Wr1t3s m3ss@g3 1n 1337sp34k.")]
         public async Task L33tAsync(CommandContext ctx, 
-                                   [RemainingText, Description("Text")] string s = null)
+                                   [RemainingText, Description("Text")] string s)
         {
             if (string.IsNullOrWhiteSpace(s))
                 throw new InvalidCommandUsageException("Y0u d1dn'7 g1v3 m3 @ny 73x7...");
@@ -195,8 +195,8 @@ namespace TheGodfather.Commands.Main
         [Command("remind")]
         [Description("Resend a message after some time.")]
         public async Task RemindAsync(CommandContext ctx,
-                                     [Description("Time to wait before repeat (in seconds).")] int time = 0,
-                                     [RemainingText, Description("What to repeat.")] string s = null)
+                                     [Description("Time to wait before repeat (in seconds).")] int time,
+                                     [RemainingText, Description("What to repeat.")] string s)
         {
             if (time == 0 || string.IsNullOrWhiteSpace(s))
                 throw new InvalidCommandUsageException("Missing time or repeat string.");
@@ -217,7 +217,7 @@ namespace TheGodfather.Commands.Main
         [Command("report")]
         [Description("Send a report message to owner about a bug (please don't abuse... please).")]
         public async Task SendErrorReportAsync(CommandContext ctx, 
-                                              [RemainingText, Description("Text.")] string issue = null)
+                                              [RemainingText, Description("Text.")] string issue)
         {
             if (string.IsNullOrWhiteSpace(issue))
                 throw new InvalidCommandUsageException("Text missing.");
@@ -257,7 +257,7 @@ namespace TheGodfather.Commands.Main
         [Description("Repeats after you.")]
         [Aliases("repeat")]
         public async Task SayAsync(CommandContext ctx, 
-                                  [RemainingText, Description("Text.")] string s = null)
+                                  [RemainingText, Description("Text.")] string s)
         {
             if (string.IsNullOrWhiteSpace(s))
                 throw new InvalidCommandUsageException("Text missing.");
@@ -272,7 +272,7 @@ namespace TheGodfather.Commands.Main
         [Description("I don't even...")]
         [Aliases("z")]
         public async Task ZugifyAsync(CommandContext ctx, 
-                                     [RemainingText, Description("Text.")] string text = null)
+                                     [RemainingText, Description("Text.")] string text)
         {
             if (string.IsNullOrWhiteSpace(text))
                 throw new InvalidCommandUsageException("Text missing.");

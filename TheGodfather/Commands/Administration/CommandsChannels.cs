@@ -28,7 +28,7 @@ namespace TheGodfather.Commands.Administration
         [Aliases("createc", "+c", "makec", "newc", "addc")]
         [RequirePermissions(Permissions.ManageChannels)]
         public async Task CreateCategoryAsync(CommandContext ctx,
-                                             [RemainingText, Description("Name.")] string name = null)
+                                             [RemainingText, Description("Name.")] string name)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new InvalidCommandUsageException("Missing category name.");
@@ -51,7 +51,7 @@ namespace TheGodfather.Commands.Administration
         [Aliases("createtxt", "createt", "+", "+t", "maket", "newt", "addt")]
         [RequirePermissions(Permissions.ManageChannels)]
         public async Task CreateTextChannelAsync(CommandContext ctx,
-                                                [Description("Name.")] string name = null,
+                                                [Description("Name.")] string name,
                                                 [Description("Parent channel")] DiscordChannel parent = null)
         {
             if (string.IsNullOrWhiteSpace(name))
@@ -80,7 +80,7 @@ namespace TheGodfather.Commands.Administration
         [Aliases("createv", "+v", "makev", "newv", "addv")]
         [RequirePermissions(Permissions.ManageChannels)]
         public async Task CreateVoiceChannelAsync(CommandContext ctx,
-                                                 [Description("Name.")] string name = null,
+                                                 [Description("Name.")] string name,
                                                  [Description("Parent channel")] DiscordChannel parent = null)
         {
             if (string.IsNullOrWhiteSpace(name))
@@ -173,7 +173,7 @@ namespace TheGodfather.Commands.Administration
         [Aliases("r", "name", "setname")]
         [RequirePermissions(Permissions.ManageChannels)]
         public async Task RenameChannelAsync(CommandContext ctx,
-                                            [Description("New name.")] string name = null,
+                                            [Description("New name.")] string name,
                                             [Description("Channel.")] DiscordChannel c = null)
         {
             if (string.IsNullOrWhiteSpace(name))
@@ -201,7 +201,7 @@ namespace TheGodfather.Commands.Administration
         [Aliases("t", "topic", "sett")]
         [RequirePermissions(Permissions.ManageChannels)]
         public async Task SetChannelTopicAsync(CommandContext ctx,
-                                              [Description("New topic.")] string topic = null,
+                                              [Description("New topic.")] string topic,
                                               [Description("Channel.")] DiscordChannel c = null)
         {
             if (string.IsNullOrWhiteSpace(topic))

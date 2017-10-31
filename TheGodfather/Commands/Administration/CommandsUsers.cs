@@ -27,8 +27,8 @@ namespace TheGodfather.Commands.Administration
         [Aliases("+role", "+r", "ar")]
         [RequirePermissions(Permissions.ManageRoles)]
         public async Task AddRoleAsync(CommandContext ctx,
-                                      [Description("User.")] DiscordMember u = null,
-                                      [Description("Role.")] DiscordRole role = null)
+                                      [Description("User.")] DiscordMember u,
+                                      [Description("Role.")] DiscordRole role)
         {
             if (u == null || role == null)
                 throw new InvalidCommandUsageException("You need to specify a user and an existing role.");
@@ -45,7 +45,7 @@ namespace TheGodfather.Commands.Administration
         [Description("Get avatar from user.")]
         [Aliases("a", "pic")]
         public async Task GetAvatarAsync(CommandContext ctx,
-                                        [Description("User.")] DiscordUser u = null)
+                                        [Description("User.")] DiscordUser u)
         {
             if (u == null)
                 throw new InvalidCommandUsageException("User missing!");
@@ -64,7 +64,7 @@ namespace TheGodfather.Commands.Administration
         [Aliases("b")]
         [RequirePermissions(Permissions.BanMembers)]
         public async Task BanAsync(CommandContext ctx, 
-                                  [Description("User.")] DiscordMember u = null,
+                                  [Description("User.")] DiscordMember u,
                                   [RemainingText, Description("Reason.")] string reason = null)
         {
             if (u == null)
@@ -91,7 +91,7 @@ namespace TheGodfather.Commands.Administration
         [Aliases("deaf", "d")]
         [RequirePermissions(Permissions.DeafenMembers)]
         public async Task DeafenAsync(CommandContext ctx, 
-                                     [Description("User")] DiscordMember u = null,
+                                     [Description("User")] DiscordMember u,
                                      [RemainingText, Description("Reason.")] string reason = null)
         {
             if (u == null)
@@ -137,7 +137,7 @@ namespace TheGodfather.Commands.Administration
         [Aliases("k")]
         [RequirePermissions(Permissions.KickMembers)]
         public async Task KickAsync(CommandContext ctx, 
-                                   [Description("User.")] DiscordMember u = null,
+                                   [Description("User.")] DiscordMember u,
                                    [RemainingText, Description("Reason.")] string reason = null)
         {
             if (u == null)
@@ -202,7 +202,7 @@ namespace TheGodfather.Commands.Administration
         [Aliases("m")]
         [RequirePermissions(Permissions.MuteMembers)]
         public async Task MuteAsync(CommandContext ctx,
-                                   [Description("User.")] DiscordMember u = null,
+                                   [Description("User.")] DiscordMember u,
                                    [RemainingText, Description("Reason.")] string reason = null)
         {
             if (u == null)
@@ -225,8 +225,8 @@ namespace TheGodfather.Commands.Administration
         [Aliases("remrole", "rmrole", "rr", "-role", "-r")]
         [RequirePermissions(Permissions.ManageRoles)]
         public async Task RemoveRoleAsync(CommandContext ctx, 
-                                         [Description("User.")] DiscordMember u = null,
-                                         [Description("Role.")] DiscordRole role = null)
+                                         [Description("User.")] DiscordMember u,
+                                         [Description("Role.")] DiscordRole role)
         {
             if (u == null || role == null)
                 throw new InvalidCommandUsageException("You need to specify a user.");
@@ -244,7 +244,7 @@ namespace TheGodfather.Commands.Administration
         [Aliases("remallroles", "remallroles", "-ra", "-rall", "-allr")]
         [RequirePermissions(Permissions.ManageRoles)]
         public async Task RemoveAllRolesAsync(CommandContext ctx,
-                                             [Description("User.")] DiscordMember u = null)
+                                             [Description("User.")] DiscordMember u)
         {
             if (u == null)
                 throw new InvalidCommandUsageException("You need to specify a user.");
@@ -275,7 +275,7 @@ namespace TheGodfather.Commands.Administration
         [Aliases("nick", "newname", "name", "rename")]
         [RequirePermissions(Permissions.ManageNicknames)]
         public async Task SetNameAsync(CommandContext ctx,
-                                      [Description("User.")] DiscordMember member = null,
+                                      [Description("User.")] DiscordMember member,
                                       [RemainingText, Description("New name.")] string newname = null)
         {
             if (member == null || string.IsNullOrWhiteSpace(newname))
@@ -294,7 +294,7 @@ namespace TheGodfather.Commands.Administration
         [Aliases("w")]
         [RequirePermissions(Permissions.KickMembers)]
         public async Task WarnAsync(CommandContext ctx,
-                                   [Description("User.")] DiscordMember u = null)
+                                   [Description("User.")] DiscordMember u)
         {
             if (u == null)
                 throw new InvalidCommandUsageException("User missing.");

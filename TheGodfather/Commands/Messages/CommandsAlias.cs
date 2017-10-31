@@ -31,8 +31,8 @@ namespace TheGodfather.Commands.Messages
         [Aliases("+", "new")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task AddAsync(CommandContext ctx,
-                                  [Description("Alias name (case sensitive).")] string alias = null,
-                                  [RemainingText, Description("Response.")] string response = null)
+                                  [Description("Alias name (case sensitive).")] string alias,
+                                  [RemainingText, Description("Response.")] string response)
         {
             if (string.IsNullOrWhiteSpace(alias) || string.IsNullOrWhiteSpace(response))
                 throw new InvalidCommandUsageException("Alias name or response missing or invalid.");
@@ -50,7 +50,7 @@ namespace TheGodfather.Commands.Messages
         [Aliases("-", "remove", "del", "rm")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task DeleteAsync(CommandContext ctx, 
-                                     [RemainingText, Description("Alias to remove.")] string alias = null)
+                                     [RemainingText, Description("Alias to remove.")] string alias)
         {
             if (string.IsNullOrWhiteSpace(alias))
                 throw new InvalidCommandUsageException("Alias name missing.");

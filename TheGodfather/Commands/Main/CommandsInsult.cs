@@ -52,7 +52,7 @@ namespace TheGodfather.Commands.Main
         [Aliases("+", "new")]
         [RequireOwner]
         public async Task AddInsultAsync(CommandContext ctx,
-                                        [RemainingText, Description("Response.")] string insult = null)
+                                        [RemainingText, Description("Response.")] string insult)
         {
             if (string.IsNullOrWhiteSpace(insult))
                 throw new InvalidCommandUsageException("Missing insult string.");
@@ -89,7 +89,7 @@ namespace TheGodfather.Commands.Main
         [Aliases("-", "remove", "del", "rm")]
         [RequireOwner]
         public async Task DeleteInsultAsync(CommandContext ctx, 
-                                           [Description("Index.")] int i = 0)
+                                           [Description("Index.")] int i)
         {
             if (ctx.Dependencies.GetDependency<InsultManager>().RemoveAt(i))
                 await ctx.RespondAsync("Insult successfully removed.").ConfigureAwait(false);
