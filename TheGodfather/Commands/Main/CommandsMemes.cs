@@ -259,14 +259,37 @@ namespace TheGodfather.Commands.Main
                 } catch (WebException e) {
                     throw new CommandFailedException("URL error.", e);
                 } catch (Exception e) {
-                    throw new CommandFailedException("Unknown error. Contact owner please.", e);
+                    throw new CommandFailedException("An error occured. Contact owner please.", e);
                 }
 
                 await ctx.RespondAsync($"Template {Formatter.Bold(name)} successfully added!")
                     .ConfigureAwait(false);
             }
             #endregion
-            
+
+            #region COMMAND_MEME_TEMPLATE_DELETE
+            [Command("delete")]
+            [Description("Add a new meme template.")]
+            [Aliases("-", "remove", "del", "rm")]
+            [RequireOwner]
+            public async Task DeleteAsync(CommandContext ctx,
+                                         [Description("Template name.")] string name)
+            {
+                string filename = $"Resources/meme-templates/{name}.jpg";
+                if (File.Exists(filename)) {
+                    try {
+                        File.Delete(filename);
+                    } catch (Exception e) {
+                        throw new CommandFailedException("An error occured. Contact owner please.", e);
+                    }
+                    await ctx.RespondAsync($"Template {Formatter.Bold(name)} successfully removed!")
+                        .ConfigureAwait(false);
+                } else {
+                    throw new CommandFailedException("No such template found!");
+                }
+            }
+            #endregion
+
             #region COMMAND_MEME_TEMPLATE_LIST
             [Command("list")]
             [Description("List all registered memes.")]
