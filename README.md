@@ -263,5 +263,24 @@ Commands use the following types:
 | ``s4 servers`` | ``save`` | Owner Only |   | Save server list. | ``!s4 servers save`` |
 |   |   |   |   |   |   |
 
+## Owner commands
+
+| Command group (with synonyms) | Command name (with synonyms) | Required Permissions | Command arguments | Command Description | Example of use |
+|---|---|---|---|---|---|
+|   |   |   |   |   |   |
+| ``owner``<br>``o``<br>``admin`` | ``botavatar``<br>``setbotavatar``<br>``setavatar`` | Owner Only | ``[string] URL`` | Set Godfather's avatar. | ``!owner setavatar http://someimage.png`` |
+| ``owner``<br>``o``<br>``admin`` | ``botname``<br>``setbotname``<br>``setname`` | Owner Only | ``[text] Name`` | Set Godfather's name. | ``!owner setname Vito Corleone`` |
+| ``owner``<br>``o``<br>``admin`` | ``clearlog``<br>``clearlogs``<br>``deletelog``<br>``deletelogs`` | Owner Only |   | Clear all application logs. | ``!owner clearlog`` |
+| ``owner``<br>``o``<br>``admin`` | ``eval``<br>``compile``<br>``run`` | Owner Only | ``[text] Code (surrounded in code block)`` | Compile and run given code, in context. | ``!owner eval ```return 42;``` `` |
+| ``owner``<br>``o``<br>``admin`` | ``leaveguilds`` | Owner Only | ``[int] Guild IDs (separated by comma, if there are more)`` | Make Godfather leave guilds with given IDs. | ``!owner leaveguils 555555555555 1111111111111`` |
+| ``owner``<br>``o``<br>``admin`` | ``sendmessage``<br>``send`` | Owner Only | ``[char] u/c (User or Channel)``<br><br>``[int] ID``<br><br>``[text] Message`` | Send a message to user or channel through the bot. | ``!owner send c 55555555555 Say hi to channel``<br><br>``!owner send u 55555555555 Say hi to user in DM`` |
+| ``owner``<br>``o``<br>``admin`` | ``shutdown``<br>``disable``<br>``poweroff``<br>``exit``<br>``quit`` | Owner Only |   | Shutdown Godfather. | ``!owner shutdown`` |
+| ``owner``<br>``o``<br>``admin`` | ``sudo``<br>``execas``<br>``as`` | Owner Only | ``[user] User``<br><br>``[text] Command`` | Execute ``Command`` as ``User``. | ``!owner execas @Someone !say test`` |
+| ``owner``<br>``o``<br>``admin`` | ``toggleignore``<br>``ti`` | Owner Only |   | Toggle ignoring of commands (except this one). | ``!owner toggleignore`` |
+| ``owner status`` | ``add``<br>``+``<br>``new`` | Owner Only | ``[text] Status`` | Add a new bot playing status to the list. | ``!owner status add Playing with Joky`` |
+| ``owner status`` | ``delete``<br>``-``<br>``remove`` | Owner Only | ``[text] Status`` | Remove playing status from the list. | ``!owner status delete Playing with Joky`` |
+| ``owner status`` | ``list`` | Owner Only |   | List all statuses. | ``!owner status list`` |
+|   |   |   |   |   |   |
+
 
 ---

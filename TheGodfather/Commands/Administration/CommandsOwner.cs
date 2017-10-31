@@ -73,7 +73,7 @@ namespace TheGodfather.Commands.Administration
         [Aliases("setbotname", "setname")]
         [CheckIgnore]
         public async Task SetBotNameAsync(CommandContext ctx,
-                                         [Description("New name.")] string name)
+                                         [RemainingText, Description("New name.")] string name)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new InvalidCommandUsageException("Name missing.");
