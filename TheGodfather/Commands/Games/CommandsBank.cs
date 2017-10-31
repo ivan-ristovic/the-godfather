@@ -35,8 +35,8 @@ namespace TheGodfather.Commands.Games
         [Aliases("give")]
         [RequireUserPermissions(Permissions.Administrator)]
         public async Task GrantAsync(CommandContext ctx,
-                                    [Description("User.")] DiscordUser u = null,
-                                    [Description("Ammount.")] int ammount = 0)
+                                    [Description("User.")] DiscordUser u,
+                                    [Description("Ammount.")] int ammount)
         {
             if (u == null || ammount <= 0 || ammount > 1000)
                 throw new InvalidCommandUsageException("Invalid user or ammount.");
@@ -116,8 +116,8 @@ namespace TheGodfather.Commands.Games
         [Description("Transfer funds from one account to another.")]
         [Aliases("lend")]
         public async Task TransferCreditsAsync(CommandContext ctx,
-                                              [Description("User to send credits to.")] DiscordUser u = null,
-                                              [Description("Ammount.")] int ammount = 0)
+                                              [Description("User to send credits to.")] DiscordUser u,
+                                              [Description("Ammount.")] int ammount)
         {
             if (u == null)
                 throw new InvalidCommandUsageException("Account to transfer the credits to is missing.");

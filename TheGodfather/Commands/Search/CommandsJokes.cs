@@ -56,7 +56,7 @@ namespace TheGodfather.Commands.Search
         [Description("Search for the joke containing the query.")]
         [Aliases("s")]
         public async Task SearchAsync(CommandContext ctx,
-                                     [RemainingText, Description("Query.")] string query = null)
+                                     [RemainingText, Description("Query.")] string query)
         {
             if (string.IsNullOrWhiteSpace(query))
                 throw new InvalidCommandUsageException("Query missing.");

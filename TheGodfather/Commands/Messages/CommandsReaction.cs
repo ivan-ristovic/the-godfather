@@ -42,7 +42,7 @@ namespace TheGodfather.Commands.Messages
         [Aliases("+", "new")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task AddAsync(CommandContext ctx,
-                                  [Description("Emoji to send.")] DiscordEmoji emoji = null,
+                                  [Description("Emoji to send.")] DiscordEmoji emoji,
                                   [RemainingText, Description("Trigger word list.")] params string[] triggers)
         {
             if (emoji == null || triggers == null)

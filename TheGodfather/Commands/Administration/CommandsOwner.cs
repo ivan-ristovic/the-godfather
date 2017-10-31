@@ -1,7 +1,9 @@
 ﻿#region USING_DIRECTIVES
 using System;
 using System.IO;
+using System.Net;
 using System.Linq;
+using System.Drawing;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Scripting;
@@ -25,9 +27,64 @@ namespace TheGodfather.Commands.Administration
     [Aliases("owner", "o")]
     [RequireOwner]
     [Hidden]
-    [Cooldown(3, 5, CooldownBucketType.Channel)]
+    [Cooldown(3, 5, CooldownBucketType.Global)]
     public class CommandsOwner
     {
+        #region COMMAND_BOTAVATAR
+        [Command("botavatar")]
+        [Description("Set bot avatar.")]
+        [Aliases("setbotavatar", "setavatar")]
+        [CheckIgnore]
+        public async Task SetBotAvatarAsync(CommandContext ctx,
+                                           [Description("URL.")] string url)
+        {
+            if (string.IsNullOrWhiteSpace(url))
+                throw new InvalidCommandUsageException("URL missing.");
+
+            string filename = $"Temp/tmp-avatar-{DateTime.Now.Ticks}.png";
+            try {
+                if (!Directory.Exists("Temp"))
+                    Directory.CreateDirectory("Temp");
+
+                using (WebClient webClient = new WebClient()) {
+                    byte[] data = webClient.DownloadData(url);
+
+                    using (MemoryStream mem = new MemoryStream(data))
+                        await ctx.Client.EditCurrentUserAsync(avatar: mem)
+                            .ConfigureAwait(false);
+                }
+
+                if (File.Exists(filename))
+                    File.Delete(filename);
+            } catch (WebException e) {
+                throw new CommandFailedException("URL error.", e);
+            } catch (Exception e) {
+                throw new CommandFailedException("An error occured. Contact owner please.", e);
+            }
+
+            await ctx.RespondAsync("Done.")
+                .ConfigureAwait(false);
+        }
+        #endregion
+
+        #region COMMAND_BOTNAME
+        [Command("botname")]
+        [Description("Set bot name.")]
+        [Aliases("setbotname", "setname")]
+        [CheckIgnore]
+        public async Task SetBotNameAsync(CommandContext ctx,
+                                         [Description("New name.")] string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new InvalidCommandUsageException("Name missing.");
+
+            await ctx.Client.EditCurrentUserAsync(username: name)
+                .ConfigureAwait(false);
+            await ctx.RespondAsync("Done.")
+                .ConfigureAwait(false);
+        }
+        #endregion
+
         #region COMMAND_CLEARLOG
         [Command("clearlog")]
         [Description("Clear application logs.")]
@@ -171,9 +228,9 @@ namespace TheGodfather.Commands.Administration
         [Aliases("send")]
         [CheckIgnore]
         public async Task SendAsync(CommandContext ctx,
-                                   [Description("u/c (for user or channel.)")] string desc = "u",
-                                   [Description("User/Channel ID.")] ulong xid = 0,
-                                   [RemainingText, Description("Message.")] string message = null)
+                                   [Description("u/c (for user or channel.)")] string desc,
+                                   [Description("User/Channel ID.")] ulong xid,
+                                   [RemainingText, Description("Message.")] string message)
         {
             if (string.IsNullOrWhiteSpace(message))
                 throw new InvalidCommandUsageException();
@@ -218,8 +275,8 @@ namespace TheGodfather.Commands.Administration
         [Aliases("execas", "as")]
         [CheckIgnore]
         public async Task SudoAsync(CommandContext ctx,
-                                   [Description("Member to execute as.")] DiscordMember member = null,
-                                   [RemainingText, Description("Command text to execute.")] string command = null)
+                                   [Description("Member to execute as.")] DiscordMember member,
+                                   [RemainingText, Description("Command text to execute.")] string command)
         {
             if (member == null || command == null)
                 throw new InvalidCommandUsageException();
@@ -252,7 +309,7 @@ namespace TheGodfather.Commands.Administration
             [Description("Add a status to running queue.")]
             [Aliases("+")]
             public async Task AddAsync(CommandContext ctx,
-                                      [RemainingText, Description("Status.")] string status = null)
+                                      [RemainingText, Description("Status.")] string status)
             {
                 if (string.IsNullOrWhiteSpace(status))
                     throw new InvalidCommandUsageException("Invalid status.");
@@ -269,7 +326,7 @@ namespace TheGodfather.Commands.Administration
             [Description("Remove status from running queue.")]
             [Aliases("-", "remove")]
             public async Task DeleteAsync(CommandContext ctx,
-                                         [RemainingText, Description("Status.")] string status = null)
+                                         [RemainingText, Description("Status.")] string status)
             {
                 if (string.IsNullOrWhiteSpace(status))
                     throw new InvalidCommandUsageException("Invalid status.");

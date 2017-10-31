@@ -41,7 +41,7 @@ namespace TheGodfather.Commands.Search
 
 
         public async Task ExecuteGroupAsync(CommandContext ctx,
-                                           [RemainingText, Description("Search query.")] string query = null)
+                                           [RemainingText, Description("Search query.")] string query)
         {
             if (string.IsNullOrWhiteSpace(query))
                 throw new InvalidCommandUsageException("Search query missing.");
@@ -83,8 +83,8 @@ namespace TheGodfather.Commands.Search
         [Description("Advanced youtube search.")]
         [Aliases("s")]
         public async Task AdvancedSearchAsync(CommandContext ctx,
-                                             [Description("Ammount of results. [1-10]")] int ammount = 5,
-                                             [RemainingText, Description("Search query.")] string query = null)
+                                             [Description("Ammount of results. [1-10]")] int ammount,
+                                             [RemainingText, Description("Search query.")] string query)
         {
             if (string.IsNullOrWhiteSpace(query))
                 throw new InvalidCommandUsageException("Search query missing.");
@@ -105,7 +105,7 @@ namespace TheGodfather.Commands.Search
         [Description("Advanced youtube search for videos only.")]
         [Aliases("sv", "searchvideo")]
         public async Task SearchVideoAsync(CommandContext ctx,
-                                          [RemainingText, Description("Search query.")] string query = null)
+                                          [RemainingText, Description("Search query.")] string query)
         {
             if (string.IsNullOrWhiteSpace(query))
                 throw new InvalidCommandUsageException("Search query missing.");
@@ -124,7 +124,7 @@ namespace TheGodfather.Commands.Search
         [Description("Advanced youtube search for channels only.")]
         [Aliases("sc", "searchchannel")]
         public async Task SearchChannelAsync(CommandContext ctx,
-                                            [RemainingText, Description("Search query.")] string query = null)
+                                            [RemainingText, Description("Search query.")] string query)
         {
             if (string.IsNullOrWhiteSpace(query))
                 throw new InvalidCommandUsageException("Search query missing.");
@@ -143,7 +143,7 @@ namespace TheGodfather.Commands.Search
         [Description("Advanced youtube search for playlists only.")]
         [Aliases("sp", "searchplaylist")]
         public async Task SearchPlaylistAsync(CommandContext ctx,
-                                             [RemainingText, Description("Search query.")] string query = null)
+                                             [RemainingText, Description("Search query.")] string query)
         {
             if (string.IsNullOrWhiteSpace(query))
                 throw new InvalidCommandUsageException("Search query missing.");

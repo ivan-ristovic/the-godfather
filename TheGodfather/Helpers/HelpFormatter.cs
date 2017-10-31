@@ -67,15 +67,15 @@ namespace TheGodfather.Helpers
                 var sb = new StringBuilder();
 
                 foreach (var arg in arguments) {
-                    if (arg.IsOptional && arg.DefaultValue != null)
-                        sb.Append(" (optional) ");
+                    if (arg.IsOptional)
+                        sb.Append("(optional) ");
 
-                    sb.Append($"[{Formatter.InlineCode(arg.Type.ToUserFriendlyName())}] ");
+                    sb.Append($"{Formatter.InlineCode($"[{arg.Type.ToUserFriendlyName()}]")} ");
 
                     sb.Append(string.IsNullOrWhiteSpace(arg.Description) ? "No description provided." : Formatter.Bold(arg.Description));
 
-                    if (arg.IsOptional && arg.DefaultValue != null)
-                        sb.Append(" (def: ").Append(arg.DefaultValue).Append(")");
+                    if (arg.IsOptional)
+                        sb.Append(" (def: ").Append(Formatter.InlineCode(arg.DefaultValue != null ? arg.DefaultValue.ToString() : "None")).Append(")");
 
                     sb.AppendLine();
                 }

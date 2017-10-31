@@ -32,7 +32,7 @@ namespace TheGodfather.Commands.Search
 
         
         public async Task ExecuteGroupAsync(CommandContext ctx,
-                                           [RemainingText, Description("Query.")] string q = null)
+                                           [RemainingText, Description("Query.")] string q)
         {
             if (string.IsNullOrWhiteSpace(q))
                 throw new InvalidCommandUsageException("Query missing!");

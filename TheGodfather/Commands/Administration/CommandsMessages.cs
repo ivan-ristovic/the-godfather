@@ -47,7 +47,7 @@ namespace TheGodfather.Commands.Administration
         [RequirePermissions(Permissions.ManageMessages)]
         [RequireUserPermissions(Permissions.Administrator)]
         public async Task DeleteMessagesFromUserAsync(CommandContext ctx, 
-                                                     [Description("User.")] DiscordUser u = null,
+                                                     [Description("User.")] DiscordUser u,
                                                      [Description("Ammount.")] int n = 5)
         {
             if (u == null)
@@ -88,16 +88,23 @@ namespace TheGodfather.Commands.Administration
         
         #region COMMAND_MESSAGES_PIN
         [Command("pin")]
-        [Description("Pins the last sent message.")]
+        [Description("Pins the last sent message. If the ID is given, pins that message.")]
         [Aliases("p")]
         [RequirePermissions(Permissions.ManageMessages)]
-        public async Task PinMessageAsync(CommandContext ctx)
+        public async Task PinMessageAsync(CommandContext ctx,
+                                         [Description("ID.")] ulong id = 0)
         {
-            var msgs = await ctx.Channel.GetMessagesAsync(2)
-                .ConfigureAwait(false);
             try {
-                await msgs.Last().PinAsync()
-                    .ConfigureAwait(false);
+                if (id!= 0) {
+                    var m = await ctx.Channel.GetMessageAsync(id)
+                        .ConfigureAwait(false);
+                    await m.PinAsync();
+                } else {
+                    var msgs = await ctx.Channel.GetMessagesAsync(2)
+                        .ConfigureAwait(false);
+                    await msgs.Last().PinAsync()
+                        .ConfigureAwait(false);
+                }
             } catch (BadRequestException e) {
                 throw new CommandFailedException("That message cannot be pinned!", e);
             }

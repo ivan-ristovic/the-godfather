@@ -40,7 +40,7 @@ namespace TheGodfather.Commands.Administration
         [Aliases("new", "add", "+")]
         [RequirePermissions(Permissions.ManageRoles)]
         public async Task CreateRoleAsync(CommandContext ctx, 
-                                         [RemainingText, Description("Role.")] string name = null)
+                                         [RemainingText, Description("Role.")] string name)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new InvalidCommandUsageException("Missing role name.");
@@ -61,7 +61,7 @@ namespace TheGodfather.Commands.Administration
         [Aliases("del", "remove", "d", "-", "rm")]
         [RequirePermissions(Permissions.ManageRoles)]
         public async Task DeleteRoleAsync(CommandContext ctx,
-                                         [Description("Role.")] DiscordRole role = null)
+                                         [Description("Role.")] DiscordRole role)
         {
             if (role == null)
                 throw new InvalidCommandUsageException("Unknown role.");
@@ -80,7 +80,7 @@ namespace TheGodfather.Commands.Administration
         [Aliases("mention", "@", "ma")]
         [RequirePermissions(Permissions.MentionEveryone)]
         public async Task MentionAllFromRoleAsync(CommandContext ctx, 
-                                                 [Description("Role.")] DiscordRole role = null)
+                                                 [Description("Role.")] DiscordRole role)
         {
             if (role == null)
                 throw new InvalidCommandUsageException("Unknown role.");
@@ -102,8 +102,8 @@ namespace TheGodfather.Commands.Administration
         [Aliases("clr", "c", "sc")]
         [RequirePermissions(Permissions.ManageRoles)]
         public async Task SetRoleColorAsync(CommandContext ctx, 
-                                           [Description("Color.")] string color = null,
-                                           [Description("Role.")] DiscordRole role = null)
+                                           [Description("Role.")] DiscordRole role,
+                                           [Description("Color.")] string color)
         {
             if (role == null || string.IsNullOrWhiteSpace(color))
                 throw new InvalidCommandUsageException("I need a valid role and a valid color in hex.");
@@ -121,8 +121,8 @@ namespace TheGodfather.Commands.Administration
         [Aliases("name", "rename", "n")]
         [RequirePermissions(Permissions.ManageRoles)]
         public async Task RenameRoleAsync(CommandContext ctx,
-                                         [Description("Role.")] DiscordRole role = null,
-                                         [RemainingText, Description("New name.")] string name = null)
+                                         [Description("Role.")] DiscordRole role,
+                                         [RemainingText, Description("New name.")] string name)
         {
             if (role == null || string.IsNullOrWhiteSpace(name))
                 throw new ArgumentException("I need a valid existing role and a new name.");
@@ -140,8 +140,8 @@ namespace TheGodfather.Commands.Administration
         [Aliases("mentionable", "m", "setm")]
         [RequirePermissions(Permissions.ManageRoles)]
         public async Task SetRoleMentionableAsync(CommandContext ctx,
-                                                 [Description("Role.")] DiscordRole role = null,
-                                                 [Description("[true/false]")] bool b = true)
+                                                 [Description("Role.")] DiscordRole role,
+                                                 [Description("[true/false]")] bool b)
         {
             if (role == null)
                 throw new InvalidCommandUsageException("Unknown role.");
@@ -159,8 +159,8 @@ namespace TheGodfather.Commands.Administration
         [Aliases("separate", "h", "seth", "hoist", "sethoist")]
         [RequirePermissions(Permissions.ManageRoles)]
         public async Task SetRoleVisibleAsync(CommandContext ctx,
-                                             [Description("Role.")] DiscordRole role = null,
-                                             [Description("[true/false]")] bool b = true)
+                                             [Description("Role.")] DiscordRole role,
+                                             [Description("[true/false]")] bool b)
         {
             if (role == null)
                 throw new InvalidCommandUsageException("Unknown role.");

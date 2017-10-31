@@ -1,6 +1,7 @@
 ﻿#region USING_DIRECTIVES
 using System;
 using System.IO;
+using System.Net;
 using System.Linq;
 using System.Collections.Generic;
 using System.Drawing;
@@ -56,8 +57,8 @@ namespace TheGodfather.Commands.Main
         [Aliases("+", "new")]
         [RequireOwner]
         public async Task AddMemeAsync(CommandContext ctx,
-                                      [Description("Short name (case insensitive).")] string name = null,
-                                      [Description("URL.")] string url = null)
+                                      [Description("Short name (case insensitive).")] string name,
+                                      [Description("URL.")] string url)
         {
             if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(url))
                 throw new InvalidCommandUsageException("Name or URL missing or invalid.");
@@ -74,9 +75,9 @@ namespace TheGodfather.Commands.Main
         [Description("Creates a new meme from blank template.")]
         [Aliases("create", "maker", "c", "make", "m")]
         public async Task CreateMemeAsync(CommandContext ctx,
-                                         [Description("Template.")] string template = null,
-                                         [Description("Top Text.")] string topText = null,
-                                         [Description("Bottom Text.")] string bottomText = null)
+                                         [Description("Template.")] string template,
+                                         [Description("Top Text.")] string topText,
+                                         [Description("Bottom Text.")] string bottomText)
         {
             if (string.IsNullOrWhiteSpace(template))
                 throw new InvalidCommandUsageException("Missing template name.");
@@ -167,7 +168,7 @@ namespace TheGodfather.Commands.Main
         [Aliases("-", "del", "remove", "rm")]
         [RequireOwner]
         public async Task DeleteMemeAsync(CommandContext ctx,
-                                         [Description("Short name (case insensitive).")] string name = null)
+                                         [Description("Short name (case insensitive).")] string name)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new InvalidCommandUsageException("Name missing.");
@@ -232,6 +233,62 @@ namespace TheGodfather.Commands.Main
                     .ConfigureAwait(false);
             }
 
+            
+            #region COMMAND_MEME_TEMPLATE_ADD
+            [Command("add")]
+            [Description("Add a new meme template.")]
+            [Aliases("+", "new")]
+            [RequireOwner]
+            public async Task AddAsync(CommandContext ctx,
+                                      [Description("Template name.")] string name,
+                                      [Description("URL.")] string url)
+            {
+                string filename = $"Temp/tmp-template-{DateTime.Now.Ticks}.png";
+                try {
+                    if (!Directory.Exists("Temp"))
+                        Directory.CreateDirectory("Temp");
+                    using (WebClient webClient = new WebClient()) {
+                        byte[] data = webClient.DownloadData(url);
+
+                        using (MemoryStream mem = new MemoryStream(data))
+                        using (Image image = Image.FromStream(mem))
+                            image.Save(filename, System.Drawing.Imaging.ImageFormat.Jpeg);
+                    }
+                    if (File.Exists(filename))
+                        File.Move(filename, $"Resources/meme-templates/{name}.jpg");
+                } catch (WebException e) {
+                    throw new CommandFailedException("URL error.", e);
+                } catch (Exception e) {
+                    throw new CommandFailedException("An error occured. Contact owner please.", e);
+                }
+
+                await ctx.RespondAsync($"Template {Formatter.Bold(name)} successfully added!")
+                    .ConfigureAwait(false);
+            }
+            #endregion
+
+            #region COMMAND_MEME_TEMPLATE_DELETE
+            [Command("delete")]
+            [Description("Add a new meme template.")]
+            [Aliases("-", "remove", "del", "rm")]
+            [RequireOwner]
+            public async Task DeleteAsync(CommandContext ctx,
+                                         [Description("Template name.")] string name)
+            {
+                string filename = $"Resources/meme-templates/{name}.jpg";
+                if (File.Exists(filename)) {
+                    try {
+                        File.Delete(filename);
+                    } catch (Exception e) {
+                        throw new CommandFailedException("An error occured. Contact owner please.", e);
+                    }
+                    await ctx.RespondAsync($"Template {Formatter.Bold(name)} successfully removed!")
+                        .ConfigureAwait(false);
+                } else {
+                    throw new CommandFailedException("No such template found!");
+                }
+            }
+            #endregion
 
             #region COMMAND_MEME_TEMPLATE_LIST
             [Command("list")]
