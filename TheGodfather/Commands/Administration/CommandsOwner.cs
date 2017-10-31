@@ -1,7 +1,9 @@
 ﻿#region USING_DIRECTIVES
 using System;
 using System.IO;
+using System.Net;
 using System.Linq;
+using System.Drawing;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Scripting;
@@ -25,9 +27,46 @@ namespace TheGodfather.Commands.Administration
     [Aliases("owner", "o")]
     [RequireOwner]
     [Hidden]
-    [Cooldown(3, 5, CooldownBucketType.Channel)]
+    [Cooldown(3, 5, CooldownBucketType.Global)]
     public class CommandsOwner
     {
+        #region COMMAND_BOTAVATAR
+        [Command("botavatar")]
+        [Description("Set bot avatar.")]
+        [Aliases("setbotavatar", "setavatar")]
+        [CheckIgnore]
+        public async Task SetBotAvatarAsync(CommandContext ctx,
+                                           [Description("URL.")] string url)
+        {
+            if (string.IsNullOrWhiteSpace(url))
+                throw new InvalidCommandUsageException("URL missing.");
+
+            string filename = $"Temp/tmp-avatar-{DateTime.Now.Ticks}.png";
+            try {
+                if (!Directory.Exists("Temp"))
+                    Directory.CreateDirectory("Temp");
+
+                using (WebClient webClient = new WebClient()) {
+                    byte[] data = webClient.DownloadData(url);
+
+                    using (MemoryStream mem = new MemoryStream(data))
+                        await ctx.Client.EditCurrentUserAsync(avatar: mem)
+                            .ConfigureAwait(false);
+                }
+
+                if (File.Exists(filename))
+                    File.Delete(filename);
+            } catch (WebException e) {
+                throw new CommandFailedException("URL error.", e);
+            } catch (Exception e) {
+                throw new CommandFailedException("An error occured. Contact owner please.", e);
+            }
+
+            await ctx.RespondAsync("Done.")
+                .ConfigureAwait(false);
+        }
+        #endregion
+
         #region COMMAND_BOTNAME
         [Command("botname")]
         [Description("Set bot name.")]
