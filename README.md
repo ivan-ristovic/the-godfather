@@ -86,6 +86,7 @@ Commands use the following types:
 | ``meme``<br>``memes``<br>``mm`` | ``list`` |  | ``(optional) [int] Page (def: 1)`` | List memes on page ``Page``. | ``!meme list 3`` |
 | ``meme``<br>``memes``<br>``mm`` | ``save`` | Owner Only |  | Save all memes. | ``!meme save`` |
 | ``meme templates``<br>``meme template``<br>``meme t`` | ``list`` |   | ``(optional) [int] Page (def: 1)`` | List templates on page ``Page``. | ``!meme templates list 4`` |
+| ``meme templates``<br>``meme template``<br>``meme t`` | ``add``<br>``+``<br>``new`` | Owner Only | ``[text] Name``<br><br>``[string] URL`` | Add a new meme template to global meme template list. | ``!meme template add somename http://url.png`` |
 |   |   |   |   |   |   |
 | ``random``<br>``rand``<br>``rnd`` | ``cat`` |   |   | Send a random cat image. | ``!random cat`` |
 | ``random``<br>``rand``<br>``rnd`` | ``dog`` |   |   | Send a random dog image. | ``!random dog`` |

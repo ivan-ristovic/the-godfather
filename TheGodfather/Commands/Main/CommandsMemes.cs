@@ -1,6 +1,7 @@
 ﻿#region USING_DIRECTIVES
 using System;
 using System.IO;
+using System.Net;
 using System.Linq;
 using System.Collections.Generic;
 using System.Drawing;
@@ -232,7 +233,40 @@ namespace TheGodfather.Commands.Main
                     .ConfigureAwait(false);
             }
 
+            
+            #region COMMAND_MEME_TEMPLATE_ADD
+            [Command("add")]
+            [Description("Add a new meme template.")]
+            [Aliases("+", "new")]
+            [RequireOwner]
+            public async Task AddAsync(CommandContext ctx,
+                                      [Description("Template name.")] string name,
+                                      [Description("URL.")] string url)
+            {
+                string filename = $"Temp/tmp-template-{DateTime.Now.Ticks}.png";
+                try {
+                    if (!Directory.Exists("Temp"))
+                        Directory.CreateDirectory("Temp");
+                    using (WebClient webClient = new WebClient()) {
+                        byte[] data = webClient.DownloadData(url);
 
+                        using (MemoryStream mem = new MemoryStream(data))
+                        using (Image image = Image.FromStream(mem))
+                            image.Save(filename, System.Drawing.Imaging.ImageFormat.Jpeg);
+                    }
+                    if (File.Exists(filename))
+                        File.Move(filename, $"Resources/meme-templates/{name}.jpg");
+                } catch (WebException e) {
+                    throw new CommandFailedException("URL error.", e);
+                } catch (Exception e) {
+                    throw new CommandFailedException("Unknown error. Contact owner please.", e);
+                }
+
+                await ctx.RespondAsync($"Template {Formatter.Bold(name)} successfully added!")
+                    .ConfigureAwait(false);
+            }
+            #endregion
+            
             #region COMMAND_MEME_TEMPLATE_LIST
             [Command("list")]
             [Description("List all registered memes.")]
