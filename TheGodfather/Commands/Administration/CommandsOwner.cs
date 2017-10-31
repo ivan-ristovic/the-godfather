@@ -28,6 +28,24 @@ namespace TheGodfather.Commands.Administration
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public class CommandsOwner
     {
+        #region COMMAND_BOTNAME
+        [Command("botname")]
+        [Description("Set bot name.")]
+        [Aliases("setbotname", "setname")]
+        [CheckIgnore]
+        public async Task SetBotNameAsync(CommandContext ctx,
+                                         [Description("New name.")] string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new InvalidCommandUsageException("Name missing.");
+
+            await ctx.Client.EditCurrentUserAsync(username: name)
+                .ConfigureAwait(false);
+            await ctx.RespondAsync("Done.")
+                .ConfigureAwait(false);
+        }
+        #endregion
+
         #region COMMAND_CLEARLOG
         [Command("clearlog")]
         [Description("Clear application logs.")]
