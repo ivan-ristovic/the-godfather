@@ -41,7 +41,6 @@ Commands use the following types:
 |---|---|---|---|---|---|
 |   |   |   |   |   |   |
 |   | ``8ball`` |   | ``[text] Question`` | Get an answer to your question from an almighty magic ball. | ``!8ball Are mirrors real?`` |
-|   | ``choose``<br>``select`` |   | ``[text] List`` | Randomly select one option from given list. Separate options with a ``,``. | ``!choose red, dark green, blue`` |
 |   | ``embed`` | Attach files (user) | ``[string] URL`` | Embeds image given as URL and sends a embed frame. | ``!embed https://img.memecdn.com/feelium_o_1007518.jpg``  |
 |   | ``greet``<br>``hello``<br>``hi``<br>``halo``<br>``hey``<br>``howdy``<br>``sup`` |  |  | Greets a user and starts a conversation | ``!greet`` |
 |   | ``invite``<br>``getinvite`` | Create instant invite |  | Get an instant invite link for the current channel. | ``!invite`` |
@@ -51,7 +50,6 @@ Commands use the following types:
 |   | ``ping`` |   |   | Ping the bot. | ``!ping`` |
 |   | ``poll``<br>``vote`` |   | ``[text] Question`` | Starts a poll in the channel. The bot will ask for poll options, which you give separated with ``;``, for example: ``option1;option2;option3`` | ``!poll "Do you want to kick Godfather?"`` |
 |   | ``prefix``<br>``setprefix`` | Administrator (user) | ``(optional) [string] New prefix (maxlen: 10)`` | If invoked without arguments, gives current prefix for this channel, otherwise sets the prefix to ``New prefix``. If for example ``New prefix`` is ``;``, all commands in that channel from that point must be invoked using ``;``, for example ``;greet``. | ``!prefix``<br><br>``!prefix .`` |
-|   | ``raffle`` |   | ``(optional) [role] Role (def: @everyone)`` | Randomly select one online user from given role. | ``!raffle @Admins`` |
 |   | ``rate``<br>``score``<br>``graph`` |   | ``[user] User`` | An accurate graphical representatin of ``User``'s humanity. | ``!rate @Someone`` |
 |   | ``remind`` |   | ``[int] Time to wait before repeat (in seconds)``<br><br>``[text] What to repeat`` | Repeat given text after given time. | ``!repeat 3600 I was told to remind you to do something`` |
 |   | ``report`` |   | ``[text] Report message`` | Send message to owner (hopefully about a bug, I can see it being abused) | ``!report Your bot sucks!`` |
@@ -91,6 +89,8 @@ Commands use the following types:
 |   |   |   |   |   |   |
 | ``random``<br>``rand``<br>``rnd`` | ``cat`` |   |   | Send a random cat image. | ``!random cat`` |
 | ``random``<br>``rand``<br>``rnd`` | ``dog`` |   |   | Send a random dog image. | ``!random dog`` |
+| ``random``<br>``rand``<br>``rnd`` | ``choose``<br>``select`` |   | ``[text] List`` | Randomly select one option from given list. Separate options with a ``,``. | ``!choose red, dark green, blue`` |
+| ``random``<br>``rand``<br>``rnd`` | ``raffle`` |   | ``(optional) [role] Role (def: @everyone)`` | Randomly select one online user from given role. | ``!raffle @Admins`` |
 |   |   |   |   |   |   |
 | ``rank``<br>``ranks``<br>``ranking`` |   |   |   | Show user rank. One message gives 1XP. | ``!rank`` |
 | ``rank``<br>``ranks``<br>``ranking`` | ``list``<br>``levels`` |   |   | Show all ranks and XP needed. | ``!rank list`` |

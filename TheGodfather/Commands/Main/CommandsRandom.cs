@@ -52,22 +52,6 @@ namespace TheGodfather.Commands.Main
         }
         #endregion
 
-        #region COMMAND_CHOOSE
-        [Command("choose")]
-        [Description("!choose option1, option2, option3...")]
-        [Aliases("select")]
-        public async Task ChooseAsync(CommandContext ctx,
-                                     [RemainingText, Description("Option list (separated with a comma).")] string s)
-        {
-            if (string.IsNullOrWhiteSpace(s))
-                throw new InvalidCommandUsageException("Missing list to choose from.");
-
-            var options = s.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
-            await ctx.RespondAsync(options[new Random().Next(options.Length)].Trim())
-                .ConfigureAwait(false);
-        }
-        #endregion
-
         #region COMMAND_PENIS
         [Command("penis")]
         [Description("An accurate size of the user's manhood.")]
@@ -77,28 +61,8 @@ namespace TheGodfather.Commands.Main
         {
             if (u == null)
                 throw new InvalidCommandUsageException("You didn't give me anyone to measure.");
-            
+
             await ctx.RespondAsync("Size: " + Formatter.Bold("8" + new string('=', (int)(u.Id % 40)) + 'D'))
-                .ConfigureAwait(false);
-        }
-        #endregion
-
-        #region COMMAND_RAFFLE
-        [Command("raffle")]
-        [Description("Choose a user from the online members list belonging to a given role.")]
-        public async Task RaffleAsync(CommandContext ctx,
-                                     [Description("Role.")] DiscordRole role = null)
-        {
-            if (role == null)
-                role = ctx.Guild.EveryoneRole;
-
-            var members = await ctx.Guild.GetAllMembersAsync()
-                .ConfigureAwait(false);
-            var online = members.Where(
-                m => m.Roles.Contains(role) && m.Presence.Status != UserStatus.Offline
-            );
-
-            await ctx.RespondAsync("Raffled: " + online.ElementAt(new Random().Next(online.Count())).Mention)
                 .ConfigureAwait(false);
         }
         #endregion
@@ -140,7 +104,7 @@ namespace TheGodfather.Commands.Main
                     File.Delete(filename);
             } catch (Exception e) {
                 throw new CommandFailedException("Error loading graph, contact owner please.", e);
-            } 
+            }
         }
         #endregion
 
@@ -179,6 +143,42 @@ namespace TheGodfather.Commands.Main
                 } catch (WebException e) {
                     throw new CommandFailedException("Connection to random.dog failed!", e);
                 }
+            }
+            #endregion
+
+            #region COMMAND_CHOOSE
+            [Command("choose")]
+            [Description("!choose option1, option2, option3...")]
+            [Aliases("select")]
+            public async Task ChooseAsync(CommandContext ctx,
+                                         [RemainingText, Description("Option list (separated with a comma).")] string s)
+            {
+                if (string.IsNullOrWhiteSpace(s))
+                    throw new InvalidCommandUsageException("Missing list to choose from.");
+
+                var options = s.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
+                await ctx.RespondAsync(options[new Random().Next(options.Length)].Trim())
+                    .ConfigureAwait(false);
+            }
+            #endregion
+
+            #region COMMAND_RAFFLE
+            [Command("raffle")]
+            [Description("Choose a user from the online members list belonging to a given role.")]
+            public async Task RaffleAsync(CommandContext ctx,
+                                         [Description("Role.")] DiscordRole role = null)
+            {
+                if (role == null)
+                    role = ctx.Guild.EveryoneRole;
+
+                var members = await ctx.Guild.GetAllMembersAsync()
+                    .ConfigureAwait(false);
+                var online = members.Where(
+                    m => m.Roles.Contains(role) && m.Presence.Status != UserStatus.Offline
+                );
+
+                await ctx.RespondAsync("Raffled: " + online.ElementAt(new Random().Next(online.Count())).Mention)
+                    .ConfigureAwait(false);
             }
             #endregion
 
