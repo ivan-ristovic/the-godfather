@@ -70,12 +70,12 @@ Commands use the following types:
 | ``filter``<br>``filters``<br>``f`` | ``list`` |  | ``(optional) [int] Page (def: 1)`` | List guild filters on page ``Page``. | ``!filter list 3`` |
 | ``filter``<br>``filters``<br>``f`` | ``save`` | Owner Only |  | Save all filters. | ``!filter save`` |
 |   |   |   |   |   |   |
-| ``insult``<br>``burn`` |   |   | ``(optional) [user] User (def: sender)`` | Insult ``User``. | ``!insult``<br><br>``!insult @Someone`` |
-| ``insult``<br>``burn`` | ``add``<br>``+``<br>``new`` | Owner Only | ``[text] Insult`` | Add a new insult to global insult list. You can use ``%user%`` in your insult text as a replacement for the user mention who will be insulted. | ``!insult add Your age is greater than your IQ, %user%!`` |
-| ``insult``<br>``burn`` | ``clear``<br>``clearall`` | Owner Only |  | Delete all insults. | ``!insult clear`` |
-| ``insult``<br>``burn`` | ``delete``<br>``-``<br>``remove``<br>``del``<br>``rm`` | Owner Only | ``[int] Index`` | Remove insult with a given index from list. Use ``!insults list`` to view indexes. | ``!insult delete 5`` |
-| ``insult``<br>``burn`` | ``list`` |  | ``(optional) [int] Page (def: 1)`` | List insults on page ``Page``. | ``!insult list 3`` |
-| ``insult``<br>``burn`` | ``save`` | Owner Only |  | Save all insults. | ``!insult save`` |
+| ``insult``<br>``burn``<br>``insults`` |   |   | ``(optional) [user] User (def: sender)`` | Insult ``User``. | ``!insult``<br><br>``!insult @Someone`` |
+| ``insult``<br>``burn``<br>``insults`` | ``add``<br>``+``<br>``new`` | Owner Only | ``[text] Insult`` | Add a new insult to global insult list. You can use ``%user%`` in your insult text as a replacement for the user mention who will be insulted. | ``!insult add Your age is greater than your IQ, %user%!`` |
+| ``insult``<br>``burn``<br>``insults`` | ``clear``<br>``clearall`` | Owner Only |  | Delete all insults. | ``!insult clear`` |
+| ``insult``<br>``burn``<br>``insults`` | ``delete``<br>``-``<br>``remove``<br>``del``<br>``rm`` | Owner Only | ``[int] Index`` | Remove insult with a given index from list. Use ``!insults list`` to view indexes. | ``!insult delete 5`` |
+| ``insult``<br>``burn``<br>``insults`` | ``list`` |  | ``(optional) [int] Page (def: 1)`` | List insults on page ``Page``. | ``!insult list 3`` |
+| ``insult``<br>``burn``<br>``insults`` | ``save`` | Owner Only |  | Save all insults. | ``!insult save`` |
 |   |   |   |   |   |   |
 | ``meme``<br>``memes``<br>``mm`` |   |   | ``(optional) [text] Meme name`` | Send a meme with name ``Meme name``. If name isn't given, sends random one. | ``!meme``<br><br>``!meme fap`` |
 | ``meme``<br>``memes``<br>``mm`` | ``add``<br>``+``<br>``new`` | Owner Only | ``[text] Name``<br><br>``[string] URL`` | Add a new meme to global meme list. | ``!meme add Name http://url.png`` |

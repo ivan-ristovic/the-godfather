@@ -19,7 +19,7 @@ namespace TheGodfather.Commands.Main
 {
     [Group("insult", CanInvokeWithoutSubcommand = true)]
     [Description("Burns a user!")]
-    [Aliases("burn")]
+    [Aliases("burn", "insults")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
     [CheckIgnore]
     public class CommandsInsult
