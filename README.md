@@ -51,7 +51,7 @@ Commands use the following types:
 |   | ``poll``<br>``vote`` |   | ``[text] Question`` | Starts a poll in the channel. The bot will ask for poll options, which you give separated with ``;``, for example: ``option1;option2;option3`` | ``!poll "Do you want to kick Godfather?"`` |
 |   | ``prefix``<br>``setprefix`` | Administrator (user) | ``(optional) [string] New prefix (maxlen: 10)`` | If invoked without arguments, gives current prefix for this channel, otherwise sets the prefix to ``New prefix``. If for example ``New prefix`` is ``;``, all commands in that channel from that point must be invoked using ``;``, for example ``;greet``. | ``!prefix``<br><br>``!prefix .`` |
 |   | ``rate``<br>``score``<br>``graph`` |   | ``[user] User`` | An accurate graphical representatin of ``User``'s humanity. | ``!rate @Someone`` |
-|   | ``remind`` |   | ``[int] Time to wait before repeat (in seconds)``<br><br>``[text] What to repeat`` | Repeat given text after given time. | ``!repeat 3600 I was told to remind you to do something`` |
+|   | ``remind`` |   | ``[int] Time to wait before repeat (in seconds)``<br><br>``[text] What to repeat`` | Repeat given text after given time. | ``!remind 3600 I was told to remind you to do this`` |
 |   | ``report`` |   | ``[text] Report message`` | Send message to owner (hopefully about a bug, I can see it being abused) | ``!report Your bot sucks!`` |
 |   | ``say``  |   | ``[text] What to say`` | Make Godfather say something! | ``!say Luke, I am your father!`` |
 |   | ``zugify`` |   | ``[text] Text`` | Requested by Zugi. It is so stupid it isn't worth describing... | ``!zugify Some text`` |
@@ -268,9 +268,9 @@ Commands use the following types:
 | Command group (with synonyms) | Command name (with synonyms) | Required Permissions | Command arguments | Command Description | Example of use |
 |---|---|---|---|---|---|
 |   |   |   |   |   |   |
-|   | ``connect``<br>``join``<br>``voice`` |   | ``[channel] Channel`` | Join a given channel. | ``connect Music`` |
-|   | ``leave``<br>``disconnect`` |   |   | Disconnect from voice channels. | ``disconnect`` |
-|   | ``play`` |   | ``[text] File path`` | Play a file from the server. Must be in voice channel. | ``play C://system32/idk.mp3`` |
+|   | ``connect``<br>``join``<br>``voice`` |   | ``[channel] Channel`` | Join a given channel. | ``!connect Music`` |
+|   | ``leave``<br>``disconnect`` |   |   | Disconnect from voice channels. | ``!disconnect`` |
+|   | ``play`` |   | ``[text] File path`` | Play a file from the server. Must be in voice channel. | ``!play C://system32/idk.mp3`` |
 |   |   |   |   |   |   |
 
 
