@@ -157,7 +157,7 @@ namespace TheGodfather.Commands.Main
 
             var rows = Math.Ceiling(realSize.Width / rect.Width);
 
-            float ScaleFontSize = font.Size / ((float)Math.Log(rows) + 1) * 2f;
+            float ScaleFontSize = font.Size / ((float)Math.Log(rows) + 1) * 1.5f;
             return new Font(font.FontFamily, ScaleFontSize, font.Style);
         }
         #endregion
