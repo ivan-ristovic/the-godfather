@@ -34,7 +34,7 @@ namespace TheGodfather.Helpers
         internal ReactionManager    ReactionControl     { get; private set; }
         internal StatusManager      StatusControl       { get; private set; }
         internal SwatServerManager  SwatServerControl   { get; private set; }
-        internal ServicesList       Services            { get; private set; }
+        internal GiphyService       GiphyService        { get; private set; }
 
         
         internal BotDependencyList(DiscordClient client, BotConfig cfg)
@@ -51,7 +51,7 @@ namespace TheGodfather.Helpers
             ReactionControl = new ReactionManager();
             StatusControl = new StatusManager();
             SwatServerControl = new SwatServerManager();
-            Services = new ServicesList(cfg);
+            GiphyService = new GiphyService(cfg.GiphyKey);
         }
 
 
@@ -102,7 +102,7 @@ namespace TheGodfather.Helpers
                 .AddInstance(ReactionControl)
                 .AddInstance(StatusControl)
                 .AddInstance(SwatServerControl)
-                .AddInstance(Services);
+                .AddInstance(GiphyService);
         }
     }
 }

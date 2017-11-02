@@ -89,8 +89,8 @@ Commands use the following types:
 |   |   |   |   |   |   |
 | ``random``<br>``rand``<br>``rnd`` | ``cat`` |   |   | Send a random cat image. | ``!random cat`` |
 | ``random``<br>``rand``<br>``rnd`` | ``dog`` |   |   | Send a random dog image. | ``!random dog`` |
-| ``random``<br>``rand``<br>``rnd`` | ``choose``<br>``select`` |   | ``[text] List`` | Randomly select one option from given list. Separate options with a ``,``. | ``!choose red, dark green, blue`` |
-| ``random``<br>``rand``<br>``rnd`` | ``raffle`` |   | ``(optional) [role] Role (def: @everyone)`` | Randomly select one online user from given role. | ``!raffle @Admins`` |
+| ``random``<br>``rand``<br>``rnd`` | ``choose``<br>``select`` |   | ``[text] List`` | Randomly select one option from given list. Separate options with a ``,``. | ``!random choose red, dark green, blue`` |
+| ``random``<br>``rand``<br>``rnd`` | ``raffle`` |   | ``(optional) [role] Role (def: @everyone)`` | Randomly select one online user from given role. | ``!random raffle @Admins`` |
 |   |   |   |   |   |   |
 | ``rank``<br>``ranks``<br>``ranking`` |   |   |   | Show user rank. One message gives 1XP. | ``!rank`` |
 | ``rank``<br>``ranks``<br>``ranking`` | ``list``<br>``levels`` |   |   | Show all ranks and XP needed. | ``!rank list`` |

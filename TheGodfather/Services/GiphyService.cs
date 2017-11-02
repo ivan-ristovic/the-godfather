@@ -4,14 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using TheGodfather.Helpers;
-using TheGodfather.Helpers.DataManagers;
 
 using GiphyDotNet;
 using GiphyDotNet.Manager;
-using GiphyDotNet.Model.GiphyImage;
-using GiphyDotNet.Model.GiphyRandomImage;
 using GiphyDotNet.Model.Parameters;
-using GiphyDotNet.Model.Results;
 #endregion
 
 namespace TheGodfather.Services
@@ -21,9 +17,9 @@ namespace TheGodfather.Services
         private Giphy _giphy { get; set; }
 
 
-        public GiphyService(BotConfig cfg)
+        public GiphyService(string key)
         {
-            _giphy = new Giphy(cfg.GiphyKey);
+            _giphy = new Giphy(key);
         }
 
         
