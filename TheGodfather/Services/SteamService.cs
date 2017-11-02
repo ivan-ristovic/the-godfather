@@ -32,15 +32,21 @@ namespace TheGodfather.Services
 
         public async Task<DiscordEmbed> GetEmbeddedResultAsync(ulong id)
         {
-            var model = await _steam.GetCommunityProfileAsync(id)
-                .ConfigureAwait(false);
-            if (model == null)
+            SteamCommunityProfileModel profile = null;
+            ISteamWebResponse<PlayerSummaryModel> summary = null;
+            try {
+                profile = await _steam.GetCommunityProfileAsync(id)
+                    .ConfigureAwait(false);
+                summary = await _steam.GetPlayerSummaryAsync(id)
+                    .ConfigureAwait(false);
+            } catch {
+                return null;
+            }
+
+            if (profile == null || summary == null || summary.Data == null)
                 return null;
 
-            var summary = await _steam.GetPlayerSummaryAsync(id)
-                .ConfigureAwait(false);
-
-            return EmbedSteamResult(model, summary.Data);
+            return EmbedSteamResult(profile, summary.Data);
         }
 
         public DiscordEmbed EmbedSteamResult(SteamCommunityProfileModel model, PlayerSummaryModel summary)
