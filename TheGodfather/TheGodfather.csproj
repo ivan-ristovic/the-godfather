@@ -252,6 +252,7 @@
     <Compile Include="Services\GiphyService.cs" />
     <Compile Include="Services\ImgurService.cs" />
     <Compile Include="Services\SteamService.cs" />
+    <Compile Include="Services\YoutubeService.cs" />
     <Compile Include="TheGodfather.cs" />
   </ItemGroup>
   <ItemGroup>
