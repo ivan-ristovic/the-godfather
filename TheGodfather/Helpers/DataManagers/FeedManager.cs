@@ -93,7 +93,7 @@ namespace TheGodfather.Helpers.DataManagers
         public bool TryRemoveUsingQualified(ulong cid, string qname)
         {
             qname = qname.ToLower();
-            var mathes = _feeds.Where(kvp => kvp.Value.QualifiedName == qname);
+            var mathes = _feeds.Where(kvp => kvp.Value.QualifiedName.ToLower() == qname);
             bool succ = true;
             foreach (var feedkvp in mathes) {
                 succ &= _feeds[feedkvp.Key].ChannelIds.Remove(cid);
