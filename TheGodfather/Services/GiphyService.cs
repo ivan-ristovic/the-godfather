@@ -23,7 +23,7 @@ namespace TheGodfather.Services
         }
 
         
-        public async Task<GiphyDotNet.Model.GiphyImage.Data[]> Search(string query, int limit = 1)
+        public async Task<GiphyDotNet.Model.GiphyImage.Data[]> SearchAsync(string query, int limit = 1)
         {
             var res = await _giphy.GifSearch(new SearchParameter() {
                 Query = query,
@@ -33,7 +33,7 @@ namespace TheGodfather.Services
             return res.Data;
         }
 
-        public async Task<GiphyDotNet.Model.GiphyRandomImage.Data> GetRandomGif()
+        public async Task<GiphyDotNet.Model.GiphyRandomImage.Data> GetRandomGifAsync()
         {
             var res = await _giphy.RandomGif(new RandomParameter())
                 .ConfigureAwait(false);
@@ -41,7 +41,7 @@ namespace TheGodfather.Services
             return res.Data;
         }
 
-        public async Task<GiphyDotNet.Model.GiphyImage.Data[]> GetTrendingGifs(int limit)
+        public async Task<GiphyDotNet.Model.GiphyImage.Data[]> GetTrendingGifsAsync(int limit)
         {
             var res = await _giphy.TrendingGifs(new TrendingParameter() {
                 Limit = limit

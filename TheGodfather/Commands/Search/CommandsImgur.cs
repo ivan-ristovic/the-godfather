@@ -1,19 +1,20 @@
 ﻿#region USING_DIRECTIVES
 using System;
+using System.Linq;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
-using TheGodfather.Helpers.DataManagers;
+using TheGodfather.Services;
 using TheGodfather.Exceptions;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 
-using Imgur.API;
-using Imgur.API.Authentication.Impl;
-using Imgur.API.Endpoints.Impl;
 using Imgur.API.Enums;
+using Imgur.API.Models;
 using Imgur.API.Models.Impl;
+using Imgur.API;
 #endregion
 
 namespace TheGodfather.Commands.Search
@@ -25,11 +26,6 @@ namespace TheGodfather.Commands.Search
     [CheckIgnore]
     public class CommandsImgur
     {
-        #region PRIVATE_FIELDS
-        private ImgurClient _imgur = null;
-        private GalleryEndpoint _endpoint = null;
-        #endregion
-
 
         public async Task ExecuteGroupAsync(CommandContext ctx,
                                            [Description("Number of images to print [1-10].")] int n,
@@ -40,8 +36,14 @@ namespace TheGodfather.Commands.Search
             if (n < 1 || n > 10)
                 throw new CommandFailedException("Invalid ammount (must be 1-10).", new ArgumentOutOfRangeException());
 
-            InitializeImgurService(ctx);
-            await PrintImagesFromSubAsync(ctx, sub.Trim(), n, SubredditGallerySortOrder.Top, TimeWindow.Day)
+            var res = await ctx.Dependencies.GetDependency<ImgurService>().GetItemsFromSubAsync(
+                sub,
+                n,
+                SubredditGallerySortOrder.Top,
+                TimeWindow.Day
+            ).ConfigureAwait(false);
+
+            await PrintImagesAsync(ctx, res, n)
                 .ConfigureAwait(false);
         }
 
@@ -59,8 +61,15 @@ namespace TheGodfather.Commands.Search
             if (n < 1 || n > 10)
                 throw new CommandFailedException("Invalid ammount (must be 1-10).", new ArgumentOutOfRangeException());
 
-            InitializeImgurService(ctx);
-            await PrintImagesFromSubAsync(ctx, sub.Trim(), n, SubredditGallerySortOrder.Time, TimeWindow.Day)
+
+            var res = await ctx.Dependencies.GetDependency<ImgurService>().GetItemsFromSubAsync(
+                sub, 
+                n, 
+                SubredditGallerySortOrder.Time, 
+                TimeWindow.Day
+            ).ConfigureAwait(false);
+
+            await PrintImagesAsync(ctx, res, n)
                 .ConfigureAwait(false);
         }
         #endregion
@@ -91,36 +100,30 @@ namespace TheGodfather.Commands.Search
             else if (time == "all" || time == "a")
                 t = TimeWindow.All;
 
-            InitializeImgurService(ctx);
-            await PrintImagesFromSubAsync(ctx, sub.Trim(), n, SubredditGallerySortOrder.Top, t)
+            var res = await ctx.Dependencies.GetDependency<ImgurService>().GetItemsFromSubAsync(
+                sub,
+                n,
+                SubredditGallerySortOrder.Time,
+                t
+            ).ConfigureAwait(false);
+
+            await PrintImagesAsync(ctx, res, n)
                 .ConfigureAwait(false);
         }
         #endregion
 
 
         #region HELPER_FUNCTIONS
-        private void InitializeImgurService(CommandContext ctx)
+        private async Task PrintImagesAsync(CommandContext ctx, IEnumerable<IGalleryItem> results, int num)
         {
-            if (_imgur == null || _endpoint == null) {
-                _imgur = new ImgurClient(ctx.Dependencies.GetDependency<BotConfigManager>().CurrentConfig.ImgurKey);
-                _endpoint = new GalleryEndpoint(_imgur);
-            }
-        }
-
-        private async Task PrintImagesFromSubAsync(CommandContext ctx, 
-                                                   string sub,
-                                                   int num,
-                                                   SubredditGallerySortOrder order,
-                                                   TimeWindow time)
-        {
-            try {
-                var images = await _endpoint.GetSubredditGalleryAsync(sub, order, time)
+            if (!results.Any()) {
+                await ctx.RespondAsync("No results...")
                     .ConfigureAwait(false);
-                
-                int i = num;
-                foreach (var im in images) {
-                    if (i-- == 0)
-                        break;
+                return;
+            }
+
+            try {
+                foreach (var im in results) {
                     if (im.GetType().Name == "GalleryImage") {
                         var img = ((GalleryImage)im);
                         if (!ctx.Channel.IsNSFW && img.Nsfw != null && img.Nsfw == true)
@@ -139,21 +142,15 @@ namespace TheGodfather.Commands.Search
                     await Task.Delay(1000)
                         .ConfigureAwait(false);
                 }
-
-                if (i == num) {
-                    await ctx.RespondAsync("No results...")
-                        .ConfigureAwait(false);
-                    return;
-                }
-
-                if (i > 0) {
-                    await ctx.RespondAsync("These are all of the results returned.")
-                        .ConfigureAwait(false);
-                }
             } catch (ImgurException ie) {
                 throw ie;
             } catch (Exception e) {
                 throw e;
+            }
+
+            if (results.Count() != num) {
+                await ctx.RespondAsync("These are all of the results returned.")
+                    .ConfigureAwait(false);
             }
         }
         #endregion

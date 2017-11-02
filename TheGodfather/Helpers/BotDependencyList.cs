@@ -35,8 +35,9 @@ namespace TheGodfather.Helpers
         internal StatusManager      StatusControl       { get; private set; }
         internal SwatServerManager  SwatServerControl   { get; private set; }
         internal GiphyService       GiphyService        { get; private set; }
+        internal ImgurService       ImgurService        { get; private set; }
 
-        
+
         internal BotDependencyList(DiscordClient client, BotConfig cfg)
         {
             AliasControl = new AliasManager();
@@ -52,6 +53,7 @@ namespace TheGodfather.Helpers
             StatusControl = new StatusManager();
             SwatServerControl = new SwatServerManager();
             GiphyService = new GiphyService(cfg.GiphyKey);
+            ImgurService = new ImgurService(cfg.ImgurKey);
         }
 
 
@@ -102,7 +104,8 @@ namespace TheGodfather.Helpers
                 .AddInstance(ReactionControl)
                 .AddInstance(StatusControl)
                 .AddInstance(SwatServerControl)
-                .AddInstance(GiphyService);
+                .AddInstance(GiphyService)
+                .AddInstance(ImgurService);
         }
     }
 }
