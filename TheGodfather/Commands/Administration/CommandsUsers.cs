@@ -241,7 +241,7 @@ namespace TheGodfather.Commands.Administration
         #region COMMAND_USER_REMOVEALLROLES
         [Command("removeallroles")]
         [Description("Revoke all roles from user.")]
-        [Aliases("remallroles", "remallroles", "-ra", "-rall", "-allr")]
+        [Aliases("remallroles", "-ra", "-rall", "-allr")]
         [RequirePermissions(Permissions.ManageRoles)]
         public async Task RemoveAllRolesAsync(CommandContext ctx,
                                              [Description("User.")] DiscordMember u)

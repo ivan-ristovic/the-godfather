@@ -76,7 +76,7 @@ namespace TheGodfather.Commands.Main
         #region COMMAND_MEME_CREATE
         [Command("create")]
         [Description("Creates a new meme from blank template.")]
-        [Aliases("create", "maker", "c", "make", "m")]
+        [Aliases("maker", "c", "make", "m")]
         public async Task CreateMemeAsync(CommandContext ctx,
                                          [Description("Template.")] string template,
                                          [Description("Top Text.")] string topText,
