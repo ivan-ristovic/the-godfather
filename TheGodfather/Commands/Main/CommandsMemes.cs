@@ -10,12 +10,15 @@ using System.Drawing.Drawing2D;
 using System.Threading.Tasks;
 
 using TheGodfather.Helpers.DataManagers;
+using TheGodfather.Services;
 using TheGodfather.Exceptions;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+
+using Imgur.API;
 #endregion
 
 namespace TheGodfather.Commands.Main
@@ -136,9 +139,15 @@ namespace TheGodfather.Commands.Main
                 image.Dispose();
 
                 var fs = new FileStream(filename, FileMode.Open);
-                await ctx.RespondWithFileAsync(fs)
+                var url = await ctx.Dependencies.GetDependency<ImgurService>().UploadImageAsync(fs, filename)
                     .ConfigureAwait(false);
                 fs.Close();
+
+                await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
+                    Title = url ?? "Uploading failed",
+                    Url = url ?? "https://cms-assets.tutsplus.com/uploads/users/30/posts/25489/image/pac-404.png",
+                    ImageUrl = url ?? "https://cms-assets.tutsplus.com/uploads/users/30/posts/25489/image/pac-404.png"
+                }).ConfigureAwait(false);
 
                 if (File.Exists(filename))
                     File.Delete(filename);
@@ -146,6 +155,8 @@ namespace TheGodfather.Commands.Main
                 throw new CommandFailedException("Unknown template name.", e);
             } catch (IOException e) {
                 throw new CommandFailedException("Failed to load/save a meme template. Please report this.", e);
+            } catch (ImgurException e) {
+                throw new CommandFailedException("Uploading image to Imgur failed.", e);
             }
         }
 
