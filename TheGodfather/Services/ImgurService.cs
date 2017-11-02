@@ -4,15 +4,9 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-using TheGodfather.Helpers;
-
-using DSharpPlus.CommandsNext;
-
-using Imgur.API;
 using Imgur.API.Authentication.Impl;
 using Imgur.API.Endpoints.Impl;
 using Imgur.API.Enums;
-using Imgur.API.Models.Impl;
 using Imgur.API.Models;
 #endregion
 
@@ -20,8 +14,8 @@ namespace TheGodfather.Services
 {
     public class ImgurService
     {
-        private ImgurClient _imgur = null;
-        private GalleryEndpoint _endpoint = null;
+        private ImgurClient _imgur { get; set; }
+        private GalleryEndpoint _endpoint { get; set; }
 
 
         public ImgurService(string key)

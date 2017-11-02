@@ -36,6 +36,7 @@ namespace TheGodfather.Helpers
         internal SwatServerManager  SwatServerControl   { get; private set; }
         internal GiphyService       GiphyService        { get; private set; }
         internal ImgurService       ImgurService        { get; private set; }
+        internal SteamService       SteamService        { get; private set; }
 
 
         internal BotDependencyList(DiscordClient client, BotConfig cfg)
@@ -54,6 +55,7 @@ namespace TheGodfather.Helpers
             SwatServerControl = new SwatServerManager();
             GiphyService = new GiphyService(cfg.GiphyKey);
             ImgurService = new ImgurService(cfg.ImgurKey);
+            SteamService = new SteamService(cfg.SteamKey);
         }
 
 
@@ -105,7 +107,8 @@ namespace TheGodfather.Helpers
                 .AddInstance(StatusControl)
                 .AddInstance(SwatServerControl)
                 .AddInstance(GiphyService)
-                .AddInstance(ImgurService);
+                .AddInstance(ImgurService)
+                .AddInstance(SteamService);
         }
     }
 }
