@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 
+using TheGodfather.Helpers;
+using TheGodfather.Services;
 using TheGodfather.Helpers.DataManagers;
 
 using DSharpPlus;
@@ -32,9 +34,10 @@ namespace TheGodfather.Helpers
         internal ReactionManager    ReactionControl     { get; private set; }
         internal StatusManager      StatusControl       { get; private set; }
         internal SwatServerManager  SwatServerControl   { get; private set; }
+        internal ServicesList       Services            { get; private set; }
 
         
-        internal BotDependencyList(DiscordClient client)
+        internal BotDependencyList(DiscordClient client, BotConfig cfg)
         {
             AliasControl = new AliasManager();
             BankControl = new BankManager();
@@ -48,6 +51,7 @@ namespace TheGodfather.Helpers
             ReactionControl = new ReactionManager();
             StatusControl = new StatusManager();
             SwatServerControl = new SwatServerManager();
+            Services = new ServicesList(cfg);
         }
 
 
@@ -97,7 +101,8 @@ namespace TheGodfather.Helpers
                 .AddInstance(RankControl)
                 .AddInstance(ReactionControl)
                 .AddInstance(StatusControl)
-                .AddInstance(SwatServerControl);
+                .AddInstance(SwatServerControl)
+                .AddInstance(Services);
         }
     }
 }

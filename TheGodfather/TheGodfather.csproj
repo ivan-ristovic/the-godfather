@@ -249,6 +249,8 @@
     <Compile Include="Helpers\DataManagers\StatusManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\GiphyService.cs" />
+    <Compile Include="Services\ServicesList.cs" />
     <Compile Include="TheGodfather.cs" />
   </ItemGroup>
   <ItemGroup>
