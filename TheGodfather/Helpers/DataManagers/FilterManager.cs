@@ -61,13 +61,13 @@ namespace TheGodfather.Helpers.DataManagers
             return true;
         }
 
-        public bool Contains(ulong gid, string message)
+        public bool ContainsFilter(ulong gid, string message)
         {
             message = message.ToLower();
-            if (_filters.ContainsKey(gid) && _filters[gid].Any(f => f.Match(message).Success))
-                return true;
-            else
-                return false;
+            foreach (var word in message.Split(' '))
+                if (_filters.ContainsKey(gid) && _filters[gid].Any(f => f.Match(word).Success))
+                    return true;
+            return false;
         }
 
         public bool TryAdd(ulong gid, Regex regex)
