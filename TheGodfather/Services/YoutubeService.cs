@@ -20,7 +20,7 @@ namespace TheGodfather.Services
 {
     public class YoutubeService
     {
-        private YouTubeService _yt = null;
+        private YouTubeService _yt { get; set; }
 
 
         public YoutubeService(string key)
