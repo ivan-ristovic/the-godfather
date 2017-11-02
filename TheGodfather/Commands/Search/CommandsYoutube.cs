@@ -7,21 +7,12 @@ using System.Threading;
 using System.Threading.Tasks;
 
 using TheGodfather.Exceptions;
-using TheGodfather.Helpers;
+using TheGodfather.Services;
 
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-
-using Google.Apis.Services;
-using Google.Apis.YouTube.v3;
-using Google.Apis.YouTube.v3.Data;
-using TheGodfather.Helpers.DataManagers;
-/*
-using Google.Apis.Auth.OAuth2;
-using Google.Apis.Util.Store;
-*/
 #endregion
 
 
@@ -34,11 +25,6 @@ namespace TheGodfather.Commands.Search
     [CheckIgnore]
     public class CommandsYoutube
     {
-        #region PRIVATE_FIELDS
-        private YouTubeService _yt = null;
-        private int _defammount = 50;
-        #endregion
-
 
         public async Task ExecuteGroupAsync(CommandContext ctx,
                                            [RemainingText, Description("Search query.")] string query)
@@ -46,35 +32,8 @@ namespace TheGodfather.Commands.Search
             if (string.IsNullOrWhiteSpace(query))
                 throw new InvalidCommandUsageException("Search query missing.");
 
-            /*await*/ InitializeYtService(ctx);
-
-            var results = await GetResultsAsync(query, 1)
+            await SendYouTubeResults(ctx, query, 1)
                 .ConfigureAwait(false);
-            if (results == null || results.Count == 0) {
-                await ctx.RespondAsync("No results...")
-                    .ConfigureAwait(false);
-                return;
-            }
-            
-            string link = "";
-            switch (results[0].Id.Kind) {
-                case "youtube#video":
-                    link = "https://www.youtube.com/watch?v=" + results[0].Id.VideoId;
-                    break;
-                case "youtube#channel":
-                    link = "https://www.youtube.com/channel/" + results[0].Id.ChannelId;
-                    break;
-                case "youtube#playlist":
-                    link = "https://www.youtube.com/playlist?list=" + results[0].Id.PlaylistId;
-                    break;
-            }
-
-            await ctx.RespondAsync($"Search result for ***{query}*** : " + link, embed: new DiscordEmbedBuilder() {
-                Title = results[0].Snippet.Title,
-                Description = results[0].Snippet.Description,
-                ThumbnailUrl = results[0].Snippet.Thumbnails.Default__.Url,
-                Color = DiscordColor.Red
-            }.Build()).ConfigureAwait(false);
         }
 
 
@@ -91,11 +50,7 @@ namespace TheGodfather.Commands.Search
             if (ammount < 1 || ammount > 10)
                 throw new CommandFailedException("Invalid ammount (must be 1-10).");
 
-            /*await*/ InitializeYtService(ctx);
-            var results = await GetResultsAsync(query, ammount)
-                .ConfigureAwait(false);
-
-            await ctx.RespondAsync($"Search results for ***{query}***", embed: EmbedYouTubeResults(results))
+            await SendYouTubeResults(ctx, query, ammount)
                 .ConfigureAwait(false);
         }
         #endregion
@@ -110,12 +65,8 @@ namespace TheGodfather.Commands.Search
             if (string.IsNullOrWhiteSpace(query))
                 throw new InvalidCommandUsageException("Search query missing.");
 
-            /*await*/ InitializeYtService(ctx);
-            var results = await GetResultsAsync(query, _defammount)
+            await SendYouTubeResults(ctx, query, 5, "video")
                 .ConfigureAwait(false);
-
-            var em = EmbedYouTubeResults(results.Where(r => r.Id.Kind == "youtube#video").Take(5).ToList());
-            await ctx.RespondAsync($"Search results for ***{query}***", embed: em);
         }
         #endregion
 
@@ -129,12 +80,8 @@ namespace TheGodfather.Commands.Search
             if (string.IsNullOrWhiteSpace(query))
                 throw new InvalidCommandUsageException("Search query missing.");
 
-            /*await*/ InitializeYtService(ctx);
-            var results = await GetResultsAsync(query, _defammount)
+            await SendYouTubeResults(ctx, query, 5, "channel")
                 .ConfigureAwait(false);
-
-            var em = EmbedYouTubeResults(results.Where(r => r.Id.Kind == "youtube#channel").Take(5).ToList());
-            await ctx.RespondAsync($"Search results for ***{query}***", embed: em);
         }
         #endregion
 
@@ -148,81 +95,19 @@ namespace TheGodfather.Commands.Search
             if (string.IsNullOrWhiteSpace(query))
                 throw new InvalidCommandUsageException("Search query missing.");
 
-            /*await*/ InitializeYtService(ctx);
-            var results = await GetResultsAsync(query, _defammount)
+            await SendYouTubeResults(ctx, query, 5, "playlist")
                 .ConfigureAwait(false);
-
-            var em = EmbedYouTubeResults(results.Where(r => r.Id.Kind == "youtube#playlist").ToList());
-            await ctx.RespondAsync($"Search results for ***{query}***", embed: em);
         }
         #endregion
 
 
         #region HELPER_FUNCTIONS
-        private /*async Task*/ void InitializeYtService(CommandContext ctx)
+        private async Task SendYouTubeResults(CommandContext ctx, string query, int ammount, string type = null)
         {
-            /*
-            UserCredential credential;
-            using (var stream = new FileStream("Resources/yt_secret.json", FileMode.Open, FileAccess.Read)) {
-                credential = await GoogleWebAuthorizationBroker.AuthorizeAsync(
-                    GoogleClientSecrets.Load(stream).Secrets,
-                    new[] { YouTubeService.Scope.YoutubeReadonly },
-                    "user", CancellationToken.None, new FileDataStore("Books.ListMyLibrary")
-                );
-            }
-            */
-
-            if (_yt == null) {
-                _yt = new YouTubeService(new BaseClientService.Initializer() {
-                    ApiKey = ctx.Dependencies.GetDependency<BotConfigManager>().CurrentConfig.YoutubeKey,
-                    ApplicationName = "TheGodfather"
-                    // HttpClientInitializer = credential
-                });
-            }
-        }
-
-        private async Task<List<SearchResult>> GetResultsAsync(string query, int ammount)
-        {
-            var searchListRequest = _yt.Search.List("snippet");
-            searchListRequest.Q = query;
-            searchListRequest.MaxResults = ammount;
-
-            var searchListResponse = await searchListRequest.ExecuteAsync().ConfigureAwait(false);
-
-            List<SearchResult> videos = new List<SearchResult>();
-            videos.AddRange(searchListResponse.Items);
-
-            return videos;
-        }
-
-        private DiscordEmbed EmbedYouTubeResults(List<SearchResult> results)
-        {
-            if (results == null || results.Count == 0)
-                return new DiscordEmbedBuilder() { Description = "No results...", Color = DiscordColor.Red };
-
-            if (results.Count > 25)
-                results = results.Take(25).ToList();
-
-            var em = new DiscordEmbedBuilder() {
-                Color = DiscordColor.Red
-            };
-            foreach (var r in results) {
-                switch (r.Id.Kind) {
-                    case "youtube#video":
-                        em.AddField(r.Snippet.Title, "https://www.youtube.com/watch?v=" + r.Id.VideoId);
-                        break;
-
-                    case "youtube#channel":
-                        em.AddField(r.Snippet.Title, "https://www.youtube.com/channel/" + r.Id.ChannelId);
-                        break;
-
-                    case "youtube#playlist":
-                        em.AddField(r.Snippet.Title, "https://www.youtube.com/playlist?list=" + r.Id.PlaylistId);
-                        break;
-                }
-            }
-
-            return em.Build();
+            var em = await ctx.Dependencies.GetDependency<YoutubeService>().GetEmbeddedResults(query, ammount, type)
+                .ConfigureAwait(false);
+            await ctx.RespondAsync($"Search result for {Formatter.Bold(query)}", embed: em)
+                .ConfigureAwait(false);
         }
         #endregion
     }

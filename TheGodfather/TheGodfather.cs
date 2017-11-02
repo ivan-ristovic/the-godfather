@@ -122,7 +122,7 @@ namespace TheGodfather
 
         private void SetupCommands()
         {
-            _dependecies = new BotDependencyList(_client);
+            _dependecies = new BotDependencyList(_client, _config.CurrentConfig);
             _commands = _client.UseCommandsNext(new CommandsNextConfiguration {
                 EnableDms = false,
                 CaseSensitive = false,

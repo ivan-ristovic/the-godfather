@@ -5,23 +5,13 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 using TheGodfather.Exceptions;
-using TheGodfather.Helpers.DataManagers;
+using TheGodfather.Services;
 
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-
-using SteamWebAPI2;
-using SteamWebAPI2.Models;
-using SteamWebAPI2.Utilities;
-using SteamWebAPI2.Exceptions;
-using SteamWebAPI2.Interfaces;
-using Steam.Models.SteamCommunity;
-using Steam.Models.SteamStore;
-using Steam.Models.SteamPlayer;
 #endregion
-
 
 namespace TheGodfather.Commands.Search
 {
@@ -32,78 +22,26 @@ namespace TheGodfather.Commands.Search
     [CheckIgnore]
     public class CommandsSteam
     {
-        #region PRIVATE_FIELDS
-        private SteamUser _steam = null;
-        #endregion
-
-
         #region COMMAND_STEAM_PROFILE
         [Command("profile")]
         [Description("Get Steam user information from ID.")]
         [Aliases("id")]
         public async Task InfoAsync(CommandContext ctx,
-                                      [Description("ID.")] ulong id)
+                                   [Description("ID.")] ulong id)
         {
-            InitializeSteamService(ctx);
-
-            var model = await _steam.GetCommunityProfileAsync(id)
-                .ConfigureAwait(false);
-            if (model == null)
-                throw new CommandFailedException("No users found!");
-
-            var summary = await _steam.GetPlayerSummaryAsync(id)
-                .ConfigureAwait(false);
-
-            await ctx.RespondAsync($"http://steamcommunity.com/id/{model.SteamID}/", embed: EmbedSteamResult(model, summary.Data))
-                .ConfigureAwait(false);
-        }
-        #endregion
-
-
-        #region HELPER_FUNCTIONS
-        private void InitializeSteamService(CommandContext ctx)
-        {
-            if (_steam == null)
-                _steam = new SteamUser(ctx.Dependencies.GetDependency<BotConfigManager>().CurrentConfig.SteamKey);
-        }
-
-        private DiscordEmbed EmbedSteamResult(SteamCommunityProfileModel model, PlayerSummaryModel summary)
-        {
-            var em = new DiscordEmbedBuilder() {
-                Title = summary.Nickname,
-                Description = Regex.Replace(model.Summary, "<[^>]*>", ""),
-                ThumbnailUrl = model.AvatarFull.ToString(),
-                Color = DiscordColor.Black
-            };
-
-            if (summary.ProfileVisibility != ProfileVisibility.Public) {
-                em.Description = "This profile is private.";
-                return em;
+            DiscordEmbed em = null;
+            try {
+                em = await ctx.Dependencies.GetDependency<SteamService>().GetEmbeddedResultAsync(id)
+                    .ConfigureAwait(false);
+            } catch (Exception e) {
+                throw new CommandFailedException("Error getting Steam information.", e);
             }
 
-            em.AddField("Member since", summary.AccountCreatedDate.ToUniversalTime().ToString(), inline: true);
+            if (em == null)
+                throw new CommandFailedException("User not found!");
 
-            if (summary.UserStatus != Steam.Models.SteamCommunity.UserStatus.Offline)
-                em.AddField("Status:", summary.UserStatus.ToString(), inline: true);
-            else
-                em.AddField("Last seen:", summary.LastLoggedOffDate.ToUniversalTime().ToString(), inline: true);
-
-            if (summary.PlayingGameName != null)
-                em.AddField("Playing: ", $"{summary.PlayingGameName}");
-
-            //em.AddField("Game activity", $"{model.HoursPlayedLastTwoWeeks.ToString()} hours past 2 weeks.", inline: true);
-            
-            if (model.IsVacBanned) {
-                var bans = _steam.GetPlayerBansAsync(model.SteamID).Result.Data;
-
-                uint bancount = 0;
-                foreach (var b in bans)
-                    bancount += b.NumberOfVACBans;
-
-                em.AddField("VAC Status:", $"**{bancount}** ban(s) on record.", inline: true);
-            }
-
-            return em.Build();
+            await ctx.RespondAsync(embed: em)
+                .ConfigureAwait(false);
         }
         #endregion
     }

@@ -249,6 +249,10 @@
     <Compile Include="Helpers\DataManagers\StatusManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\GiphyService.cs" />
+    <Compile Include="Services\ImgurService.cs" />
+    <Compile Include="Services\SteamService.cs" />
+    <Compile Include="Services\YoutubeService.cs" />
     <Compile Include="TheGodfather.cs" />
   </ItemGroup>
   <ItemGroup>
