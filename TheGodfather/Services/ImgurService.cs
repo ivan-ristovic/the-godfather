@@ -42,7 +42,8 @@ namespace TheGodfather.Services
 
         public async Task<string> UploadImageAsync(FileStream fs, string name)
         {
-            var img = await _iendpoint.UploadImageStreamAsync(fs, name: name);
+            var img = await _iendpoint.UploadImageStreamAsync(fs, name: name)
+                .ConfigureAwait(false);
             return img.Link;
         }
     }

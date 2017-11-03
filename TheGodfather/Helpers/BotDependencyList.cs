@@ -38,6 +38,7 @@ namespace TheGodfather.Helpers
         internal ImgurService       ImgurService        { get; private set; }
         internal SteamService       SteamService        { get; private set; }
         internal YoutubeService     YoutubeService      { get; private set; }
+        internal JokesService       JokesService        { get; private set; }
 
 
         internal BotDependencyList(DiscordClient client, BotConfig cfg)
@@ -58,6 +59,7 @@ namespace TheGodfather.Helpers
             ImgurService = new ImgurService(cfg.ImgurKey);
             SteamService = new SteamService(cfg.SteamKey);
             YoutubeService = new YoutubeService(cfg.YoutubeKey);
+            JokesService = new JokesService();
         }
 
 
@@ -111,7 +113,8 @@ namespace TheGodfather.Helpers
                 .AddInstance(GiphyService)
                 .AddInstance(ImgurService)
                 .AddInstance(SteamService)
-                .AddInstance(YoutubeService);
+                .AddInstance(YoutubeService)
+                .AddInstance(JokesService);
         }
     }
 }

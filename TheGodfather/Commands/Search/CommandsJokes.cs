@@ -1,17 +1,17 @@
 ﻿#region USING_DIRECTIVES
 using System;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Net;
-using Newtonsoft.Json.Linq;
 
 using TheGodfather.Exceptions;
+using TheGodfather.Services;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-using System.IO;
 #endregion
 
 namespace TheGodfather.Commands.Search
@@ -26,27 +26,17 @@ namespace TheGodfather.Commands.Search
 
         public async Task ExecuteGroupAsync(CommandContext ctx)
         {
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create("https://icanhazdadjoke.com/");
-            request.AutomaticDecompression = DecompressionMethods.GZip;
-            request.Accept = "text/plain";
-
-            string data = null;
+            string joke = null;
             try {
-                using (var response = await request.GetResponseAsync().ConfigureAwait(false)) {
-                    using (var stream = response.GetResponseStream()) {
-                        using (var reader = new StreamReader(stream)) {
-                            data = await reader.ReadToEndAsync()
-                                .ConfigureAwait(false);
-                        }
-                    }
-                }
+                joke = await ctx.Dependencies.GetDependency<JokesService>().GetRandomJokeAsync()
+                    .ConfigureAwait(false);
             } catch (WebException e) {
                 throw new CommandFailedException("Connection to remote site failed!", e);
             } catch (Exception e) {
                 throw new CommandFailedException("Exception occured!", e);
             }
 
-            await ctx.RespondAsync(embed: new DiscordEmbedBuilder() { Description = data }.Build())
+            await ctx.RespondAsync(embed: new DiscordEmbedBuilder() { Description = joke }.Build())
                 .ConfigureAwait(false);
         }
 
@@ -61,31 +51,21 @@ namespace TheGodfather.Commands.Search
             if (string.IsNullOrWhiteSpace(query))
                 throw new InvalidCommandUsageException("Query missing.");
 
-            HttpWebRequest request = (HttpWebRequest)WebRequest.Create("https://icanhazdadjoke.com/search?term=" + query.Replace(' ', '+'));
-            request.AutomaticDecompression = DecompressionMethods.GZip;
-            request.Accept = "text/plain";
-
-            string data = null;
+            string jokes = null;
             try {
-                using (var response = await request.GetResponseAsync().ConfigureAwait(false)) {
-                    using (var stream = response.GetResponseStream()) {
-                        using (var reader = new StreamReader(stream)) {
-                            data = await reader.ReadToEndAsync()
-                                .ConfigureAwait(false);
-                        }
-                    }
-                }
+                jokes = await ctx.Dependencies.GetDependency<JokesService>().SearchForJokesAsync(query)
+                    .ConfigureAwait(false);
             } catch (WebException e) {
                 throw new CommandFailedException("Connection to remote site failed!", e);
             } catch (Exception e) {
                 throw new CommandFailedException("Exception occured!", e);
             }
 
-            if (string.IsNullOrWhiteSpace(data))
-                data = "No results...";
+            if (string.IsNullOrWhiteSpace(jokes))
+                jokes = "No results...";
 
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
-                Description = string.Join("\n\n", data.Split('\n').Take(10))
+                Description = string.Join("\n\n", jokes.Split('\n').Take(10))
             }.Build()).ConfigureAwait(false);
         }
         #endregion
@@ -97,10 +77,9 @@ namespace TheGodfather.Commands.Search
         public async Task YomamaAsync(CommandContext ctx)
         {
             try {
-                var wc = new WebClient();
-                var data = wc.DownloadString("http://api.yomomma.info/");
+                var joke = await ctx.Dependencies.GetDependency<JokesService>().GetYoMommaJokeAsync();
                 await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
-                    Description = JObject.Parse(data)["joke"].ToString()
+                    Description = joke
                 }.Build()).ConfigureAwait(false);
             } catch (WebException e) {
                 throw new CommandFailedException("Connection to remote site failed!", e);
