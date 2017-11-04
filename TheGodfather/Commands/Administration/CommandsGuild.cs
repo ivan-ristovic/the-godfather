@@ -76,6 +76,36 @@ namespace TheGodfather.Commands.Administration
         }
         #endregion
 
+        #region COMMAND_GUILD_GETBANS
+        [Command("bans")]
+        [Description("Get audit logs.")]
+        [Aliases("banlist", "viewbanlist", "getbanlist", "getbans", "viewbans")]
+        [RequirePermissions(Permissions.ViewAuditLog)]
+        public async Task GetBansAsync(CommandContext ctx,
+                                      [Description("Page.")] int page = 1)
+        {
+            var bans = await ctx.Guild.GetBansAsync()
+                .ConfigureAwait(false);
+
+            if (page < 1 || page > bans.Count / 20 + 1)
+                throw new CommandFailedException("No bans on that page.");
+
+            string desc = "";
+            int starti = (page - 1) * 20;
+            int endi = (starti + 20 < bans.Count) ? starti + 20 : bans.Count;
+            var banarray = bans.Take(page * 20).ToArray();
+            for (var i = starti; i < endi; i++)
+                desc += $"{Formatter.Bold(banarray[i].User.Username)} ({banarray[i].User.Id}) - " +
+                     $"{Formatter.Bold(banarray[i].Reason)}\n";
+
+            await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
+                Title = $"Ban list (page {page}) :",
+                Description = desc,
+                Color = DiscordColor.Brown
+            }.Build()).ConfigureAwait(false);
+        }
+        #endregion
+
         #region COMMAND_GUILD_GETLOGS
         [Command("log")]
         [Description("Get audit logs.")]
