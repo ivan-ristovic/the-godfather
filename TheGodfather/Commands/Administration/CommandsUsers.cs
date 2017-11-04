@@ -101,7 +101,9 @@ namespace TheGodfather.Commands.Administration
 
             await ctx.Guild.BanMemberAsync(id, delete_message_days: 7, reason: $"{ctx.User.Username} ({ctx.User.Id}): {reason}")
                 .ConfigureAwait(false);
-            await ctx.RespondAsync($"{Formatter.Bold(ctx.User.Username)} BANNED {Formatter.Bold(id.ToString())}!", embed: new DiscordEmbedBuilder() {
+
+            var u = await ctx.Client.GetUserAsync(id);
+            await ctx.RespondAsync($"{Formatter.Bold(ctx.User.Username)} BANNED {Formatter.Bold($"{u.Username} ({id})")}!", embed: new DiscordEmbedBuilder() {
                 ImageUrl = "http://i0.kym-cdn.com/entries/icons/original/000/000/615/BANHAMMER.png"
             }.Build()).ConfigureAwait(false);
         }
@@ -306,6 +308,30 @@ namespace TheGodfather.Commands.Administration
             await member.ModifyAsync(newname, reason: $"{ctx.User.Username} ({ctx.User.Id}).")
                 .ConfigureAwait(false);
             await ctx.RespondAsync("Successfully changed the name of the user.")
+                .ConfigureAwait(false);
+        }
+        #endregion
+
+        #region COMMAND_USER_UNBAN
+        [Command("unban")]
+        [Description("Unbans the user from the server.")]
+        [Aliases("ub")]
+        [RequirePermissions(Permissions.BanMembers)]
+        public async Task UnbanAsync(CommandContext ctx,
+                                    [Description("ID.")] ulong id,
+                                    [RemainingText, Description("Reason.")] string reason = null)
+        {
+            if (id == ctx.User.Id)
+                throw new CommandFailedException("Nice joke, giving me your own ID...");
+
+            if (string.IsNullOrWhiteSpace(reason))
+                reason = "No reason provided.";
+
+            await ctx.Guild.UnbanMemberAsync(id, reason: $"{ctx.User.Username} ({ctx.User.Id}): {reason}")
+                .ConfigureAwait(false);
+
+            var u = await ctx.Client.GetUserAsync(id);
+            await ctx.RespondAsync($"{Formatter.Bold(ctx.User.Username)} removed an ID ban for {Formatter.Bold($"{u.Username} ({id})")}!")
                 .ConfigureAwait(false);
         }
         #endregion
