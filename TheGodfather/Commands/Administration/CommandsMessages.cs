@@ -1,6 +1,7 @@
 ﻿#region USING_DIRECTIVES
 using System;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 using TheGodfather.Exceptions;
@@ -58,6 +59,39 @@ namespace TheGodfather.Commands.Administration
             var msgs = await ctx.Channel.GetMessagesAsync()
                 .ConfigureAwait(false);
             await ctx.Channel.DeleteMessagesAsync(msgs.Where(m => m.Author.Id == u.Id).Take(n))
+                .ConfigureAwait(false);
+            await ctx.RespondAsync("Done!")
+                .ConfigureAwait(false);
+        }
+        #endregion
+
+        #region COMMAND_MESSAGES_DELETE_REGEX
+        [Command("deleteregex")]
+        [Description("Deletes given ammount of most-recent messages that match a given regular expression.")]
+        [Aliases("-regex", "delregex", "dr", "dfr")]
+        [RequirePermissions(Permissions.ManageMessages)]
+        [RequireUserPermissions(Permissions.Administrator)]
+        public async Task DeleteMessagesFromRegexAsync(CommandContext ctx,
+                                                      [Description("User.")] string r,
+                                                      [Description("Ammount.")] int n = 5)
+        {
+            if (r == null)
+                throw new InvalidCommandUsageException("Regex missing.");
+            if (n <= 0 || n > 1000)
+                throw new CommandFailedException("Invalid number of messages to delete (must be in range [1, 1000].", new ArgumentOutOfRangeException());
+
+            Regex regex;
+            try {
+                regex = new Regex(r, RegexOptions.IgnoreCase | RegexOptions.Singleline);
+            } catch (ArgumentException e) {
+                throw new CommandFailedException("Error occured while " + e.Message, e);
+            }
+
+            var msgs = await ctx.Channel.GetMessagesAsync()
+                .ConfigureAwait(false);
+            await ctx.Channel.DeleteMessagesAsync(msgs.Where(m => regex.IsMatch(m.Content)).Take(n))
+                .ConfigureAwait(false);
+            await ctx.RespondAsync("Done!")
                 .ConfigureAwait(false);
         }
         #endregion
