@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Runtime.InteropServices;
 
 using TheGodfather.Exceptions;
 using TheGodfather.Helpers;
@@ -115,9 +116,9 @@ namespace TheGodfather
             _client.MessageReactionAdded += Client_ReactToMessage;
             _client.MessageUpdated += Client_MessageUpdated;
             _client.Ready += Client_Ready;
-
-            // Windows 7 specific
-            _client.SetWebSocketClient<WebSocket4NetClient>();
+            
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && Environment.OSVersion.Version <= new Version(6, 1, 7601, 65536))
+                _client.SetWebSocketClient<WebSocket4NetClient>();
         }
 
         private void SetupCommands()
@@ -468,16 +469,18 @@ namespace TheGodfather
 
             if (e.Exception is CommandNotFoundException)
                 embed.Description = $"{emoji} The specified command does not exist.";
+            else if (e.Exception is InvalidCommandUsageException)
+                embed.Description = $"{emoji} Invalid usage! {ex.Message}";
+            else if (e.Exception is CommandFailedException)
+                embed.Description = $"{emoji} {ex.Message}";
             else if (e.Exception is NotSupportedException)
                 embed.Description = $"{emoji} Not supported. {e.Exception.Message}";
             else if (e.Exception is InvalidOperationException)
                 embed.Description = $"{emoji} Invalid operation. {e.Exception.Message}";
-            else if (e.Exception is InvalidCommandUsageException)
-                embed.Description = $"{emoji} Invalid usage! {ex.Message}";
+            else if (e.Exception is NotFoundException)
+                embed.Description = $"{emoji} 404: Not found.";
             else if (e.Exception is ArgumentException)
                 embed.Description = $"{emoji} Argument specified is invalid (please use {Formatter.Bold("!help <command>")}).";
-            else if (e.Exception is CommandFailedException)
-                embed.Description = $"{emoji} {ex.Message}";
             else if (ex is ChecksFailedException exc) {
                 var attr = exc.FailedChecks.First();
                 if (attr is CooldownAttribute)
