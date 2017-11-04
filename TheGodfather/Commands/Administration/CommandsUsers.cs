@@ -138,6 +138,54 @@ namespace TheGodfather.Commands.Administration
         }
         #endregion
 
+        #region COMMAND_USER_TEMPBAN
+        [Command("tempban")]
+        [Description("Temporarily ans the user from the server and then unbans him after given time.")]
+        [Aliases("tb")]
+        [RequirePermissions(Permissions.BanMembers)]
+        public async Task TempBanAsync(CommandContext ctx,
+                                      [Description("Ammount of time units.")] int ammount,
+                                      [Description("Time unit.")] string unit,
+                                      [Description("User.")] DiscordMember u,
+                                      [RemainingText, Description("Reason.")] string reason = null)
+        {
+            if (ammount < 0 || ammount > 60)
+                throw new InvalidCommandUsageException("Time unit ammount not in valid range.");
+
+            if (unit == null)
+                throw new InvalidCommandUsageException("Time unit missing.");
+
+            if (u == null)
+                throw new InvalidCommandUsageException("You need to mention a user to ban.");
+
+            if (u.Id == ctx.User.Id)
+                throw new CommandFailedException("You can't ban yourself.");
+
+            if (string.IsNullOrWhiteSpace(reason))
+                reason = "No reason provided.";
+
+            TimeSpan t;
+            switch (unit) {
+                case "s": t = TimeSpan.FromSeconds(ammount); break;
+                case "m": t = TimeSpan.FromMinutes(ammount); break;
+                case "h": t = TimeSpan.FromHours(ammount); break;
+                case "d": t = TimeSpan.FromDays(ammount); break;
+                default:
+                    throw new InvalidCommandUsageException("Time unit has to be s/m/h/d.");
+            }
+
+            await u.BanAsync(delete_message_days: 7, reason: $"(tempban for {ammount}{unit}){ctx.User.Username} ({ctx.User.Id}): {reason}")
+                .ConfigureAwait(false);
+            await ctx.RespondAsync($"{Formatter.Bold(ctx.User.Username)} BANNED {Formatter.Bold(u.Username)} for {Formatter.Bold($"{ammount}{unit}")}!", embed: new DiscordEmbedBuilder() {
+                ImageUrl = "http://i0.kym-cdn.com/entries/icons/original/000/000/615/BANHAMMER.png"
+            }.Build()).ConfigureAwait(false);
+            await Task.Delay(t)
+                .ConfigureAwait(false);
+            await u.UnbanAsync(ctx.Guild, reason: $"{ctx.User.Username} ({ctx.User.Id}): Temp ban removed.")
+                .ConfigureAwait(false);
+        }
+        #endregion
+
         #region COMMAND_USER_DEAFEN
         [Command("deafen")]
         [Description("Toggle user's voice deafen state.")]
