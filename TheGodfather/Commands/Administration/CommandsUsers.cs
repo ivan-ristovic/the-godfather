@@ -60,7 +60,7 @@ namespace TheGodfather.Commands.Administration
 
         #region COMMAND_USER_BAN
         [Command("ban")]
-        [Description("Bans the user from server.")]
+        [Description("Bans the user from the server.")]
         [Aliases("b")]
         [RequirePermissions(Permissions.BanMembers)]
         public async Task BanAsync(CommandContext ctx, 
@@ -78,8 +78,30 @@ namespace TheGodfather.Commands.Administration
 
             await ctx.Guild.BanMemberAsync(u, delete_message_days: 7, reason: $"{ctx.User.Username} ({ctx.User.Id}): {reason}")
                 .ConfigureAwait(false);
-            await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
-                Title = $"{Formatter.Bold(ctx.User.Username)} BANNED {Formatter.Bold(u.DisplayName)}!",
+            await ctx.RespondAsync($"{Formatter.Bold(ctx.User.Username)} BANNED {Formatter.Bold(u.Username)}!", embed: new DiscordEmbedBuilder() {
+                ImageUrl = "http://i0.kym-cdn.com/entries/icons/original/000/000/615/BANHAMMER.png"
+            }.Build()).ConfigureAwait(false);
+        }
+        #endregion
+
+        #region COMMAND_USER_BAN_ID
+        [Command("banid")]
+        [Description("Bans the ID from the server.")]
+        [Aliases("bid")]
+        [RequirePermissions(Permissions.BanMembers)]
+        public async Task BanIDAsync(CommandContext ctx,
+                                    [Description("ID.")] ulong id,
+                                    [RemainingText, Description("Reason.")] string reason = null)
+        {
+            if (id == ctx.User.Id)
+                throw new CommandFailedException("You can't ban yourself.");
+
+            if (string.IsNullOrWhiteSpace(reason))
+                reason = "No reason provided.";
+
+            await ctx.Guild.BanMemberAsync(id, delete_message_days: 7, reason: $"{ctx.User.Username} ({ctx.User.Id}): {reason}")
+                .ConfigureAwait(false);
+            await ctx.RespondAsync($"{Formatter.Bold(ctx.User.Username)} BANNED {Formatter.Bold(id.ToString())}!", embed: new DiscordEmbedBuilder() {
                 ImageUrl = "http://i0.kym-cdn.com/entries/icons/original/000/000/615/BANHAMMER.png"
             }.Build()).ConfigureAwait(false);
         }
