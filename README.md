@@ -158,6 +158,7 @@ Commands use the following types:
 | ``user``<br>``users``<br>``u``<br>``usr`` | ``avatar``<br>``a``<br>``pic`` |  | ``[user] User`` | Print ``User``'s avatar. | ``!user avatar @SomeUser`` |
 | ``user``<br>``users``<br>``u``<br>``usr`` | ``ban``<br>``b`` | Ban Members | ``[user] User``<br><br>``(optional) [text] Reason`` | Ban ``User``. | ``!user ban @SomeUser`` |
 | ``user``<br>``users``<br>``u``<br>``usr`` | ``banid``<br>``bid`` | Ban Members | ``[int] ID``<br><br>``(optional) [text] Reason`` | Ban user by ``ID``. | ``!user banid 235088799074484224`` |
+| ``user``<br>``users``<br>``u``<br>``usr`` | ``softban``<br>``sb`` | Ban Members | ``[user] User``<br><br>``(optional) [text] Reason`` | Ban ``User`` and unban him immediately (deletes his messages). | ``!user softban @SomeUser`` |
 | ``user``<br>``users``<br>``u``<br>``usr`` | ``deafen``<br>``d``<br>``deaf`` | Deafen Members | ``[user] User``<br><br>``(optional) [text] Reason`` | Toggle ``User``'s voice deaf status. | ``!user deafen @SomeUser`` |
 | ``user``<br>``users``<br>``u``<br>``usr`` | ``info``<br>``i``<br>``information`` |  | ``(optional) [user] User (def: sender)`` | Get information about ``User``. | ``!user info``<br><br>``!user info @SomeUser`` |
 | ``user``<br>``users``<br>``u``<br>``usr`` | ``kick``<br>``k`` | Kick Members | ``[user] User``<br><br>``(optional) [text] Reason`` | Kick ``User``. | ``!user kick @SomeUser`` |

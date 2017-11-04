@@ -76,7 +76,7 @@ namespace TheGodfather.Commands.Administration
             if (string.IsNullOrWhiteSpace(reason))
                 reason = "No reason provided.";
 
-            await ctx.Guild.BanMemberAsync(u, delete_message_days: 7, reason: $"{ctx.User.Username} ({ctx.User.Id}): {reason}")
+            await u.BanAsync(delete_message_days: 7, reason: $"{ctx.User.Username} ({ctx.User.Id}): {reason}")
                 .ConfigureAwait(false);
             await ctx.RespondAsync($"{Formatter.Bold(ctx.User.Username)} BANNED {Formatter.Bold(u.Username)}!", embed: new DiscordEmbedBuilder() {
                 ImageUrl = "http://i0.kym-cdn.com/entries/icons/original/000/000/615/BANHAMMER.png"
@@ -104,6 +104,35 @@ namespace TheGodfather.Commands.Administration
 
             var u = await ctx.Client.GetUserAsync(id);
             await ctx.RespondAsync($"{Formatter.Bold(ctx.User.Username)} BANNED {Formatter.Bold($"{u.Username} ({id})")}!", embed: new DiscordEmbedBuilder() {
+                ImageUrl = "http://i0.kym-cdn.com/entries/icons/original/000/000/615/BANHAMMER.png"
+            }.Build()).ConfigureAwait(false);
+        }
+        #endregion
+
+        #region COMMAND_USER_SOFTBAN
+        [Command("softban")]
+        [Description("Bans the user from the server and then unbans him immediately.")]
+        [Aliases("sb")]
+        [RequirePermissions(Permissions.BanMembers)]
+        public async Task SoftBanAsync(CommandContext ctx,
+                                      [Description("User.")] DiscordMember u,
+                                      [RemainingText, Description("Reason.")] string reason = null)
+        {
+            if (u == null)
+                throw new InvalidCommandUsageException("You need to mention a user to ban.");
+
+            if (u.Id == ctx.User.Id)
+                throw new CommandFailedException("You can't ban yourself.");
+
+            if (string.IsNullOrWhiteSpace(reason))
+                reason = "No reason provided.";
+            reason = "(softban) " + reason;
+
+            await u.BanAsync(delete_message_days: 7, reason: $"{ctx.User.Username} ({ctx.User.Id}): {reason}")
+                .ConfigureAwait(false);
+            await u.UnbanAsync(ctx.Guild, reason: $"{ctx.User.Username} ({ctx.User.Id}): {reason}")
+                .ConfigureAwait(false);
+            await ctx.RespondAsync($"{Formatter.Bold(ctx.User.Username)} softbanned {Formatter.Bold(u.Username)}!", embed: new DiscordEmbedBuilder() {
                 ImageUrl = "http://i0.kym-cdn.com/entries/icons/original/000/000/615/BANHAMMER.png"
             }.Build()).ConfigureAwait(false);
         }
@@ -173,7 +202,7 @@ namespace TheGodfather.Commands.Administration
             if (string.IsNullOrWhiteSpace(reason))
                 reason = "No reason provided.";
 
-            await ctx.Guild.RemoveMemberAsync(u, reason: $"{ctx.User.Username} ({ctx.User.Id}): {reason}")
+            await u.RemoveAsync(reason: $"{ctx.User.Username} ({ctx.User.Id}): {reason}")
                 .ConfigureAwait(false);
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
                 Title = $"{Formatter.Bold(ctx.User.Username)} kicked {Formatter.Bold(u.DisplayName)} in the cojones.",
