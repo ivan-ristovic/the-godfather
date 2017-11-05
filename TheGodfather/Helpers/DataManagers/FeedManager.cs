@@ -155,6 +155,8 @@ namespace TheGodfather.Helpers.DataManagers
                     await Task.Delay(TimeSpan.FromSeconds(1))
                         .ConfigureAwait(false);
                 }
+                await Task.Delay(TimeSpan.FromMinutes(5))
+                    .ConfigureAwait(false);
             }
         }
 

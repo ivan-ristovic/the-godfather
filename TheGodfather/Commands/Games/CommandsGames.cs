@@ -362,7 +362,7 @@ namespace TheGodfather.Commands.Games
 
             if (response != null) {
                 await ctx.RespondAsync($"And the winner is {response.User.Mention}!")
-                    .ConfigureAwait(false); ;
+                    .ConfigureAwait(false);
             } else {
                 await ctx.RespondAsync("ROFL what a nabs...")
                     .ConfigureAwait(false); ;
