@@ -15,8 +15,12 @@ using DSharpPlus.Entities;
 
 namespace TheGodfather.Commands.Voice
 {
+    [Group("voice", CanInvokeWithoutSubcommand = false)]
     [Description("Voice & music commands.")]
-    // TODO [CheckIgnore]
+    [Aliases("v")]
+    [CheckIgnore]
+    [RequireOwner]
+    [Hidden]
     public class CommandsVoice
     {
         #region COMMAND_JOIN

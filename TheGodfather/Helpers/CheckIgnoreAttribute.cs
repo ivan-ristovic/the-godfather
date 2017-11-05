@@ -10,6 +10,7 @@ using DSharpPlus.CommandsNext.Attributes;
 
 namespace TheGodfather
 {
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
     public class CheckIgnoreAttribute : CheckBaseAttribute
     {
         public override Task<bool> CanExecute(CommandContext ctx, bool help)

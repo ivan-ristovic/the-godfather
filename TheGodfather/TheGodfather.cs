@@ -2,6 +2,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 
@@ -134,39 +135,8 @@ namespace TheGodfather
                                            .AddInstance(_config)
                                            .Build()
             });
-
             _commands.SetHelpFormatter<HelpFormatter>();
-
-            _commands.RegisterCommands<Commands.Administration.CommandsOwner>();
-            _commands.RegisterCommands<Commands.Administration.CommandsChannels>();
-            _commands.RegisterCommands<Commands.Administration.CommandsGuild>();
-            _commands.RegisterCommands<Commands.Administration.CommandsMessages>();
-            _commands.RegisterCommands<Commands.Administration.CommandsRoles>();
-            _commands.RegisterCommands<Commands.Administration.CommandsUsers>();
-            _commands.RegisterCommands<Commands.Games.CommandsBank>();
-            _commands.RegisterCommands<Commands.Games.CommandsCards>();
-            _commands.RegisterCommands<Commands.Games.CommandsGamble>();
-            _commands.RegisterCommands<Commands.Games.CommandsGames>();
-            _commands.RegisterCommands<Commands.Main.CommandsInsult>();
-            _commands.RegisterCommands<Commands.Main.CommandsMain>();
-            _commands.RegisterCommands<Commands.Main.CommandsMemes>();
-            _commands.RegisterCommands<Commands.Main.CommandsPoll>();
-            _commands.RegisterCommands<Commands.Main.CommandsRandom>();
-            _commands.RegisterCommands<Commands.Messages.CommandsAlias>();
-            _commands.RegisterCommands<Commands.Messages.CommandsFilter>();
-            _commands.RegisterCommands<Commands.Messages.CommandsRanking>();
-            _commands.RegisterCommands<Commands.Messages.CommandsReaction>();
-            _commands.RegisterCommands<Commands.Search.CommandsGiphy>();
-            _commands.RegisterCommands<Commands.Search.CommandsImgur>();
-            _commands.RegisterCommands<Commands.Search.CommandsJokes>();
-            //_commands.RegisterCommands<Modules.Search.CommandsReddit>();
-            _commands.RegisterCommands<Commands.Search.CommandsRSS>();
-            _commands.RegisterCommands<Commands.Search.CommandsSteam>();
-            _commands.RegisterCommands<Commands.Search.CommandsUrbanDict>();
-            _commands.RegisterCommands<Commands.Search.CommandsYoutube>();
-            _commands.RegisterCommands<Commands.SWAT.CommandsSwat>();
-            //_commands.RegisterCommands<Modules.Voice.CommandsVoice>();
-
+            _commands.RegisterCommands(Assembly.GetExecutingAssembly());
             _commands.CommandExecuted += Commands_CommandExecuted;
             _commands.CommandErrored += Commands_CommandErrored;
         }
