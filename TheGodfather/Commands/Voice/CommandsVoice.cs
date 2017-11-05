@@ -26,7 +26,7 @@ namespace TheGodfather.Commands.Voice
         #region COMMAND_JOIN
         [Command("connect")]
         [Description("Connects me to your voice channel.")]
-        [Aliases("join", "voice")]
+        [Aliases("join", "c")]
         public async Task Join(CommandContext ctx, 
                               [Description("Channel.")] DiscordChannel c = null)
         {
@@ -54,7 +54,7 @@ namespace TheGodfather.Commands.Voice
         #region COMMAND_LEAVE
         [Command("disconnect")]
         [Description("Disconnects from voice channel.")]
-        [Aliases("leave")]
+        [Aliases("leave", "d")]
         public async Task Leave(CommandContext ctx)
         {
             var vnext = ctx.Client.GetVoiceNextClient();
@@ -73,6 +73,7 @@ namespace TheGodfather.Commands.Voice
         #region COMMAND_PLAY
         [Command("play")]
         [Description("Plays an audio file from server filesystem.")]
+        [Aliases("p")]
         public async Task Play(CommandContext ctx, 
                               [RemainingText, Description("Full path to the file to play.")] string filename)
         {

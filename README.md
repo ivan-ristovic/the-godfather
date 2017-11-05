@@ -274,9 +274,9 @@ Commands use the following types:
 | Command group (with synonyms) | Command name (with synonyms) | Required Permissions | Command arguments | Command Description | Example of use |
 |---|---|---|---|---|---|
 |   |   |   |   |   |   |
-| ``voice``<br>``v`` | ``connect``<br>``join``<br>``voice`` |   | ``[channel] Channel`` | Join a given channel. | ``!connect Music`` |
-| ``voice``<br>``v`` | ``leave``<br>``disconnect`` |   |   | Disconnect from voice channels. | ``!disconnect`` |
-| ``voice``<br>``v`` | ``play`` |   | ``[text] File path`` | Play a file from the server. Must be in voice channel. | ``!play C://system32/idk.mp3`` |
+| ``voice``<br>``v`` | ``connect``<br>``join``<br>``c`` |   | ``[channel] Channel`` | Join a given channel. | ``!voice connect Music`` |
+| ``voice``<br>``v`` | ``disconnect``<br>``leave``<br>``d`` |   |   | Disconnect from voice channels. | ``!voice disconnect`` |
+| ``voice``<br>``v`` | ``play``<br>``p`` |   | ``[text] File path`` | Play a file from the server. Must be in voice channel. | ``!voice play C://system32/idk.mp3`` |
 |   |   |   |   |   |   |
 
 
