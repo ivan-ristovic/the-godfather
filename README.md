@@ -276,7 +276,9 @@ Commands use the following types:
 |   |   |   |   |   |   |
 | ``voice``<br>``v`` | ``connect``<br>``join``<br>``c`` |   | ``[channel] Channel`` | Join a given channel. | ``!voice connect Music`` |
 | ``voice``<br>``v`` | ``disconnect``<br>``leave``<br>``d`` |   |   | Disconnect from voice channels. | ``!voice disconnect`` |
-| ``voice``<br>``v`` | ``play``<br>``p`` |   | ``[text] File path`` | Play a file from the server. Must be in voice channel. | ``!voice play C://system32/idk.mp3`` |
+| ``voice``<br>``v`` | ``play``<br>``p`` |   | ``[url] YouTube URL`` | Stream YouTube audio from given URL. | ``!voice play https://www.youtube.com/watch?v=c5OA1OdkKQI`` |
+| ``voice``<br>``v`` | ``playfile``<br>``pf`` |   | ``[text] File path`` | Play a file from the server. | ``!voice playfile C://system32/idk.mp3`` |
+| ``voice``<br>``v`` | ``stop``<br>``s`` |   |   | Stop playback. | ``!voice stop`` |
 |   |   |   |   |   |   |
 
 
