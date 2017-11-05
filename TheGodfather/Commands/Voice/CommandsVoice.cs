@@ -27,8 +27,8 @@ namespace TheGodfather.Commands.Voice
         [Command("connect")]
         [Description("Connects me to your voice channel.")]
         [Aliases("join", "c")]
-        public async Task Join(CommandContext ctx, 
-                              [Description("Channel.")] DiscordChannel c = null)
+        public async Task ConnectAsync(CommandContext ctx, 
+                                      [Description("Channel.")] DiscordChannel c = null)
         {
             var vnext = ctx.Client.GetVoiceNextClient();
             if (vnext == null)
@@ -45,9 +45,11 @@ namespace TheGodfather.Commands.Voice
             if (c == null)
                 c = vstat.Channel;
 
-            vnc = await vnext.ConnectAsync(c);
+            vnc = await vnext.ConnectAsync(c)
+                .ConfigureAwait(false);
 
-            await ctx.RespondAsync($"Connected to {Formatter.Bold(c.Name)}.");
+            await ctx.RespondAsync($"Connected to {Formatter.Bold(c.Name)}.")
+                .ConfigureAwait(false);
         }
         #endregion
 
@@ -55,7 +57,7 @@ namespace TheGodfather.Commands.Voice
         [Command("disconnect")]
         [Description("Disconnects from voice channel.")]
         [Aliases("leave", "d")]
-        public async Task Leave(CommandContext ctx)
+        public async Task DisconnectAsync(CommandContext ctx)
         {
             var vnext = ctx.Client.GetVoiceNextClient();
             if (vnext == null) 
@@ -66,16 +68,17 @@ namespace TheGodfather.Commands.Voice
                 throw new CommandFailedException("Not connected in this guild.");
 
             vnc.Disconnect();
-            await ctx.RespondAsync("Disconnected.");
+            await ctx.RespondAsync("Disconnected.")
+                .ConfigureAwait(false);
         }
         #endregion
 
-        #region COMMAND_PLAY
-        [Command("play")]
+        #region COMMAND_PLAYFILE
+        [Command("playfile")]
         [Description("Plays an audio file from server filesystem.")]
-        [Aliases("p")]
-        public async Task Play(CommandContext ctx, 
-                              [RemainingText, Description("Full path to the file to play.")] string filename)
+        [Aliases("pf")]
+        public async Task PlayFileAsync(CommandContext ctx,
+                                       [RemainingText, Description("Full path to the file to play.")] string filename)
         {
             var vnext = ctx.Client.GetVoiceNextClient();
             if (vnext == null)
@@ -89,11 +92,14 @@ namespace TheGodfather.Commands.Voice
                 throw new CommandFailedException($"File {Formatter.InlineCode(filename)} does not exist.", new FileNotFoundException());
 
             while (vnc.IsPlaying)
-                await vnc.WaitForPlaybackFinishAsync();
+                await vnc.WaitForPlaybackFinishAsync()
+                    .ConfigureAwait(false);
 
             Exception exc = null;
-            await ctx.Message.RespondAsync($"Playing {Formatter.InlineCode(filename)}.");
-            await vnc.SendSpeakingAsync(true);
+            await ctx.Message.RespondAsync($"Playing {Formatter.InlineCode(filename)}.")
+                .ConfigureAwait(false);
+            await vnc.SendSpeakingAsync(true)
+                .ConfigureAwait(false);
             try {
                 var ffmpeg_inf = new ProcessStartInfo {
                     FileName = "ffmpeg",
@@ -104,9 +110,10 @@ namespace TheGodfather.Commands.Voice
                 };
                 var ffmpeg = Process.Start(ffmpeg_inf);
                 var ffout = ffmpeg.StandardOutput.BaseStream;
-                
+
                 using (var ms = new MemoryStream()) {
-                    await ffout.CopyToAsync(ms);
+                    await ffout.CopyToAsync(ms)
+                        .ConfigureAwait(false);
                     ms.Position = 0;
 
                     var buff = new byte[3840];
@@ -116,13 +123,78 @@ namespace TheGodfather.Commands.Voice
                             for (var i = br; i < buff.Length; i++)
                                 buff[i] = 0;
 
-                        await vnc.SendAsync(buff, 20);
+                        await vnc.SendAsync(buff, 20)
+                            .ConfigureAwait(false);
                     }
                 }
             } catch (Exception ex) {
                 exc = ex;
             } finally {
-                await vnc.SendSpeakingAsync(false);
+                await vnc.SendSpeakingAsync(false)
+                    .ConfigureAwait(false);
+            }
+
+            if (exc != null)
+                throw exc;
+        }
+        #endregion
+
+        #region COMMAND_PLAY
+        [Command("play")]
+        [Description("Plays an audio file from the given URL.")]
+        [Aliases("p")]
+        public async Task PlayAsync(CommandContext ctx, 
+                                   [RemainingText, Description("URL.")] string url)
+        {
+            var vnext = ctx.Client.GetVoiceNextClient();
+            if (vnext == null)
+                throw new CommandFailedException("VNext is not enabled or configured.");
+
+            var vnc = vnext.GetConnection(ctx.Guild);
+            if (vnc == null)
+                throw new CommandFailedException("Not connected in this guild.");
+
+            while (vnc.IsPlaying)
+                await vnc.WaitForPlaybackFinishAsync();
+
+            Exception exc = null;
+            await ctx.Message.RespondAsync($"Playing {Formatter.InlineCode(url)}.")
+                .ConfigureAwait(false);
+            await vnc.SendSpeakingAsync(true)
+                .ConfigureAwait(false);
+            try {
+                Process ytdl = new Process();
+                ytdl.StartInfo = new ProcessStartInfo {
+                    FileName = "cmd.exe",
+                    Arguments = $"/C youtube-dl.exe -o - {url} | ffmpeg -i pipe:0 -ac 2 -f s16le -ar 48000 pipe:1",
+                    UseShellExecute = false,
+                    RedirectStandardOutput = true,
+                    CreateNoWindow = true
+                };
+                ytdl.Start();
+
+                var ytdlout =  ytdl.StandardOutput.BaseStream;
+                using (var ms = new MemoryStream()) {
+                    await ytdlout.CopyToAsync(ms)
+                        .ConfigureAwait(false);
+                    ms.Position = 0;
+
+                    var buff = new byte[3840];
+                    var br = 0;
+                    while ((br = ms.Read(buff, 0, buff.Length)) > 0) {
+                        if (br < buff.Length)
+                            for (var i = br; i < buff.Length; i++)
+                                buff[i] = 0;
+
+                        await vnc.SendAsync(buff, 20)
+                            .ConfigureAwait(false);
+                    }
+                }
+            } catch (Exception ex) {
+                exc = ex;
+            } finally {
+                await vnc.SendSpeakingAsync(false)
+                    .ConfigureAwait(false);
             }
 
             if (exc != null)
