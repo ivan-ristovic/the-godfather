@@ -98,7 +98,6 @@ namespace TheGodfather.Commands.Voice
             while (vnc.IsPlaying)
                 await vnc.WaitForPlaybackFinishAsync();
 
-            Exception exc = null;
             _playing = true;
             await ctx.Message.RespondAsync($"Playing {Formatter.InlineCode(url)}.")
                 .ConfigureAwait(false);
@@ -132,15 +131,12 @@ namespace TheGodfather.Commands.Voice
                             .ConfigureAwait(false);
                     }
                 }
-            } catch (Exception ex) {
-                exc = ex;
+            } catch {
+                _playing = false;
             } finally {
                 await vnc.SendSpeakingAsync(false)
                     .ConfigureAwait(false);
             }
-
-            if (exc != null)
-                throw exc;
         }
         #endregion
 
@@ -169,7 +165,6 @@ namespace TheGodfather.Commands.Voice
                 await vnc.WaitForPlaybackFinishAsync()
                     .ConfigureAwait(false);
 
-            Exception exc = null;
             await ctx.Message.RespondAsync($"Playing {Formatter.InlineCode(filename)}.")
                 .ConfigureAwait(false);
             _playing = true;
@@ -202,15 +197,12 @@ namespace TheGodfather.Commands.Voice
                             .ConfigureAwait(false);
                     }
                 }
-            } catch (Exception ex) {
-                exc = ex;
+            } catch {
+                _playing = false;
             } finally {
                 await vnc.SendSpeakingAsync(false)
                     .ConfigureAwait(false);
             }
-
-            if (exc != null)
-                throw exc;
         }
         #endregion
 
@@ -221,6 +213,8 @@ namespace TheGodfather.Commands.Voice
         public async Task StopAsync(CommandContext ctx)
         {
             _playing = false;
+            await ctx.RespondAsync("Stopped.")
+                .ConfigureAwait(false);
         }
         #endregion
     }
