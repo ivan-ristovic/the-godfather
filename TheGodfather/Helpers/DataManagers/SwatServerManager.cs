@@ -31,51 +31,29 @@ namespace TheGodfather.Helpers.DataManagers
 
         public void Load(DebugLogger log)
         {
-            string[] serverlist = {
-                "wm$46.251.251.9:10880:10881",
-                "myt$51.15.152.220:10480:10481",
-                "4u$109.70.149.161:10480:10481",
-                "soh$158.58.173.64:16480:10481",
-                "sh$5.9.50.39:8480:8481",
-                "esa$77.250.71.231:11180:11181",
-                "kos$31.186.250.32:10480:10481"
-            };
-
-            if (!File.Exists("Resources/servers.txt")) {
-                FileStream f = File.Open("Resources/servers.txt", FileMode.CreateNew);
-                f.Close();
-                File.WriteAllLines("Resources/servers.txt", serverlist);
-            }
-
-            try {
-                serverlist = File.ReadAllLines("Resources/servers.txt");
-                foreach (string line in serverlist) {
-                    if (line.Trim() == "" || line[0] == '#')
-                        continue;
-                    var values = line.Split('$');
-                    _serverlist.TryAdd(values[0], values[1]);
+            if (File.Exists("Resources/servers.json")) {
+                try {
+                    _serverlist = JsonConvert.DeserializeObject<ConcurrentDictionary<string, string>>(File.ReadAllText("Resources/servers.json"));
+                } catch (Exception e) {
+                    log.LogMessage(LogLevel.Error, "TheGodfather", "Servers loading error, check file formatting. Details:\n" + e.ToString(), DateTime.Now);
+                    _ioerr = true;
                 }
-            } catch (Exception e) {
-                log.LogMessage(LogLevel.Error, "TheGodfather", "Serverlist loading error, clearing list. Details : " + e.ToString(), DateTime.Now);
-                _ioerr = true;
+            } else {
+                log.LogMessage(LogLevel.Warning, "TheGodfather", "servers.json is missing.", DateTime.Now);
             }
         }
 
         public bool Save(DebugLogger log)
         {
             if (_ioerr) {
-                log.LogMessage(LogLevel.Warning, "TheGodfather", "Servers saving skipped until file conflicts are resolved!", DateTime.Now);
+                log.LogMessage(LogLevel.Warning, "TheGodfather", "Server saving skipped until file conflicts are resolved!", DateTime.Now);
                 return false;
             }
 
             try {
-                List<string> serverlist = new List<string>();
-                foreach (var entry in _serverlist)
-                    serverlist.Add(entry.Key + "$" + entry.Value);
-
-                File.WriteAllLines("Resources/servers.txt", serverlist);
+                File.WriteAllText("Resources/servers.json", JsonConvert.SerializeObject(_serverlist, Formatting.Indented));
             } catch (Exception e) {
-                log.LogMessage(LogLevel.Error, "TheGodfather", "Servers save error: " + e.ToString(), DateTime.Now);
+                log.LogMessage(LogLevel.Error, "TheGodfather", "IO Server save error. Details:\n" + e.ToString(), DateTime.Now);
                 return false;
             }
 
