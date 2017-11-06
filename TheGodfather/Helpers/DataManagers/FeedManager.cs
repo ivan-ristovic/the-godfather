@@ -27,7 +27,7 @@ namespace TheGodfather.Helpers.DataManagers
 
         public FeedManager(DiscordClient client)
         {
-            Task.Run(async () => await CheckFeedsForChangesContinuousAsync(client));
+            Task.Run(async () => await CheckFeedsForChangesContinuousAsync(client).ConfigureAwait(false));
         }
 
         
@@ -76,7 +76,7 @@ namespace TheGodfather.Helpers.DataManagers
                 return true;
             }
 
-            return _feeds.TryAdd(url, new FeedInfo(new List<ulong> { cid }, res.First().PublishDate.Ticks, qname));
+            return _feeds.TryAdd(url, new FeedInfo(new List<ulong> { cid }, res.First().Links[0].Uri.ToString(), qname));
         }
 
         public bool TryRemove(ulong cid, string url)
@@ -131,14 +131,15 @@ namespace TheGodfather.Helpers.DataManagers
                 foreach (var feed in _feeds) {
                     try {
                         var newest = GetFeedResults(feed.Key).First();
-                        if (newest.LastUpdatedTime.Ticks != feed.Value.ModifiedTime) {
-                            feed.Value.ModifiedTime = newest.LastUpdatedTime.Ticks;
+                        var url = newest.Links[0].Uri.ToString();
+                        if (url != feed.Value.SavedURL) {
+                            feed.Value.SavedURL = url;
                             foreach (var cid in feed.Value.ChannelIds) {
                                 var chn = await client.GetChannelAsync(cid)
                                     .ConfigureAwait(false);
                                 var em = new DiscordEmbedBuilder() {
                                     Title = $"{newest.Title.Text}",
-                                    Url = newest.Links[0].Uri.ToString(),
+                                    Url = url,
                                     Timestamp = newest.LastUpdatedTime,
                                     Color = DiscordColor.Orange,
                                 };
@@ -150,8 +151,9 @@ namespace TheGodfather.Helpers.DataManagers
                                     if (matches.Success)
                                         em.WithImageUrl(matches.Groups[1].Value);
                                 }
-                                em.AddField("From", feed.Value.QualifiedName != null ? feed.Value.QualifiedName : feed.Key);
-                                em.AddField("Link to content", newest.Links[0].Uri.ToString());
+                                if (feed.Value.QualifiedName != null)
+                                    em.AddField("From", feed.Value.QualifiedName);
+                                em.AddField("Link to content", url);
                                 await chn.SendMessageAsync(embed: em.Build())
                                     .ConfigureAwait(false);
                                 await Task.Delay(250)
@@ -173,17 +175,17 @@ namespace TheGodfather.Helpers.DataManagers
             [JsonProperty("ChannelIds")]
             public List<ulong> ChannelIds { get; set; }
 
-            [JsonProperty("ModifiedTime")]
-            public long ModifiedTime { get; internal set; }
+            [JsonProperty("SavedURL")]
+            public string SavedURL { get; internal set; }
             
             [JsonProperty("QualifiedName")]
             public string QualifiedName { get; private set; }
 
 
-            public FeedInfo(List<ulong> cids, long ticks, string qname = null)
+            public FeedInfo(List<ulong> cids, string link, string qname = null)
             {
                 ChannelIds = cids;
-                ModifiedTime = ticks;
+                SavedURL = link;
                 QualifiedName = qname;
             }
         }
