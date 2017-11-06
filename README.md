@@ -264,9 +264,9 @@ Commands use the following types:
 | ``swat4``<br>``swat``<br>``s4`` | ``settimeout`` | Owner Only | ``[int] Time (in ms)`` | Set spacecheck ping time. | ``!s4 settimeout 200`` |
 | ``swat4``<br>``swat``<br>``s4`` | ``spacecheck``<br>``startcheck``<br>``checkspace`` |   | ``[string] IP/Shortname`` | Start checking for space on SWAT4 server given with IP/Name. Bot will send a message when there is space on the server. One check per user at a time is allowed. | ``!s4 spacecheck 13.95.232.189:10480``<br><br>``!s4 spacecheck soh`` |
 | ``swat4``<br>``swat``<br>``s4`` | ``stopcheck``<br>``checkstop`` |   |   | Stops your issued spacecheck. | ``!s4 stopcheck`` |
-| ``s4 servers`` | ``add``<br>``+``<br>``a`` | Administrator (user) | ``[string] Shortname``<br><br>``[string] IP`` | Add a new server to database. If the server uses a non-default query port, add it after IP like in example. | ``!s4 servers + soh 13.95.232.189:10480``<br><br>``!s4 servers + soh 13.95.232.189:10480:10488`` |
-| ``s4 servers`` | ``delete``<br>``-``<br>``del``<br>``d`` | Administrator (user) | ``[string] Shortname`` | Remove a server from database. | ``!s4 servers - soh`` |
-| ``s4 servers`` | ``save`` | Owner Only |   | Save server list. | ``!s4 servers save`` |
+| ``s4 servers``<br>``s4 srv``<br>``s4 s`` | ``add``<br>``+``<br>``a`` | Administrator (user) | ``[string] Shortname``<br><br>``[string] IP`` | Add a new server to database. If the server uses a non-default query port, add it after IP like in example. | ``!s4 servers + soh 13.95.232.189:10480``<br><br>``!s4 servers + soh 13.95.232.189:10480:10488`` |
+| ``s4 servers``<br>``s4 srv``<br>``s4 s`` | ``delete``<br>``-``<br>``del``<br>``d`` | Administrator (user) | ``[string] Shortname`` | Remove a server from database. | ``!s4 servers - soh`` |
+| ``s4 servers``<br>``s4 srv``<br>``s4 s`` | ``save`` | Owner Only |   | Save server list. | ``!s4 servers save`` |
 |   |   |   |   |   |   |
 
 ## Voice/Music commands (disabled for now)

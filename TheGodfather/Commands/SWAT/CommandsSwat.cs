@@ -238,6 +238,7 @@ namespace TheGodfather.Commands.SWAT
 
         [Group("servers", CanInvokeWithoutSubcommand = false)]
         [Description("SWAT4 serverlist manipulation commands.")]
+        [Aliases("s", "srv")]
         public class CommandsServers
         {
             #region COMMAND_SERVERS_ADD

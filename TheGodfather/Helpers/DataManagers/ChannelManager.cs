@@ -56,7 +56,7 @@ namespace TheGodfather.Helpers.DataManagers
         {
             if (File.Exists("Resources/leavechannels.json")) {
                 try {
-                    _welcomeChannelIds = JsonConvert.DeserializeObject<ConcurrentDictionary<ulong, ulong>>(File.ReadAllText("Resources/leavechannels.json"));
+                    _leaveChannelIds = JsonConvert.DeserializeObject<ConcurrentDictionary<ulong, ulong>>(File.ReadAllText("Resources/leavechannels.json"));
                 } catch (Exception e) {
                     log.LogMessage(LogLevel.Error, "TheGodfather", "LeaveChannels loading error, check file formatting. Details:\n" + e.ToString(), DateTime.Now);
                     _ioerrWelcome = true;
@@ -68,7 +68,10 @@ namespace TheGodfather.Helpers.DataManagers
 
         public bool Save(DebugLogger log)
         {
-            return SaveWelcome(log) && SaveLeave(log);
+            bool b = true;
+            b &= SaveWelcome(log);
+            b &= SaveLeave(log);
+            return b;
         }
 
         public bool SaveWelcome(DebugLogger log)
