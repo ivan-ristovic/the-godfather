@@ -19,6 +19,7 @@ namespace TheGodfather.Helpers
 {
     public class Logger
     {
+        public bool DebugMode { get; set; }
         private bool _valid { get; set; }
         private readonly string LOG_TAG = "TheGodfather";
         private readonly object _lock = new object();
@@ -28,6 +29,7 @@ namespace TheGodfather.Helpers
 
         public Logger(DebugLogger logger)
         {
+            DebugMode = false;
             _log = logger;
             OpenLogFile();
         }
@@ -35,7 +37,8 @@ namespace TheGodfather.Helpers
 
         public void Log(LogLevel level, string message)
         {
-            _log.LogMessage(level, LOG_TAG, message, DateTime.Now);
+            if (DebugMode || level != LogLevel.Debug)
+                _log.LogMessage(level, LOG_TAG, message, DateTime.Now);
         }
         
         public void OpenLogFile()
