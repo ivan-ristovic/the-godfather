@@ -283,6 +283,10 @@
     <None Include="App.config" />
     <None Include="packages.config" />
     <None Include="Properties\app.manifest" />
+    <None Include="Resources\config.json" />
+    <None Include="Resources\insults.json" />
+    <None Include="Resources\servers.json" />
+    <None Include="Resources\statuses.json" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
@@ -726,6 +730,88 @@
   <ItemGroup>
     <Content Include="Resources\def txt files\insults.txt" />
     <Content Include="Resources\graph.png" />
+    <Content Include="Resources\meme-templates\1stworld.jpg" />
+    <Content Include="Resources\meme-templates\3rdworldkids.jpg" />
+    <Content Include="Resources\meme-templates\90sproblems.jpg" />
+    <Content Include="Resources\meme-templates\advice.jpg" />
+    <Content Include="Resources\meme-templates\aliens.jpg" />
+    <Content Include="Resources\meme-templates\amitheonlyone.jpg" />
+    <Content Include="Resources\meme-templates\andyoushouldfeelbad.jpg" />
+    <Content Include="Resources\meme-templates\awesomeawesome.jpg" />
+    <Content Include="Resources\meme-templates\awesomeawkward.jpg" />
+    <Content Include="Resources\meme-templates\awkwardawesome.jpg" />
+    <Content Include="Resources\meme-templates\awkwardawkward.jpg" />
+    <Content Include="Resources\meme-templates\badluckbrian.jpg" />
+    <Content Include="Resources\meme-templates\badtime.jpg" />
+    <Content Include="Resources\meme-templates\batmanslap.jpg" />
+    <Content Include="Resources\meme-templates\blackkid.jpg" />
+    <Content Include="Resources\meme-templates\braceyourselves.jpg" />
+    <Content Include="Resources\meme-templates\brain.jpg" />
+    <Content Include="Resources\meme-templates\businesscat.jpg" />
+    <Content Include="Resources\meme-templates\confession.jpg" />
+    <Content Include="Resources\meme-templates\conspiracy.jpg" />
+    <Content Include="Resources\meme-templates\coral.jpg" />
+    <Content Include="Resources\meme-templates\courage.jpg" />
+    <Content Include="Resources\meme-templates\doge.jpg" />
+    <Content Include="Resources\meme-templates\eel.jpg" />
+    <Content Include="Resources\meme-templates\embarassing.jpg" />
+    <Content Include="Resources\meme-templates\ermagherd.jpg" />
+    <Content Include="Resources\meme-templates\everywhere.jpg" />
+    <Content Include="Resources\meme-templates\facepalm.jpg" />
+    <Content Include="Resources\meme-templates\fact.jpg" />
+    <Content Include="Resources\meme-templates\feelsgood.jpg" />
+    <Content Include="Resources\meme-templates\goodguy.jpg" />
+    <Content Include="Resources\meme-templates\gordon.jpg" />
+    <Content Include="Resources\meme-templates\grandma.jpg" />
+    <Content Include="Resources\meme-templates\grindsmyears.jpg" />
+    <Content Include="Resources\meme-templates\grumpycat.jpg" />
+    <Content Include="Resources\meme-templates\hackerkid.jpg" />
+    <Content Include="Resources\meme-templates\heavybreathing.jpg" />
+    <Content Include="Resources\meme-templates\high.jpg" />
+    <Content Include="Resources\meme-templates\hookers.jpg" />
+    <Content Include="Resources\meme-templates\howaboutno.jpg" />
+    <Content Include="Resources\meme-templates\hypocrite.jpg" />
+    <Content Include="Resources\meme-templates\idkwhatiamdoing.jpg" />
+    <Content Include="Resources\meme-templates\idontalways.jpg" />
+    <Content Include="Resources\meme-templates\ifihadone.jpg" />
+    <Content Include="Resources\meme-templates\igotthatgoing.jpg" />
+    <Content Include="Resources\meme-templates\inception.jpg" />
+    <Content Include="Resources\meme-templates\insanitywolf.jpg" />
+    <Content Include="Resources\meme-templates\ishouldbuy.jpg" />
+    <Content Include="Resources\meme-templates\itsgone.jpg" />
+    <Content Include="Resources\meme-templates\iwillfindyou.jpg" />
+    <Content Include="Resources\meme-templates\losestheirminds.jpg" />
+    <Content Include="Resources\meme-templates\morpheus.jpg" />
+    <Content Include="Resources\meme-templates\noneofmybusiness.jpg" />
+    <Content Include="Resources\meme-templates\noonecares.jpg" />
+    <Content Include="Resources\meme-templates\notsureif.jpg" />
+    <Content Include="Resources\meme-templates\onedoesnotsimply.jpg" />
+    <Content Include="Resources\meme-templates\overlyattached.jpg" />
+    <Content Include="Resources\meme-templates\paranoid.jpg" />
+    <Content Include="Resources\meme-templates\peperidge.jpg" />
+    <Content Include="Resources\meme-templates\powers.jpg" />
+    <Content Include="Resources\meme-templates\quote.jpg" />
+    <Content Include="Resources\meme-templates\scepticalkid.jpg" />
+    <Content Include="Resources\meme-templates\scumbag.jpg" />
+    <Content Include="Resources\meme-templates\seal.jpg" />
+    <Content Include="Resources\meme-templates\spidermanseat.jpg" />
+    <Content Include="Resources\meme-templates\spongebob.jpg" />
+    <Content Include="Resources\meme-templates\spongebobcaveman.jpg" />
+    <Content Include="Resources\meme-templates\spongebobpondering.jpg" />
+    <Content Include="Resources\meme-templates\successkid.jpg" />
+    <Content Include="Resources\meme-templates\successpicard.jpg" />
+    <Content Include="Resources\meme-templates\suddenrealisation.jpg" />
+    <Content Include="Resources\meme-templates\takemymoney.jpg" />
+    <Content Include="Resources\meme-templates\teacher.jpg" />
+    <Content Include="Resources\meme-templates\thatwouldbegreat.jpg" />
+    <Content Include="Resources\meme-templates\thingsaregettingserious.jpg" />
+    <Content Include="Resources\meme-templates\toodamnhigh.jpg" />
+    <Content Include="Resources\meme-templates\unpopularopinion.jpg" />
+    <Content Include="Resources\meme-templates\wrong.jpg" />
+    <Content Include="Resources\meme-templates\wtf.jpg" />
+    <Content Include="Resources\meme-templates\yodawg.jpg" />
+    <Content Include="Resources\meme-templates\yougeta.jpg" />
+    <Content Include="Resources\meme-templates\zoidberg.jpg" />
     <Content Include="Resources\quiz-flags\Afghanistan.png" />
     <Content Include="Resources\quiz-flags\Albania.png" />
     <Content Include="Resources\quiz-flags\Algeria.png" />
@@ -889,6 +975,7 @@
   <ItemGroup>
     <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.2.3.0-beta1\analyzers\dotnet\cs\Analyzer.Utilities.dll" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\NETStandard.Library.2.0.1\build\netstandard2.0\NETStandard.Library.targets" Condition="Exists('..\packages\NETStandard.Library.2.0.1\build\netstandard2.0\NETStandard.Library.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
