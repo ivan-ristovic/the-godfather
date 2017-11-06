@@ -154,13 +154,13 @@ namespace TheGodfather.Helpers.DataManagers
                                 em.AddField("Link to content", newest.Links[0].Uri.ToString());
                                 await chn.SendMessageAsync(embed: em.Build())
                                     .ConfigureAwait(false);
+                                await Task.Delay(250)
+                                    .ConfigureAwait(false);
                             }
                         }
                     } catch {
 
                     }
-                    await Task.Delay(TimeSpan.FromSeconds(1))
-                        .ConfigureAwait(false);
                 }
                 await Task.Delay(TimeSpan.FromMinutes(2))
                     .ConfigureAwait(false);
