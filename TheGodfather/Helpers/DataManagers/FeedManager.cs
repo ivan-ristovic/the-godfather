@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.ServiceModel.Syndication;
 using System.Linq;
-using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
@@ -76,7 +76,7 @@ namespace TheGodfather.Helpers.DataManagers
                 return true;
             }
 
-            return _feeds.TryAdd(url, new FeedInfo(new List<ulong> { cid }, res.First().Title.Text, qname));
+            return _feeds.TryAdd(url, new FeedInfo(new List<ulong> { cid }, res.First().PublishDate.Ticks, qname));
         }
 
         public bool TryRemove(ulong cid, string url)
@@ -116,7 +116,6 @@ namespace TheGodfather.Helpers.DataManagers
             try {
                 reader = XmlReader.Create(url);
                 feed = SyndicationFeed.Load(reader);
-                reader.Close();
             } catch (Exception) {
                 return null;
             } finally {
@@ -132,8 +131,8 @@ namespace TheGodfather.Helpers.DataManagers
                 foreach (var feed in _feeds) {
                     try {
                         var newest = GetFeedResults(feed.Key).First();
-                        if (newest.Title.Text != feed.Value.SavedTitle) {
-                            feed.Value.SavedTitle = newest.Title.Text;
+                        if (newest.LastUpdatedTime.Ticks != feed.Value.ModifiedTime) {
+                            feed.Value.ModifiedTime = newest.LastUpdatedTime.Ticks;
                             foreach (var cid in feed.Value.ChannelIds) {
                                 var chn = await client.GetChannelAsync(cid)
                                     .ConfigureAwait(false);
@@ -141,8 +140,16 @@ namespace TheGodfather.Helpers.DataManagers
                                     Title = $"{newest.Title.Text}",
                                     Url = newest.Links[0].Uri.ToString(),
                                     Timestamp = newest.LastUpdatedTime,
-                                    Color = DiscordColor.Orange
+                                    Color = DiscordColor.Orange,
                                 };
+                                
+                                // TODO reddit hack
+                                if (newest.Content is TextSyndicationContent content) {
+                                    var r = new Regex("<span> *<a +href *= *\"([^\"]+)\"> *\\[link\\] *</a> *</span>");
+                                    var matches = r.Match(content.Text);
+                                    if (matches.Success)
+                                        em.WithImageUrl(matches.Groups[1].Value);
+                                }
                                 em.AddField("From", feed.Value.QualifiedName != null ? feed.Value.QualifiedName : feed.Key);
                                 em.AddField("Link to content", newest.Links[0].Uri.ToString());
                                 await chn.SendMessageAsync(embed: em.Build())
@@ -155,7 +162,7 @@ namespace TheGodfather.Helpers.DataManagers
                     await Task.Delay(TimeSpan.FromSeconds(1))
                         .ConfigureAwait(false);
                 }
-                await Task.Delay(TimeSpan.FromMinutes(5))
+                await Task.Delay(TimeSpan.FromMinutes(2))
                     .ConfigureAwait(false);
             }
         }
@@ -166,17 +173,17 @@ namespace TheGodfather.Helpers.DataManagers
             [JsonProperty("ChannelIds")]
             public List<ulong> ChannelIds { get; set; }
 
-            [JsonProperty("SavedTitle")]
-            public string SavedTitle { get; internal set; }
+            [JsonProperty("ModifiedTime")]
+            public long ModifiedTime { get; internal set; }
             
             [JsonProperty("QualifiedName")]
             public string QualifiedName { get; private set; }
 
 
-            public FeedInfo(List<ulong> cids, string title, string qname = null)
+            public FeedInfo(List<ulong> cids, long ticks, string qname = null)
             {
                 ChannelIds = cids;
-                SavedTitle = title;
+                ModifiedTime = ticks;
                 QualifiedName = qname;
             }
         }
