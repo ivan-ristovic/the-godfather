@@ -40,7 +40,7 @@ namespace TheGodfather.Commands.SWAT
         {
             await ctx.TriggerTypingAsync()
                 .ConfigureAwait(false);
-            var em = new DiscordEmbedBuilder() { Title = "Servers" };
+            var em = new DiscordEmbedBuilder() { Title = "Servers", Color = DiscordColor.DarkBlue };
             foreach (var server in ctx.Dependencies.GetDependency<SwatServerManager>().Servers) {
                 var split = server.Value.Split(':');
                 var info = await QueryIPAsync(ctx, split[0], int.Parse(split[1]))
@@ -221,7 +221,7 @@ namespace TheGodfather.Commands.SWAT
         {
             var em = new DiscordEmbedBuilder() {
                 Url = "https://swat4stats.com/servers/" + ip,
-                Title = info[0], //Regex.Replace(info[0], @"(\[c=([0-9a-f]){6}\])|(\?)", "", RegexOptions.IgnoreCase),
+                Title = info[0],
                 Description = ip,
                 Timestamp = DateTime.Now,
                 Color = DiscordColor.DarkBlue
