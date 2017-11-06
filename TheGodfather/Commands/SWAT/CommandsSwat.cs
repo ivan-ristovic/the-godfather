@@ -201,6 +201,7 @@ namespace TheGodfather.Commands.SWAT
 
             client.Close();
             var data = Encoding.ASCII.GetString(receivedData, 0, receivedData.Length);
+            data = Regex.Replace(data, @"(\[\\*c=?([0-9a-f])*\])|(\[\\*[bicu]\])|(\?)", "", RegexOptions.IgnoreCase);
 
             var split = data.Split('\\');
             int index = 0;
@@ -220,7 +221,7 @@ namespace TheGodfather.Commands.SWAT
         {
             var em = new DiscordEmbedBuilder() {
                 Url = "https://swat4stats.com/servers/" + ip,
-                Title = Regex.Replace(info[0], @"(\[c=([0-9a-f]){6}\])|(\?)", "", RegexOptions.IgnoreCase),
+                Title = info[0], //Regex.Replace(info[0], @"(\[c=([0-9a-f]){6}\])|(\?)", "", RegexOptions.IgnoreCase),
                 Description = ip,
                 Timestamp = DateTime.Now,
                 Color = DiscordColor.DarkBlue
