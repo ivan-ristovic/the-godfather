@@ -2,10 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
-using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 using TheGodfather.Helpers.DataManagers;
@@ -220,10 +220,10 @@ namespace TheGodfather.Commands.SWAT
         {
             var em = new DiscordEmbedBuilder() {
                 Url = "https://swat4stats.com/servers/" + ip,
-                Title = info[0],
+                Title = Regex.Replace(info[0], @"(\[c=([0-9a-f]){6}\])|(\?)", "", RegexOptions.IgnoreCase),
                 Description = ip,
                 Timestamp = DateTime.Now,
-                Color = DiscordColor.Gray
+                Color = DiscordColor.DarkBlue
             };
             em.AddField("Players", info[1] + "/" + info[2]);
             em.AddField("Map", info[4]);
