@@ -43,7 +43,7 @@ namespace TheGodfather.Commands.SWAT
             var em = new DiscordEmbedBuilder() { Title = "Servers", Color = DiscordColor.DarkBlue };
             foreach (var server in ctx.Dependencies.GetDependency<SwatServerManager>().Servers) {
                 var split = server.Value.Split(':');
-                var info = await QueryIPAsync(ctx, split[0], int.Parse(split[1]))
+                var info = await QueryIPAsync(ctx, split[0], int.Parse(split[2]))
                     .ConfigureAwait(false);
                 if (info != null)
                     em.AddField(info[0], $"IP: {split[0]}:{split[1]}\nPlayers: {Formatter.Bold(info[1] + " / " + info[2])}");
@@ -60,7 +60,8 @@ namespace TheGodfather.Commands.SWAT
         [Description("Return server information.")]
         [Aliases("q", "info", "i")]
         public async Task QueryAsync(CommandContext ctx, 
-                                    [Description("Registered name or IP.")] string ip)
+                                    [Description("Registered name or IP.")] string ip,
+                                    [Description("Query port")] int port = 0)
         {
             if (string.IsNullOrWhiteSpace(ip))
                 throw new InvalidCommandUsageException("IP missing.");
@@ -69,16 +70,27 @@ namespace TheGodfather.Commands.SWAT
             if (servers.ContainsKey(ip))
                 ip = servers[ip];
 
+            var split = ip.Split(':');
+            string[] info = null;
             try {
-                var split = ip.Split(':');
-                var info = await QueryIPAsync(ctx, split[0], int.Parse(split[1]));
-                if (info != null)
+                if (servers.ContainsKey(ip))
+                    info = await QueryIPAsync(ctx, split[0], int.Parse(split[2])).ConfigureAwait(false);
+                else if (port == 0)
+                    info = await QueryIPAsync(ctx, split[0], int.Parse(split[1]) + 1).ConfigureAwait(false);
+                else
+                    info = await QueryIPAsync(ctx, split[0], port).ConfigureAwait(false);
+            } catch (IndexOutOfRangeException) {
+                await ctx.RespondAsync("Invalid IP format or unknown server name. Valid IP example: 123.123.123.123:10480")
+                    .ConfigureAwait(false);
+            }
+
+            if (info != null) {
+                if (port == 0)
                     await SendEmbedInfoAsync(ctx, split[0] + ":" + split[1], info).ConfigureAwait(false);
                 else
-                    await ctx.RespondAsync("No reply from server.").ConfigureAwait(false);
-            } catch (Exception) {
-                await ctx.RespondAsync("Invalid IP format.")
-                    .ConfigureAwait(false);
+                    await SendEmbedInfoAsync(ctx, $"{split[0]}:{(split.Length > 1 ? split[1] : port.ToString())}", info).ConfigureAwait(false);
+            } else {
+                await ctx.RespondAsync("No reply from server.").ConfigureAwait(false);
             }
         }
         #endregion
@@ -181,7 +193,7 @@ namespace TheGodfather.Commands.SWAT
         private async Task<string[]> QueryIPAsync(CommandContext ctx, string ip, int port)
         {
             var client = new UdpClient();
-            IPEndPoint ep = new IPEndPoint(IPAddress.Parse(ip), port + 1);
+            IPEndPoint ep = new IPEndPoint(IPAddress.Parse(ip), port);
             client.Connect(ep);
             client.Client.SendTimeout = _checktimeout;
             client.Client.ReceiveTimeout = _checktimeout;
