@@ -8,6 +8,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
+using TheGodfather.Helpers;
 using TheGodfather.Helpers.DataManagers;
 using TheGodfather.Exceptions;
 
@@ -42,13 +43,12 @@ namespace TheGodfather.Commands.SWAT
                 .ConfigureAwait(false);
             var em = new DiscordEmbedBuilder() { Title = "Servers", Color = DiscordColor.DarkBlue };
             foreach (var server in ctx.Dependencies.GetDependency<SwatServerManager>().Servers) {
-                var split = server.Value.Split(':');
-                var info = await QueryIPAsync(ctx, split[0], int.Parse(split[2]))
+                var info = await QueryIPAsync(ctx, server.Value.IP, server.Value.QueryPort)
                     .ConfigureAwait(false);
                 if (info != null)
-                    em.AddField(info[0], $"IP: {split[0]}:{split[1]}\nPlayers: {Formatter.Bold(info[1] + " / " + info[2])}");
+                    em.AddField(info[0], $"IP: {server.Value.IP}:{server.Value.JoinPort}\nPlayers: {Formatter.Bold(info[1] + " / " + info[2])}");
                 else
-                    em.AddField(server.Key, $"IP: {split[0]}:{split[1]}\nPlayers: Offline");
+                    em.AddField(server.Value.Name, $"IP: {server.Value.IP}:{server.Value.JoinPort}\nPlayers: Offline");
             }
             await ctx.RespondAsync(embed: em.Build())
                 .ConfigureAwait(false);
@@ -61,37 +61,23 @@ namespace TheGodfather.Commands.SWAT
         [Aliases("q", "info", "i")]
         public async Task QueryAsync(CommandContext ctx, 
                                     [Description("Registered name or IP.")] string ip,
-                                    [Description("Query port")] int port = 0)
+                                    [Description("Query port")] int queryport = 10481)
         {
             if (string.IsNullOrWhiteSpace(ip))
                 throw new InvalidCommandUsageException("IP missing.");
 
-            var servers = ctx.Dependencies.GetDependency<SwatServerManager>().Servers;
-            if (servers.ContainsKey(ip))
-                ip = servers[ip];
+            if (queryport <= 0 || queryport > 65535)
+                throw new InvalidCommandUsageException("Port range invalid (must be in range [1-65535])!");
 
-            var split = ip.Split(':');
-            string[] info = null;
-            try {
-                if (servers.ContainsKey(ip))
-                    info = await QueryIPAsync(ctx, split[0], int.Parse(split[2])).ConfigureAwait(false);
-                else if (port == 0)
-                    info = await QueryIPAsync(ctx, split[0], int.Parse(split[1]) + 1).ConfigureAwait(false);
-                else
-                    info = await QueryIPAsync(ctx, split[0], port).ConfigureAwait(false);
-            } catch (IndexOutOfRangeException) {
-                await ctx.RespondAsync("Invalid IP format or unknown server name. Valid IP example: 123.123.123.123:10480")
-                    .ConfigureAwait(false);
-            }
+            var server = ctx.Dependencies.GetDependency<SwatServerManager>().GetServer(ip, queryport);
 
-            if (info != null) {
-                if (port == 0)
-                    await SendEmbedInfoAsync(ctx, split[0] + ":" + split[1], info).ConfigureAwait(false);
-                else
-                    await SendEmbedInfoAsync(ctx, $"{split[0]}:{(split.Length > 1 ? split[1] : port.ToString())}", info).ConfigureAwait(false);
-            } else {
+            var info = await QueryIPAsync(ctx, server.IP, server.QueryPort)
+                .ConfigureAwait(false);
+
+            if (info != null)
+                await SendEmbedInfoAsync(ctx, $"{server.IP}:{server.JoinPort}", info).ConfigureAwait(false);
+            else
                 await ctx.RespondAsync("No reply from server.").ConfigureAwait(false);
-            }
         }
         #endregion
 
@@ -114,10 +100,14 @@ namespace TheGodfather.Commands.SWAT
         [Description("Notifies of free space in server.")]
         [Aliases("checkspace", "spacecheck")]
         public async Task StartCheckAsync(CommandContext ctx, 
-                                         [Description("Registered name or IP.")] string ip)
+                                         [Description("Registered name or IP.")] string ip,
+                                         [Description("Query port")] int queryport = 10481)
         {
             if (string.IsNullOrWhiteSpace(ip))
                 throw new InvalidCommandUsageException("Name/IP missing.");
+
+            if (queryport <= 0 || queryport > 65535)
+                throw new InvalidCommandUsageException("Port range invalid (must be in range [1-65535])!");
 
             if (_UserIDsCheckingForSpace.ContainsKey(ctx.User.Id))
                 throw new CommandFailedException("Already checking space for you!");
@@ -125,23 +115,14 @@ namespace TheGodfather.Commands.SWAT
             if (_UserIDsCheckingForSpace.Count > 10)
                 throw new CommandFailedException("Maximum number of checks reached, please try later!");
 
-            var servers = ctx.Dependencies.GetDependency<SwatServerManager>().Servers;
-            if (servers.ContainsKey(ip))
-                ip = servers[ip];
-
-            string[] split;
-            try {
-                split = ip.Split(':');
-            } catch (Exception) {
-                throw new InvalidCommandUsageException("Invalid IP format.");
-            }
-            await ctx.RespondAsync($"Starting check on {split[0]}:{split[1]}...")
+            var server = ctx.Dependencies.GetDependency<SwatServerManager>().GetServer(ip, queryport);
+            await ctx.RespondAsync($"Starting check on {server.IP}:{server.JoinPort}...")
                 .ConfigureAwait(false);
 
             _UserIDsCheckingForSpace.GetOrAdd(ctx.User.Id, true);
             while (_UserIDsCheckingForSpace[ctx.User.Id]) {
                 try {
-                    var info = await QueryIPAsync(ctx, split[0], int.Parse(split[1]))
+                    var info = await QueryIPAsync(ctx, server.IP, server.QueryPort)
                         .ConfigureAwait(false);
                     if (info == null) {
                         await ctx.RespondAsync("No reply from server. Should I try again?")
@@ -192,18 +173,20 @@ namespace TheGodfather.Commands.SWAT
         #region HELPER_FUNCTIONS
         private async Task<string[]> QueryIPAsync(CommandContext ctx, string ip, int port)
         {
-            var client = new UdpClient();
-            IPEndPoint ep = new IPEndPoint(IPAddress.Parse(ip), port);
-            client.Connect(ep);
-            client.Client.SendTimeout = _checktimeout;
-            client.Client.ReceiveTimeout = _checktimeout;
-
             byte[] receivedData = null;
             try {
-                string query = "\\status\\";
-                await client.SendAsync(Encoding.ASCII.GetBytes(query), query.Length)
-                    .ConfigureAwait(false);
-                receivedData = client.Receive(ref ep);
+                using (var client = new UdpClient()) {
+                    IPEndPoint ep = new IPEndPoint(IPAddress.Parse(ip), port);
+                    client.Connect(ep);
+                    client.Client.SendTimeout = _checktimeout;
+                    client.Client.ReceiveTimeout = _checktimeout;
+                    string query = "\\status\\";
+                    await client.SendAsync(Encoding.ASCII.GetBytes(query), query.Length)
+                        .ConfigureAwait(false);
+                    receivedData = client.Receive(ref ep);
+                }
+            } catch (FormatException) {
+                throw new CommandFailedException("Invalid IP format.");
             } catch {
                 return null;
             }
@@ -211,7 +194,6 @@ namespace TheGodfather.Commands.SWAT
             if (receivedData == null)
                 return null;
 
-            client.Close();
             var data = Encoding.ASCII.GetString(receivedData, 0, receivedData.Length);
             data = Regex.Replace(data, @"(\[\\*c=?([0-9a-f])*\])|(\[\\*[bicu]\])|(\?)", "", RegexOptions.IgnoreCase);
 
@@ -260,19 +242,18 @@ namespace TheGodfather.Commands.SWAT
             [RequireUserPermissions(Permissions.Administrator)]
             public async Task AddAsync(CommandContext ctx,
                                       [Description("Name.")] string name,
-                                      [Description("IP.")] string ip)
+                                      [Description("IP.")] string ip,
+                                      [Description("Query port")] int queryport = 10481)
             {
                 if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(ip))
                     throw new InvalidCommandUsageException("Invalid name or IP.");
 
-                var split = ip.Split(':');
-                if (split.Length < 2)
-                    throw new InvalidCommandUsageException("Invalid IP format.");
+                if (queryport <= 0 || queryport > 65535)
+                    throw new InvalidCommandUsageException("Port range invalid (must be in range [1-65535])!");
 
-                if (split.Length < 3)
-                    ip += ":" + (int.Parse(split[1]) + 1).ToString();
+                var server = ctx.Dependencies.GetDependency<SwatServerManager>().GetServer(ip, queryport, name);
 
-                if (ctx.Dependencies.GetDependency<SwatServerManager>().TryAdd(name, ip))
+                if (ctx.Dependencies.GetDependency<SwatServerManager>().TryAdd(name, server))
                     await ctx.RespondAsync("Server added. You can now query it using the name provided.").ConfigureAwait(false);
                 else
                     throw new CommandFailedException("Failed to add server to serverlist. Check if it already exists?");

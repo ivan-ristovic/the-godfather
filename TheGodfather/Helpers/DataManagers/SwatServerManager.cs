@@ -7,19 +7,17 @@ using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 
+using TheGodfather.Helpers;
+
 using DSharpPlus;
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Converters;
-using DSharpPlus.CommandsNext.Entities;
-using DSharpPlus.Entities;
 #endregion
 
 namespace TheGodfather.Helpers.DataManagers
 {
     public class SwatServerManager
     {
-        public IReadOnlyDictionary<string, string> Servers => _serverlist;
-        private ConcurrentDictionary<string, string> _serverlist = new ConcurrentDictionary<string, string>();
+        public IReadOnlyDictionary<string, SwatServer> Servers => _serverlist;
+        private ConcurrentDictionary<string, SwatServer> _serverlist = new ConcurrentDictionary<string, SwatServer>();
         private bool _ioerr = false;
 
 
@@ -33,7 +31,7 @@ namespace TheGodfather.Helpers.DataManagers
         {
             if (File.Exists("Resources/servers.json")) {
                 try {
-                    _serverlist = JsonConvert.DeserializeObject<ConcurrentDictionary<string, string>>(File.ReadAllText("Resources/servers.json"));
+                    _serverlist = JsonConvert.DeserializeObject<ConcurrentDictionary<string, SwatServer>>(File.ReadAllText("Resources/servers.json"));
                 } catch (Exception e) {
                     log.LogMessage(LogLevel.Error, "TheGodfather", "Servers loading error, check file formatting. Details:\n" + e.ToString(), DateTime.Now);
                     _ioerr = true;
@@ -60,9 +58,9 @@ namespace TheGodfather.Helpers.DataManagers
             return true;
         }
 
-        public bool TryAdd(string name, string ip)
+        public bool TryAdd(string name, SwatServer server)
         {
-            return _serverlist.TryAdd(name, ip);
+            return _serverlist.TryAdd(name.ToLower(), server);
         }
 
         public bool TryRemove(string name)
@@ -72,5 +70,24 @@ namespace TheGodfather.Helpers.DataManagers
 
             return _serverlist.TryRemove(name, out _);
         }
+
+        public SwatServer GetServer(string ip, int queryport, string name = null)
+        {
+            ip = ip.ToLower();
+            int joinport = 10480;
+
+            if (_serverlist.ContainsKey(ip))
+                return _serverlist[ip];
+
+            var split = ip.Split(':');
+            ip = split[0];
+            if (split.Length > 1)
+                joinport = int.Parse(split[1]); // try
+            if (queryport == 10481)
+                queryport = joinport + 1;
+
+            return new SwatServer(name, ip, joinport, queryport);
+        }
+
     }
 }
