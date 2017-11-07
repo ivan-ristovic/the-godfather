@@ -24,21 +24,28 @@ namespace TheGodfather.Helpers.DataManagers
         private bool _ioerr = false;
         private string[] _ranks = {
             #region RANKS
+            // If you make more than 25 ranks, then fix the embed
             "4U donor",
             "SoH MNG",
-            "Gypsy",
+            "Cheap gypsy",
             "Romanian wallet stealer",
+            "Romanian car cracker",
             "Serbian street cleaner",
             "German closet cleaner",
             "Swed's beer supplier",
             "JoJo's harem cleaner",
             "Torq's nurse",
+            "Expensive gypsy",
             "Pakistani bomb carrier",
             "Michal's worker (black)",
             "Michal's worker (white)",
             "World Mafia Waste",
+            "KF's goat",
+            "Legendary Seagull Master",
             "Brazillian flip-flop maker",
-            "LDR"
+            "The Global Elite Silver",
+            "LDR",
+            "Generalissimo (tribute to Raptor)"
             #endregion
         };
 
