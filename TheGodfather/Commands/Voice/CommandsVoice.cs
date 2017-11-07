@@ -20,7 +20,6 @@ namespace TheGodfather.Commands.Voice
     [Aliases("v")]
     [CheckIgnore]
     [RequireOwner]
-    [Hidden]
     public class CommandsVoice
     {
         // TODO make this specific for guild, aka concurrent dictionary
