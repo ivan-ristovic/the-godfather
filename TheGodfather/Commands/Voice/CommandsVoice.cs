@@ -28,7 +28,7 @@ namespace TheGodfather.Commands.Voice
 
         #region COMMAND_CONNECT
         [Command("connect")]
-        [Description("Connects me to your voice channel.")]
+        [Description("Connects me to a voice channel.")]
         [Aliases("join", "c")]
         [RequirePermissions(Permissions.UseVoice)]
         public async Task ConnectAsync(CommandContext ctx, 
