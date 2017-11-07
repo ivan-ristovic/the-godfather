@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace TheGodfather.Helpers
+namespace TheGodfather.Helpers.Swat
 {
     public class SwatServer
     {

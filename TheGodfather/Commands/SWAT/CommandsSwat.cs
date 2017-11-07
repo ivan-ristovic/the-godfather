@@ -8,7 +8,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-using TheGodfather.Helpers;
+using TheGodfather.Helpers.Swat;
 using TheGodfather.Helpers.DataManagers;
 using TheGodfather.Exceptions;
 
@@ -46,7 +46,7 @@ namespace TheGodfather.Commands.SWAT
                 var info = await QueryIPAsync(ctx, server.Value.IP, server.Value.QueryPort)
                     .ConfigureAwait(false);
                 if (info != null)
-                    em.AddField(info[0], $"IP: {server.Value.IP}:{server.Value.JoinPort}\nPlayers: {Formatter.Bold(info[1] + " / " + info[2])}");
+                    em.AddField(info.HostName, $"IP: {server.Value.IP}:{server.Value.JoinPort}\nPlayers: {Formatter.Bold(info.Players + " / " + info.MaxPlayers)}");
                 else
                     em.AddField(server.Value.Name, $"IP: {server.Value.IP}:{server.Value.JoinPort}\nPlayers: Offline");
             }
@@ -138,8 +138,8 @@ namespace TheGodfather.Commands.SWAT
                                 .ConfigureAwait(false);
                             return;
                         }
-                    } else if (int.Parse(info[1]) < int.Parse(info[2])) {
-                        await ctx.RespondAsync(ctx.User.Mention + ", there is space on " + info[0])
+                    } else if (info.ServerHasSpace()) {
+                        await ctx.RespondAsync(ctx.User.Mention + ", there is space on " + info.HostName)
                             .ConfigureAwait(false);
                     }
                 } catch (Exception e) {
@@ -171,7 +171,7 @@ namespace TheGodfather.Commands.SWAT
 
 
         #region HELPER_FUNCTIONS
-        private async Task<string[]> QueryIPAsync(CommandContext ctx, string ip, int port)
+        private async Task<SwatServerInfo> QueryIPAsync(CommandContext ctx, string ip, int port)
         {
             byte[] receivedData = null;
             try {
@@ -198,33 +198,16 @@ namespace TheGodfather.Commands.SWAT
             data = Regex.Replace(data, @"(\[\\*c=?([0-9a-f])*\])|(\[\\*[bicu]\])|(\?)", "", RegexOptions.IgnoreCase);
 
             var split = data.Split('\\');
-            int index = 0;
-            foreach (var s in split) {
-                if (s == "hostname")
-                    break;
-                index++;
-            }
 
-            if (index < 10)
-                return new string[] { split[index + 1], split[index + 3], split[index + 5], split[index + 7], split[index + 11] };
+            if (Array.IndexOf(split, "hostname") == -1)
+                return null;
 
-            return null;
+            return SwatServerInfo.FromData(ip, split);
         }
         
-        private async Task SendEmbedInfoAsync(CommandContext ctx, string ip, string[] info)
+        private async Task SendEmbedInfoAsync(CommandContext ctx, string ip, SwatServerInfo info)
         {
-            var em = new DiscordEmbedBuilder() {
-                Url = "https://swat4stats.com/servers/" + ip,
-                Title = info[0],
-                Description = ip,
-                Timestamp = DateTime.Now,
-                Color = DiscordColor.DarkBlue
-            };
-            em.AddField("Players", info[1] + "/" + info[2]);
-            em.AddField("Map", info[4]);
-            em.AddField("Game mode", info[3]);
-
-            await ctx.RespondAsync(embed: em.Build())
+            await ctx.RespondAsync(embed: info.EmbedData())
                 .ConfigureAwait(false);
         }
         #endregion

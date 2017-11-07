@@ -3,11 +3,9 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
-using System.Linq;
-using System.Text;
 using Newtonsoft.Json;
 
-using TheGodfather.Helpers;
+using TheGodfather.Helpers.Swat;
 
 using DSharpPlus;
 #endregion
