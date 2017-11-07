@@ -16,7 +16,7 @@ namespace TheGodfather
         public override Task<bool> CanExecute(CommandContext ctx, bool help)
         {
             if (ctx.Dependencies.GetDependency<TheGodfather>().Listening) {
-                ctx.Dependencies.GetDependency<TheGodfather>().LogHandle.Log(LogLevel.Info,
+                ctx.Dependencies.GetDependency<TheGodfather>().LogHandle.Log(LogLevel.Debug,
                     $" Executing: {ctx.Command?.QualifiedName ?? "<unknown command>"}" + Environment.NewLine +
                     $" In message: {ctx.Message.Content}" + Environment.NewLine +
                     $" User: {ctx.User.ToString()}" + Environment.NewLine +

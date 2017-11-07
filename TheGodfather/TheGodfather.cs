@@ -97,7 +97,7 @@ namespace TheGodfather
         private void SetupClient()
         {
             _client = new DiscordClient(new DiscordConfiguration {
-                LogLevel = LogLevel.Debug,
+                LogLevel = LogLevel.Info,
                 LargeThreshold = 250,
                 AutoReconnect = true,
                 Token = _config.CurrentConfig.Token,

@@ -104,21 +104,6 @@ namespace TheGodfather.Commands.Administration
         }
         #endregion
 
-        #region COMMAND_DEBUG
-        [Command("debug")]
-        [Description("Toggle log debug level.")]
-        [Aliases("dbg", "debugmode")]
-        [CheckIgnore]
-        public async Task SetDebugModeAsync(CommandContext ctx,
-                                           [Description("True/False.")] bool b)
-        {
-            ctx.Dependencies.GetDependency<TheGodfather>().LogHandle.DebugMode = b;
-
-            await ctx.RespondAsync($"Debug log {Formatter.Bold(b ? "enabled" : "disabled")}.")
-                .ConfigureAwait(false);
-        }
-        #endregion
-
         #region COMMAND_EVAL
         // Code created by Emzi
         [Command("eval")]
