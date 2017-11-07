@@ -256,15 +256,20 @@ Commands use the following types:
 
 ## SWAT4 commands
 
+*Note: Ports can be omitted if they are default. Examples:*
+- ``!s4 q 13.95.232.189`` *If the joinport is not given, bot will use default 10480 joinport and 10481 queryport.*
+- ``!s4 q 5.9.50.39:8480`` *If the joinport is given, bot will use given joinport and default query port (joinport + 1). In this case 8480 and 8481, respectively.*
+<br>
+
 | Command group (with synonyms) | Command name (with synonyms) | Required Permissions | Command arguments | Command Description | Example of use |
 |---|---|---|---|---|---|
 |   |   |   |   |   |   |
 | ``swat4``<br>``swat``<br>``s4`` | ``serverlist`` |   |   | Player count for SWAT4 servers in database. | ``!s4 serverlist`` |
-| ``swat4``<br>``swat``<br>``s4`` | ``query``<br>``info``<br>``q``<br>``i`` |   | ``[string] IP/Shortname`` | Get info for SWAT4 server with given IP or short name (you can add these manually, popular servers are already added). | ``!s4 query 13.95.232.189:10480``<br><br>``!s4 query soh`` |
+| ``swat4``<br>``swat``<br>``s4`` | ``query``<br>``info``<br>``q``<br>``i`` |   | ``[string] IP/Shortname``<br><br>``(optional) [int] Query port (def: joinport + 1)`` | Get info for SWAT4 server with given IP or short name (you can add these manually, popular servers are already added). | ``!s4 query 13.95.232.189:10480``<br><br>``!s4 query soh`` |
 | ``swat4``<br>``swat``<br>``s4`` | ``settimeout`` | Owner Only | ``[int] Time (in ms)`` | Set spacecheck ping time. | ``!s4 settimeout 200`` |
-| ``swat4``<br>``swat``<br>``s4`` | ``spacecheck``<br>``startcheck``<br>``checkspace`` |   | ``[string] IP/Shortname`` | Start checking for space on SWAT4 server given with IP/Name. Bot will send a message when there is space on the server. One check per user at a time is allowed. | ``!s4 spacecheck 13.95.232.189:10480``<br><br>``!s4 spacecheck soh`` |
+| ``swat4``<br>``swat``<br>``s4`` | ``spacecheck``<br>``startcheck``<br>``checkspace`` |   | ``[string] IP/Shortname``<br><br>``(optional) [int] Query port (def: joinport + 1)`` | Start checking for space on SWAT4 server given with IP/Name. Bot will send a message when there is space on the server. One check per user at a time is allowed. | ``!s4 spacecheck 13.95.232.189:10480``<br><br>``!s4 spacecheck soh`` |
 | ``swat4``<br>``swat``<br>``s4`` | ``stopcheck``<br>``checkstop`` |   |   | Stops your issued spacecheck. | ``!s4 stopcheck`` |
-| ``s4 servers``<br>``s4 srv``<br>``s4 s`` | ``add``<br>``+``<br>``a`` | Administrator (user) | ``[string] Shortname``<br><br>``[string] IP`` | Add a new server to database. If the server uses a non-default query port, add it after IP like in example. | ``!s4 servers + soh 13.95.232.189:10480``<br><br>``!s4 servers + soh 13.95.232.189:10480:10488`` |
+| ``s4 servers``<br>``s4 srv``<br>``s4 s`` | ``add``<br>``+``<br>``a`` | Administrator (user) | ``[string] Shortname``<br><br>``[string] IP``<br><br>``(optional) [int] Query port (def: joinport + 1)`` | Add a new server to database. If the server uses a non-default query port, add it after IP like in example. | ``!s4 servers + soh 13.95.232.189:10480``<br><br>``!s4 servers + soh 13.95.232.189:10480:10488`` |
 | ``s4 servers``<br>``s4 srv``<br>``s4 s`` | ``delete``<br>``-``<br>``del``<br>``d`` | Administrator (user) | ``[string] Shortname`` | Remove a server from database. | ``!s4 servers - soh`` |
 | ``s4 servers``<br>``s4 srv``<br>``s4 s`` | ``save`` | Owner Only |   | Save server list. | ``!s4 servers save`` |
 |   |   |   |   |   |   |
