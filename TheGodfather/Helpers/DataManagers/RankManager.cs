@@ -36,6 +36,8 @@ namespace TheGodfather.Helpers.DataManagers
             "Pakistani bomb carrier",
             "Michal's worker (black)",
             "Michal's worker (white)",
+            "World Mafia Waste",
+            "Brazillian flip-flop maker",
             "LDR"
             #endregion
         };
