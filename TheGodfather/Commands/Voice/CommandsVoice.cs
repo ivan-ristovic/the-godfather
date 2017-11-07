@@ -27,10 +27,11 @@ namespace TheGodfather.Commands.Voice
         private volatile bool _playing = false;
 
 
-        #region COMMAND_JOIN
+        #region COMMAND_CONNECT
         [Command("connect")]
         [Description("Connects me to your voice channel.")]
         [Aliases("join", "c")]
+        [RequirePermissions(Permissions.UseVoice)]
         public async Task ConnectAsync(CommandContext ctx, 
                                       [Description("Channel.")] DiscordChannel c = null)
         {
@@ -57,7 +58,7 @@ namespace TheGodfather.Commands.Voice
         }
         #endregion
 
-        #region COMMAND_LEAVE
+        #region COMMAND_DISCONNECT
         [Command("disconnect")]
         [Description("Disconnects from voice channel.")]
         [Aliases("leave", "d")]
@@ -81,6 +82,7 @@ namespace TheGodfather.Commands.Voice
         [Command("play")]
         [Description("Plays an audio file from the given URL.")]
         [Aliases("p")]
+        [RequirePermissions(Permissions.UseVoice | Permissions.Speak)]
         public async Task PlayAsync(CommandContext ctx,
                                    [RemainingText, Description("URL.")] string url)
         {
@@ -144,6 +146,7 @@ namespace TheGodfather.Commands.Voice
         [Command("playfile")]
         [Description("Plays an audio file from server filesystem.")]
         [Aliases("pf")]
+        [RequirePermissions(Permissions.UseVoice | Permissions.Speak)]
         public async Task PlayFileAsync(CommandContext ctx,
                                        [RemainingText, Description("Full path to the file to play.")] string filename)
         {
