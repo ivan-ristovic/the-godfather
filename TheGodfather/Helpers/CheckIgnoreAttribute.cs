@@ -17,8 +17,8 @@ namespace TheGodfather
         {
             if (ctx.Dependencies.GetDependency<TheGodfather>().Listening) {
                 ctx.Dependencies.GetDependency<TheGodfather>().LogHandle.Log(LogLevel.Debug,
-                    $" Executing: {ctx.Command?.QualifiedName ?? "<unknown command>"}" + Environment.NewLine +
-                    $" In message: {ctx.Message.Content}" + Environment.NewLine +
+                    $"Executing: {ctx.Command?.QualifiedName ?? "<unknown command>"}" + Environment.NewLine +
+                    $" Message: {ctx.Message.Content}" + Environment.NewLine +
                     $" User: {ctx.User.ToString()}" + Environment.NewLine +
                     $" Location: '{ctx.Guild.Name}' ({ctx.Guild.Id}) ; {ctx.Channel.ToString()}"
                 );

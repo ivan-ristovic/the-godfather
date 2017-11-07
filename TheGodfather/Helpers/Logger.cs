@@ -83,7 +83,7 @@ namespace TheGodfather.Helpers
 
             try {
                 lock (_lock) {
-                    _logstream.WriteLine($"[{e.Timestamp}] [{e.Level}]{Environment.NewLine}{e.Message}");
+                    _logstream.WriteLine($"[{e.Timestamp}] [{e.Level}]{Environment.NewLine} {e.Message}");
                     _logstream.Flush();
                 }
             } catch (Exception ex) {

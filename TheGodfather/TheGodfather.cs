@@ -169,7 +169,7 @@ namespace TheGodfather
                 return;
             }
 
-            LogHandle.Log(LogLevel.Info, "Data loaded.");
+            LogHandle.Log(LogLevel.Debug, "Data loaded.");
         }
 
         private void SaveData()
@@ -186,7 +186,7 @@ namespace TheGodfather
                 return;
             }
 
-            LogHandle.Log(LogLevel.Info, "Data saved.");
+            LogHandle.Log(LogLevel.Debug, "Data saved.");
         }
 
         private Task<int> CheckMessageForPrefix(DiscordMessage m)
@@ -404,7 +404,7 @@ namespace TheGodfather
             await Task.Yield();
 
             LogHandle.Log(LogLevel.Info,
-                $" Executed: {e.Command?.QualifiedName ?? "<unknown command>"}" + Environment.NewLine +
+                $"Executed: {e.Command?.QualifiedName ?? "<unknown command>"}" + Environment.NewLine +
                 $" User: {e.Context.User.ToString()}" + Environment.NewLine +
                 $" Location: '{e.Context.Guild.Name}' ({e.Context.Guild.Id}) ; {e.Context.Channel.ToString()}"
             );
@@ -423,7 +423,7 @@ namespace TheGodfather
                 return;
 
             LogHandle.Log(LogLevel.Error,
-                $" Tried executing: {e.Command?.QualifiedName ?? "<unknown command>"}" + Environment.NewLine +
+                $"Tried executing: {e.Command?.QualifiedName ?? "<unknown command>"}" + Environment.NewLine +
                 $" User: {e.Context.User.ToString()}" + Environment.NewLine +
                 $" Location: '{e.Context.Guild.Name}' ({e.Context.Guild.Id}) ; {e.Context.Channel.ToString()}" + Environment.NewLine +
                 $" Exception: {ex.GetType()}" + Environment.NewLine +
