@@ -17,7 +17,7 @@ namespace TheGodfather.Commands.Administration
     [Description("Miscellaneous role control commands.")]
     [Aliases("role", "r", "rl")]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
-    [CheckIgnore]
+    [CheckListeningAttribute]
     public class CommandsRoles
     {
 

@@ -23,7 +23,7 @@ namespace TheGodfather.Commands.Messages
     [Description("Message filtering commands.")]
     [Aliases("f", "filters")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
-    [CheckIgnore]
+    [CheckListeningAttribute]
     public class CommandsFilter
     {        
         #region COMMAND_FILTER_ADD

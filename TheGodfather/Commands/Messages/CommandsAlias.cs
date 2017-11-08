@@ -22,7 +22,7 @@ namespace TheGodfather.Commands.Messages
     [Description("Alias handling commands.")]
     [Aliases("a", "aliases")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
-    [CheckIgnore]
+    [CheckListeningAttribute]
     public class CommandsAlias
     {
         #region COMMAND_ALIAS_ADD

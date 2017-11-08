@@ -22,7 +22,7 @@ namespace TheGodfather.Commands.Messages
     [Description("User ranking commands.")]
     [Aliases("ranks", "ranking")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
-    [CheckIgnore]
+    [CheckListeningAttribute]
     public class CommandsRanking
     {
 

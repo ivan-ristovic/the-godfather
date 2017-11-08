@@ -34,7 +34,7 @@ namespace TheGodfather.Commands.Administration
         [Command("botavatar")]
         [Description("Set bot avatar.")]
         [Aliases("setbotavatar", "setavatar")]
-        [CheckIgnore]
+        [CheckListeningAttribute]
         public async Task SetBotAvatarAsync(CommandContext ctx,
                                            [Description("URL.")] string url)
         {
@@ -71,7 +71,7 @@ namespace TheGodfather.Commands.Administration
         [Command("botname")]
         [Description("Set bot name.")]
         [Aliases("setbotname", "setname")]
-        [CheckIgnore]
+        [CheckListeningAttribute]
         public async Task SetBotNameAsync(CommandContext ctx,
                                          [RemainingText, Description("New name.")] string name)
         {
@@ -89,7 +89,7 @@ namespace TheGodfather.Commands.Administration
         [Command("clearlog")]
         [Description("Clear application logs.")]
         [Aliases("clearlogs", "deletelogs", "deletelog")]
-        [CheckIgnore]
+        [CheckListeningAttribute]
         public async Task ClearLogAsync(CommandContext ctx)
         {
             try {
@@ -109,7 +109,7 @@ namespace TheGodfather.Commands.Administration
         [Command("eval")]
         [Description("Evaluates a snippet of C# code, in context.")]
         [Aliases("compile", "run")]
-        [CheckIgnore]
+        [CheckListeningAttribute]
         public async Task EvaluateAsync(CommandContext ctx,
                                        [RemainingText, Description("Code to evaluate.")] string code)
         {
@@ -200,7 +200,7 @@ namespace TheGodfather.Commands.Administration
         #region COMMAND_LEAVEGUILDS
         [Command("leaveguilds")]
         [Description("Leave guilds given as IDs.")]
-        [CheckIgnore]
+        [CheckListeningAttribute]
         public async Task LeaveGuildsAsync(CommandContext ctx,
                                           [Description("Guild ID list.")] params ulong[] ids)
         {
@@ -226,7 +226,7 @@ namespace TheGodfather.Commands.Administration
         [Command("sendmessage")]
         [Description("Sends a message to a user or channel.")]
         [Aliases("send")]
-        [CheckIgnore]
+        [CheckListeningAttribute]
         public async Task SendAsync(CommandContext ctx,
                                    [Description("u/c (for user or channel.)")] string desc,
                                    [Description("User/Channel ID.")] ulong xid,
@@ -258,7 +258,7 @@ namespace TheGodfather.Commands.Administration
         [Command("shutdown")]
         [Description("Triggers the dying in the vineyard scene.")]
         [Aliases("disable", "poweroff", "exit", "quit")]
-        [CheckIgnore]
+        [CheckListeningAttribute]
         public async Task ExitAsync(CommandContext ctx)
         {
             await ctx.RespondAsync("https://www.youtube.com/watch?v=4rbfuw0UN2A")
@@ -273,7 +273,7 @@ namespace TheGodfather.Commands.Administration
         [Command("sudo")]
         [Description("Executes a command as another user.")]
         [Aliases("execas", "as")]
-        [CheckIgnore]
+        [CheckListeningAttribute]
         public async Task SudoAsync(CommandContext ctx,
                                    [Description("Member to execute as.")] DiscordMember member,
                                    [RemainingText, Description("Command text to execute.")] string command)
@@ -301,7 +301,7 @@ namespace TheGodfather.Commands.Administration
 
         [Group("status", CanInvokeWithoutSubcommand = false)]
         [Description("Bot status manipulation.")]
-        [CheckIgnore]
+        [CheckListeningAttribute]
         public class CommandsStatus
         {
             #region COMMAND_STATUS_ADD

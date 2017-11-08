@@ -11,7 +11,7 @@ using DSharpPlus.CommandsNext.Attributes;
 namespace TheGodfather
 {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
-    public class CheckIgnoreAttribute : CheckBaseAttribute
+    public class CheckListeningAttributeAttribute : CheckBaseAttribute
     {
         public override Task<bool> CanExecute(CommandContext ctx, bool help)
         {

@@ -20,7 +20,7 @@ namespace TheGodfather.Commands.Games
         [Group("race", CanInvokeWithoutSubcommand = true)]
         [Description("Racing!")]
         [Cooldown(2, 5, CooldownBucketType.User), Cooldown(3, 5, CooldownBucketType.Channel)]
-        [CheckIgnore]
+        [CheckListeningAttribute]
         public class CommandsRace
         {
             #region PRIVATE_FIELDS

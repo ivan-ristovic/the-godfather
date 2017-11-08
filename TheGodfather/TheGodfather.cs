@@ -419,7 +419,7 @@ namespace TheGodfather
             while (ex is AggregateException)
                 ex = ex.InnerException;
 
-            if (ex is ChecksFailedException chke && chke.FailedChecks.Any(c => c is CheckIgnoreAttribute))
+            if (ex is ChecksFailedException chke && chke.FailedChecks.Any(c => c is CheckListeningAttributeAttribute))
                 return;
 
             LogHandle.Log(LogLevel.Error,

@@ -18,7 +18,7 @@ namespace TheGodfather.Commands.Search
     [Description("Reddit commands.")]
     [Aliases("r")]
     [Cooldown(2, 5, CooldownBucketType.User), Cooldown(4, 5, CooldownBucketType.Channel)]
-    [CheckIgnore]
+    [CheckListeningAttribute]
     [RequireOwner]
     [Hidden]
     public class CommandsReddit
