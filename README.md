@@ -58,10 +58,8 @@ Commands use the following types:
    |   |   |   |   |   |
 | ``filter``<br>``filters``<br>``f`` | ``add``<br>``+``<br>``new`` | Manage Guild (user) | ``[string] Trigger`` | Add a new filter to filter guild list. Whenever someone sends a message containing ``Trigger``, bot will delete it. Triggers can also be regular expressions (case ignored). | ``!filter add fuck`` |
 | ``filter``<br>``filters``<br>``f`` | ``clear`` | Administrator (user) |  | Delete all filters for the current guild. | ``!filter clear`` |
-| ``filter``<br>``filters``<br>``f`` | ``clearall`` | Owner Only |  | Delete all filters (for all guilds). | ``!filter clearall`` |
 | ``filter``<br>``filters``<br>``f`` | ``delete``<br>``-``<br>``remove``<br>``del``<br>``rm`` | Manage Guild (user) | ``[int] Index`` | Remove filter with a given index from guild filter list. Use ``!filter list`` to view filters. | ``!filter delete 5`` |
 | ``filter``<br>``filters``<br>``f`` | ``list`` |  | ``(optional) [int] Page (def: 1)`` | List guild filters on page ``Page``. | ``!filter list 3`` |
-| ``filter``<br>``filters``<br>``f`` | ``save`` | Owner Only |  | Save all filters. | ``!filter save`` |
 |   |   |   |   |   |   |
 | ``insult``<br>``burn``<br>``insults`` |   |   | ``(optional) [user] User (def: sender)`` | Insult ``User``. | ``!insult``<br><br>``!insult @Someone`` |
 | ``insult``<br>``burn``<br>``insults`` | ``add``<br>``+``<br>``new`` | Owner Only | ``[text] Insult`` | Add a new insult to global insult list. You can use ``%user%`` in your insult text as a replacement for the user mention who will be insulted. | ``!insult add Your age is greater than your IQ, %user%!`` |
