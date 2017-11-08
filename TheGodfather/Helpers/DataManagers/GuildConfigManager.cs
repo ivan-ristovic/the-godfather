@@ -96,6 +96,9 @@ namespace TheGodfather.Helpers.DataManagers
                     return false;
             }
 
+            if (_gcfg[gid].Filters.Any(r => r.ToString() == regex.ToString()))
+                return false;
+
             lock (_filterLock)
                 return _gcfg[gid].Filters.Add(regex);
         }
