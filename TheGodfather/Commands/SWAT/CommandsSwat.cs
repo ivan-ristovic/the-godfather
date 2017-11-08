@@ -36,7 +36,7 @@ namespace TheGodfather.Commands.SWAT
 
         #region COMMAND_SERVERLIST
         [Command("serverlist")]
-        [Description("Print the serverlist with current player numbers")]
+        [Description("Print the serverlist with current player numbers.")]
         public async Task ServerlistAsync(CommandContext ctx)
         {
             await ctx.TriggerTypingAsync()
@@ -85,10 +85,11 @@ namespace TheGodfather.Commands.SWAT
         [Command("settimeout")]
         [Description("Set checking timeout.")]
         [RequireOwner]
-        [Hidden]
         public async Task SetTimeoutAsync(CommandContext ctx,
-                                         [Description("Timeout.")] int timeout)
+                                         [Description("Timeout (in ms).")] int timeout)
         {
+            if (timeout < 100 || timeout > 10000)
+                throw new InvalidCommandUsageException("Timeout not in valid range [100-10000] ms.");
             _checktimeout = timeout;
             await ctx.RespondAsync("Timeout changed to: " + Formatter.Bold(_checktimeout.ToString()))
                 .ConfigureAwait(false);
