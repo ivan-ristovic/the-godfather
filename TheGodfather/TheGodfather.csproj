@@ -219,7 +219,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Helpers\BotConfig.cs" />
-    <Compile Include="Helpers\DataManagers\BotConfigManager.cs" />
     <Compile Include="Helpers\DataManagers\ChannelManager.cs" />
     <Compile Include="Helpers\DataManagers\BankManager.cs" />
     <Compile Include="Helpers\DataManagers\FeedManager.cs" />

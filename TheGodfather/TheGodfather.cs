@@ -28,6 +28,7 @@ namespace TheGodfather
     {
         #region PUBLIC_FIELDS
         public bool Listening { get; private set; }
+        public BotConfig Config { get; private set; }
         #endregion
 
         #region PRIVATE_FIELDS
@@ -36,7 +37,6 @@ namespace TheGodfather
         private InteractivityModule _interactivity { get; set; }
         private VoiceNextClient _voice { get; set; }
 
-        private BotConfigManager _config { get; set; }
         private BotDependencyList _dependecies { get; set; }
 
         internal Logger LogHandle { get; private set; }
@@ -46,7 +46,6 @@ namespace TheGodfather
         public TheGodfather()
         {
             Listening = true;
-            _config = new BotConfigManager();
         }
 
         ~TheGodfather()
@@ -64,7 +63,8 @@ namespace TheGodfather
 
         public async Task MainAsync(string[] args)
         {
-            if (!_config.Load()) {
+            Config = BotConfig.Load();
+            if (Config == null) {
                 Console.WriteLine("Config file corrupted or missing.");
                 Console.ReadKey();
                 return;
@@ -100,7 +100,7 @@ namespace TheGodfather
                 LogLevel = LogLevel.Info,
                 LargeThreshold = 250,
                 AutoReconnect = true,
-                Token = _config.CurrentConfig.Token,
+                Token = Config.Token,
                 TokenType = TokenType.Bot,
                 UseInternalLogHandler = true
             });
@@ -124,7 +124,7 @@ namespace TheGodfather
 
         private void SetupCommands()
         {
-            _dependecies = new BotDependencyList(_client, _config.CurrentConfig);
+            _dependecies = new BotDependencyList(_client, Config);
             _commands = _client.UseCommandsNext(new CommandsNextConfiguration {
                 EnableDms = false,
                 CaseSensitive = false,
@@ -132,7 +132,7 @@ namespace TheGodfather
                 CustomPrefixPredicate = async m => await CheckMessageForPrefix(m),
                 Dependencies = _dependecies.GetDependencyCollectionBuilder()
                                            .AddInstance(this)
-                                           .AddInstance(_config)
+                                           .AddInstance(Config)
                                            .Build()
             });
             _commands.SetHelpFormatter<HelpFormatter>();
@@ -194,7 +194,7 @@ namespace TheGodfather
             if (_dependecies.PrefixControl.Prefixes.ContainsKey(m.ChannelId))
                 return Task.FromResult(m.GetStringPrefixLength(_dependecies.PrefixControl.Prefixes[m.ChannelId]));
             else
-                return Task.FromResult(m.GetStringPrefixLength(_config.CurrentConfig.DefaultPrefix));
+                return Task.FromResult(m.GetStringPrefixLength(Config.DefaultPrefix));
         }
         #endregion
 

@@ -3,6 +3,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
+using TheGodfather.Helpers;
 using TheGodfather.Helpers.DataManagers;
 using TheGodfather.Exceptions;
 
@@ -176,7 +177,7 @@ namespace TheGodfather.Commands.Main
             if (string.IsNullOrWhiteSpace(prefix)) {
                 string p = prefixes.GetPrefixForChannelId(ctx.Channel.Id);
                 if (p == null)
-                    p = ctx.Dependencies.GetDependency<BotConfigManager>().CurrentConfig.DefaultPrefix;
+                    p = ctx.Dependencies.GetDependency<TheGodfather>().Config.DefaultPrefix;
                 await ctx.RespondAsync("Current prefix for this channel is: " + Formatter.Bold(p))
                     .ConfigureAwait(false);
                 return;
