@@ -24,7 +24,6 @@ namespace TheGodfather.Helpers
     {
         internal BankManager        BankControl         { get; private set; }
         internal FeedManager        FeedControl         { get; private set; }
-        internal FilterManager      FilterControl       { get; private set; }
         internal InsultManager      InsultControl       { get; private set; }
         internal MemeManager        MemeControl         { get; private set; }
         internal RankManager        RankControl         { get; private set; }
@@ -43,7 +42,6 @@ namespace TheGodfather.Helpers
         {
             BankControl = new BankManager();
             FeedControl = new FeedManager(client);
-            FilterControl = new FilterManager();
             InsultControl = new InsultManager();
             MemeControl = new MemeManager();
             RankControl = new RankManager();
@@ -63,7 +61,6 @@ namespace TheGodfather.Helpers
         {
             BankControl.Load(log);
             FeedControl.Load(log);
-            FilterControl.Load(log);
             InsultControl.Load(log);
             MemeControl.Load(log);
             RankControl.Load(log);
@@ -77,7 +74,6 @@ namespace TheGodfather.Helpers
         {
             BankControl.Save(log);
             FeedControl.Save(log);
-            FilterControl.Save(log);
             InsultControl.Save(log);
             MemeControl.Save(log);
             RankControl.Save(log);
@@ -92,7 +88,6 @@ namespace TheGodfather.Helpers
             return new DependencyCollectionBuilder()
                 .AddInstance(BankControl)
                 .AddInstance(FeedControl)
-                .AddInstance(FilterControl)
                 .AddInstance(InsultControl)
                 .AddInstance(MemeControl)
                 .AddInstance(RankControl)

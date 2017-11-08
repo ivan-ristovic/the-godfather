@@ -37,7 +37,7 @@ namespace TheGodfather.Commands.Messages
             if (string.IsNullOrWhiteSpace(trigger) || string.IsNullOrWhiteSpace(response))
                 throw new InvalidCommandUsageException("Alias name or response missing or invalid.");
 
-            if (ctx.Dependencies.GetDependency<GuildConfigManager>().TryAddTrigger(ctx.Guild.Id, trigger, response))
+            if (ctx.Dependencies.GetDependency<GuildConfigManager>().TryAddGuildTrigger(ctx.Guild.Id, trigger, response))
                 await ctx.RespondAsync($"Trigger {Formatter.Bold(trigger)} successfully set.").ConfigureAwait(false);
             else
                 throw new CommandFailedException($"Failed to add trigger.");
@@ -55,7 +55,7 @@ namespace TheGodfather.Commands.Messages
             if (string.IsNullOrWhiteSpace(alias))
                 throw new InvalidCommandUsageException("Alias name missing.");
 
-            if (ctx.Dependencies.GetDependency<GuildConfigManager>().TryRemoveTrigger(ctx.Guild.Id, alias))
+            if (ctx.Dependencies.GetDependency<GuildConfigManager>().TryRemoveGuildTrigger(ctx.Guild.Id, alias))
                 await ctx.RespondAsync($"Trigger {Formatter.Bold(alias)} successfully removed.").ConfigureAwait(false);
             else
                 throw new CommandFailedException("Failed to remove trigger.");

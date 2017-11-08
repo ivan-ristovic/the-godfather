@@ -262,7 +262,7 @@ namespace TheGodfather.Commands.Main
             if (string.IsNullOrWhiteSpace(s))
                 throw new InvalidCommandUsageException("Text missing.");
 
-            if (ctx.Dependencies.GetDependency<FilterManager>().ContainsFilter(ctx.Guild.Id, s))
+            if (ctx.Dependencies.GetDependency<GuildConfigManager>().ContainsFilter(ctx.Guild.Id, s))
                 throw new CommandFailedException("You can't make me say something that contains filtered content for this guild.");
             
             await ctx.RespondAsync(s)

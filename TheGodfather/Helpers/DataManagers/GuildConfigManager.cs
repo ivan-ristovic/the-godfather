@@ -4,7 +4,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Linq;
-using System.Text;
+using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 
 using DSharpPlus;
@@ -22,6 +22,7 @@ namespace TheGodfather.Helpers.DataManagers
         private ConcurrentDictionary<ulong, GuildConfig> _gcfg = new ConcurrentDictionary<ulong, GuildConfig>();
         private BotConfig _cfg { get; set; }
         private bool _ioerr = false;
+        private readonly object _filterLock = new object();
         #endregion
 
 
@@ -61,6 +62,67 @@ namespace TheGodfather.Helpers.DataManagers
             }
 
             return true;
+        }
+        #endregion
+
+        #region FILTERS
+        public IReadOnlyCollection<Regex> GetAllGuildFilters(ulong gid)
+        {
+            if (_gcfg.ContainsKey(gid) && _gcfg[gid].Filters != null)
+                return _gcfg[gid].Filters;
+            else
+                return null;
+        }
+
+        public bool ContainsFilter(ulong gid, string message)
+        {
+            if (!_gcfg.ContainsKey(gid) || _gcfg[gid].Filters == null)
+                return false;
+
+            message = message.ToLower();
+            foreach (var word in message.Split(' '))
+                if (_gcfg[gid].Filters.Any(f => f.Match(word).Success))
+                    return true;
+            return false;
+        }
+
+        public bool TryAddGuildFilter(ulong gid, Regex regex)
+        {
+            if (_gcfg.ContainsKey(gid)) {
+                if (_gcfg[gid].Filters == null)
+                    _gcfg[gid].Filters = new HashSet<Regex>();
+            } else {
+                if (!_gcfg.TryAdd(gid, new GuildConfig() { Filters = new HashSet<Regex>() }))
+                    return false;
+            }
+
+            lock (_filterLock)
+                return _gcfg[gid].Filters.Add(regex);
+        }
+
+        public bool TryRemoveGuildFilter(ulong gid, int index)
+        {
+            if (!_gcfg.ContainsKey(gid))
+                return false;
+
+            if (index < 0 || index > _gcfg[gid].Filters.Count)
+                return false;
+
+            lock (_filterLock) {
+                var el = _gcfg[gid].Filters.ElementAt(index);
+                _gcfg[gid].Filters.Remove(el);
+            }
+
+            return true;
+        }
+
+        public void ClearGuildFilters(ulong gid)
+        {
+            if (!_gcfg.ContainsKey(gid))
+                return;
+
+            lock (_filterLock)
+                _gcfg[gid].Filters.Clear();
         }
         #endregion
 
@@ -157,7 +219,7 @@ namespace TheGodfather.Helpers.DataManagers
                 return null;
         }
 
-        public bool TryAddTrigger(ulong gid, string trigger, string response)
+        public bool TryAddGuildTrigger(ulong gid, string trigger, string response)
         {
             trigger = trigger.ToLower();
             if (_gcfg.ContainsKey(gid)) {
@@ -171,7 +233,7 @@ namespace TheGodfather.Helpers.DataManagers
             return _gcfg[gid].Triggers.TryAdd(trigger, response);
         }
 
-        public bool TryRemoveTrigger(ulong gid, string trigger)
+        public bool TryRemoveGuildTrigger(ulong gid, string trigger)
         {
             if (!_gcfg.ContainsKey(gid) || !_gcfg[gid].Triggers.ContainsKey(trigger))
                 return true;
@@ -203,10 +265,9 @@ namespace TheGodfather.Helpers.DataManagers
             [JsonProperty("Triggers")]
             public ConcurrentDictionary<string, string> Triggers { get; set; }
 
-            /*
             [JsonProperty("Filters")]
-            private List<string> _filters;
-
+            public HashSet<Regex> Filters { get; set; }
+            /*
             [JsonProperty("Reactions")]
             private ConcurrentDictionary<string, string> _reactions;
             */

@@ -228,7 +228,6 @@
     <Compile Include="Commands\Search\CommandsJokes.cs" />
     <Compile Include="Exceptions.cs" />
     <Compile Include="Helpers\BotDependencyList.cs" />
-    <Compile Include="Helpers\DataManagers\FilterManager.cs" />
     <Compile Include="Helpers\DataManagers\InsultManager.cs" />
     <Compile Include="Helpers\DataManagers\MemeManager.cs" />
     <Compile Include="Helpers\DataManagers\RankManager.cs" />
