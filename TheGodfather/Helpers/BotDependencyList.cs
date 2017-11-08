@@ -22,7 +22,6 @@ namespace TheGodfather.Helpers
 {
     internal class BotDependencyList
     {
-        internal AliasManager       AliasControl        { get; private set; }
         internal BankManager        BankControl         { get; private set; }
         internal FeedManager        FeedControl         { get; private set; }
         internal FilterManager      FilterControl       { get; private set; }
@@ -42,7 +41,6 @@ namespace TheGodfather.Helpers
 
         internal BotDependencyList(DiscordClient client, BotConfig cfg)
         {
-            AliasControl = new AliasManager();
             BankControl = new BankManager();
             FeedControl = new FeedManager(client);
             FilterControl = new FilterManager();
@@ -63,7 +61,6 @@ namespace TheGodfather.Helpers
 
         internal void LoadData(DebugLogger log)
         {
-            AliasControl.Load(log);
             BankControl.Load(log);
             FeedControl.Load(log);
             FilterControl.Load(log);
@@ -78,7 +75,6 @@ namespace TheGodfather.Helpers
 
         internal void SaveData(DebugLogger log)
         {
-            AliasControl.Save(log);
             BankControl.Save(log);
             FeedControl.Save(log);
             FilterControl.Save(log);
@@ -94,7 +90,6 @@ namespace TheGodfather.Helpers
         internal DependencyCollectionBuilder GetDependencyCollectionBuilder()
         {
             return new DependencyCollectionBuilder()
-                .AddInstance(AliasControl)
                 .AddInstance(BankControl)
                 .AddInstance(FeedControl)
                 .AddInstance(FilterControl)

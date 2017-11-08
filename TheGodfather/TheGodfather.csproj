@@ -227,7 +227,6 @@
     <Compile Include="Helpers\EvaluationEnvironment.cs" />
     <Compile Include="Commands\Search\CommandsJokes.cs" />
     <Compile Include="Exceptions.cs" />
-    <Compile Include="Helpers\DataManagers\AliasManager.cs" />
     <Compile Include="Helpers\BotDependencyList.cs" />
     <Compile Include="Helpers\DataManagers\FilterManager.cs" />
     <Compile Include="Helpers\DataManagers\InsultManager.cs" />
@@ -242,14 +241,14 @@
     <Compile Include="Commands\Games\CommandsQuiz.cs" />
     <Compile Include="Commands\Games\CommandsRace.cs" />
     <Compile Include="Commands\Main\CommandsRandom.cs" />
-    <Compile Include="Commands\Messages\CommandsAlias.cs" />
+    <Compile Include="Commands\Messages\CommandsTextTrigger.cs" />
     <Compile Include="Commands\Administration\CommandsChannels.cs" />
     <Compile Include="Commands\Games\CommandsGamble.cs" />
     <Compile Include="Commands\Games\CommandsGames.cs" />
     <Compile Include="Commands\Administration\CommandsGuild.cs" />
     <Compile Include="Commands\Messages\CommandsFilter.cs" />
     <Compile Include="Commands\Main\CommandsPoll.cs" />
-    <Compile Include="Commands\Messages\CommandsReaction.cs" />
+    <Compile Include="Commands\Messages\CommandsReactionTrigger.cs" />
     <Compile Include="Commands\Search\CommandsGiphy.cs" />
     <Compile Include="Commands\Search\CommandsImgur.cs" />
     <Compile Include="Commands\Main\CommandsInsult.cs" />

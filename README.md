@@ -55,14 +55,7 @@ Commands use the following types:
 |   | ``report`` |   | ``[text] Report message`` | Send message to owner (hopefully about a bug, I can see it being abused) | ``!report Your bot sucks!`` |
 |   | ``say``  |   | ``[text] What to say`` | Make Godfather say something! | ``!say Luke, I am your father!`` |
 |   | ``zugify`` |   | ``[text] Text`` | Requested by Zugi. It is so stupid it isn't worth describing... | ``!zugify Some text`` |
-|   |   |   |   |   |   |
-| ``alias``<br>``aliases``<br>``a`` | ``add``<br>``+``<br>``new`` | Manage Guild (user) | ``[string] Trigger``<br><br>``[text] Response`` | Add a new alias to alias guild list. Whenever someone sends a message ``Trigger``, bot will repond with ``Response``. You can also use ``%user%`` as a replacement for sender mention. | ``!alias add "hi" Hey, %user%!`` |
-| ``alias``<br>``aliases``<br>``a`` | ``clear`` | Administrator (user) |  | Delete all aliases for the current guild. | ``!alias clear`` |
-| ``alias``<br>``aliases``<br>``a`` | ``clearall`` | Owner Only |  | Delete all aliases (for all guilds). | ``!alias clearall`` |
-| ``alias``<br>``aliases``<br>``a`` | ``delete``<br>``-``<br>``remove``<br>``del``<br>``rm`` | Manage Guild (user) | ``[string] Trigger`` | Remove alias with a given trigger from guild alias list. Use ``!alias list`` to view aliases. | ``!alias delete hi`` |
-| ``alias``<br>``aliases``<br>``a`` | ``list`` |  | ``(optional) [int] Page (def: 1)`` | List guild aliases on page ``Page``. | ``!alias list 3`` |
-| ``alias``<br>``aliases``<br>``a`` | ``save`` | Owner Only |  | Save all aliases. | ``!alias save`` |
-|   |   |   |   |   |   |
+   |   |   |   |   |   |
 | ``filter``<br>``filters``<br>``f`` | ``add``<br>``+``<br>``new`` | Manage Guild (user) | ``[string] Trigger`` | Add a new filter to filter guild list. Whenever someone sends a message containing ``Trigger``, bot will delete it. Triggers can also be regular expressions (case ignored). | ``!filter add fuck`` |
 | ``filter``<br>``filters``<br>``f`` | ``clear`` | Administrator (user) |  | Delete all filters for the current guild. | ``!filter clear`` |
 | ``filter``<br>``filters``<br>``f`` | ``clearall`` | Owner Only |  | Delete all filters (for all guilds). | ``!filter clearall`` |
@@ -104,6 +97,11 @@ Commands use the following types:
 | ``reaction``<br>``reactions``<br>``react`` | ``delete``<br>``-``<br>``remove``<br>``del``<br>``rm`` | Manage Guild (user) | ``[text] Triggers`` | Remove trigger word (can be a list of words separated by spaces) from guild reaction list. Use ``!reaction list`` to view reactions. | ``!reaction delete smile hehe blabla`` |
 | ``reaction``<br>``reactions``<br>``react`` | ``list`` |  | ``(optional) [int] Page (def: 1)`` | List guild reactions on page ``Page``. | ``!reaction list 3`` |
 | ``reaction``<br>``reactions``<br>``react`` | ``save`` | Owner Only |  | Save all reactions. | ``!reaction save`` |
+|   |   |   |   |   |   |
+| ``trigger``<br>``triggers``<br>``alias``<br>``t``<br>``a`` | ``add``<br>``+``<br>``new`` | Manage Guild (user) | ``[string] Trigger``<br><br>``[text] Response`` | Add a new trigger to guild trigger list. Whenever someone sends a message ``Trigger``, bot will repond with ``Response``. You can also use ``%user%`` as a replacement for sender mention. | ``!trigger add "hi" Hey, %user%!`` |
+| ``trigger``<br>``triggers``<br>``alias``<br>``t``<br>``a`` | ``clear`` | Administrator (user) |  | Delete all triggers for the current guild. | ``!triggers clear`` |
+| ``trigger``<br>``triggers``<br>``alias``<br>``t``<br>``a`` | ``delete``<br>``-``<br>``remove``<br>``del``<br>``rm`` | Manage Guild (user) | ``[string] Trigger`` | Remove trigger with from guild trigger list. Use ``!trigger list`` to view guild triggers. | ``!trigger delete hi`` |
+| ``trigger``<br>``triggers``<br>``alias``<br>``t``<br>``a`` | ``list`` |  | ``(optional) [int] Page (def: 1)`` | List guild triggers on page ``Page``. | ``!trigger list 3`` |
 |   |   |   |   |   |   |
 
 ## Administration commands

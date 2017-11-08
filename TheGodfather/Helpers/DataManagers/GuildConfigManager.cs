@@ -18,9 +18,11 @@ namespace TheGodfather.Helpers.DataManagers
 {
     public class GuildConfigManager
     {
+        #region PRIVATE_FIELDS
         private ConcurrentDictionary<ulong, GuildConfig> _gcfg = new ConcurrentDictionary<ulong, GuildConfig>();
         private BotConfig _cfg { get; set; }
         private bool _ioerr = false;
+        #endregion
 
 
         public GuildConfigManager(BotConfig cfg)
@@ -29,6 +31,7 @@ namespace TheGodfather.Helpers.DataManagers
         }
 
 
+        #region LOAD/SAVE
         public void Load(DebugLogger log)
         {
             if (File.Exists("Resources/guilds.json")) {
@@ -59,7 +62,9 @@ namespace TheGodfather.Helpers.DataManagers
 
             return true;
         }
+        #endregion
 
+        #region PREFIXES
         public string GetGuildPrefix(ulong gid)
         {
             if (_gcfg.ContainsKey(gid) && !string.IsNullOrWhiteSpace(_gcfg[gid].Prefix))
@@ -77,7 +82,9 @@ namespace TheGodfather.Helpers.DataManagers
                 return _gcfg.TryAdd(gid, new GuildConfig() { Prefix = prefix });
             }
         }
+        #endregion
 
+        #region W/L channels
         public ulong GetGuildWelcomeChannelId(ulong gid)
         {
             if (_gcfg.ContainsKey(gid) && _gcfg[gid].WelcomeChannelId.HasValue)
@@ -125,6 +132,61 @@ namespace TheGodfather.Helpers.DataManagers
             if (_gcfg.ContainsKey(gid))
                 _gcfg[gid].LeaveChannelId = null;
         }
+        #endregion
+
+        #region TRIGGERS
+        public IReadOnlyDictionary<string, string> GetAllGuildTriggers(ulong gid)
+        {
+            if (_gcfg.ContainsKey(gid) && _gcfg[gid].Triggers != null)
+                return _gcfg[gid].Triggers;
+            else
+                return null;
+        }
+
+        public bool TriggerExists(ulong gid, string trigger)
+        {
+            return _gcfg.ContainsKey(gid) && _gcfg[gid].Triggers != null && _gcfg[gid].Triggers.ContainsKey(trigger);
+        }
+
+        public string GetResponseForTrigger(ulong gid, string trigger)
+        {
+            trigger = trigger.ToLower();
+            if (TriggerExists(gid, trigger))
+                return _gcfg[gid].Triggers[trigger];
+            else
+                return null;
+        }
+
+        public bool TryAddTrigger(ulong gid, string trigger, string response)
+        {
+            trigger = trigger.ToLower();
+            if (_gcfg.ContainsKey(gid)) {
+                if (_gcfg[gid].Triggers == null)
+                    _gcfg[gid].Triggers = new ConcurrentDictionary<string, string>();
+            } else {
+                if (!_gcfg.TryAdd(gid, new GuildConfig() { Triggers = new ConcurrentDictionary<string, string>() }))
+                    return false;
+            }
+
+            return _gcfg[gid].Triggers.TryAdd(trigger, response);
+        }
+
+        public bool TryRemoveTrigger(ulong gid, string trigger)
+        {
+            if (!_gcfg.ContainsKey(gid) || !_gcfg[gid].Triggers.ContainsKey(trigger))
+                return true;
+
+            return _gcfg[gid].Triggers.TryRemove(trigger, out _);
+        }
+
+        public bool ClearGuildTriggers(ulong gid)
+        {
+            if (!_gcfg.ContainsKey(gid))
+                return true;
+
+            return _gcfg.TryRemove(gid, out _);
+        }
+        #endregion
 
 
         internal sealed class GuildConfig
@@ -137,6 +199,9 @@ namespace TheGodfather.Helpers.DataManagers
 
             [JsonProperty("LeaveChannelId")]
             public ulong? LeaveChannelId { get; set; }
+            
+            [JsonProperty("Triggers")]
+            public ConcurrentDictionary<string, string> Triggers { get; set; }
         }
     }
 }

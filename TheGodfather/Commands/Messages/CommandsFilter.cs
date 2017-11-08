@@ -37,8 +37,8 @@ namespace TheGodfather.Commands.Messages
             if (string.IsNullOrWhiteSpace(filter))
                 throw new InvalidCommandUsageException("Filter trigger missing.");
             
-            if (ctx.Dependencies.GetDependency<AliasManager>().Contains(ctx.Guild.Id, filter))
-                throw new CommandFailedException("You cannot add a filter if an alias for that trigger exists!");
+            if (ctx.Dependencies.GetDependency<GuildConfigManager>().TriggerExists(ctx.Guild.Id, filter))
+                throw new CommandFailedException("You cannot add a filter if a trigger for that trigger exists!");
 
             if (filter.Contains("%") || filter.Length < 3)
                 throw new CommandFailedException($"Filter must not contain {Formatter.Bold("%")} or have less than 3 characters.");

@@ -321,22 +321,24 @@ namespace TheGodfather
                 await e.Channel.SendMessageAsync($"GG {e.Author.Mention}! You have advanced to level {rank} ({(rank < ranks.Count ? ranks[rank] : "Low")})!");
             }
 
-            // Check if message has an alias
-            var response = _dependecies.AliasControl.GetResponse(e.Guild.Id, e.Message.Content);
+            // Check if message has a text trigger
+            var response = _dependecies.GuildConfigControl.GetResponseForTrigger(e.Guild.Id, e.Message.Content);
             if (response != null) {
                 LogHandle.Log(LogLevel.Info,
-                    $"Alias triggered: {e.Message.Content}" + Environment.NewLine +
+                    $"Text trigger detected." + Environment.NewLine +
+                    $" Message: {e.Message.Content}" + Environment.NewLine +
                     $" User: {e.Message.Author.ToString()}" + Environment.NewLine +
                     $" Location: '{e.Guild.Name}' ({e.Guild.Id}) ; {e.Channel.ToString()}"
                 );
                 await e.Channel.SendMessageAsync(response.Replace("%user%", e.Author.Mention));
             }
 
-            // Check if message has react trigger
+            // Check if message has a reaction trigger
             var emojilist = _dependecies.ReactionControl.GetReactionEmojis(_client, e.Guild.Id, e.Message.Content);
             if (emojilist.Count > 0) {
                 LogHandle.Log(LogLevel.Info,
-                    $"Reactions triggered in message: {e.Message.Content}" + Environment.NewLine +
+                    $"Reaction trigger detected." + Environment.NewLine +
+                    $" Message: {e.Message.Content}" + Environment.NewLine +
                     $" User: {e.Message.Author.ToString()}" + Environment.NewLine +
                     $" Location: '{e.Guild.Name}' ({e.Guild.Id}) ; {e.Channel.ToString()}"
                 );
