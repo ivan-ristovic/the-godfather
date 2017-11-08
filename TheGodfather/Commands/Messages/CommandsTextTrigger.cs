@@ -81,7 +81,7 @@ namespace TheGodfather.Commands.Messages
             string desc = "";
             int starti = (page - 1) * 10;
             int endi = starti + 10 < triggers.Count ? starti + 10 : triggers.Count;
-            var keys = triggers.Keys.Take(page * 10).ToArray();
+            var keys = triggers.Keys.Take(page * 10).OrderBy(k => k).ToArray();
             for (var i = starti; i < endi; i++)
                 desc += $"{Formatter.Bold(keys[i])} : {triggers[keys[i]]}\n";
 

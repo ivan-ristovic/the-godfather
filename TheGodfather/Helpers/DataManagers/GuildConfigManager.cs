@@ -189,7 +189,7 @@ namespace TheGodfather.Helpers.DataManagers
         #endregion
 
 
-        internal sealed class GuildConfig
+        private sealed class GuildConfig
         {
             [JsonProperty("Prefix")]
             public string Prefix { get; set; }
@@ -202,6 +202,14 @@ namespace TheGodfather.Helpers.DataManagers
             
             [JsonProperty("Triggers")]
             public ConcurrentDictionary<string, string> Triggers { get; set; }
+
+            /*
+            [JsonProperty("Filters")]
+            private List<string> _filters;
+
+            [JsonProperty("Reactions")]
+            private ConcurrentDictionary<string, string> _reactions;
+            */
         }
     }
 }
