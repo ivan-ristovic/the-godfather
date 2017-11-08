@@ -166,19 +166,17 @@ namespace TheGodfather.Commands.Main
         
         #region COMMAND_PREFIX
         [Command("prefix")]
-        [Description("Get channel prefix, or set it to given value.")]
+        [Description("Get current guild prefix, or change it.")]
         [Aliases("setprefix")]
         [RequireUserPermissions(Permissions.Administrator)]
         public async Task GetOrSetPrefixAsync(CommandContext ctx,
                                              [Description("Prefix to set.")] string prefix = null)
         {
-            var prefixes = ctx.Dependencies.GetDependency<PrefixManager>();
+            var gcm = ctx.Dependencies.GetDependency<GuildConfigManager>();
 
             if (string.IsNullOrWhiteSpace(prefix)) {
-                string p = prefixes.GetPrefixForChannelId(ctx.Channel.Id);
-                if (p == null)
-                    p = ctx.Dependencies.GetDependency<TheGodfather>().Config.DefaultPrefix;
-                await ctx.RespondAsync("Current prefix for this channel is: " + Formatter.Bold(p))
+                string p = gcm.GetPrefixForGuild(ctx.Guild.Id);
+                await ctx.RespondAsync("Current prefix for this guild is: " + Formatter.Bold(p))
                     .ConfigureAwait(false);
                 return;
             }
@@ -186,9 +184,10 @@ namespace TheGodfather.Commands.Main
             if (prefix.Length > 10)
                 throw new CommandFailedException("Prefix length cannot be longer than 10 characters.");
 
-            prefixes.SetPrefixForChannelId(ctx.Channel.Id, prefix);
-            await ctx.RespondAsync("Successfully changed the prefix for this channel to: " + Formatter.Bold(prefix))
-                .ConfigureAwait(false);
+            if (gcm.SetPrefixForGuild(ctx.Guild.Id, prefix))
+                await ctx.RespondAsync("Successfully changed the prefix for this guild to: " + Formatter.Bold(prefix)).ConfigureAwait(false);
+            else
+                throw new CommandFailedException("Failed to set prefix.");
         }
         #endregion
 

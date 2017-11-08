@@ -10,7 +10,7 @@ Just another Discord bot. Written using DSharpPlus.
 
 Commands are separated into groups. For example, ``!user`` is a group of commands which allow manipulation of users and it has subcommands ``kick`` , ``ban`` etc. So, calling the ``kick`` command is done by typing ``!user kick ...``.
 
-The default prefix for the bot is ``!``, however you can change that using ``!prefix`` command. Also you can trigger commands by mentioning the bot. For example:
+The default prefix for the bot is ``!``, however you can change that using ``!prefix`` command (affects just your guild). Also you can trigger commands by mentioning the bot. For example:
 ``!greet`` is the same as ``@TheGodfather greet``.
 
 
@@ -49,7 +49,7 @@ Commands use the following types:
 |   | ``penis``<br>``size``<br>``length``<br>``manhood``<br>``dick`` |   | ``(optional) [user] User (def: sender)`` | An accurate measurement of ``User``'s manhood. | ``!penis @Someone`` |
 |   | ``ping`` |   |   | Ping the bot. | ``!ping`` |
 |   | ``poll``<br>``vote`` |   | ``[text] Question`` | Starts a poll in the channel. The bot will ask for poll options, which you give separated with ``;``, for example: ``option1;option2;option3`` | ``!poll "Do you want to kick Godfather?"`` |
-|   | ``prefix``<br>``setprefix`` | Administrator (user) | ``(optional) [string] New prefix (maxlen: 10)`` | If invoked without arguments, gives current prefix for this channel, otherwise sets the prefix to ``New prefix``. If for example ``New prefix`` is ``;``, all commands in that channel from that point must be invoked using ``;``, for example ``;greet``. | ``!prefix``<br><br>``!prefix .`` |
+|   | ``prefix``<br>``setprefix`` | Administrator (user) | ``(optional) [string] New prefix (maxlen: 10)`` | If invoked without arguments, gives current prefix for this guild, otherwise sets the prefix to ``New prefix``. If for example ``New prefix`` is ``;``, all commands in this guild from that point must be invoked using ``;``, for example ``;greet``. | ``!prefix``<br><br>``!prefix .`` |
 |   | ``rate``<br>``score``<br>``graph`` |   | ``[user] User`` | An accurate graphical representatin of ``User``'s humanity. | ``!rate @Someone`` |
 |   | ``remind`` |   | ``[int] Time to wait before repeat (in seconds)``<br><br>``[text] What to repeat`` | Repeat given text after given time. | ``!remind 3600 I was told to remind you to do this`` |
 |   | ``report`` |   | ``[text] Report message`` | Send message to owner (hopefully about a bug, I can see it being abused) | ``!report Your bot sucks!`` |

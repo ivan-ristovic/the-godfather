@@ -191,10 +191,8 @@ namespace TheGodfather
 
         private Task<int> CheckMessageForPrefix(DiscordMessage m)
         {
-            if (_dependecies.PrefixControl.Prefixes.ContainsKey(m.ChannelId))
-                return Task.FromResult(m.GetStringPrefixLength(_dependecies.PrefixControl.Prefixes[m.ChannelId]));
-            else
-                return Task.FromResult(m.GetStringPrefixLength(Config.DefaultPrefix));
+            string p = _dependecies.GuildConfigControl.GetPrefixForGuild(m.Channel.Guild.Id);
+            return Task.FromResult(m.GetStringPrefixLength(p));
         }
         #endregion
 

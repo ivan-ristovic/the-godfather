@@ -29,11 +29,11 @@ namespace TheGodfather.Helpers
         internal FilterManager      FilterControl       { get; private set; }
         internal InsultManager      InsultControl       { get; private set; }
         internal MemeManager        MemeControl         { get; private set; }
-        internal PrefixManager      PrefixControl       { get; private set; }
         internal RankManager        RankControl         { get; private set; }
         internal ReactionManager    ReactionControl     { get; private set; }
         internal StatusManager      StatusControl       { get; private set; }
         internal SwatServerManager  SwatServerControl   { get; private set; }
+        internal GuildConfigManager GuildConfigControl  { get; private set; }
         internal GiphyService       GiphyService        { get; private set; }
         internal ImgurService       ImgurService        { get; private set; }
         internal SteamService       SteamService        { get; private set; }
@@ -50,11 +50,11 @@ namespace TheGodfather.Helpers
             FilterControl = new FilterManager();
             InsultControl = new InsultManager();
             MemeControl = new MemeManager();
-            PrefixControl = new PrefixManager();
             RankControl = new RankManager();
             ReactionControl = new ReactionManager();
             StatusControl = new StatusManager();
             SwatServerControl = new SwatServerManager();
+            GuildConfigControl = new GuildConfigManager(cfg);
             GiphyService = new GiphyService(cfg.GiphyKey);
             ImgurService = new ImgurService(cfg.ImgurKey);
             SteamService = new SteamService(cfg.SteamKey);
@@ -72,11 +72,11 @@ namespace TheGodfather.Helpers
             FilterControl.Load(log);
             InsultControl.Load(log);
             MemeControl.Load(log);
-            PrefixControl.Load(log);
             RankControl.Load(log);
             ReactionControl.Load(log);
             StatusControl.Load(log);
             SwatServerControl.Load(log);
+            GuildConfigControl.Load(log);
         }
 
         internal void SaveData(DebugLogger log)
@@ -88,11 +88,11 @@ namespace TheGodfather.Helpers
             FilterControl.Save(log);
             InsultControl.Save(log);
             MemeControl.Save(log);
-            PrefixControl.Save(log);
             RankControl.Save(log);
             ReactionControl.Save(log);
             StatusControl.Save(log);
             SwatServerControl.Save(log);
+            GuildConfigControl.Save(log);
         }
 
         internal DependencyCollectionBuilder GetDependencyCollectionBuilder()
@@ -105,7 +105,6 @@ namespace TheGodfather.Helpers
                 .AddInstance(FilterControl)
                 .AddInstance(InsultControl)
                 .AddInstance(MemeControl)
-                .AddInstance(PrefixControl)
                 .AddInstance(RankControl)
                 .AddInstance(ReactionControl)
                 .AddInstance(StatusControl)
@@ -114,7 +113,8 @@ namespace TheGodfather.Helpers
                 .AddInstance(ImgurService)
                 .AddInstance(SteamService)
                 .AddInstance(YoutubeService)
-                .AddInstance(JokesService);
+                .AddInstance(JokesService)
+                .AddInstance(GuildConfigControl);
         }
     }
 }

@@ -222,6 +222,7 @@
     <Compile Include="Helpers\DataManagers\ChannelManager.cs" />
     <Compile Include="Helpers\DataManagers\BankManager.cs" />
     <Compile Include="Helpers\DataManagers\FeedManager.cs" />
+    <Compile Include="Helpers\DataManagers\GuildConfigManager.cs" />
     <Compile Include="Helpers\DataManagers\ReactionManager.cs" />
     <Compile Include="Helpers\DataManagers\SwatServerManager.cs" />
     <Compile Include="Helpers\EvaluationEnvironment.cs" />
@@ -267,7 +268,6 @@
     <Compile Include="Commands\Administration\CommandsUsers.cs" />
     <Compile Include="Commands\Voice\CommandsVoice.cs" />
     <Compile Include="Helpers\Logger.cs" />
-    <Compile Include="Helpers\DataManagers\PrefixManager.cs" />
     <Compile Include="Helpers\DataManagers\StatusManager.cs" />
     <Compile Include="Helpers\SWAT\SwatServer.cs" />
     <Compile Include="Helpers\SWAT\SwatServerInfo.cs" />
