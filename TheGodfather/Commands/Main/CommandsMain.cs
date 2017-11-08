@@ -175,7 +175,7 @@ namespace TheGodfather.Commands.Main
             var gcm = ctx.Dependencies.GetDependency<GuildConfigManager>();
 
             if (string.IsNullOrWhiteSpace(prefix)) {
-                string p = gcm.GetPrefixForGuild(ctx.Guild.Id);
+                string p = gcm.GetGuildPrefix(ctx.Guild.Id);
                 await ctx.RespondAsync("Current prefix for this guild is: " + Formatter.Bold(p))
                     .ConfigureAwait(false);
                 return;
@@ -184,7 +184,7 @@ namespace TheGodfather.Commands.Main
             if (prefix.Length > 10)
                 throw new CommandFailedException("Prefix length cannot be longer than 10 characters.");
 
-            if (gcm.SetPrefixForGuild(ctx.Guild.Id, prefix))
+            if (gcm.TrySetGuildPrefix(ctx.Guild.Id, prefix))
                 await ctx.RespondAsync("Successfully changed the prefix for this guild to: " + Formatter.Bold(prefix)).ConfigureAwait(false);
             else
                 throw new CommandFailedException("Failed to set prefix.");

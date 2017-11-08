@@ -191,7 +191,7 @@ namespace TheGodfather
 
         private Task<int> CheckMessageForPrefix(DiscordMessage m)
         {
-            string p = _dependecies.GuildConfigControl.GetPrefixForGuild(m.Channel.Guild.Id);
+            string p = _dependecies.GuildConfigControl.GetGuildPrefix(m.Channel.Guild.Id);
             return Task.FromResult(m.GetStringPrefixLength(p));
         }
         #endregion
@@ -224,7 +224,7 @@ namespace TheGodfather
                 $" Guild: {e.Guild.Name} ({e.Guild.Id})"
             );
 
-            ulong cid = _dependecies.ChannelControl.GetWelcomeChannelId(e.Guild.Id);
+            ulong cid = _dependecies.GuildConfigControl.GetGuildWelcomeChannelId(e.Guild.Id);
             if (cid == 0)
                 return;
 
@@ -254,7 +254,7 @@ namespace TheGodfather
                 $" Guild: {e.Guild.Name} ({e.Guild.Id})"
             );
 
-            ulong cid = _dependecies.ChannelControl.GetLeaveChannelId(e.Guild.Id);
+            ulong cid = _dependecies.GuildConfigControl.GetGuildLeaveChannelId(e.Guild.Id);
             if (cid == 0)
                 return;
 

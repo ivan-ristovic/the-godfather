@@ -60,15 +60,15 @@ namespace TheGodfather.Helpers.DataManagers
             return true;
         }
 
-        public string GetPrefixForGuild(ulong gid)
+        public string GetGuildPrefix(ulong gid)
         {
-            if (_gcfg.ContainsKey(gid))
+            if (_gcfg.ContainsKey(gid) && !string.IsNullOrWhiteSpace(_gcfg[gid].Prefix))
                 return _gcfg[gid].Prefix;
             else
                 return _cfg.DefaultPrefix;
         }
 
-        public bool SetPrefixForGuild(ulong gid, string prefix)
+        public bool TrySetGuildPrefix(ulong gid, string prefix)
         {
             if (_gcfg.ContainsKey(gid)) {
                 _gcfg[gid].Prefix = prefix;
@@ -78,11 +78,65 @@ namespace TheGodfather.Helpers.DataManagers
             }
         }
 
+        public ulong GetGuildWelcomeChannelId(ulong gid)
+        {
+            if (_gcfg.ContainsKey(gid) && _gcfg[gid].WelcomeChannelId.HasValue)
+                return _gcfg[gid].WelcomeChannelId.Value;
+            else
+                return 0;
+        }
+
+        public ulong GetGuildLeaveChannelId(ulong gid)
+        {
+            if (_gcfg.ContainsKey(gid) && _gcfg[gid].LeaveChannelId.HasValue)
+                return _gcfg[gid].LeaveChannelId.Value;
+            else
+                return 0;
+        }
+
+        public bool TrySetGuildWelcomeChannelId(ulong gid, ulong cid)
+        {
+            if (_gcfg.ContainsKey(gid)) {
+                _gcfg[gid].WelcomeChannelId = cid;
+                return true;
+            } else {
+                return _gcfg.TryAdd(gid, new GuildConfig() { WelcomeChannelId = cid });
+            }
+        }
+
+        public bool TrySetGuildLeaveChannelId(ulong gid, ulong cid)
+        {
+            if (_gcfg.ContainsKey(gid)) {
+                _gcfg[gid].LeaveChannelId = cid;
+                return true;
+            } else {
+                return _gcfg.TryAdd(gid, new GuildConfig() { LeaveChannelId = cid });
+            }
+        }
+
+        public void RemoveGuildWelcomeChannel(ulong gid)
+        {
+            if (_gcfg.ContainsKey(gid))
+                _gcfg[gid].WelcomeChannelId = null;
+        }
+
+        public void RemoveGuildLeaveChannel(ulong gid)
+        {
+            if (_gcfg.ContainsKey(gid))
+                _gcfg[gid].LeaveChannelId = null;
+        }
+
 
         internal sealed class GuildConfig
         {
             [JsonProperty("Prefix")]
             public string Prefix { get; set; }
+            
+            [JsonProperty("WelcomeChannelId")]
+            public ulong? WelcomeChannelId { get; set; }
+
+            [JsonProperty("LeaveChannelId")]
+            public ulong? LeaveChannelId { get; set; }
         }
     }
 }

@@ -197,7 +197,7 @@ namespace TheGodfather.Commands.Administration
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task GetWelcomeChannelAsync(CommandContext ctx)
         {
-            ulong cid = ctx.Dependencies.GetDependency<ChannelManager>().GetWelcomeChannelId(ctx.Guild.Id);
+            ulong cid = ctx.Dependencies.GetDependency<GuildConfigManager>().GetGuildWelcomeChannelId(ctx.Guild.Id);
             if (cid != 0) {
                 var c = ctx.Guild.GetChannel(cid);
                 if (c == null)
@@ -218,8 +218,7 @@ namespace TheGodfather.Commands.Administration
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task GetLeaveChannelAsync(CommandContext ctx)
         {
-            ulong cid = ctx.Dependencies.GetDependency<ChannelManager>().GetLeaveChannelId(ctx.Guild.Id);
-            
+            ulong cid = ctx.Dependencies.GetDependency<GuildConfigManager>().GetGuildLeaveChannelId(ctx.Guild.Id);
             if (cid != 0) {
                 var c = ctx.Guild.GetChannel(cid);
                 if (c == null)
@@ -247,7 +246,7 @@ namespace TheGodfather.Commands.Administration
             if (c.Type != ChannelType.Text)
                 throw new CommandFailedException("Channel must be text type.");
 
-            if (ctx.Dependencies.GetDependency<ChannelManager>().TryAddWelcomeChannel(ctx.Guild.Id, c.Id)) {
+            if (ctx.Dependencies.GetDependency<GuildConfigManager>().TrySetGuildWelcomeChannelId(ctx.Guild.Id, c.Id)) {
                 await ctx.RespondAsync($"Default welcome message channel set to {Formatter.Bold(c.Name)}.")
                     .ConfigureAwait(false);
             } else {
@@ -270,7 +269,7 @@ namespace TheGodfather.Commands.Administration
             if (c.Type != ChannelType.Text)
                 throw new CommandFailedException("Channel must be text type.");
 
-            if (ctx.Dependencies.GetDependency<ChannelManager>().TryAddLeaveChannel(ctx.Guild.Id, c.Id)) {
+            if (ctx.Dependencies.GetDependency<GuildConfigManager>().TrySetGuildLeaveChannelId(ctx.Guild.Id, c.Id)) {
                 await ctx.RespondAsync($"Default leave message channel set to {Formatter.Bold(c.Name)}.")
                     .ConfigureAwait(false);
             } else {
@@ -286,12 +285,9 @@ namespace TheGodfather.Commands.Administration
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task RemoveWelcomeChannelAsync(CommandContext ctx)
         {
-            if (ctx.Dependencies.GetDependency<ChannelManager>().TryRemoveWelcomeChannel(ctx.Guild.Id)) {
-                await ctx.RespondAsync("Default welcome message removed.")
-                    .ConfigureAwait(false);
-            } else {
-                throw new CommandFailedException("Failed to remove welcome channel.");
-            }
+            ctx.Dependencies.GetDependency<GuildConfigManager>().RemoveGuildWelcomeChannel(ctx.Guild.Id);
+            await ctx.RespondAsync("Default welcome message channel removed.")
+                .ConfigureAwait(false);
         }
         #endregion
 
@@ -302,12 +298,9 @@ namespace TheGodfather.Commands.Administration
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task DeleteLeaveChannelAsync(CommandContext ctx)
         {
-            if (ctx.Dependencies.GetDependency<ChannelManager>().TryRemoveLeaveChannel(ctx.Guild.Id)) {
-                await ctx.RespondAsync("Default leave message removed.")
-                    .ConfigureAwait(false);
-            } else {
-                throw new CommandFailedException("Failed to remove leave channel.");
-            }
+            ctx.Dependencies.GetDependency<GuildConfigManager>().RemoveGuildLeaveChannel(ctx.Guild.Id);
+            await ctx.RespondAsync("Default leave message channel removed.")
+                .ConfigureAwait(false);
         }
         #endregion
 
