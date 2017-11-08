@@ -237,10 +237,9 @@ namespace TheGodfather.Commands.Main
         [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
         public class CommandsMemeTemplates
         {
-            public async Task ExecuteGroupAsync(CommandContext ctx,
-                                               [Description("Page.")] int page = 1)
+            public async Task ExecuteGroupAsync(CommandContext ctx)
             {
-                await ListAsync(ctx, page)
+                await ListAsync(ctx)
                     .ConfigureAwait(false);
             }
 
@@ -304,23 +303,11 @@ namespace TheGodfather.Commands.Main
             #region COMMAND_MEME_TEMPLATE_LIST
             [Command("list")]
             [Description("List all registered memes.")]
-            public async Task ListAsync(CommandContext ctx,
-                                       [Description("Page.")] int page = 1)
+            public async Task ListAsync(CommandContext ctx)
             {
-                var templates = ctx.Dependencies.GetDependency<MemeManager>().GetAllTemplateNames();
-
-                if (page < 1 || page > templates.Count / 10 + 1)
-                    throw new CommandFailedException("No memes on that page.", new ArgumentOutOfRangeException());
-
-                string desc = "";
-                int starti = (page - 1) * 10;
-                int endi = starti + 10 < templates.Count ? starti + 10 : templates.Count;
-                for (var i = starti; i < endi; i++)
-                    desc += templates[i] + "\n";
-
                 await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
-                    Title = $"Available memes (page {page}/{templates.Count / 10 + 1}) :",
-                    Description = desc,
+                    Title = $"Available meme templates:",
+                    Description = string.Join(", ", ctx.Dependencies.GetDependency<MemeManager>().GetAllTemplateNames()),
                     Color = DiscordColor.Green
                 }.Build()).ConfigureAwait(false);
             }
