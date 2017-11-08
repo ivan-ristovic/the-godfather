@@ -130,7 +130,7 @@ namespace TheGodfather.Commands.SWAT
                             .ConfigureAwait(false);
                         var interactivity = ctx.Client.GetInteractivityModule();
                         var msg = await interactivity.WaitForMessageAsync(
-                            xm => xm.Author.Id == ctx.User.Id &&
+                            xm => xm.Author.Id == ctx.User.Id && xm.Channel.Id == ctx.Channel.Id &&
                                 (xm.Content.ToLower().StartsWith("yes") || xm.Content.ToLower().StartsWith("no")),
                             TimeSpan.FromMinutes(1)
                         ).ConfigureAwait(false);
