@@ -466,7 +466,7 @@ namespace TheGodfather
             } else if (e.Exception is UnauthorizedException)
                 embed.Description = $"{emoji} I am not authorized to do that.";
             else
-                embed.Description = $"{emoji} Unknown error occured (probably because a Serbian made this bot). Please **!report**.";
+                embed.Description = $"{emoji} Unknown error occured (probably because a Serbian made this bot). Please {Formatter.InlineCode("!report")}.";
 
             await e.Context.RespondAsync(embed: embed.Build())
                 .ConfigureAwait(false);

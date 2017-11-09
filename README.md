@@ -75,8 +75,9 @@ Commands use the following types:
 | ``meme``<br>``memes``<br>``mm`` | ``list`` | ``ls``<br>``l`` | ``(optional) [int] Page (def: 1)`` | List memes on page ``Page``. | ``!meme list 3`` |
 | ``meme``<br>``memes``<br>``mm`` | ``save`` | Owner Only | ``s`` | Save all memes. | ``!meme save`` |
 | ``meme templates``<br>``meme template``<br>``meme t`` | ``list`` | ``ls``<br>``l`` | ``(optional) [int] Page (def: 1)`` | List templates on page ``Page``. | ``!meme templates list 4`` |
-| ``meme templates``<br>``meme template``<br>``meme t`` | ``add``<br>``+``<br>``new`` | Owner Only | ``[text] Name``<br><br>``[string] URL`` | Add a new meme template to global meme template list. | ``!meme template add somename http://url.png`` |
+| ``meme templates``<br>``meme template``<br>``meme t`` | ``add``<br>``+``<br>``new`` | Owner Only | ``[string] Template name``<br><br>``[string] URL`` | Add a new meme template to global meme template list. | ``!meme template add somename http://url.png`` |
 | ``meme templates``<br>``meme template``<br>``meme t`` | ``delete``<br>``-``<br>``remove``<br>``del``<br>``rm``<br>``d`` | Owner Only | ``[text] Name``<br><br>``[string] URL`` | Add a new meme template to global meme template list. | ``!meme template add somename http://url.png`` |
+| ``meme templates``<br>``meme template``<br>``meme t`` | ``preview``<br>``p``<br>``pr``<br>``view`` |   | ``[string] Template name`` | Preview a meme template. | ``!meme template preview 1stworld`` |
 |   |   |   |   |   |   |
 | ``random``<br>``rand``<br>``rnd`` | ``cat`` |   |   | Send a random cat image. | ``!random cat`` |
 | ``random``<br>``rand``<br>``rnd`` | ``dog`` |   |   | Send a random dog image. | ``!random dog`` |

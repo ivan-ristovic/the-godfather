@@ -315,6 +315,22 @@ namespace TheGodfather.Commands.Main
                 }.Build()).ConfigureAwait(false);
             }
             #endregion
+
+            #region COMMAND_MEME_TEMPLATE_PREVIEW
+            [Command("preview")]
+            [Description("Preview a meme template.")]
+            [Aliases("p", "pr", "view")]
+            public async Task PreviewAsync(CommandContext ctx,
+                                          [Description("Template name.")] string name)
+            {
+                string filename = $"Resources/meme-templates/{name.ToLower()}.jpg";
+                if (!File.Exists(filename))
+                    throw new CommandFailedException("Such template does not exist!");
+
+                using (var fs = new FileStream(filename, FileMode.Open))
+                    await ctx.RespondWithFileAsync(fs);
+            }
+            #endregion
         }
 
 
