@@ -166,8 +166,8 @@
     <Reference Include="Steam.Models, Version=3.0.4.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Steam.Models.3.0.4\lib\netstandard2.0\Steam.Models.dll</HintPath>
     </Reference>
-    <Reference Include="SteamWebAPI2, Version=4.0.4.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SteamWebAPI2.4.0.4\lib\netstandard2.0\SteamWebAPI2.dll</HintPath>
+    <Reference Include="SteamWebAPI2, Version=4.0.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SteamWebAPI2.4.0.5\lib\netstandard2.0\SteamWebAPI2.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Collections.Immutable, Version=1.2.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -222,7 +222,6 @@
     <Compile Include="Helpers\DataManagers\BankManager.cs" />
     <Compile Include="Helpers\DataManagers\FeedManager.cs" />
     <Compile Include="Helpers\DataManagers\GuildConfigManager.cs" />
-    <Compile Include="Helpers\DataManagers\ReactionManager.cs" />
     <Compile Include="Helpers\DataManagers\SwatServerManager.cs" />
     <Compile Include="Helpers\EvaluationEnvironment.cs" />
     <Compile Include="Commands\Search\CommandsJokes.cs" />

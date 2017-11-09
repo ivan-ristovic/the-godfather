@@ -199,6 +199,81 @@ namespace TheGodfather.Helpers.DataManagers
         }
         #endregion
 
+        #region REACTIONS
+        public IReadOnlyDictionary<string, string> GetAllGuildReactions(ulong gid)
+        {
+            if (_gcfg.ContainsKey(gid) && _gcfg[gid].Reactions != null)
+                return _gcfg[gid].Reactions;
+            else
+                return null;
+        }
+
+        public IReadOnlyList<DiscordEmoji> GetReactionEmojis(DiscordClient client, ulong gid, string message)
+        {
+            var emojis = new List<DiscordEmoji>();
+
+            if (_gcfg.ContainsKey(gid) && _gcfg[gid].Reactions != null) {
+                foreach (var word in message.ToLower().Split(' ')) {
+                    if (_gcfg[gid].Reactions.ContainsKey(word)) {
+                        try {
+                            emojis.Add(DiscordEmoji.FromName(client, _gcfg[gid].Reactions[word]));
+                        } catch (ArgumentException) {
+                            client.DebugLogger.LogMessage(LogLevel.Error, "TheGodfather", "Emoji name is not valid!", DateTime.Now);
+                        }
+                    }
+                }
+            }
+
+            return emojis;
+        }
+
+        public bool TryAddReaction(ulong gid, DiscordEmoji emoji, string[] triggers)
+        {
+            if (_gcfg.ContainsKey(gid)) {
+                if (_gcfg[gid].Reactions == null)
+                    _gcfg[gid].Reactions = new ConcurrentDictionary<string, string>();
+            } else {
+                if (!_gcfg.TryAdd(gid, new GuildConfig() { Reactions = new ConcurrentDictionary<string, string>() }))
+                    return false;
+            }
+
+            bool conflict_exists = false;
+            foreach (var trigger in triggers.Select(t => t.ToLower())) {
+                if (string.IsNullOrWhiteSpace(trigger))
+                    continue;
+                if (_gcfg[gid].Reactions.ContainsKey(trigger))
+                    conflict_exists = true;
+                else
+                    conflict_exists |= !_gcfg[gid].Reactions.TryAdd(trigger, emoji.GetDiscordName());
+            }
+
+            return !conflict_exists;
+        }
+
+        public bool TryRemoveReaction(ulong gid, string[] triggers)
+        {
+            bool conflict_found = false;
+            foreach (var trigger in triggers) {
+                if (string.IsNullOrWhiteSpace(trigger))
+                    continue;
+                if (_gcfg[gid].Reactions.ContainsKey(trigger))
+                    conflict_found |= !_gcfg[gid].Reactions.TryRemove(trigger, out _);
+                else
+                    conflict_found = true;
+            }
+
+            return !conflict_found;
+        }
+
+        public void ClearGuildReactions(ulong gid)
+        {
+            if (!_gcfg.ContainsKey(gid))
+                return;
+
+            _gcfg[gid].Reactions.Clear();
+        }
+        #endregion
+
         #region TRIGGERS
         public IReadOnlyDictionary<string, string> GetAllGuildTriggers(ulong gid)
         {
@@ -244,12 +319,12 @@ namespace TheGodfather.Helpers.DataManagers
             return _gcfg[gid].Triggers.TryRemove(trigger, out _);
         }
 
-        public bool ClearGuildTriggers(ulong gid)
+        public void ClearGuildTriggers(ulong gid)
         {
             if (!_gcfg.ContainsKey(gid))
-                return true;
+                return;
 
-            return _gcfg.TryRemove(gid, out _);
+            _gcfg[gid].Triggers.Clear();
         }
         #endregion
 
@@ -270,10 +345,9 @@ namespace TheGodfather.Helpers.DataManagers
 
             [JsonProperty("Filters")]
             public HashSet<Regex> Filters { get; set; }
-            /*
+            
             [JsonProperty("Reactions")]
-            private ConcurrentDictionary<string, string> _reactions;
-            */
+            public ConcurrentDictionary<string, string> Reactions { get; set; }
         }
     }
 }

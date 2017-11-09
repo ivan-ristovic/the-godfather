@@ -91,10 +91,8 @@ Commands use the following types:
 | ``reaction``<br>``reactions``<br>``react`` |   | Manage Guild (user) | ``[emoji] Emoji``<br><br>``[text] Triggers`` | Add a new automatic reaction to a word from triggers list. Whenever someone sends a message containing a trigger word, bot will react to it with ``Emoji``. Trigger list is made of words separated with space. | ``!react :smile: laughing`` |
 | ``reaction``<br>``reactions``<br>``react`` | ``add``<br>``+``<br>``new`` | Manage Guild (user) | ``[emoji] Emoji``<br><br>``[text] Triggers`` | Same as above command. | ``!react add :smile: laughing`` |
 | ``reaction``<br>``reactions``<br>``react`` | ``clear`` | Administrator (user) |  | Delete all reactions for the current guild. | ``!reaction clear`` |
-| ``reaction``<br>``reactions``<br>``react`` | ``clearall`` | Owner Only |  | Delete all reactions (for all guilds). | ``!reaction clearall`` |
 | ``reaction``<br>``reactions``<br>``react`` | ``delete``<br>``-``<br>``remove``<br>``del``<br>``rm`` | Manage Guild (user) | ``[text] Triggers`` | Remove trigger word (can be a list of words separated by spaces) from guild reaction list. Use ``!reaction list`` to view reactions. | ``!reaction delete smile hehe blabla`` |
 | ``reaction``<br>``reactions``<br>``react`` | ``list`` |  | ``(optional) [int] Page (def: 1)`` | List guild reactions on page ``Page``. | ``!reaction list 3`` |
-| ``reaction``<br>``reactions``<br>``react`` | ``save`` | Owner Only |  | Save all reactions. | ``!reaction save`` |
 |   |   |   |   |   |   |
 | ``trigger``<br>``triggers``<br>``alias``<br>``t``<br>``a`` | ``add``<br>``+``<br>``new`` | Manage Guild (user) | ``[string] Trigger``<br><br>``[text] Response`` | Add a new trigger to guild trigger list. Whenever someone sends a message ``Trigger``, bot will repond with ``Response``. You can also use ``%user%`` as a replacement for sender mention. | ``!trigger add "hi" Hey, %user%!`` |
 | ``trigger``<br>``triggers``<br>``alias``<br>``t``<br>``a`` | ``clear`` | Administrator (user) |  | Delete all triggers for the current guild. | ``!triggers clear`` |

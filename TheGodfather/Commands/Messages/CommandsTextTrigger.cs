@@ -99,10 +99,9 @@ namespace TheGodfather.Commands.Messages
         [RequireUserPermissions(Permissions.Administrator)]
         public async Task ClearAsync(CommandContext ctx)
         {
-            if (ctx.Dependencies.GetDependency<GuildConfigManager>().ClearGuildTriggers(ctx.Guild.Id))
-                await ctx.RespondAsync("Successfully removed all triggers for this guild.").ConfigureAwait(false);
-            else
-                throw new CommandFailedException("Clearing guild triggers failed");
+            ctx.Dependencies.GetDependency<GuildConfigManager>().ClearGuildTriggers(ctx.Guild.Id);
+            await ctx.RespondAsync("Successfully removed all triggers for this guild.")
+                .ConfigureAwait(false);
         }
         #endregion
     }

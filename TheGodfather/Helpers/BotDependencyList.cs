@@ -27,7 +27,6 @@ namespace TheGodfather.Helpers
         internal InsultManager      InsultControl       { get; private set; }
         internal MemeManager        MemeControl         { get; private set; }
         internal RankManager        RankControl         { get; private set; }
-        internal ReactionManager    ReactionControl     { get; private set; }
         internal StatusManager      StatusControl       { get; private set; }
         internal SwatServerManager  SwatServerControl   { get; private set; }
         internal GuildConfigManager GuildConfigControl  { get; private set; }
@@ -45,7 +44,6 @@ namespace TheGodfather.Helpers
             InsultControl = new InsultManager();
             MemeControl = new MemeManager();
             RankControl = new RankManager();
-            ReactionControl = new ReactionManager();
             StatusControl = new StatusManager();
             SwatServerControl = new SwatServerManager();
             GuildConfigControl = new GuildConfigManager(cfg);
@@ -64,7 +62,6 @@ namespace TheGodfather.Helpers
             InsultControl.Load(log);
             MemeControl.Load(log);
             RankControl.Load(log);
-            ReactionControl.Load(log);
             StatusControl.Load(log);
             SwatServerControl.Load(log);
             GuildConfigControl.Load(log);
@@ -77,7 +74,6 @@ namespace TheGodfather.Helpers
             InsultControl.Save(log);
             MemeControl.Save(log);
             RankControl.Save(log);
-            ReactionControl.Save(log);
             StatusControl.Save(log);
             SwatServerControl.Save(log);
             GuildConfigControl.Save(log);
@@ -91,7 +87,6 @@ namespace TheGodfather.Helpers
                 .AddInstance(InsultControl)
                 .AddInstance(MemeControl)
                 .AddInstance(RankControl)
-                .AddInstance(ReactionControl)
                 .AddInstance(StatusControl)
                 .AddInstance(SwatServerControl)
                 .AddInstance(GiphyService)

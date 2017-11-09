@@ -334,7 +334,7 @@ namespace TheGodfather
             }
 
             // Check if message has a reaction trigger
-            var emojilist = _dependecies.ReactionControl.GetReactionEmojis(_client, e.Guild.Id, e.Message.Content);
+            var emojilist = _dependecies.GuildConfigControl.GetReactionEmojis(_client, e.Guild.Id, e.Message.Content);
             if (emojilist.Count > 0) {
                 LogHandle.Log(LogLevel.Info,
                     $"Reaction trigger detected." + Environment.NewLine +
