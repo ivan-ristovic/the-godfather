@@ -58,7 +58,7 @@ namespace TheGodfather.Commands.Messages
         #region COMMAND_REACTIONS_DELETE
         [Command("delete")]
         [Description("Remove trigger word (can be more than one) from list.")]
-        [Aliases("-", "remove", "del", "rm")]
+        [Aliases("-", "remove", "del", "rm", "d")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task DeleteAsync(CommandContext ctx,
                                      [RemainingText, Description("Trigger word list.")] params string[] triggers)
@@ -76,6 +76,7 @@ namespace TheGodfather.Commands.Messages
         #region COMMAND_REACTIONS_LIST
         [Command("list")]
         [Description("Show all reactions.")]
+        [Aliases("ls", "l")]
         public async Task ListAsync(CommandContext ctx,
                                    [Description("Page.")] int page = 1)
         {
@@ -108,6 +109,7 @@ namespace TheGodfather.Commands.Messages
         #region COMMAND_REACTIONS_CLEAR
         [Command("clear")]
         [Description("Delete all reactions for the current guild.")]
+        [Aliases("da", "c")]
         [RequireUserPermissions(Permissions.Administrator)]
         public async Task ClearAsync(CommandContext ctx)
         {

@@ -29,7 +29,7 @@ namespace TheGodfather.Commands.Messages
         #region COMMAND_FILTER_ADD
         [Command("add")]
         [Description("Add filter to guild filter list.")]
-        [Aliases("+", "new")]
+        [Aliases("+", "new", "a")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task AddAsync(CommandContext ctx,
                                   [RemainingText, Description("Filter word. Can be a regex (case insensitive).")] string filter)
@@ -73,6 +73,7 @@ namespace TheGodfather.Commands.Messages
         #region COMMAND_FILTER_LIST
         [Command("list")]
         [Description("Show all filters for this guild.")]
+        [Aliases("ls", "l")]
         public async Task ListAsync(CommandContext ctx, 
                                    [Description("Page")] int page = 1)
         {
@@ -106,6 +107,7 @@ namespace TheGodfather.Commands.Messages
         #region COMMAND_FILTERS_CLEAR
         [Command("clear")]
         [Description("Delete all filters for the current guild.")]
+        [Aliases("c", "da")]
         [RequireUserPermissions(Permissions.Administrator)]
         public async Task ClearAsync(CommandContext ctx)
         {

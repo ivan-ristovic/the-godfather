@@ -47,7 +47,7 @@ namespace TheGodfather.Commands.Messages
         #region COMMAND_TRIGGER_DELETE
         [Command("delete")]
         [Description("Remove trigger from guild triggers list.")]
-        [Aliases("-", "remove", "del", "rm")]
+        [Aliases("-", "remove", "del", "rm", "d")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task DeleteAsync(CommandContext ctx, 
                                      [RemainingText, Description("Alias to remove.")] string alias)
@@ -65,6 +65,7 @@ namespace TheGodfather.Commands.Messages
         #region COMMAND_TRIGGER_LIST
         [Command("list")]
         [Description("Show all triggers for the guild. Each page has 10 triggers.")]
+        [Aliases("ls", "l")]
         public async Task ListAsync(CommandContext ctx, 
                                    [Description("Page.")] int page = 1)
         {
@@ -96,6 +97,7 @@ namespace TheGodfather.Commands.Messages
         #region COMMAND_TRIGGER_CLEAR
         [Command("clear")]
         [Description("Delete all triggers for the current guild.")]
+        [Aliases("c", "da")]
         [RequireUserPermissions(Permissions.Administrator)]
         public async Task ClearAsync(CommandContext ctx)
         {
