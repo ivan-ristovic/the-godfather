@@ -10,7 +10,7 @@ Just another Discord bot. Written using DSharpPlus.
 
 Commands are separated into groups. For example, ``!user`` is a group of commands which allow manipulation of users and it has subcommands ``kick`` , ``ban`` etc. So, calling the ``kick`` command is done by typing ``!user kick ...``.
 
-The default prefix for the bot is ``!``, however you can change that using ``!prefix`` command. Also you can trigger commands by mentioning the bot. For example:
+The default prefix for the bot is ``!``, however you can change that using ``!prefix`` command (affects just your guild). Also you can trigger commands by mentioning the bot. For example:
 ``!greet`` is the same as ``@TheGodfather greet``.
 
 
@@ -49,26 +49,17 @@ Commands use the following types:
 |   | ``penis``<br>``size``<br>``length``<br>``manhood``<br>``dick`` |   | ``(optional) [user] User (def: sender)`` | An accurate measurement of ``User``'s manhood. | ``!penis @Someone`` |
 |   | ``ping`` |   |   | Ping the bot. | ``!ping`` |
 |   | ``poll``<br>``vote`` |   | ``[text] Question`` | Starts a poll in the channel. The bot will ask for poll options, which you give separated with ``;``, for example: ``option1;option2;option3`` | ``!poll "Do you want to kick Godfather?"`` |
-|   | ``prefix``<br>``setprefix`` | Administrator (user) | ``(optional) [string] New prefix (maxlen: 10)`` | If invoked without arguments, gives current prefix for this channel, otherwise sets the prefix to ``New prefix``. If for example ``New prefix`` is ``;``, all commands in that channel from that point must be invoked using ``;``, for example ``;greet``. | ``!prefix``<br><br>``!prefix .`` |
+|   | ``prefix``<br>``setprefix`` | Administrator (user) | ``(optional) [string] New prefix (maxlen: 10)`` | If invoked without arguments, gives current prefix for this guild, otherwise sets the prefix to ``New prefix``. If for example ``New prefix`` is ``;``, all commands in this guild from that point must be invoked using ``;``, for example ``;greet``. | ``!prefix``<br><br>``!prefix .`` |
 |   | ``rate``<br>``score``<br>``graph`` |   | ``[user] User`` | An accurate graphical representatin of ``User``'s humanity. | ``!rate @Someone`` |
 |   | ``remind`` |   | ``[int] Time to wait before repeat (in seconds)``<br><br>``[text] What to repeat`` | Repeat given text after given time. | ``!remind 3600 I was told to remind you to do this`` |
 |   | ``report`` |   | ``[text] Report message`` | Send message to owner (hopefully about a bug, I can see it being abused) | ``!report Your bot sucks!`` |
 |   | ``say``  |   | ``[text] What to say`` | Make Godfather say something! | ``!say Luke, I am your father!`` |
 |   | ``zugify`` |   | ``[text] Text`` | Requested by Zugi. It is so stupid it isn't worth describing... | ``!zugify Some text`` |
-|   |   |   |   |   |   |
-| ``alias``<br>``aliases``<br>``a`` | ``add``<br>``+``<br>``new`` | Manage Guild (user) | ``[string] Trigger``<br><br>``[text] Response`` | Add a new alias to alias guild list. Whenever someone sends a message ``Trigger``, bot will repond with ``Response``. You can also use ``%user%`` as a replacement for sender mention. | ``!alias add "hi" Hey, %user%!`` |
-| ``alias``<br>``aliases``<br>``a`` | ``clear`` | Administrator (user) |  | Delete all aliases for the current guild. | ``!alias clear`` |
-| ``alias``<br>``aliases``<br>``a`` | ``clearall`` | Owner Only |  | Delete all aliases (for all guilds). | ``!alias clearall`` |
-| ``alias``<br>``aliases``<br>``a`` | ``delete``<br>``-``<br>``remove``<br>``del``<br>``rm`` | Manage Guild (user) | ``[string] Trigger`` | Remove alias with a given trigger from guild alias list. Use ``!alias list`` to view aliases. | ``!alias delete hi`` |
-| ``alias``<br>``aliases``<br>``a`` | ``list`` |  | ``(optional) [int] Page (def: 1)`` | List guild aliases on page ``Page``. | ``!alias list 3`` |
-| ``alias``<br>``aliases``<br>``a`` | ``save`` | Owner Only |  | Save all aliases. | ``!alias save`` |
-|   |   |   |   |   |   |
+   |   |   |   |   |   |
 | ``filter``<br>``filters``<br>``f`` | ``add``<br>``+``<br>``new`` | Manage Guild (user) | ``[string] Trigger`` | Add a new filter to filter guild list. Whenever someone sends a message containing ``Trigger``, bot will delete it. Triggers can also be regular expressions (case ignored). | ``!filter add fuck`` |
 | ``filter``<br>``filters``<br>``f`` | ``clear`` | Administrator (user) |  | Delete all filters for the current guild. | ``!filter clear`` |
-| ``filter``<br>``filters``<br>``f`` | ``clearall`` | Owner Only |  | Delete all filters (for all guilds). | ``!filter clearall`` |
 | ``filter``<br>``filters``<br>``f`` | ``delete``<br>``-``<br>``remove``<br>``del``<br>``rm`` | Manage Guild (user) | ``[int] Index`` | Remove filter with a given index from guild filter list. Use ``!filter list`` to view filters. | ``!filter delete 5`` |
 | ``filter``<br>``filters``<br>``f`` | ``list`` |  | ``(optional) [int] Page (def: 1)`` | List guild filters on page ``Page``. | ``!filter list 3`` |
-| ``filter``<br>``filters``<br>``f`` | ``save`` | Owner Only |  | Save all filters. | ``!filter save`` |
 |   |   |   |   |   |   |
 | ``insult``<br>``burn``<br>``insults`` |   |   | ``(optional) [user] User (def: sender)`` | Insult ``User``. | ``!insult``<br><br>``!insult @Someone`` |
 | ``insult``<br>``burn``<br>``insults`` | ``add``<br>``+``<br>``new`` | Owner Only | ``[text] Insult`` | Add a new insult to global insult list. You can use ``%user%`` in your insult text as a replacement for the user mention who will be insulted. | ``!insult add Your age is greater than your IQ, %user%!`` |
@@ -100,10 +91,13 @@ Commands use the following types:
 | ``reaction``<br>``reactions``<br>``react`` |   | Manage Guild (user) | ``[emoji] Emoji``<br><br>``[text] Triggers`` | Add a new automatic reaction to a word from triggers list. Whenever someone sends a message containing a trigger word, bot will react to it with ``Emoji``. Trigger list is made of words separated with space. | ``!react :smile: laughing`` |
 | ``reaction``<br>``reactions``<br>``react`` | ``add``<br>``+``<br>``new`` | Manage Guild (user) | ``[emoji] Emoji``<br><br>``[text] Triggers`` | Same as above command. | ``!react add :smile: laughing`` |
 | ``reaction``<br>``reactions``<br>``react`` | ``clear`` | Administrator (user) |  | Delete all reactions for the current guild. | ``!reaction clear`` |
-| ``reaction``<br>``reactions``<br>``react`` | ``clearall`` | Owner Only |  | Delete all reactions (for all guilds). | ``!reaction clearall`` |
 | ``reaction``<br>``reactions``<br>``react`` | ``delete``<br>``-``<br>``remove``<br>``del``<br>``rm`` | Manage Guild (user) | ``[text] Triggers`` | Remove trigger word (can be a list of words separated by spaces) from guild reaction list. Use ``!reaction list`` to view reactions. | ``!reaction delete smile hehe blabla`` |
 | ``reaction``<br>``reactions``<br>``react`` | ``list`` |  | ``(optional) [int] Page (def: 1)`` | List guild reactions on page ``Page``. | ``!reaction list 3`` |
-| ``reaction``<br>``reactions``<br>``react`` | ``save`` | Owner Only |  | Save all reactions. | ``!reaction save`` |
+|   |   |   |   |   |   |
+| ``trigger``<br>``triggers``<br>``alias``<br>``t``<br>``a`` | ``add``<br>``+``<br>``new`` | Manage Guild (user) | ``[string] Trigger``<br><br>``[text] Response`` | Add a new trigger to guild trigger list. Whenever someone sends a message ``Trigger``, bot will repond with ``Response``. You can also use ``%user%`` as a replacement for sender mention. | ``!trigger add "hi" Hey, %user%!`` |
+| ``trigger``<br>``triggers``<br>``alias``<br>``t``<br>``a`` | ``clear`` | Administrator (user) |  | Delete all triggers for the current guild. | ``!triggers clear`` |
+| ``trigger``<br>``triggers``<br>``alias``<br>``t``<br>``a`` | ``delete``<br>``-``<br>``remove``<br>``del``<br>``rm`` | Manage Guild (user) | ``[string] Trigger`` | Remove trigger with from guild trigger list. Use ``!trigger list`` to view guild triggers. | ``!trigger delete hi`` |
+| ``trigger``<br>``triggers``<br>``alias``<br>``t``<br>``a`` | ``list`` |  | ``(optional) [int] Page (def: 1)`` | List guild triggers on page ``Page``. | ``!trigger list 3`` |
 |   |   |   |   |   |   |
 
 ## Administration commands

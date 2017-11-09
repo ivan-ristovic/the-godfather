@@ -229,7 +229,7 @@ namespace TheGodfather.Commands.Search
 
                 var results = ctx.Dependencies.GetDependency<FeedManager>().GetFeedResults(YoutubeRSSFeedLink(id));
                 if (results == null) {
-                    var ytkey = ctx.Dependencies.GetDependency<BotConfigManager>().CurrentConfig.YoutubeKey;
+                    var ytkey = ctx.Dependencies.GetDependency<TheGodfather>().Config.YoutubeKey;
                     try {
                         var wc = new WebClient();
                         var jsondata = await wc.DownloadStringTaskAsync("https://www.googleapis.com/youtube/v3/channels?key=" + ytkey + "&forUsername=" + id + "&part=id")

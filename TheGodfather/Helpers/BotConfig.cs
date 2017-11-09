@@ -1,5 +1,6 @@
 ﻿#region USING_DIRECTIVES
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -28,5 +29,23 @@ namespace TheGodfather.Helpers
 
         [JsonProperty("key-youtube")]
         public string YoutubeKey { get; private set; }
+
+
+        public static BotConfig Load()
+        {
+            BotConfig cfg = null;
+            if (File.Exists("Resources/config.json")) {
+                try {
+                    cfg = JsonConvert.DeserializeObject<BotConfig>(File.ReadAllText("Resources/config.json"));
+                } catch (Exception e) {
+                    Console.WriteLine("EXCEPTION OCCURED WHILE LOADING CONFIG FILE: " + Environment.NewLine + e.ToString());
+                    return null;
+                }
+            } else {
+                return null;
+            }
+
+            return cfg;
+        }
     }
 }

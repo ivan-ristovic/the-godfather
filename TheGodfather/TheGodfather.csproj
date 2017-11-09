@@ -166,8 +166,8 @@
     <Reference Include="Steam.Models, Version=3.0.4.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Steam.Models.3.0.4\lib\netstandard2.0\Steam.Models.dll</HintPath>
     </Reference>
-    <Reference Include="SteamWebAPI2, Version=4.0.4.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SteamWebAPI2.4.0.4\lib\netstandard2.0\SteamWebAPI2.dll</HintPath>
+    <Reference Include="SteamWebAPI2, Version=4.0.5.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SteamWebAPI2.4.0.5\lib\netstandard2.0\SteamWebAPI2.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Collections.Immutable, Version=1.2.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -219,18 +219,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Helpers\BotConfig.cs" />
-    <Compile Include="Helpers\DataManagers\BotConfigManager.cs" />
-    <Compile Include="Helpers\DataManagers\ChannelManager.cs" />
     <Compile Include="Helpers\DataManagers\BankManager.cs" />
     <Compile Include="Helpers\DataManagers\FeedManager.cs" />
-    <Compile Include="Helpers\DataManagers\ReactionManager.cs" />
+    <Compile Include="Helpers\DataManagers\GuildConfigManager.cs" />
     <Compile Include="Helpers\DataManagers\SwatServerManager.cs" />
     <Compile Include="Helpers\EvaluationEnvironment.cs" />
     <Compile Include="Commands\Search\CommandsJokes.cs" />
     <Compile Include="Exceptions.cs" />
-    <Compile Include="Helpers\DataManagers\AliasManager.cs" />
     <Compile Include="Helpers\BotDependencyList.cs" />
-    <Compile Include="Helpers\DataManagers\FilterManager.cs" />
     <Compile Include="Helpers\DataManagers\InsultManager.cs" />
     <Compile Include="Helpers\DataManagers\MemeManager.cs" />
     <Compile Include="Helpers\DataManagers\RankManager.cs" />
@@ -243,14 +239,14 @@
     <Compile Include="Commands\Games\CommandsQuiz.cs" />
     <Compile Include="Commands\Games\CommandsRace.cs" />
     <Compile Include="Commands\Main\CommandsRandom.cs" />
-    <Compile Include="Commands\Messages\CommandsAlias.cs" />
+    <Compile Include="Commands\Messages\CommandsTextTrigger.cs" />
     <Compile Include="Commands\Administration\CommandsChannels.cs" />
     <Compile Include="Commands\Games\CommandsGamble.cs" />
     <Compile Include="Commands\Games\CommandsGames.cs" />
     <Compile Include="Commands\Administration\CommandsGuild.cs" />
     <Compile Include="Commands\Messages\CommandsFilter.cs" />
     <Compile Include="Commands\Main\CommandsPoll.cs" />
-    <Compile Include="Commands\Messages\CommandsReaction.cs" />
+    <Compile Include="Commands\Messages\CommandsReactionTrigger.cs" />
     <Compile Include="Commands\Search\CommandsGiphy.cs" />
     <Compile Include="Commands\Search\CommandsImgur.cs" />
     <Compile Include="Commands\Main\CommandsInsult.cs" />
@@ -268,7 +264,6 @@
     <Compile Include="Commands\Administration\CommandsUsers.cs" />
     <Compile Include="Commands\Voice\CommandsVoice.cs" />
     <Compile Include="Helpers\Logger.cs" />
-    <Compile Include="Helpers\DataManagers\PrefixManager.cs" />
     <Compile Include="Helpers\DataManagers\StatusManager.cs" />
     <Compile Include="Helpers\SWAT\SwatServer.cs" />
     <Compile Include="Helpers\SWAT\SwatServerInfo.cs" />

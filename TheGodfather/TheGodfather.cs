@@ -28,6 +28,7 @@ namespace TheGodfather
     {
         #region PUBLIC_FIELDS
         public bool Listening { get; private set; }
+        public BotConfig Config { get; private set; }
         #endregion
 
         #region PRIVATE_FIELDS
@@ -36,7 +37,6 @@ namespace TheGodfather
         private InteractivityModule _interactivity { get; set; }
         private VoiceNextClient _voice { get; set; }
 
-        private BotConfigManager _config { get; set; }
         private BotDependencyList _dependecies { get; set; }
 
         internal Logger LogHandle { get; private set; }
@@ -46,7 +46,6 @@ namespace TheGodfather
         public TheGodfather()
         {
             Listening = true;
-            _config = new BotConfigManager();
         }
 
         ~TheGodfather()
@@ -64,7 +63,8 @@ namespace TheGodfather
 
         public async Task MainAsync(string[] args)
         {
-            if (!_config.Load()) {
+            Config = BotConfig.Load();
+            if (Config == null) {
                 Console.WriteLine("Config file corrupted or missing.");
                 Console.ReadKey();
                 return;
@@ -100,7 +100,7 @@ namespace TheGodfather
                 LogLevel = LogLevel.Info,
                 LargeThreshold = 250,
                 AutoReconnect = true,
-                Token = _config.CurrentConfig.Token,
+                Token = Config.Token,
                 TokenType = TokenType.Bot,
                 UseInternalLogHandler = true
             });
@@ -124,7 +124,7 @@ namespace TheGodfather
 
         private void SetupCommands()
         {
-            _dependecies = new BotDependencyList(_client, _config.CurrentConfig);
+            _dependecies = new BotDependencyList(_client, Config);
             _commands = _client.UseCommandsNext(new CommandsNextConfiguration {
                 EnableDms = false,
                 CaseSensitive = false,
@@ -132,7 +132,7 @@ namespace TheGodfather
                 CustomPrefixPredicate = async m => await CheckMessageForPrefix(m),
                 Dependencies = _dependecies.GetDependencyCollectionBuilder()
                                            .AddInstance(this)
-                                           .AddInstance(_config)
+                                           .AddInstance(Config)
                                            .Build()
             });
             _commands.SetHelpFormatter<HelpFormatter>();
@@ -191,10 +191,8 @@ namespace TheGodfather
 
         private Task<int> CheckMessageForPrefix(DiscordMessage m)
         {
-            if (_dependecies.PrefixControl.Prefixes.ContainsKey(m.ChannelId))
-                return Task.FromResult(m.GetStringPrefixLength(_dependecies.PrefixControl.Prefixes[m.ChannelId]));
-            else
-                return Task.FromResult(m.GetStringPrefixLength(_config.CurrentConfig.DefaultPrefix));
+            string p = _dependecies.GuildConfigControl.GetGuildPrefix(m.Channel.Guild.Id);
+            return Task.FromResult(m.GetStringPrefixLength(p));
         }
         #endregion
 
@@ -226,7 +224,7 @@ namespace TheGodfather
                 $" Guild: {e.Guild.Name} ({e.Guild.Id})"
             );
 
-            ulong cid = _dependecies.ChannelControl.GetWelcomeChannelId(e.Guild.Id);
+            ulong cid = _dependecies.GuildConfigControl.GetGuildWelcomeChannelId(e.Guild.Id);
             if (cid == 0)
                 return;
 
@@ -256,7 +254,7 @@ namespace TheGodfather
                 $" Guild: {e.Guild.Name} ({e.Guild.Id})"
             );
 
-            ulong cid = _dependecies.ChannelControl.GetLeaveChannelId(e.Guild.Id);
+            ulong cid = _dependecies.GuildConfigControl.GetGuildLeaveChannelId(e.Guild.Id);
             if (cid == 0)
                 return;
 
@@ -294,7 +292,7 @@ namespace TheGodfather
             }
 
             // Check if message contains filter
-            if (e.Message.Content != null && _dependecies.FilterControl.ContainsFilter(e.Guild.Id, e.Message.Content)) {
+            if (e.Message.Content != null && _dependecies.GuildConfigControl.ContainsFilter(e.Guild.Id, e.Message.Content)) {
                 try {
                     await e.Channel.DeleteMessageAsync(e.Message)
                         .ConfigureAwait(false);
@@ -323,22 +321,24 @@ namespace TheGodfather
                 await e.Channel.SendMessageAsync($"GG {e.Author.Mention}! You have advanced to level {rank} ({(rank < ranks.Count ? ranks[rank] : "Low")})!");
             }
 
-            // Check if message has an alias
-            var response = _dependecies.AliasControl.GetResponse(e.Guild.Id, e.Message.Content);
+            // Check if message has a text trigger
+            var response = _dependecies.GuildConfigControl.GetResponseForTrigger(e.Guild.Id, e.Message.Content);
             if (response != null) {
                 LogHandle.Log(LogLevel.Info,
-                    $"Alias triggered: {e.Message.Content}" + Environment.NewLine +
+                    $"Text trigger detected." + Environment.NewLine +
+                    $" Message: {e.Message.Content}" + Environment.NewLine +
                     $" User: {e.Message.Author.ToString()}" + Environment.NewLine +
                     $" Location: '{e.Guild.Name}' ({e.Guild.Id}) ; {e.Channel.ToString()}"
                 );
                 await e.Channel.SendMessageAsync(response.Replace("%user%", e.Author.Mention));
             }
 
-            // Check if message has react trigger
-            var emojilist = _dependecies.ReactionControl.GetReactionEmojis(_client, e.Guild.Id, e.Message.Content);
+            // Check if message has a reaction trigger
+            var emojilist = _dependecies.GuildConfigControl.GetReactionEmojis(_client, e.Guild.Id, e.Message.Content);
             if (emojilist.Count > 0) {
                 LogHandle.Log(LogLevel.Info,
-                    $"Reactions triggered in message: {e.Message.Content}" + Environment.NewLine +
+                    $"Reaction trigger detected." + Environment.NewLine +
+                    $" Message: {e.Message.Content}" + Environment.NewLine +
                     $" User: {e.Message.Author.ToString()}" + Environment.NewLine +
                     $" Location: '{e.Guild.Name}' ({e.Guild.Id}) ; {e.Channel.ToString()}"
                 );
@@ -359,7 +359,7 @@ namespace TheGodfather
                 return;
 
             // Check if message contains filter
-            if (!e.Author.IsBot && e.Message.Content != null && e.Message.Content.Split(' ').Any(s => _dependecies.FilterControl.ContainsFilter(e.Guild.Id, s))) {
+            if (!e.Author.IsBot && e.Message.Content != null && e.Message.Content.Split(' ').Any(s => _dependecies.GuildConfigControl.ContainsFilter(e.Guild.Id, s))) {
                 try {
                     await e.Channel.DeleteMessageAsync(e.Message)
                         .ConfigureAwait(false);

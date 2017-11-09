@@ -23,7 +23,7 @@ namespace TheGodfather.Commands.Messages
     [Aliases("react", "reaction")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
     [CheckListeningAttribute]
-    public class CommandsReaction
+    public class CommandsReactionTrigger
     {
         
         [RequirePermissions(Permissions.ManageGuild)]
@@ -38,7 +38,7 @@ namespace TheGodfather.Commands.Messages
 
         #region COMMAND_REACTIONS_ADD
         [Command("add")]
-        [Description("Add reactions to list.")]
+        [Description("Add reactions to guild reaction list.")]
         [Aliases("+", "new")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task AddAsync(CommandContext ctx,
@@ -48,10 +48,10 @@ namespace TheGodfather.Commands.Messages
             if (emoji == null || triggers == null)
                 throw new InvalidCommandUsageException("Missing emoji or trigger words!");
 
-            if (ctx.Dependencies.GetDependency<ReactionManager>().TryAdd(ctx.Guild.Id, emoji, triggers))
+            if (ctx.Dependencies.GetDependency<GuildConfigManager>().TryAddReaction(ctx.Guild.Id, emoji, triggers))
                 await ctx.RespondAsync("Reaction added.").ConfigureAwait(false);
             else
-                await ctx.RespondAsync("Failed adding some triggers (probably due to ambiguity).").ConfigureAwait(false);
+                await ctx.RespondAsync("Failed adding some reactions (probably due to ambiguity in trigger words).").ConfigureAwait(false);
         }
         #endregion
         
@@ -66,10 +66,10 @@ namespace TheGodfather.Commands.Messages
             if (triggers == null)
                 throw new InvalidCommandUsageException("Missing trigger words!");
 
-            if (ctx.Dependencies.GetDependency<ReactionManager>().TryRemove(ctx.Guild.Id, triggers))
-                await ctx.RespondAsync("Triggers removed.").ConfigureAwait(false);
+            if (ctx.Dependencies.GetDependency<GuildConfigManager>().TryRemoveReaction(ctx.Guild.Id, triggers))
+                await ctx.RespondAsync("Successfully removed given trigger words from reaction trigger word list.").ConfigureAwait(false);
             else
-                await ctx.RespondAsync("Done. Some triggers were not in list anyway though.").ConfigureAwait(false);
+                await ctx.RespondAsync("Done. Some trigger words were not in list anyway though.").ConfigureAwait(false);
         }
         #endregion
 
@@ -79,41 +79,29 @@ namespace TheGodfather.Commands.Messages
         public async Task ListAsync(CommandContext ctx,
                                    [Description("Page.")] int page = 1)
         {
-            var reactions = ctx.Dependencies.GetDependency<ReactionManager>().Reactions;
+            var reactions = ctx.Dependencies.GetDependency<GuildConfigManager>().GetAllGuildReactions(ctx.Guild.Id);
 
-            if (!reactions.ContainsKey(ctx.Guild.Id)) {
-                await ctx.RespondAsync("No reactions registered.")
+            if (reactions == null) {
+                await ctx.RespondAsync("No reactions registered for this guild.")
                     .ConfigureAwait(false);
                 return;
             }
 
-            if (page < 1 || page > reactions[ctx.Guild.Id].Count / 10 + 1)
+            if (page < 1 || page > reactions.Count / 10 + 1)
                 throw new CommandFailedException("No reactions on that page.");
 
             string desc = "";
             int starti = (page - 1) * 10;
-            int endi = starti + 10 < reactions[ctx.Guild.Id].Count ? starti + 10 : reactions[ctx.Guild.Id].Count;
-            var keys = reactions[ctx.Guild.Id].Keys.Take(page * 10).ToArray();
+            int endi = starti + 10 < reactions.Count ? starti + 10 : reactions.Count;
+            var keys = reactions.Keys.Take(page * 10).OrderBy(k => k).ToArray();
             for (var i = starti; i < endi; i++)
-                desc += $"{Formatter.Bold(keys[i])} : {reactions[ctx.Guild.Id][keys[i]]}\n";
+                desc += $"{Formatter.Bold(keys[i])} : {reactions[keys[i]]}\n";
 
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
-                Title = $"Available reactions (page {page}/{reactions[ctx.Guild.Id].Count / 10 + 1}) :",
+                Title = $"Available reactions (page {page}/{reactions.Count / 10 + 1}) :",
                 Description = desc,
                 Color = DiscordColor.Yellow
             }.Build()).ConfigureAwait(false);
-        }
-        #endregion
-
-        #region COMMAND_REACTONS_SAVE
-        [Command("save")]
-        [Description("Save reactions to file.")]
-        [RequireOwner]
-        public async Task SaveAsync(CommandContext ctx)
-        {
-            ctx.Dependencies.GetDependency<ReactionManager>().Save(ctx.Client.DebugLogger);
-            await ctx.RespondAsync("Reactions successfully saved.")
-                .ConfigureAwait(false);
         }
         #endregion
 
@@ -123,21 +111,9 @@ namespace TheGodfather.Commands.Messages
         [RequireUserPermissions(Permissions.Administrator)]
         public async Task ClearAsync(CommandContext ctx)
         {
-            if (ctx.Dependencies.GetDependency<ReactionManager>().ClearGuildReactions(ctx.Guild.Id))
-                await ctx.RespondAsync("All reactions successfully removed.").ConfigureAwait(false);
-            else
-                throw new CommandFailedException("Clearing guild reactions failed");
-        }
-        #endregion
-
-        #region COMMAND_REACTIONS_CLEARALL
-        [Command("clearall")]
-        [Description("Delete all reactions stored for ALL guilds.")]
-        [RequireOwner]
-        public async Task ClearAllReactions(CommandContext ctx)
-        {
-            ctx.Dependencies.GetDependency<ReactionManager>().ClearAllReactions();
-            await ctx.RespondAsync("All reactions successfully removed.").ConfigureAwait(false);
+            ctx.Dependencies.GetDependency<GuildConfigManager>().ClearGuildReactions(ctx.Guild.Id);
+            await ctx.RespondAsync("All reactions successfully removed.")
+                .ConfigureAwait(false);
         }
         #endregion
     }
