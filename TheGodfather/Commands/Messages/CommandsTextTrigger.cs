@@ -50,15 +50,15 @@ namespace TheGodfather.Commands.Messages
         [Aliases("-", "remove", "del", "rm", "d")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task DeleteAsync(CommandContext ctx, 
-                                     [RemainingText, Description("Alias to remove.")] string alias)
+                                     [RemainingText, Description("Triggers to remove.")] params string[] triggers)
         {
-            if (string.IsNullOrWhiteSpace(alias))
-                throw new InvalidCommandUsageException("Alias name missing.");
+            if (triggers == null)
+                throw new InvalidCommandUsageException("Triggers missing.");
 
-            if (ctx.Dependencies.GetDependency<GuildConfigManager>().TryRemoveGuildTrigger(ctx.Guild.Id, alias))
-                await ctx.RespondAsync($"Trigger {Formatter.Bold(alias)} successfully removed.").ConfigureAwait(false);
+            if (ctx.Dependencies.GetDependency<GuildConfigManager>().TryRemoveGuildTriggers(ctx.Guild.Id, triggers))
+                await ctx.RespondAsync($"Triggers successfully removed.").ConfigureAwait(false);
             else
-                throw new CommandFailedException("Failed to remove trigger.");
+                throw new CommandFailedException("Failed to remove some triggers.");
         }
         #endregion
 

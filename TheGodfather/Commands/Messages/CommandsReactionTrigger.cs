@@ -66,7 +66,7 @@ namespace TheGodfather.Commands.Messages
             if (triggers == null)
                 throw new InvalidCommandUsageException("Missing trigger words!");
 
-            if (ctx.Dependencies.GetDependency<GuildConfigManager>().TryRemoveReaction(ctx.Guild.Id, triggers))
+            if (ctx.Dependencies.GetDependency<GuildConfigManager>().TryRemoveReactions(ctx.Guild.Id, triggers))
                 await ctx.RespondAsync("Successfully removed given trigger words from reaction trigger word list.").ConfigureAwait(false);
             else
                 await ctx.RespondAsync("Done. Some trigger words were not in list anyway though.").ConfigureAwait(false);
