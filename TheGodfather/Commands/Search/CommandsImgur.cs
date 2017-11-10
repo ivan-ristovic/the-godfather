@@ -127,25 +127,23 @@ namespace TheGodfather.Commands.Search
                     if (im.GetType().Name == "GalleryImage") {
                         var img = ((GalleryImage)im);
                         if (!ctx.Channel.IsNSFW && img.Nsfw != null && img.Nsfw == true)
-                            throw new Exception("This is not a NSFW channel!");
+                            throw new CommandFailedException("This is not a NSFW channel!");
                         await ctx.RespondAsync(img.Link)
                             .ConfigureAwait(false);
                     } else if (im.GetType().Name == "GalleryAlbum") {
                         var img = ((GalleryAlbum)im);
                         if (!ctx.Channel.IsNSFW && img.Nsfw != null && img.Nsfw == true)
-                            throw new Exception("This is not a NSFW channel!");
+                            throw new CommandFailedException("This is not a NSFW channel!");
                         await ctx.RespondAsync(img.Link)
                             .ConfigureAwait(false);
                     } else
-                        throw new ImgurException("Imgur API error");
+                        throw new CommandFailedException("Imgur API error.");
 
                     await Task.Delay(1000)
                         .ConfigureAwait(false);
                 }
             } catch (ImgurException ie) {
-                throw ie;
-            } catch (Exception e) {
-                throw e;
+                throw new CommandFailedException("Imgur API error.", ie);
             }
 
             if (results.Count() != num) {
