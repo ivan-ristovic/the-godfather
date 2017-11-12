@@ -57,7 +57,7 @@ namespace TheGodfather.Commands.Main
         #region COMMAND_MEME_ADD
         [Command("add")]
         [Description("Add a new meme to the list.")]
-        [Aliases("+", "new")]
+        [Aliases("+", "new", "a")]
         [RequireOwner]
         public async Task AddMemeAsync(CommandContext ctx,
                                       [Description("Short name (case insensitive).")] string name,
@@ -176,7 +176,7 @@ namespace TheGodfather.Commands.Main
         #region COMMAND_MEME_DELETE
         [Command("delete")]
         [Description("Deletes a meme from list.")]
-        [Aliases("-", "del", "remove", "rm")]
+        [Aliases("-", "del", "remove", "rm", "d")]
         [RequireOwner]
         public async Task DeleteMemeAsync(CommandContext ctx,
                                          [Description("Short name (case insensitive).")] string name)
@@ -194,6 +194,7 @@ namespace TheGodfather.Commands.Main
         #region COMMAND_MEME_LIST
         [Command("list")]
         [Description("List all registered memes.")]
+        [Aliases("ls", "l")]
         public async Task ListAsync(CommandContext ctx,
                                    [Description("Page.")] int page = 1)
         {
@@ -220,6 +221,7 @@ namespace TheGodfather.Commands.Main
         #region COMMAND_MEME_SAVE
         [Command("save")]
         [Description("Saves all the memes.")]
+        [Aliases("s")]
         [RequireOwner]
         public async Task SaveMemesAsync(CommandContext ctx)
         {
@@ -280,7 +282,7 @@ namespace TheGodfather.Commands.Main
             #region COMMAND_MEME_TEMPLATE_DELETE
             [Command("delete")]
             [Description("Add a new meme template.")]
-            [Aliases("-", "remove", "del", "rm")]
+            [Aliases("-", "remove", "del", "rm", "d")]
             [RequireOwner]
             public async Task DeleteAsync(CommandContext ctx,
                                          [Description("Template name.")] string name)
@@ -303,6 +305,7 @@ namespace TheGodfather.Commands.Main
             #region COMMAND_MEME_TEMPLATE_LIST
             [Command("list")]
             [Description("List all registered memes.")]
+            [Aliases("ls", "l")]
             public async Task ListAsync(CommandContext ctx)
             {
                 await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
@@ -310,6 +313,22 @@ namespace TheGodfather.Commands.Main
                     Description = string.Join(", ", ctx.Dependencies.GetDependency<MemeManager>().GetAllTemplateNames()),
                     Color = DiscordColor.Green
                 }.Build()).ConfigureAwait(false);
+            }
+            #endregion
+
+            #region COMMAND_MEME_TEMPLATE_PREVIEW
+            [Command("preview")]
+            [Description("Preview a meme template.")]
+            [Aliases("p", "pr", "view")]
+            public async Task PreviewAsync(CommandContext ctx,
+                                          [Description("Template name.")] string name)
+            {
+                string filename = $"Resources/meme-templates/{name.ToLower()}.jpg";
+                if (!File.Exists(filename))
+                    throw new CommandFailedException("Such template does not exist!");
+
+                using (var fs = new FileStream(filename, FileMode.Open))
+                    await ctx.RespondWithFileAsync(fs);
             }
             #endregion
         }

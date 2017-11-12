@@ -57,9 +57,9 @@ Commands use the following types:
 |   | ``zugify`` |   | ``[text] Text`` | Requested by Zugi. It is so stupid it isn't worth describing... | ``!zugify Some text`` |
    |   |   |   |   |   |
 | ``filter``<br>``filters``<br>``f`` | ``add``<br>``+``<br>``new`` | Manage Guild (user) | ``[string] Trigger`` | Add a new filter to filter guild list. Whenever someone sends a message containing ``Trigger``, bot will delete it. Triggers can also be regular expressions (case ignored). | ``!filter add fuck`` |
-| ``filter``<br>``filters``<br>``f`` | ``clear`` | Administrator (user) |  | Delete all filters for the current guild. | ``!filter clear`` |
+| ``filter``<br>``filters``<br>``f`` | ``clear`` | Administrator (user) | ``ca``<br>``c`` | Delete all filters for the current guild. | ``!filter clear`` |
 | ``filter``<br>``filters``<br>``f`` | ``delete``<br>``-``<br>``remove``<br>``del``<br>``rm`` | Manage Guild (user) | ``[int] Index`` | Remove filter with a given index from guild filter list. Use ``!filter list`` to view filters. | ``!filter delete 5`` |
-| ``filter``<br>``filters``<br>``f`` | ``list`` |  | ``(optional) [int] Page (def: 1)`` | List guild filters on page ``Page``. | ``!filter list 3`` |
+| ``filter``<br>``filters``<br>``f`` | ``list`` | ``ls``<br>``l`` | ``(optional) [int] Page (def: 1)`` | List guild filters on page ``Page``. | ``!filter list 3`` |
 |   |   |   |   |   |   |
 | ``insult``<br>``burn``<br>``insults`` |   |   | ``(optional) [user] User (def: sender)`` | Insult ``User``. | ``!insult``<br><br>``!insult @Someone`` |
 | ``insult``<br>``burn``<br>``insults`` | ``add``<br>``+``<br>``new`` | Owner Only | ``[text] Insult`` | Add a new insult to global insult list. You can use ``%user%`` in your insult text as a replacement for the user mention who will be insulted. | ``!insult add Your age is greater than your IQ, %user%!`` |
@@ -69,14 +69,15 @@ Commands use the following types:
 | ``insult``<br>``burn``<br>``insults`` | ``save`` | Owner Only |  | Save all insults. | ``!insult save`` |
 |   |   |   |   |   |   |
 | ``meme``<br>``memes``<br>``mm`` |   |   | ``(optional) [text] Meme name`` | Send a meme with name ``Meme name``. If name isn't given, sends random one. | ``!meme``<br><br>``!meme fap`` |
-| ``meme``<br>``memes``<br>``mm`` | ``add``<br>``+``<br>``new`` | Owner Only | ``[text] Name``<br><br>``[string] URL`` | Add a new meme to global meme list. | ``!meme add Name http://url.png`` |
+| ``meme``<br>``memes``<br>``mm`` | ``add``<br>``+``<br>``new``<br>``a`` | Owner Only | ``[text] Name``<br><br>``[string] URL`` | Add a new meme to global meme list. | ``!meme add Name http://url.png`` |
 | ``meme``<br>``memes``<br>``mm`` | ``create``<br>``maker``<br>``make``<br>``c``<br>``m`` |  | ``[string] Template``<br><br>``[string] Top Text``<br><br>``[string] Bottom Text`` | Creates a new meme with ``Template`` as background and ``Top Text`` and ``Bottom Text`` on it. Use ``!meme template list`` to view all templates. | ``!meme create successkid "I tried to create a meme" "I succeeded!"`` |
-| ``meme``<br>``memes``<br>``mm`` | ``delete``<br>``-``<br>``remove``<br>``del``<br>``rm`` | Owner Only | ``[text] Name`` | Remove meme with a given name from the list. Use ``!meme list`` to view all memes. | ``!meme delete fap`` |
-| ``meme``<br>``memes``<br>``mm`` | ``list`` |  | ``(optional) [int] Page (def: 1)`` | List memes on page ``Page``. | ``!meme list 3`` |
-| ``meme``<br>``memes``<br>``mm`` | ``save`` | Owner Only |  | Save all memes. | ``!meme save`` |
-| ``meme templates``<br>``meme template``<br>``meme t`` | ``list`` |   | ``(optional) [int] Page (def: 1)`` | List templates on page ``Page``. | ``!meme templates list 4`` |
-| ``meme templates``<br>``meme template``<br>``meme t`` | ``add``<br>``+``<br>``new`` | Owner Only | ``[text] Name``<br><br>``[string] URL`` | Add a new meme template to global meme template list. | ``!meme template add somename http://url.png`` |
-| ``meme templates``<br>``meme template``<br>``meme t`` | ``delete``<br>``-``<br>``remove``<br>``del``<br>``rm`` | Owner Only | ``[text] Name``<br><br>``[string] URL`` | Add a new meme template to global meme template list. | ``!meme template add somename http://url.png`` |
+| ``meme``<br>``memes``<br>``mm`` | ``delete``<br>``-``<br>``remove``<br>``del``<br>``rm``<br>``d`` | Owner Only | ``[text] Name`` | Remove meme with a given name from the list. Use ``!meme list`` to view all memes. | ``!meme delete fap`` |
+| ``meme``<br>``memes``<br>``mm`` | ``list`` | ``ls``<br>``l`` | ``(optional) [int] Page (def: 1)`` | List memes on page ``Page``. | ``!meme list 3`` |
+| ``meme``<br>``memes``<br>``mm`` | ``save`` | Owner Only | ``s`` | Save all memes. | ``!meme save`` |
+| ``meme templates``<br>``meme template``<br>``meme t`` | ``list`` | ``ls``<br>``l`` | ``(optional) [int] Page (def: 1)`` | List templates on page ``Page``. | ``!meme templates list 4`` |
+| ``meme templates``<br>``meme template``<br>``meme t`` | ``add``<br>``+``<br>``new`` | Owner Only | ``[string] Template name``<br><br>``[string] URL`` | Add a new meme template to global meme template list. | ``!meme template add somename http://url.png`` |
+| ``meme templates``<br>``meme template``<br>``meme t`` | ``delete``<br>``-``<br>``remove``<br>``del``<br>``rm``<br>``d`` | Owner Only | ``[text] Name``<br><br>``[string] URL`` | Add a new meme template to global meme template list. | ``!meme template add somename http://url.png`` |
+| ``meme templates``<br>``meme template``<br>``meme t`` | ``preview``<br>``p``<br>``pr``<br>``view`` |   | ``[string] Template name`` | Preview a meme template. | ``!meme template preview 1stworld`` |
 |   |   |   |   |   |   |
 | ``random``<br>``rand``<br>``rnd`` | ``cat`` |   |   | Send a random cat image. | ``!random cat`` |
 | ``random``<br>``rand``<br>``rnd`` | ``dog`` |   |   | Send a random dog image. | ``!random dog`` |
@@ -90,14 +91,14 @@ Commands use the following types:
 |   |   |   |   |   |   |
 | ``reaction``<br>``reactions``<br>``react`` |   | Manage Guild (user) | ``[emoji] Emoji``<br><br>``[text] Triggers`` | Add a new automatic reaction to a word from triggers list. Whenever someone sends a message containing a trigger word, bot will react to it with ``Emoji``. Trigger list is made of words separated with space. | ``!react :smile: laughing`` |
 | ``reaction``<br>``reactions``<br>``react`` | ``add``<br>``+``<br>``new`` | Manage Guild (user) | ``[emoji] Emoji``<br><br>``[text] Triggers`` | Same as above command. | ``!react add :smile: laughing`` |
-| ``reaction``<br>``reactions``<br>``react`` | ``clear`` | Administrator (user) |  | Delete all reactions for the current guild. | ``!reaction clear`` |
+| ``reaction``<br>``reactions``<br>``react`` | ``clear``<br>``c``<br>``da`` | Administrator (user) |  | Delete all reactions for the current guild. | ``!reaction clear`` |
 | ``reaction``<br>``reactions``<br>``react`` | ``delete``<br>``-``<br>``remove``<br>``del``<br>``rm`` | Manage Guild (user) | ``[text] Triggers`` | Remove trigger word (can be a list of words separated by spaces) from guild reaction list. Use ``!reaction list`` to view reactions. | ``!reaction delete smile hehe blabla`` |
-| ``reaction``<br>``reactions``<br>``react`` | ``list`` |  | ``(optional) [int] Page (def: 1)`` | List guild reactions on page ``Page``. | ``!reaction list 3`` |
+| ``reaction``<br>``reactions``<br>``react`` | ``list``<br>``ls``<br>``l`` |  | ``(optional) [int] Page (def: 1)`` | List guild reactions on page ``Page``. | ``!reaction list 3`` |
 |   |   |   |   |   |   |
 | ``trigger``<br>``triggers``<br>``alias``<br>``t``<br>``a`` | ``add``<br>``+``<br>``new`` | Manage Guild (user) | ``[string] Trigger``<br><br>``[text] Response`` | Add a new trigger to guild trigger list. Whenever someone sends a message ``Trigger``, bot will repond with ``Response``. You can also use ``%user%`` as a replacement for sender mention. | ``!trigger add "hi" Hey, %user%!`` |
-| ``trigger``<br>``triggers``<br>``alias``<br>``t``<br>``a`` | ``clear`` | Administrator (user) |  | Delete all triggers for the current guild. | ``!triggers clear`` |
-| ``trigger``<br>``triggers``<br>``alias``<br>``t``<br>``a`` | ``delete``<br>``-``<br>``remove``<br>``del``<br>``rm`` | Manage Guild (user) | ``[string] Trigger`` | Remove trigger with from guild trigger list. Use ``!trigger list`` to view guild triggers. | ``!trigger delete hi`` |
-| ``trigger``<br>``triggers``<br>``alias``<br>``t``<br>``a`` | ``list`` |  | ``(optional) [int] Page (def: 1)`` | List guild triggers on page ``Page``. | ``!trigger list 3`` |
+| ``trigger``<br>``triggers``<br>``alias``<br>``t``<br>``a`` | ``clear``<br>``c``<br>``da`` | Administrator (user) |  | Delete all triggers for the current guild. | ``!triggers clear`` |
+| ``trigger``<br>``triggers``<br>``alias``<br>``t``<br>``a`` | ``delete``<br>``-``<br>``remove``<br>``del``<br>``rm``<br>``d`` | Manage Guild (user) | ``[string] Trigger`` | Remove trigger with from guild trigger list. Use ``!trigger list`` to view guild triggers. | ``!trigger delete hi`` |
+| ``trigger``<br>``triggers``<br>``alias``<br>``t``<br>``a`` | ``list``<br>``ls``<br>``l`` |  | ``(optional) [int] Page (def: 1)`` | List guild triggers on page ``Page``. | ``!trigger list 3`` |
 |   |   |   |   |   |   |
 
 ## Administration commands
@@ -265,6 +266,7 @@ Commands use the following types:
 | ``swat4``<br>``swat``<br>``s4`` | ``stopcheck``<br>``checkstop`` |   |   | Stops your issued spacecheck. | ``!s4 stopcheck`` |
 | ``s4 servers``<br>``s4 srv``<br>``s4 s`` | ``add``<br>``+``<br>``a`` | Administrator (user) | ``[string] Shortname``<br><br>``[string] IP``<br><br>``(optional) [int] Query port (def: joinport + 1)`` | Add a new server to database. If the server uses a non-default query port, add it after IP like in example. | ``!s4 servers + soh 13.95.232.189:10480``<br><br>``!s4 servers + soh 13.95.232.189:10480:10488`` |
 | ``s4 servers``<br>``s4 srv``<br>``s4 s`` | ``delete``<br>``-``<br>``del``<br>``d`` | Administrator (user) | ``[string] Shortname`` | Remove a server from database. | ``!s4 servers - soh`` |
+| ``s4 servers``<br>``s4 srv``<br>``s4 s`` | ``list``<br><br>``ls``<br><br>``l`` |   |  | ``(optional) [int] Page (def: 1)`` | List servers in database on page ``Page``. | ``!s4 servers list`` |
 | ``s4 servers``<br>``s4 srv``<br>``s4 s`` | ``save`` | Owner Only |   | Save server list. | ``!s4 servers save`` |
 |   |   |   |   |   |   |
 

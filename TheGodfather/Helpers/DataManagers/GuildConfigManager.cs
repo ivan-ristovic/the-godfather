@@ -250,8 +250,11 @@ namespace TheGodfather.Helpers.DataManagers
             return !conflict_exists;
         }
 
-        public bool TryRemoveReaction(ulong gid, string[] triggers)
+        public bool TryRemoveReactions(ulong gid, string[] triggers)
         {
+            if (!_gcfg.ContainsKey(gid))
+                return true;
+
             bool conflict_found = false;
             foreach (var trigger in triggers) {
                 if (string.IsNullOrWhiteSpace(trigger))
@@ -311,12 +314,22 @@ namespace TheGodfather.Helpers.DataManagers
             return _gcfg[gid].Triggers.TryAdd(trigger, response);
         }
 
-        public bool TryRemoveGuildTrigger(ulong gid, string trigger)
+        public bool TryRemoveGuildTriggers(ulong gid, string[] triggers)
         {
-            if (!_gcfg.ContainsKey(gid) || !_gcfg[gid].Triggers.ContainsKey(trigger))
+            if (!_gcfg.ContainsKey(gid))
                 return true;
 
-            return _gcfg[gid].Triggers.TryRemove(trigger, out _);
+            bool conflict_found = false;
+            foreach (var trigger in triggers) {
+                if (string.IsNullOrWhiteSpace(trigger))
+                    continue;
+                if (_gcfg[gid].Triggers.ContainsKey(trigger))
+                    conflict_found |= !_gcfg[gid].Triggers.TryRemove(trigger, out _);
+                else
+                    conflict_found = true;
+            }
+
+            return !conflict_found;
         }
 
         public void ClearGuildTriggers(ulong gid)

@@ -47,24 +47,25 @@ namespace TheGodfather.Commands.Messages
         #region COMMAND_TRIGGER_DELETE
         [Command("delete")]
         [Description("Remove trigger from guild triggers list.")]
-        [Aliases("-", "remove", "del", "rm")]
+        [Aliases("-", "remove", "del", "rm", "d")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task DeleteAsync(CommandContext ctx, 
-                                     [RemainingText, Description("Alias to remove.")] string alias)
+                                     [RemainingText, Description("Triggers to remove.")] params string[] triggers)
         {
-            if (string.IsNullOrWhiteSpace(alias))
-                throw new InvalidCommandUsageException("Alias name missing.");
+            if (triggers == null)
+                throw new InvalidCommandUsageException("Triggers missing.");
 
-            if (ctx.Dependencies.GetDependency<GuildConfigManager>().TryRemoveGuildTrigger(ctx.Guild.Id, alias))
-                await ctx.RespondAsync($"Trigger {Formatter.Bold(alias)} successfully removed.").ConfigureAwait(false);
+            if (ctx.Dependencies.GetDependency<GuildConfigManager>().TryRemoveGuildTriggers(ctx.Guild.Id, triggers))
+                await ctx.RespondAsync($"Triggers successfully removed.").ConfigureAwait(false);
             else
-                throw new CommandFailedException("Failed to remove trigger.");
+                throw new CommandFailedException("Failed to remove some triggers.");
         }
         #endregion
 
         #region COMMAND_TRIGGER_LIST
         [Command("list")]
         [Description("Show all triggers for the guild. Each page has 10 triggers.")]
+        [Aliases("ls", "l")]
         public async Task ListAsync(CommandContext ctx, 
                                    [Description("Page.")] int page = 1)
         {
@@ -96,6 +97,7 @@ namespace TheGodfather.Commands.Messages
         #region COMMAND_TRIGGER_CLEAR
         [Command("clear")]
         [Description("Delete all triggers for the current guild.")]
+        [Aliases("c", "da")]
         [RequireUserPermissions(Permissions.Administrator)]
         public async Task ClearAsync(CommandContext ctx)
         {

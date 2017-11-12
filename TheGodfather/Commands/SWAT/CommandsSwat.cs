@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -259,6 +260,33 @@ namespace TheGodfather.Commands.SWAT
                     await ctx.RespondAsync("Server removed.").ConfigureAwait(false);
                 else
                     await ctx.RespondAsync("Failed to remove server.").ConfigureAwait(false);
+            }
+            #endregion
+
+            #region COMMAND_SERVERS_LIST
+            [Command("list")]
+            [Description("List all registered servers.")]
+            [Aliases("ls", "l")]
+            public async Task ListAsync(CommandContext ctx,
+                                       [Description("Page.")] int page = 1)
+            {
+                var servers = ctx.Dependencies.GetDependency<SwatServerManager>().Servers;
+
+                if (page < 1 || page > servers.Count / 10 + 1)
+                    throw new CommandFailedException("No memes on that page.", new ArgumentOutOfRangeException());
+
+                string desc = "";
+                int starti = (page - 1) * 10;
+                int endi = starti + 10 < servers.Count ? starti + 10 : servers.Count;
+                var keys = servers.Keys.Take(page * 10).OrderBy(k => k).ToArray();
+                for (var i = starti; i < endi; i++)
+                    desc += $"{Formatter.Bold(servers[keys[i]].Name)} : {servers[keys[i]].IP}:{servers[keys[i]].JoinPort}\n";
+
+                await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
+                    Title = $"Available servers (page {page}/{servers.Count / 10 + 1}) :",
+                    Description = desc,
+                    Color = DiscordColor.Green
+                }.Build()).ConfigureAwait(false);
             }
             #endregion
 
