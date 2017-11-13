@@ -310,9 +310,10 @@ namespace TheGodfather.Commands.Administration
         [Aliases("emojis", "e")]
         public class CommandsGuildEmoji
         {
-            public async Task ExecuteGroupAsync(CommandContext ctx)
+            public async Task ExecuteGroupAsync(CommandContext ctx,
+                                               [Description("Page.")] int page = 1)
             {
-                await ListEmojiAsync(ctx);
+                await ListEmojiAsync(ctx, page);
             }
 
 
