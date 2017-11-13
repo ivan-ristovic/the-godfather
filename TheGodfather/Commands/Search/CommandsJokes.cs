@@ -20,7 +20,7 @@ namespace TheGodfather.Commands.Search
     [Description("Send a joke.")]
     [Aliases("jokes", "j")]
     [Cooldown(2, 5, CooldownBucketType.User), Cooldown(4, 5, CooldownBucketType.Channel)]
-    [CheckListeningAttribute]
+    [PreExecutionCheck]
     public class CommandsJokes
     {
 

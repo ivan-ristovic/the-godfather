@@ -22,7 +22,7 @@ namespace TheGodfather.Commands.Search
     [Description("Youtube search commands.")]
     [Aliases("y", "yt")]
     [Cooldown(2, 5, CooldownBucketType.User), Cooldown(4, 5, CooldownBucketType.Channel)]
-    [CheckListeningAttribute]
+    [PreExecutionCheck]
     public class CommandsYoutube
     {
 

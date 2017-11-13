@@ -18,7 +18,7 @@ namespace TheGodfather.Commands.Voice
     [Group("voice", CanInvokeWithoutSubcommand = false)]
     [Description("Voice & music commands.")]
     [Aliases("v")]
-    [CheckListeningAttribute]
+    [PreExecutionCheck]
     [RequireOwner]
     public class CommandsVoice
     {

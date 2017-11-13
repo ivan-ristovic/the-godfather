@@ -19,7 +19,7 @@ namespace TheGodfather.Commands.Games
     [Description("Bank manipulation.")]
     [Aliases("$", "$$", "$$$")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
-    [CheckListeningAttribute]
+    [PreExecutionCheck]
     public class CommandsBank
     {
 

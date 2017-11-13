@@ -22,7 +22,7 @@ namespace TheGodfather.Commands.Games
         [Description("Start a quiz!")]
         [Aliases("trivia")]
         [Cooldown(2, 5, CooldownBucketType.User), Cooldown(3, 5, CooldownBucketType.Channel)]
-        [CheckListeningAttribute]
+        [PreExecutionCheck]
         class CommandsQuiz
         {
             #region PRIVATE_FIELDS

@@ -21,7 +21,7 @@ namespace TheGodfather.Commands.Main
     [Description("Burns a user!")]
     [Aliases("burn", "insults")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
-    [CheckListeningAttribute]
+    [PreExecutionCheck]
     public class CommandsInsult
     {
 

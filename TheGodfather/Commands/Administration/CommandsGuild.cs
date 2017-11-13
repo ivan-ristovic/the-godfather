@@ -23,7 +23,7 @@ namespace TheGodfather.Commands.Administration
     [Description("Miscellaneous guild control commands.")]
     [Aliases("server", "g")]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
-    [CheckListeningAttribute]
+    [PreExecutionCheck]
     public class CommandsGuild
     {
         #region COMMAND_GUILD_INFO

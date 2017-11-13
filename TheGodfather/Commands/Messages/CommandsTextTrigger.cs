@@ -22,7 +22,7 @@ namespace TheGodfather.Commands.Messages
     [Description("Trigger/response handling commands.")]
     [Aliases("alias", "triggers", "a", "t")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
-    [CheckListeningAttribute]
+    [PreExecutionCheck]
     public class CommandsTextTrigger
     {
         #region COMMAND_TRIGGER_ADD
