@@ -308,9 +308,16 @@ namespace TheGodfather
                         $" User: {e.Message.Author.ToString()}" + Environment.NewLine +
                         $" Location: '{e.Guild.Name}' ({e.Guild.Id}) ; {e.Channel.ToString()}"
                     );
-                    await e.Channel.SendMessageAsync("The message contains the filtered word but I do not have permissions to delete it.")
-                        .ConfigureAwait(false);
+                    if (e.Channel.PermissionsFor(e.Guild.CurrentMember).HasFlag(Permissions.SendMessages))
+                        await e.Channel.SendMessageAsync("The message contains the filtered word but I do not have permissions to delete it.")
+                            .ConfigureAwait(false);
                 }
+                return;
+            }
+
+            // Since below actions require SendMessages permission, checking it now
+            if (!e.Channel.PermissionsFor(e.Guild.CurrentMember).HasFlag(Permissions.SendMessages)) {
+                await e.Guild.Owner.SendMessageAsync($"I do not have permissions to send messages in channel belonging to your guild {e.Guild.Name}: {e.Channel.Name}! All commands will be blocked until I receive permissions to send messages.");
                 return;
             }
 
@@ -331,6 +338,11 @@ namespace TheGodfather
                     $" Location: '{e.Guild.Name}' ({e.Guild.Id}) ; {e.Channel.ToString()}"
                 );
                 await e.Channel.SendMessageAsync(response.Replace("%user%", e.Author.Mention));
+            }
+
+            if (!e.Channel.PermissionsFor(e.Guild.CurrentMember).HasFlag(Permissions.AddReactions)) {
+                await e.Guild.Owner.SendMessageAsync($"I do not have permissions to react to messages in channel belonging to your guild {e.Guild.Name}: {e.Channel.Name}! Please give me permissions so I can use custom reactions.");
+                return;
             }
 
             // Check if message has a reaction trigger
@@ -419,7 +431,7 @@ namespace TheGodfather
             while (ex is AggregateException)
                 ex = ex.InnerException;
 
-            if (ex is ChecksFailedException chke && chke.FailedChecks.Any(c => c is CheckListeningAttributeAttribute))
+            if (ex is ChecksFailedException chke && chke.FailedChecks.Any(c => c is PreExecutionCheck))
                 return;
 
             LogHandle.Log(LogLevel.Error,

@@ -11,10 +11,13 @@ using DSharpPlus.CommandsNext.Attributes;
 namespace TheGodfather
 {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
-    public class CheckListeningAttributeAttribute : CheckBaseAttribute
+    public class PreExecutionCheck : CheckBaseAttribute
     {
         public override Task<bool> CanExecute(CommandContext ctx, bool help)
         {
+            if (!ctx.Channel.PermissionsFor(ctx.Guild.CurrentMember).HasFlag(Permissions.SendMessages))
+                return Task.FromResult(false);
+
             if (ctx.Dependencies.GetDependency<TheGodfather>().Listening) {
                 ctx.Dependencies.GetDependency<TheGodfather>().LogHandle.Log(LogLevel.Debug,
                     $"Executing: {ctx.Command?.QualifiedName ?? "<unknown command>"}" + Environment.NewLine +

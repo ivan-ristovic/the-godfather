@@ -19,7 +19,7 @@ namespace TheGodfather.Commands.Main
 {
     [Description("Commands that use random numbers to generate their output.")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
-    [CheckListeningAttribute]
+    [PreExecutionCheck]
     public class CommandsRandom
     {
         #region COMMAND_8BALL

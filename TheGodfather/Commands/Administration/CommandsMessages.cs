@@ -19,7 +19,7 @@ namespace TheGodfather.Commands.Administration
     [Description("Commands to manipulate messages on the channel.")]
     [Aliases("m", "msg", "msgs")]
     [Cooldown(2, 5, CooldownBucketType.User)]
-    [CheckListeningAttribute]
+    [PreExecutionCheck]
     public class CommandsMessages
     {
         #region COMMAND_MESSAGES_DELETE

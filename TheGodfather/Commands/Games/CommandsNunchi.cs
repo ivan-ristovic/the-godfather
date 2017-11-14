@@ -21,7 +21,7 @@ namespace TheGodfather.Commands.Games
         [Group("nunchi", CanInvokeWithoutSubcommand = true)]
         [Description("Nunchi game commands")]
         [Cooldown(2, 5, CooldownBucketType.User), Cooldown(3, 5, CooldownBucketType.Channel)]
-        [CheckListeningAttribute]
+        [PreExecutionCheck]
         public class CommandsNunchi
         {
             #region PRIVATE_FIELDS

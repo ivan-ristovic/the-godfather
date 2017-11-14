@@ -22,7 +22,7 @@ namespace TheGodfather.Commands.Messages
     [Description("Reaction handling commands.")]
     [Aliases("react", "reaction")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
-    [CheckListeningAttribute]
+    [PreExecutionCheck]
     public class CommandsReactionTrigger
     {
         

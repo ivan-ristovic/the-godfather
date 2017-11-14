@@ -20,7 +20,7 @@ namespace TheGodfather.Commands.Search
     [Description("GIPHY commands.")]
     [Aliases("giphy")]
     [Cooldown(2, 5, CooldownBucketType.User), Cooldown(4, 5, CooldownBucketType.Channel)]
-    [CheckListeningAttribute]
+    [PreExecutionCheck]
     public class CommandsGiphy
     {
         public async Task ExecuteGroupAsync(CommandContext ctx,

@@ -79,13 +79,17 @@ namespace TheGodfather.Helpers.DataManagers
 
             var split = ip.Split(':');
             ip = split[0];
-            if (split.Length > 1)
-                joinport = int.Parse(split[1]); // try
+            if (split.Length > 1) {
+                try {
+                    joinport = int.Parse(split[1]);
+                } catch (FormatException) {
+                    joinport = 10480;
+                }
+            }
             if (queryport == 10481)
                 queryport = joinport + 1;
 
             return new SwatServer(name, ip, joinport, queryport);
         }
-
     }
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using DSharpPlus;
 using DSharpPlus.Entities;
 
 namespace TheGodfather.Helpers.Swat
@@ -55,11 +56,11 @@ namespace TheGodfather.Helpers.Swat
                 Color = DiscordColor.DarkBlue
             };
             em.AddField("Players", Players + "/" + MaxPlayers, inline: true);
-            em.AddField("Game", Game ?? "unknown", inline: true);
-            em.AddField("Version", GameVersion ?? "unknown", inline: true);
-            em.AddField("Game mode", GameMode ?? "unknown", inline: true);
-            em.AddField("Map", Map ?? "unknown", inline: true);
-            em.AddField("Round", (Round ?? "unknown") + "/" + (MaxRounds ?? "unknown"), inline: true);
+            em.AddField("Game", string.IsNullOrWhiteSpace(Game) ? Formatter.Italic("unknown") : Game, inline: true);
+            em.AddField("Version", string.IsNullOrWhiteSpace(GameVersion) ? Formatter.Italic("unknown") : GameVersion, inline: true);
+            em.AddField("Game mode", string.IsNullOrWhiteSpace(GameMode) ? Formatter.Italic("unknown") : GameMode, inline: true);
+            em.AddField("Map", string.IsNullOrWhiteSpace(Map) ? Formatter.Italic("unknown") : Map, inline: true);
+            em.AddField("Round", (string.IsNullOrWhiteSpace(Round) ? Formatter.Italic("unknown") : Round) + "/" + (string.IsNullOrWhiteSpace(MaxRounds) ? Formatter.Italic("unknown") : MaxRounds), inline: true);
 
             return em.Build();
         }

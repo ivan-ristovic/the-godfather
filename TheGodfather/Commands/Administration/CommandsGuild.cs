@@ -23,7 +23,7 @@ namespace TheGodfather.Commands.Administration
     [Description("Miscellaneous guild control commands.")]
     [Aliases("server", "g")]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
-    [CheckListeningAttribute]
+    [PreExecutionCheck]
     public class CommandsGuild
     {
         #region COMMAND_GUILD_INFO
@@ -52,7 +52,7 @@ namespace TheGodfather.Commands.Administration
         [Description("Get guild member list.")]
         [Aliases("memberlist", "lm", "members")]
         [RequirePermissions(Permissions.ManageGuild)]
-        public async Task ListMembersAsync(CommandContext ctx, 
+        public async Task ListMembersAsync(CommandContext ctx,
                                           [Description("Page.")] int page = 1)
         {
             var members = await ctx.Guild.GetAllMembersAsync()
@@ -111,7 +111,7 @@ namespace TheGodfather.Commands.Administration
         [Description("Get audit logs.")]
         [Aliases("auditlog", "viewlog", "getlog", "getlogs", "logs")]
         [RequirePermissions(Permissions.ViewAuditLog)]
-        public async Task GetAuditLogsAsync(CommandContext ctx, 
+        public async Task GetAuditLogsAsync(CommandContext ctx,
                                            [Description("Page.")] int page = 1)
         {
             var log = await ctx.Guild.GetAuditLogsAsync()
@@ -142,17 +142,17 @@ namespace TheGodfather.Commands.Administration
         [Aliases("p", "clean")]
         [RequirePermissions(Permissions.KickMembers)]
         [RequireUserPermissions(Permissions.Administrator)]
-        public async Task PruneMembersAsync(CommandContext ctx, 
+        public async Task PruneMembersAsync(CommandContext ctx,
                                            [Description("Days.")] int days = 7)
         {
             if (days <= 0 || days > 7)
                 throw new InvalidCommandUsageException("Number of days not in valid range! [1-7]");
-            
+
             int count = await ctx.Guild.GetPruneCountAsync(days)
                 .ConfigureAwait(false);
             await ctx.RespondAsync($"Pruning will remove {Formatter.Bold(count.ToString())} member(s). Continue?")
                 .ConfigureAwait(false);
-            
+
             var interactivity = ctx.Client.GetInteractivityModule();
             var msg = await interactivity.WaitForMessageAsync(
                 xm => (xm.Author.Id == ctx.User.Id) &&
@@ -164,7 +164,7 @@ namespace TheGodfather.Commands.Administration
                     .ConfigureAwait(false);
                 return;
             }
-            
+
             await ctx.Guild.PruneAsync(days)
                 .ConfigureAwait(false);
             await ctx.RespondAsync("Pruning complete!")
@@ -310,9 +310,10 @@ namespace TheGodfather.Commands.Administration
         [Aliases("emojis", "e")]
         public class CommandsGuildEmoji
         {
-            public async Task ExecuteGroupAsync(CommandContext ctx)
+            public async Task ExecuteGroupAsync(CommandContext ctx,
+                                               [Description("Page.")] int page = 1)
             {
-                await ListEmojiAsync(ctx);
+                await ListEmojiAsync(ctx, page);
             }
 
 
@@ -386,14 +387,22 @@ namespace TheGodfather.Commands.Administration
             [Command("list")]
             [Description("Print list of guild emojis.")]
             [Aliases("print", "show", "l", "p")]
-            public async Task ListEmojiAsync(CommandContext ctx)
+            public async Task ListEmojiAsync(CommandContext ctx,
+                                            [Description("Page.")] int page = 1)
             {
+                var emojis = ctx.Guild.Emojis.OrderBy(e => e.Name).ToArray();
+
+                if (page < 1 || page > emojis.Length / 10 + 1)
+                    throw new CommandFailedException("No memes on that page.", new ArgumentOutOfRangeException());
+
                 string desc = "";
-                foreach (var emoji in ctx.Guild.Emojis)
-                    desc += $"{Formatter.Bold(emoji.Name)} ";
+                int starti = (page - 1) * 10;
+                int endi = starti + 10 < emojis.Length ? starti + 10 : emojis.Length;
+                for (var i = starti; i < endi; i++)
+                    desc += $"{Formatter.Bold(emojis[i].Name)} : {emojis[i]}\n";
 
                 await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
-                    Title = "Available guild emoji:",
+                    Title = $"Available emojis (page {page}/{emojis.Length / 10 + 1}) :",
                     Description = desc,
                     Color = DiscordColor.CornflowerBlue
                 }.Build()).ConfigureAwait(false);

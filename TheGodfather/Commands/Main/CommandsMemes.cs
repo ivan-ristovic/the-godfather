@@ -27,7 +27,7 @@ namespace TheGodfather.Commands.Main
     [Description("Manipulate memes. When invoked without name, returns a random one.")]
     [Aliases("memes", "mm")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
-    [CheckListeningAttribute]
+    [PreExecutionCheck]
     public class CommandsMemes
     {
         public async Task ExecuteGroupAsync(CommandContext ctx,
