@@ -32,7 +32,7 @@ namespace TheGodfather.Commands.Games
             if (u.Id == ctx.User.Id)
                 throw new CommandFailedException("You can't duel yourself...");
 
-            if (Duel.Exists(ctx.Channel.Id))
+            if (Duel.GameExistsInChannel(ctx.Channel.Id))
                 throw new CommandFailedException("A duel is already running in the current channel!");
 
             if (u.Id == ctx.Client.CurrentUser.Id) {
@@ -54,14 +54,18 @@ namespace TheGodfather.Commands.Games
         [Description("Starts a hangman game.")]
         public async Task HangmanAsync(CommandContext ctx)
         {
+            if (Hangman.GameExistsInChannel(ctx.Channel.Id))
+                throw new CommandFailedException("Hangman game is already running in the current channel!");
+
             DiscordDmChannel dm;
             try {
                 dm = await ctx.Client.CreateDmAsync(ctx.User)
                     .ConfigureAwait(false);
                 await dm.SendMessageAsync("What is the secret word?")
                     .ConfigureAwait(false);
+                await ctx.RespondAsync(ctx.User.Mention + ", check your DM. When you give me the word, the game will start.");
             } catch {
-                throw new Exception("Please enable direct messages, so I can ask you about the word to guess.");
+                throw new CommandFailedException("Please enable direct messages, so I can ask you about the word to guess.");
             }
             var interactivity = ctx.Client.GetInteractivityModule();
             var msg = await interactivity.WaitForMessageAsync(
@@ -69,7 +73,7 @@ namespace TheGodfather.Commands.Games
                 TimeSpan.FromMinutes(1)
             ).ConfigureAwait(false);
             if (msg == null) {
-                await ctx.RespondAsync("Ok, nvm...")
+                await ctx.RespondAsync("I didn't get the word, so I will abort the game.")
                     .ConfigureAwait(false);
                 return;
             } else {
@@ -77,67 +81,10 @@ namespace TheGodfather.Commands.Games
                     .ConfigureAwait(false);
             }
 
-            int lives = 7;
-            string word = msg.Message.Content.ToLower();
-            char[] guess_str = word.Select(c => (c == ' ') ? ' ' : '?').ToArray();
-
-            await DrawHangmanAsync(ctx, guess_str, lives)
-                .ConfigureAwait(false);
-            while (lives > 0 && Array.IndexOf(guess_str, '?') != -1) {
-                var m = await interactivity.WaitForMessageAsync(
-                    xm => xm.Channel == ctx.Channel && !xm.Author.IsBot && xm.Content.Length == 1,
-                    TimeSpan.FromMinutes(1)
-                ).ConfigureAwait(false);
-                if (m == null) {
-                    await ctx.RespondAsync("Ok, nvm, aborting game...")
-                        .ConfigureAwait(false);
-                    return;
-                }
-
-                char guess_char = Char.ToLower(m.Message.Content[0]);
-                if (word.IndexOf(guess_char) != -1) {
-                    for (int i = 0; i < word.Length; i++)
-                        if (word[i] == guess_char)
-                            guess_str[i] = Char.ToUpper(word[i]);
-                } else {
-                    lives--;
-                }
-                await DrawHangmanAsync(ctx, guess_str, lives)
-                    .ConfigureAwait(false);
-            }
-            await ctx.RespondAsync("Game over! The word was : " + Formatter.Bold(word))
+            var hangman = new Hangman(ctx.Client, ctx.Channel.Id, msg.Message.Content);
+            await hangman.Play()
                 .ConfigureAwait(false);
         }
-
-        #region HELPER_FUNCTIONS
-        private async Task DrawHangmanAsync(CommandContext ctx, char[] word, int lives)
-        {
-            string s = "\n-|-\n";
-            if (lives < 7) {
-                s += " O\n";
-                if (lives < 6) {
-                    s += "/";
-                    if (lives < 5) {
-                        s += "|";
-                        if (lives < 4) {
-                            s += "\\\n";
-                            if (lives < 3) {
-                                s += "/";
-                                if (lives < 2) {
-                                    s += "|";
-                                    if (lives < 1) {
-                                        s += "\\\n";
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            await ctx.RespondAsync("WORD: " + new string(word) + s);
-        }
-        #endregion
         #endregion
 
         #region COMMAND_GAMES_RPS

@@ -19,15 +19,15 @@ namespace TheGodfather.Commands.Games
 {
     public class Duel
     {
-        public static bool Exists(ulong cid) => _channels.Contains(cid);
+        public static bool GameExistsInChannel(ulong cid) => _channels.Contains(cid);
         private static ConcurrentHashSet<ulong> _channels = new ConcurrentHashSet<ulong>();
         private static string[] weapons = { ":hammer:", ":dagger:", ":pick:", ":bomb:", ":guitar:", ":fire:" };
 
         private DiscordClient _client;
         private ulong _cid;
-        DiscordUser _p1;
-        DiscordUser _p2;
-        DiscordMessage _msg;
+        private DiscordUser _p1;
+        private DiscordUser _p2;
+        private DiscordMessage _msg;
         private string _hp1bar = null;
         private string _hp2bar = null;
         private bool _pot1used = false;
