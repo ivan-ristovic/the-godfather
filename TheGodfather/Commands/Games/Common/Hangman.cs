@@ -27,8 +27,9 @@ namespace TheGodfather.Commands.Games
         private string _word;
         private char[] _hidden;
         private DiscordMessage _msg;
-        private int lives = 7;
+        private int _lives = 6;
         private bool _gameOver = false;
+        private List<char> _badguesses = new List<char>();
 
 
         public Hangman(DiscordClient client, ulong cid, string word)
@@ -50,7 +51,7 @@ namespace TheGodfather.Commands.Games
                 .ConfigureAwait(false);
 
             await UpdateHangman().ConfigureAwait(false);
-            while (!_gameOver && lives > 0 && Array.IndexOf(_hidden, '?') != -1)
+            while (!_gameOver && _lives > 0 && Array.IndexOf(_hidden, '?') != -1)
                 await Advance().ConfigureAwait(false);
 
             await channel.SendMessageAsync("Game over! The word was : " + Formatter.Bold(_word))
@@ -67,6 +68,7 @@ namespace TheGodfather.Commands.Games
                 ).ConfigureAwait(false);
             if (m == null) {
                 _gameOver = true;
+                return;
             }
 
             char guess_char = Char.ToLower(m.Message.Content[0]);
@@ -75,7 +77,8 @@ namespace TheGodfather.Commands.Games
                     if (_word[i] == guess_char)
                         _hidden[i] = Char.ToUpper(_word[i]);
             } else {
-                lives--;
+                _lives--;
+                _badguesses.Add(guess_char);
             }
             await UpdateHangman()
                 .ConfigureAwait(false);
@@ -83,31 +86,17 @@ namespace TheGodfather.Commands.Games
 
         private async Task UpdateHangman()
         {
-            string s = "\n-|-\n";
-            if (lives < 7) {
-                s += " O\n";
-                if (lives < 6) {
-                    s += "/";
-                    if (lives < 5) {
-                        s += "|";
-                        if (lives < 4) {
-                            s += "\\\n";
-                            if (lives < 3) {
-                                s += "/";
-                                if (lives < 2) {
-                                    s += "|";
-                                    if (lives < 1) {
-                                        s += "\\\n";
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            await _msg.ModifyAsync("WORD: " + new string(_hidden) + s)
-                .ConfigureAwait(false);
+            await _msg.ModifyAsync(embed: new DiscordEmbedBuilder() {
+                Title = string.Join(" ", _hidden),
+                Description = $@". ┌─────┐
+.┃...............┋
+.┃...............┋
+.┃{(_lives < 6 ? ".............😲" : "")}
+.┃{(_lives < 5 ? "............./" : "")} {(_lives < 4 ? "|" : "")} {(_lives < 3 ? "\\" : "")}
+.┃{(_lives < 2 ? "............../" : "")} {(_lives < 1 ? "\\" : "")}
+/-\"
+            }.WithFooter(string.Join(", ", _badguesses)))
+            .ConfigureAwait(false);
         }
     }
 }
