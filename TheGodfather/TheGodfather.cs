@@ -133,7 +133,7 @@ namespace TheGodfather
                 Dependencies = _dependecies.GetDependencyCollectionBuilder()
                                            .AddInstance(this)
                                            .AddInstance(Config)
-                                           .Build()
+                                           .Build(),
             });
             _commands.SetHelpFormatter<HelpFormatter>();
             _commands.RegisterCommands(Assembly.GetExecutingAssembly());
