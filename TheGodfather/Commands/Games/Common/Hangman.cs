@@ -63,8 +63,12 @@ namespace TheGodfather.Commands.Games
         {
             var interactivity = _client.GetInteractivityModule();
             var m = await interactivity.WaitForMessageAsync(
-                    xm => xm.Channel.Id == _cid && !xm.Author.IsBot && xm.Content.Length == 1 && Char.IsLetterOrDigit(xm.Content[0]),
-                    TimeSpan.FromMinutes(1)
+                    xm => xm.Channel.Id == _cid && 
+                          !xm.Author.IsBot && 
+                          xm.Content.Length == 1 && 
+                          Char.IsLetterOrDigit(xm.Content[0]) &&
+                          !_badguesses.Contains(xm.Content[0])
+                    , TimeSpan.FromMinutes(1)
                 ).ConfigureAwait(false);
             if (m == null) {
                 _gameOver = true;
