@@ -19,8 +19,6 @@ namespace TheGodfather.Commands.Games
 {
     public class Duel
     {
-        public static bool GameExistsInChannel(ulong cid) => _channels.Contains(cid);
-
         #region STATIC_FIELDS
         private static ConcurrentHashSet<ulong> _channels = new ConcurrentHashSet<ulong>();
         private static string[] weapons = { ":hammer:", ":dagger:", ":pick:", ":bomb:", ":guitar:", ":fire:" };
@@ -52,7 +50,9 @@ namespace TheGodfather.Commands.Games
             _p2 = p2;
         }
 
-        
+
+        public static bool GameExistsInChannel(ulong cid) => _channels.Contains(cid);
+
         public async Task Play()
         {
             UpdateHpBars();

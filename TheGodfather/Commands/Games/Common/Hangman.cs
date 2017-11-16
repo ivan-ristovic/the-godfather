@@ -19,9 +19,11 @@ namespace TheGodfather.Commands.Games
 {
     public class Hangman
     {
-        public static bool GameExistsInChannel(ulong cid) => _channels.Contains(cid);
+        #region STATIC_FIELDS
         private static ConcurrentHashSet<ulong> _channels = new ConcurrentHashSet<ulong>();
+        #endregion
 
+        #region PRIVATE_FIELDS
         private DiscordClient _client;
         private ulong _cid;
         private string _word;
@@ -30,6 +32,7 @@ namespace TheGodfather.Commands.Games
         private int _lives = 6;
         private bool _gameOver = false;
         private List<char> _badguesses = new List<char>();
+        #endregion
 
 
         public Hangman(DiscordClient client, ulong cid, string word)
@@ -42,6 +45,8 @@ namespace TheGodfather.Commands.Games
         }
 
 
+        public static bool GameExistsInChannel(ulong cid) => _channels.Contains(cid);
+
         public async Task Play()
         {
             var channel = await _client.GetChannelAsync(_cid)
@@ -50,11 +55,12 @@ namespace TheGodfather.Commands.Games
             _msg = await channel.SendMessageAsync("Game starts!")
                 .ConfigureAwait(false);
 
-            await UpdateHangman().ConfigureAwait(false);
+            await UpdateHangman()
+                .ConfigureAwait(false);
             while (!_gameOver && _lives > 0 && Array.IndexOf(_hidden, '?') != -1)
                 await Advance().ConfigureAwait(false);
 
-            await channel.SendMessageAsync("Game over! The word was : " + Formatter.Bold(_word))
+            await channel.SendMessageAsync("Game over! The word was: " + Formatter.Bold(_word))
                 .ConfigureAwait(false);
             _channels.TryRemove(_cid);
         }
