@@ -30,6 +30,7 @@ namespace TheGodfather.Commands.Games
         private ulong _p2Id;
         private DiscordMessage _msg;
         private int[,] _board = new int[3, 3];
+        private int _move = 0;
         #endregion
 
 
@@ -54,40 +55,14 @@ namespace TheGodfather.Commands.Games
 
             TTTInitializeBoard();
 
-            bool player1plays = true;
-            int moves = 0;
-            while (moves < 9 && !TTTGameOver()) {
+            while (_move < 9 && !TTTGameOver()) {
                 await TTTUpdateBoardAsync()
                     .ConfigureAwait(false);
-                int field = 0;
-                var t = await _client.GetInteractivityModule().WaitForMessageAsync(
-                    xm => {
-                        if (xm.Channel.Id != _cid) return false;
-                        if (player1plays && (xm.Author.Id != _p1Id)) return false;
-                        if (!player1plays && (xm.Author.Id != _p2Id)) return false;
-                        try {
-                            field = int.Parse(xm.Content);
-                            if (field < 1 || field > 10)
-                                return false;
-                        } catch {
-                            return false;
-                        }
-                        return true;
-                    },
-                    TimeSpan.FromMinutes(1)
-                ).ConfigureAwait(false);
-                if (field == 0) {
-                    await channel.SendMessageAsync("No reply, aborting...")
-                        .ConfigureAwait(false);
-                    return;
-                }
 
-                if (TTTPlaySuccessful(player1plays ? 1 : 2, field))
-                    player1plays = !player1plays;
-                else
-                    await channel.SendMessageAsync("Invalid move.").ConfigureAwait(false);
+                await AdvanceAsync(channel)
+                    .ConfigureAwait(false);
                 
-                moves++;
+                _move++;
             }
 
             await TTTUpdateBoardAsync()
@@ -95,9 +70,37 @@ namespace TheGodfather.Commands.Games
             _channels.TryRemove(_cid);
         }
 
-        private async Task AdvanceAsync()
+        private async Task AdvanceAsync(DiscordChannel channel)
         {
+            int field = 0;
+            bool player1plays = _move % 2 == 0;
+            var t = await _client.GetInteractivityModule().WaitForMessageAsync(
+                xm => {
+                    if (xm.Channel.Id != _cid) return false;
+                    if (player1plays && (xm.Author.Id != _p1Id)) return false;
+                    if (!player1plays && (xm.Author.Id != _p2Id)) return false;
+                    try {
+                        field = int.Parse(xm.Content);
+                        if (field < 1 || field > 10)
+                            return false;
+                    } catch {
+                        return false;
+                    }
+                    return true;
+                },
+                TimeSpan.FromMinutes(1)
+            ).ConfigureAwait(false);
+            if (field == 0) {
+                await channel.SendMessageAsync("No reply, aborting...")
+                    .ConfigureAwait(false);
+                _move = 10;
+                return;
+            }
 
+            if (TTTPlaySuccessful(player1plays ? 1 : 2, field))
+                player1plays = !player1plays;
+            else
+                await channel.SendMessageAsync("Invalid move.").ConfigureAwait(false);
         }
 
         private bool TTTGameOver()
