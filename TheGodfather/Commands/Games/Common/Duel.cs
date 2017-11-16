@@ -20,9 +20,13 @@ namespace TheGodfather.Commands.Games
     public class Duel
     {
         public static bool GameExistsInChannel(ulong cid) => _channels.Contains(cid);
+
+        #region STATIC_FIELDS
         private static ConcurrentHashSet<ulong> _channels = new ConcurrentHashSet<ulong>();
         private static string[] weapons = { ":hammer:", ":dagger:", ":pick:", ":bomb:", ":guitar:", ":fire:" };
+        #endregion
 
+        #region PRIVATE_FIELDS
         private DiscordClient _client;
         private ulong _cid;
         private DiscordUser _p1;
@@ -36,6 +40,7 @@ namespace TheGodfather.Commands.Games
         private int _hp2 = 5;
         private Random _rand = new Random();
         private string _events = "";
+        #endregion
 
 
         public Duel(DiscordClient client, ulong cid, DiscordUser p1, DiscordUser p2)
@@ -50,8 +55,7 @@ namespace TheGodfather.Commands.Games
         
         public async Task Play()
         {
-            _hp1bar = string.Join("", Enumerable.Repeat(DiscordEmoji.FromName(_client, ":white_large_square:"), _hp1)) + string.Join("", Enumerable.Repeat(DiscordEmoji.FromName(_client, ":black_large_square:"), 5 - _hp1));
-            _hp2bar = string.Join("", Enumerable.Repeat(DiscordEmoji.FromName(_client, ":black_large_square:"), 5 - _hp2)) + string.Join("", Enumerable.Repeat(DiscordEmoji.FromName(_client, ":white_large_square:"), _hp2));
+            UpdateHpBars();
 
             var chn = await _client.GetChannelAsync(_cid);
             _msg = await chn.SendMessageAsync($"{_p1.Mention} {_hp1bar} :crossed_swords: {_hp2bar} {_p2.Mention}")
@@ -73,6 +77,25 @@ namespace TheGodfather.Commands.Games
 
         private async Task Advance()
         {
+            DealDamage();
+
+            await CheckForPotionUse()
+                .ConfigureAwait(false);
+
+            UpdateHpBars();
+
+            _msg = await _msg.ModifyAsync($"{_p1.Mention} {_hp1bar} :crossed_swords: {_hp2bar} {_p2.Mention}" + _events)
+                .ConfigureAwait(false);
+        }
+
+        private void UpdateHpBars()
+        {
+            _hp1bar = string.Join("", Enumerable.Repeat(DiscordEmoji.FromName(_client, ":white_large_square:"), _hp1)) + string.Join("", Enumerable.Repeat(DiscordEmoji.FromName(_client, ":black_large_square:"), 5 - _hp1));
+            _hp2bar = string.Join("", Enumerable.Repeat(DiscordEmoji.FromName(_client, ":black_large_square:"), 5 - _hp2)) + string.Join("", Enumerable.Repeat(DiscordEmoji.FromName(_client, ":white_large_square:"), _hp2));
+        }
+
+        private void DealDamage()
+        {
             int damage = 1;
             if (_rand.Next() % 2 == 0) {
                 _events += $"\n{_p1.Mention} {weapons[_rand.Next(weapons.Length)]} {_p2.Mention}";
@@ -81,11 +104,14 @@ namespace TheGodfather.Commands.Games
                 _events += $"\n{_p2.Mention} {weapons[_rand.Next(weapons.Length)]} {_p1.Mention}";
                 _hp1 -= damage;
             }
+        }
 
+        private async Task CheckForPotionUse()
+        {
             var interactivity = _client.GetInteractivityModule();
             var reply = await interactivity.WaitForMessageAsync(
-                msg => 
-                    msg.ChannelId == _cid && msg.Content.ToLower() == "hp" && 
+                msg =>
+                    msg.ChannelId == _cid && msg.Content.ToLower() == "hp" &&
                     ((!_pot1used && msg.Author.Id == _p1.Id) || (!_pot2used && msg.Author.Id == _p2.Id))
                 , TimeSpan.FromSeconds(2)
             ).ConfigureAwait(false);
@@ -100,12 +126,6 @@ namespace TheGodfather.Commands.Games
                     _events += $"\n{_p2.Mention} {DiscordEmoji.FromName(_client, ":syringe:")}";
                 }
             }
-
-            _hp1bar = string.Join("", Enumerable.Repeat(DiscordEmoji.FromName(_client, ":white_large_square:"), _hp1)) + string.Join("", Enumerable.Repeat(DiscordEmoji.FromName(_client, ":black_large_square:"), 5 - _hp1));
-            _hp2bar = string.Join("", Enumerable.Repeat(DiscordEmoji.FromName(_client, ":black_large_square:"), 5 - _hp2)) + string.Join("", Enumerable.Repeat(DiscordEmoji.FromName(_client, ":white_large_square:"), _hp2));
-
-            _msg = await _msg.ModifyAsync($"{_p1.Mention} {_hp1bar} :crossed_swords: {_hp2bar} {_p2.Mention}" + _events)
-                .ConfigureAwait(false);
         }
     }
 }
