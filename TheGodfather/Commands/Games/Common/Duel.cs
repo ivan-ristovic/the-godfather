@@ -84,7 +84,9 @@ namespace TheGodfather.Commands.Games
 
             var interactivity = _client.GetInteractivityModule();
             var reply = await interactivity.WaitForMessageAsync(
-                msg => msg.ChannelId == _cid && msg.Content.ToLower() == "hp" && (msg.Author.Id == _p1.Id || msg.Author.Id == _p2.Id)
+                msg => 
+                    msg.ChannelId == _cid && msg.Content.ToLower() == "hp" && 
+                    ((!_pot1used && msg.Author.Id == _p1.Id) || (!_pot2used && msg.Author.Id == _p2.Id))
                 , TimeSpan.FromSeconds(2)
             ).ConfigureAwait(false);
             if (reply != null) {
