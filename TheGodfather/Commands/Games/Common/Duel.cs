@@ -90,11 +90,11 @@ namespace TheGodfather.Commands.Games
             if (reply != null) {
                 if (reply.User.Id == _p1.Id && !_pot1used) {
                     _hp1 = (_hp1 + 1 > 5) ? 5 : _hp1 + 1;
-                    _pot1used = false;
+                    _pot1used = true;
                     _events += $"\n{_p1.Mention} {DiscordEmoji.FromName(_client, ":syringe:")}";
                 } else if (reply.User.Id == _p2.Id && !_pot2used) {
                     _hp2 = (_hp2 + 1 > 5) ? 5 : _hp2 + 1;
-                    _pot2used = false;
+                    _pot2used = true;
                     _events += $"\n{_p2.Mention} {DiscordEmoji.FromName(_client, ":syringe:")}";
                 }
             }
