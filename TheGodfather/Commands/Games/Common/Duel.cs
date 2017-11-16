@@ -53,7 +53,7 @@ namespace TheGodfather.Commands.Games
 
         public static bool GameExistsInChannel(ulong cid) => _channels.Contains(cid);
 
-        public async Task Play()
+        public async Task PlayAsync()
         {
             UpdateHpBars();
 
@@ -62,7 +62,7 @@ namespace TheGodfather.Commands.Games
                 .ConfigureAwait(false);
 
             while (_hp1 > 0 && _hp2 > 0)
-                await Advance().ConfigureAwait(false);
+                await AdvanceAsync().ConfigureAwait(false);
 
             if (_hp1 <= 0) {
                 await chn.SendMessageAsync($"{_p2.Mention} wins!")
@@ -75,11 +75,11 @@ namespace TheGodfather.Commands.Games
             _channels.TryRemove(_cid);
         }
 
-        private async Task Advance()
+        private async Task AdvanceAsync()
         {
             DealDamage();
 
-            await CheckForPotionUse()
+            await CheckForPotionUseAsync()
                 .ConfigureAwait(false);
 
             UpdateHpBars();
@@ -106,7 +106,7 @@ namespace TheGodfather.Commands.Games
             }
         }
 
-        private async Task CheckForPotionUse()
+        private async Task CheckForPotionUseAsync()
         {
             var interactivity = _client.GetInteractivityModule();
             var reply = await interactivity.WaitForMessageAsync(

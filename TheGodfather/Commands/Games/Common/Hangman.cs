@@ -47,7 +47,7 @@ namespace TheGodfather.Commands.Games
 
         public static bool GameExistsInChannel(ulong cid) => _channels.Contains(cid);
 
-        public async Task Play()
+        public async Task PlayAsync()
         {
             var channel = await _client.GetChannelAsync(_cid)
                 .ConfigureAwait(false);
@@ -55,17 +55,18 @@ namespace TheGodfather.Commands.Games
             _msg = await channel.SendMessageAsync("Game starts!")
                 .ConfigureAwait(false);
 
-            await UpdateHangman()
+            await UpdateHangmanAsync()
                 .ConfigureAwait(false);
             while (!_gameOver && _lives > 0 && Array.IndexOf(_hidden, '?') != -1)
-                await Advance().ConfigureAwait(false);
+                await AdvanceAsync().ConfigureAwait(false);
 
             await channel.SendMessageAsync("Game over! The word was: " + Formatter.Bold(_word))
                 .ConfigureAwait(false);
+
             _channels.TryRemove(_cid);
         }
 
-        private async Task Advance()
+        private async Task AdvanceAsync()
         {
             var interactivity = _client.GetInteractivityModule();
             var m = await interactivity.WaitForMessageAsync(
@@ -90,11 +91,11 @@ namespace TheGodfather.Commands.Games
                 _lives--;
                 _badguesses.Add(guess_char);
             }
-            await UpdateHangman()
+            await UpdateHangmanAsync()
                 .ConfigureAwait(false);
         }
 
-        private async Task UpdateHangman()
+        private async Task UpdateHangmanAsync()
         {
             await _msg.ModifyAsync(embed: new DiscordEmbedBuilder() {
                 Title = string.Join(" ", _hidden),

@@ -222,6 +222,7 @@
   <ItemGroup>
     <Compile Include="Commands\Games\Common\Hangman.cs" />
     <Compile Include="Commands\Games\Common\Duel.cs" />
+    <Compile Include="Commands\Games\Common\TicTacToe.cs" />
     <Compile Include="Helpers\BotConfig.cs" />
     <Compile Include="Helpers\Collections\ConcurrentHashSet.cs" />
     <Compile Include="Helpers\DataManagers\BankManager.cs" />

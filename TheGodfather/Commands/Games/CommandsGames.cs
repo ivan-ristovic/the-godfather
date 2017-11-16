@@ -45,7 +45,7 @@ namespace TheGodfather.Commands.Games
             }
 
             var duel = new Duel(ctx.Client, ctx.Channel.Id, ctx.User, u);
-            await duel.Play();
+            await duel.PlayAsync();
         }
         #endregion
 
@@ -82,7 +82,7 @@ namespace TheGodfather.Commands.Games
             }
 
             var hangman = new Hangman(ctx.Client, ctx.Channel.Id, msg.Message.Content);
-            await hangman.Play()
+            await hangman.PlayAsync()
                 .ConfigureAwait(false);
         }
         #endregion
@@ -127,6 +127,9 @@ namespace TheGodfather.Commands.Games
         [Aliases("ttt")]
         public async Task TicTacToeAsync(CommandContext ctx)
         {
+            if (TicTacToe.GameExistsInChannel(ctx.Channel.Id))
+                throw new CommandFailedException("TicTacToe game is already running in the current channel!");
+
             await ctx.RespondAsync($"Who wants to play tic-tac-toe with {ctx.User.Username}?")
                 .ConfigureAwait(false);
 
@@ -141,99 +144,13 @@ namespace TheGodfather.Commands.Games
                 return;
             }
 
-            var m = await ctx.RespondAsync($"Game between {ctx.User.Mention} and {msg.User.Mention} begins!")
+            var ttt = new TicTacToe(ctx.Client, ctx.Channel.Id, ctx.User.Id, msg.User.Id);
+            await ttt.PlayAsync()
                 .ConfigureAwait(false);
 
-            int[,] board = new int[3, 3];
-            TTTInitializeBoard(board);
-
-            bool player1plays = true;
-            int moves = 0;
-            while (moves < 9 && !TTTGameOver(board)) {
-                int field = 0;
-                var t = await interactivity.WaitForMessageAsync(
-                    xm => {
-                        if (xm.Channel.Id != ctx.Channel.Id) return false;
-                        if (player1plays && (xm.Author.Id != ctx.User.Id)) return false;
-                        if (!player1plays && (xm.Author.Id != msg.User.Id)) return false;
-                        try {
-                            field = int.Parse(xm.Content);
-                            if (field < 1 || field > 10)
-                                return false;
-                        } catch {
-                            return false;
-                        }
-                        return true;
-                    },
-                    TimeSpan.FromMinutes(1)
-                ).ConfigureAwait(false);
-                if (field == 0) {
-                    await ctx.RespondAsync("No reply, aborting...");
-                    return;
-                }
-
-                if (TTTPlaySuccessful(player1plays ? 1 : 2, board, field)) {
-                    player1plays = !player1plays;
-                    await TTTPrintBoard(ctx, board, m)
-                        .ConfigureAwait(false);
-                } else {
-                    await ctx.RespondAsync("Invalid move.")
-                        .ConfigureAwait(false);
-                }
-                moves++;
-            }
-
-            await ctx.RespondAsync("GG")
+            await ctx.RespondAsync("ggwp")
                 .ConfigureAwait(false);
         }
-
-        #region HELPER_FUNCTIONS
-        private bool TTTGameOver(int[,] board)
-        {
-            for (int i = 0; i < 3; i++) {
-                if (board[i, 0] != 0 && board[i, 0] == board[i, 1] && board[i, 1] == board[i, 2])
-                    return true;
-                if (board[0, i] != 0 && board[0, i] == board[1, i] && board[1, i] == board[2, i])
-                    return true;
-            }
-            if (board[0, 0] != 0 && board[0, 0] == board[1, 1] && board[1, 1] == board[2, 2])
-                return true;
-            if (board[0, 2] != 0 && board[0, 2] == board[1, 1] && board[1, 1] == board[2, 0])
-                return true;
-            return false;
-        }
-
-        private void TTTInitializeBoard(int[,] board)
-        {
-            for (int i = 0; i < 3; i++)
-                for (int j = 0; j < 3; j++)
-                    board[i, j] = 0;
-        }
-
-        private bool TTTPlaySuccessful(int v, int[,] board, int index)
-        {
-            index--;
-            if (board[index / 3, index % 3] != 0)
-                return false;
-            board[index / 3, index % 3] = v;
-            return true;
-        }
-
-        private async Task TTTPrintBoard(CommandContext ctx, int[,] board, DiscordMessage m)
-        {
-            string s = "";
-            for (int i = 0; i < 3; i++) {
-                for (int j = 0; j < 3; j++)
-                    switch (board[i, j]) {
-                        case 0: s += $"{DiscordEmoji.FromName(ctx.Client, ":white_medium_square:")}"; break;
-                        case 1: s += $"{DiscordEmoji.FromName(ctx.Client, ":x:")}"; break;
-                        case 2: s += $"{DiscordEmoji.FromName(ctx.Client, ":o:")}"; break;
-                    }
-                s += '\n';
-            }
-            await m.ModifyAsync(embed: new DiscordEmbedBuilder() { Description = s });
-        }
-        #endregion
 
         #endregion
 
