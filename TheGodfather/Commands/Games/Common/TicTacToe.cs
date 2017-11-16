@@ -57,6 +57,8 @@ namespace TheGodfather.Commands.Games
             bool player1plays = true;
             int moves = 0;
             while (moves < 9 && !TTTGameOver()) {
+                await TTTUpdateBoardAsync()
+                    .ConfigureAwait(false);
                 int field = 0;
                 var t = await _client.GetInteractivityModule().WaitForMessageAsync(
                     xm => {
@@ -80,17 +82,16 @@ namespace TheGodfather.Commands.Games
                     return;
                 }
 
-                if (TTTPlaySuccessful(player1plays ? 1 : 2, field)) {
+                if (TTTPlaySuccessful(player1plays ? 1 : 2, field))
                     player1plays = !player1plays;
-                    await TTTUpdateBoardAsync()
-                        .ConfigureAwait(false);
-                } else {
-                    await channel.SendMessageAsync("Invalid move.")
-                        .ConfigureAwait(false);
-                }
+                else
+                    await channel.SendMessageAsync("Invalid move.").ConfigureAwait(false);
+                
                 moves++;
             }
 
+            await TTTUpdateBoardAsync()
+                .ConfigureAwait(false);
             _channels.TryRemove(_cid);
         }
 

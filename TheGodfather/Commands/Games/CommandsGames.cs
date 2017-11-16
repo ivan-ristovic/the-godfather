@@ -123,7 +123,7 @@ namespace TheGodfather.Commands.Games
 
         #region COMMAND_GAMES_TICTACTOE
         [Command("tictactoe")]
-        [Description("Starts a game of tic-tac-toe.")]
+        [Description("Starts a game of tic-tac-toe. Play by posting a number from 1 to 9 corresponding to field you wish to place your move on.")]
         [Aliases("ttt")]
         public async Task TicTacToeAsync(CommandContext ctx)
         {
