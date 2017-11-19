@@ -165,7 +165,7 @@ Commands use the following types:
 | ``user``<br>``users``<br>``u``<br>``usr`` | ``removeallroles``<br>``remallroles``<br>``rmallroles``<br>``-ra``<br>``-rall``<br>``-allr`` | Manage Roles | ``[user] User`` | Remove all roles for ``User``. | ``!user rmallroles @SomeUser`` |
 | ``user``<br>``users``<br>``u``<br>``usr`` | ``setname``<br>``nick``<br>``rename``<br>``name``<br>``newname`` | Manage Nicknames | ``[user] User``<br><br>``[text] New name`` | Change ``User``'s nickname to ``New name`` (for this server). | ``!user setname @SomeUser Some new name`` |
 | ``user``<br>``users``<br>``u``<br>``usr`` | ``unban``<br>``ub`` | Ban Members | ``[int] ID``<br><br>``(optional) [text] Reason`` | Unban user with given ID from the server. | ``!user unban 235088799074484224`` |
-| ``user``<br>``users``<br>``u``<br>``usr`` | ``warn``<br>``w`` | Kick Members | ``[user] User`` | Send a warning message to ``User``. | ``!user warn @Troublemaker`` |
+| ``user``<br>``users``<br>``u``<br>``usr`` | ``warn``<br>``w`` | Kick Members | ``[user] User``<br><br>``(optional) [text] Warning message`` | Send a warning message to ``User``. | ``!user warn @Troublemaker`` |
 |   |   |   |   |   |   |
 
 ## Gambling commands
@@ -197,7 +197,7 @@ Commands use the following types:
 | ``games``<br>``game``<br>``gm`` | ``duel``<br>``fight``<br>``vs`` |   | ``[user] Opponent`` | Call ``Opponent`` to a death battle! Type ``hp`` while the duel is on to drink a health potion. | ``!game duel @TheRock`` |
 | ``games``<br>``game``<br>``gm`` | ``hangman`` |   |   | Start a new hangman game! | ``!game hangman`` |
 | ``games``<br>``game``<br>``gm`` | ``rps``<br>``rockpaperscissors`` |   |   | Make Godfather play rock-paper-scissors! | ``!game rps`` |
-| ``games``<br>``game``<br>``gm`` | ``tictactoe``<br>``ttt`` |   |   | Challenge friends to a tictactoe game! First who replies with ``me`` or ``i`` will join your game. | ``!game ttt`` |
+| ``games``<br>``game``<br>``gm`` | ``tictactoe``<br>``ttt`` |   |   | Challenge friends to a tictactoe game! First who replies with ``me`` or ``i`` will join your game. Play by posting a number from 1 to 9 corresponding to field you wish to place your move on. | ``!game ttt`` |
 | ``games``<br>``game``<br>``gm`` | ``typing``<br>``type``<br>``typerace``<br>``typingrace`` |   |   | Start a typing race game. | ``!game typerace`` |
 | ``game nunchi`` |  |   |   | Start a signup process for a new nunchi game! | ``!game nunchi`` |
 | ``game nunchi`` | ``new``<br>``create`` |   |   | Identical result as to above command. | ``!game nunchi new`` |

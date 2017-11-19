@@ -32,6 +32,9 @@ namespace TheGodfather.Commands.Games
             if (u.Id == ctx.User.Id)
                 throw new CommandFailedException("You can't duel yourself...");
 
+            if (Duel.GameExistsInChannel(ctx.Channel.Id))
+                throw new CommandFailedException("A duel is already running in the current channel!");
+
             if (u.Id == ctx.Client.CurrentUser.Id) {
                 await ctx.RespondAsync(
                     $"{ctx.User.Mention} {string.Join("", Enumerable.Repeat(DiscordEmoji.FromName(ctx.Client, ":black_large_square:"), 5))} :crossed_swords: " +
@@ -41,58 +44,8 @@ namespace TheGodfather.Commands.Games
                 return;
             }
 
-
-            string[] weapons = { ":hammer:", ":dagger:", ":pick:", ":bomb:", ":guitar:", ":fire:" };
-
-            int hp1 = 5, hp2 = 5;
-            bool pot1used = false, pot2used = false;
-            var rnd = new Random();
-            string feed = "";
-
-            var hp1bar = string.Join("", Enumerable.Repeat(DiscordEmoji.FromName(ctx.Client, ":white_large_square:"), hp1)) + string.Join("", Enumerable.Repeat(DiscordEmoji.FromName(ctx.Client, ":black_large_square:"), 5 - hp1));
-            var hp2bar = string.Join("", Enumerable.Repeat(DiscordEmoji.FromName(ctx.Client, ":black_large_square:"), 5 - hp2)) + string.Join("", Enumerable.Repeat(DiscordEmoji.FromName(ctx.Client, ":white_large_square:"), hp2));
-            var m = await ctx.RespondAsync($"{ctx.User.Mention} {hp1bar} :crossed_swords: {hp2bar} {u.Mention}")
-                .ConfigureAwait(false);
-
-            while (hp1 > 0 && hp2 > 0) {
-                int damage = 1;
-                if (rnd.Next() % 2 == 0) {
-                    feed += $"\n{ctx.User.Mention} {weapons[rnd.Next(weapons.Length)]} {u.Mention}";
-                    hp2 -= damage;
-                } else {
-                    feed += $"\n{u.Mention} {weapons[rnd.Next(weapons.Length)]} {ctx.User.Mention}";
-                    hp1 -= damage;
-                }
-
-                var interactivity = ctx.Client.GetInteractivityModule();
-                var reply = await interactivity.WaitForMessageAsync(
-                    msg => msg.ChannelId == ctx.Channel.Id && msg.Content.ToLower() == "hp" && (msg.Author.Id == ctx.User.Id || msg.Author.Id == u.Id)
-                    , TimeSpan.FromSeconds(2)
-                ).ConfigureAwait(false);
-                if (reply != null) {
-                    if (reply.User.Id == ctx.User.Id && !pot1used) {
-                        hp1 = (hp1 + 1 > 5) ? 5 : hp1 + 1;
-                        pot1used = false;
-                        feed += $"\n{ctx.User.Mention} {DiscordEmoji.FromName(ctx.Client, ":syringe:")}";
-                    } else if (reply.User.Id == u.Id && !pot2used) {
-                        hp2 = (hp2 + 1 > 5) ? 5 : hp2 + 1;
-                        pot2used = false;
-                        feed += $"\n{u.Mention} {DiscordEmoji.FromName(ctx.Client, ":syringe:")}";
-                    }
-                }
-
-                hp1bar = string.Join("", Enumerable.Repeat(DiscordEmoji.FromName(ctx.Client, ":white_large_square:"), hp1)) + string.Join("", Enumerable.Repeat(DiscordEmoji.FromName(ctx.Client, ":black_large_square:"), 5 - hp1));
-                hp2bar = string.Join("", Enumerable.Repeat(DiscordEmoji.FromName(ctx.Client, ":black_large_square:"), 5 - hp2)) + string.Join("", Enumerable.Repeat(DiscordEmoji.FromName(ctx.Client, ":white_large_square:"), hp2));
-                m = await m.ModifyAsync($"{ctx.User.Mention} {hp1bar} :crossed_swords: {hp2bar} {u.Mention}" + feed)
-                    .ConfigureAwait(false);
-            }
-            if (hp1 <= 0) {
-                await ctx.RespondAsync($"{u.Mention} wins!")
-                    .ConfigureAwait(false);
-            } else {
-                await ctx.RespondAsync($"{ctx.User.Mention} wins!")
-                    .ConfigureAwait(false);
-            }
+            var duel = new Duel(ctx.Client, ctx.Channel.Id, ctx.User, u);
+            await duel.PlayAsync();
         }
         #endregion
 
@@ -101,14 +54,18 @@ namespace TheGodfather.Commands.Games
         [Description("Starts a hangman game.")]
         public async Task HangmanAsync(CommandContext ctx)
         {
+            if (Hangman.GameExistsInChannel(ctx.Channel.Id))
+                throw new CommandFailedException("Hangman game is already running in the current channel!");
+
             DiscordDmChannel dm;
             try {
                 dm = await ctx.Client.CreateDmAsync(ctx.User)
                     .ConfigureAwait(false);
                 await dm.SendMessageAsync("What is the secret word?")
                     .ConfigureAwait(false);
+                await ctx.RespondAsync(ctx.User.Mention + ", check your DM. When you give me the word, the game will start.");
             } catch {
-                throw new Exception("Please enable direct messages, so I can ask you about the word to guess.");
+                throw new CommandFailedException("Please enable direct messages, so I can ask you about the word to guess.");
             }
             var interactivity = ctx.Client.GetInteractivityModule();
             var msg = await interactivity.WaitForMessageAsync(
@@ -116,7 +73,7 @@ namespace TheGodfather.Commands.Games
                 TimeSpan.FromMinutes(1)
             ).ConfigureAwait(false);
             if (msg == null) {
-                await ctx.RespondAsync("Ok, nvm...")
+                await ctx.RespondAsync("I didn't get the word, so I will abort the game.")
                     .ConfigureAwait(false);
                 return;
             } else {
@@ -124,67 +81,10 @@ namespace TheGodfather.Commands.Games
                     .ConfigureAwait(false);
             }
 
-            int lives = 7;
-            string word = msg.Message.Content.ToLower();
-            char[] guess_str = word.Select(c => (c == ' ') ? ' ' : '?').ToArray();
-
-            await DrawHangmanAsync(ctx, guess_str, lives)
-                .ConfigureAwait(false);
-            while (lives > 0 && Array.IndexOf(guess_str, '?') != -1) {
-                var m = await interactivity.WaitForMessageAsync(
-                    xm => xm.Channel == ctx.Channel && !xm.Author.IsBot && xm.Content.Length == 1,
-                    TimeSpan.FromMinutes(1)
-                ).ConfigureAwait(false);
-                if (m == null) {
-                    await ctx.RespondAsync("Ok, nvm, aborting game...")
-                        .ConfigureAwait(false);
-                    return;
-                }
-
-                char guess_char = Char.ToLower(m.Message.Content[0]);
-                if (word.IndexOf(guess_char) != -1) {
-                    for (int i = 0; i < word.Length; i++)
-                        if (word[i] == guess_char)
-                            guess_str[i] = Char.ToUpper(word[i]);
-                } else {
-                    lives--;
-                }
-                await DrawHangmanAsync(ctx, guess_str, lives)
-                    .ConfigureAwait(false);
-            }
-            await ctx.RespondAsync("Game over! The word was : " + Formatter.Bold(word))
+            var hangman = new Hangman(ctx.Client, ctx.Channel.Id, msg.Message.Content);
+            await hangman.PlayAsync()
                 .ConfigureAwait(false);
         }
-
-        #region HELPER_FUNCTIONS
-        private async Task DrawHangmanAsync(CommandContext ctx, char[] word, int lives)
-        {
-            string s = "\n-|-\n";
-            if (lives < 7) {
-                s += " O\n";
-                if (lives < 6) {
-                    s += "/";
-                    if (lives < 5) {
-                        s += "|";
-                        if (lives < 4) {
-                            s += "\\\n";
-                            if (lives < 3) {
-                                s += "/";
-                                if (lives < 2) {
-                                    s += "|";
-                                    if (lives < 1) {
-                                        s += "\\\n";
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            await ctx.RespondAsync("WORD: " + new string(word) + s);
-        }
-        #endregion
         #endregion
 
         #region COMMAND_GAMES_RPS
@@ -223,10 +123,13 @@ namespace TheGodfather.Commands.Games
 
         #region COMMAND_GAMES_TICTACTOE
         [Command("tictactoe")]
-        [Description("Starts a game of tic-tac-toe.")]
+        [Description("Starts a game of tic-tac-toe. Play by posting a number from 1 to 9 corresponding to field you wish to place your move on.")]
         [Aliases("ttt")]
         public async Task TicTacToeAsync(CommandContext ctx)
         {
+            if (TicTacToe.GameExistsInChannel(ctx.Channel.Id))
+                throw new CommandFailedException("TicTacToe game is already running in the current channel!");
+
             await ctx.RespondAsync($"Who wants to play tic-tac-toe with {ctx.User.Username}?")
                 .ConfigureAwait(false);
 
@@ -241,99 +144,13 @@ namespace TheGodfather.Commands.Games
                 return;
             }
 
-            var m = await ctx.RespondAsync($"Game between {ctx.User.Mention} and {msg.User.Mention} begins!")
+            var ttt = new TicTacToe(ctx.Client, ctx.Channel.Id, ctx.User.Id, msg.User.Id);
+            await ttt.PlayAsync()
                 .ConfigureAwait(false);
 
-            int[,] board = new int[3, 3];
-            TTTInitializeBoard(board);
-
-            bool player1plays = true;
-            int moves = 0;
-            while (moves < 9 && !TTTGameOver(board)) {
-                int field = 0;
-                var t = await interactivity.WaitForMessageAsync(
-                    xm => {
-                        if (xm.Channel.Id != ctx.Channel.Id) return false;
-                        if (player1plays && (xm.Author.Id != ctx.User.Id)) return false;
-                        if (!player1plays && (xm.Author.Id != msg.User.Id)) return false;
-                        try {
-                            field = int.Parse(xm.Content);
-                            if (field < 1 || field > 10)
-                                return false;
-                        } catch {
-                            return false;
-                        }
-                        return true;
-                    },
-                    TimeSpan.FromMinutes(1)
-                ).ConfigureAwait(false);
-                if (field == 0) {
-                    await ctx.RespondAsync("No reply, aborting...");
-                    return;
-                }
-
-                if (TTTPlaySuccessful(player1plays ? 1 : 2, board, field)) {
-                    player1plays = !player1plays;
-                    await TTTPrintBoard(ctx, board, m)
-                        .ConfigureAwait(false);
-                } else {
-                    await ctx.RespondAsync("Invalid move.")
-                        .ConfigureAwait(false);
-                }
-                moves++;
-            }
-
-            await ctx.RespondAsync("GG")
+            await ctx.RespondAsync("ggwp")
                 .ConfigureAwait(false);
         }
-
-        #region HELPER_FUNCTIONS
-        private bool TTTGameOver(int[,] board)
-        {
-            for (int i = 0; i < 3; i++) {
-                if (board[i, 0] != 0 && board[i, 0] == board[i, 1] && board[i, 1] == board[i, 2])
-                    return true;
-                if (board[0, i] != 0 && board[0, i] == board[1, i] && board[1, i] == board[2, i])
-                    return true;
-            }
-            if (board[0, 0] != 0 && board[0, 0] == board[1, 1] && board[1, 1] == board[2, 2])
-                return true;
-            if (board[0, 2] != 0 && board[0, 2] == board[1, 1] && board[1, 1] == board[2, 0])
-                return true;
-            return false;
-        }
-
-        private void TTTInitializeBoard(int[,] board)
-        {
-            for (int i = 0; i < 3; i++)
-                for (int j = 0; j < 3; j++)
-                    board[i, j] = 0;
-        }
-
-        private bool TTTPlaySuccessful(int v, int[,] board, int index)
-        {
-            index--;
-            if (board[index / 3, index % 3] != 0)
-                return false;
-            board[index / 3, index % 3] = v;
-            return true;
-        }
-
-        private async Task TTTPrintBoard(CommandContext ctx, int[,] board, DiscordMessage m)
-        {
-            string s = "";
-            for (int i = 0; i < 3; i++) {
-                for (int j = 0; j < 3; j++)
-                    switch (board[i, j]) {
-                        case 0: s += $"{DiscordEmoji.FromName(ctx.Client, ":white_medium_square:")}"; break;
-                        case 1: s += $"{DiscordEmoji.FromName(ctx.Client, ":x:")}"; break;
-                        case 2: s += $"{DiscordEmoji.FromName(ctx.Client, ":o:")}"; break;
-                    }
-                s += '\n';
-            }
-            await m.ModifyAsync(embed: new DiscordEmbedBuilder() { Description = s });
-        }
-        #endregion
 
         #endregion
 
