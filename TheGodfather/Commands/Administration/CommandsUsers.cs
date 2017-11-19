@@ -419,16 +419,24 @@ namespace TheGodfather.Commands.Administration
         [Aliases("w")]
         [RequirePermissions(Permissions.KickMembers)]
         public async Task WarnAsync(CommandContext ctx,
-                                   [Description("User.")] DiscordMember u)
+                                   [Description("User.")] DiscordMember u,
+                                   [RemainingText, Description("Message.")] string msg = null)
         {
             if (u == null)
                 throw new InvalidCommandUsageException("User missing.");
 
-            await u.SendMessageAsync(embed: new DiscordEmbedBuilder() {
+            var em = new DiscordEmbedBuilder() {
                 Title = "Warning received!",
                 Description = $"Guild {Formatter.Bold(ctx.Guild.Name)} issued a warning to you through me.",
-                Color = DiscordColor.Red
-            }.Build()).ConfigureAwait(false);
+                Color = DiscordColor.Red,
+                Timestamp = DateTime.Now
+            };
+            
+            if (!string.IsNullOrWhiteSpace(msg))
+                em.AddField("Warning message", msg);
+
+            await u.SendMessageAsync(embed: em.Build())
+                .ConfigureAwait(false);
             await ctx.RespondAsync($"Successfully warned {Formatter.Bold(u.Username)}.")
                 .ConfigureAwait(false);
         }
