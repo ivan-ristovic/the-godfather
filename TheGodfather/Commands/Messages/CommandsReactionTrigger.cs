@@ -94,7 +94,7 @@ namespace TheGodfather.Commands.Messages
             string desc = "";
             int starti = (page - 1) * 10;
             int endi = starti + 10 < reactions.Count ? starti + 10 : reactions.Count;
-            var keys = reactions.Keys.Take(page * 10).OrderBy(k => k).ToArray();
+            var keys = reactions.Keys.OrderBy(k => k).Take(page * 10).ToArray();
             for (var i = starti; i < endi; i++)
                 desc += $"{Formatter.Bold(keys[i])} : {reactions[keys[i]]}\n";
 
