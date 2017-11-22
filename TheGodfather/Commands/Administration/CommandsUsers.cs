@@ -431,7 +431,7 @@ namespace TheGodfather.Commands.Administration
                 Color = DiscordColor.Red,
                 Timestamp = DateTime.Now
             };
-            
+
             if (!string.IsNullOrWhiteSpace(msg))
                 em.AddField("Warning message", msg);
 
