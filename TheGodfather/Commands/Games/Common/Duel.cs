@@ -62,8 +62,18 @@ namespace TheGodfather.Commands.Games
             _msg = await chn.SendMessageAsync($"{_p1.Mention} {_hp1bar} :crossed_swords: {_hp2bar} {_p2.Mention}")
                 .ConfigureAwait(false);
 
-            while (_hp1 > 0 && _hp2 > 0)
-                await AdvanceAsync().ConfigureAwait(false);
+            while (_hp1 > 0 && _hp2 > 0) {
+                await AdvanceAsync()
+                    .ConfigureAwait(false);
+            }
+
+            await chn.SendMessageAsync("FINISH HIM!")
+                .ConfigureAwait(false);
+            var finishingMove = await CheckForFinishingMoveAsync()
+                .ConfigureAwait(false);
+            if (finishingMove != null)
+                await chn.SendMessageAsync($"{(_hp1 != 0 ? _p1.Username : _p2.Username)} {finishingMove}!")
+                    .ConfigureAwait(false);
 
             if (_hp1 <= 0) {
                 await chn.SendMessageAsync($"{_p2.Mention} wins!")
@@ -85,7 +95,7 @@ namespace TheGodfather.Commands.Games
 
             UpdateHpBars();
 
-            _msg = await _msg.ModifyAsync($"{_p1.Username} {_hp1bar} :crossed_swords: {_hp2bar} {_p2.Username}" + _events)
+            _msg = await _msg.ModifyAsync($"{_p1.Mention} {_hp1bar} :crossed_swords: {_hp2bar} {_p2.Mention}" + _events)
                 .ConfigureAwait(false);
         }
 
@@ -99,10 +109,10 @@ namespace TheGodfather.Commands.Games
         {
             int damage = 1;
             if (_rand.Next() % 2 == 0) {
-                _events += $"\n{_p1.Mention} {weapons[_rand.Next(weapons.Length)]} {_p2.Mention}";
+                _events += $"\n{_p1.Username} {weapons[_rand.Next(weapons.Length)]} {_p2.Username}";
                 _hp2 -= damage;
             } else {
-                _events += $"\n{_p2.Mention} {weapons[_rand.Next(weapons.Length)]} {_p1.Mention}";
+                _events += $"\n{_p2.Username} {weapons[_rand.Next(weapons.Length)]} {_p1.Username}";
                 _hp1 -= damage;
             }
         }
@@ -127,6 +137,21 @@ namespace TheGodfather.Commands.Games
                     _events += $"\n{_p2.Mention} {DiscordEmoji.FromName(_client, ":syringe:")}";
                 }
             }
+        }
+
+        private async Task<string> CheckForFinishingMoveAsync()
+        {
+            var interactivity = _client.GetInteractivityModule();
+            var reply = await interactivity.WaitForMessageAsync(
+                msg =>
+                    msg.ChannelId == _cid && msg.Author.Id == (_hp1 != 0 ? _p1.Id : _p2.Id)
+                , TimeSpan.FromSeconds(20)
+            ).ConfigureAwait(false);
+
+            if (reply != null && !string.IsNullOrWhiteSpace(reply.Message?.Content))
+                return reply.Message.Content;
+            else
+                return null;
         }
     }
 }
