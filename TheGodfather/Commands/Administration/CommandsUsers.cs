@@ -419,7 +419,7 @@ namespace TheGodfather.Commands.Administration
         [Aliases("w")]
         [RequirePermissions(Permissions.KickMembers)]
         public async Task WarnAsync(CommandContext ctx,
-                                   [Description("User.")] DiscordMember u,
+                                   [Description("User.")] DiscordUser u,
                                    [RemainingText, Description("Message.")] string msg = null)
         {
             if (u == null)
@@ -431,11 +431,13 @@ namespace TheGodfather.Commands.Administration
                 Color = DiscordColor.Red,
                 Timestamp = DateTime.Now
             };
-            
+
             if (!string.IsNullOrWhiteSpace(msg))
                 em.AddField("Warning message", msg);
 
-            await u.SendMessageAsync(embed: em.Build())
+            var dm = await ctx.Client.CreateDmAsync(u)
+                .ConfigureAwait(false);
+            await dm.SendMessageAsync(embed: em.Build())
                 .ConfigureAwait(false);
             await ctx.RespondAsync($"Successfully warned {Formatter.Bold(u.Username)}.")
                 .ConfigureAwait(false);

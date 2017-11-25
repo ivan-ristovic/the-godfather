@@ -206,7 +206,7 @@ namespace TheGodfather.Commands.Main
             string desc = "";
             int starti = (page - 1) * 10;
             int endi = starti + 10 < memes.Count ? starti + 10 : memes.Count;
-            var keys = memes.Keys.Take(page * 10).ToArray();
+            var keys = memes.Keys.OrderBy(k => k).Take(page * 10).ToArray();
             for (var i = starti; i < endi; i++)
                 desc += $"{Formatter.Bold(keys[i])} : {memes[keys[i]]}\n";
 

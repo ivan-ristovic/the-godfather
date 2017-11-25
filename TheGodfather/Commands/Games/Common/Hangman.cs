@@ -41,7 +41,7 @@ namespace TheGodfather.Commands.Games
             _client = client;
             _cid = cid;
             _word = word.ToLower();
-            _hidden = word.Select(c => (c == ' ') ? ' ' : '?').ToArray();
+            _hidden = word.Select(c => (c == ' ') ? '.' : '?').ToArray();
         }
 
 

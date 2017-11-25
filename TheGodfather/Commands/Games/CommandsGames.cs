@@ -41,6 +41,8 @@ namespace TheGodfather.Commands.Games
                     $"{string.Join("", Enumerable.Repeat(DiscordEmoji.FromName(ctx.Client, ":white_large_square:"), 5))} {u.Mention}" +
                     $"\n{ctx.Client.CurrentUser.Mention} {DiscordEmoji.FromName(ctx.Client, ":zap:")} {ctx.User.Mention}"
                 ).ConfigureAwait(false);
+                await ctx.RespondAsync($"{ctx.Client.CurrentUser.Mention} wins!")
+                    .ConfigureAwait(false);
                 return;
             }
 
