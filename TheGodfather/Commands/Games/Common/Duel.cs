@@ -57,7 +57,8 @@ namespace TheGodfather.Commands.Games
         {
             UpdateHpBars();
 
-            var chn = await _client.GetChannelAsync(_cid);
+            var chn = await _client.GetChannelAsync(_cid)
+                .ConfigureAwait(false);
             _msg = await chn.SendMessageAsync($"{_p1.Mention} {_hp1bar} :crossed_swords: {_hp2bar} {_p2.Mention}")
                 .ConfigureAwait(false);
 
@@ -84,7 +85,7 @@ namespace TheGodfather.Commands.Games
 
             UpdateHpBars();
 
-            _msg = await _msg.ModifyAsync($"{_p1.Mention} {_hp1bar} :crossed_swords: {_hp2bar} {_p2.Mention}" + _events)
+            _msg = await _msg.ModifyAsync($"{_p1.Username} {_hp1bar} :crossed_swords: {_hp2bar} {_p2.Username}" + _events)
                 .ConfigureAwait(false);
         }
 
