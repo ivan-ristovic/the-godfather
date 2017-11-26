@@ -117,12 +117,9 @@ namespace TheGodfather.Commands.Administration
                 throw new InvalidCommandUsageException("Code missing.");
 
             var cs1 = code.IndexOf("```") + 3;
-            cs1 = code.IndexOf('\n', cs1) + 1;
             var cs2 = code.LastIndexOf("```");
-
             if (cs1 == -1 || cs2 == -1)
                 throw new InvalidCommandUsageException("You need to wrap the code into a code block.");
-
             code = code.Substring(cs1, cs2 - cs1);
 
             var embed = new DiscordEmbedBuilder {
