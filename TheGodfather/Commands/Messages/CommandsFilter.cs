@@ -84,20 +84,20 @@ namespace TheGodfather.Commands.Messages
                 return;
             }
 
-            if (page < 1 || page > filters.Count / 10 + 1)
+            if (page < 1 || page > filters.Count / 20 + 1)
                 throw new CommandFailedException("No filters on that page.");
 
             string desc = "";
-            int starti = (page - 1) * 10;
-            int endi = starti + 10 < filters.Count ? starti + 10 : filters.Count;
-            var pagefilters = filters.Take(page * 10).ToArray();
+            int starti = (page - 1) * 20;
+            int endi = starti + 10 < filters.Count ? starti + 20 : filters.Count;
+            var pagefilters = filters.Take(page * 20).ToArray();
             for (var i = starti; i < endi; i++) {
                 var filter = pagefilters[i].ToString();
                 desc += $"{Formatter.Bold(i.ToString())} : {filter.Substring(1, filter.Length - 2)}\n";
             }
 
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
-                Title = $"Available filters (page {page}/{filters.Count / 10 + 1}) :",
+                Title = $"Available filters (page {page}/{filters.Count / 20 + 1}) :",
                 Description = desc,
                 Color = DiscordColor.Green
             }.Build()).ConfigureAwait(false);

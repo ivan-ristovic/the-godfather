@@ -66,6 +66,9 @@ namespace TheGodfather.Commands.Main
             if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(url))
                 throw new InvalidCommandUsageException("Name or URL missing or invalid.");
 
+            if (name.Length + url.Length > 90)
+                throw new CommandFailedException("Name in combination with URL is too long. Please consider shortening.");
+
             if (ctx.Dependencies.GetDependency<MemeManager>().TryAdd(name, url))
                 await ctx.RespondAsync($"Meme {Formatter.Bold(name)} successfully added!").ConfigureAwait(false);
             else
@@ -204,14 +207,14 @@ namespace TheGodfather.Commands.Main
                 throw new CommandFailedException("No memes on that page.", new ArgumentOutOfRangeException());
 
             string desc = "";
-            int starti = (page - 1) * 10;
-            int endi = starti + 10 < memes.Count ? starti + 10 : memes.Count;
-            var keys = memes.Keys.OrderBy(k => k).Take(page * 10).ToArray();
+            int starti = (page - 1) * 20;
+            int endi = starti + 20 < memes.Count ? starti + 20 : memes.Count;
+            var keys = memes.Keys.OrderBy(k => k).Take(page * 20).ToArray();
             for (var i = starti; i < endi; i++)
                 desc += $"{Formatter.Bold(keys[i])} : {memes[keys[i]]}\n";
 
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
-                Title = $"Available memes (page {page}/{memes.Count / 10 + 1}) :",
+                Title = $"Available memes (page {page}/{memes.Count / 20 + 1}) :",
                 Description = desc,
                 Color = DiscordColor.Green
             }.Build()).ConfigureAwait(false);

@@ -57,8 +57,8 @@ namespace TheGodfather.Commands.Main
             if (string.IsNullOrWhiteSpace(insult))
                 throw new InvalidCommandUsageException("Missing insult string.");
 
-            if (insult.Length >= 200)
-                throw new CommandFailedException("Too long insult. I know it is hard, but keep it shorter than 200 please.");
+            if (insult.Length >= 190)
+                throw new CommandFailedException("Too long insult. I know it is hard, but keep it shorter than 190 characters please.");
 
             if (insult.Split(new string[] { "%user%" }, StringSplitOptions.None).Count() < 2)
                 throw new InvalidCommandUsageException($"Insult not in correct format (missing {Formatter.Bold("%user%")})!");

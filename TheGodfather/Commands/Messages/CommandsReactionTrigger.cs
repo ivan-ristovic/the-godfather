@@ -14,6 +14,7 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using DSharpPlus.Exceptions;
 #endregion
 
 namespace TheGodfather.Commands.Messages
@@ -88,18 +89,25 @@ namespace TheGodfather.Commands.Messages
                 return;
             }
 
-            if (page < 1 || page > reactions.Count / 10 + 1)
-                throw new CommandFailedException("No reactions on that page.");
-
             string desc = "";
+            var values = reactions.Values.Distinct().OrderBy(k => k).Take(page * 10).ToArray();
+
+            if (page < 1 || page > values.Length / 10 + 1)
+                throw new CommandFailedException("No reactions on that page.");
+            
             int starti = (page - 1) * 10;
-            int endi = starti + 10 < reactions.Count ? starti + 10 : reactions.Count;
-            var keys = reactions.Keys.OrderBy(k => k).Take(page * 10).ToArray();
-            for (var i = starti; i < endi; i++)
-                desc += $"{Formatter.Bold(keys[i])} : {reactions[keys[i]]}\n";
+            int endi = starti + 10 < values.Length ? starti + 10 : values.Length;
+            for (var i = starti; i < endi; i++) {
+                try {
+                    desc += $"{DiscordEmoji.FromName(ctx.Client, values[i])} => {string.Join(", ", reactions.Where(kvp => kvp.Value == values[i]).Select(kvp => kvp.Key))}\n";
+                } catch (ArgumentException) {
+                    await ctx.RespondAsync("Found non-existing guild emoji: " + values[i])
+                        .ConfigureAwait(false);
+                }
+            }
 
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
-                Title = $"Available reactions (page {page}/{reactions.Count / 10 + 1}) :",
+                Title = $"Available reactions (page {page}/{values.Length / 10 + 1}) :",
                 Description = desc,
                 Color = DiscordColor.Yellow
             }.Build()).ConfigureAwait(false);

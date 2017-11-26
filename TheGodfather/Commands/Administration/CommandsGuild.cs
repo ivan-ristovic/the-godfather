@@ -400,9 +400,7 @@ namespace TheGodfather.Commands.Administration
                         Description = emoji,
                         Color = DiscordColor.CornflowerBlue
                     }.AddField("Name", emoji.Name, inline: false)
-                     .AddField("Creation time", emoji.CreationTimestamp.ToUniversalTime().ToString(), inline: false)
                      .AddField("Created by", emoji.User != null ? emoji.User.Username : "<unknown>", inline: false)
-                     .AddField("ID", emoji.Id.ToString(), inline: false)
                      .AddField("Integration managed", emoji.Managed.ToString(), inline: false)
                     ).ConfigureAwait(false);
                 } catch (NotFoundException ex) {
