@@ -310,10 +310,9 @@ namespace TheGodfather.Commands.Administration
         [Aliases("emojis", "e")]
         public class CommandsGuildEmoji
         {
-            public async Task ExecuteGroupAsync(CommandContext ctx,
-                                               [Description("Page.")] int page = 1)
+            public async Task ExecuteGroupAsync(CommandContext ctx)
             {
-                await ListEmojiAsync(ctx, page);
+                await ListEmojiAsync(ctx);
             }
 
 
@@ -387,22 +386,14 @@ namespace TheGodfather.Commands.Administration
             [Command("list")]
             [Description("Print list of guild emojis.")]
             [Aliases("print", "show", "l", "p")]
-            public async Task ListEmojiAsync(CommandContext ctx,
-                                            [Description("Page.")] int page = 1)
+            public async Task ListEmojiAsync(CommandContext ctx)
             {
-                var emojis = ctx.Guild.Emojis.OrderBy(e => e.Name).ToArray();
-
-                if (page < 1 || page > emojis.Length / 10 + 1)
-                    throw new CommandFailedException("No memes on that page.", new ArgumentOutOfRangeException());
-
-                string desc = "";
-                int starti = (page - 1) * 10;
-                int endi = starti + 10 < emojis.Length ? starti + 10 : emojis.Length;
-                for (var i = starti; i < endi; i++)
-                    desc += $"{Formatter.Bold(emojis[i].Name)} : {emojis[i]}\n";
+                var desc = string.Join(" ", ctx.Guild.Emojis);
+                if (desc.Length > 2000)
+                    desc = desc.Substring(0, desc.LastIndexOf(" ", 2000)) + " ...";
 
                 await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
-                    Title = $"Available emojis (page {page}/{emojis.Length / 10 + 1}) :",
+                    Title = "Guild specific emojis:",
                     Description = desc,
                     Color = DiscordColor.CornflowerBlue
                 }.Build()).ConfigureAwait(false);
