@@ -62,6 +62,12 @@ namespace TheGodfather.Commands.Main
             if (u == null)
                 throw new InvalidCommandUsageException("You didn't give me anyone to measure.");
 
+            if (u.Id == ctx.Client.CurrentUser.Id) {
+                await ctx.RespondAsync($"Size: {Formatter.Bold("8==============================================================")}\n{Formatter.Italic("(Please plug in a second monitor)")}")
+                    .ConfigureAwait(false);
+                return;
+            }
+
             await ctx.RespondAsync("Size: " + Formatter.Bold("8" + new string('=', (int)(u.Id % 40)) + 'D'))
                 .ConfigureAwait(false);
         }
