@@ -47,7 +47,8 @@ namespace TheGodfather.Commands.Games
             }
 
             var duel = new Duel(ctx.Client, ctx.Channel.Id, ctx.User, u);
-            await duel.PlayAsync();
+            await duel.PlayAsync()
+                .ConfigureAwait(false);
         }
         #endregion
 

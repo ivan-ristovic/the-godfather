@@ -59,7 +59,9 @@ namespace TheGodfather.Commands.Games
 
             var chn = await _client.GetChannelAsync(_cid)
                 .ConfigureAwait(false);
-            _msg = await chn.SendMessageAsync($"{_p1.Mention} {_hp1bar} :crossed_swords: {_hp2bar} {_p2.Mention}")
+
+            var e = DiscordEmoji.FromName(_client, ":crossed_swords:");
+            _msg = await chn.SendMessageAsync($"{_p1.Mention} {_hp1bar} {e} {_hp2bar} {_p2.Mention}")
                 .ConfigureAwait(false);
 
             while (_hp1 > 0 && _hp2 > 0) {
@@ -67,19 +69,19 @@ namespace TheGodfather.Commands.Games
                     .ConfigureAwait(false);
             }
 
-            await chn.SendMessageAsync("FINISH HIM!")
+            await chn.SendMessageAsync(e + " FINISH HIM! ")
                 .ConfigureAwait(false);
             var finishingMove = await CheckForFinishingMoveAsync()
                 .ConfigureAwait(false);
             if (finishingMove != null)
-                await chn.SendMessageAsync($"{(_hp1 != 0 ? _p1.Username : _p2.Username)} {finishingMove}!")
+                await chn.SendMessageAsync($"{e} {(_hp1 != 0 ? _p1.Mention : _p2.Mention)} {finishingMove}!")
                     .ConfigureAwait(false);
 
             if (_hp1 <= 0) {
-                await chn.SendMessageAsync($"{_p2.Mention} wins!")
+                await chn.SendMessageAsync($"{e} {_p2.Mention} wins!")
                     .ConfigureAwait(false);
             } else {
-                await chn.SendMessageAsync($"{_p1.Mention} wins!")
+                await chn.SendMessageAsync($"{e} {_p1.Mention} wins!")
                     .ConfigureAwait(false);
             }
 
