@@ -108,7 +108,7 @@ namespace TheGodfather.Commands.Administration
         // Code created by Emzi
         [Command("eval")]
         [Description("Evaluates a snippet of C# code, in context.")]
-        [Aliases("compile", "run")]
+        [Aliases("compile", "run", "e", "c", "r")]
         [PreExecutionCheck]
         public async Task EvaluateAsync(CommandContext ctx,
                                        [RemainingText, Description("Code to evaluate.")] string code)

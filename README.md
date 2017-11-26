@@ -291,7 +291,7 @@ Commands use the following types:
 | ``owner``<br>``o``<br>``admin`` | ``botavatar``<br>``setbotavatar``<br>``setavatar`` | Owner Only | ``[string] URL`` | Set Godfather's avatar. | ``!owner setavatar http://someimage.png`` |
 | ``owner``<br>``o``<br>``admin`` | ``botname``<br>``setbotname``<br>``setname`` | Owner Only | ``[text] Name`` | Set Godfather's name. | ``!owner setname Vito Corleone`` |
 | ``owner``<br>``o``<br>``admin`` | ``clearlog``<br>``clearlogs``<br>``deletelog``<br>``deletelogs`` | Owner Only |   | Clear all application logs. | ``!owner clearlog`` |
-| ``owner``<br>``o``<br>``admin`` | ``eval``<br>``compile``<br>``run`` | Owner Only | ``[text] Code (surrounded in code block)`` | Compile and run given code, in context. | ``!owner eval ```return 42;``` `` |
+| ``owner``<br>``o``<br>``admin`` | ``eval``<br>``compile``<br>``run``<br>``e``<br>``c``<br>``r`` | Owner Only | ``[text] Code (surrounded in code block)`` | Compile and run given code, in context. | ``!owner eval ```return 42;``` `` |
 | ``owner``<br>``o``<br>``admin`` | ``leaveguilds`` | Owner Only | ``[int] Guild IDs (separated by comma, if there are more)`` | Make Godfather leave guilds with given IDs. | ``!owner leaveguils 555555555555 1111111111111`` |
 | ``owner``<br>``o``<br>``admin`` | ``sendmessage``<br>``send`` | Owner Only | ``[char] u/c (User or Channel)``<br><br>``[int] ID``<br><br>``[text] Message`` | Send a message to user or channel through the bot. | ``!owner send c 55555555555 Say hi to channel``<br><br>``!owner send u 55555555555 Say hi to user in DM`` |
 | ``owner``<br>``o``<br>``admin`` | ``shutdown``<br>``disable``<br>``poweroff``<br>``exit``<br>``quit`` | Owner Only |   | Shutdown Godfather. | ``!owner shutdown`` |
