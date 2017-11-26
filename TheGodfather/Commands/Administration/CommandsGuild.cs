@@ -384,8 +384,8 @@ namespace TheGodfather.Commands.Administration
 
             #region COMMAND_GUILD_EMOJI_DETAILS
             [Command("details")]
-            [Description("TODO.")]
-            
+            [Description("Get details for guild emoji.")]
+            [Aliases("det")]
             public async Task EmojiDetailsAsync(CommandContext ctx,
                                                [Description("Emoji.")] DiscordEmoji e)
             {

@@ -129,6 +129,7 @@ Commands use the following types:
 | ``g emoji``<br>``g emojis``<br>``g e`` |  |  |  | List guild emoji. | ``!guild emoji`` |
 | ``g emoji``<br>``g emojis``<br>``g e`` | ``add``<br>``+``<br>``a``<br>``create`` | Manage emojis | ``[string] Name``<br><br>``[string] URL`` | Add a new guild emoji from URL. | ``!guild emoji add http://blabla.com/someemoji.img`` |
 | ``g emoji``<br>``g emojis``<br>``g e`` | ``delete``<br>``-``<br>``del``<br>``d``<br>``remove`` | Manage emojis | ``[emoji] Emoji`` | Remove emoji from guild emoji list.<br>*Note: Bots can only remove emoji which they created!* | ``!guild emoji del :pepe:`` |
+| ``g emoji``<br>``g emojis``<br>``g e`` | ``details``<br>``det`` |  | ``[emoji] Emoji`` | Get details for guild emoji. | ``!guild emoji details :pepe:`` |
 | ``g emoji``<br>``g emojis``<br>``g e`` | ``list``<br>``print``<br>``show``<br>``print``<br>``l``<br>``p`` |  |  | List guild emoji. | ``!guild emoji list`` |
 | ``g emoji``<br>``g emojis``<br>``g e`` | ``modify``<br>``edit``<br>``mod``<br>``e``<br>``m`` | Manage emojis | ``[emoji] Emoji``<br>``[string] New name`` | Modify guild emoji. | ``!guild emoji edit :pepe: pepenewname`` |
 |   |   |   |   |   |   |   |
