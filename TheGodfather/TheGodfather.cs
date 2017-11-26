@@ -316,10 +316,8 @@ namespace TheGodfather
             }
 
             // Since below actions require SendMessages permission, checking it now
-            if (!e.Channel.PermissionsFor(e.Guild.CurrentMember).HasFlag(Permissions.SendMessages)) {
-                await e.Guild.Owner.SendMessageAsync($"I do not have permissions to send messages in channel belonging to your guild {e.Guild.Name}: {e.Channel.Name}! All commands will be blocked until I receive permissions to send messages.");
+            if (!e.Channel.PermissionsFor(e.Guild.CurrentMember).HasFlag(Permissions.SendMessages))
                 return;
-            }
 
             // Update message count for the user that sent the message
             int rank = _dependecies.RankControl.UpdateMessageCount(e.Author.Id);
@@ -340,10 +338,8 @@ namespace TheGodfather
                 await e.Channel.SendMessageAsync(response.Replace("%user%", e.Author.Mention));
             }
 
-            if (!e.Channel.PermissionsFor(e.Guild.CurrentMember).HasFlag(Permissions.AddReactions)) {
-                await e.Guild.Owner.SendMessageAsync($"I do not have permissions to react to messages in channel belonging to your guild {e.Guild.Name}: {e.Channel.Name}! Please give me permissions so I can use custom reactions.");
+            if (!e.Channel.PermissionsFor(e.Guild.CurrentMember).HasFlag(Permissions.AddReactions))
                 return;
-            }
 
             // Check if message has a reaction trigger
             var emojilist = _dependecies.GuildConfigControl.GetReactionEmojis(_client, e.Guild.Id, e.Message.Content);
