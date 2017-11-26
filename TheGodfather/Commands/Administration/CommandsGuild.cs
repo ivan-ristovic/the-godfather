@@ -382,6 +382,35 @@ namespace TheGodfather.Commands.Administration
             }
             #endregion
 
+            #region COMMAND_GUILD_EMOJI_DETAILS
+            [Command("details")]
+            [Description("TODO.")]
+            
+            public async Task EmojiDetailsAsync(CommandContext ctx,
+                                               [Description("Emoji.")] DiscordEmoji e)
+            {
+                if (e == null)
+                    throw new InvalidCommandUsageException("Emoji missing.");
+
+                try {
+                    var emoji = await ctx.Guild.GetEmojiAsync(e.Id)
+                        .ConfigureAwait(false);
+                    await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
+                        Title = "Details for emoji:",
+                        Description = emoji,
+                        Color = DiscordColor.CornflowerBlue
+                    }.AddField("Name", emoji.Name, inline: false)
+                     .AddField("Creation time", emoji.CreationTimestamp.ToUniversalTime().ToString(), inline: false)
+                     .AddField("Created by", emoji.User != null ? emoji.User.Username : "<unknown>", inline: false)
+                     .AddField("ID", emoji.Id.ToString(), inline: false)
+                     .AddField("Integration managed", emoji.Managed.ToString(), inline: false)
+                    ).ConfigureAwait(false);
+                } catch (NotFoundException ex) {
+                    throw new CommandFailedException("Can't find that emoji in list of emoji for this guild.", ex);
+                }
+            }
+            #endregion
+
             #region COMMAND_GUILD_EMOJI_LIST
             [Command("list")]
             [Description("Print list of guild emojis.")]
