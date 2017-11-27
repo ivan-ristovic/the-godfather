@@ -91,7 +91,6 @@ namespace TheGodfather.Helpers.DataManagers
 
         public DiscordEmbed GetEmbeddedStatsForUser(DiscordUser u)
         {
-
             var em = new DiscordEmbedBuilder() {
                 Title = $"Stats for {u.Username}",
                 Color = DiscordColor.Chartreuse
@@ -103,6 +102,26 @@ namespace TheGodfather.Helpers.DataManagers
             }
 
             em.AddField($"Duel stats", $"Won: {_stats[u.Id].DuelsWon}, Lost: {_stats[u.Id].DuelsLost}, Percentage: {Math.Round((double)_stats[u.Id].DuelsWon / (_stats[u.Id].DuelsWon + _stats[u.Id].DuelsLost) * 100)}%");
+
+            return em.Build();
+        }
+
+        public async Task<DiscordEmbed> GetLeaderboardAsync(DiscordClient client)
+        {
+            var em = new DiscordEmbedBuilder() {
+                Title = "Game leaderboard",
+                Color = DiscordColor.Chartreuse
+            };
+
+            string desc;
+
+            var topDuelists = _stats.OrderBy(kvp => kvp.Value.DuelsWon).Select(kvp => kvp.Key).Take(5);
+            desc = "";
+            foreach (var uid in topDuelists) {
+                var u = await client.GetUserAsync(uid); // catch if user no longer exists
+                desc += $"{Formatter.Bold(u.Username)} => Won: {_stats[uid].DuelsWon}; Lost: {_stats[uid].DuelsLost}\n"; 
+            }
+            em.AddField("Top 5 in Duel game:", desc);
 
             return em.Build();
         }

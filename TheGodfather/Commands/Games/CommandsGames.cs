@@ -105,6 +105,19 @@ namespace TheGodfather.Commands.Games
         }
         #endregion
 
+        #region COMMAND_GAMES_LEADERBOARD
+        [Command("leaderboard")]
+        [Description("Starts a hangman game.")]
+        [Aliases("globalstats")]
+        public async Task LeaderboardAsync(CommandContext ctx)
+        {
+            var em = await ctx.Dependencies.GetDependency<GameStatsManager>().GetLeaderboardAsync(ctx.Client)
+                .ConfigureAwait(false);
+            await ctx.RespondAsync(embed: em)
+                .ConfigureAwait(false);
+        }
+        #endregion
+
         #region COMMAND_GAMES_RPS
         [Command("rps")]
         [Description("Rock, paper, scissors game.")]
