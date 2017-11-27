@@ -29,12 +29,13 @@ namespace TheGodfather.Helpers
         internal RankManager        RankControl         { get; private set; }
         internal StatusManager      StatusControl       { get; private set; }
         internal SwatServerManager  SwatServerControl   { get; private set; }
+        internal GameStatsManager   GameStatsControl    { get; private set; }
         internal GuildConfigManager GuildConfigControl  { get; private set; }
         internal GiphyService       GiphyService        { get; private set; }
         internal ImgurService       ImgurService        { get; private set; }
+        internal JokesService       JokesService        { get; private set; }
         internal SteamService       SteamService        { get; private set; }
         internal YoutubeService     YoutubeService      { get; private set; }
-        internal JokesService       JokesService        { get; private set; }
 
 
         internal BotDependencyList(DiscordClient client, BotConfig cfg)
@@ -46,6 +47,7 @@ namespace TheGodfather.Helpers
             RankControl = new RankManager();
             StatusControl = new StatusManager();
             SwatServerControl = new SwatServerManager();
+            GameStatsControl = new GameStatsManager();
             GuildConfigControl = new GuildConfigManager(cfg);
             GiphyService = new GiphyService(cfg.GiphyKey);
             ImgurService = new ImgurService(cfg.ImgurKey);
@@ -64,6 +66,7 @@ namespace TheGodfather.Helpers
             RankControl.Load(log);
             StatusControl.Load(log);
             SwatServerControl.Load(log);
+            GameStatsControl.Load(log);
             GuildConfigControl.Load(log);
         }
 
@@ -76,6 +79,7 @@ namespace TheGodfather.Helpers
             RankControl.Save(log);
             StatusControl.Save(log);
             SwatServerControl.Save(log);
+            GameStatsControl.Save(log);
             GuildConfigControl.Save(log);
         }
 
@@ -94,6 +98,7 @@ namespace TheGodfather.Helpers
                 .AddInstance(SteamService)
                 .AddInstance(YoutubeService)
                 .AddInstance(JokesService)
+                .AddInstance(GameStatsControl)
                 .AddInstance(GuildConfigControl);
         }
     }

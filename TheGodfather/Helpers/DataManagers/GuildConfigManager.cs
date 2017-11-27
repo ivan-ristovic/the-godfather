@@ -340,27 +340,5 @@ namespace TheGodfather.Helpers.DataManagers
             _gcfg[gid].Triggers.Clear();
         }
         #endregion
-
-
-        private sealed class GuildConfig
-        {
-            [JsonProperty("Prefix")]
-            public string Prefix { get; set; }
-            
-            [JsonProperty("WelcomeChannelId")]
-            public ulong? WelcomeChannelId { get; set; }
-
-            [JsonProperty("LeaveChannelId")]
-            public ulong? LeaveChannelId { get; set; }
-            
-            [JsonProperty("Triggers")]
-            public ConcurrentDictionary<string, string> Triggers { get; set; }
-
-            [JsonProperty("Filters")]
-            public HashSet<Regex> Filters { get; set; }
-            
-            [JsonProperty("Reactions")]
-            public ConcurrentDictionary<string, string> Reactions { get; set; }
-        }
     }
 }

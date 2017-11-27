@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using TheGodfather.Exceptions;
+using TheGodfather.Helpers.DataManagers;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -22,7 +23,7 @@ namespace TheGodfather.Commands.Games
     [PreExecutionCheck]
     public partial class CommandsGames
     {
-        #region COMMAND_DUEL
+        #region COMMAND_GAMES_DUEL
         [Command("duel")]
         [Description("Starts a duel which I will commentate.")]
         [Aliases("fight", "vs")]
@@ -48,6 +49,20 @@ namespace TheGodfather.Commands.Games
 
             var duel = new Duel(ctx.Client, ctx.Channel.Id, ctx.User, u);
             await duel.PlayAsync()
+                .ConfigureAwait(false);
+
+            var statManager = ctx.Dependencies.GetDependency<GameStatsManager>();
+            statManager.UpdateDuelsWonForUser(duel.Winner.Id);
+            statManager.UpdateDuelsLostForUser(duel.Winner.Id == ctx.User.Id ? u.Id : ctx.User.Id);
+            var user1Stats = statManager.GetStatsForUser(ctx.User.Id);
+            var user2Stats = statManager.GetStatsForUser(u.Id);
+            var em = new DiscordEmbedBuilder() {
+                Title = $"{duel.Winner.Username} {(string.IsNullOrWhiteSpace(duel.FinishingMove) ? "wins" : duel.FinishingMove)}!",
+                Color = DiscordColor.Chartreuse
+            };
+            em.AddField($"Duel stats for {ctx.User.Username}", $"Won: {user1Stats.DuelsWon}\nLost: {user1Stats.DuelsLost}\nPercentage: {Math.Round((double)user1Stats.DuelsWon / (user1Stats.DuelsWon + user1Stats.DuelsLost) * 100)}%", inline: true);
+            em.AddField($"Duel stats for {u.Username}", $"Won: {user2Stats.DuelsWon}\nLost: {user2Stats.DuelsLost}\nPercentage: {Math.Round((double)user2Stats.DuelsWon / (user2Stats.DuelsWon + user2Stats.DuelsLost) * 100)}%", inline: true);
+            await ctx.RespondAsync(embed: em.Build())
                 .ConfigureAwait(false);
         }
         #endregion
@@ -121,6 +136,20 @@ namespace TheGodfather.Commands.Games
                         .ConfigureAwait(false);
                     break;
             }
+        }
+        #endregion
+
+        #region COMMAND_GAMES_STATS
+        [Command("stats")]
+        [Description("Print game stats for given user.")]
+        public async Task StatsAsync(CommandContext ctx,
+                                    [Description("User.")] DiscordUser u = null)
+        {
+            if (u == null)
+                u = ctx.User;
+
+            await ctx.RespondAsync(embed: ctx.Dependencies.GetDependency<GameStatsManager>().GetEmbeddedStatsForUser(u))
+                .ConfigureAwait(false);
         }
         #endregion
 

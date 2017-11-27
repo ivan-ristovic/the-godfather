@@ -19,7 +19,13 @@ namespace TheGodfather.Commands.Games
 {
     public class Duel
     {
+        #region PUBLIC_FIELDS
+        public DiscordUser Winner { get; private set; }
+        public string FinishingMove { get; private set; }
+        #endregion
+
         #region STATIC_FIELDS
+        public static bool GameExistsInChannel(ulong cid) => _channels.Contains(cid);
         private static ConcurrentHashSet<ulong> _channels = new ConcurrentHashSet<ulong>();
         private static string[] weapons = { ":hammer:", ":dagger:", ":pick:", ":bomb:", ":guitar:", ":fire:" };
         #endregion
@@ -51,8 +57,6 @@ namespace TheGodfather.Commands.Games
         }
 
 
-        public static bool GameExistsInChannel(ulong cid) => _channels.Contains(cid);
-
         public async Task PlayAsync()
         {
             UpdateHpBars();
@@ -69,21 +73,15 @@ namespace TheGodfather.Commands.Games
                     .ConfigureAwait(false);
             }
 
+            if (_hp1 > 0)
+                Winner = _p1;
+            else
+                Winner = _p2;
+
             await chn.SendMessageAsync(e + " FINISH HIM! ")
                 .ConfigureAwait(false);
-            var finishingMove = await CheckForFinishingMoveAsync()
+            FinishingMove = await CheckForFinishingMoveAsync()
                 .ConfigureAwait(false);
-            if (finishingMove != null)
-                await chn.SendMessageAsync($"{e} {(_hp1 != 0 ? _p1.Mention : _p2.Mention)} {finishingMove}!")
-                    .ConfigureAwait(false);
-
-            if (_hp1 <= 0) {
-                await chn.SendMessageAsync($"{e} {_p2.Mention} wins!")
-                    .ConfigureAwait(false);
-            } else {
-                await chn.SendMessageAsync($"{e} {_p1.Mention} wins!")
-                    .ConfigureAwait(false);
-            }
 
             _channels.TryRemove(_cid);
         }
@@ -146,7 +144,7 @@ namespace TheGodfather.Commands.Games
             var interactivity = _client.GetInteractivityModule();
             var reply = await interactivity.WaitForMessageAsync(
                 msg =>
-                    msg.ChannelId == _cid && msg.Author.Id == (_hp1 != 0 ? _p1.Id : _p2.Id)
+                    msg.ChannelId == _cid && msg.Author.Id == Winner.Id
                 , TimeSpan.FromSeconds(20)
             ).ConfigureAwait(false);
 

@@ -235,6 +235,7 @@
     <Compile Include="Helpers\Collections\ConcurrentHashSet.cs" />
     <Compile Include="Helpers\DataManagers\BankManager.cs" />
     <Compile Include="Helpers\DataManagers\FeedManager.cs" />
+    <Compile Include="Helpers\DataManagers\GameStatsManager.cs" />
     <Compile Include="Helpers\DataManagers\GuildConfigManager.cs" />
     <Compile Include="Helpers\DataManagers\SwatServerManager.cs" />
     <Compile Include="Helpers\EvaluationEnvironment.cs" />
@@ -244,6 +245,8 @@
     <Compile Include="Helpers\DataManagers\InsultManager.cs" />
     <Compile Include="Helpers\DataManagers\MemeManager.cs" />
     <Compile Include="Helpers\DataManagers\RankManager.cs" />
+    <Compile Include="Helpers\GameStats.cs" />
+    <Compile Include="Helpers\GuildConfig.cs" />
     <Compile Include="Helpers\PreExecutionCheckAttribute.cs" />
     <Compile Include="Helpers\HelpFormatter.cs" />
     <Compile Include="Commands\Administration\CommandsOwner.cs" />
