@@ -220,12 +220,18 @@ namespace TheGodfather.Commands.Administration
                 u = ctx.User;
 
             var em = new DiscordEmbedBuilder() {
-                Title = $"{Formatter.Bold(u.Username)}",
+                Title = $"Info for user: {Formatter.Bold(u.Username)}",
                 ThumbnailUrl = u.AvatarUrl,
                 Color = DiscordColor.MidnightBlue
             };
-            em.AddField("Status", u.Presence.Status.ToString());
-            em.AddField("Discriminator", u.Discriminator);
+            em.AddField("Status", u.Presence.Status.ToString(), inline: true);
+            em.AddField("Discriminator", u.Discriminator, inline: true);
+            if (!string.IsNullOrWhiteSpace(u.Email))
+                em.AddField("E-mail", u.Email, inline: true);
+            em.AddField("Created", u.CreationTimestamp.ToUniversalTime().ToString(), inline: true);
+            em.AddField("ID", u.Id.ToString());
+            if (u.Verified != null)
+                em.AddField("Verified", u.Verified.Value.ToString(), inline: false);
 
             await ctx.RespondAsync(embed: em.Build())
                 .ConfigureAwait(false);
