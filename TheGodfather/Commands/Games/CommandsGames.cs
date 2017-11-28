@@ -32,7 +32,6 @@ namespace TheGodfather.Commands.Games
         {
             if (u.Id == ctx.User.Id)
                 throw new CommandFailedException("You can't duel yourself...");
-
             if (Duel.GameExistsInChannel(ctx.Channel.Id))
                 throw new CommandFailedException("A duel is already running in the current channel!");
 
