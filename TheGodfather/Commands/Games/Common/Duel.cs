@@ -95,8 +95,11 @@ namespace TheGodfather.Commands.Games
 
             UpdateHpBars();
 
-            _msg = await _msg.ModifyAsync($"{_p1.Mention} {_hp1bar} :crossed_swords: {_hp2bar} {_p2.Mention}" + _events)
-                .ConfigureAwait(false);
+            _msg = await _msg.ModifyAsync($"{_p1.Mention} {_hp1bar} :crossed_swords: {_hp2bar} {_p2.Mention}", embed: new DiscordEmbedBuilder() {
+                Title = "CNN LIVE COVERAGE",
+                Description = _events,
+                Color = DiscordColor.Chartreuse
+            }).ConfigureAwait(false);
         }
 
         private void UpdateHpBars()

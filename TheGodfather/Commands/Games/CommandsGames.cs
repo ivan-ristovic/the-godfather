@@ -57,12 +57,11 @@ namespace TheGodfather.Commands.Games
             var user1Stats = statManager.GetStatsForUser(ctx.User.Id);
             var user2Stats = statManager.GetStatsForUser(u.Id);
             var em = new DiscordEmbedBuilder() {
-                Title = $"{duel.Winner.Username} {(string.IsNullOrWhiteSpace(duel.FinishingMove) ? "wins" : duel.FinishingMove)}!",
                 Color = DiscordColor.Chartreuse
             };
             em.AddField($"Duel stats for {ctx.User.Username}", $"Won: {user1Stats.DuelsWon}\nLost: {user1Stats.DuelsLost}\nPercentage: {Math.Round((double)user1Stats.DuelsWon / (user1Stats.DuelsWon + user1Stats.DuelsLost) * 100)}%", inline: true);
             em.AddField($"Duel stats for {u.Username}", $"Won: {user2Stats.DuelsWon}\nLost: {user2Stats.DuelsLost}\nPercentage: {Math.Round((double)user2Stats.DuelsWon / (user2Stats.DuelsWon + user2Stats.DuelsLost) * 100)}%", inline: true);
-            await ctx.RespondAsync(embed: em.Build())
+            await ctx.RespondAsync($"{duel.Winner.Username} {(string.IsNullOrWhiteSpace(duel.FinishingMove) ? "wins" : duel.FinishingMove)}!", embed: em.Build())
                 .ConfigureAwait(false);
         }
         #endregion
