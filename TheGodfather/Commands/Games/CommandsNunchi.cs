@@ -6,6 +6,7 @@ using System.Collections.Concurrent;
 using System.Threading.Tasks;
 
 using TheGodfather.Exceptions;
+using TheGodfather.Commands.Games.Common;
 
 using DSharpPlus;
 using DSharpPlus.Interactivity;
@@ -25,10 +26,8 @@ namespace TheGodfather.Commands.Games
         public class CommandsNunchi
         {
             #region PRIVATE_FIELDS
-            private ConcurrentDictionary<ulong, List<ulong>> _participants = new ConcurrentDictionary<ulong, List<ulong>>();
-            private ConcurrentDictionary<ulong, bool> _started = new ConcurrentDictionary<ulong, bool>();
+            private ConcurrentDictionary<ulong, Nunchi> _games = new ConcurrentDictionary<ulong, Nunchi>();
             #endregion
-
 
             public async Task ExecuteGroupAsync(CommandContext ctx)
             {
@@ -42,24 +41,27 @@ namespace TheGodfather.Commands.Games
             [Aliases("create")]
             public async Task NewGameAsync(CommandContext ctx)
             {
-                if (_participants.ContainsKey(ctx.Channel.Id))
-                    throw new CommandFailedException("Nunchi game already in progress!");
+                Nunchi game = null;
+                if (!Nunchi.GameExistsInChannel(ctx.Channel.Id)) {
+                    game = new Nunchi(ctx.Client, ctx.Channel.Id);
+                    if (!_games.TryAdd(ctx.Channel.Id, game))
+                        throw new CommandFailedException("Failed to create a new nunchi game! Please try again.");
+                    await ctx.RespondAsync("The game will start in 30s or when there are 10 participants. Type " + Formatter.InlineCode("!game nunchi") + " to join the game.")
+                        .ConfigureAwait(false);
+                }
 
-                _participants.TryAdd(ctx.Channel.Id, new List<ulong>());
-                _started.TryAdd(ctx.Channel.Id, false);
-
-                await ctx.RespondAsync("Nunchi will start in 30s or when there are 10 participants. Type " + Formatter.InlineCode("!game nunchi join") + " to join the game.")
+                await JoinGameAsync(ctx)
                     .ConfigureAwait(false);
                 await Task.Delay(30000)
                     .ConfigureAwait(false);
 
-                if (_participants[ctx.Channel.Id].Count > 1) {
-                    await StartGameAsync(ctx)
+                if (game.ParticipantCount > 1) {
+                    await game.PlayAsync()
                         .ConfigureAwait(false);
                 } else {
                     await ctx.RespondAsync("Not enough users joined the game.")
                         .ConfigureAwait(false);
-                    StopGame(ctx.Channel.Id);
+                    game.Stop();
                 }
             }
             #endregion
@@ -70,19 +72,14 @@ namespace TheGodfather.Commands.Games
             [Aliases("+", "compete")]
             public async Task JoinGameAsync(CommandContext ctx)
             {
-                if (!_participants.ContainsKey(ctx.Channel.Id))
-                    throw new CommandFailedException("There is no nunchi game in this channel!");
-
-                if (_participants[ctx.Channel.Id].Any(id => id == ctx.User.Id))
-                    throw new CommandFailedException("You are already participating in the game!");
-
-                if (_started[ctx.Channel.Id])
+                if (_games[ctx.Channel.Id].GameRunning)
                     throw new CommandFailedException("Game already started, you can't join it.");
 
-                if (_participants[ctx.Channel.Id].Count >= 10)
+                if (_games[ctx.Channel.Id].ParticipantCount >= 10)
                     throw new CommandFailedException("Game is full, kthxbye.");
 
-                _participants[ctx.Channel.Id].Add(ctx.User.Id);
+                if (!_games[ctx.Channel.Id].AddParticipant(ctx.User.Id))
+                    throw new CommandFailedException("You are already participating in the game!");
 
                 await ctx.RespondAsync($"{ctx.User.Mention} joined the game.")
                     .ConfigureAwait(false);
@@ -101,67 +98,6 @@ namespace TheGodfather.Commands.Games
                     "they are out of the game. If nobody posts a number 20s after the last number was posted, " +
                     "then the user that posted that number wins the game."
                 ).ConfigureAwait(false);
-            }
-            #endregion
-
-
-            #region HELPER_FUNCTIONS
-            private async Task StartGameAsync(CommandContext ctx)
-            {
-                int num = new Random().Next(1000);
-                await ctx.RespondAsync(num.ToString())
-                    .ConfigureAwait(false);
-
-                var interactivity = ctx.Client.GetInteractivityModule();
-                DiscordUser winner = null;
-                while (_participants[ctx.Channel.Id].Count > 1) {
-                    int n = 0;
-                    var msg = await interactivity.WaitForMessageAsync(
-                        xm => {
-                            if (xm.Channel.Id != ctx.Channel.Id || xm.Author.IsBot)
-                                return false;
-                            if (!_participants[ctx.Channel.Id].Contains(xm.Author.Id))
-                                return false;
-                            try {
-                                n = int.Parse(xm.Content);
-                            } catch {
-                                return false;
-                            }
-                            return true;
-                        },
-                        TimeSpan.FromSeconds(20)
-                    ).ConfigureAwait(false);
-                    if (msg == null || n == 0) {
-                        if (winner == null) {
-                            await ctx.RespondAsync("No replies, aborting...")
-                                .ConfigureAwait(false);
-                        } else {
-                            await ctx.RespondAsync($"{winner.Mention} won due to no replies from other users!")
-                                .ConfigureAwait(false);
-                        }
-                        StopGame(ctx.Channel.Id);
-                        return;
-                    } else if (n == num + 1) {
-                        num++;
-                        winner = msg.User;
-                    } else {
-                        await ctx.RespondAsync(msg.User.Mention + " lost!")
-                            .ConfigureAwait(false);
-                        if (winner != null && winner.Id == msg.User.Id)
-                            winner = null;
-                        _participants[ctx.Channel.Id].Remove(msg.User.Id);
-                    }
-                }
-
-                await ctx.RespondAsync("Game over! Winner: " + winner.Mention)
-                    .ConfigureAwait(false);
-                StopGame(ctx.Channel.Id);
-            }
-
-            private void StopGame(ulong id)
-            {
-                _participants.TryRemove(id, out _);
-                _started.TryRemove(id, out _);
             }
             #endregion
         }

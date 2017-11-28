@@ -12,7 +12,6 @@ using TheGodfather.Helpers.Collections;
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
-using DSharpPlus.CommandsNext;
 #endregion
 
 namespace TheGodfather.Commands.Games
@@ -55,7 +54,7 @@ namespace TheGodfather.Commands.Games
             _p1 = p1;
             _p2 = p2;
         }
-
+        
 
         public async Task PlayAsync()
         {
@@ -73,10 +72,7 @@ namespace TheGodfather.Commands.Games
                     .ConfigureAwait(false);
             }
 
-            if (_hp1 > 0)
-                Winner = _p1;
-            else
-                Winner = _p2;
+            Winner = _hp1 > 0 ? _p1 : _p2;
 
             await chn.SendMessageAsync(e + " FINISH HIM! ")
                 .ConfigureAwait(false);
