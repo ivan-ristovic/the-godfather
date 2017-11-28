@@ -50,8 +50,8 @@ namespace TheGodfather.Commands.Games
             var chn = await _client.GetChannelAsync(_cid)
                 .ConfigureAwait(false);
 
-            var questions = new List<string>(_countries.Keys);
-            var participants = new SortedDictionary<ulong, int>();
+            var questions = _countries.Keys.ToList();
+            var participants = new Dictionary<ulong, int>();
 
             await chn.SendMessageAsync("Quiz will start in 10s! Get ready!")
                 .ConfigureAwait(false);
@@ -109,6 +109,9 @@ namespace TheGodfather.Commands.Games
                 .ConfigureAwait(false);
 
             _channels.TryRemove(_cid);
+
+            Winner = await _client.GetUserAsync(participants.OrderByDescending(kvp => kvp.Value).First().Key)
+                .ConfigureAwait(false);
         }
 
         public static void LoadCountries()

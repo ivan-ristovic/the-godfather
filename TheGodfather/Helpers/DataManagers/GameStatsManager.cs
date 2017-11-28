@@ -91,6 +91,16 @@ namespace TheGodfather.Helpers.DataManagers
             }
         }
 
+        public bool UpdateQuizesWonForUser(ulong uid)
+        {
+            if (_stats.ContainsKey(uid)) {
+                _stats[uid].QuizesWon++;
+                return true;
+            } else {
+                return _stats.TryAdd(uid, new GameStats() { QuizesWon = 1 });
+            }
+        }
+
         public GameStats GetStatsForUser(ulong uid)
         {
             if (_stats.ContainsKey(uid))
@@ -150,6 +160,19 @@ namespace TheGodfather.Helpers.DataManagers
                 }
             }
             em.AddField("Top 5 in Nunchi game:", desc, inline: true);
+
+            var topQuizPlayers = _stats.OrderBy(kvp => kvp.Value.QuizesWon).Select(kvp => kvp.Key).Take(5);
+            desc = "";
+            foreach (var uid in topQuizPlayers) {
+                try {
+                    var u = await client.GetUserAsync(uid)
+                        .ConfigureAwait(false);
+                    desc += $"{Formatter.Bold(u.Username)} => Won: {_stats[uid].QuizesWon}\n";
+                } catch (NotFoundException) {
+                    continue;
+                }
+            }
+            em.AddField("Top 5 in Quiz game:", desc, inline: true);
 
             return em.Build();
         }

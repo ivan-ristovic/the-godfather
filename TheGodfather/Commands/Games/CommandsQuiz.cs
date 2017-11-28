@@ -1,16 +1,13 @@
 ﻿#region USING_DIRECTIVES
 using System;
-using System.Collections.Generic;
-using System.Collections.Concurrent;
 using System.Threading.Tasks;
 
 using TheGodfather.Exceptions;
+using TheGodfather.Helpers.DataManagers;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Interactivity;
-using DSharpPlus.Entities;
 #endregion
 
 namespace TheGodfather.Commands.Games
@@ -39,10 +36,9 @@ namespace TheGodfather.Commands.Games
                 await quiz.StartAsync(QuizType.Countries)
                     .ConfigureAwait(false);
 
-                // stats
+                ctx.Dependencies.GetDependency<GameStatsManager>().UpdateQuizesWonForUser(ctx.User.Id);
             }
             #endregion
-            
         }
     }
 }
