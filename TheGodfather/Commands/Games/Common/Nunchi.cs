@@ -27,6 +27,7 @@ namespace TheGodfather.Commands.Games.Common
         #region PUBLIC_FIELDS
         public int ParticipantCount => _participants.Count();
         public bool GameRunning { get; private set; }
+        public DiscordUser Winner { get; private set; }
         #endregion
 
         #region PRIVATE_FIELDS
@@ -64,7 +65,7 @@ namespace TheGodfather.Commands.Games.Common
                 .ConfigureAwait(false);
 
             var interactivity = _client.GetInteractivityModule();
-            DiscordUser winner = null;
+            Winner = null;
             while (_participants.Count > 1) {
                 int n = 0;
                 var msg = await interactivity.WaitForMessageAsync(
@@ -77,29 +78,26 @@ namespace TheGodfather.Commands.Games.Common
                 ).ConfigureAwait(false);
 
                 if (msg == null || n == 0) {
-                    if (winner == null) {
+                    if (Winner == null) {
                         await chn.SendMessageAsync("No replies, aborting...")
                             .ConfigureAwait(false);
                     } else {
-                        await chn.SendMessageAsync($"{winner.Mention} won due to no replies from other users!")
+                        await chn.SendMessageAsync($"{Winner.Mention} won due to no replies from other users!")
                             .ConfigureAwait(false);
                     }
                     Stop();
                     return;
                 } else if (n == num + 1) {
                     num++;
-                    winner = msg.User;
+                    Winner = msg.User;
                 } else {
                     await chn.SendMessageAsync(msg.User.Mention + " lost!")
                         .ConfigureAwait(false);
-                    if (winner != null && winner.Id == msg.User.Id)
-                        winner = null;
+                    if (Winner != null && Winner.Id == msg.User.Id)
+                        Winner = null;
                     _participants.Remove(msg.User.Id);
                 }
             }
-
-            await chn.SendMessageAsync("Game over! Winner: " + winner.Mention)
-                .ConfigureAwait(false);
             Stop();
         }
 

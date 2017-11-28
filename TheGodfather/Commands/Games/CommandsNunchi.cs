@@ -6,6 +6,7 @@ using System.Collections.Concurrent;
 using System.Threading.Tasks;
 
 using TheGodfather.Exceptions;
+using TheGodfather.Helpers.DataManagers;
 using TheGodfather.Commands.Games.Common;
 
 using DSharpPlus;
@@ -58,6 +59,9 @@ namespace TheGodfather.Commands.Games
                 if (game.ParticipantCount > 1) {
                     await game.PlayAsync()
                         .ConfigureAwait(false);
+                    await ctx.RespondAsync("Game over! Winner: " + game.Winner.Mention)
+                        .ConfigureAwait(false);
+                    ctx.Dependencies.GetDependency<GameStatsManager>().UpdateNunchiGamesWonForUser(game.Winner.Id);
                 } else {
                     await ctx.RespondAsync("Not enough users joined the game.")
                         .ConfigureAwait(false);
