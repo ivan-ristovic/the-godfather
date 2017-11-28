@@ -26,7 +26,7 @@ namespace TheGodfather.Commands.Games
         #region COMMAND_GAMES_DUEL
         [Command("duel")]
         [Description("Starts a duel which I will commentate.")]
-        [Aliases("fight", "vs")]
+        [Aliases("fight", "vs", "d")]
         public async Task DuelAsync(CommandContext ctx,
                                    [Description("Who to fight with?")] DiscordUser u)
         {
@@ -68,6 +68,7 @@ namespace TheGodfather.Commands.Games
         #region COMMAND_GAMES_HANGMAN
         [Command("hangman")]
         [Description("Starts a hangman game.")]
+        [Aliases("h", "hang")]
         public async Task HangmanAsync(CommandContext ctx)
         {
             if (Hangman.GameExistsInChannel(ctx.Channel.Id))

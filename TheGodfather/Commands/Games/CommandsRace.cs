@@ -19,6 +19,7 @@ namespace TheGodfather.Commands.Games
     {
         [Group("race", CanInvokeWithoutSubcommand = true)]
         [Description("Racing!")]
+        [Aliases("r")]
         [Cooldown(2, 5, CooldownBucketType.User), Cooldown(3, 5, CooldownBucketType.Channel)]
         [PreExecutionCheck]
         public class CommandsRace

@@ -22,6 +22,7 @@ namespace TheGodfather.Commands.Games
     {
         [Group("nunchi", CanInvokeWithoutSubcommand = true)]
         [Description("Nunchi game commands")]
+        [Aliases("n")]
         [Cooldown(2, 5, CooldownBucketType.User), Cooldown(3, 5, CooldownBucketType.Channel)]
         [PreExecutionCheck]
         public class CommandsNunchi
@@ -31,16 +32,6 @@ namespace TheGodfather.Commands.Games
             #endregion
 
             public async Task ExecuteGroupAsync(CommandContext ctx)
-            {
-                await NewGameAsync(ctx);
-            }
-
-
-            #region COMMAND_NUNCHI_NEW
-            [Command("new")]
-            [Description("Start a new nunchi game.")]
-            [Aliases("create")]
-            public async Task NewGameAsync(CommandContext ctx)
             {
                 Nunchi game = null;
                 if (!Nunchi.GameExistsInChannel(ctx.Channel.Id)) {
@@ -68,7 +59,7 @@ namespace TheGodfather.Commands.Games
                     game.Stop();
                 }
             }
-            #endregion
+
 
             #region COMMAND_NUNCHI_JOIN
             [Command("join")]

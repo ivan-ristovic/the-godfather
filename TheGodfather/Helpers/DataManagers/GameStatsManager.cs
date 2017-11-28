@@ -122,6 +122,8 @@ namespace TheGodfather.Helpers.DataManagers
             }
 
             em.AddField($"Duel stats", $"Won: {_stats[u.Id].DuelsWon}, Lost: {_stats[u.Id].DuelsLost}, Percentage: {Math.Round((double)_stats[u.Id].DuelsWon / (_stats[u.Id].DuelsWon + _stats[u.Id].DuelsLost) * 100)}%");
+            em.AddField($"Nunchi stats", $"Won: {_stats[u.Id].NunchiGamesWon}");
+            em.AddField($"Quiz stats", $"Won: {_stats[u.Id].QuizesWon}");
 
             return em.Build();
         }

@@ -16,7 +16,7 @@ namespace TheGodfather.Commands.Games
     {
         [Group("quiz", CanInvokeWithoutSubcommand = false)]
         [Description("Start a quiz!")]
-        [Aliases("trivia")]
+        [Aliases("trivia", "q")]
         [Cooldown(2, 5, CooldownBucketType.User), Cooldown(3, 5, CooldownBucketType.Channel)]
         [PreExecutionCheck]
         public class CommandsQuiz

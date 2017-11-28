@@ -195,21 +195,20 @@ Commands use the following types:
 | ``cards``<br>``deck`` | ``reset``<br>``opennew``<br>``new`` |   |   | Open new deck of cards (unshuffled). | ``!deck new`` |
 | ``cards``<br>``deck`` | ``shuffle``<br>``s``<br>``sh``<br>``mix`` |   |   | Shuffle current card deck. | ``!deck shuffle`` |
 |   |   |   |   |   |   |
-| ``games``<br>``game``<br>``gm`` | ``duel``<br>``fight``<br>``vs`` |   | ``[user] Opponent`` | Call ``Opponent`` to a death battle! Type ``hp`` while the duel is on to drink a health potion. | ``!game duel @TheRock`` |
-| ``games``<br>``game``<br>``gm`` | ``hangman`` |   |   | Start a new hangman game! | ``!game hangman`` |
+| ``games``<br>``game``<br>``gm`` | ``duel``<br>``fight``<br>``vs``<br>``d`` |   | ``[user] Opponent`` | Call ``Opponent`` to a death battle! Type ``hp`` while the duel is on to drink a health potion. | ``!game duel @TheRock`` |
+| ``games``<br>``game``<br>``gm`` | ``hangman``<br>``d`` |   |   | Start a new hangman game! | ``!game hangman`` |
 | ``games``<br>``game``<br>``gm`` | ``leaderboard``<br>``globalstats`` |   |   | Print global game leaderboard. | ``!game leaderboard`` |
 | ``games``<br>``game``<br>``gm`` | ``rps``<br>``rockpaperscissors`` |   |   | Make Godfather play rock-paper-scissors! | ``!game rps`` |
 | ``games``<br>``game``<br>``gm`` | ``stats`` |   | ``(optional) [user] User (def: sender)`` | Print game stats for given user. | ``!game stats`` |
 | ``games``<br>``game``<br>``gm`` | ``tictactoe``<br>``ttt`` |   |   | Challenge friends to a tictactoe game! First who replies with ``me`` or ``i`` will join your game. Play by posting a number from 1 to 9 corresponding to field you wish to place your move on. | ``!game ttt`` |
 | ``games``<br>``game``<br>``gm`` | ``typing``<br>``type``<br>``typerace``<br>``typingrace`` |   |   | Start a typing race game. | ``!game typerace`` |
-| ``game nunchi`` |  |   |   | Start a signup process for a new nunchi game! | ``!game nunchi`` |
-| ``game nunchi`` | ``new``<br>``create`` |   |   | Identical result as to above command. | ``!game nunchi new`` |
-| ``game nunchi`` | ``join``<br>``+``<br>``compete`` |   |   | Join a pending nunchi game. | ``!game nunchi join`` |
-| ``game nunchi`` | ``rules``<br>``help`` |   |   | How to play? | ``!game nunchi rules`` |
-| ``game quiz``<br>``game trivia`` | ``countries``<br>``flags`` |   |   | Start a new countries quiz. | ``!game quiz countries`` |
-| ``game race`` |  |   |   | Start a signup process for a new race! | ``!game race`` |
-| ``game race`` | ``new``<br>``create`` |   |   | Identical result as to above command. | ``!game race new`` |
-| ``game race`` | ``join``<br>``+``<br>``compete`` |   |   | Join a pending race. | ``!game race join`` |
+| ``game nunchi``<br>``game n`` |  |   |   | Start a new game or join a pending game. | ``!game nunchi`` |
+| ``game nunchi``<br>``game n`` | ``join``<br>``+``<br>``compete`` |   |   | Join a pending nunchi game. | ``!game nunchi join`` |
+| ``game nunchi``<br>``game n`` | ``rules``<br>``help`` |   |   | How to play? | ``!game nunchi rules`` |
+| ``game quiz``<br>``game trivia``<br>``game q`` | ``countries``<br>``flags`` |   |   | Start a new countries quiz. | ``!game quiz countries`` |
+| ``game race``<br>``game r`` |  |   |   | Start a signup process for a new race! | ``!game race`` |
+| ``game race``<br>``game r`` | ``new``<br>``create`` |   |   | Identical result as to above command. | ``!game race new`` |
+| ``game race``<br>``game r`` | ``join``<br>``+``<br>``compete`` |   |   | Join a pending race. | ``!game race join`` |
 |   |   |   |   |   |   |
 
 ## Search commands
