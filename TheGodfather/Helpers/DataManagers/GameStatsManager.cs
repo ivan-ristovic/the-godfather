@@ -12,7 +12,7 @@ using TheGodfather.Helpers;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Converters;
-using DSharpPlus.CommandsNext.Entities;
+using DSharpPlus.Exceptions;
 using DSharpPlus.Entities;
 #endregion
 
@@ -118,10 +118,15 @@ namespace TheGodfather.Helpers.DataManagers
             var topDuelists = _stats.OrderBy(kvp => kvp.Value.DuelsWon).Select(kvp => kvp.Key).Take(5);
             desc = "";
             foreach (var uid in topDuelists) {
-                var u = await client.GetUserAsync(uid); // catch if user no longer exists
-                desc += $"{Formatter.Bold(u.Username)} => Won: {_stats[uid].DuelsWon}; Lost: {_stats[uid].DuelsLost}\n"; 
+                try {
+                    var u = await client.GetUserAsync(uid)
+                        .ConfigureAwait(false);
+                    desc += $"{Formatter.Bold(u.Username)} => Won: {_stats[uid].DuelsWon}; Lost: {_stats[uid].DuelsLost}\n";
+                } catch (NotFoundException) {
+                    continue;
+                }
             }
-            em.AddField("Top 5 in Duel game:", desc);
+            em.AddField("Top 5 in Duel game:", desc, inline: true);
 
             return em.Build();
         }
