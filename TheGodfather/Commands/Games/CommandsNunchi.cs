@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 
 using TheGodfather.Exceptions;
 using TheGodfather.Helpers.DataManagers;
-using TheGodfather.Commands.Games.Common;
 
 using DSharpPlus;
 using DSharpPlus.Interactivity;
@@ -33,8 +32,12 @@ namespace TheGodfather.Commands.Games
 
             public async Task ExecuteGroupAsync(CommandContext ctx)
             {
-                Nunchi game = null;
-                if (!Nunchi.GameExistsInChannel(ctx.Channel.Id)) {
+                Nunchi game;
+                if (Nunchi.GameExistsInChannel(ctx.Channel.Id)) {
+                    await JoinGameAsync(ctx)
+                        .ConfigureAwait(false);
+                    return;
+                } else {
                     game = new Nunchi(ctx.Client, ctx.Channel.Id);
                     if (!_games.TryAdd(ctx.Channel.Id, game))
                         throw new CommandFailedException("Failed to create a new nunchi game! Please try again.");
@@ -58,6 +61,7 @@ namespace TheGodfather.Commands.Games
                         .ConfigureAwait(false);
                     game.Stop();
                 }
+                _games.TryRemove(ctx.Channel.Id, out _);
             }
 
 

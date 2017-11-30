@@ -15,7 +15,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 #endregion
 
-namespace TheGodfather.Commands.Games.Common
+namespace TheGodfather.Commands.Games
 {
     public class Nunchi
     {

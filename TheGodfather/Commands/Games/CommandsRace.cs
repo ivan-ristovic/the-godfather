@@ -25,17 +25,10 @@ namespace TheGodfather.Commands.Games
         public class CommandsRace
         {
             #region PRIVATE_FIELDS
-            private ConcurrentDictionary<ulong, ConcurrentQueue<ulong>> _participants = new ConcurrentDictionary<ulong, ConcurrentQueue<ulong>>();
-            private ConcurrentDictionary<ulong, ConcurrentDictionary<ulong, string>> _emojis = new ConcurrentDictionary<ulong, ConcurrentDictionary<ulong, string>>();
-            private ConcurrentDictionary<ulong, ConcurrentBag<string>> _animals = new ConcurrentDictionary<ulong, ConcurrentBag<string>>();
-            private ConcurrentDictionary<ulong, bool> _started = new ConcurrentDictionary<ulong, bool>();
+            private ConcurrentDictionary<ulong, Race> _games = new ConcurrentDictionary<ulong, Race>();
             #endregion
 
-
-            public async Task ExecuteGroupAsync(CommandContext ctx)
-            {
-                await NewRaceAsync(ctx);
-            }
+            public async Task ExecuteGroupAsync(CommandContext ctx) => await NewRaceAsync(ctx).ConfigureAwait(false);
 
 
             #region COMMAND_RACE_NEW
@@ -44,35 +37,34 @@ namespace TheGodfather.Commands.Games
             [Aliases("create")]
             public async Task NewRaceAsync(CommandContext ctx)
             {
-                if (_participants.ContainsKey(ctx.Channel.Id))
-                    throw new Exception("Race already in progress!");
-
-                bool succ = true;
-                succ &= _animals.TryAdd(ctx.Channel.Id, new ConcurrentBag<string> {
-                    ":dog:", ":cat:", ":mouse:", ":hamster:", ":rabbit:",
-                    ":bear:", ":pig:", ":cow:", ":koala:", ":tiger:"
-                });
-                succ &= _participants.TryAdd(ctx.Channel.Id, new ConcurrentQueue<ulong>());
-                succ &= _emojis.TryAdd(ctx.Channel.Id, new ConcurrentDictionary<ulong, string>());
-                succ &= _started.TryAdd(ctx.Channel.Id, false);
-                if (!succ) {
-                    StopRace(ctx.Channel.Id);
-                    throw new CommandFailedException("Race starting failed.");
+                Race race;
+                if (Race.GameExistsInChannel(ctx.Channel.Id)) {
+                    await JoinRaceAsync(ctx)
+                        .ConfigureAwait(false);
+                    return;
+                } else {
+                    race = new Race(ctx.Client, ctx.Channel.Id);
+                    if (!_games.TryAdd(ctx.Channel.Id, race))
+                        throw new CommandFailedException("Failed to create a new racing game! Please try again.");
+                    await ctx.RespondAsync("Race will start in 30s or when there are 10 participants. Type " + Formatter.InlineCode("!game race") + " to join the race.")
+                        .ConfigureAwait(false);
                 }
 
-                await ctx.RespondAsync("Race will start in 30s or when there are 10 participants. Type " + Formatter.InlineCode("!game race join") + " to join the race.")
+                await JoinRaceAsync(ctx)
                     .ConfigureAwait(false);
                 await Task.Delay(30000)
                     .ConfigureAwait(false);
 
-                if (_participants[ctx.Channel.Id].Count > 1) {
-                    await StartRaceAsync(ctx)
+                if (race.ParticipantCount > 1) {
+                    await race.StartRaceAsync()
                         .ConfigureAwait(false);
                 } else {
                     await ctx.RespondAsync("Not enough users joined the race.")
                         .ConfigureAwait(false);
-                    StopRace(ctx.Channel.Id);
+                    race.StopRace();
                 }
+
+                _games.TryRemove(ctx.Channel.Id, out _);
             }
             #endregion
 
@@ -82,88 +74,17 @@ namespace TheGodfather.Commands.Games
             [Aliases("+", "compete")]
             public async Task JoinRaceAsync(CommandContext ctx)
             {
-                if (!_participants.ContainsKey(ctx.Channel.Id))
-                    throw new Exception("There is no race in this channel!");
+                if (_games[ctx.Channel.Id].GameRunning)
+                    throw new CommandFailedException("Race already started, you can't join it.");
 
-                if (_participants[ctx.Channel.Id].Any(id => id == ctx.User.Id))
-                    throw new Exception("You are already participating in the race!");
+                if (_games[ctx.Channel.Id].ParticipantCount >= 10)
+                    throw new CommandFailedException("Race is full, kthxbye.");
 
-                if (_started[ctx.Channel.Id])
-                    throw new Exception("Race already started, you can't join it.");
+                var emoji = _games[ctx.Channel.Id].AddParticipant(ctx.User.Id);
+                if (emoji == null)
+                    throw new CommandFailedException("You are already participating!");
 
-                if (_participants[ctx.Channel.Id].Count >= 10)
-                    throw new Exception("Race full.");
-
-                string emoji;
-                if (!_animals[ctx.Channel.Id].TryTake(out emoji))
-                    throw new CommandFailedException("Failed granting emoji to player.");
-                _participants[ctx.Channel.Id].Enqueue(ctx.User.Id);
-                if (!_emojis[ctx.Channel.Id].TryAdd(ctx.User.Id, emoji))
-                    throw new CommandFailedException("Failed granting emoji to player.");
-
-                await ctx.RespondAsync($"{ctx.User.Mention} joined the race as {DiscordEmoji.FromName(ctx.Client, emoji)}")
-                    .ConfigureAwait(false);
-            }
-            #endregion
-
-
-            #region HELPER_FUNCTIONS
-            private async Task StartRaceAsync(CommandContext ctx)
-            {
-                _started[ctx.Channel.Id] = true;
-
-                Dictionary<ulong, int> progress = new Dictionary<ulong, int>();
-                foreach (var p in _participants[ctx.Channel.Id])
-                    progress.Add(p, 0);
-
-                var msg = await ctx.RespondAsync("Race starting...")
-                    .ConfigureAwait(false);
-                var rnd = new Random((int)DateTime.Now.Ticks);
-                while (!progress.Any(e => e.Value >= 100)) {
-                    await PrintRaceAsync(ctx, progress, msg)
-                        .ConfigureAwait(false);
-
-                    foreach (var id in _participants[ctx.Channel.Id]) {
-                        progress[id] += rnd.Next(2, 7);
-                        if (progress[id] > 100)
-                            progress[id] = 100;
-                    }
-
-                    await Task.Delay(2000)
-                        .ConfigureAwait(false);
-                }
-                await PrintRaceAsync(ctx, progress, msg)
-                    .ConfigureAwait(false);
-
-                await ctx.RespondAsync("Race ended!")
-                    .ConfigureAwait(false);
-                StopRace(ctx.Channel.Id);
-            }
-
-            private void StopRace(ulong id)
-            {
-                _participants.TryRemove(id, out _);
-                _animals.TryRemove(id, out _);
-                _started.TryRemove(id, out _);
-            }
-
-            private async Task PrintRaceAsync(CommandContext ctx, Dictionary<ulong, int> progress, DiscordMessage msg)
-            {
-                string s = "LIVE RACING BROADCAST\n| 🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🔚\n";
-                foreach (var id in _participants[ctx.Channel.Id]) {
-                    var participant = await ctx.Guild.GetMemberAsync(id);
-                    s += "|";
-                    for (int p = progress[id]; p > 0; p--)
-                        s += "‣";
-                    s += DiscordEmoji.FromName(ctx.Client, _emojis[ctx.Channel.Id][id]);
-                    for (int p = 100 - progress[id]; p > 0; p--)
-                        s += "‣";
-                    s += "| " + participant.Mention;
-                    if (progress[id] == 100)
-                        s += " " + DiscordEmoji.FromName(ctx.Client, ":trophy:");
-                    s += '\n';
-                }
-                await msg.ModifyAsync(s)
+                await ctx.RespondAsync($"{ctx.User.Mention} joined the race as {emoji}")
                     .ConfigureAwait(false);
             }
             #endregion
