@@ -48,8 +48,8 @@ Commands use the following types:
 |   | ``leet`` |   | ``[text] Text`` | Wr1t3s m3ss@g3 1n 1337sp34k. | ``!leet This is so cool`` |
 |   | ``penis``<br>``size``<br>``length``<br>``manhood``<br>``dick`` |   | ``(optional) [user] User (def: sender)`` | An accurate measurement of ``User``'s manhood. | ``!penis @Someone`` |
 |   | ``ping`` |   |   | Ping the bot. | ``!ping`` |
-|   | ``poll``<br>``vote`` |   | ``[text] Question`` | Starts a poll in the channel. The bot will ask for poll options, which you give separated with ``;``, for example: ``option1;option2;option3`` | ``!poll "Do you want to kick Godfather?"`` |
-|   | ``prefix``<br>``setprefix`` | Administrator (user) | ``(optional) [string] New prefix (maxlen: 10)`` | If invoked without arguments, gives current prefix for this guild, otherwise sets the prefix to ``New prefix``. If for example ``New prefix`` is ``;``, all commands in this guild from that point must be invoked using ``;``, for example ``;greet``. | ``!prefix``<br><br>``!prefix .`` |
+|   | ``poll``<br>``vote`` |   | ``[text] Question`` | Starts a poll in the channel. The bot will ask for poll options, which you give separated with ``;``, for example: ``option1 ; another option ; option3`` | ``!poll "Do you want to kick Godfather?"`` |
+|   | ``prefix``<br>``setprefix`` | Administrator (user) | ``(optional) [string] New prefix (maxlen: 10)`` | If invoked without arguments, gives current prefix for this guild, otherwise sets the prefix to ``New prefix``. If for example ``New prefix`` is ``;``, all commands in this guild from that point must be invoked using ``;`` (``;greet``). | ``!prefix``<br><br>``!prefix .`` |
 |   | ``rate``<br>``score``<br>``graph`` |   | ``[user] User`` | An accurate graphical representatin of ``User``'s humanity. | ``!rate @Someone`` |
 |   | ``remind`` |   | ``[int] Time to wait before repeat (in seconds)``<br><br>``[text] What to repeat`` | Repeat given text after given time. | ``!remind 3600 I was told to remind you to do this`` |
 |   | ``report`` |   | ``[text] Report message`` | Send message to owner (hopefully about a bug, I can see it being abused) | ``!report Your bot sucks!`` |
@@ -57,7 +57,7 @@ Commands use the following types:
 |   | ``zugify`` |   | ``[text] Text`` | Requested by Zugi. It is so stupid it isn't worth describing... | ``!zugify Some text`` |
    |   |   |   |   |   |
 | ``filter``<br>``filters``<br>``f`` | ``add``<br>``+``<br>``new`` | Manage Guild (user) | ``[string] Trigger`` | Add a new filter to filter guild list. Whenever someone sends a message containing ``Trigger``, bot will delete it. Triggers can also be regular expressions (case ignored). | ``!filter add fuck`` |
-| ``filter``<br>``filters``<br>``f`` | ``clear`` | Administrator (user) | ``ca``<br>``c`` | Delete all filters for the current guild. | ``!filter clear`` |
+| ``filter``<br>``filters``<br>``f`` | ``clear``<br>``ca``<br>``c`` | Administrator (user) |  | Delete all filters for the current guild. | ``!filter clear`` |
 | ``filter``<br>``filters``<br>``f`` | ``delete``<br>``-``<br>``remove``<br>``del``<br>``rm`` | Manage Guild (user) | ``[int] Index`` | Remove filter with a given index from guild filter list. Use ``!filter list`` to view filters. | ``!filter delete 5`` |
 | ``filter``<br>``filters``<br>``f`` | ``list`` | ``ls``<br>``l`` | ``(optional) [int] Page (def: 1)`` | List guild filters on page ``Page``. | ``!filter list 3`` |
 |   |   |   |   |   |   |
@@ -69,12 +69,12 @@ Commands use the following types:
 | ``insult``<br>``burn``<br>``insults`` | ``save`` | Owner Only |  | Save all insults. | ``!insult save`` |
 |   |   |   |   |   |   |
 | ``meme``<br>``memes``<br>``mm`` |   |   | ``(optional) [text] Meme name`` | Send a meme with name ``Meme name``. If name isn't given, sends random one. | ``!meme``<br><br>``!meme fap`` |
-| ``meme``<br>``memes``<br>``mm`` | ``add``<br>``+``<br>``new``<br>``a`` | Owner Only | ``[text] Name``<br><br>``[string] URL`` | Add a new meme to global meme list. | ``!meme add Name http://url.png`` |
+| ``meme``<br>``memes``<br>``mm`` | ``add``<br>``+``<br>``new``<br>``a`` | Owner Only | ``[text] Name``<br><br>``[string] URL`` | Add a new meme to global meme list. | ``!meme add MyMeme http://url.png`` |
 | ``meme``<br>``memes``<br>``mm`` | ``create``<br>``maker``<br>``make``<br>``c``<br>``m`` |  | ``[string] Template``<br><br>``[string] Top Text``<br><br>``[string] Bottom Text`` | Creates a new meme with ``Template`` as background and ``Top Text`` and ``Bottom Text`` on it. Use ``!meme template list`` to view all templates. | ``!meme create successkid "I tried to create a meme" "I succeeded!"`` |
 | ``meme``<br>``memes``<br>``mm`` | ``delete``<br>``-``<br>``remove``<br>``del``<br>``rm``<br>``d`` | Owner Only | ``[text] Name`` | Remove meme with a given name from the list. Use ``!meme list`` to view all memes. | ``!meme delete fap`` |
-| ``meme``<br>``memes``<br>``mm`` | ``list`` | ``ls``<br>``l`` | ``(optional) [int] Page (def: 1)`` | List memes on page ``Page``. | ``!meme list 3`` |
-| ``meme``<br>``memes``<br>``mm`` | ``save`` | Owner Only | ``s`` | Save all memes. | ``!meme save`` |
-| ``meme templates``<br>``meme template``<br>``meme t`` | ``list`` | ``ls``<br>``l`` | ``(optional) [int] Page (def: 1)`` | List templates on page ``Page``. | ``!meme templates list 4`` |
+| ``meme``<br>``memes``<br>``mm`` | ``list``<br>``ls``<br>``l`` |  | ``(optional) [int] Page (def: 1)`` | List memes on page ``Page``. | ``!meme list 3`` |
+| ``meme``<br>``memes``<br>``mm`` | ``save``<br>``s`` | Owner Only |  | Save all memes. | ``!meme save`` |
+| ``meme templates``<br>``meme template``<br>``meme t`` | ``list``<br>``ls``<br>``l`` |  | ``(optional) [int] Page (def: 1)`` | List templates on page ``Page``. | ``!meme templates list 4`` |
 | ``meme templates``<br>``meme template``<br>``meme t`` | ``add``<br>``+``<br>``new`` | Owner Only | ``[string] Template name``<br><br>``[string] URL`` | Add a new meme template to global meme template list. | ``!meme template add somename http://url.png`` |
 | ``meme templates``<br>``meme template``<br>``meme t`` | ``delete``<br>``-``<br>``remove``<br>``del``<br>``rm``<br>``d`` | Owner Only | ``[text] Name``<br><br>``[string] URL`` | Add a new meme template to global meme template list. | ``!meme template add somename http://url.png`` |
 | ``meme templates``<br>``meme template``<br>``meme t`` | ``preview``<br>``p``<br>``pr``<br>``view`` |   | ``[string] Template name`` | Preview a meme template. | ``!meme template preview 1stworld`` |
@@ -202,7 +202,7 @@ Commands use the following types:
 | ``games``<br>``game``<br>``gm`` | ``stats`` |   | ``(optional) [user] User (def: sender)`` | Print game stats for given user. | ``!game stats`` |
 | ``games``<br>``game``<br>``gm`` | ``tictactoe``<br>``ttt`` |   |   | Challenge friends to a tictactoe game! First who replies with ``me`` or ``i`` will join your game. Play by posting a number from 1 to 9 corresponding to field you wish to place your move on. | ``!game ttt`` |
 | ``games``<br>``game``<br>``gm`` | ``typing``<br>``type``<br>``typerace``<br>``typingrace`` |   |   | Start a typing race game. | ``!game typerace`` |
-| ``game nunchi``<br>``game n`` |  |   |   | Start a new game or join a pending game. | ``!game nunchi`` |
+| ``game nunchi``<br>``game n`` |  |   |   | Start a new game or join a pending Nunchi game. | ``!game nunchi`` |
 | ``game nunchi``<br>``game n`` | ``rules``<br>``help`` |   |   | How to play? | ``!game nunchi rules`` |
 | ``game quiz``<br>``game trivia``<br>``game q`` | ``countries``<br>``flags`` |   |   | Start a new countries quiz. | ``!game quiz countries`` |
 | ``game race``<br>``game r`` |  |   |   | Start a new race or join a pending race! | ``!game race`` |
