@@ -24,8 +24,8 @@ Commands use the following types:
 * ``string`` : Word consisting of Unicode characters WITHOUT spaces. If you want to include spaces, then surround it with ``"``
 * ``bool`` : ``true`` or ``false``
 * ``text`` : Some Unicode text, can include spaces. Can be surrounded with ``"``
-* ``user`` : Discord user, given by ``@mention``, ``Username`` or UID
-* ``channel`` : Discord channel, given by ``name``, ``#name`` of CID
+* ``user`` : Discord user, given by ``@mention``, ``Username`` or UID (User ID)
+* ``channel`` : Discord channel, given by ``name``, ``#name`` or CID (Channel ID)
 * ``role`` : An existing role, given with ``@mentionrole`` or ``Role name``
 * ``emoji`` : Emoji, either Unicode or Discord representation (using ``:``)
 
