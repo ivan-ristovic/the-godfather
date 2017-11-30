@@ -203,12 +203,9 @@ Commands use the following types:
 | ``games``<br>``game``<br>``gm`` | ``tictactoe``<br>``ttt`` |   |   | Challenge friends to a tictactoe game! First who replies with ``me`` or ``i`` will join your game. Play by posting a number from 1 to 9 corresponding to field you wish to place your move on. | ``!game ttt`` |
 | ``games``<br>``game``<br>``gm`` | ``typing``<br>``type``<br>``typerace``<br>``typingrace`` |   |   | Start a typing race game. | ``!game typerace`` |
 | ``game nunchi``<br>``game n`` |  |   |   | Start a new game or join a pending game. | ``!game nunchi`` |
-| ``game nunchi``<br>``game n`` | ``join``<br>``+``<br>``compete`` |   |   | Join a pending nunchi game. | ``!game nunchi join`` |
 | ``game nunchi``<br>``game n`` | ``rules``<br>``help`` |   |   | How to play? | ``!game nunchi rules`` |
 | ``game quiz``<br>``game trivia``<br>``game q`` | ``countries``<br>``flags`` |   |   | Start a new countries quiz. | ``!game quiz countries`` |
-| ``game race``<br>``game r`` |  |   |   | Start a signup process for a new race! | ``!game race`` |
-| ``game race``<br>``game r`` | ``new``<br>``create`` |   |   | Identical result as to above command. | ``!game race new`` |
-| ``game race``<br>``game r`` | ``join``<br>``+``<br>``compete`` |   |   | Join a pending race. | ``!game race join`` |
+| ``game race``<br>``game r`` |  |   |   | Start a new race or join a pending race! | ``!game race`` |
 |   |   |   |   |   |   |
 
 ## Search commands
