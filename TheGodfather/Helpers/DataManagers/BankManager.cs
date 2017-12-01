@@ -19,7 +19,7 @@ namespace TheGodfather.Helpers.DataManagers
     public class BankManager
     {
         public IReadOnlyDictionary<ulong, int> Accounts => _accounts;
-        private static ConcurrentDictionary<ulong, int> _accounts = new ConcurrentDictionary<ulong, int>();
+        private ConcurrentDictionary<ulong, int> _accounts = new ConcurrentDictionary<ulong, int>();
         private bool _ioerr = false;
 
 

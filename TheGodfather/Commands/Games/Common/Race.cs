@@ -27,7 +27,7 @@ namespace TheGodfather.Commands.Games
         #region PUBLIC_FIELDS
         public bool GameRunning { get; private set; }
         public int ParticipantCount => _participants.Count;
-        public DiscordUser Winner { get; private set; }
+        public IEnumerable<ulong> WinnerIds { get; private set; }
         #endregion
 
         #region PRIVATE_FIELDS
@@ -77,12 +77,11 @@ namespace TheGodfather.Commands.Games
                 await Task.Delay(2000)
                     .ConfigureAwait(false);
             }
+
             await PrintRaceAsync(msg)
                 .ConfigureAwait(false);
 
-            await chn.SendMessageAsync("Race ended!")
-                .ConfigureAwait(false);
-
+            WinnerIds = _progress.Where(kvp => kvp.Value >= 100).Select(kvp => kvp.Key);
         }
 
         public void StopRace()

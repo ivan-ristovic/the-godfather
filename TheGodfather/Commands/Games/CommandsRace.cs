@@ -6,6 +6,7 @@ using System.Collections.Concurrent;
 using System.Threading.Tasks;
 
 using TheGodfather.Exceptions;
+using TheGodfather.Helpers.DataManagers;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -65,6 +66,10 @@ namespace TheGodfather.Commands.Games
                 }
 
                 _games.TryRemove(ctx.Channel.Id, out _);
+
+                var statman = ctx.Dependencies.GetDependency<GameStatsManager>();
+                foreach (var uid in race.WinnerIds)
+                    statman.UpdateRacesWonForUser(uid);
             }
             #endregion
 
