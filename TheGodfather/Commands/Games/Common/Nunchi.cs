@@ -66,7 +66,7 @@ namespace TheGodfather.Commands.Games
 
             var interactivity = _client.GetInteractivityModule();
             Winner = null;
-            while (_participants.Count > 1) {
+            while (ParticipantCount > 1) {
                 int n = 0;
                 var msg = await interactivity.WaitForMessageAsync(
                     xm => {
@@ -99,6 +99,11 @@ namespace TheGodfather.Commands.Games
                 }
             }
             Stop();
+
+            Winner = await _client.GetUserAsync(_participants[0])
+                .ConfigureAwait(false);
+            await chn.SendMessageAsync("Game over! Winner: " + Winner.Mention)
+                .ConfigureAwait(false);
         }
 
         public void Stop()
