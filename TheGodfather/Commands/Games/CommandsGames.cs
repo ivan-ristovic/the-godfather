@@ -58,8 +58,8 @@ namespace TheGodfather.Commands.Games
             var em = new DiscordEmbedBuilder() {
                 Color = DiscordColor.Chartreuse
             };
-            em.AddField($"Duel stats for {ctx.User.Username}", $"Won: {user1Stats.DuelsWon}\nLost: {user1Stats.DuelsLost}\nPercentage: {Math.Round((double)user1Stats.DuelsWon / (user1Stats.DuelsWon + user1Stats.DuelsLost) * 100)}%", inline: true);
-            em.AddField($"Duel stats for {u.Username}", $"Won: {user2Stats.DuelsWon}\nLost: {user2Stats.DuelsLost}\nPercentage: {Math.Round((double)user2Stats.DuelsWon / (user2Stats.DuelsWon + user2Stats.DuelsLost) * 100)}%", inline: true);
+            em.AddField($"Duel stats for {ctx.User.Username}", $"Won: {user1Stats.DuelsWon}\nLost: {user1Stats.DuelsLost}\nPercentage: {user1Stats.DuelWinPercentage}%", inline: true);
+            em.AddField($"Duel stats for {u.Username}", $"Won: {user2Stats.DuelsWon}\nLost: {user2Stats.DuelsLost}\nPercentage: {user2Stats.DuelWinPercentage}%", inline: true);
             await ctx.RespondAsync($"{duel.Winner.Username} {(string.IsNullOrWhiteSpace(duel.FinishingMove) ? "wins" : duel.FinishingMove)}!", embed: em.Build())
                 .ConfigureAwait(false);
         }
