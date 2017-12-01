@@ -163,7 +163,7 @@ namespace TheGodfather
                 LogHandle.Log(LogLevel.Error,
                     $"Errors occured during data load: " + Environment.NewLine +
                     $" Exception: {e.GetType()}" + Environment.NewLine +
-                    (e.InnerException != null ? $" Inner exception: {e.GetType()}" + Environment.NewLine : "") +
+                    (e.InnerException != null ? $" Inner exception: {e.InnerException.GetType()}" + Environment.NewLine : "") +
                     $" Message: {e.Message}"
                 );
                 return;
@@ -180,7 +180,7 @@ namespace TheGodfather
                 LogHandle.Log(LogLevel.Error,
                     $"Errors occured during data save: " + Environment.NewLine +
                     $" Exception: {e.GetType()}" + Environment.NewLine +
-                    (e.InnerException != null ? $" Inner exception: {e.GetType()}" + Environment.NewLine : "") +
+                    (e.InnerException != null ? $" Inner exception: {e.InnerException.GetType()}" + Environment.NewLine : "") +
                     $" Message: {e.Message}"
                 );
                 return;
@@ -323,7 +323,8 @@ namespace TheGodfather
             int rank = _dependecies.RankControl.UpdateMessageCount(e.Author.Id);
             if (rank != -1) {
                 var ranks = _dependecies.RankControl.Ranks;
-                await e.Channel.SendMessageAsync($"GG {e.Author.Mention}! You have advanced to level {rank} ({(rank < ranks.Count ? ranks[rank] : "Low")})!");
+                await e.Channel.SendMessageAsync($"GG {e.Author.Mention}! You have advanced to level {rank} ({(rank < ranks.Count ? ranks[rank] : "Low")})!")
+                    .ConfigureAwait(false);
             }
 
             // Check if message has a text trigger
@@ -335,7 +336,8 @@ namespace TheGodfather
                     $" User: {e.Message.Author.ToString()}" + Environment.NewLine +
                     $" Location: '{e.Guild.Name}' ({e.Guild.Id}) ; {e.Channel.ToString()}"
                 );
-                await e.Channel.SendMessageAsync(response.Replace("%user%", e.Author.Mention));
+                await e.Channel.SendMessageAsync(response.Replace("%user%", e.Author.Mention))
+                    .ConfigureAwait(false);
             }
 
             if (!e.Channel.PermissionsFor(e.Guild.CurrentMember).HasFlag(Permissions.AddReactions))
@@ -352,11 +354,14 @@ namespace TheGodfather
                 );
                 foreach (var emoji in emojilist) {
                     try {
-                        await e.Message.CreateReactionAsync(emoji);
+                        await e.Message.CreateReactionAsync(emoji)
+                            .ConfigureAwait(false);
                     } catch (ArgumentException) {
-                        await e.Channel.SendMessageAsync($"I have a reaction for that message set up ({emoji}) but that emoji doesn't exits. Fix your shit pls.");
+                        await e.Channel.SendMessageAsync($"I have a reaction for that message set up ({emoji}) but that emoji doesn't exits. Fix your shit pls.")
+                            .ConfigureAwait(false);
                     }
-                    await Task.Delay(500);
+                    await Task.Delay(500)
+                        .ConfigureAwait(false);
                 }
             }
         }
