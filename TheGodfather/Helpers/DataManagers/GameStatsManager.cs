@@ -61,64 +61,34 @@ namespace TheGodfather.Helpers.DataManagers
             return true;
         }
 
-        public bool UpdateDuelsWonForUser(ulong uid)
+        public void UpdateDuelsWonForUser(ulong uid)
         {
-            if (_stats.ContainsKey(uid)) {
-                _stats[uid].DuelsWon++;
-                return true;
-            } else {
-                return _stats.TryAdd(uid, new GameStats() { DuelsWon = 1 });
-            }
+            _stats.AddOrUpdate(uid, new GameStats() { DuelsWon = 1 }, (k, v) => { v.DuelsWon++; return v; });
         }
 
-        public bool UpdateDuelsLostForUser(ulong uid)
+        public void UpdateDuelsLostForUser(ulong uid)
         {
-            if (_stats.ContainsKey(uid)) {
-                _stats[uid].DuelsLost++;
-                return true;
-            } else {
-                return _stats.TryAdd(uid, new GameStats() { DuelsLost = 1 });
-            }
+            _stats.AddOrUpdate(uid, new GameStats() { DuelsLost = 1 }, (k, v) => { v.DuelsLost++; return v; });
         }
 
-        public bool UpdateNunchiGamesWonForUser(ulong uid)
+        public void UpdateNunchiGamesWonForUser(ulong uid)
         {
-            if (_stats.ContainsKey(uid)) {
-                _stats[uid].NunchiGamesWon++;
-                return true;
-            } else {
-                return _stats.TryAdd(uid, new GameStats() { NunchiGamesWon = 1 });
-            }
+            _stats.AddOrUpdate(uid, new GameStats() { NunchiGamesWon = 1 }, (k, v) => { v.NunchiGamesWon++; return v; });
         }
 
-        public bool UpdateQuizesWonForUser(ulong uid)
+        public void UpdateQuizesWonForUser(ulong uid)
         {
-            if (_stats.ContainsKey(uid)) {
-                _stats[uid].QuizesWon++;
-                return true;
-            } else {
-                return _stats.TryAdd(uid, new GameStats() { QuizesWon = 1 });
-            }
+            _stats.AddOrUpdate(uid, new GameStats() { QuizesWon = 1 }, (k, v) => { v.QuizesWon++; return v; });
         }
 
-        public bool UpdateRacesWonForUser(ulong uid)
+        public void UpdateRacesWonForUser(ulong uid)
         {
-            if (_stats.ContainsKey(uid)) {
-                _stats[uid].RacesWon++;
-                return true;
-            } else {
-                return _stats.TryAdd(uid, new GameStats() { RacesWon = 1 });
-            }
+            _stats.AddOrUpdate(uid, new GameStats() { RacesWon = 1 }, (k, v) => { v.RacesWon++; return v; });
         }
 
-        public bool UpdateHangmanWonForUser(ulong uid)
+        public void UpdateHangmanWonForUser(ulong uid)
         {
-            if (_stats.ContainsKey(uid)) {
-                _stats[uid].HangmanWon++;
-                return true;
-            } else {
-                return _stats.TryAdd(uid, new GameStats() { HangmanWon = 1 });
-            }
+            _stats.AddOrUpdate(uid, new GameStats() { HangmanWon = 1 }, (k, v) => { v.HangmanWon++; return v; });
         }
 
         public GameStats GetStatsForUser(ulong uid)
