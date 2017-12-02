@@ -59,6 +59,9 @@ namespace TheGodfather.Commands.Games
                 if (race.ParticipantCount > 1) {
                     await race.StartRaceAsync()
                         .ConfigureAwait(false);
+                    var statman = ctx.Dependencies.GetDependency<GameStatsManager>();
+                    foreach (var uid in race.WinnerIds)
+                        statman.UpdateRacesWonForUser(uid);
                 } else {
                     await ctx.RespondAsync("Not enough users joined the race.")
                         .ConfigureAwait(false);
@@ -66,10 +69,6 @@ namespace TheGodfather.Commands.Games
                 }
 
                 _games.TryRemove(ctx.Channel.Id, out _);
-
-                var statman = ctx.Dependencies.GetDependency<GameStatsManager>();
-                foreach (var uid in race.WinnerIds)
-                    statman.UpdateRacesWonForUser(uid);
             }
             #endregion
 

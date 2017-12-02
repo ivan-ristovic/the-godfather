@@ -20,7 +20,7 @@ namespace TheGodfather.Helpers.DataManagers
 {
     public class GameStatsManager
     {
-        private static ConcurrentDictionary<ulong, GameStats> _stats = new ConcurrentDictionary<ulong, GameStats>();
+        private ConcurrentDictionary<ulong, GameStats> _stats = new ConcurrentDictionary<ulong, GameStats>();
         private bool _ioerr = false;
 
 
