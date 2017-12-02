@@ -38,5 +38,8 @@ namespace TheGodfather.Helpers
 
         [JsonProperty("raceswon")]
         public uint RacesWon { get; internal set; }
+
+        [JsonProperty("hangmanwon")]
+        public uint HangmanWon { get; internal set; }
     }
 }

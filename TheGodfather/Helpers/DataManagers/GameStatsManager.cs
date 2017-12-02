@@ -111,6 +111,16 @@ namespace TheGodfather.Helpers.DataManagers
             }
         }
 
+        public bool UpdateHangmanWonForUser(ulong uid)
+        {
+            if (_stats.ContainsKey(uid)) {
+                _stats[uid].HangmanWon++;
+                return true;
+            } else {
+                return _stats.TryAdd(uid, new GameStats() { HangmanWon = 1 });
+            }
+        }
+
         public GameStats GetStatsForUser(ulong uid)
         {
             if (_stats.ContainsKey(uid))
@@ -135,6 +145,7 @@ namespace TheGodfather.Helpers.DataManagers
             em.AddField($"Nunchi stats", $"Won: {_stats[u.Id].NunchiGamesWon}", inline: true);
             em.AddField($"Quiz stats", $"Won: {_stats[u.Id].QuizesWon}", inline: true);
             em.AddField($"Race stats", $"Won: {_stats[u.Id].RacesWon}", inline: true);
+            em.AddField($"Hangman stats", $"Won: {_stats[u.Id].HangmanWon}", inline: true);
 
             return em.Build();
         }
@@ -148,7 +159,7 @@ namespace TheGodfather.Helpers.DataManagers
 
             string desc;
 
-            var topDuelists = _stats.OrderBy(kvp => kvp.Value.DuelsWon).Select(kvp => kvp.Key).Take(5);
+            var topDuelists = _stats.OrderByDescending(kvp => kvp.Value.DuelsWon).Select(kvp => kvp.Key).Take(5);
             desc = "";
             foreach (var uid in topDuelists) {
                 try {
@@ -161,7 +172,7 @@ namespace TheGodfather.Helpers.DataManagers
             }
             em.AddField("Top 5 in Duel game:", desc, inline: true);
 
-            var topNunchiPlayers = _stats.OrderBy(kvp => kvp.Value.NunchiGamesWon).Select(kvp => kvp.Key).Take(5);
+            var topNunchiPlayers = _stats.OrderByDescending(kvp => kvp.Value.NunchiGamesWon).Select(kvp => kvp.Key).Take(5);
             desc = "";
             foreach (var uid in topNunchiPlayers) {
                 try {
@@ -174,7 +185,7 @@ namespace TheGodfather.Helpers.DataManagers
             }
             em.AddField("Top 5 in Nunchi game:", desc, inline: true);
 
-            var topQuizPlayers = _stats.OrderBy(kvp => kvp.Value.QuizesWon).Select(kvp => kvp.Key).Take(5);
+            var topQuizPlayers = _stats.OrderByDescending(kvp => kvp.Value.QuizesWon).Select(kvp => kvp.Key).Take(5);
             desc = "";
             foreach (var uid in topQuizPlayers) {
                 try {
@@ -187,7 +198,8 @@ namespace TheGodfather.Helpers.DataManagers
             }
             em.AddField("Top 5 in Quiz game:", desc, inline: true);
 
-            var topRacePlayers = _stats.OrderBy(kvp => kvp.Value.RacesWon).Select(kvp => kvp.Key).Take(5);
+            var topRacePlayers = _stats.OrderByDescending(kvp => kvp.Value.RacesWon).Select(kvp => kvp.Key).Take(5);
+            desc = "";
             foreach (var uid in topRacePlayers) {
                 try {
                     var u = await client.GetUserAsync(uid)
@@ -198,6 +210,19 @@ namespace TheGodfather.Helpers.DataManagers
                 }
             }
             em.AddField("Top 5 in Race game:", desc, inline: true);
+
+            var topHangmanPlayers = _stats.OrderByDescending(kvp => kvp.Value.HangmanWon).Select(kvp => kvp.Key).Take(5);
+            desc = "";
+            foreach (var uid in topHangmanPlayers) {
+                try {
+                    var u = await client.GetUserAsync(uid)
+                        .ConfigureAwait(false);
+                    desc += $"{Formatter.Bold(u.Username)} => Won: {_stats[uid].HangmanWon}\n";
+                } catch (NotFoundException) {
+                    continue;
+                }
+            }
+            em.AddField("Top 5 in Hangman game:", desc, inline: true);
 
             return em.Build();
         }

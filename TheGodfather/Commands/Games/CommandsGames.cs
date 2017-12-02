@@ -101,6 +101,8 @@ namespace TheGodfather.Commands.Games
             var hangman = new Hangman(ctx.Client, ctx.Channel.Id, msg.Message.Content);
             await hangman.PlayAsync()
                 .ConfigureAwait(false);
+            if (hangman.Winner != null)
+                ctx.Dependencies.GetDependency<GameStatsManager>().UpdateHangmanWonForUser(hangman.Winner.Id);
         }
         #endregion
 
