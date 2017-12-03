@@ -71,6 +71,11 @@ namespace TheGodfather.Helpers.DataManagers
             _stats.AddOrUpdate(uid, new GameStats() { DuelsLost = 1 }, (k, v) => { v.DuelsLost++; return v; });
         }
 
+        public void UpdateHangmanWonForUser(ulong uid)
+        {
+            _stats.AddOrUpdate(uid, new GameStats() { HangmanWon = 1 }, (k, v) => { v.HangmanWon++; return v; });
+        }
+
         public void UpdateNunchiGamesWonForUser(ulong uid)
         {
             _stats.AddOrUpdate(uid, new GameStats() { NunchiGamesWon = 1 }, (k, v) => { v.NunchiGamesWon++; return v; });
@@ -86,9 +91,13 @@ namespace TheGodfather.Helpers.DataManagers
             _stats.AddOrUpdate(uid, new GameStats() { RacesWon = 1 }, (k, v) => { v.RacesWon++; return v; });
         }
 
-        public void UpdateHangmanWonForUser(ulong uid)
+        public void UpdateTTTWonForUser(ulong uid)
         {
-            _stats.AddOrUpdate(uid, new GameStats() { HangmanWon = 1 }, (k, v) => { v.HangmanWon++; return v; });
+            _stats.AddOrUpdate(uid, new GameStats() { TTTWon = 1 }, (k, v) => { v.TTTWon++; return v; });
+        }
+        public void UpdateTTTLostForUser(ulong uid)
+        {
+            _stats.AddOrUpdate(uid, new GameStats() { TTTLost = 1 }, (k, v) => { v.TTTLost++; return v; });
         }
 
         public GameStats GetStatsForUser(ulong uid)
@@ -103,6 +112,7 @@ namespace TheGodfather.Helpers.DataManagers
         {
             var em = new DiscordEmbedBuilder() {
                 Title = $"Stats for {u.Username}",
+                ThumbnailUrl = u.AvatarUrl,
                 Color = DiscordColor.Chartreuse
             };
 
@@ -112,6 +122,7 @@ namespace TheGodfather.Helpers.DataManagers
             }
 
             em.AddField($"Duel stats", $"Won: {_stats[u.Id].DuelsWon}, Lost: {_stats[u.Id].DuelsLost}, Percentage: {_stats[u.Id].DuelWinPercentage}%");
+            em.AddField($"Tic-Tac-Toe stats", $"Won: {_stats[u.Id].TTTWon}, Lost: {_stats[u.Id].TTTLost}, Percentage: {_stats[u.Id].TTTWinPercentage}%");
             em.AddField($"Nunchi stats", $"Won: {_stats[u.Id].NunchiGamesWon}", inline: true);
             em.AddField($"Quiz stats", $"Won: {_stats[u.Id].QuizesWon}", inline: true);
             em.AddField($"Race stats", $"Won: {_stats[u.Id].RacesWon}", inline: true);

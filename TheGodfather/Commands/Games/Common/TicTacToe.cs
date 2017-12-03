@@ -19,7 +19,12 @@ namespace TheGodfather.Commands.Games
 {
     public class TicTacToe
     {
+        #region PUBLIC_FIELDS
+        public DiscordUser Winner { get; private set; }
+        #endregion
+
         #region STATIC_FIELDS
+        public static bool GameExistsInChannel(ulong cid) => _channels.Contains(cid);
         private static ConcurrentHashSet<ulong> _channels = new ConcurrentHashSet<ulong>();
         #endregion
 
@@ -44,8 +49,6 @@ namespace TheGodfather.Commands.Games
         }
 
 
-        public static bool GameExistsInChannel(ulong cid) => _channels.Contains(cid);
-
         public async Task PlayAsync()
         {
             var channel = await _client.GetChannelAsync(_cid)
@@ -63,6 +66,15 @@ namespace TheGodfather.Commands.Games
                     .ConfigureAwait(false);
                 
                 _move++;
+            }
+
+            if (TTTGameOver()) {
+                if (_move % 2 == 0)
+                    Winner = await _client.GetUserAsync(_p2Id).ConfigureAwait(false);
+                else
+                    Winner = await _client.GetUserAsync(_p1Id).ConfigureAwait(false);
+            } else {
+                Winner = null;
             }
 
             await TTTUpdateBoardAsync()

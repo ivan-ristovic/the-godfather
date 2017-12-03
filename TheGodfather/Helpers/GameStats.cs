@@ -30,6 +30,9 @@ namespace TheGodfather.Helpers
             internal set { }
         }
 
+        [JsonProperty("hangmanwon")]
+        public uint HangmanWon { get; internal set; }
+
         [JsonProperty("nunchiswon")]
         public uint NunchiGamesWon { get; internal set; }
 
@@ -39,7 +42,21 @@ namespace TheGodfather.Helpers
         [JsonProperty("raceswon")]
         public uint RacesWon { get; internal set; }
 
-        [JsonProperty("hangmanwon")]
-        public uint HangmanWon { get; internal set; }
+        [JsonProperty("tttwon")]
+        public uint TTTWon { get; internal set; }
+
+        [JsonProperty("tttlost")]
+        public uint TTTLost { get; internal set; }
+
+        [JsonIgnore]
+        public int TTTWinPercentage
+        {
+            get {
+                if (TTTWon + TTTLost == 0)
+                    return 0;
+                return (int)Math.Round((double)TTTWon / (TTTWon + TTTLost) * 100);
+            }
+            internal set { }
+        }
     }
 }

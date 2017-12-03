@@ -194,8 +194,18 @@ namespace TheGodfather.Commands.Games
             await ttt.PlayAsync()
                 .ConfigureAwait(false);
 
-            await ctx.RespondAsync("ggwp")
-                .ConfigureAwait(false);
+            if (ttt.Winner != null) {
+                await ctx.RespondAsync($"The winner is: {ttt.Winner.Mention}!")
+                    .ConfigureAwait(false);
+                ctx.Dependencies.GetDependency<GameStatsManager>().UpdateTTTWonForUser(ttt.Winner.Id);
+                if (ttt.Winner.Id == ctx.User.Id)
+                    ctx.Dependencies.GetDependency<GameStatsManager>().UpdateTTTLostForUser(msg.User.Id);
+                else
+                    ctx.Dependencies.GetDependency<GameStatsManager>().UpdateTTTLostForUser(ctx.User.Id);
+            } else {
+                await ctx.RespondAsync("A draw... Pathetic...")
+                    .ConfigureAwait(false);
+            }
         }
 
         #endregion
