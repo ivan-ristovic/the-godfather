@@ -48,7 +48,6 @@ namespace TheGodfather.Commands.Games
 
         public Duel(DiscordClient client, ulong cid, DiscordUser p1, DiscordUser p2)
         {
-            _channels.Add(_cid);
             _client = client;
             _cid = cid;
             _p1 = p1;
@@ -58,6 +57,8 @@ namespace TheGodfather.Commands.Games
 
         public async Task PlayAsync()
         {
+            _channels.Add(_cid);
+
             UpdateHpBars();
 
             var chn = await _client.GetChannelAsync(_cid)

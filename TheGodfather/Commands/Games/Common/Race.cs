@@ -19,11 +19,6 @@ namespace TheGodfather.Commands.Games
 {
     public class Race
     {
-        #region STATIC_FIELDS
-        public static bool GameExistsInChannel(ulong cid) => _channels.Contains(cid);
-        private static ConcurrentHashSet<ulong> _channels = new ConcurrentHashSet<ulong>();
-        #endregion
-
         #region PUBLIC_FIELDS
         public bool GameRunning { get; private set; }
         public int ParticipantCount => _participants.Count;
@@ -46,7 +41,6 @@ namespace TheGodfather.Commands.Games
         {
             _client = client;
             _cid = cid;
-            _channels.Add(_cid);
             GameRunning = false;
         }
 
@@ -82,12 +76,6 @@ namespace TheGodfather.Commands.Games
                 .ConfigureAwait(false);
 
             WinnerIds = _progress.Where(kvp => kvp.Value >= 100).Select(kvp => kvp.Key);
-        }
-
-        public void StopRace()
-        {
-            _channels.TryRemove(_cid);
-            GameRunning = false;
         }
 
         public DiscordEmoji AddParticipant(ulong uid)

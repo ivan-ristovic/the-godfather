@@ -42,7 +42,6 @@ namespace TheGodfather.Commands.Games
 
         public Hangman(DiscordClient client, ulong cid, string word)
         {
-            _channels.Add(_cid);
             _client = client;
             _cid = cid;
             _word = word.ToLower();
@@ -52,6 +51,7 @@ namespace TheGodfather.Commands.Games
 
         public async Task PlayAsync()
         {
+            _channels.Add(_cid);
             var channel = await _client.GetChannelAsync(_cid)
                 .ConfigureAwait(false);
 

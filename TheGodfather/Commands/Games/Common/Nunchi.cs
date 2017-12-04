@@ -19,11 +19,6 @@ namespace TheGodfather.Commands.Games
 {
     public class Nunchi
     {
-        #region STATIC_FIELDS
-        public static bool GameExistsInChannel(ulong cid) => _channels.Contains(cid);
-        private static ConcurrentHashSet<ulong> _channels = new ConcurrentHashSet<ulong>();
-        #endregion
-
         #region PUBLIC_FIELDS
         public int ParticipantCount => _participants.Count();
         public bool GameRunning { get; private set; }
@@ -42,7 +37,6 @@ namespace TheGodfather.Commands.Games
             _client = client;
             _cid = cid;
             GameRunning = false;
-            _channels.Add(_cid);
         }
 
 
@@ -85,7 +79,6 @@ namespace TheGodfather.Commands.Games
                         await chn.SendMessageAsync($"{Winner.Mention} won due to no replies from other users!")
                             .ConfigureAwait(false);
                     }
-                    Stop();
                     return;
                 } else if (n == num + 1) {
                     num++;
@@ -98,17 +91,11 @@ namespace TheGodfather.Commands.Games
                     _participants.Remove(msg.User.Id);
                 }
             }
-            Stop();
 
             Winner = await _client.GetUserAsync(_participants[0])
                 .ConfigureAwait(false);
             await chn.SendMessageAsync("Game over! Winner: " + Winner.Mention)
                 .ConfigureAwait(false);
-        }
-
-        public void Stop()
-        {
-            _channels.TryRemove(_cid);
         }
     }
 }

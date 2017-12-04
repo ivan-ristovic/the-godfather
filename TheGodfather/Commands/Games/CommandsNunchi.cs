@@ -30,20 +30,20 @@ namespace TheGodfather.Commands.Games
             private ConcurrentDictionary<ulong, Nunchi> _games = new ConcurrentDictionary<ulong, Nunchi>();
             #endregion
 
+
             public async Task ExecuteGroupAsync(CommandContext ctx)
             {
-                Nunchi game;
-                if (Nunchi.GameExistsInChannel(ctx.Channel.Id)) {
+                if (_games.ContainsKey(ctx.Channel.Id)) {
                     await JoinGameAsync(ctx)
                         .ConfigureAwait(false);
                     return;
-                } else {
-                    game = new Nunchi(ctx.Client, ctx.Channel.Id);
-                    if (!_games.TryAdd(ctx.Channel.Id, game))
-                        throw new CommandFailedException("Failed to create a new nunchi game! Please try again.");
-                    await ctx.RespondAsync("The game will start in 30s or when there are 10 participants. Type " + Formatter.InlineCode("!game nunchi") + " to join the game.")
-                        .ConfigureAwait(false);
                 }
+
+                Nunchi game = new Nunchi(ctx.Client, ctx.Channel.Id);
+                if (!_games.TryAdd(ctx.Channel.Id, game))
+                    throw new CommandFailedException("Failed to create a new nunchi game! Please try again.");
+                await ctx.RespondAsync("The game will start in 30s or when there are 10 participants. Type " + Formatter.InlineCode("!game nunchi") + " to join the game.")
+                    .ConfigureAwait(false);
 
                 await JoinGameAsync(ctx)
                     .ConfigureAwait(false);
@@ -58,9 +58,10 @@ namespace TheGodfather.Commands.Games
                 } else {
                     await ctx.RespondAsync("Not enough users joined the game.")
                         .ConfigureAwait(false);
-                    game.Stop();
                 }
-                _games.TryRemove(ctx.Channel.Id, out _);
+
+                if (!_games.TryRemove(ctx.Channel.Id, out _))
+                    throw new CommandFailedException("Failed to stop a nunchi game! Please report this.");
             }
 
 
