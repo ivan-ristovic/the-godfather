@@ -22,11 +22,12 @@ namespace TheGodfather.Helpers.DataManagers
     {
         private ConcurrentDictionary<ulong, GameStats> _stats = new ConcurrentDictionary<ulong, GameStats>();
         private bool _ioerr = false;
+        private DiscordClient _client;
 
 
-        public GameStatsManager()
+        public GameStatsManager(DiscordClient client)
         {
-
+            _client = client;
         }
 
 
@@ -95,6 +96,7 @@ namespace TheGodfather.Helpers.DataManagers
         {
             _stats.AddOrUpdate(uid, new GameStats() { TTTWon = 1 }, (k, v) => { v.TTTWon++; return v; });
         }
+
         public void UpdateTTTLostForUser(ulong uid)
         {
             _stats.AddOrUpdate(uid, new GameStats() { TTTLost = 1 }, (k, v) => { v.TTTLost++; return v; });
@@ -110,102 +112,61 @@ namespace TheGodfather.Helpers.DataManagers
 
         public DiscordEmbed GetEmbeddedStatsForUser(DiscordUser u)
         {
-            var em = new DiscordEmbedBuilder() {
-                Title = $"Stats for {u.Username}",
-                ThumbnailUrl = u.AvatarUrl,
-                Color = DiscordColor.Chartreuse
-            };
-
             if (!_stats.ContainsKey(u.Id)) {
-                em.WithDescription("No games played yet!");
-                return em.Build();
+                return new DiscordEmbedBuilder() {
+                    Title = $"Stats for {u.Username}",
+                    Description = "No games played yet!",
+                    ThumbnailUrl = u.AvatarUrl,
+                    Color = DiscordColor.Chartreuse
+                }.Build();
             }
 
-            em.AddField($"Duel stats", $"Won: {_stats[u.Id].DuelsWon}, Lost: {_stats[u.Id].DuelsLost}, Percentage: {_stats[u.Id].DuelWinPercentage}%");
-            em.AddField($"Tic-Tac-Toe stats", $"Won: {_stats[u.Id].TTTWon}, Lost: {_stats[u.Id].TTTLost}, Percentage: {_stats[u.Id].TTTWinPercentage}%");
-            em.AddField($"Nunchi stats", $"Won: {_stats[u.Id].NunchiGamesWon}", inline: true);
-            em.AddField($"Quiz stats", $"Won: {_stats[u.Id].QuizesWon}", inline: true);
-            em.AddField($"Race stats", $"Won: {_stats[u.Id].RacesWon}", inline: true);
-            em.AddField($"Hangman stats", $"Won: {_stats[u.Id].HangmanWon}", inline: true);
-
-            return em.Build();
+            var eb = _stats[u.Id].GetEmbeddedStats();
+            eb.WithTitle($"Stats for {u.Username}");
+            eb.WithThumbnailUrl(u.AvatarUrl);
+            return eb.Build();
         }
 
-        public async Task<DiscordEmbed> GetLeaderboardAsync(DiscordClient client)
+        public async Task<DiscordEmbed> GetLeaderboardAsync()
         {
             var em = new DiscordEmbedBuilder() {
-                Title = "Game leaderboard",
+                Title = "HALL OF FAME",
                 Color = DiscordColor.Chartreuse
             };
 
             string desc;
 
-            var topDuelists = _stats.OrderByDescending(kvp => kvp.Value.DuelsWon).Select(kvp => kvp.Key).Take(5);
-            desc = "";
-            foreach (var uid in topDuelists) {
-                try {
-                    var u = await client.GetUserAsync(uid)
-                        .ConfigureAwait(false);
-                    desc += $"{Formatter.Bold(u.Username)} => Won: {_stats[uid].DuelsWon}; Lost: {_stats[uid].DuelsLost}\n";
-                } catch (NotFoundException) {
-                    continue;
-                }
-            }
+            desc = await StatSelectorAsync(5, kvp => kvp.Value.DuelWinPercentage, uid => _stats[uid].DuelStatsString())
+                .ConfigureAwait(false);
             em.AddField("Top 5 in Duel game:", desc, inline: true);
 
-            var topNunchiPlayers = _stats.OrderByDescending(kvp => kvp.Value.NunchiGamesWon).Select(kvp => kvp.Key).Take(5);
-            desc = "";
-            foreach (var uid in topNunchiPlayers) {
-                try {
-                    var u = await client.GetUserAsync(uid)
-                        .ConfigureAwait(false);
-                    desc += $"{Formatter.Bold(u.Username)} => Won: {_stats[uid].NunchiGamesWon}\n";
-                } catch (NotFoundException) {
-                    continue;
-                }
-            }
+            desc = await StatSelectorAsync(5, kvp => kvp.Value.NunchiGamesWon, uid => _stats[uid].NunchiStatsString())
+                .ConfigureAwait(false);
             em.AddField("Top 5 in Nunchi game:", desc, inline: true);
 
-            var topQuizPlayers = _stats.OrderByDescending(kvp => kvp.Value.QuizesWon).Select(kvp => kvp.Key).Take(5);
-            desc = "";
-            foreach (var uid in topQuizPlayers) {
-                try {
-                    var u = await client.GetUserAsync(uid)
-                        .ConfigureAwait(false);
-                    desc += $"{Formatter.Bold(u.Username)} => Won: {_stats[uid].QuizesWon}\n";
-                } catch (NotFoundException) {
-                    continue;
-                }
-            }
+            desc = await StatSelectorAsync(5, kvp => kvp.Value.QuizesWon, uid => _stats[uid].QuizStatsString())
+                .ConfigureAwait(false);
             em.AddField("Top 5 in Quiz game:", desc, inline: true);
 
-            var topRacePlayers = _stats.OrderByDescending(kvp => kvp.Value.RacesWon).Select(kvp => kvp.Key).Take(5);
-            desc = "";
-            foreach (var uid in topRacePlayers) {
-                try {
-                    var u = await client.GetUserAsync(uid)
-                        .ConfigureAwait(false);
-                    desc += $"{Formatter.Bold(u.Username)} => Won: {_stats[uid].RacesWon}\n";
-                } catch (NotFoundException) {
-                    continue;
-                }
-            }
+            desc = await StatSelectorAsync(5, kvp => kvp.Value.RacesWon, uid => _stats[uid].RaceStatsString())
+                .ConfigureAwait(false);
             em.AddField("Top 5 in Race game:", desc, inline: true);
 
-            var topHangmanPlayers = _stats.OrderByDescending(kvp => kvp.Value.HangmanWon).Select(kvp => kvp.Key).Take(5);
-            desc = "";
-            foreach (var uid in topHangmanPlayers) {
-                try {
-                    var u = await client.GetUserAsync(uid)
-                        .ConfigureAwait(false);
-                    desc += $"{Formatter.Bold(u.Username)} => Won: {_stats[uid].HangmanWon}\n";
-                } catch (NotFoundException) {
-                    continue;
-                }
-            }
+            desc = await StatSelectorAsync(5, kvp => kvp.Value.HangmanWon, uid => _stats[uid].HangmanStatsString())
+                .ConfigureAwait(false);
             em.AddField("Top 5 in Hangman game:", desc, inline: true);
 
             return em.Build();
+        }
+
+        private async Task<string> StatSelectorAsync(int ammount, 
+                                                     Func<KeyValuePair<ulong, GameStats>, uint> sorter,
+                                                     Func<ulong, string> formatter)
+        {
+            var topuids = _stats.OrderByDescending(sorter).Select(kvp => kvp.Key).Take(ammount);
+            var stats = topuids.Select(formatter);
+            var usernames = await Task.WhenAll(topuids.Select(uid => _client.GetUserAsync(uid))).ConfigureAwait(false);
+            return string.Join("\n", usernames.Zip(stats, (u, s) => $"{Formatter.Bold(u.Username)} : {s}"));
         }
     }
 }

@@ -12,7 +12,7 @@ using DSharpPlus.Entities;
 
 namespace TheGodfather.Helpers
 {
-    public class GameStats
+    public sealed class GameStats
     {
         [JsonProperty("duelswon")]
         public uint DuelsWon { get; internal set; }
@@ -21,11 +21,12 @@ namespace TheGodfather.Helpers
         public uint DuelsLost { get; internal set; }
 
         [JsonIgnore]
-        public int DuelWinPercentage {
+        public uint DuelWinPercentage
+        {
             get {
                 if (DuelsWon + DuelsLost == 0)
                     return 0;
-                return (int)Math.Round((double)DuelsWon / (DuelsWon + DuelsLost) * 100);
+                return (uint)Math.Round((double)DuelsWon / (DuelsWon + DuelsLost) * 100);
             }
             internal set { }
         }
@@ -49,14 +50,35 @@ namespace TheGodfather.Helpers
         public uint TTTLost { get; internal set; }
 
         [JsonIgnore]
-        public int TTTWinPercentage
+        public uint TTTWinPercentage
         {
             get {
                 if (TTTWon + TTTLost == 0)
                     return 0;
-                return (int)Math.Round((double)TTTWon / (TTTWon + TTTLost) * 100);
+                return (uint)Math.Round((double)TTTWon / (TTTWon + TTTLost) * 100);
             }
             internal set { }
         }
+
+
+        public string DuelStatsString() => $"W: {DuelsWon} L: {DuelsLost} ({DuelWinPercentage}%)";
+        public string TTTStatsString() => $"W: {TTTWon} L: {TTTLost} ({TTTWinPercentage}%)";
+        public string NunchiStatsString() => $"{NunchiGamesWon}";
+        public string QuizStatsString() => $"{QuizesWon}";
+        public string RaceStatsString() => $"{RacesWon}";
+        public string HangmanStatsString() => $"{HangmanWon}";
+
+        public DiscordEmbedBuilder GetEmbeddedStats()
+        {
+            var eb = new DiscordEmbedBuilder() { Color = DiscordColor.Chartreuse };
+            eb.AddField("Duel stats", DuelStatsString());
+            eb.AddField("Tic-Tac-Toe stats", TTTStatsString());
+            eb.AddField("Nunchi games won", NunchiStatsString(), inline: true);
+            eb.AddField("Quizzes won", QuizStatsString(), inline: true);
+            eb.AddField("Races won", RaceStatsString(), inline: true);
+            eb.AddField("Hangman games won", HangmanStatsString(), inline: true);
+            return eb;
+        }
+
     }
 }

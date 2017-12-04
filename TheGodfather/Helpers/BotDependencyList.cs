@@ -47,7 +47,7 @@ namespace TheGodfather.Helpers
             RankControl = new RankManager();
             StatusControl = new StatusManager();
             SwatServerControl = new SwatServerManager();
-            GameStatsControl = new GameStatsManager();
+            GameStatsControl = new GameStatsManager(client);
             GuildConfigControl = new GuildConfigManager(cfg);
             GiphyService = new GiphyService(cfg.GiphyKey);
             ImgurService = new ImgurService(cfg.ImgurKey);

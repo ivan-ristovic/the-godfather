@@ -50,16 +50,14 @@ namespace TheGodfather.Commands.Games
             await duel.PlayAsync()
                 .ConfigureAwait(false);
 
-            var statManager = ctx.Dependencies.GetDependency<GameStatsManager>();
-            statManager.UpdateDuelsWonForUser(duel.Winner.Id);
-            statManager.UpdateDuelsLostForUser(duel.Winner.Id == ctx.User.Id ? u.Id : ctx.User.Id);
-            var user1Stats = statManager.GetStatsForUser(ctx.User.Id);
-            var user2Stats = statManager.GetStatsForUser(u.Id);
+            var gsm = ctx.Dependencies.GetDependency<GameStatsManager>();
+            gsm.UpdateDuelsWonForUser(duel.Winner.Id);
+            gsm.UpdateDuelsLostForUser(duel.Winner.Id == ctx.User.Id ? u.Id : ctx.User.Id);
             var em = new DiscordEmbedBuilder() {
                 Color = DiscordColor.Chartreuse
             };
-            em.AddField($"Duel stats for {ctx.User.Username}", $"Won: {user1Stats.DuelsWon}\nLost: {user1Stats.DuelsLost}\nPercentage: {user1Stats.DuelWinPercentage}%", inline: true);
-            em.AddField($"Duel stats for {u.Username}", $"Won: {user2Stats.DuelsWon}\nLost: {user2Stats.DuelsLost}\nPercentage: {user2Stats.DuelWinPercentage}%", inline: true);
+            em.AddField($"Duel stats for {ctx.User.Username}", gsm.GetStatsForUser(ctx.User.Id).DuelStatsString(), inline: true);
+            em.AddField($"Duel stats for {u.Username}", gsm.GetStatsForUser(u.Id).DuelStatsString(), inline: true);
             await ctx.RespondAsync($"{duel.Winner.Username} {(string.IsNullOrWhiteSpace(duel.FinishingMove) ? "wins" : duel.FinishingMove)}!", embed: em.Build())
                 .ConfigureAwait(false);
         }
@@ -112,7 +110,7 @@ namespace TheGodfather.Commands.Games
         [Aliases("globalstats")]
         public async Task LeaderboardAsync(CommandContext ctx)
         {
-            var em = await ctx.Dependencies.GetDependency<GameStatsManager>().GetLeaderboardAsync(ctx.Client)
+            var em = await ctx.Dependencies.GetDependency<GameStatsManager>().GetLeaderboardAsync()
                 .ConfigureAwait(false);
             await ctx.RespondAsync(embed: em)
                 .ConfigureAwait(false);
