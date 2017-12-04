@@ -26,9 +26,7 @@ namespace TheGodfather.Commands.Games
         #endregion
 
         #region PRIVATE_FIELDS
-        private ConcurrentQueue<ulong> _participants = new ConcurrentQueue<ulong>();
-        private ConcurrentDictionary<ulong, string> _emojis = new ConcurrentDictionary<ulong, string>();
-        private Dictionary<ulong, int> _progress = new Dictionary<ulong, int>();
+        private ConcurrentQueue<RaceParticipant> _participants = new ConcurrentQueue<RaceParticipant>();
         private ConcurrentBag<string> _animals = new ConcurrentBag<string> {
             ":dog:", ":cat:", ":mouse:", ":hamster:", ":rabbit:", ":bear:", ":pig:", ":cow:", ":koala:", ":tiger:"
         };
@@ -52,20 +50,17 @@ namespace TheGodfather.Commands.Games
             var chn = await _client.GetChannelAsync(_cid)
                 .ConfigureAwait(false);
 
-            foreach (var p in _participants)
-                _progress.Add(p, 0);
-
             var msg = await chn.SendMessageAsync("Race starting...")
                 .ConfigureAwait(false);
             var rnd = new Random((int)DateTime.Now.Ticks);
-            while (!_progress.Any(e => e.Value >= 100)) {
+            while (!_participants.Any(p => p.Progress >= 100)) {
                 await PrintRaceAsync(msg)
                     .ConfigureAwait(false);
 
-                foreach (var id in _participants) {
-                    _progress[id] += rnd.Next(2, 7);
-                    if (_progress[id] > 100)
-                        _progress[id] = 100;
+                foreach (var participant in _participants) {
+                    participant.Progress += rnd.Next(2, 7);
+                    if (participant.Progress > 100)
+                        participant.Progress = 100;
                 }
 
                 await Task.Delay(2000)
@@ -75,43 +70,51 @@ namespace TheGodfather.Commands.Games
             await PrintRaceAsync(msg)
                 .ConfigureAwait(false);
 
-            WinnerIds = _progress.Where(kvp => kvp.Value >= 100).Select(kvp => kvp.Key);
+            WinnerIds = _participants.Where(p => p.Progress >= 100).Select(p => p.Id);
         }
 
         public DiscordEmoji AddParticipant(ulong uid)
         {
-            if (_participants.Contains(uid))
+            if (_participants.Any(p => p.Id == uid))
                 return null;
 
             string emoji;
             if (!_animals.TryTake(out emoji))
                 return null;
-            _participants.Enqueue(uid);
-            if (!_emojis.TryAdd(uid, emoji))
-                return null;
+            _participants.Enqueue(new RaceParticipant {
+                Id = uid,
+                Emoji = emoji,
+                Progress = 0
+            });
 
             return DiscordEmoji.FromName(_client, emoji);
         }
 
         private async Task PrintRaceAsync(DiscordMessage msg)
         {
-            string s = "LIVE RACING BROADCAST\n| 🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🔚\n";
-            foreach (var id in _participants) {
-                var participant = await _client.GetUserAsync(id)
+            StringBuilder sb = new StringBuilder("LIVE RACING BROADCAST\n🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🔚\n");
+            foreach (var participant in _participants) {
+                var u = await _client.GetUserAsync(participant.Id)
                     .ConfigureAwait(false);
-                s += "|";
-                for (int p = _progress[id]; p > 0; p--)
-                    s += "‣";
-                s += DiscordEmoji.FromName(_client, _emojis[id]);
-                for (int p = 100 - _progress[id]; p > 0; p--)
-                    s += "‣";
-                s += "| " + participant.Mention;
-                if (_progress[id] == 100)
-                    s += " " + DiscordEmoji.FromName(_client, ":trophy:");
-                s += '\n';
+                sb.Append("|");
+                sb.Append(new string('‣', participant.Progress));
+                sb.Append(DiscordEmoji.FromName(_client, participant.Emoji));
+                sb.Append(new string('‣', 100 - participant.Progress));
+                sb.Append("| " + u.Mention);
+                if (participant.Progress == 100)
+                    sb.Append(" " + DiscordEmoji.FromName(_client, ":trophy:"));
+                sb.Append('\n');
             }
-            await msg.ModifyAsync(s)
+            await msg.ModifyAsync(sb.ToString())
                 .ConfigureAwait(false);
+        }
+        
+
+        private sealed class RaceParticipant
+        {
+            public ulong Id { get; internal set; }
+            public int Progress { get; internal set; }
+            public string Emoji { get; internal set; }
         }
     }
 }
