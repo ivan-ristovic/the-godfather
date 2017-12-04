@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
+using DSharpPlus;
 using DSharpPlus.Entities;
 #endregion
 
@@ -61,22 +62,33 @@ namespace TheGodfather.Helpers
         }
 
 
-        public string DuelStatsString() => $"W: {DuelsWon} L: {DuelsLost} ({DuelWinPercentage}%)";
-        public string TTTStatsString() => $"W: {TTTWon} L: {TTTLost} ({TTTWinPercentage}%)";
-        public string NunchiStatsString() => $"{NunchiGamesWon}";
-        public string QuizStatsString() => $"{QuizesWon}";
-        public string RaceStatsString() => $"{RacesWon}";
-        public string HangmanStatsString() => $"{HangmanWon}";
+        public string DuelStatsString()
+            => $"W: {DuelsWon} L: {DuelsLost} ({Formatter.Bold($"{DuelWinPercentage}")}%)";
+
+        public string TTTStatsString()
+            => $"W: {TTTWon} L: {TTTLost} ({Formatter.Bold($"{TTTWinPercentage}")}%)";
+
+        public string NunchiStatsString() 
+            => $"W: {NunchiGamesWon}";
+
+        public string QuizStatsString() 
+            => $"W: {QuizesWon}";
+
+        public string RaceStatsString() 
+            => $"W: {RacesWon}";
+
+        public string HangmanStatsString() 
+            => $"W: {HangmanWon}";
 
         public DiscordEmbedBuilder GetEmbeddedStats()
         {
             var eb = new DiscordEmbedBuilder() { Color = DiscordColor.Chartreuse };
             eb.AddField("Duel stats", DuelStatsString());
             eb.AddField("Tic-Tac-Toe stats", TTTStatsString());
-            eb.AddField("Nunchi games won", NunchiStatsString(), inline: true);
-            eb.AddField("Quizzes won", QuizStatsString(), inline: true);
-            eb.AddField("Races won", RaceStatsString(), inline: true);
-            eb.AddField("Hangman games won", HangmanStatsString(), inline: true);
+            eb.AddField("Nunchi stats", NunchiStatsString(), inline: true);
+            eb.AddField("Quiz stats", QuizStatsString(), inline: true);
+            eb.AddField("Race stats", RaceStatsString(), inline: true);
+            eb.AddField("Hangman stats", HangmanStatsString(), inline: true);
             return eb;
         }
 

@@ -166,7 +166,7 @@ namespace TheGodfather.Helpers.DataManagers
             var topuids = _stats.OrderByDescending(sorter).Select(kvp => kvp.Key).Take(ammount);
             var stats = topuids.Select(formatter);
             var usernames = await Task.WhenAll(topuids.Select(uid => _client.GetUserAsync(uid))).ConfigureAwait(false);
-            return string.Join("\n", usernames.Zip(stats, (u, s) => $"{Formatter.Bold(u.Username)} : {s}"));
+            return string.Join("\n", usernames.Zip(stats, (u, s) => $"{Formatter.Bold(u.Username)} > {s}"));
         }
     }
 }
