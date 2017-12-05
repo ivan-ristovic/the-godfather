@@ -11,6 +11,7 @@ using TheGodfather.Helpers.Collections;
 
 using DSharpPlus;
 using DSharpPlus.Entities;
+using DSharpPlus.Exceptions;
 using DSharpPlus.Interactivity;
 using DSharpPlus.CommandsNext;
 #endregion
@@ -37,6 +38,7 @@ namespace TheGodfather.Commands.Games
         private DiscordMessage _msg;
         private int[,] _board = new int[7, 9];
         private int _move = 0;
+        private bool _delWarnIssued = false;
         #endregion
 
 
@@ -59,7 +61,7 @@ namespace TheGodfather.Commands.Games
 
             C4InitializeBoard();
 
-            while (NoReply == false && _move < 7*9 && !C4GameOver()) {
+            while (NoReply == false && _move < 7 * 9 && !C4GameOver()) {
                 await C4UpdateBoardAsync()
                     .ConfigureAwait(false);
 
@@ -102,15 +104,66 @@ namespace TheGodfather.Commands.Games
                 return;
             }
 
-            if (C4PlaySuccessful(player1plays ? 1 : 2, column - 1))
+            if (C4PlaySuccessful(player1plays ? 1 : 2, column - 1)) {
                 _move++;
-            else
-                await channel.SendMessageAsync("Invalid move.").ConfigureAwait(false);
+                try {
+                    await t.Message.DeleteAsync()
+                        .ConfigureAwait(false);
+                } catch (UnauthorizedException) {
+                    if (!_delWarnIssued) {
+                        await channel.SendMessageAsync("Consider giving me the delete message permissions so I can clean up the move posts.")
+                            .ConfigureAwait(false);
+                        _delWarnIssued = true;
+                    }
+                }
+            } else {
+                await channel.SendMessageAsync("Invalid move.")
+                    .ConfigureAwait(false);
+            }
         }
 
         private bool C4GameOver()
         {
-            // TODO
+            // left - right
+            for (int i = 0; i < 7; i++) {
+                for (int j = 0; j < 7; j++) {
+                    if (_board[i, j] == 0)
+                        continue;
+                    if (_board[i, j] == _board[i, j + 1] && _board[i, j] == _board[i, j + 2] && _board[i, j] == _board[i, j + 3])
+                        return true;
+                }
+            }
+
+            // up - down
+            for (int i = 0; i < 4; i++) {
+                for (int j = 0; j < 9; j++) {
+                    if (_board[i, j] == 0)
+                        continue;
+                    if (_board[i, j] == _board[i + 1, j] && _board[i, j] == _board[i + 2, j] && _board[i, j] == _board[i + 3, j])
+                        return true;
+                }
+            }
+
+            // diagonal - right
+            for (int i = 0; i < 3; i++) {
+                for (int j = 0; j < 7; j++) {
+                    if (_board[i, j] == 0)
+                        continue;
+                    if (_board[i, j] == _board[i + 1, j + 1] && _board[i, j] == _board[i + 2, j + 2] && _board[i, j] == _board[i + 3, j + 3])
+                        return true;
+                }
+            }
+
+            // diagonal - left 
+            for (int i = 0; i < 4; i++) {
+                for (int j = 3; j < 9; j++) {
+                    if (_board[i, j] == 0)
+                        continue;
+                    if (_board[i, j] == _board[i + 1, j - 1] && _board[i, j] == _board[i + 2, j - 2] && _board[i, j] == _board[i + 3, j - 3])
+                        return true;
+                }
+            }
+
             return false;
         }
 
