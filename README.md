@@ -195,12 +195,13 @@ Commands use the following types:
 | ``cards``<br>``deck`` | ``reset``<br>``opennew``<br>``new`` |   |   | Open new deck of cards (unshuffled). | ``!deck new`` |
 | ``cards``<br>``deck`` | ``shuffle``<br>``s``<br>``sh``<br>``mix`` |   |   | Shuffle current card deck. | ``!deck shuffle`` |
 |   |   |   |   |   |   |
+| ``games``<br>``game``<br>``gm`` | ``connectfour``<br>``connect4``<br>``chainfour``<br>``chain4``<br>``c4`` |   |   | Challenge friends to a "Connect Four" game! First who replies with ``me`` or ``i`` will join your game. Play by posting a number from 1 to 9 corresponding to a column you wish to place your piece on. | ``!game c4`` |
 | ``games``<br>``game``<br>``gm`` | ``duel``<br>``fight``<br>``vs``<br>``d`` |   | ``[user] Opponent`` | Call ``Opponent`` to a death battle! Type ``hp`` while the duel is on to drink a health potion. | ``!game duel @TheRock`` |
 | ``games``<br>``game``<br>``gm`` | ``hangman``<br>``d`` |   |   | Start a new hangman game! | ``!game hangman`` |
 | ``games``<br>``game``<br>``gm`` | ``leaderboard``<br>``globalstats`` |   |   | Print global game leaderboard. | ``!game leaderboard`` |
 | ``games``<br>``game``<br>``gm`` | ``rps``<br>``rockpaperscissors`` |   |   | Make Godfather play rock-paper-scissors! | ``!game rps`` |
 | ``games``<br>``game``<br>``gm`` | ``stats`` |   | ``(optional) [user] User (def: sender)`` | Print game stats for given user. | ``!game stats`` |
-| ``games``<br>``game``<br>``gm`` | ``tictactoe``<br>``ttt`` |   |   | Challenge friends to a tictactoe game! First who replies with ``me`` or ``i`` will join your game. Play by posting a number from 1 to 9 corresponding to field you wish to place your move on. | ``!game ttt`` |
+| ``games``<br>``game``<br>``gm`` | ``tictactoe``<br>``ttt`` |   |   | Challenge friends to a "Tic-Tac-Toe" game! First who replies with ``me`` or ``i`` will join your game. Play by posting a number from 1 to 9 corresponding to field you wish to place your move on. | ``!game ttt`` |
 | ``games``<br>``game``<br>``gm`` | ``typing``<br>``type``<br>``typerace``<br>``typingrace`` |   |   | Start a typing race game. | ``!game typerace`` |
 | ``game nunchi``<br>``game n`` |  |   |   | Start a new game or join a pending Nunchi game. | ``!game nunchi`` |
 | ``game nunchi``<br>``game n`` | ``rules``<br>``help`` |   |   | How to play? | ``!game nunchi rules`` |

@@ -126,9 +126,9 @@ namespace TheGodfather.Commands.Games
             if (_board[0, c] != 0)
                 return false;
             int r = 1;
-            while (r < 6 && _board[r, c] == 0)
+            while (r < 7 && _board[r, c] == 0)
                 r++;
-            _board[r, c] = v;
+            _board[r - 1, c] = v;
             return true;
         }
 
