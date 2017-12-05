@@ -228,6 +228,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Commands\Games\Common\Connect4.cs" />
     <Compile Include="Commands\Games\Common\Quiz.cs" />
     <Compile Include="Commands\Games\Common\Hangman.cs" />
     <Compile Include="Commands\Games\Common\Duel.cs" />

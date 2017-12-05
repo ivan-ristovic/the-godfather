@@ -218,7 +218,7 @@ namespace TheGodfather.Helpers.DataManagers
                         try {
                             emojis.Add(DiscordEmoji.FromName(client, _gcfg[gid].Reactions[word]));
                         } catch (ArgumentException) {
-                            client.DebugLogger.LogMessage(LogLevel.Error, "TheGodfather", "Emoji name is not valid!", DateTime.Now);
+                            client.DebugLogger.LogMessage(LogLevel.Warning, "TheGodfather", "Emoji name is not valid!", DateTime.Now);
                         }
                     }
                 }
