@@ -35,10 +35,8 @@ namespace TheGodfather.Commands.Games
             await ctx.RespondAsync($"Who wants to play Connect4 with {ctx.User.Username}?")
                 .ConfigureAwait(false);
 
-            var interactivity = ctx.Client.GetInteractivityModule();
-            var msg = await interactivity.WaitForMessageAsync(
-                xm => (xm.Author.Id != ctx.User.Id) && (xm.Channel.Id == ctx.Channel.Id) &&
-                      (xm.Content.ToLower().StartsWith("me") || xm.Content.ToLower().StartsWith("i "))
+            var msg = await ctx.Client.GetInteractivityModule().WaitForMessageAsync(
+                xm => CheckIfValidOpponent(xm, ctx.User.Id, ctx.Channel.Id)
             ).ConfigureAwait(false);
             if (msg == null) {
                 await ctx.RespondAsync($"{ctx.User.Mention} right now: http://i0.kym-cdn.com/entries/icons/mobile/000/003/619/ForeverAlone.jpg")
@@ -218,11 +216,9 @@ namespace TheGodfather.Commands.Games
 
             await ctx.RespondAsync($"Who wants to play tic-tac-toe with {ctx.User.Username}?")
                 .ConfigureAwait(false);
-
-            var interactivity = ctx.Client.GetInteractivityModule();
-            var msg = await interactivity.WaitForMessageAsync(
-                xm => (xm.Author.Id != ctx.User.Id) && (xm.Channel.Id == ctx.Channel.Id) &&
-                      (xm.Content.ToLower().StartsWith("me") || xm.Content.ToLower().StartsWith("i "))
+            
+            var msg = await ctx.Client.GetInteractivityModule().WaitForMessageAsync(
+                xm => CheckIfValidOpponent(xm, ctx.User.Id, ctx.Channel.Id)
             ).ConfigureAwait(false);
             if (msg == null) {
                 await ctx.RespondAsync($"{ctx.User.Mention} right now: http://i0.kym-cdn.com/entries/icons/mobile/000/003/619/ForeverAlone.jpg")
@@ -279,6 +275,18 @@ namespace TheGodfather.Commands.Games
                 await ctx.RespondAsync("ROFL what a nabs...")
                     .ConfigureAwait(false); ;
             }
+        }
+        #endregion
+
+
+        #region HELPER_COMMANDS
+        private bool CheckIfValidOpponent(DiscordMessage m, ulong uid, ulong cid)
+        {
+            if (m.Author.Id == uid || m.Channel.Id != cid)
+                return false;
+
+            var word = m.Content.ToLower().Split(' ')[0];
+            return word == "me" || word == "i";
         }
         #endregion
     }
