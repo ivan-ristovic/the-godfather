@@ -21,6 +21,7 @@ namespace TheGodfather.Commands.Games
     {
         #region PUBLIC_FIELDS
         public DiscordUser Winner { get; private set; }
+        public bool NoReply { get; private set; }
         #endregion
 
         #region STATIC_FIELDS
@@ -58,14 +59,12 @@ namespace TheGodfather.Commands.Games
 
             C4InitializeBoard();
 
-            while (_move < 7*9 && !C4GameOver()) {
+            while (NoReply == false && _move < 7*9 && !C4GameOver()) {
                 await C4UpdateBoardAsync()
                     .ConfigureAwait(false);
 
                 await AdvanceAsync(channel)
                     .ConfigureAwait(false);
-
-                _move++;
             }
 
             if (C4GameOver()) {
@@ -91,26 +90,20 @@ namespace TheGodfather.Commands.Games
                     if (xm.Channel.Id != _cid) return false;
                     if (player1plays && (xm.Author.Id != _p1Id)) return false;
                     if (!player1plays && (xm.Author.Id != _p2Id)) return false;
-                    try {
-                        column = int.Parse(xm.Content);
-                        if (column < 1 || column > 10)
-                            return false;
-                    } catch {
-                        return false;
-                    }
-                    return true;
+                    if (!int.TryParse(xm.Content, out column)) return false;
+                    return column > 0 && column < 10;
                 },
                 TimeSpan.FromMinutes(1)
             ).ConfigureAwait(false);
             if (column == 0) {
                 await channel.SendMessageAsync("No reply, aborting...")
                     .ConfigureAwait(false);
-                _move = 7*9;
+                NoReply = true;
                 return;
             }
 
             if (C4PlaySuccessful(player1plays ? 1 : 2, column - 1))
-                player1plays = !player1plays;
+                _move++;
             else
                 await channel.SendMessageAsync("Invalid move.").ConfigureAwait(false);
         }
@@ -141,18 +134,18 @@ namespace TheGodfather.Commands.Games
 
         private async Task C4UpdateBoardAsync()
         {
-            string s = "";
+            StringBuilder sb = new StringBuilder();
             for (int i = 0; i < 7; i++) {
                 for (int j = 0; j < 9; j++)
                     switch (_board[i, j]) {
-                        case 0: s += $"{DiscordEmoji.FromName(_client, ":white_medium_square:")}"; break;
-                        case 1: s += $"{DiscordEmoji.FromName(_client, ":large_blue_circle:")}"; break;
-                        case 2: s += $"{DiscordEmoji.FromName(_client, ":red_circle:")}"; break;
+                        case 0: sb.Append(DiscordEmoji.FromName(_client, ":white_medium_square:")); break;
+                        case 1: sb.Append(DiscordEmoji.FromName(_client, ":large_blue_circle:")); break;
+                        case 2: sb.Append(DiscordEmoji.FromName(_client, ":red_circle:")); break;
                     }
-                s += '\n';
+                sb.AppendLine();
             }
 
-            await _msg.ModifyAsync(embed: new DiscordEmbedBuilder() { Description = s })
+            await _msg.ModifyAsync(embed: new DiscordEmbedBuilder() { Description = sb.ToString() })
                 .ConfigureAwait(false);
         }
     }

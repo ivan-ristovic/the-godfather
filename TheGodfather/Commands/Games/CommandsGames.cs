@@ -200,7 +200,7 @@ namespace TheGodfather.Commands.Games
                     ctx.Dependencies.GetDependency<GameStatsManager>().UpdateTTTLostForUser(msg.User.Id);
                 else
                     ctx.Dependencies.GetDependency<GameStatsManager>().UpdateTTTLostForUser(ctx.User.Id);
-            } else {
+            } else if (ttt.NoReply == false) {
                 await ctx.RespondAsync("A draw... Pathetic...")
                     .ConfigureAwait(false);
             }
@@ -241,7 +241,7 @@ namespace TheGodfather.Commands.Games
                     ctx.Dependencies.GetDependency<GameStatsManager>().UpdateTTTLostForUser(msg.User.Id);
                 else
                     ctx.Dependencies.GetDependency<GameStatsManager>().UpdateTTTLostForUser(ctx.User.Id);*/
-            } else {
+            } else if (c4.NoReply == false) {
                 await ctx.RespondAsync("A draw... Pathetic...")
                     .ConfigureAwait(false);
             }
