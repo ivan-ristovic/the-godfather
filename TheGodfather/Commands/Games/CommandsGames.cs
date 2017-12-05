@@ -23,6 +23,48 @@ namespace TheGodfather.Commands.Games
     [PreExecutionCheck]
     public partial class CommandsGames
     {
+        #region COMMAND_GAMES_CONNECTFOUR
+        [Command("connectfour")]
+        [Description("Starts a \"Connect4\" game. Play by posting a number from 1 to 9 corresponding to the column you wish to place your move on.")]
+        [Aliases("connect4", "chain4", "chainfour", "c4")]
+        public async Task Connect4Async(CommandContext ctx)
+        {
+            if (TicTacToe.GameExistsInChannel(ctx.Channel.Id))
+                throw new CommandFailedException("Connect4 game is already running in the current channel!");
+
+            await ctx.RespondAsync($"Who wants to play Connect4 with {ctx.User.Username}?")
+                .ConfigureAwait(false);
+
+            var interactivity = ctx.Client.GetInteractivityModule();
+            var msg = await interactivity.WaitForMessageAsync(
+                xm => (xm.Author.Id != ctx.User.Id) && (xm.Channel.Id == ctx.Channel.Id) &&
+                      (xm.Content.ToLower().StartsWith("me") || xm.Content.ToLower().StartsWith("i "))
+            ).ConfigureAwait(false);
+            if (msg == null) {
+                await ctx.RespondAsync($"{ctx.User.Mention} right now: http://i0.kym-cdn.com/entries/icons/mobile/000/003/619/ForeverAlone.jpg")
+                    .ConfigureAwait(false);
+                return;
+            }
+
+            var c4 = new Connect4(ctx.Client, ctx.Channel.Id, ctx.User, msg.User);
+            await c4.PlayAsync()
+                .ConfigureAwait(false);
+
+            if (c4.Winner != null) {
+                await ctx.RespondAsync($"The winner is: {c4.Winner.Mention}!")
+                    .ConfigureAwait(false);
+                /*ctx.Dependencies.GetDependency<GameStatsManager>().UpdateTTTWonForUser(c4.Winner.Id);
+                if (c4.Winner.Id == ctx.User.Id)
+                    ctx.Dependencies.GetDependency<GameStatsManager>().UpdateTTTLostForUser(msg.User.Id);
+                else
+                    ctx.Dependencies.GetDependency<GameStatsManager>().UpdateTTTLostForUser(ctx.User.Id);*/
+            } else if (c4.NoReply == false) {
+                await ctx.RespondAsync("A draw... Pathetic...")
+                    .ConfigureAwait(false);
+            }
+        }
+        #endregion
+
         #region COMMAND_GAMES_DUEL
         [Command("duel")]
         [Description("Starts a duel which I will commentate.")]
@@ -188,7 +230,7 @@ namespace TheGodfather.Commands.Games
                 return;
             }
 
-            var ttt = new TicTacToe(ctx.Client, ctx.Channel.Id, ctx.User.Id, msg.User.Id);
+            var ttt = new TicTacToe(ctx.Client, ctx.Channel.Id, ctx.User, msg.User);
             await ttt.PlayAsync()
                 .ConfigureAwait(false);
 
@@ -201,47 +243,6 @@ namespace TheGodfather.Commands.Games
                 else
                     ctx.Dependencies.GetDependency<GameStatsManager>().UpdateTTTLostForUser(ctx.User.Id);
             } else if (ttt.NoReply == false) {
-                await ctx.RespondAsync("A draw... Pathetic...")
-                    .ConfigureAwait(false);
-            }
-        }
-        #endregion
-        #region COMMAND_GAMES_CONNECTFOUR
-        [Command("connectfour")]
-        [Description("Starts a \"Connect4\" game. Play by posting a number from 1 to 9 corresponding to the column you wish to place your move on.")]
-        [Aliases("connect4", "chain4", "chainfour", "c4")]
-        public async Task Connect4Async(CommandContext ctx)
-        {
-            if (TicTacToe.GameExistsInChannel(ctx.Channel.Id))
-                throw new CommandFailedException("Connect4 game is already running in the current channel!");
-
-            await ctx.RespondAsync($"Who wants to play Connect4 with {ctx.User.Username}?")
-                .ConfigureAwait(false);
-
-            var interactivity = ctx.Client.GetInteractivityModule();
-            var msg = await interactivity.WaitForMessageAsync(
-                xm => (xm.Author.Id != ctx.User.Id) && (xm.Channel.Id == ctx.Channel.Id) &&
-                      (xm.Content.ToLower().StartsWith("me") || xm.Content.ToLower().StartsWith("i "))
-            ).ConfigureAwait(false);
-            if (msg == null) {
-                await ctx.RespondAsync($"{ctx.User.Mention} right now: http://i0.kym-cdn.com/entries/icons/mobile/000/003/619/ForeverAlone.jpg")
-                    .ConfigureAwait(false);
-                return;
-            }
-
-            var c4 = new Connect4(ctx.Client, ctx.Channel.Id, ctx.User.Id, msg.User.Id);
-            await c4.PlayAsync()
-                .ConfigureAwait(false);
-
-            if (c4.Winner != null) {
-                await ctx.RespondAsync($"The winner is: {c4.Winner.Mention}!")
-                    .ConfigureAwait(false);
-                /*ctx.Dependencies.GetDependency<GameStatsManager>().UpdateTTTWonForUser(c4.Winner.Id);
-                if (c4.Winner.Id == ctx.User.Id)
-                    ctx.Dependencies.GetDependency<GameStatsManager>().UpdateTTTLostForUser(msg.User.Id);
-                else
-                    ctx.Dependencies.GetDependency<GameStatsManager>().UpdateTTTLostForUser(ctx.User.Id);*/
-            } else if (c4.NoReply == false) {
                 await ctx.RespondAsync("A draw... Pathetic...")
                     .ConfigureAwait(false);
             }

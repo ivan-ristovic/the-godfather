@@ -32,21 +32,21 @@ namespace TheGodfather.Commands.Games
         #region PRIVATE_FIELDS
         private DiscordClient _client;
         private ulong _cid;
-        private ulong _p1Id;
-        private ulong _p2Id;
+        private DiscordUser _p1;
+        private DiscordUser _p2;
         private DiscordMessage _msg;
         private int[,] _board = new int[7, 9];
         private int _move = 0;
         #endregion
 
 
-        public Connect4(DiscordClient client, ulong cid, ulong p1Id, ulong p2Id)
+        public Connect4(DiscordClient client, ulong cid, DiscordUser p1, DiscordUser p2)
         {
             _channels.Add(_cid);
             _client = client;
             _cid = cid;
-            _p1Id = p1Id;
-            _p2Id = p2Id;
+            _p1 = p1;
+            _p2 = p2;
         }
 
 
@@ -54,7 +54,7 @@ namespace TheGodfather.Commands.Games
         {
             var channel = await _client.GetChannelAsync(_cid)
                 .ConfigureAwait(false);
-            _msg = await channel.SendMessageAsync("Game begins!")
+            _msg = await channel.SendMessageAsync($"{_p1.Mention} vs {_p2.Mention}")
                 .ConfigureAwait(false);
 
             C4InitializeBoard();
@@ -69,9 +69,9 @@ namespace TheGodfather.Commands.Games
 
             if (C4GameOver()) {
                 if (_move % 2 == 0)
-                    Winner = await _client.GetUserAsync(_p2Id).ConfigureAwait(false);
+                    Winner = _p2;
                 else
-                    Winner = await _client.GetUserAsync(_p1Id).ConfigureAwait(false);
+                    Winner = _p1;
             } else {
                 Winner = null;
             }
@@ -88,8 +88,8 @@ namespace TheGodfather.Commands.Games
             var t = await _client.GetInteractivityModule().WaitForMessageAsync(
                 xm => {
                     if (xm.Channel.Id != _cid) return false;
-                    if (player1plays && (xm.Author.Id != _p1Id)) return false;
-                    if (!player1plays && (xm.Author.Id != _p2Id)) return false;
+                    if (player1plays && (xm.Author.Id != _p1.Id)) return false;
+                    if (!player1plays && (xm.Author.Id != _p2.Id)) return false;
                     if (!int.TryParse(xm.Content, out column)) return false;
                     return column > 0 && column < 10;
                 },
