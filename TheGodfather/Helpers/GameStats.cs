@@ -60,6 +60,23 @@ namespace TheGodfather.Helpers
             }
             internal set { }
         }
+        
+        [JsonProperty("c4won")]
+        public uint Connect4Won { get; internal set; }
+
+        [JsonProperty("c4lost")]
+        public uint Connect4Lost { get; internal set; }
+
+        [JsonIgnore]
+        public uint Connect4WinPercentage
+        {
+            get {
+                if (Connect4Won + Connect4Lost == 0)
+                    return 0;
+                return (uint)Math.Round((double)Connect4Won / (Connect4Won + Connect4Lost) * 100);
+            }
+            internal set { }
+        }
 
 
         public string DuelStatsString()
@@ -67,6 +84,9 @@ namespace TheGodfather.Helpers
 
         public string TTTStatsString()
             => $"W: {TTTWon} L: {TTTLost} ({Formatter.Bold($"{TTTWinPercentage}")}%)";
+
+        public string Connect4StatsString()
+            => $"W: {Connect4Won} L: {Connect4Lost} ({Formatter.Bold($"{Connect4WinPercentage}")}%)";
 
         public string NunchiStatsString() 
             => $"W: {NunchiGamesWon}";
@@ -85,6 +105,7 @@ namespace TheGodfather.Helpers
             var eb = new DiscordEmbedBuilder() { Color = DiscordColor.Chartreuse };
             eb.AddField("Duel stats", DuelStatsString());
             eb.AddField("Tic-Tac-Toe stats", TTTStatsString());
+            eb.AddField("Connect4 stats", Connect4StatsString());
             eb.AddField("Nunchi stats", NunchiStatsString(), inline: true);
             eb.AddField("Quiz stats", QuizStatsString(), inline: true);
             eb.AddField("Race stats", RaceStatsString(), inline: true);

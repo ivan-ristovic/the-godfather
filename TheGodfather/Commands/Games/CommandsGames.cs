@@ -51,11 +51,11 @@ namespace TheGodfather.Commands.Games
             if (c4.Winner != null) {
                 await ctx.RespondAsync($"The winner is: {c4.Winner.Mention}!")
                     .ConfigureAwait(false);
-                /*ctx.Dependencies.GetDependency<GameStatsManager>().UpdateTTTWonForUser(c4.Winner.Id);
+                ctx.Dependencies.GetDependency<GameStatsManager>().UpdateConnect4WonForUser(c4.Winner.Id);
                 if (c4.Winner.Id == ctx.User.Id)
-                    ctx.Dependencies.GetDependency<GameStatsManager>().UpdateTTTLostForUser(msg.User.Id);
+                    ctx.Dependencies.GetDependency<GameStatsManager>().UpdateConnect4LostForUser(msg.User.Id);
                 else
-                    ctx.Dependencies.GetDependency<GameStatsManager>().UpdateTTTLostForUser(ctx.User.Id);*/
+                    ctx.Dependencies.GetDependency<GameStatsManager>().UpdateConnect4LostForUser(ctx.User.Id);
             } else if (c4.NoReply == false) {
                 await ctx.RespondAsync("A draw... Pathetic...")
                     .ConfigureAwait(false);

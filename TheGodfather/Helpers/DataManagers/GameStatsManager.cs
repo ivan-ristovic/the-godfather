@@ -102,6 +102,16 @@ namespace TheGodfather.Helpers.DataManagers
             _stats.AddOrUpdate(uid, new GameStats() { TTTLost = 1 }, (k, v) => { v.TTTLost++; return v; });
         }
 
+        public void UpdateConnect4WonForUser(ulong uid)
+        {
+            _stats.AddOrUpdate(uid, new GameStats() { Connect4Won = 1 }, (k, v) => { v.Connect4Won++; return v; });
+        }
+
+        public void UpdateConnect4LostForUser(ulong uid)
+        {
+            _stats.AddOrUpdate(uid, new GameStats() { Connect4Lost = 1 }, (k, v) => { v.Connect4Lost++; return v; });
+        }
+
         public GameStats GetStatsForUser(ulong uid)
         {
             if (_stats.ContainsKey(uid))
@@ -139,6 +149,14 @@ namespace TheGodfather.Helpers.DataManagers
             desc = await StatSelectorAsync(5, kvp => kvp.Value.DuelWinPercentage, uid => _stats[uid].DuelStatsString())
                 .ConfigureAwait(false);
             em.AddField("Top 5 in Duel game:", desc, inline: true);
+
+            desc = await StatSelectorAsync(5, kvp => kvp.Value.TTTWinPercentage, uid => _stats[uid].TTTStatsString())
+                .ConfigureAwait(false);
+            em.AddField("Top 5 in Tic-Tac-Toe game:", desc, inline: true);
+
+            desc = await StatSelectorAsync(5, kvp => kvp.Value.Connect4WinPercentage, uid => _stats[uid].Connect4StatsString())
+                .ConfigureAwait(false);
+            em.AddField("Top 5 in Connect4 game:", desc, inline: true);
 
             desc = await StatSelectorAsync(5, kvp => kvp.Value.NunchiGamesWon, uid => _stats[uid].NunchiStatsString())
                 .ConfigureAwait(false);
