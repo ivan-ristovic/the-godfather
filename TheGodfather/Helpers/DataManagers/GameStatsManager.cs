@@ -146,44 +146,78 @@ namespace TheGodfather.Helpers.DataManagers
 
             string desc;
 
-            desc = await StatSelectorAsync(5, kvp => kvp.Value.DuelWinPercentage, uid => _stats[uid].DuelStatsString())
-                .ConfigureAwait(false);
-            em.AddField("Top 5 in Duel game:", desc, inline: true);
+            desc = await StatSelectorAsync(5, 
+                sorter:    kvp => kvp.Value.DuelWinPercentage,
+                filter:    kvp => kvp.Value.DuelsWon > 0,
+                formatter: uid => _stats[uid].DuelStatsString(),
+                additionalSorter: kvp => kvp.Value.DuelsWon
+            ).ConfigureAwait(false);
+            em.AddField("Top 5 in Duel game:", string.IsNullOrWhiteSpace(desc) ? "No records" : desc , inline: true);
 
-            desc = await StatSelectorAsync(5, kvp => kvp.Value.TTTWinPercentage, uid => _stats[uid].TTTStatsString())
-                .ConfigureAwait(false);
-            em.AddField("Top 5 in Tic-Tac-Toe game:", desc, inline: true);
+            desc = await StatSelectorAsync(5,
+                sorter:    kvp => kvp.Value.TTTWinPercentage,
+                filter:    kvp => kvp.Value.TTTWon > 0,
+                formatter: uid => _stats[uid].TTTStatsString(),
+                additionalSorter: kvp => kvp.Value.TTTWon
+            ).ConfigureAwait(false);
+            em.AddField("Top 5 in Tic-Tac-Toe game:", string.IsNullOrWhiteSpace(desc) ? "No records" : desc, inline: true);
 
-            desc = await StatSelectorAsync(5, kvp => kvp.Value.Connect4WinPercentage, uid => _stats[uid].Connect4StatsString())
-                .ConfigureAwait(false);
-            em.AddField("Top 5 in Connect4 game:", desc, inline: true);
+            desc = await StatSelectorAsync(5,
+                sorter:    kvp => kvp.Value.Connect4WinPercentage,
+                filter:    kvp => kvp.Value.Connect4Won > 0,
+                formatter: uid => _stats[uid].Connect4StatsString(),
+                additionalSorter: kvp => kvp.Value.Connect4Won
+            ).ConfigureAwait(false);
+            em.AddField("Top 5 in Connect4 game:", string.IsNullOrWhiteSpace(desc) ? "No records" : desc, inline: true);
 
-            desc = await StatSelectorAsync(5, kvp => kvp.Value.NunchiGamesWon, uid => _stats[uid].NunchiStatsString())
-                .ConfigureAwait(false);
-            em.AddField("Top 5 in Nunchi game:", desc, inline: true);
+            desc = await StatSelectorAsync(5,
+                sorter:    kvp => kvp.Value.NunchiGamesWon,
+                filter:    kvp => kvp.Value.NunchiGamesWon > 0,
+                formatter: uid => _stats[uid].NunchiStatsString()
+            ).ConfigureAwait(false);
+            em.AddField("Top 5 in Nunchi game:", string.IsNullOrWhiteSpace(desc) ? "No records" : desc, inline: true);
 
-            desc = await StatSelectorAsync(5, kvp => kvp.Value.QuizesWon, uid => _stats[uid].QuizStatsString())
-                .ConfigureAwait(false);
-            em.AddField("Top 5 in Quiz game:", desc, inline: true);
+            desc = await StatSelectorAsync(5,
+                sorter:    kvp => kvp.Value.QuizesWon,
+                filter:    kvp => kvp.Value.QuizesWon > 0,
+                formatter: uid => _stats[uid].QuizStatsString()
+            ).ConfigureAwait(false);
+            em.AddField("Top 5 in Quiz game:", string.IsNullOrWhiteSpace(desc) ? "No records" : desc, inline: true);
 
-            desc = await StatSelectorAsync(5, kvp => kvp.Value.RacesWon, uid => _stats[uid].RaceStatsString())
-                .ConfigureAwait(false);
-            em.AddField("Top 5 in Race game:", desc, inline: true);
+            desc = await StatSelectorAsync(5,
+                sorter:    kvp => kvp.Value.RacesWon,
+                filter:    kvp => kvp.Value.RacesWon > 0,
+                formatter: uid => _stats[uid].RaceStatsString()
+            ).ConfigureAwait(false);
+            em.AddField("Top 5 in Race game:", string.IsNullOrWhiteSpace(desc) ? "No records" : desc, inline: true);
 
-            desc = await StatSelectorAsync(5, kvp => kvp.Value.HangmanWon, uid => _stats[uid].HangmanStatsString())
-                .ConfigureAwait(false);
-            em.AddField("Top 5 in Hangman game:", desc, inline: true);
+            desc = await StatSelectorAsync(5,
+                sorter:    kvp => kvp.Value.HangmanWon,
+                filter:    kvp => kvp.Value.HangmanWon > 0,
+                formatter: uid => _stats[uid].HangmanStatsString()
+            ).ConfigureAwait(false);
+            em.AddField("Top 5 in Hangman game:", string.IsNullOrWhiteSpace(desc) ? "No records" : desc, inline: true);
 
             return em.Build();
         }
 
         private async Task<string> StatSelectorAsync(int ammount, 
                                                      Func<KeyValuePair<ulong, GameStats>, uint> sorter,
-                                                     Func<ulong, string> formatter)
+                                                     Func<KeyValuePair<ulong, GameStats>, bool> filter,
+                                                     Func<ulong, string> formatter,
+                                                     Func<KeyValuePair<ulong, GameStats>, ulong> additionalSorter = null)
         {
-            var topuids = _stats.OrderByDescending(sorter).Select(kvp => kvp.Key).Take(ammount);
+            if (additionalSorter == null)
+                additionalSorter = kvp => kvp.Key;
+
+            var topuids = _stats.OrderByDescending(sorter)
+                                .ThenByDescending(additionalSorter)
+                                .Where(filter)
+                                .Select(kvp => kvp.Key)
+                                .Take(ammount);
             var stats = topuids.Select(formatter);
-            var usernames = await Task.WhenAll(topuids.Select(uid => _client.GetUserAsync(uid))).ConfigureAwait(false);
+            var usernames = await Task.WhenAll(topuids.Select(uid => _client.GetUserAsync(uid)))
+                .ConfigureAwait(false);
             return string.Join("\n", usernames.Zip(stats, (u, s) => $"{Formatter.Bold(u.Username)} > {s}"));
         }
     }
