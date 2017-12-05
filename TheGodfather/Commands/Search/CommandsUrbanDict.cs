@@ -32,17 +32,22 @@ namespace TheGodfather.Commands.Search
             if (string.IsNullOrWhiteSpace(q))
                 throw new InvalidCommandUsageException("Query missing.");
 
-            var data = await UrbanDict.GetDataAsync(q)
-                .ConfigureAwait(false);
-            if (data.Key) {
-                var interactivity = ctx.Client.GetInteractivityModule();
-                foreach (var v in data.Value.List) {
+            UrbanDictData data;
+            try {
+                data = await UrbanDict.GetDataAsync(q)
+                    .ConfigureAwait(false);
+            } catch (Exception e) {
+                throw new CommandFailedException("Error occured while connecting to Urban Dictionary.", e);
+            }
+
+            if (data.ResultType != "no_results") {
+                foreach (var v in data.List) {
                     await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
                         Description = v.Definition.Length < 1000 ? v.Definition : v.Definition.Take(1000) + "...",
                         Color = DiscordColor.CornflowerBlue
                     }.Build()).ConfigureAwait(false);
 
-                    var msg = await interactivity.WaitForMessageAsync(
+                    var msg = await ctx.Client.GetInteractivityModule().WaitForMessageAsync(
                         m => m.Channel.Id == ctx.Channel.Id && m.Content.ToLower() == "next"
                         , TimeSpan.FromSeconds(5)
                     ).ConfigureAwait(false);
@@ -104,13 +109,12 @@ namespace TheGodfather.Commands.Search
 
     public class UrbanDict
     {
-        public async static Task<KeyValuePair<bool, UrbanDictData>> GetDataAsync(string query)
+        public async static Task<UrbanDictData> GetDataAsync(string query)
         {
             using (var http = new HttpClient()) {
-                var result = await http.GetStringAsync($"http://api.urbandictionary.com/v0/define?term={ WebUtility.UrlEncode(query) }");
-                var data = JsonConvert.DeserializeObject<UrbanDictData>(result);
-
-                return new KeyValuePair<bool, UrbanDictData>(data.ResultType == "no_results" ? false : true, data);
+                var result = await http.GetStringAsync($"http://api.urbandictionary.com/v0/define?term={ WebUtility.UrlEncode(query) }")
+                    .ConfigureAwait(false);
+                return JsonConvert.DeserializeObject<UrbanDictData>(result);
             }
         }
     }
