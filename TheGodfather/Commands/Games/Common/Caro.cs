@@ -189,8 +189,23 @@ namespace TheGodfather.Commands.Games
 
         private async Task UpdateBoardAsync()
         {
+            var numbers = new string[] {
+                DiscordEmoji.FromName(_client, ":one:").ToString(),
+                DiscordEmoji.FromName(_client, ":two:").ToString(),
+                DiscordEmoji.FromName(_client, ":three:").ToString(),
+                DiscordEmoji.FromName(_client, ":four:").ToString(),
+                DiscordEmoji.FromName(_client, ":five:").ToString(),
+                DiscordEmoji.FromName(_client, ":six:").ToString(),
+                DiscordEmoji.FromName(_client, ":seven:").ToString(),
+                DiscordEmoji.FromName(_client, ":eight:").ToString(),
+                DiscordEmoji.FromName(_client, ":nine:").ToString(),
+                DiscordEmoji.FromName(_client, ":ten:").ToString()
+            };
+
             StringBuilder sb = new StringBuilder();
+            sb.Append(DiscordEmoji.FromName(_client, ":up:") + string.Join("", numbers)).AppendLine();
             for (int i = 0; i < board_size; i++) {
+                sb.Append(numbers[i]);
                 for (int j = 0; j < board_size; j++)
                     switch (_board[i, j]) {
                         case 0: sb.Append(DiscordEmoji.FromName(_client, ":white_medium_square:")); break;
