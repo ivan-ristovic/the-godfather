@@ -195,6 +195,7 @@ Commands use the following types:
 | ``cards``<br>``deck`` | ``reset``<br>``opennew``<br>``new`` |   |   | Open new deck of cards (unshuffled). | ``!deck new`` |
 | ``cards``<br>``deck`` | ``shuffle``<br>``s``<br>``sh``<br>``mix`` |   |   | Shuffle current card deck. | ``!deck shuffle`` |
 |   |   |   |   |   |   |
+| ``games``<br>``game``<br>``gm`` | ``caro``<br>``c`` |   |   | Challenge friends to a "Caro" game! First who replies with ``me`` or ``i`` will join your game. Play by posting a pair of numbers from 1 to 10 corresponding to a column and row you wish to place your piece on (for example ``2 5``). | ``!game caro`` |
 | ``games``<br>``game``<br>``gm`` | ``connectfour``<br>``connect4``<br>``chainfour``<br>``chain4``<br>``c4`` |   |   | Challenge friends to a "Connect Four" game! First who replies with ``me`` or ``i`` will join your game. Play by posting a number from 1 to 9 corresponding to a column you wish to place your piece on. | ``!game c4`` |
 | ``games``<br>``game``<br>``gm`` | ``duel``<br>``fight``<br>``vs``<br>``d`` |   | ``[user] Opponent`` | Call ``Opponent`` to a death battle! Type ``hp`` while the duel is on to drink a health potion. | ``!game duel @TheRock`` |
 | ``games``<br>``game``<br>``gm`` | ``hangman``<br>``d`` |   |   | Start a new hangman game! | ``!game hangman`` |
