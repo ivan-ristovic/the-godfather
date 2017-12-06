@@ -23,6 +23,46 @@ namespace TheGodfather.Commands.Games
     [PreExecutionCheck]
     public partial class CommandsGames
     {
+        #region COMMAND_GAMES_CARO
+        [Command("caro")]
+        [Description("Starts a caro game.")]
+        [Aliases("c")]
+        public async Task CaroAsync(CommandContext ctx)
+        {
+            if (Caro.GameExistsInChannel(ctx.Channel.Id))
+                throw new CommandFailedException("Caro game is already running in the current channel!");
+
+            await ctx.RespondAsync($"Who wants to play caro with {ctx.User.Username}?")
+                .ConfigureAwait(false);
+
+            var msg = await ctx.Client.GetInteractivityModule().WaitForMessageAsync(
+                xm => CheckIfValidOpponent(xm, ctx.User.Id, ctx.Channel.Id)
+            ).ConfigureAwait(false);
+            if (msg == null) {
+                await ctx.RespondAsync($"{ctx.User.Mention} right now: http://i0.kym-cdn.com/entries/icons/mobile/000/003/619/ForeverAlone.jpg")
+                    .ConfigureAwait(false);
+                return;
+            }
+
+            var caro = new Caro(ctx.Client, ctx.Channel.Id, ctx.User, msg.User);
+            await caro.PlayAsync()
+                .ConfigureAwait(false);
+
+            if (caro.Winner != null) {
+                await ctx.RespondAsync($"The winner is: {caro.Winner.Mention}!")
+                    .ConfigureAwait(false);
+                /*ctx.Dependencies.GetDependency<GameStatsManager>().UpdateTTTWonForUser(caro.Winner.Id);
+                if (caro.Winner.Id == ctx.User.Id)
+                    ctx.Dependencies.GetDependency<GameStatsManager>().UpdateTTTLostForUser(msg.User.Id);
+                else
+                    ctx.Dependencies.GetDependency<GameStatsManager>().UpdateTTTLostForUser(ctx.User.Id);*/
+            } else if (caro.NoReply == false) {
+                await ctx.RespondAsync("A draw... Pathetic...")
+                    .ConfigureAwait(false);
+            }
+        }
+        #endregion
+
         #region COMMAND_GAMES_CONNECTFOUR
         [Command("connectfour")]
         [Description("Starts a \"Connect4\" game. Play by posting a number from 1 to 9 corresponding to the column you wish to place your move on.")]

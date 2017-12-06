@@ -59,17 +59,17 @@ namespace TheGodfather.Commands.Games
             _msg = await channel.SendMessageAsync($"{_p1.Mention} vs {_p2.Mention}")
                 .ConfigureAwait(false);
 
-            C4InitializeBoard();
+            InitializeBoard();
 
-            while (NoReply == false && _move < 7 * 9 && !C4GameOver()) {
-                await C4UpdateBoardAsync()
+            while (NoReply == false && _move < 7 * 9 && !GameOver()) {
+                await UpdateBoardAsync()
                     .ConfigureAwait(false);
 
                 await AdvanceAsync(channel)
                     .ConfigureAwait(false);
             }
 
-            if (C4GameOver()) {
+            if (GameOver()) {
                 if (_move % 2 == 0)
                     Winner = _p2;
                 else
@@ -78,7 +78,7 @@ namespace TheGodfather.Commands.Games
                 Winner = null;
             }
 
-            await C4UpdateBoardAsync()
+            await UpdateBoardAsync()
                 .ConfigureAwait(false);
             _channels.TryRemove(_cid);
         }
@@ -104,7 +104,7 @@ namespace TheGodfather.Commands.Games
                 return;
             }
 
-            if (C4PlaySuccessful(player1plays ? 1 : 2, column - 1)) {
+            if (PlaySuccessful(player1plays ? 1 : 2, column - 1)) {
                 _move++;
                 try {
                     await t.Message.DeleteAsync()
@@ -122,7 +122,7 @@ namespace TheGodfather.Commands.Games
             }
         }
 
-        private bool C4GameOver()
+        private bool GameOver()
         {
             // left - right
             for (int i = 0; i < 7; i++) {
@@ -167,14 +167,14 @@ namespace TheGodfather.Commands.Games
             return false;
         }
 
-        private void C4InitializeBoard()
+        private void InitializeBoard()
         {
             for (int i = 0; i < 7; i++)
                 for (int j = 0; j < 9; j++)
                     _board[i, j] = 0;
         }
 
-        private bool C4PlaySuccessful(int v, int c)
+        private bool PlaySuccessful(int v, int c)
         {
             if (_board[0, c] != 0)
                 return false;
@@ -185,7 +185,7 @@ namespace TheGodfather.Commands.Games
             return true;
         }
 
-        private async Task C4UpdateBoardAsync()
+        private async Task UpdateBoardAsync()
         {
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < 7; i++) {
