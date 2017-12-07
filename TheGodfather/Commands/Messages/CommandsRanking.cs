@@ -42,7 +42,7 @@ namespace TheGodfather.Commands.Messages
                 Color = DiscordColor.Aquamarine,
                 ThumbnailUrl = u.AvatarUrl
             };
-            em.AddField("Rank", (rank < ranks.Count) ? ranks[rank] : "Low");
+            em.AddField("Rank", $"{Formatter.Italic(rank < ranks.Count ? ranks[rank] : "Low")} (#{rank})");
             em.AddField("XP", $"{msgcount}", inline: true);
             em.AddField("XP needed for next rank", $"{(rank + 1) * (rank + 1) * 10}", inline: true);
             await ctx.RespondAsync(embed: em.Build())
@@ -64,7 +64,7 @@ namespace TheGodfather.Commands.Messages
             var ranks = ctx.Dependencies.GetDependency<RankManager>().Ranks;
             for (int i = 1; i < ranks.Count; i++) {
                 var xpneeded = ctx.Dependencies.GetDependency<RankManager>().XpNeededForRankWithIndex(i);
-                em.AddField(ranks[i], $"XP needed: {xpneeded}", inline: true);
+                em.AddField($"(#{i}) {ranks[i]}", $"XP needed: {xpneeded}", inline: true);
             }
 
             await ctx.RespondAsync(embed: em.Build())
