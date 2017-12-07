@@ -112,6 +112,16 @@ namespace TheGodfather.Helpers.DataManagers
             _stats.AddOrUpdate(uid, new GameStats() { Connect4Lost = 1 }, (k, v) => { v.Connect4Lost++; return v; });
         }
 
+        public void UpdateCaroWonForUser(ulong uid)
+        {
+            _stats.AddOrUpdate(uid, new GameStats() { CaroWon = 1 }, (k, v) => { v.CaroWon++; return v; });
+        }
+
+        public void UpdateCaroLostForUser(ulong uid)
+        {
+            _stats.AddOrUpdate(uid, new GameStats() { CaroLost = 1 }, (k, v) => { v.CaroLost++; return v; });
+        }
+
         public GameStats GetStatsForUser(ulong uid)
         {
             if (_stats.ContainsKey(uid))
@@ -169,6 +179,14 @@ namespace TheGodfather.Helpers.DataManagers
                 additionalSorter: kvp => kvp.Value.Connect4Won
             ).ConfigureAwait(false);
             em.AddField("Top 5 in Connect4 game:", string.IsNullOrWhiteSpace(desc) ? "No records" : desc, inline: true);
+
+            desc = await StatSelectorAsync(5,
+                sorter: kvp => kvp.Value.CaroWinPercentage,
+                filter: kvp => kvp.Value.CaroWon > 0,
+                formatter: uid => _stats[uid].CaroStatsString(),
+                additionalSorter: kvp => kvp.Value.CaroWon
+            ).ConfigureAwait(false);
+            em.AddField("Top 5 in Caro game:", string.IsNullOrWhiteSpace(desc) ? "No records" : desc, inline: true);
 
             desc = await StatSelectorAsync(5,
                 sorter:    kvp => kvp.Value.NunchiGamesWon,
