@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 
 using TheGodfather.Exceptions;
+using TheGodfather.Services;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -21,9 +22,9 @@ namespace TheGodfather.Commands.Search
 {
     public class CommandsUrbanDict
     {
-        [Command("urban")]
+        [Command("urbandict")]
         [Description("Search Urban Dictionary for a query.")]
-        [Aliases("ud")]
+        [Aliases("ud", "urban")]
         [Cooldown(2, 5, CooldownBucketType.User), Cooldown(4, 5, CooldownBucketType.Channel)]
         [PreExecutionCheck]
         public async Task UrbanDictAsync(CommandContext ctx,
@@ -32,9 +33,9 @@ namespace TheGodfather.Commands.Search
             if (string.IsNullOrWhiteSpace(q))
                 throw new InvalidCommandUsageException("Query missing.");
 
-            UrbanDictData data;
+            UrbanDictService.UrbanDictData data;
             try {
-                data = await UrbanDict.GetDataAsync(q)
+                data = await UrbanDictService.GetDefinitionForTermAsync(q)
                     .ConfigureAwait(false);
             } catch (Exception e) {
                 throw new CommandFailedException("Error occured while connecting to Urban Dictionary.", e);
@@ -42,10 +43,17 @@ namespace TheGodfather.Commands.Search
 
             if (data.ResultType != "no_results") {
                 foreach (var v in data.List) {
-                    await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
+                    var eb = new DiscordEmbedBuilder() {
+                        Title = $"Urban Dictionary definition for \"{q}\" by {v.Author}",
                         Description = v.Definition.Length < 1000 ? v.Definition : v.Definition.Take(1000) + "...",
-                        Color = DiscordColor.CornflowerBlue
-                    }.Build()).ConfigureAwait(false);
+                        Color = DiscordColor.CornflowerBlue,
+                        Url = v.Permalink
+                    };
+                    if (!string.IsNullOrWhiteSpace(v.Example))
+                        eb.AddField("Example", v.Example);
+
+                    await ctx.RespondAsync(embed: eb.Build())
+                        .ConfigureAwait(false);
 
                     var msg = await ctx.Client.GetInteractivityModule().WaitForMessageAsync(
                         m => m.Channel.Id == ctx.Channel.Id && m.Content.ToLower() == "next"
@@ -61,62 +69,4 @@ namespace TheGodfather.Commands.Search
         }
     }
 
-    #region HELPER_CLASSES
-    public class UrbanDictList
-    {
-        [JsonProperty("definition")]
-        public string Definition { get; set; }
-
-        [JsonProperty("permalink")]
-        public string Permalink { get; set; }
-
-        [JsonProperty("thumbs_up")]
-        public int ThumbsUp { get; set; }
-
-        [JsonProperty("author")]
-        public string Author { get; set; }
-
-        [JsonProperty("word")]
-        public string Word { get; set; }
-
-        [JsonProperty("defid")]
-        public int Defid { get; set; }
-
-        [JsonProperty("current_vote")]
-        public string CurrentVote { get; set; }
-
-        [JsonProperty("example")]
-        public string Example { get; set; }
-
-        [JsonProperty("thumbs_down")]
-        public int ThumbsDown { get; set; }
-    }
-
-    public class UrbanDictData
-    {
-        [JsonProperty("tags")]
-        public string[] Tags { get; set; }
-
-        [JsonProperty("result_type")]
-        public string ResultType { get; set; }
-
-        [JsonProperty("list")]
-        public UrbanDictList[] List { get; set; }
-
-        [JsonProperty("sounds")]
-        public string[] Sounds { get; set; }
-    }
-
-    public class UrbanDict
-    {
-        public async static Task<UrbanDictData> GetDataAsync(string query)
-        {
-            using (var http = new HttpClient()) {
-                var result = await http.GetStringAsync($"http://api.urbandictionary.com/v0/define?term={ WebUtility.UrlEncode(query) }")
-                    .ConfigureAwait(false);
-                return JsonConvert.DeserializeObject<UrbanDictData>(result);
-            }
-        }
-    }
-    #endregion
 }

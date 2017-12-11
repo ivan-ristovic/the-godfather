@@ -241,7 +241,7 @@ Commands use the following types:
 |   |   |   |   |   |   |
 | ``steam``<br>``st``<br>``s`` | ``profile``<br>``id`` |   | ``[int] Steam ID`` | Get Steam information for given ID. | ``!steam profile 76561198106475313`` |
 |   |   |   |   |   |   |
-| ``urban``<br>``u`` |   |   | ``[text] Query`` | Search Urban Dictionary for a given query. | ``!urban Snowflake`` |
+| ``urbandict``<br>``urban``<br>``u`` |   |   | ``[text] Query`` | Search Urban Dictionary for a given query. | ``!urban Snowflake`` |
 |   |   |   |   |   |   |
 | ``youtube``<br>``y``<br>``yt`` |   |   | ``[text] Query`` | Search YouTube for a given query. | ``!yt Snowflake falling`` |
 | ``youtube``<br>``y``<br>``yt`` | ``search``<br>``s`` |   | ``[int] Ammount``<br><br>``[text] Query`` | Search YouTube for a given query. | ``!yt Snowflake falling`` |
