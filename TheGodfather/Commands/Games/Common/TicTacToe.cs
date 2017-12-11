@@ -58,8 +58,6 @@ namespace TheGodfather.Commands.Games
             _msg = await channel.SendMessageAsync("Game begins!")
                 .ConfigureAwait(false);
 
-            InitializeBoard();
-
             while (NoReply == false && _move < board_size * board_size && !GameOver()) {
                 await UpdateBoardAsync()
                     .ConfigureAwait(false);
@@ -122,13 +120,6 @@ namespace TheGodfather.Commands.Games
             if (_board[0, 2] != 0 && _board[0, 2] == _board[1, 1] && _board[1, 1] == _board[2, 0])
                 return true;
             return false;
-        }
-
-        private void InitializeBoard()
-        {
-            for (int i = 0; i < board_size; i++)
-                for (int j = 0; j < board_size; j++)
-                    _board[i, j] = 0;
         }
 
         private bool PlaySuccessful(int v, int index)

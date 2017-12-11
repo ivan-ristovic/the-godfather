@@ -59,8 +59,6 @@ namespace TheGodfather.Commands.Games
             _msg = await channel.SendMessageAsync($"{_p1.Mention} vs {_p2.Mention}")
                 .ConfigureAwait(false);
 
-            InitializeBoard();
-
             while (NoReply == false && _move < 7 * 9 && !GameOver()) {
                 await UpdateBoardAsync()
                     .ConfigureAwait(false);
@@ -165,13 +163,6 @@ namespace TheGodfather.Commands.Games
             }
 
             return false;
-        }
-
-        private void InitializeBoard()
-        {
-            for (int i = 0; i < 7; i++)
-                for (int j = 0; j < 9; j++)
-                    _board[i, j] = 0;
         }
 
         private bool PlaySuccessful(int v, int c)
