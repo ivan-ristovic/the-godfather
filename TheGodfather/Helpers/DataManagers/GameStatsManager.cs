@@ -7,7 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-using TheGodfather.Helpers;
+using TheGodfather.Services;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -23,11 +23,13 @@ namespace TheGodfather.Helpers.DataManagers
         private ConcurrentDictionary<ulong, GameStats> _stats = new ConcurrentDictionary<ulong, GameStats>();
         private bool _ioerr = false;
         private DiscordClient _client;
+        private DatabaseService _db;
 
 
-        public GameStatsManager(DiscordClient client)
+        public GameStatsManager(DiscordClient client, DatabaseService db)
         {
             _client = client;
+            _db = db;
         }
 
 
@@ -62,68 +64,15 @@ namespace TheGodfather.Helpers.DataManagers
             return true;
         }
 
-        public void UpdateDuelsWonForUser(ulong uid)
+        public async Task UpdateStatAsync(ulong uid, string stat)
         {
-            _stats.AddOrUpdate(uid, new GameStats() { DuelsWon = 1 }, (k, v) => { v.DuelsWon++; return v; });
-        }
-
-        public void UpdateDuelsLostForUser(ulong uid)
-        {
-            _stats.AddOrUpdate(uid, new GameStats() { DuelsLost = 1 }, (k, v) => { v.DuelsLost++; return v; });
-        }
-
-        public void UpdateHangmanWonForUser(ulong uid)
-        {
-            _stats.AddOrUpdate(uid, new GameStats() { HangmanWon = 1 }, (k, v) => { v.HangmanWon++; return v; });
-        }
-
-        public void UpdateNunchiGamesWonForUser(ulong uid)
-        {
-            _stats.AddOrUpdate(uid, new GameStats() { NunchiGamesWon = 1 }, (k, v) => { v.NunchiGamesWon++; return v; });
-        }
-
-        public void UpdateQuizesWonForUser(ulong uid)
-        {
-            _stats.AddOrUpdate(uid, new GameStats() { QuizesWon = 1 }, (k, v) => { v.QuizesWon++; return v; });
-        }
-
-        public void UpdateRacesWonForUser(ulong uid)
-        {
-            _stats.AddOrUpdate(uid, new GameStats() { RacesWon = 1 }, (k, v) => { v.RacesWon++; return v; });
-        }
-
-        public void UpdateTTTWonForUser(ulong uid)
-        {
-            _stats.AddOrUpdate(uid, new GameStats() { TTTWon = 1 }, (k, v) => { v.TTTWon++; return v; });
-        }
-
-        public void UpdateTTTLostForUser(ulong uid)
-        {
-            _stats.AddOrUpdate(uid, new GameStats() { TTTLost = 1 }, (k, v) => { v.TTTLost++; return v; });
-        }
-
-        public void UpdateConnect4WonForUser(ulong uid)
-        {
-            _stats.AddOrUpdate(uid, new GameStats() { Connect4Won = 1 }, (k, v) => { v.Connect4Won++; return v; });
-        }
-
-        public void UpdateConnect4LostForUser(ulong uid)
-        {
-            _stats.AddOrUpdate(uid, new GameStats() { Connect4Lost = 1 }, (k, v) => { v.Connect4Lost++; return v; });
-        }
-
-        public void UpdateCaroWonForUser(ulong uid)
-        {
-            _stats.AddOrUpdate(uid, new GameStats() { CaroWon = 1 }, (k, v) => { v.CaroWon++; return v; });
-        }
-
-        public void UpdateCaroLostForUser(ulong uid)
-        {
-            _stats.AddOrUpdate(uid, new GameStats() { CaroLost = 1 }, (k, v) => { v.CaroLost++; return v; });
+            await _db.UpdateStat(uid, stat, 1)
+                   .ConfigureAwait(false);
         }
 
         public GameStats GetStatsForUser(ulong uid)
         {
+            //var stats = await _db.GetStatsForUserAsync(uid);
             if (_stats.ContainsKey(uid))
                 return _stats[uid];
             else

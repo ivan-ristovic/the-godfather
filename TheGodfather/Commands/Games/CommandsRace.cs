@@ -52,9 +52,9 @@ namespace TheGodfather.Commands.Games
                 if (race.ParticipantCount > 1) {
                     await race.StartRaceAsync()
                         .ConfigureAwait(false);
-                    var statman = ctx.Dependencies.GetDependency<GameStatsManager>();
+                    var gsm = ctx.Dependencies.GetDependency<GameStatsManager>();
                     foreach (var uid in race.WinnerIds)
-                        statman.UpdateRacesWonForUser(uid);
+                        await gsm.UpdateStatAsync(uid, "races_won").ConfigureAwait(false);
                 } else {
                     await ctx.RespondAsync("Not enough users joined the race.")
                         .ConfigureAwait(false);

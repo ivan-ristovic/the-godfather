@@ -28,7 +28,6 @@ namespace TheGodfather
     {
         #region PUBLIC_FIELDS
         public bool Listening { get; private set; }
-        private BotConfig Config { get; set; }
         #endregion
 
         #region PRIVATE_FIELDS
@@ -37,6 +36,7 @@ namespace TheGodfather
         private InteractivityModule _interactivity { get; set; }
         private VoiceNextClient _voice { get; set; }
 
+        private BotConfig Config { get; set; }
         private BotDependencyList _dependecies { get; set; }
 
         internal Logger LogHandle { get; private set; }

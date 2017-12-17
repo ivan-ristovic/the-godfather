@@ -41,6 +41,8 @@ namespace TheGodfather.Helpers
 
         internal BotDependencyList(DiscordClient client, BotConfig cfg)
         {
+            DatabaseService = new DatabaseService(cfg.DatabaseConfig);
+
             BankControl = new BankManager();
             FeedControl = new FeedManager(client);
             InsultControl = new InsultManager();
@@ -48,9 +50,8 @@ namespace TheGodfather.Helpers
             RankControl = new RankManager();
             StatusControl = new StatusManager();
             SwatServerControl = new SwatServerManager();
-            GameStatsControl = new GameStatsManager(client);
+            GameStatsControl = new GameStatsManager(client, DatabaseService);
             GuildConfigControl = new GuildConfigManager(cfg);
-            DatabaseService = new DatabaseService(cfg.DatabaseConfig);
             GiphyService = new GiphyService(cfg.GiphyKey);
             ImgurService = new ImgurService(cfg.ImgurKey);
             SteamService = new SteamService(cfg.SteamKey);

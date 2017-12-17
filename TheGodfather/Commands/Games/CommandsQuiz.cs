@@ -36,7 +36,9 @@ namespace TheGodfather.Commands.Games
                 await quiz.StartAsync(QuizType.Countries)
                     .ConfigureAwait(false);
 
-                ctx.Dependencies.GetDependency<GameStatsManager>().UpdateQuizesWonForUser(ctx.User.Id);
+                if (quiz.Winner != null)
+                    await ctx.Dependencies.GetDependency<GameStatsManager>().UpdateStatAsync(quiz.Winner.Id, "quizes_won")
+                        .ConfigureAwait(false);
             }
             #endregion
         }

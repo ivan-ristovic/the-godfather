@@ -18,43 +18,43 @@ namespace TheGodfather.Services
 {
     public class DatabaseService
     {
-        private string ConnectionString { get; }
-        private SemaphoreSlim Semaphore { get; }
-        private DatabaseConfig Configuration { get; }
+        private string _connectionString { get; }
+        private SemaphoreSlim _sem { get; }
+        private DatabaseConfig _cfg { get; }
 
 
         public DatabaseService(DatabaseConfig config)
         {
-            Semaphore = new SemaphoreSlim(100, 100);
+            _sem = new SemaphoreSlim(100, 100);
 
             if (config == null)
-                Configuration = DatabaseConfig.Default;
+                _cfg = DatabaseConfig.Default;
             else
-                Configuration = config;
+                _cfg = config;
 
             var csb = new NpgsqlConnectionStringBuilder() {
-                Host = Configuration.Hostname,
-                Port = Configuration.Port,
-                Database = Configuration.Database,
-                Username = Configuration.Username,
-                Password = Configuration.Password,
+                Host = _cfg.Hostname,
+                Port = _cfg.Port,
+                Database = _cfg.Database,
+                Username = _cfg.Username,
+                Password = _cfg.Password,
                 Pooling = true
                 /*
                 SslMode = SslMode.Require,
                 TrustServerCertificate = true
                 */
             };
-            ConnectionString = csb.ConnectionString;
+            _connectionString = csb.ConnectionString;
         }
 
-
+        
         public async Task<IReadOnlyList<IReadOnlyDictionary<string, string>>> ExecuteRawQueryAsync(string query)
         {
-            await Semaphore.WaitAsync();
+            await _sem.WaitAsync();
             var dicts = new List<IReadOnlyDictionary<string, string>>();
             
             try {
-                using (var con = new NpgsqlConnection(ConnectionString))
+                using (var con = new NpgsqlConnection(_connectionString))
                 using (var cmd = con.CreateCommand()) {
                     await con.OpenAsync().ConfigureAwait(false);
 
@@ -75,8 +75,28 @@ namespace TheGodfather.Services
                 throw new DatabaseServiceException("", e);
             }
 
-            Semaphore.Release();
+            _sem.Release();
             return new ReadOnlyCollection<IReadOnlyDictionary<string, string>>(dicts);
+        }
+
+        public async Task<IReadOnlyDictionary<string, string>> GetStatsForUserAsync(ulong uid)
+        {
+            var res = await ExecuteRawQueryAsync($"SELECT * FROM gf.stats WHERE uid = {uid};")
+                .ConfigureAwait(false);
+            
+            if (res != null && res.Any())
+                return res.First();
+            else
+                return null;
+        }
+
+        public async Task UpdateStat(ulong uid, string col, int add)
+        {
+            var stats = await GetStatsForUserAsync(uid);
+            if (stats != null && stats.Any())
+                await ExecuteRawQueryAsync($"UPDATE gf.stats SET {col} = {col} + {add} WHERE uid = {uid};");
+            else
+                await ExecuteRawQueryAsync($"INSERT INTO gf.stats (uid, {col}) VALUES ({uid}, {add});");
         }
     }
 }

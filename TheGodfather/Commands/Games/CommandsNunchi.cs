@@ -54,7 +54,8 @@ namespace TheGodfather.Commands.Games
                     await game.PlayAsync()
                         .ConfigureAwait(false);
                     if (game.Winner != null)
-                        ctx.Dependencies.GetDependency<GameStatsManager>().UpdateNunchiGamesWonForUser(game.Winner.Id);
+                        await ctx.Dependencies.GetDependency<GameStatsManager>().UpdateStatAsync(game.Winner.Id, "nunchi_won")
+                            .ConfigureAwait(false);
                 } else {
                     await ctx.RespondAsync("Not enough users joined the game.")
                         .ConfigureAwait(false);
