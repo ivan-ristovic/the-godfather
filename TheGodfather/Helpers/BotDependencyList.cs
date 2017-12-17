@@ -69,7 +69,6 @@ namespace TheGodfather.Helpers
             RankControl.Load(log);
             StatusControl.Load(log);
             SwatServerControl.Load(log);
-            GameStatsControl.Load(log);
             GuildConfigControl.Load(log);
         }
 
@@ -82,7 +81,6 @@ namespace TheGodfather.Helpers
             RankControl.Save(log);
             StatusControl.Save(log);
             SwatServerControl.Save(log);
-            GameStatsControl.Save(log);
             GuildConfigControl.Save(log);
         }
 

@@ -134,17 +134,13 @@ namespace TheGodfather.Commands.Games
             await duel.PlayAsync()
                 .ConfigureAwait(false);
 
+            await ctx.RespondAsync($"{duel.Winner.Username} {(string.IsNullOrWhiteSpace(duel.FinishingMove) ? "wins" : duel.FinishingMove)}!")
+                .ConfigureAwait(false);
+
             var gsm = ctx.Dependencies.GetDependency<GameStatsManager>();
             await gsm.UpdateStatAsync(duel.Winner.Id, "duels_won")
                 .ConfigureAwait(false);
             await gsm.UpdateStatAsync(duel.Winner.Id == ctx.User.Id ? u.Id : ctx.User.Id, "duels_lost")
-                .ConfigureAwait(false);
-            var em = new DiscordEmbedBuilder() {
-                Color = DiscordColor.Chartreuse
-            };
-            em.AddField($"Duel stats for {ctx.User.Username}", gsm.GetStatsForUser(ctx.User.Id).DuelStatsString(), inline: true);
-            em.AddField($"Duel stats for {u.Username}", gsm.GetStatsForUser(u.Id).DuelStatsString(), inline: true);
-            await ctx.RespondAsync($"{duel.Winner.Username} {(string.IsNullOrWhiteSpace(duel.FinishingMove) ? "wins" : duel.FinishingMove)}!", embed: em.Build())
                 .ConfigureAwait(false);
         }
         #endregion
@@ -247,7 +243,9 @@ namespace TheGodfather.Commands.Games
             if (u == null)
                 u = ctx.User;
 
-            await ctx.RespondAsync(embed: ctx.Dependencies.GetDependency<GameStatsManager>().GetEmbeddedStatsForUser(u))
+            var e = await ctx.Dependencies.GetDependency<GameStatsManager>().GetEmbeddedStatsForUserAsync(u)
+                .ConfigureAwait(false);
+            await ctx.RespondAsync(embed: e)
                 .ConfigureAwait(false);
         }
         #endregion
