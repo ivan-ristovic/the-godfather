@@ -31,7 +31,6 @@ namespace TheGodfather.Helpers.DataManagers
         }
 
 
-
         public static IEnumerable<SyndicationItem> GetFeedResults(string url)
         {
             SyndicationFeed feed = null;

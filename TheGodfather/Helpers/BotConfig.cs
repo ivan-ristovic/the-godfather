@@ -30,6 +30,9 @@ namespace TheGodfather.Helpers
         [JsonProperty("key-youtube")]
         public string YoutubeKey { get; private set; }
 
+        [JsonProperty("db-config")]
+        public DatabaseConfig DatabaseConfig { get; private set; }
+
 
         public static BotConfig Load()
         {
@@ -46,6 +49,54 @@ namespace TheGodfather.Helpers
             }
 
             return cfg;
+        }
+
+        [JsonIgnore]
+        public static BotConfig Default
+        {
+            get {
+                return new BotConfig {
+                    Token = "<insert token here>",
+                    DefaultPrefix = "!",
+                    GiphyKey = "",
+                    SteamKey = "",
+                    ImgurKey = "",
+                    YoutubeKey = "",
+                    DatabaseConfig = DatabaseConfig.Default
+                };
+            }
+        }
+    }
+
+    public class DatabaseConfig
+    {
+        [JsonProperty("hostname")]
+        public string Hostname { get; private set; }
+
+        [JsonProperty("port")]
+        public int Port { get; private set; }
+
+        [JsonProperty("database")]
+        public string Database { get; private set; }
+
+        [JsonProperty("username")]
+        public string Username { get; private set; }
+
+        [JsonProperty("password")]
+        public string Password { get; private set; }
+
+        [JsonIgnore]
+        public static DatabaseConfig Default
+        {
+            get {
+                return new DatabaseConfig {
+                    Hostname = "localhost",
+                    Port = 5432,
+                    Database = "gf",
+                    Username = "<insert username>",
+                    Password = "<insert password>"
+                };
+            }
         }
     }
 }

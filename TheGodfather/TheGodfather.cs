@@ -22,9 +22,6 @@ using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
 #endregion
 
-using Npgsql;
-using NpgsqlTypes;
-
 namespace TheGodfather
 {
     public class TheGodfather

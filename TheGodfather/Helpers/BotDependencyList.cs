@@ -31,6 +31,7 @@ namespace TheGodfather.Helpers
         internal SwatServerManager  SwatServerControl   { get; private set; }
         internal GameStatsManager   GameStatsControl    { get; private set; }
         internal GuildConfigManager GuildConfigControl  { get; private set; }
+        internal DatabaseService    DatabaseService     { get; private set; }
         internal GiphyService       GiphyService        { get; private set; }
         internal ImgurService       ImgurService        { get; private set; }
         internal JokesService       JokesService        { get; private set; }
@@ -49,6 +50,7 @@ namespace TheGodfather.Helpers
             SwatServerControl = new SwatServerManager();
             GameStatsControl = new GameStatsManager(client);
             GuildConfigControl = new GuildConfigManager(cfg);
+            DatabaseService = new DatabaseService(cfg.DatabaseConfig);
             GiphyService = new GiphyService(cfg.GiphyKey);
             ImgurService = new ImgurService(cfg.ImgurKey);
             SteamService = new SteamService(cfg.SteamKey);
@@ -93,6 +95,7 @@ namespace TheGodfather.Helpers
                 .AddInstance(RankControl)
                 .AddInstance(StatusControl)
                 .AddInstance(SwatServerControl)
+                .AddInstance(DatabaseService)
                 .AddInstance(GiphyService)
                 .AddInstance(ImgurService)
                 .AddInstance(SteamService)
