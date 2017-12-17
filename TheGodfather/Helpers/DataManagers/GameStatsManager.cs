@@ -31,6 +31,7 @@ namespace TheGodfather.Helpers.DataManagers
             _db = db;
         }
 
+
         public async Task UpdateStatAsync(ulong uid, string stat)
         {
             await _db.UpdateStat(uid, stat, 1)
@@ -98,6 +99,7 @@ namespace TheGodfather.Helpers.DataManagers
             return emb.Build();
         }
 
+        #region LEADERBOARD_HELPERS
         public async Task<string> GetTopDuelistsStringAsync()
         {
             var topDuelists = await _db.GetOrderedStatsAsync("coalesce(1.0 * duels_won / NULLIF(duels_won + duels_lost, 0), 0)", "duels_won", "duels_lost")
@@ -289,5 +291,6 @@ namespace TheGodfather.Helpers.DataManagers
 
             return sb.ToString();
         }
+        #endregion
     }
 }
