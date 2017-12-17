@@ -22,13 +22,16 @@ using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
 #endregion
 
+using Npgsql;
+using NpgsqlTypes;
+
 namespace TheGodfather
 {
     public class TheGodfather
     {
         #region PUBLIC_FIELDS
         public bool Listening { get; private set; }
-        public BotConfig Config { get; private set; }
+        private BotConfig Config { get; set; }
         #endregion
 
         #region PRIVATE_FIELDS

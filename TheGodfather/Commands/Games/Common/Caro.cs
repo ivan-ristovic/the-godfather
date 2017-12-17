@@ -85,7 +85,7 @@ namespace TheGodfather.Commands.Games
         private async Task AdvanceAsync(DiscordChannel channel)
         {
             int row = 0, column = 0;
-            bool player1plays = _move % 2 == 0;
+            bool player1plays = (_move % 2 == 0);
             var t = await _client.GetInteractivityModule().WaitForMessageAsync(
                 xm => {
                     if (xm.Channel.Id != _cid) return false;

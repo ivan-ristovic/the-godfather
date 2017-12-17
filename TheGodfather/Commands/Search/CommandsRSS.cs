@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 
 using TheGodfather.Helpers.DataManagers;
+using TheGodfather.Services;
 using TheGodfather.Exceptions;
 
 using DSharpPlus;
@@ -31,7 +32,7 @@ namespace TheGodfather.Commands.Search
             if (string.IsNullOrWhiteSpace(url))
                 throw new InvalidCommandUsageException("URL missing.");
 
-            await SendFeedResultsAsync(ctx, ctx.Dependencies.GetDependency<FeedManager>().GetFeedResults(url))
+            await SendFeedResultsAsync(ctx, FeedManager.GetFeedResults(url))
                 .ConfigureAwait(false);
         }
 
@@ -73,7 +74,7 @@ namespace TheGodfather.Commands.Search
         [Description("Get newest topics from WM forum.")]
         public async Task WmRssAsync(CommandContext ctx)
         {
-            await SendFeedResultsAsync(ctx, ctx.Dependencies.GetDependency<FeedManager>().GetFeedResults("http://worldmafia.net/forum/forums/-/index.rss"))
+            await SendFeedResultsAsync(ctx, FeedManager.GetFeedResults("http://worldmafia.net/forum/forums/-/index.rss"))
                 .ConfigureAwait(false);
         }
         #endregion
@@ -83,7 +84,7 @@ namespace TheGodfather.Commands.Search
         [Description("Get newest world news.")]
         public async Task NewsRssAsync(CommandContext ctx)
         {
-            await SendFeedResultsAsync(ctx, ctx.Dependencies.GetDependency<FeedManager>().GetFeedResults("https://news.google.com/news/rss/headlines/section/topic/WORLD?ned=us&hl=en"))
+            await SendFeedResultsAsync(ctx, FeedManager.GetFeedResults("https://news.google.com/news/rss/headlines/section/topic/WORLD?ned=us&hl=en"))
                 .ConfigureAwait(false);
         }
         #endregion
@@ -102,7 +103,7 @@ namespace TheGodfather.Commands.Search
                     throw new InvalidCommandUsageException("Subreddit missing.");
 
                 string url = $"https://www.reddit.com/r/{ sub.ToLower() }/new/.rss";
-                await SendFeedResultsAsync(ctx, ctx.Dependencies.GetDependency<FeedManager>().GetFeedResults(url))
+                await SendFeedResultsAsync(ctx, FeedManager.GetFeedResults(url))
                     .ConfigureAwait(false);
             }
 
@@ -158,9 +159,11 @@ namespace TheGodfather.Commands.Search
                 if (string.IsNullOrWhiteSpace(url))
                     throw new InvalidCommandUsageException("Channel URL missing.");
 
-                var ytid = await GetYoutubeIdAsync(ctx, url)
+                var fm = ctx.Dependencies.GetDependency<FeedManager>();
+                var yt = ctx.Dependencies.GetDependency<YoutubeService>();
+                var ytid = await yt.GetYoutubeIdAsync(url)
                     .ConfigureAwait(false);
-                var res = ctx.Dependencies.GetDependency<FeedManager>().GetFeedResults(YoutubeRSSFeedLink(ytid));
+                var res = FeedManager.GetFeedResults(YoutubeService.GetYoutubeRSSFeedLinkForChannelId(ytid));
                 await SendFeedResultsAsync(ctx, res)
                     .ConfigureAwait(false);
             }
@@ -178,12 +181,13 @@ namespace TheGodfather.Commands.Search
                 if (string.IsNullOrWhiteSpace(url))
                     throw new InvalidCommandUsageException("Channel URL missing.");
 
-                var chid = await GetYoutubeIdAsync(ctx, url)
+                var chid = await ctx.Dependencies.GetDependency<YoutubeService>().GetYoutubeIdAsync(url)
                     .ConfigureAwait(false);
+
                 if (chid == null)
                     throw new CommandFailedException("Failed retrieving channel ID for that URL.");
 
-                var feedurl = YoutubeRSSFeedLink(chid);
+                var feedurl = YoutubeService.GetYoutubeRSSFeedLinkForChannelId(chid);
                 bool nameset = string.IsNullOrWhiteSpace(name);
                 if (ctx.Dependencies.GetDependency<FeedManager>().TryAdd(ctx.Channel.Id, feedurl, nameset ? name : url))
                     await ctx.RespondAsync("Subscribed!").ConfigureAwait(false);
@@ -203,55 +207,16 @@ namespace TheGodfather.Commands.Search
                 if (string.IsNullOrWhiteSpace(url))
                     throw new InvalidCommandUsageException("Channel URL missing.");
 
-                var chid = await GetYoutubeIdAsync(ctx, url)
+                var chid = await ctx.Dependencies.GetDependency<YoutubeService>().GetYoutubeIdAsync(url)
                     .ConfigureAwait(false);
                 if (chid == null)
                     throw new CommandFailedException("Failed retrieving channel ID for that URL.");
 
-                var feedurl = YoutubeRSSFeedLink(chid);
+                var feedurl = YoutubeService.GetYoutubeRSSFeedLinkForChannelId(chid);
                 if (ctx.Dependencies.GetDependency<FeedManager>().TryRemove(ctx.Channel.Id, feedurl))
                     await ctx.RespondAsync("Unsubscribed!").ConfigureAwait(false);
                 else
                     await ctx.RespondAsync("Failed to remove some subscriptions!").ConfigureAwait(false);
-            }
-            #endregion
-          
-
-            #region HELPER_FUNCTIONS_AND_CLASSES
-            private string YoutubeRSSFeedLink(string id)
-            {
-                return "https://www.youtube.com/feeds/videos.xml?channel_id=" + id;
-            }
-
-            private async Task<string> GetYoutubeIdAsync(CommandContext ctx, string url)
-            {
-                string id = url.Split('/').Last();
-
-                var results = ctx.Dependencies.GetDependency<FeedManager>().GetFeedResults(YoutubeRSSFeedLink(id));
-                if (results == null) {
-                    var ytkey = ctx.Dependencies.GetDependency<TheGodfather>().Config.YoutubeKey;
-                    try {
-                        var wc = new WebClient();
-                        var jsondata = await wc.DownloadStringTaskAsync("https://www.googleapis.com/youtube/v3/channels?key=" + ytkey + "&forUsername=" + id + "&part=id")
-                            .ConfigureAwait(false);
-                        var data = JsonConvert.DeserializeObject<DeserializedData>(jsondata);
-                        if (data.Items != null)
-                            return data.Items[0]["id"];
-                    } catch {
-
-                    }
-                } else {
-                    return id;
-                }
-
-                return null;
-            }
-
-
-            private sealed class DeserializedData
-            {
-                [JsonProperty("items")]
-                public List<Dictionary<string, string>> Items { get; set; }
             }
             #endregion
         }

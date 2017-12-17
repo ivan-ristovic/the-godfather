@@ -30,7 +30,25 @@ namespace TheGodfather.Helpers.DataManagers
             Task.Run(async () => await CheckFeedsForChangesContinuousAsync(client).ConfigureAwait(false));
         }
 
-        
+
+
+        public static IEnumerable<SyndicationItem> GetFeedResults(string url)
+        {
+            SyndicationFeed feed = null;
+            XmlReader reader = null;
+            try {
+                reader = XmlReader.Create(url);
+                feed = SyndicationFeed.Load(reader);
+            } catch (Exception) {
+                return null;
+            } finally {
+                reader?.Close();
+            }
+
+            return feed.Items.Take(5);
+        }
+
+
         public void Load(DebugLogger log)
         {
             if (File.Exists("Resources/feeds.json")) {
@@ -107,22 +125,6 @@ namespace TheGodfather.Helpers.DataManagers
         public IReadOnlyList<string> GetFeedListForChannel(ulong cid)
         {
             return _feeds.Where(kvp => kvp.Value.ChannelIds.Contains(cid)).Select(kvp => kvp.Value.QualifiedName != null ? kvp.Value.QualifiedName : kvp.Key).ToList();
-        }
-
-        public IEnumerable<SyndicationItem> GetFeedResults(string url)
-        {
-            SyndicationFeed feed = null;
-            XmlReader reader = null;
-            try {
-                reader = XmlReader.Create(url);
-                feed = SyndicationFeed.Load(reader);
-            } catch (Exception) {
-                return null;
-            } finally {
-                reader?.Close();
-            }
-
-            return feed.Items.Take(5);
         }
 
         private async Task CheckFeedsForChangesContinuousAsync(DiscordClient client)

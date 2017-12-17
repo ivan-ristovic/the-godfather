@@ -10,6 +10,8 @@ using Google.Apis.Services;
 using Google.Apis.YouTube.v3;
 using Google.Apis.YouTube.v3.Data;
 using TheGodfather.Helpers.DataManagers;
+using System.Net;
+using Newtonsoft.Json;
 /*
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Util.Store;
@@ -21,6 +23,7 @@ namespace TheGodfather.Services
     public class YoutubeService
     {
         private YouTubeService _yt { get; set; }
+        private string _key { get; set; }
 
 
         public YoutubeService(string key)
@@ -36,12 +39,17 @@ namespace TheGodfather.Services
             }
             */
 
+            _key = key;
             _yt = new YouTubeService(new BaseClientService.Initializer() {
                 ApiKey = key,
                 ApplicationName = "TheGodfather"
                 // HttpClientInitializer = credential
             });
         }
+
+
+        public static string GetYoutubeRSSFeedLinkForChannelId(string id) =>
+            "https://www.youtube.com/feeds/videos.xml?channel_id=" + id;
 
 
         public async Task<DiscordEmbed> GetEmbeddedResults(string query, int ammount, string type = null)
@@ -95,6 +103,35 @@ namespace TheGodfather.Services
                 }
             }
             return em.Build();
+        }
+        
+        public async Task<string> GetYoutubeIdAsync(string url)
+        {
+            string id = url.Split('/').Last();
+
+            var results = FeedManager.GetFeedResults(GetYoutubeRSSFeedLinkForChannelId(id));
+            if (results == null) {
+                try {
+                    var wc = new WebClient();
+                    var jsondata = await wc.DownloadStringTaskAsync("https://www.googleapis.com/youtube/v3/channels?key=" + _key + "&forUsername=" + id + "&part=id")
+                        .ConfigureAwait(false);
+                    var data = JsonConvert.DeserializeObject<DeserializedData>(jsondata);
+                    if (data.Items != null)
+                        return data.Items[0]["id"];
+                } catch {
+
+                }
+            } else {
+                return id;
+            }
+
+            return null;
+        }
+        
+        private sealed class DeserializedData
+        {
+            [JsonProperty("items")]
+            public List<Dictionary<string, string>> Items { get; set; }
         }
     }
 }
