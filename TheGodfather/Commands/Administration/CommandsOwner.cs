@@ -3,7 +3,6 @@ using System;
 using System.IO;
 using System.Net;
 using System.Linq;
-using System.Drawing;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Scripting;
@@ -13,11 +12,13 @@ using Microsoft.CodeAnalysis;
 using TheGodfather.Helpers;
 using TheGodfather.Helpers.DataManagers;
 using TheGodfather.Exceptions;
+using TheGodfather.Services;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using System.Text;
 #endregion
 
 namespace TheGodfather.Commands.Administration
@@ -101,6 +102,52 @@ namespace TheGodfather.Commands.Administration
 
             await ctx.RespondAsync("Logs cleared.")
                 .ConfigureAwait(false);
+        }
+        #endregion
+        
+        #region COMMAND_DBQUERY
+        [Command("dbquery")]
+        [Description("Clear application logs.")]
+        [Aliases("sql", "dbq", "q")]
+        [PreExecutionCheck]
+        public async Task DatabaseQuery(CommandContext ctx,
+                                        [RemainingText, Description("New name.")] string query)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+                throw new InvalidCommandUsageException("Query missing.");
+
+            var res = await ctx.Dependencies.GetDependency<DatabaseService>().ExecuteRawQueryAsync(query)
+                .ConfigureAwait(false);
+
+            if (!res.Any() || !res.First().Any()) {
+                await ctx.RespondAsync("No results.")
+                    .ConfigureAwait(false);
+                return;
+            }
+
+            var d0 = res.First().Select(r => r.Key).OrderByDescending(r => r.Length).First().Length + 1;
+
+            var eb = new DiscordEmbedBuilder {
+                Title = string.Concat("Results: ", res.Count.ToString("#,##0")),
+                Description = string.Concat("Showing ", res.Count > 24 ? "first 24" : "all", " results for query ", Formatter.InlineCode(query), ":"),
+                Color = new DiscordColor(0x007FFF)
+            };
+
+            var i = 0;
+            foreach (var row in res.Take(24)) {
+                var sb = new StringBuilder();
+
+                foreach (var r in row) {
+                    sb.Append(r.Key).Append(new string(' ', d0 - r.Key.Length)).Append("| ").AppendLine(r.Value);
+                }
+
+                eb.AddField(string.Concat("Result #", i++), Formatter.BlockCode(sb.ToString()), false);
+            }
+
+            if (res.Count > 24)
+                eb.AddField("Display incomplete", string.Concat((res.Count - 24).ToString("#,##0"), " results were omitted."), false);
+
+            await ctx.RespondAsync("", embed: eb.Build()).ConfigureAwait(false);
         }
         #endregion
 
