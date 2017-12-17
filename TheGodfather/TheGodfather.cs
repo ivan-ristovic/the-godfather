@@ -456,6 +456,8 @@ namespace TheGodfather
                 embed.Description = $"{emoji} Invalid usage! {ex.Message}";
             else if (e.Exception is CommandFailedException)
                 embed.Description = $"{emoji} {ex.Message}";
+            else if (e.Exception is DatabaseServiceException)
+                embed.Description = $"{emoji} Database exception occured. Details: {ex.InnerException?.Message}";
             else if (e.Exception is NotSupportedException)
                 embed.Description = $"{emoji} Not supported. {e.Exception.Message}";
             else if (e.Exception is InvalidOperationException)

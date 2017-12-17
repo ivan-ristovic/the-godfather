@@ -71,8 +71,8 @@ namespace TheGodfather.Services
                         }
                     }
                 }
-            } catch {
-
+            } catch (NpgsqlException e) {
+                throw new DatabaseServiceException("", e);
             }
 
             Semaphore.Release();
