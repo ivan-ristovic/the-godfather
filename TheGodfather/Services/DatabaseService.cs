@@ -90,6 +90,18 @@ namespace TheGodfather.Services
                 return null;
         }
 
+        public async Task<IReadOnlyList<IReadOnlyDictionary<string, string>>> GetOrderedStatsAsync(string orderstr, params string[] selectors)
+        {
+            var res = await ExecuteRawQueryAsync($@"
+                SELECT uid, {string.Join(", ", selectors)} 
+                FROM gf.stats
+                ORDER BY {orderstr} DESC
+                LIMIT 5
+            ").ConfigureAwait(false);
+
+            return res;
+        }
+
         public async Task UpdateStat(ulong uid, string col, int add)
         {
             var stats = await GetStatsForUserAsync(uid);

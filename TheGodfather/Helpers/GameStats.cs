@@ -20,7 +20,7 @@ namespace TheGodfather.Helpers
             var eb = new DiscordEmbedBuilder() { Color = DiscordColor.Chartreuse };
             eb.AddField("Duel stats", DuelStatsString(stats));
             eb.AddField("Tic-Tac-Toe stats", TTTStatsString(stats));
-            eb.AddField("Connect4 stats", Connect4StatsString(stats));
+            eb.AddField("Connect4 stats", Chain4StatsString(stats));
             eb.AddField("Caro stats", CaroStatsString(stats));
             eb.AddField("Nunchi stats", NunchiStatsString(stats), inline: true);
             eb.AddField("Quiz stats", QuizStatsString(stats), inline: true);
@@ -35,7 +35,7 @@ namespace TheGodfather.Helpers
         public static string TTTStatsString(IReadOnlyDictionary<string, string> stats)
             => $"W: {stats["ttt_won"]} L: {stats["ttt_lost"]} ({Formatter.Bold($"{CalculateWinPercentage(stats["ttt_won"], stats["ttt_lost"])}")}%)";
 
-        public static string Connect4StatsString(IReadOnlyDictionary<string, string> stats)
+        public static string Chain4StatsString(IReadOnlyDictionary<string, string> stats)
             => $"W: {stats["chain4_won"]} L: {stats["chain4_lost"]} ({Formatter.Bold($"{CalculateWinPercentage(stats["chain4_won"], stats["chain4_lost"])}")}%)";
 
         public static string CaroStatsString(IReadOnlyDictionary<string, string> stats)
