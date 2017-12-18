@@ -105,6 +105,27 @@ namespace TheGodfather.Services
             return balance.HasValue;
         }
 
+        public async Task<bool> RetrieveCreditsAsync(ulong uid, int amount)
+        {
+            int? balance = await GetBalanceForUserAsync(uid).ConfigureAwait(false);
+            if (!balance.HasValue || balance.Value < amount)
+                return false;
+
+            await _sem.WaitAsync();
+
+            using (var con = new NpgsqlConnection(_connectionString))
+            using (var cmd = con.CreateCommand()) {
+                await con.OpenAsync().ConfigureAwait(false);
+
+                cmd.CommandText = $"UPDATE gf.accounts SET balance = balance - {amount} WHERE uid = {uid};";
+
+                await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+            }
+
+            _sem.Release();
+            return true;
+        }
+
         public async Task<int?> GetBalanceForUserAsync(ulong uid)
         {
             await _sem.WaitAsync();
