@@ -14,7 +14,10 @@ namespace TheGodfather.Helpers
     {
         [JsonProperty("token")]
         public string Token { get; private set; }
-        
+
+        [JsonProperty("shard-count")]
+        public int ShardCount { get; private set; }
+
         [JsonProperty("prefix")]
         public string DefaultPrefix { get; private set; }
 
@@ -57,6 +60,7 @@ namespace TheGodfather.Helpers
             get {
                 return new BotConfig {
                     Token = "<insert token here>",
+                    ShardCount = 1,
                     DefaultPrefix = "!",
                     GiphyKey = "",
                     SteamKey = "",

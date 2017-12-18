@@ -93,8 +93,9 @@ namespace TheGodfather.Commands.Administration
         [PreExecutionCheck]
         public async Task ClearLogAsync(CommandContext ctx)
         {
+            /*
             try {
-                ctx.Dependencies.GetDependency<TheGodfather>().LogHandle.ClearLogFile();
+                ctx.Dependencies.GetDependency<TheGodfather>().Logger.ClearLogFile();
             } catch (Exception e) {
                 ctx.Client.DebugLogger.LogMessage(LogLevel.Error, "TheGodfather", e.Message, DateTime.Now);
                 throw e;
@@ -102,6 +103,7 @@ namespace TheGodfather.Commands.Administration
 
             await ctx.RespondAsync("Logs cleared.")
                 .ConfigureAwait(false);
+            */
         }
         #endregion
         
@@ -326,18 +328,6 @@ namespace TheGodfather.Commands.Administration
                 throw new InvalidCommandUsageException();
 
             await ctx.Client.GetCommandsNext().SudoAsync(member, ctx.Channel, command)
-                .ConfigureAwait(false);
-        }
-        #endregion
-        
-        #region COMMAND_TOGGLEIGNORE
-        [Command("toggleignore")]
-        [Description("Toggle bot's reaction to commands.")]
-        [Aliases("ti")]
-        public async Task ToggleIgnoreAsync(CommandContext ctx)
-        {
-            ctx.Dependencies.GetDependency<TheGodfather>().ToggleListening();
-            await ctx.RespondAsync("Done!")
                 .ConfigureAwait(false);
         }
         #endregion

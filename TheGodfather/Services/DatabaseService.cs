@@ -47,12 +47,49 @@ namespace TheGodfather.Services
             _connectionString = csb.ConnectionString;
         }
 
-        
+
+        public async Task InitializeAsync()
+        {
+            await _sem.WaitAsync();
+
+            try {
+                using (var con = new NpgsqlConnection(_connectionString))
+                using (var cmd = con.CreateCommand()) {
+                    await con.OpenAsync().ConfigureAwait(false);
+                }
+            } catch (NpgsqlException e) {
+                throw new DatabaseServiceException("Database connection failed. Check your login details in the config.json file.", e);
+            }
+
+            _sem.Release();
+        }
+
+        public async Task<IReadOnlyDictionary<ulong, string>> GetGuildPrefixesAsync()
+        {
+            await _sem.WaitAsync();
+            var dict = new Dictionary<ulong, string>();
+
+            using (var con = new NpgsqlConnection(_connectionString))
+            using (var cmd = con.CreateCommand()) {
+                await con.OpenAsync().ConfigureAwait(false);
+
+                cmd.CommandText = "SELECT * FROM gf.prefixes;";
+
+                using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
+                    while (await reader.ReadAsync().ConfigureAwait(false))
+                        dict[(ulong)(long)reader["gid"]] = (string)reader["prefix"];
+                }
+            }
+
+            _sem.Release();
+            return new ReadOnlyDictionary<ulong, string>(dict);
+        }
+
         public async Task<IReadOnlyList<IReadOnlyDictionary<string, string>>> ExecuteRawQueryAsync(string query)
         {
             await _sem.WaitAsync();
             var dicts = new List<IReadOnlyDictionary<string, string>>();
-            
+
             try {
                 using (var con = new NpgsqlConnection(_connectionString))
                 using (var cmd = con.CreateCommand()) {
@@ -83,7 +120,7 @@ namespace TheGodfather.Services
         {
             var res = await ExecuteRawQueryAsync($"SELECT * FROM gf.stats WHERE uid = {uid};")
                 .ConfigureAwait(false);
-            
+
             if (res != null && res.Any())
                 return res.First();
             else
@@ -105,10 +142,18 @@ namespace TheGodfather.Services
         public async Task UpdateStat(ulong uid, string col, int add)
         {
             var stats = await GetStatsForUserAsync(uid);
-            if (stats != null && stats.Any())
-                await ExecuteRawQueryAsync($"UPDATE gf.stats SET {col} = {col} + {add} WHERE uid = {uid};");
-            else
-                await ExecuteRawQueryAsync($"INSERT INTO gf.stats (uid, {col}) VALUES ({uid}, {add});");
+
+            using (var con = new NpgsqlConnection(_connectionString))
+            using (var cmd = con.CreateCommand()) {
+                await con.OpenAsync().ConfigureAwait(false);
+
+                if (stats != null && stats.Any())
+                    cmd.CommandText = $"UPDATE gf.stats SET {col} = {col} + {add} WHERE uid = {uid};";
+                else
+                    cmd.CommandText = $"INSERT INTO gf.stats (uid, {col}) VALUES ({uid}, {add});";
+
+                await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+            }
         }
     }
 }

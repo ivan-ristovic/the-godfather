@@ -291,7 +291,6 @@
     <Compile Include="Commands\SWAT\CommandsSwat.cs" />
     <Compile Include="Commands\Administration\CommandsUsers.cs" />
     <Compile Include="Commands\Voice\CommandsVoice.cs" />
-    <Compile Include="Helpers\Logger.cs" />
     <Compile Include="Helpers\DataManagers\StatusManager.cs" />
     <Compile Include="Helpers\SWAT\SwatServer.cs" />
     <Compile Include="Helpers\SWAT\SwatServerInfo.cs" />
@@ -304,6 +303,7 @@
     <Compile Include="Services\SteamService.cs" />
     <Compile Include="Services\UrbanDictService.cs" />
     <Compile Include="Services\YoutubeService.cs" />
+    <Compile Include="SharedData.cs" />
     <Compile Include="TheGodfather.cs" />
   </ItemGroup>
   <ItemGroup>
