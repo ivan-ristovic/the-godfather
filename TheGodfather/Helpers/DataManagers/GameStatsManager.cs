@@ -32,7 +32,7 @@ namespace TheGodfather.Helpers.DataManagers
 
         public async Task UpdateStatAsync(ulong uid, string stat)
         {
-            await _db.UpdateStat(uid, stat, 1)
+            await _db.UpdateStatAsync(uid, stat, 1)
                    .ConfigureAwait(false);
         }
 

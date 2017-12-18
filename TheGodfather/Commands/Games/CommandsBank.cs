@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 using TheGodfather.Helpers.DataManagers;
 using TheGodfather.Exceptions;
+using TheGodfather.Services;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -41,7 +42,11 @@ namespace TheGodfather.Commands.Games
             if (u == null || ammount <= 0 || ammount > 1000)
                 throw new InvalidCommandUsageException("Invalid user or ammount.");
 
-            ctx.Dependencies.GetDependency<BankManager>().IncreaseBalance(u.Id, ammount);
+            if (!await ctx.Dependencies.GetDependency<DatabaseService>().HasBankAccountAsync(ctx.User.Id).ConfigureAwait(false))
+                throw new CommandFailedException("Given user does not have a WM bank account!");
+
+            await ctx.Dependencies.GetDependency<DatabaseService>().IncreaseBalanceForUserAsync(u.Id, ammount)
+                .ConfigureAwait(false);
             await ctx.RespondAsync($"User {Formatter.Bold(u.Username)} won {Formatter.Bold(ammount.ToString())} credits on a lottery! (seems legit)")
                 .ConfigureAwait(false);
         }
@@ -53,15 +58,13 @@ namespace TheGodfather.Commands.Games
         [Aliases("r", "signup", "activate")]
         public async Task RegisterAsync(CommandContext ctx)
         {
-            if (ctx.Dependencies.GetDependency<BankManager>().Accounts.ContainsKey(ctx.User.Id))
+            if (await ctx.Dependencies.GetDependency<DatabaseService>().HasBankAccountAsync(ctx.User.Id).ConfigureAwait(false))
                 throw new CommandFailedException("You already own an account in WM bank!");
 
-            if (ctx.Dependencies.GetDependency<BankManager>().OpenAccount(ctx.User.Id)) { 
-                await ctx.RespondAsync($"Account opened for you, {ctx.User.Mention}! Since WM bank is so generous, you get 25 credits for free.")
-                    .ConfigureAwait(false);
-            } else {
-                throw new CommandFailedException("Account opening failed.");
-            }
+            await ctx.Dependencies.GetDependency<DatabaseService>().OpenAccountForUserAsync(ctx.User.Id)
+                .ConfigureAwait(false);
+            await ctx.RespondAsync($"Account opened for you, {ctx.User.Mention}! Since WM bank is so generous, you get 25 credits for free.")
+                .ConfigureAwait(false);
         }
         #endregion
 
@@ -75,14 +78,12 @@ namespace TheGodfather.Commands.Games
             if (u == null)
                 u = ctx.User;
 
-            var accounts = ctx.Dependencies.GetDependency<BankManager>().Accounts;
-            int? ammount = null;
-            if (accounts.ContainsKey(ctx.User.Id))
-                ammount = accounts[ctx.User.Id];
+            var balance = await ctx.Dependencies.GetDependency<DatabaseService>().GetBalanceForUserAsync(ctx.User.Id)
+                .ConfigureAwait(false);
 
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
                 Title = $"Account balance for {ctx.User.Username}",
-                Description = $"{Formatter.Bold(ammount != null ? ammount.ToString() : "No existing account!")}",
+                Description = $"{Formatter.Bold(balance.HasValue ? balance.ToString() : "No existing account!")}",
                 Color = DiscordColor.Yellow
             }.Build()).ConfigureAwait(false);
         }
@@ -99,11 +100,14 @@ namespace TheGodfather.Commands.Games
                 Color = DiscordColor.Yellow
             };
 
-            var leaderboard = ctx.Dependencies.GetDependency<BankManager>().Accounts.ToList().OrderBy(key => key.Value).Take(10);
-            foreach (var pair in leaderboard) {
-                var member = await ctx.Guild.GetMemberAsync(pair.Key)
+            var top = await ctx.Dependencies.GetDependency<DatabaseService>().GetTopAccountsAsync()
+                .ConfigureAwait(false);
+            foreach (var row in top) {
+                ulong uid = 0;
+                ulong.TryParse(row["uid"], out uid);
+                var member = await ctx.Guild.GetMemberAsync(uid)
                     .ConfigureAwait(false);
-                em.AddField(member.Username, pair.Value.ToString(), inline: true);
+                em.AddField(member.Username, row["balance"], inline: true);
             }
 
             await ctx.RespondAsync(embed: em.Build())
@@ -121,18 +125,12 @@ namespace TheGodfather.Commands.Games
         {
             if (u == null)
                 throw new InvalidCommandUsageException("Account to transfer the credits to is missing.");
+            
+            if (ammount <= 0)
+                throw new CommandFailedException("The amount must be positive integer.");
 
-            var accounts = ctx.Dependencies.GetDependency<BankManager>().Accounts;
-
-            if (!accounts.ContainsKey(ctx.User.Id) || !accounts.ContainsKey(u.Id))
-                throw new CommandFailedException("One or more accounts not found in the bank.", new KeyNotFoundException());
-
-            if (ammount <= 0 || accounts[ctx.User.Id] < ammount)
-                throw new CommandFailedException("Invalid ammount (check your funds).", new ArgumentOutOfRangeException());
-
-            ctx.Dependencies.GetDependency<BankManager>().RetrieveCredits(ctx.User.Id, ammount);
-            ctx.Dependencies.GetDependency<BankManager>().IncreaseBalance(u.Id, ammount);
-
+            await ctx.Dependencies.GetDependency<DatabaseService>().TransferCurrencyAsync(ctx.User.Id, u.Id, ammount)
+                .ConfigureAwait(false);
             await ctx.RespondAsync($"Transfer from {ctx.User.Mention} to {u.Mention} is complete.")
                 .ConfigureAwait(false);
         }

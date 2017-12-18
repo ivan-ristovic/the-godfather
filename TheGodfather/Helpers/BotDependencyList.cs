@@ -22,7 +22,6 @@ namespace TheGodfather.Helpers
 {
     public class BotDependencyList
     {
-        internal BankManager        BankControl         { get; private set; }
         internal FeedManager        FeedControl         { get; private set; }
         internal InsultManager      InsultControl       { get; private set; }
         internal MemeManager        MemeControl         { get; private set; }
@@ -31,7 +30,6 @@ namespace TheGodfather.Helpers
         internal SwatServerManager  SwatServerControl   { get; private set; }
         internal GameStatsManager   GameStatsControl    { get; private set; }
         internal GuildConfigManager GuildConfigControl  { get; private set; }
-        internal DatabaseService    DatabaseService     { get; private set; }
         internal GiphyService       GiphyService        { get; private set; }
         internal ImgurService       ImgurService        { get; private set; }
         internal JokesService       JokesService        { get; private set; }
@@ -39,18 +37,15 @@ namespace TheGodfather.Helpers
         internal YoutubeService     YoutubeService      { get; private set; }
 
 
-        internal BotDependencyList(BotConfig cfg)
+        internal BotDependencyList(BotConfig cfg, DatabaseService db)
         {
-            DatabaseService = new DatabaseService(cfg.DatabaseConfig);
-
-            BankControl = new BankManager();
             FeedControl = new FeedManager();
             InsultControl = new InsultManager();
             MemeControl = new MemeManager();
             RankControl = new RankManager();
             StatusControl = new StatusManager();
             SwatServerControl = new SwatServerManager();
-            GameStatsControl = new GameStatsManager(DatabaseService);
+            GameStatsControl = new GameStatsManager(db);
             GuildConfigControl = new GuildConfigManager(cfg);
             GiphyService = new GiphyService(cfg.GiphyKey);
             ImgurService = new ImgurService(cfg.ImgurKey);
@@ -62,7 +57,6 @@ namespace TheGodfather.Helpers
 
         internal void LoadData()
         {
-            BankControl.Load();
             FeedControl.Load();
             InsultControl.Load();
             MemeControl.Load();
@@ -74,7 +68,6 @@ namespace TheGodfather.Helpers
 
         internal void SaveData()
         {
-            BankControl.Save();
             FeedControl.Save();
             InsultControl.Save();
             MemeControl.Save();
@@ -87,14 +80,12 @@ namespace TheGodfather.Helpers
         internal DependencyCollectionBuilder GetDependencyCollectionBuilder()
         {
             return new DependencyCollectionBuilder()
-                .AddInstance(BankControl)
                 .AddInstance(FeedControl)
                 .AddInstance(InsultControl)
                 .AddInstance(MemeControl)
                 .AddInstance(RankControl)
                 .AddInstance(StatusControl)
                 .AddInstance(SwatServerControl)
-                .AddInstance(DatabaseService)
                 .AddInstance(GiphyService)
                 .AddInstance(ImgurService)
                 .AddInstance(SteamService)

@@ -75,7 +75,7 @@ namespace TheGodfather
             foreach (var gprefix in gprefixes_db)
                 gprefixes.TryAdd(gprefix.Key, gprefix.Value);
 
-            TheGodfather.DependencyList = new BotDependencyList(cfg);
+            TheGodfather.DependencyList = new BotDependencyList(cfg, Database);
             TheGodfather.DependencyList.LoadData();
 
             // TODO

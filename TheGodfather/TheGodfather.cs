@@ -94,7 +94,7 @@ namespace TheGodfather
             });
 
             Client.ClientErrored += Client_Error;
-            //Client.DebugLogger.LogMessageReceived += Client_LogMessage; TODO
+            // Client.DebugLogger.LogMessageReceived += Client_LogMessage; TODO
             Client.GuildAvailable += Client_GuildAvailable;
             Client.GuildMemberAdded += Client_GuildMemberAdd;
             Client.GuildMemberRemoved += Client_GuildMemberRemove;

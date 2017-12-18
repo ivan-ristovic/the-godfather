@@ -20,6 +20,7 @@ namespace TheGodfather.Commands.Games
     [PreExecutionCheck]
     public partial class CommandsGamble
     {
+        /*
         #region COMMAND_COINFLIP
         [Command("coinflip")]
         [Description("Flips a coin.")]
@@ -128,7 +129,7 @@ namespace TheGodfather.Commands.Games
                 ctx.Dependencies.GetDependency<BankManager>().IncreaseBalance(ctx.User.Id, won);
         }
         #endregion
-
+        */
 
         #region HELPER_FUNCTIONS
         private DiscordEmoji[,] RollSlot(CommandContext ctx)
