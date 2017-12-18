@@ -332,6 +332,18 @@ namespace TheGodfather.Commands.Administration
         }
         #endregion
 
+        #region COMMAND_TOGGLEIGNORE
+        [Command("toggleignore")]
+        [Description("Toggle bot's reaction to commands.")]
+        [Aliases("ti")]
+        public async Task ToggleIgnoreAsync(CommandContext ctx)
+        {
+            TheGodfather.Listening = !TheGodfather.Listening;
+            await ctx.RespondAsync("Done!")
+                .ConfigureAwait(false);
+        }
+        #endregion
+
 
         [Group("status", CanInvokeWithoutSubcommand = false)]
         [Description("Bot status manipulation.")]

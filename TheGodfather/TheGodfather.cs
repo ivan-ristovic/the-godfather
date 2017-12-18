@@ -27,6 +27,10 @@ namespace TheGodfather
 {
     public class TheGodfather
     {
+        #region STATIC_FIELDS
+        public static bool Listening { get; set; } = true;
+        #endregion
+
         #region PUBLIC_FIELDS
         public int ShardId { get; }
 
@@ -410,7 +414,7 @@ namespace TheGodfather
 
         private async Task Commands_CommandErrored(CommandErrorEventArgs e)
         {
-            if (e.Exception == null)
+            if (!Listening || e.Exception == null)
                 return;
 
             var ex = e.Exception;

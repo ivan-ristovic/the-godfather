@@ -20,7 +20,7 @@ using DSharpPlus.Entities;
 
 namespace TheGodfather.Helpers
 {
-    internal class BotDependencyList
+    public class BotDependencyList
     {
         internal BankManager        BankControl         { get; private set; }
         internal FeedManager        FeedControl         { get; private set; }
