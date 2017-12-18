@@ -138,7 +138,7 @@ namespace TheGodfather.Commands.Administration
 
         #region COMMAND_GUILD_PRUNE
         [Command("prune")]
-        [Description("Kick guild members who weren't active in given ammount of days (1-7).")]
+        [Description("Kick guild members who weren't active in given amount of days (1-7).")]
         [Aliases("p", "clean")]
         [RequirePermissions(Permissions.KickMembers)]
         [RequireUserPermissions(Permissions.Administrator)]

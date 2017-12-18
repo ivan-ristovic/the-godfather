@@ -118,7 +118,7 @@ Commands use the following types:
 | ``guild``<br>``server``<br>``g`` | ``listmembers``<br>``memberlist``<br>``lm``<br>``members`` | Manage Guild | ``(optional) [int] page (def: 1)`` | Get guild member list. | ``!guild memberlist``<br><br>``!guild memberlist 3`` |
 | ``guild``<br>``server``<br>``g`` | ``log``<br>``auditlog``<br>``viewlog``<br>``getlog``<br>``getlogs``<br>``logs`` | View Audit Log | ``(optional) [int] page (def: 1)`` | Get guild audit logs. | ``!guild log``<br><br>``!guild log 3`` |
 | ``guild``<br>``server``<br>``g`` | ``bans``<br>``banlist``<br>``viewbans``<br>``viewbanlist``<br>``getbans``<br>``getbanlist`` | View Audit Log | ``(optional) [int] page (def: 1)`` | Get guild banlist. | ``!guild bans``<br><br>``!guild bans 3`` |
-| ``guild``<br>``server``<br>``g`` | ``prune``<br>``p``<br>``clean`` | Administrator (user)<br><br>Kick Members (bot) | ``(optional) [int] page (def: 7)`` | Kick members who weren't active in given ammount of days (1-7). | ``!guild prune``<br><br>``!guild prune 5`` |
+| ``guild``<br>``server``<br>``g`` | ``prune``<br>``p``<br>``clean`` | Administrator (user)<br><br>Kick Members (bot) | ``(optional) [int] page (def: 7)`` | Kick members who weren't active in given amount of days (1-7). | ``!guild prune``<br><br>``!guild prune 5`` |
 | ``guild``<br>``server``<br>``g`` | ``rename``<br>``r``<br>``name``<br>``setname`` | Manage guild | ``[text] Name`` | Rename guild. | ``!guild rename New guild name`` |
 | ``guild``<br>``server``<br>``g`` | ``getwelcomechannel``<br>``getwelcomec``<br>``getwc``<br>``getwelcome``<br>``welcomechannel``<br>``wc`` | Manage guild (user) |  | Get current welcome message channel for this guild. | ``!guild getwc`` |
 | ``guild``<br>``server``<br>``g`` | ``getleavechannel``<br>``getleavec``<br>``getlc``<br>``getleave``<br>``leavechannel``<br>``lc`` | Manage guild (user) |  | Get current leave message channel for this guild. | ``!guild getlc`` |
@@ -133,10 +133,10 @@ Commands use the following types:
 | ``g emoji``<br>``g emojis``<br>``g e`` | ``list``<br>``print``<br>``show``<br>``print``<br>``l``<br>``p`` |  |  | List guild emoji. | ``!guild emoji list`` |
 | ``g emoji``<br>``g emojis``<br>``g e`` | ``modify``<br>``edit``<br>``mod``<br>``e``<br>``m`` | Manage emojis | ``[emoji] Emoji``<br>``[string] New name`` | Modify guild emoji. | ``!guild emoji edit :pepe: pepenewname`` |
 |   |   |   |   |   |   |   |
-| ``messages``<br>``m``<br>``msg``<br>``msgs`` | ``delete``<br>``-``<br>``d``<br>``del``<br>``prune`` | Administrator (user)<br><br>Manage messages (bot) | ``[int] Ammount (def: 5)`` | Delete ``Ammount`` messages from the current channel. | ``!messages delete 100`` |
-| ``messages``<br>``m``<br>``msg``<br>``msgs`` | ``deletefrom``<br>``-user``<br>``du``<br>``deluser``<br>``dfu`` | Administrator (user)<br><br>Manage messages (bot) | ``[user] User``<br><br>``[int] Ammount (def: 5)`` | Delete ``Ammount`` messages from ``User`` in the current channel. | ``!messages deletefrom @Someone 100`` |
-| ``messages``<br>``m``<br>``msg``<br>``msgs`` | ``deleteregex``<br>``-regex``<br>``dr``<br>``delregex``<br>``dfr`` | Administrator (user)<br><br>Manage messages (bot) | ``[string] Regex``<br><br>``[int] Ammount (def: 5)`` | Delete ``Ammount`` messages that match pattern ``Regex`` in the current channel (case ignored) | ``!messages deleteregex s+p+a+m+ 100`` |
-| ``messages``<br>``m``<br>``msg``<br>``msgs`` | ``listpinned``<br>``lp``<br>``listpins``<br>``listpin``<br>``pinned`` |  | ``[int] Ammount (def: 1)`` | List ``Ammount`` pinned messages. | ``!messages listpinned 5`` |
+| ``messages``<br>``m``<br>``msg``<br>``msgs`` | ``delete``<br>``-``<br>``d``<br>``del``<br>``prune`` | Administrator (user)<br><br>Manage messages (bot) | ``[int] Amount (def: 5)`` | Delete ``Amount`` messages from the current channel. | ``!messages delete 100`` |
+| ``messages``<br>``m``<br>``msg``<br>``msgs`` | ``deletefrom``<br>``-user``<br>``du``<br>``deluser``<br>``dfu`` | Administrator (user)<br><br>Manage messages (bot) | ``[user] User``<br><br>``[int] Amount (def: 5)`` | Delete ``Amount`` messages from ``User`` in the current channel. | ``!messages deletefrom @Someone 100`` |
+| ``messages``<br>``m``<br>``msg``<br>``msgs`` | ``deleteregex``<br>``-regex``<br>``dr``<br>``delregex``<br>``dfr`` | Administrator (user)<br><br>Manage messages (bot) | ``[string] Regex``<br><br>``[int] Amount (def: 5)`` | Delete ``Amount`` messages that match pattern ``Regex`` in the current channel (case ignored) | ``!messages deleteregex s+p+a+m+ 100`` |
+| ``messages``<br>``m``<br>``msg``<br>``msgs`` | ``listpinned``<br>``lp``<br>``listpins``<br>``listpin``<br>``pinned`` |  | ``[int] Amount (def: 1)`` | List ``Amount`` pinned messages. | ``!messages listpinned 5`` |
 | ``messages``<br>``m``<br>``msg``<br>``msgs`` | ``pin``<br>``p`` | Manage Messages  |  | Pin last sent message (before ``pin`` command). | ``!messages pin`` |
 | ``messages``<br>``m``<br>``msg``<br>``msgs`` | ``unpin``<br>``up`` | Manage Messages  | ``[int] Index (starting from 0)`` | Unpin pinned message with index ``Index`` in pinned message list. | ``!messages unpin 3`` |
 | ``messages``<br>``m``<br>``msg``<br>``msgs`` | ``unpinall``<br>``upa`` | Manage Messages  |  | Unpin all pinned messages. | ``!messages unpinall`` |
@@ -155,7 +155,7 @@ Commands use the following types:
 | ``user``<br>``users``<br>``u``<br>``usr`` | ``ban``<br>``b`` | Ban Members | ``[user] User``<br><br>``(optional) [text] Reason`` | Ban ``User``. | ``!user ban @SomeUser`` |
 | ``user``<br>``users``<br>``u``<br>``usr`` | ``banid``<br>``bid`` | Ban Members | ``[int] ID``<br><br>``(optional) [text] Reason`` | Ban user by ``ID``. | ``!user banid 235088799074484224`` |
 | ``user``<br>``users``<br>``u``<br>``usr`` | ``softban``<br>``sb`` | Ban Members | ``[user] User``<br><br>``(optional) [text] Reason`` | Ban ``User`` and unban him immediately (deletes his messages). | ``!user softban @SomeUser`` |
-| ``user``<br>``users``<br>``u``<br>``usr`` | ``tempban``<br>``tb`` | Ban Members | ``[user] User``<br><br>``[int] Ammount of time units``<br><br>``[string] Time unit (s/m/h/d)``<br><br>``(optional) [text] Reason`` | Ban ``User`` and unban him after given time. | ``!user tempban 5 d @SomeUser`` |
+| ``user``<br>``users``<br>``u``<br>``usr`` | ``tempban``<br>``tb`` | Ban Members | ``[user] User``<br><br>``[int] Amount of time units``<br><br>``[string] Time unit (s/m/h/d)``<br><br>``(optional) [text] Reason`` | Ban ``User`` and unban him after given time. | ``!user tempban 5 d @SomeUser`` |
 | ``user``<br>``users``<br>``u``<br>``usr`` | ``deafen``<br>``d``<br>``deaf`` | Deafen Members | ``[user] User``<br><br>``(optional) [text] Reason`` | Toggle ``User``'s voice deaf status. | ``!user deafen @SomeUser`` |
 | ``user``<br>``users``<br>``u``<br>``usr`` | ``info``<br>``i``<br>``information`` |  | ``(optional) [user] User (def: sender)`` | Get information about ``User``. | ``!user info``<br><br>``!user info @SomeUser`` |
 | ``user``<br>``users``<br>``u``<br>``usr`` | ``kick``<br>``k`` | Kick Members | ``[user] User``<br><br>``(optional) [text] Reason`` | Kick ``User``. | ``!user kick @SomeUser`` |
@@ -175,11 +175,11 @@ Commands use the following types:
 |---|---|---|---|---|---|
 |   |   |   |   |   |   |
 | ``bank``<br>``$``<br>``$$``<br>``$$$`` |  |  |  | Prints the account balance for sender. | ``!bank`` |
-| ``bank``<br>``$``<br>``$$``<br>``$$$`` | ``grant``<br>``give`` | Administrator | ``[user] User``<br><br>``[int] Ammount`` | Add ``Ammount`` credits to ``User``'s account. | ``!bank grant 100 @LuckyGuy`` |
+| ``bank``<br>``$``<br>``$$``<br>``$$$`` | ``grant``<br>``give`` | Administrator | ``[user] User``<br><br>``[int] Amount`` | Add ``Amount`` credits to ``User``'s account. | ``!bank grant 100 @LuckyGuy`` |
 | ``bank``<br>``$``<br>``$$``<br>``$$$`` | ``register``<br>``r``<br>``activate``<br>``signup`` |  |  | Opens an account for sender in WM bank. | ``!bank register`` |
 | ``bank``<br>``$``<br>``$$``<br>``$$$`` | ``status``<br>``balance``<br>``s`` |  | ``(optional) [user] User (def: sender)`` | Prints the account balance for a user. | ``!bank balance``<br><br>``!bank balance @BillGates`` |
 | ``bank``<br>``$``<br>``$$``<br>``$$$`` | ``top``<br>``leaderboard`` |  |  | Prints a list of richest users (globally). | ``!bank top`` |
-| ``bank``<br>``$``<br>``$$``<br>``$$$`` | ``transfer``<br>``lend`` |  | ``[user] User``<br><br>``[int] Ammount`` | Give ``Ammount`` credits from your account to ``User``'s account. | ``!bank transfer @MyFriend 100`` |
+| ``bank``<br>``$``<br>``$$``<br>``$$$`` | ``transfer``<br>``lend`` |  | ``[user] User``<br><br>``[int] Amount`` | Give ``Amount`` credits from your account to ``User``'s account. | ``!bank transfer @MyFriend 100`` |
 |   |   |   |   |   |   |
 | ``gamble``<br>``bet`` | ``coinflip``<br>``coin``<br>``flip`` |   | ``[int] Bid``<br><br>``[string] Heads/Tails`` | Bet on a coin flip outcome! Can be invoked without both arguments if you do not wish to bet. | ``!bet coinflip 5 heads`` |
 | ``gamble``<br>``bet`` | ``roll``<br>``dice``<br>``die`` |   | ``[int] Bid``<br><br>``[int] Guess [1-6]`` | Bet on a dice roll outcome! Can be invoked without both arguments if you do not wish to bet. | ``!bet dice 50 6`` |
@@ -191,7 +191,7 @@ Commands use the following types:
 | Command group (with synonyms) | Command name (with synonyms) | Required Permissions | Command arguments | Command Description | Example of use |
 |---|---|---|---|---|---|
 |   |   |   |   |   |   |
-| ``cards``<br>``deck`` | ``draw``<br>``take`` |   | ``(optional) [int] Ammount (def: 1)`` | Draw ``Ammount`` of cards from the top of the deck. | ``!deck draw 5`` |
+| ``cards``<br>``deck`` | ``draw``<br>``take`` |   | ``(optional) [int] Amount (def: 1)`` | Draw ``Amount`` of cards from the top of the deck. | ``!deck draw 5`` |
 | ``cards``<br>``deck`` | ``reset``<br>``opennew``<br>``new`` |   |   | Open new deck of cards (unshuffled). | ``!deck new`` |
 | ``cards``<br>``deck`` | ``shuffle``<br>``s``<br>``sh``<br>``mix`` |   |   | Shuffle current card deck. | ``!deck shuffle`` |
 |   |   |   |   |   |   |
@@ -217,11 +217,11 @@ Commands use the following types:
 |   |   |   |   |   |   |
 | ``gif``<br>``giphy`` |   |   | ``[text] Query`` | Search GIPHY for ``Query`` and send a GIF result. | ``!gif deal with it`` |
 | ``gif``<br>``giphy`` | ``random``<br>``r``<br>``rnd``<br>``rand`` |   |   | Send a random GIF from GIPHY. | ``!gif random`` |
-| ``gif``<br>``giphy`` | ``trending``<br>``trend``<br>``tr``<br>``t`` |   | ``(optional) [int] Ammount (def: 5)`` | Send ``Ammount`` of trending GIFs. | ``!gif trending 5`` |
+| ``gif``<br>``giphy`` | ``trending``<br>``trend``<br>``tr``<br>``t`` |   | ``(optional) [int] Amount (def: 5)`` | Send ``Amount`` of trending GIFs. | ``!gif trending 5`` |
 |   |   |   |   |   |   |
-| ``imgur``<br>``i`` |   |   | ``[int] Ammount``<br><br>``[text] Gallery`` | Search Imgur gallery group with name ``Gallery`` and send top ``Ammount`` of result images for this day. | ``!imgur 5 aww`` |
-| ``imgur``<br>``i`` | ``latest``<br>``l``<br>``new``<br>``newest`` |   | ``[int] Ammount``<br><br>``[text] Gallery`` | Search Imgur gallery group with name ``Gallery`` and send ``Ammount`` of newest posted images. | ``!imgur latest 5 aww`` |
-| ``imgur``<br>``i`` | ``top``<br>``t`` |   | ``[string] Time Window``<br><br>``[int] Ammount``<br><br>``[text] Gallery`` | Send ``Ammount`` of top images in gallery group with name ``Gallery`` for given ``Time Window``. ``TimeWindow`` must be one of the following words: ``day/month/week/year/all``. | ``!imgur top month 10 aww`` |
+| ``imgur``<br>``i`` |   |   | ``[int] Amount``<br><br>``[text] Gallery`` | Search Imgur gallery group with name ``Gallery`` and send top ``Amount`` of result images for this day. | ``!imgur 5 aww`` |
+| ``imgur``<br>``i`` | ``latest``<br>``l``<br>``new``<br>``newest`` |   | ``[int] Amount``<br><br>``[text] Gallery`` | Search Imgur gallery group with name ``Gallery`` and send ``Amount`` of newest posted images. | ``!imgur latest 5 aww`` |
+| ``imgur``<br>``i`` | ``top``<br>``t`` |   | ``[string] Time Window``<br><br>``[int] Amount``<br><br>``[text] Gallery`` | Send ``Amount`` of top images in gallery group with name ``Gallery`` for given ``Time Window``. ``TimeWindow`` must be one of the following words: ``day/month/week/year/all``. | ``!imgur top month 10 aww`` |
 |   |   |   |   |   |   |
 | ``joke``<br>``jokes``<br>``j`` |   |   |   | Send a random joke. | ``!joke`` |
 | ``joke``<br>``jokes``<br>``j`` | ``search``<br>``s`` |   | ``[text] Query`` | Search for the joke containing ``Query``. | ``!joke blonde`` |
@@ -244,7 +244,7 @@ Commands use the following types:
 | ``urbandict``<br>``urban``<br>``u`` |   |   | ``[text] Query`` | Search Urban Dictionary for a given query. | ``!urban Snowflake`` |
 |   |   |   |   |   |   |
 | ``youtube``<br>``y``<br>``yt`` |   |   | ``[text] Query`` | Search YouTube for a given query. | ``!yt Snowflake falling`` |
-| ``youtube``<br>``y``<br>``yt`` | ``search``<br>``s`` |   | ``[int] Ammount``<br><br>``[text] Query`` | Search YouTube for a given query. | ``!yt Snowflake falling`` |
+| ``youtube``<br>``y``<br>``yt`` | ``search``<br>``s`` |   | ``[int] Amount``<br><br>``[text] Query`` | Search YouTube for a given query. | ``!yt Snowflake falling`` |
 | ``youtube``<br>``y``<br>``yt`` | ``searchvideo``<br>``searchv``<br>``sv`` |   | ``[text] Query`` | Search YouTube for a given query. Returns videos only | ``!yt searchv Snowflake falling`` |
 | ``youtube``<br>``y``<br>``yt`` | ``searchchannel``<br>``searchc``<br>``sc`` |   | ``[text] Query`` | Search YouTube for a given query. Returns channels only | ``!yt searchc Snowflake falling`` |
 | ``youtube``<br>``y``<br>``yt`` | ``searchplaylist``<br>``searchp``<br>``sp`` |   | ``[text] Query`` | Search YouTube for a given query. Returns playlists only | ``!yt searchp Snowflake falling`` |

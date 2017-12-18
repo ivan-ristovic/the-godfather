@@ -37,17 +37,17 @@ namespace TheGodfather.Commands.Games
         [RequireUserPermissions(Permissions.Administrator)]
         public async Task GrantAsync(CommandContext ctx,
                                     [Description("User.")] DiscordUser u,
-                                    [Description("Ammount.")] int ammount)
+                                    [Description("Amount.")] int amount)
         {
-            if (u == null || ammount <= 0 || ammount > 1000)
-                throw new InvalidCommandUsageException("Invalid user or ammount.");
+            if (u == null || amount <= 0 || amount > 1000)
+                throw new InvalidCommandUsageException("Invalid user or amount.");
 
             if (!await ctx.Dependencies.GetDependency<DatabaseService>().HasBankAccountAsync(ctx.User.Id).ConfigureAwait(false))
                 throw new CommandFailedException("Given user does not have a WM bank account!");
 
-            await ctx.Dependencies.GetDependency<DatabaseService>().IncreaseBalanceForUserAsync(u.Id, ammount)
+            await ctx.Dependencies.GetDependency<DatabaseService>().IncreaseBalanceForUserAsync(u.Id, amount)
                 .ConfigureAwait(false);
-            await ctx.RespondAsync($"User {Formatter.Bold(u.Username)} won {Formatter.Bold(ammount.ToString())} credits on a lottery! (seems legit)")
+            await ctx.RespondAsync($"User {Formatter.Bold(u.Username)} won {Formatter.Bold(amount.ToString())} credits on a lottery! (seems legit)")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -121,15 +121,15 @@ namespace TheGodfather.Commands.Games
         [Aliases("lend")]
         public async Task TransferCreditsAsync(CommandContext ctx,
                                               [Description("User to send credits to.")] DiscordUser u,
-                                              [Description("Ammount.")] int ammount)
+                                              [Description("Amount.")] int amount)
         {
             if (u == null)
                 throw new InvalidCommandUsageException("Account to transfer the credits to is missing.");
             
-            if (ammount <= 0)
+            if (amount <= 0)
                 throw new CommandFailedException("The amount must be positive integer.");
 
-            await ctx.Dependencies.GetDependency<DatabaseService>().TransferCurrencyAsync(ctx.User.Id, u.Id, ammount)
+            await ctx.Dependencies.GetDependency<DatabaseService>().TransferCurrencyAsync(ctx.User.Id, u.Id, amount)
                 .ConfigureAwait(false);
             await ctx.RespondAsync($"Transfer from {ctx.User.Mention} to {u.Mention} is complete.")
                 .ConfigureAwait(false);

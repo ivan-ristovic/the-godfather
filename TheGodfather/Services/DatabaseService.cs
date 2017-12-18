@@ -163,7 +163,7 @@ namespace TheGodfather.Services
             _sem.Release();
         }
 
-        public async Task IncreaseBalanceForUserAsync(ulong uid, int ammount)
+        public async Task IncreaseBalanceForUserAsync(ulong uid, int amount)
         {
             await _sem.WaitAsync();
 
@@ -171,7 +171,7 @@ namespace TheGodfather.Services
             using (var cmd = con.CreateCommand()) {
                 await con.OpenAsync().ConfigureAwait(false);
 
-                cmd.CommandText = $"UPDATE gf.accounts SET balance = balance + {ammount} WHERE uid = {uid};";
+                cmd.CommandText = $"UPDATE gf.accounts SET balance = balance + {amount} WHERE uid = {uid};";
 
                 await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
             }

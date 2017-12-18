@@ -52,18 +52,18 @@ namespace TheGodfather.Services
             "https://www.youtube.com/feeds/videos.xml?channel_id=" + id;
 
 
-        public async Task<DiscordEmbed> GetEmbeddedResults(string query, int ammount, string type = null)
+        public async Task<DiscordEmbed> GetEmbeddedResults(string query, int amount, string type = null)
         {
-            var res = await GetResultsAsync(query, ammount, type)
+            var res = await GetResultsAsync(query, amount, type)
                 .ConfigureAwait(false);
             return EmbedYouTubeResults(res);
         }
 
-        private async Task<List<SearchResult>> GetResultsAsync(string query, int ammount, string type = null)
+        private async Task<List<SearchResult>> GetResultsAsync(string query, int amount, string type = null)
         {
             var searchListRequest = _yt.Search.List("snippet");
             searchListRequest.Q = query;
-            searchListRequest.MaxResults = ammount;
+            searchListRequest.MaxResults = amount;
             if (type != null)
                 searchListRequest.Type = type;
 

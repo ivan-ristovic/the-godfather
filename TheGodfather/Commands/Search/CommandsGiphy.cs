@@ -54,7 +54,7 @@ namespace TheGodfather.Commands.Search
 
         #region COMMAND_GIPHY_TRENDING
         [Command("trending")]
-        [Description("Return an ammount of trending GIFs.")]
+        [Description("Return an amount of trending GIFs.")]
         [Aliases("t", "tr", "trend")]
         public async Task TrendingAsync(CommandContext ctx,
                                        [Description("Number of results (1-10).")] int n = 5)

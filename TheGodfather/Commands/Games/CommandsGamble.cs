@@ -31,7 +31,7 @@ namespace TheGodfather.Commands.Games
             if (bid != 0) {
 
                 if (bid < 0)
-                    throw new InvalidCommandUsageException("Invalid bid ammount!");
+                    throw new InvalidCommandUsageException("Invalid bid amount!");
 
                 if (string.IsNullOrWhiteSpace(bet))
                     throw new InvalidCommandUsageException("Missing heads or tails call.");
@@ -74,7 +74,7 @@ namespace TheGodfather.Commands.Games
             if (bid != 0) {
 
                 if (bid < 0)
-                    throw new InvalidCommandUsageException("Invalid bid ammount!");
+                    throw new InvalidCommandUsageException("Invalid bid amount!");
 
                 if (guess == 0)
                     throw new InvalidCommandUsageException("Missing number as a guess.");

@@ -42,15 +42,15 @@ namespace TheGodfather.Commands.Search
         [Description("Advanced youtube search.")]
         [Aliases("s")]
         public async Task AdvancedSearchAsync(CommandContext ctx,
-                                             [Description("Ammount of results. [1-10]")] int ammount,
+                                             [Description("Amount of results. [1-10]")] int amount,
                                              [RemainingText, Description("Search query.")] string query)
         {
             if (string.IsNullOrWhiteSpace(query))
                 throw new InvalidCommandUsageException("Search query missing.");
-            if (ammount < 1 || ammount > 10)
-                throw new CommandFailedException("Invalid ammount (must be 1-10).");
+            if (amount < 1 || amount > 10)
+                throw new CommandFailedException("Invalid amount (must be 1-10).");
 
-            await SendYouTubeResults(ctx, query, ammount)
+            await SendYouTubeResults(ctx, query, amount)
                 .ConfigureAwait(false);
         }
         #endregion
@@ -102,9 +102,9 @@ namespace TheGodfather.Commands.Search
 
 
         #region HELPER_FUNCTIONS
-        private async Task SendYouTubeResults(CommandContext ctx, string query, int ammount, string type = null)
+        private async Task SendYouTubeResults(CommandContext ctx, string query, int amount, string type = null)
         {
-            var em = await ctx.Dependencies.GetDependency<YoutubeService>().GetEmbeddedResults(query, ammount, type)
+            var em = await ctx.Dependencies.GetDependency<YoutubeService>().GetEmbeddedResults(query, amount, type)
                 .ConfigureAwait(false);
             await ctx.RespondAsync($"Search result for {Formatter.Bold(query)}", embed: em)
                 .ConfigureAwait(false);
