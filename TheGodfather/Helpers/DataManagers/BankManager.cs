@@ -29,31 +29,31 @@ namespace TheGodfather.Helpers.DataManagers
         }
 
 
-        public void Load(DebugLogger log)
+        public void Load()
         {
             if (File.Exists("Resources/bankaccounts.json")) {
                 try {
                     _accounts = JsonConvert.DeserializeObject<ConcurrentDictionary<ulong, int>>(File.ReadAllText("Resources/bankaccounts.json"));
                 } catch (Exception e) {
-                    log.LogMessage(LogLevel.Error, "TheGodfather", "Bank accounts loading error, check file formatting. Details:\n" + e.ToString(), DateTime.Now);
+                    Console.WriteLine("Bank accounts loading error, check file formatting. Details:\n" + e.ToString());
                     _ioerr = true;
                 }
             } else {
-                log.LogMessage(LogLevel.Warning, "TheGodfather", "bankaccounts.json is missing.", DateTime.Now);
+                Console.WriteLine("bankaccounts.json is missing.");
             }
         }
 
-        public bool Save(DebugLogger log)
+        public bool Save()
         {
             if (_ioerr) {
-                log.LogMessage(LogLevel.Warning, "TheGodfather", "Bank account saving skipped until file conflicts are resolved!", DateTime.Now);
+                Console.WriteLine("Bank account saving skipped until file conflicts are resolved!");
                 return false;
             }
 
             try {
                 File.WriteAllText("Resources/bankaccounts.json", JsonConvert.SerializeObject(_accounts, Formatting.Indented));
             } catch (Exception e) {
-                log.LogMessage(LogLevel.Error, "TheGodfather", "IO Bank accounts save error. Details:\n" + e.ToString(), DateTime.Now);
+                Console.WriteLine("IO Bank accounts save error. Details:\n" + e.ToString());
                 return false;
             }
 

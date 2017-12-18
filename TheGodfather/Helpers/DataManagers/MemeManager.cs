@@ -30,31 +30,31 @@ namespace TheGodfather.Helpers.DataManagers
         }
 
 
-        public void Load(DebugLogger log)
+        public void Load()
         {
             if (File.Exists("Resources/memes.json")) {
                 try {
                     _memes = JsonConvert.DeserializeObject<ConcurrentDictionary<string, string>>(File.ReadAllText("Resources/memes.json"));
                 } catch (Exception e) {
-                    log.LogMessage(LogLevel.Error, "TheGodfather", "Meme loading error, check file formatting. Details:\n" + e.ToString(), DateTime.Now);
+                    Console.WriteLine("Meme loading error, check file formatting. Details:\n" + e.ToString());
                     _ioerr = true;
                 }
             } else {
-                log.LogMessage(LogLevel.Warning, "TheGodfather", "memes.json is missing.", DateTime.Now);
+                Console.WriteLine("memes.json is missing.");
             }
         }
 
-        public bool Save(DebugLogger log)
+        public bool Save()
         {
             if (_ioerr) {
-                log.LogMessage(LogLevel.Warning, "TheGodfather", "Memes saving skipped until file conflicts are resolved!", DateTime.Now);
+                Console.WriteLine("Meme saving skipped until file conflicts are resolved!");
                 return false;
             }
 
             try {
                 File.WriteAllText("Resources/memes.json", JsonConvert.SerializeObject(_memes, Formatting.Indented));
             } catch (Exception e) {
-                log.LogMessage(LogLevel.Error, "TheGodfather", "Meme save error. Details:\n" + e.ToString(), DateTime.Now);
+                Console.WriteLine("Meme save error. Details:\n" + e.ToString());
                 return false;
             }
 

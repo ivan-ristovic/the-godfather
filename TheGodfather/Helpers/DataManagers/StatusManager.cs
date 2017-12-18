@@ -29,31 +29,31 @@ namespace TheGodfather.Helpers.DataManagers
         }
 
 
-        public void Load(DebugLogger log)
+        public void Load()
         {
             if (File.Exists("Resources/statuses.json")) {
                 try {
                     _statuses = JsonConvert.DeserializeObject<List<string>>(File.ReadAllText("Resources/statuses.json"));
                 } catch (Exception e) {
-                    log.LogMessage(LogLevel.Error, "TheGodfather", "Status loading error, check file formatting. Details:\n" + e.ToString(), DateTime.Now);
+                    Console.WriteLine("Status loading error, check file formatting. Details:\n" + e.ToString());
                     _ioerr = true;
                 }
             } else {
-                log.LogMessage(LogLevel.Warning, "TheGodfather", "statuses.json is missing.", DateTime.Now);
+                Console.WriteLine("statuses.json is missing.");
             }
         }
 
-        public bool Save(DebugLogger log)
+        public bool Save()
         {
             if (_ioerr) {
-                log.LogMessage(LogLevel.Warning, "TheGodfather", "Status saving skipped until file conflicts are resolved!", DateTime.Now);
+                Console.WriteLine("Status saving skipped until file conflicts are resolved!");
                 return false;
             }
 
             try {
                 File.WriteAllText("Resources/statuses.json", JsonConvert.SerializeObject(_statuses, Formatting.Indented));
             } catch (Exception e) {
-                log.LogMessage(LogLevel.Error, "TheGodfather", "IO Status save error. Details:\n" + e.ToString(), DateTime.Now);
+                Console.WriteLine("IO Status save error. Details:\n" + e.ToString());
                 return false;
             }
 

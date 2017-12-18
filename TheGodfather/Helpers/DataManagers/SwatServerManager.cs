@@ -25,31 +25,31 @@ namespace TheGodfather.Helpers.DataManagers
         }
 
 
-        public void Load(DebugLogger log)
+        public void Load()
         {
             if (File.Exists("Resources/servers.json")) {
                 try {
                     _serverlist = JsonConvert.DeserializeObject<ConcurrentDictionary<string, SwatServer>>(File.ReadAllText("Resources/servers.json"));
                 } catch (Exception e) {
-                    log.LogMessage(LogLevel.Error, "TheGodfather", "Servers loading error, check file formatting. Details:\n" + e.ToString(), DateTime.Now);
+                    Console.WriteLine("Servers loading error, check file formatting. Details:\n" + e.ToString());
                     _ioerr = true;
                 }
             } else {
-                log.LogMessage(LogLevel.Warning, "TheGodfather", "servers.json is missing.", DateTime.Now);
+                Console.WriteLine("servers.json is missing.");
             }
         }
 
-        public bool Save(DebugLogger log)
+        public bool Save()
         {
             if (_ioerr) {
-                log.LogMessage(LogLevel.Warning, "TheGodfather", "Server saving skipped until file conflicts are resolved!", DateTime.Now);
+                Console.WriteLine("Server saving skipped until file conflicts are resolved!");
                 return false;
             }
 
             try {
                 File.WriteAllText("Resources/servers.json", JsonConvert.SerializeObject(_serverlist, Formatting.Indented));
             } catch (Exception e) {
-                log.LogMessage(LogLevel.Error, "TheGodfather", "IO Server save error. Details:\n" + e.ToString(), DateTime.Now);
+                Console.WriteLine("IO Server save error. Details:\n" + e.ToString());
                 return false;
             }
 

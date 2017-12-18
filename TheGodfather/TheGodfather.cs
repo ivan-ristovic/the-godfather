@@ -29,6 +29,7 @@ namespace TheGodfather
     {
         #region STATIC_FIELDS
         public static bool Listening { get; set; } = true;
+        public static BotDependencyList DependencyList { get; set; }
         #endregion
 
         #region PUBLIC_FIELDS
@@ -44,7 +45,6 @@ namespace TheGodfather
 
         #region PRIVATE_FIELDS
         private BotConfig _cfg { get; set; }
-        private BotDependencyList _dependecies { get; set; }
         private SharedData SharedData { get; }
         #endregion
 
@@ -64,7 +64,6 @@ namespace TheGodfather
             SetupCommands();
             SetupInteractivity();
             SetupVoice();
-            LoadData();
         }
 
         public async Task StartAsync()
@@ -88,7 +87,7 @@ namespace TheGodfather
 
                 ShardCount = _cfg.ShardCount,
                 ShardId = ShardId,
-                UseInternalLogHandler = false,
+                UseInternalLogHandler = true,
 
                 Token = _cfg.Token,
                 TokenType = TokenType.Bot
@@ -111,13 +110,12 @@ namespace TheGodfather
 
         private void SetupCommands()
         {
-            _dependecies = new BotDependencyList(Client, _cfg);
             Commands = Client.UseCommandsNext(new CommandsNextConfiguration {
                 EnableDms = false,
                 CaseSensitive = false,
                 EnableMentionPrefix = true,
                 CustomPrefixPredicate = async m => await CheckMessageForPrefix(m),
-                Dependencies = _dependecies.GetDependencyCollectionBuilder()
+                Dependencies = DependencyList.GetDependencyCollectionBuilder()
                                            .AddInstance(Client)
                                            .AddInstance(Database)
                                            .AddInstance(SharedData)
@@ -144,43 +142,9 @@ namespace TheGodfather
             Voice = Client.UseVoiceNext();
         }
 
-        private void LoadData()
-        {
-            try {
-                _dependecies.LoadData(Client.DebugLogger);
-            } catch (Exception e) {
-                Log(LogLevel.Error,
-                    $"Errors occured during data load: " + Environment.NewLine +
-                    $" Exception: {e.GetType()}" + Environment.NewLine +
-                    (e.InnerException != null ? $" Inner exception: {e.InnerException.GetType()}" + Environment.NewLine : "") +
-                    $" Message: {e.Message}"
-                );
-                return;
-            }
-
-            Log(LogLevel.Debug, "Data loaded.");
-        }
-
-        private void SaveData()
-        {
-            try {
-                _dependecies.SaveData(Client.DebugLogger);
-            } catch (Exception e) {
-                Log(LogLevel.Error,
-                    $"Errors occured during data save: " + Environment.NewLine +
-                    $" Exception: {e.GetType()}" + Environment.NewLine +
-                    (e.InnerException != null ? $" Inner exception: {e.InnerException.GetType()}" + Environment.NewLine : "") +
-                    $" Message: {e.Message}"
-                );
-                return;
-            }
-
-            Log(LogLevel.Debug, "Data saved.");
-        }
-
         private Task<int> CheckMessageForPrefix(DiscordMessage m)
         {
-            string p = _dependecies.GuildConfigControl.GetGuildPrefix(m.Channel.Guild.Id);
+            string p = DependencyList.GuildConfigControl.GetGuildPrefix(m.Channel.Guild.Id);
             return Task.FromResult(m.GetStringPrefixLength(p));
         }
         #endregion
@@ -188,10 +152,9 @@ namespace TheGodfather
         #region CLIENT_EVENTS
         private async Task Client_Heartbeated(HeartbeatEventArgs e)
         {
-            await Client.UpdateStatusAsync(new DiscordGame(_dependecies.StatusControl.GetRandomStatus()) {
+            await Client.UpdateStatusAsync(new DiscordGame(DependencyList.StatusControl.GetRandomStatus()) {
                 StreamType = GameStreamType.NoStream
             }).ConfigureAwait(false);
-            SaveData();
         }
 
         private Task Client_Error(ClientErrorEventArgs e)
@@ -213,7 +176,7 @@ namespace TheGodfather
                 $" Guild: {e.Guild.Name} ({e.Guild.Id})"
             );
 
-            ulong cid = _dependecies.GuildConfigControl.GetGuildWelcomeChannelId(e.Guild.Id);
+            ulong cid = DependencyList.GuildConfigControl.GetGuildWelcomeChannelId(e.Guild.Id);
             if (cid == 0)
                 return;
 
@@ -243,7 +206,7 @@ namespace TheGodfather
                 $" Guild: {e.Guild.Name} ({e.Guild.Id})"
             );
 
-            ulong cid = _dependecies.GuildConfigControl.GetGuildLeaveChannelId(e.Guild.Id);
+            ulong cid = DependencyList.GuildConfigControl.GetGuildLeaveChannelId(e.Guild.Id);
             if (cid == 0)
                 return;
 
@@ -281,7 +244,7 @@ namespace TheGodfather
             }
 
             // Check if message contains filter
-            if (e.Message.Content != null && _dependecies.GuildConfigControl.ContainsFilter(e.Guild.Id, e.Message.Content)) {
+            if (e.Message.Content != null && DependencyList.GuildConfigControl.ContainsFilter(e.Guild.Id, e.Message.Content)) {
                 try {
                     await e.Channel.DeleteMessageAsync(e.Message)
                         .ConfigureAwait(false);
@@ -309,15 +272,15 @@ namespace TheGodfather
                 return;
 
             // Update message count for the user that sent the message
-            int rank = _dependecies.RankControl.UpdateMessageCount(e.Author.Id);
+            int rank = DependencyList.RankControl.UpdateMessageCount(e.Author.Id);
             if (rank != -1) {
-                var ranks = _dependecies.RankControl.Ranks;
+                var ranks = DependencyList.RankControl.Ranks;
                 await e.Channel.SendMessageAsync($"GG {e.Author.Mention}! You have advanced to level {rank} ({(rank < ranks.Count ? ranks[rank] : "Low")})!")
                     .ConfigureAwait(false);
             }
 
             // Check if message has a text trigger
-            var response = _dependecies.GuildConfigControl.GetResponseForTrigger(e.Guild.Id, e.Message.Content);
+            var response = DependencyList.GuildConfigControl.GetResponseForTrigger(e.Guild.Id, e.Message.Content);
             if (response != null) {
                 Log(LogLevel.Info,
                     $"Text trigger detected." + Environment.NewLine +
@@ -333,7 +296,7 @@ namespace TheGodfather
                 return;
 
             // Check if message has a reaction trigger
-            var emojilist = _dependecies.GuildConfigControl.GetReactionEmojis(Client, e.Guild.Id, e.Message.Content);
+            var emojilist = DependencyList.GuildConfigControl.GetReactionEmojis(Client, e.Guild.Id, e.Message.Content);
             if (emojilist.Count > 0) {
                 Log(LogLevel.Info,
                     $"Reaction trigger detected." + Environment.NewLine +
@@ -361,7 +324,7 @@ namespace TheGodfather
                 return;
 
             // Check if message contains filter
-            if (!e.Author.IsBot && e.Message.Content != null && e.Message.Content.Split(' ').Any(s => _dependecies.GuildConfigControl.ContainsFilter(e.Guild.Id, s))) {
+            if (!e.Author.IsBot && e.Message.Content != null && e.Message.Content.Split(' ').Any(s => DependencyList.GuildConfigControl.ContainsFilter(e.Guild.Id, s))) {
                 try {
                     await e.Channel.DeleteMessageAsync(e.Message)
                         .ConfigureAwait(false);
@@ -394,7 +357,7 @@ namespace TheGodfather
         private async Task Client_Ready(ReadyEventArgs e)
         {
             Log(LogLevel.Info, "Client ready.");
-            await Client.UpdateStatusAsync(new DiscordGame(_dependecies.StatusControl.GetRandomStatus()) {
+            await Client.UpdateStatusAsync(new DiscordGame(DependencyList.StatusControl.GetRandomStatus()) {
                 StreamType = GameStreamType.NoStream
             }).ConfigureAwait(false);
         }

@@ -31,31 +31,31 @@ namespace TheGodfather.Helpers.DataManagers
         }
 
 
-        public void Load(DebugLogger log)
+        public void Load()
         {
             if (File.Exists("Resources/insults.json")) {
                 try {
                     _insults = JsonConvert.DeserializeObject<List<string>>(File.ReadAllText("Resources/insults.json"));
                 } catch (Exception e) {
-                    log.LogMessage(LogLevel.Error, "TheGodfather", "Insult loading error, clearing insults. Details:\n" + e.ToString(), DateTime.Now);
+                    Console.WriteLine("Insult loading error, clearing insults. Details:\n" + e.ToString());
                     _ioerr = true;
                 }
             } else {
-                log.LogMessage(LogLevel.Warning, "TheGodfather", "insults.txt is missing.", DateTime.Now);
+                Console.WriteLine("insults.json is missing.");
             }
         }
 
-        public bool Save(DebugLogger log)
+        public bool Save()
         {
             if (_ioerr) {
-                log.LogMessage(LogLevel.Warning, "TheGodfather", "Insult saving skipped until file conflicts are resolved!", DateTime.Now);
+                Console.WriteLine("Insult saving skipped until file conflicts are resolved!");
                 return false;
             }
 
             try {
                 File.WriteAllText("Resources/insults.json", JsonConvert.SerializeObject(_insults, Formatting.Indented));
             } catch (Exception e) {
-                log.LogMessage(LogLevel.Error, "TheGodfather", "IO insults save error. Details:\n" + e.ToString(), DateTime.Now);
+                Console.WriteLine("IO insults save error. Details:\n" + e.ToString());
                 return false;
             }
 

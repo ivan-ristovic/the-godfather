@@ -129,7 +129,7 @@ namespace TheGodfather.Commands.Main
         [RequireOwner]
         public async Task SaveInsultsAsync(CommandContext ctx)
         {
-            if (ctx.Dependencies.GetDependency<InsultManager>().Save(ctx.Client.DebugLogger))
+            if (ctx.Dependencies.GetDependency<InsultManager>().Save())
                 await ctx.RespondAsync("Insults successfully saved.").ConfigureAwait(false);
             else
                 throw new CommandFailedException("Failed saving insults.", new IOException());

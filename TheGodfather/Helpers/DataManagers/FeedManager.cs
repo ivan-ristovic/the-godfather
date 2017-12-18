@@ -25,9 +25,9 @@ namespace TheGodfather.Helpers.DataManagers
         private bool _ioerr = false;
 
 
-        public FeedManager(DiscordClient client)
+        public FeedManager()
         {
-            Task.Run(async () => await CheckFeedsForChangesContinuousAsync(client).ConfigureAwait(false));
+            
         }
 
 
@@ -48,31 +48,31 @@ namespace TheGodfather.Helpers.DataManagers
         }
 
 
-        public void Load(DebugLogger log)
+        public void Load()
         {
             if (File.Exists("Resources/feeds.json")) {
                 try {
                     _feeds = JsonConvert.DeserializeObject<ConcurrentDictionary<string, FeedInfo>>(File.ReadAllText("Resources/feeds.json"));
                 } catch (Exception e) {
-                    log.LogMessage(LogLevel.Error, "TheGodfather", "Feed loading error, check file formatting. Details:\n" + e.ToString(), DateTime.Now);
+                    Console.WriteLine("Feed loading error, check file formatting. Details:\n" + e.ToString());
                     _ioerr = true;
                 }
             } else {
-                log.LogMessage(LogLevel.Warning, "TheGodfather", "feeds.json is missing.", DateTime.Now);
+                Console.WriteLine("feeds.json is missing.");
             }
         }
 
-        public bool Save(DebugLogger log)
+        public bool Save()
         {
             if (_ioerr) {
-                log.LogMessage(LogLevel.Warning, "TheGodfather", "Feed saving skipped until file conflicts are resolved!", DateTime.Now);
+                Console.WriteLine("Feed saving skipped until file conflicts are resolved!");
                 return false;
             }
 
             try {
                 File.WriteAllText("Resources/feeds.json", JsonConvert.SerializeObject(_feeds, Newtonsoft.Json.Formatting.Indented));
             } catch (Exception e) {
-                log.LogMessage(LogLevel.Error, "TheGodfather", "IO Feed save error. Details:\n" + e.ToString(), DateTime.Now);
+                Console.WriteLine("IO Feed save error. Details:\n" + e.ToString());
                 return false;
             }
 
@@ -126,47 +126,43 @@ namespace TheGodfather.Helpers.DataManagers
             return _feeds.Where(kvp => kvp.Value.ChannelIds.Contains(cid)).Select(kvp => kvp.Value.QualifiedName != null ? kvp.Value.QualifiedName : kvp.Key).ToList();
         }
 
-        private async Task CheckFeedsForChangesContinuousAsync(DiscordClient client)
+        public async Task CheckFeedsForChangesAsync(DiscordClient client)
         {
-            while (true) {
-                foreach (var feed in _feeds) {
-                    try {
-                        var newest = GetFeedResults(feed.Key).First();
-                        var url = newest.Links[0].Uri.ToString();
-                        if (url != feed.Value.SavedURL) {
-                            feed.Value.SavedURL = url;
-                            foreach (var cid in feed.Value.ChannelIds) {
-                                var chn = await client.GetChannelAsync(cid)
-                                    .ConfigureAwait(false);
-                                var em = new DiscordEmbedBuilder() {
-                                    Title = $"{newest.Title.Text}",
-                                    Url = url,
-                                    Timestamp = newest.LastUpdatedTime,
-                                    Color = DiscordColor.Orange,
-                                };
-                                
-                                // TODO reddit hack
-                                if (newest.Content is TextSyndicationContent content) {
-                                    var r = new Regex("<span> *<a +href *= *\"([^\"]+)\"> *\\[link\\] *</a> *</span>");
-                                    var matches = r.Match(content.Text);
-                                    if (matches.Success)
-                                        em.WithImageUrl(matches.Groups[1].Value);
-                                }
-                                if (feed.Value.QualifiedName != null)
-                                    em.AddField("From", feed.Value.QualifiedName);
-                                em.AddField("Link to content", url);
-                                await chn.SendMessageAsync(embed: em.Build())
-                                    .ConfigureAwait(false);
-                                await Task.Delay(250)
-                                    .ConfigureAwait(false);
-                            }
-                        }
-                    } catch {
+            foreach (var feed in _feeds) {
+                try {
+                    var newest = GetFeedResults(feed.Key).First();
+                    var url = newest.Links[0].Uri.ToString();
+                    if (url != feed.Value.SavedURL) {
+                        feed.Value.SavedURL = url;
+                        foreach (var cid in feed.Value.ChannelIds) {
+                            var chn = await client.GetChannelAsync(cid)
+                                .ConfigureAwait(false);
+                            var em = new DiscordEmbedBuilder() {
+                                Title = $"{newest.Title.Text}",
+                                Url = url,
+                                Timestamp = newest.LastUpdatedTime,
+                                Color = DiscordColor.Orange,
+                            };
 
+                            // TODO reddit hack
+                            if (newest.Content is TextSyndicationContent content) {
+                                var r = new Regex("<span> *<a +href *= *\"([^\"]+)\"> *\\[link\\] *</a> *</span>");
+                                var matches = r.Match(content.Text);
+                                if (matches.Success)
+                                    em.WithImageUrl(matches.Groups[1].Value);
+                            }
+                            if (feed.Value.QualifiedName != null)
+                                em.AddField("From", feed.Value.QualifiedName);
+                            em.AddField("Link to content", url);
+                            await chn.SendMessageAsync(embed: em.Build())
+                                .ConfigureAwait(false);
+                            await Task.Delay(250)
+                                .ConfigureAwait(false);
+                        }
                     }
+                } catch {
+
                 }
-                await Task.Delay(TimeSpan.FromMinutes(2))
-                    .ConfigureAwait(false);
             }
         }
 

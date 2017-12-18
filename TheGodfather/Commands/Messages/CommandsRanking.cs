@@ -78,7 +78,7 @@ namespace TheGodfather.Commands.Messages
         [RequireOwner]
         public async Task SaveAsync(CommandContext ctx)
         {
-            ctx.Dependencies.GetDependency<RankManager>().Save(ctx.Client.DebugLogger);
+            ctx.Dependencies.GetDependency<RankManager>().Save();
             await ctx.RespondAsync("Ranks successfully saved.")
                 .ConfigureAwait(false);
         }

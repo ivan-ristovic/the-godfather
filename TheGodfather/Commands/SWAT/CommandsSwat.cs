@@ -296,7 +296,7 @@ namespace TheGodfather.Commands.SWAT
             [RequireOwner]
             public async Task SaveAsync(CommandContext ctx)
             {
-                ctx.Dependencies.GetDependency<SwatServerManager>().Save(ctx.Client.DebugLogger);
+                ctx.Dependencies.GetDependency<SwatServerManager>().Save();
                 await ctx.RespondAsync("Servers successfully saved.")
                     .ConfigureAwait(false);
             }

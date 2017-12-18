@@ -39,12 +39,12 @@ namespace TheGodfather.Helpers
         internal YoutubeService     YoutubeService      { get; private set; }
 
 
-        internal BotDependencyList(DiscordClient client, BotConfig cfg)
+        internal BotDependencyList(BotConfig cfg)
         {
             DatabaseService = new DatabaseService(cfg.DatabaseConfig);
 
             BankControl = new BankManager();
-            FeedControl = new FeedManager(client);
+            FeedControl = new FeedManager();
             InsultControl = new InsultManager();
             MemeControl = new MemeManager();
             RankControl = new RankManager();
@@ -60,28 +60,28 @@ namespace TheGodfather.Helpers
         }
 
 
-        internal void LoadData(DebugLogger log)
+        internal void LoadData()
         {
-            BankControl.Load(log);
-            FeedControl.Load(log);
-            InsultControl.Load(log);
-            MemeControl.Load(log);
-            RankControl.Load(log);
-            StatusControl.Load(log);
-            SwatServerControl.Load(log);
-            GuildConfigControl.Load(log);
+            BankControl.Load();
+            FeedControl.Load();
+            InsultControl.Load();
+            MemeControl.Load();
+            RankControl.Load();
+            StatusControl.Load();
+            SwatServerControl.Load();
+            GuildConfigControl.Load();
         }
 
-        internal void SaveData(DebugLogger log)
+        internal void SaveData()
         {
-            BankControl.Save(log);
-            FeedControl.Save(log);
-            InsultControl.Save(log);
-            MemeControl.Save(log);
-            RankControl.Save(log);
-            StatusControl.Save(log);
-            SwatServerControl.Save(log);
-            GuildConfigControl.Save(log);
+            BankControl.Save();
+            FeedControl.Save();
+            InsultControl.Save();
+            MemeControl.Save();
+            RankControl.Save();
+            StatusControl.Save();
+            SwatServerControl.Save();
+            GuildConfigControl.Save();
         }
 
         internal DependencyCollectionBuilder GetDependencyCollectionBuilder()

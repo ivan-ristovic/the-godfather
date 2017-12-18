@@ -56,31 +56,31 @@ namespace TheGodfather.Helpers.DataManagers
         }
 
 
-        public void Load(DebugLogger log)
+        public void Load()
         {
             if (File.Exists("Resources/ranks.json")) {
                 try {
                     _msgcount = JsonConvert.DeserializeObject<ConcurrentDictionary<ulong, ulong>>(File.ReadAllText("Resources/ranks.json"));
                 } catch (Exception e) {
-                    log.LogMessage(LogLevel.Error, "TheGodfather", "Rank loading error, check file formatting. Details:\n" + e.ToString(), DateTime.Now);
+                    Console.WriteLine("Rank loading error, check file formatting. Details:\n" + e.ToString());
                     _ioerr = true;
                 }
             } else {
-                log.LogMessage(LogLevel.Warning, "TheGodfather", "ranks.json is missing.", DateTime.Now);
+                Console.WriteLine("ranks.json is missing.");
             }
         }
 
-        public bool Save(DebugLogger log)
+        public bool Save()
         {
             if (_ioerr) {
-                log.LogMessage(LogLevel.Warning, "TheGodfather", "Ranks saving skipped until file conflicts are resolved!", DateTime.Now);
+                Console.WriteLine("Ranks saving skipped until file conflicts are resolved!");
                 return false;
             }
 
             try {
                 File.WriteAllText("Resources/ranks.json", JsonConvert.SerializeObject(_msgcount, Formatting.Indented));
             } catch (Exception e) {
-                log.LogMessage(LogLevel.Error, "TheGodfather", "IO Ranks save error. Details:\n" + e.ToString(), DateTime.Now);
+                Console.WriteLine("IO Ranks save error. Details:\n" + e.ToString());
                 return false;
             }
 
