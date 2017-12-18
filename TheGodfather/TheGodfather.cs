@@ -83,7 +83,7 @@ namespace TheGodfather
             Client = new DiscordClient(new DiscordConfiguration {
                 AutoReconnect = true,
                 LargeThreshold = 250,
-                LogLevel = LogLevel.Debug,
+                LogLevel = LogLevel.Info,
 
                 ShardCount = _cfg.ShardCount,
                 ShardId = ShardId,
