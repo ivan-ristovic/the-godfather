@@ -21,13 +21,11 @@ namespace TheGodfather.Helpers.DataManagers
 {
     public class GameStatsManager
     {
-        private DiscordClient _client;
         private DatabaseService _db;
 
 
-        public GameStatsManager(DiscordClient client, DatabaseService db)
+        public GameStatsManager(DatabaseService db)
         {
-            _client = client;
             _db = db;
         }
 
@@ -65,42 +63,42 @@ namespace TheGodfather.Helpers.DataManagers
             return eb.Build();
         }
 
-        public async Task<DiscordEmbed> GetLeaderboardAsync()
+        public async Task<DiscordEmbed> GetLeaderboardAsync(DiscordClient client)
         {
             var emb = new DiscordEmbedBuilder {
-                Title = DiscordEmoji.FromName(_client, ":trophy:") + " HALL OF FAME " + DiscordEmoji.FromName(_client, ":trophy:"),
+                Title = DiscordEmoji.FromName(client, ":trophy:") + " HALL OF FAME " + DiscordEmoji.FromName(client, ":trophy:"),
                 Color = DiscordColor.Chartreuse
             };
 
-            var topDuelists = await GetTopDuelistsStringAsync().ConfigureAwait(false);
+            var topDuelists = await GetTopDuelistsStringAsync(client).ConfigureAwait(false);
             emb.AddField("Top players in Duel game", topDuelists, inline: true);
 
-            var topTTTPlayers = await GetTopTTTPlayersStringAsync().ConfigureAwait(false);
+            var topTTTPlayers = await GetTopTTTPlayersStringAsync(client).ConfigureAwait(false);
             emb.AddField("Top players in Tic-Tac-Toe game", topTTTPlayers, inline: true);
 
-            var topCaroPlayers = await GetTopCaroPlayersStringAsync().ConfigureAwait(false);
+            var topCaroPlayers = await GetTopCaroPlayersStringAsync(client).ConfigureAwait(false);
             emb.AddField("Top players in Caro game", topCaroPlayers, inline: true);
 
-            var topChain4Players = await GetTopChain4PlayersStringAsync().ConfigureAwait(false);
+            var topChain4Players = await GetTopChain4PlayersStringAsync(client).ConfigureAwait(false);
             emb.AddField("Top players in Chain4 game", topChain4Players, inline: true);
 
-            var topNunchiPlayers = await GetTopNunchiPlayersStringAsync().ConfigureAwait(false);
+            var topNunchiPlayers = await GetTopNunchiPlayersStringAsync(client).ConfigureAwait(false);
             emb.AddField("Top players in Nunchi game", topNunchiPlayers, inline: true);
 
-            var topQuizPlayers = await GetTopQuizPlayersStringAsync().ConfigureAwait(false);
+            var topQuizPlayers = await GetTopQuizPlayersStringAsync(client).ConfigureAwait(false);
             emb.AddField("Top players in Quiz game", topQuizPlayers, inline: true);
 
-            var topRacers = await GetTopRacersStringAsync().ConfigureAwait(false);
+            var topRacers = await GetTopRacersStringAsync(client).ConfigureAwait(false);
             emb.AddField("Top players in Race game", topRacers, inline: true);
 
-            var topHangmanPlayers = await GetTopHangmanPlayersStringAsync().ConfigureAwait(false);
+            var topHangmanPlayers = await GetTopHangmanPlayersStringAsync(client).ConfigureAwait(false);
             emb.AddField("Top players in Hangman game", topHangmanPlayers, inline: true);
 
             return emb.Build();
         }
 
         #region LEADERBOARD_HELPERS
-        public async Task<string> GetTopDuelistsStringAsync()
+        public async Task<string> GetTopDuelistsStringAsync(DiscordClient client)
         {
             var topDuelists = await _db.GetOrderedStatsAsync("coalesce(1.0 * duels_won / NULLIF(duels_won + duels_lost, 0), 0)", "duels_won", "duels_lost")
                 .ConfigureAwait(false);
@@ -110,7 +108,7 @@ namespace TheGodfather.Helpers.DataManagers
                 ulong uid;
                 ulong.TryParse(stats["uid"], out uid);
                 try {
-                    var u = await _client.GetUserAsync(uid)
+                    var u = await client.GetUserAsync(uid)
                         .ConfigureAwait(false);
                     sb.Append(u.Username);
                     sb.Append(": ");
@@ -124,7 +122,7 @@ namespace TheGodfather.Helpers.DataManagers
             return sb.ToString();
         }
 
-        public async Task<string> GetTopTTTPlayersStringAsync()
+        public async Task<string> GetTopTTTPlayersStringAsync(DiscordClient client)
         {
             var topTTTPlayers = await _db.GetOrderedStatsAsync("coalesce(1.0 * ttt_won / NULLIF(ttt_won + ttt_lost, 0), 0)", "ttt_won", "ttt_lost")
                 .ConfigureAwait(false);
@@ -134,7 +132,7 @@ namespace TheGodfather.Helpers.DataManagers
                 ulong uid;
                 ulong.TryParse(stats["uid"], out uid);
                 try {
-                    var u = await _client.GetUserAsync(uid)
+                    var u = await client.GetUserAsync(uid)
                         .ConfigureAwait(false);
                     sb.Append(u.Username);
                     sb.Append(": ");
@@ -148,7 +146,7 @@ namespace TheGodfather.Helpers.DataManagers
             return sb.ToString();
         }
 
-        public async Task<string> GetTopCaroPlayersStringAsync()
+        public async Task<string> GetTopCaroPlayersStringAsync(DiscordClient client)
         {
             var topCaroPlayers = await _db.GetOrderedStatsAsync("coalesce(1.0 * caro_won / NULLIF(caro_won + caro_lost, 0), 0)", "caro_won", "caro_lost")
                 .ConfigureAwait(false);
@@ -158,7 +156,7 @@ namespace TheGodfather.Helpers.DataManagers
                 ulong uid;
                 ulong.TryParse(stats["uid"], out uid);
                 try {
-                    var u = await _client.GetUserAsync(uid)
+                    var u = await client.GetUserAsync(uid)
                         .ConfigureAwait(false);
                     sb.Append(u.Username);
                     sb.Append(": ");
@@ -172,7 +170,7 @@ namespace TheGodfather.Helpers.DataManagers
             return sb.ToString();
         }
 
-        public async Task<string> GetTopChain4PlayersStringAsync()
+        public async Task<string> GetTopChain4PlayersStringAsync(DiscordClient client)
         {
             var topChain4Players = await _db.GetOrderedStatsAsync("coalesce(1.0 * chain4_won / NULLIF(chain4_won + chain4_lost, 0), 0)", "chain4_won", "chain4_lost")
                 .ConfigureAwait(false);
@@ -182,7 +180,7 @@ namespace TheGodfather.Helpers.DataManagers
                 ulong uid;
                 ulong.TryParse(stats["uid"], out uid);
                 try {
-                    var u = await _client.GetUserAsync(uid)
+                    var u = await client.GetUserAsync(uid)
                         .ConfigureAwait(false);
                     sb.Append(u.Username);
                     sb.Append(": ");
@@ -196,7 +194,7 @@ namespace TheGodfather.Helpers.DataManagers
             return sb.ToString();
         }
 
-        public async Task<string> GetTopNunchiPlayersStringAsync()
+        public async Task<string> GetTopNunchiPlayersStringAsync(DiscordClient client)
         {
             var topNunchiPlayers = await _db.GetOrderedStatsAsync("nunchis_won", "nunchis_won")
                 .ConfigureAwait(false);
@@ -206,7 +204,7 @@ namespace TheGodfather.Helpers.DataManagers
                 ulong uid;
                 ulong.TryParse(stats["uid"], out uid);
                 try {
-                    var u = await _client.GetUserAsync(uid)
+                    var u = await client.GetUserAsync(uid)
                         .ConfigureAwait(false);
                     sb.Append(u.Username);
                     sb.Append(": ");
@@ -220,7 +218,7 @@ namespace TheGodfather.Helpers.DataManagers
             return sb.ToString();
         }
 
-        public async Task<string> GetTopQuizPlayersStringAsync()
+        public async Task<string> GetTopQuizPlayersStringAsync(DiscordClient client)
         {
             var topQuizPlayers = await _db.GetOrderedStatsAsync("quizes_won", "quizes_won")
                 .ConfigureAwait(false);
@@ -230,7 +228,7 @@ namespace TheGodfather.Helpers.DataManagers
                 ulong uid;
                 ulong.TryParse(stats["uid"], out uid);
                 try {
-                    var u = await _client.GetUserAsync(uid)
+                    var u = await client.GetUserAsync(uid)
                         .ConfigureAwait(false);
                     sb.Append(u.Username);
                     sb.Append(": ");
@@ -244,7 +242,7 @@ namespace TheGodfather.Helpers.DataManagers
             return sb.ToString();
         }
 
-        public async Task<string> GetTopRacersStringAsync()
+        public async Task<string> GetTopRacersStringAsync(DiscordClient client)
         {
             var topRacers = await _db.GetOrderedStatsAsync("races_won", "races_won")
                 .ConfigureAwait(false);
@@ -254,7 +252,7 @@ namespace TheGodfather.Helpers.DataManagers
                 ulong uid;
                 ulong.TryParse(stats["uid"], out uid);
                 try {
-                    var u = await _client.GetUserAsync(uid)
+                    var u = await client.GetUserAsync(uid)
                         .ConfigureAwait(false);
                     sb.Append(u.Username);
                     sb.Append(": ");
@@ -268,7 +266,7 @@ namespace TheGodfather.Helpers.DataManagers
             return sb.ToString();
         }
 
-        public async Task<string> GetTopHangmanPlayersStringAsync()
+        public async Task<string> GetTopHangmanPlayersStringAsync(DiscordClient client)
         {
             var topHangmanPlayers = await _db.GetOrderedStatsAsync("hangman_won", "hangman_won")
                 .ConfigureAwait(false);
@@ -278,7 +276,7 @@ namespace TheGodfather.Helpers.DataManagers
                 ulong uid;
                 ulong.TryParse(stats["uid"], out uid);
                 try {
-                    var u = await _client.GetUserAsync(uid)
+                    var u = await client.GetUserAsync(uid)
                         .ConfigureAwait(false);
                     sb.Append(u.Username);
                     sb.Append(": ");

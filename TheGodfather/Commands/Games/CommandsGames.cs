@@ -193,7 +193,7 @@ namespace TheGodfather.Commands.Games
         [Aliases("globalstats")]
         public async Task LeaderboardAsync(CommandContext ctx)
         {
-            var em = await ctx.Dependencies.GetDependency<GameStatsManager>().GetLeaderboardAsync()
+            var em = await ctx.Dependencies.GetDependency<GameStatsManager>().GetLeaderboardAsync(ctx.Client)
                 .ConfigureAwait(false);
             await ctx.RespondAsync(embed: em)
                 .ConfigureAwait(false);
