@@ -44,7 +44,12 @@ namespace TheGodfather.Commands.Messages
             if (filter.Contains("%") || filter.Length < 3 || filter.Length > 60)
                 throw new CommandFailedException($"Filter must not contain {Formatter.Bold("%")} or have less than 3 characters and not more than 60 characters.");
 
-            var regex = new Regex($"^{filter}$", RegexOptions.IgnoreCase);
+            Regex regex;
+            try {
+                regex = new Regex($@"\b{filter}\b", RegexOptions.IgnoreCase);
+            } catch (ArgumentException e) {
+                throw new CommandFailedException($"Invalid filter regex: {e.Message}");
+            }
 
             if (ctx.Client.GetCommandsNext().RegisteredCommands.Any(kv => regex.Match(kv.Key).Success))
                 throw new CommandFailedException("You cannot add a filter that matches one of the commands!");
@@ -53,7 +58,7 @@ namespace TheGodfather.Commands.Messages
                 await ctx.RespondAsync($"Filter successfully added.")
                     .ConfigureAwait(false);
                 try {
-                    await ctx.Dependencies.GetDependency<DatabaseService>().AddFilterAsync(regex.ToString())
+                    await ctx.Dependencies.GetDependency<DatabaseService>().AddFilterAsync(filter)
                         .ConfigureAwait(false);
                 } catch (Npgsql.NpgsqlException e) {
                     throw new DatabaseServiceException(e);

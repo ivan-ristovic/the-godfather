@@ -80,7 +80,7 @@ namespace TheGodfather
             foreach (var gfilter in gfilters_db) {
                 if (!gfilters.ContainsKey(gfilter.Key))
                     gfilters.TryAdd(gfilter.Key, new ConcurrentHashSet<Regex>());
-                gfilters[gfilter.Key].Add(new Regex(gfilter.Value));
+                gfilters[gfilter.Key].Add(new Regex($@"\b{gfilter.Value}\b"));
             }
 
             TheGodfather.DependencyList = new BotDependencyList(cfg, Database);

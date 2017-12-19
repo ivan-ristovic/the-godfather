@@ -316,7 +316,7 @@ namespace TheGodfather
                 return;
 
             // Check if message contains filter
-            if (!e.Author.IsBot && e.Message.Content != null && e.Message.Content.Split(' ').Any(s => SharedData.ContainsFilter(e.Guild.Id, s))) {
+            if (!e.Author.IsBot && e.Message.Content != null && SharedData.ContainsFilter(e.Guild.Id, e.Message.Content)) {
                 try {
                     await e.Channel.DeleteMessageAsync(e.Message)
                         .ConfigureAwait(false);

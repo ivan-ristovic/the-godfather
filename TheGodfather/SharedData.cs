@@ -63,10 +63,7 @@ namespace TheGodfather
                 return false;
 
             message = message.ToLower();
-            foreach (var word in message.Split(' '))
-                if (GuildFilters[gid].Any(f => f.Match(word).Success))
-                    return true;
-            return false;
+            return GuildFilters[gid].Any(f => f.Match(message).Success);
         }
 
         public bool TryAddGuildFilter(ulong gid, Regex regex)
