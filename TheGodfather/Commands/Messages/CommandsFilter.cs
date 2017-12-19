@@ -2,11 +2,10 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
-using System.Collections.Concurrent;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 
 using TheGodfather.Services;
 using TheGodfather.Helpers.DataManagers;
@@ -33,7 +32,7 @@ namespace TheGodfather.Commands.Messages
         [Aliases("+", "new", "a")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task AddAsync(CommandContext ctx,
-                                  [RemainingText, Description("Filter word. Can be a regex (case insensitive).")] string filter)
+                                  [RemainingText, Description("Filter. Can be a regex (case insensitive).")] string filter)
         {
             if (string.IsNullOrWhiteSpace(filter))
                 throw new InvalidCommandUsageException("Filter trigger missing.");
@@ -58,7 +57,7 @@ namespace TheGodfather.Commands.Messages
                 await ctx.RespondAsync($"Filter successfully added.")
                     .ConfigureAwait(false);
                 try {
-                    await ctx.Dependencies.GetDependency<DatabaseService>().AddFilterAsync(filter)
+                    await ctx.Dependencies.GetDependency<DatabaseService>().AddFilterAsync(ctx.Guild.Id, filter)
                         .ConfigureAwait(false);
                 } catch (Npgsql.NpgsqlException e) {
                     throw new DatabaseServiceException(e);
@@ -75,19 +74,19 @@ namespace TheGodfather.Commands.Messages
         [Aliases("-", "remove", "del")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task DeleteAsync(CommandContext ctx, 
-                                     [Description("Index in list.")] int i)
+                                     [RemainingText, Description("Filter to remove.")] string filter)
         {
-            if (ctx.Dependencies.GetDependency<SharedData>().TryRemoveGuildFilter(ctx.Guild.Id, i)) {
+            if (ctx.Dependencies.GetDependency<SharedData>().TryRemoveGuildFilter(ctx.Guild.Id, filter)) {
                 await ctx.RespondAsync($"Filter successfully removed.")
                     .ConfigureAwait(false);
                 try {
-                    await ctx.Dependencies.GetDependency<DatabaseService>().DeleteFilterAsync(i)
+                    await ctx.Dependencies.GetDependency<DatabaseService>().DeleteFilterAsync(ctx.Guild.Id, filter)
                         .ConfigureAwait(false);
                 } catch (Npgsql.NpgsqlException e) {
                     throw new DatabaseServiceException(e);
                 }
             } else {
-                throw new CommandFailedException("Filter at that index does not exist.");
+                throw new CommandFailedException("Given filter does not exist.");
             }
         }
         #endregion
@@ -99,28 +98,28 @@ namespace TheGodfather.Commands.Messages
         public async Task ListAsync(CommandContext ctx, 
                                    [Description("Page")] int page = 1)
         {
-            var filters = ctx.Dependencies.GetDependency<SharedData>().GetAllGuildFilters(ctx.Guild.Id);
+            IReadOnlyList<string> filters;
+            try {
+                filters = await ctx.Dependencies.GetDependency<DatabaseService>().GetFiltersForGuildAsync(ctx.Guild.Id)
+                    .ConfigureAwait(false);
+            } catch (Npgsql.NpgsqlException e) {
+                throw new DatabaseServiceException(e);
+            }
 
-            if (filters == null) {
+            if (filters == null || !filters.Any()) {
                 await ctx.RespondAsync("No filters registered.");
                 return;
             }
 
             if (page < 1 || page > filters.Count / 20 + 1)
                 throw new CommandFailedException("No filters on that page.");
-
-            string desc = "";
+            
             int starti = (page - 1) * 20;
-            int endi = starti + 10 < filters.Count ? starti + 20 : filters.Count;
-            var pagefilters = filters.Take(page * 20).ToArray();
-            for (var i = starti; i < endi; i++) {
-                var filter = pagefilters[i].ToString();
-                desc += $"{Formatter.Bold(i.ToString())} : {filter.Substring(1, filter.Length - 2)}\n";
-            }
+            int len = starti + 20 < filters.Count ? 20 : filters.Count - starti;
 
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
                 Title = $"Available filters (page {page}/{filters.Count / 20 + 1}) :",
-                Description = desc,
+                Description = string.Join(", ", filters.OrderBy(v => v).ToList().GetRange(starti, len)),
                 Color = DiscordColor.Green
             }.Build()).ConfigureAwait(false);
         }

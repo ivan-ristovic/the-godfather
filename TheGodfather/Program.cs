@@ -75,12 +75,12 @@ namespace TheGodfather
             foreach (var gprefix in gprefixes_db)
                 gprefixes.TryAdd(gprefix.Key, gprefix.Value);
 
-            var gfilters_db = await Database.GetGuildFiltersAsync();
+            var gfilters_db = await Database.GetAllGuildFiltersAsync();
             var gfilters = new ConcurrentDictionary<ulong, ConcurrentHashSet<Regex>>();
             foreach (var gfilter in gfilters_db) {
-                if (!gfilters.ContainsKey(gfilter.Key))
-                    gfilters.TryAdd(gfilter.Key, new ConcurrentHashSet<Regex>());
-                gfilters[gfilter.Key].Add(new Regex($@"\b{gfilter.Value}\b"));
+                if (!gfilters.ContainsKey(gfilter.Item1))
+                    gfilters.TryAdd(gfilter.Item1, new ConcurrentHashSet<Regex>());
+                gfilters[gfilter.Item1].Add(new Regex($@"\b{gfilter.Item2}\b"));
             }
 
             TheGodfather.DependencyList = new BotDependencyList(cfg, Database);

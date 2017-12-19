@@ -49,7 +49,7 @@ namespace TheGodfather
         #endregion
 
         #region FILTERS
-        public IReadOnlyCollection<Regex> GetAllGuildFilters(ulong gid)
+        public IReadOnlyCollection<Regex> GetFiltersForGuild(ulong gid)
         {
             if (GuildFilters.ContainsKey(gid) && GuildFilters[gid] != null)
                 return GuildFilters[gid];
@@ -75,22 +75,19 @@ namespace TheGodfather
                 if (!GuildFilters.TryAdd(gid, new ConcurrentHashSet<Regex>()))
                     return false;
             }
-
+            
             if (GuildFilters[gid].Any(r => r.ToString() == regex.ToString()))
                 return false;
 
             return GuildFilters[gid].Add(regex);
         }
 
-        public bool TryRemoveGuildFilter(ulong gid, int index)
+        public bool TryRemoveGuildFilter(ulong gid, string filter)
         {
             if (!GuildFilters.ContainsKey(gid))
                 return false;
 
-            if (index < 0 || index > GuildFilters[gid].Count)
-                return false;
-
-            var rstr = GuildFilters[gid].ElementAt(index).ToString();
+            var rstr = $@"\b{filter}\b";
             return GuildFilters[gid].RemoveWhere(r => r.ToString() == rstr) > 0;
         }
 
