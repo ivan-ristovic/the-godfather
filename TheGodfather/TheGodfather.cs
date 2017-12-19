@@ -143,7 +143,7 @@ namespace TheGodfather
 
         private Task<int> CheckMessageForPrefix(DiscordMessage m)
         {
-            string p = DependencyList.GuildConfigControl.GetGuildPrefix(m.Channel.Guild.Id);
+            string p = SharedData.GetGuildPrefix(m.Channel.Guild.Id) ?? _cfg.DefaultPrefix;
             return Task.FromResult(m.GetStringPrefixLength(p));
         }
         #endregion
@@ -398,7 +398,7 @@ namespace TheGodfather
             else if (e.Exception is CommandFailedException)
                 embed.Description = $"{emoji} {ex.Message}";
             else if (e.Exception is DatabaseServiceException)
-                embed.Description = $"{emoji} {ex.Message}: {ex.InnerException?.Message}";
+                embed.Description = $"{emoji} {ex.Message}: {ex.InnerException?.Message ?? "No further information."}";
             else if (e.Exception is NotSupportedException)
                 embed.Description = $"{emoji} Not supported. {ex.Message}";
             else if (e.Exception is InvalidOperationException)

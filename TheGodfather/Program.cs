@@ -80,7 +80,7 @@ namespace TheGodfather
 
             // TODO
 
-            Shared = new SharedData(gprefixes);
+            Shared = new SharedData(cfg, gprefixes);
 
             Console.WriteLine("[4/5] Creating shards...");
 
@@ -99,10 +99,10 @@ namespace TheGodfather
             
             Console.WriteLine("-------------------------------------");
 
-            await PeriodicalActionsAsync();
+            await PerformActionsPeriodicallyAsync();
         }
 
-        private static async Task PeriodicalActionsAsync()
+        private static async Task PerformActionsPeriodicallyAsync()
         {
             while (true) {
                 try {

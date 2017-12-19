@@ -12,9 +12,6 @@ namespace TheGodfather.Helpers
 {
     public sealed class GuildConfig
     {
-        [JsonProperty("Prefix")]
-        public string Prefix { get; internal set; }
-
         [JsonProperty("WelcomeChannelId")]
         public ulong? WelcomeChannelId { get; internal set; }
 

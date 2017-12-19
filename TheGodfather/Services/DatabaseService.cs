@@ -97,6 +97,7 @@ namespace TheGodfather.Services
             return new ReadOnlyCollection<IReadOnlyDictionary<string, string>>(dicts);
         }
 
+
         #region BANK_SERVICES
         public async Task<bool> HasBankAccountAsync(ulong uid)
         {
@@ -262,6 +263,7 @@ namespace TheGodfather.Services
         }
         #endregion
 
+        #region PREFIX_SERVICES
         public async Task<IReadOnlyDictionary<ulong, string>> GetGuildPrefixesAsync()
         {
             await _sem.WaitAsync();
@@ -282,6 +284,36 @@ namespace TheGodfather.Services
             _sem.Release();
             return new ReadOnlyDictionary<ulong, string>(dict);
         }
+
+        public async Task SetGuildPrefixAsync(ulong gid, string prefix)
+        {
+            await _sem.WaitAsync();
+
+            using (var con = new NpgsqlConnection(_connectionString))
+            using (var cmd = con.CreateCommand()) {
+                await con.OpenAsync().ConfigureAwait(false);
+
+                cmd.CommandText = "SELECT * FROM gf.prefixes WHERE gid = @gid LIMIT 1;";
+                cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
+
+                var res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
+                using (var cmd1 = con.CreateCommand()) {
+                    if (res == null || res is DBNull) {
+                        cmd.CommandText = "INSERT INTO gf.prefixes VALUES(@gid, @prefix);";
+                        cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
+                        cmd.Parameters.AddWithValue("prefix", NpgsqlDbType.Varchar, prefix);
+                    } else {
+                        cmd.CommandText = "UPDATE gf.prefixes SET prefix = @prefix WHERE gid = @gid;";
+                        cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
+                        cmd.Parameters.AddWithValue("prefix", NpgsqlDbType.Varchar, prefix);
+                    }
+                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                }
+            }
+
+            _sem.Release();
+        }
+        #endregion
 
         #region STATS_SERVICES
         public async Task<IReadOnlyDictionary<string, string>> GetStatsForUserAsync(ulong uid)
@@ -309,7 +341,7 @@ namespace TheGodfather.Services
 
         public async Task UpdateStatAsync(ulong uid, string col, int add)
         {
-            var stats = await GetStatsForUserAsync(uid);
+            var stats = await GetStatsForUserAsync(uid).ConfigureAwait(false);
 
             using (var con = new NpgsqlConnection(_connectionString))
             using (var cmd = con.CreateCommand()) {

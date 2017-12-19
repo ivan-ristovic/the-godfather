@@ -25,7 +25,7 @@ namespace TheGodfather.Commands.Messages
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
     [PreExecutionCheck]
     public class CommandsFilter
-    {        
+    {
         #region COMMAND_FILTER_ADD
         [Command("add")]
         [Description("Add filter to guild filter list.")]
@@ -36,12 +36,12 @@ namespace TheGodfather.Commands.Messages
         {
             if (string.IsNullOrWhiteSpace(filter))
                 throw new InvalidCommandUsageException("Filter trigger missing.");
-            
+
             if (ctx.Dependencies.GetDependency<GuildConfigManager>().TriggerExists(ctx.Guild.Id, filter))
                 throw new CommandFailedException("You cannot add a filter if a trigger for that trigger exists!");
 
-            if (filter.Contains("%") || filter.Length < 3)
-                throw new CommandFailedException($"Filter must not contain {Formatter.Bold("%")} or have less than 3 characters.");
+            if (filter.Contains("%") || filter.Length < 3 || filter.Length > 60)
+                throw new CommandFailedException($"Filter must not contain {Formatter.Bold("%")} or have less than 3 characters and not more than 60 characters.");
 
             var regex = new Regex($"^{filter}$", RegexOptions.IgnoreCase);
 

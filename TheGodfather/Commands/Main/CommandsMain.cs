@@ -3,7 +3,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-using TheGodfather.Helpers;
+using TheGodfather.Services;
 using TheGodfather.Helpers.DataManagers;
 using TheGodfather.Exceptions;
 
@@ -172,22 +172,30 @@ namespace TheGodfather.Commands.Main
         public async Task GetOrSetPrefixAsync(CommandContext ctx,
                                              [Description("Prefix to set.")] string prefix = null)
         {
-            var gcm = ctx.Dependencies.GetDependency<GuildConfigManager>();
+            var sd = ctx.Dependencies.GetDependency<SharedData>();
 
             if (string.IsNullOrWhiteSpace(prefix)) {
-                string p = gcm.GetGuildPrefix(ctx.Guild.Id);
+                string p = sd.GetGuildPrefix(ctx.Guild.Id);
                 await ctx.RespondAsync("Current prefix for this guild is: " + Formatter.Bold(p))
                     .ConfigureAwait(false);
                 return;
             }
 
-            if (prefix.Length > 10)
-                throw new CommandFailedException("Prefix length cannot be longer than 10 characters.");
+            if (prefix.Length > 12)
+                throw new CommandFailedException("Prefix length cannot be longer than 12 characters.");
 
-            if (gcm.TrySetGuildPrefix(ctx.Guild.Id, prefix))
-                await ctx.RespondAsync("Successfully changed the prefix for this guild to: " + Formatter.Bold(prefix)).ConfigureAwait(false);
-            else
+            if (sd.TrySetGuildPrefix(ctx.Guild.Id, prefix)) {
+                try {
+                    await ctx.Dependencies.GetDependency<DatabaseService>().SetGuildPrefixAsync(ctx.Guild.Id, prefix)
+                        .ConfigureAwait(false);
+                } catch (Npgsql.NpgsqlException e) {
+                    throw new DatabaseServiceException("Failed to save prefix in the database!", e);
+                }
+                await ctx.RespondAsync("Successfully changed the prefix for this guild to: " + Formatter.Bold(prefix))
+                    .ConfigureAwait(false);
+            } else {
                 throw new CommandFailedException("Failed to set prefix.");
+            }
         }
         #endregion
 

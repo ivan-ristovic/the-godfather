@@ -50,7 +50,7 @@ namespace TheGodfather.Exceptions
 
         }
         
-        public DatabaseServiceException(Exception inner) : base("Failed to connect to the database!", inner)
+        public DatabaseServiceException(Exception inner) : base("Database operation failed!", inner)
         {
 
         }

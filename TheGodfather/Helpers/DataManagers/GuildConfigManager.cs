@@ -129,26 +129,6 @@ namespace TheGodfather.Helpers.DataManagers
         }
         #endregion
 
-        #region PREFIXES
-        public string GetGuildPrefix(ulong gid)
-        {
-            if (_gcfg.ContainsKey(gid) && !string.IsNullOrWhiteSpace(_gcfg[gid].Prefix))
-                return _gcfg[gid].Prefix;
-            else
-                return _cfg.DefaultPrefix;
-        }
-
-        public bool TrySetGuildPrefix(ulong gid, string prefix)
-        {
-            if (_gcfg.ContainsKey(gid)) {
-                _gcfg[gid].Prefix = prefix;
-                return true;
-            } else {
-                return _gcfg.TryAdd(gid, new GuildConfig() { Prefix = prefix });
-            }
-        }
-        #endregion
-
         #region W/L channels
         public ulong GetGuildWelcomeChannelId(ulong gid)
         {
