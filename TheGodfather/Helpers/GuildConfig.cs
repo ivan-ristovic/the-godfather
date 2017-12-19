@@ -21,9 +21,6 @@ namespace TheGodfather.Helpers
         [JsonProperty("Triggers")]
         public ConcurrentDictionary<string, string> Triggers { get; internal set; }
 
-        [JsonProperty("Filters")]
-        public HashSet<Regex> Filters { get; internal set; }
-
         [JsonProperty("Reactions")]
         public ConcurrentDictionary<string, string> Reactions { get; internal set; }
     }

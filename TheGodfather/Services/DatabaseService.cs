@@ -263,6 +263,44 @@ namespace TheGodfather.Services
         }
         #endregion
 
+        #region FILTER_SERVICES
+        public async Task<IReadOnlyDictionary<ulong, string>> GetGuildFiltersAsync()
+        {
+            await _sem.WaitAsync();
+            var dict = new Dictionary<ulong, string>();
+
+            using (var con = new NpgsqlConnection(_connectionString))
+            using (var cmd = con.CreateCommand()) {
+                await con.OpenAsync().ConfigureAwait(false);
+
+                cmd.CommandText = "SELECT * FROM gf.filters;";
+
+                using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
+                    while (await reader.ReadAsync().ConfigureAwait(false))
+                        dict[(ulong)(long)reader["gid"]] = (string)reader["filter"];
+                }
+            }
+
+            _sem.Release();
+            return new ReadOnlyDictionary<ulong, string>(dict);
+        }
+
+        public async Task AddFilterAsync(string filter)
+        {
+
+        }
+
+        public async Task DeleteFilterAsync(int id)
+        {
+
+        }
+
+        public async Task ClearGuildFiltersAsync(ulong gid)
+        {
+
+        }
+        #endregion
+
         #region PREFIX_SERVICES
         public async Task<IReadOnlyDictionary<ulong, string>> GetGuildPrefixesAsync()
         {

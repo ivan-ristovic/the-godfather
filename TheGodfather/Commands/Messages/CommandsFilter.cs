@@ -8,6 +8,7 @@ using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
+using TheGodfather.Services;
 using TheGodfather.Helpers.DataManagers;
 using TheGodfather.Exceptions;
 
@@ -48,10 +49,18 @@ namespace TheGodfather.Commands.Messages
             if (ctx.Client.GetCommandsNext().RegisteredCommands.Any(kv => regex.Match(kv.Key).Success))
                 throw new CommandFailedException("You cannot add a filter that matches one of the commands!");
             
-            if (ctx.Dependencies.GetDependency<GuildConfigManager>().TryAddGuildFilter(ctx.Guild.Id, regex))
-                await ctx.RespondAsync($"Filter successfully added.").ConfigureAwait(false);
-            else
+            if (ctx.Dependencies.GetDependency<SharedData>().TryAddGuildFilter(ctx.Guild.Id, regex)) {
+                await ctx.RespondAsync($"Filter successfully added.")
+                    .ConfigureAwait(false);
+                try {
+                    await ctx.Dependencies.GetDependency<DatabaseService>().AddFilterAsync(regex.ToString())
+                        .ConfigureAwait(false);
+                } catch (Npgsql.NpgsqlException e) {
+                    throw new DatabaseServiceException(e);
+                }
+            } else {
                 throw new CommandFailedException("Filter already exists!");
+            }
         }
         #endregion
         
@@ -63,10 +72,18 @@ namespace TheGodfather.Commands.Messages
         public async Task DeleteAsync(CommandContext ctx, 
                                      [Description("Index in list.")] int i)
         {
-            if (ctx.Dependencies.GetDependency<GuildConfigManager>().TryRemoveGuildFilter(ctx.Guild.Id, i))
-                await ctx.RespondAsync("Filter successfully removed.").ConfigureAwait(false);
-            else
+            if (ctx.Dependencies.GetDependency<SharedData>().TryRemoveGuildFilter(ctx.Guild.Id, i)) {
+                await ctx.RespondAsync($"Filter successfully removed.")
+                    .ConfigureAwait(false);
+                try {
+                    await ctx.Dependencies.GetDependency<DatabaseService>().DeleteFilterAsync(i)
+                        .ConfigureAwait(false);
+                } catch (Npgsql.NpgsqlException e) {
+                    throw new DatabaseServiceException(e);
+                }
+            } else {
                 throw new CommandFailedException("Filter at that index does not exist.");
+            }
         }
         #endregion
         
@@ -77,7 +94,7 @@ namespace TheGodfather.Commands.Messages
         public async Task ListAsync(CommandContext ctx, 
                                    [Description("Page")] int page = 1)
         {
-            var filters = ctx.Dependencies.GetDependency<GuildConfigManager>().GetAllGuildFilters(ctx.Guild.Id);
+            var filters = ctx.Dependencies.GetDependency<SharedData>().GetAllGuildFilters(ctx.Guild.Id);
 
             if (filters == null) {
                 await ctx.RespondAsync("No filters registered.");
@@ -111,9 +128,16 @@ namespace TheGodfather.Commands.Messages
         [RequireUserPermissions(Permissions.Administrator)]
         public async Task ClearAsync(CommandContext ctx)
         {
-            ctx.Dependencies.GetDependency<GuildConfigManager>().ClearGuildFilters(ctx.Guild.Id);
+            ctx.Dependencies.GetDependency<SharedData>().ClearGuildFilters(ctx.Guild.Id);
             await ctx.RespondAsync("All filters for this guild successfully removed.")
                 .ConfigureAwait(false);
+            try {
+                await ctx.Dependencies.GetDependency<DatabaseService>().ClearGuildFiltersAsync(ctx.Guild.Id)
+                    .ConfigureAwait(false);
+            } catch (Npgsql.NpgsqlException e) {
+                throw new DatabaseServiceException(e);
+            }
+
         }
         #endregion
     }

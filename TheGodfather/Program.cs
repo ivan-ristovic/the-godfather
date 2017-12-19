@@ -1,9 +1,9 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 using TheGodfather.Services;
@@ -75,12 +75,20 @@ namespace TheGodfather
             foreach (var gprefix in gprefixes_db)
                 gprefixes.TryAdd(gprefix.Key, gprefix.Value);
 
+            var gfilters_db = await Database.GetGuildFiltersAsync();
+            var gfilters = new ConcurrentDictionary<ulong, ConcurrentHashSet<Regex>>();
+            foreach (var gfilter in gfilters_db) {
+                if (!gfilters.ContainsKey(gfilter.Key))
+                    gfilters.TryAdd(gfilter.Key, new ConcurrentHashSet<Regex>());
+                gfilters[gfilter.Key].Add(new Regex(gfilter.Value));
+            }
+
             TheGodfather.DependencyList = new BotDependencyList(cfg, Database);
             TheGodfather.DependencyList.LoadData();
 
             // TODO
 
-            Shared = new SharedData(cfg, gprefixes);
+            Shared = new SharedData(cfg, gprefixes, gfilters);
 
             Console.WriteLine("[4/5] Creating shards...");
 

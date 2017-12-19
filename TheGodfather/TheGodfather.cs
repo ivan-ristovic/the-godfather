@@ -236,7 +236,7 @@ namespace TheGodfather
             }
 
             // Check if message contains filter
-            if (e.Message.Content != null && DependencyList.GuildConfigControl.ContainsFilter(e.Guild.Id, e.Message.Content)) {
+            if (e.Message.Content != null && SharedData.ContainsFilter(e.Guild.Id, e.Message.Content)) {
                 try {
                     await e.Channel.DeleteMessageAsync(e.Message)
                         .ConfigureAwait(false);
@@ -316,7 +316,7 @@ namespace TheGodfather
                 return;
 
             // Check if message contains filter
-            if (!e.Author.IsBot && e.Message.Content != null && e.Message.Content.Split(' ').Any(s => DependencyList.GuildConfigControl.ContainsFilter(e.Guild.Id, s))) {
+            if (!e.Author.IsBot && e.Message.Content != null && e.Message.Content.Split(' ').Any(s => SharedData.ContainsFilter(e.Guild.Id, s))) {
                 try {
                     await e.Channel.DeleteMessageAsync(e.Message)
                         .ConfigureAwait(false);

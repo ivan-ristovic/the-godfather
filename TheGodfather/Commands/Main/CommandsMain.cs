@@ -185,14 +185,14 @@ namespace TheGodfather.Commands.Main
                 throw new CommandFailedException("Prefix length cannot be longer than 12 characters.");
 
             if (sd.TrySetGuildPrefix(ctx.Guild.Id, prefix)) {
+                await ctx.RespondAsync("Successfully changed the prefix for this guild to: " + Formatter.Bold(prefix))
+                    .ConfigureAwait(false);
                 try {
                     await ctx.Dependencies.GetDependency<DatabaseService>().SetGuildPrefixAsync(ctx.Guild.Id, prefix)
                         .ConfigureAwait(false);
                 } catch (Npgsql.NpgsqlException e) {
                     throw new DatabaseServiceException("Failed to save prefix in the database!", e);
                 }
-                await ctx.RespondAsync("Successfully changed the prefix for this guild to: " + Formatter.Bold(prefix))
-                    .ConfigureAwait(false);
             } else {
                 throw new CommandFailedException("Failed to set prefix.");
             }
@@ -270,7 +270,7 @@ namespace TheGodfather.Commands.Main
             if (string.IsNullOrWhiteSpace(s))
                 throw new InvalidCommandUsageException("Text missing.");
 
-            if (ctx.Dependencies.GetDependency<GuildConfigManager>().ContainsFilter(ctx.Guild.Id, s))
+            if (ctx.Dependencies.GetDependency<SharedData>().ContainsFilter(ctx.Guild.Id, s))
                 throw new CommandFailedException("You can't make me say something that contains filtered content for this guild.");
             
             await ctx.RespondAsync(s)
