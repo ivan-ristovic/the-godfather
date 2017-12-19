@@ -25,7 +25,7 @@ using System.Collections.Generic;
 
 namespace TheGodfather
 {
-    public class TheGodfather
+    public sealed class TheGodfather
     {
         #region STATIC_FIELDS
         public static bool Listening { get; set; } = true;

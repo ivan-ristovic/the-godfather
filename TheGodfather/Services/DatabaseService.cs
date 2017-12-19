@@ -97,8 +97,7 @@ namespace TheGodfather.Services
             return new ReadOnlyCollection<IReadOnlyDictionary<string, string>>(dicts);
         }
 
-        // BANK
-
+        #region BANK_SERVICES
         public async Task<bool> HasBankAccountAsync(ulong uid)
         {
             int? balance = await GetBalanceForUserAsync(uid).ConfigureAwait(false);
@@ -246,7 +245,7 @@ namespace TheGodfather.Services
                 .ConfigureAwait(false);
             return res;
         }
-
+        #endregion
 
         public async Task<IReadOnlyDictionary<ulong, string>> GetGuildPrefixesAsync()
         {
@@ -269,6 +268,7 @@ namespace TheGodfather.Services
             return new ReadOnlyDictionary<ulong, string>(dict);
         }
 
+        #region STATS_SERVICES
         public async Task<IReadOnlyDictionary<string, string>> GetStatsForUserAsync(ulong uid)
         {
             var res = await ExecuteRawQueryAsync($"SELECT * FROM gf.stats WHERE uid = {uid};")
@@ -308,5 +308,6 @@ namespace TheGodfather.Services
                 await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
             }
         }
+        #endregion
     }
 }
