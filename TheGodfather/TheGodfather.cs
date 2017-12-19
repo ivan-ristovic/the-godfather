@@ -398,15 +398,17 @@ namespace TheGodfather
             else if (e.Exception is CommandFailedException)
                 embed.Description = $"{emoji} {ex.Message}";
             else if (e.Exception is DatabaseServiceException)
-                embed.Description = $"{emoji} Database exception occured. Details: {ex.InnerException?.Message}";
+                embed.Description = $"{emoji} {ex.Message}: {ex.InnerException?.Message}";
             else if (e.Exception is NotSupportedException)
-                embed.Description = $"{emoji} Not supported. {e.Exception.Message}";
+                embed.Description = $"{emoji} Not supported. {ex.Message}";
             else if (e.Exception is InvalidOperationException)
-                embed.Description = $"{emoji} Invalid operation. {e.Exception.Message}";
+                embed.Description = $"{emoji} Invalid operation. {ex.Message}";
             else if (e.Exception is NotFoundException)
                 embed.Description = $"{emoji} 404: Not found.";
             else if (e.Exception is ArgumentException)
                 embed.Description = $"{emoji} Argument specified is invalid (please use {Formatter.Bold("!help <command>")}).";
+            else if (e.Exception is Npgsql.NpgsqlException)
+                embed.Description = $"{emoji} This is what happens when I use a Serbian database... Please {Formatter.InlineCode("!report")}.";
             else if (ex is ChecksFailedException exc) {
                 var attr = exc.FailedChecks.First();
                 if (attr is CooldownAttribute)

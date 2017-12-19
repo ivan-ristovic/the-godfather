@@ -49,6 +49,11 @@ namespace TheGodfather.Exceptions
         {
 
         }
+        
+        public DatabaseServiceException(Exception inner) : base("Failed to connect to the database!", inner)
+        {
+
+        }
 
         public DatabaseServiceException(string message, Exception inner) : base(message, inner)
         {

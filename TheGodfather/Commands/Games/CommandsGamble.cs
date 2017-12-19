@@ -45,17 +45,22 @@ namespace TheGodfather.Commands.Games
                 else
                     throw new CommandFailedException($"Invalid coin outcome call (has to be {Formatter.Bold("h")} or {Formatter.Bold("t")})");
 
-                if (!await ctx.Dependencies.GetDependency<DatabaseService>().RetrieveCreditsAsync(ctx.User.Id, bid).ConfigureAwait(false))
-                    throw new CommandFailedException("You do not have enough credits in WM bank!");
+                try {
+                    if (!await ctx.Dependencies.GetDependency<DatabaseService>().RetrieveCreditsAsync(ctx.User.Id, bid).ConfigureAwait(false))
+                        throw new CommandFailedException("You do not have enough credits in WM bank!");
 
-                int rnd = new Random().Next(2);
-                if (rnd == guess)
-                    await ctx.Dependencies.GetDependency<DatabaseService>().IncreaseBalanceForUserAsync(ctx.User.Id, bid * 2)
-                        .ConfigureAwait(false);
-                await ctx.RespondAsync($"{ctx.User.Mention} flipped " +
-                    $"{(Formatter.Bold(rnd == 0 ? "Heads" : "Tails"))} " +
-                    $"{(guess == rnd ? $"and won {bid} credits" : $"and lost {bid} credits")} !"
-                ).ConfigureAwait(false);
+                    int rnd = new Random().Next(2);
+                    if (rnd == guess)
+                        await ctx.Dependencies.GetDependency<DatabaseService>().IncreaseBalanceForUserAsync(ctx.User.Id, bid * 2)
+                            .ConfigureAwait(false);
+
+                    await ctx.RespondAsync($"{ctx.User.Mention} flipped " +
+                        $"{(Formatter.Bold(rnd == 0 ? "Heads" : "Tails"))} " +
+                        $"{(guess == rnd ? $"and won {bid} credits" : $"and lost {bid} credits")} !"
+                    ).ConfigureAwait(false);
+                } catch (Npgsql.NpgsqlException e) {
+                    throw new DatabaseServiceException(e);
+                }
             } else {
                 await ctx.RespondAsync($"{ctx.User.Mention} flipped " + $"{(Formatter.Bold(new Random().Next(2) == 0 ? "Heads" : "Tails"))} !")
                     .ConfigureAwait(false);
@@ -82,17 +87,21 @@ namespace TheGodfather.Commands.Games
                 if (guess < 1 || guess > 6)
                     throw new CommandFailedException($"Invalid guess. Has to be a number from {Formatter.Bold("1")} to {Formatter.Bold("6")})");
 
-                if (!await ctx.Dependencies.GetDependency<DatabaseService>().RetrieveCreditsAsync(ctx.User.Id, bid).ConfigureAwait(false))
-                    throw new CommandFailedException("You do not have enough credits in WM bank!");
+                try {
+                    if (!await ctx.Dependencies.GetDependency<DatabaseService>().RetrieveCreditsAsync(ctx.User.Id, bid).ConfigureAwait(false))
+                        throw new CommandFailedException("You do not have enough credits in WM bank!");
 
-                int rnd = new Random().Next(1, 7);
-                if (rnd == guess)
-                    await ctx.Dependencies.GetDependency<DatabaseService>().IncreaseBalanceForUserAsync(ctx.User.Id, bid * 6)
-                        .ConfigureAwait(false);
+                    int rnd = new Random().Next(1, 7);
+                    if (rnd == guess)
+                        await ctx.Dependencies.GetDependency<DatabaseService>().IncreaseBalanceForUserAsync(ctx.User.Id, bid * 6)
+                            .ConfigureAwait(false);
 
-                await ctx.RespondAsync($"{DiscordEmoji.FromName(ctx.Client, ":game_die:")} {ctx.User.Mention} rolled a " +
-                    $"{rnd} {(guess == rnd ? $"and won {bid * 5} credits" : $"and lost {bid} credits")} !"
-                ).ConfigureAwait(false);
+                    await ctx.RespondAsync($"{DiscordEmoji.FromName(ctx.Client, ":game_die:")} {ctx.User.Mention} rolled a " +
+                        $"{rnd} {(guess == rnd ? $"and won {bid * 5} credits" : $"and lost {bid} credits")} !"
+                    ).ConfigureAwait(false);
+                } catch (Npgsql.NpgsqlException e) {
+                    throw new DatabaseServiceException(e);
+                }
             } else {
                 await ctx.RespondAsync($"{DiscordEmoji.FromName(ctx.Client, ":game_die:")} {ctx.User.Mention} rolled a {Formatter.Bold(new Random().Next(1, 7).ToString())}!")
                     .ConfigureAwait(false);
@@ -110,25 +119,29 @@ namespace TheGodfather.Commands.Games
             if (bid < 5)
                 throw new CommandFailedException("5 is the minimum bid!", new ArgumentOutOfRangeException());
 
-            if (!await ctx.Dependencies.GetDependency<DatabaseService>().RetrieveCreditsAsync(ctx.User.Id, bid).ConfigureAwait(false))
-                throw new CommandFailedException("You do not have enough credits in WM bank!");
+            try {
+                if (!await ctx.Dependencies.GetDependency<DatabaseService>().RetrieveCreditsAsync(ctx.User.Id, bid).ConfigureAwait(false))
+                    throw new CommandFailedException("You do not have enough credits in WM bank!");
 
-            var slot_res = RollSlot(ctx);
-            int won = EvaluateSlotResult(slot_res, bid);
+                var slot_res = RollSlot(ctx);
+                int won = EvaluateSlotResult(slot_res, bid);
 
-            var em = new DiscordEmbedBuilder() {
-                Title = "TOTALLY NOT RIGGED SLOT MACHINE",
-                Description = MakeStringFromResult(slot_res),
-                Color = DiscordColor.Yellow
-            };
-            em.AddField("Result", $"You won {Formatter.Bold(won.ToString())} credits!");
+                var em = new DiscordEmbedBuilder() {
+                    Title = "TOTALLY NOT RIGGED SLOT MACHINE",
+                    Description = MakeStringFromResult(slot_res),
+                    Color = DiscordColor.Yellow
+                };
+                em.AddField("Result", $"You won {Formatter.Bold(won.ToString())} credits!");
 
-            await ctx.RespondAsync(embed: em.Build())
-                .ConfigureAwait(false);
-
-            if (won > 0)
-                await ctx.Dependencies.GetDependency<DatabaseService>().IncreaseBalanceForUserAsync(ctx.User.Id, won)
+                await ctx.RespondAsync(embed: em.Build())
                     .ConfigureAwait(false);
+
+                if (won > 0)
+                    await ctx.Dependencies.GetDependency<DatabaseService>().IncreaseBalanceForUserAsync(ctx.User.Id, won)
+                        .ConfigureAwait(false);
+            } catch (Npgsql.NpgsqlException e) {
+                throw new DatabaseServiceException(e);
+            }
         }
         #endregion
 

@@ -24,9 +24,10 @@ namespace TheGodfather.Commands.Games
     public class CommandsBank
     {
 
-        public async Task ExecuteGroupAsync(CommandContext ctx)
+        public async Task ExecuteGroupAsync(CommandContext ctx, 
+                                           [Description("User.")] DiscordUser u = null)
         {
-            await GetStatusAsync(ctx);
+            await GetStatusAsync(ctx, u).ConfigureAwait(false);
         }
 
 
@@ -45,8 +46,13 @@ namespace TheGodfather.Commands.Games
             if (!await ctx.Dependencies.GetDependency<DatabaseService>().HasBankAccountAsync(ctx.User.Id).ConfigureAwait(false))
                 throw new CommandFailedException("Given user does not have a WM bank account!");
 
-            await ctx.Dependencies.GetDependency<DatabaseService>().IncreaseBalanceForUserAsync(u.Id, amount)
-                .ConfigureAwait(false);
+            try {
+                await ctx.Dependencies.GetDependency<DatabaseService>().IncreaseBalanceForUserAsync(u.Id, amount)
+                    .ConfigureAwait(false);
+            } catch (Npgsql.NpgsqlException e) {
+                throw new DatabaseServiceException(e);
+            }
+
             await ctx.RespondAsync($"User {Formatter.Bold(u.Username)} won {Formatter.Bold(amount.ToString())} credits on a lottery! (seems legit)")
                 .ConfigureAwait(false);
         }
@@ -61,8 +67,13 @@ namespace TheGodfather.Commands.Games
             if (await ctx.Dependencies.GetDependency<DatabaseService>().HasBankAccountAsync(ctx.User.Id).ConfigureAwait(false))
                 throw new CommandFailedException("You already own an account in WM bank!");
 
-            await ctx.Dependencies.GetDependency<DatabaseService>().OpenAccountForUserAsync(ctx.User.Id)
-                .ConfigureAwait(false);
+            try {
+                await ctx.Dependencies.GetDependency<DatabaseService>().OpenAccountForUserAsync(ctx.User.Id)
+                    .ConfigureAwait(false);
+            } catch (Npgsql.NpgsqlException e) {
+                throw new DatabaseServiceException(e);
+            }
+
             await ctx.RespondAsync($"Account opened for you, {ctx.User.Mention}! Since WM bank is so generous, you get 25 credits for free.")
                 .ConfigureAwait(false);
         }
@@ -78,11 +89,16 @@ namespace TheGodfather.Commands.Games
             if (u == null)
                 u = ctx.User;
 
-            var balance = await ctx.Dependencies.GetDependency<DatabaseService>().GetBalanceForUserAsync(ctx.User.Id)
-                .ConfigureAwait(false);
+            int? balance;
+            try {
+                balance = await ctx.Dependencies.GetDependency<DatabaseService>().GetBalanceForUserAsync(u.Id)
+                    .ConfigureAwait(false);
+            } catch (Npgsql.NpgsqlException e) {
+                throw new DatabaseServiceException(e);
+            }
 
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
-                Title = $"Account balance for {ctx.User.Username}",
+                Title = $"Account balance for {u.Username}",
                 Description = $"{Formatter.Bold(balance.HasValue ? balance.ToString() : "No existing account!")}",
                 Color = DiscordColor.Yellow
             }.Build()).ConfigureAwait(false);
@@ -100,18 +116,22 @@ namespace TheGodfather.Commands.Games
                 Color = DiscordColor.Yellow
             };
 
-            var top = await ctx.Dependencies.GetDependency<DatabaseService>().GetTopAccountsAsync()
-                .ConfigureAwait(false);
-            foreach (var row in top) {
-                ulong uid = 0;
-                ulong.TryParse(row["uid"], out uid);
-                var member = await ctx.Guild.GetMemberAsync(uid)
+            try {
+                var top = await ctx.Dependencies.GetDependency<DatabaseService>().GetTopAccountsAsync()
                     .ConfigureAwait(false);
-                em.AddField(member.Username, row["balance"], inline: true);
-            }
+                foreach (var row in top) {
+                    ulong uid;
+                    ulong.TryParse(row["uid"], out uid);
+                    var member = await ctx.Guild.GetMemberAsync(uid)
+                        .ConfigureAwait(false);
+                    em.AddField(member.Username, row["balance"], inline: true);
+                }
 
-            await ctx.RespondAsync(embed: em.Build())
-                .ConfigureAwait(false);
+                await ctx.RespondAsync(embed: em.Build())
+                    .ConfigureAwait(false);
+            } catch (Npgsql.NpgsqlException e) {
+                throw new DatabaseServiceException(e);
+            }
         }
         #endregion
 
@@ -129,8 +149,13 @@ namespace TheGodfather.Commands.Games
             if (amount <= 0)
                 throw new CommandFailedException("The amount must be positive integer.");
 
-            await ctx.Dependencies.GetDependency<DatabaseService>().TransferCurrencyAsync(ctx.User.Id, u.Id, amount)
-                .ConfigureAwait(false);
+            try {
+                await ctx.Dependencies.GetDependency<DatabaseService>().TransferCurrencyAsync(ctx.User.Id, u.Id, amount)
+                    .ConfigureAwait(false);
+            } catch (Npgsql.NpgsqlException e) {
+                throw new DatabaseServiceException(e);
+            }
+
             await ctx.RespondAsync($"Transfer from {ctx.User.Mention} to {u.Mention} is complete.")
                 .ConfigureAwait(false);
         }
