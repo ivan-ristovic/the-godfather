@@ -25,7 +25,6 @@ namespace TheGodfather
             try {
                 MainAsync(args).ConfigureAwait(false).GetAwaiter().GetResult();
             } catch (Exception e) {
-                Console.WriteLine();
                 Console.WriteLine($"Exception occured: {e.GetType()} : {e.Message}");
                 Console.ReadKey();
             }

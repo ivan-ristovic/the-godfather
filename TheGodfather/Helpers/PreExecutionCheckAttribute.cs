@@ -26,7 +26,8 @@ namespace TheGodfather
                     $" Location: '{ctx.Guild.Name}' ({ctx.Guild.Id}) ; {ctx.Channel.ToString()}",
                     DateTime.Now
                 );
-                ctx.TriggerTypingAsync();
+                if (!help)
+                    ctx.TriggerTypingAsync();
                 return Task.FromResult(true);
             } else {
                 return Task.FromResult(false);
