@@ -10,6 +10,7 @@ using TheGodfather.Services;
 using TheGodfather.Helpers;
 using TheGodfather.Helpers.Collections;
 using System.Collections.Concurrent;
+using DSharpPlus.Entities;
 
 namespace TheGodfather
 {
@@ -116,7 +117,14 @@ namespace TheGodfather
                     return;
                 }
 
-                await TheGodfather.DependencyList.FeedControl.CheckFeedsForChangesAsync(Shards[0].Client);
+                var status = await Database.GetRandomStatusAsync()
+                    .ConfigureAwait(false);
+                await Shards[0].Client.UpdateStatusAsync(new DiscordGame(status) {
+                    StreamType = GameStreamType.NoStream
+                }).ConfigureAwait(false);
+
+                await TheGodfather.DependencyList.FeedControl.CheckFeedsForChangesAsync(Shards[0].Client)
+                    .ConfigureAwait(false);
 
                 await Task.Delay(TimeSpan.FromMinutes(2))
                     .ConfigureAwait(false);

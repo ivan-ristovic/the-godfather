@@ -309,5 +309,61 @@ namespace TheGodfather.Services
             }
         }
         #endregion
+
+        #region STATUS_SERVICES
+        public async Task<IReadOnlyDictionary<int, string>> GetStatusesAsync()
+        {
+            await _sem.WaitAsync();
+
+            var dict = new Dictionary<int, string>();
+
+            using (var con = new NpgsqlConnection(_connectionString))
+            using (var cmd = con.CreateCommand()) {
+                await con.OpenAsync().ConfigureAwait(false);
+
+                cmd.CommandText = "SELECT * FROM gf.statuses;";
+
+                using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
+                    while (await reader.ReadAsync().ConfigureAwait(false))
+                        dict[(int)reader["id"]] = (string)reader["status"];
+                }
+            }
+
+            _sem.Release();
+            return new ReadOnlyDictionary<int, string>(dict);
+        }
+
+        public async Task<string> GetRandomStatusAsync()
+        {
+            await _sem.WaitAsync();
+
+            string status = null;
+
+            using (var con = new NpgsqlConnection(_connectionString))
+            using (var cmd = con.CreateCommand()) {
+                await con.OpenAsync().ConfigureAwait(false);
+
+                cmd.CommandText = "SELECT status FROM gf.statuses TABLESAMPLE SYSTEM_ROWS(1);";
+
+                using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
+                    if (await reader.ReadAsync().ConfigureAwait(false))
+                        status = (string)reader["status"];
+                }
+            }
+
+            _sem.Release();
+            return status ?? "@TheGodfather help";
+        }
+
+        public async Task AddStatusAsync(string status)
+        {
+
+        }
+
+        public async Task DeleteStatusAsync(int id)
+        {
+
+        }
+        #endregion
     }
 }

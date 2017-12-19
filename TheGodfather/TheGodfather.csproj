@@ -290,7 +290,6 @@
     <Compile Include="Commands\SWAT\CommandsSwat.cs" />
     <Compile Include="Commands\Administration\CommandsUsers.cs" />
     <Compile Include="Commands\Voice\CommandsVoice.cs" />
-    <Compile Include="Helpers\DataManagers\StatusManager.cs" />
     <Compile Include="Helpers\SWAT\SwatServer.cs" />
     <Compile Include="Helpers\SWAT\SwatServerInfo.cs" />
     <Compile Include="Program.cs" />

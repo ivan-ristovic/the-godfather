@@ -360,8 +360,8 @@ namespace TheGodfather.Commands.Administration
                 if (string.IsNullOrWhiteSpace(status))
                     throw new InvalidCommandUsageException("Invalid status.");
 
-                ctx.Dependencies.GetDependency<StatusManager>().AddStatus(status);
-
+                await ctx.Dependencies.GetDependency<DatabaseService>().AddStatusAsync(status)
+                    .ConfigureAwait(false);
                 await ctx.RespondAsync("Status added!")
                     .ConfigureAwait(false);
             }
@@ -372,15 +372,10 @@ namespace TheGodfather.Commands.Administration
             [Description("Remove status from running queue.")]
             [Aliases("-", "remove")]
             public async Task DeleteAsync(CommandContext ctx,
-                                         [RemainingText, Description("Status.")] string status)
+                                         [Description("Status ID.")] int id)
             {
-                if (string.IsNullOrWhiteSpace(status))
-                    throw new InvalidCommandUsageException("Invalid status.");
-
-                if (status == "!help")
-                    throw new InvalidCommandUsageException("Cannot delete help status!");
-
-                ctx.Dependencies.GetDependency<StatusManager>().DeleteStatus(status);
+                await ctx.Dependencies.GetDependency<DatabaseService>().DeleteStatusAsync(id)
+                    .ConfigureAwait(false);
                 await ctx.RespondAsync("Status removed!")
                     .ConfigureAwait(false);
             }
@@ -391,7 +386,9 @@ namespace TheGodfather.Commands.Administration
             [Description("List all statuses.")]
             public async Task ListAsync(CommandContext ctx)
             {
-                await ctx.RespondAsync("My current statuses:\n" + string.Join("\n", ctx.Dependencies.GetDependency<StatusManager>().Statuses))
+                var statuses = await ctx.Dependencies.GetDependency<DatabaseService>().GetStatusesAsync()
+                    .ConfigureAwait(false);
+                await ctx.RespondAsync("My current statuses:\n" + string.Join("\n", statuses.Select(kvp => $"{kvp.Key} : {kvp.Value}")))
                     .ConfigureAwait(false);
             }
             #endregion

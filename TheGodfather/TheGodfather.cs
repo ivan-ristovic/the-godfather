@@ -98,7 +98,6 @@ namespace TheGodfather
             Client.GuildAvailable += Client_GuildAvailable;
             Client.GuildMemberAdded += Client_GuildMemberAdd;
             Client.GuildMemberRemoved += Client_GuildMemberRemove;
-            Client.Heartbeated += Client_Heartbeated;
             Client.MessageCreated += Client_MessageCreated;
             Client.MessageReactionAdded += Client_ReactToMessage;
             Client.MessageUpdated += Client_MessageUpdated;
@@ -150,13 +149,6 @@ namespace TheGodfather
         #endregion
 
         #region CLIENT_EVENTS
-        private async Task Client_Heartbeated(HeartbeatEventArgs e)
-        {
-            await Client.UpdateStatusAsync(new DiscordGame(DependencyList.StatusControl.GetRandomStatus()) {
-                StreamType = GameStreamType.NoStream
-            }).ConfigureAwait(false);
-        }
-
         private Task Client_Error(ClientErrorEventArgs e)
         {
             Log(LogLevel.Error, $"Client errored: {e.Exception.GetType()}: {e.Exception.Message}");
@@ -357,9 +349,6 @@ namespace TheGodfather
         private async Task Client_Ready(ReadyEventArgs e)
         {
             Log(LogLevel.Info, "Client ready.");
-            await Client.UpdateStatusAsync(new DiscordGame(DependencyList.StatusControl.GetRandomStatus()) {
-                StreamType = GameStreamType.NoStream
-            }).ConfigureAwait(false);
         }
         #endregion
 
