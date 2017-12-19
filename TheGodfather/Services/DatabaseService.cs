@@ -372,12 +372,36 @@ namespace TheGodfather.Services
 
         public async Task AddStatusAsync(string status)
         {
+            await _sem.WaitAsync();
 
+            using (var con = new NpgsqlConnection(_connectionString))
+            using (var cmd = con.CreateCommand()) {
+                await con.OpenAsync().ConfigureAwait(false);
+
+                cmd.CommandText = "INSERT INTO gf.statuses(status) VALUES (@status);";
+                cmd.Parameters.AddWithValue("status", NpgsqlDbType.Varchar, status);
+
+                await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+            }
+
+            _sem.Release();
         }
 
         public async Task DeleteStatusAsync(int id)
         {
+            await _sem.WaitAsync();
 
+            using (var con = new NpgsqlConnection(_connectionString))
+            using (var cmd = con.CreateCommand()) {
+                await con.OpenAsync().ConfigureAwait(false);
+
+                cmd.CommandText = "DELETE FROM gf.statuses WHERE id = (@id);";
+                cmd.Parameters.AddWithValue("id", NpgsqlDbType.Integer, id);
+
+                await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+            }
+
+            _sem.Release();
         }
         #endregion
     }
