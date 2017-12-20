@@ -63,10 +63,12 @@ namespace TheGodfather
                 json = await sr.ReadToEndAsync();
             var cfg = JsonConvert.DeserializeObject<BotConfig>(json);
             
+
             Console.WriteLine("[2/5] Booting PostgreSQL connection...");
 
             Database = new DatabaseService(cfg.DatabaseConfig);
             await Database.InitializeAsync();
+
 
             Console.WriteLine("[3/5] Loading data from database...");
 
@@ -90,6 +92,7 @@ namespace TheGodfather
 
             Shared = new SharedData(cfg, gprefixes, gfilters);
 
+
             Console.WriteLine("[4/5] Creating shards...");
 
             Shards = new List<TheGodfather>();
@@ -98,6 +101,7 @@ namespace TheGodfather
                 Shards.Add(shard);
             }
             
+
             Console.WriteLine("[5/5] Booting the shards...");
 
             foreach (var shard in Shards) {
@@ -107,7 +111,7 @@ namespace TheGodfather
             
             Console.WriteLine("-------------------------------------");
 
-            await PerformActionsPeriodicallyAsync();
+            await PerformActionsPeriodicallyAsync().ConfigureAwait(false);
         }
 
         private static async Task PerformActionsPeriodicallyAsync()
