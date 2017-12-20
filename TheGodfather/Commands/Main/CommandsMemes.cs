@@ -9,7 +9,6 @@ using System.Drawing.Text;
 using System.Drawing.Drawing2D;
 using System.Threading.Tasks;
 
-using TheGodfather.Helpers.DataManagers;
 using TheGodfather.Services;
 using TheGodfather.Exceptions;
 
@@ -33,22 +32,26 @@ namespace TheGodfather.Commands.Main
         public async Task ExecuteGroupAsync(CommandContext ctx,
                                            [RemainingText, Description("Meme name.")] string name = null)
         {
+            string url;
             if (string.IsNullOrWhiteSpace(name)) {
-                await SendMemeAsync(ctx, ctx.Dependencies.GetDependency<MemeManager>().GetRandomMeme())
+                var db = ctx.Dependencies.GetDependency<DatabaseService>();
+                await SendRandomMemeAsync(ctx.Client, db, ctx.Guild.Id, ctx.Channel.Id)
                     .ConfigureAwait(false);
                 return;
             }
 
-            string url = ctx.Dependencies.GetDependency<MemeManager>().GetUrl(name);
+            url = await ctx.Dependencies.GetDependency<DatabaseService>().GetMemeUrlAsync(ctx.Guild.Id, name)
+                .ConfigureAwait(false);
             if (url == null) {
                 await ctx.RespondAsync("No meme registered with that name, here is a random one: ")
                     .ConfigureAwait(false);
                 await Task.Delay(500)
                     .ConfigureAwait(false);
-                await SendMemeAsync(ctx, ctx.Dependencies.GetDependency<MemeManager>().GetRandomMeme())
+                var db = ctx.Dependencies.GetDependency<DatabaseService>();
+                await SendRandomMemeAsync(ctx.Client, db, ctx.Guild.Id, ctx.Channel.Id)
                     .ConfigureAwait(false);
             } else {
-                await SendMemeAsync(ctx, url)
+                await SendMemeAsync(ctx.Client, ctx.Channel.Id, url)
                     .ConfigureAwait(false);
             }
         }
@@ -66,13 +69,17 @@ namespace TheGodfather.Commands.Main
             if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(url))
                 throw new InvalidCommandUsageException("Name or URL missing or invalid.");
 
-            if (name.Length + url.Length > 90)
-                throw new CommandFailedException("Name in combination with URL is too long. Please consider shortening.");
+            if (name.Length > 30 || url.Length > 120)
+                throw new CommandFailedException("Name/URL is too long. Name must be shorter than 30 characters, and URL must be shorter than 120 characters.");
 
-            if (ctx.Dependencies.GetDependency<MemeManager>().TryAdd(name, url))
-                await ctx.RespondAsync($"Meme {Formatter.Bold(name)} successfully added!").ConfigureAwait(false);
-            else
-                await ctx.RespondAsync("Meme with that name already exists!").ConfigureAwait(false);
+            Uri uriResult;
+            bool result = Uri.TryCreate(url, UriKind.Absolute, out uriResult)
+                && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
+
+            await ctx.Dependencies.GetDependency<DatabaseService>().AddMemeAsync(ctx.Guild.Id, name, url)
+                .ConfigureAwait(false);
+            await ctx.RespondAsync($"Meme {Formatter.Bold(name)} successfully added!")
+                .ConfigureAwait(false);
         }
         #endregion
 
@@ -102,7 +109,7 @@ namespace TheGodfather.Commands.Main
                 .ConfigureAwait(false);
 
             try {
-                Bitmap image = new Bitmap(ctx.Dependencies.GetDependency<MemeManager>().TemplateDirectory + $"{template}.jpg");
+                Bitmap image = new Bitmap($"Resources/meme-templates/{template}.jpg");
                 Rectangle topLayout = new Rectangle(0, 0, image.Width, image.Height / 3);
                 Rectangle botLayout = new Rectangle(0, (int)(0.66 * image.Height), image.Width, image.Height / 3);
                 using (Graphics g = Graphics.FromImage(image)) {
@@ -187,10 +194,10 @@ namespace TheGodfather.Commands.Main
             if (string.IsNullOrWhiteSpace(name))
                 throw new InvalidCommandUsageException("Name missing.");
 
-            if (ctx.Dependencies.GetDependency<MemeManager>().TryRemove(name))
-                await ctx.RespondAsync($"Meme {Formatter.Bold(name)} successfully removed!").ConfigureAwait(false);
-            else
-                throw new CommandFailedException("Meme with that name doesn't exist!", new KeyNotFoundException());
+            await ctx.Dependencies.GetDependency<DatabaseService>().RemoveMemeAsync(ctx.Guild.Id, name)
+                .ConfigureAwait(false);
+            await ctx.RespondAsync($"Meme {Formatter.Bold(name)} successfully removed!")
+                .ConfigureAwait(false);
         }
         #endregion
 
@@ -201,7 +208,8 @@ namespace TheGodfather.Commands.Main
         public async Task ListAsync(CommandContext ctx,
                                    [Description("Page.")] int page = 1)
         {
-            var memes = ctx.Dependencies.GetDependency<MemeManager>().Memes;
+            var memes = await ctx.Dependencies.GetDependency<DatabaseService>().GetGuildMemesAsync(ctx.Guild.Id)
+                .ConfigureAwait(false);
 
             if (page < 1 || page > memes.Count / 10 + 1)
                 throw new CommandFailedException("No memes on that page.", new ArgumentOutOfRangeException());
@@ -218,20 +226,6 @@ namespace TheGodfather.Commands.Main
                 Description = desc,
                 Color = DiscordColor.Green
             }.Build()).ConfigureAwait(false);
-        }
-        #endregion
-
-        #region COMMAND_MEME_SAVE
-        [Command("save")]
-        [Description("Saves all the memes.")]
-        [Aliases("s")]
-        [RequireOwner]
-        public async Task SaveMemesAsync(CommandContext ctx)
-        {
-            if (ctx.Dependencies.GetDependency<MemeManager>().Save())
-                await ctx.RespondAsync("Memes successfully saved.").ConfigureAwait(false);
-            else
-                throw new CommandFailedException("Failed saving memes.", new IOException());
         }
         #endregion
 
@@ -311,9 +305,14 @@ namespace TheGodfather.Commands.Main
             [Aliases("ls", "l")]
             public async Task ListAsync(CommandContext ctx)
             {
+                string dir = "Resources/meme-templates/";
+                var templates = Directory.GetFiles(dir)
+                    .Select(s => s.Substring(dir.Length, s.Length - dir.Length - 4))
+                    .ToList();
+                templates.Sort();
                 await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
                     Title = $"Available meme templates:",
-                    Description = string.Join(", ", ctx.Dependencies.GetDependency<MemeManager>().GetAllTemplateNames()),
+                    Description = string.Join(", ", templates),
                     Color = DiscordColor.Green
                 }.Build()).ConfigureAwait(false);
             }
@@ -338,10 +337,26 @@ namespace TheGodfather.Commands.Main
 
 
         #region HELPER_FUNCTIONS
-        private async Task SendMemeAsync(CommandContext ctx, string url)
+        private async Task SendMemeAsync(DiscordClient client, ulong cid, string url)
         {
-            await ctx.RespondAsync(embed: new DiscordEmbedBuilder { ImageUrl = url }.Build())
+            var chn = await client.GetChannelAsync(cid)
                 .ConfigureAwait(false);
+            await chn.SendMessageAsync(embed: new DiscordEmbedBuilder { ImageUrl = url }.Build())
+                .ConfigureAwait(false);
+        }
+
+        private async Task SendRandomMemeAsync(DiscordClient client, DatabaseService db, ulong gid, ulong cid)
+        {
+            var chn = await client.GetChannelAsync(cid)
+                .ConfigureAwait(false);
+            string url = await db.GetRandomMemeAsync(gid)
+                .ConfigureAwait(false);
+            if (url == null)
+                await chn.SendMessageAsync("No memes registered for this guild!")
+                    .ConfigureAwait(false);
+            else
+                await chn.SendMessageAsync(embed: new DiscordEmbedBuilder { ImageUrl = url }.Build())
+                    .ConfigureAwait(false);
         }
         #endregion
     }

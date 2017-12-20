@@ -361,6 +361,78 @@ namespace TheGodfather.Services
         }
         #endregion
 
+        #region MEME_SERVICES
+        public async Task<IReadOnlyDictionary<string, string>> GetGuildMemesAsync(ulong gid)
+        {
+            await _sem.WaitAsync();
+            var dict = new Dictionary<string, string>();
+
+            using (var con = new NpgsqlConnection(_connectionString))
+            using (var cmd = con.CreateCommand()) {
+                await con.OpenAsync().ConfigureAwait(false);
+
+                cmd.CommandText = "SELECT name, url FROM gf.memes WHERE gid = @gid;";
+                cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
+
+                using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
+                    while (await reader.ReadAsync().ConfigureAwait(false))
+                        dict[(string)reader["name"]] = (string)reader["url"];
+                }
+            }
+
+            _sem.Release();
+            return new ReadOnlyDictionary<string, string>(dict);
+        }
+
+
+        public async Task<string> GetRandomMemeAsync(ulong gid)
+        {
+            await _sem.WaitAsync();
+
+            string url = null;
+
+            using (var con = new NpgsqlConnection(_connectionString))
+            using (var cmd = con.CreateCommand()) {
+                await con.OpenAsync().ConfigureAwait(false);
+
+                cmd.CommandText = "SELECT url FROM gf.memes TABLESAMPLE SYSTEM_ROWS(1) WHERE gid = @gid;";
+                cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
+
+                var res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
+                if (res != null && !(res is DBNull))
+                    url = (string)res;
+            }
+
+            _sem.Release();
+            return url;
+        }
+
+        public async Task<bool> MemeExistsAsync(ulong gid, string name)
+        {
+            return true;
+        }
+
+        public async Task<string> GetMemeUrlAsync(ulong gid, string name)
+        {
+            return null;
+        }
+
+        public async Task AddMemeAsync(ulong gid, string name, string url)
+        {
+
+        }
+
+        public async Task RemoveMemeAsync(ulong gid, string name)
+        {
+
+        }
+
+        public async Task DeleteAllGuildMemesAsync(ulong gid)
+        {
+
+        }
+        #endregion
+
         #region PREFIX_SERVICES
         public async Task<IReadOnlyDictionary<ulong, string>> GetGuildPrefixesAsync()
         {
@@ -490,10 +562,9 @@ namespace TheGodfather.Services
 
                 cmd.CommandText = "SELECT status FROM gf.statuses TABLESAMPLE SYSTEM_ROWS(1);";
 
-                using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
-                    if (await reader.ReadAsync().ConfigureAwait(false))
-                        status = (string)reader["status"];
-                }
+                var res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
+                if (res != null && !(res is DBNull))
+                    status = (string)res;
             }
 
             _sem.Release();
