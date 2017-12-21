@@ -142,7 +142,6 @@ namespace TheGodfather.Commands.Messages
             } catch (Npgsql.NpgsqlException e) {
                 throw new DatabaseServiceException(e);
             }
-
         }
         #endregion
     }

@@ -45,8 +45,13 @@ namespace TheGodfather.Commands.SWAT
                 Color = DiscordColor.DarkBlue
             };
 
-            var servers = await ctx.Dependencies.GetDependency<DatabaseService>().GetAllSwatServersAsync()
-                .ConfigureAwait(false);
+            IReadOnlyList<SwatServer> servers;
+            try {
+                servers = await ctx.Dependencies.GetDependency<DatabaseService>().GetAllSwatServersAsync()
+                    .ConfigureAwait(false);
+            } catch (Npgsql.NpgsqlException e) {
+                throw new DatabaseServiceException(e);
+            }
             
             if (servers == null || !servers.Any()) {
                 await ctx.RespondAsync("No servers registered.")
@@ -81,8 +86,13 @@ namespace TheGodfather.Commands.SWAT
             if (queryport <= 0 || queryport > 65535)
                 throw new InvalidCommandUsageException("Port range invalid (must be in range [1-65535])!");
 
-            var server = await ctx.Dependencies.GetDependency<DatabaseService>().GetSwatServerAsync(ip, queryport, name: ip)
-                .ConfigureAwait(false);
+            SwatServer server;
+            try {
+                server = await ctx.Dependencies.GetDependency<DatabaseService>().GetSwatServerAsync(ip, queryport, name: ip)
+                    .ConfigureAwait(false);
+            } catch (Npgsql.NpgsqlException e) {
+                throw new DatabaseServiceException(e);
+            }
 
             var info = await SwatServerInfo.QueryIPAsync(server.IP, server.QueryPort)
                 .ConfigureAwait(false);
@@ -207,8 +217,12 @@ namespace TheGodfather.Commands.SWAT
                     throw new InvalidCommandUsageException("Port range invalid (must be in range [1-65535])!");
 
                 var server = SwatServer.CreateFromIP(ip, queryport, name);
-                await ctx.Dependencies.GetDependency<DatabaseService>().AddSwatServerAsync(name, server)
-                    .ConfigureAwait(false);
+                try {
+                    await ctx.Dependencies.GetDependency<DatabaseService>().AddSwatServerAsync(name, server)
+                        .ConfigureAwait(false);
+                } catch (Npgsql.NpgsqlException e) {
+                    throw new DatabaseServiceException(e);
+                }
                 await ctx.RespondAsync("Server added. You can now query it using the name provided.")
                     .ConfigureAwait(false);
             }
@@ -224,9 +238,12 @@ namespace TheGodfather.Commands.SWAT
             {
                 if (string.IsNullOrWhiteSpace(name))
                     throw new InvalidCommandUsageException("Name missing.");
-
-                await ctx.Dependencies.GetDependency<DatabaseService>().RemoveSwatServerAsync(name)
-                    .ConfigureAwait(false);
+                try {
+                    await ctx.Dependencies.GetDependency<DatabaseService>().RemoveSwatServerAsync(name)
+                        .ConfigureAwait(false);
+                } catch (Npgsql.NpgsqlException e) {
+                    throw new DatabaseServiceException(e);
+                }
                 await ctx.RespondAsync("Server removed.")
                     .ConfigureAwait(false);
             }

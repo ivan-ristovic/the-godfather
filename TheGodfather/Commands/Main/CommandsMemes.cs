@@ -76,8 +76,12 @@ namespace TheGodfather.Commands.Main
             bool result = Uri.TryCreate(url, UriKind.Absolute, out uriResult)
                 && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
 
-            await ctx.Dependencies.GetDependency<DatabaseService>().AddMemeAsync(ctx.Guild.Id, name, url)
-                .ConfigureAwait(false);
+            try {
+                await ctx.Dependencies.GetDependency<DatabaseService>().AddMemeAsync(ctx.Guild.Id, name, url)
+                    .ConfigureAwait(false);
+            } catch (Npgsql.NpgsqlException e) {
+                throw new DatabaseServiceException(e);
+            }
             await ctx.RespondAsync($"Meme {Formatter.Bold(name)} successfully added!")
                 .ConfigureAwait(false);
         }
@@ -193,9 +197,12 @@ namespace TheGodfather.Commands.Main
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new InvalidCommandUsageException("Name missing.");
-
-            await ctx.Dependencies.GetDependency<DatabaseService>().RemoveMemeAsync(ctx.Guild.Id, name)
-                .ConfigureAwait(false);
+            try {
+                await ctx.Dependencies.GetDependency<DatabaseService>().RemoveMemeAsync(ctx.Guild.Id, name)
+                    .ConfigureAwait(false);
+            } catch (Npgsql.NpgsqlException e) {
+                throw new DatabaseServiceException(e);
+            }
             await ctx.RespondAsync($"Meme {Formatter.Bold(name)} successfully removed!")
                 .ConfigureAwait(false);
         }
@@ -208,8 +215,13 @@ namespace TheGodfather.Commands.Main
         public async Task ListAsync(CommandContext ctx,
                                    [Description("Page.")] int page = 1)
         {
-            var memes = await ctx.Dependencies.GetDependency<DatabaseService>().GetGuildMemesAsync(ctx.Guild.Id)
-                .ConfigureAwait(false);
+            IReadOnlyDictionary<string, string> memes;
+            try {
+                memes = await ctx.Dependencies.GetDependency<DatabaseService>().GetGuildMemesAsync(ctx.Guild.Id)
+                    .ConfigureAwait(false);
+            } catch (Npgsql.NpgsqlException e) {
+                throw new DatabaseServiceException(e);
+            }
 
             if (page < 1 || page > memes.Count / 10 + 1)
                 throw new CommandFailedException("No memes on that page.", new ArgumentOutOfRangeException());
@@ -349,14 +361,22 @@ namespace TheGodfather.Commands.Main
         {
             var chn = await client.GetChannelAsync(cid)
                 .ConfigureAwait(false);
-            string url = await db.GetRandomMemeAsync(gid)
-                .ConfigureAwait(false);
-            if (url == null)
+
+            string url = null;
+            try {
+                url = await db.GetRandomMemeAsync(gid)
+                    .ConfigureAwait(false);
+            } catch (Npgsql.NpgsqlException e) {
+                throw new DatabaseServiceException(e);
+            }
+
+            if (url == null) {
                 await chn.SendMessageAsync("No memes registered for this guild!")
                     .ConfigureAwait(false);
-            else
+            } else {
                 await chn.SendMessageAsync(embed: new DiscordEmbedBuilder { ImageUrl = url }.Build())
                     .ConfigureAwait(false);
+            }
         }
         #endregion
     }
