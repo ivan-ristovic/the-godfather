@@ -66,7 +66,6 @@ Commands use the following types:
 | ``insult``<br>``burn``<br>``insults`` | ``clear``<br>``clearall`` | Owner Only |  | Delete all insults. | ``!insult clear`` |
 | ``insult``<br>``burn``<br>``insults`` | ``delete``<br>``-``<br>``remove``<br>``del``<br>``rm`` | Owner Only | ``[int] Index`` | Remove insult with a given index from list. Use ``!insults list`` to view indexes. | ``!insult delete 5`` |
 | ``insult``<br>``burn``<br>``insults`` | ``list`` |  | ``(optional) [int] Page (def: 1)`` | List insults on page ``Page``. | ``!insult list 3`` |
-| ``insult``<br>``burn``<br>``insults`` | ``save`` | Owner Only |  | Save all insults. | ``!insult save`` |
 |   |   |   |   |   |   |
 | ``meme``<br>``memes``<br>``mm`` |   |   | ``(optional) [text] Meme name`` | Send a meme with name ``Meme name``. If name isn't given, sends random one. | ``!meme``<br><br>``!meme fap`` |
 | ``meme``<br>``memes``<br>``mm`` | ``add``<br>``+``<br>``new``<br>``a`` | Owner Only | ``[text] Name``<br><br>``[string] URL`` | Add a new meme to global meme list. | ``!meme add MyMeme http://url.png`` |
