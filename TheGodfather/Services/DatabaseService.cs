@@ -395,7 +395,7 @@ namespace TheGodfather.Services
             using (var cmd = con.CreateCommand()) {
                 await con.OpenAsync().ConfigureAwait(false);
 
-                cmd.CommandText = "SELECT url FROM gf.memes TABLESAMPLE SYSTEM_ROWS(1) WHERE gid = @gid;";
+                cmd.CommandText = "SELECT url FROM gf.memes WHERE gid = @gid OFFSET RANDOM() LIMIT 1;";
                 cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
 
                 var res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
@@ -612,7 +612,7 @@ namespace TheGodfather.Services
             using (var cmd = con.CreateCommand()) {
                 await con.OpenAsync().ConfigureAwait(false);
 
-                cmd.CommandText = "SELECT status FROM gf.statuses TABLESAMPLE SYSTEM_ROWS(1);";
+                cmd.CommandText = "SELECT status FROM gf.statuses OFFSET RANDOM() LIMIT 1;";
 
                 var res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
                 if (res != null && !(res is DBNull))
