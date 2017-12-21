@@ -117,7 +117,7 @@ namespace TheGodfather
         private static async Task PerformActionsPeriodicallyAsync()
         {
             while (true) {
-                try {
+                try {   // TODO REMOVE
                     TheGodfather.DependencyList.SaveData();
                 } catch (Exception e) {
                     Console.WriteLine(
@@ -129,11 +129,8 @@ namespace TheGodfather
                     return;
                 }
 
-                var status = await Database.GetRandomStatusAsync()
+                await UpdateBotStatusAsync()
                     .ConfigureAwait(false);
-                await Shards[0].Client.UpdateStatusAsync(new DiscordGame(status) {
-                    StreamType = GameStreamType.NoStream
-                }).ConfigureAwait(false);
 
                 await TheGodfather.DependencyList.FeedControl.CheckFeedsForChangesAsync(Shards[0].Client)
                     .ConfigureAwait(false);
@@ -141,6 +138,15 @@ namespace TheGodfather
                 await Task.Delay(TimeSpan.FromMinutes(2))
                     .ConfigureAwait(false);
             }
+        }
+
+        private static async Task UpdateBotStatusAsync()
+        {
+            var status = await Database.GetRandomStatusAsync()
+                .ConfigureAwait(false);
+            await Shards[0].Client.UpdateStatusAsync(new DiscordGame(status) {
+                StreamType = GameStreamType.NoStream
+            }).ConfigureAwait(false);
         }
     }
 }
