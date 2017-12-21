@@ -23,7 +23,6 @@ namespace TheGodfather.Helpers
     public class BotDependencyList
     {
         internal FeedManager        FeedControl         { get; private set; }
-        internal InsultManager      InsultControl       { get; private set; }
         internal RankManager        RankControl         { get; private set; }
         internal GameStatsManager   GameStatsControl    { get; private set; }
         internal GuildConfigManager GuildConfigControl  { get; private set; }
@@ -37,7 +36,6 @@ namespace TheGodfather.Helpers
         internal BotDependencyList(BotConfig cfg, DatabaseService db)
         {
             FeedControl = new FeedManager();
-            InsultControl = new InsultManager();
             RankControl = new RankManager();
             GameStatsControl = new GameStatsManager(db);
             GuildConfigControl = new GuildConfigManager(cfg);
@@ -52,7 +50,6 @@ namespace TheGodfather.Helpers
         internal void LoadData()
         {
             FeedControl.Load();
-            InsultControl.Load();
             RankControl.Load();
             GuildConfigControl.Load();
         }
@@ -60,7 +57,6 @@ namespace TheGodfather.Helpers
         internal void SaveData()
         {
             FeedControl.Save();
-            InsultControl.Save();
             RankControl.Save();
             GuildConfigControl.Save();
         }
@@ -69,7 +65,6 @@ namespace TheGodfather.Helpers
         {
             return new DependencyCollectionBuilder()
                 .AddInstance(FeedControl)
-                .AddInstance(InsultControl)
                 .AddInstance(RankControl)
                 .AddInstance(GiphyService)
                 .AddInstance(ImgurService)

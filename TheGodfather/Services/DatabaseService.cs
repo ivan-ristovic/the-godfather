@@ -344,7 +344,7 @@ namespace TheGodfather.Services
             _sem.Release();
         }
 
-        public async Task ClearGuildFiltersAsync(ulong gid)
+        public async Task DeleteAllGuildFiltersAsync(ulong gid)
         {
             await _sem.WaitAsync();
 
@@ -359,6 +359,49 @@ namespace TheGodfather.Services
             }
 
             _sem.Release();
+        }
+        #endregion
+
+        #region INSULT_SERVICES
+        public async Task<IReadOnlyDictionary<int, string>> GetAllInsultsAsync()
+        {
+            await _sem.WaitAsync();
+            var insults = new Dictionary<int, string>();
+
+            using (var con = new NpgsqlConnection(_connectionString))
+            using (var cmd = con.CreateCommand()) {
+                await con.OpenAsync().ConfigureAwait(false);
+
+                cmd.CommandText = "SELECT * FROM gf.insults;";
+
+                using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
+                    while (await reader.ReadAsync().ConfigureAwait(false))
+                        insults.Add((int)reader["id"], (string)reader["insult"]);
+                }
+            }
+
+            _sem.Release();
+            return new ReadOnlyDictionary<int, string>(insults);
+        }
+
+        public async Task<string> GetRandomInsultAsync()
+        {
+            return null;
+        }
+
+        public async Task AddInsultAsync(string insult)
+        {
+
+        }
+
+        public async Task RemoveInsultByIdAsync(int index)
+        {
+
+        }
+
+        public async Task DeleteAllInsultsAsync()
+        {
+
         }
         #endregion
 

@@ -137,7 +137,7 @@ namespace TheGodfather.Commands.Messages
             await ctx.RespondAsync("All filters for this guild successfully removed.")
                 .ConfigureAwait(false);
             try {
-                await ctx.Dependencies.GetDependency<DatabaseService>().ClearGuildFiltersAsync(ctx.Guild.Id)
+                await ctx.Dependencies.GetDependency<DatabaseService>().DeleteAllGuildFiltersAsync(ctx.Guild.Id)
                     .ConfigureAwait(false);
             } catch (Npgsql.NpgsqlException e) {
                 throw new DatabaseServiceException(e);

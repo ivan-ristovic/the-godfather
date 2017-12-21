@@ -271,7 +271,7 @@ namespace TheGodfather.Commands.SWAT
                 }
 
                 if (page < 1 || page > servers.Count / 20 + 1)
-                    throw new CommandFailedException("No filters on that page.");
+                    throw new CommandFailedException("No servers on that page.");
 
                 int starti = (page - 1) * 20;
                 int len = starti + 20 < servers.Count ? 20 : servers.Count - starti;
@@ -283,7 +283,7 @@ namespace TheGodfather.Commands.SWAT
                 }
 
                 await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
-                    Title = $"Available filters (page {page}/{servers.Count / 20 + 1}) :",
+                    Title = $"Available servers (page {page}/{servers.Count / 20 + 1}) :",
                     Description = sb.ToString(),
                     Color = DiscordColor.Green
                 }.Build()).ConfigureAwait(false);
