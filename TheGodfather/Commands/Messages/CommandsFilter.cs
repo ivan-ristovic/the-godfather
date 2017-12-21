@@ -107,7 +107,8 @@ namespace TheGodfather.Commands.Messages
             }
 
             if (filters == null || !filters.Any()) {
-                await ctx.RespondAsync("No filters registered.");
+                await ctx.RespondAsync("No filters registered.")
+                    .ConfigureAwait(false);
                 return;
             }
 

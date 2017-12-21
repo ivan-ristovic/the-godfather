@@ -1,6 +1,7 @@
 ﻿#region USING_DIRECTIVES
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -8,10 +9,10 @@ using System.Threading.Tasks;
 
 using TheGodfather.Helpers;
 using TheGodfather.Exceptions;
+using TheGodfather.Helpers.Swat;
 
 using Npgsql;
 using NpgsqlTypes;
-using System.Collections.ObjectModel;
 #endregion
 
 namespace TheGodfather.Services
@@ -654,6 +655,100 @@ namespace TheGodfather.Services
             }
 
             _sem.Release();
+        }
+        #endregion
+
+        #region SWAT_SERVICES
+        public async Task<IReadOnlyList<SwatServer>> GetAllSwatServersAsync()
+        {
+            await _sem.WaitAsync();
+
+            var servers = new List<SwatServer>();
+
+            using (var con = new NpgsqlConnection(_connectionString))
+            using (var cmd = con.CreateCommand()) {
+                await con.OpenAsync().ConfigureAwait(false);
+
+                cmd.CommandText = "SELECT name, ip, joinport, queryport FROM gf.swat_servers;";
+
+                using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
+                    while (await reader.ReadAsync().ConfigureAwait(false))
+                        servers.Add(new SwatServer((string)reader["name"], (string)reader["ip"], (int)reader["joinport"], (int)reader["queryport"]));
+                }
+            }
+
+            _sem.Release();
+            return servers.AsReadOnly();
+        }
+
+        public async Task AddSwatServerAsync(string name, SwatServer server)
+        {
+            await _sem.WaitAsync();
+
+            using (var con = new NpgsqlConnection(_connectionString))
+            using (var cmd = con.CreateCommand()) {
+                await con.OpenAsync().ConfigureAwait(false);
+
+                cmd.CommandText = "INSERT INTO gf.swat_servers(ip, joinport, queryport, name) VALUES (@ip, @joinport, @queryport, @name);";
+                cmd.Parameters.AddWithValue("ip", NpgsqlDbType.Varchar, server.IP);
+                cmd.Parameters.AddWithValue("joinport", NpgsqlDbType.Integer, server.JoinPort);
+                cmd.Parameters.AddWithValue("queryport", NpgsqlDbType.Integer, server.QueryPort);
+                cmd.Parameters.AddWithValue("name", NpgsqlDbType.Varchar, server.Name);
+
+                await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+            }
+
+            _sem.Release();
+        }
+
+        public async Task RemoveSwatServerAsync(string name)
+        {
+            await _sem.WaitAsync();
+
+            using (var con = new NpgsqlConnection(_connectionString))
+            using (var cmd = con.CreateCommand()) {
+                await con.OpenAsync().ConfigureAwait(false);
+
+                cmd.CommandText = "DELETE FROM gf.swat_servers WHERE name = @name;";
+                cmd.Parameters.AddWithValue("name", NpgsqlDbType.Varchar, name);
+
+                await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+            }
+
+            _sem.Release();
+        }
+
+        public async Task<SwatServer> GetSwatServerAsync(string ip, int queryport, string name = null)
+        {
+            var server = await GetSwatServerFromDatabaseAsync(name)
+                .ConfigureAwait(false);
+            return server ?? SwatServer.CreateFromIP(ip, queryport, name);
+        }
+
+        private async Task<SwatServer> GetSwatServerFromDatabaseAsync(string name)
+        {
+            if (name == null)
+                return null;
+
+            await _sem.WaitAsync();
+
+            SwatServer server = null;
+
+            using (var con = new NpgsqlConnection(_connectionString))
+            using (var cmd = con.CreateCommand()) {
+                await con.OpenAsync().ConfigureAwait(false);
+
+                cmd.CommandText = "SELECT * FROM gf.swat_servers WHERE name = @name LIMIT 1;";
+                cmd.Parameters.AddWithValue("name", NpgsqlDbType.Varchar, name);
+
+                using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
+                    if (await reader.ReadAsync().ConfigureAwait(false))
+                        server = new SwatServer((string)reader["name"], (string)reader["ip"], (int)reader["joinport"], (int)reader["queryport"]);
+                }
+            }
+
+            _sem.Release();
+            return server;
         }
         #endregion
     }

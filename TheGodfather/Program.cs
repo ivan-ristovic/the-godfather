@@ -34,7 +34,7 @@ namespace TheGodfather
 
         private static async Task MainAsync(string[] args)
         {
-            Console.WriteLine("[1/5] Loading configuration...");
+            Console.WriteLine("[1/6] Loading configuration...");
 
             var json = "{}";
             var utf8 = new UTF8Encoding(false);
@@ -64,13 +64,13 @@ namespace TheGodfather
             var cfg = JsonConvert.DeserializeObject<BotConfig>(json);
             
 
-            Console.WriteLine("[2/5] Booting PostgreSQL connection...");
+            Console.WriteLine("[2/6] Booting PostgreSQL connection...");
 
             Database = new DatabaseService(cfg.DatabaseConfig);
             await Database.InitializeAsync();
 
 
-            Console.WriteLine("[3/5] Loading data from database...");
+            Console.WriteLine("[3/6] Loading data from database...");
 
             var gprefixes_db = await Database.GetGuildPrefixesAsync();
             var gprefixes = new ConcurrentDictionary<ulong, string>();
@@ -93,7 +93,7 @@ namespace TheGodfather
             Shared = new SharedData(cfg, gprefixes, gfilters);
 
 
-            Console.WriteLine("[4/5] Creating shards...");
+            Console.WriteLine("[4/6] Creating shards...");
 
             Shards = new List<TheGodfather>();
             for (var i = 0; i < cfg.ShardCount; i++) {
@@ -102,15 +102,15 @@ namespace TheGodfather
             }
             
 
-            Console.WriteLine("[5/5] Booting the shards...");
+            Console.WriteLine("[5/6] Booting the shards...");
 
             foreach (var shard in Shards) {
                 shard.Initialize();
                 await shard.StartAsync();
             }
-            
-            Console.WriteLine("-------------------------------------");
 
+
+            Console.WriteLine("[6/6] Starting periodic actions...");
             await PerformActionsPeriodicallyAsync().ConfigureAwait(false);
         }
 

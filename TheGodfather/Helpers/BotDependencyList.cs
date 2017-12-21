@@ -25,7 +25,6 @@ namespace TheGodfather.Helpers
         internal FeedManager        FeedControl         { get; private set; }
         internal InsultManager      InsultControl       { get; private set; }
         internal RankManager        RankControl         { get; private set; }
-        internal SwatServerManager  SwatServerControl   { get; private set; }
         internal GameStatsManager   GameStatsControl    { get; private set; }
         internal GuildConfigManager GuildConfigControl  { get; private set; }
         internal GiphyService       GiphyService        { get; private set; }
@@ -40,7 +39,6 @@ namespace TheGodfather.Helpers
             FeedControl = new FeedManager();
             InsultControl = new InsultManager();
             RankControl = new RankManager();
-            SwatServerControl = new SwatServerManager();
             GameStatsControl = new GameStatsManager(db);
             GuildConfigControl = new GuildConfigManager(cfg);
             GiphyService = new GiphyService(cfg.GiphyKey);
@@ -56,7 +54,6 @@ namespace TheGodfather.Helpers
             FeedControl.Load();
             InsultControl.Load();
             RankControl.Load();
-            SwatServerControl.Load();
             GuildConfigControl.Load();
         }
 
@@ -65,7 +62,6 @@ namespace TheGodfather.Helpers
             FeedControl.Save();
             InsultControl.Save();
             RankControl.Save();
-            SwatServerControl.Save();
             GuildConfigControl.Save();
         }
 
@@ -75,7 +71,6 @@ namespace TheGodfather.Helpers
                 .AddInstance(FeedControl)
                 .AddInstance(InsultControl)
                 .AddInstance(RankControl)
-                .AddInstance(SwatServerControl)
                 .AddInstance(GiphyService)
                 .AddInstance(ImgurService)
                 .AddInstance(SteamService)

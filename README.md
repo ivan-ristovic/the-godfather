@@ -267,7 +267,6 @@ Commands use the following types:
 | ``s4 servers``<br>``s4 srv``<br>``s4 s`` | ``add``<br>``+``<br>``a`` | Administrator (user) | ``[string] Shortname``<br><br>``[string] IP``<br><br>``(optional) [int] Query port (def: joinport + 1)`` | Add a new server to database. If the server uses a non-default query port, add it after IP like in example. | ``!s4 servers + soh 13.95.232.189:10480``<br><br>``!s4 servers + soh 13.95.232.189:10480:10488`` |
 | ``s4 servers``<br>``s4 srv``<br>``s4 s`` | ``delete``<br>``-``<br>``del``<br>``d`` | Administrator (user) | ``[string] Shortname`` | Remove a server from database. | ``!s4 servers - soh`` |
 | ``s4 servers``<br>``s4 srv``<br>``s4 s`` | ``list``<br><br>``ls``<br><br>``l`` |   |  | ``(optional) [int] Page (def: 1)`` | List servers in database on page ``Page``. | ``!s4 servers list`` |
-| ``s4 servers``<br>``s4 srv``<br>``s4 s`` | ``save`` | Owner Only |   | Save server list. | ``!s4 servers save`` |
 |   |   |   |   |   |   |
 
 ## Voice/Music commands (disabled for now)

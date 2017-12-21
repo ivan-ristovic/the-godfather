@@ -247,7 +247,6 @@
     <Compile Include="Helpers\DataManagers\FeedManager.cs" />
     <Compile Include="Helpers\DataManagers\GameStatsManager.cs" />
     <Compile Include="Helpers\DataManagers\GuildConfigManager.cs" />
-    <Compile Include="Helpers\DataManagers\SwatServerManager.cs" />
     <Compile Include="Helpers\EvaluationEnvironment.cs" />
     <Compile Include="Commands\Search\CommandsJokes.cs" />
     <Compile Include="Exceptions.cs" />
