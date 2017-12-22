@@ -339,7 +339,7 @@ namespace TheGodfather.Commands.Administration
         public async Task ToggleIgnoreAsync(CommandContext ctx)
         {
             TheGodfather.Listening = !TheGodfather.Listening;
-            await ctx.RespondAsync("Done!")
+            await ctx.RespondAsync("Listening status set to: " + TheGodfather.Listening)
                 .ConfigureAwait(false);
         }
         #endregion
