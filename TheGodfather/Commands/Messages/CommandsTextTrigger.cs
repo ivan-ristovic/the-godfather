@@ -5,9 +5,8 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 
-using TheGodfather.Helpers.DataManagers;
+using TheGodfather.Services;
 using TheGodfather.Exceptions;
 
 using DSharpPlus;
@@ -44,6 +43,9 @@ namespace TheGodfather.Commands.Messages
                 await ctx.RespondAsync($"Trigger {Formatter.Bold(trigger)} successfully set.").ConfigureAwait(false);
             else
                 throw new CommandFailedException("Failed to add trigger.");
+
+            await ctx.Dependencies.GetDependency<DatabaseService>().AddTextTriggerAsync(ctx.Guild.Id, trigger, response)
+                .ConfigureAwait(false);
         }
         #endregion
 
@@ -62,6 +64,10 @@ namespace TheGodfather.Commands.Messages
                 await ctx.RespondAsync($"Triggers successfully removed.").ConfigureAwait(false);
             else
                 throw new CommandFailedException("Failed to remove some triggers.");
+
+            foreach (var trigger in triggers)
+                await ctx.Dependencies.GetDependency<DatabaseService>().DeleteTextTriggerAsync(ctx.Guild.Id, trigger)
+                    .ConfigureAwait(false);
         }
         #endregion
 
@@ -106,6 +112,9 @@ namespace TheGodfather.Commands.Messages
         {
             ctx.Dependencies.GetDependency<SharedData>().ClearGuildTextTriggers(ctx.Guild.Id);
             await ctx.RespondAsync("Successfully removed all triggers for this guild.")
+                .ConfigureAwait(false);
+
+            await ctx.Dependencies.GetDependency<DatabaseService>().DeleteAllGuildTextTriggersAsync(ctx.Guild.Id)
                 .ConfigureAwait(false);
         }
         #endregion

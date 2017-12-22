@@ -920,6 +920,59 @@ namespace TheGodfather.Services
             return triggers;
         }
 
+        public async Task AddTextTriggerAsync(ulong gid, string trigger, string response)
+        {
+            await _sem.WaitAsync();
+
+            using (var con = new NpgsqlConnection(_connectionString))
+            using (var cmd = con.CreateCommand()) {
+                await con.OpenAsync().ConfigureAwait(false);
+
+                cmd.CommandText = "INSERT INTO gf.text_reactions VALUES (@gid, @trigger, @response);";
+                cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
+                cmd.Parameters.AddWithValue("trigger", NpgsqlDbType.Varchar, trigger);
+                cmd.Parameters.AddWithValue("response", NpgsqlDbType.Varchar, response);
+
+                await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+            }
+
+            _sem.Release();
+        }
+        
+        public async Task DeleteTextTriggerAsync(ulong gid, string trigger)
+        {
+            await _sem.WaitAsync();
+
+            using (var con = new NpgsqlConnection(_connectionString))
+            using (var cmd = con.CreateCommand()) {
+                await con.OpenAsync().ConfigureAwait(false);
+
+                cmd.CommandText = "DELETE FROM gf.text_reactions WHERE gid = @gid AND trigger = @trigger;";
+                cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
+                cmd.Parameters.AddWithValue("trigger", NpgsqlDbType.Varchar, trigger);
+
+                await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+            }
+
+            _sem.Release();
+        }
+
+        public async Task DeleteAllGuildTextTriggersAsync(ulong gid)
+        {
+            await _sem.WaitAsync();
+
+            using (var con = new NpgsqlConnection(_connectionString))
+            using (var cmd = con.CreateCommand()) {
+                await con.OpenAsync().ConfigureAwait(false);
+
+                cmd.CommandText = "DELETE FROM gf.text_reactions WHERE gid = @gid;";
+                cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
+
+                await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+            }
+
+            _sem.Release();
+        }
         #endregion
 
         #region W/L channels
