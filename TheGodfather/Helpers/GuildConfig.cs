@@ -12,12 +12,6 @@ namespace TheGodfather.Helpers
 {
     public sealed class GuildConfig
     {
-        [JsonProperty("WelcomeChannelId")]
-        public ulong? WelcomeChannelId { get; internal set; }
-
-        [JsonProperty("LeaveChannelId")]
-        public ulong? LeaveChannelId { get; internal set; }
-
         [JsonProperty("Triggers")]
         public ConcurrentDictionary<string, string> Triggers { get; internal set; }
 

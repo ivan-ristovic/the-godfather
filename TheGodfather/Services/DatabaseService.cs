@@ -845,5 +845,37 @@ namespace TheGodfather.Services
             return server;
         }
         #endregion
+
+        #region W/L channels
+        public async Task<ulong> GetGuildWelcomeChannelIdAsync(ulong gid)
+        {
+            return 0;
+        }
+
+        public async Task<ulong> GetGuildLeaveChannelIdAsync(ulong gid)
+        {
+            return 0;
+        }
+
+        public async Task SetGuildWelcomeChannelAsync(ulong gid, ulong cid)
+        {
+
+        }
+
+        public async Task SetGuildLeaveChannelAsync(ulong gid, ulong cid)
+        {
+
+        }
+
+        public async Task RemoveGuildWelcomeChannelAsync(ulong gid)
+        {
+
+        }
+
+        public async Task RemoveGuildLeaveChannelAsync(ulong gid)
+        {
+
+        }
+        #endregion
     }
 }

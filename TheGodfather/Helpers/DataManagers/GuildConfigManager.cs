@@ -65,56 +65,6 @@ namespace TheGodfather.Helpers.DataManagers
         }
         #endregion
 
-        #region W/L channels
-        public ulong GetGuildWelcomeChannelId(ulong gid)
-        {
-            if (_gcfg.ContainsKey(gid) && _gcfg[gid].WelcomeChannelId.HasValue)
-                return _gcfg[gid].WelcomeChannelId.Value;
-            else
-                return 0;
-        }
-
-        public ulong GetGuildLeaveChannelId(ulong gid)
-        {
-            if (_gcfg.ContainsKey(gid) && _gcfg[gid].LeaveChannelId.HasValue)
-                return _gcfg[gid].LeaveChannelId.Value;
-            else
-                return 0;
-        }
-
-        public bool TrySetGuildWelcomeChannelId(ulong gid, ulong cid)
-        {
-            if (_gcfg.ContainsKey(gid)) {
-                _gcfg[gid].WelcomeChannelId = cid;
-                return true;
-            } else {
-                return _gcfg.TryAdd(gid, new GuildConfig() { WelcomeChannelId = cid });
-            }
-        }
-
-        public bool TrySetGuildLeaveChannelId(ulong gid, ulong cid)
-        {
-            if (_gcfg.ContainsKey(gid)) {
-                _gcfg[gid].LeaveChannelId = cid;
-                return true;
-            } else {
-                return _gcfg.TryAdd(gid, new GuildConfig() { LeaveChannelId = cid });
-            }
-        }
-
-        public void RemoveGuildWelcomeChannel(ulong gid)
-        {
-            if (_gcfg.ContainsKey(gid))
-                _gcfg[gid].WelcomeChannelId = null;
-        }
-
-        public void RemoveGuildLeaveChannel(ulong gid)
-        {
-            if (_gcfg.ContainsKey(gid))
-                _gcfg[gid].LeaveChannelId = null;
-        }
-        #endregion
-
         #region REACTIONS
         public IReadOnlyDictionary<string, string> GetAllGuildReactions(ulong gid)
         {

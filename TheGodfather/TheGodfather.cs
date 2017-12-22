@@ -168,7 +168,8 @@ namespace TheGodfather
                 $" Guild: {e.Guild.Name} ({e.Guild.Id})"
             );
 
-            ulong cid = DependencyList.GuildConfigControl.GetGuildWelcomeChannelId(e.Guild.Id);
+            ulong cid = await Database.GetGuildWelcomeChannelIdAsync(e.Guild.Id)
+                .ConfigureAwait(false);
             if (cid == 0)
                 return;
 
@@ -198,7 +199,8 @@ namespace TheGodfather
                 $" Guild: {e.Guild.Name} ({e.Guild.Id})"
             );
 
-            ulong cid = DependencyList.GuildConfigControl.GetGuildLeaveChannelId(e.Guild.Id);
+            ulong cid = await Database.GetGuildLeaveChannelIdAsync(e.Guild.Id)
+                .ConfigureAwait(false);
             if (cid == 0)
                 return;
 
