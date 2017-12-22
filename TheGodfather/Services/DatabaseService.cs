@@ -137,6 +137,7 @@ namespace TheGodfather.Services
             return exists;
         }
 
+
         #region BANK_SERVICES
         public async Task<bool> HasBankAccountAsync(ulong uid)
         {
@@ -237,7 +238,7 @@ namespace TheGodfather.Services
                     cmd.Parameters.AddWithValue("target", NpgsqlDbType.Bigint, (long)target);
 
                     var res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
-                    
+
                     if (res == null || res is DBNull)
                         await OpenAccountForUserAsync(target);
                 }
@@ -888,6 +889,39 @@ namespace TheGodfather.Services
         }
         #endregion
 
+        #region TEXT_TRIGGER_SERVICES
+        public async Task<Dictionary<ulong, Dictionary<string, string>>> GetTextTriggersAsync()
+        {
+            await _sem.WaitAsync();
+
+            var triggers = new Dictionary<ulong, Dictionary<string, string>>();
+
+            using (var con = new NpgsqlConnection(_connectionString))
+            using (var cmd = con.CreateCommand()) {
+                await con.OpenAsync().ConfigureAwait(false);
+
+                cmd.CommandText = "SELECT * FROM gf.text_reactions;";
+
+                using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
+                    while (await reader.ReadAsync().ConfigureAwait(false)) {
+                        ulong gid = (ulong)(long)reader["gid"];
+                        if (triggers.ContainsKey(gid)) {
+                            if (triggers[gid] == null)
+                                triggers[gid] = new Dictionary<string, string>();
+                        } else {
+                            triggers.Add(gid, new Dictionary<string, string>());
+                        }
+                        triggers[gid].Add((string)reader["trigger"], (string)reader["response"]);
+                    }
+                }
+            }
+
+            _sem.Release();
+            return triggers;
+        }
+
+        #endregion
+
         #region W/L channels
         public async Task<ulong> GetGuildWelcomeChannelIdAsync(ulong gid)
         {
@@ -940,7 +974,7 @@ namespace TheGodfather.Services
             using (var con = new NpgsqlConnection(_connectionString))
             using (var cmd = con.CreateCommand()) {
                 await con.OpenAsync().ConfigureAwait(false);
-                
+
                 cmd.CommandText = "UPDATE gf.guild_cfg SET welcome_cid = @cid WHERE gid = @gid;";
                 cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
                 cmd.Parameters.AddWithValue("cid", NpgsqlDbType.Bigint, cid);

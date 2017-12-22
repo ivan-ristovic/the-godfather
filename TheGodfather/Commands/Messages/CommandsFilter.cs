@@ -37,7 +37,7 @@ namespace TheGodfather.Commands.Messages
             if (string.IsNullOrWhiteSpace(filter))
                 throw new InvalidCommandUsageException("Filter trigger missing.");
 
-            if (ctx.Dependencies.GetDependency<GuildConfigManager>().TriggerExists(ctx.Guild.Id, filter))
+            if (ctx.Dependencies.GetDependency<SharedData>().TextTriggerExists(ctx.Guild.Id, filter))
                 throw new CommandFailedException("You cannot add a filter if a trigger for that trigger exists!");
 
             if (filter.Contains("%") || filter.Length < 3 || filter.Length > 60)

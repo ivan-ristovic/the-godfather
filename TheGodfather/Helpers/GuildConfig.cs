@@ -12,8 +12,6 @@ namespace TheGodfather.Helpers
 {
     public sealed class GuildConfig
     {
-        [JsonProperty("Triggers")]
-        public ConcurrentDictionary<string, string> Triggers { get; internal set; }
 
         [JsonProperty("Reactions")]
         public ConcurrentDictionary<string, string> Reactions { get; internal set; }

@@ -275,7 +275,7 @@ namespace TheGodfather
             }
 
             // Check if message has a text trigger
-            var response = DependencyList.GuildConfigControl.GetResponseForTrigger(e.Guild.Id, e.Message.Content);
+            var response = SharedData.GetResponseForTextTrigger(e.Guild.Id, e.Message.Content);
             if (response != null) {
                 Log(LogLevel.Info,
                     $"Text trigger detected." + Environment.NewLine +

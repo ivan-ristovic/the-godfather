@@ -37,10 +37,13 @@ namespace TheGodfather.Commands.Messages
             if (string.IsNullOrWhiteSpace(trigger) || string.IsNullOrWhiteSpace(response))
                 throw new InvalidCommandUsageException("Alias name or response missing or invalid.");
 
-            if (ctx.Dependencies.GetDependency<GuildConfigManager>().TryAddGuildTrigger(ctx.Guild.Id, trigger, response))
+            if (trigger.Length > 120 || response.Length > 120)
+                throw new CommandFailedException("Trigger or response cannot be longer than 120 characters.");
+
+            if (ctx.Dependencies.GetDependency<SharedData>().TryAddGuildTextTrigger(ctx.Guild.Id, trigger, response))
                 await ctx.RespondAsync($"Trigger {Formatter.Bold(trigger)} successfully set.").ConfigureAwait(false);
             else
-                throw new CommandFailedException($"Failed to add trigger.");
+                throw new CommandFailedException("Failed to add trigger.");
         }
         #endregion
 
@@ -55,7 +58,7 @@ namespace TheGodfather.Commands.Messages
             if (triggers == null)
                 throw new InvalidCommandUsageException("Triggers missing.");
 
-            if (ctx.Dependencies.GetDependency<GuildConfigManager>().TryRemoveGuildTriggers(ctx.Guild.Id, triggers))
+            if (ctx.Dependencies.GetDependency<SharedData>().TryRemoveGuildTriggers(ctx.Guild.Id, triggers))
                 await ctx.RespondAsync($"Triggers successfully removed.").ConfigureAwait(false);
             else
                 throw new CommandFailedException("Failed to remove some triggers.");
@@ -69,7 +72,7 @@ namespace TheGodfather.Commands.Messages
         public async Task ListAsync(CommandContext ctx, 
                                    [Description("Page.")] int page = 1)
         {
-            var triggers = ctx.Dependencies.GetDependency<GuildConfigManager>().GetAllGuildTriggers(ctx.Guild.Id);
+            var triggers = ctx.Dependencies.GetDependency<SharedData>().GetAllGuildTextTriggers(ctx.Guild.Id);
 
             if (triggers == null) {
                 await ctx.RespondAsync("No triggers registered for this guild.");
@@ -101,7 +104,7 @@ namespace TheGodfather.Commands.Messages
         [RequireUserPermissions(Permissions.Administrator)]
         public async Task ClearAsync(CommandContext ctx)
         {
-            ctx.Dependencies.GetDependency<GuildConfigManager>().ClearGuildTriggers(ctx.Guild.Id);
+            ctx.Dependencies.GetDependency<SharedData>().ClearGuildTextTriggers(ctx.Guild.Id);
             await ctx.RespondAsync("Successfully removed all triggers for this guild.")
                 .ConfigureAwait(false);
         }
