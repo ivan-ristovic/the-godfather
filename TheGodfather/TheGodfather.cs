@@ -155,10 +155,11 @@ namespace TheGodfather
             return Task.CompletedTask;
         }
 
-        private Task Client_GuildAvailable(GuildCreateEventArgs e)
+        private async Task Client_GuildAvailable(GuildCreateEventArgs e)
         {
             Log(LogLevel.Info, $"Guild available: {e.Guild.Name} ({e.Guild.Id})");
-            return Task.CompletedTask;
+            await Database.AddGuildIfNotExistsAsync(e.Guild.Id)
+                .ConfigureAwait(false);
         }
 
         private async Task Client_GuildMemberAdd(GuildMemberAddEventArgs e)

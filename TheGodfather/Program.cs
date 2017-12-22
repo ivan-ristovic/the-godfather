@@ -98,6 +98,7 @@ namespace TheGodfather
             Shards = new List<TheGodfather>();
             for (var i = 0; i < cfg.ShardCount; i++) {
                 var shard = new TheGodfather(cfg, i, Database, Shared);
+                shard.Initialize();
                 Shards.Add(shard);
             }
             
@@ -105,7 +106,6 @@ namespace TheGodfather
             Console.WriteLine("[5/6] Booting the shards...");
 
             foreach (var shard in Shards) {
-                shard.Initialize();
                 await shard.StartAsync();
             }
 

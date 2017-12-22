@@ -405,9 +405,9 @@ namespace TheGodfather.Commands.Administration
                         Title = "Details for emoji:",
                         Description = emoji,
                         Color = DiscordColor.CornflowerBlue
-                    }.AddField("Name", emoji.Name, inline: false)
-                     .AddField("Created by", emoji.User != null ? emoji.User.Username : "<unknown>", inline: false)
-                     .AddField("Integration managed", emoji.Managed.ToString(), inline: false)
+                    }.AddField("Name", emoji.Name, inline: true)
+                     .AddField("Created by", emoji.User != null ? emoji.User.Username : "<unknown>", inline: true)
+                     .AddField("Integration managed", emoji.Managed.ToString(), inline: true)
                     ).ConfigureAwait(false);
                 } catch (NotFoundException ex) {
                     throw new CommandFailedException("Can't find that emoji in list of emoji for this guild.", ex);

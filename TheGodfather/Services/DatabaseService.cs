@@ -98,6 +98,44 @@ namespace TheGodfather.Services
             return new ReadOnlyCollection<IReadOnlyDictionary<string, string>>(dicts);
         }
 
+        public async Task AddGuildIfNotExistsAsync(ulong gid)
+        {
+            if (await GuildConfigExistsAsync(gid).ConfigureAwait(false) == false) {
+                await _sem.WaitAsync();
+                using (var con = new NpgsqlConnection(_connectionString))
+                using (var cmd = con.CreateCommand()) {
+                    await con.OpenAsync().ConfigureAwait(false);
+
+                    cmd.CommandText = "INSERT INTO gf.guild_cfg VALUES (@gid, NULL, NULL);";
+                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
+
+                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                }
+                _sem.Release();
+            }
+        }
+
+        public async Task<bool> GuildConfigExistsAsync(ulong gid)
+        {
+            await _sem.WaitAsync();
+
+            bool exists = false;
+
+            using (var con = new NpgsqlConnection(_connectionString))
+            using (var cmd = con.CreateCommand()) {
+                await con.OpenAsync().ConfigureAwait(false);
+
+                cmd.CommandText = "SELECT * FROM gf.guild_cfg WHERE gid = @gid LIMIT 1;";
+                cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
+
+                var res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
+                if (res != null && !(res is DBNull))
+                    exists = true;
+            }
+
+            _sem.Release();
+            return exists;
+        }
 
         #region BANK_SERVICES
         public async Task<bool> HasBankAccountAsync(ulong uid)
@@ -659,6 +697,8 @@ namespace TheGodfather.Services
         {
             var stats = await GetStatsForUserAsync(uid).ConfigureAwait(false);
 
+            await _sem.WaitAsync();
+
             using (var con = new NpgsqlConnection(_connectionString))
             using (var cmd = con.CreateCommand()) {
                 await con.OpenAsync().ConfigureAwait(false);
@@ -670,6 +710,8 @@ namespace TheGodfather.Services
 
                 await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
             }
+
+            _sem.Release();
         }
         #endregion
 
@@ -849,32 +891,92 @@ namespace TheGodfather.Services
         #region W/L channels
         public async Task<ulong> GetGuildWelcomeChannelIdAsync(ulong gid)
         {
-            return 0;
+            await _sem.WaitAsync();
+
+            ulong cid = 0;
+
+            using (var con = new NpgsqlConnection(_connectionString))
+            using (var cmd = con.CreateCommand()) {
+                await con.OpenAsync().ConfigureAwait(false);
+
+                cmd.CommandText = "SELECT welcome_cid FROM gf.guild_cfg WHERE gid = @gid LIMIT 1;";
+                cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
+
+                var res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
+                if (res != null && !(res is DBNull))
+                    cid = (ulong)(long)res;
+            }
+
+            _sem.Release();
+            return cid;
         }
 
         public async Task<ulong> GetGuildLeaveChannelIdAsync(ulong gid)
         {
-            return 0;
+            await _sem.WaitAsync();
+
+            ulong cid = 0;
+
+            using (var con = new NpgsqlConnection(_connectionString))
+            using (var cmd = con.CreateCommand()) {
+                await con.OpenAsync().ConfigureAwait(false);
+
+                cmd.CommandText = "SELECT leave_cid FROM gf.guild_cfg WHERE gid = @gid LIMIT 1;";
+                cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
+
+                var res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
+                if (res != null && !(res is DBNull))
+                    cid = (ulong)(long)res;
+            }
+
+            _sem.Release();
+            return cid;
         }
 
         public async Task SetGuildWelcomeChannelAsync(ulong gid, ulong cid)
         {
+            await _sem.WaitAsync();
 
+            using (var con = new NpgsqlConnection(_connectionString))
+            using (var cmd = con.CreateCommand()) {
+                await con.OpenAsync().ConfigureAwait(false);
+                
+                cmd.CommandText = "UPDATE gf.guild_cfg SET welcome_cid = @cid WHERE gid = @gid;";
+                cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
+                cmd.Parameters.AddWithValue("cid", NpgsqlDbType.Bigint, cid);
+
+                await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+            }
+
+            _sem.Release();
         }
 
         public async Task SetGuildLeaveChannelAsync(ulong gid, ulong cid)
         {
+            await _sem.WaitAsync();
 
+            using (var con = new NpgsqlConnection(_connectionString))
+            using (var cmd = con.CreateCommand()) {
+                await con.OpenAsync().ConfigureAwait(false);
+
+                cmd.CommandText = "UPDATE gf.guild_cfg SET leave_cid = @cid WHERE gid = @gid;";
+                cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
+                cmd.Parameters.AddWithValue("cid", NpgsqlDbType.Bigint, cid);
+
+                await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+            }
+
+            _sem.Release();
         }
 
         public async Task RemoveGuildWelcomeChannelAsync(ulong gid)
         {
-
+            await SetGuildLeaveChannelAsync(gid, 0).ConfigureAwait(false);
         }
 
         public async Task RemoveGuildLeaveChannelAsync(ulong gid)
         {
-
+            await SetGuildLeaveChannelAsync(gid, 0).ConfigureAwait(false);
         }
         #endregion
     }
