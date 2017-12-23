@@ -32,7 +32,7 @@ namespace TheGodfather.Helpers.DataManagers
 
         public async Task UpdateStatAsync(ulong uid, string stat)
         {
-            await _db.UpdateStatAsync(uid, stat, 1)
+            await _db.UpdateUserStatsAsync(uid, stat, 1)
                    .ConfigureAwait(false);
         }
 
@@ -100,7 +100,7 @@ namespace TheGodfather.Helpers.DataManagers
         #region LEADERBOARD_HELPERS
         public async Task<string> GetTopDuelistsStringAsync(DiscordClient client)
         {
-            var topDuelists = await _db.GetOrderedStatsAsync("coalesce(1.0 * duels_won / NULLIF(duels_won + duels_lost, 0), 0)", "duels_won", "duels_lost")
+            var topDuelists = await _db.GetOrderedUserStatsAsync("coalesce(1.0 * duels_won / NULLIF(duels_won + duels_lost, 0), 0)", "duels_won", "duels_lost")
                 .ConfigureAwait(false);
 
             StringBuilder sb = new StringBuilder();
@@ -124,7 +124,7 @@ namespace TheGodfather.Helpers.DataManagers
 
         public async Task<string> GetTopTTTPlayersStringAsync(DiscordClient client)
         {
-            var topTTTPlayers = await _db.GetOrderedStatsAsync("coalesce(1.0 * ttt_won / NULLIF(ttt_won + ttt_lost, 0), 0)", "ttt_won", "ttt_lost")
+            var topTTTPlayers = await _db.GetOrderedUserStatsAsync("coalesce(1.0 * ttt_won / NULLIF(ttt_won + ttt_lost, 0), 0)", "ttt_won", "ttt_lost")
                 .ConfigureAwait(false);
 
             StringBuilder sb = new StringBuilder();
@@ -148,7 +148,7 @@ namespace TheGodfather.Helpers.DataManagers
 
         public async Task<string> GetTopCaroPlayersStringAsync(DiscordClient client)
         {
-            var topCaroPlayers = await _db.GetOrderedStatsAsync("coalesce(1.0 * caro_won / NULLIF(caro_won + caro_lost, 0), 0)", "caro_won", "caro_lost")
+            var topCaroPlayers = await _db.GetOrderedUserStatsAsync("coalesce(1.0 * caro_won / NULLIF(caro_won + caro_lost, 0), 0)", "caro_won", "caro_lost")
                 .ConfigureAwait(false);
 
             StringBuilder sb = new StringBuilder();
@@ -172,7 +172,7 @@ namespace TheGodfather.Helpers.DataManagers
 
         public async Task<string> GetTopChain4PlayersStringAsync(DiscordClient client)
         {
-            var topChain4Players = await _db.GetOrderedStatsAsync("coalesce(1.0 * chain4_won / NULLIF(chain4_won + chain4_lost, 0), 0)", "chain4_won", "chain4_lost")
+            var topChain4Players = await _db.GetOrderedUserStatsAsync("coalesce(1.0 * chain4_won / NULLIF(chain4_won + chain4_lost, 0), 0)", "chain4_won", "chain4_lost")
                 .ConfigureAwait(false);
 
             StringBuilder sb = new StringBuilder();
@@ -196,7 +196,7 @@ namespace TheGodfather.Helpers.DataManagers
 
         public async Task<string> GetTopNunchiPlayersStringAsync(DiscordClient client)
         {
-            var topNunchiPlayers = await _db.GetOrderedStatsAsync("nunchis_won", "nunchis_won")
+            var topNunchiPlayers = await _db.GetOrderedUserStatsAsync("nunchis_won", "nunchis_won")
                 .ConfigureAwait(false);
 
             StringBuilder sb = new StringBuilder();
@@ -220,7 +220,7 @@ namespace TheGodfather.Helpers.DataManagers
 
         public async Task<string> GetTopQuizPlayersStringAsync(DiscordClient client)
         {
-            var topQuizPlayers = await _db.GetOrderedStatsAsync("quizes_won", "quizes_won")
+            var topQuizPlayers = await _db.GetOrderedUserStatsAsync("quizes_won", "quizes_won")
                 .ConfigureAwait(false);
 
             StringBuilder sb = new StringBuilder();
@@ -244,7 +244,7 @@ namespace TheGodfather.Helpers.DataManagers
 
         public async Task<string> GetTopRacersStringAsync(DiscordClient client)
         {
-            var topRacers = await _db.GetOrderedStatsAsync("races_won", "races_won")
+            var topRacers = await _db.GetOrderedUserStatsAsync("races_won", "races_won")
                 .ConfigureAwait(false);
 
             StringBuilder sb = new StringBuilder();
@@ -268,7 +268,7 @@ namespace TheGodfather.Helpers.DataManagers
 
         public async Task<string> GetTopHangmanPlayersStringAsync(DiscordClient client)
         {
-            var topHangmanPlayers = await _db.GetOrderedStatsAsync("hangman_won", "hangman_won")
+            var topHangmanPlayers = await _db.GetOrderedUserStatsAsync("hangman_won", "hangman_won")
                 .ConfigureAwait(false);
 
             StringBuilder sb = new StringBuilder();

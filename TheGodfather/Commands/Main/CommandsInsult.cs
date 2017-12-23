@@ -92,7 +92,7 @@ namespace TheGodfather.Commands.Main
         public async Task DeleteInsultAsync(CommandContext ctx, 
                                            [Description("Index.")] int i)
         {
-            await ctx.Dependencies.GetDependency<DatabaseService>().RemoveInsultByIdAsync(i)
+            await ctx.Dependencies.GetDependency<DatabaseService>().DeleteInsultByIdAsync(i)
                 .ConfigureAwait(false);
             await ctx.RespondAsync("Insult successfully removed.").ConfigureAwait(false);
         }

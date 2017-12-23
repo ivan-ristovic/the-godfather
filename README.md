@@ -56,6 +56,12 @@ Commands use the following types:
 |   | ``say``  |   | ``[text] What to say`` | Make Godfather say something! | ``!say Luke, I am your father!`` |
 |   | ``zugify`` |   | ``[text] Text`` | Requested by Zugi. It is so stupid it isn't worth describing... | ``!zugify Some text`` |
    |   |   |   |   |   |
+| ``emojireaction``<br>``emojireactions``<br>``ereact``<br>``emojir``<br>``er`` |   | Manage Guild (user) | ``[emoji] Emoji``<br><br>``[text] Triggers`` | Add a new automatic emoji reaction to a word from trigger list. Whenever someone sends a message containing a trigger word, bot will react to it with ``Emoji``. Trigger list is made of words separated with whitespace. | ``!emojir :smile: laughing`` |
+| ``emojireaction``<br>``emojireactions``<br>``ereact``<br>``emojir``<br>``er`` | ``add``<br>``+``<br>``new`` | Manage Guild (user) | ``[emoji] Emoji``<br><br>``[text] Triggers`` | Same as above command. | ``!emojir add :smile: laughing`` |
+| ``emojireaction``<br>``emojireactions``<br>``ereact``<br>``emojir``<br>``er`` | ``clear``<br>``c``<br>``da`` | Administrator (user) |  | Delete all reactions for the current guild. | ``!emojir clear`` |
+| ``emojireaction``<br>``emojireactions``<br>``ereact``<br>``emojir``<br>``er`` | ``delete``<br>``-``<br>``remove``<br>``del``<br>``rm`` | Manage Guild (user) | ``[text] Triggers`` | Remove trigger word (can be a list of words separated by whitespaces) from guild emoji reaction list. Use ``!reaction list`` to view reactions. | ``!emojir delete smile hehe blabla`` |
+| ``emojireaction``<br>``emojireactions``<br>``ereact``<br>``emojir``<br>``er`` | ``list``<br>``ls``<br>``l`` |  | ``(optional) [int] Page (def: 1)`` | List guild reactions on page ``Page``. | ``!emojir list 3`` |
+|   |   |   |   |   |   |
 | ``filter``<br>``filters``<br>``f`` | ``add``<br>``+``<br>``new`` | Manage Guild (user) | ``[text] Trigger`` | Add a new filter to filter guild list. Whenever someone sends a message containing ``Trigger``, bot will delete it. Triggers can also be regular expressions (case ignored). | ``!filter add fuck`` |
 | ``filter``<br>``filters``<br>``f`` | ``clear``<br>``ca``<br>``c`` | Administrator (user) |  | Delete all filters for the current guild. | ``!filter clear`` |
 | ``filter``<br>``filters``<br>``f`` | ``delete``<br>``-``<br>``remove``<br>``del``<br>``rm`` | Manage Guild (user) | ``[text] Trigger`` | Remove given filter from guild filter list. Use ``!filter list`` to view filters. | ``!filter delete fuck`` |
@@ -87,17 +93,11 @@ Commands use the following types:
 | ``rank``<br>``ranks``<br>``ranking`` | ``save`` | Owner Only |   | Save ranks. | ``!rank save`` |
 | ``rank``<br>``ranks``<br>``ranking`` | ``top`` |  |   | Print global rank leaderboard. | ``!rank top`` |
 |   |   |   |   |   |   |
-| ``reaction``<br>``reactions``<br>``react`` |   | Manage Guild (user) | ``[emoji] Emoji``<br><br>``[text] Triggers`` | Add a new automatic reaction to a word from triggers list. Whenever someone sends a message containing a trigger word, bot will react to it with ``Emoji``. Trigger list is made of words separated with space. | ``!react :smile: laughing`` |
-| ``reaction``<br>``reactions``<br>``react`` | ``add``<br>``+``<br>``new`` | Manage Guild (user) | ``[emoji] Emoji``<br><br>``[text] Triggers`` | Same as above command. | ``!react add :smile: laughing`` |
-| ``reaction``<br>``reactions``<br>``react`` | ``clear``<br>``c``<br>``da`` | Administrator (user) |  | Delete all reactions for the current guild. | ``!reaction clear`` |
-| ``reaction``<br>``reactions``<br>``react`` | ``delete``<br>``-``<br>``remove``<br>``del``<br>``rm`` | Manage Guild (user) | ``[text] Triggers`` | Remove trigger word (can be a list of words separated by spaces) from guild reaction list. Use ``!reaction list`` to view reactions. | ``!reaction delete smile hehe blabla`` |
-| ``reaction``<br>``reactions``<br>``react`` | ``list``<br>``ls``<br>``l`` |  | ``(optional) [int] Page (def: 1)`` | List guild reactions on page ``Page``. | ``!reaction list 3`` |
-|   |   |   |   |   |   |
-| ``textreaction``<br>``textreactions``<br>``treact``<br>``txtr``<br>``tr`` |  | Manage Guild (user) | ``[string] Trigger``<br><br>``[text] Response`` | Add a new trigger to guild trigger list. Whenever someone sends a message ``Trigger``, bot will repond with ``Response``. You can also use ``%user%`` as a replacement for sender mention. | ``!txtr add "hi" Hey, %user%!`` |
+| ``textreaction``<br>``textreactions``<br>``treact``<br>``txtr``<br>``tr`` |  | Manage Guild (user) | ``[string] Trigger``<br><br>``[text] Response`` | Add a new trigger to guild text reaction list. Whenever someone sends a message ``Trigger``, bot will repond with ``Response``. You can also use ``%user%`` as a replacement for sender mention. | ``!txtr add "hi" Hey, %user%!`` |
 | ``textreaction``<br>``textreactions``<br>``treact``<br>``txtr``<br>``tr`` | ``add``<br>``+``<br>``new`` | Manage Guild (user) | ``[string] Trigger``<br><br>``[text] Response`` | Same as above command. | ``!txtr add "hi" Hey, %user%!`` |
-| ``textreaction``<br>``textreactions``<br>``treact``<br>``txtr``<br>``tr`` | ``clear``<br>``c``<br>``da`` | Administrator (user) |  | Delete all triggers for the current guild. | ``!txtr clear`` |
-| ``textreaction``<br>``textreactions``<br>``treact``<br>``txtr``<br>``tr`` | ``delete``<br>``-``<br>``remove``<br>``del``<br>``rm``<br>``d`` | Manage Guild (user) | ``[string] Trigger`` | Remove trigger with from guild trigger list. Use ``!txtr list`` to view guild triggers. | ``!txtr delete hi`` |
-| ``textreaction``<br>``textreactions``<br>``treact``<br>``txtr``<br>``tr`` | ``list``<br>``ls``<br>``l`` |  | ``(optional) [int] Page (def: 1)`` | List guild triggers on page ``Page``. | ``!txtr list 3`` |
+| ``textreaction``<br>``textreactions``<br>``treact``<br>``txtr``<br>``tr`` | ``clear``<br>``c``<br>``da`` | Administrator (user) |  | Delete all text reactions for the current guild. | ``!txtr clear`` |
+| ``textreaction``<br>``textreactions``<br>``treact``<br>``txtr``<br>``tr`` | ``delete``<br>``-``<br>``remove``<br>``del``<br>``rm``<br>``d`` | Manage Guild (user) | ``[string] Trigger`` | Remove text reaction with a given trigger from guild text reaction list. Use ``!txtr list`` to view guild triggers. | ``!txtr delete hi`` |
+| ``textreaction``<br>``textreactions``<br>``treact``<br>``txtr``<br>``tr`` | ``list``<br>``ls``<br>``l`` |  | ``(optional) [int] Page (def: 1)`` | List guild text reactions on page ``Page``. | ``!txtr list 3`` |
 |   |   |   |   |   |   |
 
 ## Administration commands

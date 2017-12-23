@@ -121,7 +121,7 @@ namespace TheGodfather
                 return null;
         }
 
-        public IReadOnlyList<DiscordEmoji> GetReactionEmojis(DiscordClient client, ulong gid, string message)
+        public IReadOnlyList<DiscordEmoji> GetEmojisForEmojiReaction(DiscordClient client, ulong gid, string message)
         {
             var emojis = new List<DiscordEmoji>();
 
@@ -204,7 +204,7 @@ namespace TheGodfather
             return GuildTextReactions.ContainsKey(gid) && GuildTextReactions[gid] != null && GuildTextReactions[gid].ContainsKey(trigger);
         }
 
-        public string GetResponseForTextTrigger(ulong gid, string trigger)
+        public string GetResponseForTextReaction(ulong gid, string trigger)
         {
             trigger = trigger.ToLower();
             if (TextTriggerExists(gid, trigger))

@@ -364,7 +364,7 @@ namespace TheGodfather.Commands.Administration
                     throw new CommandFailedException("Status length cannot be greater than 60 characters.");
 
                 try {
-                    await ctx.Dependencies.GetDependency<DatabaseService>().AddStatusAsync(status)
+                    await ctx.Dependencies.GetDependency<DatabaseService>().AddBotStatusAsync(status)
                         .ConfigureAwait(false);
                 } catch (Npgsql.NpgsqlException e) {
                     throw new DatabaseServiceException(e);
@@ -383,7 +383,7 @@ namespace TheGodfather.Commands.Administration
                                          [Description("Status ID.")] int id)
             {
                 try {
-                    await ctx.Dependencies.GetDependency<DatabaseService>().DeleteStatusAsync(id)
+                    await ctx.Dependencies.GetDependency<DatabaseService>().DeleteBotStatusAsync(id)
                         .ConfigureAwait(false);
                 } catch (Npgsql.NpgsqlException e) {
                     throw new DatabaseServiceException(e);
@@ -400,7 +400,7 @@ namespace TheGodfather.Commands.Administration
             public async Task ListAsync(CommandContext ctx)
             {
                 try {
-                    var statuses = await ctx.Dependencies.GetDependency<DatabaseService>().GetStatusesAsync()
+                    var statuses = await ctx.Dependencies.GetDependency<DatabaseService>().GetBotStatusesAsync()
                         .ConfigureAwait(false);
                     await ctx.RespondAsync("My current statuses:\n" + string.Join("\n", statuses.Select(kvp => $"{kvp.Key} : {kvp.Value}")))
                         .ConfigureAwait(false);

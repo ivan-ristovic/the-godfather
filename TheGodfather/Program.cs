@@ -85,12 +85,12 @@ namespace TheGodfather
                 gfilters[gfilter.Item1].Add(new Regex($@"\b{gfilter.Item2}\b"));
             }
 
-            var gttriggers_db = await Database.GetTextTriggersAsync();
+            var gttriggers_db = await Database.GetAllTextReactionsAsync();
             var gttriggers = new ConcurrentDictionary<ulong, ConcurrentDictionary<string, string>>();
             foreach (var ttrigger in gttriggers_db)
                 gttriggers.TryAdd(ttrigger.Key, new ConcurrentDictionary<string, string>(ttrigger.Value));
 
-            var grtriggers_db = await Database.GetEmojiTriggersAsync();
+            var grtriggers_db = await Database.GetAllEmojiReactionsAsync();
             var grtriggers = new ConcurrentDictionary<ulong, ConcurrentDictionary<string, string>>();
             foreach (var rtrigger in grtriggers_db)
                 grtriggers.TryAdd(rtrigger.Key, new ConcurrentDictionary<string, string>(rtrigger.Value));
@@ -152,7 +152,7 @@ namespace TheGodfather
 
         private static async Task UpdateBotStatusAsync()
         {
-            var status = await Database.GetRandomStatusAsync()
+            var status = await Database.GetRandomBotStatusAsync()
                 .ConfigureAwait(false);
             await Shards[0].Client.UpdateStatusAsync(new DiscordGame(status) {
                 StreamType = GameStreamType.NoStream

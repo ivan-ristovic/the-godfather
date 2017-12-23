@@ -239,7 +239,7 @@ namespace TheGodfather.Commands.SWAT
                 if (string.IsNullOrWhiteSpace(name))
                     throw new InvalidCommandUsageException("Name missing.");
                 try {
-                    await ctx.Dependencies.GetDependency<DatabaseService>().RemoveSwatServerAsync(name)
+                    await ctx.Dependencies.GetDependency<DatabaseService>().DeleteSwatServerAsync(name)
                         .ConfigureAwait(false);
                 } catch (Npgsql.NpgsqlException e) {
                     throw new DatabaseServiceException(e);

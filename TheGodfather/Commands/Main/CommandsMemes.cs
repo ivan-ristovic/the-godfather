@@ -198,7 +198,7 @@ namespace TheGodfather.Commands.Main
             if (string.IsNullOrWhiteSpace(name))
                 throw new InvalidCommandUsageException("Name missing.");
             try {
-                await ctx.Dependencies.GetDependency<DatabaseService>().RemoveMemeAsync(ctx.Guild.Id, name)
+                await ctx.Dependencies.GetDependency<DatabaseService>().DeleteMemeAsync(ctx.Guild.Id, name)
                     .ConfigureAwait(false);
             } catch (Npgsql.NpgsqlException e) {
                 throw new DatabaseServiceException(e);
@@ -217,7 +217,7 @@ namespace TheGodfather.Commands.Main
         {
             IReadOnlyDictionary<string, string> memes;
             try {
-                memes = await ctx.Dependencies.GetDependency<DatabaseService>().GetGuildMemesAsync(ctx.Guild.Id)
+                memes = await ctx.Dependencies.GetDependency<DatabaseService>().GetAllGuildMemesAsync(ctx.Guild.Id)
                     .ConfigureAwait(false);
             } catch (Npgsql.NpgsqlException e) {
                 throw new DatabaseServiceException(e);

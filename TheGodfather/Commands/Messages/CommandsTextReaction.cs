@@ -24,6 +24,7 @@ namespace TheGodfather.Commands.Messages
     [PreExecutionCheck]
     public class CommandsTextReaction
     {
+        [RequirePermissions(Permissions.ManageGuild)]
         public async Task ExecuteGroupAsync(CommandContext ctx, 
                                            [Description("Trigger (case sensitive).")] string trigger,
                                            [RemainingText, Description("Response.")] string response)

@@ -461,7 +461,7 @@ namespace TheGodfather.Services
             _sem.Release();
         }
 
-        public async Task RemoveInsultByIdAsync(int index)
+        public async Task DeleteInsultByIdAsync(int index)
         {
             await _sem.WaitAsync();
 
@@ -496,7 +496,7 @@ namespace TheGodfather.Services
         #endregion
 
         #region MEME_SERVICES
-        public async Task<IReadOnlyDictionary<string, string>> GetGuildMemesAsync(ulong gid)
+        public async Task<IReadOnlyDictionary<string, string>> GetAllGuildMemesAsync(ulong gid)
         {
             await _sem.WaitAsync();
             var dict = new Dictionary<string, string>();
@@ -582,7 +582,7 @@ namespace TheGodfather.Services
             _sem.Release();
         }
 
-        public async Task RemoveMemeAsync(ulong gid, string name)
+        public async Task DeleteMemeAsync(ulong gid, string name)
         {
             await _sem.WaitAsync();
 
@@ -682,7 +682,7 @@ namespace TheGodfather.Services
                 return null;
         }
 
-        public async Task<IReadOnlyList<IReadOnlyDictionary<string, string>>> GetOrderedStatsAsync(string orderstr, params string[] selectors)
+        public async Task<IReadOnlyList<IReadOnlyDictionary<string, string>>> GetOrderedUserStatsAsync(string orderstr, params string[] selectors)
         {
             var res = await ExecuteRawQueryAsync($@"
                 SELECT uid, {string.Join(", ", selectors)} 
@@ -694,7 +694,7 @@ namespace TheGodfather.Services
             return res;
         }
 
-        public async Task UpdateStatAsync(ulong uid, string col, int add)
+        public async Task UpdateUserStatsAsync(ulong uid, string col, int add)
         {
             var stats = await GetStatsForUserAsync(uid).ConfigureAwait(false);
 
@@ -717,7 +717,7 @@ namespace TheGodfather.Services
         #endregion
 
         #region STATUS_SERVICES
-        public async Task<IReadOnlyDictionary<int, string>> GetStatusesAsync()
+        public async Task<IReadOnlyDictionary<int, string>> GetBotStatusesAsync()
         {
             await _sem.WaitAsync();
 
@@ -739,7 +739,7 @@ namespace TheGodfather.Services
             return new ReadOnlyDictionary<int, string>(dict);
         }
 
-        public async Task<string> GetRandomStatusAsync()
+        public async Task<string> GetRandomBotStatusAsync()
         {
             await _sem.WaitAsync();
 
@@ -760,7 +760,7 @@ namespace TheGodfather.Services
             return status ?? "@TheGodfather help";
         }
 
-        public async Task AddStatusAsync(string status)
+        public async Task AddBotStatusAsync(string status)
         {
             await _sem.WaitAsync();
 
@@ -777,7 +777,7 @@ namespace TheGodfather.Services
             _sem.Release();
         }
 
-        public async Task DeleteStatusAsync(int id)
+        public async Task DeleteBotStatusAsync(int id)
         {
             await _sem.WaitAsync();
 
@@ -838,7 +838,7 @@ namespace TheGodfather.Services
             _sem.Release();
         }
 
-        public async Task RemoveSwatServerAsync(string name)
+        public async Task DeleteSwatServerAsync(string name)
         {
             await _sem.WaitAsync();
 
@@ -889,8 +889,8 @@ namespace TheGodfather.Services
         }
         #endregion
 
-        #region TEXT_TRIGGER_SERVICES
-        public async Task<Dictionary<ulong, Dictionary<string, string>>> GetTextTriggersAsync()
+        #region TEXT_REACTION_SERVICES
+        public async Task<Dictionary<ulong, Dictionary<string, string>>> GetAllTextReactionsAsync()
         {
             await _sem.WaitAsync();
 
@@ -975,8 +975,8 @@ namespace TheGodfather.Services
         }
         #endregion
 
-        #region EMOJI_TRIGGER_SERVICES
-        public async Task<Dictionary<ulong, Dictionary<string, string>>> GetEmojiTriggersAsync()
+        #region EMOJI_REACTION_SERVICES
+        public async Task<Dictionary<ulong, Dictionary<string, string>>> GetAllEmojiReactionsAsync()
         {
             await _sem.WaitAsync();
 
@@ -1006,7 +1006,7 @@ namespace TheGodfather.Services
             return triggers;
         }
         
-        public async Task AddEmojiTriggerAsync(ulong gid, string trigger, string reaction)
+        public async Task AddEmojiReactionAsync(ulong gid, string trigger, string reaction)
         {
             await _sem.WaitAsync();
 
@@ -1025,7 +1025,7 @@ namespace TheGodfather.Services
             _sem.Release();
         }
 
-        public async Task DeleteEmojiTriggerAsync(ulong gid, string trigger)
+        public async Task DeleteEmojiReactionAsync(ulong gid, string trigger)
         {
             await _sem.WaitAsync();
 
@@ -1043,7 +1043,7 @@ namespace TheGodfather.Services
             _sem.Release();
         }
 
-        public async Task DeleteAllGuildEmojiTriggersAsync(ulong gid)
+        public async Task DeleteAllGuildEmojiReactionsAsync(ulong gid)
         {
             await _sem.WaitAsync();
 

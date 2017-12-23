@@ -274,8 +274,8 @@ namespace TheGodfather
                     .ConfigureAwait(false);
             }
 
-            // Check if message has a text trigger
-            var response = SharedData.GetResponseForTextTrigger(e.Guild.Id, e.Message.Content);
+            // Check if message has a text reaction
+            var response = SharedData.GetResponseForTextReaction(e.Guild.Id, e.Message.Content);
             if (response != null) {
                 Log(LogLevel.Info,
                     $"Text trigger detected." + Environment.NewLine +
@@ -290,8 +290,8 @@ namespace TheGodfather
             if (!e.Channel.PermissionsFor(e.Guild.CurrentMember).HasFlag(Permissions.AddReactions))
                 return;
 
-            // Check if message has a reaction trigger
-            var emojilist = SharedData.GetReactionEmojis(Client, e.Guild.Id, e.Message.Content);
+            // Check if message has an emoji reaction
+            var emojilist = SharedData.GetEmojisForEmojiReaction(Client, e.Guild.Id, e.Message.Content);
             if (emojilist.Count > 0) {
                 Log(LogLevel.Info,
                     $"Reaction trigger detected." + Environment.NewLine +
