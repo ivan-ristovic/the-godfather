@@ -119,14 +119,13 @@ namespace TheGodfather
                 await shard.StartAsync();
             }
 
-            GC.Collect();
-
             Console.WriteLine("[6/6] Starting periodic actions...");
             await PerformActionsPeriodicallyAsync().ConfigureAwait(false);
         }
 
         private static async Task PerformActionsPeriodicallyAsync()
         {
+            GC.Collect();
             while (true) {
                 try {   // TODO REMOVE
                     TheGodfather.DependencyList.SaveData();
