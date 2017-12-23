@@ -242,13 +242,15 @@
     <Compile Include="Commands\Games\Common\Nunchi.cs" />
     <Compile Include="Commands\Games\Common\Race.cs" />
     <Compile Include="Commands\Games\Common\TicTacToe.cs" />
+    <Compile Include="Exceptions\CommandFailedException.cs" />
+    <Compile Include="Exceptions\InvalidCommandUsageException.cs" />
     <Compile Include="Helpers\BotConfig.cs" />
     <Compile Include="Helpers\Collections\ConcurrentHashSet.cs" />
     <Compile Include="Helpers\DataManagers\FeedManager.cs" />
     <Compile Include="Helpers\DataManagers\GameStatsManager.cs" />
     <Compile Include="Helpers\EvaluationEnvironment.cs" />
     <Compile Include="Commands\Search\CommandsJokes.cs" />
-    <Compile Include="Exceptions.cs" />
+    <Compile Include="Exceptions\DatabaseServiceException.cs" />
     <Compile Include="Helpers\BotDependencyList.cs" />
     <Compile Include="Helpers\DataManagers\RankManager.cs" />
     <Compile Include="Helpers\GameStats.cs" />
