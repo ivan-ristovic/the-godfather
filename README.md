@@ -93,10 +93,11 @@ Commands use the following types:
 | ``reaction``<br>``reactions``<br>``react`` | ``delete``<br>``-``<br>``remove``<br>``del``<br>``rm`` | Manage Guild (user) | ``[text] Triggers`` | Remove trigger word (can be a list of words separated by spaces) from guild reaction list. Use ``!reaction list`` to view reactions. | ``!reaction delete smile hehe blabla`` |
 | ``reaction``<br>``reactions``<br>``react`` | ``list``<br>``ls``<br>``l`` |  | ``(optional) [int] Page (def: 1)`` | List guild reactions on page ``Page``. | ``!reaction list 3`` |
 |   |   |   |   |   |   |
-| ``trigger``<br>``triggers``<br>``alias``<br>``t``<br>``a`` | ``add``<br>``+``<br>``new`` | Manage Guild (user) | ``[string] Trigger``<br><br>``[text] Response`` | Add a new trigger to guild trigger list. Whenever someone sends a message ``Trigger``, bot will repond with ``Response``. You can also use ``%user%`` as a replacement for sender mention. | ``!trigger add "hi" Hey, %user%!`` |
-| ``trigger``<br>``triggers``<br>``alias``<br>``t``<br>``a`` | ``clear``<br>``c``<br>``da`` | Administrator (user) |  | Delete all triggers for the current guild. | ``!triggers clear`` |
-| ``trigger``<br>``triggers``<br>``alias``<br>``t``<br>``a`` | ``delete``<br>``-``<br>``remove``<br>``del``<br>``rm``<br>``d`` | Manage Guild (user) | ``[string] Trigger`` | Remove trigger with from guild trigger list. Use ``!trigger list`` to view guild triggers. | ``!trigger delete hi`` |
-| ``trigger``<br>``triggers``<br>``alias``<br>``t``<br>``a`` | ``list``<br>``ls``<br>``l`` |  | ``(optional) [int] Page (def: 1)`` | List guild triggers on page ``Page``. | ``!trigger list 3`` |
+| ``textreaction``<br>``textreactions``<br>``treact``<br>``txtr``<br>``tr`` |  | Manage Guild (user) | ``[string] Trigger``<br><br>``[text] Response`` | Add a new trigger to guild trigger list. Whenever someone sends a message ``Trigger``, bot will repond with ``Response``. You can also use ``%user%`` as a replacement for sender mention. | ``!txtr add "hi" Hey, %user%!`` |
+| ``textreaction``<br>``textreactions``<br>``treact``<br>``txtr``<br>``tr`` | ``add``<br>``+``<br>``new`` | Manage Guild (user) | ``[string] Trigger``<br><br>``[text] Response`` | Same as above command. | ``!txtr add "hi" Hey, %user%!`` |
+| ``textreaction``<br>``textreactions``<br>``treact``<br>``txtr``<br>``tr`` | ``clear``<br>``c``<br>``da`` | Administrator (user) |  | Delete all triggers for the current guild. | ``!txtr clear`` |
+| ``textreaction``<br>``textreactions``<br>``treact``<br>``txtr``<br>``tr`` | ``delete``<br>``-``<br>``remove``<br>``del``<br>``rm``<br>``d`` | Manage Guild (user) | ``[string] Trigger`` | Remove trigger with from guild trigger list. Use ``!txtr list`` to view guild triggers. | ``!txtr delete hi`` |
+| ``textreaction``<br>``textreactions``<br>``treact``<br>``txtr``<br>``tr`` | ``list``<br>``ls``<br>``l`` |  | ``(optional) [int] Page (def: 1)`` | List guild triggers on page ``Page``. | ``!txtr list 3`` |
 |   |   |   |   |   |   |
 
 ## Administration commands

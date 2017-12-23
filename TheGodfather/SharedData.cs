@@ -20,7 +20,7 @@ namespace TheGodfather
     {
         public ConcurrentDictionary<ulong, string> GuildPrefixes { get; }
         public ConcurrentDictionary<ulong, ConcurrentHashSet<Regex>> GuildFilters { get; }
-        public ConcurrentDictionary<ulong, ConcurrentDictionary<string, string>> GuildTextTriggers { get; internal set; }
+        public ConcurrentDictionary<ulong, ConcurrentDictionary<string, string>> GuildTextReactions { get; internal set; }
         public ConcurrentDictionary<ulong, ConcurrentDictionary<string, string>> GuildEmojiReactions { get; internal set; }
 
         private BotConfig _cfg { get; }
@@ -35,7 +35,7 @@ namespace TheGodfather
             _cfg = cfg;
             GuildPrefixes = gp;
             GuildFilters = gf;
-            GuildTextTriggers = gtt;
+            GuildTextReactions = gtt;
             GuildEmojiReactions = ger;
         }
 
@@ -191,24 +191,24 @@ namespace TheGodfather
         #endregion
 
         #region TRIGGERS
-        public IReadOnlyDictionary<string, string> GetAllGuildTextTriggers(ulong gid)
+        public IReadOnlyDictionary<string, string> GetAllGuildTextReactions(ulong gid)
         {
-            if (GuildTextTriggers.ContainsKey(gid) && GuildTextTriggers[gid] != null)
-                return GuildTextTriggers[gid];
+            if (GuildTextReactions.ContainsKey(gid) && GuildTextReactions[gid] != null)
+                return GuildTextReactions[gid];
             else
                 return null;
         }
 
         public bool TextTriggerExists(ulong gid, string trigger)
         {
-            return GuildTextTriggers.ContainsKey(gid) && GuildTextTriggers[gid] != null && GuildTextTriggers[gid].ContainsKey(trigger);
+            return GuildTextReactions.ContainsKey(gid) && GuildTextReactions[gid] != null && GuildTextReactions[gid].ContainsKey(trigger);
         }
 
         public string GetResponseForTextTrigger(ulong gid, string trigger)
         {
             trigger = trigger.ToLower();
             if (TextTriggerExists(gid, trigger))
-                return GuildTextTriggers[gid][trigger];
+                return GuildTextReactions[gid][trigger];
             else
                 return null;
         }
@@ -216,28 +216,28 @@ namespace TheGodfather
         public bool TryAddGuildTextTrigger(ulong gid, string trigger, string response)
         {
             trigger = trigger.ToLower();
-            if (GuildTextTriggers.ContainsKey(gid)) {
-                if (GuildTextTriggers[gid] == null)
-                    GuildTextTriggers[gid] = new ConcurrentDictionary<string, string>();
+            if (GuildTextReactions.ContainsKey(gid)) {
+                if (GuildTextReactions[gid] == null)
+                    GuildTextReactions[gid] = new ConcurrentDictionary<string, string>();
             } else {
-                if (!GuildTextTriggers.TryAdd(gid, new ConcurrentDictionary<string, string>()))
+                if (!GuildTextReactions.TryAdd(gid, new ConcurrentDictionary<string, string>()))
                     return false;
             }
 
-            return GuildTextTriggers[gid].TryAdd(trigger, response);
+            return GuildTextReactions[gid].TryAdd(trigger, response);
         }
 
         public bool TryRemoveGuildTriggers(ulong gid, string[] triggers)
         {
-            if (!GuildTextTriggers.ContainsKey(gid))
+            if (!GuildTextReactions.ContainsKey(gid))
                 return true;
 
             bool conflict_found = false;
             foreach (var trigger in triggers) {
                 if (string.IsNullOrWhiteSpace(trigger))
                     continue;
-                if (GuildTextTriggers[gid].ContainsKey(trigger))
-                    conflict_found |= !GuildTextTriggers[gid].TryRemove(trigger, out _);
+                if (GuildTextReactions[gid].ContainsKey(trigger))
+                    conflict_found |= !GuildTextReactions[gid].TryRemove(trigger, out _);
                 else
                     conflict_found = true;
             }
@@ -245,12 +245,12 @@ namespace TheGodfather
             return !conflict_found;
         }
 
-        public void ClearGuildTextTriggers(ulong gid)
+        public void DeleteAllGuildTextReactions(ulong gid)
         {
-            if (!GuildTextTriggers.ContainsKey(gid))
+            if (!GuildTextReactions.ContainsKey(gid))
                 return;
 
-            GuildTextTriggers[gid].Clear();
+            GuildTextReactions[gid].Clear();
         }
         #endregion
     }

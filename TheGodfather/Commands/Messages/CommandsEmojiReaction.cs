@@ -23,7 +23,7 @@ namespace TheGodfather.Commands.Messages
     [Aliases("react", "reaction")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
     [PreExecutionCheck]
-    public class CommandsReactionTrigger
+    public class CommandsEmojiReaction
     {
         
         [RequirePermissions(Permissions.ManageGuild)]

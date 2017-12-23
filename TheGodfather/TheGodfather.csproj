@@ -261,14 +261,14 @@
     <Compile Include="Commands\Games\CommandsQuiz.cs" />
     <Compile Include="Commands\Games\CommandsRace.cs" />
     <Compile Include="Commands\Main\CommandsRandom.cs" />
-    <Compile Include="Commands\Messages\CommandsTextTrigger.cs" />
+    <Compile Include="Commands\Messages\CommandsTextReaction.cs" />
     <Compile Include="Commands\Administration\CommandsChannels.cs" />
     <Compile Include="Commands\Games\CommandsGamble.cs" />
     <Compile Include="Commands\Games\CommandsGames.cs" />
     <Compile Include="Commands\Administration\CommandsGuild.cs" />
     <Compile Include="Commands\Messages\CommandsFilter.cs" />
     <Compile Include="Commands\Main\CommandsPoll.cs" />
-    <Compile Include="Commands\Messages\CommandsReactionTrigger.cs" />
+    <Compile Include="Commands\Messages\CommandsEmojiReaction.cs" />
     <Compile Include="Commands\Search\CommandsGiphy.cs" />
     <Compile Include="Commands\Search\CommandsImgur.cs" />
     <Compile Include="Commands\Main\CommandsInsult.cs" />

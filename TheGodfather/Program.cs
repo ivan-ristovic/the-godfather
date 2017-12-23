@@ -89,13 +89,18 @@ namespace TheGodfather
             var gttriggers = new ConcurrentDictionary<ulong, ConcurrentDictionary<string, string>>();
             foreach (var ttrigger in gttriggers_db)
                 gttriggers.TryAdd(ttrigger.Key, new ConcurrentDictionary<string, string>(ttrigger.Value));
-            
+
+            var grtriggers_db = await Database.GetEmojiTriggersAsync();
+            var grtriggers = new ConcurrentDictionary<ulong, ConcurrentDictionary<string, string>>();
+            foreach (var rtrigger in grtriggers_db)
+                grtriggers.TryAdd(rtrigger.Key, new ConcurrentDictionary<string, string>(rtrigger.Value));
+
             TheGodfather.DependencyList = new BotDependencyList(cfg, Database);
             TheGodfather.DependencyList.LoadData();
 
             // TODO
 
-            Shared = new SharedData(cfg, gprefixes, gfilters, gttriggers);
+            Shared = new SharedData(cfg, gprefixes, gfilters, gttriggers, grtriggers);
 
 
             Console.WriteLine("[4/6] Creating shards...");
