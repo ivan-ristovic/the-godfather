@@ -107,7 +107,7 @@ namespace TheGodfather.Commands.Messages
             }
 
             if (filters == null || !filters.Any()) {
-                await ctx.RespondAsync("No filters registered.")
+                await ctx.RespondAsync("No filters registered for this guild.")
                     .ConfigureAwait(false);
                 return;
             }

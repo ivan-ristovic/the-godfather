@@ -1,11 +1,10 @@
 ﻿#region USING_DIRECTIVES
 using System;
-using System.IO;
 using System.Linq;
+using System.Text;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 
 using TheGodfather.Helpers.DataManagers;
 using TheGodfather.Exceptions;
@@ -49,7 +48,10 @@ namespace TheGodfather.Commands.Messages
             if (emoji == null || triggers == null)
                 throw new InvalidCommandUsageException("Missing emoji or trigger words!");
 
-            if (ctx.Dependencies.GetDependency<GuildConfigManager>().TryAddReaction(ctx.Guild.Id, emoji, triggers))
+            if (triggers.Any(s => s.Length > 120))
+                throw new CommandFailedException("Trigger or response cannot be longer than 120 characters.");
+
+            if (ctx.Dependencies.GetDependency<SharedData>().TryAddGuildEmojiReaction(ctx.Guild.Id, emoji, triggers))
                 await ctx.RespondAsync("Reaction added.").ConfigureAwait(false);
             else
                 await ctx.RespondAsync("Failed adding some reactions (probably due to ambiguity in trigger words).").ConfigureAwait(false);
@@ -67,7 +69,7 @@ namespace TheGodfather.Commands.Messages
             if (triggers == null)
                 throw new InvalidCommandUsageException("Missing trigger words!");
 
-            if (ctx.Dependencies.GetDependency<GuildConfigManager>().TryRemoveReactions(ctx.Guild.Id, triggers))
+            if (ctx.Dependencies.GetDependency<SharedData>().TryRemoveGuildEmojiReactions(ctx.Guild.Id, triggers))
                 await ctx.RespondAsync("Successfully removed given trigger words from reaction trigger word list.").ConfigureAwait(false);
             else
                 await ctx.RespondAsync("Done. Some trigger words were not in list anyway though.").ConfigureAwait(false);
@@ -81,15 +83,15 @@ namespace TheGodfather.Commands.Messages
         public async Task ListAsync(CommandContext ctx,
                                    [Description("Page.")] int page = 1)
         {
-            var reactions = ctx.Dependencies.GetDependency<GuildConfigManager>().GetAllGuildReactions(ctx.Guild.Id);
+            var reactions = ctx.Dependencies.GetDependency<SharedData>().GetAllGuildEmojiReactions(ctx.Guild.Id);
 
-            if (reactions == null) {
+            if (reactions == null || !reactions.Any()) {
                 await ctx.RespondAsync("No reactions registered for this guild.")
                     .ConfigureAwait(false);
                 return;
             }
 
-            string desc = "";
+            StringBuilder sb = new StringBuilder();
             var values = reactions.Values.Distinct().OrderBy(k => k).Take(page * 10).ToArray();
 
             if (page < 1 || page > values.Length / 10 + 1)
@@ -99,7 +101,8 @@ namespace TheGodfather.Commands.Messages
             int endi = starti + 10 < values.Length ? starti + 10 : values.Length;
             for (var i = starti; i < endi; i++) {
                 try {
-                    desc += $"{DiscordEmoji.FromName(ctx.Client, values[i])} => {string.Join(", ", reactions.Where(kvp => kvp.Value == values[i]).Select(kvp => kvp.Key))}\n";
+                    sb.Append($"{DiscordEmoji.FromName(ctx.Client, values[i])} => {string.Join(", ", reactions.Where(kvp => kvp.Value == values[i]).Select(kvp => kvp.Key))}");
+                    sb.AppendLine();
                 } catch (ArgumentException) {
                     await ctx.RespondAsync("Found non-existing guild emoji: " + values[i])
                         .ConfigureAwait(false);
@@ -108,7 +111,7 @@ namespace TheGodfather.Commands.Messages
 
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
                 Title = $"Available reactions (page {page}/{values.Length / 10 + 1}) :",
-                Description = desc,
+                Description = sb.ToString(),
                 Color = DiscordColor.Yellow
             }.Build()).ConfigureAwait(false);
         }
@@ -121,7 +124,7 @@ namespace TheGodfather.Commands.Messages
         [RequireUserPermissions(Permissions.Administrator)]
         public async Task ClearAsync(CommandContext ctx)
         {
-            ctx.Dependencies.GetDependency<GuildConfigManager>().ClearGuildReactions(ctx.Guild.Id);
+            ctx.Dependencies.GetDependency<SharedData>().DeleteAllGuildEmojiReactions(ctx.Guild.Id);
             await ctx.RespondAsync("All reactions successfully removed.")
                 .ConfigureAwait(false);
         }
