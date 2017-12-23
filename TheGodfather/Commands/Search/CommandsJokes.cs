@@ -28,7 +28,7 @@ namespace TheGodfather.Commands.Search
         {
             string joke = null;
             try {
-                joke = await ctx.Dependencies.GetDependency<JokesService>().GetRandomJokeAsync()
+                joke = await JokesService.GetRandomJokeAsync()
                     .ConfigureAwait(false);
             } catch (WebException e) {
                 throw new CommandFailedException("Connection to remote site failed!", e);
@@ -53,7 +53,7 @@ namespace TheGodfather.Commands.Search
 
             string jokes = null;
             try {
-                jokes = await ctx.Dependencies.GetDependency<JokesService>().SearchForJokesAsync(query)
+                jokes = await JokesService.SearchForJokesAsync(query)
                     .ConfigureAwait(false);
             } catch (WebException e) {
                 throw new CommandFailedException("Connection to remote site failed!", e);
@@ -77,7 +77,7 @@ namespace TheGodfather.Commands.Search
         public async Task YomamaAsync(CommandContext ctx)
         {
             try {
-                var joke = await ctx.Dependencies.GetDependency<JokesService>().GetYoMommaJokeAsync();
+                var joke = await JokesService.GetYoMommaJokeAsync();
                 await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
                     Description = joke
                 }.Build()).ConfigureAwait(false);

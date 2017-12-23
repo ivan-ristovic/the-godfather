@@ -1,16 +1,19 @@
-﻿using Newtonsoft.Json;
+﻿#region USING_DIRECTIVES
 using System;
 using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
+
+using DSharpPlus.Entities;
 
 using TheGodfather.Services;
 using TheGodfather.Helpers;
 using TheGodfather.Helpers.Collections;
-using System.Collections.Concurrent;
-using DSharpPlus.Entities;
+#endregion
 
 namespace TheGodfather
 {
@@ -126,6 +129,7 @@ namespace TheGodfather
         private static async Task PerformActionsPeriodicallyAsync()
         {
             GC.Collect();
+
             while (true) {
                 try {   // TODO REMOVE
                     TheGodfather.DependencyList.SaveData();

@@ -39,13 +39,12 @@ namespace TheGodfather
         public CommandsNextModule Commands { get; private set; }
         public InteractivityModule Interactivity { get; private set; }
         public VoiceNextClient Voice { get; private set; }
-
-        public DatabaseService Database { get; }
         #endregion
 
         #region PRIVATE_FIELDS
         private BotConfig _cfg { get; set; }
-        private SharedData SharedData { get; }
+        private SharedData _shared { get; }
+        private DatabaseService _db { get; }
         #endregion
 
 
@@ -53,8 +52,8 @@ namespace TheGodfather
         {
             _cfg = cfg;
             ShardId = sid;
-            Database = db;
-            SharedData = sd;
+            _db = db;
+            _shared = sd;
         }
 
 
@@ -116,8 +115,8 @@ namespace TheGodfather
                 CustomPrefixPredicate = async m => await CheckMessageForPrefix(m),
                 Dependencies = DependencyList.GetDependencyCollectionBuilder()
                                            .AddInstance(Client)
-                                           .AddInstance(Database)
-                                           .AddInstance(SharedData)
+                                           .AddInstance(_db)
+                                           .AddInstance(_shared)
                                            .Build(),
             });
             Commands.SetHelpFormatter<HelpFormatter>();
@@ -143,7 +142,7 @@ namespace TheGodfather
 
         private Task<int> CheckMessageForPrefix(DiscordMessage m)
         {
-            string p = SharedData.GetGuildPrefix(m.Channel.Guild.Id) ?? _cfg.DefaultPrefix;
+            string p = _shared.GetGuildPrefix(m.Channel.Guild.Id) ?? _cfg.DefaultPrefix;
             return Task.FromResult(m.GetStringPrefixLength(p));
         }
         #endregion
@@ -158,7 +157,7 @@ namespace TheGodfather
         private async Task Client_GuildAvailable(GuildCreateEventArgs e)
         {
             Log(LogLevel.Info, $"Guild available: {e.Guild.Name} ({e.Guild.Id})");
-            await Database.AddGuildIfNotExistsAsync(e.Guild.Id)
+            await _db.AddGuildIfNotExistsAsync(e.Guild.Id)
                 .ConfigureAwait(false);
         }
 
@@ -169,7 +168,7 @@ namespace TheGodfather
                 $" Guild: {e.Guild.Name} ({e.Guild.Id})"
             );
 
-            ulong cid = await Database.GetGuildWelcomeChannelIdAsync(e.Guild.Id)
+            ulong cid = await _db.GetGuildWelcomeChannelIdAsync(e.Guild.Id)
                 .ConfigureAwait(false);
             if (cid == 0)
                 return;
@@ -200,7 +199,7 @@ namespace TheGodfather
                 $" Guild: {e.Guild.Name} ({e.Guild.Id})"
             );
 
-            ulong cid = await Database.GetGuildLeaveChannelIdAsync(e.Guild.Id)
+            ulong cid = await _db.GetGuildLeaveChannelIdAsync(e.Guild.Id)
                 .ConfigureAwait(false);
             if (cid == 0)
                 return;
@@ -239,7 +238,7 @@ namespace TheGodfather
             }
 
             // Check if message contains filter
-            if (e.Message.Content != null && SharedData.ContainsFilter(e.Guild.Id, e.Message.Content)) {
+            if (e.Message.Content != null && _shared.ContainsFilter(e.Guild.Id, e.Message.Content)) {
                 try {
                     await e.Channel.DeleteMessageAsync(e.Message)
                         .ConfigureAwait(false);
@@ -275,7 +274,7 @@ namespace TheGodfather
             }
 
             // Check if message has a text reaction
-            var response = SharedData.GetResponseForTextReaction(e.Guild.Id, e.Message.Content);
+            var response = _shared.GetResponseForTextReaction(e.Guild.Id, e.Message.Content);
             if (response != null) {
                 Log(LogLevel.Info,
                     $"Text trigger detected." + Environment.NewLine +
@@ -291,7 +290,7 @@ namespace TheGodfather
                 return;
 
             // Check if message has an emoji reaction
-            var emojilist = SharedData.GetEmojisForEmojiReaction(Client, e.Guild.Id, e.Message.Content);
+            var emojilist = _shared.GetEmojisForEmojiReaction(Client, e.Guild.Id, e.Message.Content);
             if (emojilist.Count > 0) {
                 Log(LogLevel.Info,
                     $"Reaction trigger detected." + Environment.NewLine +
@@ -319,7 +318,7 @@ namespace TheGodfather
                 return;
 
             // Check if message contains filter
-            if (!e.Author.IsBot && e.Message.Content != null && SharedData.ContainsFilter(e.Guild.Id, e.Message.Content)) {
+            if (!e.Author.IsBot && e.Message.Content != null && _shared.ContainsFilter(e.Guild.Id, e.Message.Content)) {
                 try {
                     await e.Channel.DeleteMessageAsync(e.Message)
                         .ConfigureAwait(false);

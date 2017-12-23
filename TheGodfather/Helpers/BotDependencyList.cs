@@ -27,7 +27,6 @@ namespace TheGodfather.Helpers
         internal GameStatsManager   GameStatsControl    { get; private set; }
         internal GiphyService       GiphyService        { get; private set; }
         internal ImgurService       ImgurService        { get; private set; }
-        internal JokesService       JokesService        { get; private set; }
         internal SteamService       SteamService        { get; private set; }
         internal YoutubeService     YoutubeService      { get; private set; }
 
@@ -41,7 +40,6 @@ namespace TheGodfather.Helpers
             ImgurService = new ImgurService(cfg.ImgurKey);
             SteamService = new SteamService(cfg.SteamKey);
             YoutubeService = new YoutubeService(cfg.YoutubeKey);
-            JokesService = new JokesService();
         }
 
 
@@ -66,7 +64,6 @@ namespace TheGodfather.Helpers
                 .AddInstance(ImgurService)
                 .AddInstance(SteamService)
                 .AddInstance(YoutubeService)
-                .AddInstance(JokesService)
                 .AddInstance(GameStatsControl);
         }
     }

@@ -11,29 +11,23 @@ using Newtonsoft.Json.Linq;
 
 namespace TheGodfather.Services
 {
-    public class JokesService
+    public static class JokesService
     {
-        public JokesService()
-        {
-
-        }
-
-
-        public async Task<string> GetRandomJokeAsync()
+        public static async Task<string> GetRandomJokeAsync()
         {
             var res = await GetStringResponseAsync("https://icanhazdadjoke.com/")
                 .ConfigureAwait(false);
             return res;
         }
 
-        public async Task<string> SearchForJokesAsync(string query)
+        public static async Task<string> SearchForJokesAsync(string query)
         {
             var res = await GetStringResponseAsync("https://icanhazdadjoke.com/search?term=" + query.Replace(' ', '+'))
                 .ConfigureAwait(false);
             return res;
         }
 
-        public async Task<string> GetYoMommaJokeAsync()
+        public static async Task<string> GetYoMommaJokeAsync()
         {
             string data = null;
             using (WebClient wc = new WebClient()) {
@@ -48,7 +42,7 @@ namespace TheGodfather.Services
             }
         }
 
-        private async Task<string> GetStringResponseAsync(string url)
+        private static async Task<string> GetStringResponseAsync(string url)
         {
             HttpWebRequest request = (HttpWebRequest)WebRequest.Create(url);
             request.AutomaticDecompression = DecompressionMethods.GZip;
