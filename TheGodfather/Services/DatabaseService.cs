@@ -1061,7 +1061,7 @@ namespace TheGodfather.Services
         }
         #endregion
 
-        #region W/L channels
+        #region GUILD_CONFIG_SERVICES
         public async Task<ulong> GetGuildWelcomeChannelIdAsync(ulong gid)
         {
             await _sem.WaitAsync();
