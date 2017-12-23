@@ -114,6 +114,10 @@ namespace TheGodfather
                 EnableMentionPrefix = true,
                 CustomPrefixPredicate = async m => await CheckMessageForPrefix(m),
                 Dependencies = DependencyList.GetDependencyCollectionBuilder()
+                                           .AddInstance(new YoutubeService(_cfg.YoutubeKey))
+                                           .AddInstance(new GiphyService(_cfg.GiphyKey))
+                                           .AddInstance(new ImgurService(_cfg.ImgurKey))
+                                           .AddInstance(new SteamService(_cfg.SteamKey))
                                            .AddInstance(Client)
                                            .AddInstance(_db)
                                            .AddInstance(_shared)

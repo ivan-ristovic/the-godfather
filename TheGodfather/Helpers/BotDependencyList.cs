@@ -25,10 +25,6 @@ namespace TheGodfather.Helpers
         internal FeedManager        FeedControl         { get; private set; }
         internal RankManager        RankControl         { get; private set; }
         internal GameStatsManager   GameStatsControl    { get; private set; }
-        internal GiphyService       GiphyService        { get; private set; }
-        internal ImgurService       ImgurService        { get; private set; }
-        internal SteamService       SteamService        { get; private set; }
-        internal YoutubeService     YoutubeService      { get; private set; }
 
 
         internal BotDependencyList(BotConfig cfg, DatabaseService db)
@@ -36,10 +32,6 @@ namespace TheGodfather.Helpers
             FeedControl = new FeedManager();
             RankControl = new RankManager();
             GameStatsControl = new GameStatsManager(db);
-            GiphyService = new GiphyService(cfg.GiphyKey);
-            ImgurService = new ImgurService(cfg.ImgurKey);
-            SteamService = new SteamService(cfg.SteamKey);
-            YoutubeService = new YoutubeService(cfg.YoutubeKey);
         }
 
 
@@ -60,10 +52,6 @@ namespace TheGodfather.Helpers
             return new DependencyCollectionBuilder()
                 .AddInstance(FeedControl)
                 .AddInstance(RankControl)
-                .AddInstance(GiphyService)
-                .AddInstance(ImgurService)
-                .AddInstance(SteamService)
-                .AddInstance(YoutubeService)
                 .AddInstance(GameStatsControl);
         }
     }
