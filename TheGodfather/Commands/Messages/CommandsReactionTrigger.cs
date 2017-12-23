@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
 
-using TheGodfather.Helpers.DataManagers;
+using TheGodfather.Services;
 using TheGodfather.Exceptions;
 
 using DSharpPlus;
@@ -55,6 +55,10 @@ namespace TheGodfather.Commands.Messages
                 await ctx.RespondAsync("Reaction added.").ConfigureAwait(false);
             else
                 await ctx.RespondAsync("Failed adding some reactions (probably due to ambiguity in trigger words).").ConfigureAwait(false);
+
+            foreach (var trigger in triggers)
+                await ctx.Dependencies.GetDependency<DatabaseService>().AddEmojiTriggerAsync(ctx.Guild.Id, trigger, emoji)
+                    .ConfigureAwait(false);
         }
         #endregion
         
@@ -73,6 +77,10 @@ namespace TheGodfather.Commands.Messages
                 await ctx.RespondAsync("Successfully removed given trigger words from reaction trigger word list.").ConfigureAwait(false);
             else
                 await ctx.RespondAsync("Done. Some trigger words were not in list anyway though.").ConfigureAwait(false);
+
+            foreach (var trigger in triggers)
+                await ctx.Dependencies.GetDependency<DatabaseService>().DeleteEmojiTriggerAsync(ctx.Guild.Id, trigger)
+                    .ConfigureAwait(false);
         }
         #endregion
 
@@ -126,6 +134,8 @@ namespace TheGodfather.Commands.Messages
         {
             ctx.Dependencies.GetDependency<SharedData>().DeleteAllGuildEmojiReactions(ctx.Guild.Id);
             await ctx.RespondAsync("All reactions successfully removed.")
+                .ConfigureAwait(false);
+            await ctx.Dependencies.GetDependency<DatabaseService>().DeleteAllGuildEmojiTriggersAsync(ctx.Guild.Id)
                 .ConfigureAwait(false);
         }
         #endregion
