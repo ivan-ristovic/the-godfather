@@ -31,11 +31,10 @@ namespace TheGodfather.Services
                         if (subscriptions.ContainsKey(id)) {
                             subscriptions[id].ChannelIds.Add((ulong)(long)reader["cid"]);
                         } else {
-                            subscriptions.Add(id, new FeedSubscription(
-                                (string)reader["url"],
-                                new List<ulong>() { (ulong)(long)reader["cid"] },
-                                (string)reader["savedurl"],
-                                (string)reader["name"])
+                            subscriptions.Add(id, new FeedSubscription((string)reader["url"],
+                                                                       new List<ulong>() { (ulong)(long)reader["cid"] },
+                                                                       (string)reader["savedurl"],
+                                                                       (string)reader["name"])
                             );
                         }
                     }
@@ -66,9 +65,9 @@ namespace TheGodfather.Services
             return true;
         }
 
-        public async Task<IReadOnlyList<string>> GetFeedsForChannelAsync(ulong cid)
+        public async Task<IReadOnlyList<FeedSubscription>> GetFeedsForChannelAsync(ulong cid)
         {
-            return null;
+            return new List<FeedSubscription>().AsReadOnly();
         }
     }
 }
