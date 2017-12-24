@@ -15,7 +15,40 @@ namespace TheGodfather.Services
     {
         public async Task<IReadOnlyList<FeedSubscription>> GetAllFeedSubscriptionsAsync()
         {
-            return new List<FeedSubscription>().AsReadOnly();
+            await _sem.WaitAsync();
+
+            var subscriptions = new Dictionary<int, FeedSubscription>();
+
+            using (var con = new NpgsqlConnection(_connectionString))
+            using (var cmd = con.CreateCommand()) {
+                await con.OpenAsync().ConfigureAwait(false);
+
+                cmd.CommandText = "SELECT * FROM gf.feeds JOIN gf.subscriptions ON feeds.id = subscriptions.id;";
+
+                using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
+                    while (await reader.ReadAsync().ConfigureAwait(false)) {
+                        int id = (int)reader["id"];
+                        if (subscriptions.ContainsKey(id)) {
+                            subscriptions[id].ChannelIds.Add((ulong)(long)reader["cid"]);
+                        } else {
+                            subscriptions.Add(id, new FeedSubscription(
+                                (string)reader["url"],
+                                new List<ulong>() { (ulong)(long)reader["cid"] },
+                                (string)reader["savedurl"],
+                                (string)reader["name"])
+                            );
+                        }
+                    }
+                }
+            }
+
+            _sem.Release();
+
+            var feeds = new List<FeedSubscription>();
+            foreach (FeedSubscription f in subscriptions.Values)
+                feeds.Add(f);
+
+            return feeds.AsReadOnly();
         }
 
         public async Task<bool> AddFeedAsync(ulong cid, string url, string qname = null)
