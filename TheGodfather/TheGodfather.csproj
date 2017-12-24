@@ -246,13 +246,13 @@
     <Compile Include="Exceptions\InvalidCommandUsageException.cs" />
     <Compile Include="Helpers\BotConfig.cs" />
     <Compile Include="Helpers\Collections\ConcurrentHashSet.cs" />
-    <Compile Include="Helpers\DataManagers\FeedManager.cs" />
     <Compile Include="Helpers\DataManagers\GameStatsManager.cs" />
     <Compile Include="Helpers\EvaluationEnvironment.cs" />
     <Compile Include="Commands\Search\CommandsJokes.cs" />
     <Compile Include="Exceptions\DatabaseServiceException.cs" />
     <Compile Include="Helpers\BotDependencyList.cs" />
     <Compile Include="Helpers\DataManagers\RankManager.cs" />
+    <Compile Include="Services\FeedService\FeedEntry.cs" />
     <Compile Include="Helpers\GameStats.cs" />
     <Compile Include="Helpers\PreExecutionCheckAttribute.cs" />
     <Compile Include="Helpers\HelpFormatter.cs" />
@@ -293,6 +293,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\DatabaseService\BankDatabaseServices.cs" />
     <Compile Include="Services\DatabaseService\DatabaseService.cs" />
+    <Compile Include="Services\DatabaseService\FeedDatabaseService.cs" />
     <Compile Include="Services\DatabaseService\FilterDatabaseServices.cs" />
     <Compile Include="Services\DatabaseService\GuildConfigDatabaseService.cs" />
     <Compile Include="Services\DatabaseService\InsultDatabaseServices.cs" />
@@ -302,6 +303,8 @@
     <Compile Include="Services\DatabaseService\StatsDatabaseService.cs" />
     <Compile Include="Services\DatabaseService\StatusDatabaseService.cs" />
     <Compile Include="Services\DatabaseService\SwatDatabaseService.cs" />
+    <Compile Include="Services\FeedService\FeedService.cs" />
+    <Compile Include="Services\FeedService\Subscription.cs" />
     <Compile Include="Services\GiphyService.cs" />
     <Compile Include="Services\ImgurService.cs" />
     <Compile Include="Services\JokesService.cs" />

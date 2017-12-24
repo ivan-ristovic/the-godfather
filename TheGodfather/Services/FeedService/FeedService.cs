@@ -35,9 +35,11 @@ namespace TheGodfather.Services
                     var newest = GetFeedResults(feed.URL).First();
                     var url = newest.Links[0].Uri.ToString();
                     if (url != feed.SavedURL) {
-                        feed.SavedURL = url;
-                        foreach (var cid in feed.ChannelIds) {
-                            var chn = await client.GetChannelAsync(cid)
+                        
+                        // update db
+
+                        foreach (var sub in feed.ChannelIds) {
+                            var chn = await client.GetChannelAsync(sub.ChannelId)
                                 .ConfigureAwait(false);
                             var em = new DiscordEmbedBuilder() {
                                 Title = $"{newest.Title.Text}",
@@ -53,8 +55,8 @@ namespace TheGodfather.Services
                                 if (matches.Success)
                                     em.WithImageUrl(matches.Groups[1].Value);
                             }
-                            if (feed.QualifiedName != null)
-                                em.AddField("From", feed.QualifiedName);
+                            if (!string.IsNullOrWhiteSpace(sub.QualifiedName))
+                                em.AddField("From", sub.QualifiedName);
                             em.AddField("Link to content", url);
                             await chn.SendMessageAsync(embed: em.Build())
                                 .ConfigureAwait(false);

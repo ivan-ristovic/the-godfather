@@ -13,6 +13,8 @@ using DSharpPlus.Entities;
 using TheGodfather.Services;
 using TheGodfather.Helpers;
 using TheGodfather.Helpers.Collections;
+using System.Threading;
+using DSharpPlus;
 #endregion
 
 namespace TheGodfather
@@ -22,7 +24,8 @@ namespace TheGodfather
         private static List<TheGodfather> Shards { get; set; }
         private static DatabaseService Database { get; set; }
         private static SharedData Shared { get; set; }
-        
+        private static Timer PeriodicActionTimer { get; set; }
+
 
         internal static void Main(string[] args)
         {
@@ -65,7 +68,7 @@ namespace TheGodfather
             using (var sr = new StreamReader(fs, utf8))
                 json = await sr.ReadToEndAsync();
             var cfg = JsonConvert.DeserializeObject<BotConfig>(json);
-            
+
 
             Console.WriteLine("[2/6] Booting PostgreSQL connection...");
 
@@ -101,8 +104,6 @@ namespace TheGodfather
             TheGodfather.DependencyList = new BotDependencyList(cfg, Database);
             TheGodfather.DependencyList.LoadData();
 
-            // TODO
-
             Shared = new SharedData(cfg, gprefixes, gfilters, gttriggers, grtriggers);
 
 
@@ -113,7 +114,7 @@ namespace TheGodfather
                 var shard = new TheGodfather(cfg, i, Database, Shared);
                 Shards.Add(shard);
             }
-            
+
 
             Console.WriteLine("[5/6] Booting the shards...");
 
@@ -123,44 +124,33 @@ namespace TheGodfather
             }
 
             Console.WriteLine("[6/6] Starting periodic actions...");
-            await PerformActionsPeriodicallyAsync().ConfigureAwait(false);
-        }
+            PeriodicActionTimer = new Timer(PeriodicalActionsCallback, Shards[0].Client, TimeSpan.Zero, TimeSpan.FromMinutes(1));
 
-        private static async Task PerformActionsPeriodicallyAsync()
-        {
             GC.Collect();
-
-            while (true) {
-                try {   // TODO REMOVE
-                    TheGodfather.DependencyList.SaveData();
-                } catch (Exception e) {
-                    Console.WriteLine(
-                        $"Errors occured during data save: " + Environment.NewLine +
-                        $" Exception: {e.GetType()}" + Environment.NewLine +
-                        (e.InnerException != null ? $" Inner exception: {e.InnerException.GetType()}" + Environment.NewLine : "") +
-                        $" Message: {e.Message}"
-                    );
-                    return;
-                }
-
-                await UpdateBotStatusAsync()
-                    .ConfigureAwait(false);
-
-                await TheGodfather.DependencyList.FeedControl.CheckFeedsForChangesAsync(Shards[0].Client)
-                    .ConfigureAwait(false);
-
-                await Task.Delay(TimeSpan.FromMinutes(2))
-                    .ConfigureAwait(false);
-            }
+            await Task.Delay(-1);
         }
 
-        private static async Task UpdateBotStatusAsync()
+        private static void PeriodicalActionsCallback(object _)
         {
-            var status = await Database.GetRandomBotStatusAsync()
-                .ConfigureAwait(false);
-            await Shards[0].Client.UpdateStatusAsync(new DiscordGame(status) {
+            var client = _ as DiscordClient;
+
+            try {   // TODO REMOVE
+                TheGodfather.DependencyList.SaveData();
+            } catch (Exception e) {
+                Console.WriteLine(
+                    $"Errors occured during data save: " + Environment.NewLine +
+                    $" Exception: {e.GetType()}" + Environment.NewLine +
+                    (e.InnerException != null ? $" Inner exception: {e.InnerException.GetType()}" + Environment.NewLine : "") +
+                    $" Message: {e.Message}"
+                );
+            }
+
+            var status = Database.GetRandomBotStatusAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+            client.UpdateStatusAsync(new DiscordGame(status) {
                 StreamType = GameStreamType.NoStream
-            }).ConfigureAwait(false);
+            }).ConfigureAwait(false).GetAwaiter().GetResult();
+
+            FeedService.CheckFeedsForChangesAsync(client, Database).ConfigureAwait(false).GetAwaiter().GetResult();
         }
     }
 }
