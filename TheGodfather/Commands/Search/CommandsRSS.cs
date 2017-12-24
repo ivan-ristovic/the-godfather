@@ -32,7 +32,7 @@ namespace TheGodfather.Commands.Search
             if (string.IsNullOrWhiteSpace(url))
                 throw new InvalidCommandUsageException("URL missing.");
 
-            await SendFeedResultsAsync(ctx, FeedManager.GetFeedResults(url))
+            await SendFeedResultsAsync(ctx, FeedService.GetFeedResults(url))
                 .ConfigureAwait(false);
         }
 
@@ -48,9 +48,8 @@ namespace TheGodfather.Commands.Search
         {
             if (string.IsNullOrWhiteSpace(url))
                 throw new InvalidCommandUsageException("URL missing.");
-
-            bool nameset = string.IsNullOrWhiteSpace(name);
-            if (ctx.Dependencies.GetDependency<FeedManager>().TryAdd(ctx.Channel.Id, url, nameset ? name : url))
+            
+            if (await ctx.Dependencies.GetDependency<DatabaseService>().AddFeedAsync(ctx.Channel.Id, url, string.IsNullOrWhiteSpace(name) ? name : url).ConfigureAwait(false))
                 await ctx.RespondAsync($"Subscribed to {url} !").ConfigureAwait(false);
             else
                 await ctx.RespondAsync("Either URL you gave is invalid or you are already subscribed to it!").ConfigureAwait(false);
@@ -63,7 +62,8 @@ namespace TheGodfather.Commands.Search
         [Aliases("ls", "list")]
         public async Task FeedListAsync(CommandContext ctx)
         {
-            var feeds = ctx.Dependencies.GetDependency<FeedManager>().GetFeedListForChannel(ctx.Channel.Id);
+            var feeds = await ctx.Dependencies.GetDependency<DatabaseService>().GetFeedsForChannelAsync(ctx.Channel.Id)
+                .ConfigureAwait(false);
             await ctx.RespondAsync("Subscriptions for this channel:\n" + string.Join("\n", feeds))
                 .ConfigureAwait(false);
         }
@@ -74,7 +74,7 @@ namespace TheGodfather.Commands.Search
         [Description("Get newest topics from WM forum.")]
         public async Task WmRssAsync(CommandContext ctx)
         {
-            await SendFeedResultsAsync(ctx, FeedManager.GetFeedResults("http://worldmafia.net/forum/forums/-/index.rss"))
+            await SendFeedResultsAsync(ctx, FeedService.GetFeedResults("http://worldmafia.net/forum/forums/-/index.rss"))
                 .ConfigureAwait(false);
         }
         #endregion
@@ -84,7 +84,7 @@ namespace TheGodfather.Commands.Search
         [Description("Get newest world news.")]
         public async Task NewsRssAsync(CommandContext ctx)
         {
-            await SendFeedResultsAsync(ctx, FeedManager.GetFeedResults("https://news.google.com/news/rss/headlines/section/topic/WORLD?ned=us&hl=en"))
+            await SendFeedResultsAsync(ctx, FeedService.GetFeedResults("https://news.google.com/news/rss/headlines/section/topic/WORLD?ned=us&hl=en"))
                 .ConfigureAwait(false);
         }
         #endregion
@@ -103,7 +103,7 @@ namespace TheGodfather.Commands.Search
                     throw new InvalidCommandUsageException("Subreddit missing.");
 
                 string url = $"https://www.reddit.com/r/{ sub.ToLower() }/new/.rss";
-                await SendFeedResultsAsync(ctx, FeedManager.GetFeedResults(url))
+                await SendFeedResultsAsync(ctx, FeedService.GetFeedResults(url))
                     .ConfigureAwait(false);
             }
 
@@ -120,7 +120,7 @@ namespace TheGodfather.Commands.Search
                     throw new InvalidCommandUsageException("Subreddit missing.");
 
                 string url = $"https://www.reddit.com/r/{ sub.ToLower() }/new/.rss";
-                if (ctx.Dependencies.GetDependency<FeedManager>().TryAdd(ctx.Channel.Id, url, "/r/" + sub))
+                if (await ctx.Dependencies.GetDependency<DatabaseService>().AddFeedAsync(ctx.Channel.Id, url, "/r/" + sub).ConfigureAwait(false))
                     await ctx.RespondAsync($"Subscribed to {Formatter.Bold("/r/" + sub)} !").ConfigureAwait(false);
                 else
                     await ctx.RespondAsync("Either the subreddit you gave doesn't exist or you are already subscribed to it!").ConfigureAwait(false);
@@ -138,7 +138,7 @@ namespace TheGodfather.Commands.Search
                 if (string.IsNullOrWhiteSpace(sub))
                     throw new InvalidCommandUsageException("Subreddit missing.");
 
-                if (ctx.Dependencies.GetDependency<FeedManager>().TryRemoveUsingQualified(ctx.Channel.Id, "/r/" + sub))
+                if (await ctx.Dependencies.GetDependency<DatabaseService>().DeleteFeedUsingNameAsync(ctx.Channel.Id, "/r/" + sub))
                     await ctx.RespondAsync($"Unsubscribed from {Formatter.Bold("/r/" + sub)} !").ConfigureAwait(false);
                 else
                     await ctx.RespondAsync("Failed to remove some subscriptions!").ConfigureAwait(false);
@@ -158,12 +158,10 @@ namespace TheGodfather.Commands.Search
             {
                 if (string.IsNullOrWhiteSpace(url))
                     throw new InvalidCommandUsageException("Channel URL missing.");
-
-                var fm = ctx.Dependencies.GetDependency<FeedManager>();
-                var yt = ctx.Dependencies.GetDependency<YoutubeService>();
-                var ytid = await yt.GetYoutubeIdAsync(url)
+                
+                var ytid = await ctx.Dependencies.GetDependency<YoutubeService>().GetYoutubeIdAsync(url)
                     .ConfigureAwait(false);
-                var res = FeedManager.GetFeedResults(YoutubeService.GetYoutubeRSSFeedLinkForChannelId(ytid));
+                var res = FeedService.GetFeedResults(YoutubeService.GetYoutubeRSSFeedLinkForChannelId(ytid));
                 await SendFeedResultsAsync(ctx, res)
                     .ConfigureAwait(false);
             }
@@ -189,7 +187,7 @@ namespace TheGodfather.Commands.Search
 
                 var feedurl = YoutubeService.GetYoutubeRSSFeedLinkForChannelId(chid);
                 bool nameset = string.IsNullOrWhiteSpace(name);
-                if (ctx.Dependencies.GetDependency<FeedManager>().TryAdd(ctx.Channel.Id, feedurl, nameset ? name : url))
+                if (await ctx.Dependencies.GetDependency<DatabaseService>().AddFeedAsync(ctx.Channel.Id, feedurl, nameset ? name : url).ConfigureAwait(false))
                     await ctx.RespondAsync("Subscribed!").ConfigureAwait(false);
                 else
                     await ctx.RespondAsync("Either the channel URL you is invalid or you are already subscribed to it!").ConfigureAwait(false);
@@ -213,7 +211,7 @@ namespace TheGodfather.Commands.Search
                     throw new CommandFailedException("Failed retrieving channel ID for that URL.");
 
                 var feedurl = YoutubeService.GetYoutubeRSSFeedLinkForChannelId(chid);
-                if (ctx.Dependencies.GetDependency<FeedManager>().TryRemove(ctx.Channel.Id, feedurl))
+                if (await ctx.Dependencies.GetDependency<DatabaseService>().DeleteFeedUsingNameAsync(ctx.Channel.Id, feedurl).ConfigureAwait(false))
                     await ctx.RespondAsync("Unsubscribed!").ConfigureAwait(false);
                 else
                     await ctx.RespondAsync("Failed to remove some subscriptions!").ConfigureAwait(false);

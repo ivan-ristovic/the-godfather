@@ -22,14 +22,12 @@ namespace TheGodfather.Helpers
 {
     public class BotDependencyList
     {
-        internal FeedManager        FeedControl         { get; private set; }
         internal RankManager        RankControl         { get; private set; }
         internal GameStatsManager   GameStatsControl    { get; private set; }
 
 
         internal BotDependencyList(BotConfig cfg, DatabaseService db)
         {
-            FeedControl = new FeedManager();
             RankControl = new RankManager();
             GameStatsControl = new GameStatsManager(db);
         }
@@ -37,20 +35,17 @@ namespace TheGodfather.Helpers
 
         internal void LoadData()
         {
-            FeedControl.Load();
             RankControl.Load();
         }
 
         internal void SaveData()
         {
-            FeedControl.Save();
             RankControl.Save();
         }
 
         internal DependencyCollectionBuilder GetDependencyCollectionBuilder()
         {
             return new DependencyCollectionBuilder()
-                .AddInstance(FeedControl)
                 .AddInstance(RankControl)
                 .AddInstance(GameStatsControl);
         }

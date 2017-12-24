@@ -97,6 +97,7 @@ namespace TheGodfather.Helpers.DataManagers
             return emb.Build();
         }
 
+
         #region LEADERBOARD_HELPERS
         public async Task<string> GetTopDuelistsStringAsync(DiscordClient client)
         {
