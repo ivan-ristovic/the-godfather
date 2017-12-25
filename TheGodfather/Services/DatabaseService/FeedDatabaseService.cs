@@ -32,7 +32,8 @@ namespace TheGodfather.Services
                         if (subscriptions.ContainsKey(id)) {
                             subscriptions[id].Subscriptions.Add(new Subscription((ulong)(long)reader["cid"], (string)reader["qname"]));
                         } else {
-                            subscriptions.Add(id, new FeedEntry((string)reader["url"],
+                            subscriptions.Add(id, new FeedEntry(id,
+                                                                (string)reader["url"],
                                                                 new List<Subscription>() { new Subscription((ulong)(long)reader["cid"], (string)reader["qname"]) },
                                                                 (string)reader["savedurl"]
                             ));
@@ -162,7 +163,8 @@ namespace TheGodfather.Services
                 using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
                     while (await reader.ReadAsync().ConfigureAwait(false)) {
                         int id = (int)reader["id"];
-                        subscriptions.Add(id, new FeedEntry((string)reader["url"],
+                        subscriptions.Add(id, new FeedEntry(id,
+                                                            (string)reader["url"],
                                                             new List<Subscription>() { new Subscription(cid, (string)reader["qname"]) },
                                                             null
                         ));
@@ -177,6 +179,22 @@ namespace TheGodfather.Services
                 feeds.Add(f);
 
             return feeds.AsReadOnly();
+        }
+
+        public async Task UpdateFeedSavedURLAsync(int id, string newurl)
+        {
+            await _sem.WaitAsync();
+
+            using (var con = new NpgsqlConnection(_connectionString))
+            using (var cmd = con.CreateCommand()) {
+                await con.OpenAsync().ConfigureAwait(false);
+                cmd.CommandText = "UPDATE gf.feeds SET savedurl = @newurl WHERE id = @id;";
+                cmd.Parameters.AddWithValue("id", NpgsqlDbType.Integer, id);
+                cmd.Parameters.AddWithValue("newurl", NpgsqlDbType.Text, newurl);
+                await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+            }
+
+            _sem.Release();
         }
     }
 }

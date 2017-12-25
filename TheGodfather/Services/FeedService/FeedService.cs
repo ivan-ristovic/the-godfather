@@ -40,9 +40,8 @@ namespace TheGodfather.Services
                     var newest = GetFeedResults(feed.URL).First();
                     var url = newest.Links[0].Uri.ToString();
                     if (url != feed.SavedURL) {
-                        
-                        // update db
-
+                        await db.UpdateFeedSavedURLAsync(feed.Id, url)
+                            .ConfigureAwait(false);
                         foreach (var sub in feed.Subscriptions) {
                             var chn = await client.GetChannelAsync(sub.ChannelId)
                                 .ConfigureAwait(false);
@@ -53,7 +52,7 @@ namespace TheGodfather.Services
                                 Color = DiscordColor.Orange,
                             };
 
-                            // TODO reddit hack
+                            // FIXME reddit hack
                             if (newest.Content is TextSyndicationContent content) {
                                 var r = new Regex("<span> *<a +href *= *\"([^\"]+)\"> *\\[link\\] *</a> *</span>");
                                 var matches = r.Match(content.Text);
