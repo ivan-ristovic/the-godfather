@@ -33,7 +33,7 @@ namespace TheGodfather.Services
             foreach (var feed in _feeds) {
 
                 // TODO ?
-                if (feed.ChannelIds.Count == 0)
+                if (feed.Subscriptions.Count == 0)
                     continue;
 
                 try {
@@ -43,7 +43,7 @@ namespace TheGodfather.Services
                         
                         // update db
 
-                        foreach (var sub in feed.ChannelIds) {
+                        foreach (var sub in feed.Subscriptions) {
                             var chn = await client.GetChannelAsync(sub.ChannelId)
                                 .ConfigureAwait(false);
                             var em = new DiscordEmbedBuilder() {

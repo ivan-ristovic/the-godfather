@@ -7,13 +7,13 @@ namespace TheGodfather.Services.FeedServices
     {
         public string URL { get; set; }
         public string SavedURL { get; internal set; }
-        public List<Subscription> ChannelIds { get; set; }
+        public List<Subscription> Subscriptions { get; set; }
 
 
-        public FeedEntry(string url, List<Subscription> cids, string link)
+        public FeedEntry(string url, List<Subscription> subs, string link)
         {
             URL = url;
-            ChannelIds = cids;
+            Subscriptions = subs;
             SavedURL = link;
         }
     }

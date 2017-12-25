@@ -64,8 +64,14 @@ namespace TheGodfather.Commands.Search
         {
             var feeds = await ctx.Dependencies.GetDependency<DatabaseService>().GetFeedsForChannelAsync(ctx.Channel.Id)
                 .ConfigureAwait(false);
-            await ctx.RespondAsync("Subscriptions for this channel:\n" + string.Join("\n", feeds))
-                .ConfigureAwait(false);
+            await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
+                Title = "Subscriptions for this channel:",
+                Description = string.Join("\n", feeds.Select(fe => {
+                    string qname = fe.Subscriptions.First().QualifiedName;
+                    return string.IsNullOrWhiteSpace(qname) ? fe.URL : qname;
+                })),
+                Color = DiscordColor.Goldenrod
+            }).ConfigureAwait(false);
         }
         #endregion
 

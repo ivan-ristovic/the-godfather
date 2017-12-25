@@ -30,7 +30,7 @@ namespace TheGodfather.Services
                     while (await reader.ReadAsync().ConfigureAwait(false)) {
                         int id = (int)reader["id"];
                         if (subscriptions.ContainsKey(id)) {
-                            subscriptions[id].ChannelIds.Add(new Subscription((ulong)(long)reader["cid"], (string)reader["qname"]));
+                            subscriptions[id].Subscriptions.Add(new Subscription((ulong)(long)reader["cid"], (string)reader["qname"]));
                         } else {
                             subscriptions.Add(id, new FeedEntry((string)reader["url"],
                                                                 new List<Subscription>() { new Subscription((ulong)(long)reader["cid"], (string)reader["qname"]) },
@@ -148,7 +148,35 @@ namespace TheGodfather.Services
 
         public async Task<IReadOnlyList<FeedEntry>> GetFeedsForChannelAsync(ulong cid)
         {
-            return new List<FeedEntry>().AsReadOnly();
+            await _sem.WaitAsync();
+
+            var subscriptions = new Dictionary<int, FeedEntry>();
+
+            using (var con = new NpgsqlConnection(_connectionString))
+            using (var cmd = con.CreateCommand()) {
+                await con.OpenAsync().ConfigureAwait(false);
+
+                cmd.CommandText = "SELECT feeds.id, qname, url FROM gf.feeds JOIN gf.subscriptions ON feeds.id = subscriptions.id WHERE cid = @cid;";
+                cmd.Parameters.AddWithValue("cid", NpgsqlDbType.Bigint, cid);
+
+                using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
+                    while (await reader.ReadAsync().ConfigureAwait(false)) {
+                        int id = (int)reader["id"];
+                        subscriptions.Add(id, new FeedEntry((string)reader["url"],
+                                                            new List<Subscription>() { new Subscription(cid, (string)reader["qname"]) },
+                                                            null
+                        ));
+                    }
+                }
+            }
+
+            _sem.Release();
+
+            var feeds = new List<FeedEntry>();
+            foreach (FeedEntry f in subscriptions.Values)
+                feeds.Add(f);
+
+            return feeds.AsReadOnly();
         }
     }
 }
