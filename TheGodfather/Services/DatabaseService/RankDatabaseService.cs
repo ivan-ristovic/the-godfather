@@ -26,7 +26,7 @@ namespace TheGodfather.Services
 
                 using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
                     while (await reader.ReadAsync().ConfigureAwait(false))
-                        msgcount[(ulong)(long)reader["uid"]] = (ulong)reader["count"];
+                        msgcount[(ulong)(long)reader["uid"]] = (ulong)(long)reader["count"];
                 }
             }
 
