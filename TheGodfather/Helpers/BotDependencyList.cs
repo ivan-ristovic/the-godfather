@@ -22,31 +22,18 @@ namespace TheGodfather.Helpers
 {
     public class BotDependencyList
     {
-        internal RankManager        RankControl         { get; private set; }
         internal GameStatsManager   GameStatsControl    { get; private set; }
 
 
         internal BotDependencyList(BotConfig cfg, DatabaseService db)
         {
-            RankControl = new RankManager();
             GameStatsControl = new GameStatsManager(db);
         }
 
 
-        internal void LoadData()
-        {
-            RankControl.Load();
-        }
-
-        internal void SaveData()
-        {
-            RankControl.Save();
-        }
-
         internal DependencyCollectionBuilder GetDependencyCollectionBuilder()
         {
             return new DependencyCollectionBuilder()
-                .AddInstance(RankControl)
                 .AddInstance(GameStatsControl);
         }
     }

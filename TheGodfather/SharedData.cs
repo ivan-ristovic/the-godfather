@@ -22,6 +22,33 @@ namespace TheGodfather
         public ConcurrentDictionary<ulong, ConcurrentHashSet<Regex>> GuildFilters { get; }
         public ConcurrentDictionary<ulong, ConcurrentDictionary<string, string>> GuildTextReactions { get; internal set; }
         public ConcurrentDictionary<ulong, ConcurrentDictionary<string, string>> GuildEmojiReactions { get; internal set; }
+        public ConcurrentDictionary<ulong, ulong> MessageCount = new ConcurrentDictionary<ulong, ulong>();
+        public IReadOnlyList<string> Ranks = new List<string>() {
+            #region RANKS
+            // If you make more than 25 ranks, then fix the embed
+            "4U donor",
+            "SoH MNG",
+            "Cheap gypsy",
+            "Romanian wallet stealer",
+            "Romanian car cracker",
+            "Serbian street cleaner",
+            "German closet cleaner",
+            "Swed's beer supplier",
+            "JoJo's harem cleaner",
+            "Torq's nurse",
+            "Expensive gypsy",
+            "Pakistani bomb carrier",
+            "Michal's worker (black)",
+            "Michal's worker (white)",
+            "World Mafia Waste",
+            "KF's goat",
+            "Legendary Seagull Master",
+            "Brazillian flip-flop maker",
+            "The Global Elite Silver",
+            "LDR",
+            "Generalissimo (tribute to Raptor)"
+            #endregion
+        }.AsReadOnly();
 
         private BotConfig _cfg { get; }
 
@@ -109,6 +136,48 @@ namespace TheGodfather
             } else {
                 return GuildPrefixes.TryAdd(gid, prefix);
             }
+        }
+        #endregion
+
+        #region RANKS
+        public int UpdateMessageCount(ulong uid)
+        {
+            if (MessageCount.ContainsKey(uid)) {
+                MessageCount[uid]++;
+            } else if (!MessageCount.TryAdd(uid, 1)) {
+                return -1;
+            }
+
+            int curr = GetRankForMessageCount(MessageCount[uid]);
+            int prev = GetRankForMessageCount(MessageCount[uid] - 1);
+
+            return curr != prev ? curr : -1;
+        }
+
+        public int GetRankForId(ulong uid)
+        {
+            if (MessageCount.ContainsKey(uid))
+                return GetRankForMessageCount(MessageCount[uid]);
+            else
+                return 0;
+        }
+
+        public ulong GetMessageCountForId(ulong uid)
+        {
+            if (MessageCount.ContainsKey(uid))
+                return MessageCount[uid];
+            else
+                return 0;
+        }
+
+        public int GetRankForMessageCount(ulong msgcount)
+        {
+            return (int)Math.Floor(Math.Sqrt(msgcount / 10));
+        }
+
+        public uint XpNeededForRankWithIndex(int index)
+        {
+            return (uint)(index * index * 10);
         }
         #endregion
 

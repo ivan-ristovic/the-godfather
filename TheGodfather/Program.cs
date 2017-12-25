@@ -102,7 +102,6 @@ namespace TheGodfather
                 grtriggers.TryAdd(rtrigger.Key, new ConcurrentDictionary<string, string>(rtrigger.Value));
 
             TheGodfather.DependencyList = new BotDependencyList(cfg, Database);
-            TheGodfather.DependencyList.LoadData();
 
             Shared = new SharedData(cfg, gprefixes, gfilters, gttriggers, grtriggers);
 
@@ -133,17 +132,6 @@ namespace TheGodfather
         private static void PeriodicalActionsCallback(object _)
         {
             var client = _ as DiscordClient;
-
-            try {   // TODO REMOVE
-                TheGodfather.DependencyList.SaveData();
-            } catch (Exception e) {
-                Console.WriteLine(
-                    $"Errors occured during data save: " + Environment.NewLine +
-                    $" Exception: {e.GetType()}" + Environment.NewLine +
-                    (e.InnerException != null ? $" Inner exception: {e.InnerException.GetType()}" + Environment.NewLine : "") +
-                    $" Message: {e.Message}"
-                );
-            }
 
             var status = Database.GetRandomBotStatusAsync().ConfigureAwait(false).GetAwaiter().GetResult();
             client.UpdateStatusAsync(new DiscordGame(status) {

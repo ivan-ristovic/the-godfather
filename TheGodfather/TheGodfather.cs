@@ -270,9 +270,9 @@ namespace TheGodfather
                 return;
 
             // Update message count for the user that sent the message
-            int rank = DependencyList.RankControl.UpdateMessageCount(e.Author.Id);
+            int rank = _shared.UpdateMessageCount(e.Author.Id);
             if (rank != -1) {
-                var ranks = DependencyList.RankControl.Ranks;
+                var ranks = _shared.Ranks;
                 await e.Channel.SendMessageAsync($"GG {e.Author.Mention}! You have advanced to level {rank} ({(rank < ranks.Count ? ranks[rank] : "Low")})!")
                     .ConfigureAwait(false);
             }
