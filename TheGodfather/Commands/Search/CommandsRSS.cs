@@ -138,10 +138,10 @@ namespace TheGodfather.Commands.Search
                 if (string.IsNullOrWhiteSpace(sub))
                     throw new InvalidCommandUsageException("Subreddit missing.");
 
-                if (await ctx.Dependencies.GetDependency<DatabaseService>().DeleteFeedUsingNameAsync(ctx.Channel.Id, "/r/" + sub))
-                    await ctx.RespondAsync($"Unsubscribed from {Formatter.Bold("/r/" + sub)} !").ConfigureAwait(false);
-                else
-                    await ctx.RespondAsync("Failed to remove some subscriptions!").ConfigureAwait(false);
+                await ctx.Dependencies.GetDependency<DatabaseService>().DeleteFeedUsingNameAsync(ctx.Channel.Id, "/r/" + sub)
+                    .ConfigureAwait(false);
+                await ctx.RespondAsync($"Unsubscribed from {Formatter.Bold("/r/" + sub)} !")
+                    .ConfigureAwait(false);
             }
             #endregion
         }
@@ -211,10 +211,10 @@ namespace TheGodfather.Commands.Search
                     throw new CommandFailedException("Failed retrieving channel ID for that URL.");
 
                 var feedurl = YoutubeService.GetYoutubeRSSFeedLinkForChannelId(chid);
-                if (await ctx.Dependencies.GetDependency<DatabaseService>().DeleteFeedUsingNameAsync(ctx.Channel.Id, feedurl).ConfigureAwait(false))
-                    await ctx.RespondAsync("Unsubscribed!").ConfigureAwait(false);
-                else
-                    await ctx.RespondAsync("Failed to remove some subscriptions!").ConfigureAwait(false);
+                await ctx.Dependencies.GetDependency<DatabaseService>().DeleteFeedAsync(ctx.Channel.Id, feedurl)
+                    .ConfigureAwait(false);
+                await ctx.RespondAsync("Unsubscribed!")
+                    .ConfigureAwait(false);
             }
             #endregion
         }

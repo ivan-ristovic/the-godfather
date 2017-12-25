@@ -31,6 +31,11 @@ namespace TheGodfather.Services
             var _feeds = await db.GetAllFeedSubscriptionsAsync()
                 .ConfigureAwait(false);
             foreach (var feed in _feeds) {
+
+                // TODO ?
+                if (feed.ChannelIds.Count == 0)
+                    continue;
+
                 try {
                     var newest = GetFeedResults(feed.URL).First();
                     var url = newest.Links[0].Uri.ToString();

@@ -281,7 +281,7 @@ namespace TheGodfather
             var response = _shared.GetResponseForTextReaction(e.Guild.Id, e.Message.Content);
             if (response != null) {
                 Log(LogLevel.Info,
-                    $"Text trigger detected." + Environment.NewLine +
+                    $"Text reaction detected." + Environment.NewLine +
                     $" Message: {e.Message.Content}" + Environment.NewLine +
                     $" User: {e.Message.Author.ToString()}" + Environment.NewLine +
                     $" Location: '{e.Guild.Name}' ({e.Guild.Id}) ; {e.Channel.ToString()}"
@@ -297,7 +297,7 @@ namespace TheGodfather
             var emojilist = _shared.GetEmojisForEmojiReaction(Client, e.Guild.Id, e.Message.Content);
             if (emojilist.Count > 0) {
                 Log(LogLevel.Info,
-                    $"Reaction trigger detected." + Environment.NewLine +
+                    $"Emoji reaction detected." + Environment.NewLine +
                     $" Message: {e.Message.Content}" + Environment.NewLine +
                     $" User: {e.Message.Author.ToString()}" + Environment.NewLine +
                     $" Location: '{e.Guild.Name}' ({e.Guild.Id}) ; {e.Channel.ToString()}"

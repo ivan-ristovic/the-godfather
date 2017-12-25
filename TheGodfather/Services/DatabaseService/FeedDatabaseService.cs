@@ -75,7 +75,7 @@ namespace TheGodfather.Services
                 // If it doesnt, add it
                 if (id == null) {
                     using (var cmd = con.CreateCommand()) {
-                        cmd.CommandText = "INSERT INTO gf.feeds VALUES (DEFAULT, @url, @name, @savedurl);";
+                        cmd.CommandText = "INSERT INTO gf.feeds VALUES (DEFAULT, @url, @savedurl);";
                         cmd.Parameters.AddWithValue("url", NpgsqlDbType.Text, url);
                         cmd.Parameters.AddWithValue("name", NpgsqlDbType.Varchar, qname);
                         cmd.Parameters.AddWithValue("savedurl", NpgsqlDbType.Text, newest.Links[0].Uri.ToString());
@@ -94,7 +94,7 @@ namespace TheGodfather.Services
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "SELECT * FROM gf.subscriptions WHERE id = @id AND cid = @cid;";
                     cmd.Parameters.AddWithValue("id", NpgsqlDbType.Integer, id.Value);
-                    cmd.Parameters.AddWithValue("cid", NpgsqlDbType.Varchar, cid);
+                    cmd.Parameters.AddWithValue("cid", NpgsqlDbType.Bigint, cid);
                     var res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
                     if (res != null && !(res is DBNull))
                         return false;
@@ -102,9 +102,10 @@ namespace TheGodfather.Services
 
                 // Add subscription
                 using (var cmd = con.CreateCommand()) {
-                    cmd.CommandText = "INSERT INTO gf.subscriptions VALUES (@id, @cid);";
+                    cmd.CommandText = "INSERT INTO gf.subscriptions VALUES (@id, @cid, @qname);";
                     cmd.Parameters.AddWithValue("id", NpgsqlDbType.Integer, id.Value);
-                    cmd.Parameters.AddWithValue("cid", NpgsqlDbType.Varchar, cid);
+                    cmd.Parameters.AddWithValue("cid", NpgsqlDbType.Bigint, cid);
+                    cmd.Parameters.AddWithValue("qname", NpgsqlDbType.Varchar, qname);
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
             }
@@ -113,14 +114,36 @@ namespace TheGodfather.Services
             return true;
         }
 
-        public async Task<bool> DeleteFeedAsync(ulong cid, string url)
+        public async Task DeleteFeedAsync(ulong cid, string url)
         {
-            return true;
+            await _sem.WaitAsync();
+
+            using (var con = new NpgsqlConnection(_connectionString))
+            using (var cmd = con.CreateCommand()) {
+                await con.OpenAsync().ConfigureAwait(false);
+                cmd.CommandText = "DELETE FROM gf.subscriptions WHERE cid = @cid AND id = (SELECT id FROM gf.feeds WHERE url = @url LIMIT 1);";
+                cmd.Parameters.AddWithValue("url", NpgsqlDbType.Text, url);
+                cmd.Parameters.AddWithValue("cid", NpgsqlDbType.Bigint, cid);
+                await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+            }
+
+            _sem.Release();
         }
 
-        public async Task<bool> DeleteFeedUsingNameAsync(ulong cid, string qname)
+        public async Task DeleteFeedUsingNameAsync(ulong cid, string qname)
         {
-            return true;
+            await _sem.WaitAsync();
+
+            using (var con = new NpgsqlConnection(_connectionString))
+            using (var cmd = con.CreateCommand()) {
+                await con.OpenAsync().ConfigureAwait(false);
+                cmd.CommandText = "DELETE FROM gf.subscriptions WHERE cid = @cid AND qname = @qname;";
+                cmd.Parameters.AddWithValue("cid", NpgsqlDbType.Bigint, cid);
+                cmd.Parameters.AddWithValue("qname", NpgsqlDbType.Varchar, qname);
+                await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+            }
+
+            _sem.Release();
         }
 
         public async Task<IReadOnlyList<FeedEntry>> GetFeedsForChannelAsync(ulong cid)
