@@ -90,7 +90,6 @@ Commands use the following types:
 |   |   |   |   |   |   |
 | ``rank``<br>``ranks``<br>``ranking`` |   |   |   | Show user rank. One message gives 1XP. | ``!rank`` |
 | ``rank``<br>``ranks``<br>``ranking`` | ``list``<br>``levels`` |   |   | Show all ranks and XP needed. | ``!rank list`` |
-| ``rank``<br>``ranks``<br>``ranking`` | ``save`` | Owner Only |   | Save ranks. | ``!rank save`` |
 | ``rank``<br>``ranks``<br>``ranking`` | ``top`` |  |   | Print global rank leaderboard. | ``!rank top`` |
 |   |   |   |   |   |   |
 | ``textreaction``<br>``textreactions``<br>``treact``<br>``txtr``<br>``tr`` |  | Manage Guild (user) | ``[string] Trigger``<br><br>``[text] Response`` | Add a new trigger to guild text reaction list. Whenever someone sends a message ``Trigger``, bot will repond with ``Response``. You can also use ``%user%`` as a replacement for sender mention. | ``!txtr add "hi" Hey, %user%!`` |

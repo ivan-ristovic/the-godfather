@@ -91,19 +91,24 @@ namespace TheGodfather
                 gfilters[gfilter.Item1].Add(new Regex($@"\b{gfilter.Item2}\b"));
             }
 
-            var gttriggers_db = await Database.GetAllTextReactionsAsync();
-            var gttriggers = new ConcurrentDictionary<ulong, ConcurrentDictionary<string, string>>();
-            foreach (var ttrigger in gttriggers_db)
-                gttriggers.TryAdd(ttrigger.Key, new ConcurrentDictionary<string, string>(ttrigger.Value));
+            var gtextreactions_db = await Database.GetAllTextReactionsAsync();
+            var gtextreactions = new ConcurrentDictionary<ulong, ConcurrentDictionary<string, string>>();
+            foreach (var reaction in gtextreactions_db)
+                gtextreactions.TryAdd(reaction.Key, new ConcurrentDictionary<string, string>(reaction.Value));
 
-            var grtriggers_db = await Database.GetAllEmojiReactionsAsync();
-            var grtriggers = new ConcurrentDictionary<ulong, ConcurrentDictionary<string, string>>();
-            foreach (var rtrigger in grtriggers_db)
-                grtriggers.TryAdd(rtrigger.Key, new ConcurrentDictionary<string, string>(rtrigger.Value));
+            var gemojireactions_db = await Database.GetAllEmojiReactionsAsync();
+            var gemojireactions = new ConcurrentDictionary<ulong, ConcurrentDictionary<string, string>>();
+            foreach (var reaction in gemojireactions_db)
+                gemojireactions.TryAdd(reaction.Key, new ConcurrentDictionary<string, string>(reaction.Value));
 
-            TheGodfather.DependencyList = new BotDependencyList(cfg, Database);
+            var msgcount_db = await Database.GetMessageCountForAllUsersAsync();
+            var msgcount = new ConcurrentDictionary<ulong, ulong>();
+            foreach (var entry in msgcount_db)
+                msgcount.TryAdd(entry.Key, entry.Value);
 
-            Shared = new SharedData(cfg, gprefixes, gfilters, gttriggers, grtriggers);
+            TheGodfather.DependencyList = new BotDependencyList(cfg, Database); // TODO REMOVE
+
+            Shared = new SharedData(cfg, gprefixes, gfilters, gtextreactions, gemojireactions, msgcount);
 
 
             Console.WriteLine("[4/6] Creating shards...");
@@ -123,7 +128,7 @@ namespace TheGodfather
             }
 
             Console.WriteLine("[6/6] Starting periodic actions...");
-            PeriodicActionTimer = new Timer(PeriodicalActionsCallback, Shards[0].Client, TimeSpan.Zero, TimeSpan.FromMinutes(1));
+            PeriodicActionTimer = new Timer(PeriodicalActionsCallback, Shards[0].Client, TimeSpan.FromSeconds(10), TimeSpan.FromMinutes(1));
 
             GC.Collect();
             await Task.Delay(-1);
@@ -139,6 +144,8 @@ namespace TheGodfather
             }).ConfigureAwait(false).GetAwaiter().GetResult();
 
             FeedService.CheckFeedsForChangesAsync(client, Database).ConfigureAwait(false).GetAwaiter().GetResult();
+
+            Shared.SaveRanksToDatabaseAsync(Database).ConfigureAwait(false).GetAwaiter().GetResult();
         }
     }
 }

@@ -7,6 +7,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
+using TheGodfather.Services;
 using TheGodfather.Helpers;
 using TheGodfather.Helpers.Collections;
 
@@ -22,7 +23,7 @@ namespace TheGodfather
         public ConcurrentDictionary<ulong, ConcurrentHashSet<Regex>> GuildFilters { get; }
         public ConcurrentDictionary<ulong, ConcurrentDictionary<string, string>> GuildTextReactions { get; internal set; }
         public ConcurrentDictionary<ulong, ConcurrentDictionary<string, string>> GuildEmojiReactions { get; internal set; }
-        public ConcurrentDictionary<ulong, ulong> MessageCount = new ConcurrentDictionary<ulong, ulong>();
+        public ConcurrentDictionary<ulong, ulong> MessageCount { get; internal set; }
         public IReadOnlyList<string> Ranks = new List<string>() {
             #region RANKS
             // If you make more than 25 ranks, then fix the embed
@@ -57,13 +58,15 @@ namespace TheGodfather
                           ConcurrentDictionary<ulong, string> gp,
                           ConcurrentDictionary<ulong, ConcurrentHashSet<Regex>> gf,
                           ConcurrentDictionary<ulong, ConcurrentDictionary<string, string>> gtt,
-                          ConcurrentDictionary<ulong, ConcurrentDictionary<string, string>> ger)
+                          ConcurrentDictionary<ulong, ConcurrentDictionary<string, string>> ger,
+                          ConcurrentDictionary<ulong, ulong> msgcount)
         {
             _cfg = cfg;
             GuildPrefixes = gp;
             GuildFilters = gf;
             GuildTextReactions = gtt;
             GuildEmojiReactions = ger;
+            MessageCount = msgcount;
         }
 
 
@@ -178,6 +181,14 @@ namespace TheGodfather
         public uint XpNeededForRankWithIndex(int index)
         {
             return (uint)(index * index * 10);
+        }
+
+        public async Task SaveRanksToDatabaseAsync(DatabaseService db)
+        {
+            //lock (_rankLock) {
+                foreach (var entry in MessageCount)
+                    await db.UpdateMessageCountAsync(entry.Key, entry.Value).ConfigureAwait(false);
+            //}
         }
         #endregion
 
