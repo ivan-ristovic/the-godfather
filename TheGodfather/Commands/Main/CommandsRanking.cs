@@ -5,10 +5,6 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-
-using TheGodfather.Helpers.DataManagers;
-using TheGodfather.Exceptions;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;

@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using TheGodfather.Services;
-using TheGodfather.Helpers.DataManagers;
 using TheGodfather.Exceptions;
 
 using DSharpPlus;

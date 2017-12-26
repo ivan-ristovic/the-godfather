@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using TheGodfather.Services;
-using TheGodfather.Helpers.DataManagers;
 using TheGodfather.Exceptions;
 
 using DSharpPlus;

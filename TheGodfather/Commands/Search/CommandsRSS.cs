@@ -7,7 +7,6 @@ using System.ServiceModel.Syndication;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-using TheGodfather.Helpers.DataManagers;
 using TheGodfather.Services;
 using TheGodfather.Exceptions;
 

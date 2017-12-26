@@ -2,8 +2,8 @@
 using System;
 using System.Threading.Tasks;
 
+using TheGodfather.Services;
 using TheGodfather.Exceptions;
-using TheGodfather.Helpers.DataManagers;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -37,7 +37,7 @@ namespace TheGodfather.Commands.Games
                     .ConfigureAwait(false);
 
                 if (quiz.Winner != null)
-                    await ctx.Dependencies.GetDependency<GameStatsManager>().UpdateStatAsync(quiz.Winner.Id, "quizes_won")
+                    await ctx.Dependencies.GetDependency<DatabaseService>().UpdateUserStatsAsync(quiz.Winner.Id, "quizes_won")
                         .ConfigureAwait(false);
             }
             #endregion

@@ -108,8 +108,6 @@ namespace TheGodfather
             foreach (var entry in msgcount_db)
                 msgcount.TryAdd(entry.Key, entry.Value);
 
-            TheGodfather.DependencyList = new BotDependencyList(cfg, Database); // TODO REMOVE
-
             Shared = new SharedData(cfg, gprefixes, gfilters, gtextreactions, gemojireactions, msgcount);
 
 

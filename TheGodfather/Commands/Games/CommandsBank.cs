@@ -4,7 +4,6 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-using TheGodfather.Helpers.DataManagers;
 using TheGodfather.Exceptions;
 using TheGodfather.Services;
 
@@ -120,8 +119,7 @@ namespace TheGodfather.Commands.Games
                 var top = await ctx.Dependencies.GetDependency<DatabaseService>().GetTopAccountsAsync()
                     .ConfigureAwait(false);
                 foreach (var row in top) {
-                    ulong uid;
-                    ulong.TryParse(row["uid"], out uid);
+                    ulong.TryParse(row["uid"], out ulong uid);
                     var member = await ctx.Guild.GetMemberAsync(uid)
                         .ConfigureAwait(false);
                     em.AddField(member.Username, row["balance"], inline: true);

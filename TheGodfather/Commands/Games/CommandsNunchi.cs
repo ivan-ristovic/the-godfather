@@ -5,8 +5,8 @@ using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
 
+using TheGodfather.Services;
 using TheGodfather.Exceptions;
-using TheGodfather.Helpers.DataManagers;
 
 using DSharpPlus;
 using DSharpPlus.Interactivity;
@@ -54,7 +54,7 @@ namespace TheGodfather.Commands.Games
                     await game.PlayAsync()
                         .ConfigureAwait(false);
                     if (game.Winner != null)
-                        await ctx.Dependencies.GetDependency<GameStatsManager>().UpdateStatAsync(game.Winner.Id, "nunchi_won")
+                        await ctx.Dependencies.GetDependency<DatabaseService>().UpdateUserStatsAsync(game.Winner.Id, "nunchi_won")
                             .ConfigureAwait(false);
                 } else {
                     await ctx.RespondAsync("Not enough users joined the game.")

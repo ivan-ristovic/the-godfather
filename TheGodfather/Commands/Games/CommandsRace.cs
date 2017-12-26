@@ -5,8 +5,8 @@ using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
 
+using TheGodfather.Services;
 using TheGodfather.Exceptions;
-using TheGodfather.Helpers.DataManagers;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -52,9 +52,9 @@ namespace TheGodfather.Commands.Games
                 if (race.ParticipantCount > 1) {
                     await race.StartRaceAsync()
                         .ConfigureAwait(false);
-                    var gsm = ctx.Dependencies.GetDependency<GameStatsManager>();
+                    var db = ctx.Dependencies.GetDependency<DatabaseService>();
                     foreach (var uid in race.WinnerIds)
-                        await gsm.UpdateStatAsync(uid, "races_won").ConfigureAwait(false);
+                        await db.UpdateUserStatsAsync(uid, "races_won").ConfigureAwait(false);
                 } else {
                     await ctx.RespondAsync("Not enough users joined the race.")
                         .ConfigureAwait(false);

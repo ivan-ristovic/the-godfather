@@ -13,51 +13,63 @@ using DSharpPlus.Entities;
 
 namespace TheGodfather.Helpers
 {
-    public static class GameStats
+    public class GameStats
     {
-        public static DiscordEmbedBuilder GetEmbeddedStats(IReadOnlyDictionary<string, string> stats)
+        private IReadOnlyDictionary<string, string> Stats { get; }
+        public ulong UserId {
+            get {
+                bool succ = ulong.TryParse(Stats["uid"], out ulong uid); return succ ? uid : 0;
+            }
+        }
+
+
+        public GameStats(IReadOnlyDictionary<string, string> statdict)
+        {
+            Stats = statdict;
+        }
+
+        public DiscordEmbedBuilder GetEmbeddedStats()
         {
             var eb = new DiscordEmbedBuilder() { Color = DiscordColor.Chartreuse };
-            eb.AddField("Duel stats", DuelStatsString(stats));
-            eb.AddField("Tic-Tac-Toe stats", TTTStatsString(stats));
-            eb.AddField("Connect4 stats", Chain4StatsString(stats));
-            eb.AddField("Caro stats", CaroStatsString(stats));
-            eb.AddField("Nunchi stats", NunchiStatsString(stats), inline: true);
-            eb.AddField("Quiz stats", QuizStatsString(stats), inline: true);
-            eb.AddField("Race stats", RaceStatsString(stats), inline: true);
-            eb.AddField("Hangman stats", HangmanStatsString(stats), inline: true);
+            eb.AddField("Duel stats", DuelStatsString());
+            eb.AddField("Tic-Tac-Toe stats", TTTStatsString());
+            eb.AddField("Connect4 stats", Chain4StatsString());
+            eb.AddField("Caro stats", CaroStatsString());
+            eb.AddField("Nunchi stats", NunchiStatsString(), inline: true);
+            eb.AddField("Quiz stats", QuizStatsString(), inline: true);
+            eb.AddField("Race stats", RaceStatsString(), inline: true);
+            eb.AddField("Hangman stats", HangmanStatsString(), inline: true);
             return eb;
         }
 
-        public static string DuelStatsString(IReadOnlyDictionary<string, string> stats)
-            => $"W: {stats["duels_won"]} L: {stats["duels_lost"]} ({Formatter.Bold($"{CalculateWinPercentage(stats["duels_won"], stats["duels_lost"])}")}%)";
+        public string DuelStatsString()
+            => $"W: {Stats["duels_won"]} L: {Stats["duels_lost"]} ({Formatter.Bold($"{CalculateWinPercentage(Stats["duels_won"], Stats["duels_lost"])}")}%)";
 
-        public static string TTTStatsString(IReadOnlyDictionary<string, string> stats)
-            => $"W: {stats["ttt_won"]} L: {stats["ttt_lost"]} ({Formatter.Bold($"{CalculateWinPercentage(stats["ttt_won"], stats["ttt_lost"])}")}%)";
+        public string TTTStatsString()
+            => $"W: {Stats["ttt_won"]} L: {Stats["ttt_lost"]} ({Formatter.Bold($"{CalculateWinPercentage(Stats["ttt_won"], Stats["ttt_lost"])}")}%)";
 
-        public static string Chain4StatsString(IReadOnlyDictionary<string, string> stats)
-            => $"W: {stats["chain4_won"]} L: {stats["chain4_lost"]} ({Formatter.Bold($"{CalculateWinPercentage(stats["chain4_won"], stats["chain4_lost"])}")}%)";
+        public string Chain4StatsString()
+            => $"W: {Stats["chain4_won"]} L: {Stats["chain4_lost"]} ({Formatter.Bold($"{CalculateWinPercentage(Stats["chain4_won"], Stats["chain4_lost"])}")}%)";
 
-        public static string CaroStatsString(IReadOnlyDictionary<string, string> stats)
-            => $"W: {stats["caro_won"]} L: {stats["caro_lost"]} ({Formatter.Bold($"{CalculateWinPercentage(stats["caro_won"], stats["caro_lost"])}")}%)";
+        public string CaroStatsString()
+            => $"W: {Stats["caro_won"]} L: {Stats["caro_lost"]} ({Formatter.Bold($"{CalculateWinPercentage(Stats["caro_won"], Stats["caro_lost"])}")}%)";
 
-        public static string NunchiStatsString(IReadOnlyDictionary<string, string> stats)
-            => $"W: {stats["nunchis_won"]}";
+        public string NunchiStatsString()
+            => $"W: {Stats["nunchis_won"]}";
 
-        public static string QuizStatsString(IReadOnlyDictionary<string, string> stats)
-            => $"W: {stats["quizes_won"]}";
+        public string QuizStatsString()
+            => $"W: {Stats["quizes_won"]}";
 
-        public static string RaceStatsString(IReadOnlyDictionary<string, string> stats)
-            => $"W: {stats["races_won"]}";
+        public string RaceStatsString()
+            => $"W: {Stats["races_won"]}";
 
-        public static string HangmanStatsString(IReadOnlyDictionary<string, string> stats)
-            => $"W: {stats["hangman_won"]}";
+        public string HangmanStatsString()
+            => $"W: {Stats["hangman_won"]}";
 
-        public static uint CalculateWinPercentage(string won, string lost)
+        public uint CalculateWinPercentage(string won, string lost)
         {
-            int w, l;
-            int.TryParse(won, out w);
-            int.TryParse(lost, out l);
+            int.TryParse(won, out int w);
+            int.TryParse(lost, out int l);
 
             if (w + l == 0)
                 return 0;

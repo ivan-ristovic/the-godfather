@@ -29,7 +29,6 @@ namespace TheGodfather
     {
         #region STATIC_FIELDS
         public static bool Listening { get; set; } = true;
-        public static BotDependencyList DependencyList { get; set; }
         #endregion
 
         #region PUBLIC_FIELDS
@@ -113,15 +112,15 @@ namespace TheGodfather
                 CaseSensitive = false,
                 EnableMentionPrefix = true,
                 CustomPrefixPredicate = async m => await CheckMessageForPrefix(m),
-                Dependencies = DependencyList.GetDependencyCollectionBuilder()
-                                           .AddInstance(new YoutubeService(_cfg.YoutubeKey))
-                                           .AddInstance(new GiphyService(_cfg.GiphyKey))
-                                           .AddInstance(new ImgurService(_cfg.ImgurKey))
-                                           .AddInstance(new SteamService(_cfg.SteamKey))
-                                           .AddInstance(Client)
-                                           .AddInstance(_db)
-                                           .AddInstance(_shared)
-                                           .Build(),
+                Dependencies = new DependencyCollectionBuilder()
+                    .AddInstance(new YoutubeService(_cfg.YoutubeKey))
+                    .AddInstance(new GiphyService(_cfg.GiphyKey))
+                    .AddInstance(new ImgurService(_cfg.ImgurKey))
+                    .AddInstance(new SteamService(_cfg.SteamKey))
+                    .AddInstance(Client)
+                    .AddInstance(_db)
+                    .AddInstance(_shared)
+                    .Build(),
             });
             Commands.SetHelpFormatter<HelpFormatter>();
             Commands.RegisterCommands(Assembly.GetExecutingAssembly());
