@@ -4,8 +4,8 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
+using TheGodfather.Services;
 using TheGodfather.Exceptions;
-using TheGodfather.Helpers.DataManagers;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -51,11 +51,13 @@ namespace TheGodfather.Commands.Games
             if (caro.Winner != null) {
                 await ctx.RespondAsync($"The winner is: {caro.Winner.Mention}!")
                     .ConfigureAwait(false);
-                ctx.Dependencies.GetDependency<GameStatsManager>().UpdateCaroWonForUser(caro.Winner.Id);
+
+                var db = ctx.Dependencies.GetDependency<DatabaseService>();
+                await db.UpdateUserStatsAsync(caro.Winner.Id, "caro_won").ConfigureAwait(false);
                 if (caro.Winner.Id == ctx.User.Id)
-                    ctx.Dependencies.GetDependency<GameStatsManager>().UpdateCaroLostForUser(msg.User.Id);
+                    await db.UpdateUserStatsAsync(msg.User.Id, "caro_lost").ConfigureAwait(false);
                 else
-                    ctx.Dependencies.GetDependency<GameStatsManager>().UpdateCaroLostForUser(ctx.User.Id);
+                    await db.UpdateUserStatsAsync(ctx.User.Id, "caro_lost").ConfigureAwait(false);
             } else if (caro.NoReply == false) {
                 await ctx.RespondAsync("A draw... Pathetic...")
                     .ConfigureAwait(false);
@@ -91,11 +93,13 @@ namespace TheGodfather.Commands.Games
             if (c4.Winner != null) {
                 await ctx.RespondAsync($"The winner is: {c4.Winner.Mention}!")
                     .ConfigureAwait(false);
-                ctx.Dependencies.GetDependency<GameStatsManager>().UpdateConnect4WonForUser(c4.Winner.Id);
+
+                var db = ctx.Dependencies.GetDependency<DatabaseService>();
+                await db.UpdateUserStatsAsync(c4.Winner.Id, "chain4_won").ConfigureAwait(false);
                 if (c4.Winner.Id == ctx.User.Id)
-                    ctx.Dependencies.GetDependency<GameStatsManager>().UpdateConnect4LostForUser(msg.User.Id);
+                    await db.UpdateUserStatsAsync(msg.User.Id, "chain4_lost").ConfigureAwait(false);
                 else
-                    ctx.Dependencies.GetDependency<GameStatsManager>().UpdateConnect4LostForUser(ctx.User.Id);
+                    await db.UpdateUserStatsAsync(ctx.User.Id, "chain4_lost").ConfigureAwait(false);
             } else if (c4.NoReply == false) {
                 await ctx.RespondAsync("A draw... Pathetic...")
                     .ConfigureAwait(false);
@@ -130,15 +134,13 @@ namespace TheGodfather.Commands.Games
             await duel.PlayAsync()
                 .ConfigureAwait(false);
 
-            var gsm = ctx.Dependencies.GetDependency<GameStatsManager>();
-            gsm.UpdateDuelsWonForUser(duel.Winner.Id);
-            gsm.UpdateDuelsLostForUser(duel.Winner.Id == ctx.User.Id ? u.Id : ctx.User.Id);
-            var em = new DiscordEmbedBuilder() {
-                Color = DiscordColor.Chartreuse
-            };
-            em.AddField($"Duel stats for {ctx.User.Username}", gsm.GetStatsForUser(ctx.User.Id).DuelStatsString(), inline: true);
-            em.AddField($"Duel stats for {u.Username}", gsm.GetStatsForUser(u.Id).DuelStatsString(), inline: true);
-            await ctx.RespondAsync($"{duel.Winner.Username} {(string.IsNullOrWhiteSpace(duel.FinishingMove) ? "wins" : duel.FinishingMove)}!", embed: em.Build())
+            await ctx.RespondAsync($"{duel.Winner.Username} {(string.IsNullOrWhiteSpace(duel.FinishingMove) ? "wins" : duel.FinishingMove)}!")
+                .ConfigureAwait(false);
+
+            var db = ctx.Dependencies.GetDependency<DatabaseService>();
+            await db.UpdateUserStatsAsync(duel.Winner.Id, "duels_won")
+                .ConfigureAwait(false);
+            await db.UpdateUserStatsAsync(duel.Winner.Id == ctx.User.Id ? u.Id : ctx.User.Id, "duels_lost")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -180,7 +182,8 @@ namespace TheGodfather.Commands.Games
             await hangman.PlayAsync()
                 .ConfigureAwait(false);
             if (hangman.Winner != null)
-                ctx.Dependencies.GetDependency<GameStatsManager>().UpdateHangmanWonForUser(hangman.Winner.Id);
+                await ctx.Dependencies.GetDependency<DatabaseService>().UpdateUserStatsAsync(hangman.Winner.Id, "hangman_won")
+                    .ConfigureAwait(false);
         }
         #endregion
 
@@ -190,7 +193,7 @@ namespace TheGodfather.Commands.Games
         [Aliases("globalstats")]
         public async Task LeaderboardAsync(CommandContext ctx)
         {
-            var em = await ctx.Dependencies.GetDependency<GameStatsManager>().GetLeaderboardAsync()
+            var em = await ctx.Dependencies.GetDependency<DatabaseService>().GetStatsLeaderboardAsync(ctx.Client)
                 .ConfigureAwait(false);
             await ctx.RespondAsync(embed: em)
                 .ConfigureAwait(false);
@@ -240,7 +243,9 @@ namespace TheGodfather.Commands.Games
             if (u == null)
                 u = ctx.User;
 
-            await ctx.RespondAsync(embed: ctx.Dependencies.GetDependency<GameStatsManager>().GetEmbeddedStatsForUser(u))
+            var e = await ctx.Dependencies.GetDependency<DatabaseService>().GetEmbeddedStatsForUserAsync(u)
+                .ConfigureAwait(false);
+            await ctx.RespondAsync(embed: e)
                 .ConfigureAwait(false);
         }
         #endregion
@@ -271,13 +276,14 @@ namespace TheGodfather.Commands.Games
                 .ConfigureAwait(false);
 
             if (ttt.Winner != null) {
+                var db = ctx.Dependencies.GetDependency<DatabaseService>();
                 await ctx.RespondAsync($"The winner is: {ttt.Winner.Mention}!")
                     .ConfigureAwait(false);
-                ctx.Dependencies.GetDependency<GameStatsManager>().UpdateTTTWonForUser(ttt.Winner.Id);
+                await db.UpdateUserStatsAsync(ttt.Winner.Id, "ttt_won").ConfigureAwait(false);
                 if (ttt.Winner.Id == ctx.User.Id)
-                    ctx.Dependencies.GetDependency<GameStatsManager>().UpdateTTTLostForUser(msg.User.Id);
+                    await db.UpdateUserStatsAsync(msg.User.Id, "ttt_lost").ConfigureAwait(false);
                 else
-                    ctx.Dependencies.GetDependency<GameStatsManager>().UpdateTTTLostForUser(ctx.User.Id);
+                    await db.UpdateUserStatsAsync(ctx.User.Id, "ttt_lost").ConfigureAwait(false);
             } else if (ttt.NoReply == false) {
                 await ctx.RespondAsync("A draw... Pathetic...")
                     .ConfigureAwait(false);

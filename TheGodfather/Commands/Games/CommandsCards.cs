@@ -32,16 +32,16 @@ namespace TheGodfather.Commands.Games
             [Description("Draw cards from the top of the deck.")]
             [Aliases("take")]
             public async Task DrawAsync(CommandContext ctx,
-                                       [Description("Ammount.")] int ammount = 1)
+                                       [Description("Amount.")] int amount = 1)
             {
                 if (_deck == null || _deck.Count == 0)
                     throw new CommandFailedException($"No deck to deal from. Use {Formatter.InlineCode("!deck new")}");
 
-                if (ammount <= 0 || ammount >= 10 || _deck.Count < ammount)
-                    throw new InvalidCommandUsageException("Cannot draw that ammount of cards...", new ArgumentException());
+                if (amount <= 0 || amount >= 10 || _deck.Count < amount)
+                    throw new InvalidCommandUsageException("Cannot draw that amount of cards...", new ArgumentException());
 
-                string hand = string.Join(" ", _deck.Take(ammount));
-                _deck.RemoveRange(0, ammount);
+                string hand = string.Join(" ", _deck.Take(amount));
+                _deck.RemoveRange(0, amount);
 
                 await ctx.RespondAsync(hand)
                     .ConfigureAwait(false);

@@ -1,24 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
 
 namespace TheGodfather.Helpers.Swat
 {
     public class SwatServer
     {
-        [JsonProperty("name")]
         public string Name { get; set; }
-
-        [JsonProperty("IP")]
         public string IP { get; set; }
-
-        [JsonProperty("JoinPort")]
         public int JoinPort { get; set; }
-
-        [JsonProperty("QueryPort")]
         public int QueryPort { get; set; }
 
 
@@ -28,6 +16,23 @@ namespace TheGodfather.Helpers.Swat
             IP = ip;
             JoinPort = joinport;
             QueryPort = queryport;
+        }
+
+
+        public static SwatServer CreateFromIP(string ip, int queryport = 10481, string name = null)
+        {
+            int joinport = 10480;
+
+            var split = ip.Split(':');
+            ip = split[0];
+            if (split.Length > 1) {
+                if (!int.TryParse(split[1], out joinport))
+                    joinport = 10480;
+            }
+            if (queryport == 10481)
+                queryport = joinport + 1;
+
+            return new SwatServer(name, ip, joinport, queryport);
         }
     }
 }

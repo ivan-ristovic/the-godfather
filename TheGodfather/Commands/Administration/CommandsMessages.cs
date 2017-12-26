@@ -24,12 +24,12 @@ namespace TheGodfather.Commands.Administration
     {
         #region COMMAND_MESSAGES_DELETE
         [Command("delete")]
-        [Description("Deletes the specified ammount of most-recent messages from the channel.")]
+        [Description("Deletes the specified amount of most-recent messages from the channel.")]
         [Aliases("-", "prune", "del", "d")]
         [RequirePermissions(Permissions.ManageMessages)]
         [RequireUserPermissions(Permissions.Administrator)]
         public async Task DeleteMessagesAsync(CommandContext ctx, 
-                                             [Description("Ammount.")] int n = 5)
+                                             [Description("Amount.")] int n = 5)
         {
             if (n <= 0 || n > 1000)
                 throw new CommandFailedException("Invalid number of messages to delete (must be in range [1, 1000].", new ArgumentOutOfRangeException());
@@ -43,13 +43,13 @@ namespace TheGodfather.Commands.Administration
 
         #region COMMAND_MESSAGES_DELETE_FROM
         [Command("deletefrom")]
-        [Description("Deletes given ammount of most-recent messages from given user.")]
+        [Description("Deletes given amount of most-recent messages from given user.")]
         [Aliases("-user", "deluser", "du", "dfu", "delfrom")]
         [RequirePermissions(Permissions.ManageMessages)]
         [RequireUserPermissions(Permissions.Administrator)]
         public async Task DeleteMessagesFromUserAsync(CommandContext ctx, 
                                                      [Description("User.")] DiscordUser u,
-                                                     [Description("Ammount.")] int n = 5)
+                                                     [Description("Amount.")] int n = 5)
         {
             if (u == null)
                 throw new InvalidCommandUsageException("User missing.");
@@ -67,13 +67,13 @@ namespace TheGodfather.Commands.Administration
 
         #region COMMAND_MESSAGES_DELETE_REGEX
         [Command("deleteregex")]
-        [Description("Deletes given ammount of most-recent messages that match a given regular expression.")]
+        [Description("Deletes given amount of most-recent messages that match a given regular expression.")]
         [Aliases("-regex", "delregex", "dr", "dfr")]
         [RequirePermissions(Permissions.ManageMessages)]
         [RequireUserPermissions(Permissions.Administrator)]
         public async Task DeleteMessagesFromRegexAsync(CommandContext ctx,
                                                       [Description("User.")] string r,
-                                                      [Description("Ammount.")] int n = 5)
+                                                      [Description("Amount.")] int n = 5)
         {
             if (r == null)
                 throw new InvalidCommandUsageException("Regex missing.");
@@ -98,13 +98,13 @@ namespace TheGodfather.Commands.Administration
 
         #region COMMAND_MESSAGES_LISTPINNED
         [Command("listpinned")]
-        [Description("List latest ammount of pinned messages.")]
+        [Description("List latest amount of pinned messages.")]
         [Aliases("lp", "listpins", "listpin", "pinned")]
         public async Task ListPinnedMessagesAsync(CommandContext ctx,
-                                                 [Description("Ammount.")] int n = 1)
+                                                 [Description("Amount.")] int n = 1)
         {
             if (n < 1 || n > 20)
-                throw new CommandFailedException("Invalid ammount (1-20).");
+                throw new CommandFailedException("Invalid amount (1-20).");
 
             var pinned = await ctx.Channel.GetPinnedMessagesAsync()
                 .ConfigureAwait(false);

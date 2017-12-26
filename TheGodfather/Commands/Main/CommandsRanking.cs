@@ -5,10 +5,6 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-
-using TheGodfather.Helpers.DataManagers;
-using TheGodfather.Exceptions;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -32,9 +28,9 @@ namespace TheGodfather.Commands.Messages
             if (u == null)
                 u = ctx.User;
 
-            var ranks = ctx.Dependencies.GetDependency<RankManager>().Ranks;
-            var rank = ctx.Dependencies.GetDependency<RankManager>().GetRankForId(u.Id);
-            var msgcount = ctx.Dependencies.GetDependency<RankManager>().GetMessageCountForId(u.Id);
+            var shared = ctx.Dependencies.GetDependency<SharedData>();
+            var rank = shared.GetRankForId(u.Id);
+            var msgcount = shared.GetMessageCountForId(u.Id);
 
             var em = new DiscordEmbedBuilder() {
                 Title = u.Username,
@@ -42,7 +38,7 @@ namespace TheGodfather.Commands.Messages
                 Color = DiscordColor.Aquamarine,
                 ThumbnailUrl = u.AvatarUrl
             };
-            em.AddField("Rank", $"{Formatter.Italic(rank < ranks.Count ? ranks[rank] : "Low")} (#{rank})");
+            em.AddField("Rank", $"{Formatter.Italic(rank < shared.Ranks.Count ? shared.Ranks[rank] : "Low")} (#{rank})");
             em.AddField("XP", $"{msgcount}", inline: true);
             em.AddField("XP needed for next rank", $"{(rank + 1) * (rank + 1) * 10}", inline: true);
             await ctx.RespondAsync(embed: em.Build())
@@ -61,25 +57,13 @@ namespace TheGodfather.Commands.Messages
                 Color = DiscordColor.IndianRed
             };
 
-            var ranks = ctx.Dependencies.GetDependency<RankManager>().Ranks;
-            for (int i = 1; i < ranks.Count; i++) {
-                var xpneeded = ctx.Dependencies.GetDependency<RankManager>().XpNeededForRankWithIndex(i);
-                em.AddField($"(#{i}) {ranks[i]}", $"XP needed: {xpneeded}", inline: true);
+            var shared = ctx.Dependencies.GetDependency<SharedData>();
+            for (int i = 1; i < shared.Ranks.Count; i++) {
+                var xpneeded = shared.XpNeededForRankWithIndex(i);
+                em.AddField($"(#{i}) {shared.Ranks[i]}", $"XP needed: {xpneeded}", inline: true);
             }
 
             await ctx.RespondAsync(embed: em.Build())
-                .ConfigureAwait(false);
-        }
-        #endregion
-
-        #region COMMAND_RANK_SAVE
-        [Command("save")]
-        [Description("Save ranks to file.")]
-        [RequireOwner]
-        public async Task SaveAsync(CommandContext ctx)
-        {
-            ctx.Dependencies.GetDependency<RankManager>().Save(ctx.Client.DebugLogger);
-            await ctx.RespondAsync("Ranks successfully saved.")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -89,16 +73,16 @@ namespace TheGodfather.Commands.Messages
         [Description("Get rank leaderboard.")]
         public async Task TopAsync(CommandContext ctx)
         {
-            var rm = ctx.Dependencies.GetDependency<RankManager>();
-            var msgcount = rm.MessageCount;
-            var ranks = rm.Ranks;
+            var shared = ctx.Dependencies.GetDependency<SharedData>();
+            var msgcount = shared.MessageCount;
+            var ranks = shared.Ranks;
 
             var top = msgcount.OrderByDescending(v => v.Value).Take(10);
             var em = new DiscordEmbedBuilder() { Title = "Top ranked users (globally): ", Color = DiscordColor.Purple };
             foreach (var v in top) {
                 var u = await ctx.Client.GetUserAsync(v.Key)
                     .ConfigureAwait(false);
-                var rank = rm.GetRankForMessageCount(v.Value);
+                var rank = shared.GetRankForMessageCount(v.Value);
                 if (rank < ranks.Count)
                     em.AddField(u.Username, $"{ranks[rank]} ({rank}) ({v.Value} XP)");
                 else

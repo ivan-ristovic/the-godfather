@@ -3,7 +3,6 @@ using System;
 using System.IO;
 using System.Net;
 using System.Linq;
-using System.Drawing;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Scripting;
@@ -11,13 +10,14 @@ using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis;
 
 using TheGodfather.Helpers;
-using TheGodfather.Helpers.DataManagers;
 using TheGodfather.Exceptions;
+using TheGodfather.Services;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using System.Text;
 #endregion
 
 namespace TheGodfather.Commands.Administration
@@ -92,8 +92,9 @@ namespace TheGodfather.Commands.Administration
         [PreExecutionCheck]
         public async Task ClearLogAsync(CommandContext ctx)
         {
+            /*
             try {
-                ctx.Dependencies.GetDependency<TheGodfather>().LogHandle.ClearLogFile();
+                ctx.Dependencies.GetDependency<TheGodfather>().Logger.ClearLogFile();
             } catch (Exception e) {
                 ctx.Client.DebugLogger.LogMessage(LogLevel.Error, "TheGodfather", e.Message, DateTime.Now);
                 throw e;
@@ -101,6 +102,53 @@ namespace TheGodfather.Commands.Administration
 
             await ctx.RespondAsync("Logs cleared.")
                 .ConfigureAwait(false);
+            */
+        }
+        #endregion
+        
+        #region COMMAND_DBQUERY
+        [Command("dbquery")]
+        [Description("Clear application logs.")]
+        [Aliases("sql", "dbq", "q")]
+        [PreExecutionCheck]
+        public async Task DatabaseQuery(CommandContext ctx,
+                                        [RemainingText, Description("New name.")] string query)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+                throw new InvalidCommandUsageException("Query missing.");
+
+            var res = await ctx.Dependencies.GetDependency<DatabaseService>().ExecuteRawQueryAsync(query)
+                .ConfigureAwait(false);
+
+            if (!res.Any() || !res.First().Any()) {
+                await ctx.RespondAsync("No results.")
+                    .ConfigureAwait(false);
+                return;
+            }
+
+            var d0 = res.First().Select(r => r.Key).OrderByDescending(r => r.Length).First().Length + 1;
+
+            var eb = new DiscordEmbedBuilder {
+                Title = string.Concat("Results: ", res.Count.ToString("#,##0")),
+                Description = string.Concat("Showing ", res.Count > 24 ? "first 24" : "all", " results for query ", Formatter.InlineCode(query), ":"),
+                Color = new DiscordColor(0x007FFF)
+            };
+
+            var i = 0;
+            foreach (var row in res.Take(24)) {
+                var sb = new StringBuilder();
+
+                foreach (var r in row) {
+                    sb.Append(r.Key).Append(new string(' ', d0 - r.Key.Length)).Append("| ").AppendLine(r.Value);
+                }
+
+                eb.AddField(string.Concat("Result #", i++), Formatter.BlockCode(sb.ToString()), false);
+            }
+
+            if (res.Count > 24)
+                eb.AddField("Display incomplete", string.Concat((res.Count - 24).ToString("#,##0"), " results were omitted."), false);
+
+            await ctx.RespondAsync("", embed: eb.Build()).ConfigureAwait(false);
         }
         #endregion
 
@@ -282,15 +330,15 @@ namespace TheGodfather.Commands.Administration
                 .ConfigureAwait(false);
         }
         #endregion
-        
+
         #region COMMAND_TOGGLEIGNORE
         [Command("toggleignore")]
         [Description("Toggle bot's reaction to commands.")]
         [Aliases("ti")]
         public async Task ToggleIgnoreAsync(CommandContext ctx)
         {
-            ctx.Dependencies.GetDependency<TheGodfather>().ToggleListening();
-            await ctx.RespondAsync("Done!")
+            TheGodfather.Listening = !TheGodfather.Listening;
+            await ctx.RespondAsync("Listening status set to: " + TheGodfather.Listening)
                 .ConfigureAwait(false);
         }
         #endregion
@@ -311,8 +359,11 @@ namespace TheGodfather.Commands.Administration
                 if (string.IsNullOrWhiteSpace(status))
                     throw new InvalidCommandUsageException("Invalid status.");
 
-                ctx.Dependencies.GetDependency<StatusManager>().AddStatus(status);
-
+                if (status.Length > 60)
+                    throw new CommandFailedException("Status length cannot be greater than 60 characters.");
+                
+                await ctx.Dependencies.GetDependency<DatabaseService>().AddBotStatusAsync(status)
+                    .ConfigureAwait(false);
                 await ctx.RespondAsync("Status added!")
                     .ConfigureAwait(false);
             }
@@ -323,15 +374,10 @@ namespace TheGodfather.Commands.Administration
             [Description("Remove status from running queue.")]
             [Aliases("-", "remove")]
             public async Task DeleteAsync(CommandContext ctx,
-                                         [RemainingText, Description("Status.")] string status)
+                                         [Description("Status ID.")] int id)
             {
-                if (string.IsNullOrWhiteSpace(status))
-                    throw new InvalidCommandUsageException("Invalid status.");
-
-                if (status == "!help")
-                    throw new InvalidCommandUsageException("Cannot delete help status!");
-
-                ctx.Dependencies.GetDependency<StatusManager>().DeleteStatus(status);
+                await ctx.Dependencies.GetDependency<DatabaseService>().DeleteBotStatusAsync(id)
+                    .ConfigureAwait(false);
                 await ctx.RespondAsync("Status removed!")
                     .ConfigureAwait(false);
             }
@@ -342,7 +388,9 @@ namespace TheGodfather.Commands.Administration
             [Description("List all statuses.")]
             public async Task ListAsync(CommandContext ctx)
             {
-                await ctx.RespondAsync("My current statuses:\n" + string.Join("\n", ctx.Dependencies.GetDependency<StatusManager>().Statuses))
+                var statuses = await ctx.Dependencies.GetDependency<DatabaseService>().GetBotStatusesAsync()
+                    .ConfigureAwait(false);
+                await ctx.RespondAsync("My current statuses:\n" + string.Join("\n", statuses.Select(kvp => $"{kvp.Key} : {kvp.Value}")))
                     .ConfigureAwait(false);
             }
             #endregion

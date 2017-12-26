@@ -34,7 +34,7 @@ namespace TheGodfather.Commands.Search
             if (string.IsNullOrWhiteSpace(sub))
                 throw new InvalidCommandUsageException("Missing search query.");
             if (n < 1 || n > 10)
-                throw new CommandFailedException("Invalid ammount (must be 1-10).", new ArgumentOutOfRangeException());
+                throw new CommandFailedException("Invalid amount (must be 1-10).", new ArgumentOutOfRangeException());
 
             var res = await ctx.Dependencies.GetDependency<ImgurService>().GetItemsFromSubAsync(
                 sub,
@@ -59,7 +59,7 @@ namespace TheGodfather.Commands.Search
             if (string.IsNullOrWhiteSpace(sub))
                 throw new InvalidCommandUsageException("Missing search query.");
             if (n < 1 || n > 10)
-                throw new CommandFailedException("Invalid ammount (must be 1-10).", new ArgumentOutOfRangeException());
+                throw new CommandFailedException("Invalid amount (must be 1-10).", new ArgumentOutOfRangeException());
 
 
             var res = await ctx.Dependencies.GetDependency<ImgurService>().GetItemsFromSubAsync(
@@ -86,7 +86,7 @@ namespace TheGodfather.Commands.Search
             if (string.IsNullOrWhiteSpace(sub))
                 throw new InvalidCommandUsageException("Missing search query.");
             if (n < 1 || n > 10)
-                throw new CommandFailedException("Invalid ammount (must be 1-10).", new ArgumentOutOfRangeException());
+                throw new CommandFailedException("Invalid amount (must be 1-10).", new ArgumentOutOfRangeException());
 
             TimeWindow t = TimeWindow.Day;
             if (time == "day" || time == "d")

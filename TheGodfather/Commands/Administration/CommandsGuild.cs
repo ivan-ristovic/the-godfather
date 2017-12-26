@@ -6,7 +6,7 @@ using System.IO;
 using System.Drawing;
 using System.Threading.Tasks;
 
-using TheGodfather.Helpers.DataManagers;
+using TheGodfather.Services;
 using TheGodfather.Exceptions;
 
 using DSharpPlus;
@@ -138,7 +138,7 @@ namespace TheGodfather.Commands.Administration
 
         #region COMMAND_GUILD_PRUNE
         [Command("prune")]
-        [Description("Kick guild members who weren't active in given ammount of days (1-7).")]
+        [Description("Kick guild members who weren't active in given amount of days (1-7).")]
         [Aliases("p", "clean")]
         [RequirePermissions(Permissions.KickMembers)]
         [RequireUserPermissions(Permissions.Administrator)]
@@ -197,7 +197,8 @@ namespace TheGodfather.Commands.Administration
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task GetWelcomeChannelAsync(CommandContext ctx)
         {
-            ulong cid = ctx.Dependencies.GetDependency<GuildConfigManager>().GetGuildWelcomeChannelId(ctx.Guild.Id);
+            ulong cid = await ctx.Dependencies.GetDependency<DatabaseService>().GetGuildWelcomeChannelIdAsync(ctx.Guild.Id)
+                .ConfigureAwait(false);
             if (cid != 0) {
                 var c = ctx.Guild.GetChannel(cid);
                 if (c == null)
@@ -218,7 +219,8 @@ namespace TheGodfather.Commands.Administration
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task GetLeaveChannelAsync(CommandContext ctx)
         {
-            ulong cid = ctx.Dependencies.GetDependency<GuildConfigManager>().GetGuildLeaveChannelId(ctx.Guild.Id);
+            ulong cid = await ctx.Dependencies.GetDependency<DatabaseService>().GetGuildLeaveChannelIdAsync(ctx.Guild.Id)
+                .ConfigureAwait(false);
             if (cid != 0) {
                 var c = ctx.Guild.GetChannel(cid);
                 if (c == null)
@@ -246,12 +248,13 @@ namespace TheGodfather.Commands.Administration
             if (c.Type != ChannelType.Text)
                 throw new CommandFailedException("Channel must be text type.");
 
-            if (ctx.Dependencies.GetDependency<GuildConfigManager>().TrySetGuildWelcomeChannelId(ctx.Guild.Id, c.Id)) {
-                await ctx.RespondAsync($"Default welcome message channel set to {Formatter.Bold(c.Name)}.")
-                    .ConfigureAwait(false);
-            } else {
-                throw new CommandFailedException("Failed to set welcome channel.");
-            }
+            if (!ctx.Guild.Channels.Any(chn => chn.Id == c.Id))
+                throw new CommandFailedException("That channel does not belong to this guild!");
+
+            await ctx.Dependencies.GetDependency<DatabaseService>().SetGuildWelcomeChannelAsync(ctx.Guild.Id, c.Id)
+                .ConfigureAwait(false);
+            await ctx.RespondAsync($"Default welcome message channel set to {Formatter.Bold(c.Name)}.")
+                .ConfigureAwait(false);
         }
         #endregion
 
@@ -269,12 +272,13 @@ namespace TheGodfather.Commands.Administration
             if (c.Type != ChannelType.Text)
                 throw new CommandFailedException("Channel must be text type.");
 
-            if (ctx.Dependencies.GetDependency<GuildConfigManager>().TrySetGuildLeaveChannelId(ctx.Guild.Id, c.Id)) {
-                await ctx.RespondAsync($"Default leave message channel set to {Formatter.Bold(c.Name)}.")
-                    .ConfigureAwait(false);
-            } else {
-                throw new CommandFailedException("Failed to set welcome channel.");
-            }
+            if (!ctx.Guild.Channels.Any(chn => chn.Id == c.Id))
+                throw new CommandFailedException("That channel does not belong to this guild!");
+
+            await ctx.Dependencies.GetDependency<DatabaseService>().SetGuildLeaveChannelAsync(ctx.Guild.Id, c.Id)
+                .ConfigureAwait(false);
+            await ctx.RespondAsync($"Default leave message channel set to {Formatter.Bold(c.Name)}.")
+                .ConfigureAwait(false);
         }
         #endregion
 
@@ -285,7 +289,8 @@ namespace TheGodfather.Commands.Administration
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task RemoveWelcomeChannelAsync(CommandContext ctx)
         {
-            ctx.Dependencies.GetDependency<GuildConfigManager>().RemoveGuildWelcomeChannel(ctx.Guild.Id);
+            await ctx.Dependencies.GetDependency<DatabaseService>().RemoveGuildWelcomeChannelAsync(ctx.Guild.Id)
+                .ConfigureAwait(false);
             await ctx.RespondAsync("Default welcome message channel removed.")
                 .ConfigureAwait(false);
         }
@@ -298,7 +303,8 @@ namespace TheGodfather.Commands.Administration
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task DeleteLeaveChannelAsync(CommandContext ctx)
         {
-            ctx.Dependencies.GetDependency<GuildConfigManager>().RemoveGuildLeaveChannel(ctx.Guild.Id);
+            await ctx.Dependencies.GetDependency<DatabaseService>().RemoveGuildLeaveChannelAsync(ctx.Guild.Id)
+                .ConfigureAwait(false);
             await ctx.RespondAsync("Default leave message channel removed.")
                 .ConfigureAwait(false);
         }
@@ -399,9 +405,9 @@ namespace TheGodfather.Commands.Administration
                         Title = "Details for emoji:",
                         Description = emoji,
                         Color = DiscordColor.CornflowerBlue
-                    }.AddField("Name", emoji.Name, inline: false)
-                     .AddField("Created by", emoji.User != null ? emoji.User.Username : "<unknown>", inline: false)
-                     .AddField("Integration managed", emoji.Managed.ToString(), inline: false)
+                    }.AddField("Name", emoji.Name, inline: true)
+                     .AddField("Created by", emoji.User != null ? emoji.User.Username : "<unknown>", inline: true)
+                     .AddField("Integration managed", emoji.Managed.ToString(), inline: true)
                     ).ConfigureAwait(false);
                 } catch (NotFoundException ex) {
                     throw new CommandFailedException("Can't find that emoji in list of emoji for this guild.", ex);

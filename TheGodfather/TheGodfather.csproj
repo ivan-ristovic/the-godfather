@@ -88,8 +88,8 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AutoMapper, Version=6.2.1.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
-      <HintPath>..\packages\AutoMapper.6.2.1\lib\net45\AutoMapper.dll</HintPath>
+    <Reference Include="AutoMapper, Version=6.2.2.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <HintPath>..\packages\AutoMapper.6.2.2\lib\net45\AutoMapper.dll</HintPath>
     </Reference>
     <Reference Include="DSharpPlus, Version=3.2.3.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\DSharpPlus.3.2.3\lib\net47\DSharpPlus.dll</HintPath>
@@ -109,38 +109,38 @@
     <Reference Include="GiphyDotNet, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\GiphyDotNet.1.0.0.0\lib\GiphyDotNet.dll</HintPath>
     </Reference>
-    <Reference Include="Google.Apis, Version=1.31.0.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
-      <HintPath>..\packages\Google.Apis.1.31.0-beta01\lib\net45\Google.Apis.dll</HintPath>
+    <Reference Include="Google.Apis, Version=1.32.0.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
+      <HintPath>..\packages\Google.Apis.1.32.0\lib\net45\Google.Apis.dll</HintPath>
     </Reference>
-    <Reference Include="Google.Apis.Auth, Version=1.31.0.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
-      <HintPath>..\packages\Google.Apis.Auth.1.31.0-beta01\lib\net45\Google.Apis.Auth.dll</HintPath>
+    <Reference Include="Google.Apis.Auth, Version=1.32.0.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
+      <HintPath>..\packages\Google.Apis.Auth.1.32.0\lib\net45\Google.Apis.Auth.dll</HintPath>
     </Reference>
-    <Reference Include="Google.Apis.Auth.PlatformServices, Version=1.31.0.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
-      <HintPath>..\packages\Google.Apis.Auth.1.31.0-beta01\lib\net45\Google.Apis.Auth.PlatformServices.dll</HintPath>
+    <Reference Include="Google.Apis.Auth.PlatformServices, Version=1.32.0.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
+      <HintPath>..\packages\Google.Apis.Auth.1.32.0\lib\net45\Google.Apis.Auth.PlatformServices.dll</HintPath>
     </Reference>
-    <Reference Include="Google.Apis.Core, Version=1.31.0.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
-      <HintPath>..\packages\Google.Apis.Core.1.31.0-beta01\lib\net45\Google.Apis.Core.dll</HintPath>
+    <Reference Include="Google.Apis.Core, Version=1.32.0.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
+      <HintPath>..\packages\Google.Apis.Core.1.32.0\lib\net45\Google.Apis.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Google.Apis.PlatformServices, Version=1.31.0.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
-      <HintPath>..\packages\Google.Apis.1.31.0-beta01\lib\net45\Google.Apis.PlatformServices.dll</HintPath>
+    <Reference Include="Google.Apis.PlatformServices, Version=1.32.0.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
+      <HintPath>..\packages\Google.Apis.1.32.0\lib\net45\Google.Apis.PlatformServices.dll</HintPath>
     </Reference>
-    <Reference Include="Google.Apis.YouTube.v3, Version=1.30.0.1035, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
-      <HintPath>..\packages\Google.Apis.YouTube.v3.1.30.0.1035\lib\net45\Google.Apis.YouTube.v3.dll</HintPath>
+    <Reference Include="Google.Apis.YouTube.v3, Version=1.32.0.1063, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
+      <HintPath>..\packages\Google.Apis.YouTube.v3.1.32.0.1063\lib\net45\Google.Apis.YouTube.v3.dll</HintPath>
     </Reference>
     <Reference Include="Imgur.API, Version=5.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Imgur.API.5.0.0-beta1\lib\net45\Imgur.API.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.CodeAnalysis, Version=2.4.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.CodeAnalysis.Common.2.4.0\lib\netstandard1.3\Microsoft.CodeAnalysis.dll</HintPath>
+    <Reference Include="Microsoft.CodeAnalysis, Version=2.6.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.CodeAnalysis.Common.2.6.1\lib\netstandard1.3\Microsoft.CodeAnalysis.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.CSharp, Version=2.4.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.CodeAnalysis.CSharp.2.4.0\lib\netstandard1.3\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp, Version=2.6.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.CodeAnalysis.CSharp.2.6.1\lib\netstandard1.3\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.CSharp.Scripting, Version=2.4.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.CodeAnalysis.CSharp.Scripting.2.4.0\lib\netstandard1.3\Microsoft.CodeAnalysis.CSharp.Scripting.dll</HintPath>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp.Scripting, Version=2.6.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.CodeAnalysis.CSharp.Scripting.2.6.1\lib\netstandard1.3\Microsoft.CodeAnalysis.CSharp.Scripting.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.CodeAnalysis.Scripting, Version=2.4.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.CodeAnalysis.Scripting.Common.2.4.0\lib\netstandard1.3\Microsoft.CodeAnalysis.Scripting.dll</HintPath>
+    <Reference Include="Microsoft.CodeAnalysis.Scripting, Version=2.6.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.CodeAnalysis.Scripting.Common.2.6.1\lib\netstandard1.3\Microsoft.CodeAnalysis.Scripting.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Extensions.Caching.Abstractions, Version=2.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
@@ -160,6 +160,9 @@
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="Npgsql, Version=3.2.6.0, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Npgsql.3.2.6\lib\net451\Npgsql.dll</HintPath>
     </Reference>
     <Reference Include="RedditSharp, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\RedditSharp.2.0.0-CI00046\lib\netstandard1.3\RedditSharp.dll</HintPath>
@@ -219,6 +222,9 @@
     <Reference Include="System.Text.Encoding.CodePages, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Text.Encoding.CodePages.4.4.0\lib\net461\System.Text.Encoding.CodePages.dll</HintPath>
     </Reference>
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.1.1.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.4.0\lib\netstandard2.0\System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
@@ -236,24 +242,18 @@
     <Compile Include="Commands\Games\Common\Nunchi.cs" />
     <Compile Include="Commands\Games\Common\Race.cs" />
     <Compile Include="Commands\Games\Common\TicTacToe.cs" />
-    <Compile Include="Helpers\BotConfig.cs" />
+    <Compile Include="Exceptions\CommandFailedException.cs" />
+    <Compile Include="Exceptions\InvalidCommandUsageException.cs" />
+    <Compile Include="BotConfig.cs" />
     <Compile Include="Helpers\Collections\ConcurrentHashSet.cs" />
-    <Compile Include="Helpers\DataManagers\BankManager.cs" />
-    <Compile Include="Helpers\DataManagers\FeedManager.cs" />
-    <Compile Include="Helpers\DataManagers\GameStatsManager.cs" />
-    <Compile Include="Helpers\DataManagers\GuildConfigManager.cs" />
-    <Compile Include="Helpers\DataManagers\SwatServerManager.cs" />
     <Compile Include="Helpers\EvaluationEnvironment.cs" />
     <Compile Include="Commands\Search\CommandsJokes.cs" />
-    <Compile Include="Exceptions.cs" />
-    <Compile Include="Helpers\BotDependencyList.cs" />
-    <Compile Include="Helpers\DataManagers\InsultManager.cs" />
-    <Compile Include="Helpers\DataManagers\MemeManager.cs" />
-    <Compile Include="Helpers\DataManagers\RankManager.cs" />
+    <Compile Include="Exceptions\DatabaseServiceException.cs" />
+    <Compile Include="Services\DatabaseService\RankDatabaseService.cs" />
+    <Compile Include="Services\FeedService\FeedEntry.cs" />
     <Compile Include="Helpers\GameStats.cs" />
-    <Compile Include="Helpers\GuildConfig.cs" />
-    <Compile Include="Helpers\PreExecutionCheckAttribute.cs" />
-    <Compile Include="Helpers\HelpFormatter.cs" />
+    <Compile Include="PreExecutionCheckAttribute.cs" />
+    <Compile Include="HelpFormatter.cs" />
     <Compile Include="Commands\Administration\CommandsOwner.cs" />
     <Compile Include="Commands\Games\CommandsBank.cs" />
     <Compile Include="Commands\Games\CommandsCards.cs" />
@@ -261,21 +261,21 @@
     <Compile Include="Commands\Games\CommandsQuiz.cs" />
     <Compile Include="Commands\Games\CommandsRace.cs" />
     <Compile Include="Commands\Main\CommandsRandom.cs" />
-    <Compile Include="Commands\Messages\CommandsTextTrigger.cs" />
+    <Compile Include="Commands\Main\CommandsTextReaction.cs" />
     <Compile Include="Commands\Administration\CommandsChannels.cs" />
     <Compile Include="Commands\Games\CommandsGamble.cs" />
     <Compile Include="Commands\Games\CommandsGames.cs" />
     <Compile Include="Commands\Administration\CommandsGuild.cs" />
-    <Compile Include="Commands\Messages\CommandsFilter.cs" />
+    <Compile Include="Commands\Main\CommandsFilter.cs" />
     <Compile Include="Commands\Main\CommandsPoll.cs" />
-    <Compile Include="Commands\Messages\CommandsReactionTrigger.cs" />
+    <Compile Include="Commands\Main\CommandsEmojiReaction.cs" />
     <Compile Include="Commands\Search\CommandsGiphy.cs" />
     <Compile Include="Commands\Search\CommandsImgur.cs" />
     <Compile Include="Commands\Main\CommandsInsult.cs" />
     <Compile Include="Commands\Main\CommandsMemes.cs" />
     <Compile Include="Commands\Administration\CommandsMessages.cs" />
     <Compile Include="Commands\Main\CommandsMain.cs" />
-    <Compile Include="Commands\Messages\CommandsRanking.cs" />
+    <Compile Include="Commands\Main\CommandsRanking.cs" />
     <Compile Include="Commands\Search\CommandsReddit.cs" />
     <Compile Include="Commands\Administration\CommandsRoles.cs" />
     <Compile Include="Commands\Search\CommandsRSS.cs" />
@@ -285,18 +285,31 @@
     <Compile Include="Commands\SWAT\CommandsSwat.cs" />
     <Compile Include="Commands\Administration\CommandsUsers.cs" />
     <Compile Include="Commands\Voice\CommandsVoice.cs" />
-    <Compile Include="Helpers\Logger.cs" />
-    <Compile Include="Helpers\DataManagers\StatusManager.cs" />
     <Compile Include="Helpers\SWAT\SwatServer.cs" />
     <Compile Include="Helpers\SWAT\SwatServerInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\DatabaseService\BankDatabaseServices.cs" />
+    <Compile Include="Services\DatabaseService\DatabaseService.cs" />
+    <Compile Include="Services\DatabaseService\FeedDatabaseService.cs" />
+    <Compile Include="Services\DatabaseService\FilterDatabaseServices.cs" />
+    <Compile Include="Services\DatabaseService\GuildConfigDatabaseService.cs" />
+    <Compile Include="Services\DatabaseService\InsultDatabaseServices.cs" />
+    <Compile Include="Services\DatabaseService\MemeDatabaseService.cs" />
+    <Compile Include="Services\DatabaseService\PrefixDatabaseService.cs" />
+    <Compile Include="Services\DatabaseService\ReactionDatabaseService.cs" />
+    <Compile Include="Services\DatabaseService\StatsDatabaseService.cs" />
+    <Compile Include="Services\DatabaseService\StatusDatabaseService.cs" />
+    <Compile Include="Services\DatabaseService\SwatDatabaseService.cs" />
+    <Compile Include="Services\FeedService\FeedService.cs" />
+    <Compile Include="Services\FeedService\Subscription.cs" />
     <Compile Include="Services\GiphyService.cs" />
     <Compile Include="Services\ImgurService.cs" />
     <Compile Include="Services\JokesService.cs" />
     <Compile Include="Services\SteamService.cs" />
     <Compile Include="Services\UrbanDictService.cs" />
     <Compile Include="Services\YoutubeService.cs" />
+    <Compile Include="SharedData.cs" />
     <Compile Include="TheGodfather.cs" />
   </ItemGroup>
   <ItemGroup>

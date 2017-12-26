@@ -2,7 +2,7 @@
 using System;
 using System.Threading.Tasks;
 
-using TheGodfather.Helpers.DataManagers;
+using TheGodfather.Services;
 using TheGodfather.Exceptions;
 
 using DSharpPlus;
@@ -31,7 +31,7 @@ namespace TheGodfather.Commands.Games
             if (bid != 0) {
 
                 if (bid < 0)
-                    throw new InvalidCommandUsageException("Invalid bid ammount!");
+                    throw new InvalidCommandUsageException("Invalid bid amount!");
 
                 if (string.IsNullOrWhiteSpace(bet))
                     throw new InvalidCommandUsageException("Missing heads or tails call.");
@@ -45,12 +45,14 @@ namespace TheGodfather.Commands.Games
                 else
                     throw new CommandFailedException($"Invalid coin outcome call (has to be {Formatter.Bold("h")} or {Formatter.Bold("t")})");
 
-                if (!ctx.Dependencies.GetDependency<BankManager>().RetrieveCredits(ctx.User.Id, bid))
+                if (!await ctx.Dependencies.GetDependency<DatabaseService>().RetrieveCreditsAsync(ctx.User.Id, bid).ConfigureAwait(false))
                     throw new CommandFailedException("You do not have enough credits in WM bank!");
 
                 int rnd = new Random().Next(2);
                 if (rnd == guess)
-                    ctx.Dependencies.GetDependency<BankManager>().IncreaseBalance(ctx.User.Id, bid * 2);
+                    await ctx.Dependencies.GetDependency<DatabaseService>().IncreaseBalanceForUserAsync(ctx.User.Id, bid * 2)
+                        .ConfigureAwait(false);
+
                 await ctx.RespondAsync($"{ctx.User.Mention} flipped " +
                     $"{(Formatter.Bold(rnd == 0 ? "Heads" : "Tails"))} " +
                     $"{(guess == rnd ? $"and won {bid} credits" : $"and lost {bid} credits")} !"
@@ -73,7 +75,7 @@ namespace TheGodfather.Commands.Games
             if (bid != 0) {
 
                 if (bid < 0)
-                    throw new InvalidCommandUsageException("Invalid bid ammount!");
+                    throw new InvalidCommandUsageException("Invalid bid amount!");
 
                 if (guess == 0)
                     throw new InvalidCommandUsageException("Missing number as a guess.");
@@ -81,12 +83,13 @@ namespace TheGodfather.Commands.Games
                 if (guess < 1 || guess > 6)
                     throw new CommandFailedException($"Invalid guess. Has to be a number from {Formatter.Bold("1")} to {Formatter.Bold("6")})");
 
-                if (!ctx.Dependencies.GetDependency<BankManager>().RetrieveCredits(ctx.User.Id, bid))
+                if (!await ctx.Dependencies.GetDependency<DatabaseService>().RetrieveCreditsAsync(ctx.User.Id, bid).ConfigureAwait(false))
                     throw new CommandFailedException("You do not have enough credits in WM bank!");
 
                 int rnd = new Random().Next(1, 7);
                 if (rnd == guess)
-                    ctx.Dependencies.GetDependency<BankManager>().IncreaseBalance(ctx.User.Id, bid * 6);
+                    await ctx.Dependencies.GetDependency<DatabaseService>().IncreaseBalanceForUserAsync(ctx.User.Id, bid * 6)
+                        .ConfigureAwait(false);
 
                 await ctx.RespondAsync($"{DiscordEmoji.FromName(ctx.Client, ":game_die:")} {ctx.User.Mention} rolled a " +
                     $"{rnd} {(guess == rnd ? $"and won {bid * 5} credits" : $"and lost {bid} credits")} !"
@@ -108,7 +111,7 @@ namespace TheGodfather.Commands.Games
             if (bid < 5)
                 throw new CommandFailedException("5 is the minimum bid!", new ArgumentOutOfRangeException());
 
-            if (!ctx.Dependencies.GetDependency<BankManager>().RetrieveCredits(ctx.User.Id, bid))
+            if (!await ctx.Dependencies.GetDependency<DatabaseService>().RetrieveCreditsAsync(ctx.User.Id, bid).ConfigureAwait(false))
                 throw new CommandFailedException("You do not have enough credits in WM bank!");
 
             var slot_res = RollSlot(ctx);
@@ -125,10 +128,10 @@ namespace TheGodfather.Commands.Games
                 .ConfigureAwait(false);
 
             if (won > 0)
-                ctx.Dependencies.GetDependency<BankManager>().IncreaseBalance(ctx.User.Id, won);
+                await ctx.Dependencies.GetDependency<DatabaseService>().IncreaseBalanceForUserAsync(ctx.User.Id, won)
+                    .ConfigureAwait(false);
         }
         #endregion
-
 
         #region HELPER_FUNCTIONS
         private DiscordEmoji[,] RollSlot(CommandContext ctx)

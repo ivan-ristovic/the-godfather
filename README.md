@@ -56,9 +56,15 @@ Commands use the following types:
 |   | ``say``  |   | ``[text] What to say`` | Make Godfather say something! | ``!say Luke, I am your father!`` |
 |   | ``zugify`` |   | ``[text] Text`` | Requested by Zugi. It is so stupid it isn't worth describing... | ``!zugify Some text`` |
    |   |   |   |   |   |
-| ``filter``<br>``filters``<br>``f`` | ``add``<br>``+``<br>``new`` | Manage Guild (user) | ``[string] Trigger`` | Add a new filter to filter guild list. Whenever someone sends a message containing ``Trigger``, bot will delete it. Triggers can also be regular expressions (case ignored). | ``!filter add fuck`` |
+| ``emojireaction``<br>``emojireactions``<br>``ereact``<br>``emojir``<br>``er`` |   | Manage Guild (user) | ``[emoji] Emoji``<br><br>``[text] Triggers`` | Add a new automatic emoji reaction to a word from trigger list. Whenever someone sends a message containing a trigger word, bot will react to it with ``Emoji``. Trigger list is made of words separated with whitespace. | ``!emojir :smile: laughing`` |
+| ``emojireaction``<br>``emojireactions``<br>``ereact``<br>``emojir``<br>``er`` | ``add``<br>``+``<br>``new`` | Manage Guild (user) | ``[emoji] Emoji``<br><br>``[text] Triggers`` | Same as above command. | ``!emojir add :smile: laughing`` |
+| ``emojireaction``<br>``emojireactions``<br>``ereact``<br>``emojir``<br>``er`` | ``clear``<br>``c``<br>``da`` | Administrator (user) |  | Delete all reactions for the current guild. | ``!emojir clear`` |
+| ``emojireaction``<br>``emojireactions``<br>``ereact``<br>``emojir``<br>``er`` | ``delete``<br>``-``<br>``remove``<br>``del``<br>``rm`` | Manage Guild (user) | ``[text] Triggers`` | Remove trigger word (can be a list of words separated by whitespaces) from guild emoji reaction list. Use ``!reaction list`` to view reactions. | ``!emojir delete smile hehe blabla`` |
+| ``emojireaction``<br>``emojireactions``<br>``ereact``<br>``emojir``<br>``er`` | ``list``<br>``ls``<br>``l`` |  | ``(optional) [int] Page (def: 1)`` | List guild reactions on page ``Page``. | ``!emojir list 3`` |
+|   |   |   |   |   |   |
+| ``filter``<br>``filters``<br>``f`` | ``add``<br>``+``<br>``new`` | Manage Guild (user) | ``[text] Trigger`` | Add a new filter to filter guild list. Whenever someone sends a message containing ``Trigger``, bot will delete it. Triggers can also be regular expressions (case ignored). | ``!filter add fuck`` |
 | ``filter``<br>``filters``<br>``f`` | ``clear``<br>``ca``<br>``c`` | Administrator (user) |  | Delete all filters for the current guild. | ``!filter clear`` |
-| ``filter``<br>``filters``<br>``f`` | ``delete``<br>``-``<br>``remove``<br>``del``<br>``rm`` | Manage Guild (user) | ``[int] Index`` | Remove filter with a given index from guild filter list. Use ``!filter list`` to view filters. | ``!filter delete 5`` |
+| ``filter``<br>``filters``<br>``f`` | ``delete``<br>``-``<br>``remove``<br>``del``<br>``rm`` | Manage Guild (user) | ``[text] Trigger`` | Remove given filter from guild filter list. Use ``!filter list`` to view filters. | ``!filter delete fuck`` |
 | ``filter``<br>``filters``<br>``f`` | ``list`` | ``ls``<br>``l`` | ``(optional) [int] Page (def: 1)`` | List guild filters on page ``Page``. | ``!filter list 3`` |
 |   |   |   |   |   |   |
 | ``insult``<br>``burn``<br>``insults`` |   |   | ``(optional) [user] User (def: sender)`` | Insult ``User``. | ``!insult``<br><br>``!insult @Someone`` |
@@ -66,14 +72,12 @@ Commands use the following types:
 | ``insult``<br>``burn``<br>``insults`` | ``clear``<br>``clearall`` | Owner Only |  | Delete all insults. | ``!insult clear`` |
 | ``insult``<br>``burn``<br>``insults`` | ``delete``<br>``-``<br>``remove``<br>``del``<br>``rm`` | Owner Only | ``[int] Index`` | Remove insult with a given index from list. Use ``!insults list`` to view indexes. | ``!insult delete 5`` |
 | ``insult``<br>``burn``<br>``insults`` | ``list`` |  | ``(optional) [int] Page (def: 1)`` | List insults on page ``Page``. | ``!insult list 3`` |
-| ``insult``<br>``burn``<br>``insults`` | ``save`` | Owner Only |  | Save all insults. | ``!insult save`` |
 |   |   |   |   |   |   |
 | ``meme``<br>``memes``<br>``mm`` |   |   | ``(optional) [text] Meme name`` | Send a meme with name ``Meme name``. If name isn't given, sends random one. | ``!meme``<br><br>``!meme fap`` |
 | ``meme``<br>``memes``<br>``mm`` | ``add``<br>``+``<br>``new``<br>``a`` | Owner Only | ``[text] Name``<br><br>``[string] URL`` | Add a new meme to global meme list. | ``!meme add MyMeme http://url.png`` |
 | ``meme``<br>``memes``<br>``mm`` | ``create``<br>``maker``<br>``make``<br>``c``<br>``m`` |  | ``[string] Template``<br><br>``[string] Top Text``<br><br>``[string] Bottom Text`` | Creates a new meme with ``Template`` as background and ``Top Text`` and ``Bottom Text`` on it. Use ``!meme template list`` to view all templates. | ``!meme create successkid "I tried to create a meme" "I succeeded!"`` |
 | ``meme``<br>``memes``<br>``mm`` | ``delete``<br>``-``<br>``remove``<br>``del``<br>``rm``<br>``d`` | Owner Only | ``[text] Name`` | Remove meme with a given name from the list. Use ``!meme list`` to view all memes. | ``!meme delete fap`` |
 | ``meme``<br>``memes``<br>``mm`` | ``list``<br>``ls``<br>``l`` |  | ``(optional) [int] Page (def: 1)`` | List memes on page ``Page``. | ``!meme list 3`` |
-| ``meme``<br>``memes``<br>``mm`` | ``save``<br>``s`` | Owner Only |  | Save all memes. | ``!meme save`` |
 | ``meme templates``<br>``meme template``<br>``meme t`` | ``list``<br>``ls``<br>``l`` |  | ``(optional) [int] Page (def: 1)`` | List templates on page ``Page``. | ``!meme templates list 4`` |
 | ``meme templates``<br>``meme template``<br>``meme t`` | ``add``<br>``+``<br>``new`` | Owner Only | ``[string] Template name``<br><br>``[string] URL`` | Add a new meme template to global meme template list. | ``!meme template add somename http://url.png`` |
 | ``meme templates``<br>``meme template``<br>``meme t`` | ``delete``<br>``-``<br>``remove``<br>``del``<br>``rm``<br>``d`` | Owner Only | ``[text] Name``<br><br>``[string] URL`` | Add a new meme template to global meme template list. | ``!meme template add somename http://url.png`` |
@@ -86,19 +90,13 @@ Commands use the following types:
 |   |   |   |   |   |   |
 | ``rank``<br>``ranks``<br>``ranking`` |   |   |   | Show user rank. One message gives 1XP. | ``!rank`` |
 | ``rank``<br>``ranks``<br>``ranking`` | ``list``<br>``levels`` |   |   | Show all ranks and XP needed. | ``!rank list`` |
-| ``rank``<br>``ranks``<br>``ranking`` | ``save`` | Owner Only |   | Save ranks. | ``!rank save`` |
 | ``rank``<br>``ranks``<br>``ranking`` | ``top`` |  |   | Print global rank leaderboard. | ``!rank top`` |
 |   |   |   |   |   |   |
-| ``reaction``<br>``reactions``<br>``react`` |   | Manage Guild (user) | ``[emoji] Emoji``<br><br>``[text] Triggers`` | Add a new automatic reaction to a word from triggers list. Whenever someone sends a message containing a trigger word, bot will react to it with ``Emoji``. Trigger list is made of words separated with space. | ``!react :smile: laughing`` |
-| ``reaction``<br>``reactions``<br>``react`` | ``add``<br>``+``<br>``new`` | Manage Guild (user) | ``[emoji] Emoji``<br><br>``[text] Triggers`` | Same as above command. | ``!react add :smile: laughing`` |
-| ``reaction``<br>``reactions``<br>``react`` | ``clear``<br>``c``<br>``da`` | Administrator (user) |  | Delete all reactions for the current guild. | ``!reaction clear`` |
-| ``reaction``<br>``reactions``<br>``react`` | ``delete``<br>``-``<br>``remove``<br>``del``<br>``rm`` | Manage Guild (user) | ``[text] Triggers`` | Remove trigger word (can be a list of words separated by spaces) from guild reaction list. Use ``!reaction list`` to view reactions. | ``!reaction delete smile hehe blabla`` |
-| ``reaction``<br>``reactions``<br>``react`` | ``list``<br>``ls``<br>``l`` |  | ``(optional) [int] Page (def: 1)`` | List guild reactions on page ``Page``. | ``!reaction list 3`` |
-|   |   |   |   |   |   |
-| ``trigger``<br>``triggers``<br>``alias``<br>``t``<br>``a`` | ``add``<br>``+``<br>``new`` | Manage Guild (user) | ``[string] Trigger``<br><br>``[text] Response`` | Add a new trigger to guild trigger list. Whenever someone sends a message ``Trigger``, bot will repond with ``Response``. You can also use ``%user%`` as a replacement for sender mention. | ``!trigger add "hi" Hey, %user%!`` |
-| ``trigger``<br>``triggers``<br>``alias``<br>``t``<br>``a`` | ``clear``<br>``c``<br>``da`` | Administrator (user) |  | Delete all triggers for the current guild. | ``!triggers clear`` |
-| ``trigger``<br>``triggers``<br>``alias``<br>``t``<br>``a`` | ``delete``<br>``-``<br>``remove``<br>``del``<br>``rm``<br>``d`` | Manage Guild (user) | ``[string] Trigger`` | Remove trigger with from guild trigger list. Use ``!trigger list`` to view guild triggers. | ``!trigger delete hi`` |
-| ``trigger``<br>``triggers``<br>``alias``<br>``t``<br>``a`` | ``list``<br>``ls``<br>``l`` |  | ``(optional) [int] Page (def: 1)`` | List guild triggers on page ``Page``. | ``!trigger list 3`` |
+| ``textreaction``<br>``textreactions``<br>``treact``<br>``txtr``<br>``tr`` |  | Manage Guild (user) | ``[string] Trigger``<br><br>``[text] Response`` | Add a new trigger to guild text reaction list. Whenever someone sends a message ``Trigger``, bot will repond with ``Response``. You can also use ``%user%`` as a replacement for sender mention. | ``!txtr add "hi" Hey, %user%!`` |
+| ``textreaction``<br>``textreactions``<br>``treact``<br>``txtr``<br>``tr`` | ``add``<br>``+``<br>``new`` | Manage Guild (user) | ``[string] Trigger``<br><br>``[text] Response`` | Same as above command. | ``!txtr add "hi" Hey, %user%!`` |
+| ``textreaction``<br>``textreactions``<br>``treact``<br>``txtr``<br>``tr`` | ``clear``<br>``c``<br>``da`` | Administrator (user) |  | Delete all text reactions for the current guild. | ``!txtr clear`` |
+| ``textreaction``<br>``textreactions``<br>``treact``<br>``txtr``<br>``tr`` | ``delete``<br>``-``<br>``remove``<br>``del``<br>``rm``<br>``d`` | Manage Guild (user) | ``[string] Trigger`` | Remove text reaction with a given trigger from guild text reaction list. Use ``!txtr list`` to view guild triggers. | ``!txtr delete hi`` |
+| ``textreaction``<br>``textreactions``<br>``treact``<br>``txtr``<br>``tr`` | ``list``<br>``ls``<br>``l`` |  | ``(optional) [int] Page (def: 1)`` | List guild text reactions on page ``Page``. | ``!txtr list 3`` |
 |   |   |   |   |   |   |
 
 ## Administration commands
@@ -118,7 +116,7 @@ Commands use the following types:
 | ``guild``<br>``server``<br>``g`` | ``listmembers``<br>``memberlist``<br>``lm``<br>``members`` | Manage Guild | ``(optional) [int] page (def: 1)`` | Get guild member list. | ``!guild memberlist``<br><br>``!guild memberlist 3`` |
 | ``guild``<br>``server``<br>``g`` | ``log``<br>``auditlog``<br>``viewlog``<br>``getlog``<br>``getlogs``<br>``logs`` | View Audit Log | ``(optional) [int] page (def: 1)`` | Get guild audit logs. | ``!guild log``<br><br>``!guild log 3`` |
 | ``guild``<br>``server``<br>``g`` | ``bans``<br>``banlist``<br>``viewbans``<br>``viewbanlist``<br>``getbans``<br>``getbanlist`` | View Audit Log | ``(optional) [int] page (def: 1)`` | Get guild banlist. | ``!guild bans``<br><br>``!guild bans 3`` |
-| ``guild``<br>``server``<br>``g`` | ``prune``<br>``p``<br>``clean`` | Administrator (user)<br><br>Kick Members (bot) | ``(optional) [int] page (def: 7)`` | Kick members who weren't active in given ammount of days (1-7). | ``!guild prune``<br><br>``!guild prune 5`` |
+| ``guild``<br>``server``<br>``g`` | ``prune``<br>``p``<br>``clean`` | Administrator (user)<br><br>Kick Members (bot) | ``(optional) [int] page (def: 7)`` | Kick members who weren't active in given amount of days (1-7). | ``!guild prune``<br><br>``!guild prune 5`` |
 | ``guild``<br>``server``<br>``g`` | ``rename``<br>``r``<br>``name``<br>``setname`` | Manage guild | ``[text] Name`` | Rename guild. | ``!guild rename New guild name`` |
 | ``guild``<br>``server``<br>``g`` | ``getwelcomechannel``<br>``getwelcomec``<br>``getwc``<br>``getwelcome``<br>``welcomechannel``<br>``wc`` | Manage guild (user) |  | Get current welcome message channel for this guild. | ``!guild getwc`` |
 | ``guild``<br>``server``<br>``g`` | ``getleavechannel``<br>``getleavec``<br>``getlc``<br>``getleave``<br>``leavechannel``<br>``lc`` | Manage guild (user) |  | Get current leave message channel for this guild. | ``!guild getlc`` |
@@ -133,10 +131,10 @@ Commands use the following types:
 | ``g emoji``<br>``g emojis``<br>``g e`` | ``list``<br>``print``<br>``show``<br>``print``<br>``l``<br>``p`` |  |  | List guild emoji. | ``!guild emoji list`` |
 | ``g emoji``<br>``g emojis``<br>``g e`` | ``modify``<br>``edit``<br>``mod``<br>``e``<br>``m`` | Manage emojis | ``[emoji] Emoji``<br>``[string] New name`` | Modify guild emoji. | ``!guild emoji edit :pepe: pepenewname`` |
 |   |   |   |   |   |   |   |
-| ``messages``<br>``m``<br>``msg``<br>``msgs`` | ``delete``<br>``-``<br>``d``<br>``del``<br>``prune`` | Administrator (user)<br><br>Manage messages (bot) | ``[int] Ammount (def: 5)`` | Delete ``Ammount`` messages from the current channel. | ``!messages delete 100`` |
-| ``messages``<br>``m``<br>``msg``<br>``msgs`` | ``deletefrom``<br>``-user``<br>``du``<br>``deluser``<br>``dfu`` | Administrator (user)<br><br>Manage messages (bot) | ``[user] User``<br><br>``[int] Ammount (def: 5)`` | Delete ``Ammount`` messages from ``User`` in the current channel. | ``!messages deletefrom @Someone 100`` |
-| ``messages``<br>``m``<br>``msg``<br>``msgs`` | ``deleteregex``<br>``-regex``<br>``dr``<br>``delregex``<br>``dfr`` | Administrator (user)<br><br>Manage messages (bot) | ``[string] Regex``<br><br>``[int] Ammount (def: 5)`` | Delete ``Ammount`` messages that match pattern ``Regex`` in the current channel (case ignored) | ``!messages deleteregex s+p+a+m+ 100`` |
-| ``messages``<br>``m``<br>``msg``<br>``msgs`` | ``listpinned``<br>``lp``<br>``listpins``<br>``listpin``<br>``pinned`` |  | ``[int] Ammount (def: 1)`` | List ``Ammount`` pinned messages. | ``!messages listpinned 5`` |
+| ``messages``<br>``m``<br>``msg``<br>``msgs`` | ``delete``<br>``-``<br>``d``<br>``del``<br>``prune`` | Administrator (user)<br><br>Manage messages (bot) | ``[int] Amount (def: 5)`` | Delete ``Amount`` messages from the current channel. | ``!messages delete 100`` |
+| ``messages``<br>``m``<br>``msg``<br>``msgs`` | ``deletefrom``<br>``-user``<br>``du``<br>``deluser``<br>``dfu`` | Administrator (user)<br><br>Manage messages (bot) | ``[user] User``<br><br>``[int] Amount (def: 5)`` | Delete ``Amount`` messages from ``User`` in the current channel. | ``!messages deletefrom @Someone 100`` |
+| ``messages``<br>``m``<br>``msg``<br>``msgs`` | ``deleteregex``<br>``-regex``<br>``dr``<br>``delregex``<br>``dfr`` | Administrator (user)<br><br>Manage messages (bot) | ``[string] Regex``<br><br>``[int] Amount (def: 5)`` | Delete ``Amount`` messages that match pattern ``Regex`` in the current channel (case ignored) | ``!messages deleteregex s+p+a+m+ 100`` |
+| ``messages``<br>``m``<br>``msg``<br>``msgs`` | ``listpinned``<br>``lp``<br>``listpins``<br>``listpin``<br>``pinned`` |  | ``[int] Amount (def: 1)`` | List ``Amount`` pinned messages. | ``!messages listpinned 5`` |
 | ``messages``<br>``m``<br>``msg``<br>``msgs`` | ``pin``<br>``p`` | Manage Messages  |  | Pin last sent message (before ``pin`` command). | ``!messages pin`` |
 | ``messages``<br>``m``<br>``msg``<br>``msgs`` | ``unpin``<br>``up`` | Manage Messages  | ``[int] Index (starting from 0)`` | Unpin pinned message with index ``Index`` in pinned message list. | ``!messages unpin 3`` |
 | ``messages``<br>``m``<br>``msg``<br>``msgs`` | ``unpinall``<br>``upa`` | Manage Messages  |  | Unpin all pinned messages. | ``!messages unpinall`` |
@@ -155,7 +153,7 @@ Commands use the following types:
 | ``user``<br>``users``<br>``u``<br>``usr`` | ``ban``<br>``b`` | Ban Members | ``[user] User``<br><br>``(optional) [text] Reason`` | Ban ``User``. | ``!user ban @SomeUser`` |
 | ``user``<br>``users``<br>``u``<br>``usr`` | ``banid``<br>``bid`` | Ban Members | ``[int] ID``<br><br>``(optional) [text] Reason`` | Ban user by ``ID``. | ``!user banid 235088799074484224`` |
 | ``user``<br>``users``<br>``u``<br>``usr`` | ``softban``<br>``sb`` | Ban Members | ``[user] User``<br><br>``(optional) [text] Reason`` | Ban ``User`` and unban him immediately (deletes his messages). | ``!user softban @SomeUser`` |
-| ``user``<br>``users``<br>``u``<br>``usr`` | ``tempban``<br>``tb`` | Ban Members | ``[user] User``<br><br>``[int] Ammount of time units``<br><br>``[string] Time unit (s/m/h/d)``<br><br>``(optional) [text] Reason`` | Ban ``User`` and unban him after given time. | ``!user tempban 5 d @SomeUser`` |
+| ``user``<br>``users``<br>``u``<br>``usr`` | ``tempban``<br>``tb`` | Ban Members | ``[user] User``<br><br>``[int] Amount of time units``<br><br>``[string] Time unit (s/m/h/d)``<br><br>``(optional) [text] Reason`` | Ban ``User`` and unban him after given time. | ``!user tempban 5 d @SomeUser`` |
 | ``user``<br>``users``<br>``u``<br>``usr`` | ``deafen``<br>``d``<br>``deaf`` | Deafen Members | ``[user] User``<br><br>``(optional) [text] Reason`` | Toggle ``User``'s voice deaf status. | ``!user deafen @SomeUser`` |
 | ``user``<br>``users``<br>``u``<br>``usr`` | ``info``<br>``i``<br>``information`` |  | ``(optional) [user] User (def: sender)`` | Get information about ``User``. | ``!user info``<br><br>``!user info @SomeUser`` |
 | ``user``<br>``users``<br>``u``<br>``usr`` | ``kick``<br>``k`` | Kick Members | ``[user] User``<br><br>``(optional) [text] Reason`` | Kick ``User``. | ``!user kick @SomeUser`` |
@@ -174,12 +172,12 @@ Commands use the following types:
 | Command group (with synonyms) | Command name (with synonyms) | Required Permissions | Command arguments | Command Description | Example of use |
 |---|---|---|---|---|---|
 |   |   |   |   |   |   |
-| ``bank``<br>``$``<br>``$$``<br>``$$$`` |  |  |  | Prints the account balance for sender. | ``!bank`` |
-| ``bank``<br>``$``<br>``$$``<br>``$$$`` | ``grant``<br>``give`` | Administrator | ``[user] User``<br><br>``[int] Ammount`` | Add ``Ammount`` credits to ``User``'s account. | ``!bank grant 100 @LuckyGuy`` |
+| ``bank``<br>``$``<br>``$$``<br>``$$$`` |  |  | ``(optional) [user] User (def: sender)`` | Prints the account balance for the user (same as ``!bank balance``). | ``!bank`` |
+| ``bank``<br>``$``<br>``$$``<br>``$$$`` | ``grant``<br>``give`` | Administrator | ``[user] User``<br><br>``[int] Amount`` | Add ``Amount`` credits to ``User``'s account. | ``!bank grant 100 @LuckyGuy`` |
 | ``bank``<br>``$``<br>``$$``<br>``$$$`` | ``register``<br>``r``<br>``activate``<br>``signup`` |  |  | Opens an account for sender in WM bank. | ``!bank register`` |
 | ``bank``<br>``$``<br>``$$``<br>``$$$`` | ``status``<br>``balance``<br>``s`` |  | ``(optional) [user] User (def: sender)`` | Prints the account balance for a user. | ``!bank balance``<br><br>``!bank balance @BillGates`` |
 | ``bank``<br>``$``<br>``$$``<br>``$$$`` | ``top``<br>``leaderboard`` |  |  | Prints a list of richest users (globally). | ``!bank top`` |
-| ``bank``<br>``$``<br>``$$``<br>``$$$`` | ``transfer``<br>``lend`` |  | ``[user] User``<br><br>``[int] Ammount`` | Give ``Ammount`` credits from your account to ``User``'s account. | ``!bank transfer @MyFriend 100`` |
+| ``bank``<br>``$``<br>``$$``<br>``$$$`` | ``transfer``<br>``lend`` |  | ``[user] User``<br><br>``[int] Amount`` | Give ``Amount`` credits from your account to ``User``'s account. | ``!bank transfer @MyFriend 100`` |
 |   |   |   |   |   |   |
 | ``gamble``<br>``bet`` | ``coinflip``<br>``coin``<br>``flip`` |   | ``[int] Bid``<br><br>``[string] Heads/Tails`` | Bet on a coin flip outcome! Can be invoked without both arguments if you do not wish to bet. | ``!bet coinflip 5 heads`` |
 | ``gamble``<br>``bet`` | ``roll``<br>``dice``<br>``die`` |   | ``[int] Bid``<br><br>``[int] Guess [1-6]`` | Bet on a dice roll outcome! Can be invoked without both arguments if you do not wish to bet. | ``!bet dice 50 6`` |
@@ -191,7 +189,7 @@ Commands use the following types:
 | Command group (with synonyms) | Command name (with synonyms) | Required Permissions | Command arguments | Command Description | Example of use |
 |---|---|---|---|---|---|
 |   |   |   |   |   |   |
-| ``cards``<br>``deck`` | ``draw``<br>``take`` |   | ``(optional) [int] Ammount (def: 1)`` | Draw ``Ammount`` of cards from the top of the deck. | ``!deck draw 5`` |
+| ``cards``<br>``deck`` | ``draw``<br>``take`` |   | ``(optional) [int] Amount (def: 1)`` | Draw ``Amount`` of cards from the top of the deck. | ``!deck draw 5`` |
 | ``cards``<br>``deck`` | ``reset``<br>``opennew``<br>``new`` |   |   | Open new deck of cards (unshuffled). | ``!deck new`` |
 | ``cards``<br>``deck`` | ``shuffle``<br>``s``<br>``sh``<br>``mix`` |   |   | Shuffle current card deck. | ``!deck shuffle`` |
 |   |   |   |   |   |   |
@@ -217,11 +215,11 @@ Commands use the following types:
 |   |   |   |   |   |   |
 | ``gif``<br>``giphy`` |   |   | ``[text] Query`` | Search GIPHY for ``Query`` and send a GIF result. | ``!gif deal with it`` |
 | ``gif``<br>``giphy`` | ``random``<br>``r``<br>``rnd``<br>``rand`` |   |   | Send a random GIF from GIPHY. | ``!gif random`` |
-| ``gif``<br>``giphy`` | ``trending``<br>``trend``<br>``tr``<br>``t`` |   | ``(optional) [int] Ammount (def: 5)`` | Send ``Ammount`` of trending GIFs. | ``!gif trending 5`` |
+| ``gif``<br>``giphy`` | ``trending``<br>``trend``<br>``tr``<br>``t`` |   | ``(optional) [int] Amount (def: 5)`` | Send ``Amount`` of trending GIFs. | ``!gif trending 5`` |
 |   |   |   |   |   |   |
-| ``imgur``<br>``i`` |   |   | ``[int] Ammount``<br><br>``[text] Gallery`` | Search Imgur gallery group with name ``Gallery`` and send top ``Ammount`` of result images for this day. | ``!imgur 5 aww`` |
-| ``imgur``<br>``i`` | ``latest``<br>``l``<br>``new``<br>``newest`` |   | ``[int] Ammount``<br><br>``[text] Gallery`` | Search Imgur gallery group with name ``Gallery`` and send ``Ammount`` of newest posted images. | ``!imgur latest 5 aww`` |
-| ``imgur``<br>``i`` | ``top``<br>``t`` |   | ``[string] Time Window``<br><br>``[int] Ammount``<br><br>``[text] Gallery`` | Send ``Ammount`` of top images in gallery group with name ``Gallery`` for given ``Time Window``. ``TimeWindow`` must be one of the following words: ``day/month/week/year/all``. | ``!imgur top month 10 aww`` |
+| ``imgur``<br>``i`` |   |   | ``[int] Amount``<br><br>``[text] Gallery`` | Search Imgur gallery group with name ``Gallery`` and send top ``Amount`` of result images for this day. | ``!imgur 5 aww`` |
+| ``imgur``<br>``i`` | ``latest``<br>``l``<br>``new``<br>``newest`` |   | ``[int] Amount``<br><br>``[text] Gallery`` | Search Imgur gallery group with name ``Gallery`` and send ``Amount`` of newest posted images. | ``!imgur latest 5 aww`` |
+| ``imgur``<br>``i`` | ``top``<br>``t`` |   | ``[string] Time Window``<br><br>``[int] Amount``<br><br>``[text] Gallery`` | Send ``Amount`` of top images in gallery group with name ``Gallery`` for given ``Time Window``. ``TimeWindow`` must be one of the following words: ``day/month/week/year/all``. | ``!imgur top month 10 aww`` |
 |   |   |   |   |   |   |
 | ``joke``<br>``jokes``<br>``j`` |   |   |   | Send a random joke. | ``!joke`` |
 | ``joke``<br>``jokes``<br>``j`` | ``search``<br>``s`` |   | ``[text] Query`` | Search for the joke containing ``Query``. | ``!joke blonde`` |
@@ -244,7 +242,7 @@ Commands use the following types:
 | ``urbandict``<br>``urban``<br>``u`` |   |   | ``[text] Query`` | Search Urban Dictionary for a given query. | ``!urban Snowflake`` |
 |   |   |   |   |   |   |
 | ``youtube``<br>``y``<br>``yt`` |   |   | ``[text] Query`` | Search YouTube for a given query. | ``!yt Snowflake falling`` |
-| ``youtube``<br>``y``<br>``yt`` | ``search``<br>``s`` |   | ``[int] Ammount``<br><br>``[text] Query`` | Search YouTube for a given query. | ``!yt Snowflake falling`` |
+| ``youtube``<br>``y``<br>``yt`` | ``search``<br>``s`` |   | ``[int] Amount``<br><br>``[text] Query`` | Search YouTube for a given query. | ``!yt Snowflake falling`` |
 | ``youtube``<br>``y``<br>``yt`` | ``searchvideo``<br>``searchv``<br>``sv`` |   | ``[text] Query`` | Search YouTube for a given query. Returns videos only | ``!yt searchv Snowflake falling`` |
 | ``youtube``<br>``y``<br>``yt`` | ``searchchannel``<br>``searchc``<br>``sc`` |   | ``[text] Query`` | Search YouTube for a given query. Returns channels only | ``!yt searchc Snowflake falling`` |
 | ``youtube``<br>``y``<br>``yt`` | ``searchplaylist``<br>``searchp``<br>``sp`` |   | ``[text] Query`` | Search YouTube for a given query. Returns playlists only | ``!yt searchp Snowflake falling`` |
@@ -268,7 +266,6 @@ Commands use the following types:
 | ``s4 servers``<br>``s4 srv``<br>``s4 s`` | ``add``<br>``+``<br>``a`` | Administrator (user) | ``[string] Shortname``<br><br>``[string] IP``<br><br>``(optional) [int] Query port (def: joinport + 1)`` | Add a new server to database. If the server uses a non-default query port, add it after IP like in example. | ``!s4 servers + soh 13.95.232.189:10480``<br><br>``!s4 servers + soh 13.95.232.189:10480:10488`` |
 | ``s4 servers``<br>``s4 srv``<br>``s4 s`` | ``delete``<br>``-``<br>``del``<br>``d`` | Administrator (user) | ``[string] Shortname`` | Remove a server from database. | ``!s4 servers - soh`` |
 | ``s4 servers``<br>``s4 srv``<br>``s4 s`` | ``list``<br><br>``ls``<br><br>``l`` |   |  | ``(optional) [int] Page (def: 1)`` | List servers in database on page ``Page``. | ``!s4 servers list`` |
-| ``s4 servers``<br>``s4 srv``<br>``s4 s`` | ``save`` | Owner Only |   | Save server list. | ``!s4 servers save`` |
 |   |   |   |   |   |   |
 
 ## Voice/Music commands (disabled for now)
@@ -292,6 +289,7 @@ Commands use the following types:
 | ``owner``<br>``o``<br>``admin`` | ``botavatar``<br>``setbotavatar``<br>``setavatar`` | Owner Only | ``[string] URL`` | Set Godfather's avatar. | ``!owner setavatar http://someimage.png`` |
 | ``owner``<br>``o``<br>``admin`` | ``botname``<br>``setbotname``<br>``setname`` | Owner Only | ``[text] Name`` | Set Godfather's name. | ``!owner setname Vito Corleone`` |
 | ``owner``<br>``o``<br>``admin`` | ``clearlog``<br>``clearlogs``<br>``deletelog``<br>``deletelogs`` | Owner Only |   | Clear all application logs. | ``!owner clearlog`` |
+| ``owner``<br>``o``<br>``admin`` | ``dbquery``<br>``sql``<br>``dbq``<br>``q`` | Owner Only | ``[text] SQL Query`` | Execute given query on the bot database. | ``!owner dbquery SELECT * FROM gf.users;`` |
 | ``owner``<br>``o``<br>``admin`` | ``eval``<br>``compile``<br>``run``<br>``e``<br>``c``<br>``r`` | Owner Only | ``[text] Code (surrounded in code block)`` | Compile and run given code, in context. | ``!owner eval ```return 42;``` `` |
 | ``owner``<br>``o``<br>``admin`` | ``leaveguilds`` | Owner Only | ``[int] Guild IDs (separated by comma, if there are more)`` | Make Godfather leave guilds with given IDs. | ``!owner leaveguils 555555555555 1111111111111`` |
 | ``owner``<br>``o``<br>``admin`` | ``sendmessage``<br>``send`` | Owner Only | ``[char] u/c (User or Channel)``<br><br>``[int] ID``<br><br>``[text] Message`` | Send a message to user or channel through the bot. | ``!owner send c 55555555555 Say hi to channel``<br><br>``!owner send u 55555555555 Say hi to user in DM`` |

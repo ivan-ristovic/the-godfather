@@ -9,8 +9,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
+using TheGodfather.Services;
 using TheGodfather.Helpers.Swat;
-using TheGodfather.Helpers.DataManagers;
 using TheGodfather.Exceptions;
 
 using DSharpPlus;
@@ -40,16 +40,27 @@ namespace TheGodfather.Commands.SWAT
         [Description("Print the serverlist with current player numbers.")]
         public async Task ServerlistAsync(CommandContext ctx)
         {
-            await ctx.TriggerTypingAsync()
+            var em = new DiscordEmbedBuilder() {
+                Title = "Servers",
+                Color = DiscordColor.DarkBlue
+            };
+            
+            var servers = await ctx.Dependencies.GetDependency<DatabaseService>().GetAllSwatServersAsync()
                 .ConfigureAwait(false);
-            var em = new DiscordEmbedBuilder() { Title = "Servers", Color = DiscordColor.DarkBlue };
-            foreach (var server in ctx.Dependencies.GetDependency<SwatServerManager>().Servers) {
-                var info = await QueryIPAsync(ctx, server.Value.IP, server.Value.QueryPort)
+
+            if (servers == null || !servers.Any()) {
+                await ctx.RespondAsync("No servers registered.")
+                    .ConfigureAwait(false);
+                return;
+            }
+
+            foreach (var server in servers) {
+                var info = await SwatServerInfo.QueryIPAsync(server.IP, server.QueryPort)
                     .ConfigureAwait(false);
                 if (info != null)
-                    em.AddField(info.HostName, $"IP: {server.Value.IP}:{server.Value.JoinPort}\nPlayers: {Formatter.Bold(info.Players + " / " + info.MaxPlayers)}");
+                    em.AddField(info.HostName, $"IP: {server.IP}:{server.JoinPort}\nPlayers: {Formatter.Bold(info.Players + " / " + info.MaxPlayers)}");
                 else
-                    em.AddField(server.Value.Name, $"IP: {server.Value.IP}:{server.Value.JoinPort}\nPlayers: Offline");
+                    em.AddField(server.Name, $"IP: {server.IP}:{server.JoinPort}\nPlayers: Offline");
             }
             await ctx.RespondAsync(embed: em.Build())
                 .ConfigureAwait(false);
@@ -70,13 +81,14 @@ namespace TheGodfather.Commands.SWAT
             if (queryport <= 0 || queryport > 65535)
                 throw new InvalidCommandUsageException("Port range invalid (must be in range [1-65535])!");
 
-            var server = ctx.Dependencies.GetDependency<SwatServerManager>().GetServer(ip, queryport);
+            var server = await ctx.Dependencies.GetDependency<DatabaseService>().GetSwatServerAsync(ip, queryport, name: ip)
+                .ConfigureAwait(false);
 
-            var info = await QueryIPAsync(ctx, server.IP, server.QueryPort)
+            var info = await SwatServerInfo.QueryIPAsync(server.IP, server.QueryPort)
                 .ConfigureAwait(false);
 
             if (info != null)
-                await SendEmbedInfoAsync(ctx, $"{server.IP}:{server.JoinPort}", info).ConfigureAwait(false);
+                await ctx.RespondAsync(embed: info.EmbedData()).ConfigureAwait(false);
             else
                 await ctx.RespondAsync("No reply from server.").ConfigureAwait(false);
         }
@@ -117,14 +129,15 @@ namespace TheGodfather.Commands.SWAT
             if (_UserIDsCheckingForSpace.Count > 10)
                 throw new CommandFailedException("Maximum number of checks reached, please try later!");
 
-            var server = ctx.Dependencies.GetDependency<SwatServerManager>().GetServer(ip, queryport);
+            var server = await ctx.Dependencies.GetDependency<DatabaseService>().GetSwatServerAsync(ip, queryport)
+                .ConfigureAwait(false);
             await ctx.RespondAsync($"Starting check on {server.IP}:{server.JoinPort}...")
                 .ConfigureAwait(false);
 
             _UserIDsCheckingForSpace.GetOrAdd(ctx.User.Id, true);
             while (_UserIDsCheckingForSpace[ctx.User.Id]) {
                 try {
-                    var info = await QueryIPAsync(ctx, server.IP, server.QueryPort)
+                    var info = await SwatServerInfo.QueryIPAsync(server.IP, server.QueryPort)
                         .ConfigureAwait(false);
                     if (info == null) {
                         await ctx.RespondAsync("No reply from server. Should I try again?")
@@ -172,49 +185,6 @@ namespace TheGodfather.Commands.SWAT
         #endregion
 
 
-        #region HELPER_FUNCTIONS
-        private async Task<SwatServerInfo> QueryIPAsync(CommandContext ctx, string ip, int port)
-        {
-            byte[] receivedData = null;
-            try {
-                using (var client = new UdpClient()) {
-                    IPEndPoint ep = new IPEndPoint(IPAddress.Parse(ip), port);
-                    client.Connect(ep);
-                    client.Client.SendTimeout = _checktimeout;
-                    client.Client.ReceiveTimeout = _checktimeout;
-                    string query = "\\status\\";
-                    await client.SendAsync(Encoding.ASCII.GetBytes(query), query.Length)
-                        .ConfigureAwait(false);
-                    receivedData = client.Receive(ref ep);
-                }
-            } catch (FormatException) {
-                throw new CommandFailedException("Invalid IP format.");
-            } catch {
-                return null;
-            }
-
-            if (receivedData == null)
-                return null;
-
-            var data = Encoding.ASCII.GetString(receivedData, 0, receivedData.Length);
-            data = Regex.Replace(data, @"(\[\\*c=?([0-9a-f])*\])|(\[\\*[bicu]\])|(\?)", "", RegexOptions.IgnoreCase);
-
-            var split = data.Split('\\');
-
-            if (Array.IndexOf(split, "hostname") == -1)
-                return null;
-
-            return SwatServerInfo.FromData(ip, split);
-        }
-        
-        private async Task SendEmbedInfoAsync(CommandContext ctx, string ip, SwatServerInfo info)
-        {
-            await ctx.RespondAsync(embed: info.EmbedData())
-                .ConfigureAwait(false);
-        }
-        #endregion
-
-
         [Group("servers", CanInvokeWithoutSubcommand = false)]
         [Description("SWAT4 serverlist manipulation commands.")]
         [Aliases("s", "srv")]
@@ -236,12 +206,12 @@ namespace TheGodfather.Commands.SWAT
                 if (queryport <= 0 || queryport > 65535)
                     throw new InvalidCommandUsageException("Port range invalid (must be in range [1-65535])!");
 
-                var server = ctx.Dependencies.GetDependency<SwatServerManager>().GetServer(ip, queryport, name);
+                var server = SwatServer.CreateFromIP(ip, queryport, name);
 
-                if (ctx.Dependencies.GetDependency<SwatServerManager>().TryAdd(name, server))
-                    await ctx.RespondAsync("Server added. You can now query it using the name provided.").ConfigureAwait(false);
-                else
-                    throw new CommandFailedException("Failed to add server to serverlist. Check if it already exists?");
+                await ctx.Dependencies.GetDependency<DatabaseService>().AddSwatServerAsync(name, server)
+                    .ConfigureAwait(false);
+                await ctx.RespondAsync("Server added. You can now query it using the name provided.")
+                    .ConfigureAwait(false);
             }
             #endregion
 
@@ -256,10 +226,10 @@ namespace TheGodfather.Commands.SWAT
                 if (string.IsNullOrWhiteSpace(name))
                     throw new InvalidCommandUsageException("Name missing.");
 
-                if (ctx.Dependencies.GetDependency<SwatServerManager>().TryRemove(name))
-                    await ctx.RespondAsync("Server removed.").ConfigureAwait(false);
-                else
-                    await ctx.RespondAsync("Failed to remove server.").ConfigureAwait(false);
+                await ctx.Dependencies.GetDependency<DatabaseService>().DeleteSwatServerAsync(name)
+                    .ConfigureAwait(false);
+                await ctx.RespondAsync("Server removed.")
+                    .ConfigureAwait(false);
             }
             #endregion
 
@@ -270,35 +240,32 @@ namespace TheGodfather.Commands.SWAT
             public async Task ListAsync(CommandContext ctx,
                                        [Description("Page.")] int page = 1)
             {
-                var servers = ctx.Dependencies.GetDependency<SwatServerManager>().Servers;
+                var servers = await ctx.Dependencies.GetDependency<DatabaseService>().GetAllSwatServersAsync()
+                    .ConfigureAwait(false);
 
-                if (page < 1 || page > servers.Count / 10 + 1)
-                    throw new CommandFailedException("No memes on that page.", new ArgumentOutOfRangeException());
+                if (servers == null || !servers.Any()) {
+                    await ctx.RespondAsync("No servers registered.")
+                        .ConfigureAwait(false);
+                    return;
+                }
 
-                string desc = "";
-                int starti = (page - 1) * 10;
-                int endi = starti + 10 < servers.Count ? starti + 10 : servers.Count;
-                var keys = servers.Keys.Take(page * 10).OrderBy(k => k).ToArray();
-                for (var i = starti; i < endi; i++)
-                    desc += $"{Formatter.Bold(servers[keys[i]].Name)} : {servers[keys[i]].IP}:{servers[keys[i]].JoinPort}\n";
+                if (page < 1 || page > servers.Count / 20 + 1)
+                    throw new CommandFailedException("No servers on that page.");
+
+                int starti = (page - 1) * 20;
+                int len = starti + 20 < servers.Count ? 20 : servers.Count - starti;
+
+                StringBuilder sb = new StringBuilder();
+                foreach (var server in servers.OrderBy(v => v).ToList().GetRange(starti, len)) {
+                    sb.Append($"{Formatter.Bold(server.Name)} : {server.IP}:{server.JoinPort}");
+                    sb.AppendLine();
+                }
 
                 await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
-                    Title = $"Available servers (page {page}/{servers.Count / 10 + 1}) :",
-                    Description = desc,
+                    Title = $"Available servers (page {page}/{servers.Count / 20 + 1}) :",
+                    Description = sb.ToString(),
                     Color = DiscordColor.Green
                 }.Build()).ConfigureAwait(false);
-            }
-            #endregion
-
-            #region COMMAND_SERVERS_SAVE
-            [Command("save")]
-            [Description("Saves all the servers in the list.")]
-            [RequireOwner]
-            public async Task SaveAsync(CommandContext ctx)
-            {
-                ctx.Dependencies.GetDependency<SwatServerManager>().Save(ctx.Client.DebugLogger);
-                await ctx.RespondAsync("Servers successfully saved.")
-                    .ConfigureAwait(false);
             }
             #endregion
         }

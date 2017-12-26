@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 
 using TheGodfather.Exceptions;
 using TheGodfather.Helpers;
-using TheGodfather.Helpers.DataManagers;
+using TheGodfather.Services;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -20,130 +20,118 @@ using DSharpPlus.EventArgs;
 using DSharpPlus.Net.WebSocket;
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
+using System.Collections.Generic;
 #endregion
 
 namespace TheGodfather
 {
-    public class TheGodfather
+    public sealed class TheGodfather
     {
+        #region STATIC_FIELDS
+        public static bool Listening { get; set; } = true;
+        #endregion
+
         #region PUBLIC_FIELDS
-        public bool Listening { get; private set; }
-        public BotConfig Config { get; private set; }
+        public int ShardId { get; }
+
+        public DiscordClient Client { get; private set; }
+        public CommandsNextModule Commands { get; private set; }
+        public InteractivityModule Interactivity { get; private set; }
+        public VoiceNextClient Voice { get; private set; }
         #endregion
 
         #region PRIVATE_FIELDS
-        private DiscordClient _client { get; set; }
-        private CommandsNextModule _commands { get; set; }
-        private InteractivityModule _interactivity { get; set; }
-        private VoiceNextClient _voice { get; set; }
-
-        private BotDependencyList _dependecies { get; set; }
-
-        internal Logger LogHandle { get; private set; }
+        private BotConfig _cfg { get; set; }
+        private SharedData _shared { get; }
+        private DatabaseService _db { get; }
         #endregion
 
 
-        public TheGodfather()
+        public TheGodfather(BotConfig cfg, int sid, DatabaseService db, SharedData sd)
         {
-            Listening = true;
-        }
-
-        ~TheGodfather()
-        {
-            if (_client != null && LogHandle != null) {
-                LogHandle.Log(LogLevel.Info, "Shutting down...");
-                SaveData();
-                _client.DisconnectAsync();
-                _client.Dispose();
-                if (Directory.Exists("Temp"))
-                    Directory.Delete("Temp");
-            }
+            _cfg = cfg;
+            ShardId = sid;
+            _db = db;
+            _shared = sd;
         }
 
 
-        public async Task MainAsync(string[] args)
+        public void Initialize()
         {
-            Config = BotConfig.Load();
-            if (Config == null) {
-                Console.WriteLine("Config file corrupted or missing.");
-                Console.ReadKey();
-                return;
-            };
-
             SetupClient();
             SetupCommands();
             SetupInteractivity();
             SetupVoice();
-            LoadData();
+        }
 
-            try {
-                await _client.ConnectAsync()
-                    .ConfigureAwait(false);
-            } catch (Exception ex) {
-                LogHandle.Log(LogLevel.Error, "Exception occured during connection: " + Environment.NewLine +
-                    $" Exception: {ex.GetType()}" + Environment.NewLine +
-                    (ex.InnerException != null ? $" Inner exception: {ex.InnerException.GetType()}" + Environment.NewLine : "") +
-                    $" Message: {ex.Message ?? "<no message>"}"
-                );
-                Console.ReadKey();
-                return;
-            }
+        public async Task StartAsync()
+        {
+            await Client.ConnectAsync().ConfigureAwait(false);
+        }
 
-            await Task.Delay(-1);
+        public void Log(LogLevel level, string message)
+        {
+            Client.DebugLogger.LogMessage(level, "TheGodfather", message, DateTime.Now);
         }
 
 
         #region BOT_SETUP_FUNCTIONS
         private void SetupClient()
         {
-            _client = new DiscordClient(new DiscordConfiguration {
-                LogLevel = LogLevel.Info,
-                LargeThreshold = 250,
+            Client = new DiscordClient(new DiscordConfiguration {
                 AutoReconnect = true,
-                Token = Config.Token,
-                TokenType = TokenType.Bot,
-                UseInternalLogHandler = true
+                LargeThreshold = 250,
+                LogLevel = LogLevel.Info,
+
+                ShardCount = _cfg.ShardCount,
+                ShardId = ShardId,
+                UseInternalLogHandler = true,
+
+                Token = _cfg.Token,
+                TokenType = TokenType.Bot
             });
 
-            LogHandle = new Logger(_client.DebugLogger);
+            Client.ClientErrored += Client_Error;
+            // Client.DebugLogger.LogMessageReceived += Client_LogMessage; TODO
+            Client.GuildAvailable += Client_GuildAvailable;
+            Client.GuildMemberAdded += Client_GuildMemberAdd;
+            Client.GuildMemberRemoved += Client_GuildMemberRemove;
+            Client.MessageCreated += Client_MessageCreated;
+            Client.MessageReactionAdded += Client_ReactToMessage;
+            Client.MessageUpdated += Client_MessageUpdated;
+            Client.Ready += Client_Ready;
 
-            _client.ClientErrored += Client_Error;
-            _client.DebugLogger.LogMessageReceived += Client_LogMessage;
-            _client.GuildAvailable += Client_GuildAvailable;
-            _client.GuildMemberAdded += Client_GuildMemberAdd;
-            _client.GuildMemberRemoved += Client_GuildMemberRemove;
-            _client.Heartbeated += Client_Heartbeated;
-            _client.MessageCreated += Client_MessageCreated;
-            _client.MessageReactionAdded += Client_ReactToMessage;
-            _client.MessageUpdated += Client_MessageUpdated;
-            _client.Ready += Client_Ready;
-            
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && Environment.OSVersion.Version <= new Version(6, 1, 7601, 65536))
-                _client.SetWebSocketClient<WebSocket4NetClient>();
+                Client.SetWebSocketClient<WebSocket4NetClient>();
         }
 
         private void SetupCommands()
         {
-            _dependecies = new BotDependencyList(_client, Config);
-            _commands = _client.UseCommandsNext(new CommandsNextConfiguration {
+            Commands = Client.UseCommandsNext(new CommandsNextConfiguration {
                 EnableDms = false,
                 CaseSensitive = false,
                 EnableMentionPrefix = true,
                 CustomPrefixPredicate = async m => await CheckMessageForPrefix(m),
-                Dependencies = _dependecies.GetDependencyCollectionBuilder()
-                                           .AddInstance(this)
-                                           .AddInstance(Config)
-                                           .Build(),
+                Dependencies = new DependencyCollectionBuilder()
+                    .AddInstance(new YoutubeService(_cfg.YoutubeKey))
+                    .AddInstance(new GiphyService(_cfg.GiphyKey))
+                    .AddInstance(new ImgurService(_cfg.ImgurKey))
+                    .AddInstance(new SteamService(_cfg.SteamKey))
+                    .AddInstance(Client)
+                    .AddInstance(_db)
+                    .AddInstance(_shared)
+                    .Build(),
             });
-            _commands.SetHelpFormatter<HelpFormatter>();
-            _commands.RegisterCommands(Assembly.GetExecutingAssembly());
-            _commands.CommandExecuted += Commands_CommandExecuted;
-            _commands.CommandErrored += Commands_CommandErrored;
+            Commands.SetHelpFormatter<HelpFormatter>();
+            Commands.RegisterCommands(Assembly.GetExecutingAssembly());
+
+            Commands.CommandExecuted += Commands_CommandExecuted;
+            Commands.CommandErrored += Commands_CommandErrored;
         }
 
         private void SetupInteractivity()
         {
-            _interactivity = _client.UseInteractivity(new InteractivityConfiguration() {
+            Interactivity = Client.UseInteractivity(new InteractivityConfiguration() {
                 PaginationBehaviour = TimeoutBehaviour.Delete,
                 PaginationTimeout = TimeSpan.FromSeconds(30),
                 Timeout = TimeSpan.FromSeconds(30)
@@ -152,79 +140,39 @@ namespace TheGodfather
 
         private void SetupVoice()
         {
-            _voice = _client.UseVoiceNext();
-        }
-
-        private void LoadData()
-        {
-            try {
-                _dependecies.LoadData(_client.DebugLogger);
-            } catch (Exception e) {
-                LogHandle.Log(LogLevel.Error,
-                    $"Errors occured during data load: " + Environment.NewLine +
-                    $" Exception: {e.GetType()}" + Environment.NewLine +
-                    (e.InnerException != null ? $" Inner exception: {e.InnerException.GetType()}" + Environment.NewLine : "") +
-                    $" Message: {e.Message}"
-                );
-                return;
-            }
-
-            LogHandle.Log(LogLevel.Debug, "Data loaded.");
-        }
-
-        private void SaveData()
-        {
-            try {
-                _dependecies.SaveData(_client.DebugLogger);
-            } catch (Exception e) {
-                LogHandle.Log(LogLevel.Error,
-                    $"Errors occured during data save: " + Environment.NewLine +
-                    $" Exception: {e.GetType()}" + Environment.NewLine +
-                    (e.InnerException != null ? $" Inner exception: {e.InnerException.GetType()}" + Environment.NewLine : "") +
-                    $" Message: {e.Message}"
-                );
-                return;
-            }
-
-            LogHandle.Log(LogLevel.Debug, "Data saved.");
+            Voice = Client.UseVoiceNext();
         }
 
         private Task<int> CheckMessageForPrefix(DiscordMessage m)
         {
-            string p = _dependecies.GuildConfigControl.GetGuildPrefix(m.Channel.Guild.Id);
+            string p = _shared.GetGuildPrefix(m.Channel.Guild.Id) ?? _cfg.DefaultPrefix;
             return Task.FromResult(m.GetStringPrefixLength(p));
         }
         #endregion
 
         #region CLIENT_EVENTS
-        private async Task Client_Heartbeated(HeartbeatEventArgs e)
-        {
-            await _client.UpdateStatusAsync(new DiscordGame(_dependecies.StatusControl.GetRandomStatus()) {
-                StreamType = GameStreamType.NoStream
-            }).ConfigureAwait(false);
-            SaveData();
-        }
-
         private Task Client_Error(ClientErrorEventArgs e)
         {
-            LogHandle.Log(LogLevel.Error, $"Client errored: {e.Exception.GetType()}: {e.Exception.Message}");
+            Log(LogLevel.Error, $"Client errored: {e.Exception.GetType()}: {e.Exception.Message}");
             return Task.CompletedTask;
         }
 
-        private Task Client_GuildAvailable(GuildCreateEventArgs e)
+        private async Task Client_GuildAvailable(GuildCreateEventArgs e)
         {
-            LogHandle.Log(LogLevel.Info, $"Guild available: {e.Guild.Name} ({e.Guild.Id})");
-            return Task.CompletedTask;
+            Log(LogLevel.Info, $"Guild available: {e.Guild.Name} ({e.Guild.Id})");
+            await _db.AddGuildIfNotExistsAsync(e.Guild.Id)
+                .ConfigureAwait(false);
         }
 
         private async Task Client_GuildMemberAdd(GuildMemberAddEventArgs e)
         {
-            LogHandle.Log(LogLevel.Info,
+            Log(LogLevel.Info,
                 $"Member joined: {e.Member.Username} ({e.Member.Id})" + Environment.NewLine +
                 $" Guild: {e.Guild.Name} ({e.Guild.Id})"
             );
 
-            ulong cid = _dependecies.GuildConfigControl.GetGuildWelcomeChannelId(e.Guild.Id);
+            ulong cid = await _db.GetGuildWelcomeChannelIdAsync(e.Guild.Id)
+                .ConfigureAwait(false);
             if (cid == 0)
                 return;
 
@@ -234,7 +182,7 @@ namespace TheGodfather
             } catch (Exception exc) {
                 while (exc is AggregateException)
                     exc = exc.InnerException;
-                LogHandle.Log(LogLevel.Error,
+                Log(LogLevel.Error,
                     $"Failed to send a welcome message!" + Environment.NewLine +
                     $" Channel ID: {cid}" + Environment.NewLine +
                     $" Exception: {exc.GetType()}" + Environment.NewLine +
@@ -249,12 +197,13 @@ namespace TheGodfather
 
         private async Task Client_GuildMemberRemove(GuildMemberRemoveEventArgs e)
         {
-            LogHandle.Log(LogLevel.Info,
+            Log(LogLevel.Info,
                 $"Member left: {e.Member.Username} ({e.Member.Id})" + Environment.NewLine +
                 $" Guild: {e.Guild.Name} ({e.Guild.Id})"
             );
 
-            ulong cid = _dependecies.GuildConfigControl.GetGuildLeaveChannelId(e.Guild.Id);
+            ulong cid = await _db.GetGuildLeaveChannelIdAsync(e.Guild.Id)
+                .ConfigureAwait(false);
             if (cid == 0)
                 return;
 
@@ -264,7 +213,7 @@ namespace TheGodfather
             } catch (Exception exc) {
                 while (exc is AggregateException)
                     exc = exc.InnerException;
-                LogHandle.Log(LogLevel.Error,
+                Log(LogLevel.Error,
                     $"Failed to send a leaving message!" + Environment.NewLine +
                     $" Channel ID: {cid}" + Environment.NewLine +
                     $" Exception: {exc.GetType()}" + Environment.NewLine +
@@ -278,7 +227,7 @@ namespace TheGodfather
 
         private void Client_LogMessage(object sender, DebugLogMessageEventArgs e)
         {
-            LogHandle.WriteToFile(e);
+            // TODO write to file
         }
 
         private async Task Client_MessageCreated(MessageCreateEventArgs e)
@@ -287,22 +236,22 @@ namespace TheGodfather
                 return;
 
             if (e.Channel.IsPrivate) {
-                LogHandle.Log(LogLevel.Info, $"IGNORED DM FROM {e.Author.Username} ({e.Author.Id}): {e.Message}");
+                Log(LogLevel.Info, $"IGNORED DM FROM {e.Author.Username} ({e.Author.Id}): {e.Message}");
                 return;
             }
 
             // Check if message contains filter
-            if (e.Message.Content != null && _dependecies.GuildConfigControl.ContainsFilter(e.Guild.Id, e.Message.Content)) {
+            if (e.Message.Content != null && _shared.ContainsFilter(e.Guild.Id, e.Message.Content)) {
                 try {
                     await e.Channel.DeleteMessageAsync(e.Message)
                         .ConfigureAwait(false);
-                    LogHandle.Log(LogLevel.Info,
+                    Log(LogLevel.Info,
                         $"Filter triggered in message: '{e.Message.Content}'" + Environment.NewLine +
                         $" User: {e.Message.Author.ToString()}" + Environment.NewLine +
                         $" Location: '{e.Guild.Name}' ({e.Guild.Id}) ; {e.Channel.ToString()}"
                     );
                 } catch (UnauthorizedException) {
-                    LogHandle.Log(LogLevel.Warning,
+                    Log(LogLevel.Warning,
                         $"Filter triggered in message but missing permissions to delete!" + Environment.NewLine +
                         $" Message: '{e.Message.Content}'" + Environment.NewLine +
                         $" User: {e.Message.Author.ToString()}" + Environment.NewLine +
@@ -320,18 +269,18 @@ namespace TheGodfather
                 return;
 
             // Update message count for the user that sent the message
-            int rank = _dependecies.RankControl.UpdateMessageCount(e.Author.Id);
+            int rank = _shared.UpdateMessageCount(e.Author.Id);
             if (rank != -1) {
-                var ranks = _dependecies.RankControl.Ranks;
+                var ranks = _shared.Ranks;
                 await e.Channel.SendMessageAsync($"GG {e.Author.Mention}! You have advanced to level {rank} ({(rank < ranks.Count ? ranks[rank] : "Low")})!")
                     .ConfigureAwait(false);
             }
 
-            // Check if message has a text trigger
-            var response = _dependecies.GuildConfigControl.GetResponseForTrigger(e.Guild.Id, e.Message.Content);
+            // Check if message has a text reaction
+            var response = _shared.GetResponseForTextReaction(e.Guild.Id, e.Message.Content);
             if (response != null) {
-                LogHandle.Log(LogLevel.Info,
-                    $"Text trigger detected." + Environment.NewLine +
+                Log(LogLevel.Info,
+                    $"Text reaction detected." + Environment.NewLine +
                     $" Message: {e.Message.Content}" + Environment.NewLine +
                     $" User: {e.Message.Author.ToString()}" + Environment.NewLine +
                     $" Location: '{e.Guild.Name}' ({e.Guild.Id}) ; {e.Channel.ToString()}"
@@ -343,11 +292,11 @@ namespace TheGodfather
             if (!e.Channel.PermissionsFor(e.Guild.CurrentMember).HasFlag(Permissions.AddReactions))
                 return;
 
-            // Check if message has a reaction trigger
-            var emojilist = _dependecies.GuildConfigControl.GetReactionEmojis(_client, e.Guild.Id, e.Message.Content);
+            // Check if message has an emoji reaction
+            var emojilist = _shared.GetEmojisForEmojiReaction(Client, e.Guild.Id, e.Message.Content);
             if (emojilist.Count > 0) {
-                LogHandle.Log(LogLevel.Info,
-                    $"Reaction trigger detected." + Environment.NewLine +
+                Log(LogLevel.Info,
+                    $"Emoji reaction detected." + Environment.NewLine +
                     $" Message: {e.Message.Content}" + Environment.NewLine +
                     $" User: {e.Message.Author.ToString()}" + Environment.NewLine +
                     $" Location: '{e.Guild.Name}' ({e.Guild.Id}) ; {e.Channel.ToString()}"
@@ -372,17 +321,17 @@ namespace TheGodfather
                 return;
 
             // Check if message contains filter
-            if (!e.Author.IsBot && e.Message.Content != null && e.Message.Content.Split(' ').Any(s => _dependecies.GuildConfigControl.ContainsFilter(e.Guild.Id, s))) {
+            if (!e.Author.IsBot && e.Message.Content != null && _shared.ContainsFilter(e.Guild.Id, e.Message.Content)) {
                 try {
                     await e.Channel.DeleteMessageAsync(e.Message)
                         .ConfigureAwait(false);
-                    LogHandle.Log(LogLevel.Info,
+                    Log(LogLevel.Info,
                         $"Filter triggered in edit of a message: '{e.Message.Content}'" + Environment.NewLine +
                         $" User: {e.Message.Author.ToString()}" + Environment.NewLine +
                         $" Location: '{e.Guild.Name}' ({e.Guild.Id}) ; {e.Channel.ToString()}"
                     );
                 } catch (UnauthorizedException) {
-                    LogHandle.Log(LogLevel.Warning,
+                    Log(LogLevel.Warning,
                         $"Filter triggered in edited message but missing permissions to delete!" + Environment.NewLine +
                         $" Message: '{e.Message.Content}'" + Environment.NewLine +
                         $" User: {e.Message.Author.ToString()}" + Environment.NewLine +
@@ -404,10 +353,7 @@ namespace TheGodfather
 
         private async Task Client_Ready(ReadyEventArgs e)
         {
-            LogHandle.Log(LogLevel.Info, "Client ready.");
-            await _client.UpdateStatusAsync(new DiscordGame(_dependecies.StatusControl.GetRandomStatus()) {
-                StreamType = GameStreamType.NoStream
-            }).ConfigureAwait(false);
+            Log(LogLevel.Info, "Client ready.");
         }
         #endregion
 
@@ -416,7 +362,7 @@ namespace TheGodfather
         {
             await Task.Yield();
 
-            LogHandle.Log(LogLevel.Info,
+            Log(LogLevel.Info,
                 $"Executed: {e.Command?.QualifiedName ?? "<unknown command>"}" + Environment.NewLine +
                 $" User: {e.Context.User.ToString()}" + Environment.NewLine +
                 $" Location: '{e.Context.Guild.Name}' ({e.Context.Guild.Id}) ; {e.Context.Channel.ToString()}"
@@ -435,7 +381,7 @@ namespace TheGodfather
             if (ex is ChecksFailedException chke && chke.FailedChecks.Any(c => c is PreExecutionCheck))
                 return;
 
-            LogHandle.Log(LogLevel.Error,
+            Log(LogLevel.Error,
                 $"Tried executing: {e.Command?.QualifiedName ?? "<unknown command>"}" + Environment.NewLine +
                 $" User: {e.Context.User.ToString()}" + Environment.NewLine +
                 $" Location: '{e.Context.Guild.Name}' ({e.Context.Guild.Id}) ; {e.Context.Channel.ToString()}" + Environment.NewLine +
@@ -456,14 +402,18 @@ namespace TheGodfather
                 embed.Description = $"{emoji} Invalid usage! {ex.Message}";
             else if (e.Exception is CommandFailedException)
                 embed.Description = $"{emoji} {ex.Message}";
+            else if (e.Exception is DatabaseServiceException)
+                embed.Description = $"{emoji} {ex.Message} Details: {ex.InnerException?.Message ?? "<none>"}";
             else if (e.Exception is NotSupportedException)
-                embed.Description = $"{emoji} Not supported. {e.Exception.Message}";
+                embed.Description = $"{emoji} Not supported. {ex.Message}";
             else if (e.Exception is InvalidOperationException)
-                embed.Description = $"{emoji} Invalid operation. {e.Exception.Message}";
+                embed.Description = $"{emoji} Invalid operation. {ex.Message}";
             else if (e.Exception is NotFoundException)
                 embed.Description = $"{emoji} 404: Not found.";
             else if (e.Exception is ArgumentException)
                 embed.Description = $"{emoji} Argument specified is invalid (please use {Formatter.Bold("!help <command>")}).";
+            else if (e.Exception is Npgsql.NpgsqlException)
+                embed.Description = $"{emoji} This is what happens when I use a Serbian database... Please {Formatter.InlineCode("!report")}.";
             else if (ex is ChecksFailedException exc) {
                 var attr = exc.FailedChecks.First();
                 if (attr is CooldownAttribute)
@@ -483,13 +433,6 @@ namespace TheGodfather
 
             await e.Context.RespondAsync(embed: embed.Build())
                 .ConfigureAwait(false);
-        }
-        #endregion
-
-        #region GETTERS_AND_SETTERS
-        internal void ToggleListening()
-        {
-            Listening = !Listening;
         }
         #endregion
     }

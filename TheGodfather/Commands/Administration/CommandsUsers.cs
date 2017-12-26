@@ -144,13 +144,13 @@ namespace TheGodfather.Commands.Administration
         [Aliases("tb")]
         [RequirePermissions(Permissions.BanMembers)]
         public async Task TempBanAsync(CommandContext ctx,
-                                      [Description("Ammount of time units.")] int ammount,
+                                      [Description("Amount of time units.")] int amount,
                                       [Description("Time unit.")] string unit,
                                       [Description("User.")] DiscordMember u,
                                       [RemainingText, Description("Reason.")] string reason = null)
         {
-            if (ammount < 0 || ammount > 60)
-                throw new InvalidCommandUsageException("Time unit ammount not in valid range.");
+            if (amount < 0 || amount > 60)
+                throw new InvalidCommandUsageException("Time unit amount not in valid range.");
 
             if (unit == null)
                 throw new InvalidCommandUsageException("Time unit missing.");
@@ -166,17 +166,17 @@ namespace TheGodfather.Commands.Administration
 
             TimeSpan t;
             switch (unit) {
-                case "s": t = TimeSpan.FromSeconds(ammount); break;
-                case "m": t = TimeSpan.FromMinutes(ammount); break;
-                case "h": t = TimeSpan.FromHours(ammount); break;
-                case "d": t = TimeSpan.FromDays(ammount); break;
+                case "s": t = TimeSpan.FromSeconds(amount); break;
+                case "m": t = TimeSpan.FromMinutes(amount); break;
+                case "h": t = TimeSpan.FromHours(amount); break;
+                case "d": t = TimeSpan.FromDays(amount); break;
                 default:
                     throw new InvalidCommandUsageException("Time unit has to be s/m/h/d.");
             }
 
-            await u.BanAsync(delete_message_days: 7, reason: $"(tempban for {ammount}{unit}){ctx.User.Username} ({ctx.User.Id}): {reason}")
+            await u.BanAsync(delete_message_days: 7, reason: $"(tempban for {amount}{unit}){ctx.User.Username} ({ctx.User.Id}): {reason}")
                 .ConfigureAwait(false);
-            await ctx.RespondAsync($"{Formatter.Bold(ctx.User.Username)} BANNED {Formatter.Bold(u.Username)} for {Formatter.Bold($"{ammount}{unit}")}!", embed: new DiscordEmbedBuilder() {
+            await ctx.RespondAsync($"{Formatter.Bold(ctx.User.Username)} BANNED {Formatter.Bold(u.Username)} for {Formatter.Bold($"{amount}{unit}")}!", embed: new DiscordEmbedBuilder() {
                 ImageUrl = "http://i0.kym-cdn.com/entries/icons/original/000/000/615/BANHAMMER.png"
             }.Build()).ConfigureAwait(false);
             await Task.Delay(t)

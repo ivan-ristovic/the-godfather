@@ -13,120 +13,27 @@ using DSharpPlus.Entities;
 
 namespace TheGodfather.Helpers
 {
-    public sealed class GameStats
+    public class GameStats
     {
-        [JsonProperty("duelswon")]
-        public uint DuelsWon { get; internal set; }
-
-        [JsonProperty("duelslost")]
-        public uint DuelsLost { get; internal set; }
-
-        [JsonIgnore]
-        public uint DuelWinPercentage
-        {
+        private IReadOnlyDictionary<string, string> Stats { get; }
+        public ulong UserId {
             get {
-                if (DuelsWon + DuelsLost == 0)
-                    return 0;
-                return (uint)Math.Round((double)DuelsWon / (DuelsWon + DuelsLost) * 100);
+                bool succ = ulong.TryParse(Stats["uid"], out ulong uid); return succ ? uid : 0;
             }
-            internal set { }
-        }
-
-        [JsonProperty("hangmanwon")]
-        public uint HangmanWon { get; internal set; }
-
-        [JsonProperty("nunchiswon")]
-        public uint NunchiGamesWon { get; internal set; }
-
-        [JsonProperty("quizeswon")]
-        public uint QuizesWon { get; internal set; }
-
-        [JsonProperty("raceswon")]
-        public uint RacesWon { get; internal set; }
-
-        [JsonProperty("tttwon")]
-        public uint TTTWon { get; internal set; }
-
-        [JsonProperty("tttlost")]
-        public uint TTTLost { get; internal set; }
-
-        [JsonIgnore]
-        public uint TTTWinPercentage
-        {
-            get {
-                if (TTTWon + TTTLost == 0)
-                    return 0;
-                return (uint)Math.Round((double)TTTWon / (TTTWon + TTTLost) * 100);
-            }
-            internal set { }
-        }
-        
-        [JsonProperty("c4won")]
-        public uint Connect4Won { get; internal set; }
-
-        [JsonProperty("c4lost")]
-        public uint Connect4Lost { get; internal set; }
-
-        [JsonIgnore]
-        public uint Connect4WinPercentage
-        {
-            get {
-                if (Connect4Won + Connect4Lost == 0)
-                    return 0;
-                return (uint)Math.Round((double)Connect4Won / (Connect4Won + Connect4Lost) * 100);
-            }
-            internal set { }
-        }
-
-        [JsonProperty("carowon")]
-        public uint CaroWon { get; internal set; }
-
-        [JsonProperty("carolost")]
-        public uint CaroLost { get; internal set; }
-
-        [JsonIgnore]
-        public uint CaroWinPercentage
-        {
-            get {
-                if (CaroWon + CaroLost == 0)
-                    return 0;
-                return (uint)Math.Round((double)CaroWon / (CaroWon + CaroLost) * 100);
-            }
-            internal set { }
         }
 
 
-        public string DuelStatsString()
-            => $"W: {DuelsWon} L: {DuelsLost} ({Formatter.Bold($"{DuelWinPercentage}")}%)";
-
-        public string TTTStatsString()
-            => $"W: {TTTWon} L: {TTTLost} ({Formatter.Bold($"{TTTWinPercentage}")}%)";
-
-        public string Connect4StatsString()
-            => $"W: {Connect4Won} L: {Connect4Lost} ({Formatter.Bold($"{Connect4WinPercentage}")}%)";
-
-        public string CaroStatsString()
-            => $"W: {CaroWon} L: {CaroLost} ({Formatter.Bold($"{CaroWinPercentage}")}%)";
-
-        public string NunchiStatsString() 
-            => $"W: {NunchiGamesWon}";
-
-        public string QuizStatsString() 
-            => $"W: {QuizesWon}";
-
-        public string RaceStatsString() 
-            => $"W: {RacesWon}";
-
-        public string HangmanStatsString() 
-            => $"W: {HangmanWon}";
-
+        public GameStats(IReadOnlyDictionary<string, string> statdict)
+        {
+            Stats = statdict;
+        }
 
         public DiscordEmbedBuilder GetEmbeddedStats()
         {
             var eb = new DiscordEmbedBuilder() { Color = DiscordColor.Chartreuse };
             eb.AddField("Duel stats", DuelStatsString());
             eb.AddField("Tic-Tac-Toe stats", TTTStatsString());
-            eb.AddField("Connect4 stats", Connect4StatsString());
+            eb.AddField("Connect4 stats", Chain4StatsString());
             eb.AddField("Caro stats", CaroStatsString());
             eb.AddField("Nunchi stats", NunchiStatsString(), inline: true);
             eb.AddField("Quiz stats", QuizStatsString(), inline: true);
@@ -135,5 +42,39 @@ namespace TheGodfather.Helpers
             return eb;
         }
 
+        public string DuelStatsString()
+            => $"W: {Stats["duels_won"]} L: {Stats["duels_lost"]} ({Formatter.Bold($"{CalculateWinPercentage(Stats["duels_won"], Stats["duels_lost"])}")}%)";
+
+        public string TTTStatsString()
+            => $"W: {Stats["ttt_won"]} L: {Stats["ttt_lost"]} ({Formatter.Bold($"{CalculateWinPercentage(Stats["ttt_won"], Stats["ttt_lost"])}")}%)";
+
+        public string Chain4StatsString()
+            => $"W: {Stats["chain4_won"]} L: {Stats["chain4_lost"]} ({Formatter.Bold($"{CalculateWinPercentage(Stats["chain4_won"], Stats["chain4_lost"])}")}%)";
+
+        public string CaroStatsString()
+            => $"W: {Stats["caro_won"]} L: {Stats["caro_lost"]} ({Formatter.Bold($"{CalculateWinPercentage(Stats["caro_won"], Stats["caro_lost"])}")}%)";
+
+        public string NunchiStatsString()
+            => $"W: {Stats["nunchis_won"]}";
+
+        public string QuizStatsString()
+            => $"W: {Stats["quizes_won"]}";
+
+        public string RaceStatsString()
+            => $"W: {Stats["races_won"]}";
+
+        public string HangmanStatsString()
+            => $"W: {Stats["hangman_won"]}";
+
+        public uint CalculateWinPercentage(string won, string lost)
+        {
+            int.TryParse(won, out int w);
+            int.TryParse(lost, out int l);
+
+            if (w + l == 0)
+                return 0;
+
+            return (uint)Math.Round((double)w / (w + l) * 100);
+        }
     }
 }
