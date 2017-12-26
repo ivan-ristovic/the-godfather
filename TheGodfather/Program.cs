@@ -24,7 +24,9 @@ namespace TheGodfather
         private static List<TheGodfather> Shards { get; set; }
         private static DatabaseService Database { get; set; }
         private static SharedData Shared { get; set; }
-        private static Timer PeriodicActionTimer { get; set; }
+        private static Timer BotStatusTimer { get; set; }
+        private static Timer DatabaseSyncTimer { get; set; }
+        private static Timer FeedCheckTimer { get; set; }
 
 
         internal static void Main(string[] args)
@@ -128,24 +130,51 @@ namespace TheGodfather
             }
 
             Console.WriteLine("[6/6] Starting periodic actions...");
-            PeriodicActionTimer = new Timer(PeriodicalActionsCallback, Shards[0].Client, TimeSpan.FromSeconds(10), TimeSpan.FromMinutes(1));
+            DatabaseSyncTimer = new Timer(DatabaseSyncTimerCallback, Shards[0].Client, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(5));
+            BotStatusTimer = new Timer(BotStatusTimerCallback, Shards[0].Client, TimeSpan.FromSeconds(10), TimeSpan.FromMinutes(5));
+            FeedCheckTimer = new Timer(FeedCheckTimerCallback, Shards[0].Client, TimeSpan.FromSeconds(30), TimeSpan.FromMinutes(1));
 
             GC.Collect();
             await Task.Delay(-1);
         }
 
-        private static void PeriodicalActionsCallback(object _)
+        private static void BotStatusTimerCallback(object _)
         {
             var client = _ as DiscordClient;
-
             var status = Database.GetRandomBotStatusAsync().ConfigureAwait(false).GetAwaiter().GetResult();
             client.UpdateStatusAsync(new DiscordGame(status) {
                 StreamType = GameStreamType.NoStream
             }).ConfigureAwait(false).GetAwaiter().GetResult();
+        }
 
-            FeedService.CheckFeedsForChangesAsync(client, Database).ConfigureAwait(false).GetAwaiter().GetResult();
+        private static void DatabaseSyncTimerCallback(object _)
+        {
+            var client = _ as DiscordClient;
+            try {
+                Shared.SaveRanksToDatabaseAsync(Database).ConfigureAwait(false).GetAwaiter().GetResult();
+            } catch (Exception e) {
+                client.DebugLogger.LogMessage(LogLevel.Error, "TheGodfather",
+                    $"Exception occured while syncing with the database: {e.GetType()}" + Environment.NewLine +
+                    $" Message: {e.Message}" + Environment.NewLine +
+                    (e.InnerException != null ? $" Inner exception: {e.InnerException.GetType()} : {e.InnerException.Message}" : "") + Environment.NewLine
+                    , DateTime.Now
+                );
+            }
+        }
 
-            Shared.SaveRanksToDatabaseAsync(Database).ConfigureAwait(false).GetAwaiter().GetResult();
+        private static void FeedCheckTimerCallback(object _)
+        {
+            var client = _ as DiscordClient;
+            try {
+                FeedService.CheckFeedsForChangesAsync(client, Database).ConfigureAwait(false).GetAwaiter().GetResult();
+            } catch (Exception e) {
+                client.DebugLogger.LogMessage(LogLevel.Error, "TheGodfather",
+                    $"Exception occured while checking for feed updates: {e.GetType()}" + Environment.NewLine +
+                    $" Message: {e.Message}" + Environment.NewLine +
+                    (e.InnerException != null ? $" Inner exception: {e.InnerException.GetType()} : {e.InnerException.Message}" : "") + Environment.NewLine
+                    , DateTime.Now
+                );
+            }
         }
     }
 }
