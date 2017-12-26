@@ -186,12 +186,8 @@ namespace TheGodfather.Commands.Main
             if (sd.TrySetGuildPrefix(ctx.Guild.Id, prefix)) {
                 await ctx.RespondAsync("Successfully changed the prefix for this guild to: " + Formatter.Bold(prefix))
                     .ConfigureAwait(false);
-                try {
-                    await ctx.Dependencies.GetDependency<DatabaseService>().SetGuildPrefixAsync(ctx.Guild.Id, prefix)
-                        .ConfigureAwait(false);
-                } catch (Npgsql.NpgsqlException e) {
-                    throw new DatabaseServiceException("Failed to save prefix in the database!", e);
-                }
+                await ctx.Dependencies.GetDependency<DatabaseService>().SetGuildPrefixAsync(ctx.Guild.Id, prefix)
+                    .ConfigureAwait(false);
             } else {
                 throw new CommandFailedException("Failed to set prefix.");
             }

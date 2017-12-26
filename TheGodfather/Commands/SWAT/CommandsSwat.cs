@@ -44,15 +44,10 @@ namespace TheGodfather.Commands.SWAT
                 Title = "Servers",
                 Color = DiscordColor.DarkBlue
             };
-
-            IReadOnlyList<SwatServer> servers;
-            try {
-                servers = await ctx.Dependencies.GetDependency<DatabaseService>().GetAllSwatServersAsync()
-                    .ConfigureAwait(false);
-            } catch (Npgsql.NpgsqlException e) {
-                throw new DatabaseServiceException(e);
-            }
             
+            var servers = await ctx.Dependencies.GetDependency<DatabaseService>().GetAllSwatServersAsync()
+                .ConfigureAwait(false);
+
             if (servers == null || !servers.Any()) {
                 await ctx.RespondAsync("No servers registered.")
                     .ConfigureAwait(false);
@@ -86,13 +81,8 @@ namespace TheGodfather.Commands.SWAT
             if (queryport <= 0 || queryport > 65535)
                 throw new InvalidCommandUsageException("Port range invalid (must be in range [1-65535])!");
 
-            SwatServer server;
-            try {
-                server = await ctx.Dependencies.GetDependency<DatabaseService>().GetSwatServerAsync(ip, queryport, name: ip)
-                    .ConfigureAwait(false);
-            } catch (Npgsql.NpgsqlException e) {
-                throw new DatabaseServiceException(e);
-            }
+            var server = await ctx.Dependencies.GetDependency<DatabaseService>().GetSwatServerAsync(ip, queryport, name: ip)
+                .ConfigureAwait(false);
 
             var info = await SwatServerInfo.QueryIPAsync(server.IP, server.QueryPort)
                 .ConfigureAwait(false);
@@ -217,12 +207,9 @@ namespace TheGodfather.Commands.SWAT
                     throw new InvalidCommandUsageException("Port range invalid (must be in range [1-65535])!");
 
                 var server = SwatServer.CreateFromIP(ip, queryport, name);
-                try {
-                    await ctx.Dependencies.GetDependency<DatabaseService>().AddSwatServerAsync(name, server)
-                        .ConfigureAwait(false);
-                } catch (Npgsql.NpgsqlException e) {
-                    throw new DatabaseServiceException(e);
-                }
+
+                await ctx.Dependencies.GetDependency<DatabaseService>().AddSwatServerAsync(name, server)
+                    .ConfigureAwait(false);
                 await ctx.RespondAsync("Server added. You can now query it using the name provided.")
                     .ConfigureAwait(false);
             }
@@ -238,12 +225,9 @@ namespace TheGodfather.Commands.SWAT
             {
                 if (string.IsNullOrWhiteSpace(name))
                     throw new InvalidCommandUsageException("Name missing.");
-                try {
-                    await ctx.Dependencies.GetDependency<DatabaseService>().DeleteSwatServerAsync(name)
-                        .ConfigureAwait(false);
-                } catch (Npgsql.NpgsqlException e) {
-                    throw new DatabaseServiceException(e);
-                }
+
+                await ctx.Dependencies.GetDependency<DatabaseService>().DeleteSwatServerAsync(name)
+                    .ConfigureAwait(false);
                 await ctx.RespondAsync("Server removed.")
                     .ConfigureAwait(false);
             }
@@ -256,13 +240,8 @@ namespace TheGodfather.Commands.SWAT
             public async Task ListAsync(CommandContext ctx,
                                        [Description("Page.")] int page = 1)
             {
-                IReadOnlyList<SwatServer> servers;
-                try {
-                    servers = await ctx.Dependencies.GetDependency<DatabaseService>().GetAllSwatServersAsync()
-                        .ConfigureAwait(false);
-                } catch (Npgsql.NpgsqlException e) {
-                    throw new DatabaseServiceException(e);
-                }
+                var servers = await ctx.Dependencies.GetDependency<DatabaseService>().GetAllSwatServersAsync()
+                    .ConfigureAwait(false);
 
                 if (servers == null || !servers.Any()) {
                     await ctx.RespondAsync("No servers registered.")

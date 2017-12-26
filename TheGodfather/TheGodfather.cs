@@ -403,7 +403,7 @@ namespace TheGodfather
             else if (e.Exception is CommandFailedException)
                 embed.Description = $"{emoji} {ex.Message}";
             else if (e.Exception is DatabaseServiceException)
-                embed.Description = $"{emoji} {ex.Message}: {ex.InnerException?.Message ?? "No further information."}";
+                embed.Description = $"{emoji} {ex.Message} Details: {ex.InnerException?.Message ?? "<none>"}";
             else if (e.Exception is NotSupportedException)
                 embed.Description = $"{emoji} Not supported. {ex.Message}";
             else if (e.Exception is InvalidOperationException)

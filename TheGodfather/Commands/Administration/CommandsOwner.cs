@@ -361,14 +361,9 @@ namespace TheGodfather.Commands.Administration
 
                 if (status.Length > 60)
                     throw new CommandFailedException("Status length cannot be greater than 60 characters.");
-
-                try {
-                    await ctx.Dependencies.GetDependency<DatabaseService>().AddBotStatusAsync(status)
-                        .ConfigureAwait(false);
-                } catch (Npgsql.NpgsqlException e) {
-                    throw new DatabaseServiceException(e);
-                }
-
+                
+                await ctx.Dependencies.GetDependency<DatabaseService>().AddBotStatusAsync(status)
+                    .ConfigureAwait(false);
                 await ctx.RespondAsync("Status added!")
                     .ConfigureAwait(false);
             }
@@ -381,13 +376,8 @@ namespace TheGodfather.Commands.Administration
             public async Task DeleteAsync(CommandContext ctx,
                                          [Description("Status ID.")] int id)
             {
-                try {
-                    await ctx.Dependencies.GetDependency<DatabaseService>().DeleteBotStatusAsync(id)
-                        .ConfigureAwait(false);
-                } catch (Npgsql.NpgsqlException e) {
-                    throw new DatabaseServiceException(e);
-                }
-
+                await ctx.Dependencies.GetDependency<DatabaseService>().DeleteBotStatusAsync(id)
+                    .ConfigureAwait(false);
                 await ctx.RespondAsync("Status removed!")
                     .ConfigureAwait(false);
             }
@@ -398,14 +388,10 @@ namespace TheGodfather.Commands.Administration
             [Description("List all statuses.")]
             public async Task ListAsync(CommandContext ctx)
             {
-                try {
-                    var statuses = await ctx.Dependencies.GetDependency<DatabaseService>().GetBotStatusesAsync()
-                        .ConfigureAwait(false);
-                    await ctx.RespondAsync("My current statuses:\n" + string.Join("\n", statuses.Select(kvp => $"{kvp.Key} : {kvp.Value}")))
-                        .ConfigureAwait(false);
-                } catch (Npgsql.NpgsqlException e) {
-                    throw new DatabaseServiceException(e);
-                }
+                var statuses = await ctx.Dependencies.GetDependency<DatabaseService>().GetBotStatusesAsync()
+                    .ConfigureAwait(false);
+                await ctx.RespondAsync("My current statuses:\n" + string.Join("\n", statuses.Select(kvp => $"{kvp.Key} : {kvp.Value}")))
+                    .ConfigureAwait(false);
             }
             #endregion
         }
