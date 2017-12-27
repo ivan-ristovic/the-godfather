@@ -33,7 +33,6 @@ namespace TheGodfather
 
         #region PUBLIC_FIELDS
         public int ShardId { get; }
-
         public DiscordClient Client { get; private set; }
         public CommandsNextModule Commands { get; private set; }
         public InteractivityModule Interactivity { get; private set; }
