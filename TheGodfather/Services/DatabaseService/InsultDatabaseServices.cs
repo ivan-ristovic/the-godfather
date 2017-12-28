@@ -43,7 +43,7 @@ namespace TheGodfather.Services
             using (var cmd = con.CreateCommand()) {
                 await con.OpenAsync().ConfigureAwait(false);
 
-                cmd.CommandText = "SELECT insult FROM gf.insults OFFSET RANDOM() LIMIT 1;";
+                cmd.CommandText = "SELECT insult FROM gf.insults LIMIT 1 OFFSET floor(random() * (SELECT count(*) FROM gf.insults));";
 
                 var res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
                 if (res != null && !(res is DBNull))

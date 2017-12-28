@@ -44,7 +44,7 @@ namespace TheGodfather.Services
             using (var cmd = con.CreateCommand()) {
                 await con.OpenAsync().ConfigureAwait(false);
 
-                cmd.CommandText = "SELECT url FROM gf.memes WHERE gid = @gid OFFSET RANDOM() LIMIT 1;";
+                cmd.CommandText = "SELECT url FROM gf.memes WHERE gid = @gid LIMIT 1 OFFSET floor(random() * (SELECT count(*) FROM gf.memes WHERE gid = @gid));";
                 cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
 
                 var res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
