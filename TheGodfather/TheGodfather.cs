@@ -176,8 +176,9 @@ namespace TheGodfather
                 return;
 
             try {
-                await e.Guild.GetChannel(cid).SendMessageAsync($"Welcome to {Formatter.Bold(e.Guild.Name)}, {e.Member.Mention}!")
-                    .ConfigureAwait(false);
+                var chn = e.Guild.GetChannel(cid);
+                if (chn != null)
+                    await chn.SendMessageAsync($"Welcome to {Formatter.Bold(e.Guild.Name)}, {e.Member.Mention}!").ConfigureAwait(false);
             } catch (Exception exc) {
                 while (exc is AggregateException)
                     exc = exc.InnerException;
@@ -187,10 +188,6 @@ namespace TheGodfather
                     $" Exception: {exc.GetType()}" + Environment.NewLine +
                     $" Message: {exc.Message}"
                 );
-
-                if (exc is UnauthorizedException)
-                    await e.Guild.Owner.SendMessageAsync("You have set a welcome message channel for me to post in, but I do not have permissions to do so. Please consider changing it. Guild: " + e.Guild.Name + " , Channel: " + e.Guild.GetChannel(cid).Name)
-                        .ConfigureAwait(false);
             }
         }
 
@@ -207,8 +204,9 @@ namespace TheGodfather
                 return;
 
             try {
-                await e.Guild.GetChannel(cid).SendMessageAsync($"{Formatter.Bold(e.Member?.Username ?? "<unknown>")} left the server. Bye!")
-                    .ConfigureAwait(false);
+                var chn = e.Guild.GetChannel(cid);
+                if (chn != null)
+                    await chn.SendMessageAsync($"{Formatter.Bold(e.Member?.Username ?? "<unknown>")} left the server. Bye!").ConfigureAwait(false);
             } catch (Exception exc) {
                 while (exc is AggregateException)
                     exc = exc.InnerException;
@@ -218,9 +216,6 @@ namespace TheGodfather
                     $" Exception: {exc.GetType()}" + Environment.NewLine +
                     $" Message: {exc.Message}"
                 );
-                if (exc is UnauthorizedException)
-                    await e.Guild.Owner.SendMessageAsync("You have set a leave message channel for me to post in, but I do not have permissions to do so. Please consider changing it. Guild: " + e.Guild.Name + " , Channel: " + e.Guild.GetChannel(cid).Name)
-                        .ConfigureAwait(false);
             }
         }
 
