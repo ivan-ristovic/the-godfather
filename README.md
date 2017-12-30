@@ -227,6 +227,7 @@ Commands use the following types:
 |   |   |   |   |   |   |
 | ``rss``<br>``feed`` |   |   | ``[text] Feed URL`` | Get feed from URL. | ``!feed http://somefeedurl.rss`` |
 | ``rss``<br>``feed`` | ``subscribe``<br>``add``<br>``+``<br>``sub`` | Manage Guild (user) | ``[text] Feed URL``<br><br>``(optional) [text] Friendly Name`` | Subscribe to given feed URL. Bot will send messages whenever it detects updates. ``Friendly Name`` will be shown instead of feed URL (if set). | ``!feed subscribe http://somefeedurl.rss``<br><br>``!feed subscribe http://somefeedurl.rss My site RSS`` |
+| ``rss``<br>``feed`` | ``unsubscribe``<br>``del``<br>``d``<br>``rm``<br>``-``<br>``unsub`` | Manage Guild (user) | ``[int] Feed index`` | Remove an existing feed subscription using the index (can be seen with ``!feed list``. | ``!feed unsubscribe 5`` |
 | ``rss``<br>``feed`` | ``listsubs``<br>``list``<br>``ls`` |   |   | List all subscribed feeds. | ``!feed list`` |
 | ``rss``<br>``feed`` | ``wm`` |   |   | Get latest topics from WM forum. | ``!feed wm`` |
 | ``rss``<br>``feed`` | ``news`` |   |   | Get latest worldwide news. | ``!feed news`` |
