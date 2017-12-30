@@ -187,7 +187,7 @@ namespace TheGodfather
         {
             //lock (_rankLock) {
                 foreach (var entry in MessageCount)
-                    await db.UpdateMessageCountAsync(entry.Key, entry.Value).ConfigureAwait(false);
+                    await db.UpdateMessageCountForUserAsync(entry.Key, entry.Value).ConfigureAwait(false);
             //}
         }
         #endregion

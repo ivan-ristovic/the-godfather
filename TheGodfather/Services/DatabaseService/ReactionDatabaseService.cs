@@ -61,7 +61,7 @@ namespace TheGodfather.Services
             _sem.Release();
         }
 
-        public async Task DeleteTextReactionAsync(ulong gid, string trigger)
+        public async Task RemoveTextReactionAsync(ulong gid, string trigger)
         {
             await _sem.WaitAsync();
 
@@ -147,7 +147,7 @@ namespace TheGodfather.Services
             _sem.Release();
         }
 
-        public async Task DeleteEmojiReactionAsync(ulong gid, string trigger)
+        public async Task RemoveEmojiReactionAsync(ulong gid, string trigger)
         {
             await _sem.WaitAsync();
 

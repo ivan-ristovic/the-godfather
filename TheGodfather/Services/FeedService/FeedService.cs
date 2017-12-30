@@ -28,7 +28,7 @@ namespace TheGodfather.Services
 
         public static async Task CheckFeedsForChangesAsync(DiscordClient client, DatabaseService db)
         {
-            var _feeds = await db.GetAllFeedSubscriptionsAsync()
+            var _feeds = await db.GetAllSubscriptionsAsync()
                 .ConfigureAwait(false);
             foreach (var feed in _feeds) {
 

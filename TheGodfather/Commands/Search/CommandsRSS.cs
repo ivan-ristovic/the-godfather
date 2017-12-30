@@ -61,7 +61,7 @@ namespace TheGodfather.Commands.Search
         [Aliases("ls", "list")]
         public async Task FeedListAsync(CommandContext ctx)
         {
-            var feeds = await ctx.Dependencies.GetDependency<DatabaseService>().GetFeedsForChannelAsync(ctx.Channel.Id)
+            var feeds = await ctx.Dependencies.GetDependency<DatabaseService>().GetSubscriptionsForChannelAsync(ctx.Channel.Id)
                 .ConfigureAwait(false);
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
                 Title = "Subscriptions for this channel:",
@@ -102,7 +102,7 @@ namespace TheGodfather.Commands.Search
         public async Task UnsubscribeAsync(CommandContext ctx,
                                           [Description("ID.")] int id)
         {
-            await ctx.Dependencies.GetDependency<DatabaseService>().DeleteSubscriptionAsync(ctx.Channel.Id, id)
+            await ctx.Dependencies.GetDependency<DatabaseService>().RemoveSubscriptionAsync(ctx.Channel.Id, id)
                 .ConfigureAwait(false);
             await ctx.RespondAsync($"Unsubscribed from feed with ID {Formatter.Bold(id.ToString())} !")
                 .ConfigureAwait(false);
@@ -158,7 +158,7 @@ namespace TheGodfather.Commands.Search
                 if (string.IsNullOrWhiteSpace(sub))
                     throw new InvalidCommandUsageException("Subreddit missing.");
 
-                await ctx.Dependencies.GetDependency<DatabaseService>().DeleteSubscriptionUsingNameAsync(ctx.Channel.Id, "/r/" + sub)
+                await ctx.Dependencies.GetDependency<DatabaseService>().RemoveSubscriptionUsingNameAsync(ctx.Channel.Id, "/r/" + sub)
                     .ConfigureAwait(false);
                 await ctx.RespondAsync($"Unsubscribed from {Formatter.Bold("/r/" + sub)} !")
                     .ConfigureAwait(false);
@@ -231,7 +231,7 @@ namespace TheGodfather.Commands.Search
                     throw new CommandFailedException("Failed retrieving channel ID for that URL.");
 
                 var feedurl = YoutubeService.GetYoutubeRSSFeedLinkForChannelId(chid);
-                await ctx.Dependencies.GetDependency<DatabaseService>().DeleteSubscriptionUsingUrlAsync(ctx.Channel.Id, feedurl)
+                await ctx.Dependencies.GetDependency<DatabaseService>().RemoveSubscriptionUsingUrlAsync(ctx.Channel.Id, feedurl)
                     .ConfigureAwait(false);
                 await ctx.RespondAsync("Unsubscribed!")
                     .ConfigureAwait(false);

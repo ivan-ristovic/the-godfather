@@ -61,7 +61,7 @@ namespace TheGodfather.Commands.Games
             if (await ctx.Dependencies.GetDependency<DatabaseService>().HasBankAccountAsync(ctx.User.Id).ConfigureAwait(false))
                 throw new CommandFailedException("You already own an account in WM bank!");
 
-            await ctx.Dependencies.GetDependency<DatabaseService>().OpenAccountForUserAsync(ctx.User.Id)
+            await ctx.Dependencies.GetDependency<DatabaseService>().OpenBankAccountForUserAsync(ctx.User.Id)
                 .ConfigureAwait(false);
 
             await ctx.RespondAsync($"Account opened for you, {ctx.User.Mention}! Since WM bank is so generous, you get 25 credits for free.")
@@ -101,7 +101,7 @@ namespace TheGodfather.Commands.Games
                 Color = DiscordColor.Yellow
             };
 
-            var top = await ctx.Dependencies.GetDependency<DatabaseService>().GetTopAccountsAsync()
+            var top = await ctx.Dependencies.GetDependency<DatabaseService>().GetTopBankAccountsAsync()
                 .ConfigureAwait(false);
             foreach (var row in top) {
                 ulong.TryParse(row["uid"], out ulong uid);

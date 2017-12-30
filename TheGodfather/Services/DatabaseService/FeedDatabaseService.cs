@@ -14,7 +14,7 @@ namespace TheGodfather.Services
 {
     public partial class DatabaseService
     {
-        public async Task<IReadOnlyList<FeedEntry>> GetAllFeedSubscriptionsAsync()
+        public async Task<IReadOnlyList<FeedEntry>> GetAllSubscriptionsAsync()
         {
             await _sem.WaitAsync();
 
@@ -115,7 +115,7 @@ namespace TheGodfather.Services
             return true;
         }
 
-        public async Task DeleteSubscriptionAsync(ulong cid, int id)
+        public async Task RemoveSubscriptionAsync(ulong cid, int id)
         {
             await _sem.WaitAsync();
 
@@ -131,7 +131,7 @@ namespace TheGodfather.Services
             _sem.Release();
         }
 
-        public async Task DeleteSubscriptionUsingUrlAsync(ulong cid, string url)
+        public async Task RemoveSubscriptionUsingUrlAsync(ulong cid, string url)
         {
             await _sem.WaitAsync();
 
@@ -147,7 +147,7 @@ namespace TheGodfather.Services
             _sem.Release();
         }
 
-        public async Task DeleteSubscriptionUsingNameAsync(ulong cid, string qname)
+        public async Task RemoveSubscriptionUsingNameAsync(ulong cid, string qname)
         {
             await _sem.WaitAsync();
 
@@ -163,7 +163,7 @@ namespace TheGodfather.Services
             _sem.Release();
         }
 
-        public async Task<IReadOnlyList<FeedEntry>> GetFeedsForChannelAsync(ulong cid)
+        public async Task<IReadOnlyList<FeedEntry>> GetSubscriptionsForChannelAsync(ulong cid)
         {
             await _sem.WaitAsync();
 

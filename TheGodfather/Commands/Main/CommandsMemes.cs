@@ -40,7 +40,7 @@ namespace TheGodfather.Commands.Main
                 return;
             }
 
-            url = await ctx.Dependencies.GetDependency<DatabaseService>().GetMemeUrlAsync(ctx.Guild.Id, name)
+            url = await ctx.Dependencies.GetDependency<DatabaseService>().GetGuildMemeUrlAsync(ctx.Guild.Id, name)
                 .ConfigureAwait(false);
             if (url == null) {
                 await ctx.RespondAsync("No meme registered with that name, here is a random one: ")
@@ -76,7 +76,7 @@ namespace TheGodfather.Commands.Main
             bool result = Uri.TryCreate(url, UriKind.Absolute, out uriResult)
                 && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
 
-            await ctx.Dependencies.GetDependency<DatabaseService>().AddMemeAsync(ctx.Guild.Id, name, url)
+            await ctx.Dependencies.GetDependency<DatabaseService>().AddGuildMemeAsync(ctx.Guild.Id, name, url)
                 .ConfigureAwait(false);
             await ctx.RespondAsync($"Meme {Formatter.Bold(name)} successfully added!")
                 .ConfigureAwait(false);
@@ -194,7 +194,7 @@ namespace TheGodfather.Commands.Main
             if (string.IsNullOrWhiteSpace(name))
                 throw new InvalidCommandUsageException("Name missing.");
 
-            await ctx.Dependencies.GetDependency<DatabaseService>().DeleteMemeAsync(ctx.Guild.Id, name)
+            await ctx.Dependencies.GetDependency<DatabaseService>().RemoveGuildMemeAsync(ctx.Guild.Id, name)
                 .ConfigureAwait(false);
             await ctx.RespondAsync($"Meme {Formatter.Bold(name)} successfully removed!")
                 .ConfigureAwait(false);
@@ -350,7 +350,7 @@ namespace TheGodfather.Commands.Main
             var chn = await client.GetChannelAsync(cid)
                 .ConfigureAwait(false);
 
-            string url = await db.GetRandomMemeAsync(gid)
+            string url = await db.GetRandomGuildMemeAsync(gid)
                 .ConfigureAwait(false);
 
             if (url == null) {

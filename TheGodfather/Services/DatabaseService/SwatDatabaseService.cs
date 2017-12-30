@@ -56,7 +56,7 @@ namespace TheGodfather.Services
             _sem.Release();
         }
 
-        public async Task DeleteSwatServerAsync(string name)
+        public async Task RemoveSwatServerAsync(string name)
         {
             await _sem.WaitAsync();
 

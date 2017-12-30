@@ -65,7 +65,7 @@ namespace TheGodfather.Services
             return balance;
         }
 
-        public async Task OpenAccountForUserAsync(ulong uid)
+        public async Task OpenBankAccountForUserAsync(ulong uid)
         {
             await _sem.WaitAsync();
 
@@ -115,7 +115,7 @@ namespace TheGodfather.Services
                     var res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
 
                     if (res == null || res is DBNull)
-                        await OpenAccountForUserAsync(target);
+                        await OpenBankAccountForUserAsync(target);
                 }
 
                 await _tsem.WaitAsync().ConfigureAwait(false);
@@ -175,7 +175,7 @@ namespace TheGodfather.Services
             }
         }
 
-        public async Task<IReadOnlyList<IReadOnlyDictionary<string, string>>> GetTopAccountsAsync()
+        public async Task<IReadOnlyList<IReadOnlyDictionary<string, string>>> GetTopBankAccountsAsync()
         {
             var res = await ExecuteRawQueryAsync("SELECT * FROM gf.accounts ORDER BY balance DESC LIMIT 10")
                 .ConfigureAwait(false);

@@ -75,7 +75,7 @@ namespace TheGodfather.Commands.Messages
                 throw new CommandFailedException("Failed to remove some text reactions.");
 
             foreach (var trigger in triggers)
-                await ctx.Dependencies.GetDependency<DatabaseService>().DeleteTextReactionAsync(ctx.Guild.Id, trigger)
+                await ctx.Dependencies.GetDependency<DatabaseService>().RemoveTextReactionAsync(ctx.Guild.Id, trigger)
                     .ConfigureAwait(false);
         }
         #endregion

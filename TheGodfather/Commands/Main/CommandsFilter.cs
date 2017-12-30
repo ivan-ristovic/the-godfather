@@ -74,7 +74,7 @@ namespace TheGodfather.Commands.Messages
             if (ctx.Dependencies.GetDependency<SharedData>().TryRemoveGuildFilter(ctx.Guild.Id, filter)) {
                 await ctx.RespondAsync($"Filter successfully removed.")
                     .ConfigureAwait(false);
-                await ctx.Dependencies.GetDependency<DatabaseService>().DeleteFilterAsync(ctx.Guild.Id, filter)
+                await ctx.Dependencies.GetDependency<DatabaseService>().RemoveFilterAsync(ctx.Guild.Id, filter)
                     .ConfigureAwait(false);
             } else {
                 throw new CommandFailedException("Given filter does not exist.");
@@ -122,7 +122,7 @@ namespace TheGodfather.Commands.Messages
             ctx.Dependencies.GetDependency<SharedData>().ClearGuildFilters(ctx.Guild.Id);
             await ctx.RespondAsync("All filters for this guild successfully removed.")
                 .ConfigureAwait(false);
-            await ctx.Dependencies.GetDependency<DatabaseService>().DeleteAllGuildFiltersAsync(ctx.Guild.Id)
+            await ctx.Dependencies.GetDependency<DatabaseService>().RemoveAllGuildFiltersAsync(ctx.Guild.Id)
                 .ConfigureAwait(false);
         }
         #endregion

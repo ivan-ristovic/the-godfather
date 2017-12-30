@@ -79,7 +79,7 @@ namespace TheGodfather.Commands.Messages
                 await ctx.RespondAsync("Done. Some trigger words were not in list anyway though.").ConfigureAwait(false);
 
             foreach (var trigger in triggers)
-                await ctx.Dependencies.GetDependency<DatabaseService>().DeleteEmojiReactionAsync(ctx.Guild.Id, trigger)
+                await ctx.Dependencies.GetDependency<DatabaseService>().RemoveEmojiReactionAsync(ctx.Guild.Id, trigger)
                     .ConfigureAwait(false);
         }
         #endregion

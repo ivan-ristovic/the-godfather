@@ -226,7 +226,7 @@ namespace TheGodfather.Commands.SWAT
                 if (string.IsNullOrWhiteSpace(name))
                     throw new InvalidCommandUsageException("Name missing.");
 
-                await ctx.Dependencies.GetDependency<DatabaseService>().DeleteSwatServerAsync(name)
+                await ctx.Dependencies.GetDependency<DatabaseService>().RemoveSwatServerAsync(name)
                     .ConfigureAwait(false);
                 await ctx.RespondAsync("Server removed.")
                     .ConfigureAwait(false);

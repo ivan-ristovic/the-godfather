@@ -72,7 +72,7 @@ namespace TheGodfather.Services
             _sem.Release();
         }
 
-        public async Task DeleteFilterAsync(ulong gid, string filter)
+        public async Task RemoveFilterAsync(ulong gid, string filter)
         {
             await _sem.WaitAsync();
 
@@ -90,7 +90,7 @@ namespace TheGodfather.Services
             _sem.Release();
         }
 
-        public async Task DeleteAllGuildFiltersAsync(ulong gid)
+        public async Task RemoveAllGuildFiltersAsync(ulong gid)
         {
             await _sem.WaitAsync();
 

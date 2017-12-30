@@ -71,7 +71,7 @@ namespace TheGodfather.Services
             _sem.Release();
         }
 
-        public async Task DeleteInsultByIdAsync(int index)
+        public async Task RemoveInsultByIdAsync(int index)
         {
             await _sem.WaitAsync();
 

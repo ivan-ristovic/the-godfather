@@ -376,7 +376,7 @@ namespace TheGodfather.Commands.Administration
             public async Task DeleteAsync(CommandContext ctx,
                                          [Description("Status ID.")] int id)
             {
-                await ctx.Dependencies.GetDependency<DatabaseService>().DeleteBotStatusAsync(id)
+                await ctx.Dependencies.GetDependency<DatabaseService>().RemoveBotStatusAsync(id)
                     .ConfigureAwait(false);
                 await ctx.RespondAsync("Status removed!")
                     .ConfigureAwait(false);

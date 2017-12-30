@@ -56,7 +56,7 @@ namespace TheGodfather.Services
             return msgcount;
         }
 
-        public async Task AddUserToMessageCountAsync(ulong uid)
+        public async Task StartTrackingMessageCountForUserAsync(ulong uid)
         {
             await _sem.WaitAsync();
 
@@ -73,7 +73,7 @@ namespace TheGodfather.Services
             _sem.Release();
         }
 
-        public async Task UpdateMessageCountAsync(ulong uid, ulong count)
+        public async Task UpdateMessageCountForUserAsync(ulong uid, ulong count)
         {
             await _sem.WaitAsync();
 

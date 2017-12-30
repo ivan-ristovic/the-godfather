@@ -34,7 +34,7 @@ namespace TheGodfather.Services
             return new ReadOnlyDictionary<string, string>(dict);
         }
 
-        public async Task<string> GetRandomMemeAsync(ulong gid)
+        public async Task<string> GetRandomGuildMemeAsync(ulong gid)
         {
             await _sem.WaitAsync();
 
@@ -56,7 +56,7 @@ namespace TheGodfather.Services
             return url;
         }
 
-        public async Task<string> GetMemeUrlAsync(ulong gid, string name)
+        public async Task<string> GetGuildMemeUrlAsync(ulong gid, string name)
         {
             await _sem.WaitAsync();
 
@@ -79,7 +79,7 @@ namespace TheGodfather.Services
             return url;
         }
 
-        public async Task AddMemeAsync(ulong gid, string name, string url)
+        public async Task AddGuildMemeAsync(ulong gid, string name, string url)
         {
             await _sem.WaitAsync();
 
@@ -98,7 +98,7 @@ namespace TheGodfather.Services
             _sem.Release();
         }
 
-        public async Task DeleteMemeAsync(ulong gid, string name)
+        public async Task RemoveGuildMemeAsync(ulong gid, string name)
         {
             await _sem.WaitAsync();
 

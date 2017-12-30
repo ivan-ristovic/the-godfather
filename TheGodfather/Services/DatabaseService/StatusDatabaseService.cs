@@ -43,8 +43,8 @@ namespace TheGodfather.Services
             using (var con = new NpgsqlConnection(_connectionString))
             using (var cmd = con.CreateCommand()) {
                 await con.OpenAsync().ConfigureAwait(false);
-
-                cmd.CommandText = "SELECT status FROM gf.statuses OFFSET RANDOM() LIMIT 1;";
+                
+                cmd.CommandText = "SELECT status FROM gf.statuses LIMIT 1 OFFSET floor(random() * (SELECT count(*) FROM gf.statuses));";
 
                 var res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
                 if (res != null && !(res is DBNull))
@@ -72,7 +72,7 @@ namespace TheGodfather.Services
             _sem.Release();
         }
 
-        public async Task DeleteBotStatusAsync(int id)
+        public async Task RemoveBotStatusAsync(int id)
         {
             await _sem.WaitAsync();
 
