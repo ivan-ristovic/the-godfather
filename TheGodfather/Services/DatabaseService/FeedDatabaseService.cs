@@ -115,7 +115,23 @@ namespace TheGodfather.Services
             return true;
         }
 
-        public async Task DeleteFeedAsync(ulong cid, string url)
+        public async Task DeleteSubscriptionAsync(ulong cid, int id)
+        {
+            await _sem.WaitAsync();
+
+            using (var con = new NpgsqlConnection(_connectionString))
+            using (var cmd = con.CreateCommand()) {
+                await con.OpenAsync().ConfigureAwait(false);
+                cmd.CommandText = "DELETE FROM gf.subscriptions WHERE cid = @cid AND id = @id;";
+                cmd.Parameters.AddWithValue("cid", NpgsqlDbType.Bigint, cid);
+                cmd.Parameters.AddWithValue("id", NpgsqlDbType.Integer, id);
+                await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+            }
+
+            _sem.Release();
+        }
+
+        public async Task DeleteSubscriptionUsingUrlAsync(ulong cid, string url)
         {
             await _sem.WaitAsync();
 
@@ -131,7 +147,7 @@ namespace TheGodfather.Services
             _sem.Release();
         }
 
-        public async Task DeleteFeedUsingNameAsync(ulong cid, string qname)
+        public async Task DeleteSubscriptionUsingNameAsync(ulong cid, string qname)
         {
             await _sem.WaitAsync();
 

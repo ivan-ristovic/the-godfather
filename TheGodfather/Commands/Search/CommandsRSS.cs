@@ -67,7 +67,7 @@ namespace TheGodfather.Commands.Search
                 Title = "Subscriptions for this channel:",
                 Description = string.Join("\n", feeds.Select(fe => {
                     string qname = fe.Subscriptions.First().QualifiedName;
-                    return string.IsNullOrWhiteSpace(qname) ? fe.URL : qname;
+                    return (string.IsNullOrWhiteSpace(qname) ? fe.URL : qname) + $" (ID: {fe.Id})";
                 })),
                 Color = DiscordColor.Goldenrod
             }).ConfigureAwait(false);
@@ -90,6 +90,21 @@ namespace TheGodfather.Commands.Search
         public async Task NewsRssAsync(CommandContext ctx)
         {
             await SendFeedResultsAsync(ctx, FeedService.GetFeedResults("https://news.google.com/news/rss/headlines/section/topic/WORLD?ned=us&hl=en"))
+                .ConfigureAwait(false);
+        }
+        #endregion
+
+        #region COMMAND_RSS_UNSUBSCRIBE
+        [Command("unsubscribe")]
+        [Description("Remove an existing feed subscription.")]
+        [Aliases("del", "d", "rm", "-", "unsub")]
+        [RequirePermissions(Permissions.ManageGuild)]
+        public async Task UnsubscribeAsync(CommandContext ctx,
+                                          [Description("ID.")] int id)
+        {
+            await ctx.Dependencies.GetDependency<DatabaseService>().DeleteSubscriptionAsync(ctx.Channel.Id, id)
+                .ConfigureAwait(false);
+            await ctx.RespondAsync($"Unsubscribed from feed with ID {Formatter.Bold(id.ToString())} !")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -143,7 +158,7 @@ namespace TheGodfather.Commands.Search
                 if (string.IsNullOrWhiteSpace(sub))
                     throw new InvalidCommandUsageException("Subreddit missing.");
 
-                await ctx.Dependencies.GetDependency<DatabaseService>().DeleteFeedUsingNameAsync(ctx.Channel.Id, "/r/" + sub)
+                await ctx.Dependencies.GetDependency<DatabaseService>().DeleteSubscriptionUsingNameAsync(ctx.Channel.Id, "/r/" + sub)
                     .ConfigureAwait(false);
                 await ctx.RespondAsync($"Unsubscribed from {Formatter.Bold("/r/" + sub)} !")
                     .ConfigureAwait(false);
@@ -216,7 +231,7 @@ namespace TheGodfather.Commands.Search
                     throw new CommandFailedException("Failed retrieving channel ID for that URL.");
 
                 var feedurl = YoutubeService.GetYoutubeRSSFeedLinkForChannelId(chid);
-                await ctx.Dependencies.GetDependency<DatabaseService>().DeleteFeedAsync(ctx.Channel.Id, feedurl)
+                await ctx.Dependencies.GetDependency<DatabaseService>().DeleteSubscriptionUsingUrlAsync(ctx.Channel.Id, feedurl)
                     .ConfigureAwait(false);
                 await ctx.RespondAsync("Unsubscribed!")
                     .ConfigureAwait(false);

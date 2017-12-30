@@ -316,10 +316,6 @@
     <None Include="App.config" />
     <None Include="packages.config" />
     <None Include="Properties\app.manifest" />
-    <None Include="Resources\config.json" />
-    <None Include="Resources\insults.json" />
-    <None Include="Resources\servers.json" />
-    <None Include="Resources\statuses.json" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
@@ -761,7 +757,6 @@
     </PublishFile>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Resources\def txt files\insults.txt" />
     <Content Include="Resources\graph.png" />
     <Content Include="Resources\meme-templates\1stworld.jpg" />
     <Content Include="Resources\meme-templates\3rdworldkids.jpg" />
