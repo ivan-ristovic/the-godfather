@@ -13,7 +13,7 @@ using Google.Apis.YouTube.v3;
 using Google.Apis.YouTube.v3.Data;
 
 using YoutubeExplode;
-using YoutubeExplode.Models;
+using YoutubeExplode.Models.MediaStreams;
 /*
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Util.Store;
@@ -54,11 +54,30 @@ namespace TheGodfather.Services
             "https://www.youtube.com/feeds/videos.xml?channel_id=" + id;
 
 
+        public async Task<string> GetFirstVideoResultAsync(string query)
+        {
+            var res = await GetResultsAsync(query, 1, "video").ConfigureAwait(false);
+            return "https://www.youtube.com/watch?v=" + res.First().Id.VideoId;
+        }
+
         public async Task<DiscordEmbed> GetEmbeddedResults(string query, int amount, string type = null)
         {
             var res = await GetResultsAsync(query, amount, type)
                 .ConfigureAwait(false);
             return EmbedYouTubeResults(res);
+        }
+
+        public async Task<string> TryDownloadYoutubeAudioAsync(string url)
+        {
+            if (!YoutubeClient.TryParseVideoId(url, out string id))
+                return null;
+
+            var yt = new YoutubeClient();
+            var infos = await yt.GetVideoMediaStreamInfosAsync(id);
+            var info = infos.Audio.First();
+            string filename = "test.mp3";
+            await yt.DownloadMediaStreamAsync(info, filename);
+            return filename;
         }
 
         private async Task<List<SearchResult>> GetResultsAsync(string query, int amount, string type = null)
