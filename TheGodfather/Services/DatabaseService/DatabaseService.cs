@@ -98,7 +98,7 @@ namespace TheGodfather.Services
             return new ReadOnlyCollection<IReadOnlyDictionary<string, string>>(dicts);
         }
 
-        public async Task AddGuildIfNotExistsAsync(ulong gid)
+        public async Task<bool> AddGuildIfNotExistsAsync(ulong gid)
         {
             if (await GuildConfigExistsAsync(gid).ConfigureAwait(false) == false) {
                 await _sem.WaitAsync();
@@ -112,7 +112,9 @@ namespace TheGodfather.Services
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
                 _sem.Release();
+                return true;
             }
+            return false;
         }
 
         public async Task<bool> GuildConfigExistsAsync(ulong gid)
