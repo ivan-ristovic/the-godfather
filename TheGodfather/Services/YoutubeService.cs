@@ -1,16 +1,19 @@
 ﻿#region USING_DIRECTIVES
 using System;
+using System.Net;
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 using DSharpPlus.Entities;
 
 using Google.Apis.Services;
 using Google.Apis.YouTube.v3;
 using Google.Apis.YouTube.v3.Data;
-using System.Net;
-using Newtonsoft.Json;
+
+using YoutubeExplode;
+using YoutubeExplode.Models;
 /*
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Util.Store;
@@ -106,7 +109,12 @@ namespace TheGodfather.Services
         
         public async Task<string> GetYoutubeIdAsync(string url)
         {
-            string id = url.Split('/').Last();
+            string id;
+
+            if (!YoutubeClient.TryParseChannelId(url, out id))
+                return id;
+
+            id = url.Split('/').Last();
 
             var results = FeedService.GetFeedResults(GetYoutubeRSSFeedLinkForChannelId(id));
             if (results == null) {
