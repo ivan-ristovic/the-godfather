@@ -274,11 +274,11 @@ Commands use the following types:
 | Command group (with synonyms) | Command name (with synonyms) | Required Permissions | Command arguments | Command Description | Example of use |
 |---|---|---|---|---|---|
 |   |   |   |   |   |   |
-| ``voice``<br>``v`` | ``connect``<br>``join``<br>``c`` | Use Voice | ``(optional) [channel] Channel`` | Connects bot to a given voice channel. If channel is not given, connects to the same voice channel the user is in. | ``!voice connect``<br><br>``!voice connect Music`` |
-| ``voice``<br>``v`` | ``disconnect``<br>``leave``<br>``d`` |   |   | Disconnects bot from voice channel in the current guild. | ``!voice disconnect`` |
-| ``voice``<br>``v`` | ``play``<br>``p`` | Use Voice<br><br>Speak | ``[string] YouTube URL`` | Stream YouTube audio from given URL. | ``!voice play https://www.youtube.com/watch?v=c5OA1OdkKQI`` |
-| ``voice``<br>``v`` | ``playfile``<br>``pf`` | Use Voice<br><br>Speak | ``[text] File path`` | Stream a file from the server's filesystem. | ``!voice playfile C://system32/idk.mp3`` |
-| ``voice``<br>``v`` | ``stop``<br>``s`` |   |   | Stop voice stream. | ``!voice stop`` |
+|  | ``connect`` | Use Voice | ``(optional) [channel] Channel`` | Connects bot to a given voice channel. If channel is not given, connects to the same voice channel the user is in. | ``!voice connect``<br><br>``!voice connect Music`` |
+|  | ``disconnect`` |   |   | Disconnects bot from voice channel in the current guild. | ``!voice disconnect`` |
+|  | ``stop``<br>``s`` |   |   | Stop voice playback. | ``!voice stop`` |
+| ``play``<br>``music``<br>``p`` |  | Use Voice<br><br>Speak | ``[string] YouTube URL`` | Stream YouTube audio from given URL. | ``!voice play https://www.youtube.com/watch?v=c5OA1OdkKQI`` |
+| ``play``<br>``music``<br>``p`` | ``file``<br>``f`` | Use Voice<br><br>Speak | ``[text] File path`` | Stream a file from the server's filesystem. | ``!voice playfile C://system32/idk.mp3`` |
 |   |   |   |   |   |   |
 
 
