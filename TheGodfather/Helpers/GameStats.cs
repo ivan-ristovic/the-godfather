@@ -25,8 +25,26 @@ namespace TheGodfather.Helpers
 
         public GameStats(IReadOnlyDictionary<string, string> statdict)
         {
-            Stats = statdict;
+            if (statdict == null || !statdict.Any()) {
+                Stats = new Dictionary<string, string>() {
+                    { "duels_won" , "0" },
+                    { "duels_lost" , "0" },
+                    { "ttt_won" , "0" },
+                    { "ttt_lost" , "0" },
+                    { "chain4_won" , "0" },
+                    { "chain4_lost" , "0" },
+                    { "caro_won" , "0" },
+                    { "caro_lost" , "0" },
+                    { "nunchis_won" , "0" },
+                    { "quizes_won" , "0" },
+                    { "races_won" , "0" },
+                    { "hangman_won" , "0" }
+                };
+            } else {
+                Stats = statdict;
+            }
         }
+
 
         public DiscordEmbedBuilder GetEmbeddedStats()
         {

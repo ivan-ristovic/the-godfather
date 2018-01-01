@@ -1,6 +1,7 @@
 ﻿#region USING_DIRECTIVES
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -21,13 +22,27 @@ namespace TheGodfather.Services
     {
         public async Task<GameStats> GetStatsForUserAsync(ulong uid)
         {
-            var res = await ExecuteRawQueryAsync($"SELECT * FROM gf.stats WHERE uid = {uid};")
-                .ConfigureAwait(false);
+            await _sem.WaitAsync();
 
-            if (res != null && res.Any())
-                return new GameStats(res.First());
+            var dict = new Dictionary<string, string>();
 
-            return null;
+            using (var con = new NpgsqlConnection(_connectionString))
+            using (var cmd = con.CreateCommand()) {
+                await con.OpenAsync().ConfigureAwait(false);
+
+                cmd.CommandText = "SELECT * FROM gf.stats WHERE uid = @uid LIMIT 1;";
+                cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, uid);
+
+                using (var rdr = await cmd.ExecuteReaderAsync()) {
+                    if (await rdr.ReadAsync()) {
+                        for (var i = 0; i < rdr.FieldCount; i++)
+                            dict[rdr.GetName(i)] = rdr[i] is DBNull ? "<null>" : rdr[i].ToString();
+                    }
+                }
+            }
+
+            _sem.Release();
+            return dict.Any() ? new GameStats(dict) : null;
         }
 
         public async Task<IEnumerable<GameStats>> GetOrderedUserStatsAsync(string orderstr, params string[] selectors)
