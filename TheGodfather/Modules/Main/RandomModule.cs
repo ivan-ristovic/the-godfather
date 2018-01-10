@@ -180,7 +180,7 @@ namespace TheGodfather.Modules.Main
                 var members = await ctx.Guild.GetAllMembersAsync()
                     .ConfigureAwait(false);
                 var online = members.Where(
-                    m => m.Roles.Contains(role) && m.Presence.Status != UserStatus.Offline
+                    m => m.Roles.Contains(role) && m.Presence?.Status != UserStatus.Offline
                 );
 
                 await ctx.RespondAsync("Raffled: " + online.ElementAt(new Random().Next(online.Count())).Mention)
