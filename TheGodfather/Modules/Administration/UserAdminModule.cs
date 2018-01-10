@@ -224,7 +224,7 @@ namespace TheGodfather.Modules.Administration
                 ThumbnailUrl = u.AvatarUrl,
                 Color = DiscordColor.MidnightBlue
             };
-            em.AddField("Status", u.Presence.Status.ToString(), inline: true);
+            em.AddField("Status", u.Presence != null ? u.Presence.Status.ToString() : "Offline", inline: true);
             em.AddField("Discriminator", u.Discriminator, inline: true);
             if (!string.IsNullOrWhiteSpace(u.Email))
                 em.AddField("E-mail", u.Email, inline: true);
