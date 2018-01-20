@@ -3,11 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Linq;
-using System.Net;
-using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
 using TheGodfather.Services;
 using TheGodfather.Helpers.Swat;
@@ -45,7 +44,7 @@ namespace TheGodfather.Modules.SWAT
                 Color = DiscordColor.DarkBlue
             };
             
-            var servers = await ctx.Dependencies.GetDependency<DatabaseService>().GetAllSwatServersAsync()
+            var servers = await ctx.Services.GetService<DatabaseService>().GetAllSwatServersAsync()
                 .ConfigureAwait(false);
 
             if (servers == null || !servers.Any()) {
@@ -81,7 +80,7 @@ namespace TheGodfather.Modules.SWAT
             if (queryport <= 0 || queryport > 65535)
                 throw new InvalidCommandUsageException("Port range invalid (must be in range [1-65535])!");
 
-            var server = await ctx.Dependencies.GetDependency<DatabaseService>().GetSwatServerAsync(ip, queryport, name: ip)
+            var server = await ctx.Services.GetService<DatabaseService>().GetSwatServerAsync(ip, queryport, name: ip)
                 .ConfigureAwait(false);
 
             var info = await SwatServerInfo.QueryIPAsync(server.IP, server.QueryPort)
@@ -129,7 +128,7 @@ namespace TheGodfather.Modules.SWAT
             if (_UserIDsCheckingForSpace.Count > 10)
                 throw new CommandFailedException("Maximum number of checks reached, please try later!");
 
-            var server = await ctx.Dependencies.GetDependency<DatabaseService>().GetSwatServerAsync(ip, queryport)
+            var server = await ctx.Services.GetService<DatabaseService>().GetSwatServerAsync(ip, queryport)
                 .ConfigureAwait(false);
             await ctx.RespondAsync($"Starting check on {server.IP}:{server.JoinPort}...")
                 .ConfigureAwait(false);
@@ -142,7 +141,7 @@ namespace TheGodfather.Modules.SWAT
                     if (info == null) {
                         await ctx.RespondAsync("No reply from server. Should I try again?")
                             .ConfigureAwait(false);
-                        var interactivity = ctx.Client.GetInteractivityModule();
+                        var interactivity = ctx.Client.GetInteractivity();
                         var msg = await interactivity.WaitForMessageAsync(
                             xm => xm.Author.Id == ctx.User.Id && xm.Channel.Id == ctx.Channel.Id &&
                                 (xm.Content.ToLower().StartsWith("yes") || xm.Content.ToLower().StartsWith("no")),
@@ -208,7 +207,7 @@ namespace TheGodfather.Modules.SWAT
 
                 var server = SwatServer.CreateFromIP(ip, queryport, name);
 
-                await ctx.Dependencies.GetDependency<DatabaseService>().AddSwatServerAsync(name, server)
+                await ctx.Services.GetService<DatabaseService>().AddSwatServerAsync(name, server)
                     .ConfigureAwait(false);
                 await ctx.RespondAsync("Server added. You can now query it using the name provided.")
                     .ConfigureAwait(false);
@@ -226,7 +225,7 @@ namespace TheGodfather.Modules.SWAT
                 if (string.IsNullOrWhiteSpace(name))
                     throw new InvalidCommandUsageException("Name missing.");
 
-                await ctx.Dependencies.GetDependency<DatabaseService>().RemoveSwatServerAsync(name)
+                await ctx.Services.GetService<DatabaseService>().RemoveSwatServerAsync(name)
                     .ConfigureAwait(false);
                 await ctx.RespondAsync("Server removed.")
                     .ConfigureAwait(false);
@@ -240,7 +239,7 @@ namespace TheGodfather.Modules.SWAT
             public async Task ListAsync(CommandContext ctx,
                                        [Description("Page.")] int page = 1)
             {
-                var servers = await ctx.Dependencies.GetDependency<DatabaseService>().GetAllSwatServersAsync()
+                var servers = await ctx.Services.GetService<DatabaseService>().GetAllSwatServersAsync()
                     .ConfigureAwait(false);
 
                 if (servers == null || !servers.Any()) {

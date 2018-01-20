@@ -1,6 +1,7 @@
 ﻿#region USING_DIRECTIVES
 using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
 using TheGodfather.Services;
 using TheGodfather.Exceptions;
@@ -37,7 +38,7 @@ namespace TheGodfather.Modules.Games
                     .ConfigureAwait(false);
 
                 if (quiz.Winner != null)
-                    await ctx.Dependencies.GetDependency<DatabaseService>().UpdateUserStatsAsync(quiz.Winner.Id, "quizes_won")
+                    await ctx.Services.GetService<DatabaseService>().UpdateUserStatsAsync(quiz.Winner.Id, "quizes_won")
                         .ConfigureAwait(false);
             }
             #endregion

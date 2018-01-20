@@ -58,7 +58,7 @@ namespace TheGodfather.Modules.Games
             await chn.SendMessageAsync(num.ToString())
                 .ConfigureAwait(false);
 
-            var interactivity = _client.GetInteractivityModule();
+            var interactivity = _client.GetInteractivity();
             Winner = null;
             while (ParticipantCount > 1) {
                 int n = 0;

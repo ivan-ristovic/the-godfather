@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
+using Microsoft.Extensions.DependencyInjection;
 
 using TheGodfather.Exceptions;
 using TheGodfather.Helpers;
@@ -20,7 +21,6 @@ using DSharpPlus.EventArgs;
 using DSharpPlus.Net.WebSocket;
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
-using System.Collections.Generic;
 #endregion
 
 namespace TheGodfather
@@ -34,9 +34,9 @@ namespace TheGodfather
         #region PUBLIC_FIELDS
         public int ShardId { get; }
         public DiscordClient Client { get; private set; }
-        public CommandsNextModule Commands { get; private set; }
-        public InteractivityModule Interactivity { get; private set; }
-        public VoiceNextClient Voice { get; private set; }
+        public CommandsNextExtension Commands { get; private set; }
+        public InteractivityExtension Interactivity { get; private set; }
+        public VoiceNextExtension Voice { get; private set; }
         #endregion
 
         #region PRIVATE_FIELDS
@@ -52,6 +52,11 @@ namespace TheGodfather
             ShardId = sid;
             _db = db;
             _shared = sd;
+        }
+
+        ~TheGodfather()
+        {
+            Client.DisconnectAsync().GetAwaiter().GetResult();
         }
 
 
@@ -77,7 +82,7 @@ namespace TheGodfather
         #region BOT_SETUP_FUNCTIONS
         private void SetupClient()
         {
-            Client = new DiscordClient(new DiscordConfiguration {
+            var cfg = new DiscordConfiguration {
                 AutoReconnect = true,
                 LargeThreshold = 250,
                 LogLevel = LogLevel.Info,
@@ -88,7 +93,12 @@ namespace TheGodfather
 
                 Token = _cfg.Token,
                 TokenType = TokenType.Bot
-            });
+            };
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && Environment.OSVersion.Version <= new Version(6, 1, 7601, 65536))
+                cfg.WebSocketClientFactory = WebSocket4NetClient.CreateNew;
+
+            Client = new DiscordClient(cfg);
 
             Client.ClientErrored += Client_Error;
             // Client.DebugLogger.LogMessageReceived += Client_LogMessage; TODO
@@ -99,9 +109,6 @@ namespace TheGodfather
             Client.MessageReactionAdded += Client_ReactToMessage;
             Client.MessageUpdated += Client_MessageUpdated;
             Client.Ready += Client_Ready;
-
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && Environment.OSVersion.Version <= new Version(6, 1, 7601, 65536))
-                Client.SetWebSocketClient<WebSocket4NetClient>();
         }
 
         private void SetupCommands()
@@ -110,16 +117,16 @@ namespace TheGodfather
                 EnableDms = false,
                 CaseSensitive = false,
                 EnableMentionPrefix = true,
-                CustomPrefixPredicate = async m => await CheckMessageForPrefix(m),
-                Dependencies = new DependencyCollectionBuilder()
-                    .AddInstance(new YoutubeService(_cfg.YoutubeKey))
-                    .AddInstance(new GiphyService(_cfg.GiphyKey))
-                    .AddInstance(new ImgurService(_cfg.ImgurKey))
-                    .AddInstance(new SteamService(_cfg.SteamKey))
-                    .AddInstance(Client)
-                    .AddInstance(_db)
-                    .AddInstance(_shared)
-                    .Build(),
+                PrefixResolver = async m => await CheckMessageForPrefix(m),
+                Services = new ServiceCollection()
+                    .AddSingleton(new YoutubeService(_cfg.YoutubeKey))
+                    .AddSingleton(new GiphyService(_cfg.GiphyKey))
+                    .AddSingleton(new ImgurService(_cfg.ImgurKey))
+                    .AddSingleton(new SteamService(_cfg.SteamKey))
+                    .AddSingleton(Client)
+                    .AddSingleton(_db)
+                    .AddSingleton(_shared)
+                    .BuildServiceProvider(),
             });
             Commands.SetHelpFormatter<HelpFormatter>();
             Commands.RegisterCommands(Assembly.GetExecutingAssembly());
@@ -131,7 +138,7 @@ namespace TheGodfather
         private void SetupInteractivity()
         {
             Interactivity = Client.UseInteractivity(new InteractivityConfiguration() {
-                PaginationBehaviour = TimeoutBehaviour.Delete,
+                PaginationBehavior = TimeoutBehaviour.DeleteReactions,
                 PaginationTimeout = TimeSpan.FromSeconds(30),
                 Timeout = TimeSpan.FromSeconds(30)
             });
@@ -427,6 +434,17 @@ namespace TheGodfather
 
             await e.Context.RespondAsync(embed: embed.Build())
                 .ConfigureAwait(false);
+        }
+        #endregion
+
+        #region HELPER_FUNCTIONS
+        public async Task<DiscordDmChannel> CreateDmChannelAsync(ulong uid)
+        {
+            var firstResult = Client.Guilds.Values.SelectMany(e => e.Members).FirstOrDefault(e => e.Id == uid);
+            if (firstResult != null)
+                return await firstResult.CreateDmChannelAsync().ConfigureAwait(false);
+            else
+                return null;
         }
         #endregion
     }

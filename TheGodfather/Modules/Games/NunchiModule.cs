@@ -1,9 +1,8 @@
 ﻿#region USING_DIRECTIVES
 using System;
-using System.Linq;
-using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
 using TheGodfather.Services;
 using TheGodfather.Exceptions;
@@ -54,7 +53,7 @@ namespace TheGodfather.Modules.Games
                     await game.PlayAsync()
                         .ConfigureAwait(false);
                     if (game.Winner != null)
-                        await ctx.Dependencies.GetDependency<DatabaseService>().UpdateUserStatsAsync(game.Winner.Id, "nunchi_won")
+                        await ctx.Services.GetService<DatabaseService>().UpdateUserStatsAsync(game.Winner.Id, "nunchi_won")
                             .ConfigureAwait(false);
                 } else {
                     await ctx.RespondAsync("Not enough users joined the game.")

@@ -1,8 +1,8 @@
 ﻿#region USING_DIRECTIVES
 using System;
 using System.Linq;
-using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
 using TheGodfather.Services;
 using TheGodfather.Exceptions;
@@ -35,7 +35,7 @@ namespace TheGodfather.Modules.Games
             await ctx.RespondAsync($"Who wants to play caro with {ctx.User.Username}?")
                 .ConfigureAwait(false);
 
-            var msg = await ctx.Client.GetInteractivityModule().WaitForMessageAsync(
+            var msg = await ctx.Client.GetInteractivity().WaitForMessageAsync(
                 xm => CheckIfValidOpponent(xm, ctx.User.Id, ctx.Channel.Id)
             ).ConfigureAwait(false);
             if (msg == null) {
@@ -52,7 +52,7 @@ namespace TheGodfather.Modules.Games
                 await ctx.RespondAsync($"The winner is: {caro.Winner.Mention}!")
                     .ConfigureAwait(false);
 
-                var db = ctx.Dependencies.GetDependency<DatabaseService>();
+                var db = ctx.Services.GetService<DatabaseService>();
                 await db.UpdateUserStatsAsync(caro.Winner.Id, "caro_won").ConfigureAwait(false);
                 if (caro.Winner.Id == ctx.User.Id)
                     await db.UpdateUserStatsAsync(msg.User.Id, "caro_lost").ConfigureAwait(false);
@@ -77,7 +77,7 @@ namespace TheGodfather.Modules.Games
             await ctx.RespondAsync($"Who wants to play Connect4 with {ctx.User.Username}?")
                 .ConfigureAwait(false);
 
-            var msg = await ctx.Client.GetInteractivityModule().WaitForMessageAsync(
+            var msg = await ctx.Client.GetInteractivity().WaitForMessageAsync(
                 xm => CheckIfValidOpponent(xm, ctx.User.Id, ctx.Channel.Id)
             ).ConfigureAwait(false);
             if (msg == null) {
@@ -94,7 +94,7 @@ namespace TheGodfather.Modules.Games
                 await ctx.RespondAsync($"The winner is: {c4.Winner.Mention}!")
                     .ConfigureAwait(false);
 
-                var db = ctx.Dependencies.GetDependency<DatabaseService>();
+                var db = ctx.Services.GetService<DatabaseService>();
                 await db.UpdateUserStatsAsync(c4.Winner.Id, "chain4_won").ConfigureAwait(false);
                 if (c4.Winner.Id == ctx.User.Id)
                     await db.UpdateUserStatsAsync(msg.User.Id, "chain4_lost").ConfigureAwait(false);
@@ -137,7 +137,7 @@ namespace TheGodfather.Modules.Games
             await ctx.RespondAsync($"{duel.Winner.Username} {(string.IsNullOrWhiteSpace(duel.FinishingMove) ? "wins" : duel.FinishingMove)}!")
                 .ConfigureAwait(false);
 
-            var db = ctx.Dependencies.GetDependency<DatabaseService>();
+            var db = ctx.Services.GetService<DatabaseService>();
             await db.UpdateUserStatsAsync(duel.Winner.Id, "duels_won")
                 .ConfigureAwait(false);
             await db.UpdateUserStatsAsync(duel.Winner.Id == ctx.User.Id ? u.Id : ctx.User.Id, "duels_lost")
@@ -156,15 +156,17 @@ namespace TheGodfather.Modules.Games
 
             DiscordDmChannel dm;
             try {
-                dm = await ctx.Client.CreateDmAsync(ctx.User)
+                dm = await ctx.Services.GetService<TheGodfather>().CreateDmChannelAsync(ctx.User.Id)
                     .ConfigureAwait(false);
+                if (dm == null)
+                    throw new CommandFailedException("I can't talk to that user...");
                 await dm.SendMessageAsync("What is the secret word?")
                     .ConfigureAwait(false);
                 await ctx.RespondAsync(ctx.User.Mention + ", check your DM. When you give me the word, the game will start.");
             } catch {
                 throw new CommandFailedException("Please enable direct messages, so I can ask you about the word to guess.");
             }
-            var interactivity = ctx.Client.GetInteractivityModule();
+            var interactivity = ctx.Client.GetInteractivity();
             var msg = await interactivity.WaitForMessageAsync(
                 xm => xm.Channel == dm && xm.Author.Id == ctx.User.Id,
                 TimeSpan.FromMinutes(1)
@@ -182,7 +184,7 @@ namespace TheGodfather.Modules.Games
             await hangman.PlayAsync()
                 .ConfigureAwait(false);
             if (hangman.Winner != null)
-                await ctx.Dependencies.GetDependency<DatabaseService>().UpdateUserStatsAsync(hangman.Winner.Id, "hangman_won")
+                await ctx.Services.GetService<DatabaseService>().UpdateUserStatsAsync(hangman.Winner.Id, "hangman_won")
                     .ConfigureAwait(false);
         }
         #endregion
@@ -193,7 +195,7 @@ namespace TheGodfather.Modules.Games
         [Aliases("globalstats")]
         public async Task LeaderboardAsync(CommandContext ctx)
         {
-            var em = await ctx.Dependencies.GetDependency<DatabaseService>().GetStatsLeaderboardAsync(ctx.Client)
+            var em = await ctx.Services.GetService<DatabaseService>().GetStatsLeaderboardAsync(ctx.Client)
                 .ConfigureAwait(false);
             await ctx.RespondAsync(embed: em)
                 .ConfigureAwait(false);
@@ -243,7 +245,7 @@ namespace TheGodfather.Modules.Games
             if (u == null)
                 u = ctx.User;
 
-            var e = await ctx.Dependencies.GetDependency<DatabaseService>().GetEmbeddedStatsForUserAsync(u)
+            var e = await ctx.Services.GetService<DatabaseService>().GetEmbeddedStatsForUserAsync(u)
                 .ConfigureAwait(false);
             await ctx.RespondAsync(embed: e)
                 .ConfigureAwait(false);
@@ -262,7 +264,7 @@ namespace TheGodfather.Modules.Games
             await ctx.RespondAsync($"Who wants to play tic-tac-toe with {ctx.User.Username}?")
                 .ConfigureAwait(false);
             
-            var msg = await ctx.Client.GetInteractivityModule().WaitForMessageAsync(
+            var msg = await ctx.Client.GetInteractivity().WaitForMessageAsync(
                 xm => CheckIfValidOpponent(xm, ctx.User.Id, ctx.Channel.Id)
             ).ConfigureAwait(false);
             if (msg == null) {
@@ -276,7 +278,7 @@ namespace TheGodfather.Modules.Games
                 .ConfigureAwait(false);
 
             if (ttt.Winner != null) {
-                var db = ctx.Dependencies.GetDependency<DatabaseService>();
+                var db = ctx.Services.GetService<DatabaseService>();
                 await ctx.RespondAsync($"The winner is: {ttt.Winner.Mention}!")
                     .ConfigureAwait(false);
                 await db.UpdateUserStatsAsync(ttt.Winner.Id, "ttt_won").ConfigureAwait(false);
@@ -308,7 +310,7 @@ namespace TheGodfather.Modules.Games
             await ctx.RespondAsync(Formatter.Bold(msg) + " (you have 60s)")
                 .ConfigureAwait(false);
 
-            var interactivity = ctx.Client.GetInteractivityModule();
+            var interactivity = ctx.Client.GetInteractivity();
             var response = await interactivity.WaitForMessageAsync(
                 m => m.ChannelId == ctx.Channel.Id && m.Content == msg,
                 TimeSpan.FromSeconds(60)

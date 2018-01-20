@@ -3,11 +3,11 @@ using System;
 using System.IO;
 using System.Net;
 using System.Linq;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Text;
 using System.Drawing.Drawing2D;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
 using TheGodfather.Services;
 using TheGodfather.Exceptions;
@@ -34,20 +34,20 @@ namespace TheGodfather.Modules.Main
         {
             string url;
             if (string.IsNullOrWhiteSpace(name)) {
-                var db = ctx.Dependencies.GetDependency<DatabaseService>();
+                var db = ctx.Services.GetService<DatabaseService>();
                 await SendRandomMemeAsync(ctx.Client, db, ctx.Guild.Id, ctx.Channel.Id)
                     .ConfigureAwait(false);
                 return;
             }
 
-            url = await ctx.Dependencies.GetDependency<DatabaseService>().GetGuildMemeUrlAsync(ctx.Guild.Id, name)
+            url = await ctx.Services.GetService<DatabaseService>().GetGuildMemeUrlAsync(ctx.Guild.Id, name)
                 .ConfigureAwait(false);
             if (url == null) {
                 await ctx.RespondAsync("No meme registered with that name, here is a random one: ")
                     .ConfigureAwait(false);
                 await Task.Delay(500)
                     .ConfigureAwait(false);
-                var db = ctx.Dependencies.GetDependency<DatabaseService>();
+                var db = ctx.Services.GetService<DatabaseService>();
                 await SendRandomMemeAsync(ctx.Client, db, ctx.Guild.Id, ctx.Channel.Id)
                     .ConfigureAwait(false);
             } else {
@@ -76,7 +76,7 @@ namespace TheGodfather.Modules.Main
             bool result = Uri.TryCreate(url, UriKind.Absolute, out uriResult)
                 && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
 
-            await ctx.Dependencies.GetDependency<DatabaseService>().AddGuildMemeAsync(ctx.Guild.Id, name, url)
+            await ctx.Services.GetService<DatabaseService>().AddGuildMemeAsync(ctx.Guild.Id, name, url)
                 .ConfigureAwait(false);
             await ctx.RespondAsync($"Meme {Formatter.Bold(name)} successfully added!")
                 .ConfigureAwait(false);
@@ -149,7 +149,7 @@ namespace TheGodfather.Modules.Main
                 image.Dispose();
 
                 var fs = new FileStream(filename, FileMode.Open);
-                var url = await ctx.Dependencies.GetDependency<ImgurService>().UploadImageAsync(fs, filename)
+                var url = await ctx.Services.GetService<ImgurService>().UploadImageAsync(fs, filename)
                     .ConfigureAwait(false);
                 fs.Close();
 
@@ -194,7 +194,7 @@ namespace TheGodfather.Modules.Main
             if (string.IsNullOrWhiteSpace(name))
                 throw new InvalidCommandUsageException("Name missing.");
 
-            await ctx.Dependencies.GetDependency<DatabaseService>().RemoveGuildMemeAsync(ctx.Guild.Id, name)
+            await ctx.Services.GetService<DatabaseService>().RemoveGuildMemeAsync(ctx.Guild.Id, name)
                 .ConfigureAwait(false);
             await ctx.RespondAsync($"Meme {Formatter.Bold(name)} successfully removed!")
                 .ConfigureAwait(false);
@@ -208,7 +208,7 @@ namespace TheGodfather.Modules.Main
         public async Task ListAsync(CommandContext ctx,
                                    [Description("Page.")] int page = 1)
         {
-            var memes = await ctx.Dependencies.GetDependency<DatabaseService>().GetAllGuildMemesAsync(ctx.Guild.Id)
+            var memes = await ctx.Services.GetService<DatabaseService>().GetAllGuildMemesAsync(ctx.Guild.Id)
                 .ConfigureAwait(false); ;
 
             if (page < 1 || page > memes.Count / 10 + 1)

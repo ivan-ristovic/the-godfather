@@ -1,4 +1,6 @@
 ﻿#region USING_DIRECTIVES
+using Microsoft.Extensions.DependencyInjection;
+
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
@@ -15,7 +17,7 @@ namespace TheGodfather.Modules.Administration.Common
         public DiscordUser User => this.Context.User;
         public DiscordMember Member => this.Context.Member;
         public DiscordClient Client => this.Context.Client;
-        public TheGodfather Godfather => Context.Dependencies.GetDependency<TheGodfather>(); 
+        public TheGodfather Godfather => Context.Services.GetService<TheGodfather>(); 
 
         public EvaluationEnvironment(CommandContext ctx)
         {

@@ -67,7 +67,7 @@ namespace TheGodfather.Modules.Administration
                 throw new InvalidCommandUsageException("Unknown role.");
 
             string name = role.Name;
-            await ctx.Guild.DeleteRoleAsync(role)
+            await role.DeleteAsync()
                 .ConfigureAwait(false);
             await ctx.RespondAsync($"Successfully removed role {Formatter.Bold(name)}!")
                 .ConfigureAwait(false);
@@ -108,7 +108,7 @@ namespace TheGodfather.Modules.Administration
             if (role == null || string.IsNullOrWhiteSpace(color))
                 throw new InvalidCommandUsageException("I need a valid role and a valid color in hex.");
 
-            await ctx.Guild.UpdateRoleAsync(role, color: new DiscordColor(color))
+            await role.UpdateAsync(color: new DiscordColor(color))
                 .ConfigureAwait(false);
             await ctx.RespondAsync($"Successfully changed color for {Formatter.Bold(role.Name)}!")
                 .ConfigureAwait(false);
@@ -127,7 +127,7 @@ namespace TheGodfather.Modules.Administration
             if (role == null || string.IsNullOrWhiteSpace(name))
                 throw new ArgumentException("I need a valid existing role and a new name.");
 
-            await ctx.Guild.UpdateRoleAsync(role, name: name, reason: $"{ctx.User.Username} ({ctx.User.Id})")
+            await role.UpdateAsync(name: name, reason: $"{ctx.User.Username} ({ctx.User.Id})")
                 .ConfigureAwait(false);
             await ctx.RespondAsync($"Successfully changed role name to {Formatter.Bold(name)}.")
                 .ConfigureAwait(false);
@@ -146,7 +146,7 @@ namespace TheGodfather.Modules.Administration
             if (role == null)
                 throw new InvalidCommandUsageException("Unknown role.");
 
-            await ctx.Guild.UpdateRoleAsync(role, mentionable: b, reason: $"{ctx.User.Username} ({ctx.User.Id})")
+            await role.UpdateAsync(mentionable: b, reason: $"{ctx.User.Username} ({ctx.User.Id})")
                 .ConfigureAwait(false);
             await ctx.RespondAsync($"Successfully set mentionable var for {Formatter.Bold(role.Name)} to {Formatter.Bold(b.ToString())}.")
                 .ConfigureAwait(false);
@@ -165,7 +165,7 @@ namespace TheGodfather.Modules.Administration
             if (role == null)
                 throw new InvalidCommandUsageException("Unknown role.");
 
-            await ctx.Guild.UpdateRoleAsync(role, hoist: b, reason: $"{ctx.User.Username} ({ctx.User.Id})")
+            await role.UpdateAsync(hoist: b, reason: $"{ctx.User.Username} ({ctx.User.Id})")
                 .ConfigureAwait(false);
             await ctx.RespondAsync($"Successfully set hoist var for {Formatter.Bold(role.Name)} to {Formatter.Bold(b.ToString())}.")
                 .ConfigureAwait(false);

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis;
+using Microsoft.Extensions.DependencyInjection;
 
 using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Exceptions;
@@ -117,7 +118,7 @@ namespace TheGodfather.Modules.Administration
             if (string.IsNullOrWhiteSpace(query))
                 throw new InvalidCommandUsageException("Query missing.");
 
-            var res = await ctx.Dependencies.GetDependency<DatabaseService>().ExecuteRawQueryAsync(query)
+            var res = await ctx.Services.GetService<DatabaseService>().ExecuteRawQueryAsync(query)
                 .ConfigureAwait(false);
 
             if (!res.Any() || !res.First().Any()) {
@@ -281,8 +282,10 @@ namespace TheGodfather.Modules.Administration
                 throw new InvalidCommandUsageException();
 
             if (desc == "u") {
-                var user = await ctx.Client.GetUserAsync(xid);
-                var dm = await ctx.Client.CreateDmAsync(user);
+                var dm = await ctx.Services.GetService<TheGodfather>().CreateDmChannelAsync(xid)
+                    .ConfigureAwait(false);
+                if (dm == null)
+                    throw new CommandFailedException("I can't talk to that user...");
                 await ctx.Client.SendMessageAsync(dm, content: message)
                     .ConfigureAwait(false);
             } else if (desc == "c") {
@@ -362,7 +365,7 @@ namespace TheGodfather.Modules.Administration
                 if (status.Length > 60)
                     throw new CommandFailedException("Status length cannot be greater than 60 characters.");
                 
-                await ctx.Dependencies.GetDependency<DatabaseService>().AddBotStatusAsync(status)
+                await ctx.Services.GetService<DatabaseService>().AddBotStatusAsync(status)
                     .ConfigureAwait(false);
                 await ctx.RespondAsync("Status added!")
                     .ConfigureAwait(false);
@@ -376,7 +379,7 @@ namespace TheGodfather.Modules.Administration
             public async Task DeleteAsync(CommandContext ctx,
                                          [Description("Status ID.")] int id)
             {
-                await ctx.Dependencies.GetDependency<DatabaseService>().RemoveBotStatusAsync(id)
+                await ctx.Services.GetService<DatabaseService>().RemoveBotStatusAsync(id)
                     .ConfigureAwait(false);
                 await ctx.RespondAsync("Status removed!")
                     .ConfigureAwait(false);
@@ -388,7 +391,7 @@ namespace TheGodfather.Modules.Administration
             [Description("List all statuses.")]
             public async Task ListAsync(CommandContext ctx)
             {
-                var statuses = await ctx.Dependencies.GetDependency<DatabaseService>().GetBotStatusesAsync()
+                var statuses = await ctx.Services.GetService<DatabaseService>().GetBotStatusesAsync()
                     .ConfigureAwait(false);
                 await ctx.RespondAsync("My current statuses:\n" + string.Join("\n", statuses.Select(kvp => $"{kvp.Key} : {kvp.Value}")))
                     .ConfigureAwait(false);

@@ -34,7 +34,7 @@ namespace TheGodfather.Modules.Administration
             if (n <= 0 || n > 1000)
                 throw new CommandFailedException("Invalid number of messages to delete (must be in range [1, 1000].", new ArgumentOutOfRangeException());
 
-            var msgs = await ctx.Channel.GetMessagesAsync(n)
+            var msgs = await ctx.Channel.GetMessagesBeforeAsync(ctx.Channel.LastMessageId, n)
                 .ConfigureAwait(false);
             await ctx.Channel.DeleteMessagesAsync(msgs)
                 .ConfigureAwait(false);
@@ -56,7 +56,7 @@ namespace TheGodfather.Modules.Administration
             if (n <= 0 || n > 1000)
                 throw new CommandFailedException("Invalid number of messages to delete (must be in range [1, 1000].", new ArgumentOutOfRangeException());
 
-            var msgs = await ctx.Channel.GetMessagesAsync()
+            var msgs = await ctx.Channel.GetMessagesBeforeAsync(ctx.Channel.LastMessageId)
                 .ConfigureAwait(false);
             await ctx.Channel.DeleteMessagesAsync(msgs.Where(m => m.Author.Id == u.Id).Take(n))
                 .ConfigureAwait(false);
@@ -87,7 +87,7 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException("Error occured while " + e.Message, e);
             }
 
-            var msgs = await ctx.Channel.GetMessagesAsync()
+            var msgs = await ctx.Channel.GetMessagesBeforeAsync(ctx.Channel.LastMessageId)
                 .ConfigureAwait(false);
             await ctx.Channel.DeleteMessagesAsync(msgs.Where(m => regex.IsMatch(m.Content)).Take(n))
                 .ConfigureAwait(false);
@@ -134,7 +134,7 @@ namespace TheGodfather.Modules.Administration
                         .ConfigureAwait(false);
                     await m.PinAsync();
                 } else {
-                    var msgs = await ctx.Channel.GetMessagesAsync(2)
+                    var msgs = await ctx.Channel.GetMessagesBeforeAsync(ctx.Channel.LastMessageId, 2)
                         .ConfigureAwait(false);
                     await msgs.Last().PinAsync()
                         .ConfigureAwait(false);

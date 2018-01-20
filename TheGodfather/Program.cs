@@ -8,13 +8,13 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
+using DSharpPlus;
 using DSharpPlus.Entities;
 
 using TheGodfather.Services;
 using TheGodfather.Helpers;
 using TheGodfather.Helpers.Collections;
 using System.Threading;
-using DSharpPlus;
 #endregion
 
 namespace TheGodfather
@@ -140,9 +140,8 @@ namespace TheGodfather
         {
             var client = _ as DiscordClient;
             var status = Database.GetRandomBotStatusAsync().ConfigureAwait(false).GetAwaiter().GetResult();
-            client.UpdateStatusAsync(new DiscordGame(status) {
-                StreamType = GameStreamType.NoStream
-            }).ConfigureAwait(false).GetAwaiter().GetResult();
+            client.UpdateStatusAsync(new DiscordActivity(status, ActivityType.Watching))
+                .ConfigureAwait(false).GetAwaiter().GetResult();
         }
 
         private static void DatabaseSyncTimerCallback(object _)

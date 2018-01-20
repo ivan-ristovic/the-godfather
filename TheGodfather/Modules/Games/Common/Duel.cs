@@ -119,7 +119,7 @@ namespace TheGodfather.Modules.Games
 
         private async Task CheckForPotionUseAsync()
         {
-            var interactivity = _client.GetInteractivityModule();
+            var interactivity = _client.GetInteractivity();
             var reply = await interactivity.WaitForMessageAsync(
                 msg =>
                     msg.ChannelId == _cid && msg.Content.ToLower() == "hp" &&
@@ -141,7 +141,7 @@ namespace TheGodfather.Modules.Games
 
         private async Task<string> CheckForFinishingMoveAsync()
         {
-            var interactivity = _client.GetInteractivityModule();
+            var interactivity = _client.GetInteractivity();
             var reply = await interactivity.WaitForMessageAsync(
                 msg =>
                     msg.ChannelId == _cid && msg.Author.Id == Winner.Id

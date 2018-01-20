@@ -1,11 +1,9 @@
 ﻿#region USING_DIRECTIVES
 using System;
-using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
 using TheGodfather.Services;
 using TheGodfather.Exceptions;
@@ -36,7 +34,7 @@ namespace TheGodfather.Modules.Messages
             if (string.IsNullOrWhiteSpace(filter))
                 throw new InvalidCommandUsageException("Filter trigger missing.");
 
-            if (ctx.Dependencies.GetDependency<SharedData>().TextTriggerExists(ctx.Guild.Id, filter))
+            if (ctx.Services.GetService<SharedData>().TextTriggerExists(ctx.Guild.Id, filter))
                 throw new CommandFailedException("You cannot add a filter if a trigger for that trigger exists!");
 
             if (filter.Contains("%") || filter.Length < 3 || filter.Length > 60)
@@ -52,10 +50,10 @@ namespace TheGodfather.Modules.Messages
             if (ctx.Client.GetCommandsNext().RegisteredCommands.Any(kv => regex.Match(kv.Key).Success))
                 throw new CommandFailedException("You cannot add a filter that matches one of the commands!");
             
-            if (ctx.Dependencies.GetDependency<SharedData>().TryAddGuildFilter(ctx.Guild.Id, regex)) {
+            if (ctx.Services.GetService<SharedData>().TryAddGuildFilter(ctx.Guild.Id, regex)) {
                 await ctx.RespondAsync($"Filter successfully added.")
                     .ConfigureAwait(false);
-                await ctx.Dependencies.GetDependency<DatabaseService>().AddFilterAsync(ctx.Guild.Id, filter)
+                await ctx.Services.GetService<DatabaseService>().AddFilterAsync(ctx.Guild.Id, filter)
                     .ConfigureAwait(false);
             } else {
                 throw new CommandFailedException("Filter already exists!");
@@ -71,10 +69,10 @@ namespace TheGodfather.Modules.Messages
         public async Task DeleteAsync(CommandContext ctx, 
                                      [RemainingText, Description("Filter to remove.")] string filter)
         {
-            if (ctx.Dependencies.GetDependency<SharedData>().TryRemoveGuildFilter(ctx.Guild.Id, filter)) {
+            if (ctx.Services.GetService<SharedData>().TryRemoveGuildFilter(ctx.Guild.Id, filter)) {
                 await ctx.RespondAsync($"Filter successfully removed.")
                     .ConfigureAwait(false);
-                await ctx.Dependencies.GetDependency<DatabaseService>().RemoveFilterAsync(ctx.Guild.Id, filter)
+                await ctx.Services.GetService<DatabaseService>().RemoveFilterAsync(ctx.Guild.Id, filter)
                     .ConfigureAwait(false);
             } else {
                 throw new CommandFailedException("Given filter does not exist.");
@@ -89,7 +87,7 @@ namespace TheGodfather.Modules.Messages
         public async Task ListAsync(CommandContext ctx, 
                                    [Description("Page")] int page = 1)
         {
-            var filters = await ctx.Dependencies.GetDependency<DatabaseService>().GetFiltersForGuildAsync(ctx.Guild.Id)
+            var filters = await ctx.Services.GetService<DatabaseService>().GetFiltersForGuildAsync(ctx.Guild.Id)
                 .ConfigureAwait(false);
 
             if (filters == null || !filters.Any()) {
@@ -119,10 +117,10 @@ namespace TheGodfather.Modules.Messages
         [RequireUserPermissions(Permissions.Administrator)]
         public async Task ClearAsync(CommandContext ctx)
         {
-            ctx.Dependencies.GetDependency<SharedData>().ClearGuildFilters(ctx.Guild.Id);
+            ctx.Services.GetService<SharedData>().ClearGuildFilters(ctx.Guild.Id);
             await ctx.RespondAsync("All filters for this guild successfully removed.")
                 .ConfigureAwait(false);
-            await ctx.Dependencies.GetDependency<DatabaseService>().RemoveAllGuildFiltersAsync(ctx.Guild.Id)
+            await ctx.Services.GetService<DatabaseService>().RemoveAllGuildFiltersAsync(ctx.Guild.Id)
                 .ConfigureAwait(false);
         }
         #endregion

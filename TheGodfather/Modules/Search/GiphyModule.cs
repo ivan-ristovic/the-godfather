@@ -2,6 +2,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
 using TheGodfather.Exceptions;
 using TheGodfather.Services;
@@ -29,7 +30,7 @@ namespace TheGodfather.Modules.Search
             if (string.IsNullOrWhiteSpace(q))
                 throw new InvalidCommandUsageException("Query missing!");
 
-            var res = await ctx.Dependencies.GetDependency<GiphyService>().SearchAsync(q)
+            var res = await ctx.Services.GetService<GiphyService>().SearchAsync(q)
                 .ConfigureAwait(false);
 
             if (res.Count() != 0)
@@ -45,7 +46,7 @@ namespace TheGodfather.Modules.Search
         [Aliases("r", "rand", "rnd")]
         public async Task RandomAsync(CommandContext ctx)
         {
-            var res = await ctx.Dependencies.GetDependency<GiphyService>().GetRandomGifAsync()
+            var res = await ctx.Services.GetService<GiphyService>().GetRandomGifAsync()
                 .ConfigureAwait(false);
             await ctx.RespondAsync(res.ImageUrl)
                 .ConfigureAwait(false);
@@ -62,7 +63,7 @@ namespace TheGodfather.Modules.Search
             if (n < 1 || n > 10)
                 throw new CommandFailedException("Number of results must be 1-10.", new ArgumentOutOfRangeException());
 
-            var res = await ctx.Dependencies.GetDependency<GiphyService>().GetTrendingGifsAsync(n)
+            var res = await ctx.Services.GetService<GiphyService>().GetTrendingGifsAsync(n)
                 .ConfigureAwait(false);
 
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {

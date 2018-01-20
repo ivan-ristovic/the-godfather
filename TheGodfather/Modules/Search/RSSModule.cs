@@ -5,7 +5,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.ServiceModel.Syndication;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
+using Microsoft.Extensions.DependencyInjection;
 
 using TheGodfather.Services;
 using TheGodfather.Exceptions;
@@ -48,7 +48,7 @@ namespace TheGodfather.Modules.Search
             if (string.IsNullOrWhiteSpace(url))
                 throw new InvalidCommandUsageException("URL missing.");
             
-            if (await ctx.Dependencies.GetDependency<DatabaseService>().AddFeedAsync(ctx.Channel.Id, url, string.IsNullOrWhiteSpace(name) ? name : url).ConfigureAwait(false))
+            if (await ctx.Services.GetService<DatabaseService>().AddFeedAsync(ctx.Channel.Id, url, string.IsNullOrWhiteSpace(name) ? name : url).ConfigureAwait(false))
                 await ctx.RespondAsync($"Subscribed to {url} !").ConfigureAwait(false);
             else
                 await ctx.RespondAsync("Either URL you gave is invalid or you are already subscribed to it!").ConfigureAwait(false);
@@ -61,7 +61,7 @@ namespace TheGodfather.Modules.Search
         [Aliases("ls", "list")]
         public async Task FeedListAsync(CommandContext ctx)
         {
-            var feeds = await ctx.Dependencies.GetDependency<DatabaseService>().GetSubscriptionsForChannelAsync(ctx.Channel.Id)
+            var feeds = await ctx.Services.GetService<DatabaseService>().GetSubscriptionsForChannelAsync(ctx.Channel.Id)
                 .ConfigureAwait(false);
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
                 Title = "Subscriptions for this channel:",
@@ -102,7 +102,7 @@ namespace TheGodfather.Modules.Search
         public async Task UnsubscribeAsync(CommandContext ctx,
                                           [Description("ID.")] int id)
         {
-            await ctx.Dependencies.GetDependency<DatabaseService>().RemoveSubscriptionAsync(ctx.Channel.Id, id)
+            await ctx.Services.GetService<DatabaseService>().RemoveSubscriptionAsync(ctx.Channel.Id, id)
                 .ConfigureAwait(false);
             await ctx.RespondAsync($"Unsubscribed from feed with ID {Formatter.Bold(id.ToString())} !")
                 .ConfigureAwait(false);
@@ -140,7 +140,7 @@ namespace TheGodfather.Modules.Search
                     throw new InvalidCommandUsageException("Subreddit missing.");
 
                 string url = $"https://www.reddit.com/r/{ sub.ToLower() }/new/.rss";
-                if (await ctx.Dependencies.GetDependency<DatabaseService>().AddFeedAsync(ctx.Channel.Id, url, "/r/" + sub).ConfigureAwait(false))
+                if (await ctx.Services.GetService<DatabaseService>().AddFeedAsync(ctx.Channel.Id, url, "/r/" + sub).ConfigureAwait(false))
                     await ctx.RespondAsync($"Subscribed to {Formatter.Bold("/r/" + sub)} !").ConfigureAwait(false);
                 else
                     await ctx.RespondAsync("Either the subreddit you gave doesn't exist or you are already subscribed to it!").ConfigureAwait(false);
@@ -158,7 +158,7 @@ namespace TheGodfather.Modules.Search
                 if (string.IsNullOrWhiteSpace(sub))
                     throw new InvalidCommandUsageException("Subreddit missing.");
 
-                await ctx.Dependencies.GetDependency<DatabaseService>().RemoveSubscriptionUsingNameAsync(ctx.Channel.Id, "/r/" + sub)
+                await ctx.Services.GetService<DatabaseService>().RemoveSubscriptionUsingNameAsync(ctx.Channel.Id, "/r/" + sub)
                     .ConfigureAwait(false);
                 await ctx.RespondAsync($"Unsubscribed from {Formatter.Bold("/r/" + sub)} !")
                     .ConfigureAwait(false);
@@ -179,7 +179,7 @@ namespace TheGodfather.Modules.Search
                 if (string.IsNullOrWhiteSpace(url))
                     throw new InvalidCommandUsageException("Channel URL missing.");
                 
-                var ytid = await ctx.Dependencies.GetDependency<YoutubeService>().GetYoutubeIdAsync(url)
+                var ytid = await ctx.Services.GetService<YoutubeService>().GetYoutubeIdAsync(url)
                     .ConfigureAwait(false);
                 var res = FeedService.GetFeedResults(YoutubeService.GetYoutubeRSSFeedLinkForChannelId(ytid));
                 await SendFeedResultsAsync(ctx, res)
@@ -199,7 +199,7 @@ namespace TheGodfather.Modules.Search
                 if (string.IsNullOrWhiteSpace(url))
                     throw new InvalidCommandUsageException("Channel URL missing.");
 
-                var chid = await ctx.Dependencies.GetDependency<YoutubeService>().GetYoutubeIdAsync(url)
+                var chid = await ctx.Services.GetService<YoutubeService>().GetYoutubeIdAsync(url)
                     .ConfigureAwait(false);
 
                 if (chid == null)
@@ -207,7 +207,7 @@ namespace TheGodfather.Modules.Search
 
                 var feedurl = YoutubeService.GetYoutubeRSSFeedLinkForChannelId(chid);
                 bool nameset = string.IsNullOrWhiteSpace(name);
-                if (await ctx.Dependencies.GetDependency<DatabaseService>().AddFeedAsync(ctx.Channel.Id, feedurl, nameset ? name : url).ConfigureAwait(false))
+                if (await ctx.Services.GetService<DatabaseService>().AddFeedAsync(ctx.Channel.Id, feedurl, nameset ? name : url).ConfigureAwait(false))
                     await ctx.RespondAsync("Subscribed!").ConfigureAwait(false);
                 else
                     await ctx.RespondAsync("Either the channel URL you is invalid or you are already subscribed to it!").ConfigureAwait(false);
@@ -225,13 +225,13 @@ namespace TheGodfather.Modules.Search
                 if (string.IsNullOrWhiteSpace(url))
                     throw new InvalidCommandUsageException("Channel URL missing.");
 
-                var chid = await ctx.Dependencies.GetDependency<YoutubeService>().GetYoutubeIdAsync(url)
+                var chid = await ctx.Services.GetService<YoutubeService>().GetYoutubeIdAsync(url)
                     .ConfigureAwait(false);
                 if (chid == null)
                     throw new CommandFailedException("Failed retrieving channel ID for that URL.");
 
                 var feedurl = YoutubeService.GetYoutubeRSSFeedLinkForChannelId(chid);
-                await ctx.Dependencies.GetDependency<DatabaseService>().RemoveSubscriptionUsingUrlAsync(ctx.Channel.Id, feedurl)
+                await ctx.Services.GetService<DatabaseService>().RemoveSubscriptionUsingUrlAsync(ctx.Channel.Id, feedurl)
                     .ConfigureAwait(false);
                 await ctx.RespondAsync("Unsubscribed!")
                     .ConfigureAwait(false);

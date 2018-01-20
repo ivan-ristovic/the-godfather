@@ -1,6 +1,7 @@
 ﻿#region USING_DIRECTIVES
 using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
 using TheGodfather.Services;
 using TheGodfather.Exceptions;
@@ -45,12 +46,12 @@ namespace TheGodfather.Modules.Games
                 else
                     throw new CommandFailedException($"Invalid coin outcome call (has to be {Formatter.Bold("h")} or {Formatter.Bold("t")})");
 
-                if (!await ctx.Dependencies.GetDependency<DatabaseService>().RetrieveCreditsAsync(ctx.User.Id, bid).ConfigureAwait(false))
+                if (!await ctx.Services.GetService<DatabaseService>().RetrieveCreditsAsync(ctx.User.Id, bid).ConfigureAwait(false))
                     throw new CommandFailedException("You do not have enough credits in WM bank!");
 
                 int rnd = new Random().Next(2);
                 if (rnd == guess)
-                    await ctx.Dependencies.GetDependency<DatabaseService>().IncreaseBalanceForUserAsync(ctx.User.Id, bid * 2)
+                    await ctx.Services.GetService<DatabaseService>().IncreaseBalanceForUserAsync(ctx.User.Id, bid * 2)
                         .ConfigureAwait(false);
 
                 await ctx.RespondAsync($"{ctx.User.Mention} flipped " +
@@ -83,12 +84,12 @@ namespace TheGodfather.Modules.Games
                 if (guess < 1 || guess > 6)
                     throw new CommandFailedException($"Invalid guess. Has to be a number from {Formatter.Bold("1")} to {Formatter.Bold("6")})");
 
-                if (!await ctx.Dependencies.GetDependency<DatabaseService>().RetrieveCreditsAsync(ctx.User.Id, bid).ConfigureAwait(false))
+                if (!await ctx.Services.GetService<DatabaseService>().RetrieveCreditsAsync(ctx.User.Id, bid).ConfigureAwait(false))
                     throw new CommandFailedException("You do not have enough credits in WM bank!");
 
                 int rnd = new Random().Next(1, 7);
                 if (rnd == guess)
-                    await ctx.Dependencies.GetDependency<DatabaseService>().IncreaseBalanceForUserAsync(ctx.User.Id, bid * 6)
+                    await ctx.Services.GetService<DatabaseService>().IncreaseBalanceForUserAsync(ctx.User.Id, bid * 6)
                         .ConfigureAwait(false);
 
                 await ctx.RespondAsync($"{DiscordEmoji.FromName(ctx.Client, ":game_die:")} {ctx.User.Mention} rolled a " +
@@ -111,7 +112,7 @@ namespace TheGodfather.Modules.Games
             if (bid < 5)
                 throw new CommandFailedException("5 is the minimum bid!", new ArgumentOutOfRangeException());
 
-            if (!await ctx.Dependencies.GetDependency<DatabaseService>().RetrieveCreditsAsync(ctx.User.Id, bid).ConfigureAwait(false))
+            if (!await ctx.Services.GetService<DatabaseService>().RetrieveCreditsAsync(ctx.User.Id, bid).ConfigureAwait(false))
                 throw new CommandFailedException("You do not have enough credits in WM bank!");
 
             var slot_res = RollSlot(ctx);
@@ -128,7 +129,7 @@ namespace TheGodfather.Modules.Games
                 .ConfigureAwait(false);
 
             if (won > 0)
-                await ctx.Dependencies.GetDependency<DatabaseService>().IncreaseBalanceForUserAsync(ctx.User.Id, won)
+                await ctx.Services.GetService<DatabaseService>().IncreaseBalanceForUserAsync(ctx.User.Id, won)
                     .ConfigureAwait(false);
         }
         #endregion

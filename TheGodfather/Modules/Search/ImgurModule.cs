@@ -3,11 +3,11 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
 using TheGodfather.Services;
 using TheGodfather.Exceptions;
 
-using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 
@@ -36,7 +36,7 @@ namespace TheGodfather.Modules.Search
             if (n < 1 || n > 10)
                 throw new CommandFailedException("Invalid amount (must be 1-10).", new ArgumentOutOfRangeException());
 
-            var res = await ctx.Dependencies.GetDependency<ImgurService>().GetItemsFromSubAsync(
+            var res = await ctx.Services.GetService<ImgurService>().GetItemsFromSubAsync(
                 sub,
                 n,
                 SubredditGallerySortOrder.Top,
@@ -62,7 +62,7 @@ namespace TheGodfather.Modules.Search
                 throw new CommandFailedException("Invalid amount (must be 1-10).", new ArgumentOutOfRangeException());
 
 
-            var res = await ctx.Dependencies.GetDependency<ImgurService>().GetItemsFromSubAsync(
+            var res = await ctx.Services.GetService<ImgurService>().GetItemsFromSubAsync(
                 sub, 
                 n, 
                 SubredditGallerySortOrder.Time, 
@@ -100,7 +100,7 @@ namespace TheGodfather.Modules.Search
             else if (time == "all" || time == "a")
                 t = TimeWindow.All;
 
-            var res = await ctx.Dependencies.GetDependency<ImgurService>().GetItemsFromSubAsync(
+            var res = await ctx.Services.GetService<ImgurService>().GetItemsFromSubAsync(
                 sub,
                 n,
                 SubredditGallerySortOrder.Time,

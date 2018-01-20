@@ -2,9 +2,8 @@
 using System;
 using System.Linq;
 using System.Text;
-using System.Collections.Generic;
-using System.Collections.Concurrent;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
 using TheGodfather.Services;
 using TheGodfather.Exceptions;
@@ -13,7 +12,6 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-using DSharpPlus.Exceptions;
 #endregion
 
 namespace TheGodfather.Modules.Messages
@@ -51,13 +49,13 @@ namespace TheGodfather.Modules.Messages
             if (triggers.Any(s => s.Length > 120))
                 throw new CommandFailedException("Trigger or response cannot be longer than 120 characters.");
 
-            if (ctx.Dependencies.GetDependency<SharedData>().TryAddGuildEmojiReaction(ctx.Guild.Id, emoji, triggers))
+            if (ctx.Services.GetService<SharedData>().TryAddGuildEmojiReaction(ctx.Guild.Id, emoji, triggers))
                 await ctx.RespondAsync("Reaction added.").ConfigureAwait(false);
             else
                 await ctx.RespondAsync("Failed adding some reactions (probably due to ambiguity in trigger words).").ConfigureAwait(false);
 
             foreach (var trigger in triggers)
-                await ctx.Dependencies.GetDependency<DatabaseService>().AddEmojiReactionAsync(ctx.Guild.Id, trigger, emoji)
+                await ctx.Services.GetService<DatabaseService>().AddEmojiReactionAsync(ctx.Guild.Id, trigger, emoji)
                     .ConfigureAwait(false);
         }
         #endregion
@@ -73,13 +71,13 @@ namespace TheGodfather.Modules.Messages
             if (triggers == null)
                 throw new InvalidCommandUsageException("Missing trigger words!");
 
-            if (ctx.Dependencies.GetDependency<SharedData>().TryRemoveGuildEmojiReactions(ctx.Guild.Id, triggers))
+            if (ctx.Services.GetService<SharedData>().TryRemoveGuildEmojiReactions(ctx.Guild.Id, triggers))
                 await ctx.RespondAsync("Successfully removed given trigger words for emoji reaction.").ConfigureAwait(false);
             else
                 await ctx.RespondAsync("Done. Some trigger words were not in list anyway though.").ConfigureAwait(false);
 
             foreach (var trigger in triggers)
-                await ctx.Dependencies.GetDependency<DatabaseService>().RemoveEmojiReactionAsync(ctx.Guild.Id, trigger)
+                await ctx.Services.GetService<DatabaseService>().RemoveEmojiReactionAsync(ctx.Guild.Id, trigger)
                     .ConfigureAwait(false);
         }
         #endregion
@@ -91,7 +89,7 @@ namespace TheGodfather.Modules.Messages
         public async Task ListAsync(CommandContext ctx,
                                    [Description("Page.")] int page = 1)
         {
-            var reactions = ctx.Dependencies.GetDependency<SharedData>().GetAllGuildEmojiReactions(ctx.Guild.Id);
+            var reactions = ctx.Services.GetService<SharedData>().GetAllGuildEmojiReactions(ctx.Guild.Id);
 
             if (reactions == null || !reactions.Any()) {
                 await ctx.RespondAsync("No emoji reactions registered for this guild.")
@@ -132,10 +130,10 @@ namespace TheGodfather.Modules.Messages
         [RequireUserPermissions(Permissions.Administrator)]
         public async Task ClearAsync(CommandContext ctx)
         {
-            ctx.Dependencies.GetDependency<SharedData>().DeleteAllGuildEmojiReactions(ctx.Guild.Id);
+            ctx.Services.GetService<SharedData>().DeleteAllGuildEmojiReactions(ctx.Guild.Id);
             await ctx.RespondAsync("All emoji reactions successfully removed.")
                 .ConfigureAwait(false);
-            await ctx.Dependencies.GetDependency<DatabaseService>().DeleteAllGuildEmojiReactionsAsync(ctx.Guild.Id)
+            await ctx.Services.GetService<DatabaseService>().DeleteAllGuildEmojiReactionsAsync(ctx.Guild.Id)
                 .ConfigureAwait(false);
         }
         #endregion

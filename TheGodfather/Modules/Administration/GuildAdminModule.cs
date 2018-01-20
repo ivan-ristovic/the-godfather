@@ -5,6 +5,7 @@ using System.Net;
 using System.IO;
 using System.Drawing;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
 using TheGodfather.Services;
 using TheGodfather.Exceptions;
@@ -15,6 +16,7 @@ using DSharpPlus.Interactivity;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
+using DSharpPlus.Net.Models;
 #endregion
 
 namespace TheGodfather.Modules.Administration
@@ -39,7 +41,6 @@ namespace TheGodfather.Modules.Administration
             };
             em.AddField("Members", ctx.Guild.MemberCount.ToString(), inline: true);
             em.AddField("Owner", ctx.Guild.Owner.Username, inline: true);
-            em.AddField("Region ID", ctx.Guild.RegionId, inline: true);
             em.AddField("Creation date", ctx.Guild.CreationTimestamp.ToString(), inline: true);
 
             await ctx.RespondAsync(embed: em.Build())
@@ -153,7 +154,7 @@ namespace TheGodfather.Modules.Administration
             await ctx.RespondAsync($"Pruning will remove {Formatter.Bold(count.ToString())} member(s). Continue?")
                 .ConfigureAwait(false);
 
-            var interactivity = ctx.Client.GetInteractivityModule();
+            var interactivity = ctx.Client.GetInteractivity();
             var msg = await interactivity.WaitForMessageAsync(
                 xm => (xm.Author.Id == ctx.User.Id) &&
                       (xm.Content.ToLower().StartsWith("yes") || xm.Content.ToLower().StartsWith("no")),
@@ -183,8 +184,10 @@ namespace TheGodfather.Modules.Administration
             if (string.IsNullOrWhiteSpace(name))
                 throw new InvalidCommandUsageException("Missing new guild name.");
 
-            await ctx.Guild.ModifyAsync(name: name)
-                .ConfigureAwait(false);
+            await ctx.Guild.ModifyAsync(new Action<GuildEditModel>(m => {
+                m.Name = name;
+                m.AuditLogReason = $"{ctx.User.Username} ({ctx.User.Id})";
+            })).ConfigureAwait(false);
             await ctx.RespondAsync("Guild successfully renamed.")
                 .ConfigureAwait(false);
         }
@@ -197,7 +200,7 @@ namespace TheGodfather.Modules.Administration
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task GetWelcomeChannelAsync(CommandContext ctx)
         {
-            ulong cid = await ctx.Dependencies.GetDependency<DatabaseService>().GetGuildWelcomeChannelIdAsync(ctx.Guild.Id)
+            ulong cid = await ctx.Services.GetService<DatabaseService>().GetGuildWelcomeChannelIdAsync(ctx.Guild.Id)
                 .ConfigureAwait(false);
             if (cid != 0) {
                 var c = ctx.Guild.GetChannel(cid);
@@ -219,7 +222,7 @@ namespace TheGodfather.Modules.Administration
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task GetLeaveChannelAsync(CommandContext ctx)
         {
-            ulong cid = await ctx.Dependencies.GetDependency<DatabaseService>().GetGuildLeaveChannelIdAsync(ctx.Guild.Id)
+            ulong cid = await ctx.Services.GetService<DatabaseService>().GetGuildLeaveChannelIdAsync(ctx.Guild.Id)
                 .ConfigureAwait(false);
             if (cid != 0) {
                 var c = ctx.Guild.GetChannel(cid);
@@ -251,7 +254,7 @@ namespace TheGodfather.Modules.Administration
             if (!ctx.Guild.Channels.Any(chn => chn.Id == c.Id))
                 throw new CommandFailedException("That channel does not belong to this guild!");
 
-            await ctx.Dependencies.GetDependency<DatabaseService>().SetGuildWelcomeChannelAsync(ctx.Guild.Id, c.Id)
+            await ctx.Services.GetService<DatabaseService>().SetGuildWelcomeChannelAsync(ctx.Guild.Id, c.Id)
                 .ConfigureAwait(false);
             await ctx.RespondAsync($"Default welcome message channel set to {Formatter.Bold(c.Name)}.")
                 .ConfigureAwait(false);
@@ -275,7 +278,7 @@ namespace TheGodfather.Modules.Administration
             if (!ctx.Guild.Channels.Any(chn => chn.Id == c.Id))
                 throw new CommandFailedException("That channel does not belong to this guild!");
 
-            await ctx.Dependencies.GetDependency<DatabaseService>().SetGuildLeaveChannelAsync(ctx.Guild.Id, c.Id)
+            await ctx.Services.GetService<DatabaseService>().SetGuildLeaveChannelAsync(ctx.Guild.Id, c.Id)
                 .ConfigureAwait(false);
             await ctx.RespondAsync($"Default leave message channel set to {Formatter.Bold(c.Name)}.")
                 .ConfigureAwait(false);
@@ -289,7 +292,7 @@ namespace TheGodfather.Modules.Administration
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task RemoveWelcomeChannelAsync(CommandContext ctx)
         {
-            await ctx.Dependencies.GetDependency<DatabaseService>().RemoveGuildWelcomeChannelAsync(ctx.Guild.Id)
+            await ctx.Services.GetService<DatabaseService>().RemoveGuildWelcomeChannelAsync(ctx.Guild.Id)
                 .ConfigureAwait(false);
             await ctx.RespondAsync("Default welcome message channel removed.")
                 .ConfigureAwait(false);
@@ -303,7 +306,7 @@ namespace TheGodfather.Modules.Administration
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task DeleteLeaveChannelAsync(CommandContext ctx)
         {
-            await ctx.Dependencies.GetDependency<DatabaseService>().RemoveGuildLeaveChannelAsync(ctx.Guild.Id)
+            await ctx.Services.GetService<DatabaseService>().RemoveGuildLeaveChannelAsync(ctx.Guild.Id)
                 .ConfigureAwait(false);
             await ctx.RespondAsync("Default leave message channel removed.")
                 .ConfigureAwait(false);
@@ -407,7 +410,7 @@ namespace TheGodfather.Modules.Administration
                         Color = DiscordColor.CornflowerBlue
                     }.AddField("Name", emoji.Name, inline: true)
                      .AddField("Created by", emoji.User != null ? emoji.User.Username : "<unknown>", inline: true)
-                     .AddField("Integration managed", emoji.Managed.ToString(), inline: true)
+                     .AddField("Integration managed", emoji.IsManaged.ToString(), inline: true)
                     ).ConfigureAwait(false);
                 } catch (NotFoundException ex) {
                     throw new CommandFailedException("Can't find that emoji in list of emoji for this guild.", ex);

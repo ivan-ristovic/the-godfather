@@ -77,7 +77,7 @@ namespace TheGodfather.Modules.Games
                         .ConfigureAwait(false);
                 }
 
-                var interactivity = _client.GetInteractivityModule();
+                var interactivity = _client.GetInteractivity();
                 var msg = await interactivity.WaitForMessageAsync(
                     // TODO check enum when you add more quiz commands
                     xm => xm.ChannelId == _cid && xm.Content.ToLower() == _countries[question].ToLower()

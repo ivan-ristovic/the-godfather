@@ -3,6 +3,7 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
 using TheGodfather.Exceptions;
 using TheGodfather.Services;
@@ -42,10 +43,10 @@ namespace TheGodfather.Modules.Games
             if (u == null || amount <= 0 || amount > 1000)
                 throw new InvalidCommandUsageException("Invalid user or amount.");
 
-            if (!await ctx.Dependencies.GetDependency<DatabaseService>().HasBankAccountAsync(ctx.User.Id).ConfigureAwait(false))
+            if (!await ctx.Services.GetService<DatabaseService>().HasBankAccountAsync(ctx.User.Id).ConfigureAwait(false))
                 throw new CommandFailedException("Given user does not have a WM bank account!");
 
-            await ctx.Dependencies.GetDependency<DatabaseService>().IncreaseBalanceForUserAsync(u.Id, amount)
+            await ctx.Services.GetService<DatabaseService>().IncreaseBalanceForUserAsync(u.Id, amount)
                 .ConfigureAwait(false);
             await ctx.RespondAsync($"User {Formatter.Bold(u.Username)} won {Formatter.Bold(amount.ToString())} credits on a lottery! (seems legit)")
                 .ConfigureAwait(false);
@@ -58,10 +59,10 @@ namespace TheGodfather.Modules.Games
         [Aliases("r", "signup", "activate")]
         public async Task RegisterAsync(CommandContext ctx)
         {
-            if (await ctx.Dependencies.GetDependency<DatabaseService>().HasBankAccountAsync(ctx.User.Id).ConfigureAwait(false))
+            if (await ctx.Services.GetService<DatabaseService>().HasBankAccountAsync(ctx.User.Id).ConfigureAwait(false))
                 throw new CommandFailedException("You already own an account in WM bank!");
 
-            await ctx.Dependencies.GetDependency<DatabaseService>().OpenBankAccountForUserAsync(ctx.User.Id)
+            await ctx.Services.GetService<DatabaseService>().OpenBankAccountForUserAsync(ctx.User.Id)
                 .ConfigureAwait(false);
 
             await ctx.RespondAsync($"Account opened for you, {ctx.User.Mention}! Since WM bank is so generous, you get 25 credits for free.")
@@ -79,7 +80,7 @@ namespace TheGodfather.Modules.Games
             if (u == null)
                 u = ctx.User;
 
-            int? balance = await ctx.Dependencies.GetDependency<DatabaseService>().GetBalanceForUserAsync(u.Id)
+            int? balance = await ctx.Services.GetService<DatabaseService>().GetBalanceForUserAsync(u.Id)
                 .ConfigureAwait(false);
 
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
@@ -101,7 +102,7 @@ namespace TheGodfather.Modules.Games
                 Color = DiscordColor.Yellow
             };
 
-            var top = await ctx.Dependencies.GetDependency<DatabaseService>().GetTopBankAccountsAsync()
+            var top = await ctx.Services.GetService<DatabaseService>().GetTopBankAccountsAsync()
                 .ConfigureAwait(false);
             foreach (var row in top) {
                 ulong.TryParse(row["uid"], out ulong uid);
@@ -129,7 +130,7 @@ namespace TheGodfather.Modules.Games
             if (amount <= 0)
                 throw new CommandFailedException("The amount must be positive integer.");
 
-            await ctx.Dependencies.GetDependency<DatabaseService>().TransferCurrencyAsync(ctx.User.Id, u.Id, amount)
+            await ctx.Services.GetService<DatabaseService>().TransferCurrencyAsync(ctx.User.Id, u.Id, amount)
                 .ConfigureAwait(false);
 
             await ctx.RespondAsync($"Transfer from {ctx.User.Mention} to {u.Mention} is complete.")

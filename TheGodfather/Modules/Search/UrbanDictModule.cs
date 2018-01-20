@@ -55,7 +55,7 @@ namespace TheGodfather.Modules.Search
                     await ctx.RespondAsync(embed: eb.Build())
                         .ConfigureAwait(false);
 
-                    var msg = await ctx.Client.GetInteractivityModule().WaitForMessageAsync(
+                    var msg = await ctx.Client.GetInteractivity().WaitForMessageAsync(
                         m => m.Channel.Id == ctx.Channel.Id && m.Content.ToLower() == "next"
                         , TimeSpan.FromSeconds(5)
                     ).ConfigureAwait(false);

@@ -2,6 +2,7 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
 using TheGodfather.Services;
 using TheGodfather.Exceptions;
@@ -47,7 +48,7 @@ namespace TheGodfather.Modules.Main
         {
             await ctx.RespondAsync($"{DiscordEmoji.FromName(ctx.Client, ":wave:")} Hi, {ctx.User.Mention}!")
                 .ConfigureAwait(false);
-            var interactivity = ctx.Client.GetInteractivityModule();
+            var interactivity = ctx.Client.GetInteractivity();
             var msg = await interactivity.WaitForMessageAsync(
                 xm => xm.Author.Id == ctx.User.Id && xm.Content.ToLower().StartsWith("how are you"),
                 TimeSpan.FromMinutes(1)
@@ -98,7 +99,7 @@ namespace TheGodfather.Modules.Main
         [RequireUserPermissions(Permissions.KickMembers)]
         public async Task LeaveAsync(CommandContext ctx)
         {
-            var inter = ctx.Client.GetInteractivityModule();
+            var inter = ctx.Client.GetInteractivity();
             await ctx.RespondAsync("Are you sure?")
                 .ConfigureAwait(false);
             var m = await inter.WaitForMessageAsync(
@@ -171,7 +172,7 @@ namespace TheGodfather.Modules.Main
         public async Task GetOrSetPrefixAsync(CommandContext ctx,
                                              [Description("Prefix to set.")] string prefix = null)
         {
-            var sd = ctx.Dependencies.GetDependency<SharedData>();
+            var sd = ctx.Services.GetService<SharedData>();
 
             if (string.IsNullOrWhiteSpace(prefix)) {
                 string p = sd.GetGuildPrefix(ctx.Guild.Id);
@@ -186,7 +187,7 @@ namespace TheGodfather.Modules.Main
             if (sd.TrySetGuildPrefix(ctx.Guild.Id, prefix)) {
                 await ctx.RespondAsync("Successfully changed the prefix for this guild to: " + Formatter.Bold(prefix))
                     .ConfigureAwait(false);
-                await ctx.Dependencies.GetDependency<DatabaseService>().SetGuildPrefixAsync(ctx.Guild.Id, prefix)
+                await ctx.Services.GetService<DatabaseService>().SetGuildPrefixAsync(ctx.Guild.Id, prefix)
                     .ConfigureAwait(false);
             } else {
                 throw new CommandFailedException("Failed to set prefix.");
@@ -228,16 +229,17 @@ namespace TheGodfather.Modules.Main
             await ctx.RespondAsync("Are you okay with your user and guild info being sent for further inspection?\n\n" +
                 Formatter.Italic("(Please either respond with 'yes' or wait 15 seconds for the prompt to time out)"))
                 .ConfigureAwait(false);
-            var interactivity = ctx.Client.GetInteractivityModule();
+            var interactivity = ctx.Client.GetInteractivity();
             var msg = await interactivity.WaitForMessageAsync(
                 x => x.Author.Id == ctx.User.Id && x.Channel.Id == ctx.Channel.Id && x.Content.ToLower() == "yes"
                 , TimeSpan.FromSeconds(15)
             ).ConfigureAwait(false);
             if (msg != null) {
                 ctx.Client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", $"Report from {ctx.User.Username} ({ctx.User.Id}): {issue}", DateTime.Now);
-                var dm = await ctx.Client.CreateDmAsync(ctx.Client.CurrentApplication.Owner)
+                var dm = await ctx.Services.GetService<TheGodfather>().CreateDmChannelAsync(ctx.Client.CurrentApplication.Owner.Id)
                     .ConfigureAwait(false);
-
+                if (dm == null)
+                    throw new CommandFailedException("I can't talk to that user...");
                 await dm.SendMessageAsync("A new issue has been reported!", embed:
                     new DiscordEmbedBuilder() {
                         Title = "Issue",
@@ -265,7 +267,7 @@ namespace TheGodfather.Modules.Main
             if (string.IsNullOrWhiteSpace(s))
                 throw new InvalidCommandUsageException("Text missing.");
 
-            if (ctx.Dependencies.GetDependency<SharedData>().ContainsFilter(ctx.Guild.Id, s))
+            if (ctx.Services.GetService<SharedData>().ContainsFilter(ctx.Guild.Id, s))
                 throw new CommandFailedException("You can't make me say something that contains filtered content for this guild.");
             
             await ctx.RespondAsync(s)

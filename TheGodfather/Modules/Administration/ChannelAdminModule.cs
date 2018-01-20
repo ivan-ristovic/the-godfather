@@ -11,6 +11,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
 using DSharpPlus.Interactivity;
+using DSharpPlus.Net.Models;
 #endregion
 
 namespace TheGodfather.Modules.Administration
@@ -118,7 +119,7 @@ namespace TheGodfather.Modules.Administration
 
             if (c.Type == ChannelType.Category && c.Children.Count() > 0) {
                 await ctx.RespondAsync("The channel specified is a non-empty category. Delete all channels in it? (y/n)");
-                var interactivity = ctx.Client.GetInteractivityModule();
+                var interactivity = ctx.Client.GetInteractivity();
                 string[] answers = new string[] { "yes", "y", "no", "n" };
                 var msg = await interactivity.WaitForMessageAsync(
                     m => m.ChannelId == ctx.Channel.Id && m.Author.Id == ctx.User.Id && answers.Contains(m.Content)
@@ -184,8 +185,10 @@ namespace TheGodfather.Modules.Administration
                 c = ctx.Channel;
 
             try {
-                await c.ModifyAsync(name, reason: $"{ctx.User.Username} ({ctx.User.Id})")
-                    .ConfigureAwait(false);
+                await c.ModifyAsync(new Action<ChannelEditModel>(m => {
+                    m.Name = name;
+                    m.AuditLogReason = $"{ctx.User.Username} ({ctx.User.Id})";
+                })).ConfigureAwait(false);
             } catch (BadRequestException e) {
                 throw new CommandFailedException("Error occured. Possibly the name entered contains invalid characters...", e);
             }
@@ -209,8 +212,10 @@ namespace TheGodfather.Modules.Administration
             if (c == null)
                 c = ctx.Channel;
 
-            await c.ModifyAsync(topic: topic, reason: $"{ctx.User.Username} ({ctx.User.Id})")
-                .ConfigureAwait(false);
+            await c.ModifyAsync(new Action<ChannelEditModel>(m => {
+                m.Topic = topic;
+                m.AuditLogReason = $"{ctx.User.Username} ({ctx.User.Id})";
+            })).ConfigureAwait(false);
             await ctx.RespondAsync("Channel topic successfully changed.")
                 .ConfigureAwait(false);
         }
@@ -222,7 +227,7 @@ namespace TheGodfather.Modules.Administration
         {
             if (ctx.Guild.Channels.Any(chn => chn.Name == cname.ToLower())) {
                 await ctx.RespondAsync("A channel with that name already exists. Continue anyway? (y/n)");
-                var interactivity = ctx.Client.GetInteractivityModule();
+                var interactivity = ctx.Client.GetInteractivity();
                 string[] answers = new string[] { "yes", "y", "no", "n" };
                 var msg = await interactivity.WaitForMessageAsync(
                     m => m.ChannelId == ctx.Channel.Id && m.Author.Id == ctx.User.Id && answers.Contains(m.Content)

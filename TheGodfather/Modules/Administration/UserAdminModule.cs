@@ -9,7 +9,7 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-using DSharpPlus.Exceptions;
+using DSharpPlus.Net.Models;
 #endregion
 
 namespace TheGodfather.Modules.Administration
@@ -388,8 +388,10 @@ namespace TheGodfather.Modules.Administration
             if (member == null || string.IsNullOrWhiteSpace(newname))
                 throw new InvalidCommandUsageException("Member or name invalid.");
 
-            await member.ModifyAsync(newname, reason: $"{ctx.User.Username} ({ctx.User.Id}).")
-                .ConfigureAwait(false);
+            await member.ModifyAsync(new Action<MemberEditModel>(m => {
+                m.Nickname = newname;
+                m.AuditLogReason = $"{ctx.User.Username} ({ctx.User.Id}).";
+            })).ConfigureAwait(false);
             await ctx.RespondAsync("Successfully changed the name of the user.")
                 .ConfigureAwait(false);
         }
@@ -425,10 +427,10 @@ namespace TheGodfather.Modules.Administration
         [Aliases("w")]
         [RequirePermissions(Permissions.KickMembers)]
         public async Task WarnAsync(CommandContext ctx,
-                                   [Description("User.")] DiscordUser u,
+                                   [Description("User.")] DiscordMember member,
                                    [RemainingText, Description("Message.")] string msg = null)
         {
-            if (u == null)
+            if (member == null)
                 throw new InvalidCommandUsageException("User missing.");
 
             var em = new DiscordEmbedBuilder() {
@@ -441,11 +443,13 @@ namespace TheGodfather.Modules.Administration
             if (!string.IsNullOrWhiteSpace(msg))
                 em.AddField("Warning message", msg);
 
-            var dm = await ctx.Client.CreateDmAsync(u)
+            var dm = await member.CreateDmChannelAsync()
                 .ConfigureAwait(false);
+            if (dm == null)
+                throw new CommandFailedException("I can't talk to that user...");
             await dm.SendMessageAsync(embed: em.Build())
                 .ConfigureAwait(false);
-            await ctx.RespondAsync($"Successfully warned {Formatter.Bold(u.Username)}.")
+            await ctx.RespondAsync($"Successfully warned {Formatter.Bold(member.Username)}.")
                 .ConfigureAwait(false);
         }
         #endregion

@@ -1,20 +1,17 @@
 ﻿#region USING_DIRECTIVES
 using System;
-using System.IO;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
 using TheGodfather.Exceptions;
 using TheGodfather.Services;
 
 using DSharpPlus;
-using DSharpPlus.Entities;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 #endregion
-
 
 namespace TheGodfather.Modules.Search
 {
@@ -104,7 +101,7 @@ namespace TheGodfather.Modules.Search
         #region HELPER_FUNCTIONS
         private async Task SendYouTubeResults(CommandContext ctx, string query, int amount, string type = null)
         {
-            var em = await ctx.Dependencies.GetDependency<YoutubeService>().GetEmbeddedResults(query, amount, type)
+            var em = await ctx.Services.GetService<YoutubeService>().GetEmbeddedResults(query, amount, type)
                 .ConfigureAwait(false);
             await ctx.RespondAsync($"Search result for {Formatter.Bold(query)}", embed: em)
                 .ConfigureAwait(false);

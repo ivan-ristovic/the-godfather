@@ -71,7 +71,7 @@ namespace TheGodfather.Modules.Games
 
         private async Task AdvanceAsync()
         {
-            var interactivity = _client.GetInteractivityModule();
+            var interactivity = _client.GetInteractivity();
             var m = await interactivity.WaitForMessageAsync(
                     xm => (xm.Channel.Id == _cid && 
                           !xm.Author.IsBot && 

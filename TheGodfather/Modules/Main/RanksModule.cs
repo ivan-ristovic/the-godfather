@@ -1,10 +1,8 @@
 #region USING_DIRECTIVES
 using System;
-using System.IO;
 using System.Linq;
-using System.Collections.Generic;
-using System.Collections.Concurrent;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -28,7 +26,7 @@ namespace TheGodfather.Modules.Messages
             if (u == null)
                 u = ctx.User;
 
-            var shared = ctx.Dependencies.GetDependency<SharedData>();
+            var shared = ctx.Services.GetService<SharedData>();
             var rank = shared.GetRankForId(u.Id);
             var msgcount = shared.GetMessageCountForId(u.Id);
 
@@ -57,7 +55,7 @@ namespace TheGodfather.Modules.Messages
                 Color = DiscordColor.IndianRed
             };
 
-            var shared = ctx.Dependencies.GetDependency<SharedData>();
+            var shared = ctx.Services.GetService<SharedData>();
             for (int i = 1; i < shared.Ranks.Count; i++) {
                 var xpneeded = shared.XpNeededForRankWithIndex(i);
                 em.AddField($"(#{i}) {shared.Ranks[i]}", $"XP needed: {xpneeded}", inline: true);
@@ -73,7 +71,7 @@ namespace TheGodfather.Modules.Messages
         [Description("Get rank leaderboard.")]
         public async Task TopAsync(CommandContext ctx)
         {
-            var shared = ctx.Dependencies.GetDependency<SharedData>();
+            var shared = ctx.Services.GetService<SharedData>();
             var msgcount = shared.MessageCount;
             var ranks = shared.Ranks;
 

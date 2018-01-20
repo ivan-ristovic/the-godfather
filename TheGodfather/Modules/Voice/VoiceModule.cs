@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
 using TheGodfather.Services;
 using TheGodfather.Exceptions;
@@ -38,9 +39,9 @@ namespace TheGodfather.Modules.Voice
                 if (Uri.TryCreate(data, UriKind.Absolute, out Uri res) && (res.Scheme == Uri.UriSchemeHttp || res.Scheme == Uri.UriSchemeHttps))
                     url = data;
                 else
-                    url = await ctx.Dependencies.GetDependency<YoutubeService>().GetFirstVideoResultAsync(data);
+                    url = await ctx.Services.GetService<YoutubeService>().GetFirstVideoResultAsync(data);
 
-                string filename = await ctx.Dependencies.GetDependency<YoutubeService>().TryDownloadYoutubeAudioAsync(url);
+                string filename = await ctx.Services.GetService<YoutubeService>().TryDownloadYoutubeAudioAsync(url);
                 await PlayFileAsync(ctx, filename);
             }
 
@@ -52,7 +53,7 @@ namespace TheGodfather.Modules.Voice
             public async Task PlayFileAsync(CommandContext ctx,
                                            [RemainingText, Description("Full path to the file to play.")] string filename)
             {
-                var vnext = ctx.Client.GetVoiceNextClient();
+                var vnext = ctx.Client.GetVoiceNext();
                 if (vnext == null)
                     throw new CommandFailedException("VNext is not enabled or configured.");
 
@@ -113,7 +114,7 @@ namespace TheGodfather.Modules.Voice
         public async Task ConnectAsync(CommandContext ctx, 
                                       [Description("Channel.")] DiscordChannel c = null)
         {
-            var vnext = ctx.Client.GetVoiceNextClient();
+            var vnext = ctx.Client.GetVoiceNext();
             if (vnext == null)
                 throw new CommandFailedException("VNext is not enabled or configured.");
 
@@ -141,7 +142,7 @@ namespace TheGodfather.Modules.Voice
         [Description("Disconnects from voice channel.")]
         public async Task DisconnectAsync(CommandContext ctx)
         {
-            var vnext = ctx.Client.GetVoiceNextClient();
+            var vnext = ctx.Client.GetVoiceNext();
             if (vnext == null) 
                 throw new CommandFailedException("VNext is not enabled or configured.");
 

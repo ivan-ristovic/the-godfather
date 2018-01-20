@@ -1,8 +1,8 @@
 ﻿#region USING_DIRECTIVES
 using System;
 using System.Linq;
-using System.Collections.Generic;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
 using TheGodfather.Services;
 using TheGodfather.Exceptions;
@@ -35,7 +35,7 @@ namespace TheGodfather.Modules.Main
                 return;
             }
 
-            string insult = await ctx.Dependencies.GetDependency<DatabaseService>().GetRandomInsultAsync()
+            string insult = await ctx.Services.GetService<DatabaseService>().GetRandomInsultAsync()
                 .ConfigureAwait(false);
             if (insult == null)
                 throw new CommandFailedException("No available insults.");
@@ -62,7 +62,7 @@ namespace TheGodfather.Modules.Main
             if (insult.Split(new string[] { "%user%" }, StringSplitOptions.None).Count() < 2)
                 throw new InvalidCommandUsageException($"Insult not in correct format (missing {Formatter.Bold("%user%")} in the insult)!");
 
-            await ctx.Dependencies.GetDependency<DatabaseService>().AddInsultAsync(insult)
+            await ctx.Services.GetService<DatabaseService>().AddInsultAsync(insult)
                 .ConfigureAwait(false);
 
             await ctx.RespondAsync("Insult added.")
@@ -77,7 +77,7 @@ namespace TheGodfather.Modules.Main
         [RequireOwner]
         public async Task ClearAllInsultsAsync(CommandContext ctx)
         {
-            await ctx.Dependencies.GetDependency<DatabaseService>().DeleteAllInsultsAsync()
+            await ctx.Services.GetService<DatabaseService>().DeleteAllInsultsAsync()
                 .ConfigureAwait(false);
             await ctx.RespondAsync("All insults successfully removed.")
                 .ConfigureAwait(false);
@@ -92,7 +92,7 @@ namespace TheGodfather.Modules.Main
         public async Task DeleteInsultAsync(CommandContext ctx, 
                                            [Description("Index.")] int i)
         {
-            await ctx.Dependencies.GetDependency<DatabaseService>().RemoveInsultByIdAsync(i)
+            await ctx.Services.GetService<DatabaseService>().RemoveInsultByIdAsync(i)
                 .ConfigureAwait(false);
             await ctx.RespondAsync("Insult successfully removed.").ConfigureAwait(false);
         }
@@ -104,7 +104,7 @@ namespace TheGodfather.Modules.Main
         public async Task ListInsultsAsync(CommandContext ctx,
                                           [Description("Page.")] int page = 1)
         {
-            var insults = await ctx.Dependencies.GetDependency<DatabaseService>().GetAllInsultsAsync()
+            var insults = await ctx.Services.GetService<DatabaseService>().GetAllInsultsAsync()
                 .ConfigureAwait(false);
 
             if (insults == null || !insults.Any()) {

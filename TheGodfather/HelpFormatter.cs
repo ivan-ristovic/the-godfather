@@ -13,7 +13,7 @@ using DSharpPlus.Entities;
 
 namespace TheGodfather.Helpers
 {
-    public class HelpFormatter : IHelpFormatter
+    public class HelpFormatter : BaseHelpFormatter
     {
         #region PRIVATE_FIELDS
         private DiscordEmbedBuilder _embed;
@@ -22,7 +22,7 @@ namespace TheGodfather.Helpers
         #endregion
 
 
-        public HelpFormatter()
+        public HelpFormatter(CommandsNextExtension cnext) : base(cnext)
         {
             _embed = new DiscordEmbedBuilder();
             _name = null;
@@ -31,7 +31,7 @@ namespace TheGodfather.Helpers
         }
 
 
-        public CommandHelpMessage Build()
+        public override CommandHelpMessage Build()
         {
             _embed.WithTitle("Help");
             _embed.WithColor(DiscordColor.SpringGreen);
@@ -54,14 +54,14 @@ namespace TheGodfather.Helpers
             return new CommandHelpMessage(embed: _embed);
         }
 
-        public IHelpFormatter WithAliases(IEnumerable<string> aliases)
+        public override BaseHelpFormatter WithAliases(IEnumerable<string> aliases)
         {
             if (aliases.Any())
                 _embed.AddField("Aliases", string.Join(", ", aliases.Select(a => Formatter.InlineCode(a))));
             return this;
         }
 
-        public IHelpFormatter WithArguments(IEnumerable<CommandArgument> arguments)
+        public override BaseHelpFormatter WithArguments(IEnumerable<CommandArgument> arguments)
         {
             if (arguments.Any()) {
                 var sb = new StringBuilder();
@@ -70,7 +70,7 @@ namespace TheGodfather.Helpers
                     if (arg.IsOptional)
                         sb.Append("(optional) ");
 
-                    sb.Append($"{Formatter.InlineCode($"[{arg.Type.ToUserFriendlyName()}]")} ");
+                    sb.Append($"{Formatter.InlineCode($"[{arg.Type}]")} ");
 
                     sb.Append(string.IsNullOrWhiteSpace(arg.Description) ? "No description provided." : Formatter.Bold(arg.Description));
 
@@ -85,25 +85,25 @@ namespace TheGodfather.Helpers
             return this;
         }
 
-        public IHelpFormatter WithCommandName(string name)
+        public override BaseHelpFormatter WithCommandName(string name)
         {
             _name = name;
             return this;
         }
 
-        public IHelpFormatter WithDescription(string description)
+        public override BaseHelpFormatter WithDescription(string description)
         {
             _desc = description;
             return this;
         }
 
-        public IHelpFormatter WithGroupExecutable()
+        public override BaseHelpFormatter WithGroupExecutable()
         {
             _gexec = true;
             return this;
         }
 
-        public IHelpFormatter WithSubcommands(IEnumerable<Command> subcommands)
+        public override BaseHelpFormatter WithSubcommands(IEnumerable<Command> subcommands)
         {
             if (subcommands.Any())
                 _embed.AddField(_name != null ? "Subcommands" : "Commands", string.Join(", ", subcommands.Select(c => Formatter.InlineCode(c.Name))));

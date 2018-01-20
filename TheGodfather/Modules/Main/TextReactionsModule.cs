@@ -1,10 +1,8 @@
 ﻿#region USING_DIRECTIVES
 using System;
-using System.IO;
 using System.Linq;
-using System.Collections.Generic;
-using System.Collections.Concurrent;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
 using TheGodfather.Services;
 using TheGodfather.Exceptions;
@@ -48,12 +46,12 @@ namespace TheGodfather.Modules.Messages
             if (trigger.Length > 120 || response.Length > 120)
                 throw new CommandFailedException("Trigger or response cannot be longer than 120 characters.");
 
-            if (ctx.Dependencies.GetDependency<SharedData>().TryAddGuildTextTrigger(ctx.Guild.Id, trigger, response))
+            if (ctx.Services.GetService<SharedData>().TryAddGuildTextTrigger(ctx.Guild.Id, trigger, response))
                 await ctx.RespondAsync($"Text reaction {Formatter.Bold(trigger)} successfully set.").ConfigureAwait(false);
             else
                 throw new CommandFailedException("Failed to add text reaction.");
 
-            await ctx.Dependencies.GetDependency<DatabaseService>().AddTextReactionAsync(ctx.Guild.Id, trigger, response)
+            await ctx.Services.GetService<DatabaseService>().AddTextReactionAsync(ctx.Guild.Id, trigger, response)
                 .ConfigureAwait(false);
         }
         #endregion
@@ -69,13 +67,13 @@ namespace TheGodfather.Modules.Messages
             if (triggers == null)
                 throw new InvalidCommandUsageException("Trigger words missing.");
 
-            if (ctx.Dependencies.GetDependency<SharedData>().TryRemoveGuildTriggers(ctx.Guild.Id, triggers))
+            if (ctx.Services.GetService<SharedData>().TryRemoveGuildTriggers(ctx.Guild.Id, triggers))
                 await ctx.RespondAsync("Text reactions successfully removed.").ConfigureAwait(false);
             else
                 throw new CommandFailedException("Failed to remove some text reactions.");
 
             foreach (var trigger in triggers)
-                await ctx.Dependencies.GetDependency<DatabaseService>().RemoveTextReactionAsync(ctx.Guild.Id, trigger)
+                await ctx.Services.GetService<DatabaseService>().RemoveTextReactionAsync(ctx.Guild.Id, trigger)
                     .ConfigureAwait(false);
         }
         #endregion
@@ -87,7 +85,7 @@ namespace TheGodfather.Modules.Messages
         public async Task ListAsync(CommandContext ctx, 
                                    [Description("Page.")] int page = 1)
         {
-            var treactions = ctx.Dependencies.GetDependency<SharedData>().GetAllGuildTextReactions(ctx.Guild.Id);
+            var treactions = ctx.Services.GetService<SharedData>().GetAllGuildTextReactions(ctx.Guild.Id);
 
             if (treactions == null) {
                 await ctx.RespondAsync("No text reactions registered for this guild.");
@@ -119,10 +117,10 @@ namespace TheGodfather.Modules.Messages
         [RequireUserPermissions(Permissions.Administrator)]
         public async Task ClearAsync(CommandContext ctx)
         {
-            ctx.Dependencies.GetDependency<SharedData>().DeleteAllGuildTextReactions(ctx.Guild.Id);
+            ctx.Services.GetService<SharedData>().DeleteAllGuildTextReactions(ctx.Guild.Id);
             await ctx.RespondAsync("Successfully removed all text reactions for this guild.")
                 .ConfigureAwait(false);
-            await ctx.Dependencies.GetDependency<DatabaseService>().DeleteAllGuildTextReactionsAsync(ctx.Guild.Id)
+            await ctx.Services.GetService<DatabaseService>().DeleteAllGuildTextReactionsAsync(ctx.Guild.Id)
                 .ConfigureAwait(false);
         }
         #endregion

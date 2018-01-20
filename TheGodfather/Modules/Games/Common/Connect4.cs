@@ -85,7 +85,7 @@ namespace TheGodfather.Modules.Games
         {
             int column = 0;
             bool player1plays = _move % 2 == 0;
-            var t = await _client.GetInteractivityModule().WaitForMessageAsync(
+            var t = await _client.GetInteractivity().WaitForMessageAsync(
                 xm => {
                     if (xm.Channel.Id != _cid) return false;
                     if (player1plays && (xm.Author.Id != _p1.Id)) return false;

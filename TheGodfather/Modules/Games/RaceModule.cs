@@ -1,9 +1,8 @@
 ﻿#region USING_DIRECTIVES
 using System;
-using System.Linq;
-using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
 using TheGodfather.Services;
 using TheGodfather.Exceptions;
@@ -11,7 +10,6 @@ using TheGodfather.Exceptions;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
 #endregion
 
 namespace TheGodfather.Modules.Games
@@ -52,7 +50,7 @@ namespace TheGodfather.Modules.Games
                 if (race.ParticipantCount > 1) {
                     await race.StartRaceAsync()
                         .ConfigureAwait(false);
-                    var db = ctx.Dependencies.GetDependency<DatabaseService>();
+                    var db = ctx.Services.GetService<DatabaseService>();
                     foreach (var uid in race.WinnerIds)
                         await db.UpdateUserStatsAsync(uid, "races_won").ConfigureAwait(false);
                 } else {

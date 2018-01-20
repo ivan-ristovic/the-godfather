@@ -48,7 +48,7 @@ namespace TheGodfather.Modules.Main
             // Get poll options interactively
             await ctx.RespondAsync("And what will be the possible answers? (separate with semicolon ``;``)")
                 .ConfigureAwait(false);
-            var interactivity = ctx.Client.GetInteractivityModule();
+            var interactivity = ctx.Client.GetInteractivity();
             var msg = await interactivity.WaitForMessageAsync(
                 xm => xm.Author.Id == ctx.User.Id && xm.Channel.Id == ctx.Channel.Id,
                 TimeSpan.FromMinutes(1)

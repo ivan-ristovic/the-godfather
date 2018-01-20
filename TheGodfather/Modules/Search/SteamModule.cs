@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
 using TheGodfather.Exceptions;
 using TheGodfather.Services;
@@ -31,7 +32,7 @@ namespace TheGodfather.Modules.Search
         {
             DiscordEmbed em = null;
             try {
-                em = await ctx.Dependencies.GetDependency<SteamService>().GetEmbeddedResultAsync(id)
+                em = await ctx.Services.GetService<SteamService>().GetEmbeddedResultAsync(id)
                     .ConfigureAwait(false);
             } catch (Exception e) {
                 throw new CommandFailedException("Error getting Steam information.", e);
