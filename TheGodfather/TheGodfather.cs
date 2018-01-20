@@ -73,26 +73,19 @@ namespace TheGodfather
             await Client.ConnectAsync().ConfigureAwait(false);
         }
 
-        public void Log(LogLevel level, string message)
-        {
-            Client.DebugLogger.LogMessage(level, "TheGodfather", message, DateTime.Now);
-        }
-
 
         #region BOT_SETUP_FUNCTIONS
         private void SetupClient()
         {
             var cfg = new DiscordConfiguration {
+                Token = _cfg.Token,
+                TokenType = TokenType.Bot,
                 AutoReconnect = true,
                 LargeThreshold = 250,
-                LogLevel = LogLevel.Info,
-
                 ShardCount = _cfg.ShardCount,
                 ShardId = ShardId,
-                UseInternalLogHandler = true,
-
-                Token = _cfg.Token,
-                TokenType = TokenType.Bot
+                UseInternalLogHandler = false,
+                LogLevel = LogLevel.Info
             };
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && Environment.OSVersion.Version <= new Version(6, 1, 7601, 65536))
@@ -101,14 +94,13 @@ namespace TheGodfather
             Client = new DiscordClient(cfg);
 
             Client.ClientErrored += Client_Error;
-            // Client.DebugLogger.LogMessageReceived += Client_LogMessage; TODO
+            Client.DebugLogger.LogMessageReceived += (s, e) => Logger.LogMessage(ShardId, e);
             Client.GuildAvailable += Client_GuildAvailable;
             Client.GuildMemberAdded += Client_GuildMemberAdd;
             Client.GuildMemberRemoved += Client_GuildMemberRemove;
             Client.MessageCreated += Client_MessageCreated;
             Client.MessageReactionAdded += Client_ReactToMessage;
             Client.MessageUpdated += Client_MessageUpdated;
-            Client.Ready += Client_Ready;
         }
 
         private void SetupCommands()
@@ -224,11 +216,6 @@ namespace TheGodfather
                     $" Message: {exc.Message}"
                 );
             }
-        }
-
-        private void Client_LogMessage(object sender, DebugLogMessageEventArgs e)
-        {
-            // TODO write to file
         }
 
         private async Task Client_MessageCreated(MessageCreateEventArgs e)
@@ -351,11 +338,6 @@ namespace TheGodfather
             if (new Random().Next(10) == 0)
                 await e.Message.CreateReactionAsync(e.Emoji).ConfigureAwait(false);
         }
-
-        private async Task Client_Ready(ReadyEventArgs e)
-        {
-            Log(LogLevel.Info, "Client ready.");
-        }
         #endregion
 
         #region COMMAND_EVENTS
@@ -364,9 +346,9 @@ namespace TheGodfather
             await Task.Yield();
 
             Log(LogLevel.Info,
-                $"Executed: {e.Command?.QualifiedName ?? "<unknown command>"}" + Environment.NewLine +
-                $" User: {e.Context.User.ToString()}" + Environment.NewLine +
-                $" Location: '{e.Context.Guild.Name}' ({e.Context.Guild.Id}) ; {e.Context.Channel.ToString()}"
+                $"Executed: {e.Command?.QualifiedName ?? "<unknown command>"}<br>" +
+                $"{e.Context.User.ToString()}<br>" + 
+                $"{e.Context.Guild.ToString()}; {e.Context.Channel.ToString()}"
             );
         }
 
@@ -383,12 +365,12 @@ namespace TheGodfather
                 return;
 
             Log(LogLevel.Error,
-                $"Tried executing: {e.Command?.QualifiedName ?? "<unknown command>"}" + Environment.NewLine +
-                $" User: {e.Context.User.ToString()}" + Environment.NewLine +
-                $" Location: '{e.Context.Guild.Name}' ({e.Context.Guild.Id}) ; {e.Context.Channel.ToString()}" + Environment.NewLine +
-                $" Exception: {ex.GetType()}" + Environment.NewLine +
-                (ex.InnerException != null ? $" Inner exception: {ex.InnerException.GetType()}" + Environment.NewLine : "") +
-                $" Message: {ex.Message ?? "<no message>"}"
+                $"Tried executing: {e.Command?.QualifiedName ?? "<unknown command>"}<br>" +
+                $"{e.Context.User.ToString()}<br>" +
+                $"{e.Context.Guild.ToString()}; {e.Context.Channel.ToString()}<br>" +
+                $"Exception: {ex.GetType()}<br>" +
+                (ex.InnerException != null ? $"Inner exception: {ex.InnerException.GetType()}<br>" : "") +
+                $"Message: {ex.Message.Replace("\n", "<br>") ?? "<no message>"}<br>"
             );
 
             var emoji = DiscordEmoji.FromName(e.Context.Client, ":no_entry:");
@@ -438,6 +420,11 @@ namespace TheGodfather
         #endregion
 
         #region HELPER_FUNCTIONS
+        public void Log(LogLevel level, string message)
+        {
+            Client.DebugLogger.LogMessage(level, "TheGodfather", message, DateTime.Now);
+        }
+
         public async Task<DiscordDmChannel> CreateDmChannelAsync(ulong uid)
         {
             var firstResult = Client.Guilds.Values.SelectMany(e => e.Members).FirstOrDefault(e => e.Id == uid);
