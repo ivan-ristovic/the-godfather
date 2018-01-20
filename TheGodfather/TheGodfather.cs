@@ -123,7 +123,7 @@ namespace TheGodfather
                     .AddSingleton(new GiphyService(_cfg.GiphyKey))
                     .AddSingleton(new ImgurService(_cfg.ImgurKey))
                     .AddSingleton(new SteamService(_cfg.SteamKey))
-                    .AddSingleton(Client)
+                    .AddSingleton(this)
                     .AddSingleton(_db)
                     .AddSingleton(_shared)
                     .BuildServiceProvider(),

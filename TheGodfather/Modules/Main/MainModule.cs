@@ -239,7 +239,7 @@ namespace TheGodfather.Modules.Main
                 var dm = await ctx.Services.GetService<TheGodfather>().CreateDmChannelAsync(ctx.Client.CurrentApplication.Owner.Id)
                     .ConfigureAwait(false);
                 if (dm == null)
-                    throw new CommandFailedException("I can't talk to that user...");
+                    throw new CommandFailedException("Owner has disabled DMs.");
                 await dm.SendMessageAsync("A new issue has been reported!", embed:
                     new DiscordEmbedBuilder() {
                         Title = "Issue",

@@ -154,18 +154,14 @@ namespace TheGodfather.Modules.Games
             if (Hangman.GameExistsInChannel(ctx.Channel.Id))
                 throw new CommandFailedException("Hangman game is already running in the current channel!");
 
-            DiscordDmChannel dm;
-            try {
-                dm = await ctx.Services.GetService<TheGodfather>().CreateDmChannelAsync(ctx.User.Id)
-                    .ConfigureAwait(false);
-                if (dm == null)
-                    throw new CommandFailedException("I can't talk to that user...");
-                await dm.SendMessageAsync("What is the secret word?")
-                    .ConfigureAwait(false);
-                await ctx.RespondAsync(ctx.User.Mention + ", check your DM. When you give me the word, the game will start.");
-            } catch {
+            var dm = await ctx.Services.GetService<TheGodfather>().CreateDmChannelAsync(ctx.User.Id)
+                .ConfigureAwait(false);
+            if (dm == null)
                 throw new CommandFailedException("Please enable direct messages, so I can ask you about the word to guess.");
-            }
+            await dm.SendMessageAsync("What is the secret word?")
+                .ConfigureAwait(false);
+            await ctx.RespondAsync(ctx.User.Mention + ", check your DM. When you give me the word, the game will start.");
+
             var interactivity = ctx.Client.GetInteractivity();
             var msg = await interactivity.WaitForMessageAsync(
                 xm => xm.Channel == dm && xm.Author.Id == ctx.User.Id,
@@ -263,7 +259,7 @@ namespace TheGodfather.Modules.Games
 
             await ctx.RespondAsync($"Who wants to play tic-tac-toe with {ctx.User.Username}?")
                 .ConfigureAwait(false);
-            
+
             var msg = await ctx.Client.GetInteractivity().WaitForMessageAsync(
                 xm => CheckIfValidOpponent(xm, ctx.User.Id, ctx.Channel.Id)
             ).ConfigureAwait(false);
