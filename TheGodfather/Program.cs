@@ -139,9 +139,7 @@ namespace TheGodfather
         private static void BotStatusTimerCallback(object _)
         {
             var client = _ as DiscordClient;
-            var status = Database.GetRandomBotStatusAsync().ConfigureAwait(false).GetAwaiter().GetResult();
-            client.UpdateStatusAsync(new DiscordActivity(status, ActivityType.Watching))
-                .ConfigureAwait(false).GetAwaiter().GetResult();
+            Database.UpdateBotStatusAsync(client).ConfigureAwait(false).GetAwaiter().GetResult();
         }
 
         private static void DatabaseSyncTimerCallback(object _)

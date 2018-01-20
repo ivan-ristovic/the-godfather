@@ -4,6 +4,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 
+using DSharpPlus;
+using DSharpPlus.Entities;
+
 using Npgsql;
 using NpgsqlTypes;
 #endregion
@@ -34,28 +37,38 @@ namespace TheGodfather.Services
             return new ReadOnlyDictionary<int, string>(dict);
         }
 
-        public async Task<string> GetRandomBotStatusAsync()
+        public async Task UpdateBotStatusAsync(DiscordClient client)
         {
             await _sem.WaitAsync();
 
+            int type = 0;
             string status = null;
 
             using (var con = new NpgsqlConnection(_connectionString))
             using (var cmd = con.CreateCommand()) {
                 await con.OpenAsync().ConfigureAwait(false);
                 
-                cmd.CommandText = "SELECT status FROM gf.statuses LIMIT 1 OFFSET floor(random() * (SELECT count(*) FROM gf.statuses));";
-
-                var res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
-                if (res != null && !(res is DBNull))
-                    status = (string)res;
+                cmd.CommandText = "SELECT status, type FROM gf.statuses LIMIT 1 OFFSET floor(random() * (SELECT count(*) FROM gf.statuses));";
+                
+                using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
+                    if (await reader.ReadAsync().ConfigureAwait(false)) {
+                        status = (string)reader["status"];
+                        type = (short)reader["type"];
+                    }
+                }
             }
 
             _sem.Release();
-            return status ?? "@TheGodfather help";
+
+            if (!Enum.IsDefined(typeof(ActivityType), type)) {
+                client.DebugLogger.LogMessage(LogLevel.Warning, "TheGodfather", "Undefined status activity found in database", DateTime.Now);
+                type = 0;
+            }
+            await client.UpdateStatusAsync(new DiscordActivity(status ?? "@TheGodfather help", (ActivityType)type))
+                .ConfigureAwait(false);
         }
 
-        public async Task AddBotStatusAsync(string status)
+        public async Task AddBotStatusAsync(string status, ActivityType type)
         {
             await _sem.WaitAsync();
 
@@ -63,8 +76,9 @@ namespace TheGodfather.Services
             using (var cmd = con.CreateCommand()) {
                 await con.OpenAsync().ConfigureAwait(false);
 
-                cmd.CommandText = "INSERT INTO gf.statuses(status) VALUES (@status);";
+                cmd.CommandText = "INSERT INTO gf.statuses(status, type) VALUES (@status, @type);";
                 cmd.Parameters.AddWithValue("status", NpgsqlDbType.Varchar, status);
+                cmd.Parameters.AddWithValue("type", NpgsqlDbType.Smallint, type);
 
                 await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
             }

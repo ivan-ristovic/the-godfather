@@ -106,7 +106,7 @@ namespace TheGodfather.Modules.Administration
             */
         }
         #endregion
-        
+
         #region COMMAND_DBQUERY
         [Command("dbquery")]
         [Description("Clear application logs.")]
@@ -357,15 +357,28 @@ namespace TheGodfather.Modules.Administration
             [Description("Add a status to running queue.")]
             [Aliases("+")]
             public async Task AddAsync(CommandContext ctx,
+                                      [Description("Activity type.")] string type,
                                       [RemainingText, Description("Status.")] string status)
             {
-                if (string.IsNullOrWhiteSpace(status))
-                    throw new InvalidCommandUsageException("Invalid status.");
+                if (string.IsNullOrWhiteSpace(type) || string.IsNullOrWhiteSpace(status))
+                    throw new InvalidCommandUsageException("Invalid activity type or status.");
+
+                ActivityType activity = ActivityType.Playing;
+                if (string.Equals(type, "playing", StringComparison.OrdinalIgnoreCase))
+                    activity = ActivityType.Playing;
+                else if (string.Equals(type, "watching", StringComparison.OrdinalIgnoreCase))
+                    activity = ActivityType.Watching;
+                else if (string.Equals(type, "streaming", StringComparison.OrdinalIgnoreCase))
+                    activity = ActivityType.Streaming;
+                else if (string.Equals(type, "listening", StringComparison.OrdinalIgnoreCase))
+                    activity = ActivityType.ListeningTo;
+                else
+                    throw new CommandFailedException("Invalid activity. Possible values: playing, watching, streaming and listening.");
 
                 if (status.Length > 60)
                     throw new CommandFailedException("Status length cannot be greater than 60 characters.");
-                
-                await ctx.Services.GetService<DatabaseService>().AddBotStatusAsync(status)
+
+                await ctx.Services.GetService<DatabaseService>().AddBotStatusAsync(status, activity)
                     .ConfigureAwait(false);
                 await ctx.RespondAsync("Status added!")
                     .ConfigureAwait(false);
