@@ -13,9 +13,25 @@ namespace TheGodfather.Modules
 {
     public abstract class GodfatherBaseModule : BaseExtension
     {
-        // private SharedData SharedData;
-        // private DatabaseService Database;
+        protected SharedData SharedData;
+        protected DatabaseService DatabaseService;
 
-        // TODO
+
+        protected GodfatherBaseModule(SharedData shared, DatabaseService db)
+        {
+            SharedData = shared;
+            DatabaseService = db;
+        }
+
+        /*
+        in modules add:
+        
+        public module(SharedData shared, DatabaseService db) : base(shared, db) { }
+        */
+
+        protected override void Setup(DiscordClient client)
+        {
+
+        }
     }
 }

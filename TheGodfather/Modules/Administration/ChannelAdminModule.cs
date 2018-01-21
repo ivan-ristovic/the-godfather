@@ -3,6 +3,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
+using TheGodfather.Services;
 using TheGodfather.Exceptions;
 
 using DSharpPlus;
@@ -38,7 +39,7 @@ namespace TheGodfather.Modules.Administration
                 .ConfigureAwait(false);
             if (!checkspassed)
                 return;
-
+            
             await ctx.Guild.CreateChannelAsync(name, ChannelType.Category, reason: $"{ctx.User.Username} ({ctx.User.Id})")
                 .ConfigureAwait(false);
             await ctx.RespondAsync($"Category {Formatter.Bold(name)} successfully created.")
@@ -57,7 +58,7 @@ namespace TheGodfather.Modules.Administration
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new InvalidCommandUsageException("Missing channel name.");
-            if (name.Contains(" "))
+            if (name.Contains(' '))
                 throw new InvalidCommandUsageException("Name cannot contain spaces.");
 
             bool checkspassed = await HandleChannelExistsAsync(ctx, name)
@@ -226,7 +227,8 @@ namespace TheGodfather.Modules.Administration
         private async Task<bool> HandleChannelExistsAsync(CommandContext ctx, string cname)
         {
             if (ctx.Guild.Channels.Any(chn => chn.Name == cname.ToLower())) {
-                await ctx.RespondAsync("A channel with that name already exists. Continue anyway? (y/n)");
+                await ctx.RespondAsync("A channel with that name already exists. Continue anyway? (y/n)")
+                    .ConfigureAwait(false);
                 var interactivity = ctx.Client.GetInteractivity();
                 string[] answers = new string[] { "yes", "y", "no", "n" };
                 var msg = await interactivity.WaitForMessageAsync(

@@ -49,6 +49,7 @@ Commands use the following types:
 |   | ``penis``<br>``size``<br>``length``<br>``manhood``<br>``dick`` |   | ``(optional) [user] User (def: sender)`` | An accurate measurement of ``User``'s manhood. | ``!penis @Someone`` |
 |   | ``ping`` |   |   | Ping the bot. | ``!ping`` |
 |   | ``poll``<br>``vote`` |   | ``[text] Question`` | Starts a poll in the channel. The bot will ask for poll options, which you give separated with ``;``, for example: ``option1 ; another option ; option3`` | ``!poll "Do you want to kick Godfather?"`` |
+|   | ``pollr``<br>``vote`` |   | ``[emoji] Reactions (min 2)`` | Starts a poll with reactions in the channel. | ``!pollr :smile: :angry:`` |
 |   | ``prefix``<br>``setprefix`` | Administrator (user) | ``(optional) [string] New prefix (maxlen: 10)`` | If invoked without arguments, gives current prefix for this guild, otherwise sets the prefix to ``New prefix``. If for example ``New prefix`` is ``;``, all commands in this guild from that point must be invoked using ``;`` (``;greet``). | ``!prefix``<br><br>``!prefix .`` |
 |   | ``rate``<br>``score``<br>``graph`` |   | ``[user] User`` | An accurate graphical representatin of ``User``'s humanity. | ``!rate @Someone`` |
 |   | ``remind`` |   | ``[int] Time to wait before repeat (in seconds)``<br><br>``[text] What to repeat`` | Repeat given text after given time. | ``!remind 3600 I was told to remind you to do this`` |
