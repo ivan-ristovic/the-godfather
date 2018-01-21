@@ -274,11 +274,11 @@ Commands use the following types:
 | Command group (with synonyms) | Command name (with synonyms) | Required Permissions | Command arguments | Command Description | Example of use |
 |---|---|---|---|---|---|
 |   |   |   |   |   |   |
-|  | ``connect`` | Use Voice | ``(optional) [channel] Channel`` | Connects bot to a given voice channel. If channel is not given, connects to the same voice channel the user is in. | ``!voice connect``<br><br>``!voice connect Music`` |
-|  | ``disconnect`` |   |   | Disconnects bot from voice channel in the current guild. | ``!voice disconnect`` |
+|  | ``connect`` | Use Voice | ``(optional) [channel] Channel`` | Connects bot to a given voice channel. If channel is not given, connects to the same voice channel the user is in. | ``!connect``<br><br>``!connect Music`` |
+|  | ``disconnect`` |   |   | Disconnects bot from voice channel in the current guild. | ``!disconnect`` |
 |  | ``stop``<br>``s`` |   |   | Stop voice playback. | ``!voice stop`` |
-| ``play``<br>``music``<br>``p`` |  | Use Voice<br><br>Speak | ``[string] YouTube URL`` | Stream YouTube audio from given URL. | ``!voice play https://www.youtube.com/watch?v=c5OA1OdkKQI`` |
-| ``play``<br>``music``<br>``p`` | ``file``<br>``f`` | Use Voice<br><br>Speak | ``[text] File path`` | Stream a file from the server's filesystem. | ``!voice playfile C://system32/idk.mp3`` |
+| ``play``<br>``music``<br>``p`` |  | Use Voice<br><br>Speak | ``[string] YouTube URL`` | Stream YouTube audio from given URL. | ``!play https://www.youtube.com/watch?v=c5OA1OdkKQI`` <br><br>``!play justin bieber baby`` |
+| ``play``<br>``music``<br>``p`` | ``file``<br>``f`` | Use Voice<br><br>Speak | ``[text] File path`` | Stream a file from the server's filesystem. | ``!play file C://system32/idk.mp3`` |
 |   |   |   |   |   |   |
 
 
@@ -297,7 +297,7 @@ Commands use the following types:
 | ``owner``<br>``o``<br>``admin`` | ``shutdown``<br>``disable``<br>``poweroff``<br>``exit``<br>``quit`` | Owner Only |   | Shutdown Godfather. | ``!owner shutdown`` |
 | ``owner``<br>``o``<br>``admin`` | ``sudo``<br>``execas``<br>``as`` | Owner Only | ``[user] User``<br><br>``[text] Command`` | Execute ``Command`` as ``User``. | ``!owner execas @Someone !say test`` |
 | ``owner``<br>``o``<br>``admin`` | ``toggleignore``<br>``ti`` | Owner Only |   | Toggle ignoring of commands (except this one). | ``!owner toggleignore`` |
-| ``owner status`` | ``add``<br>``+``<br>``new`` | Owner Only | ``[text] Status`` | Add a new bot playing status to the list. | ``!owner status add Playing with Joky`` |
+| ``owner status`` | ``add``<br>``+``<br>``new`` | Owner Only | ``[string] Activity type``<br><br>``[text] Status`` | Add a new bot status to the list. Activity type can be: ``playing``, ``streaming``, ``watching`` and ``listening`` | ``!owner status add playing with Joky``<br><br>``!owner status add streaming PUBG`` |
 | ``owner status`` | ``delete``<br>``-``<br>``remove`` | Owner Only | ``[text] Status`` | Remove playing status from the list. | ``!owner status delete Playing with Joky`` |
 | ``owner status`` | ``list`` | Owner Only |   | List all statuses. | ``!owner status list`` |
 |   |   |   |   |   |   |
