@@ -54,6 +54,7 @@ Commands use the following types:
 |   | ``remind`` |   | ``[int] Time to wait before repeat (in seconds)``<br><br>``[text] What to repeat`` | Repeat given text after given time. | ``!remind 3600 I was told to remind you to do this`` |
 |   | ``report`` |   | ``[text] Report message`` | Send message to owner (hopefully about a bug, I can see it being abused) | ``!report Your bot sucks!`` |
 |   | ``say``  |   | ``[text] What to say`` | Make Godfather say something! | ``!say Luke, I am your father!`` |
+|   | ``tts``  |   | ``[text] What to say`` | Make Godfather say something out loud (using tts)! | ``!tts Luke, I am your father!`` |
 |   | ``zugify`` |   | ``[text] Text`` | Requested by Zugi. It is so stupid it isn't worth describing... | ``!zugify Some text`` |
    |   |   |   |   |   |
 | ``emojireaction``<br>``emojireactions``<br>``ereact``<br>``emojir``<br>``er`` |   | Manage Guild (user) | ``[emoji] Emoji``<br><br>``[text] Triggers`` | Add a new automatic emoji reaction to a word from trigger list. Whenever someone sends a message containing a trigger word, bot will react to it with ``Emoji``. Trigger list is made of words separated with whitespace. | ``!emojir :smile: laughing`` |

@@ -275,6 +275,23 @@ namespace TheGodfather.Modules.Main
         }
         #endregion
 
+        #region COMMAND_TTS
+        [Command("tts")]
+        [Description("Repeats after you but uses tts.")]
+        public async Task TTSAsync(CommandContext ctx,
+                                  [RemainingText, Description("Text.")] string s)
+        {
+            if (string.IsNullOrWhiteSpace(s))
+                throw new InvalidCommandUsageException("Text missing.");
+
+            if (ctx.Services.GetService<SharedData>().ContainsFilter(ctx.Guild.Id, s))
+                throw new CommandFailedException("You can't make me say something that contains filtered content for this guild.");
+
+            await ctx.RespondAsync(s, isTTS: true)
+                .ConfigureAwait(false);
+        }
+        #endregion
+
         #region COMMAND_ZUGIFY
         [Command("zugify")]
         [Description("I don't even...")]
