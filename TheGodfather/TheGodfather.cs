@@ -157,7 +157,7 @@ namespace TheGodfather
 
         private async Task Client_GuildAvailable(GuildCreateEventArgs e)
         {
-            Log(LogLevel.Info, $"Guild available: {e.Guild.Name} ({e.Guild.Id})");
+            Log(LogLevel.Info, $"Guild available: {e.Guild.ToString()}");
             if (await _db.AddGuildIfNotExistsAsync(e.Guild.Id).ConfigureAwait(false))
                 await e.Guild.GetDefaultChannel().SendMessageAsync($"Thank you for adding me! Type {Formatter.InlineCode("!help / !help <command>")} to view my command list or get help for a specific command.").ConfigureAwait(false);
         }
@@ -165,8 +165,8 @@ namespace TheGodfather
         private async Task Client_GuildMemberAdd(GuildMemberAddEventArgs e)
         {
             Log(LogLevel.Info,
-                $"Member joined: {e.Member.Username} ({e.Member.Id})" + Environment.NewLine +
-                $" Guild: {e.Guild.Name} ({e.Guild.Id})"
+                $"Member joined: {e.Member.ToString()}<br>" +
+                $"{e.Guild.ToString()}"
             );
 
             ulong cid = await _db.GetGuildWelcomeChannelIdAsync(e.Guild.Id)
@@ -182,10 +182,11 @@ namespace TheGodfather
                 while (exc is AggregateException)
                     exc = exc.InnerException;
                 Log(LogLevel.Error,
-                    $"Failed to send a welcome message!" + Environment.NewLine +
-                    $" Channel ID: {cid}" + Environment.NewLine +
-                    $" Exception: {exc.GetType()}" + Environment.NewLine +
-                    $" Message: {exc.Message}"
+                    $"Failed to send a welcome message!<br>" + 
+                    $"Channel ID: {cid}<br>" +
+                    $"{e.Guild.ToString()}<br>" +
+                    $"Exception: {exc.GetType()}<br>" +
+                    $"Message: {exc.Message}"
                 );
             }
         }
@@ -193,8 +194,8 @@ namespace TheGodfather
         private async Task Client_GuildMemberRemove(GuildMemberRemoveEventArgs e)
         {
             Log(LogLevel.Info,
-                $"Member left: {e.Member.Username} ({e.Member.Id})" + Environment.NewLine +
-                $" Guild: {e.Guild.Name} ({e.Guild.Id})"
+                $"Member left: {e.Member.ToString()}<br>" +
+                e.Guild.ToString()
             );
 
             ulong cid = await _db.GetGuildLeaveChannelIdAsync(e.Guild.Id)
@@ -210,10 +211,11 @@ namespace TheGodfather
                 while (exc is AggregateException)
                     exc = exc.InnerException;
                 Log(LogLevel.Error,
-                    $"Failed to send a leaving message!" + Environment.NewLine +
-                    $" Channel ID: {cid}" + Environment.NewLine +
-                    $" Exception: {exc.GetType()}" + Environment.NewLine +
-                    $" Message: {exc.Message}"
+                    $"Failed to send a leaving message!<br>" +
+                    $"Channel ID: {cid}<br>" +
+                    $"{e.Guild.ToString()}<br>" +
+                    $"Exception: {exc.GetType()}<br>" + 
+                    $"Message: {exc.Message}"
                 );
             }
         }
@@ -224,7 +226,7 @@ namespace TheGodfather
                 return;
 
             if (e.Channel.IsPrivate) {
-                Log(LogLevel.Info, $"IGNORED DM FROM {e.Author.Username} ({e.Author.Id}): {e.Message}");
+                Log(LogLevel.Info, $"IGNORED DM FROM {e.Author.ToString()}:<br>{e.Message}");
                 return;
             }
 
@@ -234,16 +236,17 @@ namespace TheGodfather
                     await e.Channel.DeleteMessageAsync(e.Message)
                         .ConfigureAwait(false);
                     Log(LogLevel.Info,
-                        $"Filter triggered in message: '{e.Message.Content}'" + Environment.NewLine +
-                        $" User: {e.Message.Author.ToString()}" + Environment.NewLine +
-                        $" Location: '{e.Guild.Name}' ({e.Guild.Id}) ; {e.Channel.ToString()}"
+                        $"Filter triggered:<br>" + 
+                        $"Message: {e.Message.Content}<br>" +
+                        $"{e.Message.Author.ToString()}<br>" + 
+                        $"{e.Guild.ToString()} ; {e.Channel.ToString()}"
                     );
                 } catch (UnauthorizedException) {
                     Log(LogLevel.Warning,
-                        $"Filter triggered in message but missing permissions to delete!" + Environment.NewLine +
-                        $" Message: '{e.Message.Content}'" + Environment.NewLine +
-                        $" User: {e.Message.Author.ToString()}" + Environment.NewLine +
-                        $" Location: '{e.Guild.Name}' ({e.Guild.Id}) ; {e.Channel.ToString()}"
+                        $"Filter triggered in message but missing permissions to delete!<br>" +
+                        $"Message: {e.Message.Content}<br>" +
+                        $"{e.Message.Author.ToString()}<br>" +
+                        $"{e.Guild.ToString()} ; {e.Channel.ToString()}"
                     );
                     if (e.Channel.PermissionsFor(e.Guild.CurrentMember).HasFlag(Permissions.SendMessages))
                         await e.Channel.SendMessageAsync("The message contains the filtered word but I do not have permissions to delete it.")
@@ -268,10 +271,10 @@ namespace TheGodfather
             var response = _shared.GetResponseForTextReaction(e.Guild.Id, e.Message.Content);
             if (response != null) {
                 Log(LogLevel.Info,
-                    $"Text reaction detected." + Environment.NewLine +
-                    $" Message: {e.Message.Content}" + Environment.NewLine +
-                    $" User: {e.Message.Author.ToString()}" + Environment.NewLine +
-                    $" Location: '{e.Guild.Name}' ({e.Guild.Id}) ; {e.Channel.ToString()}"
+                    $"Text reaction detected:<br>" + 
+                    $"Message: {e.Message.Content}<br>" +
+                    $"{e.Message.Author.ToString()}<br>" +
+                    $"{e.Guild.ToString()} ; {e.Channel.ToString()}"
                 );
                 await e.Channel.SendMessageAsync(response.Replace("%user%", e.Author.Mention))
                     .ConfigureAwait(false);
@@ -284,10 +287,10 @@ namespace TheGodfather
             var emojilist = _shared.GetEmojisForEmojiReaction(Client, e.Guild.Id, e.Message.Content);
             if (emojilist.Count > 0) {
                 Log(LogLevel.Info,
-                    $"Emoji reaction detected." + Environment.NewLine +
-                    $" Message: {e.Message.Content}" + Environment.NewLine +
-                    $" User: {e.Message.Author.ToString()}" + Environment.NewLine +
-                    $" Location: '{e.Guild.Name}' ({e.Guild.Id}) ; {e.Channel.ToString()}"
+                    $"Emoji reaction detected:<br>" + 
+                    $"Message: {e.Message.Content}<br>" +
+                    $"{e.Message.Author.ToString()}<br>" + 
+                    $"{e.Guild.ToString()} ; {e.Channel.ToString()}"
                 );
                 foreach (var emoji in emojilist) {
                     try {
@@ -314,16 +317,17 @@ namespace TheGodfather
                     await e.Channel.DeleteMessageAsync(e.Message)
                         .ConfigureAwait(false);
                     Log(LogLevel.Info,
-                        $"Filter triggered in edit of a message: '{e.Message.Content}'" + Environment.NewLine +
-                        $" User: {e.Message.Author.ToString()}" + Environment.NewLine +
-                        $" Location: '{e.Guild.Name}' ({e.Guild.Id}) ; {e.Channel.ToString()}"
+                        $"Filter triggered in edit of a message:<br>" +
+                        $"Message: {e.Message.Content}<br>" + 
+                        $"{e.Message.Author.ToString()}<br>" + 
+                        $"{e.Guild.ToString()} ; {e.Channel.ToString()}"
                     );
                 } catch (UnauthorizedException) {
                     Log(LogLevel.Warning,
-                        $"Filter triggered in edited message but missing permissions to delete!" + Environment.NewLine +
-                        $" Message: '{e.Message.Content}'" + Environment.NewLine +
-                        $" User: {e.Message.Author.ToString()}" + Environment.NewLine +
-                        $" Location: '{e.Guild.Name}' ({e.Guild.Id}) ; {e.Channel.ToString()}"
+                        $"Filter triggered in edited message but missing permissions to delete!<br>" +
+                        $"Message: '{e.Message.Content}<br>" + 
+                        $"{e.Message.Author.ToString()}<br>" + 
+                        $"{e.Guild.ToString()} ; {e.Channel.ToString()}"
                     );
                     await e.Channel.SendMessageAsync("The edited message contains the filtered word but I do not have permissions to delete it.")
                         .ConfigureAwait(false);

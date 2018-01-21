@@ -82,6 +82,39 @@ namespace TheGodfather.Modules.Main
         }
         #endregion
 
+        #region COMMAND_POLLR
+        [Command("pollr")]
+        [Description("Starts a poll with reactions in the channel.")]
+        [Aliases("voter")]
+        [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
+        [PreExecutionCheck]
+        public async Task Pollr(CommandContext ctx, 
+                               [Description("Options")] params DiscordEmoji[] options)
+        {
+            var interactivity = ctx.Client.GetInteractivity();
+            var poll_options = options.Select(e => e.ToString());
+
+            var embed = new DiscordEmbedBuilder {
+                Title = "Poll time!",
+                Description = string.Join(" ", poll_options)
+            };
+            var msg = await ctx.RespondAsync(embed: embed)
+                .ConfigureAwait(false);
+
+            for (var i = 0; i < options.Length; i++)
+                await msg.CreateReactionAsync(options[i]).ConfigureAwait(false);
+
+            var poll_result = await interactivity.CollectReactionsAsync(msg, TimeSpan.FromSeconds(30)).ConfigureAwait(false);
+            var results = poll_result.Reactions.Where(kvp => options.Contains(kvp.Key))
+                .Select(kvp => $"{kvp.Key} : {kvp.Value}");
+
+            await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
+                Title = "Results:",
+                Description = string.Join("\n", results)
+            }.Build()).ConfigureAwait(false);
+        }
+        #endregion
+
 
         #region HELPER_FUNCTIONS
         private void TryToAddListenerEvent(CommandContext ctx)
@@ -130,10 +163,8 @@ namespace TheGodfather.Modules.Main
 
         private void RemoveEntries(ulong id)
         {
-            int[] r;
-            _options.TryRemove(id, out r);
-            List<ulong> l;
-            _idsvoted.TryRemove(id, out l);
+            _options.TryRemove(id, out _);
+            _idsvoted.TryRemove(id, out _);
         }
 
         private DiscordEmbed EmbedPoll(string question, List<string> poll_options)
