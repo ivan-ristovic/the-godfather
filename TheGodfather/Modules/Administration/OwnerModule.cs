@@ -404,10 +404,13 @@ namespace TheGodfather.Modules.Administration
             [Description("List all statuses.")]
             public async Task ListAsync(CommandContext ctx)
             {
-                var statuses = await ctx.Services.GetService<DatabaseService>().GetBotStatusesAsync()
+                var statuses = await ctx.Services.GetService<DatabaseService>().GetBotStatusesAsync(ctx.Client)
                     .ConfigureAwait(false);
-                await ctx.RespondAsync("My current statuses:\n" + string.Join("\n", statuses.Select(kvp => $"{kvp.Key} : {kvp.Value}")))
-                    .ConfigureAwait(false);
+                await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
+                    Title = "My current statuses:",
+                    Description = string.Join("\n", statuses.Select(kvp => $"{kvp.Key} : {kvp.Value}")),
+                    Color = DiscordColor.Azure
+                }.Build()).ConfigureAwait(false);
             }
             #endregion
         }

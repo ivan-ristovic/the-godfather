@@ -15,7 +15,7 @@ namespace TheGodfather.Services
 {
     public partial class DatabaseService
     {
-        public async Task<IReadOnlyDictionary<int, string>> GetBotStatusesAsync()
+        public async Task<IReadOnlyDictionary<int, string>> GetBotStatusesAsync(DiscordClient client)
         {
             await _sem.WaitAsync();
 
@@ -28,8 +28,14 @@ namespace TheGodfather.Services
                 cmd.CommandText = "SELECT * FROM gf.statuses;";
 
                 using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
-                    while (await reader.ReadAsync().ConfigureAwait(false))
-                        dict[(int)reader["id"]] = (string)reader["status"];
+                    while (await reader.ReadAsync().ConfigureAwait(false)) {
+                        int type = (short)reader["type"];
+                        if (!Enum.IsDefined(typeof(ActivityType), type)) {
+                            client.DebugLogger.LogMessage(LogLevel.Warning, "TheGodfather", "Undefined status activity found in database", DateTime.Now);
+                            type = 0;
+                        }
+                        dict[(int)reader["id"]] = ((ActivityType)type).ToString() + " " + (string)reader["status"];
+                    }
                 }
             }
 
