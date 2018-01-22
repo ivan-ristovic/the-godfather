@@ -193,6 +193,44 @@ namespace TheGodfather.Modules.Administration
         }
         #endregion
 
+        #region COMMAND_GUILD_SETICON
+        [Command("seticon")]
+        [Description("Change icon of the guild.")]
+        [Aliases("icon", "si")]
+        [RequirePermissions(Permissions.ManageGuild)]
+        public async Task SetIconAsync(CommandContext ctx,
+                                      [Description("New icon URL.")] string url)
+        {
+            if (string.IsNullOrWhiteSpace(url))
+                throw new InvalidCommandUsageException("URL missing.");
+
+            string filename = $"Temp/tmp-icon-{DateTime.Now.Ticks}.png";
+            try {
+                if (!Directory.Exists("Temp"))
+                    Directory.CreateDirectory("Temp");
+
+                using (WebClient webClient = new WebClient()) {
+                    byte[] data = webClient.DownloadData(url);
+
+                    using (MemoryStream mem = new MemoryStream(data))
+                        await ctx.Guild.ModifyAsync(new Action<GuildEditModel>(e =>
+                            e.Icon = mem
+                        )).ConfigureAwait(false);
+                }
+
+                if (File.Exists(filename))
+                    File.Delete(filename);
+            } catch (WebException e) {
+                throw new CommandFailedException("URL error.", e);
+            } catch (Exception e) {
+                throw new CommandFailedException("An error occured. Contact owner please.", e);
+            }
+
+            await ctx.RespondAsync("Done.")
+                .ConfigureAwait(false);
+        }
+        #endregion
+
         #region COMMAND_GUILD_GETWELCOMECHANNEL
         [Command("getwelcomechannel")]
         [Description("Get current welcome message channel for this guild.")]

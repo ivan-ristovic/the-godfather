@@ -57,6 +57,8 @@ namespace TheGodfather
         ~TheGodfather()
         {
             Client.DisconnectAsync().GetAwaiter().GetResult();
+            if (Directory.Exists("Temp"))
+                Directory.Delete("Temp", recursive: true);
         }
 
 
@@ -115,6 +117,7 @@ namespace TheGodfather
                     .AddSingleton(new GiphyService(_cfg.GiphyKey))
                     .AddSingleton(new ImgurService(_cfg.ImgurKey))
                     .AddSingleton(new SteamService(_cfg.SteamKey))
+                    .AddSingleton(this)
                     .AddSingleton(_db)
                     .AddSingleton(_shared)
                     .BuildServiceProvider(),
