@@ -55,7 +55,7 @@ namespace TheGodfather.Modules.Messages
                 await ctx.RespondAsync("Failed adding some reactions (probably due to ambiguity in trigger words).").ConfigureAwait(false);
 
             foreach (var trigger in triggers)
-                await ctx.Services.GetService<DatabaseService>().AddEmojiReactionAsync(ctx.Guild.Id, trigger, emoji)
+                await ctx.Services.GetService<DatabaseService>().AddEmojiReactionAsync(ctx.Guild.Id, trigger, emoji.GetDiscordName())
                     .ConfigureAwait(false);
         }
         #endregion
