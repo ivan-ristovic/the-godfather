@@ -8,6 +8,7 @@ using TheGodfather.Services;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
+using DSharpPlus.Entities;
 
 namespace TheGodfather.Modules
 {
@@ -23,15 +24,23 @@ namespace TheGodfather.Modules
             DatabaseService = db;
         }
 
-        /*
-        in modules add:
-        
-        public module(SharedData shared, DatabaseService db) : base(shared, db) { }
-        */
 
         protected override void Setup(DiscordClient client)
         {
 
         }
+
+
+        protected async Task ReplySuccessAsync(CommandContext ctx, string msg = "Done!")
+        {
+            await ctx.RespondAsync(embed: new DiscordEmbedBuilder {
+                Description = DiscordEmoji.FromName(ctx.Client, ":white_check_mark:") + " " + msg,
+                Color = DiscordColor.Green
+            }).ConfigureAwait(false);
+        }
+
+        protected string GetReasonString(CommandContext ctx, string reason = "No reason provided.")
+            => $"{ctx.User.ToString()} : {reason} | Invoked in: {ctx.Channel.ToString()}";
+
     }
 }

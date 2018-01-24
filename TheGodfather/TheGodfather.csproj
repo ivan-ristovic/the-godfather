@@ -247,6 +247,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Extensions\AugmentedBoolConverter.cs" />
+    <Compile Include="Extensions\InteractivityUtil.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Modules\Games\Common\Caro.cs" />
     <Compile Include="Modules\Games\Common\Connect4.cs" />
@@ -268,7 +270,7 @@
     <Compile Include="Services\FeedService\FeedEntry.cs" />
     <Compile Include="Helpers\GameStats.cs" />
     <Compile Include="PreExecutionCheckAttribute.cs" />
-    <Compile Include="HelpFormatter.cs" />
+    <Compile Include="Extensions\HelpFormatter.cs" />
     <Compile Include="Modules\Administration\OwnerModule.cs" />
     <Compile Include="Modules\Games\BankModule.cs" />
     <Compile Include="Modules\Games\CardGamesModule.cs" />

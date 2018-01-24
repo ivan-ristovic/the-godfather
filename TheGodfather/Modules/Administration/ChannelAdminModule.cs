@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 using TheGodfather.Services;
 using TheGodfather.Exceptions;
+using TheGodfather.Extensions;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -22,12 +23,16 @@ namespace TheGodfather.Modules.Administration
     [Aliases("channels", "c", "chn")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     [PreExecutionCheck]
-    public class ChannelAdminModule
+    public class ChannelAdminModule : GodfatherBaseModule
     {
+
+        public ChannelAdminModule(SharedData shared, DatabaseService db) : base(shared, db) { }
+        
+
         #region COMMAND_CHANNEL_CREATECATEGORY
         [Command("createcategory")]
         [Description("Create new channel category.")]
-        [Aliases("createc", "+c", "makec", "newc", "addc")]
+        [Aliases("createcat", "createc", "ccat", "cc", "+cat", "+c", "+category")]
         [RequirePermissions(Permissions.ManageChannels)]
         public async Task CreateCategoryAsync(CommandContext ctx,
                                              [RemainingText, Description("Name.")] string name)
@@ -35,14 +40,19 @@ namespace TheGodfather.Modules.Administration
             if (string.IsNullOrWhiteSpace(name))
                 throw new InvalidCommandUsageException("Missing category name.");
 
-            bool checkspassed = await HandleChannelExistsAsync(ctx, name)
-                .ConfigureAwait(false);
-            if (!checkspassed)
-                return;
+            if (name.Length < 2 || name.Length > 100)
+                throw new InvalidCommandUsageException("Name must be longer than 2 and shorter than 100 characters.");
+
+            if (ctx.Guild.Channels.Any(chn => chn.Name == name.ToLower())) {
+                await ctx.RespondAsync("A channel with that name already exists. Continue anyway?")
+                    .ConfigureAwait(false);
+                if (!await InteractivityUtil.WaitForConfirmationAsync(ctx).ConfigureAwait(false))
+                    return;
+            }
             
-            await ctx.Guild.CreateChannelAsync(name, ChannelType.Category, reason: $"{ctx.User.Username} ({ctx.User.Id})")
+            await ctx.Guild.CreateChannelAsync(name, ChannelType.Category, reason: GetReasonString(ctx))
                 .ConfigureAwait(false);
-            await ctx.RespondAsync($"Category {Formatter.Bold(name)} successfully created.")
+            await ReplySuccessAsync(ctx, $"Category {Formatter.Bold(name)} successfully created.")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -50,28 +60,32 @@ namespace TheGodfather.Modules.Administration
         #region COMMAND_CHANNEL_CREATETEXT
         [Command("createtext")]
         [Description("Create new txt channel.")]
-        [Aliases("createtxt", "createt", "+", "+t", "maket", "newt", "addt")]
+        [Aliases("createtxt", "createt", "ctxt", "ct", "+", "+t", "+txt")]
         [RequirePermissions(Permissions.ManageChannels)]
         public async Task CreateTextChannelAsync(CommandContext ctx,
                                                 [Description("Name.")] string name,
-                                                [Description("Parent channel")] DiscordChannel parent = null)
+                                                [Description("Parent category.")] DiscordChannel parent = null)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new InvalidCommandUsageException("Missing channel name.");
+
             if (name.Contains(' '))
                 throw new InvalidCommandUsageException("Name cannot contain spaces.");
 
-            bool checkspassed = await HandleChannelExistsAsync(ctx, name)
-                .ConfigureAwait(false);
-            if (!checkspassed)
-                return;
+            if (name.Length < 2 || name.Length > 100)
+                throw new InvalidCommandUsageException("Name must be longer than 2 and shorter than 100 characters.");
 
-            bool channelcreated = await TryCreateChannelAsync(ctx, name, parent, ChannelType.Text)
-                .ConfigureAwait(false);
-            if (!channelcreated)
+            if (ctx.Guild.Channels.Any(chn => chn.Name == name.ToLower())) {
+                await ctx.RespondAsync("A channel with that name already exists. Continue anyway?")
+                    .ConfigureAwait(false);
+                if (!await InteractivityUtil.WaitForConfirmationAsync(ctx).ConfigureAwait(false))
+                    return;
+            }
+
+            if (!await TryCreateChannelAsync(ctx, name, parent, ChannelType.Text).ConfigureAwait(false))
                 throw new CommandFailedException("Channel parent must be a category!");
 
-            await ctx.RespondAsync($"Channel {Formatter.Bold(name)} successfully created.")
+            await ReplySuccessAsync(ctx, $"Channel {Formatter.Bold(name)} successfully created.")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -79,23 +93,26 @@ namespace TheGodfather.Modules.Administration
         #region COMMAND_CHANNEL_CREATEVOICE
         [Command("createvoice")]
         [Description("Create new voice channel.")]
-        [Aliases("createv", "+v", "makev", "newv", "addv")]
+        [Aliases("createv", "cvoice", "cv", "+voice", "+v")]
         [RequirePermissions(Permissions.ManageChannels)]
         public async Task CreateVoiceChannelAsync(CommandContext ctx,
                                                  [Description("Name.")] string name,
-                                                 [Description("Parent channel")] DiscordChannel parent = null)
+                                                 [Description("Parent category.")] DiscordChannel parent = null)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new InvalidCommandUsageException("Missing channel name.");
 
-            bool checkspassed = await HandleChannelExistsAsync(ctx, name)
-                .ConfigureAwait(false);
-            if (!checkspassed)
-                return;
-            
-            bool channelcreated = await TryCreateChannelAsync(ctx, name, parent, ChannelType.Voice)
-                .ConfigureAwait(false);
-            if (!channelcreated)
+            if (name.Length < 2 || name.Length > 100)
+                throw new InvalidCommandUsageException("Name must be longer than 2 and shorter than 100 characters.");
+
+            if (ctx.Guild.Channels.Any(chn => chn.Name == name.ToLower())) {
+                await ctx.RespondAsync("A channel with that name already exists. Continue anyway?")
+                    .ConfigureAwait(false);
+                if (!await InteractivityUtil.WaitForConfirmationAsync(ctx).ConfigureAwait(false))
+                    return;
+            }
+
+            if (!await TryCreateChannelAsync(ctx, name, parent, ChannelType.Voice).ConfigureAwait(false))
                 throw new CommandFailedException("Channel parent must be a category!");
 
             await ctx.RespondAsync($"Channel {Formatter.Bold(name)} successfully created.")
@@ -105,64 +122,61 @@ namespace TheGodfather.Modules.Administration
 
         #region COMMAND_CHANNEL_DELETE
         [Command("delete")]
-        [Description("Delete channel.")]
-        [Aliases("-", "del", "d", "remove")]
+        [Description("Delete a given channel or category.")]
+        [Aliases("-", "del", "d", "remove", "rm")]
         [RequirePermissions(Permissions.ManageChannels)]
         public async Task DeleteChannelAsync(CommandContext ctx,
-                                            [Description("Channel.")] DiscordChannel c = null,
+                                            [Description("Channel to delete.")] DiscordChannel channel = null,
                                             [RemainingText, Description("Reason.")] string reason = null)
         {
-            if (c == null)
-                c = ctx.Channel;
+            if (channel == null)
+                channel = ctx.Channel;
 
-            if (string.IsNullOrWhiteSpace(reason))
-                reason = "No reason provided.";
-
-            if (c.Type == ChannelType.Category && c.Children.Count() > 0) {
-                await ctx.RespondAsync("The channel specified is a non-empty category. Delete all channels in it? (y/n)");
-                var interactivity = ctx.Client.GetInteractivity();
-                string[] answers = new string[] { "yes", "y", "no", "n" };
-                var msg = await interactivity.WaitForMessageAsync(
-                    m => m.ChannelId == ctx.Channel.Id && m.Author.Id == ctx.User.Id && answers.Contains(m.Content)
-                ).ConfigureAwait(false);
-                if (msg != null && (msg.Message.Content == "yes" || msg.Message.Content == "y"))
-                    foreach (var chn in c.Children)
-                        await chn.DeleteAsync(reason: $"{ctx.User.Username} ({ctx.User.Id}): {reason}")
+            if (channel.Type == ChannelType.Category && channel.Children.Count() > 0) {
+                await ctx.RespondAsync("The channel specified is a non-empty category. Delete all channels in it recursively?");
+                if (await InteractivityUtil.WaitForConfirmationAsync(ctx)) {
+                    foreach (var chn in channel.Children.ToList()) {
+                        await chn.DeleteAsync(reason: GetReasonString(ctx, reason))
                             .ConfigureAwait(false);
+                    }
+                }
             }
 
-            string name = c.Name;
-            await c.DeleteAsync(reason: $"{ctx.User.Username} ({ctx.User.Id}): {reason}")
+            string name = channel.Name;
+            await channel.DeleteAsync(reason: GetReasonString(ctx, reason))
                 .ConfigureAwait(false);
-            if (c.Id != ctx.Channel.Id)
-                await ctx.RespondAsync($"Channel {Formatter.Bold(name)} successfully deleted.")
+            if (channel.Id != ctx.Channel.Id)
+                await ReplySuccessAsync(ctx, $"Channel {Formatter.Bold(name)} successfully deleted.")
                     .ConfigureAwait(false);
         }
         #endregion
 
         #region COMMAND_CHANNEL_INFO
         [Command("info")]
-        [Description("Get channel information.")]
+        [Description("Get information about a given channel.")]
         [Aliases("i", "information")]
-        [RequirePermissions(Permissions.ManageChannels)]
+        [RequirePermissions(Permissions.AccessChannels)]
         public async Task ChannelInfoAsync(CommandContext ctx,
-                                          [Description("Channel.")] DiscordChannel c = null)
+                                          [Description("Channel.")] DiscordChannel channel = null)
         {
-            if (c == null)
-                c = ctx.Channel;
+            if (channel == null)
+                channel = ctx.Channel;
+
+            if (!ctx.Member.PermissionsIn(channel).HasFlag(Permissions.AccessChannels))
+                throw new CommandFailedException("You are not allowed to see this channel! (nice try smartass)");
 
             var em = new DiscordEmbedBuilder() {
-                Title = "Details for channel: " + c.Name,
-                Description = "Topic: " + Formatter.Italic(c.Topic),
+                Title = "Information for: " + channel.ToString(),
+                Description = "Current channel topic: " + (string.IsNullOrWhiteSpace(channel.Topic) ? Formatter.Italic(channel.Topic) : "None."),
                 Color = DiscordColor.Goldenrod
             };
-            em.AddField("Type", c.Type.ToString(), inline: true);
-            em.AddField("NSFW", c.IsNSFW ? "Yes" : "No", inline: true);
-            em.AddField("Private", c.IsPrivate ? "Yes" : "No", inline: true);
-            if (c.Type == ChannelType.Voice)
-                em.AddField("Bitrate", c.Bitrate.ToString(), inline: true);
-            em.AddField("User limit", c.UserLimit == 0 ? "No limit." : c.UserLimit.ToString(), inline: true);
-            em.AddField("Created", c.CreationTimestamp.ToString(), inline: true);
+            em.AddField("Type", channel.Type.ToString(), inline: true);
+            em.AddField("NSFW", channel.IsNSFW ? "Yes" : "No", inline: true);
+            em.AddField("Private", channel.IsPrivate ? "Yes" : "No", inline: true);
+            if (channel.Type == ChannelType.Voice)
+                em.AddField("Bitrate", channel.Bitrate.ToString(), inline: true);
+            em.AddField("User limit", channel.UserLimit == 0 ? "No limit." : channel.UserLimit.ToString(), inline: true);
+            em.AddField("Creation time", channel.CreationTimestamp.ToString(), inline: true);
 
             await ctx.RespondAsync(embed: em.Build())
                 .ConfigureAwait(false);
@@ -175,26 +189,32 @@ namespace TheGodfather.Modules.Administration
         [Aliases("r", "name", "setname")]
         [RequirePermissions(Permissions.ManageChannels)]
         public async Task RenameChannelAsync(CommandContext ctx,
-                                            [Description("New name.")] string name,
-                                            [Description("Channel.")] DiscordChannel c = null)
+                                            [Description("New name.")] string newname,
+                                            [Description("Channel to rename.")] DiscordChannel channel = null,
+                                            [Description("Reason.")] string reason = null)
         {
-            if (string.IsNullOrWhiteSpace(name))
+            if (string.IsNullOrWhiteSpace(newname))
                 throw new InvalidCommandUsageException("Missing new channel name.");
-            if (name.Contains(" "))
+
+            if (newname.Contains(' '))
                 throw new InvalidCommandUsageException("Name cannot contain spaces.");
-            if (c == null)
-                c = ctx.Channel;
+
+            if (newname.Length < 2 || newname.Length > 100)
+                throw new InvalidCommandUsageException("Name must be longer than 2 and shorter than 100 characters.");
+
+            if (channel == null)
+                channel = ctx.Channel;
 
             try {
-                await c.ModifyAsync(new Action<ChannelEditModel>(m => {
-                    m.Name = name;
-                    m.AuditLogReason = $"{ctx.User.Username} ({ctx.User.Id})";
+                await channel.ModifyAsync(new Action<ChannelEditModel>(m => {
+                    m.Name = newname;
+                    m.AuditLogReason = GetReasonString(ctx, reason);
                 })).ConfigureAwait(false);
             } catch (BadRequestException e) {
-                throw new CommandFailedException("Error occured. Possibly the name entered contains invalid characters...", e);
+                throw new CommandFailedException("An error occured. Maybe the name entered contains invalid characters?", e);
             }
 
-            await ctx.RespondAsync("Channel successfully renamed.")
+            await ReplySuccessAsync(ctx)
                 .ConfigureAwait(false);
         }
         #endregion
@@ -206,48 +226,32 @@ namespace TheGodfather.Modules.Administration
         [RequirePermissions(Permissions.ManageChannels)]
         public async Task SetChannelTopicAsync(CommandContext ctx,
                                               [Description("New topic.")] string topic,
-                                              [Description("Channel.")] DiscordChannel c = null)
+                                              [Description("Channel.")] DiscordChannel channel = null,
+                                              [Description("Reason.")] string reason = null)
         {
             if (string.IsNullOrWhiteSpace(topic))
                 throw new InvalidCommandUsageException("Missing topic.");
-            if (c == null)
-                c = ctx.Channel;
+            if (channel == null)
+                channel = ctx.Channel;
 
-            await c.ModifyAsync(new Action<ChannelEditModel>(m => {
+            await channel.ModifyAsync(new Action<ChannelEditModel>(m => {
                 m.Topic = topic;
-                m.AuditLogReason = $"{ctx.User.Username} ({ctx.User.Id})";
+                m.AuditLogReason = GetReasonString(ctx, reason);
             })).ConfigureAwait(false);
-            await ctx.RespondAsync("Channel topic successfully changed.")
+            await ReplySuccessAsync(ctx)
                 .ConfigureAwait(false);
         }
         #endregion
 
 
         #region HELPER_FUNCTIONS
-        private async Task<bool> HandleChannelExistsAsync(CommandContext ctx, string cname)
-        {
-            if (ctx.Guild.Channels.Any(chn => chn.Name == cname.ToLower())) {
-                await ctx.RespondAsync("A channel with that name already exists. Continue anyway? (y/n)")
-                    .ConfigureAwait(false);
-                var interactivity = ctx.Client.GetInteractivity();
-                string[] answers = new string[] { "yes", "y", "no", "n" };
-                var msg = await interactivity.WaitForMessageAsync(
-                    m => m.ChannelId == ctx.Channel.Id && m.Author.Id == ctx.User.Id && answers.Contains(m.Content)
-                ).ConfigureAwait(false);
-                if (msg != null && (msg.Message.Content == "no" || msg.Message.Content == "n"))
-                    return false;
-            }
-
-            return true;
-        }
-
         private async Task<bool> TryCreateChannelAsync(CommandContext ctx, string cname, DiscordChannel parent, ChannelType type)
         {
             if (parent != null && parent.Type != ChannelType.Category)
                 return false;
 
-            await ctx.Guild.CreateChannelAsync(cname, type, parent: parent, reason: $"{ctx.User.Username} ({ctx.User.Id})")
-                        .ConfigureAwait(false);
+            await ctx.Guild.CreateChannelAsync(cname, type, parent: parent, reason: GetReasonString(ctx))
+                .ConfigureAwait(false);
             return true;
         }
         #endregion

@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using Microsoft.Extensions.DependencyInjection;
 
 using TheGodfather.Exceptions;
+using TheGodfather.Extensions;
 using TheGodfather.Helpers;
 using TheGodfather.Services;
 
@@ -124,6 +125,7 @@ namespace TheGodfather
             });
             Commands.SetHelpFormatter<HelpFormatter>();
             Commands.RegisterCommands(Assembly.GetExecutingAssembly());
+            Commands.RegisterConverter(new AugmentedBoolConverter());
 
             Commands.CommandExecuted += Commands_CommandExecuted;
             Commands.CommandErrored += Commands_CommandErrored;
@@ -399,6 +401,8 @@ namespace TheGodfather
                 embed.Description = $"{emoji} Invalid operation. {ex.Message}";
             else if (e.Exception is NotFoundException)
                 embed.Description = $"{emoji} 404: Not found.";
+            else if (e.Exception is BadRequestException)
+                embed.Description = $"{emoji} Bad request. Please check if the parameters are valid.";
             else if (e.Exception is ArgumentException)
                 embed.Description = $"{emoji} Argument specified is invalid (please use {Formatter.Bold("!help <command>")}).";
             else if (e.Exception is Npgsql.NpgsqlException)
