@@ -257,8 +257,8 @@ namespace TheGodfather.Modules.Administration
         [Aliases("setpar", "par", "parent")]
         [RequirePermissions(Permissions.ManageChannels)]
         public async Task ChangeParentAsync(CommandContext ctx,
-                                           [Description("Channel to rename.")] DiscordChannel parent,
-                                           [Description("Channel to rename.")] DiscordChannel channel = null,
+                                           [Description("Parent category.")] DiscordChannel parent,
+                                           [Description("Child channel.")] DiscordChannel channel = null,
                                            [Description("Reason.")] string reason = null)
         {
             if (parent == null)
@@ -287,7 +287,7 @@ namespace TheGodfather.Modules.Administration
         [RequirePermissions(Permissions.ManageChannels)]
         public async Task ReorderChannelAsync(CommandContext ctx,
                                             [Description("Position.")] int position,
-                                            [Description("Channel to rename.")] DiscordChannel channel = null,
+                                            [Description("Channel to reorder.")] DiscordChannel channel = null,
                                             [Description("Reason.")] string reason = null)
         {
             if (position < 0)
