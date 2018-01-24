@@ -44,7 +44,7 @@ namespace TheGodfather.Modules.Administration
                 throw new InvalidCommandUsageException("Name must be longer than 2 and shorter than 100 characters.");
 
             if (ctx.Guild.Channels.Any(chn => chn.Name == name.ToLower())) {
-                await ctx.RespondAsync("A channel with that name already exists. Continue anyway?")
+                await ctx.RespondAsync("A channel with that name already exists. Continue?")
                     .ConfigureAwait(false);
                 if (!await InteractivityUtil.WaitForConfirmationAsync(ctx).ConfigureAwait(false))
                     return;
@@ -179,6 +179,33 @@ namespace TheGodfather.Modules.Administration
             em.AddField("Creation time", channel.CreationTimestamp.ToString(), inline: true);
 
             await ctx.RespondAsync(embed: em.Build())
+                .ConfigureAwait(false);
+        }
+        #endregion
+
+        #region COMMAND_CHANNEL_MODIFY
+        [Command("modify")]
+        [Description("Modify current channel. Set 0 if you wish to keep the value as it is.")]
+        [Aliases("edit", "mod", "m", "e")]
+        [RequirePermissions(Permissions.ManageChannels)]
+        public async Task ModifyChannelAsync(CommandContext ctx,
+                                            [Description("User limit.")] int limit = 0,
+                                            [Description("Bitrate (applicable only to voice channels).")] int bitrate = 0,
+                                            [RemainingText, Description("Reason.")] string reason = null)
+        {
+            try {
+                await ctx.Channel.ModifyAsync(new Action<ChannelEditModel>(m => {
+                    if (limit > 0)
+                        m.Userlimit = limit;
+                    if (ctx.Channel.Type == ChannelType.Voice && bitrate > 0)
+                        m.Bitrate = bitrate;
+                    m.AuditLogReason = GetReasonString(ctx, reason);
+                })).ConfigureAwait(false);
+            } catch (BadRequestException e) {
+                throw new CommandFailedException("An error occured. Maybe the name entered contains invalid characters?", e);
+            }
+
+            await ReplySuccessAsync(ctx)
                 .ConfigureAwait(false);
         }
         #endregion
