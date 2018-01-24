@@ -36,7 +36,7 @@ namespace TheGodfather.Extensions
             _embed.WithTitle("Help");
             _embed.WithColor(DiscordColor.SpringGreen);
 
-            var desc = "Listing all commands and groups. Use ``!help <command>`` for detailed information.";
+            var desc = $"Listing all commands and groups. Use {Formatter.InlineCode("!help<command>")} for detailed information.";
             if (_name != null) {
                 var sb = new StringBuilder();
                 sb.Append(_name)
@@ -70,7 +70,7 @@ namespace TheGodfather.Extensions
                     if (arg.IsOptional)
                         sb.Append("(optional) ");
 
-                    sb.Append($"{Formatter.InlineCode($"[{arg.Type}]")} ");
+                    sb.Append($"{Formatter.InlineCode($"[{arg.Type.Name}]")} ");
 
                     sb.Append(string.IsNullOrWhiteSpace(arg.Description) ? "No description provided." : Formatter.Bold(arg.Description));
 
