@@ -63,7 +63,7 @@ namespace TheGodfather.Extensions
                 int count = start + ammount > list.Count ? list.Count - start : ammount;
                 pages.Add(new Page() {
                     Embed = new DiscordEmbedBuilder() {
-                        Title = $"{title} (page {i + 1})",
+                        Title = $"{title} (page {i + 1}/{pagesnum + 1})",
                         Description = string.Join("\n", list.GetRange(start, count).Select(formatter)),
                         Color = color != null ? color.Value : DiscordColor.Black
                     }.Build()

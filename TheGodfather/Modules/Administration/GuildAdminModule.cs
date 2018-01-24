@@ -36,7 +36,7 @@ namespace TheGodfather.Modules.Administration
 
         #region COMMAND_GUILD_GETBANS
         [Command("bans")]
-        [Description("Get audit logs.")]
+        [Description("Get guild ban list.")]
         [Aliases("banlist", "viewbanlist", "getbanlist", "getbans", "viewbans")]
         [RequirePermissions(Permissions.ViewAuditLog)]
         public async Task GetBansAsync(CommandContext ctx)
@@ -49,7 +49,7 @@ namespace TheGodfather.Modules.Administration
                 "Guild bans", 
                 bans, 
                 b => $"- {b.User.ToString()} | Reason: {b.Reason} ", 
-                DiscordColor.Brown
+                DiscordColor.Red
             ).ConfigureAwait(false);
         }
         #endregion
@@ -62,25 +62,17 @@ namespace TheGodfather.Modules.Administration
         public async Task GetAuditLogsAsync(CommandContext ctx,
                                            [Description("Page.")] int page = 1)
         {
-            var log = await ctx.Guild.GetAuditLogsAsync()
+            var bans = await ctx.Guild.GetAuditLogsAsync()
                 .ConfigureAwait(false);
 
-            if (page < 1 || page > log.Count / 20 + 1)
-                throw new CommandFailedException("No members on that page.");
-
-            string desc = "";
-            int starti = (page - 1) * 20;
-            int endi = (starti + 20 < log.Count) ? starti + 20 : log.Count;
-            var logarray = log.Take(page * 20).ToArray();
-            for (var i = starti; i < endi; i++)
-                desc += $"{Formatter.Bold(logarray[i].CreationTimestamp.ToUniversalTime().ToString())} UTC : Action " +
-                     $"{Formatter.Bold(logarray[i].ActionType.ToString())} by {Formatter.Bold(logarray[i].UserResponsible.Username)}\n";
-
-            await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
-                Title = $"Audit log (page {page.ToString()}) :",
-                Description = desc,
-                Color = DiscordColor.Brown
-            }.Build()).ConfigureAwait(false);
+            await InteractivityUtil.SendPaginatedCollectionAsync(
+                ctx,
+                "Guild bans",
+                bans,
+                le => $"- {le.CreationTimestamp} {Formatter.Bold(le.UserResponsible.Username)} | {Formatter.Bold(le.ActionType.ToString())} | Reason: {le.Reason}",
+                DiscordColor.Brown,
+                5
+            ).ConfigureAwait(false);
         }
         #endregion
 
