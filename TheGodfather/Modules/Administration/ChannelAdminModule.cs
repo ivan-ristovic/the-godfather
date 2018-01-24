@@ -250,11 +250,40 @@ namespace TheGodfather.Modules.Administration
                 .ConfigureAwait(false);
         }
         #endregion
-        
+
+        #region COMMAND_CHANNEL_SETPARENT
+        [Command("setparent")]
+        [Description("Change the parent of the given channel.")]
+        [Aliases("setpar", "par", "parent")]
+        [RequirePermissions(Permissions.ManageChannels)]
+        public async Task ChangeParentAsync(CommandContext ctx,
+                                           [Description("Channel to rename.")] DiscordChannel parent,
+                                           [Description("Channel to rename.")] DiscordChannel channel = null,
+                                           [Description("Reason.")] string reason = null)
+        {
+            if (parent == null)
+                throw new InvalidCommandUsageException("Parent missing.");
+
+            if (parent.Type != ChannelType.Category)
+                throw new CommandFailedException("Parent must be a category.");
+
+            if (channel == null)
+                channel = ctx.Channel;
+
+            await channel.ModifyAsync(new Action<ChannelEditModel>(m => {
+                m.Parent = parent;
+                m.AuditLogReason = GetReasonString(ctx, reason);
+            })).ConfigureAwait(false);
+
+            await ReplySuccessAsync(ctx)
+                .ConfigureAwait(false);
+        }
+        #endregion
+
         #region COMMAND_CHANNEL_SETPOSITION
         [Command("setposition")]
         [Description("Change the position of the given channel in the guild channel list.")]
-        [Aliases("setpos", "sp", "pos", "setp")]
+        [Aliases("setpos", "pos", "position")]
         [RequirePermissions(Permissions.ManageChannels)]
         public async Task ReorderChannelAsync(CommandContext ctx,
                                             [Description("Position.")] int position,
