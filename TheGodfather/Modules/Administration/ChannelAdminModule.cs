@@ -167,15 +167,17 @@ namespace TheGodfather.Modules.Administration
 
             var em = new DiscordEmbedBuilder() {
                 Title = "Information for: " + channel.ToString(),
-                Description = "Current channel topic: " + (string.IsNullOrWhiteSpace(channel.Topic) ? Formatter.Italic(channel.Topic) : "None."),
+                Description = "Current channel topic: " + (string.IsNullOrWhiteSpace(channel.Topic) ? "None." : Formatter.Italic(channel.Topic)),
                 Color = DiscordColor.Goldenrod
             };
             em.AddField("Type", channel.Type.ToString(), inline: true);
             em.AddField("NSFW", channel.IsNSFW ? "Yes" : "No", inline: true);
             em.AddField("Private", channel.IsPrivate ? "Yes" : "No", inline: true);
-            if (channel.Type == ChannelType.Voice)
+            em.AddField("Position", channel.Position.ToString());
+            if (channel.Type == ChannelType.Voice) {
                 em.AddField("Bitrate", channel.Bitrate.ToString(), inline: true);
-            em.AddField("User limit", channel.UserLimit == 0 ? "No limit." : channel.UserLimit.ToString(), inline: true);
+                em.AddField("User limit", channel.UserLimit == 0 ? "No limit." : channel.UserLimit.ToString(), inline: true);
+            }
             em.AddField("Creation time", channel.CreationTimestamp.ToString(), inline: true);
 
             await ctx.RespondAsync(embed: em.Build())
@@ -185,25 +187,28 @@ namespace TheGodfather.Modules.Administration
 
         #region COMMAND_CHANNEL_MODIFY
         [Command("modify")]
-        [Description("Modify current channel. Set 0 if you wish to keep the value as it is.")]
+        [Description("Modify a given voice channel. Set 0 if you wish to keep the value as it is.")]
         [Aliases("edit", "mod", "m", "e")]
         [RequirePermissions(Permissions.ManageChannels)]
         public async Task ModifyChannelAsync(CommandContext ctx,
+                                            [Description("Voice channel to edit")] DiscordChannel channel,
                                             [Description("User limit.")] int limit = 0,
-                                            [Description("Bitrate (applicable only to voice channels).")] int bitrate = 0,
+                                            [Description("Bitrate.")] int bitrate = 0,
                                             [RemainingText, Description("Reason.")] string reason = null)
         {
-            try {
-                await ctx.Channel.ModifyAsync(new Action<ChannelEditModel>(m => {
-                    if (limit > 0)
-                        m.Userlimit = limit;
-                    if (ctx.Channel.Type == ChannelType.Voice && bitrate > 0)
-                        m.Bitrate = bitrate;
-                    m.AuditLogReason = GetReasonString(ctx, reason);
-                })).ConfigureAwait(false);
-            } catch (BadRequestException e) {
-                throw new CommandFailedException("An error occured. Maybe the name entered contains invalid characters?", e);
-            }
+            if (channel == null)
+                throw new InvalidCommandUsageException("Channel missing.");
+
+            if (channel.Type != ChannelType.Voice)
+                throw new InvalidCommandUsageException("That isn't a voice channel");
+
+            await channel.ModifyAsync(new Action<ChannelEditModel>(m => {
+                if (limit > 0)
+                    m.Userlimit = limit;
+                if (channel.Type == ChannelType.Voice && bitrate > 0)
+                    m.Bitrate = bitrate;
+                m.AuditLogReason = GetReasonString(ctx, reason);
+            })).ConfigureAwait(false);
 
             await ReplySuccessAsync(ctx)
                 .ConfigureAwait(false);
@@ -240,6 +245,30 @@ namespace TheGodfather.Modules.Administration
             } catch (BadRequestException e) {
                 throw new CommandFailedException("An error occured. Maybe the name entered contains invalid characters?", e);
             }
+
+            await ReplySuccessAsync(ctx)
+                .ConfigureAwait(false);
+        }
+        #endregion
+        
+        #region COMMAND_CHANNEL_SETPOSITION
+        [Command("setposition")]
+        [Description("Change the position of the given channel in the guild channel list.")]
+        [Aliases("setpos", "sp", "pos", "setp")]
+        [RequirePermissions(Permissions.ManageChannels)]
+        public async Task ReorderChannelAsync(CommandContext ctx,
+                                            [Description("Position.")] int position,
+                                            [Description("Channel to rename.")] DiscordChannel channel = null,
+                                            [Description("Reason.")] string reason = null)
+        {
+            if (position < 0)
+                throw new InvalidCommandUsageException("Position cannot be negative...");
+
+            if (channel == null)
+                channel = ctx.Channel;
+
+            await channel.ModifyPositionAsync(position, GetReasonString(ctx, reason))
+                .ConfigureAwait(false);
 
             await ReplySuccessAsync(ctx)
                 .ConfigureAwait(false);
