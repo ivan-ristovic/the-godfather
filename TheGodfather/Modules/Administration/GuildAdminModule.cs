@@ -5,10 +5,12 @@ using System.Net;
 using System.IO;
 using System.Drawing;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using Microsoft.Extensions.DependencyInjection;
 
 using TheGodfather.Services;
 using TheGodfather.Exceptions;
+using TheGodfather.Extensions;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -26,8 +28,62 @@ namespace TheGodfather.Modules.Administration
     [Aliases("server", "g")]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
     [PreExecutionCheck]
-    public class GuildAdminModule
+    public class GuildAdminModule : GodfatherBaseModule
     {
+
+        public GuildAdminModule(SharedData shared, DatabaseService db) : base(shared, db) { }
+        
+
+        #region COMMAND_GUILD_GETBANS
+        [Command("bans")]
+        [Description("Get audit logs.")]
+        [Aliases("banlist", "viewbanlist", "getbanlist", "getbans", "viewbans")]
+        [RequirePermissions(Permissions.ViewAuditLog)]
+        public async Task GetBansAsync(CommandContext ctx)
+        {
+            var bans = await ctx.Guild.GetBansAsync()
+                .ConfigureAwait(false);
+
+            await InteractivityUtil.SendPaginatedCollectionAsync(
+                ctx, 
+                "Guild bans", 
+                bans, 
+                b => $"- {b.User.ToString()} | Reason: {b.Reason} ", 
+                DiscordColor.Brown
+            ).ConfigureAwait(false);
+        }
+        #endregion
+
+        #region COMMAND_GUILD_GETLOGS
+        [Command("log")]
+        [Description("Get audit logs.")]
+        [Aliases("auditlog", "viewlog", "getlog", "getlogs", "logs")]
+        [RequirePermissions(Permissions.ViewAuditLog)]
+        public async Task GetAuditLogsAsync(CommandContext ctx,
+                                           [Description("Page.")] int page = 1)
+        {
+            var log = await ctx.Guild.GetAuditLogsAsync()
+                .ConfigureAwait(false);
+
+            if (page < 1 || page > log.Count / 20 + 1)
+                throw new CommandFailedException("No members on that page.");
+
+            string desc = "";
+            int starti = (page - 1) * 20;
+            int endi = (starti + 20 < log.Count) ? starti + 20 : log.Count;
+            var logarray = log.Take(page * 20).ToArray();
+            for (var i = starti; i < endi; i++)
+                desc += $"{Formatter.Bold(logarray[i].CreationTimestamp.ToUniversalTime().ToString())} UTC : Action " +
+                     $"{Formatter.Bold(logarray[i].ActionType.ToString())} by {Formatter.Bold(logarray[i].UserResponsible.Username)}\n";
+
+            await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
+                Title = $"Audit log (page {page.ToString()}) :",
+                Description = desc,
+                Color = DiscordColor.Brown
+            }.Build()).ConfigureAwait(false);
+        }
+        #endregion
+
         #region COMMAND_GUILD_INFO
         [Command("info")]
         [Description("Get guild information.")]
@@ -73,66 +129,6 @@ namespace TheGodfather.Modules.Administration
                 Title = $"Members (page {Formatter.Bold(page.ToString())}) :",
                 Description = s,
                 Color = DiscordColor.SapGreen
-            }.Build()).ConfigureAwait(false);
-        }
-        #endregion
-
-        #region COMMAND_GUILD_GETBANS
-        [Command("bans")]
-        [Description("Get audit logs.")]
-        [Aliases("banlist", "viewbanlist", "getbanlist", "getbans", "viewbans")]
-        [RequirePermissions(Permissions.ViewAuditLog)]
-        public async Task GetBansAsync(CommandContext ctx,
-                                      [Description("Page.")] int page = 1)
-        {
-            var bans = await ctx.Guild.GetBansAsync()
-                .ConfigureAwait(false);
-
-            if (page < 1 || page > bans.Count / 20 + 1)
-                throw new CommandFailedException("No bans on that page.");
-
-            string desc = "";
-            int starti = (page - 1) * 20;
-            int endi = (starti + 20 < bans.Count) ? starti + 20 : bans.Count;
-            var banarray = bans.Take(page * 20).ToArray();
-            for (var i = starti; i < endi; i++)
-                desc += $"{Formatter.Bold(banarray[i].User.Username)} ({banarray[i].User.Id}) - " +
-                     $"{Formatter.Bold(banarray[i].Reason)}\n";
-
-            await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
-                Title = $"Ban list (page {page}) :",
-                Description = desc,
-                Color = DiscordColor.Brown
-            }.Build()).ConfigureAwait(false);
-        }
-        #endregion
-
-        #region COMMAND_GUILD_GETLOGS
-        [Command("log")]
-        [Description("Get audit logs.")]
-        [Aliases("auditlog", "viewlog", "getlog", "getlogs", "logs")]
-        [RequirePermissions(Permissions.ViewAuditLog)]
-        public async Task GetAuditLogsAsync(CommandContext ctx,
-                                           [Description("Page.")] int page = 1)
-        {
-            var log = await ctx.Guild.GetAuditLogsAsync()
-                .ConfigureAwait(false);
-
-            if (page < 1 || page > log.Count / 20 + 1)
-                throw new CommandFailedException("No members on that page.");
-
-            string desc = "";
-            int starti = (page - 1) * 20;
-            int endi = (starti + 20 < log.Count) ? starti + 20 : log.Count;
-            var logarray = log.Take(page * 20).ToArray();
-            for (var i = starti; i < endi; i++)
-                desc += $"{Formatter.Bold(logarray[i].CreationTimestamp.ToUniversalTime().ToString())} UTC : Action " +
-                     $"{Formatter.Bold(logarray[i].ActionType.ToString())} by {Formatter.Bold(logarray[i].UserResponsible.Username)}\n";
-
-            await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
-                Title = $"Audit log (page {page.ToString()}) :",
-                Description = desc,
-                Color = DiscordColor.Brown
             }.Build()).ConfigureAwait(false);
         }
         #endregion
@@ -230,6 +226,9 @@ namespace TheGodfather.Modules.Administration
                 .ConfigureAwait(false);
         }
         #endregion
+
+
+        #region WELCOME_LEAVE_CHANNELS
 
         #region COMMAND_GUILD_GETWELCOMECHANNEL
         [Command("getwelcomechannel")]
@@ -349,6 +348,8 @@ namespace TheGodfather.Modules.Administration
             await ctx.RespondAsync("Default leave message channel removed.")
                 .ConfigureAwait(false);
         }
+        #endregion
+
         #endregion
 
 

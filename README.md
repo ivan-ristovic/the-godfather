@@ -120,7 +120,7 @@ Commands use the following types:
 | ``guild``<br>``server``<br>``g`` | ``info``<br>``i``<br>``information`` |  |  | Get guild information. | ``!guild info`` |
 | ``guild``<br>``server``<br>``g`` | ``listmembers``<br>``memberlist``<br>``lm``<br>``members`` | Manage Guild | ``(optional) [int] page (def: 1)`` | Get guild member list. | ``!guild memberlist``<br><br>``!guild memberlist 3`` |
 | ``guild``<br>``server``<br>``g`` | ``log``<br>``auditlog``<br>``viewlog``<br>``getlog``<br>``getlogs``<br>``logs`` | View Audit Log | ``(optional) [int] page (def: 1)`` | Get guild audit logs. | ``!guild log``<br><br>``!guild log 3`` |
-| ``guild``<br>``server``<br>``g`` | ``bans``<br>``banlist``<br>``viewbans``<br>``viewbanlist``<br>``getbans``<br>``getbanlist`` | View Audit Log | ``(optional) [int] page (def: 1)`` | Get guild banlist. | ``!guild bans``<br><br>``!guild bans 3`` |
+| ``guild``<br>``server``<br>``g`` | ``bans``<br>``banlist``<br>``viewbans``<br>``viewbanlist``<br>``getbans``<br>``getbanlist`` | View Audit Log |  | Browse guild banlist. | ``!guild bans`` |
 | ``guild``<br>``server``<br>``g`` | ``prune``<br>``p``<br>``clean`` | Administrator (user)<br><br>Kick Members (bot) | ``(optional) [int] page (def: 7)`` | Kick members who weren't active in given amount of days (1-7). | ``!guild prune``<br><br>``!guild prune 5`` |
 | ``guild``<br>``server``<br>``g`` | ``rename``<br>``r``<br>``name``<br>``setname`` | Manage guild | ``[text] Name`` | Rename guild. | ``!guild rename New guild name`` |
 | ``guild``<br>``server``<br>``g`` | ``seticon``<br>``si``<br>``icon`` | Manage guild | ``[string] URL`` | Set guild icon. | ``!guild seticon http://someimage.png`` |
