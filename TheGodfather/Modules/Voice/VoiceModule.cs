@@ -28,12 +28,13 @@ namespace TheGodfather.Modules.Voice
         [Group("play", CanInvokeWithoutSubcommand = true)]
         [Description("Plays a mp3 file from URL or server filesystem.")]
         [Aliases("music", "p")]
+        [RequireOwner]
         public class CommandsVoicePlay : VoiceModule
         {
 
             [RequirePermissions(Permissions.UseVoice | Permissions.Speak)]
             public async Task ExecuteGroupAsync(CommandContext ctx,
-                                               [RemainingText, Description("URL.")] string data)
+                                               [RemainingText, Description("URL or YouTube search query.")] string data)
             {
                 string url;
                 if (Uri.TryCreate(data, UriKind.Absolute, out Uri res) && (res.Scheme == Uri.UriSchemeHttp || res.Scheme == Uri.UriSchemeHttps))

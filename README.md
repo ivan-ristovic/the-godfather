@@ -280,7 +280,7 @@ Commands use the following types:
 |  | ``connect`` | Use Voice | ``(optional) [channel] Channel`` | Connects bot to a given voice channel. If channel is not given, connects to the same voice channel the user is in. | ``!connect``<br><br>``!connect Music`` |
 |  | ``disconnect`` |   |   | Disconnects bot from voice channel in the current guild. | ``!disconnect`` |
 |  | ``stop``<br>``s`` |   |   | Stop voice playback. | ``!voice stop`` |
-| ``play``<br>``music``<br>``p`` |  | Use Voice<br><br>Speak | ``[string] YouTube URL`` | Stream YouTube audio from given URL. | ``!play https://www.youtube.com/watch?v=c5OA1OdkKQI`` <br><br>``!play justin bieber baby`` |
+| ``play``<br>``music``<br>``p`` |  | Use Voice<br><br>Speak | ``[string] YouTube URL or search query`` | Stream YouTube audio from given URL. | ``!play https://www.youtube.com/watch?v=c5OA1OdkKQI`` <br><br>``!play justin bieber baby`` |
 | ``play``<br>``music``<br>``p`` | ``file``<br>``f`` | Use Voice<br><br>Speak | ``[text] File path`` | Stream a file from the server's filesystem. | ``!play file C://system32/idk.mp3`` |
 |   |   |   |   |   |   |
 
