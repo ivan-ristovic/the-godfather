@@ -34,7 +34,7 @@ namespace TheGodfather
             try {
                 MainAsync(args).ConfigureAwait(false).GetAwaiter().GetResult();
             } catch (Exception e) {
-                Console.WriteLine($"Exception occured: {e.GetType()} : {e.Message}");
+                Console.WriteLine($"\nException occured: {e.GetType()} : {e.Message}");
                 Console.ReadKey();
             }
         }
@@ -112,7 +112,7 @@ namespace TheGodfather
             Shared = new SharedData(cfg, gprefixes, gfilters, gtextreactions, gemojireactions, msgcount);
 
 
-            Console.Write("\r[4/5] Creating shards...              ");
+            Console.Write("\r[4/5] Creating {0} shards...          ", cfg.ShardCount);
 
             Shards = new List<TheGodfather>();
             for (var i = 0; i < cfg.ShardCount; i++) {
@@ -121,12 +121,13 @@ namespace TheGodfather
             }
 
 
-            Console.WriteLine("\r[5/5] Booting the shards...           ");
+            Console.WriteLine("\r[5/5] Booting the shards...             ");
 
             foreach (var shard in Shards) {
                 shard.Initialize();
                 await shard.StartAsync();
             }
+
 
             Console.WriteLine("Done! Starting periodic actions...");
             DatabaseSyncTimer = new Timer(DatabaseSyncTimerCallback, Shards[0].Client, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(5));

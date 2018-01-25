@@ -22,12 +22,13 @@ Commands use the following types:
 * ``int`` : Integer (positive or negative number)
 * ``double`` : Floating point number (positive or negative), can also be integer (for example 5.64)
 * ``string`` : Word consisting of Unicode characters WITHOUT spaces. If you want to include spaces, then surround it with ``"``
-* ``bool`` : ``true`` or ``false``
+* ``bool`` : ``true`` or ``false`` (can be converted from ``yes`` or ``no`` in various forms)
 * ``text`` : Some Unicode text, can include spaces. Can be surrounded with ``"``
 * ``user`` : Discord user, given by ``@mention``, ``Username`` or UID (User ID)
 * ``channel`` : Discord channel, given by ``name``, ``#name`` or CID (Channel ID)
 * ``role`` : An existing role, given with ``@mentionrole`` or ``Role name``
 * ``emoji`` : Emoji, either Unicode or Discord representation (using ``:``)
+* ``id`` : ID of Discord entity (could be a message, user, channel etc.). Only seen when the ``Developer appearance`` is enabled in the Discord client options.
 
 
 ## Command table
@@ -137,12 +138,12 @@ Commands use the following types:
 | ``g emoji``<br>``g emojis``<br>``g e`` | ``list``<br>``print``<br>``show``<br>``print``<br>``l``<br>``p`` |  |  | List guild emoji. | ``!guild emoji list`` |
 | ``g emoji``<br>``g emojis``<br>``g e`` | ``modify``<br>``edit``<br>``mod``<br>``e``<br>``m`` | Manage emojis | ``[emoji] Emoji``<br>``[string] New name`` | Modify guild emoji. | ``!guild emoji edit :pepe: pepenewname`` |
 |   |   |   |   |   |   |   |
-| ``messages``<br>``m``<br>``msg``<br>``msgs`` | ``delete``<br>``-``<br>``d``<br>``del``<br>``prune`` | Administrator (user)<br><br>Manage messages (bot) | ``[int] Amount (def: 5)`` | Delete ``Amount`` messages from the current channel. | ``!messages delete 100`` |
-| ``messages``<br>``m``<br>``msg``<br>``msgs`` | ``deletefrom``<br>``-user``<br>``du``<br>``deluser``<br>``dfu`` | Administrator (user)<br><br>Manage messages (bot) | ``[user] User``<br><br>``[int] Amount (def: 5)`` | Delete ``Amount`` messages from ``User`` in the current channel. | ``!messages deletefrom @Someone 100`` |
-| ``messages``<br>``m``<br>``msg``<br>``msgs`` | ``deleteregex``<br>``-regex``<br>``dr``<br>``delregex``<br>``dfr`` | Administrator (user)<br><br>Manage messages (bot) | ``[string] Regex``<br><br>``[int] Amount (def: 5)`` | Delete ``Amount`` messages that match pattern ``Regex`` in the current channel (case ignored) | ``!messages deleteregex s+p+a+m+ 100`` |
-| ``messages``<br>``m``<br>``msg``<br>``msgs`` | ``listpinned``<br>``lp``<br>``listpins``<br>``listpin``<br>``pinned`` |  | ``[int] Amount (def: 1)`` | List ``Amount`` pinned messages. | ``!messages listpinned 5`` |
-| ``messages``<br>``m``<br>``msg``<br>``msgs`` | ``pin``<br>``p`` | Manage Messages  |  | Pin last sent message (before ``pin`` command). | ``!messages pin`` |
-| ``messages``<br>``m``<br>``msg``<br>``msgs`` | ``unpin``<br>``up`` | Manage Messages  | ``[int] Index (starting from 0)`` | Unpin pinned message with index ``Index`` in pinned message list. | ``!messages unpin 3`` |
+| ``messages``<br>``m``<br>``msg``<br>``msgs`` | ``delete``<br>``-``<br>``d``<br>``del``<br>``prune`` | Administrator (user)<br><br>Manage messages (bot) | ``[int] Amount (def: 5)``<br><br>``(optional) [text] Reason`` | Delete ``Amount`` messages from the current channel. | ``!messages delete 100 Spam`` |
+| ``messages``<br>``m``<br>``msg``<br>``msgs`` | ``deletefrom``<br>``-user``<br>``du``<br>``deluser``<br>``dfu`` | Administrator (user)<br><br>Manage messages (bot) | ``[user] User``<br><br>``[int] Amount (def: 5)``<br><br>``(optional) [text] Reason`` | Delete ``Amount`` messages from ``User`` in the current channel. | ``!messages deletefrom @Someone 100`` |
+| ``messages``<br>``m``<br>``msg``<br>``msgs`` | ``deleteregex``<br>``-regex``<br>``dr``<br>``delregex``<br>``dfr`` | Administrator (user)<br><br>Manage messages (bot) | ``[string] Regex``<br><br>``[int] Amount (def: 5)``<br><br>``(optional) [text] Reason`` | Delete ``Amount`` messages that match pattern ``Regex`` in the current channel (case ignored) | ``!messages deleteregex s+p+a+m+ 100`` |
+| ``messages``<br>``m``<br>``msg``<br>``msgs`` | ``listpinned``<br>``lp``<br>``listpins``<br>``listpin``<br>``pinned`` |  |  | List pinned messages in the current channel. | ``!messages listpinned `` |
+| ``messages``<br>``m``<br>``msg``<br>``msgs`` | ``pin``<br>``p`` | Manage Messages  | ``(optional) [id] Message ID (def: last message ID)`` | Pin message with a given ID. If the message ID is not provided, the last message before the command invocation will be pinned. | ``!messages pin``<br><br>``!messages pin 406201063792967680`` |
+| ``messages``<br>``m``<br>``msg``<br>``msgs`` | ``unpin``<br>``up`` | Manage Messages  | ``[int] Index (starting from 1)`` | Unpin pinned message with index ``Index`` in pinned message list (1 being the last pinned message). | ``!messages unpin 3`` |
 | ``messages``<br>``m``<br>``msg``<br>``msgs`` | ``unpinall``<br>``upa`` | Manage Messages  |  | Unpin all pinned messages. | ``!messages unpinall`` |
 |   |   |   |   |   |   |
 | ``role``<br>``roles``<br>``r``<br>``rl`` |  |  |  | List all roles for this guild. | ``!roles`` |

@@ -102,7 +102,6 @@ namespace TheGodfather
             Client.GuildMemberAdded += Client_GuildMemberAdd;
             Client.GuildMemberRemoved += Client_GuildMemberRemove;
             Client.MessageCreated += Client_MessageCreated;
-            Client.MessageReactionAdded += Client_ReactToMessage;
             Client.MessageUpdated += Client_MessageUpdated;
         }
 
@@ -303,8 +302,11 @@ namespace TheGodfather
                     } catch (ArgumentException) {
                         await e.Channel.SendMessageAsync($"I have a reaction for that message set up ({emoji}) but that emoji doesn't exits. Fix your shit pls.")
                             .ConfigureAwait(false);
+                    } catch (UnauthorizedException) {
+                        await e.Channel.SendMessageAsync($"I have a reaction for that message set up ({emoji}) but I do not have permissions to add reactions. Fix your shit pls.")
+                            .ConfigureAwait(false);
                     }
-                    await Task.Delay(500)
+                    await Task.Delay(250)
                         .ConfigureAwait(false);
                 }
             }
@@ -339,12 +341,6 @@ namespace TheGodfather
                 await e.Channel.SendMessageAsync($"Nice try, {e.Author.Mention}! But I see throught it!")
                     .ConfigureAwait(false);
             }
-        }
-
-        private async Task Client_ReactToMessage(MessageReactionAddEventArgs e)
-        {
-            if (new Random().Next(10) == 0)
-                await e.Message.CreateReactionAsync(e.Emoji).ConfigureAwait(false);
         }
         #endregion
 
