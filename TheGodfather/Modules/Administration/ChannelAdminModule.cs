@@ -262,10 +262,10 @@ namespace TheGodfather.Modules.Administration
                                            [RemainingText, Description("Reason.")] string reason = null)
         {
             if (parent == null)
-                throw new InvalidCommandUsageException("Parent missing.");
+                throw new InvalidCommandUsageException("Parent category missing.");
 
             if (parent.Type != ChannelType.Category)
-                throw new CommandFailedException("Parent must be a category.");
+                throw new CommandFailedException("Parent channel must be a category.");
 
             if (channel == null)
                 channel = ctx.Channel;

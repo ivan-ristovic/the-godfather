@@ -19,6 +19,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
 using DSharpPlus.Net.Models;
+using System.Net.Http;
 #endregion
 
 namespace TheGodfather.Modules.Administration
@@ -186,25 +187,28 @@ namespace TheGodfather.Modules.Administration
         {
             if (string.IsNullOrWhiteSpace(url))
                 throw new InvalidCommandUsageException("URL missing.");
+            
+            if (!IsValidImageURL(url, out Uri uri))
+                throw new CommandFailedException("URL must point to an image and use http or https protocols.");
 
             string filename = $"Temp/tmp-icon-{DateTime.Now.Ticks}.png";
             try {
                 if (!Directory.Exists("Temp"))
                     Directory.CreateDirectory("Temp");
 
-                using (WebClient webClient = new WebClient()) {
-                    byte[] data = webClient.DownloadData(url);
+                using (var wc = new WebClient()) {
+                    byte[] data = wc.DownloadData(uri.AbsoluteUri);
 
-                    using (MemoryStream mem = new MemoryStream(data))
+                    using (var ms = new MemoryStream(data))
                         await ctx.Guild.ModifyAsync(new Action<GuildEditModel>(e =>
-                            e.Icon = mem
+                            e.Icon = ms
                         )).ConfigureAwait(false);
                 }
 
                 if (File.Exists(filename))
                     File.Delete(filename);
             } catch (WebException e) {
-                throw new CommandFailedException("URL error.", e);
+                throw new CommandFailedException("Error getting the image.", e);
             } catch (Exception e) {
                 throw new CommandFailedException("Unknown error occured.", e);
             }
@@ -337,11 +341,16 @@ namespace TheGodfather.Modules.Administration
         [Group("emoji", CanInvokeWithoutSubcommand = true)]
         [Description("Manipulate guild emoji.")]
         [Aliases("emojis", "e")]
-        public class CommandsGuildEmoji
+        public class CommandsGuildEmoji : GodfatherBaseModule
         {
+
+            public CommandsGuildEmoji(SharedData shared, DatabaseService db) : base(shared, db) { }
+
+
             public async Task ExecuteGroupAsync(CommandContext ctx)
             {
-                await ListEmojiAsync(ctx);
+                await ListEmojiAsync(ctx)
+                    .ConfigureAwait(false);
             }
 
 
@@ -357,18 +366,21 @@ namespace TheGodfather.Modules.Administration
                 if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(url))
                     throw new InvalidCommandUsageException("Name or URL missing or invalid.");
 
+                if (!IsValidImageURL(url, out Uri uri))
+                    throw new CommandFailedException("URL must point to an image and use http or https protocols.");
+
                 string filename = $"Temp/tmp-emoji-{DateTime.Now.Ticks}.png";
                 try {
                     if (!Directory.Exists("Temp"))
                         Directory.CreateDirectory("Temp");
-                    using (WebClient webClient = new WebClient()) {
-                        byte[] data = webClient.DownloadData(url);
+                    using (var wc = new WebClient()) {
+                        byte[] data = wc.DownloadData(uri.AbsoluteUri);
 
-                        using (MemoryStream mem = new MemoryStream(data))
-                        using (Image image = Image.FromStream(mem)) {
+                        using (var ms = new MemoryStream(data))
+                        using (var image = Image.FromStream(ms)) {
                             image.Save(filename, System.Drawing.Imaging.ImageFormat.Png);
-                            FileStream fs = new FileStream(filename, FileMode.Open);
-                            await ctx.Guild.CreateEmojiAsync(name, fs, reason: $"{ctx.User.Username} ({ctx.User.Id})")
+                            var fs = new FileStream(filename, FileMode.Open);
+                            await ctx.Guild.CreateEmojiAsync(name, fs, reason: GetReasonString(ctx))
                                 .ConfigureAwait(false);
                             await ctx.RespondAsync($"Emoji {Formatter.Bold(name)} successfully added!")
                                 .ConfigureAwait(false);
@@ -377,11 +389,11 @@ namespace TheGodfather.Modules.Administration
                     if (File.Exists(filename))
                         File.Delete(filename);
                 } catch (WebException e) {
-                    throw new CommandFailedException("URL error.", e);
+                    throw new CommandFailedException("Error getting the image.", e);
                 } catch (BadRequestException e) {
                     throw new CommandFailedException("Bad request. Possibly emoji slots are full for this guild?", e);
                 } catch (Exception e) {
-                    throw new CommandFailedException("IO error. Contact owner please.", e);
+                    throw new CommandFailedException("Unknown error occured.", e);
                 }
             }
             #endregion

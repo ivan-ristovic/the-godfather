@@ -389,12 +389,12 @@ namespace TheGodfather
 
             if (e.Exception is CommandNotFoundException)
                 embed.Description = $"{emoji} The specified command does not exist.";
-            else if (e.Exception is ArgumentException)
-                embed.Description = $"{emoji} Argument specified is invalid (please see {Formatter.Bold("!help <command>")} and make sure the arguments are valid).";
             else if (e.Exception is InvalidCommandUsageException)
                 embed.Description = $"{emoji} Invalid usage! {ex.Message}";
+            else if (e.Exception is ArgumentException)
+                embed.Description = $"{emoji} Argument specified is invalid (please see {Formatter.Bold("!help <command>")} and make sure the arguments are valid).";
             else if (e.Exception is CommandFailedException)
-                embed.Description = $"{emoji} {ex.Message}";
+                embed.Description = $"{emoji} {ex.Message} {(ex.InnerException != null ? "Details: " + ex.InnerException.Message : "")}";
             else if (e.Exception is DatabaseServiceException)
                 embed.Description = $"{emoji} {ex.Message} Details: {ex.InnerException?.Message ?? "<none>"}";
             else if (e.Exception is NotSupportedException)

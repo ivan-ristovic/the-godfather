@@ -9,6 +9,7 @@ using TheGodfather.Services;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
+using System.Net;
 
 namespace TheGodfather.Modules
 {
@@ -42,5 +43,32 @@ namespace TheGodfather.Modules
         protected string GetReasonString(CommandContext ctx, string reason = null)
             => $"{ctx.User.ToString()} : {reason ?? "No reason provided."} | Invoked in: {ctx.Channel.ToString()}";
 
+        protected bool IsValidURL(string url, out Uri uri)
+        {
+            uri = null;
+            if (!Uri.TryCreate(url, UriKind.Absolute, out uri))
+                return false;
+            if (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps)
+                return false;
+            return true;
+        }
+
+        protected bool IsValidImageURL(string url, out Uri uri)
+        {
+            if (!IsValidImageURL(url, out uri))
+                return false;
+
+            if (WebRequest.Create(uri) is HttpWebRequest request) {
+                string contentType = "";
+                if (request.GetResponse() is HttpWebResponse response)
+                    contentType = response.ContentType;
+                if (!contentType.StartsWith("image/"))
+                    return false;
+            } else {
+                return false;
+            }
+
+            return true;
+        }
     }
 }
