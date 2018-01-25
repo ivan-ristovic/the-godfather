@@ -382,7 +382,7 @@ namespace TheGodfather.Modules.Administration
                             var fs = new FileStream(filename, FileMode.Open);
                             await ctx.Guild.CreateEmojiAsync(name, fs, reason: GetReasonString(ctx))
                                 .ConfigureAwait(false);
-                            await ctx.RespondAsync($"Emoji {Formatter.Bold(name)} successfully added!")
+                            await ReplySuccessAsync(ctx, $"Emoji {Formatter.Bold(name)} successfully added!")
                                 .ConfigureAwait(false);
                         }
                     }
@@ -400,25 +400,25 @@ namespace TheGodfather.Modules.Administration
 
             #region COMMAND_GUILD_EMOJI_DELETE
             [Command("delete")]
-            [Description("Remove emoji.")]
+            [Description("Remove guild emoji.")]
             [Aliases("remove", "del", "-", "d")]
             [RequirePermissions(Permissions.ManageEmojis)]
             public async Task DeleteEmojiAsync(CommandContext ctx,
-                                              [Description("Emoji.")] DiscordEmoji e)
+                                              [Description("Emoji.")] DiscordEmoji emoji)
             {
-                if (e == null)
+                if (emoji == null)
                     throw new InvalidCommandUsageException("Emoji missing.");
 
                 try {
-                    var emoji = await ctx.Guild.GetEmojiAsync(e.Id)
+                    var gemoji = await ctx.Guild.GetEmojiAsync(emoji.Id)
                         .ConfigureAwait(false);
-                    string name = emoji.Name;
-                    await ctx.Guild.DeleteEmojiAsync(emoji, $"Deleted by Godfather : {ctx.User.Username} ({ctx.User.Id})")
+                    string name = gemoji.Name;
+                    await ctx.Guild.DeleteEmojiAsync(gemoji, GetReasonString(ctx))
                         .ConfigureAwait(false);
-                    await ctx.RespondAsync($"Emoji {Formatter.Bold(name)} successfully deleted!")
+                    await ReplySuccessAsync(ctx, $"Emoji {Formatter.Bold(name)} successfully deleted!")
                         .ConfigureAwait(false);
-                } catch (NotFoundException ex) {
-                    throw new CommandFailedException("Can't find that emoji in list of emoji that I made for this guild.", ex);
+                } catch (NotFoundException) {
+                    throw new CommandFailedException("Can't find that emoji in list of emoji that I made for this guild.");
                 }
             }
             #endregion
@@ -428,70 +428,70 @@ namespace TheGodfather.Modules.Administration
             [Description("Get details for guild emoji.")]
             [Aliases("det")]
             public async Task EmojiDetailsAsync(CommandContext ctx,
-                                               [Description("Emoji.")] DiscordEmoji e)
+                                               [Description("Emoji.")] DiscordEmoji emoji)
             {
-                if (e == null)
+                if (emoji == null)
                     throw new InvalidCommandUsageException("Emoji missing.");
 
                 try {
-                    var emoji = await ctx.Guild.GetEmojiAsync(e.Id)
+                    var gemoji = await ctx.Guild.GetEmojiAsync(emoji.Id)
                         .ConfigureAwait(false);
                     await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
                         Title = "Details for emoji:",
-                        Description = emoji,
+                        Description = gemoji,
                         Color = DiscordColor.CornflowerBlue
-                    }.AddField("Name", emoji.Name, inline: true)
-                     .AddField("Created by", emoji.User != null ? emoji.User.Username : "<unknown>", inline: true)
-                     .AddField("Integration managed", emoji.IsManaged.ToString(), inline: true)
+                    }.AddField("Name", gemoji.Name, inline: true)
+                     .AddField("Created by", gemoji.User != null ? gemoji.User.Username : "<unknown>", inline: true)
+                     .AddField("Integration managed", gemoji.IsManaged.ToString(), inline: true)
                     ).ConfigureAwait(false);
-                } catch (NotFoundException ex) {
-                    throw new CommandFailedException("Can't find that emoji in list of emoji for this guild.", ex);
+                } catch (NotFoundException) {
+                    throw new CommandFailedException("Can't find that emoji in list of emoji for this guild.");
                 }
             }
             #endregion
 
             #region COMMAND_GUILD_EMOJI_LIST
             [Command("list")]
-            [Description("Print list of guild emojis.")]
+            [Description("View guild emojis.")]
             [Aliases("print", "show", "l", "p")]
             public async Task ListEmojiAsync(CommandContext ctx)
             {
-                var desc = string.Join(" ", ctx.Guild.Emojis);
-                if (desc.Length > 2000)
-                    desc = desc.Substring(0, desc.LastIndexOf(" ", 2000)) + " ...";
-
-                await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
-                    Title = "Guild specific emojis:",
-                    Description = desc,
-                    Color = DiscordColor.CornflowerBlue
-                }.Build()).ConfigureAwait(false);
+                var emojis = ctx.Guild.Emojis;
+                emojis.ToList().Sort((e1, e2) => string.Compare(e1.Name, e2.Name, true));
+                await InteractivityUtil.SendPaginatedCollectionAsync(
+                    ctx,
+                    "Guild specific emojis:",
+                    emojis,
+                    e => $"{e}  {e.Name}",
+                    DiscordColor.CornflowerBlue
+                ).ConfigureAwait(false);
             }
             #endregion
 
             #region COMMAND_GUILD_EMOJI_MODIFY
             [Command("modify")]
-            [Description("Remove emoji.")]
+            [Description("Edit name of an existing guild emoji.")]
             [Aliases("edit", "mod", "e", "m")]
             [RequirePermissions(Permissions.ManageEmojis)]
             public async Task ModifyEmojiAsync(CommandContext ctx,
-                                              [Description("Emoji.")] DiscordEmoji e,
-                                              [Description("Name.")] string name)
+                                              [Description("Emoji.")] DiscordEmoji emoji,
+                                              [Description("Name.")] string newname)
             {
-                if (e == null)
+                if (emoji == null)
                     throw new InvalidCommandUsageException("Emoji missing.");
 
-                if (string.IsNullOrWhiteSpace(name))
+                if (string.IsNullOrWhiteSpace(newname))
                     throw new InvalidCommandUsageException("Name missing.");
 
                 try {
-                    var emoji = await ctx.Guild.GetEmojiAsync(e.Id)
+                    var gemoji = await ctx.Guild.GetEmojiAsync(emoji.Id)
                         .ConfigureAwait(false);
-                    await ctx.Guild.ModifyEmojiAsync(emoji, name: name, reason: $"{ctx.User.Username} ({ctx.User.Id})")
+                    await ctx.Guild.ModifyEmojiAsync(gemoji, name: newname, reason: GetReasonString(ctx))
                         .ConfigureAwait(false);
-                    await ctx.RespondAsync("Emoji successfully edited!")
+                    await ReplySuccessAsync(ctx)
                         .ConfigureAwait(false);
-                } catch (NotFoundException ex) {
-                    throw new CommandFailedException("Can't find that emoji in list of emoji that I made for this guild.", ex);
+                } catch (NotFoundException) {
+                    throw new CommandFailedException("Can't find that emoji in list of emoji that I made for this guild.");
                 }
             }
             #endregion
