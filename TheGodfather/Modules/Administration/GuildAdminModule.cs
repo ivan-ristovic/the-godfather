@@ -59,15 +59,14 @@ namespace TheGodfather.Modules.Administration
         [Description("Get audit logs.")]
         [Aliases("auditlog", "viewlog", "getlog", "getlogs", "logs")]
         [RequirePermissions(Permissions.ViewAuditLog)]
-        public async Task GetAuditLogsAsync(CommandContext ctx,
-                                           [Description("Page.")] int page = 1)
+        public async Task GetAuditLogsAsync(CommandContext ctx)
         {
             var bans = await ctx.Guild.GetAuditLogsAsync()
                 .ConfigureAwait(false);
 
             await InteractivityUtil.SendPaginatedCollectionAsync(
                 ctx,
-                "Guild bans",
+                "Audit log",
                 bans,
                 le => $"- {le.CreationTimestamp} {Formatter.Bold(le.UserResponsible.Username)} | {Formatter.Bold(le.ActionType.ToString())} | Reason: {le.Reason}",
                 DiscordColor.Brown,
@@ -90,6 +89,8 @@ namespace TheGodfather.Modules.Administration
             em.AddField("Members", ctx.Guild.MemberCount.ToString(), inline: true);
             em.AddField("Owner", ctx.Guild.Owner.Username, inline: true);
             em.AddField("Creation date", ctx.Guild.CreationTimestamp.ToString(), inline: true);
+            em.AddField("Voice region", ctx.Guild.VoiceRegion.Name, inline: true);
+            em.AddField("Verification level", ctx.Guild.VerificationLevel.ToString(), inline: true);
 
             await ctx.RespondAsync(embed: em.Build())
                 .ConfigureAwait(false);
@@ -100,28 +101,21 @@ namespace TheGodfather.Modules.Administration
         [Command("listmembers")]
         [Description("Get guild member list.")]
         [Aliases("memberlist", "lm", "members")]
-        [RequirePermissions(Permissions.ManageGuild)]
-        public async Task ListMembersAsync(CommandContext ctx,
-                                          [Description("Page.")] int page = 1)
+        public async Task ListMembersAsync(CommandContext ctx)
         {
             var members = await ctx.Guild.GetAllMembersAsync()
                 .ConfigureAwait(false);
 
-            if (page < 1 || page > members.Count / 20 + 1)
-                throw new CommandFailedException("No members on that page.");
+            var sorted = members.ToList();
+            sorted.Sort((m1, m2) => string.Compare(m1.Username, m2.Username));
 
-            string s = "";
-            int starti = (page - 1) * 20;
-            int endi = starti + 20 < members.Count ? starti + 20 : members.Count;
-            var membersarray = members.Take(page * 20).ToArray();
-            for (var i = starti; i < endi; i++)
-                s += $"{Formatter.Bold(membersarray[i].Username)} , joined at: {Formatter.Bold(membersarray[i].JoinedAt.ToString())}\n";
-
-            await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
-                Title = $"Members (page {Formatter.Bold(page.ToString())}) :",
-                Description = s,
-                Color = DiscordColor.SapGreen
-            }.Build()).ConfigureAwait(false);
+            await InteractivityUtil.SendPaginatedCollectionAsync(
+                ctx,
+                "Members",
+                sorted,
+                m => m.ToString(),
+                DiscordColor.SapGreen
+            ).ConfigureAwait(false);
         }
         #endregion
 
@@ -132,31 +126,32 @@ namespace TheGodfather.Modules.Administration
         [RequirePermissions(Permissions.KickMembers)]
         [RequireUserPermissions(Permissions.Administrator)]
         public async Task PruneMembersAsync(CommandContext ctx,
-                                           [Description("Days.")] int days = 7)
+                                           [Description("Days.")] int days = 7,
+                                           [RemainingText, Description("Reason.")] string reason = null)
         {
             if (days <= 0 || days > 7)
-                throw new InvalidCommandUsageException("Number of days not in valid range! [1-7]");
+                throw new InvalidCommandUsageException("Number of days is not in valid range! [1-7]");
 
             int count = await ctx.Guild.GetPruneCountAsync(days)
                 .ConfigureAwait(false);
+            if (count == 0) {
+                await ctx.RespondAsync("No members found to prune...")
+                    .ConfigureAwait(false);
+                return;
+            }
+
             await ctx.RespondAsync($"Pruning will remove {Formatter.Bold(count.ToString())} member(s). Continue?")
                 .ConfigureAwait(false);
 
-            var interactivity = ctx.Client.GetInteractivity();
-            var msg = await interactivity.WaitForMessageAsync(
-                xm => (xm.Author.Id == ctx.User.Id) &&
-                      (xm.Content.ToLower().StartsWith("yes") || xm.Content.ToLower().StartsWith("no")),
-                TimeSpan.FromMinutes(1)
-            ).ConfigureAwait(false);
-            if (msg == null || msg.Message.Content.StartsWith("no")) {
+            if (!await InteractivityUtil.WaitForConfirmationAsync(ctx)) {
                 await ctx.RespondAsync("Alright, cancelling...")
                     .ConfigureAwait(false);
                 return;
             }
 
-            await ctx.Guild.PruneAsync(days)
+            await ctx.Guild.PruneAsync(days, GetReasonString(ctx, reason))
                 .ConfigureAwait(false);
-            await ctx.RespondAsync("Pruning complete!")
+            await ReplySuccessAsync(ctx)
                 .ConfigureAwait(false);
         }
         #endregion
@@ -167,16 +162,16 @@ namespace TheGodfather.Modules.Administration
         [Aliases("r", "name", "setname")]
         [RequirePermissions(Permissions.ManageGuild)]
         public async Task RenameGuildAsync(CommandContext ctx,
-                                          [RemainingText, Description("New name.")] string name)
+                                          [RemainingText, Description("New name.")] string newname)
         {
-            if (string.IsNullOrWhiteSpace(name))
+            if (string.IsNullOrWhiteSpace(newname))
                 throw new InvalidCommandUsageException("Missing new guild name.");
 
             await ctx.Guild.ModifyAsync(new Action<GuildEditModel>(m => {
-                m.Name = name;
-                m.AuditLogReason = $"{ctx.User.Username} ({ctx.User.Id})";
+                m.Name = newname;
+                m.AuditLogReason = GetReasonString(ctx);
             })).ConfigureAwait(false);
-            await ctx.RespondAsync("Guild successfully renamed.")
+            await ReplySuccessAsync(ctx)
                 .ConfigureAwait(false);
         }
         #endregion
@@ -211,10 +206,10 @@ namespace TheGodfather.Modules.Administration
             } catch (WebException e) {
                 throw new CommandFailedException("URL error.", e);
             } catch (Exception e) {
-                throw new CommandFailedException("An error occured. Contact owner please.", e);
+                throw new CommandFailedException("Unknown error occured.", e);
             }
 
-            await ctx.RespondAsync("Done.")
+            await ReplySuccessAsync(ctx)
                 .ConfigureAwait(false);
         }
         #endregion
@@ -229,7 +224,7 @@ namespace TheGodfather.Modules.Administration
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task GetWelcomeChannelAsync(CommandContext ctx)
         {
-            ulong cid = await ctx.Services.GetService<DatabaseService>().GetGuildWelcomeChannelIdAsync(ctx.Guild.Id)
+            ulong cid = await DatabaseService.GetGuildWelcomeChannelIdAsync(ctx.Guild.Id)
                 .ConfigureAwait(false);
             if (cid != 0) {
                 var c = ctx.Guild.GetChannel(cid);
@@ -251,7 +246,7 @@ namespace TheGodfather.Modules.Administration
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task GetLeaveChannelAsync(CommandContext ctx)
         {
-            ulong cid = await ctx.Services.GetService<DatabaseService>().GetGuildLeaveChannelIdAsync(ctx.Guild.Id)
+            ulong cid = await DatabaseService.GetGuildLeaveChannelIdAsync(ctx.Guild.Id)
                 .ConfigureAwait(false);
             if (cid != 0) {
                 var c = ctx.Guild.GetChannel(cid);
@@ -272,20 +267,17 @@ namespace TheGodfather.Modules.Administration
         [Aliases("setwc", "setwelcomec", "setwelcome")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task SetWelcomeChannelAsync(CommandContext ctx,
-                                                [Description("Channel.")] DiscordChannel c = null)
+                                                [Description("Channel.")] DiscordChannel channel = null)
         {
-            if (c == null)
-                c = ctx.Channel;
+            if (channel == null)
+                channel = ctx.Channel;
 
-            if (c.Type != ChannelType.Text)
-                throw new CommandFailedException("Channel must be text type.");
+            if (channel.Type != ChannelType.Text)
+                throw new CommandFailedException("Given channel must be a text channel.");
 
-            if (!ctx.Guild.Channels.Any(chn => chn.Id == c.Id))
-                throw new CommandFailedException("That channel does not belong to this guild!");
-
-            await ctx.Services.GetService<DatabaseService>().SetGuildWelcomeChannelAsync(ctx.Guild.Id, c.Id)
+            await DatabaseService.SetGuildWelcomeChannelAsync(ctx.Guild.Id, channel.Id)
                 .ConfigureAwait(false);
-            await ctx.RespondAsync($"Default welcome message channel set to {Formatter.Bold(c.Name)}.")
+            await ReplySuccessAsync(ctx, $"Default welcome message channel set to {Formatter.Bold(channel.Name)}.")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -296,20 +288,17 @@ namespace TheGodfather.Modules.Administration
         [Aliases("leavec", "setlc", "setleave")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task SetLeaveChannelAsync(CommandContext ctx,
-                                              [Description("Channel.")] DiscordChannel c = null)
+                                              [Description("Channel.")] DiscordChannel channel = null)
         {
-            if (c == null)
-                c = ctx.Channel;
+            if (channel == null)
+                channel = ctx.Channel;
 
-            if (c.Type != ChannelType.Text)
-                throw new CommandFailedException("Channel must be text type.");
+            if (channel.Type != ChannelType.Text)
+                throw new CommandFailedException("Given channel must be a text channel.");
 
-            if (!ctx.Guild.Channels.Any(chn => chn.Id == c.Id))
-                throw new CommandFailedException("That channel does not belong to this guild!");
-
-            await ctx.Services.GetService<DatabaseService>().SetGuildLeaveChannelAsync(ctx.Guild.Id, c.Id)
+            await DatabaseService.SetGuildLeaveChannelAsync(ctx.Guild.Id, channel.Id)
                 .ConfigureAwait(false);
-            await ctx.RespondAsync($"Default leave message channel set to {Formatter.Bold(c.Name)}.")
+            await ctx.RespondAsync($"Default leave message channel set to {Formatter.Bold(channel.Name)}.")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -321,7 +310,7 @@ namespace TheGodfather.Modules.Administration
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task RemoveWelcomeChannelAsync(CommandContext ctx)
         {
-            await ctx.Services.GetService<DatabaseService>().RemoveGuildWelcomeChannelAsync(ctx.Guild.Id)
+            await DatabaseService.RemoveGuildWelcomeChannelAsync(ctx.Guild.Id)
                 .ConfigureAwait(false);
             await ctx.RespondAsync("Default welcome message channel removed.")
                 .ConfigureAwait(false);
@@ -335,7 +324,7 @@ namespace TheGodfather.Modules.Administration
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task DeleteLeaveChannelAsync(CommandContext ctx)
         {
-            await ctx.Services.GetService<DatabaseService>().RemoveGuildLeaveChannelAsync(ctx.Guild.Id)
+            await DatabaseService.RemoveGuildLeaveChannelAsync(ctx.Guild.Id)
                 .ConfigureAwait(false);
             await ctx.RespondAsync("Default leave message channel removed.")
                 .ConfigureAwait(false);

@@ -223,7 +223,7 @@ namespace TheGodfather.Modules.Administration
         public async Task RenameChannelAsync(CommandContext ctx,
                                             [Description("New name.")] string newname,
                                             [Description("Channel to rename.")] DiscordChannel channel = null,
-                                            [Description("Reason.")] string reason = null)
+                                            [RemainingText, Description("Reason.")] string reason = null)
         {
             if (string.IsNullOrWhiteSpace(newname))
                 throw new InvalidCommandUsageException("Missing new channel name.");
@@ -259,7 +259,7 @@ namespace TheGodfather.Modules.Administration
         public async Task ChangeParentAsync(CommandContext ctx,
                                            [Description("Parent category.")] DiscordChannel parent,
                                            [Description("Child channel.")] DiscordChannel channel = null,
-                                           [Description("Reason.")] string reason = null)
+                                           [RemainingText, Description("Reason.")] string reason = null)
         {
             if (parent == null)
                 throw new InvalidCommandUsageException("Parent missing.");
@@ -288,7 +288,7 @@ namespace TheGodfather.Modules.Administration
         public async Task ReorderChannelAsync(CommandContext ctx,
                                             [Description("Position.")] int position,
                                             [Description("Channel to reorder.")] DiscordChannel channel = null,
-                                            [Description("Reason.")] string reason = null)
+                                            [RemainingText, Description("Reason.")] string reason = null)
         {
             if (position < 0)
                 throw new InvalidCommandUsageException("Position cannot be negative...");
@@ -312,7 +312,7 @@ namespace TheGodfather.Modules.Administration
         public async Task SetChannelTopicAsync(CommandContext ctx,
                                               [Description("New topic.")] string topic,
                                               [Description("Channel.")] DiscordChannel channel = null,
-                                              [Description("Reason.")] string reason = null)
+                                              [RemainingText, Description("Reason.")] string reason = null)
         {
             if (string.IsNullOrWhiteSpace(topic))
                 throw new InvalidCommandUsageException("Missing topic.");

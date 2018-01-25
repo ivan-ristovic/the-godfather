@@ -34,13 +34,13 @@ namespace TheGodfather.Modules
         protected async Task ReplySuccessAsync(CommandContext ctx, string msg = "Done!")
         {
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder {
-                Description = DiscordEmoji.FromName(ctx.Client, ":white_check_mark:") + " " + msg,
+                Description = $"{DiscordEmoji.FromName(ctx.Client, ":white_check_mark:")} {msg}",
                 Color = DiscordColor.Green
             }).ConfigureAwait(false);
         }
 
-        protected string GetReasonString(CommandContext ctx, string reason = "No reason provided.")
-            => $"{ctx.User.ToString()} : {reason} | Invoked in: {ctx.Channel.ToString()}";
+        protected string GetReasonString(CommandContext ctx, string reason = null)
+            => $"{ctx.User.ToString()} : {reason ?? "No reason provided."} | Invoked in: {ctx.Channel.ToString()}";
 
     }
 }

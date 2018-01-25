@@ -389,6 +389,8 @@ namespace TheGodfather
 
             if (e.Exception is CommandNotFoundException)
                 embed.Description = $"{emoji} The specified command does not exist.";
+            else if (e.Exception is ArgumentException)
+                embed.Description = $"{emoji} Argument specified is invalid (please see {Formatter.Bold("!help <command>")} and make sure the arguments are valid).";
             else if (e.Exception is InvalidCommandUsageException)
                 embed.Description = $"{emoji} Invalid usage! {ex.Message}";
             else if (e.Exception is CommandFailedException)
@@ -403,8 +405,6 @@ namespace TheGodfather
                 embed.Description = $"{emoji} 404: Not found.";
             else if (e.Exception is BadRequestException)
                 embed.Description = $"{emoji} Bad request. Please check if the parameters are valid.";
-            else if (e.Exception is ArgumentException)
-                embed.Description = $"{emoji} Argument specified is invalid (please use {Formatter.Bold("!help <command>")}).";
             else if (e.Exception is Npgsql.NpgsqlException)
                 embed.Description = $"{emoji} This is what happens when I use a Serbian database... Please {Formatter.InlineCode("!report")}.";
             else if (ex is ChecksFailedException exc) {
