@@ -14,25 +14,17 @@ namespace TheGodfather.Extensions
     public static class InteractivityUtil
     {
         public static bool IsConfirmation(MessageContext mctx)
-        {
-            return string.Equals(mctx.Message.Content, "yes", StringComparison.OrdinalIgnoreCase)
-                || string.Equals(mctx.Message.Content, "y", StringComparison.OrdinalIgnoreCase)
-                || string.Equals(mctx.Message.Content, "1", StringComparison.OrdinalIgnoreCase)
-                || string.Equals(mctx.Message.Content, "ya", StringComparison.OrdinalIgnoreCase)
-                || string.Equals(mctx.Message.Content, "ja", StringComparison.OrdinalIgnoreCase)
-                || string.Equals(mctx.Message.Content, "si", StringComparison.OrdinalIgnoreCase)
-                || string.Equals(mctx.Message.Content, "da", StringComparison.OrdinalIgnoreCase);
-        }
+            => IsConfirmation(mctx.Message.Content);
 
-        public static bool IsConfirmation(string m)
+        public static bool IsConfirmation(string message)
         {
-            return string.Equals(m, "yes", StringComparison.OrdinalIgnoreCase)
-                || string.Equals(m, "y", StringComparison.OrdinalIgnoreCase)
-                || string.Equals(m, "1", StringComparison.OrdinalIgnoreCase)
-                || string.Equals(m, "ya", StringComparison.OrdinalIgnoreCase)
-                || string.Equals(m, "ja", StringComparison.OrdinalIgnoreCase)
-                || string.Equals(m, "si", StringComparison.OrdinalIgnoreCase)
-                || string.Equals(m, "da", StringComparison.OrdinalIgnoreCase);
+            return string.Equals(message, "yes", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(message, "y", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(message, "1", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(message, "ya", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(message, "ja", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(message, "si", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(message, "da", StringComparison.OrdinalIgnoreCase);
         }
 
         public static async Task<bool> WaitForConfirmationAsync(CommandContext ctx)
