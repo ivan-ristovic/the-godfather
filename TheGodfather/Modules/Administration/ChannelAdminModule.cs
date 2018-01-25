@@ -50,7 +50,7 @@ namespace TheGodfather.Modules.Administration
                     return;
             }
             
-            await ctx.Guild.CreateChannelAsync(name, ChannelType.Category, reason: GetReasonString(ctx))
+            await ctx.Guild.CreateChannelCategoryAsync(name, reason: GetReasonString(ctx))
                 .ConfigureAwait(false);
             await ReplySuccessAsync(ctx, $"Category {Formatter.Bold(name)} successfully created.")
                 .ConfigureAwait(false);
@@ -64,7 +64,8 @@ namespace TheGodfather.Modules.Administration
         [RequirePermissions(Permissions.ManageChannels)]
         public async Task CreateTextChannelAsync(CommandContext ctx,
                                                 [Description("Name.")] string name,
-                                                [Description("Parent category.")] DiscordChannel parent = null)
+                                                [Description("Parent category.")] DiscordChannel parent = null,
+                                                [Description("NSFW?")] bool nsfw = false)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new InvalidCommandUsageException("Missing channel name.");
@@ -82,8 +83,11 @@ namespace TheGodfather.Modules.Administration
                     return;
             }
 
-            if (!await TryCreateChannelAsync(ctx, name, parent, ChannelType.Text).ConfigureAwait(false))
+            if (parent != null && parent.Type != ChannelType.Category)
                 throw new CommandFailedException("Channel parent must be a category!");
+
+            await ctx.Guild.CreateTextChannelAsync(name, parent, nsfw: nsfw, reason: GetReasonString(ctx))
+                .ConfigureAwait(false);
 
             await ReplySuccessAsync(ctx, $"Channel {Formatter.Bold(name)} successfully created.")
                 .ConfigureAwait(false);
@@ -97,7 +101,9 @@ namespace TheGodfather.Modules.Administration
         [RequirePermissions(Permissions.ManageChannels)]
         public async Task CreateVoiceChannelAsync(CommandContext ctx,
                                                  [Description("Name.")] string name,
-                                                 [Description("Parent category.")] DiscordChannel parent = null)
+                                                 [Description("Parent category.")] DiscordChannel parent = null,
+                                                 [Description("User limit.")] int? userlimit = null,
+                                                 [Description("Bitrate.")] int? bitrate = null)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new InvalidCommandUsageException("Missing channel name.");
@@ -112,8 +118,11 @@ namespace TheGodfather.Modules.Administration
                     return;
             }
 
-            if (!await TryCreateChannelAsync(ctx, name, parent, ChannelType.Voice).ConfigureAwait(false))
+            if (parent != null && parent.Type != ChannelType.Category)
                 throw new CommandFailedException("Channel parent must be a category!");
+
+            await ctx.Guild.CreateVoiceChannelAsync(name, parent, bitrate, userlimit, reason: GetReasonString(ctx))
+                .ConfigureAwait(false);
 
             await ctx.RespondAsync($"Channel {Formatter.Bold(name)} successfully created.")
                 .ConfigureAwait(false);
@@ -325,19 +334,6 @@ namespace TheGodfather.Modules.Administration
             })).ConfigureAwait(false);
             await ReplySuccessAsync(ctx)
                 .ConfigureAwait(false);
-        }
-        #endregion
-
-
-        #region HELPER_FUNCTIONS
-        private async Task<bool> TryCreateChannelAsync(CommandContext ctx, string cname, DiscordChannel parent, ChannelType type)
-        {
-            if (parent != null && parent.Type != ChannelType.Category)
-                return false;
-
-            await ctx.Guild.CreateChannelAsync(cname, type, parent: parent, reason: GetReasonString(ctx))
-                .ConfigureAwait(false);
-            return true;
         }
         #endregion
     }
