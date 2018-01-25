@@ -5,8 +5,6 @@ using System.Net;
 using System.IO;
 using System.Drawing;
 using System.Threading.Tasks;
-using System.Collections.Generic;
-using Microsoft.Extensions.DependencyInjection;
 
 using TheGodfather.Services;
 using TheGodfather.Exceptions;
@@ -14,12 +12,10 @@ using TheGodfather.Extensions;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
-using DSharpPlus.Interactivity;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
 using DSharpPlus.Net.Models;
-using System.Net.Http;
 #endregion
 
 namespace TheGodfather.Modules.Administration

@@ -148,11 +148,10 @@ namespace TheGodfather
             try {
                 Shared.SaveRanksToDatabaseAsync(Database).ConfigureAwait(false).GetAwaiter().GetResult();
             } catch (Exception e) {
-                client.DebugLogger.LogMessage(LogLevel.Error, "TheGodfather",
-                    $"Exception occured while syncing with the database: {e.GetType()}" + Environment.NewLine +
-                    $" Message: {e.Message}" + Environment.NewLine +
-                    (e.InnerException != null ? $" Inner exception: {e.InnerException.GetType()} : {e.InnerException.Message}" : "") + Environment.NewLine
-                    , DateTime.Now
+                Logger.LogMessage(LogLevel.Error, 
+                    $"Exception occured while syncing with the database: {e.GetType()}<br>" + 
+                    $"Message: {e.Message}<br>" +
+                    (e.InnerException != null ? $" Inner exception: {e.InnerException.GetType()} : {e.InnerException.Message}" : "")
                 );
             }
         }
@@ -163,11 +162,10 @@ namespace TheGodfather
             try {
                 FeedService.CheckFeedsForChangesAsync(client, Database).ConfigureAwait(false).GetAwaiter().GetResult();
             } catch (Exception e) {
-                client.DebugLogger.LogMessage(LogLevel.Error, "TheGodfather",
-                    $"Exception occured while checking for feed updates: {e.GetType()}" + Environment.NewLine +
-                    $" Message: {e.Message}" + Environment.NewLine +
-                    (e.InnerException != null ? $" Inner exception: {e.InnerException.GetType()} : {e.InnerException.Message}" : "") + Environment.NewLine
-                    , DateTime.Now
+                Logger.LogMessage(LogLevel.Error,
+                    $"Exception occured while checking for feed updates: {e.GetType()}<br>" + 
+                    $"Message: {e.Message}<br>" +
+                    (e.InnerException != null ? $" Inner exception: {e.InnerException.GetType()} : {e.InnerException.Message}" : "") 
                 );
             }
         }
