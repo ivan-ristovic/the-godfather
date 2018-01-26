@@ -19,7 +19,7 @@ namespace TheGodfather.Modules.Administration
 {
     [Group("messages", CanInvokeWithoutSubcommand = false)]
     [Description("Commands to manipulate messages on the channel.")]
-    [Aliases("m", "msg", "msgs")]
+    [Aliases("m", "msg", "msgs", "message")]
     [Cooldown(2, 5, CooldownBucketType.User)]
     [PreExecutionCheck]
     public class MessageAdminModule : GodfatherBaseModule
@@ -49,7 +49,7 @@ namespace TheGodfather.Modules.Administration
                 Color = DiscordColor.Azure
             };
             foreach (var attachment in msg.Attachments) 
-                emb.AddField(attachment.FileName, $"{attachment.Url} ({attachment.FileSize}B)");
+                emb.AddField($"{attachment.FileName} ({attachment.FileSize} bytes)", attachment.Url);
 
             await ctx.RespondAsync(embed: emb.Build())
                 .ConfigureAwait(false);
