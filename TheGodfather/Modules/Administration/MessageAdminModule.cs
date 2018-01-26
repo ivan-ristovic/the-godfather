@@ -17,9 +17,9 @@ using DSharpPlus.Exceptions;
 
 namespace TheGodfather.Modules.Administration
 {
-    [Group("messages", CanInvokeWithoutSubcommand = false)]
+    [Group("message", CanInvokeWithoutSubcommand = false)]
     [Description("Commands to manipulate messages on the channel.")]
-    [Aliases("m", "msg", "msgs", "message")]
+    [Aliases("m", "msg", "msgs", "messages")]
     [Cooldown(2, 5, CooldownBucketType.User)]
     [PreExecutionCheck]
     public class MessageAdminModule : GodfatherBaseModule
@@ -179,7 +179,26 @@ namespace TheGodfather.Modules.Administration
             ).ConfigureAwait(false);
         }
         #endregion
-        
+
+        #region COMMAND_MESSAGES_MODIFY
+        [Command("modify")]
+        [Description("Modify the given message.")]
+        [Aliases("edit", "mod", "e", "m")]
+        [RequirePermissions(Permissions.ManageMessages)]
+        public async Task ModifyMessageAsync(CommandContext ctx,
+                                            [Description("Message ID.")] ulong id,
+                                            [RemainingText, Description("New content.")] string content)
+        {
+            if (string.IsNullOrWhiteSpace(content))
+                throw new CommandFailedException("Missing new message content!");
+
+            var msg = await ctx.Channel.GetMessageAsync(id)
+                .ConfigureAwait(false);
+            await msg.ModifyAsync(content)
+                .ConfigureAwait(false);
+        }
+        #endregion
+
         #region COMMAND_MESSAGES_PIN
         [Command("pin")]
         [Description("Pins the last sent message. If the ID is given, pins that message.")]
