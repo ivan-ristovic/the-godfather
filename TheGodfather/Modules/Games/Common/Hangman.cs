@@ -109,7 +109,7 @@ namespace TheGodfather.Modules.Games
 
         private async Task UpdateHangmanAsync()
         {
-            await _msg.ModifyAsync(embed: new DiscordEmbedBuilder() {
+            var emb = new DiscordEmbedBuilder() {
                 Title = string.Join(" ", _hidden),
                 Description = $@". ┌─────┐
 .┃...............┋
@@ -118,8 +118,11 @@ namespace TheGodfather.Modules.Games
 .┃{(_lives < 5 ? "............./" : "")} {(_lives < 4 ? "|" : "")} {(_lives < 3 ? "\\" : "")}
 .┃{(_lives < 2 ? "............../" : "")} {(_lives < 1 ? "\\" : "")}
 /-\"
-            }.WithFooter(string.Join(", ", _badguesses)))
-            .ConfigureAwait(false);
+            };
+            emb.WithFooter(string.Join(", ", _badguesses));
+
+            await _msg.ModifyAsync(embed: emb.Build())
+                .ConfigureAwait(false);
         }
     }
 }

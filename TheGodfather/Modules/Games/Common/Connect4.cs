@@ -189,8 +189,9 @@ namespace TheGodfather.Modules.Games
                 sb.AppendLine();
             }
 
-            await _msg.ModifyAsync(embed: new DiscordEmbedBuilder() { Description = sb.ToString() })
-                .ConfigureAwait(false);
+            await _msg.ModifyAsync(embed: new DiscordEmbedBuilder() {
+                Description = sb.ToString()
+            }.Build()).ConfigureAwait(false);
         }
     }
 }

@@ -13,6 +13,13 @@ namespace TheGodfather
         private static object _lock = new object();
 
 
+        public static void Clear()
+        {
+            lock (_lock) {
+                Console.Clear();
+            }
+        }
+
         public static void LogMessage(LogLevel level, string message, DateTime? timestamp = null)
         {
             lock (_lock) {

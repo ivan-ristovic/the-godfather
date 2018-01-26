@@ -12,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Exceptions;
+using TheGodfather.Extensions;
 using TheGodfather.Services;
 
 using DSharpPlus;
@@ -29,8 +30,12 @@ namespace TheGodfather.Modules.Administration
     [RequireOwner]
     [Hidden]
     [Cooldown(3, 5, CooldownBucketType.Global)]
-    public class OwnerModule
+    public class OwnerModule : GodfatherBaseModule
     {
+
+        public OwnerModule(SharedData shared, DatabaseService db) : base(shared, db) { }
+
+
         #region COMMAND_BOTAVATAR
         [Command("botavatar")]
         [Description("Set bot avatar.")]
@@ -42,28 +47,30 @@ namespace TheGodfather.Modules.Administration
             if (string.IsNullOrWhiteSpace(url))
                 throw new InvalidCommandUsageException("URL missing.");
 
+            if (!IsValidImageURL(url, out Uri uri))
+                throw new CommandFailedException("URL must point to an image and use http or https protocols.");
+
             string filename = $"Temp/tmp-avatar-{DateTime.Now.Ticks}.png";
             try {
                 if (!Directory.Exists("Temp"))
                     Directory.CreateDirectory("Temp");
 
-                using (WebClient webClient = new WebClient()) {
-                    byte[] data = webClient.DownloadData(url);
-
-                    using (MemoryStream mem = new MemoryStream(data))
-                        await ctx.Client.EditCurrentUserAsync(avatar: mem)
+                using (var wc = new WebClient()) {
+                    var data = wc.DownloadData(uri.AbsoluteUri);
+                    using (var mem = new MemoryStream(data))
+                        await ctx.Client.UpdateCurrentUserAsync(avatar: mem)
                             .ConfigureAwait(false);
                 }
 
                 if (File.Exists(filename))
                     File.Delete(filename);
             } catch (WebException e) {
-                throw new CommandFailedException("URL error.", e);
+                throw new CommandFailedException("Error getting the image.", e);
             } catch (Exception e) {
-                throw new CommandFailedException("An error occured. Contact owner please.", e);
+                throw new CommandFailedException("Unknown error occured.", e);
             }
 
-            await ctx.RespondAsync("Done.")
+            await ReplySuccessAsync(ctx)
                 .ConfigureAwait(false);
         }
         #endregion
@@ -79,9 +86,9 @@ namespace TheGodfather.Modules.Administration
             if (string.IsNullOrWhiteSpace(name))
                 throw new InvalidCommandUsageException("Name missing.");
 
-            await ctx.Client.EditCurrentUserAsync(username: name)
+            await ctx.Client.UpdateCurrentUserAsync(username: name)
                 .ConfigureAwait(false);
-            await ctx.RespondAsync("Done.")
+            await ReplySuccessAsync(ctx)
                 .ConfigureAwait(false);
         }
         #endregion
@@ -93,17 +100,17 @@ namespace TheGodfather.Modules.Administration
         [PreExecutionCheck]
         public async Task ClearLogAsync(CommandContext ctx)
         {
-            /*
-            try {
-                ctx.Dependencies.GetDependency<TheGodfather>().Logger.ClearLogFile();
-            } catch (Exception e) {
-                ctx.Client.DebugLogger.LogMessage(LogLevel.Error, "TheGodfather", e.Message, DateTime.Now);
-                throw e;
+            await ctx.RespondAsync("Are you sure you want to clear the logs?")
+                .ConfigureAwait(false);
+
+            if (!await InteractivityUtil.WaitForConfirmationAsync(ctx)) {
+                await ctx.RespondAsync("Cancelling...")
+                    .ConfigureAwait(false);
             }
 
-            await ctx.RespondAsync("Logs cleared.")
+            Logger.Clear();
+            await ReplySuccessAsync(ctx)
                 .ConfigureAwait(false);
-            */
         }
         #endregion
 
@@ -113,12 +120,12 @@ namespace TheGodfather.Modules.Administration
         [Aliases("sql", "dbq", "q")]
         [PreExecutionCheck]
         public async Task DatabaseQuery(CommandContext ctx,
-                                        [RemainingText, Description("New name.")] string query)
+                                        [RemainingText, Description("SQL Query.")] string query)
         {
             if (string.IsNullOrWhiteSpace(query))
                 throw new InvalidCommandUsageException("Query missing.");
 
-            var res = await ctx.Services.GetService<DatabaseService>().ExecuteRawQueryAsync(query)
+            var res = await DatabaseService.ExecuteRawQueryAsync(query)
                 .ConfigureAwait(false);
 
             if (!res.Any() || !res.First().Any()) {
@@ -129,7 +136,7 @@ namespace TheGodfather.Modules.Administration
 
             var d0 = res.First().Select(r => r.Key).OrderByDescending(r => r.Length).First().Length + 1;
 
-            var eb = new DiscordEmbedBuilder {
+            var emb = new DiscordEmbedBuilder {
                 Title = string.Concat("Results: ", res.Count.ToString("#,##0")),
                 Description = string.Concat("Showing ", res.Count > 24 ? "first 24" : "all", " results for query ", Formatter.InlineCode(query), ":"),
                 Color = new DiscordColor(0x007FFF)
@@ -139,17 +146,17 @@ namespace TheGodfather.Modules.Administration
             foreach (var row in res.Take(24)) {
                 var sb = new StringBuilder();
 
-                foreach (var r in row) {
+                foreach (var r in row)
                     sb.Append(r.Key).Append(new string(' ', d0 - r.Key.Length)).Append("| ").AppendLine(r.Value);
-                }
 
-                eb.AddField(string.Concat("Result #", i++), Formatter.BlockCode(sb.ToString()), false);
+                emb.AddField(string.Concat("Result #", i++), Formatter.BlockCode(sb.ToString()), false);
             }
 
             if (res.Count > 24)
-                eb.AddField("Display incomplete", string.Concat((res.Count - 24).ToString("#,##0"), " results were omitted."), false);
+                emb.AddField("Display incomplete", string.Concat((res.Count - 24).ToString("#,##0"), " results were omitted."), false);
 
-            await ctx.RespondAsync("", embed: eb.Build()).ConfigureAwait(false);
+            await ctx.RespondAsync(embed: emb.Build())
+                .ConfigureAwait(false);
         }
         #endregion
 

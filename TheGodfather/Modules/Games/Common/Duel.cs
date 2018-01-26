@@ -96,7 +96,7 @@ namespace TheGodfather.Modules.Games
                 Title = "CNN LIVE COVERAGE",
                 Description = _events,
                 Color = DiscordColor.Chartreuse
-            }).ConfigureAwait(false);
+            }.Build()).ConfigureAwait(false);
         }
 
         private void UpdateHpBars()
