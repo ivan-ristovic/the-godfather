@@ -28,6 +28,34 @@ namespace TheGodfather.Modules.Administration
         public MessageAdminModule(SharedData shared, DatabaseService db) : base(shared, db) { }
 
 
+        #region COMMAND_MESSAGES_ATTACHMENTS
+        [Command("attachments")]
+        [Description("Print all message attachments.")]
+        [Aliases("a", "files", "la")]
+        public async Task ListAttachmentsAsync(CommandContext ctx,
+                                              [Description("Message ID.")] ulong id = 0)
+        {
+            DiscordMessage msg;
+            if (id != 0) {
+                msg = await ctx.Channel.GetMessageAsync(id)
+                    .ConfigureAwait(false);
+            } else {
+                var msgs = await ctx.Channel.GetMessagesBeforeAsync(ctx.Channel.LastMessageId, 1);
+                msg = msgs.First();
+            }
+
+            var emb = new DiscordEmbedBuilder() {
+                Title = "Attachments:",
+                Color = DiscordColor.Azure
+            };
+            foreach (var attachment in msg.Attachments) 
+                emb.AddField(attachment.FileName, $"{attachment.Url} ({attachment.FileSize}B)");
+
+            await ctx.RespondAsync(embed: emb.Build())
+                .ConfigureAwait(false);
+        }
+        #endregion
+
         #region COMMAND_MESSAGES_DELETE
         [Command("delete")]
         [Description("Deletes the specified amount of most-recent messages from the channel.")]
