@@ -73,7 +73,8 @@ namespace TheGodfather
 
         public async Task StartAsync()
         {
-            await Client.ConnectAsync().ConfigureAwait(false);
+            await Client.ConnectAsync()
+                .ConfigureAwait(false);
         }
 
 
@@ -111,7 +112,7 @@ namespace TheGodfather
                 EnableDms = false,
                 CaseSensitive = false,
                 EnableMentionPrefix = true,
-                PrefixResolver = async m => await CheckMessageForPrefix(m),
+                PrefixResolver = PrefixResolverAsync,
                 Services = new ServiceCollection()
                     .AddSingleton(new YoutubeService(_cfg.YoutubeKey))
                     .AddSingleton(new GiphyService(_cfg.GiphyKey))
@@ -133,7 +134,7 @@ namespace TheGodfather
         private void SetupInteractivity()
         {
             Interactivity = Client.UseInteractivity(new InteractivityConfiguration() {
-                PaginationBehavior = TimeoutBehaviour.DeleteReactions,
+                PaginationBehavior = TimeoutBehaviour.Ignore,
                 PaginationTimeout = TimeSpan.FromSeconds(30),
                 Timeout = TimeSpan.FromSeconds(30)
             });
@@ -144,7 +145,7 @@ namespace TheGodfather
             Voice = Client.UseVoiceNext();
         }
 
-        private Task<int> CheckMessageForPrefix(DiscordMessage m)
+        private Task<int> PrefixResolverAsync(DiscordMessage m)
         {
             string p = _shared.GetGuildPrefix(m.Channel.Guild.Id) ?? _cfg.DefaultPrefix;
             return Task.FromResult(m.GetStringPrefixLength(p));

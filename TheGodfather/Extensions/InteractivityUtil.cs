@@ -43,16 +43,16 @@ namespace TheGodfather.Extensions
                                                                  IEnumerable<T> collection, 
                                                                  Func<T, string> formatter,
                                                                  DiscordColor? color = null,
-                                                                 int ammount = 10,
+                                                                 int amount = 10,
                                                                  TimeSpan? timeout = null)
         {
             var list = collection.ToList();
             var interactivity = ctx.Client.GetInteractivity();
             var pages = new List<Page>();
-            int pagesnum = (list.Count - 1) / ammount;
+            int pagesnum = (list.Count - 1) / amount;
             for (int i = 0; i <= pagesnum; i++) {
-                int start = ammount * i;
-                int count = start + ammount > list.Count ? list.Count - start : ammount;
+                int start = amount * i;
+                int count = start + amount > list.Count ? list.Count - start : amount;
                 pages.Add(new Page() {
                     Embed = new DiscordEmbedBuilder() {
                         Title = $"{title} (page {i + 1}/{pagesnum + 1})",
