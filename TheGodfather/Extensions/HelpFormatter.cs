@@ -15,98 +15,68 @@ namespace TheGodfather.Extensions
 {
     public class HelpFormatter : BaseHelpFormatter
     {
-        #region PRIVATE_FIELDS
-        private DiscordEmbedBuilder _embed;
-        private string _name, _desc;
-        private bool _gexec;
-        #endregion
+        private DiscordEmbedBuilder _emb = new DiscordEmbedBuilder();
+        private string _name;
+        private string _desc;
 
 
-        public HelpFormatter(CommandsNextExtension cnext) : base(cnext)
-        {
-            _embed = new DiscordEmbedBuilder();
-            _name = null;
-            _desc = null;
-            _gexec = false;
-        }
+        public HelpFormatter(CommandsNextExtension cnext) : base(cnext) { }
 
 
         public override CommandHelpMessage Build()
         {
-            _embed.WithTitle("Help");
-            _embed.WithColor(DiscordColor.SpringGreen);
+            _emb.WithColor(DiscordColor.SpringGreen);
 
-            var desc = $"Listing all commands and groups. Use {Formatter.InlineCode("!help<command>")} for detailed information.";
+            string desc = $"Listing all commands and groups. Use {Formatter.InlineCode("!help <command>")} for detailed information.";
             if (_name != null) {
-                var sb = new StringBuilder();
-                sb.Append(_name)
-                  .Append(": ")
-                  .Append(string.IsNullOrWhiteSpace(_desc) ? "No description provided." : _desc);
-
-                if (_gexec)
-                    sb.AppendLine().AppendLine().Append("This group can be executed without subcommand.");
-
-                desc = sb.ToString();
+                _emb.WithTitle(_name);
+                desc = string.IsNullOrWhiteSpace(_desc) ? "No description provided." : _desc;
+            } else {
+                _emb.WithTitle("Help");
             }
-            _embed.WithDescription(desc);
-            _embed.WithFooter("Detailed info @ https://ivan-ristovic.github.io/the-godfather/");
+            _emb.WithDescription(desc);
+            _emb.WithFooter("Detailed info @ https://ivan-ristovic.github.io/the-godfather/");
 
-            return new CommandHelpMessage(embed: _embed);
+            return new CommandHelpMessage(embed: _emb);
         }
 
-        public override BaseHelpFormatter WithAliases(IEnumerable<string> aliases)
+        public override BaseHelpFormatter WithCommand(Command command)
         {
-            if (aliases.Any())
-                _embed.AddField("Aliases", string.Join(", ", aliases.Select(a => Formatter.InlineCode(a))));
-            return this;
-        }
+            _name = command.QualifiedName;
+            _desc = command.Description;
 
-        public override BaseHelpFormatter WithArguments(IEnumerable<CommandArgument> arguments)
-        {
-            if (arguments.Any()) {
-                var sb = new StringBuilder();
+            if (command.Aliases?.Any() == true)
+                _emb.AddField("Aliases", string.Join(", ", command.Aliases.Select(a => Formatter.InlineCode(a))));
 
-                foreach (var arg in arguments) {
-                    if (arg.IsOptional)
-                        sb.Append("(optional) ");
+            if (command.Overloads?.Any() == true) {
+                foreach (var overload in command.Overloads.OrderByDescending(x => x.Priority)) {
+                    var sb = new StringBuilder();
 
-                    sb.Append($"{Formatter.InlineCode($"[{arg.Type.Name}]")} ");
+                    foreach (var arg in overload.Arguments) {
+                        if (arg.IsOptional)
+                            sb.Append("(optional) ");
 
-                    sb.Append(string.IsNullOrWhiteSpace(arg.Description) ? "No description provided." : Formatter.Bold(arg.Description));
+                        sb.Append($"{Formatter.InlineCode($"[{CommandsNext.GetUserFriendlyTypeName(arg.Type)}]")} ");
 
-                    if (arg.IsOptional)
-                        sb.Append(" (def: ").Append(Formatter.InlineCode(arg.DefaultValue != null ? arg.DefaultValue.ToString() : "None")).Append(")");
+                        sb.Append(string.IsNullOrWhiteSpace(arg.Description) ? "No description provided." : Formatter.Bold(arg.Description));
 
-                    sb.AppendLine();
+                        if (arg.IsOptional)
+                            sb.Append(" (def: ").Append(Formatter.InlineCode(arg.DefaultValue != null ? arg.DefaultValue.ToString() : "None")).Append(")");
+
+                        sb.AppendLine();
+                    }
+
+                    _emb.AddField($"{(command.Overloads.Count > 1 ? $"Overload #{overload.Priority}" : "Arguments")}" , sb.ToString());
                 }
-
-                _embed.AddField("Arguments", sb.ToString());
             }
-            return this;
-        }
 
-        public override BaseHelpFormatter WithCommandName(string name)
-        {
-            _name = name;
-            return this;
-        }
-
-        public override BaseHelpFormatter WithDescription(string description)
-        {
-            _desc = description;
-            return this;
-        }
-
-        public override BaseHelpFormatter WithGroupExecutable()
-        {
-            _gexec = true;
             return this;
         }
 
         public override BaseHelpFormatter WithSubcommands(IEnumerable<Command> subcommands)
         {
             if (subcommands.Any())
-                _embed.AddField(_name != null ? "Subcommands" : "Commands", string.Join(", ", subcommands.Select(c => Formatter.InlineCode(c.Name))));
+                _emb.AddField(_name != null ? "Subcommands" : "Commands", string.Join(", ", subcommands.Select(c => Formatter.InlineCode(c.Name))));
             return this;
         }
     }
