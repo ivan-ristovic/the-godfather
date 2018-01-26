@@ -40,8 +40,8 @@ namespace TheGodfather.Modules.Administration
                 msg = await ctx.Channel.GetMessageAsync(id)
                     .ConfigureAwait(false);
             } else {
-                var msgs = await ctx.Channel.GetMessagesBeforeAsync(ctx.Channel.LastMessageId, 1);
-                msg = msgs.First();
+                var _ = await ctx.Channel.GetMessagesBeforeAsync(ctx.Channel.LastMessageId, 1);
+                msg = _.First();
             }
 
             var emb = new DiscordEmbedBuilder() {
@@ -79,7 +79,7 @@ namespace TheGodfather.Modules.Administration
         #region COMMAND_MESSAGES_DELETE_FROM
         [Command("deletefrom")]
         [Description("Deletes given amount of most-recent messages from given user.")]
-        [Aliases("-user", "deluser", "du", "dfu", "delfrom")]
+        [Aliases("-user", "-u", "deluser", "du", "dfu", "delfrom")]
         [RequirePermissions(Permissions.ManageMessages)]
         [RequireUserPermissions(Permissions.Administrator)]
         public async Task DeleteMessagesFromUserAsync(CommandContext ctx, 
@@ -101,14 +101,41 @@ namespace TheGodfather.Modules.Administration
         }
         #endregion
 
+        #region COMMAND_MESSAGES_DELETE_REACTIONS
+        [Command("deletereactions")]
+        [Description("Deletes all reactions from the given message.")]
+        [Aliases("-reactions", "-r", "delreactions", "dr")]
+        [RequirePermissions(Permissions.ManageMessages)]
+        [RequireUserPermissions(Permissions.Administrator)]
+        public async Task DeleteReactionsAsync(CommandContext ctx,
+                                              [Description("ID.")] ulong id = 0,
+                                              [RemainingText, Description("Reason.")] string reason = null)
+        {
+            DiscordMessage msg;
+            if (id != 0)
+                msg = await ctx.Channel.GetMessageAsync(id)
+                    .ConfigureAwait(false);
+            else {
+                var _ = await ctx.Channel.GetMessagesBeforeAsync(ctx.Channel.LastMessageId, 1)
+                    .ConfigureAwait(false);
+                msg = _.First();
+            }
+
+            await msg.DeleteAllReactionsAsync(GetReasonString(ctx, reason))
+                .ConfigureAwait(false);
+            await ReplySuccessAsync(ctx)
+                .ConfigureAwait(false);
+        }
+        #endregion
+
         #region COMMAND_MESSAGES_DELETE_REGEX
         [Command("deleteregex")]
         [Description("Deletes given amount of most-recent messages that match a given regular expression.")]
-        [Aliases("-regex", "delregex", "dr", "dfr")]
+        [Aliases("-regex", "-rx", "delregex", "drx")]
         [RequirePermissions(Permissions.ManageMessages)]
         [RequireUserPermissions(Permissions.Administrator)]
         public async Task DeleteMessagesFromRegexAsync(CommandContext ctx,
-                                                      [Description("User.")] string pattern,
+                                                      [Description("Pattern (Regex).")] string pattern,
                                                       [Description("Amount.")] int amount = 5,
                                                       [RemainingText, Description("Reason.")] string reason = null)
         {
