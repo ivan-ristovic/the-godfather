@@ -60,6 +60,7 @@ namespace TheGodfather.Modules.Administration
         [Command("createtext")]
         [Description("Create new txt channel.")]
         [Aliases("createtxt", "createt", "ctxt", "ct", "+", "+t", "+txt")]
+        [Priority(2)]
         [RequirePermissions(Permissions.ManageChannels)]
         public async Task CreateTextChannelAsync(CommandContext ctx,
                                                 [Description("Name.")] string name,
@@ -91,6 +92,22 @@ namespace TheGodfather.Modules.Administration
             await ReplySuccessAsync(ctx, $"Channel {Formatter.Bold(name)} successfully created.")
                 .ConfigureAwait(false);
         }
+
+        [Command("createtext")]
+        [Priority(1)]
+        public async Task CreateTextChannelAsync(CommandContext ctx,
+                                                [Description("Name.")] string name,
+                                                [Description("NSFW?")] bool nsfw = false,
+                                                [Description("Parent category.")] DiscordChannel parent = null)
+           => await CreateTextChannelAsync(ctx, name, parent, nsfw);
+
+        [Command("createtext")]
+        [Priority(0)]
+        public async Task CreateTextChannelAsync(CommandContext ctx, 
+                                                [Description("Parent category.")] DiscordChannel parent,
+                                                [Description("Name.")] string name,
+                                                [Description("NSFW?")] bool nsfw = false)
+           => await CreateTextChannelAsync(ctx, name, parent, nsfw);
         #endregion
 
         #region COMMAND_CHANNEL_CREATEVOICE
@@ -98,6 +115,7 @@ namespace TheGodfather.Modules.Administration
         [Description("Create new voice channel.")]
         [Aliases("createv", "cvoice", "cv", "+voice", "+v")]
         [RequirePermissions(Permissions.ManageChannels)]
+        [Priority(2)]
         public async Task CreateVoiceChannelAsync(CommandContext ctx,
                                                  [Description("Name.")] string name,
                                                  [Description("Parent category.")] DiscordChannel parent = null,
@@ -126,12 +144,32 @@ namespace TheGodfather.Modules.Administration
             await ctx.RespondAsync($"Channel {Formatter.Bold(name)} successfully created.")
                 .ConfigureAwait(false);
         }
+
+
+        [Command("createvoice")]
+        [Priority(1)]
+        public async Task CreateVoiceChannelAsync(CommandContext ctx,
+                                                 [Description("Name.")] string name,
+                                                 [Description("User limit.")] int? userlimit = null,
+                                                 [Description("Bitrate.")] int? bitrate = null,
+                                                 [Description("Parent category.")] DiscordChannel parent = null)
+            => await CreateVoiceChannelAsync(ctx, name, parent, userlimit, bitrate);
+
+        [Command("createvoice")]
+        [Priority(0)]
+        public async Task CreateVoiceChannelAsync(CommandContext ctx,
+                                                 [Description("Parent category.")] DiscordChannel parent,
+                                                 [Description("Name.")] string name,
+                                                 [Description("User limit.")] int? userlimit = null,
+                                                 [Description("Bitrate.")] int? bitrate = null)
+            => await CreateVoiceChannelAsync(ctx, name, parent, userlimit, bitrate);
         #endregion
 
         #region COMMAND_CHANNEL_DELETE
         [Command("delete")]
         [Description("Delete a given channel or category.")]
         [Aliases("-", "del", "d", "remove", "rm")]
+        [Priority(1)]
         [RequirePermissions(Permissions.ManageChannels)]
         public async Task DeleteChannelAsync(CommandContext ctx,
                                             [Description("Channel to delete.")] DiscordChannel channel = null,
@@ -157,6 +195,12 @@ namespace TheGodfather.Modules.Administration
                 await ReplySuccessAsync(ctx, $"Channel {Formatter.Bold(name)} successfully deleted.")
                     .ConfigureAwait(false);
         }
+
+        [Command("delete")]
+        [Priority(0)]
+        public async Task DeleteChannelAsync(CommandContext ctx,
+                                            [RemainingText, Description("Reason.")] string reason)
+            => await DeleteChannelAsync(ctx, null, reason);
         #endregion
 
         #region COMMAND_CHANNEL_INFO
@@ -197,6 +241,7 @@ namespace TheGodfather.Modules.Administration
         [Command("modify")]
         [Description("Modify a given voice channel. Set 0 if you wish to keep the value as it is.")]
         [Aliases("edit", "mod", "m", "e")]
+        [Priority(1)]
         [RequirePermissions(Permissions.ManageChannels)]
         public async Task ModifyChannelAsync(CommandContext ctx,
                                             [Description("Voice channel to edit")] DiscordChannel channel,
@@ -221,16 +266,25 @@ namespace TheGodfather.Modules.Administration
             await ReplySuccessAsync(ctx)
                 .ConfigureAwait(false);
         }
+
+        [Command("modify")]
+        [Priority(0)]
+        public async Task ModifyChannelAsync(CommandContext ctx,
+                                            [Description("User limit.")] int limit = 0,
+                                            [Description("Bitrate.")] int bitrate = 0,
+                                            [RemainingText, Description("Reason.")] string reason = null)
+            => await ModifyChannelAsync(ctx, null, limit, bitrate, reason);
         #endregion
 
         #region COMMAND_CHANNEL_RENAME
         [Command("rename")]
         [Description("Rename channel.")]
         [Aliases("r", "name", "setname")]
+        [Priority(2)]
         [RequirePermissions(Permissions.ManageChannels)]
         public async Task RenameChannelAsync(CommandContext ctx,
+                                            [Description("Channel to rename.")] DiscordChannel channel,
                                             [Description("New name.")] string newname,
-                                            [Description("Channel to rename.")] DiscordChannel channel = null,
                                             [RemainingText, Description("Reason.")] string reason = null)
         {
             if (string.IsNullOrWhiteSpace(newname))
@@ -257,16 +311,32 @@ namespace TheGodfather.Modules.Administration
             await ReplySuccessAsync(ctx)
                 .ConfigureAwait(false);
         }
+
+        [Command("rename")]
+        [Priority(1)]
+        public async Task RenameChannelAsync(CommandContext ctx,
+                                            [Description("New name.")] string newname,
+                                            [Description("Channel to rename.")] DiscordChannel channel,
+                                            [RemainingText, Description("Reason.")] string reason = null)
+            => await RenameChannelAsync(ctx, channel, newname, reason);
+
+        [Command("rename")]
+        [Priority(0)]
+        public async Task RenameChannelAsync(CommandContext ctx,
+                                            [Description("New name.")] string newname,
+                                            [RemainingText, Description("Reason.")] string reason = null)
+            => await RenameChannelAsync(ctx, null, newname, reason);
         #endregion
 
         #region COMMAND_CHANNEL_SETPARENT
         [Command("setparent")]
         [Description("Change the parent of the given channel.")]
         [Aliases("setpar", "par", "parent")]
+        [Priority(1)]
         [RequirePermissions(Permissions.ManageChannels)]
         public async Task ChangeParentAsync(CommandContext ctx,
+                                           [Description("Child channel.")] DiscordChannel channel,
                                            [Description("Parent category.")] DiscordChannel parent,
-                                           [Description("Child channel.")] DiscordChannel channel = null,
                                            [RemainingText, Description("Reason.")] string reason = null)
         {
             if (parent == null)
@@ -286,17 +356,25 @@ namespace TheGodfather.Modules.Administration
             await ReplySuccessAsync(ctx)
                 .ConfigureAwait(false);
         }
+
+        [Command("setparent")]
+        [Priority(0)]
+        public async Task ChangeParentAsync(CommandContext ctx,
+                                           [Description("Parent category.")] DiscordChannel parent,
+                                           [RemainingText, Description("Reason.")] string reason = null)
+            => await ChangeParentAsync(ctx, null, parent, reason);
         #endregion
 
         #region COMMAND_CHANNEL_SETPOSITION
         [Command("setposition")]
         [Description("Change the position of the given channel in the guild channel list.")]
         [Aliases("setpos", "pos", "position")]
+        [Priority(2)]
         [RequirePermissions(Permissions.ManageChannels)]
         public async Task ReorderChannelAsync(CommandContext ctx,
-                                            [Description("Position.")] int position,
-                                            [Description("Channel to reorder.")] DiscordChannel channel = null,
-                                            [RemainingText, Description("Reason.")] string reason = null)
+                                             [Description("Channel to reorder.")] DiscordChannel channel,
+                                             [Description("Position.")] int position,
+                                             [RemainingText, Description("Reason.")] string reason = null)
         {
             if (position < 0)
                 throw new InvalidCommandUsageException("Position cannot be negative...");
@@ -310,16 +388,32 @@ namespace TheGodfather.Modules.Administration
             await ReplySuccessAsync(ctx)
                 .ConfigureAwait(false);
         }
+
+        [Command("setposition")]
+        [Priority(1)]
+        public async Task ReorderChannelAsync(CommandContext ctx,
+                                             [Description("Position.")] int position,
+                                             [Description("Channel to reorder.")] DiscordChannel channel,
+                                             [RemainingText, Description("Reason.")] string reason = null)
+            => await ReorderChannelAsync(ctx, channel, position, reason);
+
+        [Command("setposition")]
+        [Priority(0)]
+        public async Task ReorderChannelAsync(CommandContext ctx,
+                                             [Description("Position.")] int position,
+                                             [RemainingText, Description("Reason.")] string reason = null)
+            => await ReorderChannelAsync(ctx, null, position, reason);
         #endregion
 
         #region COMMAND_CHANNEL_SETTOPIC
         [Command("settopic")]
         [Description("Set channel topic.")]
         [Aliases("t", "topic", "sett")]
+        [Priority(2)]
         [RequirePermissions(Permissions.ManageChannels)]
         public async Task SetChannelTopicAsync(CommandContext ctx,
+                                              [Description("Channel.")] DiscordChannel channel,
                                               [Description("New topic.")] string topic,
-                                              [Description("Channel.")] DiscordChannel channel = null,
                                               [RemainingText, Description("Reason.")] string reason = null)
         {
             if (string.IsNullOrWhiteSpace(topic))
@@ -334,6 +428,21 @@ namespace TheGodfather.Modules.Administration
             await ReplySuccessAsync(ctx)
                 .ConfigureAwait(false);
         }
+
+        [Command("settopic")]
+        [Priority(1)]
+        public async Task SetChannelTopicAsync(CommandContext ctx,
+                                              [Description("New topic.")] string topic,
+                                              [Description("Channel.")] DiscordChannel channel,
+                                              [RemainingText, Description("Reason.")] string reason = null)
+           => await SetChannelTopicAsync(ctx, channel, topic, reason);
+
+        [Command("settopic")]
+        [Priority(0)]
+        public async Task SetChannelTopicAsync(CommandContext ctx,
+                                              [Description("New topic.")] string topic,
+                                              [RemainingText, Description("Reason.")] string reason = null)
+            => await SetChannelTopicAsync(ctx, null, topic, reason);
         #endregion
     }
 }
