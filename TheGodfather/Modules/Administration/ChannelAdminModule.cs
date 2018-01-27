@@ -409,7 +409,7 @@ namespace TheGodfather.Modules.Administration
         [Command("settopic")]
         [Description("Set channel topic.")]
         [Aliases("t", "topic", "sett")]
-        [Priority(2)]
+        [Priority(3)]
         [RequirePermissions(Permissions.ManageChannels)]
         public async Task SetChannelTopicAsync(CommandContext ctx,
                                               [Description("Channel.")] DiscordChannel channel,
@@ -430,7 +430,7 @@ namespace TheGodfather.Modules.Administration
         }
 
         [Command("settopic")]
-        [Priority(1)]
+        [Priority(2)]
         public async Task SetChannelTopicAsync(CommandContext ctx,
                                               [Description("New topic.")] string topic,
                                               [Description("Channel.")] DiscordChannel channel,
@@ -438,11 +438,17 @@ namespace TheGodfather.Modules.Administration
            => await SetChannelTopicAsync(ctx, channel, topic, reason);
 
         [Command("settopic")]
-        [Priority(0)]
+        [Priority(1)]
         public async Task SetChannelTopicAsync(CommandContext ctx,
                                               [Description("New topic.")] string topic,
                                               [RemainingText, Description("Reason.")] string reason = null)
             => await SetChannelTopicAsync(ctx, null, topic, reason);
+
+        [Command("settopic")]
+        [Priority(0)]
+        public async Task SetChannelTopicAsync(CommandContext ctx,
+                                              [RemainingText, Description("New Topic.")] string topic = null)
+            => await SetChannelTopicAsync(ctx, null, topic, null);
         #endregion
     }
 }
