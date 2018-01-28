@@ -239,7 +239,7 @@ namespace TheGodfather
                 try {
                     await e.Channel.DeleteMessageAsync(e.Message)
                         .ConfigureAwait(false);
-                    Log(LogLevel.Info,
+                    Log(LogLevel.Debug,
                         $"Filter triggered:<br>" + 
                         $"Message: {e.Message.Content}<br>" +
                         $"{e.Message.Author.ToString()}<br>" + 
@@ -274,7 +274,7 @@ namespace TheGodfather
             // Check if message has a text reaction
             var response = _shared.GetResponseForTextReaction(e.Guild.Id, e.Message.Content);
             if (response != null) {
-                Log(LogLevel.Info,
+                Log(LogLevel.Debug,
                     $"Text reaction detected:<br>" + 
                     $"Message: {e.Message.Content}<br>" +
                     $"{e.Message.Author.ToString()}<br>" +
@@ -290,7 +290,7 @@ namespace TheGodfather
             // Check if message has an emoji reaction
             var emojilist = _shared.GetEmojisForEmojiReaction(Client, e.Guild.Id, e.Message.Content);
             if (emojilist.Count > 0) {
-                Log(LogLevel.Info,
+                Log(LogLevel.Debug,
                     $"Emoji reaction detected:<br>" + 
                     $"Message: {e.Message.Content}<br>" +
                     $"{e.Message.Author.ToString()}<br>" + 
@@ -323,7 +323,7 @@ namespace TheGodfather
                 try {
                     await e.Channel.DeleteMessageAsync(e.Message)
                         .ConfigureAwait(false);
-                    Log(LogLevel.Info,
+                    Log(LogLevel.Debug,
                         $"Filter triggered in edit of a message:<br>" +
                         $"Message: {e.Message.Content}<br>" + 
                         $"{e.Message.Author.ToString()}<br>" + 
