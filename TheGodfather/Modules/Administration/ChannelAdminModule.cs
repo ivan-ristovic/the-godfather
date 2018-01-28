@@ -280,12 +280,11 @@ namespace TheGodfather.Modules.Administration
         [Command("rename")]
         [Description("Rename channel.")]
         [Aliases("r", "name", "setname")]
-        [Priority(2)]
+        [Priority(1)]
         [RequirePermissions(Permissions.ManageChannels)]
         public async Task RenameChannelAsync(CommandContext ctx,
                                             [Description("Channel to rename.")] DiscordChannel channel,
-                                            [Description("New name.")] string newname,
-                                            [RemainingText, Description("Reason.")] string reason = null)
+                                            [Description("New name.")] string newname)
         {
             if (string.IsNullOrWhiteSpace(newname))
                 throw new InvalidCommandUsageException("Missing new channel name.");
@@ -302,7 +301,7 @@ namespace TheGodfather.Modules.Administration
             try {
                 await channel.ModifyAsync(new Action<ChannelEditModel>(m => {
                     m.Name = newname;
-                    m.AuditLogReason = GetReasonString(ctx, reason);
+                    m.AuditLogReason = GetReasonString(ctx, null);
                 })).ConfigureAwait(false);
             } catch (BadRequestException e) {
                 throw new CommandFailedException("An error occured. Maybe the name entered contains invalid characters?", e);
@@ -313,19 +312,10 @@ namespace TheGodfather.Modules.Administration
         }
 
         [Command("rename")]
-        [Priority(1)]
-        public async Task RenameChannelAsync(CommandContext ctx,
-                                            [Description("New name.")] string newname,
-                                            [Description("Channel to rename.")] DiscordChannel channel,
-                                            [RemainingText, Description("Reason.")] string reason = null)
-            => await RenameChannelAsync(ctx, channel, newname, reason);
-
-        [Command("rename")]
         [Priority(0)]
         public async Task RenameChannelAsync(CommandContext ctx,
-                                            [Description("New name.")] string newname,
-                                            [RemainingText, Description("Reason.")] string reason = null)
-            => await RenameChannelAsync(ctx, null, newname, reason);
+                                            [RemainingText, Description("New name.")] string newname)
+            => await RenameChannelAsync(ctx, null, newname);
         #endregion
 
         #region COMMAND_CHANNEL_SETPARENT
@@ -409,12 +399,11 @@ namespace TheGodfather.Modules.Administration
         [Command("settopic")]
         [Description("Set channel topic.")]
         [Aliases("t", "topic", "sett")]
-        [Priority(3)]
+        [Priority(1)]
         [RequirePermissions(Permissions.ManageChannels)]
         public async Task SetChannelTopicAsync(CommandContext ctx,
-                                              [Description("Channel.")] DiscordChannel channel,
-                                              [Description("New topic.")] string topic,
-                                              [RemainingText, Description("Reason.")] string reason = null)
+                                              [Description("Channel.")] DiscordChannel channel, 
+                                              [RemainingText, Description("New topic.")] string topic)
         {
             if (string.IsNullOrWhiteSpace(topic))
                 throw new InvalidCommandUsageException("Missing topic.");
@@ -423,32 +412,18 @@ namespace TheGodfather.Modules.Administration
 
             await channel.ModifyAsync(new Action<ChannelEditModel>(m => {
                 m.Topic = topic;
-                m.AuditLogReason = GetReasonString(ctx, reason);
+                m.AuditLogReason = GetReasonString(ctx, null);
             })).ConfigureAwait(false);
             await ReplySuccessAsync(ctx)
                 .ConfigureAwait(false);
         }
 
         [Command("settopic")]
-        [Priority(2)]
-        public async Task SetChannelTopicAsync(CommandContext ctx,
-                                              [Description("New topic.")] string topic,
-                                              [Description("Channel.")] DiscordChannel channel,
-                                              [RemainingText, Description("Reason.")] string reason = null)
-           => await SetChannelTopicAsync(ctx, channel, topic, reason);
-
-        [Command("settopic")]
-        [Priority(1)]
-        public async Task SetChannelTopicAsync(CommandContext ctx,
-                                              [Description("New topic.")] string topic,
-                                              [RemainingText, Description("Reason.")] string reason = null)
-            => await SetChannelTopicAsync(ctx, null, topic, reason);
-
-        [Command("settopic")]
         [Priority(0)]
         public async Task SetChannelTopicAsync(CommandContext ctx,
-                                              [RemainingText, Description("New Topic.")] string topic = null)
-            => await SetChannelTopicAsync(ctx, null, topic, null);
+                                              [RemainingText, Description("New Topic.")] string topic)
+            => await SetChannelTopicAsync(ctx, null, topic);
+
         #endregion
     }
 }
