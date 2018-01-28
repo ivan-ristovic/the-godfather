@@ -210,7 +210,7 @@ namespace TheGodfather
             try {
                 var chn = e.Guild.GetChannel(cid);
                 if (chn != null)
-                    await chn.SendMessageAsync($"{Formatter.Bold(e.Member?.Username ?? "<unknown>")} left the server. Bye!").ConfigureAwait(false);
+                    await chn.SendMessageAsync($"{Formatter.Bold(e.Member?.Username ?? "<unknown>")} left the server. Cya never!").ConfigureAwait(false);
             } catch (Exception exc) {
                 while (exc is AggregateException)
                     exc = exc.InnerException;
