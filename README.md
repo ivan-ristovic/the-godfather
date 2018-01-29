@@ -31,9 +31,11 @@ Commands use the following types:
 * ``id`` : ID of Discord entity (could be a message, user, channel etc.). Only seen when the ``Developer appearance`` is enabled in the Discord client options.
 
 
-## Command table
+## Command table 
 
-*Note: Required permissions are permissions required for both bot and user to run the command (if not specified otherwise in table)*
+### Note: (OVERLOAD UPDATES ARE IN PROGRESS, LIST WILL BE UPDATED SOON™)
+
+*Note: ``Required permissions`` are permissions required for both the bot and the user in order to run the command (if not specified otherwise in table)*
 <br><br>
 
 ## Main commands
