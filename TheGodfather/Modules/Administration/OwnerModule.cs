@@ -281,15 +281,40 @@ namespace TheGodfather.Modules.Administration
             commands.Sort((c1, c2) => string.Compare(c1.QualifiedName, c2.QualifiedName, true));
 
             foreach (var cmd in commands) {
-                if (cmd is CommandGroup grp) 
-                    sb.AppendLine("## " + grp.QualifiedName);
+                if (cmd is CommandGroup || cmd.Parent != null) 
+                    sb.AppendLine("## " + cmd.QualifiedName);
                 else
                     sb.AppendLine("### " + cmd.QualifiedName);
-                
+
                 if (cmd.IsHidden)
                     sb.AppendLine(Formatter.Italic("Hidden.") + "\n");
 
                 sb.AppendLine(Formatter.Italic(cmd.Description ?? "No description provided.") + "\n");
+
+                var allchecks = cmd.ExecutionChecks.Union(cmd.Parent?.ExecutionChecks ?? Enumerable.Empty<CheckBaseAttribute>());
+                var permissions = allchecks.Where(chk => chk is RequirePermissionsAttribute)
+                                           .Select(chk => chk as RequirePermissionsAttribute)
+                                           .Select(chk => chk.Permissions.ToPermissionString());
+                var userpermissions = allchecks.Where(chk => chk is RequireUserPermissionsAttribute)
+                                               .Select(chk => chk as RequireUserPermissionsAttribute)
+                                               .Select(chk => chk.Permissions.ToPermissionString());
+                var botpermissions = allchecks.Where(chk => chk is RequireBotPermissionsAttribute)
+                                              .Select(chk => chk as RequireBotPermissionsAttribute)
+                                              .Select(chk => chk.Permissions.ToPermissionString());
+                if (allchecks.Any(chk => chk is RequireOwnerAttribute))
+                    sb.AppendLine(Formatter.Underline(Formatter.Bold("Owner-only.")) + "\n");
+                if (permissions.Any()) {
+                    sb.AppendLine(Formatter.Underline(Formatter.Bold("Requires permissions:")) + "\n");
+                    sb.AppendLine(Formatter.Italic(string.Join(", ", permissions)) + "\n");
+                }
+                if (userpermissions.Any()) {
+                    sb.AppendLine(Formatter.Underline(Formatter.Bold("Requires user permissions:")) + "\n");
+                    sb.AppendLine(Formatter.Italic(string.Join(", ", userpermissions)) + "\n");
+                }
+                if (botpermissions.Any()) {
+                    sb.AppendLine(Formatter.Underline(Formatter.Bold("Requires bot permissions:")) + "\n");
+                    sb.AppendLine(Formatter.Italic(string.Join(", ", botpermissions)) + "\n");
+                }
 
                 if (cmd.Aliases.Any()) {
                     sb.AppendLine(Formatter.Underline(Formatter.Bold("Aliases:")) + "\n");

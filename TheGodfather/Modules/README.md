@@ -10,8 +10,10 @@ __**Arguments:**__
 
 ---
 
-### admin botavatar
+## admin botavatar
 *Set bot avatar.*
+
+__**Owner-only.**__
 
 __**Aliases:**__
 
@@ -24,8 +26,10 @@ __**Arguments:**__
 
 ---
 
-### admin botname
+## admin botname
 *Set bot name.*
+
+__**Owner-only.**__
 
 __**Aliases:**__
 
@@ -38,8 +42,10 @@ __**Arguments:**__
 
 ---
 
-### admin clearlog
+## admin clearlog
 *Clear application logs.*
+
+__**Owner-only.**__
 
 __**Aliases:**__
 
@@ -50,8 +56,10 @@ __**Arguments:**__
 
 ---
 
-### admin dbquery
+## admin dbquery
 *Clear application logs.*
+
+__**Owner-only.**__
 
 __**Aliases:**__
 
@@ -64,8 +72,10 @@ __**Arguments:**__
 
 ---
 
-### admin eval
+## admin eval
 *Evaluates a snippet of C# code, in context.*
+
+__**Owner-only.**__
 
 __**Aliases:**__
 
@@ -78,8 +88,10 @@ __**Arguments:**__
 
 ---
 
-### admin generatecommands
+## admin generatecommands
 *Generates a command-list.*
+
+__**Owner-only.**__
 
 __**Aliases:**__
 
@@ -92,8 +104,10 @@ __**Arguments:**__
 
 ---
 
-### admin leaveguilds
+## admin leaveguilds
 *Leave guilds given as IDs.*
+
+__**Owner-only.**__
 
 
 __**Arguments:**__
@@ -102,8 +116,10 @@ __**Arguments:**__
 
 ---
 
-### admin sendmessage
+## admin sendmessage
 *Sends a message to a user or channel.*
+
+__**Owner-only.**__
 
 __**Aliases:**__
 
@@ -120,8 +136,10 @@ __**Arguments:**__
 
 ---
 
-### admin shutdown
+## admin shutdown
 *Triggers the dying in the vineyard scene.*
+
+__**Owner-only.**__
 
 __**Aliases:**__
 
@@ -135,9 +153,13 @@ __**Arguments:**__
 ## admin status
 *Bot status manipulation.*
 
+__**Owner-only.**__
 
-### admin sudo
+
+## admin sudo
 *Executes a command as another user.*
+
+__**Owner-only.**__
 
 __**Aliases:**__
 
@@ -152,8 +174,10 @@ __**Arguments:**__
 
 ---
 
-### admin toggleignore
+## admin toggleignore
 *Toggle bot's reaction to commands.*
+
+__**Owner-only.**__
 
 __**Aliases:**__
 
@@ -178,8 +202,12 @@ __**Arguments:**__
 
 ---
 
-### bank grant
+## bank grant
 *Magically give funds to a user.*
+
+__**Requires user permissions:**__
+
+*Administrator*
 
 __**Aliases:**__
 
@@ -194,7 +222,7 @@ __**Arguments:**__
 
 ---
 
-### bank register
+## bank register
 *Create an account in WM bank.*
 
 __**Aliases:**__
@@ -206,7 +234,7 @@ __**Arguments:**__
 
 ---
 
-### bank status
+## bank status
 *View account balance for user.*
 
 __**Aliases:**__
@@ -220,7 +248,7 @@ __**Arguments:**__
 
 ---
 
-### bank top
+## bank top
 *Print the richest users.*
 
 __**Aliases:**__
@@ -232,7 +260,7 @@ __**Arguments:**__
 
 ---
 
-### bank transfer
+## bank transfer
 *Transfer funds from one account to another.*
 
 __**Aliases:**__
@@ -248,7 +276,7 @@ __**Arguments:**__
 
 ---
 
-### cards draw
+## cards draw
 *Draw cards from the top of the deck.*
 
 __**Aliases:**__
@@ -262,7 +290,7 @@ __**Arguments:**__
 
 ---
 
-### cards reset
+## cards reset
 *Opens a brand new card deck.*
 
 __**Aliases:**__
@@ -274,7 +302,7 @@ __**Arguments:**__
 
 ---
 
-### cards shuffle
+## cards shuffle
 *Shuffle current deck.*
 
 __**Aliases:**__
@@ -286,8 +314,12 @@ __**Arguments:**__
 
 ---
 
-### channel createcategory
+## channel createcategory
 *Create new channel category.*
+
+__**Requires permissions:**__
+
+*Manage channels*
 
 __**Aliases:**__
 
@@ -300,8 +332,12 @@ __**Arguments:**__
 
 ---
 
-### channel createtext
+## channel createtext
 *Create new txt channel.*
+
+__**Requires permissions:**__
+
+*Manage channels*
 
 __**Aliases:**__
 
@@ -338,8 +374,12 @@ __**Overload 0:**__
 
 ---
 
-### channel createvoice
+## channel createvoice
 *Create new voice channel.*
+
+__**Requires permissions:**__
+
+*Manage channels*
 
 __**Aliases:**__
 
@@ -382,8 +422,12 @@ __**Overload 0:**__
 
 ---
 
-### channel delete
+## channel delete
 *Delete a given channel or category.*
+
+__**Requires permissions:**__
+
+*Manage channels*
 
 __**Aliases:**__
 
@@ -404,8 +448,12 @@ __**Overload 0:**__
 
 ---
 
-### channel info
+## channel info
 *Get information about a given channel.*
+
+__**Requires permissions:**__
+
+*Read messages*
 
 __**Aliases:**__
 
@@ -418,8 +466,12 @@ __**Arguments:**__
 
 ---
 
-### channel modify
+## channel modify
 *Modify a given voice channel. Set 0 if you wish to keep the value as it is.*
+
+__**Requires permissions:**__
+
+*Manage channels*
 
 __**Aliases:**__
 
@@ -448,8 +500,12 @@ __**Overload 0:**__
 
 ---
 
-### channel rename
+## channel rename
 *Rename channel.*
+
+__**Requires permissions:**__
+
+*Manage channels*
 
 __**Aliases:**__
 
@@ -480,8 +536,12 @@ __**Overload 0:**__
 
 ---
 
-### channel setparent
+## channel setparent
 *Change the parent of the given channel.*
+
+__**Requires permissions:**__
+
+*Manage channels*
 
 __**Aliases:**__
 
@@ -506,8 +566,12 @@ __**Overload 0:**__
 
 ---
 
-### channel setposition
+## channel setposition
 *Change the position of the given channel in the guild channel list.*
+
+__**Requires permissions:**__
+
+*Manage channels*
 
 __**Aliases:**__
 
@@ -542,8 +606,12 @@ __**Overload 0:**__
 
 ---
 
-### channel settopic
+## channel settopic
 *Set channel topic.*
+
+__**Requires permissions:**__
+
+*Manage channels*
 
 __**Aliases:**__
 
@@ -577,6 +645,12 @@ __**Overload 0:**__
 ### connect
 *Connects me to a voice channel.*
 
+__**Owner-only.**__
+
+__**Requires permissions:**__
+
+*Use voice chat*
+
 
 __**Arguments:**__
 
@@ -587,6 +661,8 @@ __**Arguments:**__
 ### disconnect
 *Disconnects from voice channel.*
 
+__**Owner-only.**__
+
 
 __**Arguments:**__
 
@@ -594,6 +670,10 @@ __**Arguments:**__
 
 ### embed
 *Embed an image given as an URL.*
+
+__**Requires permissions:**__
+
+*Attach files*
 
 
 __**Arguments:**__
@@ -618,8 +698,12 @@ __**Arguments:**__
 
 ---
 
-### emojireaction add
+## emojireaction add
 *Add emoji reactions to guild reaction list.*
+
+__**Requires user permissions:**__
+
+*Manage guild*
 
 __**Aliases:**__
 
@@ -634,8 +718,12 @@ __**Arguments:**__
 
 ---
 
-### emojireaction clear
+## emojireaction clear
 *Delete all reactions for the current guild.*
+
+__**Requires user permissions:**__
+
+*Administrator*
 
 __**Aliases:**__
 
@@ -646,8 +734,12 @@ __**Arguments:**__
 
 ---
 
-### emojireaction delete
+## emojireaction delete
 *Remove emoji reactions for given trigger words.*
+
+__**Requires user permissions:**__
+
+*Manage guild*
 
 __**Aliases:**__
 
@@ -660,7 +752,7 @@ __**Arguments:**__
 
 ---
 
-### emojireaction list
+## emojireaction list
 *Show all emoji reactions.*
 
 __**Aliases:**__
@@ -674,8 +766,12 @@ __**Arguments:**__
 
 ---
 
-### filter add
+## filter add
 *Add filter to guild filter list.*
+
+__**Requires user permissions:**__
+
+*Manage guild*
 
 __**Aliases:**__
 
@@ -688,8 +784,12 @@ __**Arguments:**__
 
 ---
 
-### filter clear
+## filter clear
 *Delete all filters for the current guild.*
+
+__**Requires user permissions:**__
+
+*Administrator*
 
 __**Aliases:**__
 
@@ -700,8 +800,12 @@ __**Arguments:**__
 
 ---
 
-### filter delete
+## filter delete
 *Remove filter from guild filter list.*
+
+__**Requires user permissions:**__
+
+*Manage guild*
 
 __**Aliases:**__
 
@@ -714,7 +818,7 @@ __**Arguments:**__
 
 ---
 
-### filter list
+## filter list
 *Show all filters for this guild.*
 
 __**Aliases:**__
@@ -728,7 +832,7 @@ __**Arguments:**__
 
 ---
 
-### gamble coinflip
+## gamble coinflip
 *Flips a coin.*
 
 __**Aliases:**__
@@ -744,7 +848,7 @@ __**Arguments:**__
 
 ---
 
-### gamble roll
+## gamble roll
 *Rolls a dice.*
 
 __**Aliases:**__
@@ -760,7 +864,7 @@ __**Arguments:**__
 
 ---
 
-### gamble slot
+## gamble slot
 *Roll a slot machine.*
 
 __**Aliases:**__
@@ -774,7 +878,7 @@ __**Arguments:**__
 
 ---
 
-### games caro
+## games caro
 *Starts a caro game.*
 
 __**Aliases:**__
@@ -786,7 +890,7 @@ __**Arguments:**__
 
 ---
 
-### games connectfour
+## games connectfour
 *Starts a "Connect4" game. Play by posting a number from 1 to 9 corresponding to the column you wish to place your move on.*
 
 __**Aliases:**__
@@ -798,7 +902,7 @@ __**Arguments:**__
 
 ---
 
-### games duel
+## games duel
 *Starts a duel which I will commentate.*
 
 __**Aliases:**__
@@ -812,7 +916,7 @@ __**Arguments:**__
 
 ---
 
-### games hangman
+## games hangman
 *Starts a hangman game.*
 
 __**Aliases:**__
@@ -824,7 +928,7 @@ __**Arguments:**__
 
 ---
 
-### games leaderboard
+## games leaderboard
 *Starts a hangman game.*
 
 __**Aliases:**__
@@ -868,7 +972,7 @@ __**Arguments:**__
 
 ---
 
-### games rps
+## games rps
 *Rock, paper, scissors game.*
 
 __**Aliases:**__
@@ -880,7 +984,7 @@ __**Arguments:**__
 
 ---
 
-### games stats
+## games stats
 *Print game stats for given user.*
 
 
@@ -890,7 +994,7 @@ __**Arguments:**__
 
 ---
 
-### games tictactoe
+## games tictactoe
 *Starts a game of tic-tac-toe. Play by posting a number from 1 to 9 corresponding to field you wish to place your move on.*
 
 __**Aliases:**__
@@ -902,7 +1006,7 @@ __**Arguments:**__
 
 ---
 
-### games typing
+## games typing
 *Typing race.*
 
 __**Aliases:**__
@@ -928,7 +1032,7 @@ __**Arguments:**__
 
 ---
 
-### gif random
+## gif random
 *Return a random GIF.*
 
 __**Aliases:**__
@@ -940,7 +1044,7 @@ __**Arguments:**__
 
 ---
 
-### gif trending
+## gif trending
 *Return an amount of trending GIFs.*
 
 __**Aliases:**__
@@ -966,8 +1070,12 @@ __**Arguments:**__
 
 ---
 
-### guild bans
+## guild bans
 *Get guild ban list.*
+
+__**Requires permissions:**__
+
+*View audit log*
 
 __**Aliases:**__
 
@@ -978,8 +1086,12 @@ __**Arguments:**__
 
 ---
 
-### guild deleteleavechannel
+## guild deleteleavechannel
 *Remove leave message channel for this guild.*
+
+__**Requires user permissions:**__
+
+*Manage guild*
 
 __**Aliases:**__
 
@@ -990,8 +1102,12 @@ __**Arguments:**__
 
 ---
 
-### guild deletewelcomechannel
+## guild deletewelcomechannel
 *Remove welcome message channel for this guild.*
+
+__**Requires user permissions:**__
+
+*Manage guild*
 
 __**Aliases:**__
 
@@ -1014,8 +1130,12 @@ __**Arguments:**__
 
 ---
 
-### guild getleavechannel
+## guild getleavechannel
 *Get current leave message channel for this guild.*
+
+__**Requires user permissions:**__
+
+*Manage guild*
 
 __**Aliases:**__
 
@@ -1026,8 +1146,12 @@ __**Arguments:**__
 
 ---
 
-### guild getwelcomechannel
+## guild getwelcomechannel
 *Get current welcome message channel for this guild.*
+
+__**Requires user permissions:**__
+
+*Manage guild*
 
 __**Aliases:**__
 
@@ -1038,7 +1162,7 @@ __**Arguments:**__
 
 ---
 
-### guild info
+## guild info
 *Get guild information.*
 
 __**Aliases:**__
@@ -1050,7 +1174,7 @@ __**Arguments:**__
 
 ---
 
-### guild listmembers
+## guild listmembers
 *Get guild member list.*
 
 __**Aliases:**__
@@ -1062,8 +1186,12 @@ __**Arguments:**__
 
 ---
 
-### guild log
+## guild log
 *Get audit logs.*
+
+__**Requires permissions:**__
+
+*View audit log*
 
 __**Aliases:**__
 
@@ -1074,8 +1202,16 @@ __**Arguments:**__
 
 ---
 
-### guild prune
+## guild prune
 *Kick guild members who weren't active in given amount of days (1-7).*
+
+__**Requires permissions:**__
+
+*Kick members*
+
+__**Requires user permissions:**__
+
+*Administrator*
 
 __**Aliases:**__
 
@@ -1090,8 +1226,12 @@ __**Arguments:**__
 
 ---
 
-### guild rename
+## guild rename
 *Rename guild.*
+
+__**Requires permissions:**__
+
+*Manage guild*
 
 __**Aliases:**__
 
@@ -1104,8 +1244,12 @@ __**Arguments:**__
 
 ---
 
-### guild seticon
+## guild seticon
 *Change icon of the guild.*
+
+__**Requires permissions:**__
+
+*Manage guild*
 
 __**Aliases:**__
 
@@ -1118,8 +1262,12 @@ __**Arguments:**__
 
 ---
 
-### guild setleavechannel
+## guild setleavechannel
 *Set leave message channel for this guild.*
+
+__**Requires user permissions:**__
+
+*Manage guild*
 
 __**Aliases:**__
 
@@ -1132,8 +1280,12 @@ __**Arguments:**__
 
 ---
 
-### guild setwelcomechannel
+## guild setwelcomechannel
 *Set welcome message channel for this guild.*
+
+__**Requires user permissions:**__
+
+*Manage guild*
 
 __**Aliases:**__
 
@@ -1172,7 +1324,7 @@ __**Arguments:**__
 
 ---
 
-### imgur latest
+## imgur latest
 *Return latest images for query.*
 
 __**Aliases:**__
@@ -1188,7 +1340,7 @@ __**Arguments:**__
 
 ---
 
-### imgur top
+## imgur top
 *Return most rated images for query.*
 
 __**Aliases:**__
@@ -1220,8 +1372,10 @@ __**Arguments:**__
 
 ---
 
-### insult add
+## insult add
 *Add insult to list (Use % to code mention).*
+
+__**Owner-only.**__
 
 __**Aliases:**__
 
@@ -1234,8 +1388,10 @@ __**Arguments:**__
 
 ---
 
-### insult clear
+## insult clear
 *Delete all insults.*
+
+__**Owner-only.**__
 
 __**Aliases:**__
 
@@ -1246,8 +1402,10 @@ __**Arguments:**__
 
 ---
 
-### insult delete
+## insult delete
 *Remove insult with a given index from list. (use ``!insults list`` to view indexes)*
+
+__**Owner-only.**__
 
 __**Aliases:**__
 
@@ -1260,7 +1418,7 @@ __**Arguments:**__
 
 ---
 
-### insult list
+## insult list
 *Show all insults.*
 
 
@@ -1272,6 +1430,10 @@ __**Arguments:**__
 
 ### invite
 *Get an instant invite link for the current channel.*
+
+__**Requires permissions:**__
+
+*Create instant invites*
 
 __**Aliases:**__
 
@@ -1294,7 +1456,7 @@ __**Arguments:**__
 
 ---
 
-### joke search
+## joke search
 *Search for the joke containing the query.*
 
 __**Aliases:**__
@@ -1308,7 +1470,7 @@ __**Arguments:**__
 
 ---
 
-### joke yourmom
+## joke yourmom
 *Yo mama so...*
 
 __**Aliases:**__
@@ -1322,6 +1484,10 @@ __**Arguments:**__
 
 ### leave
 *Makes Godfather leave the server.*
+
+__**Requires user permissions:**__
+
+*Kick members*
 
 
 __**Arguments:**__
@@ -1352,8 +1518,10 @@ __**Arguments:**__
 
 ---
 
-### meme add
+## meme add
 *Add a new meme to the list.*
+
+__**Owner-only.**__
 
 __**Aliases:**__
 
@@ -1368,7 +1536,7 @@ __**Arguments:**__
 
 ---
 
-### meme create
+## meme create
 *Creates a new meme from blank template.*
 
 __**Aliases:**__
@@ -1386,8 +1554,10 @@ __**Arguments:**__
 
 ---
 
-### meme delete
+## meme delete
 *Deletes a meme from list.*
+
+__**Owner-only.**__
 
 __**Aliases:**__
 
@@ -1400,7 +1570,7 @@ __**Arguments:**__
 
 ---
 
-### meme list
+## meme list
 *List all registered memes.*
 
 __**Aliases:**__
@@ -1426,7 +1596,7 @@ __**Arguments:**__
 
 ---
 
-### message attachments
+## message attachments
 *Print all message attachments.*
 
 __**Aliases:**__
@@ -1440,8 +1610,16 @@ __**Arguments:**__
 
 ---
 
-### message delete
+## message delete
 *Deletes the specified amount of most-recent messages from the channel.*
+
+__**Requires permissions:**__
+
+*Manage messages*
+
+__**Requires user permissions:**__
+
+*Administrator*
 
 __**Aliases:**__
 
@@ -1456,8 +1634,16 @@ __**Arguments:**__
 
 ---
 
-### message deletefrom
+## message deletefrom
 *Deletes given amount of most-recent messages from given user.*
+
+__**Requires permissions:**__
+
+*Manage messages*
+
+__**Requires user permissions:**__
+
+*Administrator*
 
 __**Aliases:**__
 
@@ -1474,8 +1660,16 @@ __**Arguments:**__
 
 ---
 
-### message deletereactions
+## message deletereactions
 *Deletes all reactions from the given message.*
+
+__**Requires permissions:**__
+
+*Manage messages*
+
+__**Requires user permissions:**__
+
+*Administrator*
 
 __**Aliases:**__
 
@@ -1490,8 +1684,16 @@ __**Arguments:**__
 
 ---
 
-### message deleteregex
+## message deleteregex
 *Deletes given amount of most-recent messages that match a given regular expression.*
+
+__**Requires permissions:**__
+
+*Manage messages*
+
+__**Requires user permissions:**__
+
+*Administrator*
 
 __**Aliases:**__
 
@@ -1508,7 +1710,7 @@ __**Arguments:**__
 
 ---
 
-### message listpinned
+## message listpinned
 *List latest amount of pinned messages.*
 
 __**Aliases:**__
@@ -1520,8 +1722,12 @@ __**Arguments:**__
 
 ---
 
-### message modify
+## message modify
 *Modify the given message.*
+
+__**Requires permissions:**__
+
+*Manage messages*
 
 __**Aliases:**__
 
@@ -1536,8 +1742,12 @@ __**Arguments:**__
 
 ---
 
-### message pin
+## message pin
 *Pins the last sent message. If the ID is given, pins that message.*
+
+__**Requires permissions:**__
+
+*Manage messages*
 
 __**Aliases:**__
 
@@ -1550,8 +1760,12 @@ __**Arguments:**__
 
 ---
 
-### message unpin
+## message unpin
 *Unpins the message at given index (starting from 0).*
+
+__**Requires permissions:**__
+
+*Manage messages*
 
 __**Aliases:**__
 
@@ -1564,8 +1778,12 @@ __**Arguments:**__
 
 ---
 
-### message unpinall
+## message unpinall
 *Unpins all pinned messages.*
+
+__**Requires permissions:**__
+
+*Manage messages*
 
 __**Aliases:**__
 
@@ -1601,6 +1819,8 @@ __**Arguments:**__
 ## play
 *Plays a mp3 file from URL or server filesystem.*
 
+__**Owner-only.**__
+
 __**Aliases:**__
 
 *music, p*
@@ -1612,8 +1832,14 @@ __**Arguments:**__
 
 ---
 
-### play file
+## play file
 *Plays an audio file from server filesystem.*
+
+__**Owner-only.**__
+
+__**Requires permissions:**__
+
+*Speak, Use voice chat*
 
 __**Aliases:**__
 
@@ -1657,6 +1883,10 @@ __**Arguments:**__
 ### prefix
 *Get current guild prefix, or change it.*
 
+__**Requires user permissions:**__
+
+*Administrator*
+
 __**Aliases:**__
 
 *setprefix*
@@ -1668,7 +1898,7 @@ __**Arguments:**__
 
 ---
 
-### random cat
+## random cat
 *Get a random cat image.*
 
 
@@ -1676,7 +1906,7 @@ __**Arguments:**__
 
 ---
 
-### random choose
+## random choose
 *!choose option1, option2, option3...*
 
 __**Aliases:**__
@@ -1690,7 +1920,7 @@ __**Arguments:**__
 
 ---
 
-### random dog
+## random dog
 *Get a random dog image.*
 
 
@@ -1698,7 +1928,7 @@ __**Arguments:**__
 
 ---
 
-### random raffle
+## random raffle
 *Choose a user from the online members list belonging to a given role.*
 
 
@@ -1722,7 +1952,7 @@ __**Arguments:**__
 
 ---
 
-### rank list
+## rank list
 *Print all available ranks.*
 
 __**Aliases:**__
@@ -1734,7 +1964,7 @@ __**Arguments:**__
 
 ---
 
-### rank top
+## rank top
 *Get rank leaderboard.*
 
 
@@ -1790,8 +2020,12 @@ __**Arguments:**__
 
 ---
 
-### roles create
+## roles create
 *Create a new role.*
+
+__**Requires permissions:**__
+
+*Manage roles*
 
 __**Aliases:**__
 
@@ -1804,8 +2038,12 @@ __**Arguments:**__
 
 ---
 
-### roles delete
+## roles delete
 *Create a new role.*
+
+__**Requires permissions:**__
+
+*Manage roles*
 
 __**Aliases:**__
 
@@ -1818,8 +2056,12 @@ __**Arguments:**__
 
 ---
 
-### roles mentionall
+## roles mentionall
 *Mention all users from given role.*
+
+__**Requires permissions:**__
+
+*Mention everyone*
 
 __**Aliases:**__
 
@@ -1832,8 +2074,12 @@ __**Arguments:**__
 
 ---
 
-### roles setcolor
+## roles setcolor
 *Set a color for the role.*
+
+__**Requires permissions:**__
+
+*Manage roles*
 
 __**Aliases:**__
 
@@ -1848,8 +2094,12 @@ __**Arguments:**__
 
 ---
 
-### roles setmentionable
+## roles setmentionable
 *Set role mentionable var.*
+
+__**Requires permissions:**__
+
+*Manage roles*
 
 __**Aliases:**__
 
@@ -1864,8 +2114,12 @@ __**Arguments:**__
 
 ---
 
-### roles setname
+## roles setname
 *Set a name for the role.*
+
+__**Requires permissions:**__
+
+*Manage roles*
 
 __**Aliases:**__
 
@@ -1880,8 +2134,12 @@ __**Arguments:**__
 
 ---
 
-### roles setvisible
+## roles setvisible
 *Set role hoist var (visibility in online list.*
+
+__**Requires permissions:**__
+
+*Manage roles*
 
 __**Aliases:**__
 
@@ -1910,7 +2168,7 @@ __**Arguments:**__
 
 ---
 
-### rss listsubs
+## rss listsubs
 *Get feed list for the current channel.*
 
 __**Aliases:**__
@@ -1922,7 +2180,7 @@ __**Arguments:**__
 
 ---
 
-### rss news
+## rss news
 *Get newest world news.*
 
 
@@ -1944,8 +2202,12 @@ __**Arguments:**__
 
 ---
 
-### rss subscribe
+## rss subscribe
 *Subscribe to given url.*
+
+__**Requires permissions:**__
+
+*Manage guild*
 
 __**Aliases:**__
 
@@ -1960,8 +2222,12 @@ __**Arguments:**__
 
 ---
 
-### rss unsubscribe
+## rss unsubscribe
 *Remove an existing feed subscription.*
+
+__**Requires permissions:**__
+
+*Manage guild*
 
 __**Aliases:**__
 
@@ -1974,7 +2240,7 @@ __**Arguments:**__
 
 ---
 
-### rss wm
+## rss wm
 *Get newest topics from WM forum.*
 
 
@@ -2010,7 +2276,7 @@ __**Arguments:**__
 
 ---
 
-### steam profile
+## steam profile
 *Get Steam user information from ID.*
 
 __**Aliases:**__
@@ -2027,12 +2293,14 @@ __**Arguments:**__
 ### stop
 *Stops current voice playback.*
 
+__**Owner-only.**__
+
 
 __**Arguments:**__
 
 ---
 
-### swat query
+## swat query
 *Return server information.*
 
 __**Aliases:**__
@@ -2048,7 +2316,7 @@ __**Arguments:**__
 
 ---
 
-### swat serverlist
+## swat serverlist
 *Print the serverlist with current player numbers.*
 
 
@@ -2064,8 +2332,10 @@ __**Aliases:**__
 *s, srv*
 
 
-### swat settimeout
+## swat settimeout
 *Set checking timeout.*
+
+__**Owner-only.**__
 
 
 __**Arguments:**__
@@ -2074,7 +2344,7 @@ __**Arguments:**__
 
 ---
 
-### swat startcheck
+## swat startcheck
 *Notifies of free space in server.*
 
 __**Aliases:**__
@@ -2090,7 +2360,7 @@ __**Arguments:**__
 
 ---
 
-### swat stopcheck
+## swat stopcheck
 *Stops space checking.*
 
 __**Aliases:**__
@@ -2118,8 +2388,12 @@ __**Arguments:**__
 
 ---
 
-### textreaction add
+## textreaction add
 *Add text reaction to guild text reaction list.*
+
+__**Requires user permissions:**__
+
+*Manage guild*
 
 __**Aliases:**__
 
@@ -2134,8 +2408,12 @@ __**Arguments:**__
 
 ---
 
-### textreaction clear
+## textreaction clear
 *Delete all text reactions for the current guild.*
+
+__**Requires user permissions:**__
+
+*Administrator*
 
 __**Aliases:**__
 
@@ -2146,8 +2424,12 @@ __**Arguments:**__
 
 ---
 
-### textreaction delete
+## textreaction delete
 *Remove text reaction from guild text reaction list.*
+
+__**Requires user permissions:**__
+
+*Manage guild*
 
 __**Aliases:**__
 
@@ -2160,7 +2442,7 @@ __**Arguments:**__
 
 ---
 
-### textreaction list
+## textreaction list
 *Show all text reactions for the guild. Each page has 10 text reactions.*
 
 __**Aliases:**__
@@ -2198,8 +2480,12 @@ __**Arguments:**__
 
 ---
 
-### user addrole
+## user addrole
 *Add a role to user.*
+
+__**Requires permissions:**__
+
+*Manage roles*
 
 __**Aliases:**__
 
@@ -2214,7 +2500,7 @@ __**Arguments:**__
 
 ---
 
-### user avatar
+## user avatar
 *Get avatar from user.*
 
 __**Aliases:**__
@@ -2228,8 +2514,12 @@ __**Arguments:**__
 
 ---
 
-### user ban
+## user ban
 *Bans the user from the server.*
+
+__**Requires permissions:**__
+
+*Ban members*
 
 __**Aliases:**__
 
@@ -2244,8 +2534,12 @@ __**Arguments:**__
 
 ---
 
-### user banid
+## user banid
 *Bans the ID from the server.*
+
+__**Requires permissions:**__
+
+*Ban members*
 
 __**Aliases:**__
 
@@ -2260,8 +2554,12 @@ __**Arguments:**__
 
 ---
 
-### user deafen
+## user deafen
 *Toggle user's voice deafen state.*
+
+__**Requires permissions:**__
+
+*Deafen voice chat members*
 
 __**Aliases:**__
 
@@ -2276,7 +2574,7 @@ __**Arguments:**__
 
 ---
 
-### user info
+## user info
 *Print the user information.*
 
 __**Aliases:**__
@@ -2290,8 +2588,12 @@ __**Arguments:**__
 
 ---
 
-### user kick
+## user kick
 *Kicks the user from server.*
+
+__**Requires permissions:**__
+
+*Kick members*
 
 __**Aliases:**__
 
@@ -2306,7 +2608,7 @@ __**Arguments:**__
 
 ---
 
-### user listperms
+## user listperms
 *List user permissions.*
 
 __**Aliases:**__
@@ -2320,7 +2622,7 @@ __**Arguments:**__
 
 ---
 
-### user listroles
+## user listroles
 *List user permissions.*
 
 __**Aliases:**__
@@ -2334,8 +2636,12 @@ __**Arguments:**__
 
 ---
 
-### user mute
+## user mute
 *Toggle user mute.*
+
+__**Requires permissions:**__
+
+*Mute voice chat members*
 
 __**Aliases:**__
 
@@ -2350,8 +2656,12 @@ __**Arguments:**__
 
 ---
 
-### user removeallroles
+## user removeallroles
 *Revoke all roles from user.*
+
+__**Requires permissions:**__
+
+*Manage roles*
 
 __**Aliases:**__
 
@@ -2364,8 +2674,12 @@ __**Arguments:**__
 
 ---
 
-### user removerole
+## user removerole
 *Revoke a role from user.*
+
+__**Requires permissions:**__
+
+*Manage roles*
 
 __**Aliases:**__
 
@@ -2380,8 +2694,12 @@ __**Arguments:**__
 
 ---
 
-### user setname
+## user setname
 *Gives someone a new nickname.*
+
+__**Requires permissions:**__
+
+*Manage nicknames*
 
 __**Aliases:**__
 
@@ -2396,8 +2714,12 @@ __**Arguments:**__
 
 ---
 
-### user softban
+## user softban
 *Bans the user from the server and then unbans him immediately.*
+
+__**Requires permissions:**__
+
+*Ban members*
 
 __**Aliases:**__
 
@@ -2412,8 +2734,12 @@ __**Arguments:**__
 
 ---
 
-### user tempban
+## user tempban
 *Temporarily ans the user from the server and then unbans him after given time.*
+
+__**Requires permissions:**__
+
+*Ban members*
 
 __**Aliases:**__
 
@@ -2432,8 +2758,12 @@ __**Arguments:**__
 
 ---
 
-### user unban
+## user unban
 *Unbans the user from the server.*
+
+__**Requires permissions:**__
+
+*Ban members*
 
 __**Aliases:**__
 
@@ -2448,8 +2778,12 @@ __**Arguments:**__
 
 ---
 
-### user warn
+## user warn
 *Warn a user.*
+
+__**Requires permissions:**__
+
+*Kick members*
 
 __**Aliases:**__
 
@@ -2478,7 +2812,7 @@ __**Arguments:**__
 
 ---
 
-### youtube search
+## youtube search
 *Advanced youtube search.*
 
 __**Aliases:**__
@@ -2494,7 +2828,7 @@ __**Arguments:**__
 
 ---
 
-### youtube searchc
+## youtube searchc
 *Advanced youtube search for channels only.*
 
 __**Aliases:**__
@@ -2508,7 +2842,7 @@ __**Arguments:**__
 
 ---
 
-### youtube searchp
+## youtube searchp
 *Advanced youtube search for playlists only.*
 
 __**Aliases:**__
@@ -2522,7 +2856,7 @@ __**Arguments:**__
 
 ---
 
-### youtube searchv
+## youtube searchv
 *Advanced youtube search for videos only.*
 
 __**Aliases:**__
