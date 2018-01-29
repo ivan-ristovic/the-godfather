@@ -15,19 +15,17 @@ namespace TheGodfather
     {
         public override Task<bool> ExecuteCheckAsync(CommandContext ctx, bool help)
         {
-            if (!ctx.Channel.PermissionsFor(ctx.Guild.CurrentMember).HasFlag(Permissions.SendMessages))
-                return Task.FromResult(false);
-
             if (TheGodfather.Listening) {
-                ctx.Client.DebugLogger.LogMessage(LogLevel.Debug, "TheGodfather",
-                    $"Executing: {ctx.Command?.QualifiedName ?? "<unknown command>"}" + Environment.NewLine +
-                    $" User: {ctx.User.ToString()}" + Environment.NewLine +
-                    $" Location: '{ctx.Guild.Name}' ({ctx.Guild.Id}) ; {ctx.Channel.ToString()}" +
-                    $" Full message: {ctx.Message.Content}" + Environment.NewLine,
-                    DateTime.Now
-                );
-                if (!help)
+                if (!help) {
+                    ctx.Client.DebugLogger.LogMessage(LogLevel.Debug, "TheGodfather",
+                        $"Executing: {ctx.Command?.QualifiedName ?? "<unknown command>"}<br>" + 
+                        $"User: {ctx.User.ToString()}<br>" +
+                        $"{ctx.Guild.ToString()} ; {ctx.Channel.ToString()}" +
+                        $"Full message: {ctx.Message.Content}" + Environment.NewLine,
+                        DateTime.Now
+                    );
                     ctx.TriggerTypingAsync();
+                }
                 return Task.FromResult(true);
             } else {
                 return Task.FromResult(false);
