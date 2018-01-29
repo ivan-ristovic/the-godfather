@@ -304,20 +304,20 @@ namespace TheGodfather.Modules.Administration
                 if (allchecks.Any(chk => chk is RequireOwnerAttribute))
                     sb.AppendLine(Formatter.Underline(Formatter.Bold("Owner-only.")) + "\n");
                 if (permissions.Any()) {
-                    sb.AppendLine(Formatter.Underline(Formatter.Bold("Requires permissions:")) + "\n");
+                    sb.AppendLine(Formatter.Underline(Formatter.Bold("Requires permissions:")));
                     sb.AppendLine(Formatter.Italic(string.Join(", ", permissions)) + "\n");
                 }
                 if (userpermissions.Any()) {
-                    sb.AppendLine(Formatter.Underline(Formatter.Bold("Requires user permissions:")) + "\n");
+                    sb.AppendLine(Formatter.Underline(Formatter.Bold("Requires user permissions:")));
                     sb.AppendLine(Formatter.Italic(string.Join(", ", userpermissions)) + "\n");
                 }
                 if (botpermissions.Any()) {
-                    sb.AppendLine(Formatter.Underline(Formatter.Bold("Requires bot permissions:")) + "\n");
+                    sb.AppendLine(Formatter.Underline(Formatter.Bold("Requires bot permissions:")));
                     sb.AppendLine(Formatter.Italic(string.Join(", ", botpermissions)) + "\n");
                 }
 
                 if (cmd.Aliases.Any()) {
-                    sb.AppendLine(Formatter.Underline(Formatter.Bold("Aliases:")) + "\n");
+                    sb.AppendLine(Formatter.Underline(Formatter.Bold("Aliases:")));
                     sb.AppendLine(Formatter.Italic(string.Join(", ", cmd.Aliases)) + "\n");
                 }
                 sb.AppendLine();
