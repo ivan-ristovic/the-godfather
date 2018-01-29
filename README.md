@@ -33,7 +33,7 @@ Commands use the following types:
 
 ## Command table 
 
-### Note: (OVERLOAD UPDATES ARE IN PROGRESS, LIST WILL BE UPDATED SOON™)
+### Note: (OVERLOAD UPDATES ARE IN PROGRESS, LIST WILL BE UPDATED SOON)
 
 *Note: ``Required permissions`` are permissions required for both the bot and the user in order to run the command (if not specified otherwise in table)*
 <br><br>

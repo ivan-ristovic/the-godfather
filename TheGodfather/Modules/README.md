@@ -1,117 +1,117 @@
 # Command list
 
 ### 8ball
-```*An almighty ball which knows answer to everything.*
+*An almighty ball which knows answer to everything.*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[string...]` : *A question for the almighty ball.*
 
 ---
 
 ```### admin botavatar
-```*Set bot avatar.*
+*Set bot avatar.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *setbotavatar, setavatar*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[string]` : *URL.*
 
 ---
 
 ```### admin botname
-```*Set bot name.*
+*Set bot name.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *setbotname, setname*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[string...]` : *New name.*
 
 ---
 
 ```### admin clearlog
-```*Clear application logs.*
+*Clear application logs.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *clearlogs, deletelogs, deletelog*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 ---
 
 ```### admin dbquery
-```*Clear application logs.*
+*Clear application logs.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *sql, dbq, q*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[string...]` : *SQL Query.*
 
 ---
 
 ```### admin eval
-```*Evaluates a snippet of C# code, in context.*
+*Evaluates a snippet of C# code, in context.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *compile, run, e, c, r*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[string...]` : *Code to evaluate.*
 
 ---
 
 ```### admin generatecommands
-```*Generates a command-list.*
+*Generates a command-list.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *cmdlist, gencmdlist, gencmds*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 (optional) `[string...]` : *File path.* (def: `None`)
 
 ---
 
 ```### admin leaveguilds
-```*Leave guilds given as IDs.*
+*Leave guilds given as IDs.*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[unsigned long...]` : *Guild ID list.*
 
 ---
 
 ```### admin sendmessage
-```*Sends a message to a user or channel.*
+*Sends a message to a user or channel.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *send*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[string]` : *u/c (for user or channel.)*
 
 `[unsigned long]` : *User/Channel ID.*
@@ -121,31 +121,31 @@ __
 ---
 
 ```### admin shutdown
-```*Triggers the dying in the vineyard scene.*
+*Triggers the dying in the vineyard scene.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *disable, poweroff, exit, quit*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 ---
 
 ```## admin status
-```*Bot status manipulation.*
+*Bot status manipulation.*
 
 
 ```### admin sudo
-```*Executes a command as another user.*
+*Executes a command as another user.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *execas, as*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[member]` : *Member to execute as.*
 
 `[string...]` : *Command text to execute.*
@@ -153,41 +153,41 @@ __
 ---
 
 ```### admin toggleignore
-```*Toggle bot's reaction to commands.*
+*Toggle bot's reaction to commands.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *ti*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 ---
 
 ```## bank
-```*Bank manipulation.*
+*Bank manipulation.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *$, $$, $$$*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 (optional) `[user]` : *User.* (def: `None`)
 
 ---
 
 ```### bank grant
-```*Magically give funds to a user.*
+*Magically give funds to a user.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *give*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[user]` : *User.*
 
 `[int]` : *Amount.*
@@ -195,53 +195,53 @@ __
 ---
 
 ```### bank register
-```*Create an account in WM bank.*
+*Create an account in WM bank.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *r, signup, activate*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 ---
 
 ```### bank status
-```*View account balance for user.*
+*View account balance for user.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *s, balance*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 (optional) `[user]` : *User.* (def: `None`)
 
 ---
 
 ```### bank top
-```*Print the richest users.*
+*Print the richest users.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *leaderboard*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 ---
 
 ```### bank transfer
-```*Transfer funds from one account to another.*
+*Transfer funds from one account to another.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *lend*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[user]` : *User to send credits to.*
 
 `[int]` : *Amount.*
@@ -249,67 +249,67 @@ __
 ---
 
 ```### cards draw
-```*Draw cards from the top of the deck.*
+*Draw cards from the top of the deck.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *take*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 (optional) `[int]` : *Amount.* (def: `1`)
 
 ---
 
 ```### cards reset
-```*Opens a brand new card deck.*
+*Opens a brand new card deck.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *new, opennew*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 ---
 
 ```### cards shuffle
-```*Shuffle current deck.*
+*Shuffle current deck.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *s, sh, mix*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 ---
 
 ```### channel createcategory
-```*Create new channel category.*
+*Create new channel category.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *createcat, createc, ccat, cc, +cat, +c, +category*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[string...]` : *Name.*
 
 ---
 
 ```### channel createtext
-```*Create new txt channel.*
+*Create new txt channel.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *createtxt, createt, ctxt, ct, +, +t, +txt*
 
 
-__**Overload 2:**
-__
+__**Overload 2:**__
+
 `[string]` : *Name.*
 
 (optional) `[channel]` : *Parent category.* (def: `None`)
@@ -318,8 +318,8 @@ __
 
 ---
 
-__**Overload 1:**
-__
+__**Overload 1:**__
+
 `[string]` : *Name.*
 
 (optional) `[boolean]` : *NSFW?* (def: `False`)
@@ -328,8 +328,8 @@ __
 
 ---
 
-__**Overload 0:**
-__
+__**Overload 0:**__
+
 `[channel]` : *Parent category.*
 
 `[string]` : *Name.*
@@ -339,15 +339,15 @@ __
 ---
 
 ```### channel createvoice
-```*Create new voice channel.*
+*Create new voice channel.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *createv, cvoice, cv, +voice, +v*
 
 
-__**Overload 2:**
-__
+__**Overload 2:**__
+
 `[string]` : *Name.*
 
 (optional) `[channel]` : *Parent category.* (def: `None`)
@@ -358,8 +358,8 @@ __
 
 ---
 
-__**Overload 1:**
-__
+__**Overload 1:**__
+
 `[string]` : *Name.*
 
 (optional) `[int]` : *User limit.* (def: `None`)
@@ -370,8 +370,8 @@ __
 
 ---
 
-__**Overload 0:**
-__
+__**Overload 0:**__
+
 `[channel]` : *Parent category.*
 
 `[string]` : *Name.*
@@ -383,51 +383,51 @@ __
 ---
 
 ```### channel delete
-```*Delete a given channel or category.*
+*Delete a given channel or category.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *-, del, d, remove, rm*
 
 
-__**Overload 1:**
-__
+__**Overload 1:**__
+
 (optional) `[channel]` : *Channel to delete.* (def: `None`)
 
 (optional) `[string...]` : *Reason.* (def: `None`)
 
 ---
 
-__**Overload 0:**
-__
+__**Overload 0:**__
+
 `[string...]` : *Reason.*
 
 ---
 
 ```### channel info
-```*Get information about a given channel.*
+*Get information about a given channel.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *i, information*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 (optional) `[channel]` : *Channel.* (def: `None`)
 
 ---
 
 ```### channel modify
-```*Modify a given voice channel. Set 0 if you wish to keep the value as it is.*
+*Modify a given voice channel. Set 0 if you wish to keep the value as it is.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *edit, mod, m, e*
 
 
-__**Overload 1:**
-__
+__**Overload 1:**__
+
 `[channel]` : *Voice channel to edit*
 
 (optional) `[int]` : *User limit.* (def: `0`)
@@ -438,8 +438,8 @@ __
 
 ---
 
-__**Overload 0:**
-__
+__**Overload 0:**__
+
 (optional) `[int]` : *User limit.* (def: `0`)
 
 (optional) `[int]` : *Bitrate.* (def: `0`)
@@ -449,15 +449,15 @@ __
 ---
 
 ```### channel rename
-```*Rename channel.*
+*Rename channel.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *r, name, setname*
 
 
-__**Overload 2:**
-__
+__**Overload 2:**__
+
 `[string]` : *Reason.*
 
 `[channel]` : *Channel to rename.*
@@ -466,30 +466,30 @@ __
 
 ---
 
-__**Overload 1:**
-__
+__**Overload 1:**__
+
 `[channel]` : *Channel to rename.*
 
 `[string...]` : *New name.*
 
 ---
 
-__**Overload 0:**
-__
+__**Overload 0:**__
+
 `[string...]` : *New name.*
 
 ---
 
 ```### channel setparent
-```*Change the parent of the given channel.*
+*Change the parent of the given channel.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *setpar, par, parent*
 
 
-__**Overload 1:**
-__
+__**Overload 1:**__
+
 `[channel]` : *Child channel.*
 
 `[channel]` : *Parent category.*
@@ -498,8 +498,8 @@ __
 
 ---
 
-__**Overload 0:**
-__
+__**Overload 0:**__
+
 `[channel]` : *Parent category.*
 
 (optional) `[string...]` : *Reason.* (def: `None`)
@@ -507,15 +507,15 @@ __
 ---
 
 ```### channel setposition
-```*Change the position of the given channel in the guild channel list.*
+*Change the position of the given channel in the guild channel list.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *setpos, pos, position*
 
 
-__**Overload 2:**
-__
+__**Overload 2:**__
+
 `[channel]` : *Channel to reorder.*
 
 `[int]` : *Position.*
@@ -524,8 +524,8 @@ __
 
 ---
 
-__**Overload 1:**
-__
+__**Overload 1:**__
+
 `[int]` : *Position.*
 
 `[channel]` : *Channel to reorder.*
@@ -534,8 +534,8 @@ __
 
 ---
 
-__**Overload 0:**
-__
+__**Overload 0:**__
+
 `[int]` : *Position.*
 
 (optional) `[string...]` : *Reason.* (def: `None`)
@@ -543,15 +543,15 @@ __
 ---
 
 ```### channel settopic
-```*Set channel topic.*
+*Set channel topic.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *t, topic, sett*
 
 
-__**Overload 2:**
-__
+__**Overload 2:**__
+
 `[string]` : *Reason.*
 
 `[channel]` : *Channel.*
@@ -560,58 +560,58 @@ __
 
 ---
 
-__**Overload 1:**
-__
+__**Overload 1:**__
+
 `[channel]` : *Channel.*
 
 `[string...]` : *New Topic.*
 
 ---
 
-__**Overload 0:**
-__
+__**Overload 0:**__
+
 `[string...]` : *New Topic.*
 
 ---
 
 ```### connect
-```*Connects me to a voice channel.*
+*Connects me to a voice channel.*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 (optional) `[channel]` : *Channel.* (def: `None`)
 
 ---
 
 ```### disconnect
-```*Disconnects from voice channel.*
+*Disconnects from voice channel.*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 ---
 
 ```### embed
-```*Embed an image given as an URL.*
+*Embed an image given as an URL.*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[string]` : *Image URL.*
 
 ---
 
 ```## emojireaction
-```*Emoji reaction handling.*
+*Emoji reaction handling.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *ereact, er, emojir, emojireactions*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 (optional) `[emoji]` : *Emoji to send.* (def: `None`)
 
 `[string...]` : *Trigger word list.*
@@ -619,15 +619,15 @@ __
 ---
 
 ```### emojireaction add
-```*Add emoji reactions to guild reaction list.*
+*Add emoji reactions to guild reaction list.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *+, new*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[emoji]` : *Emoji to send.*
 
 `[string...]` : *Trigger word list.*
@@ -635,109 +635,109 @@ __
 ---
 
 ```### emojireaction clear
-```*Delete all reactions for the current guild.*
+*Delete all reactions for the current guild.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *da, c*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 ---
 
 ```### emojireaction delete
-```*Remove emoji reactions for given trigger words.*
+*Remove emoji reactions for given trigger words.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *-, remove, del, rm, d*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[string...]` : *Trigger word list.*
 
 ---
 
 ```### emojireaction list
-```*Show all emoji reactions.*
+*Show all emoji reactions.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *ls, l*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 (optional) `[int]` : *Page.* (def: `1`)
 
 ---
 
 ```### filter add
-```*Add filter to guild filter list.*
+*Add filter to guild filter list.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *+, new, a*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[string...]` : *Filter. Can be a regex (case insensitive).*
 
 ---
 
 ```### filter clear
-```*Delete all filters for the current guild.*
+*Delete all filters for the current guild.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *c, da*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 ---
 
 ```### filter delete
-```*Remove filter from guild filter list.*
+*Remove filter from guild filter list.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *-, remove, del*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[string...]` : *Filter to remove.*
 
 ---
 
 ```### filter list
-```*Show all filters for this guild.*
+*Show all filters for this guild.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *ls, l*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 (optional) `[int]` : *Page* (def: `1`)
 
 ---
 
 ```### gamble coinflip
-```*Flips a coin.*
+*Flips a coin.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *coin, flip*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 (optional) `[int]` : *Bid.* (def: `0`)
 
 (optional) `[string]` : *Heads/Tails (h/t).* (def: `None`)
@@ -745,15 +745,15 @@ __
 ---
 
 ```### gamble roll
-```*Rolls a dice.*
+*Rolls a dice.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *dice, die*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 (optional) `[int]` : *Bid.* (def: `0`)
 
 (optional) `[int]` : *Number guess.* (def: `0`)
@@ -761,329 +761,329 @@ __
 ---
 
 ```### gamble slot
-```*Roll a slot machine.*
+*Roll a slot machine.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *slotmachine*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 (optional) `[int]` : *Bid.* (def: `5`)
 
 ---
 
 ```### games caro
-```*Starts a caro game.*
+*Starts a caro game.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *c*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 ---
 
 ```### games connectfour
-```*Starts a "Connect4" game. Play by posting a number from 1 to 9 corresponding to the column you wish to place your move on.*
+*Starts a "Connect4" game. Play by posting a number from 1 to 9 corresponding to the column you wish to place your move on.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *connect4, chain4, chainfour, c4*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 ---
 
 ```### games duel
-```*Starts a duel which I will commentate.*
+*Starts a duel which I will commentate.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *fight, vs, d*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[user]` : *Who to fight with?*
 
 ---
 
 ```### games hangman
-```*Starts a hangman game.*
+*Starts a hangman game.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *h, hang*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 ---
 
 ```### games leaderboard
-```*Starts a hangman game.*
+*Starts a hangman game.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *globalstats*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 ---
 
 ```## games nunchi
-```*Nunchi game commands*
+*Nunchi game commands*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *n*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 ---
 
 ```## games quiz
-```*Start a quiz!*
+*Start a quiz!*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *trivia, q*
 
 
 ```## games race
-```*Racing!*
+*Racing!*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *r*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 ---
 
 ```### games rps
-```*Rock, paper, scissors game.*
+*Rock, paper, scissors game.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *rockpaperscissors*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 ---
 
 ```### games stats
-```*Print game stats for given user.*
+*Print game stats for given user.*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 (optional) `[user]` : *User.* (def: `None`)
 
 ---
 
 ```### games tictactoe
-```*Starts a game of tic-tac-toe. Play by posting a number from 1 to 9 corresponding to field you wish to place your move on.*
+*Starts a game of tic-tac-toe. Play by posting a number from 1 to 9 corresponding to field you wish to place your move on.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *ttt*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 ---
 
 ```### games typing
-```*Typing race.*
+*Typing race.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *type, typerace, typingrace*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 ---
 
 ```## gif
-```*GIPHY commands.*
+*GIPHY commands.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *giphy*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[string...]` : *Query.*
 
 ---
 
 ```### gif random
-```*Return a random GIF.*
+*Return a random GIF.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *r, rand, rnd*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 ---
 
 ```### gif trending
-```*Return an amount of trending GIFs.*
+*Return an amount of trending GIFs.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *t, tr, trend*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 (optional) `[int]` : *Number of results (1-10).* (def: `5`)
 
 ---
 
 ```### greet
-```*Greets a user and starts a conversation.*
+*Greets a user and starts a conversation.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *hello, hi, halo, hey, howdy, sup*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 ---
 
 ```### guild bans
-```*Get guild ban list.*
+*Get guild ban list.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *banlist, viewbanlist, getbanlist, getbans, viewbans*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 ---
 
 ```### guild deleteleavechannel
-```*Remove leave message channel for this guild.*
+*Remove leave message channel for this guild.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *delleavec, dellc, delleave, dlc*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 ---
 
 ```### guild deletewelcomechannel
-```*Remove welcome message channel for this guild.*
+*Remove welcome message channel for this guild.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *delwelcomec, delwc, delwelcome, dwc, deletewc*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 ---
 
 ```## guild emoji
-```*Manipulate guild emoji.*
+*Manipulate guild emoji.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *emojis, e*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 ---
 
 ```### guild getleavechannel
-```*Get current leave message channel for this guild.*
+*Get current leave message channel for this guild.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *getleavec, getlc, getleave, leavechannel, lc*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 ---
 
 ```### guild getwelcomechannel
-```*Get current welcome message channel for this guild.*
+*Get current welcome message channel for this guild.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *getwelcomec, getwc, getwelcome, welcomechannel, wc*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 ---
 
 ```### guild info
-```*Get guild information.*
+*Get guild information.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *i, information*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 ---
 
 ```### guild listmembers
-```*Get guild member list.*
+*Get guild member list.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *memberlist, lm, members*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 ---
 
 ```### guild log
-```*Get audit logs.*
+*Get audit logs.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *auditlog, viewlog, getlog, getlogs, logs*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 ---
 
 ```### guild prune
-```*Kick guild members who weren't active in given amount of days (1-7).*
+*Kick guild members who weren't active in given amount of days (1-7).*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *p, clean*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 (optional) `[int]` : *Days.* (def: `7`)
 
 (optional) `[string...]` : *Reason.* (def: `None`)
@@ -1091,81 +1091,81 @@ __
 ---
 
 ```### guild rename
-```*Rename guild.*
+*Rename guild.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *r, name, setname*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[string...]` : *New name.*
 
 ---
 
 ```### guild seticon
-```*Change icon of the guild.*
+*Change icon of the guild.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *icon, si*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[string]` : *New icon URL.*
 
 ---
 
 ```### guild setleavechannel
-```*Set leave message channel for this guild.*
+*Set leave message channel for this guild.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *leavec, setlc, setleave*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 (optional) `[channel]` : *Channel.* (def: `None`)
 
 ---
 
 ```### guild setwelcomechannel
-```*Set welcome message channel for this guild.*
+*Set welcome message channel for this guild.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *setwc, setwelcomec, setwelcome*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 (optional) `[channel]` : *Channel.* (def: `None`)
 
 ---
 
 ```### help
-```*Displays command help.*
+*Displays command help.*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[string...]` : *Command to provide help for.*
 
 ---
 
 ```## imgur
-```*Search imgur. Invoking without sub command searches top.*
+*Search imgur. Invoking without sub command searches top.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *img, im, i*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[int]` : *Number of images to print [1-10].*
 
 `[string...]` : *Query.*
@@ -1173,15 +1173,15 @@ __
 ---
 
 ```### imgur latest
-```*Return latest images for query.*
+*Return latest images for query.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *l, new, newest*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[int]` : *Number of images to print [1-10].*
 
 `[string]` : *Query.*
@@ -1189,15 +1189,15 @@ __
 ---
 
 ```### imgur top
-```*Return most rated images for query.*
+*Return most rated images for query.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *t*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 (optional) `[string]` : *Time window (day/month/week/year/all).* (def: `day`)
 
 (optional) `[int]` : *Number of images to print [1-10].* (def: `1`)
@@ -1207,161 +1207,161 @@ __
 ---
 
 ```## insult
-```*Burns a user!*
+*Burns a user!*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *burn, insults*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 (optional) `[user]` : *User.* (def: `None`)
 
 ---
 
 ```### insult add
-```*Add insult to list (Use % to code mention).*
+*Add insult to list (Use % to code mention).*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *+, new*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[string...]` : *Response.*
 
 ---
 
 ```### insult clear
-```*Delete all insults.*
+*Delete all insults.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *clearall*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 ---
 
 ```### insult delete
-```*Remove insult with a given index from list. (use ``!insults list`` to view indexes)*
+*Remove insult with a given index from list. (use ``!insults list`` to view indexes)*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *-, remove, del, rm*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[int]` : *Index.*
 
 ---
 
 ```### insult list
-```*Show all insults.*
+*Show all insults.*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 (optional) `[int]` : *Page.* (def: `1`)
 
 ---
 
 ```### invite
-```*Get an instant invite link for the current channel.*
+*Get an instant invite link for the current channel.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *getinvite*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 ---
 
 ```## joke
-```*Send a joke.*
+*Send a joke.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *jokes, j*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 ---
 
 ```### joke search
-```*Search for the joke containing the query.*
+*Search for the joke containing the query.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *s*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[string...]` : *Query.*
 
 ---
 
 ```### joke yourmom
-```*Yo mama so...*
+*Yo mama so...*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *mama, m, yomomma, yomom, yomoma, yomamma, yomama*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 ---
 
 ```### leave
-```*Makes Godfather leave the server.*
+*Makes Godfather leave the server.*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 ---
 
 ```### leet
-```*Wr1t3s m3ss@g3 1n 1337sp34k.*
+*Wr1t3s m3ss@g3 1n 1337sp34k.*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[string...]` : *Text*
 
 ---
 
 ```## meme
-```*Manipulate memes. When invoked without name, returns a random one.*
+*Manipulate memes. When invoked without name, returns a random one.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *memes, mm*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 (optional) `[string...]` : *Meme name.* (def: `None`)
 
 ---
 
 ```### meme add
-```*Add a new meme to the list.*
+*Add a new meme to the list.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *+, new, a*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[string]` : *Short name (case insensitive).*
 
 `[string]` : *URL.*
@@ -1369,15 +1369,15 @@ __
 ---
 
 ```### meme create
-```*Creates a new meme from blank template.*
+*Creates a new meme from blank template.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *maker, c, make, m*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[string]` : *Template.*
 
 `[string]` : *Top Text.*
@@ -1387,69 +1387,69 @@ __
 ---
 
 ```### meme delete
-```*Deletes a meme from list.*
+*Deletes a meme from list.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *-, del, remove, rm, d*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[string]` : *Short name (case insensitive).*
 
 ---
 
 ```### meme list
-```*List all registered memes.*
+*List all registered memes.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *ls, l*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 (optional) `[int]` : *Page.* (def: `1`)
 
 ---
 
 ```## meme templates
-```*Manipulate meme templates.*
+*Manipulate meme templates.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *template, t*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 ---
 
 ```### message attachments
-```*Print all message attachments.*
+*Print all message attachments.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *a, files, la*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 (optional) `[unsigned long]` : *Message ID.* (def: `0`)
 
 ---
 
 ```### message delete
-```*Deletes the specified amount of most-recent messages from the channel.*
+*Deletes the specified amount of most-recent messages from the channel.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *-, prune, del, d*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 (optional) `[int]` : *Amount.* (def: `5`)
 
 (optional) `[string...]` : *Reason.* (def: `None`)
@@ -1457,15 +1457,15 @@ __
 ---
 
 ```### message deletefrom
-```*Deletes given amount of most-recent messages from given user.*
+*Deletes given amount of most-recent messages from given user.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *-user, -u, deluser, du, dfu, delfrom*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[user]` : *User.*
 
 (optional) `[int]` : *Amount.* (def: `5`)
@@ -1475,15 +1475,15 @@ __
 ---
 
 ```### message deletereactions
-```*Deletes all reactions from the given message.*
+*Deletes all reactions from the given message.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *-reactions, -r, delreactions, dr*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 (optional) `[unsigned long]` : *ID.* (def: `0`)
 
 (optional) `[string...]` : *Reason.* (def: `None`)
@@ -1491,15 +1491,15 @@ __
 ---
 
 ```### message deleteregex
-```*Deletes given amount of most-recent messages that match a given regular expression.*
+*Deletes given amount of most-recent messages that match a given regular expression.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *-regex, -rx, delregex, drx*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[string]` : *Pattern (Regex).*
 
 (optional) `[int]` : *Amount.* (def: `5`)
@@ -1509,27 +1509,27 @@ __
 ---
 
 ```### message listpinned
-```*List latest amount of pinned messages.*
+*List latest amount of pinned messages.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *lp, listpins, listpin, pinned*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 ---
 
 ```### message modify
-```*Modify the given message.*
+*Modify the given message.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *edit, mod, e, m*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[unsigned long]` : *Message ID.*
 
 `[string...]` : *New content.*
@@ -1537,231 +1537,231 @@ __
 ---
 
 ```### message pin
-```*Pins the last sent message. If the ID is given, pins that message.*
+*Pins the last sent message. If the ID is given, pins that message.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *p*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 (optional) `[unsigned long]` : *ID.* (def: `0`)
 
 ---
 
 ```### message unpin
-```*Unpins the message at given index (starting from 0).*
+*Unpins the message at given index (starting from 0).*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *up*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 (optional) `[int]` : *Index (starting from 1).* (def: `1`)
 
 ---
 
 ```### message unpinall
-```*Unpins all pinned messages.*
+*Unpins all pinned messages.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *upa*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 ---
 
 ```### penis
-```*An accurate size of the user's manhood.*
+*An accurate size of the user's manhood.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *size, length, manhood, dick*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[user]` : *Who to measure*
 
 ---
 
 ```### ping
-```*Ping the bot.*
+*Ping the bot.*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 ---
 
 ```## play
-```*Plays a mp3 file from URL or server filesystem.*
+*Plays a mp3 file from URL or server filesystem.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *music, p*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[string...]` : *URL or YouTube search query.*
 
 ---
 
 ```### play file
-```*Plays an audio file from server filesystem.*
+*Plays an audio file from server filesystem.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *f*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[string...]` : *Full path to the file to play.*
 
 ---
 
 ```### poll
-```*Starts a poll in the channel.*
+*Starts a poll in the channel.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *vote*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[string...]` : *Question.*
 
 ---
 
 ```### pollr
-```*Starts a poll with reactions in the channel.*
+*Starts a poll with reactions in the channel.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *voter*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[emoji...]` : *Options*
 
 ---
 
 ```### prefix
-```*Get current guild prefix, or change it.*
+*Get current guild prefix, or change it.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *setprefix*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 (optional) `[string]` : *Prefix to set.* (def: `None`)
 
 ---
 
 ```### random cat
-```*Get a random cat image.*
+*Get a random cat image.*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 ---
 
 ```### random choose
-```*!choose option1, option2, option3...*
+*!choose option1, option2, option3...*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *select*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[string...]` : *Option list (separated with a comma).*
 
 ---
 
 ```### random dog
-```*Get a random dog image.*
+*Get a random dog image.*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 ---
 
 ```### random raffle
-```*Choose a user from the online members list belonging to a given role.*
+*Choose a user from the online members list belonging to a given role.*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 (optional) `[role]` : *Role.* (def: `None`)
 
 ---
 
 ```## rank
-```*User ranking commands.*
+*User ranking commands.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *ranks, ranking*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 (optional) `[user]` : *User.* (def: `None`)
 
 ---
 
 ```### rank list
-```*Print all available ranks.*
+*Print all available ranks.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *levels*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 ---
 
 ```### rank top
-```*Get rank leaderboard.*
+*Get rank leaderboard.*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 ---
 
 ```### rate
-```*An accurate graph of a user's humanity.*
+*An accurate graph of a user's humanity.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *score, graph*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[user]` : *Who to measure.*
 
 ---
 
 ```### remind
-```*Resend a message after some time.*
+*Resend a message after some time.*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[int]` : *Time to wait before repeat (in seconds).*
 
 `[string...]` : *What to repeat.*
@@ -1769,79 +1769,79 @@ __
 ---
 
 ```### report
-```*Send a report message to owner about a bug (please don't abuse... please).*
+*Send a report message to owner about a bug (please don't abuse... please).*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[string...]` : *Text.*
 
 ---
 
 ```## roles
-```*Miscellaneous role control commands.*
+*Miscellaneous role control commands.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *role, r, rl*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 ---
 
 ```### roles create
-```*Create a new role.*
+*Create a new role.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *new, add, +*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[string...]` : *Role.*
 
 ---
 
 ```### roles delete
-```*Create a new role.*
+*Create a new role.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *del, remove, d, -, rm*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[role]` : *Role.*
 
 ---
 
 ```### roles mentionall
-```*Mention all users from given role.*
+*Mention all users from given role.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *mention, @, ma*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[role]` : *Role.*
 
 ---
 
 ```### roles setcolor
-```*Set a color for the role.*
+*Set a color for the role.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *clr, c, sc*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[role]` : *Role.*
 
 `[string]` : *Color.*
@@ -1849,15 +1849,15 @@ __
 ---
 
 ```### roles setmentionable
-```*Set role mentionable var.*
+*Set role mentionable var.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *mentionable, m, setm*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[role]` : *Role.*
 
 `[boolean]` : *[true/false]*
@@ -1865,15 +1865,15 @@ __
 ---
 
 ```### roles setname
-```*Set a name for the role.*
+*Set a name for the role.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *name, rename, n*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[role]` : *Role.*
 
 `[string...]` : *New name.*
@@ -1881,15 +1881,15 @@ __
 ---
 
 ```### roles setvisible
-```*Set role hoist var (visibility in online list.*
+*Set role hoist var (visibility in online list.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *separate, h, seth, hoist, sethoist*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[role]` : *Role.*
 
 `[boolean]` : *[true/false]*
@@ -1897,63 +1897,63 @@ __
 ---
 
 ```## rss
-```*RSS feed operations.*
+*RSS feed operations.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *feed*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[string...]` : *URL.*
 
 ---
 
 ```### rss listsubs
-```*Get feed list for the current channel.*
+*Get feed list for the current channel.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *ls, list*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 ---
 
 ```### rss news
-```*Get newest world news.*
+*Get newest world news.*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 ---
 
 ```## rss reddit
-```*Reddit feed manipulation.*
+*Reddit feed manipulation.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *r*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 (optional) `[string]` : *Subreddit.* (def: `all`)
 
 ---
 
 ```### rss subscribe
-```*Subscribe to given url.*
+*Subscribe to given url.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *sub, add, +*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[string...]` : *URL.*
 
 (optional) `[string]` : *Friendly name.* (def: `None`)
@@ -1961,87 +1961,87 @@ __
 ---
 
 ```### rss unsubscribe
-```*Remove an existing feed subscription.*
+*Remove an existing feed subscription.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *del, d, rm, -, unsub*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[int]` : *ID.*
 
 ---
 
 ```### rss wm
-```*Get newest topics from WM forum.*
+*Get newest topics from WM forum.*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 ---
 
 ```## rss youtube
-```*Youtube feed manipulation.*
+*Youtube feed manipulation.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *yt, y*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[string]` : *Channel URL.*
 
 ---
 
 ```### say
-```*Repeats after you.*
+*Repeats after you.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *repeat*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[string...]` : *Text.*
 
 ---
 
 ```### steam profile
-```*Get Steam user information from ID.*
+*Get Steam user information from ID.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *id*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[unsigned long]` : *ID.*
 
 ---
 
 ```### stop
-```*Stops current voice playback.*
+*Stops current voice playback.*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 ---
 
 ```### swat query
-```*Return server information.*
+*Return server information.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *q, info, i*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[string]` : *Registered name or IP.*
 
 (optional) `[int]` : *Query port* (def: `10481`)
@@ -2049,41 +2049,41 @@ __
 ---
 
 ```### swat serverlist
-```*Print the serverlist with current player numbers.*
+*Print the serverlist with current player numbers.*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 ---
 
 ```## swat servers
-```*SWAT4 serverlist manipulation commands.*
+*SWAT4 serverlist manipulation commands.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *s, srv*
 
 
 ```### swat settimeout
-```*Set checking timeout.*
+*Set checking timeout.*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[int]` : *Timeout (in ms).*
 
 ---
 
 ```### swat startcheck
-```*Notifies of free space in server.*
+*Notifies of free space in server.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *checkspace, spacecheck*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[string]` : *Registered name or IP.*
 
 (optional) `[int]` : *Query port* (def: `10481`)
@@ -2091,27 +2091,27 @@ __
 ---
 
 ```### swat stopcheck
-```*Stops space checking.*
+*Stops space checking.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *checkstop*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 ---
 
 ```## textreaction
-```*Text reaction handling.*
+*Text reaction handling.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *treact, tr, txtr, textreactions*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[string]` : *Trigger (case sensitive).*
 
 `[string...]` : *Response.*
@@ -2119,15 +2119,15 @@ __
 ---
 
 ```### textreaction add
-```*Add text reaction to guild text reaction list.*
+*Add text reaction to guild text reaction list.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *+, new*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[string]` : *Trigger (case sensitive).*
 
 `[string...]` : *Response.*
@@ -2135,79 +2135,79 @@ __
 ---
 
 ```### textreaction clear
-```*Delete all text reactions for the current guild.*
+*Delete all text reactions for the current guild.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *c, da*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 ---
 
 ```### textreaction delete
-```*Remove text reaction from guild text reaction list.*
+*Remove text reaction from guild text reaction list.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *-, remove, del, rm, d*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[string...]` : *Trigger words to remove.*
 
 ---
 
 ```### textreaction list
-```*Show all text reactions for the guild. Each page has 10 text reactions.*
+*Show all text reactions for the guild. Each page has 10 text reactions.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *ls, l*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 (optional) `[int]` : *Page.* (def: `1`)
 
 ---
 
 ```### tts
-```*Repeats after you but uses tts.*
+*Repeats after you but uses tts.*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[string...]` : *Text.*
 
 ---
 
 ```### urbandict
-```*Search Urban Dictionary for a query.*
+*Search Urban Dictionary for a query.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *ud, urban*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[string...]` : *Query.*
 
 ---
 
 ```### user addrole
-```*Add a role to user.*
+*Add a role to user.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *+role, +r, ar*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[member]` : *User.*
 
 `[role]` : *Role.*
@@ -2215,29 +2215,29 @@ __
 ---
 
 ```### user avatar
-```*Get avatar from user.*
+*Get avatar from user.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *a, pic*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[user]` : *User.*
 
 ---
 
 ```### user ban
-```*Bans the user from the server.*
+*Bans the user from the server.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *b*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[member]` : *User.*
 
 (optional) `[string...]` : *Reason.* (def: `None`)
@@ -2245,15 +2245,15 @@ __
 ---
 
 ```### user banid
-```*Bans the ID from the server.*
+*Bans the ID from the server.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *bid*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[unsigned long]` : *ID.*
 
 (optional) `[string...]` : *Reason.* (def: `None`)
@@ -2261,15 +2261,15 @@ __
 ---
 
 ```### user deafen
-```*Toggle user's voice deafen state.*
+*Toggle user's voice deafen state.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *deaf, d*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[member]` : *User*
 
 (optional) `[string...]` : *Reason.* (def: `None`)
@@ -2277,29 +2277,29 @@ __
 ---
 
 ```### user info
-```*Print the user information.*
+*Print the user information.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *i, information*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 (optional) `[user]` : *User.* (def: `None`)
 
 ---
 
 ```### user kick
-```*Kicks the user from server.*
+*Kicks the user from server.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *k*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[member]` : *User.*
 
 (optional) `[string...]` : *Reason.* (def: `None`)
@@ -2307,43 +2307,43 @@ __
 ---
 
 ```### user listperms
-```*List user permissions.*
+*List user permissions.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *permlist, perms, p*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 (optional) `[member]` : *User.* (def: `None`)
 
 ---
 
 ```### user listroles
-```*List user permissions.*
+*List user permissions.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *rolelist, roles, r*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 (optional) `[member]` : *User.* (def: `None`)
 
 ---
 
 ```### user mute
-```*Toggle user mute.*
+*Toggle user mute.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *m*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[member]` : *User.*
 
 (optional) `[string...]` : *Reason.* (def: `None`)
@@ -2351,29 +2351,29 @@ __
 ---
 
 ```### user removeallroles
-```*Revoke all roles from user.*
+*Revoke all roles from user.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *remallroles, -ra, -rall, -allr*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[member]` : *User.*
 
 ---
 
 ```### user removerole
-```*Revoke a role from user.*
+*Revoke a role from user.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *remrole, rmrole, rr, -role, -r*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[member]` : *User.*
 
 `[role]` : *Role.*
@@ -2381,15 +2381,15 @@ __
 ---
 
 ```### user setname
-```*Gives someone a new nickname.*
+*Gives someone a new nickname.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *nick, newname, name, rename*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[member]` : *User.*
 
 (optional) `[string...]` : *New name.* (def: `None`)
@@ -2397,15 +2397,15 @@ __
 ---
 
 ```### user softban
-```*Bans the user from the server and then unbans him immediately.*
+*Bans the user from the server and then unbans him immediately.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *sb*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[member]` : *User.*
 
 (optional) `[string...]` : *Reason.* (def: `None`)
@@ -2413,15 +2413,15 @@ __
 ---
 
 ```### user tempban
-```*Temporarily ans the user from the server and then unbans him after given time.*
+*Temporarily ans the user from the server and then unbans him after given time.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *tb*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[int]` : *Amount of time units.*
 
 `[string]` : *Time unit.*
@@ -2433,15 +2433,15 @@ __
 ---
 
 ```### user unban
-```*Unbans the user from the server.*
+*Unbans the user from the server.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *ub*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[unsigned long]` : *ID.*
 
 (optional) `[string...]` : *Reason.* (def: `None`)
@@ -2449,15 +2449,15 @@ __
 ---
 
 ```### user warn
-```*Warn a user.*
+*Warn a user.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *w*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[member]` : *User.*
 
 (optional) `[string...]` : *Message.* (def: `None`)
@@ -2465,29 +2465,29 @@ __
 ---
 
 ```## youtube
-```*Youtube search commands.*
+*Youtube search commands.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *y, yt*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[string...]` : *Search query.*
 
 ---
 
 ```### youtube search
-```*Advanced youtube search.*
+*Advanced youtube search.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *s*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[int]` : *Amount of results. [1-10]*
 
 `[string...]` : *Search query.*
@@ -2495,57 +2495,57 @@ __
 ---
 
 ```### youtube searchc
-```*Advanced youtube search for channels only.*
+*Advanced youtube search for channels only.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *sc, searchchannel*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[string...]` : *Search query.*
 
 ---
 
 ```### youtube searchp
-```*Advanced youtube search for playlists only.*
+*Advanced youtube search for playlists only.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *sp, searchplaylist*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[string...]` : *Search query.*
 
 ---
 
 ```### youtube searchv
-```*Advanced youtube search for videos only.*
+*Advanced youtube search for videos only.*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *sv, searchvideo*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[string...]` : *Search query.*
 
 ---
 
 ```### zugify
-```*I don't even...*
+*I don't even...*
 
-__**Aliases:**
-__
+__**Aliases:**__
+
 *z*
 
 
-__**Arguments:**
-__
+__**Arguments:**__
+
 `[string...]` : *Text.*
 
 ---
