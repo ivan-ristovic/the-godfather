@@ -185,7 +185,7 @@ namespace TheGodfather.Modules.SWAT
         #endregion
 
 
-        [Group("servers", CanInvokeWithoutSubcommand = false)]
+        [Group("servers")]
         [Description("SWAT4 serverlist manipulation commands.")]
         [Aliases("s", "srv")]
         public class CommandsServers

@@ -116,7 +116,7 @@ namespace TheGodfather.Modules.Main
         #endregion
 
 
-        [Group("random", CanInvokeWithoutSubcommand = false)]
+        [Group("random")]
         [Description("Return random things.")]
         [Aliases("rnd", "rand")]
         public class CommandsRandomGroup

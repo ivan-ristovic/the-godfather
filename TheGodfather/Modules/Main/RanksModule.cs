@@ -14,7 +14,7 @@ using DSharpPlus.Entities;
 
 namespace TheGodfather.Modules.Messages
 {
-    [Group("rank", CanInvokeWithoutSubcommand = true)]
+    [Group("rank")]
     [Description("User ranking commands.")]
     [Aliases("ranks", "ranking")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
@@ -22,6 +22,7 @@ namespace TheGodfather.Modules.Messages
     public class RanksModule
     {
 
+        [GroupCommand]
         public async Task ExecuteGroupAsync(CommandContext ctx,
                                            [Description("User.")] DiscordUser u = null)
         {

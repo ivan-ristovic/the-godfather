@@ -350,8 +350,8 @@ namespace TheGodfather.Modules.Administration
                     }
                 }
 
-                var examples = cmd.ExecutionChecks.Where(chk => chk is UsageExampleAttribute)
-                                                  .Select(chk => chk as UsageExampleAttribute);
+                var examples = cmd.CustomAttributes.Where(chk => chk is UsageExampleAttribute)
+                                                   .Select(chk => chk as UsageExampleAttribute);
                 if (examples.Any()) {
                     sb.AppendLine(Formatter.Underline(Formatter.Bold("Examples:")) + "\n");
                     foreach (var example in examples)
@@ -476,7 +476,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
 
-        [Group("status", CanInvokeWithoutSubcommand = false)]
+        [Group("status")]
         [Description("Bot status manipulation.")]
         [PreExecutionCheck]
         public class CommandsStatus

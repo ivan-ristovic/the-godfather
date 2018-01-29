@@ -16,13 +16,15 @@ using DSharpPlus.Entities;
 
 namespace TheGodfather.Modules.Messages
 {
-    [Group("textreaction", CanInvokeWithoutSubcommand = true)]
+    [Group("textreaction")]
     [Description("Text reaction handling.")]
     [Aliases("treact", "tr", "txtr", "textreactions")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
     [PreExecutionCheck]
     public class TextReactionsModule
     {
+
+        [GroupCommand]
         [RequirePermissions(Permissions.ManageGuild)]
         public async Task ExecuteGroupAsync(CommandContext ctx, 
                                            [Description("Trigger (case sensitive).")] string trigger,

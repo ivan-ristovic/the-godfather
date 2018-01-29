@@ -20,7 +20,7 @@ using Imgur.API;
 
 namespace TheGodfather.Modules.Search
 {
-    [Group("imgur", CanInvokeWithoutSubcommand = true)]
+    [Group("imgur")]
     [Description("Search imgur. Invoking without sub command searches top.")]
     [Aliases("img", "im", "i")]
     [Cooldown(2, 5, CooldownBucketType.User), Cooldown(4, 5, CooldownBucketType.Channel)]
@@ -28,6 +28,7 @@ namespace TheGodfather.Modules.Search
     public class ImgurModule
     {
 
+        [GroupCommand]
         public async Task ExecuteGroupAsync(CommandContext ctx,
                                            [Description("Number of images to print [1-10].")] int n,
                                            [RemainingText, Description("Query.")] string sub)

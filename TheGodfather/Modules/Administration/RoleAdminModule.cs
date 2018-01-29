@@ -14,7 +14,7 @@ using DSharpPlus.Entities;
 
 namespace TheGodfather.Modules.Administration
 {
-    [Group("roles", CanInvokeWithoutSubcommand = true)]
+    [Group("roles")]
     [Description("Miscellaneous role control commands.")]
     [Aliases("role", "r", "rl")]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
@@ -22,6 +22,7 @@ namespace TheGodfather.Modules.Administration
     public class RoleAdminModule
     {
 
+        [GroupCommand]
         public async Task ExecuteGroupAsync(CommandContext ctx)
         {
             string desc = "";

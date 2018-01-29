@@ -16,7 +16,7 @@ using DSharpPlus.CommandsNext.Attributes;
 
 namespace TheGodfather.Modules.Search
 {
-    [Group("youtube", CanInvokeWithoutSubcommand = true)]
+    [Group("youtube")]
     [Description("Youtube search commands.")]
     [Aliases("y", "yt")]
     [Cooldown(2, 5, CooldownBucketType.User), Cooldown(4, 5, CooldownBucketType.Channel)]
@@ -24,6 +24,7 @@ namespace TheGodfather.Modules.Search
     public class YoutubeModule
     {
 
+        [GroupCommand]
         public async Task ExecuteGroupAsync(CommandContext ctx,
                                            [RemainingText, Description("Search query.")] string query)
         {

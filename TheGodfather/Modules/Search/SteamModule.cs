@@ -17,7 +17,7 @@ using DSharpPlus.CommandsNext.Attributes;
 
 namespace TheGodfather.Modules.Search
 {
-    [Group("steam", CanInvokeWithoutSubcommand = false)]
+    [Group("steam")]
     [Description("Youtube search commands.")]
     [Aliases("s", "st")]
     [Cooldown(2, 5, CooldownBucketType.User), Cooldown(4, 5, CooldownBucketType.Channel)]

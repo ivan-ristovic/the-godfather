@@ -17,7 +17,7 @@ using DSharpPlus.Entities;
 
 namespace TheGodfather.Modules.Messages
 {
-    [Group("filter", CanInvokeWithoutSubcommand = false)]
+    [Group("filter")]
     [Description("Message filtering commands.")]
     [Aliases("f", "filters")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]

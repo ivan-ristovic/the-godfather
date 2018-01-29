@@ -18,7 +18,7 @@ using DSharpPlus.Net.Models;
 
 namespace TheGodfather.Modules.Administration
 {
-    [Group("channel", CanInvokeWithoutSubcommand = false)]
+    [Group("channel")]
     [Description("Miscellaneous channel control commands.")]
     [Aliases("channels", "c", "chn")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]

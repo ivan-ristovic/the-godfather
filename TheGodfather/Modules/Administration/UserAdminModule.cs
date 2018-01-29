@@ -15,7 +15,7 @@ using DSharpPlus.Net.Models;
 
 namespace TheGodfather.Modules.Administration
 {
-    [Group("user", CanInvokeWithoutSubcommand = false)]
+    [Group("user")]
     [Description("Miscellaneous user control commands.")]
     [Aliases("users", "u", "usr")]
     [Cooldown(3, 5, CooldownBucketType.User)]

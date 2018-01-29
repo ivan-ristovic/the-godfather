@@ -16,7 +16,7 @@ namespace TheGodfather.Modules.Games
 {
     public partial class GamesModule
     {
-        [Group("quiz", CanInvokeWithoutSubcommand = false)]
+        [Group("quiz")]
         [Description("Start a quiz!")]
         [Aliases("trivia", "q")]
         [Cooldown(2, 5, CooldownBucketType.User), Cooldown(3, 5, CooldownBucketType.Channel)]

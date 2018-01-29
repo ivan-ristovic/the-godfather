@@ -19,13 +19,15 @@ using DSharpPlus.Entities;
 
 namespace TheGodfather.Modules.Search
 {
-    [Group("rss", CanInvokeWithoutSubcommand = true)]
+    [Group("rss")]
     [Description("RSS feed operations.")]
     [Aliases("feed")]
     [Cooldown(2, 5, CooldownBucketType.User), Cooldown(4, 5, CooldownBucketType.Channel)]
     [PreExecutionCheck]
     public class RSSModule
     {
+
+        [GroupCommand]
         public async Task ExecuteGroupAsync(CommandContext ctx, 
                                            [RemainingText, Description("URL.")] string url)
         {
@@ -112,11 +114,13 @@ namespace TheGodfather.Modules.Search
 
 
         #region GROUP_RSS_REDDIT
-        [Group("reddit", CanInvokeWithoutSubcommand = true)]
+        [Group("reddit")]
         [Description("Reddit feed manipulation.")]
         [Aliases("r")]
         public class CommandsRSSReddit : RSSModule
         {
+
+            [GroupCommand]
             public new async Task ExecuteGroupAsync(CommandContext ctx,
                                                    [Description("Subreddit.")] string sub = "all")
             {
@@ -169,11 +173,13 @@ namespace TheGodfather.Modules.Search
         #endregion
 
         #region GROUP_RSS_YOUTUBE
-        [Group("youtube", CanInvokeWithoutSubcommand = true)]
+        [Group("youtube")]
         [Description("Youtube feed manipulation.")]
         [Aliases("yt", "y")]
         public class CommandsRSSYoutube : RSSModule
         {
+
+            [GroupCommand]
             public new async Task ExecuteGroupAsync(CommandContext ctx,
                                                    [Description("Channel URL.")] string url)
             {

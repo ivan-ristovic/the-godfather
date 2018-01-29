@@ -15,7 +15,7 @@ using DSharpPlus.Entities;
 
 namespace TheGodfather.Modules.Games
 {
-    [Group("bank", CanInvokeWithoutSubcommand = true)]
+    [Group("bank")]
     [Description("Bank manipulation.")]
     [Aliases("$", "$$", "$$$")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
@@ -23,6 +23,7 @@ namespace TheGodfather.Modules.Games
     public class BankModule
     {
 
+        [GroupCommand]
         public async Task ExecuteGroupAsync(CommandContext ctx, 
                                            [Description("User.")] DiscordUser u = null)
         {

@@ -21,7 +21,7 @@ using DSharpPlus.Net.Models;
 
 namespace TheGodfather.Modules.Administration
 {
-    [Group("guild", CanInvokeWithoutSubcommand = false)]
+    [Group("guild")]
     [Description("Miscellaneous guild control commands.")]
     [Aliases("server", "g")]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
@@ -335,7 +335,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
 
-        [Group("emoji", CanInvokeWithoutSubcommand = true)]
+        [Group("emoji")]
         [Description("Manipulate guild emoji.")]
         [Aliases("emojis", "e")]
         public class CommandsGuildEmoji : GodfatherBaseModule
@@ -344,6 +344,7 @@ namespace TheGodfather.Modules.Administration
             public CommandsGuildEmoji(SharedData shared, DatabaseService db) : base(shared, db) { }
 
 
+            [GroupCommand]
             public async Task ExecuteGroupAsync(CommandContext ctx)
             {
                 await ListEmojiAsync(ctx)

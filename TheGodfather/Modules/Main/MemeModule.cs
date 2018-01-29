@@ -23,13 +23,15 @@ using Imgur.API;
 
 namespace TheGodfather.Modules.Main
 {
-    [Group("meme", CanInvokeWithoutSubcommand = true)]
+    [Group("meme")]
     [Description("Manipulate memes. When invoked without name, returns a random one.")]
     [Aliases("memes", "mm")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
     [PreExecutionCheck]
     public class MemeModule
     {
+
+        [GroupCommand]
         public async Task ExecuteGroupAsync(CommandContext ctx,
                                            [RemainingText, Description("Meme name.")] string name = null)
         {
@@ -231,12 +233,14 @@ namespace TheGodfather.Modules.Main
         #endregion
 
 
-        [Group("templates", CanInvokeWithoutSubcommand = true)]
+        [Group("templates")]
         [Description("Manipulate meme templates.")]
         [Aliases("template", "t")]
         [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
         public class CommandsMemeTemplates
         {
+
+            [GroupCommand]
             public async Task ExecuteGroupAsync(CommandContext ctx)
             {
                 await ListAsync(ctx)

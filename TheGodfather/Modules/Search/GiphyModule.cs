@@ -18,13 +18,15 @@ using GiphyDotNet.Model.GiphyImage;
 
 namespace TheGodfather.Modules.Search
 {
-    [Group("gif", CanInvokeWithoutSubcommand = true)]
+    [Group("gif")]
     [Description("GIPHY commands.")]
     [Aliases("giphy")]
     [Cooldown(2, 5, CooldownBucketType.User), Cooldown(4, 5, CooldownBucketType.Channel)]
     [PreExecutionCheck]
     public class GiphyModule
     {
+
+        [GroupCommand]
         public async Task ExecuteGroupAsync(CommandContext ctx,
                                            [RemainingText, Description("Query.")] string q)
         {

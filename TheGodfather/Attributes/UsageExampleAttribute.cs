@@ -11,7 +11,7 @@ using DSharpPlus.CommandsNext.Attributes;
 namespace TheGodfather.Attributes
 {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true)]
-    public class UsageExampleAttribute : CheckBaseAttribute
+    public class UsageExampleAttribute : Attribute
     {
         public string Example { get; private set; }
 
@@ -20,9 +20,5 @@ namespace TheGodfather.Attributes
         {
             Example = example;
         }
-
-
-        public override Task<bool> ExecuteCheckAsync(CommandContext ctx, bool help)
-            => Task.FromResult(true);
     }
 }

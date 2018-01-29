@@ -17,7 +17,7 @@ namespace TheGodfather.Modules.Games
 {
     public partial class GamesModule
     {
-        [Group("nunchi", CanInvokeWithoutSubcommand = true)]
+        [Group("nunchi")]
         [Description("Nunchi game commands")]
         [Aliases("n")]
         [Cooldown(2, 5, CooldownBucketType.User), Cooldown(3, 5, CooldownBucketType.Channel)]
@@ -29,6 +29,7 @@ namespace TheGodfather.Modules.Games
             #endregion
 
 
+            [GroupCommand]
             public async Task ExecuteGroupAsync(CommandContext ctx)
             {
                 if (_games.ContainsKey(ctx.Channel.Id)) {

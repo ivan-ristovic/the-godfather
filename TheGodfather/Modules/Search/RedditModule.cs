@@ -13,7 +13,7 @@ using DSharpPlus.CommandsNext.Attributes;
 
 namespace TheGodfather.Modules.Search
 {
-    [Group("reddit", CanInvokeWithoutSubcommand = true)]
+    [Group("reddit")]
     [Description("Reddit commands.")]
     [Aliases("r")]
     [Cooldown(2, 5, CooldownBucketType.User), Cooldown(4, 5, CooldownBucketType.Channel)]

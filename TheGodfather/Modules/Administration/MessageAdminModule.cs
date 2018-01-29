@@ -18,7 +18,7 @@ using DSharpPlus.Exceptions;
 
 namespace TheGodfather.Modules.Administration
 {
-    [Group("message", CanInvokeWithoutSubcommand = false)]
+    [Group("message")]
     [Description("Commands to manipulate messages on the channel.")]
     [Aliases("m", "msg", "msgs", "messages")]
     [Cooldown(2, 5, CooldownBucketType.User)]

@@ -16,7 +16,7 @@ namespace TheGodfather.Modules.Games
 {
     //public partial class CommandsGamble
     //{
-        [Group("cards", CanInvokeWithoutSubcommand = false)]
+        [Group("cards")]
         [Description("Deck manipulation commands.")]
         [Aliases("deck")]
         [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]

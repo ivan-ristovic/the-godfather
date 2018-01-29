@@ -17,7 +17,7 @@ using DSharpPlus.Entities;
 
 namespace TheGodfather.Modules.Search
 {
-    [Group("joke", CanInvokeWithoutSubcommand = true)]
+    [Group("joke")]
     [Description("Send a joke.")]
     [Aliases("jokes", "j")]
     [Cooldown(2, 5, CooldownBucketType.User), Cooldown(4, 5, CooldownBucketType.Channel)]
@@ -25,6 +25,7 @@ namespace TheGodfather.Modules.Search
     public class JokesModule
     {
 
+        [GroupCommand]
         public async Task ExecuteGroupAsync(CommandContext ctx)
         {
             string joke = null;

@@ -13,7 +13,7 @@ using System.Net;
 
 namespace TheGodfather.Modules
 {
-    public abstract class GodfatherBaseModule : BaseExtension
+    public abstract class GodfatherBaseModule : BaseCommandModule
     {
         protected SharedData SharedData;
         protected DatabaseService DatabaseService;
@@ -23,12 +23,6 @@ namespace TheGodfather.Modules
         {
             SharedData = shared;
             DatabaseService = db;
-        }
-
-
-        protected override void Setup(DiscordClient client)
-        {
-
         }
 
 

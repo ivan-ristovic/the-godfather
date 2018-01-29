@@ -16,7 +16,7 @@ using DSharpPlus.Entities;
 
 namespace TheGodfather.Modules.Main
 {
-    [Group("insult", CanInvokeWithoutSubcommand = true)]
+    [Group("insult")]
     [Description("Burns a user!")]
     [Aliases("burn", "insults")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]

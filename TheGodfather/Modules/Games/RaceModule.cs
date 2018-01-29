@@ -17,7 +17,7 @@ namespace TheGodfather.Modules.Games
 {
     public partial class GamesModule
     {
-        [Group("race", CanInvokeWithoutSubcommand = true)]
+        [Group("race")]
         [Description("Racing!")]
         [Aliases("r")]
         [Cooldown(2, 5, CooldownBucketType.User), Cooldown(3, 5, CooldownBucketType.Channel)]

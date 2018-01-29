@@ -26,13 +26,14 @@ namespace TheGodfather.Modules.Voice
         // TODO make this specific for guild, aka concurrent dictionary
         private volatile bool _playing = false;
 
-        [Group("play", CanInvokeWithoutSubcommand = true)]
+        [Group("play")]
         [Description("Plays a mp3 file from URL or server filesystem.")]
         [Aliases("music", "p")]
         [RequireOwner]
         public class CommandsVoicePlay : VoiceModule
         {
 
+            [GroupCommand]
             [RequirePermissions(Permissions.UseVoice | Permissions.Speak)]
             public async Task ExecuteGroupAsync(CommandContext ctx,
                                                [RemainingText, Description("URL or YouTube search query.")] string data)
