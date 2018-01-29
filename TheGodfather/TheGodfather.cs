@@ -379,9 +379,6 @@ namespace TheGodfather
                 $"Message: {ex.Message.Replace("\n", "<br>") ?? "<no message>"}<br>"
             );
 
-            if (!e.Context.Channel.PermissionsFor(e.Context.Guild.CurrentMember).HasFlag(Permissions.SendMessages))
-                return;
-
             var emoji = DiscordEmoji.FromName(e.Context.Client, ":no_entry:");
             var embed = new DiscordEmbedBuilder {
                 Title = "Error",

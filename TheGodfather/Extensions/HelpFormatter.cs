@@ -56,10 +56,13 @@ namespace TheGodfather.Extensions
                         if (arg.IsOptional)
                             sb.Append("(optional) ");
 
-                        sb.Append($"{Formatter.InlineCode($"[{CommandsNext.GetUserFriendlyTypeName(arg.Type)}")}");
+                        string typestr = $"[{CommandsNext.GetUserFriendlyTypeName(arg.Type)}";
                         if (arg.IsCatchAll)
-                            sb.Append("...");
-                        sb.Append("] ");
+                            typestr += "...";
+                        typestr += "]";
+
+                        sb.Append(Formatter.InlineCode(typestr));
+                        sb.Append(" ");
 
                         sb.Append(string.IsNullOrWhiteSpace(arg.Description) ? "No description provided." : Formatter.Bold(arg.Description));
 

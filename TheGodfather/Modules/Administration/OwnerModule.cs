@@ -3,6 +3,8 @@ using System;
 using System.IO;
 using System.Net;
 using System.Linq;
+using System.Text;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis.Scripting;
@@ -19,7 +21,6 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-using System.Text;
 #endregion
 
 namespace TheGodfather.Modules.Administration
@@ -249,6 +250,83 @@ namespace TheGodfather.Modules.Administration
             await msg.ModifyAsync(embed: embed.Build()).ConfigureAwait(false);
         }
         #endregion
+
+        [Command("generatecommands")]
+        [Description("Generates a command-list.")]
+        [Aliases("cmdlist", "gencmdlist", "gencmds")]
+        [PreExecutionCheck]
+        public async Task GenerateCommandListAsync(CommandContext ctx,
+                                                  [RemainingText, Description("File path.")] string filepath = null)
+        {
+            if (string.IsNullOrWhiteSpace(filepath))
+                filepath = "Temp/cmds.md";
+
+            StringBuilder sb = new StringBuilder();
+            sb.AppendLine("# Command list");
+            sb.AppendLine();
+
+            var cmdsandgroups = ctx.CommandsNext.RegisteredCommands.Values.Distinct();
+
+            List<Command> commands = new List<Command>();
+            foreach (var cmd in cmdsandgroups) {
+                if (cmd is CommandGroup grp) {
+                    foreach (var child in grp.Children)
+                        commands.Add(child);
+                    if (grp.IsExecutableWithoutSubcommands)
+                        commands.Add(grp as Command);
+                } else {
+                    commands.Add(cmd);
+                }
+            }
+            commands.Sort((c1, c2) => string.Compare(c1.QualifiedName, c2.QualifiedName, true));
+
+            foreach (var cmd in commands) {
+                if (cmd is CommandGroup grp) 
+                    sb.AppendLine("## " + grp.QualifiedName);
+                else
+                    sb.AppendLine("### " + cmd.QualifiedName);
+
+                if (cmd.IsHidden)
+                    sb.AppendLine(Formatter.Italic("Hidden.") + "\n");
+
+                sb.AppendLine(Formatter.Italic(cmd.Description ?? "No description provided.") + "\n");
+
+                if (cmd.Aliases.Any()) {
+                    sb.AppendLine(Formatter.Bold("Aliases:") + "\n");
+                    sb.AppendLine(Formatter.Italic(string.Join(", ", cmd.Aliases)) + "\n");
+                }
+                sb.AppendLine();
+
+                foreach (var overload in cmd.Overloads.OrderByDescending(o => o.Priority)) {
+                    sb.AppendLine(Formatter.Bold((cmd.Overloads.Count > 1 ? $"Overload {overload.Priority.ToString()}:" : "Arguments:")) + "\n");
+                    foreach (var arg in overload.Arguments) {
+                        if (arg.IsOptional)
+                            sb.Append("(optional) ");
+
+                        string typestr = $"[{ctx.CommandsNext.GetUserFriendlyTypeName(arg.Type)}";
+                        if (arg.IsCatchAll)
+                            typestr += "...";
+                        typestr += "]";
+
+                        sb.Append(Formatter.InlineCode(typestr));
+                        sb.Append(" : ");
+
+                        sb.Append(string.IsNullOrWhiteSpace(arg.Description) ? "No description provided." : Formatter.Italic(arg.Description));
+
+                        if (arg.IsOptional)
+                            sb.Append(" (def: ").Append(Formatter.InlineCode(arg.DefaultValue != null ? arg.DefaultValue.ToString() : "None")).Append(")");
+
+                        sb.AppendLine("\n");
+                    }
+
+                    sb.AppendLine("---\n");
+                }
+            }
+
+            File.WriteAllText(filepath, sb.ToString());
+            await ctx.RespondAsync($"File created at {Formatter.InlineCode(filepath)}!")
+                .ConfigureAwait(false);
+        }
 
         #region COMMAND_LEAVEGUILDS
         [Command("leaveguilds")]
