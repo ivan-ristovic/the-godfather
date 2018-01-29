@@ -252,6 +252,7 @@ namespace TheGodfather.Modules.Administration
         }
         #endregion
 
+        #region COMMAND_GENERATECOMMANDS
         [Command("generatecommands")]
         [Description("Generates a command-list.")]
         [Aliases("cmdlist", "gencmdlist", "gencmds")]
@@ -344,15 +345,27 @@ namespace TheGodfather.Modules.Administration
 
                         sb.AppendLine("\n");
                     }
-
-                    sb.AppendLine("---\n");
                 }
+
+                sb.AppendLine(Formatter.Underline(Formatter.Bold("Examples:")) + "\n");
+                var examples = cmd.ExecutionChecks.Where(chk => chk is UsageExampleAttribute)
+                                                  .Select(chk => chk as UsageExampleAttribute);
+                foreach (var example in examples)
+                    sb.AppendLine(Formatter.InlineCode(example.Example) + "\n");
+
+                sb.AppendLine("---\n");
             }
 
-            File.WriteAllText(filepath, sb.ToString());
+            try {
+                File.WriteAllText(filepath, sb.ToString());
+            } catch (IOException e) {
+                throw new CommandFailedException("IO Exception occured!", e);
+            }
+
             await ctx.RespondAsync($"File created at {Formatter.InlineCode(filepath)}!")
                 .ConfigureAwait(false);
         }
+        #endregion
 
         #region COMMAND_LEAVEGUILDS
         [Command("leaveguilds")]
