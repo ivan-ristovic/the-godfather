@@ -321,7 +321,6 @@ namespace TheGodfather.Modules.Administration
 
                     sb.AppendLine("---\n");
                 }
-                sb.Append("```");
             }
 
             File.WriteAllText(filepath, sb.ToString());
