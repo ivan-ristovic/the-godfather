@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 
+using TheGodfather.Attributes;
 using TheGodfather.Services;
 using TheGodfather.Helpers.Swat;
 using TheGodfather.Exceptions;

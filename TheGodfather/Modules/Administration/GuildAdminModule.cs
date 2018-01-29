@@ -6,6 +6,7 @@ using System.IO;
 using System.Drawing;
 using System.Threading.Tasks;
 
+using TheGodfather.Attributes;
 using TheGodfather.Services;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;

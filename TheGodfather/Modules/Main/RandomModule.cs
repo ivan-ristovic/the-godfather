@@ -7,6 +7,7 @@ using System.Drawing;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
+using TheGodfather.Attributes;
 using TheGodfather.Exceptions;
 
 using DSharpPlus;

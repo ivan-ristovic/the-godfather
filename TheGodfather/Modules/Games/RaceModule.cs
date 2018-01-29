@@ -4,6 +4,7 @@ using System.Collections.Concurrent;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 
+using TheGodfather.Attributes;
 using TheGodfather.Services;
 using TheGodfather.Exceptions;
 

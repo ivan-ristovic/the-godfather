@@ -3,12 +3,11 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
+using TheGodfather.Attributes;
+
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-
-using RedditSharp;
-using static RedditSharp.Things.VotableThing;
 #endregion
 
 

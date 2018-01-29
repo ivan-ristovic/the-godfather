@@ -6,6 +6,7 @@ using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
 
+using TheGodfather.Attributes;
 using TheGodfather.Exceptions;
 
 using DSharpPlus;
