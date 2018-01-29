@@ -325,6 +325,9 @@ namespace TheGodfather.Modules.Administration
                 sb.AppendLine();
 
                 foreach (var overload in cmd.Overloads.OrderByDescending(o => o.Priority)) {
+                    if (!overload.Arguments.Any())
+                        continue;
+
                     sb.AppendLine(Formatter.Underline(Formatter.Bold((cmd.Overloads.Count > 1 ? $"Overload {overload.Priority.ToString()}:" : "Arguments:"))) + "\n");
                     foreach (var arg in overload.Arguments) {
                         if (arg.IsOptional)
@@ -347,11 +350,13 @@ namespace TheGodfather.Modules.Administration
                     }
                 }
 
-                sb.AppendLine(Formatter.Underline(Formatter.Bold("Examples:")) + "\n");
                 var examples = cmd.ExecutionChecks.Where(chk => chk is UsageExampleAttribute)
                                                   .Select(chk => chk as UsageExampleAttribute);
-                foreach (var example in examples)
-                    sb.AppendLine(Formatter.InlineCode(example.Example) + "\n");
+                if (examples.Any()) {
+                    sb.AppendLine(Formatter.Underline(Formatter.Bold("Examples:")) + "\n");
+                    foreach (var example in examples)
+                        sb.AppendLine(Formatter.InlineCode(example.Example) + "\n");
+                }
 
                 sb.AppendLine("---\n");
             }

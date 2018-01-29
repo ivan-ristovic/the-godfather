@@ -8,8 +8,6 @@ __**Arguments:**__
 
 `[string...]` : *A question for the almighty ball.*
 
-__**Examples:**__
-
 ---
 
 ## admin botavatar
@@ -24,8 +22,6 @@ __**Aliases:**__
 __**Arguments:**__
 
 `[string]` : *URL.*
-
-__**Examples:**__
 
 ---
 
@@ -42,8 +38,6 @@ __**Arguments:**__
 
 `[string...]` : *New name.*
 
-__**Examples:**__
-
 ---
 
 ## admin clearlog
@@ -54,10 +48,6 @@ __**Owner-only.**__
 __**Aliases:**__
 *clearlogs, deletelogs, deletelog*
 
-
-__**Arguments:**__
-
-__**Examples:**__
 
 ---
 
@@ -74,8 +64,6 @@ __**Arguments:**__
 
 `[string...]` : *SQL Query.*
 
-__**Examples:**__
-
 ---
 
 ## admin eval
@@ -90,8 +78,6 @@ __**Aliases:**__
 __**Arguments:**__
 
 `[string...]` : *Code to evaluate.*
-
-__**Examples:**__
 
 ---
 
@@ -108,8 +94,6 @@ __**Arguments:**__
 
 (optional) `[string...]` : *File path.* (def: `None`)
 
-__**Examples:**__
-
 ---
 
 ## admin leaveguilds
@@ -121,8 +105,6 @@ __**Owner-only.**__
 __**Arguments:**__
 
 `[unsigned long...]` : *Guild ID list.*
-
-__**Examples:**__
 
 ---
 
@@ -143,8 +125,6 @@ __**Arguments:**__
 
 `[string...]` : *Message.*
 
-__**Examples:**__
-
 ---
 
 ## admin shutdown
@@ -156,10 +136,6 @@ __**Aliases:**__
 *disable, poweroff, exit, quit*
 
 
-__**Arguments:**__
-
-__**Examples:**__
-
 ---
 
 ## admin status
@@ -167,8 +143,6 @@ __**Examples:**__
 
 __**Owner-only.**__
 
-
-__**Examples:**__
 
 ---
 
@@ -187,8 +161,6 @@ __**Arguments:**__
 
 `[string...]` : *Command text to execute.*
 
-__**Examples:**__
-
 ---
 
 ## admin toggleignore
@@ -199,10 +171,6 @@ __**Owner-only.**__
 __**Aliases:**__
 *ti*
 
-
-__**Arguments:**__
-
-__**Examples:**__
 
 ---
 
@@ -216,8 +184,6 @@ __**Aliases:**__
 __**Arguments:**__
 
 (optional) `[user]` : *User.* (def: `None`)
-
-__**Examples:**__
 
 ---
 
@@ -237,8 +203,6 @@ __**Arguments:**__
 
 `[int]` : *Amount.*
 
-__**Examples:**__
-
 ---
 
 ## bank register
@@ -247,10 +211,6 @@ __**Examples:**__
 __**Aliases:**__
 *r, signup, activate*
 
-
-__**Arguments:**__
-
-__**Examples:**__
 
 ---
 
@@ -265,8 +225,6 @@ __**Arguments:**__
 
 (optional) `[user]` : *User.* (def: `None`)
 
-__**Examples:**__
-
 ---
 
 ## bank top
@@ -275,10 +233,6 @@ __**Examples:**__
 __**Aliases:**__
 *leaderboard*
 
-
-__**Arguments:**__
-
-__**Examples:**__
 
 ---
 
@@ -295,8 +249,6 @@ __**Arguments:**__
 
 `[int]` : *Amount.*
 
-__**Examples:**__
-
 ---
 
 ## cards draw
@@ -310,8 +262,6 @@ __**Arguments:**__
 
 (optional) `[int]` : *Amount.* (def: `1`)
 
-__**Examples:**__
-
 ---
 
 ## cards reset
@@ -321,10 +271,6 @@ __**Aliases:**__
 *new, opennew*
 
 
-__**Arguments:**__
-
-__**Examples:**__
-
 ---
 
 ## cards shuffle
@@ -333,10 +279,6 @@ __**Examples:**__
 __**Aliases:**__
 *s, sh, mix*
 
-
-__**Arguments:**__
-
-__**Examples:**__
 
 ---
 
@@ -701,8 +643,6 @@ __**Arguments:**__
 
 (optional) `[channel]` : *Channel.* (def: `None`)
 
-__**Examples:**__
-
 ---
 
 ### disconnect
@@ -710,10 +650,6 @@ __**Examples:**__
 
 __**Owner-only.**__
 
-
-__**Arguments:**__
-
-__**Examples:**__
 
 ---
 
@@ -727,8 +663,6 @@ __**Requires permissions:**__
 __**Arguments:**__
 
 `[string]` : *Image URL.*
-
-__**Examples:**__
 
 ---
 
@@ -744,8 +678,6 @@ __**Arguments:**__
 (optional) `[emoji]` : *Emoji to send.* (def: `None`)
 
 `[string...]` : *Trigger word list.*
-
-__**Examples:**__
 
 ---
 
@@ -765,8 +697,6 @@ __**Arguments:**__
 
 `[string...]` : *Trigger word list.*
 
-__**Examples:**__
-
 ---
 
 ## emojireaction clear
@@ -778,10 +708,6 @@ __**Requires user permissions:**__
 __**Aliases:**__
 *da, c*
 
-
-__**Arguments:**__
-
-__**Examples:**__
 
 ---
 
@@ -799,8 +725,6 @@ __**Arguments:**__
 
 `[string...]` : *Trigger word list.*
 
-__**Examples:**__
-
 ---
 
 ## emojireaction list
@@ -813,8 +737,6 @@ __**Aliases:**__
 __**Arguments:**__
 
 (optional) `[int]` : *Page.* (def: `1`)
-
-__**Examples:**__
 
 ---
 
@@ -832,8 +754,6 @@ __**Arguments:**__
 
 `[string...]` : *Filter. Can be a regex (case insensitive).*
 
-__**Examples:**__
-
 ---
 
 ## filter clear
@@ -845,10 +765,6 @@ __**Requires user permissions:**__
 __**Aliases:**__
 *c, da*
 
-
-__**Arguments:**__
-
-__**Examples:**__
 
 ---
 
@@ -866,8 +782,6 @@ __**Arguments:**__
 
 `[string...]` : *Filter to remove.*
 
-__**Examples:**__
-
 ---
 
 ## filter list
@@ -880,8 +794,6 @@ __**Aliases:**__
 __**Arguments:**__
 
 (optional) `[int]` : *Page* (def: `1`)
-
-__**Examples:**__
 
 ---
 
@@ -898,8 +810,6 @@ __**Arguments:**__
 
 (optional) `[string]` : *Heads/Tails (h/t).* (def: `None`)
 
-__**Examples:**__
-
 ---
 
 ## gamble roll
@@ -915,8 +825,6 @@ __**Arguments:**__
 
 (optional) `[int]` : *Number guess.* (def: `0`)
 
-__**Examples:**__
-
 ---
 
 ## gamble slot
@@ -930,8 +838,6 @@ __**Arguments:**__
 
 (optional) `[int]` : *Bid.* (def: `5`)
 
-__**Examples:**__
-
 ---
 
 ## games caro
@@ -941,10 +847,6 @@ __**Aliases:**__
 *c*
 
 
-__**Arguments:**__
-
-__**Examples:**__
-
 ---
 
 ## games connectfour
@@ -953,10 +855,6 @@ __**Examples:**__
 __**Aliases:**__
 *connect4, chain4, chainfour, c4*
 
-
-__**Arguments:**__
-
-__**Examples:**__
 
 ---
 
@@ -971,8 +869,6 @@ __**Arguments:**__
 
 `[user]` : *Who to fight with?*
 
-__**Examples:**__
-
 ---
 
 ## games hangman
@@ -981,10 +877,6 @@ __**Examples:**__
 __**Aliases:**__
 *h, hang*
 
-
-__**Arguments:**__
-
-__**Examples:**__
 
 ---
 
@@ -995,10 +887,6 @@ __**Aliases:**__
 *globalstats*
 
 
-__**Arguments:**__
-
-__**Examples:**__
-
 ---
 
 ## games nunchi
@@ -1007,10 +895,6 @@ __**Examples:**__
 __**Aliases:**__
 *n*
 
-
-__**Arguments:**__
-
-__**Examples:**__
 
 ---
 
@@ -1021,8 +905,6 @@ __**Aliases:**__
 *trivia, q*
 
 
-__**Examples:**__
-
 ---
 
 ## games race
@@ -1032,10 +914,6 @@ __**Aliases:**__
 *r*
 
 
-__**Arguments:**__
-
-__**Examples:**__
-
 ---
 
 ## games rps
@@ -1044,10 +922,6 @@ __**Examples:**__
 __**Aliases:**__
 *rockpaperscissors*
 
-
-__**Arguments:**__
-
-__**Examples:**__
 
 ---
 
@@ -1059,8 +933,6 @@ __**Arguments:**__
 
 (optional) `[user]` : *User.* (def: `None`)
 
-__**Examples:**__
-
 ---
 
 ## games tictactoe
@@ -1070,10 +942,6 @@ __**Aliases:**__
 *ttt*
 
 
-__**Arguments:**__
-
-__**Examples:**__
-
 ---
 
 ## games typing
@@ -1082,10 +950,6 @@ __**Examples:**__
 __**Aliases:**__
 *type, typerace, typingrace*
 
-
-__**Arguments:**__
-
-__**Examples:**__
 
 ---
 
@@ -1100,8 +964,6 @@ __**Arguments:**__
 
 `[string...]` : *Query.*
 
-__**Examples:**__
-
 ---
 
 ## gif random
@@ -1110,10 +972,6 @@ __**Examples:**__
 __**Aliases:**__
 *r, rand, rnd*
 
-
-__**Arguments:**__
-
-__**Examples:**__
 
 ---
 
@@ -1128,8 +986,6 @@ __**Arguments:**__
 
 (optional) `[int]` : *Number of results (1-10).* (def: `5`)
 
-__**Examples:**__
-
 ---
 
 ### greet
@@ -1138,10 +994,6 @@ __**Examples:**__
 __**Aliases:**__
 *hello, hi, halo, hey, howdy, sup*
 
-
-__**Arguments:**__
-
-__**Examples:**__
 
 ---
 
@@ -1155,10 +1007,6 @@ __**Aliases:**__
 *banlist, viewbanlist, getbanlist, getbans, viewbans*
 
 
-__**Arguments:**__
-
-__**Examples:**__
-
 ---
 
 ## guild deleteleavechannel
@@ -1170,10 +1018,6 @@ __**Requires user permissions:**__
 __**Aliases:**__
 *delleavec, dellc, delleave, dlc*
 
-
-__**Arguments:**__
-
-__**Examples:**__
 
 ---
 
@@ -1187,10 +1031,6 @@ __**Aliases:**__
 *delwelcomec, delwc, delwelcome, dwc, deletewc*
 
 
-__**Arguments:**__
-
-__**Examples:**__
-
 ---
 
 ## guild emoji
@@ -1199,10 +1039,6 @@ __**Examples:**__
 __**Aliases:**__
 *emojis, e*
 
-
-__**Arguments:**__
-
-__**Examples:**__
 
 ---
 
@@ -1216,10 +1052,6 @@ __**Aliases:**__
 *getleavec, getlc, getleave, leavechannel, lc*
 
 
-__**Arguments:**__
-
-__**Examples:**__
-
 ---
 
 ## guild getwelcomechannel
@@ -1232,10 +1064,6 @@ __**Aliases:**__
 *getwelcomec, getwc, getwelcome, welcomechannel, wc*
 
 
-__**Arguments:**__
-
-__**Examples:**__
-
 ---
 
 ## guild info
@@ -1245,10 +1073,6 @@ __**Aliases:**__
 *i, information*
 
 
-__**Arguments:**__
-
-__**Examples:**__
-
 ---
 
 ## guild listmembers
@@ -1257,10 +1081,6 @@ __**Examples:**__
 __**Aliases:**__
 *memberlist, lm, members*
 
-
-__**Arguments:**__
-
-__**Examples:**__
 
 ---
 
@@ -1273,10 +1093,6 @@ __**Requires permissions:**__
 __**Aliases:**__
 *auditlog, viewlog, getlog, getlogs, logs*
 
-
-__**Arguments:**__
-
-__**Examples:**__
 
 ---
 
@@ -1299,8 +1115,6 @@ __**Arguments:**__
 
 (optional) `[string...]` : *Reason.* (def: `None`)
 
-__**Examples:**__
-
 ---
 
 ## guild rename
@@ -1316,8 +1130,6 @@ __**Aliases:**__
 __**Arguments:**__
 
 `[string...]` : *New name.*
-
-__**Examples:**__
 
 ---
 
@@ -1335,8 +1147,6 @@ __**Arguments:**__
 
 `[string]` : *New icon URL.*
 
-__**Examples:**__
-
 ---
 
 ## guild setleavechannel
@@ -1352,8 +1162,6 @@ __**Aliases:**__
 __**Arguments:**__
 
 (optional) `[channel]` : *Channel.* (def: `None`)
-
-__**Examples:**__
 
 ---
 
@@ -1371,8 +1179,6 @@ __**Arguments:**__
 
 (optional) `[channel]` : *Channel.* (def: `None`)
 
-__**Examples:**__
-
 ---
 
 ### help
@@ -1382,8 +1188,6 @@ __**Examples:**__
 __**Arguments:**__
 
 `[string...]` : *Command to provide help for.*
-
-__**Examples:**__
 
 ---
 
@@ -1400,8 +1204,6 @@ __**Arguments:**__
 
 `[string...]` : *Query.*
 
-__**Examples:**__
-
 ---
 
 ## imgur latest
@@ -1416,8 +1218,6 @@ __**Arguments:**__
 `[int]` : *Number of images to print [1-10].*
 
 `[string]` : *Query.*
-
-__**Examples:**__
 
 ---
 
@@ -1436,8 +1236,6 @@ __**Arguments:**__
 
 (optional) `[string...]` : *Query.* (def: `None`)
 
-__**Examples:**__
-
 ---
 
 ## insult
@@ -1450,8 +1248,6 @@ __**Aliases:**__
 __**Arguments:**__
 
 (optional) `[user]` : *User.* (def: `None`)
-
-__**Examples:**__
 
 ---
 
@@ -1468,8 +1264,6 @@ __**Arguments:**__
 
 `[string...]` : *Response.*
 
-__**Examples:**__
-
 ---
 
 ## insult clear
@@ -1480,10 +1274,6 @@ __**Owner-only.**__
 __**Aliases:**__
 *clearall*
 
-
-__**Arguments:**__
-
-__**Examples:**__
 
 ---
 
@@ -1500,8 +1290,6 @@ __**Arguments:**__
 
 `[int]` : *Index.*
 
-__**Examples:**__
-
 ---
 
 ## insult list
@@ -1511,8 +1299,6 @@ __**Examples:**__
 __**Arguments:**__
 
 (optional) `[int]` : *Page.* (def: `1`)
-
-__**Examples:**__
 
 ---
 
@@ -1526,10 +1312,6 @@ __**Aliases:**__
 *getinvite*
 
 
-__**Arguments:**__
-
-__**Examples:**__
-
 ---
 
 ## joke
@@ -1538,10 +1320,6 @@ __**Examples:**__
 __**Aliases:**__
 *jokes, j*
 
-
-__**Arguments:**__
-
-__**Examples:**__
 
 ---
 
@@ -1556,8 +1334,6 @@ __**Arguments:**__
 
 `[string...]` : *Query.*
 
-__**Examples:**__
-
 ---
 
 ## joke yourmom
@@ -1566,10 +1342,6 @@ __**Examples:**__
 __**Aliases:**__
 *mama, m, yomomma, yomom, yomoma, yomamma, yomama*
 
-
-__**Arguments:**__
-
-__**Examples:**__
 
 ---
 
@@ -1580,10 +1352,6 @@ __**Requires user permissions:**__
 *Kick members*
 
 
-__**Arguments:**__
-
-__**Examples:**__
-
 ---
 
 ### leet
@@ -1593,8 +1361,6 @@ __**Examples:**__
 __**Arguments:**__
 
 `[string...]` : *Text*
-
-__**Examples:**__
 
 ---
 
@@ -1608,8 +1374,6 @@ __**Aliases:**__
 __**Arguments:**__
 
 (optional) `[string...]` : *Meme name.* (def: `None`)
-
-__**Examples:**__
 
 ---
 
@@ -1628,8 +1392,6 @@ __**Arguments:**__
 
 `[string]` : *URL.*
 
-__**Examples:**__
-
 ---
 
 ## meme create
@@ -1647,8 +1409,6 @@ __**Arguments:**__
 
 `[string]` : *Bottom Text.*
 
-__**Examples:**__
-
 ---
 
 ## meme delete
@@ -1664,8 +1424,6 @@ __**Arguments:**__
 
 `[string]` : *Short name (case insensitive).*
 
-__**Examples:**__
-
 ---
 
 ## meme list
@@ -1679,8 +1437,6 @@ __**Arguments:**__
 
 (optional) `[int]` : *Page.* (def: `1`)
 
-__**Examples:**__
-
 ---
 
 ## meme templates
@@ -1689,10 +1445,6 @@ __**Examples:**__
 __**Aliases:**__
 *template, t*
 
-
-__**Arguments:**__
-
-__**Examples:**__
 
 ---
 
@@ -1706,8 +1458,6 @@ __**Aliases:**__
 __**Arguments:**__
 
 (optional) `[unsigned long]` : *Message ID.* (def: `0`)
-
-__**Examples:**__
 
 ---
 
@@ -1729,8 +1479,6 @@ __**Arguments:**__
 (optional) `[int]` : *Amount.* (def: `5`)
 
 (optional) `[string...]` : *Reason.* (def: `None`)
-
-__**Examples:**__
 
 ---
 
@@ -1755,8 +1503,6 @@ __**Arguments:**__
 
 (optional) `[string...]` : *Reason.* (def: `None`)
 
-__**Examples:**__
-
 ---
 
 ## message deletereactions
@@ -1777,8 +1523,6 @@ __**Arguments:**__
 (optional) `[unsigned long]` : *ID.* (def: `0`)
 
 (optional) `[string...]` : *Reason.* (def: `None`)
-
-__**Examples:**__
 
 ---
 
@@ -1803,8 +1547,6 @@ __**Arguments:**__
 
 (optional) `[string...]` : *Reason.* (def: `None`)
 
-__**Examples:**__
-
 ---
 
 ## message listpinned
@@ -1813,10 +1555,6 @@ __**Examples:**__
 __**Aliases:**__
 *lp, listpins, listpin, pinned*
 
-
-__**Arguments:**__
-
-__**Examples:**__
 
 ---
 
@@ -1836,8 +1574,6 @@ __**Arguments:**__
 
 `[string...]` : *New content.*
 
-__**Examples:**__
-
 ---
 
 ## message pin
@@ -1853,8 +1589,6 @@ __**Aliases:**__
 __**Arguments:**__
 
 (optional) `[unsigned long]` : *ID.* (def: `0`)
-
-__**Examples:**__
 
 ---
 
@@ -1872,8 +1606,6 @@ __**Arguments:**__
 
 (optional) `[int]` : *Index (starting from 1).* (def: `1`)
 
-__**Examples:**__
-
 ---
 
 ## message unpinall
@@ -1885,10 +1617,6 @@ __**Requires permissions:**__
 __**Aliases:**__
 *upa*
 
-
-__**Arguments:**__
-
-__**Examples:**__
 
 ---
 
@@ -1903,17 +1631,11 @@ __**Arguments:**__
 
 `[user]` : *Who to measure*
 
-__**Examples:**__
-
 ---
 
 ### ping
 *Ping the bot.*
 
-
-__**Arguments:**__
-
-__**Examples:**__
 
 ---
 
@@ -1929,8 +1651,6 @@ __**Aliases:**__
 __**Arguments:**__
 
 `[string...]` : *URL or YouTube search query.*
-
-__**Examples:**__
 
 ---
 
@@ -1950,8 +1670,6 @@ __**Arguments:**__
 
 `[string...]` : *Full path to the file to play.*
 
-__**Examples:**__
-
 ---
 
 ### poll
@@ -1965,8 +1683,6 @@ __**Arguments:**__
 
 `[string...]` : *Question.*
 
-__**Examples:**__
-
 ---
 
 ### pollr
@@ -1979,8 +1695,6 @@ __**Aliases:**__
 __**Arguments:**__
 
 `[emoji...]` : *Options*
-
-__**Examples:**__
 
 ---
 
@@ -1998,17 +1712,11 @@ __**Arguments:**__
 
 (optional) `[string]` : *Prefix to set.* (def: `None`)
 
-__**Examples:**__
-
 ---
 
 ## random cat
 *Get a random cat image.*
 
-
-__**Arguments:**__
-
-__**Examples:**__
 
 ---
 
@@ -2023,17 +1731,11 @@ __**Arguments:**__
 
 `[string...]` : *Option list (separated with a comma).*
 
-__**Examples:**__
-
 ---
 
 ## random dog
 *Get a random dog image.*
 
-
-__**Arguments:**__
-
-__**Examples:**__
 
 ---
 
@@ -2044,8 +1746,6 @@ __**Examples:**__
 __**Arguments:**__
 
 (optional) `[role]` : *Role.* (def: `None`)
-
-__**Examples:**__
 
 ---
 
@@ -2060,8 +1760,6 @@ __**Arguments:**__
 
 (optional) `[user]` : *User.* (def: `None`)
 
-__**Examples:**__
-
 ---
 
 ## rank list
@@ -2071,19 +1769,11 @@ __**Aliases:**__
 *levels*
 
 
-__**Arguments:**__
-
-__**Examples:**__
-
 ---
 
 ## rank top
 *Get rank leaderboard.*
 
-
-__**Arguments:**__
-
-__**Examples:**__
 
 ---
 
@@ -2098,8 +1788,6 @@ __**Arguments:**__
 
 `[user]` : *Who to measure.*
 
-__**Examples:**__
-
 ---
 
 ### remind
@@ -2112,8 +1800,6 @@ __**Arguments:**__
 
 `[string...]` : *What to repeat.*
 
-__**Examples:**__
-
 ---
 
 ### report
@@ -2124,8 +1810,6 @@ __**Arguments:**__
 
 `[string...]` : *Text.*
 
-__**Examples:**__
-
 ---
 
 ## roles
@@ -2134,10 +1818,6 @@ __**Examples:**__
 __**Aliases:**__
 *role, r, rl*
 
-
-__**Arguments:**__
-
-__**Examples:**__
 
 ---
 
@@ -2155,8 +1835,6 @@ __**Arguments:**__
 
 `[string...]` : *Role.*
 
-__**Examples:**__
-
 ---
 
 ## roles delete
@@ -2173,8 +1851,6 @@ __**Arguments:**__
 
 `[role]` : *Role.*
 
-__**Examples:**__
-
 ---
 
 ## roles mentionall
@@ -2190,8 +1866,6 @@ __**Aliases:**__
 __**Arguments:**__
 
 `[role]` : *Role.*
-
-__**Examples:**__
 
 ---
 
@@ -2211,8 +1885,6 @@ __**Arguments:**__
 
 `[string]` : *Color.*
 
-__**Examples:**__
-
 ---
 
 ## roles setmentionable
@@ -2230,8 +1902,6 @@ __**Arguments:**__
 `[role]` : *Role.*
 
 `[boolean]` : *[true/false]*
-
-__**Examples:**__
 
 ---
 
@@ -2251,8 +1921,6 @@ __**Arguments:**__
 
 `[string...]` : *New name.*
 
-__**Examples:**__
-
 ---
 
 ## roles setvisible
@@ -2271,8 +1939,6 @@ __**Arguments:**__
 
 `[boolean]` : *[true/false]*
 
-__**Examples:**__
-
 ---
 
 ## rss
@@ -2286,8 +1952,6 @@ __**Arguments:**__
 
 `[string...]` : *URL.*
 
-__**Examples:**__
-
 ---
 
 ## rss listsubs
@@ -2297,19 +1961,11 @@ __**Aliases:**__
 *ls, list*
 
 
-__**Arguments:**__
-
-__**Examples:**__
-
 ---
 
 ## rss news
 *Get newest world news.*
 
-
-__**Arguments:**__
-
-__**Examples:**__
 
 ---
 
@@ -2323,8 +1979,6 @@ __**Aliases:**__
 __**Arguments:**__
 
 (optional) `[string]` : *Subreddit.* (def: `all`)
-
-__**Examples:**__
 
 ---
 
@@ -2344,8 +1998,6 @@ __**Arguments:**__
 
 (optional) `[string]` : *Friendly name.* (def: `None`)
 
-__**Examples:**__
-
 ---
 
 ## rss unsubscribe
@@ -2362,17 +2014,11 @@ __**Arguments:**__
 
 `[int]` : *ID.*
 
-__**Examples:**__
-
 ---
 
 ## rss wm
 *Get newest topics from WM forum.*
 
-
-__**Arguments:**__
-
-__**Examples:**__
 
 ---
 
@@ -2387,8 +2033,6 @@ __**Arguments:**__
 
 `[string]` : *Channel URL.*
 
-__**Examples:**__
-
 ---
 
 ### say
@@ -2401,8 +2045,6 @@ __**Aliases:**__
 __**Arguments:**__
 
 `[string...]` : *Text.*
-
-__**Examples:**__
 
 ---
 
@@ -2417,8 +2059,6 @@ __**Arguments:**__
 
 `[unsigned long]` : *ID.*
 
-__**Examples:**__
-
 ---
 
 ### stop
@@ -2426,10 +2066,6 @@ __**Examples:**__
 
 __**Owner-only.**__
 
-
-__**Arguments:**__
-
-__**Examples:**__
 
 ---
 
@@ -2446,17 +2082,11 @@ __**Arguments:**__
 
 (optional) `[int]` : *Query port* (def: `10481`)
 
-__**Examples:**__
-
 ---
 
 ## swat serverlist
 *Print the serverlist with current player numbers.*
 
-
-__**Arguments:**__
-
-__**Examples:**__
 
 ---
 
@@ -2466,8 +2096,6 @@ __**Examples:**__
 __**Aliases:**__
 *s, srv*
 
-
-__**Examples:**__
 
 ---
 
@@ -2480,8 +2108,6 @@ __**Owner-only.**__
 __**Arguments:**__
 
 `[int]` : *Timeout (in ms).*
-
-__**Examples:**__
 
 ---
 
@@ -2498,8 +2124,6 @@ __**Arguments:**__
 
 (optional) `[int]` : *Query port* (def: `10481`)
 
-__**Examples:**__
-
 ---
 
 ## swat stopcheck
@@ -2508,10 +2132,6 @@ __**Examples:**__
 __**Aliases:**__
 *checkstop*
 
-
-__**Arguments:**__
-
-__**Examples:**__
 
 ---
 
@@ -2527,8 +2147,6 @@ __**Arguments:**__
 `[string]` : *Trigger (case sensitive).*
 
 `[string...]` : *Response.*
-
-__**Examples:**__
 
 ---
 
@@ -2548,8 +2166,6 @@ __**Arguments:**__
 
 `[string...]` : *Response.*
 
-__**Examples:**__
-
 ---
 
 ## textreaction clear
@@ -2561,10 +2177,6 @@ __**Requires user permissions:**__
 __**Aliases:**__
 *c, da*
 
-
-__**Arguments:**__
-
-__**Examples:**__
 
 ---
 
@@ -2582,8 +2194,6 @@ __**Arguments:**__
 
 `[string...]` : *Trigger words to remove.*
 
-__**Examples:**__
-
 ---
 
 ## textreaction list
@@ -2597,8 +2207,6 @@ __**Arguments:**__
 
 (optional) `[int]` : *Page.* (def: `1`)
 
-__**Examples:**__
-
 ---
 
 ### tts
@@ -2608,8 +2216,6 @@ __**Examples:**__
 __**Arguments:**__
 
 `[string...]` : *Text.*
-
-__**Examples:**__
 
 ---
 
@@ -2623,8 +2229,6 @@ __**Aliases:**__
 __**Arguments:**__
 
 `[string...]` : *Query.*
-
-__**Examples:**__
 
 ---
 
@@ -2644,8 +2248,6 @@ __**Arguments:**__
 
 `[role]` : *Role.*
 
-__**Examples:**__
-
 ---
 
 ## user avatar
@@ -2658,8 +2260,6 @@ __**Aliases:**__
 __**Arguments:**__
 
 `[user]` : *User.*
-
-__**Examples:**__
 
 ---
 
@@ -2679,8 +2279,6 @@ __**Arguments:**__
 
 (optional) `[string...]` : *Reason.* (def: `None`)
 
-__**Examples:**__
-
 ---
 
 ## user banid
@@ -2698,8 +2296,6 @@ __**Arguments:**__
 `[unsigned long]` : *ID.*
 
 (optional) `[string...]` : *Reason.* (def: `None`)
-
-__**Examples:**__
 
 ---
 
@@ -2719,8 +2315,6 @@ __**Arguments:**__
 
 (optional) `[string...]` : *Reason.* (def: `None`)
 
-__**Examples:**__
-
 ---
 
 ## user info
@@ -2733,8 +2327,6 @@ __**Aliases:**__
 __**Arguments:**__
 
 (optional) `[user]` : *User.* (def: `None`)
-
-__**Examples:**__
 
 ---
 
@@ -2754,8 +2346,6 @@ __**Arguments:**__
 
 (optional) `[string...]` : *Reason.* (def: `None`)
 
-__**Examples:**__
-
 ---
 
 ## user listperms
@@ -2769,8 +2359,6 @@ __**Arguments:**__
 
 (optional) `[member]` : *User.* (def: `None`)
 
-__**Examples:**__
-
 ---
 
 ## user listroles
@@ -2783,8 +2371,6 @@ __**Aliases:**__
 __**Arguments:**__
 
 (optional) `[member]` : *User.* (def: `None`)
-
-__**Examples:**__
 
 ---
 
@@ -2804,8 +2390,6 @@ __**Arguments:**__
 
 (optional) `[string...]` : *Reason.* (def: `None`)
 
-__**Examples:**__
-
 ---
 
 ## user removeallroles
@@ -2821,8 +2405,6 @@ __**Aliases:**__
 __**Arguments:**__
 
 `[member]` : *User.*
-
-__**Examples:**__
 
 ---
 
@@ -2842,8 +2424,6 @@ __**Arguments:**__
 
 `[role]` : *Role.*
 
-__**Examples:**__
-
 ---
 
 ## user setname
@@ -2862,8 +2442,6 @@ __**Arguments:**__
 
 (optional) `[string...]` : *New name.* (def: `None`)
 
-__**Examples:**__
-
 ---
 
 ## user softban
@@ -2881,8 +2459,6 @@ __**Arguments:**__
 `[member]` : *User.*
 
 (optional) `[string...]` : *Reason.* (def: `None`)
-
-__**Examples:**__
 
 ---
 
@@ -2906,8 +2482,6 @@ __**Arguments:**__
 
 (optional) `[string...]` : *Reason.* (def: `None`)
 
-__**Examples:**__
-
 ---
 
 ## user unban
@@ -2925,8 +2499,6 @@ __**Arguments:**__
 `[unsigned long]` : *ID.*
 
 (optional) `[string...]` : *Reason.* (def: `None`)
-
-__**Examples:**__
 
 ---
 
@@ -2946,8 +2518,6 @@ __**Arguments:**__
 
 (optional) `[string...]` : *Message.* (def: `None`)
 
-__**Examples:**__
-
 ---
 
 ## youtube
@@ -2960,8 +2530,6 @@ __**Aliases:**__
 __**Arguments:**__
 
 `[string...]` : *Search query.*
-
-__**Examples:**__
 
 ---
 
@@ -2978,8 +2546,6 @@ __**Arguments:**__
 
 `[string...]` : *Search query.*
 
-__**Examples:**__
-
 ---
 
 ## youtube searchc
@@ -2992,8 +2558,6 @@ __**Aliases:**__
 __**Arguments:**__
 
 `[string...]` : *Search query.*
-
-__**Examples:**__
 
 ---
 
@@ -3008,8 +2572,6 @@ __**Arguments:**__
 
 `[string...]` : *Search query.*
 
-__**Examples:**__
-
 ---
 
 ## youtube searchv
@@ -3023,8 +2585,6 @@ __**Arguments:**__
 
 `[string...]` : *Search query.*
 
-__**Examples:**__
-
 ---
 
 ### zugify
@@ -3037,8 +2597,6 @@ __**Aliases:**__
 __**Arguments:**__
 
 `[string...]` : *Text.*
-
-__**Examples:**__
 
 ---
 
