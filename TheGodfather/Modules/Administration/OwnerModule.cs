@@ -286,19 +286,20 @@ namespace TheGodfather.Modules.Administration
                 else
                     sb.AppendLine("### " + cmd.QualifiedName);
 
+                sb.Append("```");
                 if (cmd.IsHidden)
                     sb.AppendLine(Formatter.Italic("Hidden.") + "\n");
 
                 sb.AppendLine(Formatter.Italic(cmd.Description ?? "No description provided.") + "\n");
 
                 if (cmd.Aliases.Any()) {
-                    sb.AppendLine(Formatter.Bold("Aliases:") + "\n");
+                    sb.AppendLine(Formatter.Underline(Formatter.Bold("Aliases:") + "\n"));
                     sb.AppendLine(Formatter.Italic(string.Join(", ", cmd.Aliases)) + "\n");
                 }
                 sb.AppendLine();
 
                 foreach (var overload in cmd.Overloads.OrderByDescending(o => o.Priority)) {
-                    sb.AppendLine(Formatter.Bold((cmd.Overloads.Count > 1 ? $"Overload {overload.Priority.ToString()}:" : "Arguments:")) + "\n");
+                    sb.AppendLine(Formatter.Underline(Formatter.Bold((cmd.Overloads.Count > 1 ? $"Overload {overload.Priority.ToString()}:" : "Arguments:")) + "\n"));
                     foreach (var arg in overload.Arguments) {
                         if (arg.IsOptional)
                             sb.Append("(optional) ");
@@ -321,6 +322,7 @@ namespace TheGodfather.Modules.Administration
 
                     sb.AppendLine("---\n");
                 }
+                sb.Append("```");
             }
 
             File.WriteAllText(filepath, sb.ToString());
