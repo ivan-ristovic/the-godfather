@@ -36,6 +36,7 @@ namespace TheGodfather.Modules.Administration
         [Command("bans")]
         [Description("Get guild ban list.")]
         [Aliases("banlist", "viewbanlist", "getbanlist", "getbans", "viewbans")]
+        [UsageExample("!guild banlist")]
         [RequirePermissions(Permissions.ViewAuditLog)]
         public async Task GetBansAsync(CommandContext ctx)
         {
@@ -56,6 +57,7 @@ namespace TheGodfather.Modules.Administration
         [Command("log")]
         [Description("Get audit logs.")]
         [Aliases("auditlog", "viewlog", "getlog", "getlogs", "logs")]
+        [UsageExample("!guild logs")]
         [RequirePermissions(Permissions.ViewAuditLog)]
         public async Task GetAuditLogsAsync(CommandContext ctx)
         {
@@ -76,6 +78,7 @@ namespace TheGodfather.Modules.Administration
         #region COMMAND_GUILD_INFO
         [Command("info")]
         [Description("Get guild information.")]
+        [UsageExample("!guild info")]
         [Aliases("i", "information")]
         public async Task GuildInfoAsync(CommandContext ctx)
         {
@@ -98,6 +101,7 @@ namespace TheGodfather.Modules.Administration
         #region COMMAND_GUILD_LISTMEMBERS
         [Command("listmembers")]
         [Description("Get guild member list.")]
+        [UsageExample("!guild memberlist")]
         [Aliases("memberlist", "lm", "members")]
         public async Task ListMembersAsync(CommandContext ctx)
         {
@@ -121,6 +125,7 @@ namespace TheGodfather.Modules.Administration
         [Command("prune")]
         [Description("Kick guild members who weren't active in given amount of days (1-7).")]
         [Aliases("p", "clean")]
+        [UsageExample("!guild prune 5 Kicking inactives..")]
         [RequirePermissions(Permissions.KickMembers)]
         [RequireUserPermissions(Permissions.Administrator)]
         public async Task PruneMembersAsync(CommandContext ctx,
@@ -158,8 +163,11 @@ namespace TheGodfather.Modules.Administration
         [Command("rename")]
         [Description("Rename guild.")]
         [Aliases("r", "name", "setname")]
+        [UsageExample("!guild rename New guild name")]
+        [UsageExample("!guild rename \"Reason for renaming\" New guild name")]
         [RequirePermissions(Permissions.ManageGuild)]
         public async Task RenameGuildAsync(CommandContext ctx,
+                                          [Description("Reason.")] string reason,
                                           [RemainingText, Description("New name.")] string newname)
         {
             if (string.IsNullOrWhiteSpace(newname))
@@ -167,17 +175,23 @@ namespace TheGodfather.Modules.Administration
 
             await ctx.Guild.ModifyAsync(new Action<GuildEditModel>(m => {
                 m.Name = newname;
-                m.AuditLogReason = GetReasonString(ctx);
+                m.AuditLogReason = GetReasonString(ctx, reason);
             })).ConfigureAwait(false);
             await ReplySuccessAsync(ctx)
                 .ConfigureAwait(false);
         }
+
+        [Command("rename")]
+        public async Task RenameGuildAsync(CommandContext ctx,
+                                          [RemainingText, Description("New name.")] string newname)
+            => await RenameGuildAsync(ctx, null, newname);
         #endregion
 
         #region COMMAND_GUILD_SETICON
         [Command("seticon")]
         [Description("Change icon of the guild.")]
         [Aliases("icon", "si")]
+        [UsageExample("!guild seticon http://imgur.com/someimage.png")]
         [RequirePermissions(Permissions.ManageGuild)]
         public async Task SetIconAsync(CommandContext ctx,
                                       [Description("New icon URL.")] string url)
@@ -222,6 +236,7 @@ namespace TheGodfather.Modules.Administration
         [Command("getwelcomechannel")]
         [Description("Get current welcome message channel for this guild.")]
         [Aliases("getwelcomec", "getwc", "getwelcome", "welcomechannel", "wc")]
+        [UsageExample("!guild getwelcomechannel")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task GetWelcomeChannelAsync(CommandContext ctx)
         {
