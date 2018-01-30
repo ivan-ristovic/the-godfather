@@ -29,6 +29,7 @@ namespace TheGodfather.Modules.Games
             #endregion
 
 
+            [GroupCommand]
             public async Task ExecuteGroupAsync(CommandContext ctx)
             {
                 if (_races.ContainsKey(ctx.Channel.Id)) {

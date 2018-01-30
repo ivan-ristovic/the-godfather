@@ -24,6 +24,7 @@ namespace TheGodfather.Modules.Main
     public class InsultModule
     {
 
+        [GroupCommand]
         public async Task ExecuteGroupAsync(CommandContext ctx, 
                                            [Description("User.")] DiscordUser u = null)
         {

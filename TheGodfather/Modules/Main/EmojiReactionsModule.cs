@@ -25,6 +25,7 @@ namespace TheGodfather.Modules.Messages
     public class EmojiReactionsModule
     {
         
+        [GroupCommand]
         [RequirePermissions(Permissions.ManageGuild)]
         public async Task ExecuteGroupAsync(CommandContext ctx,
                                            [Description("Emoji to send.")] DiscordEmoji emoji = null,
