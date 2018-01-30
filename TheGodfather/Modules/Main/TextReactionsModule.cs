@@ -20,7 +20,7 @@ namespace TheGodfather.Modules.Messages
     [Description("Text reaction handling.")]
     [Aliases("treact", "tr", "txtr", "textreactions")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
-    [PreExecutionCheck]
+    [ListeningCheckAttribute]
     public class TextReactionsModule
     {
 

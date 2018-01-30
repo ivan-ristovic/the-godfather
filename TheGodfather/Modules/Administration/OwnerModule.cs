@@ -42,7 +42,7 @@ namespace TheGodfather.Modules.Administration
         [Command("botavatar")]
         [Description("Set bot avatar.")]
         [Aliases("setbotavatar", "setavatar")]
-        [PreExecutionCheck]
+        [ListeningCheckAttribute]
         public async Task SetBotAvatarAsync(CommandContext ctx,
                                            [Description("URL.")] string url)
         {
@@ -81,7 +81,7 @@ namespace TheGodfather.Modules.Administration
         [Command("botname")]
         [Description("Set bot name.")]
         [Aliases("setbotname", "setname")]
-        [PreExecutionCheck]
+        [ListeningCheckAttribute]
         public async Task SetBotNameAsync(CommandContext ctx,
                                          [RemainingText, Description("New name.")] string name)
         {
@@ -99,7 +99,7 @@ namespace TheGodfather.Modules.Administration
         [Command("clearlog")]
         [Description("Clear application logs.")]
         [Aliases("clearlogs", "deletelogs", "deletelog")]
-        [PreExecutionCheck]
+        [ListeningCheckAttribute]
         public async Task ClearLogAsync(CommandContext ctx)
         {
             await ctx.RespondAsync("Are you sure you want to clear the logs?")
@@ -120,7 +120,7 @@ namespace TheGodfather.Modules.Administration
         [Command("dbquery")]
         [Description("Clear application logs.")]
         [Aliases("sql", "dbq", "q")]
-        [PreExecutionCheck]
+        [ListeningCheckAttribute]
         public async Task DatabaseQuery(CommandContext ctx,
                                         [RemainingText, Description("SQL Query.")] string query)
         {
@@ -167,7 +167,7 @@ namespace TheGodfather.Modules.Administration
         [Command("eval")]
         [Description("Evaluates a snippet of C# code, in context.")]
         [Aliases("compile", "run", "e", "c", "r")]
-        [PreExecutionCheck]
+        [ListeningCheckAttribute]
         public async Task EvaluateAsync(CommandContext ctx,
                                        [RemainingText, Description("Code to evaluate.")] string code)
         {
@@ -256,7 +256,7 @@ namespace TheGodfather.Modules.Administration
         [Command("generatecommands")]
         [Description("Generates a command-list.")]
         [Aliases("cmdlist", "gencmdlist", "gencmds")]
-        [PreExecutionCheck]
+        [ListeningCheckAttribute]
         public async Task GenerateCommandListAsync(CommandContext ctx,
                                                   [RemainingText, Description("File path.")] string filepath = null)
         {
@@ -375,7 +375,7 @@ namespace TheGodfather.Modules.Administration
         #region COMMAND_LEAVEGUILDS
         [Command("leaveguilds")]
         [Description("Leave guilds given as IDs.")]
-        [PreExecutionCheck]
+        [ListeningCheckAttribute]
         public async Task LeaveGuildsAsync(CommandContext ctx,
                                           [Description("Guild ID list.")] params ulong[] ids)
         {
@@ -401,7 +401,7 @@ namespace TheGodfather.Modules.Administration
         [Command("sendmessage")]
         [Description("Sends a message to a user or channel.")]
         [Aliases("send")]
-        [PreExecutionCheck]
+        [ListeningCheckAttribute]
         public async Task SendAsync(CommandContext ctx,
                                    [Description("u/c (for user or channel.)")] string desc,
                                    [Description("User/Channel ID.")] ulong xid,
@@ -435,7 +435,7 @@ namespace TheGodfather.Modules.Administration
         [Command("shutdown")]
         [Description("Triggers the dying in the vineyard scene.")]
         [Aliases("disable", "poweroff", "exit", "quit")]
-        [PreExecutionCheck]
+        [ListeningCheckAttribute]
         public async Task ExitAsync(CommandContext ctx)
         {
             await ctx.RespondAsync("https://www.youtube.com/watch?v=4rbfuw0UN2A")
@@ -450,7 +450,7 @@ namespace TheGodfather.Modules.Administration
         [Command("sudo")]
         [Description("Executes a command as another user.")]
         [Aliases("execas", "as")]
-        [PreExecutionCheck]
+        [ListeningCheckAttribute]
         public async Task SudoAsync(CommandContext ctx,
                                    [Description("Member to execute as.")] DiscordMember member,
                                    [RemainingText, Description("Command text to execute.")] string command)
@@ -478,7 +478,7 @@ namespace TheGodfather.Modules.Administration
 
         [Group("status")]
         [Description("Bot status manipulation.")]
-        [PreExecutionCheck]
+        [ListeningCheckAttribute]
         public class CommandsStatus
         {
             #region COMMAND_STATUS_ADD

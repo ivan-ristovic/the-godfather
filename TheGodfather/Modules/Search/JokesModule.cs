@@ -21,7 +21,7 @@ namespace TheGodfather.Modules.Search
     [Description("Send a joke.")]
     [Aliases("jokes", "j")]
     [Cooldown(2, 5, CooldownBucketType.User), Cooldown(4, 5, CooldownBucketType.Channel)]
-    [PreExecutionCheck]
+    [ListeningCheckAttribute]
     public class JokesModule
     {
 

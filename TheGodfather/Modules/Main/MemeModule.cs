@@ -27,7 +27,7 @@ namespace TheGodfather.Modules.Main
     [Description("Manipulate memes. When invoked without name, returns a random one.")]
     [Aliases("memes", "mm")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
-    [PreExecutionCheck]
+    [ListeningCheckAttribute]
     public class MemeModule
     {
 

@@ -23,7 +23,7 @@ namespace TheGodfather.Modules.Search
     [Description("RSS feed operations.")]
     [Aliases("feed")]
     [Cooldown(2, 5, CooldownBucketType.User), Cooldown(4, 5, CooldownBucketType.Channel)]
-    [PreExecutionCheck]
+    [ListeningCheckAttribute]
     public class RSSModule
     {
 

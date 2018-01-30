@@ -20,7 +20,7 @@ namespace TheGodfather.Modules.Games
         [Description("Deck manipulation commands.")]
         [Aliases("deck")]
         [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
-        [PreExecutionCheck]
+        [ListeningCheckAttribute]
         public class CardGamesModule
         {
             #region PRIVATE_FIELDS

@@ -21,7 +21,7 @@ namespace TheGodfather.Modules.Messages
     [Description("Emoji reaction handling.")]
     [Aliases("ereact", "er", "emojir", "emojireactions")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
-    [PreExecutionCheck]
+    [ListeningCheckAttribute]
     public class EmojiReactionsModule
     {
         

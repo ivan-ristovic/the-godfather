@@ -22,7 +22,7 @@ namespace TheGodfather.Modules.Administration
     [Description("Miscellaneous channel control commands.")]
     [Aliases("channels", "c", "chn")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    [PreExecutionCheck]
+    [ListeningCheck]
     public class ChannelAdminModule : GodfatherBaseModule
     {
 

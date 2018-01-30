@@ -19,7 +19,7 @@ using DSharpPlus.Entities;
 namespace TheGodfather.Modules.Voice
 {
     [Description("Voice & music commands.")]
-    [PreExecutionCheck]
+    [ListeningCheckAttribute]
     [RequireOwner]
     public class VoiceModule
     {

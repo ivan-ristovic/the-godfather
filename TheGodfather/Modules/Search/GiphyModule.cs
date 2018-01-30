@@ -22,7 +22,7 @@ namespace TheGodfather.Modules.Search
     [Description("GIPHY commands.")]
     [Aliases("giphy")]
     [Cooldown(2, 5, CooldownBucketType.User), Cooldown(4, 5, CooldownBucketType.Channel)]
-    [PreExecutionCheck]
+    [ListeningCheckAttribute]
     public class GiphyModule
     {
 

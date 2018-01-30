@@ -25,7 +25,7 @@ namespace TheGodfather.Modules.Administration
     [Description("Miscellaneous guild control commands.")]
     [Aliases("server", "g")]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
-    [PreExecutionCheck]
+    [ListeningCheck]
     public class GuildAdminModule : GodfatherBaseModule
     {
 

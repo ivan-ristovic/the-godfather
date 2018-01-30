@@ -34,7 +34,7 @@ namespace TheGodfather.Modules.Main
         [Description("Starts a poll in the channel.")]
         [Aliases("vote")]
         [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
-        [PreExecutionCheck]
+        [ListeningCheckAttribute]
         public async Task Poll(CommandContext ctx, 
                               [RemainingText, Description("Question.")] string q)
         {
@@ -88,7 +88,7 @@ namespace TheGodfather.Modules.Main
         [Description("Starts a poll with reactions in the channel.")]
         [Aliases("voter")]
         [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
-        [PreExecutionCheck]
+        [ListeningCheckAttribute]
         public async Task Pollr(CommandContext ctx, 
                                [Description("Options")] params DiscordEmoji[] options)
         {

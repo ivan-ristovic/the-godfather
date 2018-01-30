@@ -21,7 +21,7 @@ namespace TheGodfather.Modules.Messages
     [Description("Message filtering commands.")]
     [Aliases("f", "filters")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
-    [PreExecutionCheck]
+    [ListeningCheckAttribute]
     public class FilterModule
     {
         #region COMMAND_FILTER_ADD

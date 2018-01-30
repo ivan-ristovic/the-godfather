@@ -19,7 +19,7 @@ namespace TheGodfather.Modules.Games
     [Description("Random betting and gambling commands.")]
     [Aliases("bet")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
-    [PreExecutionCheck]
+    [ListeningCheckAttribute]
     public partial class GambleModule
     {
         #region COMMAND_COINFLIP

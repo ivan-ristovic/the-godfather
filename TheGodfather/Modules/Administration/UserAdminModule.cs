@@ -19,7 +19,7 @@ namespace TheGodfather.Modules.Administration
     [Description("Miscellaneous user control commands.")]
     [Aliases("users", "u", "usr")]
     [Cooldown(3, 5, CooldownBucketType.User)]
-    [PreExecutionCheck]
+    [ListeningCheckAttribute]
     public class UserAdminModule
     {
         #region COMMAND_USER_ADDROLE

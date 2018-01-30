@@ -21,7 +21,7 @@ namespace TheGodfather.Modules.Search
     [Description("Youtube search commands.")]
     [Aliases("s", "st")]
     [Cooldown(2, 5, CooldownBucketType.User), Cooldown(4, 5, CooldownBucketType.Channel)]
-    [PreExecutionCheck]
+    [ListeningCheckAttribute]
     public class SteamModule
     {
         #region COMMAND_STEAM_PROFILE

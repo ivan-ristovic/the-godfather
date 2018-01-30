@@ -17,7 +17,7 @@ namespace TheGodfather.Modules.Search
     [Description("Reddit commands.")]
     [Aliases("r")]
     [Cooldown(2, 5, CooldownBucketType.User), Cooldown(4, 5, CooldownBucketType.Channel)]
-    [PreExecutionCheck]
+    [ListeningCheckAttribute]
     [RequireOwner]
     [Hidden]
     public class RedditModule

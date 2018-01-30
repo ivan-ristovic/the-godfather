@@ -21,7 +21,7 @@ namespace TheGodfather.Modules.Games
         [Description("Racing!")]
         [Aliases("r")]
         [Cooldown(2, 5, CooldownBucketType.User), Cooldown(3, 5, CooldownBucketType.Channel)]
-        [PreExecutionCheck]
+        [ListeningCheckAttribute]
         public class RaceModule
         {
             #region PRIVATE_FIELDS

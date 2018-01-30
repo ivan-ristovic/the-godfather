@@ -21,7 +21,7 @@ namespace TheGodfather.Modules.Games
     [Description("Starts a game for you to play!")]
     [Aliases("game", "gm")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
-    [PreExecutionCheck]
+    [ListeningCheckAttribute]
     public partial class GamesModule
     {
         #region COMMAND_GAMES_CARO

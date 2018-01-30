@@ -22,7 +22,7 @@ namespace TheGodfather.Modules.Administration
     [Description("Commands to manipulate messages on the channel.")]
     [Aliases("m", "msg", "msgs", "messages")]
     [Cooldown(2, 5, CooldownBucketType.User)]
-    [PreExecutionCheck]
+    [ListeningCheckAttribute]
     public class MessageAdminModule : GodfatherBaseModule
     {
 

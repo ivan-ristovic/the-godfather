@@ -26,7 +26,7 @@ namespace TheGodfather.Modules.SWAT
     [Description("SWAT4 related commands.")]
     [Aliases("s4", "swat4")]
     [Cooldown(2, 5, CooldownBucketType.User), Cooldown(4, 5, CooldownBucketType.Channel)]
-    [PreExecutionCheck]
+    [ListeningCheckAttribute]
     public class SwatModule
     {
         #region PRIVATE_FIELDS

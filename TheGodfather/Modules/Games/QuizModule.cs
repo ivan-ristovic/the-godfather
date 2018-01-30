@@ -20,7 +20,7 @@ namespace TheGodfather.Modules.Games
         [Description("Start a quiz!")]
         [Aliases("trivia", "q")]
         [Cooldown(2, 5, CooldownBucketType.User), Cooldown(3, 5, CooldownBucketType.Channel)]
-        [PreExecutionCheck]
+        [ListeningCheckAttribute]
         public class QuizModule
         {
             #region COMMAND_QUIZ_COUNTRIES
