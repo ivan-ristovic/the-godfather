@@ -246,10 +246,10 @@ namespace TheGodfather.Modules.Administration
                 var c = ctx.Guild.GetChannel(cid);
                 if (c == null)
                     throw new CommandFailedException($"Welcome channel was set but does not exist anymore (id: {cid}).");
-                await ctx.RespondAsync($"Default welcome message channel: {Formatter.Bold(ctx.Guild.GetChannel(cid).Name)}.")
+                await ReplySuccessAsync(ctx, $"Default welcome message channel: {Formatter.Bold(ctx.Guild.GetChannel(cid).Name)}.")
                     .ConfigureAwait(false);
             } else {
-                await ctx.RespondAsync("Default welcome message channel isn't set for this guild.")
+                await ReplySuccessAsync(ctx, "Default welcome message channel isn't set for this guild.")
                     .ConfigureAwait(false);
             }
         }
@@ -259,6 +259,7 @@ namespace TheGodfather.Modules.Administration
         [Command("getleavechannel")]
         [Description("Get current leave message channel for this guild.")]
         [Aliases("getleavec", "getlc", "getleave", "leavechannel", "lc")]
+        [UsageExample("!guild getleavechannel")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task GetLeaveChannelAsync(CommandContext ctx)
         {
@@ -268,10 +269,10 @@ namespace TheGodfather.Modules.Administration
                 var c = ctx.Guild.GetChannel(cid);
                 if (c == null)
                     throw new CommandFailedException($"Leave channel was set but does not exist anymore (id: {cid}).");
-                await ctx.RespondAsync($"Default leave message channel: {Formatter.Bold(c.Name)}.")
+                await ReplySuccessAsync(ctx, $"Default leave message channel: {Formatter.Bold(c.Name)}.")
                     .ConfigureAwait(false);
             } else {
-                await ctx.RespondAsync("Default leave message channel isn't set for this guild.")
+                await ReplySuccessAsync(ctx, "Default leave message channel isn't set for this guild.")
                     .ConfigureAwait(false);
             }
         }
@@ -279,8 +280,10 @@ namespace TheGodfather.Modules.Administration
 
         #region COMMAND_GUILD_SETWELCOMECHANNEL
         [Command("setwelcomechannel")]
-        [Description("Set welcome message channel for this guild.")]
+        [Description("Set welcome message channel for this guild. If the channel isn't given, uses the current one.")]
         [Aliases("setwc", "setwelcomec", "setwelcome")]
+        [UsageExample("!guild setwelcomechannel")]
+        [UsageExample("!guild setwelcomechannel #welcome")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task SetWelcomeChannelAsync(CommandContext ctx,
                                                 [Description("Channel.")] DiscordChannel channel = null)
@@ -300,8 +303,10 @@ namespace TheGodfather.Modules.Administration
 
         #region COMMAND_GUILD_SETLEAVECHANNEL
         [Command("setleavechannel")]
-        [Description("Set leave message channel for this guild.")]
+        [Description("Set leave message channel for this guild. If the channel isn't given, uses the current one.")]
         [Aliases("leavec", "setlc", "setleave")]
+        [UsageExample("!guild setleavechannel")]
+        [UsageExample("!guild setleavechannel #bb")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task SetLeaveChannelAsync(CommandContext ctx,
                                               [Description("Channel.")] DiscordChannel channel = null)
@@ -314,7 +319,7 @@ namespace TheGodfather.Modules.Administration
 
             await DatabaseService.SetGuildLeaveChannelAsync(ctx.Guild.Id, channel.Id)
                 .ConfigureAwait(false);
-            await ctx.RespondAsync($"Default leave message channel set to {Formatter.Bold(channel.Name)}.")
+            await ReplySuccessAsync(ctx, $"Default leave message channel set to {Formatter.Bold(channel.Name)}.")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -323,12 +328,13 @@ namespace TheGodfather.Modules.Administration
         [Command("deletewelcomechannel")]
         [Description("Remove welcome message channel for this guild.")]
         [Aliases("delwelcomec", "delwc", "delwelcome", "dwc", "deletewc")]
+        [UsageExample("!guild deletewelcomechannel")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task RemoveWelcomeChannelAsync(CommandContext ctx)
         {
             await DatabaseService.RemoveGuildWelcomeChannelAsync(ctx.Guild.Id)
                 .ConfigureAwait(false);
-            await ctx.RespondAsync("Default welcome message channel removed.")
+            await ReplySuccessAsync(ctx, "Default welcome message channel removed.")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -337,12 +343,13 @@ namespace TheGodfather.Modules.Administration
         [Command("deleteleavechannel")]
         [Description("Remove leave message channel for this guild.")]
         [Aliases("delleavec", "dellc", "delleave", "dlc")]
+        [UsageExample("!guild deletewelcomechannel")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task DeleteLeaveChannelAsync(CommandContext ctx)
         {
             await DatabaseService.RemoveGuildLeaveChannelAsync(ctx.Guild.Id)
                 .ConfigureAwait(false);
-            await ctx.RespondAsync("Default leave message channel removed.")
+            await ReplySuccessAsync(ctx, "Default leave message channel removed.")
                 .ConfigureAwait(false);
         }
         #endregion

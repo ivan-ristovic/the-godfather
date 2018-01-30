@@ -175,7 +175,7 @@ namespace TheGodfather.Modules.Administration
 
         #region COMMAND_CHANNEL_DELETE
         [Command("delete")]
-        [Description("Delete a given channel or category.")]
+        [Description("Delete a given channel or category. If the channel isn't given, deletes the current one.")]
         [Aliases("-", "del", "d", "remove", "rm")]
         [UsageExample("!channel delete")]
         [UsageExample("!channel delete \"My voice channel\"")]
@@ -216,7 +216,7 @@ namespace TheGodfather.Modules.Administration
 
         #region COMMAND_CHANNEL_INFO
         [Command("info")]
-        [Description("Get information about a given channel.")]
+        [Description("Get information about a given channel. If the channel isn't given, uses the current one.")]
         [Aliases("i", "information")]
         [UsageExample("!channel info")]
         [UsageExample("!channel info \"My voice channel\"")]
@@ -292,7 +292,7 @@ namespace TheGodfather.Modules.Administration
 
         #region COMMAND_CHANNEL_RENAME
         [Command("rename")]
-        [Description("Rename channel.")]
+        [Description("Rename channel. If the channel isn't given, uses the current one.")]
         [Aliases("r", "name", "setname")]
         [UsageExample("!channel rename New name for this channel")]
         [UsageExample("!channel rename \"My voice channel\" \"My old voice channel\"")]
@@ -345,7 +345,7 @@ namespace TheGodfather.Modules.Administration
 
         #region COMMAND_CHANNEL_SETPARENT
         [Command("setparent")]
-        [Description("Change the parent of the given channel.")]
+        [Description("Change the parent of the given channel. If the channel isn't given, uses the current one.")]
         [Aliases("setpar", "par", "parent")]
         [UsageExample("!channel setparent \"My channel\" ParentCategory")]
         [UsageExample("!channel setparent ParentCategory I set a new parent for this channel!")]
@@ -384,7 +384,7 @@ namespace TheGodfather.Modules.Administration
 
         #region COMMAND_CHANNEL_SETPOSITION
         [Command("setposition")]
-        [Description("Change the position of the given channel in the guild channel list.")]
+        [Description("Change the position of the given channel in the guild channel list. If the channel isn't given, uses the current one.")]
         [Aliases("setpos", "pos", "position")]
         [UsageExample("!channel setposition 4")]
         [UsageExample("!channel setposition \"My channel\" 1")]
@@ -427,7 +427,7 @@ namespace TheGodfather.Modules.Administration
 
         #region COMMAND_CHANNEL_SETTOPIC
         [Command("settopic")]
-        [Description("Set channel topic.")]
+        [Description("Set channel topic. If the channel isn't given, uses the current one.")]
         [Aliases("t", "topic", "sett")]
         [UsageExample("!channel settopic New channel topic")]
         [UsageExample("!channel settopic \"My channel\" New channel topic")]
