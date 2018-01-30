@@ -49,7 +49,7 @@ Furthermore, the reason in the first overload is marked as ``(optional)`` in the
 
 ``!kick @User``
 
-In the second overload though, the reason is mandatory since it preceeds ``user``. That doesn't mean that you HAVE to write a reason, for instance:
+In the second overload though, the reason is mandatory since it preceeds ``user``. That doesn't mean that you *have* to make up a reason, ``string`` can be *empty*:
 
 ``!kick "" @user``
 
