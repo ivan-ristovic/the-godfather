@@ -53,7 +53,7 @@ namespace TheGodfather.Modules.Games
                     await game.PlayAsync()
                         .ConfigureAwait(false);
                     if (game.Winner != null)
-                        await ctx.Services.GetService<DatabaseService>().UpdateUserStatsAsync(game.Winner.Id, "nunchi_won")
+                        await ctx.Services.GetService<DatabaseService>().UpdateUserStatsAsync(game.Winner.Id, "nunchis_won")
                             .ConfigureAwait(false);
                 } else {
                     await ctx.RespondAsync("Not enough users joined the game.")

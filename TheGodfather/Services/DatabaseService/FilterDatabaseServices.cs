@@ -13,98 +13,107 @@ namespace TheGodfather.Services
     {
         public async Task<IReadOnlyList<Tuple<ulong, string>>> GetAllGuildFiltersAsync()
         {
-            await _sem.WaitAsync();
             var filters = new List<Tuple<ulong, string>>();
 
-            using (var con = new NpgsqlConnection(_connectionString))
-            using (var cmd = con.CreateCommand()) {
-                await con.OpenAsync().ConfigureAwait(false);
+            await _sem.WaitAsync();
+            try {
+                using (var con = new NpgsqlConnection(_connectionString))
+                using (var cmd = con.CreateCommand()) {
+                    await con.OpenAsync().ConfigureAwait(false);
 
-                cmd.CommandText = "SELECT * FROM gf.filters;";
+                    cmd.CommandText = "SELECT * FROM gf.filters;";
 
-                using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
-                    while (await reader.ReadAsync().ConfigureAwait(false))
-                        filters.Add(new Tuple<ulong, string>((ulong)(long)reader["gid"], (string)reader["filter"]));
+                    using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
+                        while (await reader.ReadAsync().ConfigureAwait(false))
+                            filters.Add(new Tuple<ulong, string>((ulong)(long)reader["gid"], (string)reader["filter"]));
+                    }
                 }
+            } finally {
+                _sem.Release();
             }
 
-            _sem.Release();
             return filters.AsReadOnly();
         }
 
         public async Task<IReadOnlyList<string>> GetFiltersForGuildAsync(ulong gid)
         {
-            await _sem.WaitAsync();
             var filters = new List<string>();
 
-            using (var con = new NpgsqlConnection(_connectionString))
-            using (var cmd = con.CreateCommand()) {
-                await con.OpenAsync().ConfigureAwait(false);
+            await _sem.WaitAsync();
+            try {
+                using (var con = new NpgsqlConnection(_connectionString))
+                using (var cmd = con.CreateCommand()) {
+                    await con.OpenAsync().ConfigureAwait(false);
 
-                cmd.CommandText = "SELECT * FROM gf.filters WHERE gid = @gid;";
-                cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
+                    cmd.CommandText = "SELECT * FROM gf.filters WHERE gid = @gid;";
+                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
 
-                using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
-                    while (await reader.ReadAsync().ConfigureAwait(false))
-                        filters.Add((string)reader["filter"]);
+                    using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
+                        while (await reader.ReadAsync().ConfigureAwait(false))
+                            filters.Add((string)reader["filter"]);
+                    }
                 }
+            } finally {
+                _sem.Release();
             }
 
-            _sem.Release();
             return filters.AsReadOnly();
         }
 
         public async Task AddFilterAsync(ulong gid, string filter)
         {
             await _sem.WaitAsync();
+            try {
+                using (var con = new NpgsqlConnection(_connectionString))
+                using (var cmd = con.CreateCommand()) {
+                    await con.OpenAsync().ConfigureAwait(false);
 
-            using (var con = new NpgsqlConnection(_connectionString))
-            using (var cmd = con.CreateCommand()) {
-                await con.OpenAsync().ConfigureAwait(false);
+                    cmd.CommandText = "INSERT INTO gf.filters(gid, filter) VALUES (@gid, @filter);";
+                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
+                    cmd.Parameters.AddWithValue("filter", NpgsqlDbType.Varchar, filter);
 
-                cmd.CommandText = "INSERT INTO gf.filters(gid, filter) VALUES (@gid, @filter);";
-                cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
-                cmd.Parameters.AddWithValue("filter", NpgsqlDbType.Varchar, filter);
-
-                await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                }
+            } finally {
+                _sem.Release();
             }
-
-            _sem.Release();
         }
 
         public async Task RemoveFilterAsync(ulong gid, string filter)
         {
             await _sem.WaitAsync();
+            try {
+                using (var con = new NpgsqlConnection(_connectionString))
+                using (var cmd = con.CreateCommand()) {
+                    await con.OpenAsync().ConfigureAwait(false);
 
-            using (var con = new NpgsqlConnection(_connectionString))
-            using (var cmd = con.CreateCommand()) {
-                await con.OpenAsync().ConfigureAwait(false);
+                    cmd.CommandText = "DELETE FROM gf.filters WHERE gid = @gid AND filter = @filter;";
+                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
+                    cmd.Parameters.AddWithValue("filter", NpgsqlDbType.Varchar, filter);
 
-                cmd.CommandText = "DELETE FROM gf.filters WHERE gid = @gid AND filter = @filter;";
-                cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
-                cmd.Parameters.AddWithValue("filter", NpgsqlDbType.Varchar, filter);
-
-                await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                }
+            } finally {
+                _sem.Release();
             }
-
-            _sem.Release();
         }
 
         public async Task RemoveAllGuildFiltersAsync(ulong gid)
         {
             await _sem.WaitAsync();
+            try {
+                using (var con = new NpgsqlConnection(_connectionString))
+                using (var cmd = con.CreateCommand()) {
+                    await con.OpenAsync().ConfigureAwait(false);
 
-            using (var con = new NpgsqlConnection(_connectionString))
-            using (var cmd = con.CreateCommand()) {
-                await con.OpenAsync().ConfigureAwait(false);
+                    cmd.CommandText = "DELETE FROM gf.filters WHERE gid = @gid;";
+                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
 
-                cmd.CommandText = "DELETE FROM gf.filters WHERE gid = @gid;";
-                cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
-
-                await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                }
+            } finally {
+                _sem.Release();
             }
-
-            _sem.Release();
         }
     }
 }

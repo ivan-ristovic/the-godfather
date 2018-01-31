@@ -11,7 +11,7 @@ namespace TheGodfather.Services.FeedServices
         public List<Subscription> Subscriptions { get; set; }
 
 
-        public FeedEntry(int id, string url, List<Subscription> subs, string link)
+        public FeedEntry(int id, string url, List<Subscription> subs, string link = null)
         {
             Id = id;
             URL = url;

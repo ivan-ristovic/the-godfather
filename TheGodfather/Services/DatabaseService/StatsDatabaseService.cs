@@ -22,26 +22,28 @@ namespace TheGodfather.Services
     {
         public async Task<GameStats> GetStatsForUserAsync(ulong uid)
         {
-            await _sem.WaitAsync();
-
             var dict = new Dictionary<string, string>();
 
-            using (var con = new NpgsqlConnection(_connectionString))
-            using (var cmd = con.CreateCommand()) {
-                await con.OpenAsync().ConfigureAwait(false);
+            await _sem.WaitAsync();
+            try {
+                using (var con = new NpgsqlConnection(_connectionString))
+                using (var cmd = con.CreateCommand()) {
+                    await con.OpenAsync().ConfigureAwait(false);
 
-                cmd.CommandText = "SELECT * FROM gf.stats WHERE uid = @uid LIMIT 1;";
-                cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, uid);
+                    cmd.CommandText = "SELECT * FROM gf.stats WHERE uid = @uid LIMIT 1;";
+                    cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, uid);
 
-                using (var rdr = await cmd.ExecuteReaderAsync()) {
-                    if (await rdr.ReadAsync()) {
-                        for (var i = 0; i < rdr.FieldCount; i++)
-                            dict[rdr.GetName(i)] = rdr[i] is DBNull ? "<null>" : rdr[i].ToString();
+                    using (var rdr = await cmd.ExecuteReaderAsync()) {
+                        if (await rdr.ReadAsync()) {
+                            for (var i = 0; i < rdr.FieldCount; i++)
+                                dict[rdr.GetName(i)] = rdr[i] is DBNull ? "<null>" : rdr[i].ToString();
+                        }
                     }
                 }
+            } finally {
+                _sem.Release();
             }
 
-            _sem.Release();
             return dict.Any() ? new GameStats(dict) : null;
         }
 
@@ -62,20 +64,21 @@ namespace TheGodfather.Services
             var stats = await GetStatsForUserAsync(uid).ConfigureAwait(false);
 
             await _sem.WaitAsync();
+            try {
+                using (var con = new NpgsqlConnection(_connectionString))
+                using (var cmd = con.CreateCommand()) {
+                    await con.OpenAsync().ConfigureAwait(false);
 
-            using (var con = new NpgsqlConnection(_connectionString))
-            using (var cmd = con.CreateCommand()) {
-                await con.OpenAsync().ConfigureAwait(false);
+                    if (stats != null)
+                        cmd.CommandText = $"UPDATE gf.stats SET {col} = {col} + {add} WHERE uid = {uid};";
+                    else
+                        cmd.CommandText = $"INSERT INTO gf.stats (uid, {col}) VALUES ({uid}, {add});";
 
-                if (stats != null)
-                    cmd.CommandText = $"UPDATE gf.stats SET {col} = {col} + {add} WHERE uid = {uid};";
-                else
-                    cmd.CommandText = $"INSERT INTO gf.stats (uid, {col}) VALUES ({uid}, {add});";
-
-                await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                }
+            } finally {
+                _sem.Release();
             }
-
-            _sem.Release();
         }
 
         public async Task<DiscordEmbed> GetEmbeddedStatsForUserAsync(DiscordUser u)
@@ -92,10 +95,10 @@ namespace TheGodfather.Services
                 }.Build();
             }
 
-            var eb = stats.GetEmbeddedStats();
-            eb.WithTitle($"Stats for {u.Username}");
-            eb.WithThumbnailUrl(u.AvatarUrl);
-            return eb.Build();
+            var emb = stats.GetEmbeddedStatsBuilder();
+            emb.WithTitle($"Stats for {u.Username}");
+            emb.WithThumbnailUrl(u.AvatarUrl);
+            return emb.Build();
         }
         
         public async Task<DiscordEmbed> GetStatsLeaderboardAsync(DiscordClient client)

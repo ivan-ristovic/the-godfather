@@ -485,7 +485,7 @@ namespace TheGodfather.Modules.Administration
         [Group("status")]
         [Description("Bot status manipulation.")]
         [ListeningCheckAttribute]
-        public class CommandsStatus
+        public class CommandsStatus : BaseCommandModule
         {
             #region COMMAND_STATUS_ADD
             [Command("add")]

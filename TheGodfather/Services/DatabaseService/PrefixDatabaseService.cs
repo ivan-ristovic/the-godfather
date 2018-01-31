@@ -14,52 +14,56 @@ namespace TheGodfather.Services
     {
         public async Task<IReadOnlyDictionary<ulong, string>> GetGuildPrefixesAsync()
         {
-            await _sem.WaitAsync();
             var dict = new Dictionary<ulong, string>();
 
-            using (var con = new NpgsqlConnection(_connectionString))
-            using (var cmd = con.CreateCommand()) {
-                await con.OpenAsync().ConfigureAwait(false);
+            await _sem.WaitAsync();
+            try {
+                using (var con = new NpgsqlConnection(_connectionString))
+                using (var cmd = con.CreateCommand()) {
+                    await con.OpenAsync().ConfigureAwait(false);
 
-                cmd.CommandText = "SELECT * FROM gf.prefixes;";
+                    cmd.CommandText = "SELECT * FROM gf.prefixes;";
 
-                using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
-                    while (await reader.ReadAsync().ConfigureAwait(false))
-                        dict[(ulong)(long)reader["gid"]] = (string)reader["prefix"];
+                    using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
+                        while (await reader.ReadAsync().ConfigureAwait(false))
+                            dict[(ulong)(long)reader["gid"]] = (string)reader["prefix"];
+                    }
                 }
+            } finally {
+                _sem.Release();
             }
 
-            _sem.Release();
             return new ReadOnlyDictionary<ulong, string>(dict);
         }
 
         public async Task SetGuildPrefixAsync(ulong gid, string prefix)
         {
             await _sem.WaitAsync();
+            try {
+                using (var con = new NpgsqlConnection(_connectionString))
+                using (var cmd = con.CreateCommand()) {
+                    await con.OpenAsync().ConfigureAwait(false);
 
-            using (var con = new NpgsqlConnection(_connectionString))
-            using (var cmd = con.CreateCommand()) {
-                await con.OpenAsync().ConfigureAwait(false);
+                    cmd.CommandText = "SELECT * FROM gf.prefixes WHERE gid = @gid LIMIT 1;";
+                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
 
-                cmd.CommandText = "SELECT * FROM gf.prefixes WHERE gid = @gid LIMIT 1;";
-                cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
-
-                var res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
-                using (var cmd1 = con.CreateCommand()) {
-                    if (res == null || res is DBNull) {
-                        cmd.CommandText = "INSERT INTO gf.prefixes VALUES(@gid, @prefix);";
-                        cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
-                        cmd.Parameters.AddWithValue("prefix", NpgsqlDbType.Varchar, prefix);
-                    } else {
-                        cmd.CommandText = "UPDATE gf.prefixes SET prefix = @prefix WHERE gid = @gid;";
-                        cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
-                        cmd.Parameters.AddWithValue("prefix", NpgsqlDbType.Varchar, prefix);
+                    var res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
+                    using (var cmd1 = con.CreateCommand()) {
+                        if (res == null || res is DBNull) {
+                            cmd.CommandText = "INSERT INTO gf.prefixes VALUES(@gid, @prefix);";
+                            cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
+                            cmd.Parameters.AddWithValue("prefix", NpgsqlDbType.Varchar, prefix);
+                        } else {
+                            cmd.CommandText = "UPDATE gf.prefixes SET prefix = @prefix WHERE gid = @gid;";
+                            cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
+                            cmd.Parameters.AddWithValue("prefix", NpgsqlDbType.Varchar, prefix);
+                        }
+                        await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                     }
-                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
+            } finally {
+                _sem.Release();
             }
-
-            _sem.Release();
         }
     }
 }

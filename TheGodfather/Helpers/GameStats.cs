@@ -46,7 +46,7 @@ namespace TheGodfather.Helpers
         }
 
 
-        public DiscordEmbedBuilder GetEmbeddedStats()
+        public DiscordEmbedBuilder GetEmbeddedStatsBuilder()
         {
             var eb = new DiscordEmbedBuilder() { Color = DiscordColor.Chartreuse };
             eb.AddField("Duel stats", DuelStatsString());

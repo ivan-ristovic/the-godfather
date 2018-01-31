@@ -54,7 +54,6 @@ namespace TheGodfather.Services
         public async Task InitializeAsync()
         {
             await _sem.WaitAsync();
-
             try {
                 using (var con = new NpgsqlConnection(_connectionString))
                 using (var cmd = con.CreateCommand()) {
@@ -62,16 +61,16 @@ namespace TheGodfather.Services
                 }
             } catch (NpgsqlException e) {
                 throw new DatabaseServiceException("Database connection failed. Check your login details in the config.json file.", e);
+            } finally {
+                _sem.Release();
             }
-
-            _sem.Release();
         }
 
         public async Task<IReadOnlyList<IReadOnlyDictionary<string, string>>> ExecuteRawQueryAsync(string query)
         {
-            await _sem.WaitAsync();
             var dicts = new List<IReadOnlyDictionary<string, string>>();
 
+            await _sem.WaitAsync();
             try {
                 using (var con = new NpgsqlConnection(_connectionString))
                 using (var cmd = con.CreateCommand()) {
@@ -90,18 +89,20 @@ namespace TheGodfather.Services
                         }
                     }
                 }
-            } catch (NpgsqlException e) {
-                throw new DatabaseServiceException(e);
+            } finally {
+                _sem.Release();
             }
 
-            _sem.Release();
             return new ReadOnlyCollection<IReadOnlyDictionary<string, string>>(dicts);
         }
 
         public async Task<bool> AddGuildIfNotExistsAsync(ulong gid)
         {
-            if (await GuildConfigExistsAsync(gid).ConfigureAwait(false) == false) {
-                await _sem.WaitAsync();
+            if (await GuildConfigExistsAsync(gid).ConfigureAwait(false))
+                return false;
+
+            await _sem.WaitAsync();
+            try {
                 using (var con = new NpgsqlConnection(_connectionString))
                 using (var cmd = con.CreateCommand()) {
                     await con.OpenAsync().ConfigureAwait(false);
@@ -111,31 +112,34 @@ namespace TheGodfather.Services
 
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
+            } finally {
                 _sem.Release();
-                return true;
             }
-            return false;
+
+            return true;
         }
 
         public async Task<bool> GuildConfigExistsAsync(ulong gid)
         {
-            await _sem.WaitAsync();
-
             bool exists = false;
 
-            using (var con = new NpgsqlConnection(_connectionString))
-            using (var cmd = con.CreateCommand()) {
-                await con.OpenAsync().ConfigureAwait(false);
+            await _sem.WaitAsync();
+            try {
+                using (var con = new NpgsqlConnection(_connectionString))
+                using (var cmd = con.CreateCommand()) {
+                    await con.OpenAsync().ConfigureAwait(false);
 
-                cmd.CommandText = "SELECT * FROM gf.guild_cfg WHERE gid = @gid LIMIT 1;";
-                cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
+                    cmd.CommandText = "SELECT * FROM gf.guild_cfg WHERE gid = @gid LIMIT 1;";
+                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
 
-                var res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
-                if (res != null && !(res is DBNull))
-                    exists = true;
+                    var res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
+                    if (res != null && !(res is DBNull))
+                        exists = true;
+                }
+            } finally {
+                _sem.Release();
             }
 
-            _sem.Release();
             return exists;
         }
     }

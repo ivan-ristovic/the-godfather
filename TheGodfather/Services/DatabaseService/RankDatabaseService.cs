@@ -14,95 +14,101 @@ namespace TheGodfather.Services
     {
         public async Task<IReadOnlyDictionary<ulong, ulong>> GetMessageCountForAllUsersAsync()
         {
-            await _sem.WaitAsync();
-
             var msgcount = new Dictionary<ulong, ulong>();
 
-            using (var con = new NpgsqlConnection(_connectionString))
-            using (var cmd = con.CreateCommand()) {
-                await con.OpenAsync().ConfigureAwait(false);
+            await _sem.WaitAsync();
+            try {
+                using (var con = new NpgsqlConnection(_connectionString))
+                using (var cmd = con.CreateCommand()) {
+                    await con.OpenAsync().ConfigureAwait(false);
 
-                cmd.CommandText = "SELECT * FROM gf.msgcount;";
+                    cmd.CommandText = "SELECT * FROM gf.msgcount;";
 
-                using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
-                    while (await reader.ReadAsync().ConfigureAwait(false))
-                        msgcount[(ulong)(long)reader["uid"]] = (ulong)(long)reader["count"];
+                    using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
+                        while (await reader.ReadAsync().ConfigureAwait(false))
+                            msgcount[(ulong)(long)reader["uid"]] = (ulong)(long)reader["count"];
+                    }
                 }
+            } finally {
+                _sem.Release();
             }
 
-            _sem.Release();
             return new ReadOnlyDictionary<ulong, ulong>(msgcount);
         }
 
         public async Task<ulong> GetMessageCountForUserAsync(ulong uid)
         {
-            await _sem.WaitAsync();
-
             ulong msgcount = 0;
 
-            using (var con = new NpgsqlConnection(_connectionString))
-            using (var cmd = con.CreateCommand()) {
-                await con.OpenAsync().ConfigureAwait(false);
+            await _sem.WaitAsync();
+            try {
+                using (var con = new NpgsqlConnection(_connectionString))
+                using (var cmd = con.CreateCommand()) {
+                    await con.OpenAsync().ConfigureAwait(false);
 
-                cmd.CommandText = "SELECT count FROM gf.msgcount WHERE uid = @uid LIMIT 1;";
-                cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
+                    cmd.CommandText = "SELECT count FROM gf.msgcount WHERE uid = @uid LIMIT 1;";
+                    cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
 
-                var res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
-                if (res == null || res is DBNull)
-                    msgcount = (ulong)(long)res;
+                    var res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
+                    if (res == null || res is DBNull)
+                        msgcount = (ulong)(long)res;
+                }
+            } finally {
+                _sem.Release();
             }
 
-            _sem.Release();
             return msgcount;
         }
 
         public async Task StartTrackingMessageCountForUserAsync(ulong uid)
         {
             await _sem.WaitAsync();
+            try {
+                using (var con = new NpgsqlConnection(_connectionString))
+                using (var cmd = con.CreateCommand()) {
+                    await con.OpenAsync().ConfigureAwait(false);
 
-            using (var con = new NpgsqlConnection(_connectionString))
-            using (var cmd = con.CreateCommand()) {
-                await con.OpenAsync().ConfigureAwait(false);
+                    cmd.CommandText = "INSERT INTO gf.msgcount VALUES(@uid, 1);";
+                    cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
 
-                cmd.CommandText = "INSERT INTO gf.msgcount VALUES(@uid, 1);";
-                cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
-
-                await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                }
+            } finally {
+                _sem.Release();
             }
-
-            _sem.Release();
         }
 
         public async Task UpdateMessageCountForUserAsync(ulong uid, ulong count)
         {
             await _sem.WaitAsync();
+            try {
+                using (var con = new NpgsqlConnection(_connectionString))
+                using (var cmd = con.CreateCommand()) {
+                    await con.OpenAsync().ConfigureAwait(false);
 
-            using (var con = new NpgsqlConnection(_connectionString))
-            using (var cmd = con.CreateCommand()) {
-                await con.OpenAsync().ConfigureAwait(false);
+                    cmd.CommandText = "SELECT count FROM gf.msgcount WHERE uid = @uid LIMIT 1;";
+                    cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
 
-                cmd.CommandText = "SELECT count FROM gf.msgcount WHERE uid = @uid LIMIT 1;";
-                cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
-
-                var res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
-                if (res == null || res is DBNull) {
-                    using (var cmd1 = con.CreateCommand()) {
-                        cmd.CommandText = "INSERT INTO gf.msgcount VALUES(@uid, @count);";
-                        cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
-                        cmd.Parameters.AddWithValue("count", NpgsqlDbType.Bigint, (long)count);
-                        await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
-                    }
-                } else if ((ulong)(long)res != count) {
-                    using (var cmd1 = con.CreateCommand()) {
-                        cmd.CommandText = "UPDATE gf.msgcount SET count = @count WHERE uid = @uid;";
-                        cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
-                        cmd.Parameters.AddWithValue("count", NpgsqlDbType.Bigint, (long)count);
-                        await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                    var res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
+                    if (res == null || res is DBNull) {
+                        using (var cmd1 = con.CreateCommand()) {
+                            cmd.CommandText = "INSERT INTO gf.msgcount VALUES(@uid, @count);";
+                            cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
+                            cmd.Parameters.AddWithValue("count", NpgsqlDbType.Bigint, (long)count);
+                            await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                        }
+                    } else if ((ulong)(long)res != count) {
+                        using (var cmd1 = con.CreateCommand()) {
+                            cmd.CommandText = "UPDATE gf.msgcount SET count = @count WHERE uid = @uid;";
+                            cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
+                            cmd.Parameters.AddWithValue("count", NpgsqlDbType.Bigint, (long)count);
+                            await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                        }
                     }
                 }
+            } finally {
+                _sem.Release();
             }
-
-            _sem.Release();
         }
     }
 }

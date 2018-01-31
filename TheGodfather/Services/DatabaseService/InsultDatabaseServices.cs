@@ -14,94 +14,102 @@ namespace TheGodfather.Services
     {
         public async Task<IReadOnlyDictionary<int, string>> GetAllInsultsAsync()
         {
-            await _sem.WaitAsync();
             var insults = new Dictionary<int, string>();
 
-            using (var con = new NpgsqlConnection(_connectionString))
-            using (var cmd = con.CreateCommand()) {
-                await con.OpenAsync().ConfigureAwait(false);
+            await _sem.WaitAsync();
+            try {
+                using (var con = new NpgsqlConnection(_connectionString))
+                using (var cmd = con.CreateCommand()) {
+                    await con.OpenAsync().ConfigureAwait(false);
 
-                cmd.CommandText = "SELECT * FROM gf.insults;";
+                    cmd.CommandText = "SELECT * FROM gf.insults;";
 
-                using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
-                    while (await reader.ReadAsync().ConfigureAwait(false))
-                        insults.Add((int)reader["id"], (string)reader["insult"]);
+                    using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
+                        while (await reader.ReadAsync().ConfigureAwait(false))
+                            insults.Add((int)reader["id"], (string)reader["insult"]);
+                    }
                 }
+            } finally {
+                _sem.Release();
             }
 
-            _sem.Release();
             return new ReadOnlyDictionary<int, string>(insults);
         }
 
         public async Task<string> GetRandomInsultAsync()
         {
-            await _sem.WaitAsync();
-
             string insult = null;
 
-            using (var con = new NpgsqlConnection(_connectionString))
-            using (var cmd = con.CreateCommand()) {
-                await con.OpenAsync().ConfigureAwait(false);
+            await _sem.WaitAsync();
+            try {
+                using (var con = new NpgsqlConnection(_connectionString))
+                using (var cmd = con.CreateCommand()) {
+                    await con.OpenAsync().ConfigureAwait(false);
 
-                cmd.CommandText = "SELECT insult FROM gf.insults LIMIT 1 OFFSET floor(random() * (SELECT count(*) FROM gf.insults));";
+                    cmd.CommandText = "SELECT insult FROM gf.insults LIMIT 1 OFFSET floor(random() * (SELECT count(*) FROM gf.insults));";
 
-                var res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
-                if (res != null && !(res is DBNull))
-                    insult = (string)res;
+                    var res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
+                    if (res != null && !(res is DBNull))
+                        insult = (string)res;
+                }
+            } finally {
+                _sem.Release();
             }
 
-            _sem.Release();
             return insult;
         }
 
         public async Task AddInsultAsync(string insult)
         {
             await _sem.WaitAsync();
+            try {
+                using (var con = new NpgsqlConnection(_connectionString))
+                using (var cmd = con.CreateCommand()) {
+                    await con.OpenAsync().ConfigureAwait(false);
 
-            using (var con = new NpgsqlConnection(_connectionString))
-            using (var cmd = con.CreateCommand()) {
-                await con.OpenAsync().ConfigureAwait(false);
+                    cmd.CommandText = "INSERT INTO gf.insults(insult) VALUES (@insult);";
+                    cmd.Parameters.AddWithValue("insult", NpgsqlDbType.Varchar, insult);
 
-                cmd.CommandText = "INSERT INTO gf.insults(insult) VALUES (@insult);";
-                cmd.Parameters.AddWithValue("insult", NpgsqlDbType.Varchar, insult);
-
-                await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                }
+            } finally {
+                _sem.Release();
             }
-
-            _sem.Release();
         }
 
         public async Task RemoveInsultByIdAsync(int index)
         {
             await _sem.WaitAsync();
+            try {
+                using (var con = new NpgsqlConnection(_connectionString))
+                using (var cmd = con.CreateCommand()) {
+                    await con.OpenAsync().ConfigureAwait(false);
 
-            using (var con = new NpgsqlConnection(_connectionString))
-            using (var cmd = con.CreateCommand()) {
-                await con.OpenAsync().ConfigureAwait(false);
+                    cmd.CommandText = "DELETE FROM gf.insults WHERE id = @id;";
+                    cmd.Parameters.AddWithValue("id", NpgsqlDbType.Bigint, index);
 
-                cmd.CommandText = "DELETE FROM gf.insults WHERE id = @id;";
-                cmd.Parameters.AddWithValue("id", NpgsqlDbType.Bigint, index);
-
-                await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                }
+            } finally {
+                _sem.Release();
             }
-
-            _sem.Release();
         }
 
         public async Task DeleteAllInsultsAsync()
         {
             await _sem.WaitAsync();
+            try {
+                using (var con = new NpgsqlConnection(_connectionString))
+                using (var cmd = con.CreateCommand()) {
+                    await con.OpenAsync().ConfigureAwait(false);
 
-            using (var con = new NpgsqlConnection(_connectionString))
-            using (var cmd = con.CreateCommand()) {
-                await con.OpenAsync().ConfigureAwait(false);
+                    cmd.CommandText = "DELETE FROM gf.insults;";
 
-                cmd.CommandText = "DELETE FROM gf.insults;";
-
-                await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                }
+            } finally {
+                _sem.Release();
             }
-
-            _sem.Release();
         }
     }
 }
