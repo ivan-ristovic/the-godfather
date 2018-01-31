@@ -21,7 +21,7 @@ namespace TheGodfather.Modules.Main
     [Description("Commands that use random numbers to generate their output.")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
     [ListeningCheckAttribute]
-    public class RandomModule
+    public class RandomModule : BaseCommandModule
     {
         #region COMMAND_8BALL
         [Command("8ball")]
@@ -119,7 +119,7 @@ namespace TheGodfather.Modules.Main
         [Group("random")]
         [Description("Return random things.")]
         [Aliases("rnd", "rand")]
-        public class CommandsRandomGroup
+        public class CommandsRandomGroup : BaseCommandModule
         {
             #region COMMAND_CAT
             [Command("cat")]

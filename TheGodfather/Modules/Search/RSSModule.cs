@@ -24,7 +24,7 @@ namespace TheGodfather.Modules.Search
     [Aliases("feed")]
     [Cooldown(2, 5, CooldownBucketType.User), Cooldown(4, 5, CooldownBucketType.Channel)]
     [ListeningCheckAttribute]
-    public class RSSModule
+    public class RSSModule : BaseCommandModule
     {
 
         [GroupCommand]

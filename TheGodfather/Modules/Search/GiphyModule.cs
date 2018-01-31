@@ -23,7 +23,7 @@ namespace TheGodfather.Modules.Search
     [Aliases("giphy")]
     [Cooldown(2, 5, CooldownBucketType.User), Cooldown(4, 5, CooldownBucketType.Channel)]
     [ListeningCheckAttribute]
-    public class GiphyModule
+    public class GiphyModule : BaseCommandModule
     {
 
         [GroupCommand]

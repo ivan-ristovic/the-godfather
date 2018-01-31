@@ -22,7 +22,7 @@ namespace TheGodfather.Modules.Games
         [Aliases("n")]
         [Cooldown(2, 5, CooldownBucketType.User), Cooldown(3, 5, CooldownBucketType.Channel)]
         [ListeningCheckAttribute]
-        public class NunchiModule
+        public class NunchiModule : BaseCommandModule
         {
             #region PRIVATE_FIELDS
             private ConcurrentDictionary<ulong, Nunchi> _games = new ConcurrentDictionary<ulong, Nunchi>();

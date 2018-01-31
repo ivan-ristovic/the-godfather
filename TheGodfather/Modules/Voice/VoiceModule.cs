@@ -21,7 +21,7 @@ namespace TheGodfather.Modules.Voice
     [Description("Voice & music commands.")]
     [ListeningCheckAttribute]
     [RequireOwner]
-    public class VoiceModule
+    public class VoiceModule : BaseCommandModule
     {
         // TODO make this specific for guild, aka concurrent dictionary
         private volatile bool _playing = false;

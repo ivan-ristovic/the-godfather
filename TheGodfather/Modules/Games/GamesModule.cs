@@ -22,7 +22,7 @@ namespace TheGodfather.Modules.Games
     [Aliases("game", "gm")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
     [ListeningCheckAttribute]
-    public partial class GamesModule
+    public partial class GamesModule : BaseCommandModule
     {
         #region COMMAND_GAMES_CARO
         [Command("caro")]

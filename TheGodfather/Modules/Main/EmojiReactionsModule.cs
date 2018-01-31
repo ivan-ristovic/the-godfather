@@ -22,7 +22,7 @@ namespace TheGodfather.Modules.Messages
     [Aliases("ereact", "er", "emojir", "emojireactions")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
     [ListeningCheckAttribute]
-    public class EmojiReactionsModule
+    public class EmojiReactionsModule : BaseCommandModule
     {
         
         [GroupCommand]

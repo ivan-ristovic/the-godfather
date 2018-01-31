@@ -22,7 +22,7 @@ namespace TheGodfather.Modules.Messages
     [Aliases("f", "filters")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
     [ListeningCheckAttribute]
-    public class FilterModule
+    public class FilterModule : BaseCommandModule
     {
         #region COMMAND_FILTER_ADD
         [Command("add")]

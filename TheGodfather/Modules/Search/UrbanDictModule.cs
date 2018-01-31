@@ -16,7 +16,7 @@ using DSharpPlus.Interactivity;
 
 namespace TheGodfather.Modules.Search
 {
-    public class UrbanDictModule
+    public class UrbanDictModule : BaseCommandModule
     {
         [Command("urbandict")]
         [Description("Search Urban Dictionary for a query.")]

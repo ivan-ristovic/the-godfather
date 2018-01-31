@@ -21,7 +21,7 @@ namespace TheGodfather.Modules.Main
     [Aliases("burn", "insults")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
     [ListeningCheckAttribute]
-    public class InsultModule
+    public class InsultModule : BaseCommandModule
     {
 
         [GroupCommand]

@@ -21,7 +21,7 @@ namespace TheGodfather.Modules.Messages
     [Aliases("treact", "tr", "txtr", "textreactions")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
     [ListeningCheckAttribute]
-    public class TextReactionsModule
+    public class TextReactionsModule : BaseCommandModule
     {
 
         [GroupCommand]

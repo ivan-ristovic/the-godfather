@@ -19,7 +19,7 @@ using DSharpPlus.EventArgs;
 
 namespace TheGodfather.Modules.Main
 {
-    public class PollModule
+    public class PollModule : BaseCommandModule
     {
         #region PRIVATE_FIELDS
         private bool _eventset = false;

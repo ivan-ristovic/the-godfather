@@ -20,7 +20,7 @@ namespace TheGodfather.Modules.Main
     [Description("Main bot commands.")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
     [ListeningCheckAttribute]
-    public class MainModule
+    public class MainModule : BaseCommandModule
     {
         #region COMMAND_EMBED
         [Command("embed")]

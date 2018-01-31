@@ -20,7 +20,7 @@ namespace TheGodfather.Modules.Games
     [Aliases("$", "$$", "$$$")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
     [ListeningCheckAttribute]
-    public class BankModule
+    public class BankModule : BaseCommandModule
     {
 
         [GroupCommand]

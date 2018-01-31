@@ -27,7 +27,7 @@ namespace TheGodfather.Modules.SWAT
     [Aliases("s4", "swat4")]
     [Cooldown(2, 5, CooldownBucketType.User), Cooldown(4, 5, CooldownBucketType.Channel)]
     [ListeningCheckAttribute]
-    public class SwatModule
+    public class SwatModule : BaseCommandModule
     {
         #region PRIVATE_FIELDS
         private ConcurrentDictionary<ulong, bool> _UserIDsCheckingForSpace = new ConcurrentDictionary<ulong, bool>();
@@ -188,7 +188,7 @@ namespace TheGodfather.Modules.SWAT
         [Group("servers")]
         [Description("SWAT4 serverlist manipulation commands.")]
         [Aliases("s", "srv")]
-        public class CommandsServers
+        public class CommandsServers : BaseCommandModule
         {
             #region COMMAND_SERVERS_ADD
             [Command("add")]

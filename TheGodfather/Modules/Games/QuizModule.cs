@@ -21,7 +21,7 @@ namespace TheGodfather.Modules.Games
         [Aliases("trivia", "q")]
         [Cooldown(2, 5, CooldownBucketType.User), Cooldown(3, 5, CooldownBucketType.Channel)]
         [ListeningCheckAttribute]
-        public class QuizModule
+        public class QuizModule : BaseCommandModule
         {
             #region COMMAND_QUIZ_COUNTRIES
             [Command("countries")]

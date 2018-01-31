@@ -21,8 +21,8 @@ namespace TheGodfather.Modules.Games
         [Aliases("deck")]
         [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
         [ListeningCheckAttribute]
-        public class CardGamesModule
-        {
+        public class CardGamesModule : BaseCommandModule
+    {
             #region PRIVATE_FIELDS
             private List<string> _deck = null;
             #endregion

@@ -20,7 +20,7 @@ namespace TheGodfather.Modules.Search
     [ListeningCheckAttribute]
     [RequireOwner]
     [Hidden]
-    public class RedditModule
+    public class RedditModule : BaseCommandModule
     {
         /*
         public async Task ExecuteGroupAsync(CommandContext ctx)

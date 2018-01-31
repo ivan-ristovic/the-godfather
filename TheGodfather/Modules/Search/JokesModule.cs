@@ -22,7 +22,7 @@ namespace TheGodfather.Modules.Search
     [Aliases("jokes", "j")]
     [Cooldown(2, 5, CooldownBucketType.User), Cooldown(4, 5, CooldownBucketType.Channel)]
     [ListeningCheckAttribute]
-    public class JokesModule
+    public class JokesModule : BaseCommandModule
     {
 
         [GroupCommand]

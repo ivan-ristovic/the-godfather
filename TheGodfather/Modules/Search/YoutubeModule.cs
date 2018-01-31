@@ -21,7 +21,7 @@ namespace TheGodfather.Modules.Search
     [Aliases("y", "yt")]
     [Cooldown(2, 5, CooldownBucketType.User), Cooldown(4, 5, CooldownBucketType.Channel)]
     [ListeningCheckAttribute]
-    public class YoutubeModule
+    public class YoutubeModule : BaseCommandModule
     {
 
         [GroupCommand]

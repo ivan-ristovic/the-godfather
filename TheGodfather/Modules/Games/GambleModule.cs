@@ -20,7 +20,7 @@ namespace TheGodfather.Modules.Games
     [Aliases("bet")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
     [ListeningCheckAttribute]
-    public partial class GambleModule
+    public partial class GambleModule : BaseCommandModule
     {
         #region COMMAND_COINFLIP
         [Command("coinflip")]

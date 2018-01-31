@@ -22,7 +22,7 @@ namespace TheGodfather.Modules.Search
     [Aliases("s", "st")]
     [Cooldown(2, 5, CooldownBucketType.User), Cooldown(4, 5, CooldownBucketType.Channel)]
     [ListeningCheckAttribute]
-    public class SteamModule
+    public class SteamModule : BaseCommandModule
     {
         #region COMMAND_STEAM_PROFILE
         [Command("profile")]

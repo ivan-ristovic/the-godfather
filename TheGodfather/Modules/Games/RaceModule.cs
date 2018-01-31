@@ -22,7 +22,7 @@ namespace TheGodfather.Modules.Games
         [Aliases("r")]
         [Cooldown(2, 5, CooldownBucketType.User), Cooldown(3, 5, CooldownBucketType.Channel)]
         [ListeningCheckAttribute]
-        public class RaceModule
+        public class RaceModule : BaseCommandModule
         {
             #region PRIVATE_FIELDS
             private ConcurrentDictionary<ulong, Race> _races = new ConcurrentDictionary<ulong, Race>();

@@ -20,7 +20,7 @@ namespace TheGodfather.Modules.Administration
     [Aliases("users", "u", "usr")]
     [Cooldown(3, 5, CooldownBucketType.User)]
     [ListeningCheckAttribute]
-    public class UserAdminModule
+    public class UserAdminModule : BaseCommandModule
     {
         #region COMMAND_USER_ADDROLE
         [Command("addrole")]
