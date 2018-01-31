@@ -267,18 +267,12 @@ namespace TheGodfather.Modules.Administration
             sb.AppendLine("# Command list");
             sb.AppendLine();
 
-            var cmdsandgroups = ctx.CommandsNext.RegisteredCommands.Values.Distinct();
-
             List<Command> commands = new List<Command>();
-            foreach (var cmd in cmdsandgroups) {
-                if (cmd is CommandGroup grp) {
-                    foreach (var child in grp.Children)
-                        commands.Add(child);
-                    if (grp.IsExecutableWithoutSubcommands)
-                        commands.Add(grp as Command);
-                } else {
+            foreach (var cmd in ctx.CommandsNext.RegisteredCommands.Values.Distinct()) {
+                if (cmd is CommandGroup grp)
+                    AddCommandsFromGroupRecursive(grp, commands);
+                else
                     commands.Add(cmd);
-                }
             }
             commands.Sort((c1, c2) => string.Compare(c1.QualifiedName, c2.QualifiedName, true));
 
@@ -369,6 +363,18 @@ namespace TheGodfather.Modules.Administration
 
             await ctx.RespondAsync($"File created at {Formatter.InlineCode(filepath)}!")
                 .ConfigureAwait(false);
+        }
+
+        private void AddCommandsFromGroupRecursive(CommandGroup group, List<Command> commands)
+        {
+            if (group.IsExecutableWithoutSubcommands)
+                commands.Add(group as Command);
+            foreach (var child in group.Children) {
+                if (child is CommandGroup grp)
+                    AddCommandsFromGroupRecursive(grp, commands);
+                else
+                    commands.Add(child);
+            }
         }
         #endregion
 
