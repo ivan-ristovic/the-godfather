@@ -168,7 +168,7 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException("Pattern parsing error.", e);
             }
 
-            var msgs = await ctx.Channel.GetMessagesAsync(100)
+            var msgs = await ctx.Channel.GetMessagesBeforeAsync(ctx.Channel.LastMessageId, 100)
                 .ConfigureAwait(false);
             await ctx.Channel.DeleteMessagesAsync(msgs.Where(m => regex.IsMatch(m.Content)).Take(amount), GetReasonString(ctx, reason))
                 .ConfigureAwait(false);
