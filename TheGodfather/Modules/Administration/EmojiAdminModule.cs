@@ -18,7 +18,7 @@ using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
 #endregion
 
-namespace TheGodfather.Modules
+namespace TheGodfather.Modules.Administration
 {
     [Group("emoji")]
     [Description("Manipulate guild emoji. Standalone call lists all guild emoji.")]
@@ -37,7 +37,7 @@ namespace TheGodfather.Modules
             => await ListEmojiAsync(ctx).ConfigureAwait(false);
 
 
-        #region COMMAND_GUILD_EMOJI_ADD
+        #region COMMAND_EMOJI_ADD
         [Command("add")]
         [Description("Add emoji.")]
         [Aliases("create", "a", "+")]
@@ -82,7 +82,7 @@ namespace TheGodfather.Modules
         }
         #endregion
 
-        #region COMMAND_GUILD_EMOJI_DELETE
+        #region COMMAND_EMOJI_DELETE
         [Command("delete")]
         [Description("Remove guild emoji. Note: bots can only delete emojis they created.")]
         [Aliases("remove", "del", "-", "d")]
@@ -108,7 +108,7 @@ namespace TheGodfather.Modules
         }
         #endregion
 
-        #region COMMAND_GUILD_EMOJI_DETAILS
+        #region COMMAND_EMOJI_DETAILS
         [Command("details")]
         [Description("Get details for guild emoji.")]
         [UsageExample("!emoji details pepe")]
@@ -138,7 +138,7 @@ namespace TheGodfather.Modules
         }
         #endregion
 
-        #region COMMAND_GUILD_EMOJI_LIST
+        #region COMMAND_EMOJI_LIST
         [Command("list")]
         [Description("View guild emojis.")]
         [Aliases("print", "show", "l", "p")]
@@ -157,7 +157,7 @@ namespace TheGodfather.Modules
         }
         #endregion
 
-        #region COMMAND_GUILD_EMOJI_MODIFY
+        #region COMMAND_EMOJI_MODIFY
         [Command("modify")]
         [Description("Edit name of an existing guild emoji.")]
         [Aliases("edit", "mod", "e", "m")]
