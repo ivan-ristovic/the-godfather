@@ -271,9 +271,9 @@
     <Compile Include="Services\DatabaseService\RankDatabaseService.cs" />
     <Compile Include="Services\FeedService\FeedEntry.cs" />
     <Compile Include="Helpers\GameStats.cs" />
-    <Compile Include="Attributes\PreExecutionCheckAttribute.cs" />
+    <Compile Include="Attributes\ListeningCheckAttribute.cs" />
     <Compile Include="Extensions\HelpFormatter.cs" />
-    <Compile Include="Modules\Administration\OwnerModule.cs" />
+    <Compile Include="Modules\Administration\BotOwnerModule.cs" />
     <Compile Include="Modules\Games\BankModule.cs" />
     <Compile Include="Modules\Games\CardGamesModule.cs" />
     <Compile Include="Modules\Games\NunchiModule.cs" />

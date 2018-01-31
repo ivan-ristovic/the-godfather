@@ -26,16 +26,16 @@ using DSharpPlus.Entities;
 
 namespace TheGodfather.Modules.Administration
 {
-    [Group("admin")]
+    [Group("owner")]
     [Description("Owner-only administration commands.")]
-    [Aliases("owner", "o")]
+    [Aliases("admin", "o")]
     [RequireOwner]
     [Hidden]
     [Cooldown(3, 5, CooldownBucketType.Global)]
-    public class OwnerModule : GodfatherBaseModule
+    public class BotOwnerModule : GodfatherBaseModule
     {
 
-        public OwnerModule(SharedData shared, DatabaseService db) : base(shared, db) { }
+        public BotOwnerModule(SharedData shared, DatabaseService db) : base(shared, db) { }
 
 
         #region COMMAND_BOTAVATAR
