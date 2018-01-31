@@ -158,10 +158,11 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_EMOJI_MODIFY
-        [Command("modify")]
+        [Command("modify"), Priority(1)]
         [Description("Edit name of an existing guild emoji.")]
         [Aliases("edit", "mod", "e", "m")]
         [UsageExample("!emoji modify :pepe: newname")]
+        [UsageExample("!emoji modify newname :pepe:")]
         [RequirePermissions(Permissions.ManageEmojis)]
         public async Task ModifyEmojiAsync(CommandContext ctx,
                                           [Description("Emoji.")] DiscordEmoji emoji,
@@ -184,6 +185,12 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException("Can't find that emoji in list of emoji that I made for this guild.");
             }
         }
+
+        [Command("modify"), Priority(0)]
+        public async Task ModifyEmojiAsync(CommandContext ctx,
+                                          [Description("Name.")] string newname,
+                                          [Description("Emoji.")] DiscordEmoji emoji)
+            => await ModifyEmojiAsync(ctx, emoji, newname).ConfigureAwait(false);
         #endregion
     }
 }

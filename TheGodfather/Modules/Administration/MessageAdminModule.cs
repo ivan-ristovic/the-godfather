@@ -19,10 +19,10 @@ using DSharpPlus.Exceptions;
 namespace TheGodfather.Modules.Administration
 {
     [Group("message")]
-    [Description("Commands to manipulate messages on the channel.")]
+    [Description("Commands for manipulating messages.")]
     [Aliases("m", "msg", "msgs", "messages")]
     [Cooldown(2, 5, CooldownBucketType.User)]
-    [ListeningCheckAttribute]
+    [ListeningCheck]
     public class MessageAdminModule : GodfatherBaseModule
     {
 
@@ -31,8 +31,10 @@ namespace TheGodfather.Modules.Administration
 
         #region COMMAND_MESSAGES_ATTACHMENTS
         [Command("attachments")]
-        [Description("Print all message attachments.")]
+        [Description("View all message attachments. If the message is not provided, uses the last sent message before command invocation.")]
         [Aliases("a", "files", "la")]
+        [UsageExample("!message attachments")]
+        [UsageExample("!message attachments 408226948855234561")]
         public async Task ListAttachmentsAsync(CommandContext ctx,
                                               [Description("Message ID.")] ulong id = 0)
         {
@@ -61,6 +63,8 @@ namespace TheGodfather.Modules.Administration
         [Command("delete")]
         [Description("Deletes the specified amount of most-recent messages from the channel.")]
         [Aliases("-", "prune", "del", "d")]
+        [UsageExample("!messages delete 10")]
+        [UsageExample("!messages delete 10 Cleaning spam")]
         [RequirePermissions(Permissions.ManageMessages)]
         [RequireUserPermissions(Permissions.Administrator)]
         public async Task DeleteMessagesAsync(CommandContext ctx, 
@@ -78,9 +82,11 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_MESSAGES_DELETE_FROM
-        [Command("deletefrom")]
+        [Command("deletefrom"), Priority(1)]
         [Description("Deletes given amount of most-recent messages from given user.")]
         [Aliases("-user", "-u", "deluser", "du", "dfu", "delfrom")]
+        [UsageExample("!messages deletefrom @Someone 10 Cleaning spam")]
+        [UsageExample("!messages deletefrom 10 @Someone Cleaning spam")]
         [RequirePermissions(Permissions.ManageMessages)]
         [RequireUserPermissions(Permissions.Administrator)]
         public async Task DeleteMessagesFromUserAsync(CommandContext ctx, 
@@ -100,12 +106,20 @@ namespace TheGodfather.Modules.Administration
             await ReplySuccessAsync(ctx)
                 .ConfigureAwait(false);
         }
+
+        [Command("deletefrom"), Priority(0)]
+        public async Task DeleteMessagesFromUserAsync(CommandContext ctx,
+                                                     [Description("Amount.")] int amount,
+                                                     [Description("User.")] DiscordUser user,
+                                                     [RemainingText, Description("Reason.")] string reason = null)
+            => await DeleteMessagesFromUserAsync(ctx, user, amount, reason).ConfigureAwait(false);
         #endregion
 
         #region COMMAND_MESSAGES_DELETE_REACTIONS
         [Command("deletereactions")]
         [Description("Deletes all reactions from the given message.")]
         [Aliases("-reactions", "-r", "delreactions", "dr")]
+        [UsageExample("!messages deletereactions 408226948855234561")]
         [RequirePermissions(Permissions.ManageMessages)]
         [RequireUserPermissions(Permissions.Administrator)]
         public async Task DeleteReactionsAsync(CommandContext ctx,
@@ -130,9 +144,11 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_MESSAGES_DELETE_REGEX
-        [Command("deleteregex")]
+        [Command("deleteregex"), Priority(1)]
         [Description("Deletes given amount of most-recent messages that match a given regular expression.")]
         [Aliases("-regex", "-rx", "delregex", "drx")]
+        [UsageExample("!messages deletefrom s+p+a+m+ 10 Cleaning spam")]
+        [UsageExample("!messages deletefrom 10 s+p+a+m+ Cleaning spam")]
         [RequirePermissions(Permissions.ManageMessages)]
         [RequireUserPermissions(Permissions.Administrator)]
         public async Task DeleteMessagesFromRegexAsync(CommandContext ctx,
@@ -159,12 +175,20 @@ namespace TheGodfather.Modules.Administration
             await ReplySuccessAsync(ctx)
                 .ConfigureAwait(false);
         }
+
+        [Command("deleteregex"), Priority(0)]
+        public async Task DeleteMessagesFromRegexAsync(CommandContext ctx,
+                                                      [Description("Amount.")] int amount,
+                                                      [Description("Pattern (Regex).")] string pattern,
+                                                      [RemainingText, Description("Reason.")] string reason = null)
+            => await DeleteMessagesFromRegexAsync(ctx, pattern, amount, reason).ConfigureAwait(false);
         #endregion
 
         #region COMMAND_MESSAGES_LISTPINNED
         [Command("listpinned")]
-        [Description("List latest amount of pinned messages.")]
+        [Description("List pinned messages in this channel.")]
         [Aliases("lp", "listpins", "listpin", "pinned")]
+        [UsageExample("!messages listpinned")]
         public async Task ListPinnedMessagesAsync(CommandContext ctx)
         {
             var pinned = await ctx.Channel.GetPinnedMessagesAsync()
@@ -185,6 +209,7 @@ namespace TheGodfather.Modules.Administration
         [Command("modify")]
         [Description("Modify the given message.")]
         [Aliases("edit", "mod", "e", "m")]
+        [UsageExample("!messages modify 408226948855234561 modified text")]
         [RequirePermissions(Permissions.ManageMessages)]
         public async Task ModifyMessageAsync(CommandContext ctx,
                                             [Description("Message ID.")] ulong id,
@@ -202,8 +227,10 @@ namespace TheGodfather.Modules.Administration
 
         #region COMMAND_MESSAGES_PIN
         [Command("pin")]
-        [Description("Pins the last sent message. If the ID is given, pins that message.")]
+        [Description("Pins the message given by ID. If the message is not provided, pins the last sent message before command invocation.")]
         [Aliases("p")]
+        [UsageExample("!messages pin")]
+        [UsageExample("!messages pin 408226948855234561")]
         [RequirePermissions(Permissions.ManageMessages)]
         public async Task PinMessageAsync(CommandContext ctx,
                                          [Description("ID.")] ulong id = 0)
@@ -232,8 +259,10 @@ namespace TheGodfather.Modules.Administration
 
         #region COMMAND_MESSAGES_UNPIN
         [Command("unpin")]
-        [Description("Unpins the message at given index (starting from 0).")]
+        [Description("Unpins the message at given index (starting from 1). If the index is not given, unpins the most recent one.")]
         [Aliases("up")]
+        [UsageExample("!messages unpin")]
+        [UsageExample("!messages unpin 10")]
         [RequirePermissions(Permissions.ManageMessages)]
         public async Task UnpinMessageAsync(CommandContext ctx,
                                            [Description("Index (starting from 1).")] int index = 1)
@@ -253,8 +282,9 @@ namespace TheGodfather.Modules.Administration
 
         #region COMMAND_MESSAGES_UNPINALL
         [Command("unpinall")]
-        [Description("Unpins all pinned messages.")]
+        [Description("Unpins all pinned messages in this channel.")]
         [Aliases("upa")]
+        [UsageExample("!messages unpinall")]
         [RequirePermissions(Permissions.ManageMessages)]
         public async Task UnpinAllMessagesAsync(CommandContext ctx)
         {
