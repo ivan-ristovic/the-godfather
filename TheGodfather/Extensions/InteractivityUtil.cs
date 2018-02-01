@@ -61,7 +61,8 @@ namespace TheGodfather.Extensions
                     }.Build()
                 });
             }
-            await interactivity.SendPaginatedMessage(ctx.Channel, ctx.User, pages, TimeSpan.FromSeconds(30));
+            await interactivity.SendPaginatedMessage(ctx.Channel, ctx.User, pages)
+                .ConfigureAwait(false);
         }
     }
 }
