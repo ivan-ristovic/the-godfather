@@ -27,10 +27,9 @@ using DSharpPlus.Entities;
 namespace TheGodfather.Modules.Administration
 {
     [Group("owner")]
-    [Description("Owner-only administration commands.")]
+    [Description("Owner-only bot administration commands.")]
     [Aliases("admin", "o")]
-    [RequireOwner]
-    [Hidden]
+    [RequireOwner, Hidden]
     [Cooldown(3, 5, CooldownBucketType.Global)]
     public class BotOwnerModule : GodfatherBaseModule
     {
@@ -42,7 +41,8 @@ namespace TheGodfather.Modules.Administration
         [Command("botavatar")]
         [Description("Set bot avatar.")]
         [Aliases("setbotavatar", "setavatar")]
-        [ListeningCheckAttribute]
+        [UsageExample("!owner botavatar http://someimage.png")]
+        [ListeningCheck]
         public async Task SetBotAvatarAsync(CommandContext ctx,
                                            [Description("URL.")] string url)
         {
@@ -59,17 +59,17 @@ namespace TheGodfather.Modules.Administration
 
                 using (var wc = new WebClient()) {
                     var data = wc.DownloadData(uri.AbsoluteUri);
-                    using (var mem = new MemoryStream(data))
-                        await ctx.Client.UpdateCurrentUserAsync(avatar: mem)
+                    using (var ms = new MemoryStream(data))
+                        await ctx.Client.UpdateCurrentUserAsync(avatar: ms)
                             .ConfigureAwait(false);
                 }
 
                 if (File.Exists(filename))
                     File.Delete(filename);
             } catch (WebException e) {
-                throw new CommandFailedException("Error getting the image.", e);
+                throw new CommandFailedException("Web exception thrown while fetching the image.", e);
             } catch (Exception e) {
-                throw new CommandFailedException("Unknown error occured.", e);
+                throw new CommandFailedException("An error occured.", e);
             }
 
             await ReplySuccessAsync(ctx)
@@ -81,7 +81,8 @@ namespace TheGodfather.Modules.Administration
         [Command("botname")]
         [Description("Set bot name.")]
         [Aliases("setbotname", "setname")]
-        [ListeningCheckAttribute]
+        [UsageExample("!owner setname TheBotfather")]
+        [ListeningCheck]
         public async Task SetBotNameAsync(CommandContext ctx,
                                          [RemainingText, Description("New name.")] string name)
         {
@@ -99,7 +100,8 @@ namespace TheGodfather.Modules.Administration
         [Command("clearlog")]
         [Description("Clear application logs.")]
         [Aliases("clearlogs", "deletelogs", "deletelog")]
-        [ListeningCheckAttribute]
+        [UsageExample("!owner clearlog")]
+        [ListeningCheck]
         public async Task ClearLogAsync(CommandContext ctx)
         {
             await ctx.RespondAsync("Are you sure you want to clear the logs?")
@@ -120,16 +122,22 @@ namespace TheGodfather.Modules.Administration
         [Command("dbquery")]
         [Description("Clear application logs.")]
         [Aliases("sql", "dbq", "q")]
-        [ListeningCheckAttribute]
+        [UsageExample("!owner dbquery SELECT * FROM gf.msgcount;")]
+        [ListeningCheck]
         public async Task DatabaseQuery(CommandContext ctx,
                                         [RemainingText, Description("SQL Query.")] string query)
         {
             if (string.IsNullOrWhiteSpace(query))
                 throw new InvalidCommandUsageException("Query missing.");
 
-            var res = await DatabaseService.ExecuteRawQueryAsync(query)
-                .ConfigureAwait(false);
-
+            IReadOnlyList<IReadOnlyDictionary<string, string>> res;
+            try {
+                res = await DatabaseService.ExecuteRawQueryAsync(query)
+                    .ConfigureAwait(false);
+            } catch (Npgsql.NpgsqlException e) {
+                throw new CommandFailedException("An error occured while attempting to execute the query.", e);
+            }
+             
             if (!res.Any() || !res.First().Any()) {
                 await ctx.RespondAsync("No results.")
                     .ConfigureAwait(false);
@@ -138,36 +146,29 @@ namespace TheGodfather.Modules.Administration
 
             var d0 = res.First().Select(r => r.Key).OrderByDescending(r => r.Length).First().Length + 1;
 
-            var emb = new DiscordEmbedBuilder {
-                Title = string.Concat("Results: ", res.Count.ToString("#,##0")),
-                Description = string.Concat("Showing ", res.Count > 24 ? "first 24" : "all", " results for query ", Formatter.InlineCode(query), ":"),
-                Color = new DiscordColor(0x007FFF)
-            };
-
-            var i = 0;
-            foreach (var row in res.Take(24)) {
-                var sb = new StringBuilder();
-
-                foreach (var r in row)
-                    sb.Append(r.Key).Append(new string(' ', d0 - r.Key.Length)).Append("| ").AppendLine(r.Value);
-
-                emb.AddField(string.Concat("Result #", i++), Formatter.BlockCode(sb.ToString()), false);
-            }
-
-            if (res.Count > 24)
-                emb.AddField("Display incomplete", string.Concat((res.Count - 24).ToString("#,##0"), " results were omitted."), false);
-
-            await ctx.RespondAsync(embed: emb.Build())
-                .ConfigureAwait(false);
+            await InteractivityUtil.SendPaginatedCollectionAsync(
+                ctx,
+                $"Results ({res.Count}):",
+                res,
+                row => {
+                    var sb = new StringBuilder();
+                    foreach (var r in row)
+                        sb.Append(r.Key).Append(new string(' ', d0 - r.Key.Length)).Append("| ").AppendLine(r.Value);
+                    return Formatter.BlockCode(sb.ToString());
+                },
+                DiscordColor.Azure,
+                5
+            ).ConfigureAwait(false);
         }
         #endregion
 
         #region COMMAND_EVAL
-        // Code created by Emzi
+        // Original code created by Emzi, edited by me to fit own requirements
         [Command("eval")]
-        [Description("Evaluates a snippet of C# code, in context.")]
+        [Description("Evaluates a snippet of C# code, in context. Surround the code in the code block.")]
         [Aliases("compile", "run", "e", "c", "r")]
-        [ListeningCheckAttribute]
+        [UsageExample("!owner eval ```await Context.RespondAsync(\"Hello!\");```")]
+        [ListeningCheck]
         public async Task EvaluateAsync(CommandContext ctx,
                                        [RemainingText, Description("Code to evaluate.")] string code)
         {
@@ -234,8 +235,7 @@ namespace TheGodfather.Modules.Administration
                 await msg.ModifyAsync(embed: embed.Build()).ConfigureAwait(false);
                 return;
             }
-
-            // execution succeeded
+            
             embed = new DiscordEmbedBuilder {
                 Title = "Evaluation successful",
                 Color = DiscordColor.Aquamarine
@@ -253,10 +253,12 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_GENERATECOMMANDS
-        [Command("generatecommands")]
-        [Description("Generates a command-list.")]
-        [Aliases("cmdlist", "gencmdlist", "gencmds")]
-        [ListeningCheckAttribute]
+        [Command("generatecommandlist")]
+        [Description("Generates a markdown command-list. You can also provide a file path for the output.")]
+        [Aliases("cmdlist", "gencmdlist", "gencmds", "gencmdslist")]
+        [UsageExample("!owner generatecommandlist")]
+        [UsageExample("!owner generatecommandlist Temp/blabla.md")]
+        [ListeningCheck]
         public async Task GenerateCommandListAsync(CommandContext ctx,
                                                   [RemainingText, Description("File path.")] string filepath = null)
         {
@@ -361,7 +363,7 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException("IO Exception occured!", e);
             }
 
-            await ctx.RespondAsync($"File created at {Formatter.InlineCode(filepath)}!")
+            await ReplySuccessAsync(ctx, $"Command list created at path: {Formatter.InlineCode(filepath)}!")
                 .ConfigureAwait(false);
         }
 
@@ -380,25 +382,30 @@ namespace TheGodfather.Modules.Administration
 
         #region COMMAND_LEAVEGUILDS
         [Command("leaveguilds")]
-        [Description("Leave guilds given as IDs.")]
-        [ListeningCheckAttribute]
+        [Description("Leaves the given guilds.")]
+        [Aliases("leave", "gtfo")]
+        [UsageExample("!owner leave 337570344149975050")]
+        [UsageExample("!owner leave 337570344149975050 201315884709576708")]
+        [ListeningCheck]
         public async Task LeaveGuildsAsync(CommandContext ctx,
-                                          [Description("Guild ID list.")] params ulong[] ids)
+                                          [Description("Guild ID list.")] params ulong[] gids)
         {
-            if (!ids.Any())
+            if (!gids.Any())
                 throw new InvalidCommandUsageException("IDs missing.");
 
-            string s = $"Left:\n";
-            foreach (var id in ids) {
+            StringBuilder sb = new StringBuilder("Operation results:");
+            sb.AppendLine();
+            foreach (var gid in gids) {
                 try {
-                    var guild = ctx.Client.Guilds[id];
-                    await guild.LeaveAsync();
-                    s += $"{Formatter.Bold(guild.Name)} owned by {Formatter.Bold(guild.Owner.Username)}#{guild.Owner.Discriminator}\n";
-                } catch {
-
+                    var guild = ctx.Client.Guilds[gid];
+                    await guild.LeaveAsync()
+                        .ConfigureAwait(false);
+                    sb.AppendLine($"Left: {Formatter.Bold(guild.ToString())}, Owner: {Formatter.Bold(guild.Owner.ToString())}");
+                } catch (KeyNotFoundException) {
+                    sb.AppendLine($"I am not a member of the guild with ID: {Formatter.InlineCode(gid.ToString())}!");
                 }
             }
-            await ctx.RespondAsync(s)
+            await ReplySuccessAsync(ctx, sb.ToString())
                 .ConfigureAwait(false);
         }
         #endregion
@@ -406,8 +413,10 @@ namespace TheGodfather.Modules.Administration
         #region COMMAND_SENDMESSAGE
         [Command("sendmessage")]
         [Description("Sends a message to a user or channel.")]
-        [Aliases("send")]
-        [ListeningCheckAttribute]
+        [Aliases("send", "s")]
+        [UsageExample("!owner send u 303463460233150464 Hi to user!")]
+        [UsageExample("!owner send c 120233460278590414 Hi to channel!")]
+        [ListeningCheck]
         public async Task SendAsync(CommandContext ctx,
                                    [Description("u/c (for user or channel.)")] string desc,
                                    [Description("User/Channel ID.")] ulong xid,
@@ -432,21 +441,20 @@ namespace TheGodfather.Modules.Administration
                 throw new InvalidCommandUsageException("Descriptor can only be 'u' or 'c'.");
             }
 
-            await ctx.RespondAsync("Message sent.")
+            await ReplySuccessAsync(ctx)
                 .ConfigureAwait(false);
         }
         #endregion
 
         #region COMMAND_SHUTDOWN
         [Command("shutdown")]
-        [Description("Triggers the dying in the vineyard scene.")]
+        [Description("Triggers the dying in the vineyard scene (power off the bot).")]
         [Aliases("disable", "poweroff", "exit", "quit")]
-        [ListeningCheckAttribute]
+        [UsageExample("!owner shutdown")]
+        [ListeningCheck]
         public async Task ExitAsync(CommandContext ctx)
         {
             await ctx.RespondAsync("https://www.youtube.com/watch?v=4rbfuw0UN2A")
-                .ConfigureAwait(false);
-            await ctx.Client.DisconnectAsync()
                 .ConfigureAwait(false);
             Environment.Exit(0);
         }
@@ -456,7 +464,8 @@ namespace TheGodfather.Modules.Administration
         [Command("sudo")]
         [Description("Executes a command as another user.")]
         [Aliases("execas", "as")]
-        [ListeningCheckAttribute]
+        [UsageExample("!owner sudo @Someone !rate")]
+        [ListeningCheck]
         public async Task SudoAsync(CommandContext ctx,
                                    [Description("Member to execute as.")] DiscordMember member,
                                    [RemainingText, Description("Command text to execute.")] string command)
@@ -473,24 +482,32 @@ namespace TheGodfather.Modules.Administration
         [Command("toggleignore")]
         [Description("Toggle bot's reaction to commands.")]
         [Aliases("ti")]
+        [UsageExample("!owner toggleignore")]
         public async Task ToggleIgnoreAsync(CommandContext ctx)
         {
             TheGodfather.Listening = !TheGodfather.Listening;
-            await ctx.RespondAsync("Listening status set to: " + TheGodfather.Listening)
+            await ReplySuccessAsync(ctx, $"Listening status set to: {Formatter.Bold(TheGodfather.Listening.ToString())}")
                 .ConfigureAwait(false);
         }
         #endregion
 
 
-        [Group("status")]
+        [Group("statuses")]
         [Description("Bot status manipulation.")]
-        [ListeningCheckAttribute]
-        public class CommandsStatus : BaseCommandModule
+        [Aliases("status", "botstatus")]
+        [ListeningCheck]
+        public class StatusModule : GodfatherBaseModule
         {
+
+            public StatusModule(SharedData shared, DatabaseService db) : base(shared, db) { }
+
+
             #region COMMAND_STATUS_ADD
             [Command("add")]
-            [Description("Add a status to running queue.")]
-            [Aliases("+")]
+            [Description("Add a status to running status queue.")]
+            [Aliases("+", "a")]
+            [UsageExample("!owner status add Playing CS:GO")]
+            [UsageExample("!owner status add Streaming on Twitch")]
             public async Task AddAsync(CommandContext ctx,
                                       [Description("Activity type.")] string type,
                                       [RemainingText, Description("Status.")] string status)
@@ -513,9 +530,9 @@ namespace TheGodfather.Modules.Administration
                 if (status.Length > 60)
                     throw new CommandFailedException("Status length cannot be greater than 60 characters.");
 
-                await ctx.Services.GetService<DatabaseService>().AddBotStatusAsync(status, activity)
+                await DatabaseService.AddBotStatusAsync(status, activity)
                     .ConfigureAwait(false);
-                await ctx.RespondAsync("Status added!")
+                await ReplySuccessAsync(ctx)
                     .ConfigureAwait(false);
             }
             #endregion
@@ -523,29 +540,36 @@ namespace TheGodfather.Modules.Administration
             #region COMMAND_STATUS_DELETE
             [Command("delete")]
             [Description("Remove status from running queue.")]
-            [Aliases("-", "remove")]
+            [Aliases("-", "remove", "rm", "del")]
+            [UsageExample("!owner status delete Playing CS:GO")]
             public async Task DeleteAsync(CommandContext ctx,
                                          [Description("Status ID.")] int id)
             {
-                await ctx.Services.GetService<DatabaseService>().RemoveBotStatusAsync(id)
+                await DatabaseService.RemoveBotStatusAsync(id)
                     .ConfigureAwait(false);
-                await ctx.RespondAsync("Status removed!")
+                await ReplySuccessAsync(ctx)
                     .ConfigureAwait(false);
             }
             #endregion
 
             #region COMMAND_STATUS_LIST
             [Command("list")]
-            [Description("List all statuses.")]
+            [Description("List all bot statuses.")]
+            [Aliases("ls")]
+            [UsageExample("!owner status list")]
             public async Task ListAsync(CommandContext ctx)
             {
-                var statuses = await ctx.Services.GetService<DatabaseService>().GetBotStatusesAsync(ctx.Client)
+                var statuses = await DatabaseService.GetBotStatusesAsync(ctx.Client)
                     .ConfigureAwait(false);
-                await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
-                    Title = "My current statuses:",
-                    Description = string.Join("\n", statuses.Select(kvp => $"{kvp.Key} : {kvp.Value}")),
-                    Color = DiscordColor.Azure
-                }.Build()).ConfigureAwait(false);
+
+                await InteractivityUtil.SendPaginatedCollectionAsync(
+                    ctx,
+                    "Statuses:",
+                    statuses,
+                    kvp => kvp.Value,
+                    DiscordColor.Azure,
+                    10
+                ).ConfigureAwait(false);
             }
             #endregion
         }
