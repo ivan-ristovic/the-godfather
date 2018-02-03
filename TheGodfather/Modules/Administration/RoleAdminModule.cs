@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 using TheGodfather.Attributes;
 using TheGodfather.Exceptions;
+using TheGodfather.Extensions;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -18,21 +19,21 @@ namespace TheGodfather.Modules.Administration
     [Description("Miscellaneous role control commands.")]
     [Aliases("role", "r", "rl")]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
-    [ListeningCheckAttribute]
-    public class RoleAdminModule : BaseCommandModule
+    [ListeningCheck]
+    public class RoleAdminModule : GodfatherBaseModule
     {
 
         [GroupCommand]
         public async Task ExecuteGroupAsync(CommandContext ctx)
         {
-            string desc = "";
-            foreach (var role in ctx.Guild.Roles.OrderBy(r => r.Position).Reverse())
-                desc += role.Name + "\n";
-            await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
-                Title = "Roles:",
-                Description = desc,
-                Color = DiscordColor.Gold
-            }.Build()).ConfigureAwait(false);
+            await InteractivityUtil.SendPaginatedCollectionAsync(
+                ctx,
+                "Roles in this guild:",
+                ctx.Guild.Roles.OrderByDescending(r => r.Position),
+                r => $"{Formatter.Bold(r.Name)} ({r.Id})",
+                DiscordColor.Gold,
+                10
+            ).ConfigureAwait(false);
         }
 
 

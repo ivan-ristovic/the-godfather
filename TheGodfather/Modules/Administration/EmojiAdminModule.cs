@@ -7,7 +7,6 @@ using System.Drawing;
 using System.Threading.Tasks;
 
 using TheGodfather.Attributes;
-using TheGodfather.Services;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 
@@ -28,9 +27,6 @@ namespace TheGodfather.Modules.Administration
     [ListeningCheck]
     public class EmojiAdminModule : GodfatherBaseModule
     {
-
-        public EmojiAdminModule(SharedData shared, DatabaseService db) : base(shared, db) { }
-
 
         [GroupCommand]
         public async Task ExecuteGroupAsync(CommandContext ctx)

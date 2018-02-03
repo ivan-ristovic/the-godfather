@@ -29,8 +29,8 @@ namespace TheGodfather.Modules.Administration
     public class GuildAdminModule : GodfatherBaseModule
     {
 
-        public GuildAdminModule(SharedData shared, DatabaseService db) : base(shared, db) { }
-        
+        public GuildAdminModule(DatabaseService db) : base(db: db) { }
+
 
         #region COMMAND_GUILD_GETBANS
         [Command("bans")]

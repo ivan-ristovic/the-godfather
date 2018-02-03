@@ -25,10 +25,6 @@ namespace TheGodfather.Modules.Administration
     [ListeningCheck]
     public class MessageAdminModule : GodfatherBaseModule
     {
-
-        public MessageAdminModule(SharedData shared, DatabaseService db) : base(shared, db) { }
-
-
         #region COMMAND_MESSAGES_ATTACHMENTS
         [Command("attachments")]
         [Description("View all message attachments. If the message is not provided, uses the last sent message before command invocation.")]
@@ -193,7 +189,13 @@ namespace TheGodfather.Modules.Administration
         {
             var pinned = await ctx.Channel.GetPinnedMessagesAsync()
                 .ConfigureAwait(false);
-
+            
+            if (!pinned.Any()) {
+                await ReplySuccessAsync(ctx, "No pinned messages in this channel")
+                    .ConfigureAwait(false);
+                return;
+            }
+            
             await InteractivityUtil.SendPaginatedCollectionAsync(
                 ctx,
                 "Pinned messages:",

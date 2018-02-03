@@ -15,11 +15,11 @@ namespace TheGodfather.Modules
 {
     public abstract class GodfatherBaseModule : BaseCommandModule
     {
-        protected SharedData SharedData;
-        protected DatabaseService DatabaseService;
+        protected SharedData SharedData { get; }
+        protected DatabaseService DatabaseService { get; }
 
 
-        protected GodfatherBaseModule(SharedData shared, DatabaseService db)
+        protected GodfatherBaseModule(SharedData shared = null, DatabaseService db = null)
         {
             SharedData = shared;
             DatabaseService = db;

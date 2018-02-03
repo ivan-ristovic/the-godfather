@@ -34,7 +34,7 @@ namespace TheGodfather.Modules.Administration
     public class BotOwnerModule : GodfatherBaseModule
     {
 
-        public BotOwnerModule(SharedData shared, DatabaseService db) : base(shared, db) { }
+        public BotOwnerModule(DatabaseService db) : base(db: db) { }
 
 
         #region COMMAND_BOTAVATAR
@@ -144,7 +144,7 @@ namespace TheGodfather.Modules.Administration
                 return;
             }
 
-            var d0 = res.First().Select(r => r.Key).OrderByDescending(r => r.Length).First().Length + 1;
+            var maxlen = res.First().Select(r => r.Key).OrderByDescending(r => r.Length).First().Length + 1;
 
             await InteractivityUtil.SendPaginatedCollectionAsync(
                 ctx,
@@ -152,8 +152,8 @@ namespace TheGodfather.Modules.Administration
                 res,
                 row => {
                     var sb = new StringBuilder();
-                    foreach (var r in row)
-                        sb.Append(r.Key).Append(new string(' ', d0 - r.Key.Length)).Append("| ").AppendLine(r.Value);
+                    foreach (var col in row)
+                        sb.Append(col.Key).Append(new string(' ', maxlen - col.Key.Length)).Append("| ").AppendLine(col.Value);
                     return Formatter.BlockCode(sb.ToString());
                 },
                 DiscordColor.Azure,
@@ -503,7 +503,7 @@ namespace TheGodfather.Modules.Administration
         public class StatusModule : GodfatherBaseModule
         {
 
-            public StatusModule(SharedData shared, DatabaseService db) : base(shared, db) { }
+            public StatusModule(DatabaseService db) : base(db: db) { }
 
 
             #region COMMAND_STATUS_ADD

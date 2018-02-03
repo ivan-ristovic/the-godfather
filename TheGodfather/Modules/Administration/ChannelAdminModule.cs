@@ -26,8 +26,8 @@ namespace TheGodfather.Modules.Administration
     public class ChannelAdminModule : GodfatherBaseModule
     {
 
-        public ChannelAdminModule(SharedData shared, DatabaseService db) : base(shared, db) { }
-        
+        public ChannelAdminModule(DatabaseService db) : base(db: db) { }
+
 
         #region COMMAND_CHANNEL_CREATECATEGORY
         [Command("createcategory")]
