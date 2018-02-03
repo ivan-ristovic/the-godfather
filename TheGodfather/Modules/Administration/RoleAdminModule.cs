@@ -98,7 +98,33 @@ namespace TheGodfather.Modules.Administration
                 .ConfigureAwait(false);
         }
         #endregion
-        
+
+        #region COMMAND_ROLES_INFO
+        [Command("info")]
+        [Description("Get information about a given role.")]
+        [Aliases("i")]
+        [UsageExample("!role info Admins")]
+        [RequirePermissions(Permissions.ManageRoles)]
+        public async Task RoleInfoAsync(CommandContext ctx,
+                                       [Description("Role.")] DiscordRole role)
+        {
+            var emb = new DiscordEmbedBuilder() {
+                Title = $"Information about role {role.Name}:",
+                Color = DiscordColor.Orange
+            };
+            emb.AddField("Position", role.Position.ToString(), true)
+               .AddField("Color", role.Color.ToString(), true)
+               .AddField("Id", role.Id.ToString(), true)
+               .AddField("Mentionable", role.IsMentionable.ToString(), true)
+               .AddField("Visible", role.IsHoisted.ToString(), true)
+               .AddField("Managed", role.IsManaged.ToString(), true)
+               .AddField("Created at", role.CreationTimestamp.ToString(), true);
+
+            await ctx.RespondAsync(embed: emb.Build())
+                .ConfigureAwait(false);
+        }
+        #endregion
+
         #region COMMAND_ROLES_MENTIONALL
         [Command("mentionall")]
         [Description("Mention all users from given role.")]
