@@ -118,7 +118,8 @@ namespace TheGodfather.Modules.Administration
                .AddField("Mentionable", role.IsMentionable.ToString(), true)
                .AddField("Visible", role.IsHoisted.ToString(), true)
                .AddField("Managed", role.IsManaged.ToString(), true)
-               .AddField("Created at", role.CreationTimestamp.ToString(), true);
+               .AddField("Created at", role.CreationTimestamp.ToString(), true)
+               .AddField("Permissions:", role.Permissions.ToPermissionString(), false);
 
             await ctx.RespondAsync(embed: emb.Build())
                 .ConfigureAwait(false);
