@@ -44,12 +44,9 @@ namespace TheGodfather.Modules.Administration
             if (name.Length < 2 || name.Length > 100)
                 throw new InvalidCommandUsageException("Name must be longer than 2 and shorter than 100 characters.");
 
-            if (ctx.Guild.Channels.Any(chn => chn.Name == name.ToLower())) {
-                await ctx.RespondAsync("A channel with that name already exists. Continue?")
-                    .ConfigureAwait(false);
-                if (!await InteractivityUtil.WaitForConfirmationAsync(ctx).ConfigureAwait(false))
+            if (ctx.Guild.Channels.Any(chn => chn.Name == name.ToLower()))
+                if (!await AskYesNoQuestionAsync(ctx, "A channel with that name already exists. Continue?").ConfigureAwait(false))
                     return;
-            }
             
             await ctx.Guild.CreateChannelCategoryAsync(name, reason: GetReasonString(ctx))
                 .ConfigureAwait(false);

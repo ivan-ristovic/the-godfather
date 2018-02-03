@@ -142,14 +142,8 @@ namespace TheGodfather.Modules.Administration
                 return;
             }
 
-            await ctx.RespondAsync($"Pruning will remove {Formatter.Bold(count.ToString())} member(s). Continue?")
-                .ConfigureAwait(false);
-
-            if (!await InteractivityUtil.WaitForConfirmationAsync(ctx)) {
-                await ctx.RespondAsync("Alright, cancelling...")
-                    .ConfigureAwait(false);
+            if (!await AskYesNoQuestionAsync(ctx, $"Pruning will remove {Formatter.Bold(count.ToString())} member(s). Continue?").ConfigureAwait(false))
                 return;
-            }
 
             await ctx.Guild.PruneAsync(days, GetReasonString(ctx, reason))
                 .ConfigureAwait(false);

@@ -104,13 +104,8 @@ namespace TheGodfather.Modules.Administration
         [ListeningCheck]
         public async Task ClearLogAsync(CommandContext ctx)
         {
-            await ctx.RespondAsync("Are you sure you want to clear the logs?")
-                .ConfigureAwait(false);
-
-            if (!await InteractivityUtil.WaitForConfirmationAsync(ctx)) {
-                await ctx.RespondAsync("Cancelling...")
-                    .ConfigureAwait(false);
-            }
+            if (!await AskYesNoQuestionAsync(ctx, "Are you sure you want to clear the logs?").ConfigureAwait(false))
+                return;
 
             Logger.Clear();
             await ReplySuccessAsync(ctx)

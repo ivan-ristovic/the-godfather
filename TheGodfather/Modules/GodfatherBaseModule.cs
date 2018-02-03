@@ -2,14 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Net;
 using System.Threading.Tasks;
 
 using TheGodfather.Services;
+using TheGodfather.Extensions;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
-using System.Net;
 
 namespace TheGodfather.Modules
 {
@@ -32,6 +33,21 @@ namespace TheGodfather.Modules
                 Description = $"{DiscordEmoji.FromName(ctx.Client, ":white_check_mark:")} {msg}",
                 Color = DiscordColor.Green
             }).ConfigureAwait(false);
+        }
+
+        protected async Task<bool> AskYesNoQuestionAsync(CommandContext ctx, string question)
+        {
+            await ctx.RespondAsync(embed: new DiscordEmbedBuilder {
+                Description = $"{DiscordEmoji.FromName(ctx.Client, ":question:")} {question}",
+                Color = DiscordColor.Yellow
+            }).ConfigureAwait(false);
+
+            bool answer = await InteractivityUtil.WaitForConfirmationAsync(ctx).ConfigureAwait(false);
+            if (!answer)
+                await ReplySuccessAsync(ctx, "Alright, aborting...")
+                    .ConfigureAwait(false);
+
+            return answer;
         }
 
         protected string GetReasonString(CommandContext ctx, string reason = null)

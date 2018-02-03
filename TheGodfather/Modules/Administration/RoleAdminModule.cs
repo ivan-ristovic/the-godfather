@@ -30,7 +30,7 @@ namespace TheGodfather.Modules.Administration
                 ctx,
                 "Roles in this guild:",
                 ctx.Guild.Roles.OrderByDescending(r => r.Position),
-                r => $"{Formatter.Bold(r.Name)} ({r.Id})",
+                r => $"{Formatter.Bold(r.Name)} | {r.Color.ToString()} | ID: {Formatter.InlineCode(r.Id.ToString())}",
                 DiscordColor.Gold,
                 10
             ).ConfigureAwait(false);
@@ -38,24 +38,46 @@ namespace TheGodfather.Modules.Administration
 
 
         #region COMMAND_ROLES_CREATE
-        [Command("create")]
+        [Command("create"), Priority(2)]
         [Description("Create a new role.")]
-        [Aliases("new", "add", "+")]
+        [Aliases("new", "add", "+", "c")]
+        [UsageExample("!roles create \"My role\" #C77B0F no no")]
+        [UsageExample("!roles create My new role")]
         [RequirePermissions(Permissions.ManageRoles)]
-        public async Task CreateRoleAsync(CommandContext ctx, 
-                                         [RemainingText, Description("Role.")] string name)
+        public async Task CreateRoleAsync(CommandContext ctx,
+                                         [Description("Name.")] string name,
+                                         [Description("Color.")] string colorhex = null,
+                                         [Description("Hoisted?")] bool hoisted = false,
+                                         [Description("Mentionable?")] bool mentionable = false)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new InvalidCommandUsageException("Missing role name.");
 
-            if (ctx.Guild.Roles.Any(r => r.Name == name))
-                throw new CommandFailedException("A role with that name already exists!");
+            if (ctx.Guild.Roles.Any(r => string.Compare(r.Name, name, true) == 0)) 
+                if (!await AskYesNoQuestionAsync(ctx, "A role with that name already exists. Continue?").ConfigureAwait(false))
+                    return;
 
-            await ctx.Guild.CreateRoleAsync(name)
+            DiscordColor? color = null;
+            if (!string.IsNullOrWhiteSpace(colorhex))
+                color = new DiscordColor(colorhex);
+
+            await ctx.Guild.CreateRoleAsync(name, null, color, hoisted, mentionable, GetReasonString(ctx))
                 .ConfigureAwait(false);
-            await ctx.RespondAsync($"Successfully created role {Formatter.Bold(name)}!")
+            await ReplySuccessAsync(ctx, $"Successfully created role {Formatter.Bold(name)}!")
                 .ConfigureAwait(false);
         }
+        /*
+        [Command("create"), Priority(1)]
+        public async Task CreateRoleAsync(CommandContext ctx,
+                                         [Description("Color.")] string colorhex,
+                                         [RemainingText, Description("Name.")] string name)
+            => await CreateRoleAsync(ctx, name, colorhex, false, false).ConfigureAwait(false);
+
+        [Command("create"), Priority(0)]
+        public async Task CreateRoleAsync(CommandContext ctx,
+                                         [RemainingText, Description("Name.")] string name)
+            => await CreateRoleAsync(ctx, name, null, false, false).ConfigureAwait(false);
+        */
         #endregion
 
         #region COMMAND_ROLES_DELETE
