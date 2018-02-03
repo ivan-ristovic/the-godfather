@@ -124,9 +124,10 @@ namespace TheGodfather
                     .AddSingleton(_shared)
                     .BuildServiceProvider(),
             });
-            Commands.SetHelpFormatter<HelpFormatter>();
+            Commands.SetHelpFormatter<CustomHelpFormatter>();
             Commands.RegisterCommands(Assembly.GetExecutingAssembly());
-            Commands.RegisterConverter(new AugmentedBoolConverter());
+            Commands.RegisterConverter(new CustomBoolConverter());
+            Commands.RegisterConverter(new CustomColorConverter());
 
             Commands.CommandExecuted += Commands_CommandExecuted;
             Commands.CommandErrored += Commands_CommandErrored;

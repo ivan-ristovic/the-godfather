@@ -248,7 +248,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Attributes\UsageExampleAttribute.cs" />
-    <Compile Include="Extensions\AugmentedBoolConverter.cs" />
+    <Compile Include="Extensions\CustomBoolConverter.cs" />
+    <Compile Include="Extensions\CustomColorConverter.cs" />
     <Compile Include="Extensions\InteractivityUtil.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Modules\Administration\EmojiAdminModule.cs" />
@@ -272,7 +273,7 @@
     <Compile Include="Services\FeedService\FeedEntry.cs" />
     <Compile Include="Helpers\GameStats.cs" />
     <Compile Include="Attributes\ListeningCheckAttribute.cs" />
-    <Compile Include="Extensions\HelpFormatter.cs" />
+    <Compile Include="Extensions\CustomHelpFormatter.cs" />
     <Compile Include="Modules\Administration\BotOwnerModule.cs" />
     <Compile Include="Modules\Games\BankModule.cs" />
     <Compile Include="Modules\Games\CardGamesModule.cs" />

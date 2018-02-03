@@ -13,14 +13,14 @@ using DSharpPlus.Entities;
 
 namespace TheGodfather.Extensions
 {
-    public class HelpFormatter : BaseHelpFormatter
+    public class CustomHelpFormatter : BaseHelpFormatter
     {
         private DiscordEmbedBuilder _emb = new DiscordEmbedBuilder();
         private string _name;
         private string _desc;
 
 
-        public HelpFormatter(CommandsNextExtension cnext) : base(cnext) { }
+        public CustomHelpFormatter(CommandsNextExtension cnext) : base(cnext) { }
 
 
         public override CommandHelpMessage Build()

@@ -46,7 +46,7 @@ namespace TheGodfather.Modules.Administration
         [RequirePermissions(Permissions.ManageRoles)]
         public async Task CreateRoleAsync(CommandContext ctx,
                                          [Description("Name.")] string name,
-                                         [Description("Color.")] string colorhex = null,
+                                         [Description("Color.")] DiscordColor? color = null,
                                          [Description("Hoisted?")] bool hoisted = false,
                                          [Description("Mentionable?")] bool mentionable = false)
         {
@@ -57,27 +57,22 @@ namespace TheGodfather.Modules.Administration
                 if (!await AskYesNoQuestionAsync(ctx, "A role with that name already exists. Continue?").ConfigureAwait(false))
                     return;
 
-            DiscordColor? color = null;
-            if (!string.IsNullOrWhiteSpace(colorhex))
-                color = new DiscordColor(colorhex);
-
             await ctx.Guild.CreateRoleAsync(name, null, color, hoisted, mentionable, GetReasonString(ctx))
                 .ConfigureAwait(false);
             await ReplySuccessAsync(ctx, $"Successfully created role {Formatter.Bold(name)}!")
                 .ConfigureAwait(false);
         }
-        /*
+
         [Command("create"), Priority(1)]
         public async Task CreateRoleAsync(CommandContext ctx,
-                                         [Description("Color.")] string colorhex,
+                                         [Description("Color.")] DiscordColor color,
                                          [RemainingText, Description("Name.")] string name)
-            => await CreateRoleAsync(ctx, name, colorhex, false, false).ConfigureAwait(false);
+            => await CreateRoleAsync(ctx, name, color, false, false).ConfigureAwait(false);
 
         [Command("create"), Priority(0)]
         public async Task CreateRoleAsync(CommandContext ctx,
                                          [RemainingText, Description("Name.")] string name)
             => await CreateRoleAsync(ctx, name, null, false, false).ConfigureAwait(false);
-        */
         #endregion
 
         #region COMMAND_ROLES_DELETE
