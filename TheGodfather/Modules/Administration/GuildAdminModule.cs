@@ -82,18 +82,17 @@ namespace TheGodfather.Modules.Administration
         [Aliases("i", "information")]
         public async Task GuildInfoAsync(CommandContext ctx)
         {
-            var em = new DiscordEmbedBuilder() {
-                Title = ctx.Guild.Name,
-                ThumbnailUrl = ctx.Guild.IconUrl,
-                Color = DiscordColor.MidnightBlue
-            };
-            em.AddField("Members", ctx.Guild.MemberCount.ToString(), inline: true);
-            em.AddField("Owner", ctx.Guild.Owner.Username, inline: true);
-            em.AddField("Creation date", ctx.Guild.CreationTimestamp.ToString(), inline: true);
-            em.AddField("Voice region", ctx.Guild.VoiceRegion.Name, inline: true);
-            em.AddField("Verification level", ctx.Guild.VerificationLevel.ToString(), inline: true);
+            var emb = new DiscordEmbedBuilder()
+                .WithTitle(ctx.Guild.Name)
+                .WithThumbnailUrl(ctx.Guild.IconUrl)
+                .WithColor(DiscordColor.MidnightBlue)
+                .AddField("Members", ctx.Guild.MemberCount.ToString(), inline: true)
+                .AddField("Owner", ctx.Guild.Owner.Username, inline: true)
+                .AddField("Creation date", ctx.Guild.CreationTimestamp.ToString(), inline: true)
+                .AddField("Voice region", ctx.Guild.VoiceRegion.Name, inline: true)
+                .AddField("Verification level", ctx.Guild.VerificationLevel.ToString(), inline: true);
 
-            await ctx.RespondAsync(embed: em.Build())
+            await ctx.RespondAsync(embed: emb.Build())
                 .ConfigureAwait(false);
         }
         #endregion

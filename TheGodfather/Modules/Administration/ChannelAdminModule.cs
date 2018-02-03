@@ -222,22 +222,22 @@ namespace TheGodfather.Modules.Administration
             if (!ctx.Member.PermissionsIn(channel).HasFlag(Permissions.AccessChannels))
                 throw new CommandFailedException("You are not allowed to see this channel! (nice try smartass)");
 
-            var em = new DiscordEmbedBuilder() {
+            var emb = new DiscordEmbedBuilder() {
                 Title = "Information for: " + channel.ToString(),
                 Description = "Current channel topic: " + (string.IsNullOrWhiteSpace(channel.Topic) ? "None." : Formatter.Italic(channel.Topic)),
                 Color = DiscordColor.Goldenrod
             };
-            em.AddField("Type", channel.Type.ToString(), inline: true);
-            em.AddField("NSFW", channel.IsNSFW ? "Yes" : "No", inline: true);
-            em.AddField("Private", channel.IsPrivate ? "Yes" : "No", inline: true);
-            em.AddField("Position", channel.Position.ToString());
+            emb.AddField("Type", channel.Type.ToString(), inline: true)
+               .AddField("NSFW", channel.IsNSFW ? "Yes" : "No", inline: true)
+               .AddField("Private", channel.IsPrivate ? "Yes" : "No", inline: true)
+               .AddField("Position", channel.Position.ToString());
             if (channel.Type == ChannelType.Voice) {
-                em.AddField("Bitrate", channel.Bitrate.ToString(), inline: true);
-                em.AddField("User limit", channel.UserLimit == 0 ? "No limit." : channel.UserLimit.ToString(), inline: true);
+                emb.AddField("Bitrate", channel.Bitrate.ToString(), inline: true)
+                   .AddField("User limit", channel.UserLimit == 0 ? "No limit." : channel.UserLimit.ToString(), inline: true);
             }
-            em.AddField("Creation time", channel.CreationTimestamp.ToString(), inline: true);
+            emb.AddField("Creation time", channel.CreationTimestamp.ToString(), inline: true);
 
-            await ctx.RespondAsync(embed: em.Build())
+            await ctx.RespondAsync(embed: emb.Build())
                 .ConfigureAwait(false);
         }
         #endregion
