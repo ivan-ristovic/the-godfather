@@ -127,7 +127,6 @@ namespace TheGodfather
             Commands.SetHelpFormatter<CustomHelpFormatter>();
             Commands.RegisterCommands(Assembly.GetExecutingAssembly());
             Commands.RegisterConverter(new CustomBoolConverter());
-            Commands.RegisterConverter(new CustomColorConverter());
 
             Commands.CommandExecuted += Commands_CommandExecuted;
             Commands.CommandErrored += Commands_CommandErrored;

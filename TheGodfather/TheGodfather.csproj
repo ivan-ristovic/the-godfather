@@ -249,7 +249,6 @@
   <ItemGroup>
     <Compile Include="Attributes\UsageExampleAttribute.cs" />
     <Compile Include="Extensions\CustomBoolConverter.cs" />
-    <Compile Include="Extensions\CustomColorConverter.cs" />
     <Compile Include="Extensions\InteractivityUtil.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Modules\Administration\EmojiAdminModule.cs" />

@@ -72,7 +72,8 @@ namespace TheGodfather.Extensions
                         sb.AppendLine();
                     }
 
-                    _emb.AddField($"{(command.Overloads.Count > 1 ? $"Overload #{overload.Priority}" : "Arguments")}" , sb.ToString());
+                    string args = sb.ToString();
+                    _emb.AddField($"{(command.Overloads.Count > 1 ? $"Overload #{overload.Priority}" : "Arguments")}" , string.IsNullOrWhiteSpace(args) ? "None": args);
                 }
             }
 
