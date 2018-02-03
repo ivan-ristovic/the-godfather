@@ -88,9 +88,6 @@ namespace TheGodfather.Modules.Administration
                                          [Description("Role.")] DiscordRole role,
                                          [RemainingText, Description("Reason.")] string reason = null)
         {
-            if (role == null)
-                throw new InvalidCommandUsageException("Unknown role.");
-
             string name = role.Name;
             await role.DeleteAsync(GetReasonString(ctx, reason))
                 .ConfigureAwait(false);
@@ -135,9 +132,6 @@ namespace TheGodfather.Modules.Administration
         public async Task MentionAllFromRoleAsync(CommandContext ctx, 
                                                  [Description("Role.")] DiscordRole role)
         {
-            if (role == null)
-                throw new InvalidCommandUsageException("Unknown role.");
-            
             if (role.IsMentionable) {
                 await ctx.RespondAsync(role.Mention)
                     .ConfigureAwait(false);

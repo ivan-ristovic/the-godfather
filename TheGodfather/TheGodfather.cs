@@ -381,49 +381,48 @@ namespace TheGodfather
             );
 
             var emoji = DiscordEmoji.FromName(e.Context.Client, ":no_entry:");
-            var embed = new DiscordEmbedBuilder {
-                Title = "Error",
+            var emb = new DiscordEmbedBuilder {
                 Color = DiscordColor.Red
             };
 
             if (e.Exception is CommandNotFoundException)
-                embed.Description = $"{emoji} The specified command does not exist.";
+                emb.Description = $"{emoji} The specified command does not exist.";
             else if (e.Exception is InvalidCommandUsageException)
-                embed.Description = $"{emoji} Invalid usage! {ex.Message}";
+                emb.Description = $"{emoji} Invalid usage! {ex.Message}";
             else if (e.Exception is ArgumentException)
-                embed.Description = $"{emoji} Argument specified is invalid (please see {Formatter.Bold("!help <command>")} and make sure the arguments are valid).";
+                emb.Description = $"{emoji} Argument specified is invalid (please see {Formatter.Bold("!help <command>")} and make sure the arguments are valid).";
             else if (e.Exception is CommandFailedException)
-                embed.Description = $"{emoji} {ex.Message} {(ex.InnerException != null ? "Details: " + ex.InnerException.Message : "")}";
+                emb.Description = $"{emoji} {ex.Message} {(ex.InnerException != null ? "Details: " + ex.InnerException.Message : "")}";
             else if (e.Exception is DatabaseServiceException)
-                embed.Description = $"{emoji} {ex.Message} Details: {ex.InnerException?.Message ?? "<none>"}";
+                emb.Description = $"{emoji} {ex.Message} Details: {ex.InnerException?.Message ?? "<none>"}";
             else if (e.Exception is NotSupportedException)
-                embed.Description = $"{emoji} Not supported. {ex.Message}";
+                emb.Description = $"{emoji} Not supported. {ex.Message}";
             else if (e.Exception is InvalidOperationException)
-                embed.Description = $"{emoji} Invalid operation. {ex.Message}";
+                emb.Description = $"{emoji} Invalid operation. {ex.Message}";
             else if (e.Exception is NotFoundException)
-                embed.Description = $"{emoji} 404: Not found.";
+                emb.Description = $"{emoji} 404: Not found.";
             else if (e.Exception is BadRequestException)
-                embed.Description = $"{emoji} Bad request. Please check if the parameters are valid.";
+                emb.Description = $"{emoji} Bad request. Please check if the parameters are valid.";
             else if (e.Exception is Npgsql.NpgsqlException)
-                embed.Description = $"{emoji} This is what happens when I use a Serbian database... Please {Formatter.InlineCode("!report")}.";
+                emb.Description = $"{emoji} This is what happens when I use a Serbian database... Please {Formatter.InlineCode("!report")}.";
             else if (ex is ChecksFailedException exc) {
                 var attr = exc.FailedChecks.First();
                 if (attr is CooldownAttribute)
                     return;
                 else if (attr is RequireUserPermissionsAttribute)
-                    embed.Description = $"{emoji} You do not have the required permissions to run this command!";
+                    emb.Description = $"{emoji} You do not have the required permissions to run this command!";
                 else if (attr is RequirePermissionsAttribute)
-                    embed.Description = $"{emoji} Permissions to execute that command aren't met!";
+                    emb.Description = $"{emoji} Permissions to execute that command aren't met!";
                 else if (attr is RequireOwnerAttribute)
-                    embed.Description = $"{emoji} That command is reserved for the bot owner only!";
+                    emb.Description = $"{emoji} That command is reserved for the bot owner only!";
                 else
-                    embed.Description = $"{emoji} Command execution checks failed!";
+                    emb.Description = $"{emoji} Command execution checks failed!";
             } else if (e.Exception is UnauthorizedException)
-                embed.Description = $"{emoji} I am not authorized to do that.";
+                emb.Description = $"{emoji} I am not authorized to do that.";
             else
-                embed.Description = $"{emoji} Unknown error occured (probably because a Serbian made this bot). Please {Formatter.InlineCode("!report")}.";
+                emb.Description = $"{emoji} Unknown error occured (probably because a Serbian made this bot). Please {Formatter.InlineCode("!report")}.";
 
-            await e.Context.RespondAsync(embed: embed.Build())
+            await e.Context.RespondAsync(embed: emb.Build())
                 .ConfigureAwait(false);
         }
         #endregion

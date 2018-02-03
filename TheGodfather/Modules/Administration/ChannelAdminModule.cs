@@ -440,5 +440,58 @@ namespace TheGodfather.Modules.Administration
                                               [RemainingText, Description("New Topic.")] string topic)
             => await SetChannelTopicAsync(ctx, null, null, topic).ConfigureAwait(false);
         #endregion
+
+        #region COMMAND_CHANNEL_VIEWPERMS
+        [Command("viewperms"), Priority(1)]
+        [Description("View permissions for a member or role in this channel. If the member is not given, lists the sender's permissions.")]
+        [Aliases("tp", "perms", "permsfor", "testperms", "listperms")]
+        [UsageExample("!channel viewperms @Someone")]
+        [UsageExample("!channel viewperms Admins")]
+        public async Task PrintPermsAsync(CommandContext ctx,
+                                         [Description("Member.")] DiscordMember member = null)
+        {
+            if (member == null)
+                member = ctx.Member;
+
+            await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
+                Title = $"Permissions for member {member.Username} in this channel:",
+                Description = ctx.Channel.PermissionsFor(member).ToPermissionString(),
+                Color = DiscordColor.Turquoise
+            }.Build()).ConfigureAwait(false);
+        }
+
+        [Command("viewperms"), Priority(0)]
+        public async Task PrintPermsAsync(CommandContext ctx,
+                                         [Description("Role.")] DiscordRole role)
+        {
+            if (!ctx.Member.Roles.Any(r => r.Position >= role.Position))
+                throw new CommandFailedException("You cannot view permissions for roles which have position above your highest role position.");
+
+            DiscordOverwrite overwrite = null;
+            foreach (var o in ctx.Channel.PermissionOverwrites) {
+                var r = await o.GetRoleAsync()
+                    .ConfigureAwait(false);
+                if (r.Id == role.Id) {
+                    overwrite = o;
+                    break;
+                }
+            }
+
+            var emb = new DiscordEmbedBuilder() {
+                Title = $"Permissions for role {role.Name} in this channel:",
+                Color = DiscordColor.Turquoise
+            };
+
+            if (overwrite != null) {
+                emb.AddField("Allowed", overwrite.Allowed.ToPermissionString())
+                   .AddField("Denied", overwrite.Denied.ToPermissionString());
+            } else {
+                emb.AddField("No overwrites found, listing default role permissions:\n", role.Permissions.ToPermissionString());
+            }
+
+            await ctx.RespondAsync(embed: emb.Build())
+                .ConfigureAwait(false);
+        }
+        #endregion
     }
 }
