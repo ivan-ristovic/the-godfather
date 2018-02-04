@@ -47,7 +47,7 @@ namespace TheGodfather.Modules.Administration
             if (ctx.Guild.Channels.Any(chn => chn.Name == name.ToLower()))
                 if (!await AskYesNoQuestionAsync(ctx, "A channel with that name already exists. Continue?").ConfigureAwait(false))
                     return;
-            
+
             await ctx.Guild.CreateChannelCategoryAsync(name, reason: GetReasonString(ctx))
                 .ConfigureAwait(false);
             await ReplySuccessAsync(ctx, $"Category {Formatter.Bold(name)} successfully created.")
@@ -102,7 +102,7 @@ namespace TheGodfather.Modules.Administration
            => await CreateTextChannelAsync(ctx, name, parent, nsfw).ConfigureAwait(false);
 
         [Command("createtext"), Priority(0)]
-        public async Task CreateTextChannelAsync(CommandContext ctx, 
+        public async Task CreateTextChannelAsync(CommandContext ctx,
                                                 [Description("Parent category.")] DiscordChannel parent,
                                                 [Description("Name.")] string name,
                                                 [Description("NSFW?")] bool nsfw = false)
@@ -339,9 +339,6 @@ namespace TheGodfather.Modules.Administration
                                            [Description("Parent category.")] DiscordChannel parent,
                                            [RemainingText, Description("Reason.")] string reason = null)
         {
-            if (parent == null)
-                throw new InvalidCommandUsageException("Parent category missing.");
-
             if (parent.Type != ChannelType.Category)
                 throw new CommandFailedException("Parent channel must be a category.");
 
@@ -413,7 +410,7 @@ namespace TheGodfather.Modules.Administration
         [RequirePermissions(Permissions.ManageChannels)]
         public async Task SetChannelTopicAsync(CommandContext ctx,
                                               [Description("Reason.")] string reason,
-                                              [Description("Channel.")] DiscordChannel channel, 
+                                              [Description("Channel.")] DiscordChannel channel,
                                               [RemainingText, Description("New topic.")] string topic)
         {
             if (string.IsNullOrWhiteSpace(topic))
@@ -442,30 +439,50 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_CHANNEL_VIEWPERMS
-        [Command("viewperms"), Priority(1)]
-        [Description("View permissions for a member or role in this channel. If the member is not given, lists the sender's permissions.")]
+        [Command("viewperms"), Priority(3)]
+        [Description("View permissions for a member or role in the given channel. If the member is not given, lists the sender's permissions. If the channel is not given, uses current one.")]
         [Aliases("tp", "perms", "permsfor", "testperms", "listperms")]
         [UsageExample("!channel viewperms @Someone")]
         [UsageExample("!channel viewperms Admins")]
+        [UsageExample("!channel viewperms #private everyone")]
+        [UsageExample("!channel viewperms everyone #private")]
         public async Task PrintPermsAsync(CommandContext ctx,
-                                         [Description("Member.")] DiscordMember member = null)
+                                         [Description("Member.")] DiscordMember member = null,
+                                         [Description("Channel.")] DiscordChannel channel = null)
         {
             if (member == null)
                 member = ctx.Member;
 
+            if (channel == null)
+                channel = ctx.Channel;
+
+            string perms = $"{Formatter.Bold(member.DisplayName)} cannot access channel {Formatter.Bold(channel.Name)}.";
+            if (member.PermissionsIn(channel).HasPermission(Permissions.AccessChannels))
+                perms = member.PermissionsIn(channel).ToPermissionString();
+
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
-                Title = $"Permissions for member {member.Username} in this channel:",
-                Description = ctx.Channel.PermissionsFor(member).ToPermissionString(),
+                Title = $"Permissions for member {member.Username} in channel {channel.Name}:",
+                Description = perms,
                 Color = DiscordColor.Turquoise
             }.Build()).ConfigureAwait(false);
         }
 
-        [Command("viewperms"), Priority(0)]
+        [Command("viewperms"), Priority(2)]
         public async Task PrintPermsAsync(CommandContext ctx,
-                                         [Description("Role.")] DiscordRole role)
+                                         [Description("Channel.")] DiscordChannel channel,
+                                         [Description("Member.")] DiscordMember member = null)
+            => await PrintPermsAsync(ctx, member, channel).ConfigureAwait(false);
+
+        [Command("viewperms"), Priority(1)]
+        public async Task PrintPermsAsync(CommandContext ctx,
+                                         [Description("Role.")] DiscordRole role,
+                                         [Description("Channel.")] DiscordChannel channel = null)
         {
             if (!ctx.Member.Roles.Any(r => r.Position >= role.Position))
                 throw new CommandFailedException("You cannot view permissions for roles which have position above your highest role position.");
+
+            if (channel == null)
+                channel = ctx.Channel;
 
             DiscordOverwrite overwrite = null;
             foreach (var o in ctx.Channel.PermissionOverwrites) {
@@ -478,7 +495,7 @@ namespace TheGodfather.Modules.Administration
             }
 
             var emb = new DiscordEmbedBuilder() {
-                Title = $"Permissions for role {role.Name} in this channel:",
+                Title = $"Permissions for role {role.Name} in channel {channel.Name}:",
                 Color = DiscordColor.Turquoise
             };
 
@@ -492,6 +509,12 @@ namespace TheGodfather.Modules.Administration
             await ctx.RespondAsync(embed: emb.Build())
                 .ConfigureAwait(false);
         }
+
+        [Command("viewperms"), Priority(0)]
+        public async Task PrintPermsAsync(CommandContext ctx,
+                                         [Description("Channel.")] DiscordChannel channel,
+                                         [Description("Role.")] DiscordRole role)
+            => await PrintPermsAsync(ctx, role, channel).ConfigureAwait(false);
         #endregion
     }
 }

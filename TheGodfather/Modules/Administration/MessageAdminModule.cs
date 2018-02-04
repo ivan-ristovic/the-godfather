@@ -90,8 +90,6 @@ namespace TheGodfather.Modules.Administration
                                                      [Description("Amount.")] int amount = 5,
                                                      [RemainingText, Description("Reason.")] string reason = null)
         {
-            if (user == null)
-                throw new InvalidCommandUsageException("User missing.");
             if (amount <= 0 || amount > 100)
                 throw new CommandFailedException("Invalid number of messages to delete (must be in range [1, 100].");
 
@@ -152,8 +150,6 @@ namespace TheGodfather.Modules.Administration
                                                       [Description("Amount.")] int amount = 5,
                                                       [RemainingText, Description("Reason.")] string reason = null)
         {
-            if (pattern == null)
-                throw new InvalidCommandUsageException("Regex missing.");
             if (amount <= 0 || amount > 100)
                 throw new CommandFailedException("Invalid number of messages to delete (must be in range [1, 100].");
 

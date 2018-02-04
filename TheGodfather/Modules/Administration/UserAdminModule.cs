@@ -19,41 +19,44 @@ namespace TheGodfather.Modules.Administration
     [Description("Miscellaneous user control commands.")]
     [Aliases("users", "u", "usr")]
     [Cooldown(3, 5, CooldownBucketType.User)]
-    [ListeningCheckAttribute]
-    public class UserAdminModule : BaseCommandModule
+    [ListeningCheck]
+    public class UserAdminModule : GodfatherBaseModule
     {
         #region COMMAND_USER_ADDROLE
-        [Command("addrole")]
-        [Description("Add a role to user.")]
-        [Aliases("+role", "+r", "ar")]
+        [Command("addrole"), Priority(1)]
+        [Description("Assign a role to a member.")]
+        [Aliases("+role", "+r", "ar", "addr")]
+        [UsageExample("!user addrole @User Admins")]
+        [UsageExample("!user addrole Admins @User")]
         [RequirePermissions(Permissions.ManageRoles)]
         public async Task AddRoleAsync(CommandContext ctx,
-                                      [Description("User.")] DiscordMember u,
+                                      [Description("Member.")] DiscordMember member,
                                       [Description("Role.")] DiscordRole role)
         {
-            if (u == null || role == null)
-                throw new InvalidCommandUsageException("You need to specify a user and an existing role.");
-
-            await u.GrantRoleAsync(role)
+            await member.GrantRoleAsync(role)
                 .ConfigureAwait(false);
-            await ctx.RespondAsync($"Successfully granted role {Formatter.Bold(role.Name)} to {Formatter.Bold(u.DisplayName)}.")
+            await ReplySuccessAsync(ctx, $"Successfully granted role {Formatter.Bold(role.Name)} to {Formatter.Bold(member.DisplayName)}.")
                 .ConfigureAwait(false);
         }
+
+        [Command("addrole"), Priority(0)]
+        public async Task AddRoleAsync(CommandContext ctx,
+                                      [Description("Role.")] DiscordRole role,
+                                      [Description("Member.")] DiscordMember member)
+            => await AddRoleAsync(ctx, member, role).ConfigureAwait(false);
         #endregion
 
         #region COMMAND_USER_AVATAR
         [Command("avatar")]
         [Description("Get avatar from user.")]
-        [Aliases("a", "pic")]
+        [Aliases("a", "pic", "profilepic")]
+        [UsageExample("!user avatar @Someone")]
         public async Task GetAvatarAsync(CommandContext ctx,
-                                        [Description("User.")] DiscordUser u)
+                                        [Description("User.")] DiscordUser user)
         {
-            if (u == null)
-                throw new InvalidCommandUsageException("User missing!");
-
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
-                Title = u.Username + "'s avatar:",
-                ImageUrl = u.AvatarUrl,
+                Title = user.Username + "'s avatar:",
+                ImageUrl = user.AvatarUrl,
                 Color = DiscordColor.Gray
             }.Build()).ConfigureAwait(false);
         }
@@ -61,27 +64,22 @@ namespace TheGodfather.Modules.Administration
 
         #region COMMAND_USER_BAN
         [Command("ban")]
-        [Description("Bans the user from the server.")]
+        [Description("Bans the user from the guild.")]
         [Aliases("b")]
+        [UsageExample("!user ban @Someone")]
+        [UsageExample("!user ban @Someone Troublemaker")]
         [RequirePermissions(Permissions.BanMembers)]
-        public async Task BanAsync(CommandContext ctx, 
-                                  [Description("User.")] DiscordMember u,
+        public async Task BanAsync(CommandContext ctx,
+                                  [Description("Member.")] DiscordMember member,
                                   [RemainingText, Description("Reason.")] string reason = null)
         {
-            if (u == null)
-                throw new InvalidCommandUsageException("You need to mention a user to ban.");
-
-            if (u.Id == ctx.User.Id)
+            if (member.Id == ctx.User.Id)
                 throw new CommandFailedException("You can't ban yourself.");
 
-            if (string.IsNullOrWhiteSpace(reason))
-                reason = "No reason provided.";
-
-            await u.BanAsync(delete_message_days: 7, reason: $"{ctx.User.Username} ({ctx.User.Id}): {reason}")
+            await member.BanAsync(delete_message_days: 7, reason: GetReasonString(ctx, reason))
                 .ConfigureAwait(false);
-            await ctx.RespondAsync($"{Formatter.Bold(ctx.User.Username)} BANNED {Formatter.Bold(u.Username)}!", embed: new DiscordEmbedBuilder() {
-                ImageUrl = "http://i0.kym-cdn.com/entries/icons/original/000/000/615/BANHAMMER.png"
-            }.Build()).ConfigureAwait(false);
+            await ReplySuccessAsync(ctx, $"{Formatter.Bold(ctx.User.Username)} BANNED {Formatter.Bold(member.Username)}!")
+                .ConfigureAwait(false);
         }
         #endregion
 
@@ -89,6 +87,8 @@ namespace TheGodfather.Modules.Administration
         [Command("banid")]
         [Description("Bans the ID from the server.")]
         [Aliases("bid")]
+        [UsageExample("!user banid 154956794490845232")]
+        [UsageExample("!user banid 154558794490846232 Troublemaker")]
         [RequirePermissions(Permissions.BanMembers)]
         public async Task BanIDAsync(CommandContext ctx,
                                     [Description("ID.")] ulong id,
@@ -97,94 +97,75 @@ namespace TheGodfather.Modules.Administration
             if (id == ctx.User.Id)
                 throw new CommandFailedException("You can't ban yourself.");
 
-            if (string.IsNullOrWhiteSpace(reason))
-                reason = "No reason provided.";
-
-            await ctx.Guild.BanMemberAsync(id, delete_message_days: 7, reason: $"{ctx.User.Username} ({ctx.User.Id}): {reason}")
+            var u = await ctx.Client.GetUserAsync(id)
                 .ConfigureAwait(false);
 
-            var u = await ctx.Client.GetUserAsync(id);
-            await ctx.RespondAsync($"{Formatter.Bold(ctx.User.Username)} BANNED {Formatter.Bold($"{u.Username} ({id})")}!", embed: new DiscordEmbedBuilder() {
-                ImageUrl = "http://i0.kym-cdn.com/entries/icons/original/000/000/615/BANHAMMER.png"
-            }.Build()).ConfigureAwait(false);
+            await ctx.Guild.BanMemberAsync(u.Id, delete_message_days: 7, reason: GetReasonString(ctx, reason))
+                .ConfigureAwait(false);
+
+            await ReplySuccessAsync(ctx, $"{Formatter.Bold(ctx.User.Username)} BANNED {Formatter.Bold(u.ToString())}!")
+                .ConfigureAwait(false);
         }
         #endregion
 
         #region COMMAND_USER_SOFTBAN
         [Command("softban")]
-        [Description("Bans the user from the server and then unbans him immediately.")]
-        [Aliases("sb")]
+        [Description("Bans the member from the guild and then unbans him immediately.")]
+        [Aliases("sb", "sban")]
+        [UsageExample("!user sban @Someone")]
+        [UsageExample("!user sban @Someone Troublemaker")]
         [RequirePermissions(Permissions.BanMembers)]
         public async Task SoftBanAsync(CommandContext ctx,
-                                      [Description("User.")] DiscordMember u,
+                                      [Description("User.")] DiscordMember member,
                                       [RemainingText, Description("Reason.")] string reason = null)
         {
-            if (u == null)
-                throw new InvalidCommandUsageException("You need to mention a user to ban.");
-
-            if (u.Id == ctx.User.Id)
+            if (member.Id == ctx.User.Id)
                 throw new CommandFailedException("You can't ban yourself.");
-
-            if (string.IsNullOrWhiteSpace(reason))
-                reason = "No reason provided.";
-            reason = "(softban) " + reason;
-
-            await u.BanAsync(delete_message_days: 7, reason: $"{ctx.User.Username} ({ctx.User.Id}): {reason}")
+            
+            await member.BanAsync(delete_message_days: 7, reason: GetReasonString(ctx, "(softban) " + reason))
                 .ConfigureAwait(false);
-            await u.UnbanAsync(ctx.Guild, reason: $"{ctx.User.Username} ({ctx.User.Id}): {reason}")
+            await member.UnbanAsync(ctx.Guild, reason: GetReasonString(ctx, "(softban) " + reason))
                 .ConfigureAwait(false);
-            await ctx.RespondAsync($"{Formatter.Bold(ctx.User.Username)} softbanned {Formatter.Bold(u.Username)}!", embed: new DiscordEmbedBuilder() {
-                ImageUrl = "http://i0.kym-cdn.com/entries/icons/original/000/000/615/BANHAMMER.png"
-            }.Build()).ConfigureAwait(false);
+            await ReplySuccessAsync(ctx, $"{Formatter.Bold(ctx.User.Username)} SOFTBANNED {Formatter.Bold(member.Username)}!")
+                .ConfigureAwait(false);
         }
         #endregion
 
         #region COMMAND_USER_TEMPBAN
-        [Command("tempban")]
-        [Description("Temporarily ans the user from the server and then unbans him after given time.")]
-        [Aliases("tb")]
+        [Command("tempban"), Priority(1)]
+        [Description("Temporarily ans the user from the server and then unbans him after given timespan.")]
+        [Aliases("tb", "tban", "tmpban", "tmpb")]
+        [UsageExample("!user sban @Someone 3h4m")]
+        [UsageExample("!user sban 5d @Someone Troublemaker")]
+        [UsageExample("!user sban @Someone 5h30m30s Troublemaker")]
         [RequirePermissions(Permissions.BanMembers)]
         public async Task TempBanAsync(CommandContext ctx,
-                                      [Description("Amount of time units.")] int amount,
-                                      [Description("Time unit.")] string unit,
-                                      [Description("User.")] DiscordMember u,
+                                      [Description("Time span.")] TimeSpan time,
+                                      [Description("Member.")] DiscordMember member,
                                       [RemainingText, Description("Reason.")] string reason = null)
         {
-            if (amount < 0 || amount > 60)
-                throw new InvalidCommandUsageException("Time unit amount not in valid range.");
-
-            if (unit == null)
-                throw new InvalidCommandUsageException("Time unit missing.");
-
-            if (u == null)
-                throw new InvalidCommandUsageException("You need to mention a user to ban.");
-
-            if (u.Id == ctx.User.Id)
+            if (member.Id == ctx.User.Id)
                 throw new CommandFailedException("You can't ban yourself.");
 
-            if (string.IsNullOrWhiteSpace(reason))
-                reason = "No reason provided.";
-
-            TimeSpan t;
-            switch (unit) {
-                case "s": t = TimeSpan.FromSeconds(amount); break;
-                case "m": t = TimeSpan.FromMinutes(amount); break;
-                case "h": t = TimeSpan.FromHours(amount); break;
-                case "d": t = TimeSpan.FromDays(amount); break;
-                default:
-                    throw new InvalidCommandUsageException("Time unit has to be s/m/h/d.");
-            }
-
-            await u.BanAsync(delete_message_days: 7, reason: $"(tempban for {amount}{unit}){ctx.User.Username} ({ctx.User.Id}): {reason}")
+            await member.BanAsync(delete_message_days: 7, reason: GetReasonString(ctx, $"(tempban for {time.ToString()}) " + reason))
                 .ConfigureAwait(false);
-            await ctx.RespondAsync($"{Formatter.Bold(ctx.User.Username)} BANNED {Formatter.Bold(u.Username)} for {Formatter.Bold($"{amount}{unit}")}!", embed: new DiscordEmbedBuilder() {
-                ImageUrl = "http://i0.kym-cdn.com/entries/icons/original/000/000/615/BANHAMMER.png"
-            }.Build()).ConfigureAwait(false);
-            await Task.Delay(t)
+            await ctx.RespondAsync($"{Formatter.Bold(ctx.User.Username)} BANNED {Formatter.Bold(member.Username)} for {Formatter.Bold(time.ToString())}!")
                 .ConfigureAwait(false);
-            await u.UnbanAsync(ctx.Guild, reason: $"{ctx.User.Username} ({ctx.User.Id}): Temp ban removed.")
+
+            // TODO change this when tasks are added to db
+            await Task.Delay(time)
+                .ConfigureAwait(false);
+
+            await member.UnbanAsync(ctx.Guild, reason: "(tempban removed) " + reason)
                 .ConfigureAwait(false);
         }
+
+        [Command("tempban"), Priority(0)]
+        public async Task TempBanAsync(CommandContext ctx,
+                                      [Description("User.")] DiscordMember member,
+                                      [Description("Time span.")] TimeSpan time,
+                                      [RemainingText, Description("Reason.")] string reason = null)
+            => await TempBanAsync(ctx, time, member).ConfigureAwait(false);
         #endregion
 
         #region COMMAND_USER_DEAFEN
@@ -192,20 +173,14 @@ namespace TheGodfather.Modules.Administration
         [Description("Toggle user's voice deafen state.")]
         [Aliases("deaf", "d")]
         [RequirePermissions(Permissions.DeafenMembers)]
-        public async Task DeafenAsync(CommandContext ctx, 
-                                     [Description("User")] DiscordMember u,
+        public async Task DeafenAsync(CommandContext ctx,
+                                     [Description("Member.")] DiscordMember member,
                                      [RemainingText, Description("Reason.")] string reason = null)
         {
-            if (u == null)
-                throw new InvalidCommandUsageException("You need to mention a user to deafen.");
-
-            if (string.IsNullOrWhiteSpace(reason))
-                reason = "No reason provided.";
-
-            bool deafened = u.IsDeafened;
-            await u.SetDeafAsync(!deafened, reason: $"{ctx.User.Username} ({ctx.User.Id}): {reason}")
+            bool deafened = member.IsDeafened;
+            await member.SetDeafAsync(!deafened, reason: GetReasonString(ctx, reason))
                 .ConfigureAwait(false);
-            await ctx.RespondAsync("Successfully " + (deafened ? "undeafened " : "deafened ") + Formatter.Bold(u.DisplayName))
+            await ctx.RespondAsync("Successfully " + (deafened ? "undeafened " : "deafened ") + Formatter.Bold(member.DisplayName))
                 .ConfigureAwait(false);
         }
         #endregion
@@ -244,7 +219,7 @@ namespace TheGodfather.Modules.Administration
         [Description("Kicks the user from server.")]
         [Aliases("k")]
         [RequirePermissions(Permissions.KickMembers)]
-        public async Task KickAsync(CommandContext ctx, 
+        public async Task KickAsync(CommandContext ctx,
                                    [Description("User.")] DiscordMember u,
                                    [RemainingText, Description("Reason.")] string reason = null)
         {
@@ -270,12 +245,12 @@ namespace TheGodfather.Modules.Administration
         [Command("listperms")]
         [Description("List user permissions.")]
         [Aliases("permlist", "perms", "p")]
-        public async Task GetPermsAsync(CommandContext ctx, 
+        public async Task GetPermsAsync(CommandContext ctx,
                                        [Description("User.")] DiscordMember u = null)
         {
             if (u == null)
                 u = ctx.Member;
-            
+
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
                 Title = $"{Formatter.Bold(u.DisplayName)}'s permissions list:",
                 Description = ctx.Channel.PermissionsFor(u).ToPermissionString()
@@ -332,13 +307,13 @@ namespace TheGodfather.Modules.Administration
         [Description("Revoke a role from user.")]
         [Aliases("remrole", "rmrole", "rr", "-role", "-r")]
         [RequirePermissions(Permissions.ManageRoles)]
-        public async Task RemoveRoleAsync(CommandContext ctx, 
+        public async Task RemoveRoleAsync(CommandContext ctx,
                                          [Description("User.")] DiscordMember u,
                                          [Description("Role.")] DiscordRole role)
         {
             if (u == null || role == null)
                 throw new InvalidCommandUsageException("You need to specify a user.");
-            
+
             await u.RevokeRoleAsync(role, reason: $"{ctx.User.Username} ({ctx.User.Id})")
                 .ConfigureAwait(false);
             await ctx.RespondAsync($"Successfully removed role {Formatter.Bold(role.Name)} from {Formatter.Bold(u.DisplayName)}.")

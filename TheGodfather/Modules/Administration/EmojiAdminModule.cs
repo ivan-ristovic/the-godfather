@@ -87,9 +87,6 @@ namespace TheGodfather.Modules.Administration
         public async Task DeleteEmojiAsync(CommandContext ctx,
                                           [Description("Emoji to delete.")] DiscordEmoji emoji)
         {
-            if (emoji == null)
-                throw new InvalidCommandUsageException("Emoji missing.");
-
             try {
                 var gemoji = await ctx.Guild.GetEmojiAsync(emoji.Id)
                     .ConfigureAwait(false);
@@ -112,9 +109,6 @@ namespace TheGodfather.Modules.Administration
         public async Task EmojiDetailsAsync(CommandContext ctx,
                                            [Description("Emoji.")] DiscordEmoji emoji)
         {
-            if (emoji == null)
-                throw new InvalidCommandUsageException("Emoji missing.");
-
             try {
                 var gemoji = await ctx.Guild.GetEmojiAsync(emoji.Id)
                     .ConfigureAwait(false);
@@ -164,9 +158,6 @@ namespace TheGodfather.Modules.Administration
                                           [Description("Emoji.")] DiscordEmoji emoji,
                                           [Description("Name.")] string newname)
         {
-            if (emoji == null)
-                throw new InvalidCommandUsageException("Emoji missing.");
-
             if (string.IsNullOrWhiteSpace(newname))
                 throw new InvalidCommandUsageException("Name missing.");
 

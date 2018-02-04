@@ -469,8 +469,8 @@ namespace TheGodfather.Modules.Administration
                                    [Description("Member to execute as.")] DiscordMember member,
                                    [RemainingText, Description("Command text to execute.")] string command)
         {
-            if (member == null || command == null)
-                throw new InvalidCommandUsageException();
+            if (string.IsNullOrWhiteSpace(command))
+                throw new InvalidCommandUsageException("Missing command.");
 
             await ctx.Client.GetCommandsNext().SudoAsync(member, ctx.Channel, command)
                 .ConfigureAwait(false);
