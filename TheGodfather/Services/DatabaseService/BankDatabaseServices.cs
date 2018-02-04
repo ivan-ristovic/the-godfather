@@ -177,7 +177,7 @@ namespace TheGodfather.Services
             }
         }
 
-        public async Task<IReadOnlyList<IReadOnlyDictionary<string, string>>> GetTopBankAccountsAsync()
+        public async Task<IReadOnlyList<IReadOnlyDictionary<string, string>>> GetTopTenBankAccountsAsync()
         {
             var res = await ExecuteRawQueryAsync("SELECT * FROM gf.accounts ORDER BY balance DESC LIMIT 10")
                 .ConfigureAwait(false);

@@ -1,7 +1,7 @@
 ﻿#region USING_DIRECTIVES
 using System;
+using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 
 using TheGodfather.Attributes;
 using TheGodfather.Exceptions;
@@ -19,123 +19,145 @@ namespace TheGodfather.Modules.Games
     [Description("Bank manipulation.")]
     [Aliases("$", "$$", "$$$")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
-    [ListeningCheckAttribute]
-    public class BankModule : BaseCommandModule
+    [ListeningCheck]
+    public class BankModule : GodfatherBaseModule
     {
 
+        public BankModule(DatabaseService db) : base(db: db) { }
+
+
         [GroupCommand]
-        public async Task ExecuteGroupAsync(CommandContext ctx, 
-                                           [Description("User.")] DiscordUser u = null)
+        public async Task ExecuteGroupAsync(CommandContext ctx,
+                                           [Description("User.")] DiscordUser user = null)
         {
-            await GetStatusAsync(ctx, u).ConfigureAwait(false);
+            await GetBalanceAsync(ctx, user).ConfigureAwait(false);
         }
 
 
-        #region COMMAND_GRANT
-        [Command("grant")]
-        [Description("Magically give funds to a user.")]
-        [Aliases("give")]
-        [RequireUserPermissions(Permissions.Administrator)]
-        public async Task GrantAsync(CommandContext ctx,
-                                    [Description("User.")] DiscordUser u,
-                                    [Description("Amount.")] int amount)
+        #region COMMAND_BALANCE
+        [Command("balance")]
+        [Description("View account balance for given user. If the user is no given, checks sender's balance.")]
+        [Aliases("s", "status", "bal", "money", "credits")]
+        [UsageExample("!bank balance @Someone")]
+        public async Task GetBalanceAsync(CommandContext ctx,
+                                         [Description("User.")] DiscordUser user = null)
         {
-            if (u == null || amount <= 0 || amount > 1000)
-                throw new InvalidCommandUsageException("Invalid user or amount.");
+            if (user == null)
+                user = ctx.User;
 
-            if (!await ctx.Services.GetService<DatabaseService>().HasBankAccountAsync(ctx.User.Id).ConfigureAwait(false))
-                throw new CommandFailedException("Given user does not have a WM bank account!");
-
-            await ctx.Services.GetService<DatabaseService>().IncreaseBalanceForUserAsync(u.Id, amount)
-                .ConfigureAwait(false);
-            await ctx.RespondAsync($"User {Formatter.Bold(u.Username)} won {Formatter.Bold(amount.ToString())} credits on a lottery! (seems legit)")
-                .ConfigureAwait(false);
-        }
-        #endregion
-
-        #region COMMAND_REGISTER
-        [Command("register")]
-        [Description("Create an account in WM bank.")]
-        [Aliases("r", "signup", "activate")]
-        public async Task RegisterAsync(CommandContext ctx)
-        {
-            if (await ctx.Services.GetService<DatabaseService>().HasBankAccountAsync(ctx.User.Id).ConfigureAwait(false))
-                throw new CommandFailedException("You already own an account in WM bank!");
-
-            await ctx.Services.GetService<DatabaseService>().OpenBankAccountForUserAsync(ctx.User.Id)
-                .ConfigureAwait(false);
-
-            await ctx.RespondAsync($"Account opened for you, {ctx.User.Mention}! Since WM bank is so generous, you get 25 credits for free.")
-                .ConfigureAwait(false);
-        }
-        #endregion
-
-        #region COMMAND_STATUS
-        [Command("status")]
-        [Description("View account balance for user.")]
-        [Aliases("s", "balance")]
-        public async Task GetStatusAsync(CommandContext ctx,
-                                        [Description("User.")] DiscordUser u = null)
-        {
-            if (u == null)
-                u = ctx.User;
-
-            int? balance = await ctx.Services.GetService<DatabaseService>().GetBalanceForUserAsync(u.Id)
+            int? balance = await DatabaseService.GetBalanceForUserAsync(user.Id)
                 .ConfigureAwait(false);
 
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
-                Title = $"Account balance for {u.Username}",
+                Title = $"Account balance for {user.Username}",
                 Description = $"{Formatter.Bold(balance.HasValue ? balance.ToString() : "No existing account!")}",
                 Color = DiscordColor.Yellow
             }.Build()).ConfigureAwait(false);
         }
         #endregion
 
-        #region COMMAND_TOP
-        [Command("top")]
-        [Description("Print the richest users.")]
-        [Aliases("leaderboard")]
-        public async Task GetLeaderboardAsync(CommandContext ctx)
+        #region COMMAND_GRANT
+        [Command("grant"), Priority(1)]
+        [Description("Magically give funds to a user.")]
+        [Aliases("give")]
+        [UsageExample("!bank grant @Someone 1000")]
+        [UsageExample("!bank grant 1000 @Someone")]
+        [RequireUserPermissions(Permissions.Administrator)]
+        public async Task GrantAsync(CommandContext ctx,
+                                    [Description("User.")] DiscordUser user,
+                                    [Description("Amount.")] int amount)
         {
-            var em = new DiscordEmbedBuilder() {
-                Title = "WEALTHIEST PEOPLE IN WM BANK:",
-                Color = DiscordColor.Yellow
-            };
+            if (amount <= 0 || amount > 100000)
+                throw new InvalidCommandUsageException("Invalid amount. Must be in range [1-100000].");
 
-            var top = await ctx.Services.GetService<DatabaseService>().GetTopBankAccountsAsync()
+            if (!await DatabaseService.HasBankAccountAsync(ctx.User.Id).ConfigureAwait(false))
+                throw new CommandFailedException("Given user does not have a WM bank account!");
+
+            await DatabaseService.IncreaseBalanceForUserAsync(user.Id, amount)
                 .ConfigureAwait(false);
-            foreach (var row in top) {
-                ulong.TryParse(row["uid"], out ulong uid);
-                var member = await ctx.Guild.GetMemberAsync(uid)
-                    .ConfigureAwait(false);
-                em.AddField(member.Username, row["balance"], inline: true);
-            }
+            await ReplySuccessAsync(ctx, $"User {Formatter.Bold(user.Username)} won {Formatter.Bold(amount.ToString())} credits on a lottery! (seems legit)")
+                .ConfigureAwait(false);
+        }
 
-            await ctx.RespondAsync(embed: em.Build())
+        [Command("grant"), Priority(0)]
+        public async Task GrantAsync(CommandContext ctx,
+                                    [Description("Amount.")] int amount,
+                                    [Description("User.")] DiscordUser user)
+            => await GrantAsync(ctx, user, amount).ConfigureAwait(false);
+        #endregion
+
+        #region COMMAND_REGISTER
+        [Command("register")]
+        [Description("Create an account in WM bank.")]
+        [Aliases("r", "signup", "activate")]
+        [UsageExample("!bank register")]
+        public async Task RegisterAsync(CommandContext ctx)
+        {
+            if (await DatabaseService.HasBankAccountAsync(ctx.User.Id).ConfigureAwait(false))
+                throw new CommandFailedException("You already own an account in WM bank!");
+
+            await DatabaseService.OpenBankAccountForUserAsync(ctx.User.Id)
+                .ConfigureAwait(false);
+            await ReplySuccessAsync(ctx, $"Account opened for you, {ctx.User.Mention}! Since WM bank is so generous, you get 25 credits for free.")
                 .ConfigureAwait(false);
         }
         #endregion
 
+        #region COMMAND_TOP
+        [Command("top")]
+        [Description("Print the richest users.")]
+        [Aliases("leaderboard", "elite")]
+        [UsageExample("!bank top")]
+        public async Task GetLeaderboardAsync(CommandContext ctx)
+        {
+            var top = await DatabaseService.GetTopTenBankAccountsAsync()
+                .ConfigureAwait(false);
+
+            StringBuilder sb = new StringBuilder();
+            foreach (var row in top) {
+                if (!ulong.TryParse(row["uid"], out ulong uid))
+                    continue;
+                var u = await ctx.Client.GetUserAsync(uid)
+                    .ConfigureAwait(false);
+                sb.AppendLine($"{Formatter.Bold(u.Username)} : {row["balance"]}");
+            }
+
+            await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
+                Title = "WEALTHIEST PEOPLE IN WM BANK:",
+                Description = sb.ToString(),
+                Color = DiscordColor.Gold
+            }.Build()).ConfigureAwait(false);
+        }
+        #endregion
+
         #region COMMAND_TRANSFER
-        [Command("transfer")]
+        [Command("transfer"), Priority(1)]
         [Description("Transfer funds from one account to another.")]
         [Aliases("lend")]
+        [UsageExample("!bank transfer @Someone 40")]
+        [UsageExample("!bank transfer 40 @Someone")]
         public async Task TransferCreditsAsync(CommandContext ctx,
-                                              [Description("User to send credits to.")] DiscordUser u,
+                                              [Description("User to send credits to.")] DiscordUser user,
                                               [Description("Amount.")] int amount)
         {
-            if (u == null)
-                throw new InvalidCommandUsageException("Account to transfer the credits to is missing.");
-            
             if (amount <= 0)
                 throw new CommandFailedException("The amount must be positive integer.");
 
-            await ctx.Services.GetService<DatabaseService>().TransferCurrencyAsync(ctx.User.Id, u.Id, amount)
+            if (user.Id == ctx.User.Id)
+                throw new CommandFailedException("You can't transfer funds to yourself.");
+
+            await DatabaseService.TransferCurrencyAsync(ctx.User.Id, user.Id, amount)
                 .ConfigureAwait(false);
 
-            await ctx.RespondAsync($"Transfer from {ctx.User.Mention} to {u.Mention} is complete.")
+            await ReplySuccessAsync(ctx, $"Transfer from {Formatter.Bold(ctx.User.Username)} to {Formatter.Bold(user.Username)} is complete.")
                 .ConfigureAwait(false);
         }
+
+        [Command("transfer"), Priority(0)]
+        public async Task TransferCreditsAsync(CommandContext ctx,
+                                              [Description("Amount.")] int amount,
+                                              [Description("User to send credits to.")] DiscordUser user)
+            => await TransferCreditsAsync(ctx, user, amount).ConfigureAwait(false);
         #endregion
     }
 }
