@@ -28,6 +28,7 @@ Each command receives arguments which are some of the following types:
 * ``emoji`` : Emoji, either Unicode or Discord representation (using ``:``)
 * ``id`` : ID of Discord entity (could be a message, user, channel etc.). Only seen when the ``Developer appearance`` option is enabled in the Discord client options.
 * ``color`` : A hex or rgb color representation, for example: ``FF0000`` or ``(255, 0, 0)`` for red
+* ``time span`` : A time span, for example: ``3d 5m 30s`` etc. 
 
 For example, in ``!say Some text``, the command is ``say`` and argument is ``Some text``. The type of this argument is ``string...``.
 Commands receive **only** arguments of the specified type, so for example if command expects an ``int``, passing ``text`` to it will cause an error.
