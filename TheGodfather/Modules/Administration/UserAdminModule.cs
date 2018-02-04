@@ -31,7 +31,7 @@ namespace TheGodfather.Modules.Administration
         [RequirePermissions(Permissions.ManageRoles)]
         public async Task AddRoleAsync(CommandContext ctx,
                                       [Description("Member.")] DiscordMember member,
-                                      [Description("Role to grant.")] DiscordRole role)
+                                      [Description("Role to grant.")] DiscordRole[] role)
         {
             if (role.Position >= ctx.Member.Roles.Max(r => r.Position))
                 throw new CommandFailedException("You are not authorised to grant that role.");

@@ -13,7 +13,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 #endregion
 
-namespace TheGodfather.Modules.Games
+namespace TheGodfather.Modules.Gambling
 {
     [Group("gamble")]
     [Description("Random betting and gambling commands.")]

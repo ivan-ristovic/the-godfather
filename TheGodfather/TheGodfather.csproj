@@ -274,7 +274,7 @@
     <Compile Include="Attributes\ListeningCheckAttribute.cs" />
     <Compile Include="Extensions\CustomHelpFormatter.cs" />
     <Compile Include="Modules\Administration\BotOwnerModule.cs" />
-    <Compile Include="Modules\Games\BankModule.cs" />
+    <Compile Include="Modules\Gambling\BankModule.cs" />
     <Compile Include="Modules\Games\CardGamesModule.cs" />
     <Compile Include="Modules\Games\NunchiModule.cs" />
     <Compile Include="Modules\Games\QuizModule.cs" />
@@ -282,7 +282,7 @@
     <Compile Include="Modules\Main\RandomModule.cs" />
     <Compile Include="Modules\Main\TextReactionsModule.cs" />
     <Compile Include="Modules\Administration\ChannelAdminModule.cs" />
-    <Compile Include="Modules\Games\GambleModule.cs" />
+    <Compile Include="Modules\Gambling\GambleModule.cs" />
     <Compile Include="Modules\Games\GamesModule.cs" />
     <Compile Include="Modules\Administration\GuildAdminModule.cs" />
     <Compile Include="Modules\Main\FilterModule.cs" />
