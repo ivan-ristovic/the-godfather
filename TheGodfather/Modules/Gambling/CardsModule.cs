@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 using TheGodfather.Attributes;
 using TheGodfather.Exceptions;
+using TheGodfather.Modules.Gambling.Cards;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -21,9 +22,6 @@ namespace TheGodfather.Modules.Gambling
     [ListeningCheck]
     public class CardsModule : GodfatherBaseModule
     {
-        #region PRIVATE_FIELDS
-        private List<string> _deck = null;
-        #endregion
 
         public CardsModule(SharedData shared) : base(shared: shared) { }
 
@@ -32,9 +30,13 @@ namespace TheGodfather.Modules.Gambling
         public async Task ExecuteGroupAsync(CommandContext ctx)
         {
             if (SharedData.CardDecks.ContainsKey(ctx.Channel.Id))
-                throw new CommandFailedException("A deck is already opened in this channel!");
+                throw new CommandFailedException($"A deck is already opened in this channel! If you want to reset it, use {Formatter.InlineCode("!deck new")}");
 
-            // TODO
+            SharedData.CardDecks[ctx.Channel.Id] = new Deck();
+            SharedData.CardDecks[ctx.Channel.Id].Shuffle();
+
+            await ReplySuccessAsync(ctx, "A new shuffled deck is opened in this channel!", ":spades:")
+                .ConfigureAwait(false);
         }
 
 
@@ -43,22 +45,27 @@ namespace TheGodfather.Modules.Gambling
         [Description("Draw cards from the top of the deck.")]
         [Aliases("take")]
         public async Task DrawAsync(CommandContext ctx,
-                                   [Description("Amount.")] int amount = 1)
+                                   [Description("Amount (in range [1-10]).")] int amount = 1)
         {
-            if (_deck == null || _deck.Count == 0)
+            if (!SharedData.CardDecks.ContainsKey(ctx.Channel.Id))
                 throw new CommandFailedException($"No deck to deal from. Use {Formatter.InlineCode("!deck new")}");
 
-            if (amount <= 0 || amount >= 10 || _deck.Count < amount)
-                throw new InvalidCommandUsageException("Cannot draw that amount of cards...", new ArgumentException());
+            var deck = SharedData.CardDecks[ctx.Channel.Id];
 
-            string hand = string.Join(" ", _deck.Take(amount));
-            _deck.RemoveRange(0, amount);
+            if (deck == null || deck.CardCount == 0)
+                throw new CommandFailedException($"No deck to deal from. Use {Formatter.InlineCode("!deck new")}");
 
-            await ctx.RespondAsync(hand)
+            if (amount <= 0 || amount >= 10)
+                throw new InvalidCommandUsageException("Cannot draw less than 1 or more than 10 cards...");
+
+            if (deck.CardCount < amount)
+                throw new InvalidCommandUsageException($"The deck has only {deck.CardCount} cards...");
+
+            await ctx.RespondAsync(string.Join(" ", deck.Draw(amount)))
                 .ConfigureAwait(false);
         }
         #endregion
-
+        /*
         #region COMMAND_DECK_RESET
         [Command("reset")]
         [Description("Opens a brand new card deck.")]
@@ -97,5 +104,6 @@ namespace TheGodfather.Modules.Gambling
                 .ConfigureAwait(false);
         }
         #endregion
+    */
     }
 }

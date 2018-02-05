@@ -12,6 +12,7 @@ namespace TheGodfather.Modules.Gambling.Cards
     {
         private List<Card> _cards;
         public IReadOnlyList<Card> Cards => _cards.AsReadOnly();
+        public int CardCount => _cards.Count;
 
 
         public Deck()
@@ -20,7 +21,7 @@ namespace TheGodfather.Modules.Gambling.Cards
         }
 
 
-        private void OpenNew()
+        public void OpenNew()
         {
             _cards = new List<Card>(52);
             for (var i = 1; i < 5; i++)
@@ -28,11 +29,12 @@ namespace TheGodfather.Modules.Gambling.Cards
                     _cards.Add(new Card((CardSuit)i, j));
         }
 
-        private void Shuffle()
+        public void Shuffle()
         {
-            if (_cards.Count <= 1) return;
+            if (CardCount <= 1)
+                return;
             var shuffled = _cards.Shuffle();
-            _cards = _cards as List<Card> ?? shuffled.ToList();
+            _cards = shuffled as List<Card> ?? _cards;
         }
 
         public Card Draw()

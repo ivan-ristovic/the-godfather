@@ -39,20 +39,23 @@ namespace TheGodfather.Modules.Gambling.Cards
         public override string ToString()
         {
             char suit = GetSuitSign(Suit);
-            if (Value > 1 && Value < 10)
-                return Value.ToString() + suit;
-            else if (Value == 10)
-                return "T" + suit;
-            else if (Value == 11)
-                return "J" + suit;
-            else if (Value == 12)
-                return "Q" + suit;
-            else if (Value == 13)
-                return "K" + suit;
-            else if (Value == 1)
-                return "A" + suit;
-            else
-                return "?" + suit;
+            switch (Value) {
+                case 1:  return ":regional_indicator_a:" + suit;
+                case 2:  return ":two:" + suit;
+                case 3:  return ":three:" + suit;
+                case 4:  return ":four:" + suit;
+                case 5:  return ":five:" + suit;
+                case 6:  return ":six:" + suit;
+                case 7:  return ":seven:" + suit;
+                case 8:  return ":eight:" + suit;
+                case 9:  return ":nine:" + suit;
+                case 10: return ":regional_indicator_t:" + suit;
+                case 11: return ":regional_indicator_j:" + suit;
+                case 12: return ":regional_indicator_q:" + suit;
+                case 13: return ":regional_indicator_k:" + suit;
+            }
+
+            return ":question:" + suit;
         }
     }
 }
