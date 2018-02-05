@@ -28,6 +28,42 @@ namespace TheGodfather.Modules.Gambling
 
         [GroupCommand]
         public async Task ExecuteGroupAsync(CommandContext ctx)
+            => await ResetDeckAsync(ctx).ConfigureAwait(false);
+
+
+        #region COMMAND_DECK_DRAW
+        [Command("draw")]
+        [Description("Draw cards from the top of the deck. If amount of cards is not specified, draws one card.")]
+        [Aliases("take")]
+        [UsageExample("!deck draw 5")]
+        public async Task DrawAsync(CommandContext ctx,
+                                   [Description("Amount (in range [1-10]).")] int amount = 1)
+        {
+            if (!SharedData.CardDecks.ContainsKey(ctx.Channel.Id) || SharedData.CardDecks[ctx.Channel.Id] == null)
+                throw new CommandFailedException($"No deck to deal from. Type {Formatter.InlineCode("!deck")} to open a deck.");
+
+            var deck = SharedData.CardDecks[ctx.Channel.Id];
+
+            if (deck.CardCount == 0)
+                throw new CommandFailedException($"Current deck has no more cards. Type {Formatter.InlineCode("!deck reset")} to reset the deck.");
+
+            if (amount <= 0 || amount >= 10)
+                throw new InvalidCommandUsageException("Cannot draw less than 1 or more than 10 cards...");
+
+            if (deck.CardCount < amount)
+                throw new InvalidCommandUsageException($"The deck has only {deck.CardCount} cards...");
+            
+            await ReplySuccessAsync(ctx, $"{ctx.User.Mention} drew {string.Join(" ", deck.Draw(amount))}", ":ticket:")
+                .ConfigureAwait(false);
+        }
+        #endregion
+
+        #region COMMAND_DECK_RESET
+        [Command("reset")]
+        [Description("Opens a brand new card deck.")]
+        [Aliases("new", "opennew", "open")]
+        [UsageExample("!deck draw 5")]
+        public async Task ResetDeckAsync(CommandContext ctx)
         {
             if (SharedData.CardDecks.ContainsKey(ctx.Channel.Id))
                 throw new CommandFailedException($"A deck is already opened in this channel! If you want to reset it, use {Formatter.InlineCode("!deck new")}");
@@ -38,72 +74,22 @@ namespace TheGodfather.Modules.Gambling
             await ReplySuccessAsync(ctx, "A new shuffled deck is opened in this channel!", ":spades:")
                 .ConfigureAwait(false);
         }
-
-
-        #region COMMAND_DECK_DRAW
-        [Command("draw")]
-        [Description("Draw cards from the top of the deck.")]
-        [Aliases("take")]
-        public async Task DrawAsync(CommandContext ctx,
-                                   [Description("Amount (in range [1-10]).")] int amount = 1)
-        {
-            if (!SharedData.CardDecks.ContainsKey(ctx.Channel.Id))
-                throw new CommandFailedException($"No deck to deal from. Use {Formatter.InlineCode("!deck new")}");
-
-            var deck = SharedData.CardDecks[ctx.Channel.Id];
-
-            if (deck == null || deck.CardCount == 0)
-                throw new CommandFailedException($"No deck to deal from. Use {Formatter.InlineCode("!deck new")}");
-
-            if (amount <= 0 || amount >= 10)
-                throw new InvalidCommandUsageException("Cannot draw less than 1 or more than 10 cards...");
-
-            if (deck.CardCount < amount)
-                throw new InvalidCommandUsageException($"The deck has only {deck.CardCount} cards...");
-
-            await ctx.RespondAsync(string.Join(" ", deck.Draw(amount)))
-                .ConfigureAwait(false);
-        }
-        #endregion
-        /*
-        #region COMMAND_DECK_RESET
-        [Command("reset")]
-        [Description("Opens a brand new card deck.")]
-        [Aliases("new", "opennew", "open")]
-        public async Task ResetDeckAsync(CommandContext ctx)
-        {
-            _deck = new List<string>();
-            char[] suit = { '♠', '♥', '♦', '♣' };
-            foreach (char s in suit) {
-                _deck.Add("A" + s);
-                for (int i = 2; i < 10; i++) {
-                    _deck.Add(i.ToString() + s);
-                }
-                _deck.Add("T" + s);
-                _deck.Add("J" + s);
-                _deck.Add("Q" + s);
-                _deck.Add("K" + s);
-            }
-
-            await ctx.RespondAsync("New deck opened!")
-                .ConfigureAwait(false);
-        }
         #endregion
 
         #region COMMAND_DECK_SHUFFLE
         [Command("shuffle")]
-        [Description("Shuffle current deck.")]
+        [Description("Shuffles current deck.")]
         [Aliases("s", "sh", "mix")]
+        [UsageExample("!deck shuffle")]
         public async Task ShuffleDeckAsync(CommandContext ctx)
         {
-            if (_deck == null || _deck.Count == 0)
-                throw new CommandFailedException("No deck to shuffle.");
+            if (!SharedData.CardDecks.ContainsKey(ctx.Channel.Id) || SharedData.CardDecks[ctx.Channel.Id] == null)
+                throw new CommandFailedException($"No decks to shuffle. Type {Formatter.InlineCode("!deck")} to open a new shuffled deck.");
 
-            _deck = _deck.OrderBy(a => Guid.NewGuid()).ToList();
-            await ctx.RespondAsync("Deck shuffled.")
+            SharedData.CardDecks[ctx.Channel.Id].Shuffle();
+            await ReplySuccessAsync(ctx, emojistr: ":ticket:")
                 .ConfigureAwait(false);
         }
         #endregion
-    */
     }
 }

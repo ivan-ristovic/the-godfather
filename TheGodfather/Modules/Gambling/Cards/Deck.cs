@@ -44,13 +44,13 @@ namespace TheGodfather.Modules.Gambling.Cards
             return card;
         }
 
-        public IEnumerable<Card> Draw(int amount)
+        public List<Card> Draw(int amount)
         {
             if (amount <= 0)
-                return Enumerable.Empty<Card>();
+                return new List<Card>();
             var drawn = _cards.Take(amount);
             _cards.RemoveRange(0, amount);
-            return drawn;
+            return drawn.ToList();
         }
     }
 }
