@@ -249,12 +249,16 @@
   <ItemGroup>
     <Compile Include="Attributes\UsageExampleAttribute.cs" />
     <Compile Include="Extensions\CustomBoolConverter.cs" />
+    <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Extensions\InteractivityUtil.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Modules\Administration\EmojiAdminModule.cs" />
-    <Compile Include="Modules\Gambling\Common\CoinflipCommands.cs" />
-    <Compile Include="Modules\Gambling\Common\DiceCommands.cs" />
-    <Compile Include="Modules\Gambling\Common\SlotCommands.cs" />
+    <Compile Include="Modules\Gambling\Cards\CardSuit.cs" />
+    <Compile Include="Modules\Gambling\Cards\Card.cs" />
+    <Compile Include="Modules\Gambling\CoinflipCommands.cs" />
+    <Compile Include="Modules\Gambling\Cards\Deck.cs" />
+    <Compile Include="Modules\Gambling\DiceCommands.cs" />
+    <Compile Include="Modules\Gambling\SlotCommands.cs" />
     <Compile Include="Modules\Games\Common\Caro.cs" />
     <Compile Include="Modules\Games\Common\Connect4.cs" />
     <Compile Include="Modules\Games\Common\Quiz.cs" />
@@ -278,7 +282,7 @@
     <Compile Include="Extensions\CustomHelpFormatter.cs" />
     <Compile Include="Modules\Administration\BotOwnerModule.cs" />
     <Compile Include="Modules\Gambling\BankModule.cs" />
-    <Compile Include="Modules\Games\CardGamesModule.cs" />
+    <Compile Include="Modules\Gambling\CardsModule.cs" />
     <Compile Include="Modules\Games\NunchiModule.cs" />
     <Compile Include="Modules\Games\QuizModule.cs" />
     <Compile Include="Modules\Games\RaceModule.cs" />

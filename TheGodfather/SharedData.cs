@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using TheGodfather.Services;
 using TheGodfather.Helpers;
 using TheGodfather.Helpers.Collections;
+using TheGodfather.Modules.Gambling.Cards;
 
 using DSharpPlus;
 using DSharpPlus.Entities;
@@ -19,11 +20,12 @@ namespace TheGodfather
 {
     public sealed class SharedData
     {
-        public ConcurrentDictionary<ulong, string> GuildPrefixes { get; }
-        public ConcurrentDictionary<ulong, ConcurrentHashSet<Regex>> GuildFilters { get; }
+        public ConcurrentDictionary<ulong, string> GuildPrefixes { get; internal set; }
+        public ConcurrentDictionary<ulong, ConcurrentHashSet<Regex>> GuildFilters { get; internal set; }
         public ConcurrentDictionary<ulong, ConcurrentDictionary<string, string>> GuildTextReactions { get; internal set; }
         public ConcurrentDictionary<ulong, ConcurrentDictionary<string, string>> GuildEmojiReactions { get; internal set; }
         public ConcurrentDictionary<ulong, ulong> MessageCount { get; internal set; }
+        public ConcurrentDictionary<ulong, Deck> CardDecks { get; internal set; }
         public IReadOnlyList<string> Ranks = new List<string>() {
             #region RANKS
             // If you make more than 25 ranks, then fix the embed

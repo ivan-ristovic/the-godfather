@@ -21,6 +21,7 @@ namespace TheGodfather.Modules.Gambling
         [Command("slot")]
         [Description("Roll a slot machine.")]
         [Aliases("slotmachine")]
+        [UsageExample("!gamble slot 20")]
         public async Task SlotMachine(CommandContext ctx,
                                      [Description("Bid.")] int bid = 5)
         {
