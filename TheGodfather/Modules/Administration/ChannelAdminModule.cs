@@ -293,14 +293,14 @@ namespace TheGodfather.Modules.Administration
             if (string.IsNullOrWhiteSpace(newname))
                 throw new InvalidCommandUsageException("Missing new channel name.");
 
-            if (newname.Contains(' '))
-                throw new InvalidCommandUsageException("Name cannot contain spaces.");
-
             if (newname.Length < 2 || newname.Length > 100)
                 throw new InvalidCommandUsageException("Name must be longer than 2 and shorter than 100 characters.");
 
             if (channel == null)
                 channel = ctx.Channel;
+
+            if (channel.Type == ChannelType.Text && newname.Contains(' '))
+                throw new InvalidCommandUsageException("Name cannot contain spaces for a text channel.");
 
             try {
                 await channel.ModifyAsync(new Action<ChannelEditModel>(m => {
