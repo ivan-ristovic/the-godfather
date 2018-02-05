@@ -27,10 +27,10 @@ namespace TheGodfather.Modules
         }
 
 
-        protected async Task ReplySuccessAsync(CommandContext ctx, string msg = "Done!")
+        protected async Task ReplySuccessAsync(CommandContext ctx, string msg = "Done!", string emojistr = ":white_check_mark:")
         {
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder {
-                Description = $"{DiscordEmoji.FromName(ctx.Client, ":white_check_mark:")} {msg}",
+                Description = $"{DiscordEmoji.FromName(ctx.Client, emojistr)} {msg}",
                 Color = DiscordColor.Green
             }).ConfigureAwait(false);
         }

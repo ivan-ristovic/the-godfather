@@ -16,55 +16,15 @@ using DSharpPlus.Entities;
 namespace TheGodfather.Modules.Gambling
 {
     [Group("gamble")]
-    [Description("Random betting and gambling commands.")]
+    [Description("Betting and gambling commands.")]
     [Aliases("bet")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
-    [ListeningCheckAttribute]
-    public partial class GambleModule : BaseCommandModule
+    [ListeningCheck]
+    public partial class GambleModule : GodfatherBaseModule
     {
-        #region COMMAND_COINFLIP
-        [Command("coinflip")]
-        [Description("Flips a coin.")]
-        [Aliases("coin", "flip")]
-        public async Task CoinflipAsync(CommandContext ctx,
-                                       [Description("Bid.")] int bid = 0,
-                                       [Description("Heads/Tails (h/t).")] string bet = null)
-        {
-            if (bid != 0) {
 
-                if (bid < 0)
-                    throw new InvalidCommandUsageException("Invalid bid amount!");
+        public GambleModule(DatabaseService db) : base(db: db) { }
 
-                if (string.IsNullOrWhiteSpace(bet))
-                    throw new InvalidCommandUsageException("Missing heads or tails call.");
-                bet = bet.ToLower();
-
-                int guess;
-                if (bet == "heads" || bet == "head" || bet == "h")
-                    guess = 0;
-                else if (bet == "tails" || bet == "tail" || bet == "t")
-                    guess = 1;
-                else
-                    throw new CommandFailedException($"Invalid coin outcome call (has to be {Formatter.Bold("h")} or {Formatter.Bold("t")})");
-
-                if (!await ctx.Services.GetService<DatabaseService>().RetrieveCreditsAsync(ctx.User.Id, bid).ConfigureAwait(false))
-                    throw new CommandFailedException("You do not have enough credits in WM bank!");
-
-                int rnd = new Random().Next(2);
-                if (rnd == guess)
-                    await ctx.Services.GetService<DatabaseService>().IncreaseBalanceForUserAsync(ctx.User.Id, bid * 2)
-                        .ConfigureAwait(false);
-
-                await ctx.RespondAsync($"{ctx.User.Mention} flipped " +
-                    $"{(Formatter.Bold(rnd == 0 ? "Heads" : "Tails"))} " +
-                    $"{(guess == rnd ? $"and won {bid} credits" : $"and lost {bid} credits")} !"
-                ).ConfigureAwait(false);
-            } else {
-                await ctx.RespondAsync($"{ctx.User.Mention} flipped " + $"{(Formatter.Bold(new Random().Next(2) == 0 ? "Heads" : "Tails"))} !")
-                    .ConfigureAwait(false);
-            }
-        }
-        #endregion
 
         #region COMMAND_ROLL
         [Command("roll")]

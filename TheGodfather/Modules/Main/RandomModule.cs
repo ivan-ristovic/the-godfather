@@ -53,6 +53,17 @@ namespace TheGodfather.Modules.Main
         }
         #endregion
 
+        #region COMMAND_COINFLIP
+        [Command("coinflip")]
+        [Description("Throw a coin.")]
+        [Aliases("coin")]
+        public async Task CoinflipAsync(CommandContext ctx)
+        {
+            await ctx.RespondAsync($"{ctx.User.Mention} flipped " + $"{(Formatter.Bold(new Random().Next(2) == 0 ? "Heads" : "Tails"))} !")
+                .ConfigureAwait(false);
+        }
+        #endregion
+
         #region COMMAND_PENIS
         [Command("penis")]
         [Description("An accurate size of the user's manhood.")]
