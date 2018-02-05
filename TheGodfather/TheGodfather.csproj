@@ -252,8 +252,9 @@
     <Compile Include="Extensions\InteractivityUtil.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Modules\Administration\EmojiAdminModule.cs" />
-    <Compile Include="Modules\Gambling\Coinflip.cs" />
-    <Compile Include="Modules\Gambling\Dice.cs" />
+    <Compile Include="Modules\Gambling\CoinflipCommands.cs" />
+    <Compile Include="Modules\Gambling\DiceCommands.cs" />
+    <Compile Include="Modules\Gambling\SlotCommands.cs" />
     <Compile Include="Modules\Games\Common\Caro.cs" />
     <Compile Include="Modules\Games\Common\Connect4.cs" />
     <Compile Include="Modules\Games\Common\Quiz.cs" />
