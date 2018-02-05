@@ -64,6 +64,17 @@ namespace TheGodfather.Modules.Main
         }
         #endregion
 
+        #region COMMAND_DICE
+        [Command("dice")]
+        [Description("Throw a coin.")]
+        [Aliases("die", "roll")]
+        public async Task DiceAsync(CommandContext ctx)
+        {
+            await ctx.RespondAsync($"{DiscordEmoji.FromName(ctx.Client, ":game_die:")} {ctx.User.Mention} rolled a {Formatter.Bold(new Random().Next(1, 7).ToString())}!")
+                .ConfigureAwait(false);
+        }
+        #endregion
+
         #region COMMAND_PENIS
         [Command("penis")]
         [Description("An accurate size of the user's manhood.")]

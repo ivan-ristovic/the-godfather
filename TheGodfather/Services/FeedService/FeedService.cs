@@ -21,7 +21,7 @@ namespace TheGodfather.Services
                     var feed = SyndicationFeed.Load(reader);
                     return feed.Items.Take(5);
                 }
-            } catch (Exception) {
+            } catch {
                 return null;
             }
         }

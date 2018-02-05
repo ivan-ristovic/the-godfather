@@ -17,7 +17,7 @@ namespace TheGodfather.Modules.Gambling
     public partial class GambleModule : GodfatherBaseModule
     {
         [Command("coinflip"), Priority(1)]
-        [Description("Flips a coin.")]
+        [Description("Flip a coin and bet on the outcome.")]
         [Aliases("coin", "flip")]
         [UsageExample("!bet coinflip 10 heads")]
         [UsageExample("!bet coinflip tails 20")]
@@ -44,9 +44,6 @@ namespace TheGodfather.Modules.Gambling
                 throw new CommandFailedException("You do not have enough credits in WM bank!");
 
             int rnd = new Random().Next(2);
-            if (rnd == guess)
-                await DatabaseService.IncreaseBalanceForUserAsync(ctx.User.Id, bid * 2)
-                    .ConfigureAwait(false);
 
             StringBuilder sb = new StringBuilder();
             sb.Append(ctx.User.Mention)
@@ -54,11 +51,15 @@ namespace TheGodfather.Modules.Gambling
               .Append(Formatter.Bold(rnd == 0 ? "Heads" : "Tails"))
               .Append(" and ")
               .Append(guess == rnd ? "won " : "lost ")
-              .Append(bid)
+              .Append(Formatter.Bold(bid.ToString()))
               .Append(" credits!");
 
             await ReplySuccessAsync(ctx, sb.ToString(), ":game_die:")
                 .ConfigureAwait(false);
+
+            if (rnd == guess)
+                await DatabaseService.IncreaseBalanceForUserAsync(ctx.User.Id, bid * 2)
+                    .ConfigureAwait(false);
         }
 
         [Command("coinflip"), Priority(0)]

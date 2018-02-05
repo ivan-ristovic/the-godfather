@@ -26,43 +26,6 @@ namespace TheGodfather.Modules.Gambling
         public GambleModule(DatabaseService db) : base(db: db) { }
 
 
-        #region COMMAND_ROLL
-        [Command("roll")]
-        [Description("Rolls a dice.")]
-        [Aliases("dice", "die")]
-        public async Task RollDiceAsync(CommandContext ctx,
-                                       [Description("Bid.")] int bid = 0,
-                                       [Description("Number guess.")] int guess = 0)
-        {
-            if (bid != 0) {
-
-                if (bid < 0)
-                    throw new InvalidCommandUsageException("Invalid bid amount!");
-
-                if (guess == 0)
-                    throw new InvalidCommandUsageException("Missing number as a guess.");
-
-                if (guess < 1 || guess > 6)
-                    throw new CommandFailedException($"Invalid guess. Has to be a number from {Formatter.Bold("1")} to {Formatter.Bold("6")})");
-
-                if (!await ctx.Services.GetService<DatabaseService>().RetrieveCreditsAsync(ctx.User.Id, bid).ConfigureAwait(false))
-                    throw new CommandFailedException("You do not have enough credits in WM bank!");
-
-                int rnd = new Random().Next(1, 7);
-                if (rnd == guess)
-                    await ctx.Services.GetService<DatabaseService>().IncreaseBalanceForUserAsync(ctx.User.Id, bid * 6)
-                        .ConfigureAwait(false);
-
-                await ctx.RespondAsync($"{DiscordEmoji.FromName(ctx.Client, ":game_die:")} {ctx.User.Mention} rolled a " +
-                    $"{rnd} {(guess == rnd ? $"and won {bid * 5} credits" : $"and lost {bid} credits")} !"
-                ).ConfigureAwait(false);
-            } else {
-                await ctx.RespondAsync($"{DiscordEmoji.FromName(ctx.Client, ":game_die:")} {ctx.User.Mention} rolled a {Formatter.Bold(new Random().Next(1, 7).ToString())}!")
-                    .ConfigureAwait(false);
-            }
-        }
-        #endregion
-
         #region COMMAND_SLOT
         [Command("slot")]
         [Description("Roll a slot machine.")]
