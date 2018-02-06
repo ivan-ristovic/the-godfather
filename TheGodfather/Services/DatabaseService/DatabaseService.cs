@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 using TheGodfather.Entities;
 using TheGodfather.Exceptions;
-using TheGodfather.Entities.Swat;
+using TheGodfather.Entities.SWAT;
 
 using Npgsql;
 using NpgsqlTypes;

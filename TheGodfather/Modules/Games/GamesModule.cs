@@ -17,9 +17,9 @@ using DSharpPlus.Entities;
 
 namespace TheGodfather.Modules.Games
 {
-    [Group("games")]
+    [Group("game")]
     [Description("Starts a game for you to play!")]
-    [Aliases("game", "gm")]
+    [Aliases("games", "gm")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
     [ListeningCheck]
     public partial class GamesModule : GodfatherBaseModule

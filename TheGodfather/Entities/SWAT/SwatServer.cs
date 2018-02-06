@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TheGodfather.Entities.Swat
+namespace TheGodfather.Entities.SWAT
 {
     public class SwatServer
     {
