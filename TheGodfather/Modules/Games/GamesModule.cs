@@ -114,7 +114,7 @@ namespace TheGodfather.Modules.Games
             if (Hangman.GameExistsInChannel(ctx.Channel.Id))
                 throw new CommandFailedException("Hangman game is already running in the current channel!");
 
-            var dm = await ctx.Services.GetService<TheGodfather>().CreateDmChannelAsync(ctx.User.Id)
+            var dm = await ctx.Services.GetService<TheGodfatherShard>().CreateDmChannelAsync(ctx.User.Id)
                 .ConfigureAwait(false);
             if (dm == null)
                 throw new CommandFailedException("Please enable direct messages, so I can ask you about the word to guess.");

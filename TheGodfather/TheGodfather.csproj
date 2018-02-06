@@ -251,7 +251,7 @@
     <Compile Include="Extensions\CustomBoolConverter.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Extensions\InteractivityUtil.cs" />
-    <Compile Include="Logger.cs" />
+    <Compile Include="Extensions\Logger.cs" />
     <Compile Include="Modules\Administration\EmojiAdminModule.cs" />
     <Compile Include="Modules\Gambling\Cards\CardSuit.cs" />
     <Compile Include="Modules\Gambling\Cards\Card.cs" />
@@ -270,8 +270,8 @@
     <Compile Include="Modules\Games\Common\TicTacToe.cs" />
     <Compile Include="Exceptions\CommandFailedException.cs" />
     <Compile Include="Exceptions\InvalidCommandUsageException.cs" />
-    <Compile Include="BotConfig.cs" />
-    <Compile Include="Helpers\Collections\ConcurrentHashSet.cs" />
+    <Compile Include="Entities\BotConfig.cs" />
+    <Compile Include="Extensions\Collections\ConcurrentHashSet.cs" />
     <Compile Include="Modules\Administration\Common\EvaluationEnvironment.cs" />
     <Compile Include="Modules\Games\GameCommands\CaroCommands.cs" />
     <Compile Include="Modules\GodfatherBaseModule.cs" />
@@ -279,7 +279,7 @@
     <Compile Include="Exceptions\DatabaseServiceException.cs" />
     <Compile Include="Services\DatabaseService\RankDatabaseService.cs" />
     <Compile Include="Services\FeedService\FeedEntry.cs" />
-    <Compile Include="Helpers\GameStats.cs" />
+    <Compile Include="Entities\GameStats.cs" />
     <Compile Include="Attributes\ListeningCheckAttribute.cs" />
     <Compile Include="Extensions\CustomHelpFormatter.cs" />
     <Compile Include="Modules\Administration\BotOwnerModule.cs" />
@@ -313,9 +313,9 @@
     <Compile Include="Modules\SWAT\SwatModule.cs" />
     <Compile Include="Modules\Administration\UserAdminModule.cs" />
     <Compile Include="Modules\Voice\VoiceModule.cs" />
-    <Compile Include="Helpers\SWAT\SwatServer.cs" />
-    <Compile Include="Helpers\SWAT\SwatServerInfo.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="Entities\SWAT\SwatServer.cs" />
+    <Compile Include="Entities\SWAT\SwatServerInfo.cs" />
+    <Compile Include="TheGodfather.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\DatabaseService\BankDatabaseServices.cs" />
     <Compile Include="Services\DatabaseService\DatabaseService.cs" />
@@ -337,8 +337,8 @@
     <Compile Include="Services\SteamService.cs" />
     <Compile Include="Services\UrbanDictService.cs" />
     <Compile Include="Services\YoutubeService.cs" />
-    <Compile Include="SharedData.cs" />
-    <Compile Include="TheGodfather.cs" />
+    <Compile Include="Entities\SharedData.cs" />
+    <Compile Include="TheGodfatherShard.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

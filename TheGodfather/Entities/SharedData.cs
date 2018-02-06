@@ -8,10 +8,9 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 using TheGodfather.Services;
-using TheGodfather.Helpers;
-using TheGodfather.Helpers.Collections;
+using TheGodfather.Entities;
+using TheGodfather.Extensions.Collections;
 using TheGodfather.Modules.Gambling.Cards;
-using TheGodfather.Modules.Games.Common;
 
 using DSharpPlus;
 using DSharpPlus.Entities;
@@ -21,6 +20,7 @@ namespace TheGodfather
 {
     public sealed class SharedData
     {
+        public BotConfig BotConfiguration { get; internal set; }
         public ConcurrentDictionary<ulong, string> GuildPrefixes { get; internal set; }
         public ConcurrentDictionary<ulong, ConcurrentHashSet<Regex>> GuildFilters { get; internal set; }
         public ConcurrentDictionary<ulong, ConcurrentDictionary<string, string>> GuildTextReactions { get; internal set; }
@@ -53,24 +53,6 @@ namespace TheGodfather
             "Generalissimo (tribute to Raptor)"
             #endregion
         }.AsReadOnly();
-
-        private BotConfig _cfg { get; }
-
-
-        public SharedData(BotConfig cfg,
-                          ConcurrentDictionary<ulong, string> gp,
-                          ConcurrentDictionary<ulong, ConcurrentHashSet<Regex>> gf,
-                          ConcurrentDictionary<ulong, ConcurrentDictionary<string, string>> gtt,
-                          ConcurrentDictionary<ulong, ConcurrentDictionary<string, string>> ger,
-                          ConcurrentDictionary<ulong, ulong> msgcount)
-        {
-            _cfg = cfg;
-            GuildPrefixes = gp;
-            GuildFilters = gf;
-            GuildTextReactions = gtt;
-            GuildEmojiReactions = ger;
-            MessageCount = msgcount;
-        }
 
 
         #region FILTERS
@@ -131,7 +113,7 @@ namespace TheGodfather
             if (GuildPrefixes.ContainsKey(gid) && !string.IsNullOrWhiteSpace(GuildPrefixes[gid]))
                 return GuildPrefixes[gid];
             else
-                return _cfg.DefaultPrefix;
+                return BotConfiguration.DefaultPrefix;
         }
 
         public bool TrySetGuildPrefix(ulong gid, string prefix)

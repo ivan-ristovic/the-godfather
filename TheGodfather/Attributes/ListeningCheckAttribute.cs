@@ -15,7 +15,7 @@ namespace TheGodfather.Attributes
     {
         public override Task<bool> ExecuteCheckAsync(CommandContext ctx, bool help)
         {
-            if (TheGodfather.Listening) {
+            if (TheGodfatherShard.Listening) {
                 if (!help) {
                     ctx.Client.DebugLogger.LogMessage(LogLevel.Debug, "TheGodfather",
                         $"Executing: {ctx.Command?.QualifiedName ?? "<unknown command>"}<br>" + 

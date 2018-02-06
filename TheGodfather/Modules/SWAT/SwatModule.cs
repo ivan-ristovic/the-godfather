@@ -10,7 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 using TheGodfather.Attributes;
 using TheGodfather.Services;
-using TheGodfather.Helpers.Swat;
+using TheGodfather.Entities.Swat;
 using TheGodfather.Exceptions;
 
 using DSharpPlus;

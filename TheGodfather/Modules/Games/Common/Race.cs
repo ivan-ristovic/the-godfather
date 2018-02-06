@@ -8,11 +8,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-using TheGodfather.Helpers.Collections;
-
 using DSharpPlus;
 using DSharpPlus.Entities;
-using DSharpPlus.Interactivity;
 #endregion
 
 namespace TheGodfather.Modules.Games

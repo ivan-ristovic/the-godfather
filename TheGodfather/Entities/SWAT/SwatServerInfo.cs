@@ -13,7 +13,7 @@ using DSharpPlus;
 using DSharpPlus.Entities;
 #endregion
 
-namespace TheGodfather.Helpers.Swat
+namespace TheGodfather.Entities.Swat
 {
     public class SwatServerInfo
     {

@@ -11,7 +11,7 @@ using DSharpPlus;
 using DSharpPlus.Entities;
 #endregion
 
-namespace TheGodfather.Helpers
+namespace TheGodfather.Entities
 {
     public class GameStats
     {

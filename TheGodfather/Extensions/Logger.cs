@@ -1,12 +1,13 @@
-﻿using DSharpPlus;
-using DSharpPlus.EventArgs;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TheGodfather
+using DSharpPlus;
+using DSharpPlus.EventArgs;
+
+namespace TheGodfather.Extensions
 {
     public static class Logger
     {

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 
-using TheGodfather.Helpers.Swat;
+using TheGodfather.Entities.Swat;
 
 using Npgsql;
 using NpgsqlTypes;

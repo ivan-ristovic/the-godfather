@@ -17,7 +17,7 @@ namespace TheGodfather.Modules.Administration.Common
         public DiscordUser User => this.Context.User;
         public DiscordMember Member => this.Context.Member;
         public DiscordClient Client => this.Context.Client;
-        public TheGodfather Godfather => Context.Services.GetService<TheGodfather>(); 
+        public TheGodfatherShard Godfather => Context.Services.GetService<TheGodfatherShard>(); 
 
         public EvaluationEnvironment(CommandContext ctx)
         {

@@ -425,7 +425,7 @@ namespace TheGodfather.Modules.Administration
                 throw new InvalidCommandUsageException();
 
             if (desc == "u") {
-                var dm = await ctx.Services.GetService<TheGodfather>().CreateDmChannelAsync(xid)
+                var dm = await ctx.Services.GetService<TheGodfatherShard>().CreateDmChannelAsync(xid)
                     .ConfigureAwait(false);
                 if (dm == null)
                     throw new CommandFailedException("I can't talk to that user...");
@@ -484,8 +484,8 @@ namespace TheGodfather.Modules.Administration
         [UsageExample("!owner toggleignore")]
         public async Task ToggleIgnoreAsync(CommandContext ctx)
         {
-            TheGodfather.Listening = !TheGodfather.Listening;
-            await ReplySuccessAsync(ctx, $"Listening status set to: {Formatter.Bold(TheGodfather.Listening.ToString())}")
+            TheGodfatherShard.Listening = !TheGodfatherShard.Listening;
+            await ReplySuccessAsync(ctx, $"Listening status set to: {Formatter.Bold(TheGodfatherShard.Listening.ToString())}")
                 .ConfigureAwait(false);
         }
         #endregion

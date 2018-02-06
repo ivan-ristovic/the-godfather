@@ -3,7 +3,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-using TheGodfather.Helpers;
+using TheGodfather.Entities;
 
 using GiphyDotNet;
 using GiphyDotNet.Manager;
