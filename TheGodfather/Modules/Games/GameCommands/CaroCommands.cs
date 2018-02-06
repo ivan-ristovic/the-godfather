@@ -8,7 +8,7 @@ using TheGodfather.Services;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 
-using DSharpPlus;
+using DSharpPlus.Interactivity;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 #endregion
@@ -29,7 +29,7 @@ namespace TheGodfather.Modules.Games
             [GroupCommand]
             public async Task ExecuteGroupAsync(CommandContext ctx)
             {
-                if (Game.RunningInChannel(ctx.Channel.Id, SharedData.ActiveGames))
+                if (Game.RunningInChannel(ctx.Channel.Id))
                     throw new CommandFailedException("Another game is already running in the current channel!");
 
                 await ctx.RespondAsync($"Who wants to play caro with {ctx.User.Username}?")
@@ -39,9 +39,9 @@ namespace TheGodfather.Modules.Games
                 if (opponent == null)
                     return;
 
-                var caro = new Caro(ctx.Client, ctx.Channel, ctx.User, opponent);
-                Game.RegisterGameInChannel(caro, ctx.Channel.Id, SharedData.ActiveGames);
-                await caro.PlayAsync()
+                var caro = new Caro(ctx.Client.GetInteractivity(), ctx.Channel, ctx.User, opponent);
+                Game.RegisterGameInChannel(caro, ctx.Channel.Id);
+                await caro.StartAsync()
                     .ConfigureAwait(false);
 
                 if (caro.Winner != null) {
@@ -58,11 +58,11 @@ namespace TheGodfather.Modules.Games
                     await ctx.RespondAsync("A draw... Pathetic...")
                         .ConfigureAwait(false);
                 } else {
-                    await ctx.RespondAsync("No reply, aborting...")
+                    await ctx.RespondAsync("No reply, aborting caro game...")
                         .ConfigureAwait(false);
                 }
 
-                Game.UnregisterGameInChannel(ctx.Channel.Id, SharedData.ActiveGames);
+                Game.UnregisterGameInChannel(ctx.Channel.Id);
             }
         }
     }

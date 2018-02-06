@@ -27,7 +27,6 @@ namespace TheGodfather
         public ConcurrentDictionary<ulong, ConcurrentDictionary<string, string>> GuildEmojiReactions { get; internal set; }
         public ConcurrentDictionary<ulong, ulong> MessageCount { get; internal set; }
         public ConcurrentDictionary<ulong, Deck> CardDecks { get; internal set; } = new ConcurrentDictionary<ulong, Deck>();
-        public ConcurrentDictionary<ulong, Game> ActiveGames { get; internal set; } = new ConcurrentDictionary<ulong, Game>();
         public IReadOnlyList<string> Ranks = new List<string>() {
             #region RANKS
             // If you make more than 25 ranks, then fix the embed
