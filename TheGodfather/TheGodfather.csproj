@@ -255,12 +255,13 @@
     <Compile Include="Modules\Administration\EmojiAdminModule.cs" />
     <Compile Include="Modules\Gambling\Cards\CardSuit.cs" />
     <Compile Include="Modules\Gambling\Cards\Card.cs" />
-    <Compile Include="Modules\Gambling\CoinflipCommands.cs" />
+    <Compile Include="Modules\Gambling\GambleCommands\CoinflipCommands.cs" />
     <Compile Include="Modules\Gambling\Cards\Deck.cs" />
-    <Compile Include="Modules\Gambling\DiceCommands.cs" />
-    <Compile Include="Modules\Gambling\SlotCommands.cs" />
+    <Compile Include="Modules\Gambling\GambleCommands\DiceCommands.cs" />
+    <Compile Include="Modules\Gambling\GambleCommands\SlotCommands.cs" />
     <Compile Include="Modules\Games\Common\Caro.cs" />
     <Compile Include="Modules\Games\Common\Connect4.cs" />
+    <Compile Include="Modules\Games\Common\Game.cs" />
     <Compile Include="Modules\Games\Common\Quiz.cs" />
     <Compile Include="Modules\Games\Common\Hangman.cs" />
     <Compile Include="Modules\Games\Common\Duel.cs" />
@@ -272,6 +273,7 @@
     <Compile Include="BotConfig.cs" />
     <Compile Include="Helpers\Collections\ConcurrentHashSet.cs" />
     <Compile Include="Modules\Administration\Common\EvaluationEnvironment.cs" />
+    <Compile Include="Modules\Games\GameCommands\CaroCommands.cs" />
     <Compile Include="Modules\GodfatherBaseModule.cs" />
     <Compile Include="Modules\Search\JokesModule.cs" />
     <Compile Include="Exceptions\DatabaseServiceException.cs" />

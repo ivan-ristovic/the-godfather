@@ -21,50 +21,9 @@ namespace TheGodfather.Modules.Games
     [Description("Starts a game for you to play!")]
     [Aliases("game", "gm")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
-    [ListeningCheckAttribute]
-    public partial class GamesModule : BaseCommandModule
+    [ListeningCheck]
+    public partial class GamesModule : GodfatherBaseModule
     {
-        #region COMMAND_GAMES_CARO
-        [Command("caro")]
-        [Description("Starts a caro game.")]
-        [Aliases("c")]
-        public async Task CaroAsync(CommandContext ctx)
-        {
-            if (Caro.GameExistsInChannel(ctx.Channel.Id))
-                throw new CommandFailedException("Caro game is already running in the current channel!");
-
-            await ctx.RespondAsync($"Who wants to play caro with {ctx.User.Username}?")
-                .ConfigureAwait(false);
-
-            var msg = await ctx.Client.GetInteractivity().WaitForMessageAsync(
-                xm => CheckIfValidOpponent(xm, ctx.User.Id, ctx.Channel.Id)
-            ).ConfigureAwait(false);
-            if (msg == null) {
-                await ctx.RespondAsync($"{ctx.User.Mention} right now: http://i0.kym-cdn.com/entries/icons/mobile/000/003/619/ForeverAlone.jpg")
-                    .ConfigureAwait(false);
-                return;
-            }
-
-            var caro = new Caro(ctx.Client, ctx.Channel.Id, ctx.User, msg.User);
-            await caro.PlayAsync()
-                .ConfigureAwait(false);
-
-            if (caro.Winner != null) {
-                await ctx.RespondAsync($"The winner is: {caro.Winner.Mention}!")
-                    .ConfigureAwait(false);
-
-                var db = ctx.Services.GetService<DatabaseService>();
-                await db.UpdateUserStatsAsync(caro.Winner.Id, "caro_won").ConfigureAwait(false);
-                if (caro.Winner.Id == ctx.User.Id)
-                    await db.UpdateUserStatsAsync(msg.User.Id, "caro_lost").ConfigureAwait(false);
-                else
-                    await db.UpdateUserStatsAsync(ctx.User.Id, "caro_lost").ConfigureAwait(false);
-            } else if (caro.NoReply == false) {
-                await ctx.RespondAsync("A draw... Pathetic...")
-                    .ConfigureAwait(false);
-            }
-        }
-        #endregion
 
         #region COMMAND_GAMES_CONNECTFOUR
         [Command("connectfour")]

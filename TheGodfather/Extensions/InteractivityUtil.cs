@@ -29,15 +29,28 @@ namespace TheGodfather.Extensions
 
         public static async Task<bool> WaitForConfirmationAsync(CommandContext ctx)
         {
-            var interactivity = ctx.Client.GetInteractivity();
-            var mctx = await interactivity.WaitForMessageAsync(
+            var mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(
                 m => m.ChannelId == ctx.Channel.Id && m.Author.Id == ctx.User.Id
             ).ConfigureAwait(false);
             if (mctx != null && IsConfirmation(mctx))
                 return true;
             return false;
         }
-        
+
+        public static async Task<DiscordUser> WaitForGameOpponentAsync(CommandContext ctx)
+        {
+            var mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(
+                xm => {
+                    if (xm.Author.Id == ctx.User.Id || xm.Channel.Id != ctx.Channel.Id)
+                        return false;
+                    var word = xm.Content.ToLowerInvariant().Split(' ')[0];
+                    return word == "me" || word == "i";
+                }
+            ).ConfigureAwait(false);
+
+            return mctx != null ? mctx.User : null;
+        }
+
         public static async Task SendPaginatedCollectionAsync<T>(CommandContext ctx,
                                                                  string title,
                                                                  IEnumerable<T> collection, 
@@ -47,7 +60,6 @@ namespace TheGodfather.Extensions
                                                                  TimeSpan? timeout = null)
         {
             var list = collection.ToList();
-            var interactivity = ctx.Client.GetInteractivity();
             var pages = new List<Page>();
             int pagesnum = (list.Count - 1) / amount;
             for (int i = 0; i <= pagesnum; i++) {
@@ -61,7 +73,7 @@ namespace TheGodfather.Extensions
                     }.Build()
                 });
             }
-            await interactivity.SendPaginatedMessage(ctx.Channel, ctx.User, pages)
+            await ctx.Client.GetInteractivity().SendPaginatedMessage(ctx.Channel, ctx.User, pages)
                 .ConfigureAwait(false);
         }
     }
