@@ -39,7 +39,7 @@ namespace TheGodfather.Modules.Games.Common
         private const int BOARD_SIZE = 10;
         private int[,] _board = new int[BOARD_SIZE, BOARD_SIZE];
         private int _move = 0;
-        private bool _delWarnIssued = false;
+        private bool _deletefailed = false;
         #endregion
 
 
@@ -98,14 +98,14 @@ namespace TheGodfather.Modules.Games.Common
 
             if (TryPlayMove(player1plays ? 1 : 2, row - 1, col - 1)) {
                 _move++;
-                try {
-                    await mctx.Message.DeleteAsync()
-                        .ConfigureAwait(false);
-                } catch (UnauthorizedException) {
-                    if (!_delWarnIssued) {
+                if (!_deletefailed) {
+                    try {
+                        await mctx.Message.DeleteAsync()
+                            .ConfigureAwait(false);
+                    } catch (UnauthorizedException) {
                         await _channel.SendMessageAsync("Consider giving me the permissions to delete messages so that I can clean up the move posts.")
                             .ConfigureAwait(false);
-                        _delWarnIssued = true;
+                        _deletefailed = true;
                     }
                 }
             } else {

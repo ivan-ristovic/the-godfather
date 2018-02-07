@@ -39,7 +39,7 @@ namespace TheGodfather.Modules.Games
                 if (opponent == null)
                     return;
 
-                var connect4 = new Connect4(ctx.Client/*.GetInteractivity()*/, ctx.Channel, ctx.User, opponent);
+                var connect4 = new Connect4(ctx.Client.GetInteractivity(), ctx.Channel, ctx.User, opponent);
                 Game.RegisterGameInChannel(connect4, ctx.Channel.Id);
                 await connect4.StartAsync()
                     .ConfigureAwait(false);

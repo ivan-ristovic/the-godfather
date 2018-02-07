@@ -21,23 +21,40 @@ namespace TheGodfather.Modules.Games
 {
     public class Connect4 : Game
     {
+        #region STATIC_FIELDS
+        private static string[] _numbers = new string[] {
+            DiscordEmoji.FromUnicode("1\u20e3"),
+            DiscordEmoji.FromUnicode("2\u20e3"),
+            DiscordEmoji.FromUnicode("3\u20e3"),
+            DiscordEmoji.FromUnicode("4\u20e3"),
+            DiscordEmoji.FromUnicode("5\u20e3"),
+            DiscordEmoji.FromUnicode("6\u20e3"),
+            DiscordEmoji.FromUnicode("7\u20e3"),
+            DiscordEmoji.FromUnicode("8\u20e3"),
+            DiscordEmoji.FromUnicode("9\u20e3")
+        };
+        private static string _header = string.Join("", _numbers);
+        private string _square = DiscordEmoji.FromUnicode("\u25fb");
+        private string _blue = DiscordEmoji.FromUnicode("\U0001f535");
+        private string _red = DiscordEmoji.FromUnicode("\U0001f534");
+        #endregion
+
         #region PRIVATE_FIELDS
-        private DiscordClient _client;
         private DiscordUser _p1;
         private DiscordUser _p2;
         private DiscordMessage _msg;
         private int[,] _board = new int[7, 9];
         private int _move = 0;
-        private bool _delWarnIssued = false;
+        private bool _deletefailed = false;
         #endregion
 
 
-        public Connect4(DiscordClient client, DiscordChannel channel, DiscordUser p1, DiscordUser p2)
+        public Connect4(InteractivityExtension interactivity, DiscordChannel channel, DiscordUser player1, DiscordUser player2)
         {
-            _client = client;
+            _interactivity = interactivity;
             _channel = channel;
-            _p1 = p1;
-            _p2 = p2;
+            _p1 = player1;
+            _p2 = player2;
         }
 
 
@@ -49,7 +66,6 @@ namespace TheGodfather.Modules.Games
             while (NoReply == false && _move < 7 * 9 && !GameOver()) {
                 await UpdateBoardAsync()
                     .ConfigureAwait(false);
-
                 await AdvanceAsync()
                     .ConfigureAwait(false);
             }
@@ -71,7 +87,7 @@ namespace TheGodfather.Modules.Games
         {
             int column = 0;
             bool player1plays = _move % 2 == 0;
-            var t = await _client.GetInteractivity().WaitForMessageAsync(
+            var mctx = await _interactivity.WaitForMessageAsync(
                 xm => {
                     if (xm.Channel.Id != _channel.Id) return false;
                     if (player1plays && (xm.Author.Id != _p1.Id)) return false;
@@ -86,16 +102,16 @@ namespace TheGodfather.Modules.Games
                 return;
             }
 
-            if (PlaySuccessful(player1plays ? 1 : 2, column - 1)) {
+            if (TryPlayMove(player1plays ? 1 : 2, column - 1)) {
                 _move++;
-                try {
-                    await t.Message.DeleteAsync()
-                        .ConfigureAwait(false);
-                } catch (UnauthorizedException) {
-                    if (!_delWarnIssued) {
-                        await _channel.SendMessageAsync("Consider giving me the delete message permissions so I can clean up the move posts.")
+                if (!_deletefailed) {
+                    try {
+                        await mctx.Message.DeleteAsync()
                             .ConfigureAwait(false);
-                        _delWarnIssued = true;
+                    } catch (UnauthorizedException) {
+                        await _channel.SendMessageAsync("Consider giving me the permissions to delete messages so that I can clean up the move posts.")
+                            .ConfigureAwait(false);
+                        _deletefailed = true;
                     }
                 }
             } else {
@@ -149,26 +165,27 @@ namespace TheGodfather.Modules.Games
             return false;
         }
 
-        private bool PlaySuccessful(int v, int col)
+        private bool TryPlayMove(int val, int col)
         {
             if (_board[0, col] != 0)
                 return false;
-            int r = 1;
-            while (r < 7 && _board[r, col] == 0)
-                r++;
-            _board[r - 1, col] = v;
+            int row = 1;
+            while (row < 7 && _board[row, col] == 0)
+                row++;
+            _board[row - 1, col] = val;
             return true;
         }
 
         private async Task UpdateBoardAsync()
         {
             StringBuilder sb = new StringBuilder();
+            sb.AppendLine(_header);
             for (int i = 0; i < 7; i++) {
                 for (int j = 0; j < 9; j++)
                     switch (_board[i, j]) {
-                        case 0: sb.Append(DiscordEmoji.FromName(_client, ":white_medium_square:")); break;
-                        case 1: sb.Append(DiscordEmoji.FromName(_client, ":large_blue_circle:")); break;
-                        case 2: sb.Append(DiscordEmoji.FromName(_client, ":red_circle:")); break;
+                        case 0: sb.Append(_square); break;
+                        case 1: sb.Append(_blue); break;
+                        case 2: sb.Append(_red); break;
                     }
                 sb.AppendLine();
             }
