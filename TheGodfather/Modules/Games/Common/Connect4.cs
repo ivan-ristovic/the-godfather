@@ -50,9 +50,8 @@ namespace TheGodfather.Modules.Games
 
 
         public Connect4(InteractivityExtension interactivity, DiscordChannel channel, DiscordUser player1, DiscordUser player2)
+            : base(interactivity, channel)
         {
-            _interactivity = interactivity;
-            _channel = channel;
             _p1 = player1;
             _p2 = player2;
         }

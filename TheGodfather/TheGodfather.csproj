@@ -249,6 +249,7 @@
   <ItemGroup>
     <Compile Include="Attributes\UsageExampleAttribute.cs" />
     <Compile Include="Extensions\CustomBoolConverter.cs" />
+    <Compile Include="Extensions\EmojiUtil.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Extensions\InteractivityUtil.cs" />
     <Compile Include="Extensions\Logger.cs" />
@@ -259,6 +260,7 @@
     <Compile Include="Modules\Gambling\Cards\Deck.cs" />
     <Compile Include="Modules\Gambling\GambleCommands\DiceCommands.cs" />
     <Compile Include="Modules\Gambling\GambleCommands\SlotCommands.cs" />
+    <Compile Include="Modules\Games\Common\BoardGame.cs" />
     <Compile Include="Modules\Games\Common\Caro.cs" />
     <Compile Include="Modules\Games\Common\Connect4.cs" />
     <Compile Include="Modules\Games\Common\Game.cs" />

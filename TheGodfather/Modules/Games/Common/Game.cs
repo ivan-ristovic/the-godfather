@@ -24,6 +24,13 @@ namespace TheGodfather.Modules.Games.Common
             => _games.ContainsKey(cid) == false || _games.TryRemove(cid, out _);
 
 
+        protected Game(InteractivityExtension interactivity, DiscordChannel channel)
+        {
+            _interactivity = interactivity;
+            _channel = channel;
+        }
+
+
         public DiscordUser Winner { get; protected set; }
         public bool NoReply { get; protected set; }
 

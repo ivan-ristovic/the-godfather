@@ -1,7 +1,10 @@
 ﻿#region USING_DIRECTIVES
 using System;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
+using TheGodfather.Extensions;
 
 using DSharpPlus;
 using DSharpPlus.Entities;
@@ -11,70 +14,16 @@ using DSharpPlus.Exceptions;
 
 namespace TheGodfather.Modules.Games.Common
 {
-    public class Caro : Game
+    public class Caro : BoardGame
     {
-        #region STATIC_FIELDS
-        private static string[] _numbers = new string[] {
-            DiscordEmoji.FromUnicode("1\u20e3"),
-            DiscordEmoji.FromUnicode("2\u20e3"),
-            DiscordEmoji.FromUnicode("3\u20e3"),
-            DiscordEmoji.FromUnicode("4\u20e3"),
-            DiscordEmoji.FromUnicode("5\u20e3"),
-            DiscordEmoji.FromUnicode("6\u20e3"),
-            DiscordEmoji.FromUnicode("7\u20e3"),
-            DiscordEmoji.FromUnicode("8\u20e3"),
-            DiscordEmoji.FromUnicode("9\u20e3"),
-            DiscordEmoji.FromUnicode("\U0001f51f")
-        };
-        private static string _header = DiscordEmoji.FromUnicode("\U0001f199") + string.Join("", _numbers);
-        private string _square = DiscordEmoji.FromUnicode("\u25fb");
-        private string _x = DiscordEmoji.FromUnicode("\u274c");
-        private string _o = DiscordEmoji.FromUnicode("\u2b55");
-        #endregion
-
-        #region PRIVATE_FIELDS
-        private DiscordUser _p1;
-        private DiscordUser _p2;
-        private DiscordMessage _msg;
-        private const int BOARD_SIZE = 10;
-        private int[,] _board = new int[BOARD_SIZE, BOARD_SIZE];
-        private int _move = 0;
-        private bool _deletefailed = false;
-        #endregion
+        private static string _header = DiscordEmoji.FromUnicode("\U0001f199") + string.Join("", EmojiUtil.Numbers);
 
 
         public Caro(InteractivityExtension interactivity, DiscordChannel channel, DiscordUser player1, DiscordUser player2)
-        {
-            _interactivity = interactivity;
-            _channel = channel;
-            _p1 = player1;
-            _p2 = player2;
-        }
+            : base(interactivity, channel, player1, player2, 10, 10) { }
 
 
-        public async Task StartAsync()
-        {
-            _msg = await _channel.SendMessageAsync($"{_p1.Mention} vs {_p2.Mention}")
-                .ConfigureAwait(false);
-
-            while (NoReply == false && _move < BOARD_SIZE * BOARD_SIZE && !GameOver()) {
-                await UpdateBoardAsync()
-                    .ConfigureAwait(false);
-                await AdvanceAsync()
-                    .ConfigureAwait(false);
-            }
-
-            if (GameOver())
-                Winner = (_move % 2 == 0) ? _p2 : _p1;
-            else
-                Winner = null;
-
-            await UpdateBoardAsync()
-                .ConfigureAwait(false);
-        }
-
-
-        private async Task AdvanceAsync()
+        protected override async Task AdvanceAsync()
         {
             int row = 0, col = 0;
             bool player1plays = (_move % 2 == 0);
@@ -87,7 +36,7 @@ namespace TheGodfather.Modules.Games.Common
                     if (split.Length < 2) return false;
                     if (!int.TryParse(split[0], out row)) return false;
                     if (!int.TryParse(split[1], out col)) return false;
-                    return row > 0 && row < 11 && col > 0 && col < 11;
+                    return row > 0 && row <= BOARD_SIZE_Y && col > 0 && col < BOARD_SIZE_X;
                 },
                 TimeSpan.FromMinutes(1)
             ).ConfigureAwait(false);
@@ -114,11 +63,11 @@ namespace TheGodfather.Modules.Games.Common
             }
         }
 
-        private bool GameOver()
+        protected override bool GameOver()
         {
             // left - right
-            for (int i = 0; i < BOARD_SIZE; i++) {
-                for (int j = 0; j < BOARD_SIZE - 4; j++) {
+            for (int i = 0; i < BOARD_SIZE_Y; i++) {
+                for (int j = 0; j < BOARD_SIZE_X - 4; j++) {
                     if (_board[i, j] == 0)
                         continue;
                     if (_board[i, j] == _board[i, j + 1] && _board[i, j] == _board[i, j + 2] && _board[i, j] == _board[i, j + 3] && _board[i, j] == _board[i, j + 4])
@@ -127,8 +76,8 @@ namespace TheGodfather.Modules.Games.Common
             }
 
             // up - down
-            for (int i = 0; i < BOARD_SIZE - 4; i++) {
-                for (int j = 0; j < BOARD_SIZE; j++) {
+            for (int i = 0; i < BOARD_SIZE_Y - 4; i++) {
+                for (int j = 0; j < BOARD_SIZE_X; j++) {
                     if (_board[i, j] == 0)
                         continue;
                     if (_board[i, j] == _board[i + 1, j] && _board[i, j] == _board[i + 2, j] && _board[i, j] == _board[i + 3, j] && _board[i, j] == _board[i + 4, j])
@@ -137,8 +86,8 @@ namespace TheGodfather.Modules.Games.Common
             }
 
             // diagonal - right
-            for (int i = 0; i < BOARD_SIZE - 4; i++) {
-                for (int j = 0; j < BOARD_SIZE - 4; j++) {
+            for (int i = 0; i < BOARD_SIZE_Y - 4; i++) {
+                for (int j = 0; j < BOARD_SIZE_X - 4; j++) {
                     if (_board[i, j] == 0)
                         continue;
                     if (_board[i, j] == _board[i + 1, j + 1] && _board[i, j] == _board[i + 2, j + 2] && _board[i, j] == _board[i + 3, j + 3] && _board[i, j] == _board[i + 4, j + 4])
@@ -147,8 +96,8 @@ namespace TheGodfather.Modules.Games.Common
             }
 
             // diagonal - left 
-            for (int i = 0; i < BOARD_SIZE - 4; i++) {
-                for (int j = 3; j < BOARD_SIZE; j++) {
+            for (int i = 0; i < BOARD_SIZE_Y - 4; i++) {
+                for (int j = 3; j < BOARD_SIZE_X; j++) {
                     if (_board[i, j] == 0)
                         continue;
                     if (_board[i, j] == _board[i + 1, j - 1] && _board[i, j] == _board[i + 2, j - 2] && _board[i, j] == _board[i + 3, j - 3] && _board[i, j] == _board[i + 4, j - 4])
@@ -159,7 +108,7 @@ namespace TheGodfather.Modules.Games.Common
             return false;
         }
 
-        private bool TryPlayMove(int val, int row, int col)
+        protected override bool TryPlayMove(int val, int row, int col)
         {
             if (_board[row, col] != 0)
                 return false;
@@ -168,17 +117,17 @@ namespace TheGodfather.Modules.Games.Common
             return true;
         }
 
-        private async Task UpdateBoardAsync()
+        protected override async Task UpdateBoardAsync()
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendLine(_header);
-            for (int i = 0; i < BOARD_SIZE; i++) {
-                sb.Append(_numbers[i]);
-                for (int j = 0; j < BOARD_SIZE; j++)
+            for (int i = 0; i < BOARD_SIZE_Y; i++) {
+                sb.Append(EmojiUtil.Numbers[i]);
+                for (int j = 0; j < BOARD_SIZE_X; j++)
                     switch (_board[i, j]) {
-                        case 0: sb.Append(_square); break;
-                        case 1: sb.Append(_x); break;
-                        case 2: sb.Append(_o); break;
+                        case 0: sb.Append(EmojiUtil.BoardSquare); break;
+                        case 1: sb.Append(EmojiUtil.BoardPieceX); break;
+                        case 2: sb.Append(EmojiUtil.BoardPieceO); break;
                     }
                 sb.AppendLine();
             }
