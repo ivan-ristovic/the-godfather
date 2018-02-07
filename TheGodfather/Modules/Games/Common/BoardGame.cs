@@ -23,7 +23,7 @@ namespace TheGodfather.Modules.Games.Common
         {
             BOARD_SIZE_X = size_x;
             BOARD_SIZE_Y = size_y;
-            _board = new int[BOARD_SIZE_X, BOARD_SIZE_Y];
+            _board = new int[BOARD_SIZE_Y, BOARD_SIZE_X];
             _p1 = p1;
             _p2 = p2;
         }

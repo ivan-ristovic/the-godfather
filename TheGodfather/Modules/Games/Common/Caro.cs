@@ -14,7 +14,7 @@ using DSharpPlus.Exceptions;
 
 namespace TheGodfather.Modules.Games.Common
 {
-    public class Caro : BoardGame
+    public sealed class Caro : BoardGame
     {
         private static string _header = DiscordEmoji.FromUnicode("\U0001f199") + string.Join("", EmojiUtil.Numbers);
 
@@ -36,7 +36,7 @@ namespace TheGodfather.Modules.Games.Common
                     if (split.Length < 2) return false;
                     if (!int.TryParse(split[0], out row)) return false;
                     if (!int.TryParse(split[1], out col)) return false;
-                    return row > 0 && row <= BOARD_SIZE_Y && col > 0 && col < BOARD_SIZE_X;
+                    return row > 0 && row <= BOARD_SIZE_Y && col > 0 && col <= BOARD_SIZE_X;
                 },
                 TimeSpan.FromMinutes(1)
             ).ConfigureAwait(false);
@@ -97,7 +97,7 @@ namespace TheGodfather.Modules.Games.Common
 
             // diagonal - left 
             for (int i = 0; i < BOARD_SIZE_Y - 4; i++) {
-                for (int j = 3; j < BOARD_SIZE_X; j++) {
+                for (int j = 4; j < BOARD_SIZE_X; j++) {
                     if (_board[i, j] == 0)
                         continue;
                     if (_board[i, j] == _board[i + 1, j - 1] && _board[i, j] == _board[i + 2, j - 2] && _board[i, j] == _board[i + 3, j - 3] && _board[i, j] == _board[i + 4, j - 4])
