@@ -114,7 +114,7 @@ namespace TheGodfather.Modules.Games
         {
             if (_board[0, col] != 0)
                 return false;
-            while (row < 7 && _board[row, col] == 0)
+            while (row < BOARD_SIZE_Y && _board[row, col] == 0)
                 row++;
             _board[row - 1, col] = val;
             return true;
@@ -124,8 +124,8 @@ namespace TheGodfather.Modules.Games
         {
             StringBuilder sb = new StringBuilder();
             sb.AppendLine(_header);
-            for (int i = 0; i < 7; i++) {
-                for (int j = 0; j < 9; j++)
+            for (int i = 0; i < BOARD_SIZE_Y; i++) {
+                for (int j = 0; j < BOARD_SIZE_X; j++)
                     switch (_board[i, j]) {
                         case 0: sb.Append(EmojiUtil.BoardSquare); break;
                         case 1: sb.Append(EmojiUtil.BoardPieceBlueCircle); break;
