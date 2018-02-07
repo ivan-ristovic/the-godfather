@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Attributes;
 using TheGodfather.Services;
 using TheGodfather.Exceptions;
+using TheGodfather.Modules.Games.Common;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -25,22 +26,26 @@ namespace TheGodfather.Modules.Games
     public partial class GamesModule : GodfatherBaseModule
     {
 
+        public GamesModule(DatabaseService db) : base(db: db) { }
+
+
         #region COMMAND_GAMES_DUEL
         [Command("duel")]
         [Description("Starts a duel which I will commentate.")]
         [Aliases("fight", "vs", "d")]
         public async Task DuelAsync(CommandContext ctx,
-                                   [Description("Who to fight with?")] DiscordUser u)
+                                   [Description("Who to fight with?")] DiscordUser opponent)
         {
-            if (u.Id == ctx.User.Id)
-                throw new CommandFailedException("You can't duel yourself...");
-            if (Duel.GameExistsInChannel(ctx.Channel.Id))
-                throw new CommandFailedException("A duel is already running in the current channel!");
+            if (Game.RunningInChannel(ctx.Channel.Id))
+                throw new CommandFailedException("Another game is already running in the current channel!");
 
-            if (u.Id == ctx.Client.CurrentUser.Id) {
+            if (opponent.Id == ctx.User.Id)
+                throw new CommandFailedException("You can't duel yourself...");
+
+            if (opponent.Id == ctx.Client.CurrentUser.Id) {
                 await ctx.RespondAsync(
                     $"{ctx.User.Mention} {string.Join("", Enumerable.Repeat(DiscordEmoji.FromName(ctx.Client, ":black_large_square:"), 5))} :crossed_swords: " +
-                    $"{string.Join("", Enumerable.Repeat(DiscordEmoji.FromName(ctx.Client, ":white_large_square:"), 5))} {u.Mention}" +
+                    $"{string.Join("", Enumerable.Repeat(DiscordEmoji.FromName(ctx.Client, ":white_large_square:"), 5))} {opponent.Mention}" +
                     $"\n{ctx.Client.CurrentUser.Mention} {DiscordEmoji.FromName(ctx.Client, ":zap:")} {ctx.User.Mention}"
                 ).ConfigureAwait(false);
                 await ctx.RespondAsync($"{ctx.Client.CurrentUser.Mention} wins!")
@@ -48,18 +53,23 @@ namespace TheGodfather.Modules.Games
                 return;
             }
 
-            var duel = new Duel(ctx.Client, ctx.Channel.Id, ctx.User, u);
-            await duel.PlayAsync()
-                .ConfigureAwait(false);
+            var duel = new Duel(ctx.Client.GetInteractivity(), ctx.Channel, ctx.User, opponent);
+            Game.RegisterGameInChannel(duel, ctx.Channel.Id);
 
-            await ctx.RespondAsync($"{duel.Winner.Username} {(string.IsNullOrWhiteSpace(duel.FinishingMove) ? "wins" : duel.FinishingMove)}!")
-                .ConfigureAwait(false);
+            try {
+                await duel.StartAsync()
+                    .ConfigureAwait(false);
 
-            var db = ctx.Services.GetService<DatabaseService>();
-            await db.UpdateUserStatsAsync(duel.Winner.Id, "duels_won")
-                .ConfigureAwait(false);
-            await db.UpdateUserStatsAsync(duel.Winner.Id == ctx.User.Id ? u.Id : ctx.User.Id, "duels_lost")
-                .ConfigureAwait(false);
+                await ctx.RespondAsync($"{duel.Winner.Username} {duel.FinishingMove ?? "wins"}!")
+                    .ConfigureAwait(false);
+
+                await DatabaseService.UpdateUserStatsAsync(duel.Winner.Id, "duels_won")
+                    .ConfigureAwait(false);
+                await DatabaseService.UpdateUserStatsAsync(duel.Winner.Id == ctx.User.Id ? opponent.Id : ctx.User.Id, "duels_lost")
+                    .ConfigureAwait(false);
+            } finally {
+                Game.UnregisterGameInChannel(ctx.Channel.Id);
+            }
         }
         #endregion
 

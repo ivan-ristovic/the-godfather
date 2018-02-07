@@ -7,7 +7,8 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-using TheGodfather.Extensions.Collections;
+using TheGodfather.Extensions;
+using TheGodfather.Modules.Games.Common;
 
 using DSharpPlus;
 using DSharpPlus.Entities;
@@ -16,22 +17,13 @@ using DSharpPlus.Interactivity;
 
 namespace TheGodfather.Modules.Games
 {
-    public class Duel
+    public class Duel : Game
     {
         #region PUBLIC_FIELDS
-        public DiscordUser Winner { get; private set; }
         public string FinishingMove { get; private set; }
         #endregion
 
-        #region STATIC_FIELDS
-        public static bool GameExistsInChannel(ulong cid) => _channels.Contains(cid);
-        private static ConcurrentHashSet<ulong> _channels = new ConcurrentHashSet<ulong>();
-        private static string[] weapons = { ":hammer:", ":dagger:", ":pick:", ":bomb:", ":guitar:", ":fire:" };
-        #endregion
-
         #region PRIVATE_FIELDS
-        private DiscordClient _client;
-        private ulong _cid;
         private DiscordUser _p1;
         private DiscordUser _p2;
         private DiscordMessage _msg;
@@ -42,30 +34,23 @@ namespace TheGodfather.Modules.Games
         private int _hp1 = 5;
         private int _hp2 = 5;
         private Random _rand = new Random();
-        private string _events = "";
+        private StringBuilder _events = new StringBuilder();
         #endregion
 
 
-        public Duel(DiscordClient client, ulong cid, DiscordUser p1, DiscordUser p2)
+        public Duel(InteractivityExtension interactivity, DiscordChannel channel, DiscordUser p1, DiscordUser p2)
+            : base(interactivity, channel)
         {
-            _client = client;
-            _cid = cid;
             _p1 = p1;
             _p2 = p2;
         }
         
 
-        public async Task PlayAsync()
+        public async Task StartAsync()
         {
-            _channels.Add(_cid);
-
             UpdateHpBars();
-
-            var chn = await _client.GetChannelAsync(_cid)
-                .ConfigureAwait(false);
-
-            var e = DiscordEmoji.FromName(_client, ":crossed_swords:");
-            _msg = await chn.SendMessageAsync($"{_p1.Mention} {_hp1bar} {e} {_hp2bar} {_p2.Mention}")
+            
+            _msg = await _channel.SendMessageAsync($"{_p1.Mention} {_hp1bar} {EmojiUtil.DuelSwords} {_hp2bar} {_p2.Mention}")
                 .ConfigureAwait(false);
 
             while (_hp1 > 0 && _hp2 > 0) {
@@ -75,81 +60,75 @@ namespace TheGodfather.Modules.Games
 
             Winner = _hp1 > 0 ? _p1 : _p2;
 
-            await chn.SendMessageAsync(e + " FINISH HIM! ")
+            await _channel.SendMessageAsync(EmojiUtil.DuelSwords + " FINISH HIM! " + EmojiUtil.DuelSwords)
                 .ConfigureAwait(false);
-            FinishingMove = await CheckForFinishingMoveAsync()
+            FinishingMove = await WaitForFinishingMoveAsync()
                 .ConfigureAwait(false);
-
-            _channels.TryRemove(_cid);
         }
 
         private async Task AdvanceAsync()
         {
             DealDamage();
 
-            await CheckForPotionUseAsync()
+            await WaitForPotionUseAsync()
                 .ConfigureAwait(false);
 
             UpdateHpBars();
 
-            _msg = await _msg.ModifyAsync($"{_p1.Mention} {_hp1bar} :crossed_swords: {_hp2bar} {_p2.Mention}", embed: new DiscordEmbedBuilder() {
-                Title = "CNN LIVE COVERAGE",
-                Description = _events,
+            _msg = await _msg.ModifyAsync($"{_p1.Mention} {_hp1bar} {EmojiUtil.DuelSwords} {_hp2bar} {_p2.Mention}", embed: new DiscordEmbedBuilder() {
+                Title = "CNN LIVE DUEL COVERAGE",
+                Description = _events.ToString(),
                 Color = DiscordColor.Chartreuse
             }.Build()).ConfigureAwait(false);
         }
 
         private void UpdateHpBars()
         {
-            _hp1bar = string.Join("", Enumerable.Repeat(DiscordEmoji.FromName(_client, ":white_large_square:"), _hp1)) + string.Join("", Enumerable.Repeat(DiscordEmoji.FromName(_client, ":black_large_square:"), 5 - _hp1));
-            _hp2bar = string.Join("", Enumerable.Repeat(DiscordEmoji.FromName(_client, ":black_large_square:"), 5 - _hp2)) + string.Join("", Enumerable.Repeat(DiscordEmoji.FromName(_client, ":white_large_square:"), _hp2));
+            _hp1bar = string.Join("", Enumerable.Repeat(EmojiUtil.WhiteSquare, _hp1)) + string.Join("", Enumerable.Repeat(EmojiUtil.BlackSquare, 5 - _hp1));
+            _hp2bar = string.Join("", Enumerable.Repeat(EmojiUtil.BlackSquare, 5 - _hp2)) + string.Join("", Enumerable.Repeat(EmojiUtil.WhiteSquare, _hp2));
         }
 
         private void DealDamage()
         {
             int damage = 1;
             if (_rand.Next() % 2 == 0) {
-                _events += $"\n{_p1.Username} {weapons[_rand.Next(weapons.Length)]} {_p2.Username}";
+                _events.AppendLine($"{_p1.Username} {EmojiUtil.GetRandomDuelWeapon(_rand)} {_p2.Username}");
                 _hp2 -= damage;
             } else {
-                _events += $"\n{_p2.Username} {weapons[_rand.Next(weapons.Length)]} {_p1.Username}";
+                _events.AppendLine($"{_p2.Username} {EmojiUtil.GetRandomDuelWeapon(_rand)} {_p1.Username}");
                 _hp1 -= damage;
             }
         }
 
-        private async Task CheckForPotionUseAsync()
+        private async Task WaitForPotionUseAsync()
         {
-            var interactivity = _client.GetInteractivity();
-            var reply = await interactivity.WaitForMessageAsync(
+            var mctx = await _interactivity.WaitForMessageAsync(
                 msg =>
-                    msg.ChannelId == _cid && msg.Content.ToLower() == "hp" &&
+                    msg.ChannelId == _channel.Id && msg.Content.ToLower() == "hp" &&
                     ((!_pot1used && msg.Author.Id == _p1.Id) || (!_pot2used && msg.Author.Id == _p2.Id))
                 , TimeSpan.FromSeconds(2)
             ).ConfigureAwait(false);
-            if (reply != null) {
-                if (reply.User.Id == _p1.Id && !_pot1used) {
+            if (mctx != null) {
+                if (mctx.User.Id == _p1.Id && !_pot1used) {
                     _hp1 = (_hp1 + 1 > 5) ? 5 : _hp1 + 1;
                     _pot1used = true;
-                    _events += $"\n{_p1.Username} {DiscordEmoji.FromName(_client, ":syringe:")}";
-                } else if (reply.User.Id == _p2.Id && !_pot2used) {
+                    _events.AppendLine($"{_p1.Username} {EmojiUtil.Syringe}");
+                } else if (mctx.User.Id == _p2.Id && !_pot2used) {
                     _hp2 = (_hp2 + 1 > 5) ? 5 : _hp2 + 1;
                     _pot2used = true;
-                    _events += $"\n{_p2.Username} {DiscordEmoji.FromName(_client, ":syringe:")}";
+                    _events.AppendLine($"{_p2.Username} {EmojiUtil.Syringe}");
                 }
             }
         }
 
-        private async Task<string> CheckForFinishingMoveAsync()
+        private async Task<string> WaitForFinishingMoveAsync()
         {
-            var interactivity = _client.GetInteractivity();
-            var reply = await interactivity.WaitForMessageAsync(
-                msg =>
-                    msg.ChannelId == _cid && msg.Author.Id == Winner.Id
-                , TimeSpan.FromSeconds(20)
+            var mctx = await _interactivity.WaitForMessageAsync(
+                m => m.ChannelId == _channel.Id && m.Author.Id == Winner.Id
             ).ConfigureAwait(false);
 
-            if (reply != null && !string.IsNullOrWhiteSpace(reply.Message?.Content))
-                return reply.Message.Content;
+            if (mctx != null && !string.IsNullOrWhiteSpace(mctx.Message?.Content))
+                return mctx.Message.Content.Trim();
             else
                 return null;
         }

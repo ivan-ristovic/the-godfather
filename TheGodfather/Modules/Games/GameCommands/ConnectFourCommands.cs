@@ -41,27 +41,29 @@ namespace TheGodfather.Modules.Games
 
                 var connect4 = new Connect4(ctx.Client.GetInteractivity(), ctx.Channel, ctx.User, opponent);
                 Game.RegisterGameInChannel(connect4, ctx.Channel.Id);
-                await connect4.StartAsync()
-                    .ConfigureAwait(false);
+                try {
+                    await connect4.StartAsync()
+                        .ConfigureAwait(false);
 
-                if (connect4.Winner != null) {
-                    await ctx.RespondAsync($"The winner is: {connect4.Winner.Mention}!")
-                        .ConfigureAwait(false);
-                    
-                    await DatabaseService.UpdateUserStatsAsync(connect4.Winner.Id, "chain4_won").ConfigureAwait(false);
-                    if (connect4.Winner.Id == ctx.User.Id)
-                        await DatabaseService.UpdateUserStatsAsync(opponent.Id, "chain4_lost").ConfigureAwait(false);
-                    else
-                        await DatabaseService.UpdateUserStatsAsync(ctx.User.Id, "chain4_lost").ConfigureAwait(false);
-                } else if (connect4.NoReply == false) {
-                    await ctx.RespondAsync("A draw... Pathetic...")
-                        .ConfigureAwait(false);
-                } else {
-                    await ctx.RespondAsync("No reply, aborting Connect4 game...")
-                        .ConfigureAwait(false);
+                    if (connect4.Winner != null) {
+                        await ctx.RespondAsync($"The winner is: {connect4.Winner.Mention}!")
+                            .ConfigureAwait(false);
+
+                        await DatabaseService.UpdateUserStatsAsync(connect4.Winner.Id, "chain4_won").ConfigureAwait(false);
+                        if (connect4.Winner.Id == ctx.User.Id)
+                            await DatabaseService.UpdateUserStatsAsync(opponent.Id, "chain4_lost").ConfigureAwait(false);
+                        else
+                            await DatabaseService.UpdateUserStatsAsync(ctx.User.Id, "chain4_lost").ConfigureAwait(false);
+                    } else if (connect4.NoReply == false) {
+                        await ctx.RespondAsync("A draw... Pathetic...")
+                            .ConfigureAwait(false);
+                    } else {
+                        await ctx.RespondAsync("No reply, aborting Connect4 game...")
+                            .ConfigureAwait(false);
+                    }
+                } finally {
+                    Game.UnregisterGameInChannel(ctx.Channel.Id);
                 }
-
-                Game.UnregisterGameInChannel(ctx.Channel.Id);
             }
         }
     }
