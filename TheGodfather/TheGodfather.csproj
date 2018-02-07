@@ -273,6 +273,7 @@
     <Compile Include="Entities\BotConfig.cs" />
     <Compile Include="Extensions\Collections\ConcurrentHashSet.cs" />
     <Compile Include="Modules\Administration\Common\EvaluationEnvironment.cs" />
+    <Compile Include="Modules\Games\GameCommands\ConnectFourCommands.cs" />
     <Compile Include="Modules\Games\GameCommands\CaroCommands.cs" />
     <Compile Include="Modules\GodfatherBaseModule.cs" />
     <Compile Include="Modules\Search\JokesModule.cs" />

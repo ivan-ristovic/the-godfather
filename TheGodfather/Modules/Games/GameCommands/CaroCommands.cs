@@ -18,7 +18,7 @@ namespace TheGodfather.Modules.Games
     public partial class GamesModule : GodfatherBaseModule
     {
         [Group("caro")]
-        [Description("Caro game commands.")]
+        [Description("Starts a \"Caro\" game. Play a move by writing a pair of numbers from 1 to 10 corresponding to the row and column where you wish to play.")]
         [Aliases("c")]
         public class CaroModule : GodfatherBaseModule
         {

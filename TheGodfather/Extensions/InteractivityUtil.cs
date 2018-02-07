@@ -69,11 +69,11 @@ namespace TheGodfather.Extensions
                     Embed = new DiscordEmbedBuilder() {
                         Title = $"{title} (page {i + 1}/{pagesnum + 1})",
                         Description = string.Join("\n", list.GetRange(start, count).Select(formatter)),
-                        Color = color != null ? color.Value : DiscordColor.Black
+                        Color = color ?? DiscordColor.Black
                     }.Build()
                 });
             }
-            await ctx.Client.GetInteractivity().SendPaginatedMessage(ctx.Channel, ctx.User, pages)
+            await ctx.Client.GetInteractivity().SendPaginatedMessage(ctx.Channel, ctx.User, pages, timeout)
                 .ConfigureAwait(false);
         }
     }
