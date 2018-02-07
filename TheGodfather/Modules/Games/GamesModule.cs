@@ -57,7 +57,7 @@ namespace TheGodfather.Modules.Games
             Game.RegisterGameInChannel(duel, ctx.Channel.Id);
 
             try {
-                await duel.StartAsync()
+                await duel.RunAsync()
                     .ConfigureAwait(false);
 
                 await ctx.RespondAsync($"{duel.Winner.Username} {duel.FinishingMove ?? "wins"}!")

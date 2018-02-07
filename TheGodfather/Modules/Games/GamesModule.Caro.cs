@@ -42,7 +42,7 @@ namespace TheGodfather.Modules.Games
                 var caro = new Caro(ctx.Client.GetInteractivity(), ctx.Channel, ctx.User, opponent);
                 Game.RegisterGameInChannel(caro, ctx.Channel.Id);
                 try {
-                    await caro.StartAsync()
+                    await caro.RunAsync()
                         .ConfigureAwait(false);
 
                     if (caro.Winner != null) {

@@ -46,7 +46,7 @@ namespace TheGodfather.Modules.Games
         }
         
 
-        public async Task StartAsync()
+        public async Task RunAsync()
         {
             UpdateHpBars();
             
