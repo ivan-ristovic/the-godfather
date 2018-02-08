@@ -231,7 +231,7 @@ namespace TheGodfather.Modules.Administration
                 emb.AddField("E-mail", user.Email, inline: true);
             if (user.Verified != null)
                 emb.AddField("Verified", user.Verified.Value.ToString(), inline: true);
-            if (!string.IsNullOrWhiteSpace(user.Presence.Activity.Name))
+            if (!string.IsNullOrWhiteSpace(user.Presence?.Activity?.Name))
                 emb.AddField("Activity", $"{user.Presence.Activity.ActivityType.ToString()} : {user.Presence.Activity.Name}", inline: false);
 
             await ctx.RespondAsync(embed: emb.Build())

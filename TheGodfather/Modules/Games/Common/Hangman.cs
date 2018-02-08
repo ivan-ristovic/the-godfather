@@ -1,102 +1,80 @@
 ﻿#region USING_DIRECTIVES
 using System;
 using System.Collections.Generic;
-using System.Collections.Concurrent;
-using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
-using TheGodfather.Extensions.Collections;
+using TheGodfather.Modules.Games.Common;
 
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
-using DSharpPlus.CommandsNext;
 #endregion
 
 namespace TheGodfather.Modules.Games
 {
-    public class Hangman
+    public class Hangman : Game
     {
-        #region STATIC_FIELDS
-        public static bool GameExistsInChannel(ulong cid) => _channels.Contains(cid);
-        private static ConcurrentHashSet<ulong> _channels = new ConcurrentHashSet<ulong>();
-        #endregion
-
-        #region PUBLIC_FIELDS
-        public DiscordUser Winner { get; private set; }
-        #endregion
-
         #region PRIVATE_FIELDS
-        private DiscordClient _client;
-        private ulong _cid;
+        private DiscordMessage _msg;
         private string _word;
         private char[] _hidden;
-        private DiscordMessage _msg;
         private int _lives = 6;
         private bool _gameOver = false;
         private List<char> _badguesses = new List<char>();
         #endregion
 
 
-        public Hangman(DiscordClient client, ulong cid, string word)
+        public Hangman(InteractivityExtension interactivity, DiscordChannel channel, string word)
+            : base(interactivity, channel)
         {
-            _client = client;
-            _cid = cid;
             _word = word.ToLower();
-            _hidden = word.Select(c => (c == ' ') ? '.' : '?').ToArray();
+            _hidden = new string('?', _word.Length).ToCharArray();
         }
-        
 
-        public async Task PlayAsync()
+
+        public async Task RunAsync()
         {
-            _channels.Add(_cid);
-            var channel = await _client.GetChannelAsync(_cid)
-                .ConfigureAwait(false);
-
-            _msg = await channel.SendMessageAsync("Game starts!")
+            _msg = await _channel.SendMessageAsync("Game starts!")
                 .ConfigureAwait(false);
 
             await UpdateHangmanAsync()
                 .ConfigureAwait(false);
-            while (!_gameOver && _lives > 0)
-                await AdvanceAsync().ConfigureAwait(false);
+            while (!_gameOver && _lives > 0) {
+                await AdvanceAsync()
+                    .ConfigureAwait(false);
+            }
 
-            await channel.SendMessageAsync("Game over! The word was: " + Formatter.Bold(_word))
+            await _channel.SendMessageAsync("Game over! The word was: " + Formatter.Bold(_word))
                 .ConfigureAwait(false);
-
-            _channels.TryRemove(_cid);
         }
 
         private async Task AdvanceAsync()
         {
-            var interactivity = _client.GetInteractivity();
-            var m = await interactivity.WaitForMessageAsync(
-                    xm => (xm.Channel.Id == _cid && 
+            var mctx = await _interactivity.WaitForMessageAsync(
+                    xm => (xm.Channel.Id == _channel.Id && 
                           !xm.Author.IsBot && 
                           xm.Content.Length == 1 && 
                           Char.IsLetterOrDigit(xm.Content[0]) &&
                           !_badguesses.Contains(xm.Content[0])) || xm.Content.ToLower() == _word
                     , TimeSpan.FromMinutes(1)
                 ).ConfigureAwait(false);
-            if (m == null) {
+            if (mctx == null) {
                 _gameOver = true;
                 return;
             }
 
-            if (m.Message.Content.ToLower() == _word) {
-                Winner = m.User;
+            if (mctx.Message.Content.ToLower() == _word) {
+                Winner = mctx.User;
                 _gameOver = true;
             }
 
-            char guess_char = Char.ToLower(m.Message.Content[0]);
+            char guess_char = Char.ToLower(mctx.Message.Content[0]);
             if (_word.IndexOf(guess_char) != -1) {
                 for (int i = 0; i < _word.Length; i++)
                     if (_word[i] == guess_char)
                         _hidden[i] = Char.ToUpper(_word[i]);
                 if (Array.IndexOf(_hidden, '?') == -1) {
-                    Winner = m.User;
+                    Winner = mctx.User;
                     _gameOver = true;
                 }
             } else {

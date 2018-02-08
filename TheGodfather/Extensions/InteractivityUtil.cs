@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using DSharpPlus.CommandsNext;
 
+using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
-
 
 namespace TheGodfather.Extensions
 {
@@ -75,6 +74,15 @@ namespace TheGodfather.Extensions
             }
             await ctx.Client.GetInteractivity().SendPaginatedMessage(ctx.Channel, ctx.User, pages, timeout)
                 .ConfigureAwait(false);
+        }
+
+        public static async Task<DiscordDmChannel> CreateDmChannelAsync(DiscordClient client, ulong uid)
+        {
+            var firstResult = client.Guilds.Values.SelectMany(e => e.Members).FirstOrDefault(e => e.Id == uid);
+            if (firstResult != null)
+                return await firstResult.CreateDmChannelAsync().ConfigureAwait(false);
+            else
+                return null;
         }
     }
 }

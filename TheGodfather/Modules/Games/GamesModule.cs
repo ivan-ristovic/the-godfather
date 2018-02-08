@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Attributes;
 using TheGodfather.Services;
 using TheGodfather.Exceptions;
+using TheGodfather.Extensions;
 using TheGodfather.Modules.Games.Common;
 
 using DSharpPlus;
@@ -33,6 +34,7 @@ namespace TheGodfather.Modules.Games
         [Command("duel")]
         [Description("Starts a duel which I will commentate.")]
         [Aliases("fight", "vs", "d")]
+        [UsageExample("!game duel @Someone")]
         public async Task DuelAsync(CommandContext ctx,
                                    [Description("Who to fight with?")] DiscordUser opponent)
         {
@@ -77,18 +79,20 @@ namespace TheGodfather.Modules.Games
         [Command("hangman")]
         [Description("Starts a hangman game.")]
         [Aliases("h", "hang")]
+        [UsageExample("!game hangman")]
         public async Task HangmanAsync(CommandContext ctx)
         {
-            if (Hangman.GameExistsInChannel(ctx.Channel.Id))
-                throw new CommandFailedException("Hangman game is already running in the current channel!");
+            if (Game.RunningInChannel(ctx.Channel.Id))
+                throw new CommandFailedException("Another game is already running in the current channel!");
 
-            var dm = await ctx.Services.GetService<TheGodfatherShard>().CreateDmChannelAsync(ctx.User.Id)
+            var dm = await InteractivityUtil.CreateDmChannelAsync(ctx.Client, ctx.User.Id)
                 .ConfigureAwait(false);
             if (dm == null)
                 throw new CommandFailedException("Please enable direct messages, so I can ask you about the word to guess.");
             await dm.SendMessageAsync("What is the secret word?")
                 .ConfigureAwait(false);
-            await ctx.RespondAsync(ctx.User.Mention + ", check your DM. When you give me the word, the game will start.");
+            await ctx.RespondAsync(ctx.User.Mention + ", check your DM. When you give me the word, the game will start.")
+                .ConfigureAwait(false);
 
             var interactivity = ctx.Client.GetInteractivity();
             var msg = await interactivity.WaitForMessageAsync(
@@ -104,12 +108,17 @@ namespace TheGodfather.Modules.Games
                     .ConfigureAwait(false);
             }
 
-            var hangman = new Hangman(ctx.Client, ctx.Channel.Id, msg.Message.Content);
-            await hangman.PlayAsync()
-                .ConfigureAwait(false);
-            if (hangman.Winner != null)
-                await ctx.Services.GetService<DatabaseService>().UpdateUserStatsAsync(hangman.Winner.Id, "hangman_won")
+            var hangman = new Hangman(ctx.Client.GetInteractivity(), ctx.Channel, msg.Message.Content);
+            Game.RegisterGameInChannel(hangman, ctx.Channel.Id);
+            try {
+                await hangman.RunAsync()
                     .ConfigureAwait(false);
+                if (hangman.Winner != null)
+                    await DatabaseService.UpdateUserStatsAsync(hangman.Winner.Id, "hangman_won")
+                        .ConfigureAwait(false);
+            } finally {
+                Game.UnregisterGameInChannel(ctx.Channel.Id);
+            }
         }
         #endregion
 

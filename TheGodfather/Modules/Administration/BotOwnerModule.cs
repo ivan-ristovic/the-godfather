@@ -425,7 +425,7 @@ namespace TheGodfather.Modules.Administration
                 throw new InvalidCommandUsageException();
 
             if (desc == "u") {
-                var dm = await ctx.Services.GetService<TheGodfatherShard>().CreateDmChannelAsync(xid)
+                var dm = await InteractivityUtil.CreateDmChannelAsync(ctx.Client, xid)
                     .ConfigureAwait(false);
                 if (dm == null)
                     throw new CommandFailedException("I can't talk to that user...");

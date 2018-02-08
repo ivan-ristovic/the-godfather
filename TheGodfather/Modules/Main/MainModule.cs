@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Attributes;
 using TheGodfather.Services;
 using TheGodfather.Exceptions;
+using TheGodfather.Extensions;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -237,7 +238,7 @@ namespace TheGodfather.Modules.Main
             ).ConfigureAwait(false);
             if (msg != null) {
                 ctx.Client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", $"Report from {ctx.User.Username} ({ctx.User.Id}): {issue}", DateTime.Now);
-                var dm = await ctx.Services.GetService<TheGodfatherShard>().CreateDmChannelAsync(ctx.Client.CurrentApplication.Owner.Id)
+                var dm = await InteractivityUtil.CreateDmChannelAsync(ctx.Client, ctx.Client.CurrentApplication.Owner.Id)
                     .ConfigureAwait(false);
                 if (dm == null)
                     throw new CommandFailedException("Owner has disabled DMs.");

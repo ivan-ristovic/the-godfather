@@ -76,6 +76,9 @@ namespace TheGodfather
                 .ConfigureAwait(false);
         }
 
+        public void Log(LogLevel level, string message)
+            => Client.DebugLogger.LogMessage(level, "TheGodfather", message, DateTime.Now);
+
 
         #region BOT_SETUP_FUNCTIONS
         private void SetupClient()
@@ -422,22 +425,6 @@ namespace TheGodfather
 
             await e.Context.RespondAsync(embed: emb.Build())
                 .ConfigureAwait(false);
-        }
-        #endregion
-
-        #region HELPER_FUNCTIONS
-        public void Log(LogLevel level, string message)
-        {
-            Client.DebugLogger.LogMessage(level, "TheGodfather", message, DateTime.Now);
-        }
-
-        public async Task<DiscordDmChannel> CreateDmChannelAsync(ulong uid)
-        {
-            var firstResult = Client.Guilds.Values.SelectMany(e => e.Members).FirstOrDefault(e => e.Id == uid);
-            if (firstResult != null)
-                return await firstResult.CreateDmChannelAsync().ConfigureAwait(false);
-            else
-                return null;
         }
         #endregion
     }
