@@ -135,7 +135,7 @@ namespace TheGodfather.Modules.Games
                 .ConfigureAwait(false);
         }
         #endregion
-
+        
         #region COMMAND_GAMES_RPS
         [Command("rps")]
         [Description("Rock, paper, scissors game against TheGodfather")]

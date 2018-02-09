@@ -7,6 +7,7 @@ using TheGodfather.Modules.Games.Common;
 using TheGodfather.Services;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
+using TheGodfather.Attributes;
 
 using DSharpPlus.Interactivity;
 using DSharpPlus.CommandsNext;
@@ -17,9 +18,10 @@ namespace TheGodfather.Modules.Games
 {
     public partial class GamesModule : GodfatherBaseModule
     {
-        [Group("connectfour")]
+        [Group("connect4")]
         [Description("Starts a \"Connect 4\" game. Play a move by writing a number from 1 to 9 corresponding to the column where you wish to insert your piece.")]
-        [Aliases("connect4", "chain4", "chainfour", "c4")]
+        [Aliases("connectfour", "chain4", "chainfour", "c4")]
+        [UsageExample("!game connect4")]
         public class ConnectFourModule : GodfatherBaseModule
         {
 
