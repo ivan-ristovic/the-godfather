@@ -197,39 +197,44 @@ namespace TheGodfather.Modules.Games
         [Command("tictactoe")]
         [Description("Starts a game of tic-tac-toe. Play by posting a number from 1 to 9 corresponding to field you wish to place your move on.")]
         [Aliases("ttt")]
+        [UsageExample("!game tictactoe")]
         public async Task TicTacToeAsync(CommandContext ctx)
         {
-            if (TicTacToe.GameExistsInChannel(ctx.Channel.Id))
-                throw new CommandFailedException("TicTacToe game is already running in the current channel!");
+            if (Game.RunningInChannel(ctx.Channel.Id))
+                throw new CommandFailedException("Another game is already running in the current channel!");
 
             await ctx.RespondAsync($"Who wants to play tic-tac-toe with {ctx.User.Username}?")
                 .ConfigureAwait(false);
-
-            var msg = await ctx.Client.GetInteractivity().WaitForMessageAsync(
-                xm => CheckIfValidOpponent(xm, ctx.User.Id, ctx.Channel.Id)
-            ).ConfigureAwait(false);
-            if (msg == null) {
-                await ctx.RespondAsync($"{ctx.User.Mention} right now: http://i0.kym-cdn.com/entries/icons/mobile/000/003/619/ForeverAlone.jpg")
-                    .ConfigureAwait(false);
-                return;
-            }
-
-            var ttt = new TicTacToe(ctx.Client, ctx.Channel.Id, ctx.User, msg.User);
-            await ttt.PlayAsync()
+            var opponent = await InteractivityUtil.WaitForGameOpponentAsync(ctx)
                 .ConfigureAwait(false);
+            if (opponent == null)
+                return;
 
-            if (ttt.Winner != null) {
-                var db = ctx.Services.GetService<DatabaseService>();
-                await ctx.RespondAsync($"The winner is: {ttt.Winner.Mention}!")
+            var ttt = new TicTacToe(ctx.Client.GetInteractivity(), ctx.Channel, ctx.User, opponent);
+            Game.RegisterGameInChannel(ttt, ctx.Channel.Id);
+            try {
+                await ttt.RunAsync()
                     .ConfigureAwait(false);
-                await db.UpdateUserStatsAsync(ttt.Winner.Id, "ttt_won").ConfigureAwait(false);
-                if (ttt.Winner.Id == ctx.User.Id)
-                    await db.UpdateUserStatsAsync(msg.User.Id, "ttt_lost").ConfigureAwait(false);
-                else
-                    await db.UpdateUserStatsAsync(ctx.User.Id, "ttt_lost").ConfigureAwait(false);
-            } else if (ttt.NoReply == false) {
-                await ctx.RespondAsync("A draw... Pathetic...")
-                    .ConfigureAwait(false);
+
+                if (ttt.Winner != null) {
+                    await ctx.RespondAsync($"The winner is: {ttt.Winner.Mention}!")
+                        .ConfigureAwait(false);
+
+                    await DatabaseService.UpdateUserStatsAsync(ttt.Winner.Id, "ttt_won")
+                        .ConfigureAwait(false);
+                    if (ttt.Winner.Id == ctx.User.Id)
+                        await DatabaseService.UpdateUserStatsAsync(opponent.Id, "ttt_lost").ConfigureAwait(false);
+                    else
+                        await DatabaseService.UpdateUserStatsAsync(ctx.User.Id, "ttt_lost").ConfigureAwait(false);
+                } else if (ttt.NoReply == false) {
+                    await ctx.RespondAsync("A draw... Pathetic...")
+                        .ConfigureAwait(false);
+                } else {
+                    await ctx.RespondAsync("No reply, aborting TicTacToe game...")
+                        .ConfigureAwait(false);
+                }
+            } finally {
+                Game.UnregisterGameInChannel(ctx.Channel.Id);
             }
         }
         #endregion
@@ -264,18 +269,6 @@ namespace TheGodfather.Modules.Games
                 await ctx.RespondAsync("ROFL what a nabs...")
                     .ConfigureAwait(false); ;
             }
-        }
-        #endregion
-
-
-        #region HELPER_COMMANDS
-        private bool CheckIfValidOpponent(DiscordMessage m, ulong uid, ulong cid)
-        {
-            if (m.Author.Id == uid || m.Channel.Id != cid)
-                return false;
-
-            var word = m.Content.ToLower().Split(' ')[0];
-            return word == "me" || word == "i";
         }
         #endregion
     }

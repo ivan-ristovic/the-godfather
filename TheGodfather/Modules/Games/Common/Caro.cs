@@ -108,15 +108,6 @@ namespace TheGodfather.Modules.Games.Common
             return false;
         }
 
-        protected override bool TryPlayMove(int val, int row, int col)
-        {
-            if (_board[row, col] != 0)
-                return false;
-
-            _board[row, col] = val;
-            return true;
-        }
-
         protected override async Task UpdateBoardAsync()
         {
             StringBuilder sb = new StringBuilder();

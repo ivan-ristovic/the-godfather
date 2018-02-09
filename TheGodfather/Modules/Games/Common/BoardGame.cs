@@ -49,11 +49,18 @@ namespace TheGodfather.Modules.Games.Common
             await UpdateBoardAsync()
                 .ConfigureAwait(false);
         }
+        
+        protected virtual bool TryPlayMove(int val, int row, int col)
+        {
+            if (_board[row, col] != 0)
+                return false;
+            _board[row, col] = val;
+            return true;
+        }
 
 
         protected abstract Task AdvanceAsync();
         protected abstract bool GameOver();
-        protected abstract bool TryPlayMove(int val, int row, int col);
         protected abstract Task UpdateBoardAsync();
     }
 }

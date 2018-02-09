@@ -59,7 +59,7 @@ namespace TheGodfather.Modules.Games
                         await ctx.RespondAsync("A draw... Pathetic...")
                             .ConfigureAwait(false);
                     } else {
-                        await ctx.RespondAsync("No reply, aborting caro game...")
+                        await ctx.RespondAsync("No reply, aborting Caro game...")
                             .ConfigureAwait(false);
                     }
                 } finally {
