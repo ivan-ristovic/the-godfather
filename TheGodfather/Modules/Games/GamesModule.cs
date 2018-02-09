@@ -124,11 +124,12 @@ namespace TheGodfather.Modules.Games
 
         #region COMMAND_GAMES_LEADERBOARD
         [Command("leaderboard")]
-        [Description("Starts a hangman game.")]
+        [Description("View the global game leaderboard.")]
         [Aliases("globalstats")]
+        [UsageExample("!game leaderboard")]
         public async Task LeaderboardAsync(CommandContext ctx)
         {
-            var em = await ctx.Services.GetService<DatabaseService>().GetStatsLeaderboardAsync(ctx.Client)
+            var em = await DatabaseService.GetStatsLeaderboardAsync(ctx.Client)
                 .ConfigureAwait(false);
             await ctx.RespondAsync(embed: em)
                 .ConfigureAwait(false);
@@ -137,50 +138,57 @@ namespace TheGodfather.Modules.Games
 
         #region COMMAND_GAMES_RPS
         [Command("rps")]
-        [Description("Rock, paper, scissors game.")]
+        [Description("Rock, paper, scissors game against TheGodfather")]
         [Aliases("rockpaperscissors")]
-        public async Task RpsAsync(CommandContext ctx)
+        [UsageExample("!game rps scissors")]
+        public async Task RpsAsync(CommandContext ctx,
+                                  [Description("rock/paper/scissors")] string rps)
         {
-            var msg = await ctx.RespondAsync("Get ready!")
-                .ConfigureAwait(false);
-            for (int i = 3; i > 0; i--) {
-                await msg.ModifyAsync(i + "...")
-                    .ConfigureAwait(false);
-                await Task.Delay(1000)
-                    .ConfigureAwait(false);
-            }
-            await msg.ModifyAsync("GO!")
-                .ConfigureAwait(false);
+            if (string.IsNullOrWhiteSpace(rps))
+                throw new CommandFailedException("Missing your pick!");
 
+            DiscordEmoji usre;
+            if (string.Compare(rps, "rock", true) == 0 || string.Compare(rps, "r", true) == 0)
+                usre = DiscordEmoji.FromName(ctx.Client, ":new_moon:");
+            else if (string.Compare(rps, "paper", true) == 0 || string.Compare(rps, "p", true) == 0)
+                usre = DiscordEmoji.FromName(ctx.Client, ":newspaper:");
+            else if (string.Compare(rps, "scissors", true) == 0 || string.Compare(rps, "s", true) == 0)
+                usre = DiscordEmoji.FromName(ctx.Client, ":scissors:");
+            else
+                throw new CommandFailedException("Invalid pick. Must be rock, paper or scissors.");
+
+            DiscordEmoji gfe;
             switch (new Random().Next(0, 3)) {
                 case 0:
-                    await ctx.RespondAsync($"{DiscordEmoji.FromName(ctx.Client, ":new_moon:")}")
-                        .ConfigureAwait(false);
+                    gfe = DiscordEmoji.FromName(ctx.Client, ":new_moon:");
                     break;
                 case 1:
-                    await ctx.RespondAsync($"{DiscordEmoji.FromName(ctx.Client, ":newspaper:")}")
-                        .ConfigureAwait(false);
+                    gfe = DiscordEmoji.FromName(ctx.Client, ":newspaper:");
                     break;
-                case 2:
-                    await ctx.RespondAsync($"{DiscordEmoji.FromName(ctx.Client, ":scissors:")}")
-                        .ConfigureAwait(false);
+                default:
+                    gfe = DiscordEmoji.FromName(ctx.Client, ":scissors:");
                     break;
             }
+            await ReplySuccessAsync(ctx, $"{ctx.User.Mention} {usre} {gfe} {ctx.Client.CurrentUser.Mention}", null)
+                 .ConfigureAwait(false);
         }
         #endregion
 
         #region COMMAND_GAMES_STATS
         [Command("stats")]
         [Description("Print game stats for given user.")]
+        [Aliases("s", "st")]
+        [UsageExample("!game stats")]
+        [UsageExample("!game stats @Someone")]
         public async Task StatsAsync(CommandContext ctx,
-                                    [Description("User.")] DiscordUser u = null)
+                                    [Description("User.")] DiscordUser user = null)
         {
-            if (u == null)
-                u = ctx.User;
+            if (user == null)
+                user = ctx.User;
 
-            var e = await ctx.Services.GetService<DatabaseService>().GetEmbeddedStatsForUserAsync(u)
+            var em = await DatabaseService.GetEmbeddedStatsForUserAsync(user)
                 .ConfigureAwait(false);
-            await ctx.RespondAsync(embed: e)
+            await ctx.RespondAsync(embed: em)
                 .ConfigureAwait(false);
         }
         #endregion
