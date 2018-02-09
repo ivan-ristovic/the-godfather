@@ -261,6 +261,7 @@
     <Compile Include="Modules\Gambling\GambleModule.Dice.cs" />
     <Compile Include="Modules\Gambling\GambleModule.Slot.cs" />
     <Compile Include="Modules\Games\Common\BoardGame.cs" />
+    <Compile Include="Modules\Games\Common\Othello.cs" />
     <Compile Include="Modules\Games\Common\Caro.cs" />
     <Compile Include="Modules\Games\Common\Connect4.cs" />
     <Compile Include="Modules\Games\Common\Game.cs" />
@@ -275,6 +276,7 @@
     <Compile Include="Entities\BotConfig.cs" />
     <Compile Include="Extensions\Collections\ConcurrentHashSet.cs" />
     <Compile Include="Modules\Administration\Common\EvaluationEnvironment.cs" />
+    <Compile Include="Modules\Games\GamesModule.Othello.cs" />
     <Compile Include="Modules\Games\GamesModule.TicTacToe.cs" />
     <Compile Include="Modules\Games\GamesModule.ConnectFour.cs" />
     <Compile Include="Modules\Games\GamesModule.Caro.cs" />

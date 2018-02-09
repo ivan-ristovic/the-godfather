@@ -34,7 +34,7 @@ namespace TheGodfather.Modules.Games
                 if (Game.RunningInChannel(ctx.Channel.Id))
                     throw new CommandFailedException("Another game is already running in the current channel!");
 
-                await ctx.RespondAsync($"Who wants to play tic-tac-toe with {ctx.User.Username}?")
+                await ctx.RespondAsync($"Who wants to play Tic-Tac-Toe with {ctx.User.Username}?")
                     .ConfigureAwait(false);
                 var opponent = await InteractivityUtil.WaitForGameOpponentAsync(ctx)
                     .ConfigureAwait(false);
