@@ -34,10 +34,10 @@
 
 (optional) `[user]` : *User.* (def: `None`)
 
-__**Examples:**__
-
-`!bank balance @Someone`
-
+**Examples:**
+```
+!bank balance @Someone
+```
 ---
 
 ### bank grant
@@ -62,12 +62,11 @@ __**Examples:**__
 
 `[user]` : *User.*
 
-__**Examples:**__
-
-`!bank grant @Someone 1000`
-
-`!bank grant 1000 @Someone`
-
+**Examples:**
+```
+!bank grant @Someone 1000
+!bank grant 1000 @Someone
+```
 ---
 
 ### bank register
@@ -77,10 +76,10 @@ __**Examples:**__
 `r, signup, activate`
 
 
-__**Examples:**__
-
-`!bank register`
-
+**Examples:**
+```
+!bank register
+```
 ---
 
 ### bank top
@@ -90,10 +89,10 @@ __**Examples:**__
 `leaderboard, elite`
 
 
-__**Examples:**__
-
-`!bank top`
-
+**Examples:**
+```
+!bank top
+```
 ---
 
 ### bank transfer
@@ -115,12 +114,11 @@ __**Examples:**__
 
 `[user]` : *User to send credits to.*
 
-__**Examples:**__
-
-`!bank transfer @Someone 40`
-
-`!bank transfer 40 @Someone`
-
+**Examples:**
+```
+!bank transfer @Someone 40
+!bank transfer 40 @Someone
+```
 ---
 
 ## cards
@@ -143,10 +141,10 @@ __**Examples:**__
 
 (optional) `[int]` : *Amount (in range [1-10]).* (def: `1`)
 
-__**Examples:**__
-
-`!deck draw 5`
-
+**Examples:**
+```
+!deck draw 5
+```
 ---
 
 ### cards reset
@@ -156,10 +154,10 @@ __**Examples:**__
 `new, opennew, open`
 
 
-__**Examples:**__
-
-`!deck draw 5`
-
+**Examples:**
+```
+!deck draw 5
+```
 ---
 
 ### cards shuffle
@@ -169,10 +167,10 @@ __**Examples:**__
 `s, sh, mix`
 
 
-__**Examples:**__
-
-`!deck shuffle`
-
+**Examples:**
+```
+!deck shuffle
+```
 ---
 
 ### channel createcategory
@@ -189,10 +187,10 @@ __**Examples:**__
 
 `[string...]` : *Name.*
 
-__**Examples:**__
-
-`!channel createcategory My New Category`
-
+**Examples:**
+```
+!channel createcategory My New Category
+```
 ---
 
 ### channel createtext
@@ -229,14 +227,12 @@ __**Examples:**__
 
 (optional) `[boolean]` : *NSFW?* (def: `False`)
 
-__**Examples:**__
-
-`!channel createtext newtextchannel ParentCategory no`
-
-`!channel createtext newtextchannel no`
-
-`!channel createtext ParentCategory newtextchannel`
-
+**Examples:**
+```
+!channel createtext newtextchannel ParentCategory no
+!channel createtext newtextchannel no
+!channel createtext ParentCategory newtextchannel
+```
 ---
 
 ### channel createvoice
@@ -279,14 +275,12 @@ __**Examples:**__
 
 (optional) `[int]` : *Bitrate.* (def: `None`)
 
-__**Examples:**__
-
-`!channel createtext "My voice channel" ParentCategory 0 96000`
-
-`!channel createtext "My voice channel" 10 96000`
-
-`!channel createtext ParentCategory "My voice channel" 10 96000`
-
+**Examples:**
+```
+!channel createtext "My voice channel" ParentCategory 0 96000
+!channel createtext "My voice channel" 10 96000
+!channel createtext ParentCategory "My voice channel" 10 96000
+```
 ---
 
 ### channel delete
@@ -309,14 +303,12 @@ __**Examples:**__
 
 `[string...]` : *Reason.*
 
-__**Examples:**__
-
-`!channel delete`
-
-`!channel delete "My voice channel"`
-
-`!channel delete "My voice channel" Because I can!`
-
+**Examples:**
+```
+!channel delete
+!channel delete "My voice channel"
+!channel delete "My voice channel" Because I can!
+```
 ---
 
 ### channel info
@@ -333,12 +325,11 @@ __**Examples:**__
 
 (optional) `[channel]` : *Channel.* (def: `None`)
 
-__**Examples:**__
-
-`!channel info`
-
-`!channel info "My voice channel"`
-
+**Examples:**
+```
+!channel info
+!channel info "My voice channel"
+```
 ---
 
 ### channel modify
@@ -369,10 +360,10 @@ __**Examples:**__
 
 (optional) `[string...]` : *Reason.* (def: `None`)
 
-__**Examples:**__
-
-`!channel modify "My voice channel" 20 96000 Some reason`
-
+**Examples:**
+```
+!channel modify "My voice channel" 20 96000 Some reason
+```
 ---
 
 ### channel rename
@@ -403,14 +394,12 @@ __**Examples:**__
 
 `[string...]` : *New name.*
 
-__**Examples:**__
-
-`!channel rename New name for this channel`
-
-`!channel rename "My voice channel" "My old voice channel"`
-
-`!channel rename "My reason" "My voice channel" "My old voice channel"`
-
+**Examples:**
+```
+!channel rename New name for this channel
+!channel rename "My voice channel" "My old voice channel"
+!channel rename "My reason" "My voice channel" "My old voice channel"
+```
 ---
 
 ### channel setparent
@@ -437,12 +426,11 @@ __**Examples:**__
 
 (optional) `[string...]` : *Reason.* (def: `None`)
 
-__**Examples:**__
-
-`!channel setparent "My channel" ParentCategory`
-
-`!channel setparent ParentCategory I set a new parent for this channel!`
-
+**Examples:**
+```
+!channel setparent "My channel" ParentCategory
+!channel setparent ParentCategory I set a new parent for this channel!
+```
 ---
 
 ### channel setposition
@@ -477,14 +465,12 @@ __**Examples:**__
 
 (optional) `[string...]` : *Reason.* (def: `None`)
 
-__**Examples:**__
-
-`!channel setposition 4`
-
-`!channel setposition "My channel" 1`
-
-`!channel setposition "My channel" 4 I changed position :)`
-
+**Examples:**
+```
+!channel setposition 4
+!channel setposition "My channel" 1
+!channel setposition "My channel" 4 I changed position :)
+```
 ---
 
 ### channel settopic
@@ -515,12 +501,11 @@ __**Examples:**__
 
 `[string...]` : *New Topic.*
 
-__**Examples:**__
-
-`!channel settopic New channel topic`
-
-`!channel settopic "My channel" New channel topic`
-
+**Examples:**
+```
+!channel settopic New channel topic
+!channel settopic "My channel" New channel topic
+```
 ---
 
 ### channel viewperms
@@ -554,16 +539,13 @@ __**Examples:**__
 
 `[role]` : *Role.*
 
-__**Examples:**__
-
-`!channel viewperms @Someone`
-
-`!channel viewperms Admins`
-
-`!channel viewperms #private everyone`
-
-`!channel viewperms everyone #private`
-
+**Examples:**
+```
+!channel viewperms @Someone
+!channel viewperms Admins
+!channel viewperms #private everyone
+!channel viewperms everyone #private
+```
 ---
 
 ## coinflip
@@ -627,10 +609,10 @@ __**Examples:**__
 `emojis, e`
 
 
-__**Examples:**__
-
-`!emoji`
-
+**Examples:**
+```
+!emoji
+```
 ---
 
 ### emoji add
@@ -649,10 +631,10 @@ __**Examples:**__
 
 `[string]` : *URL.*
 
-__**Examples:**__
-
-`!emoji add pepe http://i0.kym-cdn.com/photos/images/facebook/000/862/065/0e9.jpg`
-
+**Examples:**
+```
+!emoji add pepe http://i0.kym-cdn.com/photos/images/facebook/000/862/065/0e9.jpg
+```
 ---
 
 ### emoji delete
@@ -669,10 +651,10 @@ __**Examples:**__
 
 `[emoji]` : *Emoji to delete.*
 
-__**Examples:**__
-
-`!emoji delete pepe`
-
+**Examples:**
+```
+!emoji delete pepe
+```
 ---
 
 ### emoji details
@@ -686,10 +668,10 @@ __**Examples:**__
 
 `[emoji]` : *Emoji.*
 
-__**Examples:**__
-
-`!emoji details pepe`
-
+**Examples:**
+```
+!emoji details pepe
+```
 ---
 
 ### emoji list
@@ -699,10 +681,10 @@ __**Examples:**__
 `print, show, l, p`
 
 
-__**Examples:**__
-
-`!emoji list`
-
+**Examples:**
+```
+!emoji list
+```
 ---
 
 ### emoji modify
@@ -727,12 +709,11 @@ __**Examples:**__
 
 `[emoji]` : *Emoji.*
 
-__**Examples:**__
-
-`!emoji modify :pepe: newname`
-
-`!emoji modify newname :pepe:`
-
+**Examples:**
+```
+!emoji modify :pepe: newname
+!emoji modify newname :pepe:
+```
 ---
 
 ## emojireaction
@@ -885,12 +866,11 @@ __**Examples:**__
 
 `[int]` : *Bid.*
 
-__**Examples:**__
-
-`!bet coinflip 10 heads`
-
-`!bet coinflip tails 20`
-
+**Examples:**
+```
+!bet coinflip 10 heads
+!bet coinflip tails 20
+```
 ---
 
 ### gamble dice
@@ -912,12 +892,11 @@ __**Examples:**__
 
 `[int]` : *Bid.*
 
-__**Examples:**__
-
-`!dice 50 six`
-
-`!dice three 10`
-
+**Examples:**
+```
+!dice 50 six
+!dice three 10
+```
 ---
 
 ### gamble slot
@@ -931,10 +910,10 @@ __**Examples:**__
 
 (optional) `[int]` : *Bid.* (def: `5`)
 
-__**Examples:**__
-
-`!gamble slot 20`
-
+**Examples:**
+```
+!gamble slot 20
+```
 ---
 
 ## game caro
@@ -944,10 +923,10 @@ __**Examples:**__
 `c`
 
 
-__**Examples:**__
-
-`!game caro`
-
+**Examples:**
+```
+!game caro
+```
 ---
 
 ## game connect4
@@ -957,10 +936,10 @@ __**Examples:**__
 `connectfour, chain4, chainfour, c4`
 
 
-__**Examples:**__
-
-`!game connect4`
-
+**Examples:**
+```
+!game connect4
+```
 ---
 
 ### game duel
@@ -974,10 +953,10 @@ __**Examples:**__
 
 `[user]` : *Who to fight with?*
 
-__**Examples:**__
-
-`!game duel @Someone`
-
+**Examples:**
+```
+!game duel @Someone
+```
 ---
 
 ### game hangman
@@ -987,10 +966,10 @@ __**Examples:**__
 `h, hang`
 
 
-__**Examples:**__
-
-`!game hangman`
-
+**Examples:**
+```
+!game hangman
+```
 ---
 
 ### game leaderboard
@@ -1000,10 +979,10 @@ __**Examples:**__
 `globalstats`
 
 
-__**Examples:**__
-
-`!game leaderboard`
-
+**Examples:**
+```
+!game leaderboard
+```
 ---
 
 ## game nunchi
@@ -1040,10 +1019,10 @@ __**Examples:**__
 `reversi, oth, rev`
 
 
-__**Examples:**__
-
-`!game othello`
-
+**Examples:**
+```
+!game othello
+```
 ---
 
 ### game quiz countries
@@ -1084,10 +1063,10 @@ __**Examples:**__
 
 `[string]` : *rock/paper/scissors*
 
-__**Examples:**__
-
-`!game rps scissors`
-
+**Examples:**
+```
+!game rps scissors
+```
 ---
 
 ### game stats
@@ -1101,12 +1080,11 @@ __**Examples:**__
 
 (optional) `[user]` : *User.* (def: `None`)
 
-__**Examples:**__
-
-`!game stats`
-
-`!game stats @Someone`
-
+**Examples:**
+```
+!game stats
+!game stats @Someone
+```
 ---
 
 ### game tictactoe
@@ -1116,10 +1094,10 @@ __**Examples:**__
 `ttt`
 
 
-__**Examples:**__
-
-`!game tictactoe`
-
+**Examples:**
+```
+!game tictactoe
+```
 ---
 
 ## game tictactoe
@@ -1129,10 +1107,10 @@ __**Examples:**__
 `ttt`
 
 
-__**Examples:**__
-
-`!game tictactoe`
-
+**Examples:**
+```
+!game tictactoe
+```
 ---
 
 ### game typing
@@ -1198,10 +1176,10 @@ __**Examples:**__
 `banlist, viewbanlist, getbanlist, getbans, viewbans`
 
 
-__**Examples:**__
-
-`!guild banlist`
-
+**Examples:**
+```
+!guild banlist
+```
 ---
 
 ### guild deleteleavechannel
@@ -1214,10 +1192,10 @@ __**Examples:**__
 `delleavec, dellc, delleave, dlc`
 
 
-__**Examples:**__
-
-`!guild deletewelcomechannel`
-
+**Examples:**
+```
+!guild deletewelcomechannel
+```
 ---
 
 ### guild deletewelcomechannel
@@ -1230,10 +1208,10 @@ __**Examples:**__
 `delwelcomec, delwc, delwelcome, dwc, deletewc`
 
 
-__**Examples:**__
-
-`!guild deletewelcomechannel`
-
+**Examples:**
+```
+!guild deletewelcomechannel
+```
 ---
 
 ### guild getleavechannel
@@ -1246,10 +1224,10 @@ __**Examples:**__
 `getleavec, getlc, getleave, leavechannel, lc`
 
 
-__**Examples:**__
-
-`!guild getleavechannel`
-
+**Examples:**
+```
+!guild getleavechannel
+```
 ---
 
 ### guild getwelcomechannel
@@ -1262,10 +1240,10 @@ __**Examples:**__
 `getwelcomec, getwc, getwelcome, welcomechannel, wc`
 
 
-__**Examples:**__
-
-`!guild getwelcomechannel`
-
+**Examples:**
+```
+!guild getwelcomechannel
+```
 ---
 
 ### guild info
@@ -1275,10 +1253,10 @@ __**Examples:**__
 `i, information`
 
 
-__**Examples:**__
-
-`!guild info`
-
+**Examples:**
+```
+!guild info
+```
 ---
 
 ### guild listmembers
@@ -1288,10 +1266,10 @@ __**Examples:**__
 `memberlist, lm, members`
 
 
-__**Examples:**__
-
-`!guild memberlist`
-
+**Examples:**
+```
+!guild memberlist
+```
 ---
 
 ### guild log
@@ -1304,10 +1282,10 @@ __**Examples:**__
 `auditlog, viewlog, getlog, getlogs, logs`
 
 
-__**Examples:**__
-
-`!guild logs`
-
+**Examples:**
+```
+!guild logs
+```
 ---
 
 ### guild prune
@@ -1329,10 +1307,10 @@ __**Examples:**__
 
 (optional) `[string...]` : *Reason.* (def: `None`)
 
-__**Examples:**__
-
-`!guild prune 5 Kicking inactives..`
-
+**Examples:**
+```
+!guild prune 5 Kicking inactives..
+```
 ---
 
 ### guild rename
@@ -1355,12 +1333,11 @@ __**Examples:**__
 
 `[string...]` : *New name.*
 
-__**Examples:**__
-
-`!guild rename New guild name`
-
-`!guild rename "Reason for renaming" New guild name`
-
+**Examples:**
+```
+!guild rename New guild name
+!guild rename "Reason for renaming" New guild name
+```
 ---
 
 ### guild seticon
@@ -1377,10 +1354,10 @@ __**Examples:**__
 
 `[string]` : *New icon URL.*
 
-__**Examples:**__
-
-`!guild seticon http://imgur.com/someimage.png`
-
+**Examples:**
+```
+!guild seticon http://imgur.com/someimage.png
+```
 ---
 
 ### guild setleavechannel
@@ -1397,12 +1374,11 @@ __**Examples:**__
 
 (optional) `[channel]` : *Channel.* (def: `None`)
 
-__**Examples:**__
-
-`!guild setleavechannel`
-
-`!guild setleavechannel #bb`
-
+**Examples:**
+```
+!guild setleavechannel
+!guild setleavechannel #bb
+```
 ---
 
 ### guild setwelcomechannel
@@ -1419,12 +1395,11 @@ __**Examples:**__
 
 (optional) `[channel]` : *Channel.* (def: `None`)
 
-__**Examples:**__
-
-`!guild setwelcomechannel`
-
-`!guild setwelcomechannel #welcome`
-
+**Examples:**
+```
+!guild setwelcomechannel
+!guild setwelcomechannel #welcome
+```
 ---
 
 ## help
@@ -1696,12 +1671,11 @@ __**Examples:**__
 
 (optional) `[unsigned long]` : *Message ID.* (def: `0`)
 
-__**Examples:**__
-
-`!message attachments`
-
-`!message attachments 408226948855234561`
-
+**Examples:**
+```
+!message attachments
+!message attachments 408226948855234561
+```
 ---
 
 ### message delete
@@ -1723,12 +1697,11 @@ __**Examples:**__
 
 (optional) `[string...]` : *Reason.* (def: `None`)
 
-__**Examples:**__
-
-`!messages delete 10`
-
-`!messages delete 10 Cleaning spam`
-
+**Examples:**
+```
+!messages delete 10
+!messages delete 10 Cleaning spam
+```
 ---
 
 ### message deletefrom
@@ -1760,12 +1733,11 @@ __**Examples:**__
 
 (optional) `[string...]` : *Reason.* (def: `None`)
 
-__**Examples:**__
-
-`!messages deletefrom @Someone 10 Cleaning spam`
-
-`!messages deletefrom 10 @Someone Cleaning spam`
-
+**Examples:**
+```
+!messages deletefrom @Someone 10 Cleaning spam
+!messages deletefrom 10 @Someone Cleaning spam
+```
 ---
 
 ### message deletereactions
@@ -1787,10 +1759,10 @@ __**Examples:**__
 
 (optional) `[string...]` : *Reason.* (def: `None`)
 
-__**Examples:**__
-
-`!messages deletereactions 408226948855234561`
-
+**Examples:**
+```
+!messages deletereactions 408226948855234561
+```
 ---
 
 ### message deleteregex
@@ -1822,12 +1794,11 @@ __**Examples:**__
 
 (optional) `[string...]` : *Reason.* (def: `None`)
 
-__**Examples:**__
-
-`!messages deletefrom s+p+a+m+ 10 Cleaning spam`
-
-`!messages deletefrom 10 s+p+a+m+ Cleaning spam`
-
+**Examples:**
+```
+!messages deletefrom s+p+a+m+ 10 Cleaning spam
+!messages deletefrom 10 s+p+a+m+ Cleaning spam
+```
 ---
 
 ### message listpinned
@@ -1837,10 +1808,10 @@ __**Examples:**__
 `lp, listpins, listpin, pinned`
 
 
-__**Examples:**__
-
-`!messages listpinned`
-
+**Examples:**
+```
+!messages listpinned
+```
 ---
 
 ### message modify
@@ -1859,10 +1830,10 @@ __**Examples:**__
 
 `[string...]` : *New content.*
 
-__**Examples:**__
-
-`!messages modify 408226948855234561 modified text`
-
+**Examples:**
+```
+!messages modify 408226948855234561 modified text
+```
 ---
 
 ### message pin
@@ -1879,12 +1850,11 @@ __**Examples:**__
 
 (optional) `[unsigned long]` : *ID.* (def: `0`)
 
-__**Examples:**__
-
-`!messages pin`
-
-`!messages pin 408226948855234561`
-
+**Examples:**
+```
+!messages pin
+!messages pin 408226948855234561
+```
 ---
 
 ### message unpin
@@ -1901,12 +1871,11 @@ __**Examples:**__
 
 (optional) `[int]` : *Index (starting from 1).* (def: `1`)
 
-__**Examples:**__
-
-`!messages unpin`
-
-`!messages unpin 10`
-
+**Examples:**
+```
+!messages unpin
+!messages unpin 10
+```
 ---
 
 ### message unpinall
@@ -1919,10 +1888,10 @@ __**Examples:**__
 `upa`
 
 
-__**Examples:**__
-
-`!messages unpinall`
-
+**Examples:**
+```
+!messages unpinall
+```
 ---
 
 ### owner botavatar
@@ -1938,10 +1907,10 @@ __**Examples:**__
 
 `[string]` : *URL.*
 
-__**Examples:**__
-
-`!owner botavatar http://someimage.png`
-
+**Examples:**
+```
+!owner botavatar http://someimage.png
+```
 ---
 
 ### owner botname
@@ -1957,10 +1926,10 @@ __**Examples:**__
 
 `[string...]` : *New name.*
 
-__**Examples:**__
-
-`!owner setname TheBotfather`
-
+**Examples:**
+```
+!owner setname TheBotfather
+```
 ---
 
 ### owner clearlog
@@ -1972,10 +1941,10 @@ __**Examples:**__
 `clearlogs, deletelogs, deletelog`
 
 
-__**Examples:**__
-
-`!owner clearlog`
-
+**Examples:**
+```
+!owner clearlog
+```
 ---
 
 ### owner dbquery
@@ -1991,10 +1960,10 @@ __**Examples:**__
 
 `[string...]` : *SQL Query.*
 
-__**Examples:**__
-
-`!owner dbquery SELECT * FROM gf.msgcount;`
-
+**Examples:**
+```
+!owner dbquery SELECT * FROM gf.msgcount;
+```
 ---
 
 ### owner eval
@@ -2010,10 +1979,10 @@ __**Examples:**__
 
 `[string...]` : *Code to evaluate.*
 
-__**Examples:**__
-
-`!owner eval ```await Context.RespondAsync("Hello!");````
-
+**Examples:**
+```
+!owner eval ```await Context.RespondAsync("Hello!");```
+```
 ---
 
 ### owner generatecommandlist
@@ -2029,12 +1998,11 @@ __**Examples:**__
 
 (optional) `[string...]` : *File path.* (def: `None`)
 
-__**Examples:**__
-
-`!owner generatecommandlist`
-
-`!owner generatecommandlist Temp/blabla.md`
-
+**Examples:**
+```
+!owner generatecommandlist
+!owner generatecommandlist Temp/blabla.md
+```
 ---
 
 ### owner leaveguilds
@@ -2050,12 +2018,11 @@ __**Examples:**__
 
 `[unsigned long...]` : *Guild ID list.*
 
-__**Examples:**__
-
-`!owner leave 337570344149975050`
-
-`!owner leave 337570344149975050 201315884709576708`
-
+**Examples:**
+```
+!owner leave 337570344149975050
+!owner leave 337570344149975050 201315884709576708
+```
 ---
 
 ### owner sendmessage
@@ -2075,12 +2042,11 @@ __**Examples:**__
 
 `[string...]` : *Message.*
 
-__**Examples:**__
-
-`!owner send u 303463460233150464 Hi to user!`
-
-`!owner send c 120233460278590414 Hi to channel!`
-
+**Examples:**
+```
+!owner send u 303463460233150464 Hi to user!
+!owner send c 120233460278590414 Hi to channel!
+```
 ---
 
 ### owner shutdown
@@ -2092,10 +2058,10 @@ __**Examples:**__
 `disable, poweroff, exit, quit`
 
 
-__**Examples:**__
-
-`!owner shutdown`
-
+**Examples:**
+```
+!owner shutdown
+```
 ---
 
 ### owner statuses add
@@ -2111,12 +2077,11 @@ __**Examples:**__
 
 `[string...]` : *Status.*
 
-__**Examples:**__
-
-`!owner status add Playing CS:GO`
-
-`!owner status add Streaming on Twitch`
-
+**Examples:**
+```
+!owner status add Playing CS:GO
+!owner status add Streaming on Twitch
+```
 ---
 
 ### owner statuses delete
@@ -2130,10 +2095,10 @@ __**Examples:**__
 
 `[int]` : *Status ID.*
 
-__**Examples:**__
-
-`!owner status delete Playing CS:GO`
-
+**Examples:**
+```
+!owner status delete Playing CS:GO
+```
 ---
 
 ### owner statuses list
@@ -2143,10 +2108,10 @@ __**Examples:**__
 `ls`
 
 
-__**Examples:**__
-
-`!owner status list`
-
+**Examples:**
+```
+!owner status list
+```
 ---
 
 ### owner sudo
@@ -2164,10 +2129,10 @@ __**Examples:**__
 
 `[string...]` : *Command text to execute.*
 
-__**Examples:**__
-
-`!owner sudo @Someone !rate`
-
+**Examples:**
+```
+!owner sudo @Someone !rate
+```
 ---
 
 ### owner toggleignore
@@ -2179,10 +2144,10 @@ __**Examples:**__
 `ti`
 
 
-__**Examples:**__
-
-`!owner toggleignore`
-
+**Examples:**
+```
+!owner toggleignore
+```
 ---
 
 ## penis
@@ -2416,14 +2381,12 @@ __**Examples:**__
 
 `[string...]` : *Name.*
 
-__**Examples:**__
-
-`!roles create "My role" #C77B0F no no`
-
-`!roles create `
-
-`!roles create #C77B0F My new role`
-
+**Examples:**
+```
+!roles create "My role" #C77B0F no no
+!roles create 
+!roles create #C77B0F My new role
+```
 ---
 
 ### roles delete
@@ -2442,12 +2405,11 @@ __**Examples:**__
 
 (optional) `[string...]` : *Reason.* (def: `None`)
 
-__**Examples:**__
-
-`!role delete My role`
-
-`!role delete @admins`
-
+**Examples:**
+```
+!role delete My role
+!role delete @admins
+```
 ---
 
 ### roles info
@@ -2464,10 +2426,10 @@ __**Examples:**__
 
 `[role]` : *Role.*
 
-__**Examples:**__
-
-`!role info Admins`
-
+**Examples:**
+```
+!role info Admins
+```
 ---
 
 ### roles mentionall
@@ -2484,10 +2446,10 @@ __**Examples:**__
 
 `[role]` : *Role.*
 
-__**Examples:**__
-
-`!role mentionall Admins`
-
+**Examples:**
+```
+!role mentionall Admins
+```
 ---
 
 ### roles setcolor
@@ -2512,12 +2474,11 @@ __**Examples:**__
 
 `[role]` : *Role.*
 
-__**Examples:**__
-
-`!role setcolor #FF0000 Admins`
-
-`!role setcolor Admins #FF0000`
-
+**Examples:**
+```
+!role setcolor #FF0000 Admins
+!role setcolor Admins #FF0000
+```
 ---
 
 ### roles setmentionable
@@ -2542,14 +2503,12 @@ __**Examples:**__
 
 `[role]` : *Role.*
 
-__**Examples:**__
-
-`!role setmentionable Admins`
-
-`!role setmentionable Admins false`
-
-`!role setmentionable false Admins`
-
+**Examples:**
+```
+!role setmentionable Admins
+!role setmentionable Admins false
+!role setmentionable false Admins
+```
 ---
 
 ### roles setname
@@ -2574,12 +2533,11 @@ __**Examples:**__
 
 `[role]` : *Role.*
 
-__**Examples:**__
-
-`!role setname @Admins Administrators`
-
-`!role setname Administrators @Admins`
-
+**Examples:**
+```
+!role setname @Admins Administrators
+!role setname Administrators @Admins
+```
 ---
 
 ### roles setvisible
@@ -2604,14 +2562,12 @@ __**Examples:**__
 
 `[role]` : *Role.*
 
-__**Examples:**__
-
-`!role setvisible Admins`
-
-`!role setvisible Admins false`
-
-`!role setvisible false Admins`
-
+**Examples:**
+```
+!role setvisible Admins
+!role setvisible Admins false
+!role setvisible false Admins
+```
 ---
 
 ## rss
@@ -3033,12 +2989,11 @@ __**Examples:**__
 
 `[member]` : *Member.*
 
-__**Examples:**__
-
-`!user addrole @User Admins`
-
-`!user addrole Admins @User`
-
+**Examples:**
+```
+!user addrole @User Admins
+!user addrole Admins @User
+```
 ---
 
 ### user avatar
@@ -3052,10 +3007,10 @@ __**Examples:**__
 
 `[user]` : *User.*
 
-__**Examples:**__
-
-`!user avatar @Someone`
-
+**Examples:**
+```
+!user avatar @Someone
+```
 ---
 
 ### user ban
@@ -3074,12 +3029,11 @@ __**Examples:**__
 
 (optional) `[string...]` : *Reason.* (def: `None`)
 
-__**Examples:**__
-
-`!user ban @Someone`
-
-`!user ban @Someone Troublemaker`
-
+**Examples:**
+```
+!user ban @Someone
+!user ban @Someone Troublemaker
+```
 ---
 
 ### user banid
@@ -3098,12 +3052,11 @@ __**Examples:**__
 
 (optional) `[string...]` : *Reason.* (def: `None`)
 
-__**Examples:**__
-
-`!user banid 154956794490845232`
-
-`!user banid 154558794490846232 Troublemaker`
-
+**Examples:**
+```
+!user banid 154956794490845232
+!user banid 154558794490846232 Troublemaker
+```
 ---
 
 ### user deafen
@@ -3122,10 +3075,10 @@ __**Examples:**__
 
 (optional) `[string...]` : *Reason.* (def: `None`)
 
-__**Examples:**__
-
-`!user deafen @Someone`
-
+**Examples:**
+```
+!user deafen @Someone
+```
 ---
 
 ### user info
@@ -3139,10 +3092,10 @@ __**Examples:**__
 
 (optional) `[user]` : *User.* (def: `None`)
 
-__**Examples:**__
-
-`!user info @Someone`
-
+**Examples:**
+```
+!user info @Someone
+```
 ---
 
 ### user kick
@@ -3161,12 +3114,11 @@ __**Examples:**__
 
 (optional) `[string...]` : *Reason.* (def: `None`)
 
-__**Examples:**__
-
-`!user kick @Someone`
-
-`!user kick @Someone Troublemaker`
-
+**Examples:**
+```
+!user kick @Someone
+!user kick @Someone Troublemaker
+```
 ---
 
 ### user mute
@@ -3185,12 +3137,11 @@ __**Examples:**__
 
 (optional) `[string...]` : *Reason.* (def: `None`)
 
-__**Examples:**__
-
-`!user mute @Someone`
-
-`!user mute @Someone Trashtalk`
-
+**Examples:**
+```
+!user mute @Someone
+!user mute @Someone Trashtalk
+```
 ---
 
 ### user removeallroles
@@ -3209,10 +3160,10 @@ __**Examples:**__
 
 (optional) `[string...]` : *Reason.* (def: `None`)
 
-__**Examples:**__
-
-`!user removeallroles @Someone`
-
+**Examples:**
+```
+!user removeallroles @Someone
+```
 ---
 
 ### user removerole
@@ -3247,12 +3198,11 @@ __**Examples:**__
 
 (optional) `[string...]` : *Reason.* (def: `None`)
 
-__**Examples:**__
-
-`!user removerole @Someone Admins`
-
-`!user removerole Admins @Someone`
-
+**Examples:**
+```
+!user removerole @Someone Admins
+!user removerole Admins @Someone
+```
 ---
 
 ### user setname
@@ -3271,10 +3221,10 @@ __**Examples:**__
 
 (optional) `[string...]` : *New name.* (def: `None`)
 
-__**Examples:**__
-
-`!user setname @Someone Newname`
-
+**Examples:**
+```
+!user setname @Someone Newname
+```
 ---
 
 ### user softban
@@ -3293,12 +3243,11 @@ __**Examples:**__
 
 (optional) `[string...]` : *Reason.* (def: `None`)
 
-__**Examples:**__
-
-`!user sban @Someone`
-
-`!user sban @Someone Troublemaker`
-
+**Examples:**
+```
+!user sban @Someone
+!user sban @Someone Troublemaker
+```
 ---
 
 ### user tempban
@@ -3327,14 +3276,12 @@ __**Examples:**__
 
 (optional) `[string...]` : *Reason.* (def: `None`)
 
-__**Examples:**__
-
-`!user tempban @Someone 3h4m`
-
-`!user tempban 5d @Someone Troublemaker`
-
-`!user tempban @Someone 5h30m30s Troublemaker`
-
+**Examples:**
+```
+!user tempban @Someone 3h4m
+!user tempban 5d @Someone Troublemaker
+!user tempban @Someone 5h30m30s Troublemaker
+```
 ---
 
 ### user unban
@@ -3353,10 +3300,10 @@ __**Examples:**__
 
 (optional) `[string...]` : *Reason.* (def: `None`)
 
-__**Examples:**__
-
-`!user unban 154956794490845232`
-
+**Examples:**
+```
+!user unban 154956794490845232
+```
 ---
 
 ### user undeafen
@@ -3375,10 +3322,10 @@ __**Examples:**__
 
 (optional) `[string...]` : *Reason.* (def: `None`)
 
-__**Examples:**__
-
-`!user undeafen @Someone`
-
+**Examples:**
+```
+!user undeafen @Someone
+```
 ---
 
 ### user unmute
@@ -3397,12 +3344,11 @@ __**Examples:**__
 
 (optional) `[string...]` : *Reason.* (def: `None`)
 
-__**Examples:**__
-
-`!user unmute @Someone`
-
-`!user unmute @Someone Some reason`
-
+**Examples:**
+```
+!user unmute @Someone
+!user unmute @Someone Some reason
+```
 ---
 
 ### user warn
@@ -3421,10 +3367,10 @@ __**Examples:**__
 
 (optional) `[string...]` : *Warning message.* (def: `None`)
 
-__**Examples:**__
-
-`!user warn @Someone Stop spamming or kick!`
-
+**Examples:**
+```
+!user warn @Someone Stop spamming or kick!
+```
 ---
 
 ## youtube

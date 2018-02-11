@@ -33,27 +33,32 @@ Each command receives arguments which are some of the following types:
 For example, in ``!say Some text``, the command is ``say`` and argument is ``Some text``. The type of this argument is ``string...``.
 Commands receive **only** arguments of the specified type, so for example if command expects an ``int``, passing ``text`` to it will cause an error.
 
-## Command overload explanation:
+## Aliases explanation
 
-Each command can be invoked in various ways, each of them being called an **overload**. For example, the ``!kick`` command takes two arguments, ``user`` and ``string...`` which correspond to user and reason for kick, respectively. 
-There are two overloads for the ``!kick`` command. One takes ``user`` as the first argument and ``string...`` as the second one. The other overload takes a ``string`` and a ``user``. The reason why this is done is so that it doesn't matter if you provide the user first or the reason first, as long as you provide the user. So both of these calling attempts will work:
+Aliases are the synonyms for a command. For example, the ``user`` command group has an alias ``u``. This means that if you wish to call a command from that group, let's say ``!user kick``, you can also call it by using an alias: ``!u kick``.
 
-``!kick @User My reason for doing this is because I am a terrible person.``
-``!kick "My reason for doing this is because I am a terrible person." @User``
+## Command overloads explanation:
 
-Note that in the second overload the reason is a ``string`` and not ``string...`` like it is in the first overload. This is because ``string...`` captures the remaining text of the command invocation message and looks at it like plain text, which in this case would capture the ``user`` as well.
+Each command can be invoked in various ways, each of those ways being called an **overload** in the documentation. 
+For example, one way to call ``!user kick`` is by giving a ``user`` and a ``string...`` which correspond to user and reason for kick, respectively. 
+Another way to call ``!user kick`` is by giving a ``string`` and a ``user``. The reason why they both exist is so that it doesn't matter if you provide the user first or the reason first, as long as you provide the user (since it is nececary). So both of these calling attempts will work:
 
-~~``!kick My reason for doing this is because I am a terrible person @User``~~ Invalid incovation
+```!user kick @User My reason for doing this is because I am a terrible person.```
+```!user kick "My reason for doing this is because I am a terrible person." @User```
 
-The reason why it fails is because it will look the entire ``My reason for doing this is because I am a terrible person @User`` as a reason for kick and would miss the ``user`` argument.
+Note that in the second overload the reason is a ``string`` and not ``string...`` unlike in the first one. This is because ``string...`` captures the remaining text of the command invocation message and looks at it like plain text, which in this case would capture the ``user`` as well. 
+So, the following command invocation attempt will cause an error:
 
-Furthermore, the reason in the first overload is marked as ``(optional)`` in the documentation. When the argument is marked as optional, you can omit it.
+~~```!user kick My reason for doing this is because I am a terrible person @User```~~
 
-``!kick @User``
+Arguments can be marked as ``(optional)`` in the documentation. When the argument is marked as optional, you can omit it.
+For example, the reason for kick mentioned above, is optional, so you can do simply:
 
-In the second overload though, the reason is mandatory since it preceeds ``user``. That doesn't mean that you *have* to make up a reason, ``string`` can be *empty*:
+```!user kick @User```
 
-``!kick "" @user``
+In the second overload though, the reason is mandatory since it preceeds ``user`` which is also mandatory.
+
+```!user kick "I must type a reason here... Also surround it with quotes because it's a string and not text." @user```
 
 ## Automatically generated command list
 

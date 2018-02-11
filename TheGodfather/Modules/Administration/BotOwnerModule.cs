@@ -348,9 +348,10 @@ namespace TheGodfather.Modules.Administration
                 var examples = cmd.CustomAttributes.Where(chk => chk is UsageExampleAttribute)
                                                    .Select(chk => chk as UsageExampleAttribute);
                 if (examples.Any()) {
-                    sb.AppendLine(Formatter.Underline(Formatter.Bold("Examples:")) + "\n");
+                    sb.AppendLine(Formatter.Bold("Examples:") + "\n```");
                     foreach (var example in examples)
-                        sb.AppendLine(Formatter.InlineCode(example.Example) + "\n");
+                        sb.AppendLine(example.Example);
+                    sb.AppendLine("```");
                 }
 
                 sb.AppendLine("---\n");
