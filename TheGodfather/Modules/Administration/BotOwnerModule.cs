@@ -299,22 +299,22 @@ namespace TheGodfather.Modules.Administration
                                               .Select(chk => chk as RequireBotPermissionsAttribute)
                                               .Select(chk => chk.Permissions.ToPermissionString());
                 if (allchecks.Any(chk => chk is RequireOwnerAttribute))
-                    sb.AppendLine(Formatter.Underline(Formatter.Bold("Owner-only.")) + "\n");
+                    sb.AppendLine(Formatter.Bold("Owner-only.") + "\n");
                 if (permissions.Any()) {
-                    sb.AppendLine(Formatter.Underline(Formatter.Bold("Requires permissions:")));
+                    sb.AppendLine(Formatter.Bold("Requires permissions:"));
                     sb.AppendLine(Formatter.InlineCode(string.Join(", ", permissions)) + "\n");
                 }
                 if (userpermissions.Any()) {
-                    sb.AppendLine(Formatter.Underline(Formatter.Bold("Requires user permissions:")));
+                    sb.AppendLine(Formatter.Bold("Requires user permissions:"));
                     sb.AppendLine(Formatter.InlineCode(string.Join(", ", userpermissions)) + "\n");
                 }
                 if (botpermissions.Any()) {
-                    sb.AppendLine(Formatter.Underline(Formatter.Bold("Requires bot permissions:")));
+                    sb.AppendLine(Formatter.Bold("Requires bot permissions:"));
                     sb.AppendLine(Formatter.InlineCode(string.Join(", ", botpermissions)) + "\n");
                 }
 
                 if (cmd.Aliases.Any()) {
-                    sb.AppendLine(Formatter.Underline(Formatter.Bold("Aliases:")));
+                    sb.AppendLine(Formatter.Bold("Aliases:"));
                     sb.AppendLine(Formatter.InlineCode(string.Join(", ", cmd.Aliases)) + "\n");
                 }
                 sb.AppendLine();
@@ -323,7 +323,7 @@ namespace TheGodfather.Modules.Administration
                     if (!overload.Arguments.Any())
                         continue;
 
-                    sb.AppendLine(Formatter.Underline(Formatter.Bold((cmd.Overloads.Count > 1 ? $"Overload {overload.Priority.ToString()}:" : "Arguments:"))) + "\n");
+                    sb.AppendLine(Formatter.Bold(cmd.Overloads.Count > 1 ? $"Overload {overload.Priority.ToString()}:" : "Arguments:") + "\n");
                     foreach (var arg in overload.Arguments) {
                         if (arg.IsOptional)
                             sb.Append("(optional) ");
