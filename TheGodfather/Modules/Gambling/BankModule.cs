@@ -16,9 +16,10 @@ using DSharpPlus.Entities;
 namespace TheGodfather.Modules.Gambling
 {
     [Group("bank")]
-    [Description("Bank manipulation.")]
+    [Description("Bank manipulation. If invoked alone, prints out your bank balance.")]
     [Aliases("$", "$$", "$$$")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
+    [UsageExample("!bank")]
     [ListeningCheck]
     public class BankModule : GodfatherBaseModule
     {
@@ -36,7 +37,7 @@ namespace TheGodfather.Modules.Gambling
 
         #region COMMAND_BALANCE
         [Command("balance")]
-        [Description("View account balance for given user. If the user is no given, checks sender's balance.")]
+        [Description("View account balance for given user. If the user is not given, checks sender's balance.")]
         [Aliases("s", "status", "bal", "money", "credits")]
         [UsageExample("!bank balance @Someone")]
         public async Task GetBalanceAsync(CommandContext ctx,
@@ -58,7 +59,7 @@ namespace TheGodfather.Modules.Gambling
 
         #region COMMAND_GRANT
         [Command("grant"), Priority(1)]
-        [Description("Magically give funds to a user.")]
+        [Description("Magically give funds to some user.")]
         [Aliases("give")]
         [UsageExample("!bank grant @Someone 1000")]
         [UsageExample("!bank grant 1000 @Someone")]
@@ -88,7 +89,7 @@ namespace TheGodfather.Modules.Gambling
 
         #region COMMAND_REGISTER
         [Command("register")]
-        [Description("Create an account in WM bank.")]
+        [Description("Create an account for you in WM bank.")]
         [Aliases("r", "signup", "activate")]
         [UsageExample("!bank register")]
         public async Task RegisterAsync(CommandContext ctx)
@@ -132,7 +133,7 @@ namespace TheGodfather.Modules.Gambling
 
         #region COMMAND_TRANSFER
         [Command("transfer"), Priority(1)]
-        [Description("Transfer funds from one account to another.")]
+        [Description("Transfer funds from your account to another one.")]
         [Aliases("lend")]
         [UsageExample("!bank transfer @Someone 40")]
         [UsageExample("!bank transfer 40 @Someone")]
