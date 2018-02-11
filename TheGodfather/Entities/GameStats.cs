@@ -48,16 +48,17 @@ namespace TheGodfather.Entities
 
         public DiscordEmbedBuilder GetEmbeddedStatsBuilder()
         {
-            var eb = new DiscordEmbedBuilder() { Color = DiscordColor.Chartreuse };
-            eb.AddField("Duel stats", DuelStatsString());
-            eb.AddField("Tic-Tac-Toe stats", TTTStatsString());
-            eb.AddField("Connect4 stats", Chain4StatsString());
-            eb.AddField("Caro stats", CaroStatsString());
-            eb.AddField("Nunchi stats", NunchiStatsString(), inline: true);
-            eb.AddField("Quiz stats", QuizStatsString(), inline: true);
-            eb.AddField("Race stats", RaceStatsString(), inline: true);
-            eb.AddField("Hangman stats", HangmanStatsString(), inline: true);
-            return eb;
+            var emb = new DiscordEmbedBuilder() { Color = DiscordColor.Chartreuse };
+            emb.AddField("Duel stats", DuelStatsString());
+            emb.AddField("Tic-Tac-Toe stats", TTTStatsString());
+            emb.AddField("Connect4 stats", Chain4StatsString());
+            emb.AddField("Caro stats", CaroStatsString());
+            emb.AddField("Othello stats", OthelloStatsString());
+            emb.AddField("Nunchi stats", NunchiStatsString(), inline: true);
+            emb.AddField("Quiz stats", QuizStatsString(), inline: true);
+            emb.AddField("Race stats", RaceStatsString(), inline: true);
+            emb.AddField("Hangman stats", HangmanStatsString(), inline: true);
+            return emb;
         }
 
         public string DuelStatsString()
@@ -83,6 +84,9 @@ namespace TheGodfather.Entities
 
         public string HangmanStatsString()
             => $"W: {Stats["hangman_won"]}";
+
+        public string OthelloStatsString()
+            => $"W: {Stats["othello_won"]} L: {Stats["othello_lost"]} ({Formatter.Bold($"{CalculateWinPercentage(Stats["othello_won"], Stats["othello_lost"])}")}%)";
 
         public uint CalculateWinPercentage(string won, string lost)
         {

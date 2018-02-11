@@ -120,6 +120,9 @@ namespace TheGodfather.Services
             var topChain4Players = await GetTopChain4PlayersStringAsync(client).ConfigureAwait(false);
             emb.AddField("Top players in Chain4 game", topChain4Players, inline: true);
 
+            var topOthelloPlayers = await GetTopOthelloPlayersStringAsync(client).ConfigureAwait(false);
+            emb.AddField("Top players in Othello game", topOthelloPlayers, inline: true);
+
             var topNunchiPlayers = await GetTopNunchiPlayersStringAsync(client).ConfigureAwait(false);
             emb.AddField("Top players in Nunchi game", topNunchiPlayers, inline: true);
 
@@ -306,6 +309,28 @@ namespace TheGodfather.Services
                     sb.Append("<unknown name>: ");
                 }
                 sb.Append(stats.HangmanStatsString());
+                sb.AppendLine();
+            }
+
+            return sb.ToString();
+        }
+        
+        public async Task<string> GetTopOthelloPlayersStringAsync(DiscordClient client)
+        {
+            var topOthelloPlayers = await GetOrderedUserStatsAsync("coalesce(1.0 * othello_won / NULLIF(othello_won + othello_lost, 0), 0)", "othello_won", "othello_lost")
+                .ConfigureAwait(false);
+
+            StringBuilder sb = new StringBuilder();
+            foreach (var stats in topOthelloPlayers) {
+                try {
+                    var u = await client.GetUserAsync(stats.UserId)
+                        .ConfigureAwait(false);
+                    sb.Append(u.Username);
+                    sb.Append(": ");
+                } catch (NotFoundException) {
+                    sb.Append("<unknown name>: ");
+                }
+                sb.Append(stats.OthelloStatsString());
                 sb.AppendLine();
             }
 

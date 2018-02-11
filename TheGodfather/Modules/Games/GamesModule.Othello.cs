@@ -50,15 +50,13 @@ namespace TheGodfather.Modules.Games
                     if (othello.Winner != null) {
                         await ctx.RespondAsync($"The winner is: {othello.Winner.Mention}!")
                             .ConfigureAwait(false);
-
-                        /*
-                        await DatabaseService.UpdateUserStatsAsync(othello.Winner.Id, "caro_won")
+                        
+                        await DatabaseService.UpdateUserStatsAsync(othello.Winner.Id, "othello_won")
                             .ConfigureAwait(false);
                         if (othello.Winner.Id == ctx.User.Id)
-                            await DatabaseService.UpdateUserStatsAsync(opponent.Id, "caro_lost").ConfigureAwait(false);
+                            await DatabaseService.UpdateUserStatsAsync(opponent.Id, "othello_lost").ConfigureAwait(false);
                         else
-                            await DatabaseService.UpdateUserStatsAsync(ctx.User.Id, "caro_lost").ConfigureAwait(false);
-                        */
+                            await DatabaseService.UpdateUserStatsAsync(ctx.User.Id, "othello_lost").ConfigureAwait(false);
                     } else if (othello.NoReply == false) {
                         await ctx.RespondAsync("A draw... Pathetic...")
                             .ConfigureAwait(false);
