@@ -251,6 +251,7 @@
     <Compile Include="Extensions\CustomBoolConverter.cs" />
     <Compile Include="Extensions\EmojiUtil.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
+    <Compile Include="Extensions\ImageUtil.cs" />
     <Compile Include="Extensions\InteractivityUtil.cs" />
     <Compile Include="Extensions\Logger.cs" />
     <Compile Include="Modules\Administration\EmojiAdminModule.cs" />

@@ -42,6 +42,24 @@ namespace TheGodfather.Modules.Main
         }
         #endregion
 
+        #region COMMAND_GIVEME
+        [Command("giveme")]
+        [Description("Grants you a role from this guild's self-assignable roles list.")]
+        [Aliases("giverole", "gimme", "grantme")]
+        [RequireBotPermissions(Permissions.ManageRoles)]
+        public async Task GiveRoleAsync(CommandContext ctx,
+                                       [Description("Role.")] DiscordRole role)
+        {
+            if (!await ctx.Services.GetService<DatabaseService>().SelfAssignableRoleExistsAsync(ctx.Guild.Id, role.Id))
+                throw new CommandFailedException("That role is not in this guild's self-assignable roles list.");
+
+            await ctx.Member.GrantRoleAsync(role, "Granted self-assignable role.")
+                .ConfigureAwait(false);
+            await ctx.RespondAsync("Done!")
+                .ConfigureAwait(false);
+        }
+        #endregion
+
         #region COMMAND_GREET
         [Command("greet")]
         [Description("Greets a user and starts a conversation.")]

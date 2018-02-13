@@ -1,8 +1,10 @@
 ﻿#region USING_DIRECTIVES
 using System;
 using System.Linq;
+using System.Drawing;
+using System.Drawing.Drawing2D;
+using System.Drawing.Text;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 
 using TheGodfather.Attributes;
 using TheGodfather.Services;
@@ -15,6 +17,7 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Entities;
+using System.IO;
 #endregion
 
 namespace TheGodfather.Modules.Games
@@ -252,18 +255,29 @@ namespace TheGodfather.Modules.Games
 
             const string chars = "abcdefghijklmnopqrstuvwxyz0123456789";
             var rnd = new Random();
-            var msg = new string(Enumerable.Repeat(chars, 20).Select(s => s[rnd.Next(s.Length)]).ToArray());
-            await ctx.RespondAsync(Formatter.Bold(msg) + " (you have 60s)")
-                .ConfigureAwait(false);
+            var msg = new string(Enumerable.Repeat(chars, 30).Select(s => s[rnd.Next(s.Length)]).ToArray());
 
-            var interactivity = ctx.Client.GetInteractivity();
-            var response = await interactivity.WaitForMessageAsync(
-                m => m.ChannelId == ctx.Channel.Id && m.Content == msg,
+            using (var image = ImageUtil.TextToImage(msg, new Font("Impact", 60))) { 
+                string filename = $"Temp/typing-{DateTime.Now.Ticks}.jpg";
+                if (!Directory.Exists("Temp"))
+                    Directory.CreateDirectory("Temp");
+                image.Save(filename, System.Drawing.Imaging.ImageFormat.Jpeg);
+
+                using (var fs = new FileStream(filename, FileMode.Open))
+                    await ctx.RespondWithFileAsync(fs, content: "(you have 60s to to type)")
+                        .ConfigureAwait(false);
+
+                if (File.Exists(filename))
+                    File.Delete(filename);
+            }
+
+            var mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(
+                m => m.ChannelId == ctx.Channel.Id && m.Content.ToLower() == msg,
                 TimeSpan.FromSeconds(60)
             ).ConfigureAwait(false);
 
-            if (response != null) {
-                await ctx.RespondAsync($"And the winner is {response.User.Mention}!")
+            if (mctx != null) {
+                await ctx.RespondAsync($"And the winner is {mctx.User.Mention}!")
                     .ConfigureAwait(false);
             } else {
                 await ctx.RespondAsync("ROFL what a nabs...")
