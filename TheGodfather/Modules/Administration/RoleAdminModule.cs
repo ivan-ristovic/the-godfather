@@ -61,7 +61,7 @@ namespace TheGodfather.Modules.Administration
 
             await ctx.Guild.CreateRoleAsync(name, null, color, hoisted, mentionable, GetReasonString(ctx))
                 .ConfigureAwait(false);
-            await ReplySuccessAsync(ctx, $"Successfully created role {Formatter.Bold(name)}!")
+            await ReplyWithEmbedAsync(ctx, $"Successfully created role {Formatter.Bold(name)}!")
                 .ConfigureAwait(false);
         }
 
@@ -91,7 +91,7 @@ namespace TheGodfather.Modules.Administration
             string name = role.Name;
             await role.DeleteAsync(GetReasonString(ctx, reason))
                 .ConfigureAwait(false);
-            await ReplySuccessAsync(ctx, $"Successfully removed role {Formatter.Bold(name)}!")
+            await ReplyWithEmbedAsync(ctx, $"Successfully removed role {Formatter.Bold(name)}!")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -172,7 +172,7 @@ namespace TheGodfather.Modules.Administration
         {
             await role.UpdateAsync(color: color, reason: GetReasonString(ctx))
                 .ConfigureAwait(false);
-            await ReplySuccessAsync(ctx, $"Successfully changed color for {Formatter.Bold(role.Name)}!")
+            await ReplyWithEmbedAsync(ctx, $"Successfully changed color for {Formatter.Bold(role.Name)}!")
                 .ConfigureAwait(false);
         }
 
@@ -199,7 +199,7 @@ namespace TheGodfather.Modules.Administration
 
             await role.UpdateAsync(name: name, reason: GetReasonString(ctx))
                 .ConfigureAwait(false);
-            await ReplySuccessAsync(ctx, $"Successfully changed role name to {Formatter.Bold(name)}.")
+            await ReplyWithEmbedAsync(ctx, $"Successfully changed role name to {Formatter.Bold(name)}.")
                 .ConfigureAwait(false);
         }
 
@@ -224,7 +224,7 @@ namespace TheGodfather.Modules.Administration
         {
             await role.UpdateAsync(mentionable: mentionable, reason: GetReasonString(ctx))
                 .ConfigureAwait(false);
-            await ReplySuccessAsync(ctx, $"Successfully set mentionable var for {Formatter.Bold(role.Name)} to {Formatter.Bold(mentionable.ToString())}.")
+            await ReplyWithEmbedAsync(ctx, $"Successfully set mentionable var for {Formatter.Bold(role.Name)} to {Formatter.Bold(mentionable.ToString())}.")
                 .ConfigureAwait(false);
         }
 
@@ -249,7 +249,7 @@ namespace TheGodfather.Modules.Administration
         {
             await role.UpdateAsync(hoist: hoisted, reason: GetReasonString(ctx))
                 .ConfigureAwait(false);
-            await ReplySuccessAsync(ctx, $"Successfully set hoisted var for role {Formatter.Bold(role.Name)} to {Formatter.Bold(hoisted.ToString())}.")
+            await ReplyWithEmbedAsync(ctx, $"Successfully set hoisted var for role {Formatter.Bold(role.Name)} to {Formatter.Bold(hoisted.ToString())}.")
                 .ConfigureAwait(false);
         }
 

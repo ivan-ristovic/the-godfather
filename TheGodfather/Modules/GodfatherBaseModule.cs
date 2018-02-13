@@ -27,7 +27,7 @@ namespace TheGodfather.Modules
         }
 
 
-        protected async Task ReplySuccessAsync(CommandContext ctx, string msg = "Done!", string emojistr = ":white_check_mark:")
+        protected async Task ReplyWithEmbedAsync(CommandContext ctx, string msg = "Done!", string emojistr = ":white_check_mark:")
         {
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder {
                 Description = $"{(string.IsNullOrWhiteSpace(emojistr) ? "" : DiscordEmoji.FromName(ctx.Client, emojistr))} {msg}",
@@ -44,7 +44,7 @@ namespace TheGodfather.Modules
 
             bool answer = await InteractivityUtil.WaitForConfirmationAsync(ctx).ConfigureAwait(false);
             if (!answer)
-                await ReplySuccessAsync(ctx, "Alright, aborting...")
+                await ReplyWithEmbedAsync(ctx, "Alright, aborting...")
                     .ConfigureAwait(false);
 
             return answer;
@@ -65,7 +65,7 @@ namespace TheGodfather.Modules
 
         protected bool IsValidImageURL(string url, out Uri uri)
         {
-            if (!IsValidImageURL(url, out uri))
+            if (!IsValidURL(url, out uri))
                 return false;
 
             if (WebRequest.Create(uri) is HttpWebRequest request) {

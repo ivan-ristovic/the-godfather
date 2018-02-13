@@ -62,7 +62,7 @@ namespace TheGodfather.Modules.Administration
                         var fs = new FileStream(filename, FileMode.Open);
                         await ctx.Guild.CreateEmojiAsync(name, fs, reason: GetReasonString(ctx))
                             .ConfigureAwait(false);
-                        await ReplySuccessAsync(ctx, $"Emoji {Formatter.Bold(name)} successfully added!")
+                        await ReplyWithEmbedAsync(ctx, $"Emoji {Formatter.Bold(name)} successfully added!")
                             .ConfigureAwait(false);
                     }
                 }
@@ -93,7 +93,7 @@ namespace TheGodfather.Modules.Administration
                 string name = gemoji.Name;
                 await ctx.Guild.DeleteEmojiAsync(gemoji, GetReasonString(ctx))
                     .ConfigureAwait(false);
-                await ReplySuccessAsync(ctx, $"Emoji {Formatter.Bold(name)} successfully deleted!")
+                await ReplyWithEmbedAsync(ctx, $"Emoji {Formatter.Bold(name)} successfully deleted!")
                     .ConfigureAwait(false);
             } catch (NotFoundException) {
                 throw new CommandFailedException("Can't find that emoji in list of emoji that I made for this guild.");
@@ -166,7 +166,7 @@ namespace TheGodfather.Modules.Administration
                     .ConfigureAwait(false);
                 await ctx.Guild.ModifyEmojiAsync(gemoji, name: newname, reason: GetReasonString(ctx))
                     .ConfigureAwait(false);
-                await ReplySuccessAsync(ctx)
+                await ReplyWithEmbedAsync(ctx)
                     .ConfigureAwait(false);
             } catch (NotFoundException) {
                 throw new CommandFailedException("Can't find that emoji in list of emoji that I made for this guild.");

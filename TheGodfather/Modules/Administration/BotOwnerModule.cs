@@ -72,7 +72,7 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException("An error occured.", e);
             }
 
-            await ReplySuccessAsync(ctx)
+            await ReplyWithEmbedAsync(ctx)
                 .ConfigureAwait(false);
         }
         #endregion
@@ -91,7 +91,7 @@ namespace TheGodfather.Modules.Administration
 
             await ctx.Client.UpdateCurrentUserAsync(username: name)
                 .ConfigureAwait(false);
-            await ReplySuccessAsync(ctx)
+            await ReplyWithEmbedAsync(ctx)
                 .ConfigureAwait(false);
         }
         #endregion
@@ -108,7 +108,7 @@ namespace TheGodfather.Modules.Administration
                 return;
 
             Logger.Clear();
-            await ReplySuccessAsync(ctx)
+            await ReplyWithEmbedAsync(ctx)
                 .ConfigureAwait(false);
         }
         #endregion
@@ -363,7 +363,7 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException("IO Exception occured!", e);
             }
 
-            await ReplySuccessAsync(ctx, $"Command list created at path: {Formatter.InlineCode(filepath)}!")
+            await ReplyWithEmbedAsync(ctx, $"Command list created at path: {Formatter.InlineCode(filepath)}!")
                 .ConfigureAwait(false);
         }
 
@@ -405,7 +405,7 @@ namespace TheGodfather.Modules.Administration
                     sb.AppendLine($"I am not a member of the guild with ID: {Formatter.InlineCode(gid.ToString())}!");
                 }
             }
-            await ReplySuccessAsync(ctx, sb.ToString())
+            await ReplyWithEmbedAsync(ctx, sb.ToString())
                 .ConfigureAwait(false);
         }
         #endregion
@@ -441,7 +441,7 @@ namespace TheGodfather.Modules.Administration
                 throw new InvalidCommandUsageException("Descriptor can only be 'u' or 'c'.");
             }
 
-            await ReplySuccessAsync(ctx)
+            await ReplyWithEmbedAsync(ctx)
                 .ConfigureAwait(false);
         }
         #endregion
@@ -486,7 +486,7 @@ namespace TheGodfather.Modules.Administration
         public async Task ToggleIgnoreAsync(CommandContext ctx)
         {
             TheGodfatherShard.Listening = !TheGodfatherShard.Listening;
-            await ReplySuccessAsync(ctx, $"Listening status set to: {Formatter.Bold(TheGodfatherShard.Listening.ToString())}")
+            await ReplyWithEmbedAsync(ctx, $"Listening status set to: {Formatter.Bold(TheGodfatherShard.Listening.ToString())}")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -532,7 +532,7 @@ namespace TheGodfather.Modules.Administration
 
                 await DatabaseService.AddBotStatusAsync(status, activity)
                     .ConfigureAwait(false);
-                await ReplySuccessAsync(ctx)
+                await ReplyWithEmbedAsync(ctx)
                     .ConfigureAwait(false);
             }
             #endregion
@@ -547,7 +547,7 @@ namespace TheGodfather.Modules.Administration
             {
                 await DatabaseService.RemoveBotStatusAsync(id)
                     .ConfigureAwait(false);
-                await ReplySuccessAsync(ctx)
+                await ReplyWithEmbedAsync(ctx)
                     .ConfigureAwait(false);
             }
             #endregion

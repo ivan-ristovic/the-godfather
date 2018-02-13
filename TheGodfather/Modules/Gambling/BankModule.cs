@@ -76,7 +76,7 @@ namespace TheGodfather.Modules.Gambling
 
             await DatabaseService.IncreaseBalanceForUserAsync(user.Id, amount)
                 .ConfigureAwait(false);
-            await ReplySuccessAsync(ctx, $"{Formatter.Bold(user.Mention)} won {Formatter.Bold(amount.ToString())} credits on the Serbian lottery! (seems legit)", ":moneybag:")
+            await ReplyWithEmbedAsync(ctx, $"{Formatter.Bold(user.Mention)} won {Formatter.Bold(amount.ToString())} credits on the Serbian lottery! (seems legit)", ":moneybag:")
                 .ConfigureAwait(false);
         }
 
@@ -99,7 +99,7 @@ namespace TheGodfather.Modules.Gambling
 
             await DatabaseService.OpenBankAccountForUserAsync(ctx.User.Id)
                 .ConfigureAwait(false);
-            await ReplySuccessAsync(ctx, $"Account opened for you, {ctx.User.Mention}! Since WM bank is so generous, you get 25 credits for free.", ":moneybag:")
+            await ReplyWithEmbedAsync(ctx, $"Account opened for you, {ctx.User.Mention}! Since WM bank is so generous, you get 25 credits for free.", ":moneybag:")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -150,7 +150,7 @@ namespace TheGodfather.Modules.Gambling
             await DatabaseService.TransferCurrencyAsync(ctx.User.Id, user.Id, amount)
                 .ConfigureAwait(false);
 
-            await ReplySuccessAsync(ctx, $"Transfer from {Formatter.Bold(ctx.User.Username)} to {Formatter.Bold(user.Username)} is complete.", ":moneybag:")
+            await ReplyWithEmbedAsync(ctx, $"Transfer from {Formatter.Bold(ctx.User.Username)} to {Formatter.Bold(user.Username)} is complete.", ":moneybag:")
                 .ConfigureAwait(false);
         }
 

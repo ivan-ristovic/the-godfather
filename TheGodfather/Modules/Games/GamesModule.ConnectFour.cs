@@ -34,7 +34,7 @@ namespace TheGodfather.Modules.Games
                 if (Game.RunningInChannel(ctx.Channel.Id))
                     throw new CommandFailedException("Another game is already running in the current channel!");
 
-                await ctx.RespondAsync($"Who wants to play Connect4 with {ctx.User.Username}?")
+                await ReplyWithEmbedAsync(ctx, $"Who wants to play Connect4 with {ctx.User.Username}?", ":question:")
                     .ConfigureAwait(false);
                 var opponent = await InteractivityUtil.WaitForGameOpponentAsync(ctx)
                     .ConfigureAwait(false);
@@ -48,7 +48,7 @@ namespace TheGodfather.Modules.Games
                         .ConfigureAwait(false);
 
                     if (connect4.Winner != null) {
-                        await ctx.RespondAsync($"The winner is: {connect4.Winner.Mention}!")
+                        await ReplyWithEmbedAsync(ctx, $"The winner is: {connect4.Winner.Mention}!", ":trophy:")
                             .ConfigureAwait(false);
 
                         await DatabaseService.UpdateUserStatsAsync(connect4.Winner.Id, "chain4_won").ConfigureAwait(false);
@@ -57,10 +57,10 @@ namespace TheGodfather.Modules.Games
                         else
                             await DatabaseService.UpdateUserStatsAsync(ctx.User.Id, "chain4_lost").ConfigureAwait(false);
                     } else if (connect4.NoReply == false) {
-                        await ctx.RespondAsync("A draw... Pathetic...")
+                        await ReplyWithEmbedAsync(ctx, "A draw... Pathetic...", ":video_game:")
                             .ConfigureAwait(false);
                     } else {
-                        await ctx.RespondAsync("No reply, aborting Connect4 game...")
+                        await ReplyWithEmbedAsync(ctx, "No reply, aborting Connect4 game...", ":alarm_clock:")
                             .ConfigureAwait(false);
                     }
                 } finally {

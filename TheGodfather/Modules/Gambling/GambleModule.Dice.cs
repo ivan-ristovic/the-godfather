@@ -57,7 +57,7 @@ namespace TheGodfather.Modules.Gambling
               .Append(guess_int == rnd ? $"won {Formatter.Bold((bid * 5).ToString())}" : $"lost {Formatter.Bold((bid).ToString())}")
               .Append(" credits!");
 
-            await ReplySuccessAsync(ctx, sb.ToString(), ":game_die:")
+            await ReplyWithEmbedAsync(ctx, sb.ToString(), ":game_die:")
                 .ConfigureAwait(false);
 
             if (rnd == guess_int)

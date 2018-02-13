@@ -34,7 +34,7 @@ namespace TheGodfather.Modules.Games
                 if (Game.RunningInChannel(ctx.Channel.Id))
                     throw new CommandFailedException("Another game is already running in the current channel!");
 
-                await ctx.RespondAsync($"Who wants to play Caro with {ctx.User.Username}?")
+                await ReplyWithEmbedAsync(ctx, $"Who wants to play Caro with {ctx.User.Username}?", ":question:")
                     .ConfigureAwait(false);
                 var opponent = await InteractivityUtil.WaitForGameOpponentAsync(ctx)
                     .ConfigureAwait(false);
@@ -48,7 +48,7 @@ namespace TheGodfather.Modules.Games
                         .ConfigureAwait(false);
 
                     if (caro.Winner != null) {
-                        await ctx.RespondAsync($"The winner is: {caro.Winner.Mention}!")
+                        await ReplyWithEmbedAsync(ctx, $"The winner is: {caro.Winner.Mention}!", ":trophy:")
                             .ConfigureAwait(false);
 
                         await DatabaseService.UpdateUserStatsAsync(caro.Winner.Id, "caro_won")
@@ -58,10 +58,10 @@ namespace TheGodfather.Modules.Games
                         else
                             await DatabaseService.UpdateUserStatsAsync(ctx.User.Id, "caro_lost").ConfigureAwait(false);
                     } else if (caro.NoReply == false) {
-                        await ctx.RespondAsync("A draw... Pathetic...")
+                        await ReplyWithEmbedAsync(ctx, "A draw... Pathetic...", ":video_game:")
                             .ConfigureAwait(false);
                     } else {
-                        await ctx.RespondAsync("No reply, aborting Caro game...")
+                        await ReplyWithEmbedAsync(ctx, "No reply, aborting Caro game...", ":alarm_clock:")
                             .ConfigureAwait(false);
                     }
                 } finally {

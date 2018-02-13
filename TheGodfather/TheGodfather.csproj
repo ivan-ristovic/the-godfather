@@ -94,41 +94,41 @@
     <Reference Include="AutoMapper, Version=6.2.2.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
       <HintPath>..\packages\AutoMapper.6.2.2\lib\net45\AutoMapper.dll</HintPath>
     </Reference>
-    <Reference Include="DSharpPlus, Version=4.0.0.421, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\DSharpPlus.4.0.0-beta-00421\lib\net47\DSharpPlus.dll</HintPath>
+    <Reference Include="DSharpPlus, Version=4.0.0.425, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\DSharpPlus.4.0.0-beta-00425\lib\net47\DSharpPlus.dll</HintPath>
     </Reference>
-    <Reference Include="DSharpPlus.CommandsNext, Version=4.0.0.421, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\DSharpPlus.CommandsNext.4.0.0-beta-00421\lib\net47\DSharpPlus.CommandsNext.dll</HintPath>
+    <Reference Include="DSharpPlus.CommandsNext, Version=4.0.0.425, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\DSharpPlus.CommandsNext.4.0.0-beta-00425\lib\net47\DSharpPlus.CommandsNext.dll</HintPath>
     </Reference>
-    <Reference Include="DSharpPlus.Interactivity, Version=4.0.0.421, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\DSharpPlus.Interactivity.4.0.0-beta-00421\lib\net47\DSharpPlus.Interactivity.dll</HintPath>
+    <Reference Include="DSharpPlus.Interactivity, Version=4.0.0.425, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\DSharpPlus.Interactivity.4.0.0-beta-00425\lib\net47\DSharpPlus.Interactivity.dll</HintPath>
     </Reference>
-    <Reference Include="DSharpPlus.VoiceNext, Version=4.0.0.421, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\DSharpPlus.VoiceNext.4.0.0-beta-00421\lib\net47\DSharpPlus.VoiceNext.dll</HintPath>
+    <Reference Include="DSharpPlus.VoiceNext, Version=4.0.0.425, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\DSharpPlus.VoiceNext.4.0.0-beta-00425\lib\net47\DSharpPlus.VoiceNext.dll</HintPath>
     </Reference>
-    <Reference Include="DSharpPlus.WebSocket.WebSocket4Net, Version=4.0.0.421, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\DSharpPlus.WebSocket.WebSocket4Net.4.0.0-beta-00421\lib\net47\DSharpPlus.WebSocket.WebSocket4Net.dll</HintPath>
+    <Reference Include="DSharpPlus.WebSocket.WebSocket4Net, Version=4.0.0.425, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\DSharpPlus.WebSocket.WebSocket4Net.4.0.0-beta-00425\lib\net47\DSharpPlus.WebSocket.WebSocket4Net.dll</HintPath>
     </Reference>
     <Reference Include="GiphyDotNet, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\GiphyDotNet.1.0.0.0\lib\GiphyDotNet.dll</HintPath>
     </Reference>
-    <Reference Include="Google.Apis, Version=1.32.1.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
-      <HintPath>..\packages\Google.Apis.1.32.1\lib\net45\Google.Apis.dll</HintPath>
+    <Reference Include="Google.Apis, Version=1.32.2.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
+      <HintPath>..\packages\Google.Apis.1.32.2\lib\net45\Google.Apis.dll</HintPath>
     </Reference>
-    <Reference Include="Google.Apis.Auth, Version=1.32.0.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
-      <HintPath>..\packages\Google.Apis.Auth.1.32.0\lib\net45\Google.Apis.Auth.dll</HintPath>
+    <Reference Include="Google.Apis.Auth, Version=1.32.2.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
+      <HintPath>..\packages\Google.Apis.Auth.1.32.2\lib\net45\Google.Apis.Auth.dll</HintPath>
     </Reference>
-    <Reference Include="Google.Apis.Auth.PlatformServices, Version=1.32.0.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
-      <HintPath>..\packages\Google.Apis.Auth.1.32.0\lib\net45\Google.Apis.Auth.PlatformServices.dll</HintPath>
+    <Reference Include="Google.Apis.Auth.PlatformServices, Version=1.32.2.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
+      <HintPath>..\packages\Google.Apis.Auth.1.32.2\lib\net45\Google.Apis.Auth.PlatformServices.dll</HintPath>
     </Reference>
-    <Reference Include="Google.Apis.Core, Version=1.32.1.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
-      <HintPath>..\packages\Google.Apis.Core.1.32.1\lib\net45\Google.Apis.Core.dll</HintPath>
+    <Reference Include="Google.Apis.Core, Version=1.32.2.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
+      <HintPath>..\packages\Google.Apis.Core.1.32.2\lib\net45\Google.Apis.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Google.Apis.PlatformServices, Version=1.32.1.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
-      <HintPath>..\packages\Google.Apis.1.32.1\lib\net45\Google.Apis.PlatformServices.dll</HintPath>
+    <Reference Include="Google.Apis.PlatformServices, Version=1.32.2.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
+      <HintPath>..\packages\Google.Apis.1.32.2\lib\net45\Google.Apis.PlatformServices.dll</HintPath>
     </Reference>
-    <Reference Include="Google.Apis.YouTube.v3, Version=1.32.0.1079, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
-      <HintPath>..\packages\Google.Apis.YouTube.v3.1.32.0.1079\lib\net45\Google.Apis.YouTube.v3.dll</HintPath>
+    <Reference Include="Google.Apis.YouTube.v3, Version=1.32.2.1131, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
+      <HintPath>..\packages\Google.Apis.YouTube.v3.1.32.2.1131\lib\net45\Google.Apis.YouTube.v3.dll</HintPath>
     </Reference>
     <Reference Include="Imgur.API, Version=5.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Imgur.API.5.0.0-beta1\lib\net45\Imgur.API.dll</HintPath>
@@ -164,8 +164,8 @@
     <Reference Include="Microsoft.Extensions.Primitives, Version=2.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Extensions.Primitives.2.0.0\lib\netstandard2.0\Microsoft.Extensions.Primitives.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.11.0.1-beta3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Npgsql, Version=3.2.6.0, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7, processorArchitecture=MSIL">
       <HintPath>..\packages\Npgsql.3.2.6\lib\net451\Npgsql.dll</HintPath>
@@ -173,11 +173,11 @@
     <Reference Include="RedditSharp, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\RedditSharp.2.0.0-CI00046\lib\netstandard1.3\RedditSharp.dll</HintPath>
     </Reference>
-    <Reference Include="Steam.Models, Version=3.0.6.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Steam.Models.3.0.6\lib\netstandard2.0\Steam.Models.dll</HintPath>
+    <Reference Include="Steam.Models, Version=3.0.7.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Steam.Models.3.0.7\lib\netstandard2.0\Steam.Models.dll</HintPath>
     </Reference>
-    <Reference Include="SteamWebAPI2, Version=4.0.6.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SteamWebAPI2.4.0.6\lib\netstandard2.0\SteamWebAPI2.dll</HintPath>
+    <Reference Include="SteamWebAPI2, Version=4.0.7.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SteamWebAPI2.4.0.7\lib\netstandard2.0\SteamWebAPI2.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Collections.Immutable, Version=1.2.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -242,8 +242,8 @@
     <Reference Include="WebSocket4Net, Version=0.14.1.0, Culture=neutral, PublicKeyToken=eb4e154b696bf72a, processorArchitecture=MSIL">
       <HintPath>..\packages\WebSocket4Net.0.14.1\lib\net45\WebSocket4Net.dll</HintPath>
     </Reference>
-    <Reference Include="YoutubeExplode, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\YoutubeExplode.4.0.0\lib\net45\YoutubeExplode.dll</HintPath>
+    <Reference Include="YoutubeExplode, Version=4.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\YoutubeExplode.4.1.0\lib\net45\YoutubeExplode.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -251,7 +251,6 @@
     <Compile Include="Extensions\CustomBoolConverter.cs" />
     <Compile Include="Extensions\EmojiUtil.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
-    <Compile Include="Extensions\ImageUtil.cs" />
     <Compile Include="Extensions\InteractivityUtil.cs" />
     <Compile Include="Extensions\Logger.cs" />
     <Compile Include="Modules\Administration\EmojiAdminModule.cs" />

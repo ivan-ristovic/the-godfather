@@ -138,7 +138,7 @@ namespace TheGodfather.Modules.Games
                 .ConfigureAwait(false);
         }
         #endregion
-        
+
         #region COMMAND_GAMES_RPS
         [Command("rps")]
         [Description("Rock, paper, scissors game against TheGodfather")]
@@ -172,7 +172,7 @@ namespace TheGodfather.Modules.Games
                     gfe = DiscordEmoji.FromName(ctx.Client, ":scissors:");
                     break;
             }
-            await ReplySuccessAsync(ctx, $"{ctx.User.Mention} {usre} {gfe} {ctx.Client.CurrentUser.Mention}", null)
+            await ReplyWithEmbedAsync(ctx, $"{ctx.User.Mention} {usre} {gfe} {ctx.Client.CurrentUser.Mention}", null)
                  .ConfigureAwait(false);
         }
         #endregion
@@ -248,16 +248,37 @@ namespace TheGodfather.Modules.Games
         [Aliases("type", "typerace", "typingrace")]
         public async Task TypingRaceAsync(CommandContext ctx)
         {
-            await ctx.RespondAsync("I will send a random string in 5s. First one to types it wins. FOCUS!")
+            if (Game.RunningInChannel(ctx.Channel.Id))
+                throw new CommandFailedException("Another game is already running in the current channel!");
+
+            await ReplyWithEmbedAsync(ctx, "I will send a text in 5s. First one to types it wins. FOCUS!", ":clock1:")
                 .ConfigureAwait(false);
             await Task.Delay(5000)
                 .ConfigureAwait(false);
 
             const string chars = "abcdefghijklmnopqrstuvwxyz0123456789";
             var rnd = new Random();
-            var msg = new string(Enumerable.Repeat(chars, 30).Select(s => s[rnd.Next(s.Length)]).ToArray());
+            var msg = new string(Enumerable.Repeat(' ', 30).Select(c => chars[rnd.Next(chars.Length)]).ToArray());
 
-            using (var image = ImageUtil.TextToImage(msg, new Font("Impact", 60))) { 
+            using (var image = new Bitmap(700, 150)) {
+                using (Graphics g = Graphics.FromImage(image)) {
+                    g.InterpolationMode = InterpolationMode.High;
+                    g.SmoothingMode = SmoothingMode.HighQuality;
+                    g.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
+                    g.CompositingQuality = CompositingQuality.HighQuality;
+                    Rectangle layout = new Rectangle(0, 0, image.Width, image.Height);
+                    using (GraphicsPath p = new GraphicsPath()) {
+                        var font = new Font("Arial", 40);
+                        var fmt = new StringFormat() {
+                            Alignment = StringAlignment.Center,
+                            LineAlignment = StringAlignment.Center,
+                            FormatFlags = StringFormatFlags.FitBlackBox
+                        };
+                        p.AddString(msg, font.FontFamily, (int)FontStyle.Regular, font.Size, layout, fmt);
+                        g.FillPath(Brushes.White, p);
+                    }
+                    g.Flush();
+                }
                 string filename = $"Temp/typing-{DateTime.Now.Ticks}.jpg";
                 if (!Directory.Exists("Temp"))
                     Directory.CreateDirectory("Temp");
@@ -277,10 +298,10 @@ namespace TheGodfather.Modules.Games
             ).ConfigureAwait(false);
 
             if (mctx != null) {
-                await ctx.RespondAsync($"And the winner is {mctx.User.Mention}!")
+                await ReplyWithEmbedAsync(ctx, $"The winner is {mctx.User.Mention}!", ":trophy:")
                     .ConfigureAwait(false);
             } else {
-                await ctx.RespondAsync("ROFL what a nabs...")
+                await ReplyWithEmbedAsync(ctx, "ROFL what a nabs...", ":alarm_clock:")
                     .ConfigureAwait(false); ;
             }
         }

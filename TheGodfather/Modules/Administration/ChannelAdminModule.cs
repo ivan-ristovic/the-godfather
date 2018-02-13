@@ -50,7 +50,7 @@ namespace TheGodfather.Modules.Administration
 
             await ctx.Guild.CreateChannelCategoryAsync(name, reason: GetReasonString(ctx))
                 .ConfigureAwait(false);
-            await ReplySuccessAsync(ctx, $"Category {Formatter.Bold(name)} successfully created.")
+            await ReplyWithEmbedAsync(ctx, $"Category {Formatter.Bold(name)} successfully created.")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -90,7 +90,7 @@ namespace TheGodfather.Modules.Administration
             await ctx.Guild.CreateTextChannelAsync(name, parent, nsfw: nsfw, reason: GetReasonString(ctx))
                 .ConfigureAwait(false);
 
-            await ReplySuccessAsync(ctx, $"Channel {Formatter.Bold(name)} successfully created.")
+            await ReplyWithEmbedAsync(ctx, $"Channel {Formatter.Bold(name)} successfully created.")
                 .ConfigureAwait(false);
         }
 
@@ -193,7 +193,7 @@ namespace TheGodfather.Modules.Administration
             await channel.DeleteAsync(reason: GetReasonString(ctx, reason))
                 .ConfigureAwait(false);
             if (channel.Id != ctx.Channel.Id)
-                await ReplySuccessAsync(ctx, $"Channel {Formatter.Bold(name)} successfully deleted.")
+                await ReplyWithEmbedAsync(ctx, $"Channel {Formatter.Bold(name)} successfully deleted.")
                     .ConfigureAwait(false);
         }
 
@@ -265,7 +265,7 @@ namespace TheGodfather.Modules.Administration
                 m.AuditLogReason = GetReasonString(ctx, reason);
             })).ConfigureAwait(false);
 
-            await ReplySuccessAsync(ctx)
+            await ReplyWithEmbedAsync(ctx)
                 .ConfigureAwait(false);
         }
 
@@ -311,7 +311,7 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException("An error occured. Maybe the name entered contains invalid characters?", e);
             }
 
-            await ReplySuccessAsync(ctx)
+            await ReplyWithEmbedAsync(ctx)
                 .ConfigureAwait(false);
         }
 
@@ -350,7 +350,7 @@ namespace TheGodfather.Modules.Administration
                 m.AuditLogReason = GetReasonString(ctx, reason);
             })).ConfigureAwait(false);
 
-            await ReplySuccessAsync(ctx)
+            await ReplyWithEmbedAsync(ctx)
                 .ConfigureAwait(false);
         }
 
@@ -383,7 +383,7 @@ namespace TheGodfather.Modules.Administration
             await channel.ModifyPositionAsync(position, GetReasonString(ctx, reason))
                 .ConfigureAwait(false);
 
-            await ReplySuccessAsync(ctx)
+            await ReplyWithEmbedAsync(ctx)
                 .ConfigureAwait(false);
         }
 
@@ -422,7 +422,7 @@ namespace TheGodfather.Modules.Administration
                 m.Topic = topic;
                 m.AuditLogReason = GetReasonString(ctx, null);
             })).ConfigureAwait(false);
-            await ReplySuccessAsync(ctx)
+            await ReplyWithEmbedAsync(ctx)
                 .ConfigureAwait(false);
         }
 

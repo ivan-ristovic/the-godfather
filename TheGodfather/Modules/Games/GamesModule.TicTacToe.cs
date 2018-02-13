@@ -34,7 +34,7 @@ namespace TheGodfather.Modules.Games
                 if (Game.RunningInChannel(ctx.Channel.Id))
                     throw new CommandFailedException("Another game is already running in the current channel!");
 
-                await ctx.RespondAsync($"Who wants to play Tic-Tac-Toe with {ctx.User.Username}?")
+                await ReplyWithEmbedAsync(ctx, $"Who wants to play Tic-Tac-Toe with {ctx.User.Username}?", ":question:")
                     .ConfigureAwait(false);
                 var opponent = await InteractivityUtil.WaitForGameOpponentAsync(ctx)
                     .ConfigureAwait(false);
@@ -48,7 +48,7 @@ namespace TheGodfather.Modules.Games
                         .ConfigureAwait(false);
 
                     if (ttt.Winner != null) {
-                        await ctx.RespondAsync($"The winner is: {ttt.Winner.Mention}!")
+                        await ReplyWithEmbedAsync(ctx, $"The winner is: {ttt.Winner.Mention}!", ":trophy:")
                             .ConfigureAwait(false);
 
                         await DatabaseService.UpdateUserStatsAsync(ttt.Winner.Id, "ttt_won")
@@ -58,10 +58,10 @@ namespace TheGodfather.Modules.Games
                         else
                             await DatabaseService.UpdateUserStatsAsync(ctx.User.Id, "ttt_lost").ConfigureAwait(false);
                     } else if (ttt.NoReply == false) {
-                        await ctx.RespondAsync("A draw... Pathetic...")
+                        await ReplyWithEmbedAsync(ctx, "A draw... Pathetic...", ":video_game:")
                             .ConfigureAwait(false);
                     } else {
-                        await ctx.RespondAsync("No reply, aborting TicTacToe game...")
+                        await ReplyWithEmbedAsync(ctx, "No reply, aborting TicTacToe game...", ":alarm_clock:")
                             .ConfigureAwait(false);
                     }
                 } finally {

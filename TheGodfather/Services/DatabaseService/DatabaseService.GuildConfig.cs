@@ -98,7 +98,7 @@ namespace TheGodfather.Services
         }
 
         public async Task RemoveGuildWelcomeChannelAsync(ulong gid)
-            => await SetGuildLeaveChannelAsync(gid, 0).ConfigureAwait(false);
+            => await SetGuildWelcomeChannelAsync(gid, 0).ConfigureAwait(false);
 
         public async Task RemoveGuildLeaveChannelAsync(ulong gid)
             => await SetGuildLeaveChannelAsync(gid, 0).ConfigureAwait(false);
