@@ -387,7 +387,7 @@ namespace TheGodfather
             };
 
             if (e.Exception is CommandNotFoundException)
-                emb.Description = $"{emoji} The specified command does not exist.";
+                return;
             else if (e.Exception is InvalidCommandUsageException)
                 emb.Description = $"{emoji} Invalid usage! {ex.Message}";
             else if (e.Exception is ArgumentException)
@@ -414,6 +414,8 @@ namespace TheGodfather
                     emb.Description = $"{emoji} You do not have the required permissions to run this command!";
                 else if (attr is RequirePermissionsAttribute)
                     emb.Description = $"{emoji} Permissions to execute that command aren't met!";
+                else if (attr is RequireBotPermissionsAttribute)
+                    emb.Description = $"{emoji} I do not have the required permissions to run this command!";
                 else if (attr is RequireOwnerAttribute)
                     emb.Description = $"{emoji} That command is reserved for the bot owner only!";
                 else
