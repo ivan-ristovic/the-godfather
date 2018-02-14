@@ -14,7 +14,6 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Entities;
-using System.IO;
 #endregion
 
 namespace TheGodfather.Modules.Games

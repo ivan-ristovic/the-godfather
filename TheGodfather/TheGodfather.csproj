@@ -248,6 +248,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Attributes\UsageExampleAttribute.cs" />
+    <Compile Include="Entities\TemporaryFile.cs" />
     <Compile Include="Extensions\CustomBoolConverter.cs" />
     <Compile Include="Extensions\EmojiUtil.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />

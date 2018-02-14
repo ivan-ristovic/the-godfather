@@ -7,6 +7,8 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Text;
 using System.Threading.Tasks;
 
+using TheGodfather.Entities;
+
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 #endregion
@@ -46,17 +48,13 @@ namespace TheGodfather.Modules.Games.Common
                     }
                     g.Flush();
                 }
-                string filename = $"Temp/typing-{DateTime.Now.Ticks}.jpg";
-                if (!Directory.Exists("Temp"))
-                    Directory.CreateDirectory("Temp");
-                image.Save(filename, System.Drawing.Imaging.ImageFormat.Jpeg);
 
-                using (var fs = new FileStream(filename, FileMode.Open))
-                    await _channel.SendFileAsync(fs, content: "(you have 60s to to type)")
-                        .ConfigureAwait(false);
-
-                if (File.Exists(filename))
-                    File.Delete(filename);
+                using (var tf = new TemporaryFile(".jpg")) {
+                    tf.Save(() => image.Save(tf.FullPath, System.Drawing.Imaging.ImageFormat.Jpeg));
+                    using (var fs = tf.OpenFileStream())
+                        await _channel.SendFileAsync(fs, content: "(you have 60s to to type)")
+                            .ConfigureAwait(false);
+                }
             }
 
             var mctx = await _interactivity.WaitForMessageAsync(
