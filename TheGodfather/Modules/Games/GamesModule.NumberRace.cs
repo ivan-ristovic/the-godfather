@@ -70,7 +70,7 @@ namespace TheGodfather.Modules.Games
                         }
 
                         if (game.Winner != null)
-                            await DatabaseService.UpdateUserStatsAsync(game.Winner.Id, "nunchis_won")
+                            await DatabaseService.UpdateUserStatsAsync(game.Winner.Id, "numraces_won")
                                 .ConfigureAwait(false);
                     } else {
                         await ReplyWithEmbedAsync(ctx, "Not enough users joined the race.", ":alarm_clock:")
