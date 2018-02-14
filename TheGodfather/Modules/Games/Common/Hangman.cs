@@ -32,7 +32,7 @@ namespace TheGodfather.Modules.Games
         }
 
 
-        public async Task RunAsync()
+        public override async Task RunAsync()
         {
             _msg = await _channel.SendMessageAsync("Game starts!")
                 .ConfigureAwait(false);

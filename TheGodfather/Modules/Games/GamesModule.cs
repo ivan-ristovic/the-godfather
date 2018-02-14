@@ -1,9 +1,6 @@
 ﻿#region USING_DIRECTIVES
 using System;
 using System.Linq;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Text;
 using System.Threading.Tasks;
 
 using TheGodfather.Attributes;
@@ -251,58 +248,27 @@ namespace TheGodfather.Modules.Games
             if (Game.RunningInChannel(ctx.Channel.Id))
                 throw new CommandFailedException("Another game is already running in the current channel!");
 
-            await ReplyWithEmbedAsync(ctx, "I will send a text in 5s. First one to types it wins. FOCUS!", ":clock1:")
-                .ConfigureAwait(false);
-            await Task.Delay(5000)
-                .ConfigureAwait(false);
+            var game = new TypingRace(ctx.Client.GetInteractivity(), ctx.Channel);
+            Game.RegisterGameInChannel(game, ctx.Channel.Id);
 
-            const string chars = "abcdefghijklmnopqrstuvwxyz0123456789";
-            var rnd = new Random();
-            var msg = new string(Enumerable.Repeat(' ', 30).Select(c => chars[rnd.Next(chars.Length)]).ToArray());
-
-            using (var image = new Bitmap(700, 150)) {
-                using (Graphics g = Graphics.FromImage(image)) {
-                    g.InterpolationMode = InterpolationMode.High;
-                    g.SmoothingMode = SmoothingMode.HighQuality;
-                    g.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
-                    g.CompositingQuality = CompositingQuality.HighQuality;
-                    Rectangle layout = new Rectangle(0, 0, image.Width, image.Height);
-                    using (GraphicsPath p = new GraphicsPath()) {
-                        var font = new Font("Arial", 40);
-                        var fmt = new StringFormat() {
-                            Alignment = StringAlignment.Center,
-                            LineAlignment = StringAlignment.Center,
-                            FormatFlags = StringFormatFlags.FitBlackBox
-                        };
-                        p.AddString(msg, font.FontFamily, (int)FontStyle.Regular, font.Size, layout, fmt);
-                        g.FillPath(Brushes.White, p);
-                    }
-                    g.Flush();
-                }
-                string filename = $"Temp/typing-{DateTime.Now.Ticks}.jpg";
-                if (!Directory.Exists("Temp"))
-                    Directory.CreateDirectory("Temp");
-                image.Save(filename, System.Drawing.Imaging.ImageFormat.Jpeg);
-
-                using (var fs = new FileStream(filename, FileMode.Open))
-                    await ctx.RespondWithFileAsync(fs, content: "(you have 60s to to type)")
-                        .ConfigureAwait(false);
-
-                if (File.Exists(filename))
-                    File.Delete(filename);
-            }
-
-            var mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(
-                m => m.ChannelId == ctx.Channel.Id && m.Content.ToLower() == msg,
-                TimeSpan.FromSeconds(60)
-            ).ConfigureAwait(false);
-
-            if (mctx != null) {
-                await ReplyWithEmbedAsync(ctx, $"The winner is {mctx.User.Mention}!", ":trophy:")
+            try {
+                await ReplyWithEmbedAsync(ctx, "I will send a text in 5s. First one to types it wins. FOCUS!", ":clock1:")
                     .ConfigureAwait(false);
-            } else {
-                await ReplyWithEmbedAsync(ctx, "ROFL what a nabs...", ":alarm_clock:")
-                    .ConfigureAwait(false); ;
+                await Task.Delay(5000)
+                    .ConfigureAwait(false);
+
+                await game.RunAsync()
+                    .ConfigureAwait(false);
+
+                if (game.NoReply == true) {
+                    await ReplyWithEmbedAsync(ctx, "ROFL what a nabs...", ":alarm_clock:")
+                        .ConfigureAwait(false);
+                } else {
+                    await ReplyWithEmbedAsync(ctx, $"The winner is {game.Winner?.Mention ?? "<unknown>"}!", ":trophy:")
+                        .ConfigureAwait(false);
+                }
+            } finally {
+                Game.UnregisterGameInChannel(ctx.Channel.Id);
             }
         }
         #endregion

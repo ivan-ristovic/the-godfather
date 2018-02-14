@@ -38,7 +38,7 @@ namespace TheGodfather.Modules.Games.Common
         }
 
 
-        public async Task RunAsync()
+        public sealed override async Task RunAsync()
         {
             _msg = await _channel.SendMessageAsync($"{_p1.Mention} vs {_p2.Mention}")
                 .ConfigureAwait(false);
