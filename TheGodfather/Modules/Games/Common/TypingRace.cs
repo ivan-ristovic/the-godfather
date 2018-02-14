@@ -1,6 +1,5 @@
 ﻿#region USING_DIRECTIVES
 using System;
-using System.IO;
 using System.Linq;
 using System.Drawing;
 using System.Drawing.Drawing2D;

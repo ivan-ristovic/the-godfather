@@ -1,16 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TheGodfather.Entities
 {
     public sealed class TemporaryFile : IDisposable
     {
         public string FileName { get; set; }
-        public string Extension { get; set; } = "";
+        public string Extension { get; set; }
         public string DirPath { get; } = "Temp/";
         public string FullPath => DirPath + FileName + Extension;
 
@@ -20,7 +16,7 @@ namespace TheGodfather.Entities
             if (string.IsNullOrWhiteSpace(filename))
                 filename = DateTime.Now.Ticks.ToString();
             FileName = filename;
-            Extension = extension;
+            Extension = extension ?? "";
         }
 
 

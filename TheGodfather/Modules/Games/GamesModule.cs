@@ -239,9 +239,10 @@ namespace TheGodfather.Modules.Games
         #endregion
 
         #region COMMAND_GAMES_TYPING
-        [Command("typing")]
+        [Command("typingrace")]
         [Description("Typing race.")]
-        [Aliases("type", "typerace", "typingrace")]
+        [Aliases("type", "typerace", "typing")]
+        [UsageExample("!game typingrace")]
         public async Task TypingRaceAsync(CommandContext ctx)
         {
             if (Game.RunningInChannel(ctx.Channel.Id))
@@ -249,11 +250,10 @@ namespace TheGodfather.Modules.Games
 
             var game = new TypingRace(ctx.Client.GetInteractivity(), ctx.Channel);
             Game.RegisterGameInChannel(game, ctx.Channel.Id);
-
             try {
                 await ReplyWithEmbedAsync(ctx, "I will send a text in 5s. First one to types it wins. FOCUS!", ":clock1:")
                     .ConfigureAwait(false);
-                await Task.Delay(5000)
+                await Task.Delay(TimeSpan.FromSeconds(5))
                     .ConfigureAwait(false);
 
                 await game.RunAsync()
