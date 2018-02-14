@@ -52,20 +52,13 @@ namespace TheGodfather.Modules.Administration
             if (!IsValidImageURL(url, out Uri uri))
                 throw new CommandFailedException("URL must point to an image and use http or https protocols.");
 
-            string filename = $"Temp/tmp-avatar-{DateTime.Now.Ticks}.png";
             try {
-                if (!Directory.Exists("Temp"))
-                    Directory.CreateDirectory("Temp");
-
                 using (var wc = new WebClient()) {
                     var data = wc.DownloadData(uri.AbsoluteUri);
                     using (var ms = new MemoryStream(data))
                         await ctx.Client.UpdateCurrentUserAsync(avatar: ms)
                             .ConfigureAwait(false);
                 }
-
-                if (File.Exists(filename))
-                    File.Delete(filename);
             } catch (WebException e) {
                 throw new CommandFailedException("Web exception thrown while fetching the image.", e);
             } catch (Exception e) {

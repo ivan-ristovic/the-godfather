@@ -49,32 +49,23 @@ namespace TheGodfather.Modules.Administration
             if (!IsValidImageURL(url, out Uri uri))
                 throw new CommandFailedException("URL must point to an image and use http or https protocols.");
 
-            string filename = $"Temp/tmp-emoji-{DateTime.Now.Ticks}.png";
             try {
-                if (!Directory.Exists("Temp"))
-                    Directory.CreateDirectory("Temp");
                 using (var wc = new WebClient()) {
-                    byte[] data = wc.DownloadData(uri.AbsoluteUri);
-
+                    var data = wc.DownloadData(uri.AbsoluteUri);
                     using (var ms = new MemoryStream(data))
-                    using (var image = Image.FromStream(ms)) {
-                        image.Save(filename, System.Drawing.Imaging.ImageFormat.Png);
-                        var fs = new FileStream(filename, FileMode.Open);
-                        await ctx.Guild.CreateEmojiAsync(name, fs, reason: GetReasonString(ctx))
+                        await ctx.Guild.CreateEmojiAsync(name, ms, reason: GetReasonString(ctx))
                             .ConfigureAwait(false);
-                        await ReplyWithEmbedAsync(ctx, $"Emoji {Formatter.Bold(name)} successfully added!")
-                            .ConfigureAwait(false);
-                    }
                 }
-                if (File.Exists(filename))
-                    File.Delete(filename);
             } catch (WebException e) {
                 throw new CommandFailedException("Error getting the image.", e);
             } catch (BadRequestException e) {
-                throw new CommandFailedException("Bad request. Possibly emoji slots are full for this guild?", e);
+                throw new CommandFailedException("Possibly emoji slots are full for this guild?", e);
             } catch (Exception e) {
-                throw new CommandFailedException("Unknown error occured.", e);
+                throw new CommandFailedException("An error occured.", e);
             }
+
+            await ReplyWithEmbedAsync(ctx, $"Emoji {Formatter.Bold(name)} successfully added!")
+                .ConfigureAwait(false);
         }
         #endregion
 
