@@ -1,6 +1,7 @@
 ﻿#region USING_DIRECTIVES
 using System;
 using System.Linq;
+using System.IO;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Text;
@@ -48,11 +49,11 @@ namespace TheGodfather.Modules.Games.Common
                     g.Flush();
                 }
 
-                using (var tf = new TemporaryFile(".jpg")) {
-                    tf.Save(() => image.Save(tf.FullPath, System.Drawing.Imaging.ImageFormat.Jpeg));
-                    using (var fs = tf.OpenFileStream())
-                        await _channel.SendFileAsync(fs, content: "(you have 60s to to type)")
-                            .ConfigureAwait(false);
+                using (var ms = new MemoryStream()) {
+                    image.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
+                    ms.Position = 0;
+                    await _channel.SendFileAsync(ms, "typing-challenge.jpg", content: "(you have 60s to to type)")
+                        .ConfigureAwait(false);
                 }
             }
 
