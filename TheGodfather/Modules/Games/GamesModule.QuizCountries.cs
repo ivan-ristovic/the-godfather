@@ -9,7 +9,6 @@ using TheGodfather.Services;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Games.Common;
 
-using DSharpPlus;
 using DSharpPlus.Interactivity;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
@@ -20,41 +19,18 @@ namespace TheGodfather.Modules.Games
 {
     public partial class GamesModule
     {
-        [Group("quiz")]
-        [Description("List all available quiz categories.")]
-        [Aliases("trivia", "q")]
-        [UsageExample("!game quiz ")]
-        [Cooldown(2, 5, CooldownBucketType.User), Cooldown(3, 5, CooldownBucketType.Channel)]
-        [ListeningCheck]
-        public class QuizModule : GodfatherBaseModule
+        public partial class QuizModule
         {
-
-            public QuizModule(DatabaseService db) : base(db: db) { }
-
-
-            [GroupCommand]
-            public async Task ExecuteGroupAsync(CommandContext ctx)
-            {
-                await ReplyWithEmbedAsync(
-                    ctx,
-                    "Available quiz categories:" +
-                    $"- {Formatter.Bold("countries")}",
-                    ":information_source:"
-                ).ConfigureAwait(false);
-            }
-
-
-            #region COMMAND_QUIZ_COUNTRIES
             [Command("countries")]
             [Description("Country flags guessing quiz.")]
-            [Aliases("flags", "c")]
+            [Aliases("flags")]
+            [UsageExample("!game quiz countries")]
             public async Task CountriesQuizAsync(CommandContext ctx)
             {
                 QuizCountries.LoadCountries();
 
                 if (Game.RunningInChannel(ctx.Channel.Id))
                     throw new CommandFailedException("Another game is already running in the current channel.");
-
 
                 var quiz = new QuizCountries(ctx.Client.GetInteractivity(), ctx.Channel);
                 Game.RegisterGameInChannel(quiz, ctx.Channel.Id);
@@ -75,7 +51,7 @@ namespace TheGodfather.Modules.Games
                     int n = quiz.Results.Count();
                     if (n == 0)
                         return;
-                    if (n > 1) { 
+                    if (n > 1) {
                         List<(DiscordUser, int)> results = new List<(DiscordUser, int)>();
                         foreach (var res in quiz.Results) {
                             var user = await ctx.Client.GetUserAsync(res.Item1)
@@ -97,7 +73,6 @@ namespace TheGodfather.Modules.Games
                     Game.UnregisterGameInChannel(ctx.Channel.Id);
                 }
             }
-            #endregion
         }
     }
 }
