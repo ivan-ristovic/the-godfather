@@ -119,8 +119,8 @@ namespace TheGodfather.Modules.Games
                     "I will start by typing a number. Users have to count up by 1 from that number. " +
                     "If someone makes a mistake (types an incorrent number, or repeats the same number) " +
                     "they are out of the game. If nobody posts a number 20s after the last number was posted, " +
-                    "then the user that posted that number wins the game. The game ends when only one user remains."
-                    , ":information_source:"
+                    "then the user that posted that number wins the game. The game ends when only one user remains.",
+                    ":information_source:"
                 ).ConfigureAwait(false);
             }
             #endregion

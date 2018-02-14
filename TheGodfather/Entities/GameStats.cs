@@ -35,7 +35,7 @@ namespace TheGodfather.Entities
                     { "chain4_lost" , "0" },
                     { "caro_won" , "0" },
                     { "caro_lost" , "0" },
-                    { "nunchis_won" , "0" },
+                    { "numraces_won" , "0" },
                     { "quizes_won" , "0" },
                     { "races_won" , "0" },
                     { "hangman_won" , "0" }
@@ -74,7 +74,7 @@ namespace TheGodfather.Entities
             => $"W: {Stats["caro_won"]} L: {Stats["caro_lost"]} ({Formatter.Bold($"{CalculateWinPercentage(Stats["caro_won"], Stats["caro_lost"])}")}%)";
 
         public string NunchiStatsString()
-            => $"W: {Stats["nunchis_won"]}";
+            => $"W: {Stats["numraces_won"]}";
 
         public string QuizStatsString()
             => $"W: {Stats["quizes_won"]}";

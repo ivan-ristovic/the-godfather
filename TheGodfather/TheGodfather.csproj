@@ -265,10 +265,10 @@
     <Compile Include="Modules\Games\Common\Caro.cs" />
     <Compile Include="Modules\Games\Common\Connect4.cs" />
     <Compile Include="Modules\Games\Common\Game.cs" />
-    <Compile Include="Modules\Games\Common\Quiz.cs" />
+    <Compile Include="Modules\Games\Common\QuizCountries.cs" />
     <Compile Include="Modules\Games\Common\Hangman.cs" />
     <Compile Include="Modules\Games\Common\Duel.cs" />
-    <Compile Include="Modules\Games\Common\Nunchi.cs" />
+    <Compile Include="Modules\Games\Common\NumberRace.cs" />
     <Compile Include="Modules\Games\Common\Race.cs" />
     <Compile Include="Modules\Games\Common\TicTacToe.cs" />
     <Compile Include="Exceptions\CommandFailedException.cs" />
@@ -292,7 +292,7 @@
     <Compile Include="Modules\Administration\BotOwnerModule.cs" />
     <Compile Include="Modules\Gambling\BankModule.cs" />
     <Compile Include="Modules\Gambling\CardsModule.cs" />
-    <Compile Include="Modules\Games\NunchiModule.cs" />
+    <Compile Include="Modules\Games\GamesModule.NumberRace.cs" />
     <Compile Include="Modules\Games\QuizModule.cs" />
     <Compile Include="Modules\Games\RaceModule.cs" />
     <Compile Include="Modules\Main\RandomModule.cs" />

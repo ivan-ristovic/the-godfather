@@ -229,7 +229,7 @@ namespace TheGodfather.Services
 
         public async Task<string> GetTopNunchiPlayersStringAsync(DiscordClient client)
         {
-            var topNunchiPlayers = await GetOrderedUserStatsAsync("nunchis_won", "nunchis_won")
+            var topNunchiPlayers = await GetOrderedUserStatsAsync("numraces_won", "numraces_won")
                 .ConfigureAwait(false);
 
             StringBuilder sb = new StringBuilder();
