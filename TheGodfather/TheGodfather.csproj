@@ -278,6 +278,7 @@
     <Compile Include="Modules\Administration\Common\EvaluationEnvironment.cs" />
     <Compile Include="Modules\Games\Common\TypingRace.cs" />
     <Compile Include="Modules\Games\GamesModule.Othello.cs" />
+    <Compile Include="Modules\Games\GamesModule.QuizCountries.cs" />
     <Compile Include="Modules\Games\GamesModule.TicTacToe.cs" />
     <Compile Include="Modules\Games\GamesModule.ConnectFour.cs" />
     <Compile Include="Modules\Games\GamesModule.Caro.cs" />
@@ -293,7 +294,7 @@
     <Compile Include="Modules\Gambling\BankModule.cs" />
     <Compile Include="Modules\Gambling\CardsModule.cs" />
     <Compile Include="Modules\Games\GamesModule.NumberRace.cs" />
-    <Compile Include="Modules\Games\QuizModule.cs" />
+    <Compile Include="Modules\Games\GamesModule.Quiz.cs" />
     <Compile Include="Modules\Games\RaceModule.cs" />
     <Compile Include="Modules\Main\RandomModule.cs" />
     <Compile Include="Modules\Main\TextReactionsModule.cs" />

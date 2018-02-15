@@ -81,7 +81,7 @@ namespace TheGodfather.Services
         {
             var server = await GetSwatServerFromDatabaseAsync(name)
                 .ConfigureAwait(false);
-            return server ?? SwatServer.CreateFromIP(ip, queryport, name);
+            return server ?? SwatServer.FromIP(ip, queryport, name);
         }
 
         private async Task<SwatServer> GetSwatServerFromDatabaseAsync(string name)

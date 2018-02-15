@@ -1,11 +1,7 @@
 ﻿#region USING_DIRECTIVES
 using System;
-using System.IO;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
 
 using DSharpPlus;
 using DSharpPlus.Entities;
@@ -16,11 +12,7 @@ namespace TheGodfather.Entities
     public class GameStats
     {
         private IReadOnlyDictionary<string, string> Stats { get; }
-        public ulong UserId {
-            get {
-                bool succ = ulong.TryParse(Stats["uid"], out ulong uid); return succ ? uid : 0;
-            }
-        }
+        public ulong UserId => ulong.TryParse(Stats["uid"], out ulong uid) ? uid : 0;
 
 
         public GameStats(IReadOnlyDictionary<string, string> statdict)
@@ -46,18 +38,20 @@ namespace TheGodfather.Entities
         }
 
 
-        public DiscordEmbedBuilder GetEmbeddedStatsBuilder()
+        public DiscordEmbedBuilder GetEmbedBuilder()
         {
-            var emb = new DiscordEmbedBuilder() { Color = DiscordColor.Chartreuse };
-            emb.AddField("Duel stats", DuelStatsString());
-            emb.AddField("Tic-Tac-Toe stats", TTTStatsString());
-            emb.AddField("Connect4 stats", Chain4StatsString());
-            emb.AddField("Caro stats", CaroStatsString());
-            emb.AddField("Othello stats", OthelloStatsString());
-            emb.AddField("Nunchi stats", NunchiStatsString(), inline: true);
-            emb.AddField("Quiz stats", QuizStatsString(), inline: true);
-            emb.AddField("Race stats", RaceStatsString(), inline: true);
-            emb.AddField("Hangman stats", HangmanStatsString(), inline: true);
+            var emb = new DiscordEmbedBuilder() {
+                Color = DiscordColor.Chartreuse
+            };
+            emb.AddField("Duel stats", DuelStatsString())
+               .AddField("Tic-Tac-Toe stats", TTTStatsString())
+               .AddField("Connect4 stats", Chain4StatsString())
+               .AddField("Caro stats", CaroStatsString())
+               .AddField("Othello stats", OthelloStatsString())
+               .AddField("Nunchi stats", NunchiStatsString(), inline: true)
+               .AddField("Quiz stats", QuizStatsString(), inline: true)
+               .AddField("Race stats", RaceStatsString(), inline: true)
+               .AddField("Hangman stats", HangmanStatsString(), inline: true);
             return emb;
         }
 

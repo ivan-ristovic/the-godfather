@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿#region USING_DIRECTIVES
+using System;
 
 using DSharpPlus;
 using DSharpPlus.EventArgs;
+#endregion
 
 namespace TheGodfather.Extensions
 {

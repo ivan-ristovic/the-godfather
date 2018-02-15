@@ -2,7 +2,7 @@
 
 namespace TheGodfather.Entities.SWAT
 {
-    public class SwatServer
+    public sealed class SwatServer
     {
         public string Name { get; set; }
         public string IP { get; set; }
@@ -19,7 +19,7 @@ namespace TheGodfather.Entities.SWAT
         }
 
 
-        public static SwatServer CreateFromIP(string ip, int queryport = 10481, string name = null)
+        public static SwatServer FromIP(string ip, int queryport = 10481, string name = null)
         {
             int joinport = 10480;
 

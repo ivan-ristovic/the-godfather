@@ -1,7 +1,9 @@
-﻿using System;
-using System.Linq;
+﻿#region USING_DIRECTIVES
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Cryptography;
+#endregion
 
 namespace TheGodfather.Extensions
 {

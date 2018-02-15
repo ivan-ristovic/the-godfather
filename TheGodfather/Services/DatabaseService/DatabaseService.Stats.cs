@@ -95,7 +95,7 @@ namespace TheGodfather.Services
                 }.Build();
             }
 
-            var emb = stats.GetEmbeddedStatsBuilder();
+            var emb = stats.GetEmbedBuilder();
             emb.WithTitle($"Stats for {u.Username}");
             emb.WithThumbnailUrl(u.AvatarUrl);
             return emb.Build();

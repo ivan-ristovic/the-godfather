@@ -1,6 +1,5 @@
 ﻿#region USING_DIRECTIVES
 using System;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -78,31 +77,31 @@ namespace TheGodfather.Entities.SWAT
             if (Array.IndexOf(split, "hostname") == -1)
                 return null;
 
-            return SwatServerInfo.FromData(ip, split);
+            return FromData(ip, split);
         }
 
 
-        public bool ServerHasSpace()
+        public bool HasSpace()
         {
             return int.Parse(Players) < int.Parse(MaxPlayers);
         }
 
         public DiscordEmbed EmbedData()
         {
-            var em = new DiscordEmbedBuilder() {
+            var emb = new DiscordEmbedBuilder() {
                 Url = "https://swat4stats.com/servers/" + IP + ":" + JoinPort,
                 Title = HostName,
                 Description = IP + ":" + JoinPort,
                 Color = DiscordColor.DarkBlue
             };
-            em.AddField("Players", Players + "/" + MaxPlayers, inline: true);
-            em.AddField("Game", string.IsNullOrWhiteSpace(Game) ? Formatter.Italic("unknown") : Game, inline: true);
-            em.AddField("Version", string.IsNullOrWhiteSpace(GameVersion) ? Formatter.Italic("unknown") : GameVersion, inline: true);
-            em.AddField("Game mode", string.IsNullOrWhiteSpace(GameMode) ? Formatter.Italic("unknown") : GameMode, inline: true);
-            em.AddField("Map", string.IsNullOrWhiteSpace(Map) ? Formatter.Italic("unknown") : Map, inline: true);
-            em.AddField("Round", (string.IsNullOrWhiteSpace(Round) ? Formatter.Italic("unknown") : Round) + "/" + (string.IsNullOrWhiteSpace(MaxRounds) ? Formatter.Italic("unknown") : MaxRounds), inline: true);
+            emb.AddField("Players", Players + "/" + MaxPlayers, inline: true)
+               .AddField("Game", string.IsNullOrWhiteSpace(Game) ? Formatter.Italic("unknown") : Game, inline: true)
+               .AddField("Version", string.IsNullOrWhiteSpace(GameVersion) ? Formatter.Italic("unknown") : GameVersion, inline: true)
+               .AddField("Game mode", string.IsNullOrWhiteSpace(GameMode) ? Formatter.Italic("unknown") : GameMode, inline: true)
+               .AddField("Map", string.IsNullOrWhiteSpace(Map) ? Formatter.Italic("unknown") : Map, inline: true)
+               .AddField("Round", (string.IsNullOrWhiteSpace(Round) ? Formatter.Italic("unknown") : Round) + "/" + (string.IsNullOrWhiteSpace(MaxRounds) ? Formatter.Italic("unknown") : MaxRounds), inline: true);
 
-            return em.Build();
+            return emb.Build();
         }
     }
 }

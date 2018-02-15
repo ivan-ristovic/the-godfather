@@ -153,7 +153,7 @@ namespace TheGodfather.Modules.SWAT
                                 .ConfigureAwait(false);
                             return;
                         }
-                    } else if (info.ServerHasSpace()) {
+                    } else if (info.HasSpace()) {
                         await ctx.RespondAsync(ctx.User.Mention + ", there is space on " + info.HostName)
                             .ConfigureAwait(false);
                     }
@@ -206,7 +206,7 @@ namespace TheGodfather.Modules.SWAT
                 if (queryport <= 0 || queryport > 65535)
                     throw new InvalidCommandUsageException("Port range invalid (must be in range [1-65535])!");
 
-                var server = SwatServer.CreateFromIP(ip, queryport, name);
+                var server = SwatServer.FromIP(ip, queryport, name);
 
                 await ctx.Services.GetService<DatabaseService>().AddSwatServerAsync(name, server)
                     .ConfigureAwait(false);

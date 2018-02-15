@@ -3,14 +3,13 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-using TheGodfather.Services;
 using TheGodfather.Entities;
 using TheGodfather.Extensions.Collections;
 using TheGodfather.Modules.Gambling.Cards;
+using TheGodfather.Services;
 
 using DSharpPlus;
 using DSharpPlus.Entities;

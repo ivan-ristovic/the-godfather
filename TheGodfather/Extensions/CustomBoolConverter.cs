@@ -1,8 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿#region USING_DIRECTIVES
+using System.Threading.Tasks;
 
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Converters;
 using DSharpPlus.Entities;
+#endregion
 
 namespace TheGodfather.Extensions
 {
