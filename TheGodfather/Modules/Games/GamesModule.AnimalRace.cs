@@ -43,7 +43,7 @@ namespace TheGodfather.Modules.Games
                     return;
                 }
 
-                var game = new AnimalRace(ctx.Client, ctx.Client.GetInteractivity(), ctx.Channel);
+                var game = new AnimalRace(ctx.Client.GetInteractivity(), ctx.Channel);
                 Game.RegisterGameInChannel(game, ctx.Channel.Id);
                 try {
                     await ReplyWithEmbedAsync(ctx, $"The race will start in 30s or when there are 10 participants. Type {Formatter.InlineCode("!game animalrace")} to join the race.", ":clock1:")
@@ -87,10 +87,10 @@ namespace TheGodfather.Modules.Games
                 if (game.ParticipantCount >= 10)
                     throw new CommandFailedException("Race slots are full (max 10 participants), kthxbye.");
 
-                if (!game.AddParticipant(ctx.User.Id, out DiscordEmoji emoji))
+                if (!game.AddParticipant(ctx.User, out DiscordEmoji emoji))
                     throw new CommandFailedException("You are already participating in the race!");
 
-                await ReplyWithEmbedAsync(ctx, $"{ctx.User.Mention} joined the race as {emoji}.", ":bicyclist:")
+                await ReplyWithEmbedAsync(ctx, $"{ctx.User.Mention} joined the race as {emoji}", ":bicyclist:")
                     .ConfigureAwait(false);
             }
             #endregion
