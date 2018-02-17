@@ -1,18 +1,16 @@
 ﻿#region USING_DIRECTIVES
 using System;
-using System.Collections.Concurrent;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 
 using TheGodfather.Attributes;
-using TheGodfather.Services;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Games.Common;
+using TheGodfather.Services;
 
 using DSharpPlus;
-using DSharpPlus.Interactivity;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Interactivity;
 #endregion
 
 namespace TheGodfather.Modules.Games
@@ -21,7 +19,7 @@ namespace TheGodfather.Modules.Games
     {
         [Group("numberrace")]
         [Description("Number racing game commands.")]
-        [Aliases("n", "nunchi", "numbers", "numbersrace")]
+        [Aliases("nr", "n", "nunchi", "numbers", "numbersrace")]
         [UsageExample("!game numberrace")]
         [Cooldown(2, 5, CooldownBucketType.User), Cooldown(3, 5, CooldownBucketType.Channel)]
         [ListeningCheck]
@@ -36,7 +34,7 @@ namespace TheGodfather.Modules.Games
             {
                 if (Game.RunningInChannel(ctx.Channel.Id)) {
                     if (Game.GetRunningGameInChannel(ctx.Channel.Id) is NumberRace)
-                        await JoinGameAsync(ctx).ConfigureAwait(false);
+                        await JoinRaceAsync(ctx).ConfigureAwait(false);
                     else
                         throw new CommandFailedException("Another game is already running in the current channel.");
                     return;
@@ -47,7 +45,7 @@ namespace TheGodfather.Modules.Games
                 try {
                     await ReplyWithEmbedAsync(ctx, $"The race will start in 30s or when there are 10 participants. Type {Formatter.InlineCode("!game numberrace")} to join the race.", ":clock1:")
                         .ConfigureAwait(false);
-                    await JoinGameAsync(ctx)
+                    await JoinRaceAsync(ctx)
                         .ConfigureAwait(false);
                     await Task.Delay(TimeSpan.FromSeconds(30))
                         .ConfigureAwait(false);
@@ -87,13 +85,13 @@ namespace TheGodfather.Modules.Games
             [Description("Join an existing number race game.")]
             [Aliases("+", "compete", "j", "enter")]
             [UsageExample("!game numberrace join")]
-            public async Task JoinGameAsync(CommandContext ctx)
+            public async Task JoinRaceAsync(CommandContext ctx)
             {
                 var game = Game.GetRunningGameInChannel(ctx.Channel.Id) as NumberRace;
                 if (game == null)
                     throw new CommandFailedException("There is no number race game running in this channel.");
 
-                if (game.GameStarted)
+                if (game.Started)
                     throw new CommandFailedException("Race has already started, you can't join it.");
 
                 if (game.ParticipantCount >= 10)

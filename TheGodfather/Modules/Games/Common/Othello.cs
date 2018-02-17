@@ -1,15 +1,12 @@
 ﻿#region USING_DIRECTIVES
-using System;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 using TheGodfather.Extensions;
 
-using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
-using DSharpPlus.Exceptions;
 #endregion
 
 namespace TheGodfather.Modules.Games.Common

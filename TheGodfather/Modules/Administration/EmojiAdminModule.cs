@@ -1,9 +1,8 @@
 ﻿#region USING_DIRECTIVES
 using System;
+using System.IO;
 using System.Linq;
 using System.Net;
-using System.IO;
-using System.Drawing;
 using System.Threading.Tasks;
 
 using TheGodfather.Attributes;

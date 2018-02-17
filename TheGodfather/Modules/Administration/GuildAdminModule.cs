@@ -1,9 +1,8 @@
 ﻿#region USING_DIRECTIVES
 using System;
+using System.IO;
 using System.Linq;
 using System.Net;
-using System.IO;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using TheGodfather.Attributes;
@@ -15,7 +14,6 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-using DSharpPlus.Exceptions;
 using DSharpPlus.Net.Models;
 #endregion
 

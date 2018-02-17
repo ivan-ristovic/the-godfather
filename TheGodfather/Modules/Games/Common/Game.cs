@@ -1,9 +1,7 @@
 ﻿#region USING_DIRECTIVES
-using System;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
 
-using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 #endregion

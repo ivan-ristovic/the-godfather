@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Games.Common;
 
-using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 #endregion

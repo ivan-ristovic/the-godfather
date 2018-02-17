@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 using TheGodfather.Extensions.Collections;
 using TheGodfather.Modules.Games.Common;
 
-using DSharpPlus.Interactivity;
 using DSharpPlus.Entities;
+using DSharpPlus.Interactivity;
 #endregion
 
 namespace TheGodfather.Modules.Games
@@ -16,19 +16,19 @@ namespace TheGodfather.Modules.Games
     {
         private ConcurrentHashSet<DiscordUser> _participants = new ConcurrentHashSet<DiscordUser>();
         public int ParticipantCount => _participants.Count();
-        public bool GameStarted { get; private set; }
+        public bool Started { get; private set; }
 
 
         public NumberRace(InteractivityExtension interactivity, DiscordChannel channel)
             : base(interactivity, channel)
         {
-            GameStarted = false;
+            Started = false;
         }
 
 
         public override async Task RunAsync()
         {
-            GameStarted = true;
+            Started = true;
 
             int num = new Random().Next(1000);
             await _channel.SendMessageAsync(num.ToString())

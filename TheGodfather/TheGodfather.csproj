@@ -269,7 +269,7 @@
     <Compile Include="Modules\Games\Common\Hangman.cs" />
     <Compile Include="Modules\Games\Common\Duel.cs" />
     <Compile Include="Modules\Games\Common\NumberRace.cs" />
-    <Compile Include="Modules\Games\Common\Race.cs" />
+    <Compile Include="Modules\Games\Common\AnimaRace.cs" />
     <Compile Include="Modules\Games\Common\TicTacToe.cs" />
     <Compile Include="Exceptions\CommandFailedException.cs" />
     <Compile Include="Exceptions\InvalidCommandUsageException.cs" />
@@ -295,7 +295,7 @@
     <Compile Include="Modules\Gambling\CardsModule.cs" />
     <Compile Include="Modules\Games\GamesModule.NumberRace.cs" />
     <Compile Include="Modules\Games\GamesModule.Quiz.cs" />
-    <Compile Include="Modules\Games\RaceModule.cs" />
+    <Compile Include="Modules\Games\GamesModule.AnimalRace.cs" />
     <Compile Include="Modules\Main\RandomModule.cs" />
     <Compile Include="Modules\Main\TextReactionsModule.cs" />
     <Compile Include="Modules\Administration\ChannelAdminModule.cs" />

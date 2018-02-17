@@ -5,14 +5,14 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using TheGodfather.Attributes;
-using TheGodfather.Services;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Games.Common;
+using TheGodfather.Services;
 
-using DSharpPlus.Interactivity;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using DSharpPlus.Interactivity;
 #endregion
 
 namespace TheGodfather.Modules.Games

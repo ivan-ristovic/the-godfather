@@ -1,8 +1,11 @@
-﻿using System;
-using DSharpPlus.Entities;
-using DSharpPlus.Interactivity;
+﻿#region USING_DIRECTIVES
+using System;
 using System.Threading.Tasks;
+
+using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
+using DSharpPlus.Interactivity;
+#endregion
 
 namespace TheGodfather.Modules.Games.Common
 {

@@ -1,23 +1,24 @@
 ﻿#region USING_DIRECTIVES
 using System;
-using System.IO;
-using System.Collections.Generic;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
+
+using TheGodfather.Modules.Games.Common;
 
 using DSharpPlus;
 using DSharpPlus.Entities;
+using DSharpPlus.Interactivity;
 #endregion
 
 namespace TheGodfather.Modules.Games
 {
-    public class Race
+    public class AnimalRace : Game
     {
         #region PUBLIC_FIELDS
-        public bool GameRunning { get; private set; }
+        public bool Started { get; private set; }
         public int ParticipantCount => _participants.Count;
         public IEnumerable<ulong> WinnerIds { get; private set; }
         #endregion
@@ -27,29 +28,25 @@ namespace TheGodfather.Modules.Games
         private ConcurrentBag<string> _animals = new ConcurrentBag<string> {
             ":dog:", ":cat:", ":mouse:", ":hamster:", ":rabbit:", ":bear:", ":pig:", ":cow:", ":koala:", ":tiger:"
         };
-        private DiscordClient _client;
-        private ulong _cid;
+        private DiscordClient _client { get; }
         #endregion
 
 
-        public Race(DiscordClient client, ulong cid)
+        public AnimalRace(DiscordClient client, InteractivityExtension interactivity, DiscordChannel channel)
+            : base(interactivity, channel)
         {
             _client = client;
-            _cid = cid;
-            GameRunning = false;
+            Started = false;
         }
 
 
-        public async Task StartRaceAsync()
+        public override async Task RunAsync()
         {
-            GameRunning = true;
+            Started = true;
 
-            var chn = await _client.GetChannelAsync(_cid)
+            var msg = await _channel.SendMessageAsync("Race starting...")
                 .ConfigureAwait(false);
-
-            var msg = await chn.SendMessageAsync("Race starting...")
-                .ConfigureAwait(false);
-            var rnd = new Random((int)DateTime.Now.Ticks);
+            var rnd = new Random();
             while (!_participants.Any(p => p.Progress >= 100)) {
                 await PrintRaceAsync(msg)
                     .ConfigureAwait(false);
@@ -60,7 +57,7 @@ namespace TheGodfather.Modules.Games
                         participant.Progress = 100;
                 }
 
-                await Task.Delay(2000)
+                await Task.Delay(TimeSpan.FromSeconds(2))
                     .ConfigureAwait(false);
             }
 
@@ -70,21 +67,22 @@ namespace TheGodfather.Modules.Games
             WinnerIds = _participants.Where(p => p.Progress >= 100).Select(p => p.Id);
         }
 
-        public DiscordEmoji AddParticipant(ulong uid)
+        public bool AddParticipant(ulong uid, out DiscordEmoji emoji)
         {
+            emoji = null;
             if (_participants.Any(p => p.Id == uid))
-                return null;
+                return false;
 
-            string emoji;
-            if (!_animals.TryTake(out emoji))
-                return null;
+            if (!_animals.TryTake(out string emojistr))
+                return false;
             _participants.Enqueue(new RaceParticipant {
                 Id = uid,
-                Emoji = emoji,
+                Emoji = emojistr,
                 Progress = 0
             });
 
-            return DiscordEmoji.FromName(_client, emoji);
+            emoji = DiscordEmoji.FromName(_client, emojistr);
+            return true;
         }
 
         private async Task PrintRaceAsync(DiscordMessage msg)
@@ -100,7 +98,7 @@ namespace TheGodfather.Modules.Games
                 sb.Append("| " + u.Mention);
                 if (participant.Progress == 100)
                     sb.Append(" " + DiscordEmoji.FromName(_client, ":trophy:"));
-                sb.Append('\n');
+                sb.AppendLine();
             }
             await msg.ModifyAsync(sb.ToString())
                 .ConfigureAwait(false);

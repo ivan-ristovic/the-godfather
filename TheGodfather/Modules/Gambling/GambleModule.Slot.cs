@@ -8,9 +8,9 @@ using TheGodfather.Services;
 using TheGodfather.Exceptions;
 
 using DSharpPlus;
-using DSharpPlus.Entities;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Entities;
 #endregion
 
 namespace TheGodfather.Modules.Gambling
