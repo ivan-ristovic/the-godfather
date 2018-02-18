@@ -32,13 +32,13 @@ namespace TheGodfather.Modules.Messages
 
         public EmojiReactionsModule(SharedData shared, DatabaseService db) : base(shared, db) { }
 
-        
+
         [GroupCommand]
         [RequirePermissions(Permissions.ManageGuild)]
         public async Task ExecuteGroupAsync(CommandContext ctx,
                                            [Description("Emoji to send.")] DiscordEmoji emoji = null,
                                            [RemainingText, Description("Trigger word list.")] params string[] triggers)
-            =>  await AddAsync(ctx, emoji, triggers).ConfigureAwait(false);
+            => await AddAsync(ctx, emoji, triggers).ConfigureAwait(false);
 
 
         #region COMMAND_EMOJI_REACTIONS_ADD
@@ -46,6 +46,7 @@ namespace TheGodfather.Modules.Messages
         [Description("Add emoji reaction to guild reaction list.")]
         [Aliases("+", "new", "a")]
         [UsageExample("!emojireaction add :smile: haha")]
+        [UsageExample("!emojireaction add haha :smile:")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task AddAsync(CommandContext ctx,
                                   [Description("Emoji to send.")] DiscordEmoji emoji,
@@ -63,16 +64,17 @@ namespace TheGodfather.Modules.Messages
                 if (!SharedData.GuildEmojiReactions.ContainsKey(ctx.Guild.Id))
                     SharedData.GuildEmojiReactions.TryAdd(ctx.Guild.Id, new ConcurrentDictionary<string, ConcurrentHashSet<Regex>>());
 
-                string reaction = emoji.GetDiscordName();
                 var regex = new Regex($@"\b{trigger}\b");
-                if (SharedData.GuildEmojiReactions[ctx.Guild.Id].ContainsKey(reaction)) {
-                    if (!SharedData.GuildEmojiReactions[ctx.Guild.Id][reaction].Any(r => r.ToString() == regex.ToString()))
-                        SharedData.GuildEmojiReactions[ctx.Guild.Id][reaction].Add(regex);
-                    else
-                        failed.Add(trigger);
-                } else {
-                    SharedData.GuildEmojiReactions[ctx.Guild.Id].TryAdd(reaction, new ConcurrentHashSet<Regex>() { regex });
+                if (SharedData.GuildEmojiReactions[ctx.Guild.Id].Values.Any(set => set.Any(r => r.ToString() == regex.ToString()))) {
+                    failed.Add(trigger);
+                    continue;
                 }
+
+                string reaction = emoji.GetDiscordName();
+                if (SharedData.GuildEmojiReactions[ctx.Guild.Id].ContainsKey(reaction))
+                    SharedData.GuildEmojiReactions[ctx.Guild.Id][reaction].Add(regex);
+                else
+                    SharedData.GuildEmojiReactions[ctx.Guild.Id].TryAdd(reaction, new ConcurrentHashSet<Regex>() { regex });
 
                 try {
                     await DatabaseService.AddEmojiReactionAsync(ctx.Guild.Id, trigger, reaction)
@@ -95,27 +97,49 @@ namespace TheGodfather.Modules.Messages
             => await AddAsync(ctx, emoji, trigger).ConfigureAwait(false);
         #endregion
 
-            #region COMMAND_EMOJI_REACTIONS_DELETE
-        [Command("delete")]
+        #region COMMAND_EMOJI_REACTIONS_DELETE
+        [Command("delete"), Priority(1)]
         [Description("Remove emoji reactions for given trigger words.")]
         [Aliases("-", "remove", "del", "rm", "d")]
+        [UsageExample("!emojireaction delete haha sometrigger")]
+        [UsageExample("!emojireaction delete :joy:")]
         [RequireUserPermissions(Permissions.ManageGuild)]
+        public async Task DeleteAsync(CommandContext ctx,
+                                     [Description("Emoji to send.")] DiscordEmoji emoji)
+        {
+            if (!SharedData.GuildEmojiReactions.ContainsKey(ctx.Guild.Id))
+                throw new CommandFailedException("This guild has no emoji reactions registered.");
+
+            string reaction = emoji.GetDiscordName();
+            if (SharedData.GuildEmojiReactions[ctx.Guild.Id].ContainsKey(reaction))
+                SharedData.GuildEmojiReactions[ctx.Guild.Id].TryRemove(reaction, out _);
+
+            await DatabaseService.RemoveAllEmojiReactionTriggersForReactionAsync(ctx.Guild.Id, reaction)
+                .ConfigureAwait(false);
+            await ReplyWithEmbedAsync(ctx)
+                .ConfigureAwait(false);
+        }
+
+        [Command("delete"), Priority(0)]
         public async Task DeleteAsync(CommandContext ctx,
                                      [RemainingText, Description("Trigger word list.")] params string[] triggers)
         {
-            /*
             if (triggers == null)
                 throw new InvalidCommandUsageException("Missing trigger words!");
 
-            if (ctx.Services.GetService<SharedData>().TryRemoveGuildEmojiReactions(ctx.Guild.Id, triggers))
-                await ctx.RespondAsync("Successfully removed given trigger words for emoji reaction.").ConfigureAwait(false);
-            else
-                await ctx.RespondAsync("Done. Some trigger words were not in list anyway though.").ConfigureAwait(false);
-            
-            foreach (var trigger in triggers)
-                await ctx.Services.GetService<DatabaseService>().RemoveEmojiReactionAsync(ctx.Guild.Id, trigger)
+            if (!SharedData.GuildEmojiReactions.ContainsKey(ctx.Guild.Id))
+                throw new CommandFailedException("This guild has no emoji reactions registered.");
+
+            foreach (var trigger in triggers.Select(t => t.ToLowerInvariant())) {
+                string regex = $@"\b{trigger}\b";
+                foreach (var kvp in SharedData.GuildEmojiReactions[ctx.Guild.Id])
+                    kvp.Value.RemoveWhere(r => r.ToString() == regex);
+                await DatabaseService.RemoveEmojiReactionTriggerAsync(ctx.Guild.Id, trigger)
                     .ConfigureAwait(false);
-            */
+            }
+
+            await ReplyWithEmbedAsync(ctx)
+                .ConfigureAwait(false);
         }
         #endregion
 
