@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Attributes;
 using TheGodfather.Services;
 using TheGodfather.Exceptions;
+using TheGodfather.Extensions;
 using TheGodfather.Extensions.Collections;
 
 using DSharpPlus;
@@ -106,7 +107,7 @@ namespace TheGodfather.Modules.Messages
         #region COMMAND_FILTER_DELETE
         [Command("delete")]
         [Description("Remove filters from guild filter list.")]
-        [Aliases("-", "remove", "del")]
+        [Aliases("-", "remove", "del", "rm", "rem")]
         [UsageExample("!filter delete fuck f+u+c+k+")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task DeleteAsync(CommandContext ctx,
@@ -140,29 +141,19 @@ namespace TheGodfather.Modules.Messages
         [Command("list")]
         [Description("Show all filters for this guild.")]
         [Aliases("ls", "l")]
-        public async Task ListAsync(CommandContext ctx,
-                                   [Description("Page")] int page = 1)
+        [UsageExample("!filter list")]
+        public async Task ListAsync(CommandContext ctx)
         {
-            var filters = await ctx.Services.GetService<DatabaseService>().GetFiltersForGuildAsync(ctx.Guild.Id)
-                .ConfigureAwait(false);
+            if (!SharedData.GuildFilters.ContainsKey(ctx.Guild.Id) || !SharedData.GuildFilters[ctx.Guild.Id].Any())
+                throw new CommandFailedException("No filters registered for this guild.");
 
-            if (filters == null || !filters.Any()) {
-                await ctx.RespondAsync("No filters registered for this guild.")
-                    .ConfigureAwait(false);
-                return;
-            }
-
-            if (page < 1 || page > filters.Count / 20 + 1)
-                throw new CommandFailedException("No filters on that page.");
-
-            int starti = (page - 1) * 20;
-            int len = starti + 20 < filters.Count ? 20 : filters.Count - starti;
-
-            await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
-                Title = $"Available filters (page {page}/{filters.Count / 20 + 1}) :",
-                Description = string.Join(", ", filters.OrderBy(v => v).ToList().GetRange(starti, len)),
-                Color = DiscordColor.Green
-            }.Build()).ConfigureAwait(false);
+            await InteractivityUtil.SendPaginatedCollectionAsync(
+                ctx,
+                "Filters in this guild",
+                SharedData.GuildFilters[ctx.Guild.Id],
+                r => r.ToString().Replace(@"\b", ""),
+                DiscordColor.DarkGreen
+            ).ConfigureAwait(false);
         }
         #endregion
 
