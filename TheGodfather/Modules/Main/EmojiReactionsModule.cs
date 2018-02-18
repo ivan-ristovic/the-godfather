@@ -145,25 +145,18 @@ namespace TheGodfather.Modules.Messages
 
         #region COMMAND_EMOJI_REACTIONS_LIST
         [Command("list")]
-        [Description("Show all emoji reactions.")]
-        [Aliases("ls", "l")]
-        public async Task ListAsync(CommandContext ctx,
-                                   [Description("Page.")] int page = 1)
+        [Description("Show all emoji reactions for this guild.")]
+        [Aliases("ls", "l", "view")]
+        [UsageExample("!emojireaction list")]
+        public async Task ListAsync(CommandContext ctx)
         {
-            // TODO 
-
-            var reactions = ctx.Services.GetService<SharedData>().GetAllGuildEmojiReactions(ctx.Guild.Id);
-
-            if (reactions == null || !reactions.Any()) {
-                await ctx.RespondAsync("No emoji reactions registered for this guild.")
-                    .ConfigureAwait(false);
-                return;
-            }
+            if (!SharedData.GuildEmojiReactions.ContainsKey(ctx.Guild.Id) || !SharedData.GuildEmojiReactions[ctx.Guild.Id].Any())
+                throw new CommandFailedException("No emoji reactions registered for this guild.");
 
             await InteractivityUtil.SendPaginatedCollectionAsync(
                 ctx,
                 "Emoji reactions for this guild",
-                reactions.Where(kvp => kvp.Value.Any()),
+                SharedData.GuildEmojiReactions[ctx.Guild.Id].Where(kvp => kvp.Value.Any()),
                 kvp => $"{DiscordEmoji.FromName(ctx.Client, kvp.Key)} => {string.Join(", ", kvp.Value.Select(r => r.ToString().Replace(@"\b", "")))}",
                 DiscordColor.Blue
             ).ConfigureAwait(false);

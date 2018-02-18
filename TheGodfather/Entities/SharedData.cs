@@ -176,15 +176,6 @@ namespace TheGodfather
         }
         #endregion
 
-        #region REACTIONS
-        public IReadOnlyDictionary<string, ConcurrentHashSet<Regex>> GetAllGuildEmojiReactions(ulong gid)
-        {
-            if (GuildEmojiReactions.ContainsKey(gid) && GuildEmojiReactions[gid] != null)
-                return GuildEmojiReactions[gid];
-            else
-                return null;
-        }
-
         public IReadOnlyList<DiscordEmoji> GetEmojisForEmojiReaction(DiscordClient client, ulong gid, string message)
         {
             var emojis = new List<DiscordEmoji>();
@@ -206,7 +197,6 @@ namespace TheGodfather
 
             return emojis.AsReadOnly();
         }
-        #endregion
 
         #region TRIGGERS
         public IReadOnlyDictionary<string, string> GetAllGuildTextReactions(ulong gid)
