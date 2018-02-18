@@ -166,17 +166,23 @@ namespace TheGodfather.Modules.Messages
         #region COMMAND_EMOJI_REACTIONS_CLEAR
         [Command("clear")]
         [Description("Delete all reactions for the current guild.")]
-        [Aliases("da", "c")]
+        [Aliases("da", "c", "ca", "cl")]
+        [UsageExample("!emojireactions clear")]
         [RequireUserPermissions(Permissions.Administrator)]
         public async Task ClearAsync(CommandContext ctx)
         {
-            /*
-            ctx.Services.GetService<SharedData>().DeleteAllGuildEmojiReactions(ctx.Guild.Id);
-            await ctx.RespondAsync("All emoji reactions successfully removed.")
+            await ReplyWithEmbedAsync(ctx, "Are you sure you want to delete all emoji reactions for this guild?", ":question:")
                 .ConfigureAwait(false);
-            await ctx.Services.GetService<DatabaseService>().DeleteAllGuildEmojiReactionsAsync(ctx.Guild.Id)
+            if (!await InteractivityUtil.WaitForConfirmationAsync(ctx))
+                return;
+
+            if (SharedData.GuildEmojiReactions.ContainsKey(ctx.Guild.Id))
+                SharedData.GuildEmojiReactions.TryRemove(ctx.Guild.Id, out _);
+
+            await DatabaseService.DeleteAllGuildEmojiReactionsAsync(ctx.Guild.Id)
                 .ConfigureAwait(false);
-            */
+            await ReplyWithEmbedAsync(ctx, "Removed all emoji reactions!")
+                .ConfigureAwait(false);
         }
         #endregion
     }
