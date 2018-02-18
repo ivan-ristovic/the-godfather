@@ -189,7 +189,7 @@ namespace TheGodfather
                 while (exc is AggregateException)
                     exc = exc.InnerException;
                 Log(LogLevel.Error,
-                    $"Failed to send a welcome message!<br>" + 
+                    $"Failed to send a welcome message!<br>" +
                     $"Channel ID: {cid}<br>" +
                     $"{e.Guild.ToString()}<br>" +
                     $"Exception: {exc.GetType()}<br>" +
@@ -221,7 +221,7 @@ namespace TheGodfather
                     $"Failed to send a leaving message!<br>" +
                     $"Channel ID: {cid}<br>" +
                     $"{e.Guild.ToString()}<br>" +
-                    $"Exception: {exc.GetType()}<br>" + 
+                    $"Exception: {exc.GetType()}<br>" +
                     $"Message: {exc.Message}"
                 );
             }
@@ -243,9 +243,9 @@ namespace TheGodfather
                     await e.Channel.DeleteMessageAsync(e.Message)
                         .ConfigureAwait(false);
                     Log(LogLevel.Debug,
-                        $"Filter triggered:<br>" + 
+                        $"Filter triggered:<br>" +
                         $"Message: {e.Message.Content}<br>" +
-                        $"{e.Message.Author.ToString()}<br>" + 
+                        $"{e.Message.Author.ToString()}<br>" +
                         $"{e.Guild.ToString()} ; {e.Channel.ToString()}"
                     );
                 } catch (UnauthorizedException) {
@@ -278,7 +278,7 @@ namespace TheGodfather
             var response = _shared.GetResponseForTextReaction(e.Guild.Id, e.Message.Content);
             if (response != null) {
                 Log(LogLevel.Debug,
-                    $"Text reaction detected:<br>" + 
+                    $"Text reaction detected:<br>" +
                     $"Message: {e.Message.Content}<br>" +
                     $"{e.Message.Author.ToString()}<br>" +
                     $"{e.Guild.ToString()} ; {e.Channel.ToString()}"
@@ -291,27 +291,29 @@ namespace TheGodfather
                 return;
 
             // Check if message has an emoji reaction
-            var emojilist = _shared.GetEmojisForEmojiReaction(Client, e.Guild.Id, e.Message.Content);
-            if (emojilist.Any()) {
+            if (_shared.GuildEmojiReactions.ContainsKey(e.Guild.Id) && _shared.GuildEmojiReactions[e.Guild.Id] != null) {
                 Log(LogLevel.Debug,
-                    $"Emoji reaction detected:<br>" + 
+                    $"Emoji reaction detected:<br>" +
                     $"Message: {e.Message.Content}<br>" +
-                    $"{e.Message.Author.ToString()}<br>" + 
+                    $"{e.Message.Author.ToString()}<br>" +
                     $"{e.Guild.ToString()} ; {e.Channel.ToString()}"
                 );
-                foreach (var emoji in emojilist) {
-                    try {
-                        await e.Message.CreateReactionAsync(emoji)
-                            .ConfigureAwait(false);
-                    } catch (ArgumentException) {
-                        await e.Channel.SendMessageAsync($"I have a reaction for that message set up ({emoji}) but that emoji doesn't exits. Fix your shit pls.")
-                            .ConfigureAwait(false);
-                    } catch (UnauthorizedException) {
-                        await e.Channel.SendMessageAsync($"I have a reaction for that message set up ({emoji}) but I do not have permissions to add reactions. Fix your shit pls.")
-                            .ConfigureAwait(false);
+                foreach (var reaction in _shared.GuildEmojiReactions[e.Guild.Id]) {
+                    foreach (var trigger in reaction.Value) {
+                        if (trigger.IsMatch(e.Message.Content)) {
+                            try {
+                                var emoji = DiscordEmoji.FromName(Client, reaction.Key);
+                                await e.Message.CreateReactionAsync(emoji)
+                                    .ConfigureAwait(false);
+                                break;
+                            } catch (ArgumentException) {
+                                Client.DebugLogger.LogMessage(LogLevel.Warning, "TheGodfather", "Emoji name is not valid!", DateTime.Now);
+                            } catch (UnauthorizedException) {
+                                await e.Channel.SendMessageAsync($"I have a reaction for that message set up but I do not have permissions to add reactions. Fix your shit pls.")
+                                    .ConfigureAwait(false);
+                            }
+                        }
                     }
-                    await Task.Delay(250)
-                        .ConfigureAwait(false);
                 }
             }
         }
@@ -328,15 +330,15 @@ namespace TheGodfather
                         .ConfigureAwait(false);
                     Log(LogLevel.Debug,
                         $"Filter triggered in edit of a message:<br>" +
-                        $"Message: {e.Message.Content}<br>" + 
-                        $"{e.Message.Author.ToString()}<br>" + 
+                        $"Message: {e.Message.Content}<br>" +
+                        $"{e.Message.Author.ToString()}<br>" +
                         $"{e.Guild.ToString()} ; {e.Channel.ToString()}"
                     );
                 } catch (UnauthorizedException) {
                     Log(LogLevel.Warning,
                         $"Filter triggered in edited message but missing permissions to delete!<br>" +
-                        $"Message: '{e.Message.Content}<br>" + 
-                        $"{e.Message.Author.ToString()}<br>" + 
+                        $"Message: '{e.Message.Content}<br>" +
+                        $"{e.Message.Author.ToString()}<br>" +
                         $"{e.Guild.ToString()} ; {e.Channel.ToString()}"
                     );
                     await e.Channel.SendMessageAsync("The edited message contains the filtered word but I do not have permissions to delete it.")
@@ -355,7 +357,7 @@ namespace TheGodfather
 
             Log(LogLevel.Info,
                 $"Executed: {e.Command?.QualifiedName ?? "<unknown command>"}<br>" +
-                $"{e.Context.User.ToString()}<br>" + 
+                $"{e.Context.User.ToString()}<br>" +
                 $"{e.Context.Guild.ToString()}; {e.Context.Channel.ToString()}"
             );
         }

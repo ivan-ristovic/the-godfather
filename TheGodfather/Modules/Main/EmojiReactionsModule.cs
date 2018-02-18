@@ -1,17 +1,15 @@
 ﻿#region USING_DIRECTIVES
-using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 
 using TheGodfather.Attributes;
-using TheGodfather.Services;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Extensions.Collections;
+using TheGodfather.Services;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -157,7 +155,7 @@ namespace TheGodfather.Modules.Messages
                 ctx,
                 "Emoji reactions for this guild",
                 SharedData.GuildEmojiReactions[ctx.Guild.Id].Where(kvp => kvp.Value.Any()),
-                kvp => $"{DiscordEmoji.FromName(ctx.Client, kvp.Key)} => {string.Join(", ", kvp.Value.Select(r => r.ToString().Replace(@"\b", "")))}",
+                kvp => $"{kvp.Key} => {string.Join(", ", kvp.Value.Select(r => r.ToString().Replace(@"\b", "")))}",
                 DiscordColor.Blue
             ).ConfigureAwait(false);
         }

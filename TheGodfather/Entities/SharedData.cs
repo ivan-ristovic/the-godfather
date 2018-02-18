@@ -176,28 +176,6 @@ namespace TheGodfather
         }
         #endregion
 
-        public IReadOnlyList<DiscordEmoji> GetEmojisForEmojiReaction(DiscordClient client, ulong gid, string message)
-        {
-            var emojis = new List<DiscordEmoji>();
-
-            if (GuildEmojiReactions.ContainsKey(gid) && GuildEmojiReactions[gid] != null) {
-                foreach (var reaction in GuildEmojiReactions[gid]) {
-                    foreach (var trigger in reaction.Value) {
-                        if (trigger.IsMatch(message)) {
-                            try {
-                                emojis.Add(DiscordEmoji.FromName(client, reaction.Key));
-                                break;
-                            } catch (ArgumentException) {
-                                client.DebugLogger.LogMessage(LogLevel.Warning, "TheGodfather", "Emoji name is not valid!", DateTime.Now);
-                            }
-                        }
-                    }
-                }
-            }
-
-            return emojis.AsReadOnly();
-        }
-
         #region TRIGGERS
         public IReadOnlyDictionary<string, string> GetAllGuildTextReactions(ulong gid)
         {
