@@ -23,7 +23,7 @@ namespace TheGodfather
         public ConcurrentDictionary<ulong, string> GuildPrefixes { get; internal set; }
         public ConcurrentDictionary<ulong, ConcurrentHashSet<Regex>> GuildFilters { get; internal set; }
         public ConcurrentDictionary<ulong, ConcurrentDictionary<string, string>> GuildTextReactions { get; internal set; }
-        public ConcurrentDictionary<ulong, ConcurrentDictionary<string, string>> GuildEmojiReactions { get; internal set; }
+        public ConcurrentDictionary<ulong, ConcurrentDictionary<string, ConcurrentHashSet<Regex>>> GuildEmojiReactions { get; internal set; }
         public ConcurrentDictionary<ulong, ulong> MessageCount { get; internal set; }
         public ConcurrentDictionary<ulong, Deck> CardDecks { get; internal set; } = new ConcurrentDictionary<ulong, Deck>();
         public IReadOnlyList<string> Ranks = new List<string>() {
@@ -170,14 +170,14 @@ namespace TheGodfather
         public async Task SaveRanksToDatabaseAsync(DatabaseService db)
         {
             //lock (_rankLock) {
-                foreach (var entry in MessageCount)
-                    await db.UpdateMessageCountForUserAsync(entry.Key, entry.Value).ConfigureAwait(false);
+            foreach (var entry in MessageCount)
+                await db.UpdateMessageCountForUserAsync(entry.Key, entry.Value).ConfigureAwait(false);
             //}
         }
         #endregion
 
         #region REACTIONS
-        public IReadOnlyDictionary<string, string> GetAllGuildEmojiReactions(ulong gid)
+        public IReadOnlyDictionary<string, ConcurrentHashSet<Regex>> GetAllGuildEmojiReactions(ulong gid)
         {
             if (GuildEmojiReactions.ContainsKey(gid) && GuildEmojiReactions[gid] != null)
                 return GuildEmojiReactions[gid];
@@ -190,12 +190,15 @@ namespace TheGodfather
             var emojis = new List<DiscordEmoji>();
 
             if (GuildEmojiReactions.ContainsKey(gid) && GuildEmojiReactions[gid] != null) {
-                foreach (var word in message.ToLower().Split(' ')) {
-                    if (GuildEmojiReactions[gid].ContainsKey(word)) {
-                        try {
-                            emojis.Add(DiscordEmoji.FromName(client, GuildEmojiReactions[gid][word]));
-                        } catch (ArgumentException) {
-                            client.DebugLogger.LogMessage(LogLevel.Warning, "TheGodfather", "Emoji name is not valid!", DateTime.Now);
+                foreach (var reaction in GuildEmojiReactions[gid]) {
+                    foreach (var trigger in reaction.Value) {
+                        if (trigger.IsMatch(message)) {
+                            try {
+                                emojis.Add(DiscordEmoji.FromName(client, reaction.Key));
+                                break;
+                            } catch (ArgumentException) {
+                                client.DebugLogger.LogMessage(LogLevel.Warning, "TheGodfather", "Emoji name is not valid!", DateTime.Now);
+                            }
                         }
                     }
                 }
@@ -206,51 +209,17 @@ namespace TheGodfather
 
         public bool TryAddGuildEmojiReaction(ulong gid, DiscordEmoji emoji, string[] triggers)
         {
-            if (GuildEmojiReactions.ContainsKey(gid)) {
-                if (GuildEmojiReactions[gid] == null)
-                    GuildEmojiReactions[gid] = new ConcurrentDictionary<string, string>();
-            } else {
-                if (!GuildEmojiReactions.TryAdd(gid, new ConcurrentDictionary<string, string>()))
-                    return false;
-            }
-
-            bool conflict_exists = false;
-            foreach (var trigger in triggers.Select(t => t.ToLower())) {
-                if (string.IsNullOrWhiteSpace(trigger))
-                    continue;
-                if (GuildEmojiReactions[gid].ContainsKey(trigger))
-                    conflict_exists = true;
-                else
-                    conflict_exists |= !GuildEmojiReactions[gid].TryAdd(trigger, emoji.GetDiscordName());
-            }
-
-            return !conflict_exists;
+            return true;
         }
 
         public bool TryRemoveGuildEmojiReactions(ulong gid, string[] triggers)
         {
-            if (!GuildEmojiReactions.ContainsKey(gid))
-                return true;
-
-            bool conflict_found = false;
-            foreach (var trigger in triggers) {
-                if (string.IsNullOrWhiteSpace(trigger))
-                    continue;
-                if (GuildEmojiReactions[gid].ContainsKey(trigger))
-                    conflict_found |= !GuildEmojiReactions[gid].TryRemove(trigger, out _);
-                else
-                    conflict_found = true;
-            }
-
-            return !conflict_found;
+            return true;
         }
 
         public void DeleteAllGuildEmojiReactions(ulong gid)
         {
-            if (!GuildEmojiReactions.ContainsKey(gid))
-                return;
 
-            GuildEmojiReactions[gid].Clear();
         }
         #endregion
 

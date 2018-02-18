@@ -292,7 +292,7 @@ namespace TheGodfather
 
             // Check if message has an emoji reaction
             var emojilist = _shared.GetEmojisForEmojiReaction(Client, e.Guild.Id, e.Message.Content);
-            if (emojilist.Count > 0) {
+            if (emojilist.Any()) {
                 Log(LogLevel.Debug,
                     $"Emoji reaction detected:<br>" + 
                     $"Message: {e.Message.Content}<br>" +

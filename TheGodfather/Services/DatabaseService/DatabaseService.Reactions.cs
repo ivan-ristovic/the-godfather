@@ -1,6 +1,7 @@
 ﻿#region USING_DIRECTIVES
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 using Npgsql;
@@ -103,9 +104,9 @@ namespace TheGodfather.Services
         #endregion
 
         #region EMOJI_REACTION_SERVICES
-        public async Task<Dictionary<ulong, Dictionary<string, string>>> GetAllEmojiReactionsAsync()
+        public async Task<Dictionary<ulong, Dictionary<string, List<Regex>>>> GetAllEmojiReactionsAsync()
         {
-            var triggers = new Dictionary<ulong, Dictionary<string, string>>();
+            var triggers = new Dictionary<ulong, Dictionary<string, List<Regex>>>();
 
             await _sem.WaitAsync();
             try {
@@ -118,13 +119,23 @@ namespace TheGodfather.Services
                     using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
                         while (await reader.ReadAsync().ConfigureAwait(false)) {
                             ulong gid = (ulong)(long)reader["gid"];
+
                             if (triggers.ContainsKey(gid)) {
                                 if (triggers[gid] == null)
-                                    triggers[gid] = new Dictionary<string, string>();
+                                    triggers[gid] = new Dictionary<string, List<Regex>>();
                             } else {
-                                triggers.Add(gid, new Dictionary<string, string>());
+                                triggers.Add(gid, new Dictionary<string, List<Regex>>());
                             }
-                            triggers[gid].Add((string)reader["trigger"], (string)reader["reaction"]);
+
+                            string reaction = (string)reader["reaction"];
+                            if (triggers[gid].ContainsKey(reaction)) {
+                                if (triggers[gid][reaction] == null)
+                                    triggers[gid][reaction] = new List<Regex>();
+                            } else {
+                                triggers[gid].Add(reaction, new List<Regex>());
+                            }
+
+                            triggers[gid][reaction].Add(new Regex($@"\b{(string)reader["trigger"]}\b"));
                         }
                     }
                 }
