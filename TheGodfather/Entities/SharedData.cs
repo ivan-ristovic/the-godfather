@@ -72,22 +72,6 @@ namespace TheGodfather
             return GuildFilters[gid].Any(f => f.Match(message).Success);
         }
 
-        public bool TryAddGuildFilter(ulong gid, Regex regex)
-        {
-            if (GuildFilters.ContainsKey(gid)) {
-                if (GuildFilters[gid] == null)
-                    GuildFilters[gid] = new ConcurrentHashSet<Regex>();
-            } else {
-                if (!GuildFilters.TryAdd(gid, new ConcurrentHashSet<Regex>()))
-                    return false;
-            }
-
-            if (GuildFilters[gid].Any(r => r.ToString() == regex.ToString()))
-                return false;
-
-            return GuildFilters[gid].Add(regex);
-        }
-
         public bool TryRemoveGuildFilter(ulong gid, string filter)
         {
             if (!GuildFilters.ContainsKey(gid))

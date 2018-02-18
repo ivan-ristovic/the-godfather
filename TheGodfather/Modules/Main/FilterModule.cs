@@ -1,7 +1,7 @@
 ﻿#region USING_DIRECTIVES
 using System;
 using System.Linq;
-using System.Collections.Generic;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -50,10 +50,20 @@ namespace TheGodfather.Modules.Messages
             if (filters == null || !filters.Any())
                 throw new InvalidCommandUsageException("Filter words missing.");
 
-            List<string> failed = new List<string>();
+            var errors = new StringBuilder();
             foreach (var filter in filters) {
-                if (filter.Contains('%') || filter.Length < 3 || filter.Length > 60 || SharedData.TextTriggerExists(ctx.Guild.Id, filter)) {
-                    failed.Add(filter);
+                if (filter.Contains('%')) {
+                    errors.AppendLine($"Error: Filter {Formatter.Bold(filter)} cannot contain '%' character.");
+                    continue;
+                }
+
+                if (filter.Length < 3 || filter.Length > 60) {
+                    errors.AppendLine($"Error: Filter {Formatter.Bold(filter)} doesn't fit the size requirement. Filters cannot be shorter than 3 and longer than 60 characters.");
+                    continue;
+                }
+
+                if (SharedData.TextTriggerExists(ctx.Guild.Id, filter)) {
+                    errors.AppendLine($"Error: Filter {Formatter.Bold(filter)} cannot be added because of a conflict with an existing text trigger in this guild.");
                     continue;
                 }
 
@@ -61,18 +71,18 @@ namespace TheGodfather.Modules.Messages
                 try {
                     regex = new Regex($@"\b{filter}\b", RegexOptions.IgnoreCase);
                 } catch (ArgumentException) {
-                    failed.Add(filter);
+                    errors.AppendLine($"Error: Filter {Formatter.Bold(filter)} is not a valid regular expression.");
                     continue;
                 }
 
                 if (ctx.Client.GetCommandsNext().RegisteredCommands.Any(kvp => regex.IsMatch(kvp.Key))) {
-                    failed.Add(filter);
+                    errors.AppendLine($"Error: Filter {Formatter.Bold(filter)} collides with an existing bot command.");
                     continue;
                 }
 
                 if (SharedData.GuildFilters.ContainsKey(ctx.Guild.Id)) {
                     if (SharedData.GuildFilters[ctx.Guild.Id].Any(r => r.ToString() == regex.ToString())) {
-                        failed.Add(filter);
+                        errors.AppendLine($"Error: Filter {Formatter.Bold(filter)} already exists.");
                         continue;
                     }
                     SharedData.GuildFilters[ctx.Guild.Id].Add(regex);
@@ -80,14 +90,16 @@ namespace TheGodfather.Modules.Messages
                     SharedData.GuildFilters.TryAdd(ctx.Guild.Id, new ConcurrentHashSet<Regex>() { regex });
                 }
 
-                await DatabaseService.AddFilterAsync(ctx.Guild.Id, filter)
-                    .ConfigureAwait(false);
+                try {
+                    await DatabaseService.AddFilterAsync(ctx.Guild.Id, filter)
+                        .ConfigureAwait(false);
+                } catch {
+                    errors.AppendLine($"Warning: Failed to add filter {Formatter.Bold(filter)} to the database.");
+                }
             }
 
-            if (failed.Any())
-                await ReplyWithEmbedAsync(ctx, $"Failed to add: {string.Join(", ", failed.Select(s => Formatter.Bold(s)))}.\n\nFilters must be valid regular expressions and cannot be added if they already exist or if they are longer than 60 or less than 3 characters. Also filters must not overlap an existing text reaction or bot command.", ":negative_squared_cross_mark:").ConfigureAwait(false);
-            else
-                await ReplyWithEmbedAsync(ctx).ConfigureAwait(false);
+            await ReplyWithEmbedAsync(ctx, $"Done!\n\n{errors.ToString()}")
+                .ConfigureAwait(false);
         }
         #endregion
         
