@@ -103,10 +103,38 @@ namespace TheGodfather.Modules.Messages
         }
         #endregion
 
+        #region COMMAND_FILTERS_CLEAR
+        [Command("clear")]
+        [Description("Delete all filters for the current guild.")]
+        [Aliases("da", "c", "ca", "cl", "clearall")]
+        [UsageExample("!filter clear")]
+        [RequireUserPermissions(Permissions.Administrator)]
+        public async Task ClearAsync(CommandContext ctx)
+        {
+            await ReplyWithEmbedAsync(ctx, "Are you sure you want to delete all filters for this guild?", ":question:")
+                .ConfigureAwait(false);
+            if (!await InteractivityUtil.WaitForConfirmationAsync(ctx))
+                return;
+
+            if (SharedData.GuildFilters.ContainsKey(ctx.Guild.Id))
+                SharedData.GuildFilters.TryRemove(ctx.Guild.Id, out _);
+
+            try {
+                await DatabaseService.RemoveAllGuildFiltersAsync(ctx.Guild.Id)
+                    .ConfigureAwait(false);
+            } catch {
+                throw new CommandFailedException("Failed to delete filters from the database.");
+            }
+
+            await ReplyWithEmbedAsync(ctx, "Removed all filters!")
+                .ConfigureAwait(false);
+        }
+        #endregion
+
         #region COMMAND_FILTER_DELETE
         [Command("delete")]
         [Description("Remove filters from guild filter list.")]
-        [Aliases("-", "remove", "del", "rm", "rem")]
+        [Aliases("-", "remove", "del", "rm", "rem", "d")]
         [UsageExample("!filter delete fuck f+u+c+k+")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task DeleteAsync(CommandContext ctx,
@@ -153,34 +181,6 @@ namespace TheGodfather.Modules.Messages
                 r => r.ToString().Replace(@"\b", ""),
                 DiscordColor.DarkGreen
             ).ConfigureAwait(false);
-        }
-        #endregion
-
-        #region COMMAND_FILTERS_CLEAR
-        [Command("clear")]
-        [Description("Delete all filters for the current guild.")]
-        [Aliases("da", "c", "ca", "cl", "clearall")]
-        [UsageExample("!filter clear")]
-        [RequireUserPermissions(Permissions.Administrator)]
-        public async Task ClearAsync(CommandContext ctx)
-        {
-            await ReplyWithEmbedAsync(ctx, "Are you sure you want to delete all filters for this guild?", ":question:")
-                .ConfigureAwait(false);
-            if (!await InteractivityUtil.WaitForConfirmationAsync(ctx))
-                return;
-
-            if (SharedData.GuildFilters.ContainsKey(ctx.Guild.Id))
-                SharedData.GuildFilters.TryRemove(ctx.Guild.Id, out _);
-
-            try {
-                await DatabaseService.RemoveAllGuildFiltersAsync(ctx.Guild.Id)
-                    .ConfigureAwait(false);
-            } catch {
-                throw new CommandFailedException("Failed to delete filters from the database.");
-            }
-
-            await ReplyWithEmbedAsync(ctx, "Removed all filters!")
-                .ConfigureAwait(false);
         }
         #endregion
     }

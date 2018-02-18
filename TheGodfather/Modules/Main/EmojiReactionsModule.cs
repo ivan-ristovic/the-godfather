@@ -102,6 +102,34 @@ namespace TheGodfather.Modules.Messages
             => await AddAsync(ctx, emoji, trigger).ConfigureAwait(false);
         #endregion
 
+        #region COMMAND_EMOJI_REACTIONS_CLEAR
+        [Command("clear")]
+        [Description("Delete all reactions for the current guild.")]
+        [Aliases("da", "c", "ca", "cl", "clearall")]
+        [UsageExample("!emojireactions clear")]
+        [RequireUserPermissions(Permissions.Administrator)]
+        public async Task ClearAsync(CommandContext ctx)
+        {
+            await ReplyWithEmbedAsync(ctx, "Are you sure you want to delete all emoji reactions for this guild?", ":question:")
+                .ConfigureAwait(false);
+            if (!await InteractivityUtil.WaitForConfirmationAsync(ctx))
+                return;
+
+            if (SharedData.GuildEmojiReactions.ContainsKey(ctx.Guild.Id))
+                SharedData.GuildEmojiReactions.TryRemove(ctx.Guild.Id, out _);
+
+            try {
+                await DatabaseService.DeleteAllGuildEmojiReactionsAsync(ctx.Guild.Id)
+                    .ConfigureAwait(false);
+            } catch {
+                throw new CommandFailedException("Failed to delete emoji reactions from the database.");
+            }
+
+            await ReplyWithEmbedAsync(ctx, "Removed all emoji reactions!")
+                .ConfigureAwait(false);
+        }
+        #endregion
+
         #region COMMAND_EMOJI_REACTIONS_DELETE
         [Command("delete"), Priority(1)]
         [Description("Remove emoji reactions for given trigger words.")]
@@ -176,34 +204,6 @@ namespace TheGodfather.Modules.Messages
                 kvp => $"{kvp.Key} => {string.Join(", ", kvp.Value.Select(r => r.ToString().Replace(@"\b", "")))}",
                 DiscordColor.Blue
             ).ConfigureAwait(false);
-        }
-        #endregion
-
-        #region COMMAND_EMOJI_REACTIONS_CLEAR
-        [Command("clear")]
-        [Description("Delete all reactions for the current guild.")]
-        [Aliases("da", "c", "ca", "cl", "clearall")]
-        [UsageExample("!emojireactions clear")]
-        [RequireUserPermissions(Permissions.Administrator)]
-        public async Task ClearAsync(CommandContext ctx)
-        {
-            await ReplyWithEmbedAsync(ctx, "Are you sure you want to delete all emoji reactions for this guild?", ":question:")
-                .ConfigureAwait(false);
-            if (!await InteractivityUtil.WaitForConfirmationAsync(ctx))
-                return;
-
-            if (SharedData.GuildEmojiReactions.ContainsKey(ctx.Guild.Id))
-                SharedData.GuildEmojiReactions.TryRemove(ctx.Guild.Id, out _);
-
-            try {
-                await DatabaseService.DeleteAllGuildEmojiReactionsAsync(ctx.Guild.Id)
-                    .ConfigureAwait(false);
-            } catch {
-                throw new CommandFailedException("Failed to delete emoji reactions from the database.");
-            }
-
-            await ReplyWithEmbedAsync(ctx, "Removed all emoji reactions!")
-                .ConfigureAwait(false);
         }
         #endregion
     }
