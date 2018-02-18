@@ -54,41 +54,14 @@ namespace TheGodfather
         }.AsReadOnly();
 
 
-        #region FILTERS
-        public IReadOnlyCollection<Regex> GetFiltersForGuild(ulong gid)
-        {
-            if (GuildFilters.ContainsKey(gid) && GuildFilters[gid] != null)
-                return GuildFilters[gid];
-            else
-                return null;
-        }
-
-        public bool ContainsFilter(ulong gid, string message)
+        public bool MessageContainsFilter(ulong gid, string message)
         {
             if (!GuildFilters.ContainsKey(gid) || GuildFilters[gid] == null)
                 return false;
 
             message = message.ToLower();
-            return GuildFilters[gid].Any(f => f.Match(message).Success);
+            return GuildFilters[gid].Any(f => f.IsMatch(message));
         }
-
-        public bool TryRemoveGuildFilter(ulong gid, string filter)
-        {
-            if (!GuildFilters.ContainsKey(gid))
-                return false;
-
-            var rstr = $@"\b{filter}\b";
-            return GuildFilters[gid].RemoveWhere(r => r.ToString() == rstr) > 0;
-        }
-
-        public void ClearGuildFilters(ulong gid)
-        {
-            if (!GuildFilters.ContainsKey(gid))
-                return;
-
-            GuildFilters[gid].Clear();
-        }
-        #endregion
 
         #region PREFIXES
         public string GetGuildPrefix(ulong gid)

@@ -4,13 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 
 using TheGodfather.Attributes;
-using TheGodfather.Services;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Extensions.Collections;
+using TheGodfather.Services;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -125,7 +124,7 @@ namespace TheGodfather.Modules.Messages
                 }
 
                 try {
-                    await ctx.Services.GetService<DatabaseService>().RemoveFilterAsync(ctx.Guild.Id, filter)
+                    await DatabaseService.RemoveFilterAsync(ctx.Guild.Id, filter)
                         .ConfigureAwait(false);
                 } catch {
                     errors.AppendLine($"Warning: Failed to remove filter {Formatter.Bold(filter)} from the database.");
@@ -160,14 +159,27 @@ namespace TheGodfather.Modules.Messages
         #region COMMAND_FILTERS_CLEAR
         [Command("clear")]
         [Description("Delete all filters for the current guild.")]
-        [Aliases("c", "da")]
+        [Aliases("da", "c", "ca", "cl", "clearall")]
+        [UsageExample("!filter clear")]
         [RequireUserPermissions(Permissions.Administrator)]
         public async Task ClearAsync(CommandContext ctx)
         {
-            ctx.Services.GetService<SharedData>().ClearGuildFilters(ctx.Guild.Id);
-            await ctx.RespondAsync("All filters for this guild successfully removed.")
+            await ReplyWithEmbedAsync(ctx, "Are you sure you want to delete all filters for this guild?", ":question:")
                 .ConfigureAwait(false);
-            await ctx.Services.GetService<DatabaseService>().RemoveAllGuildFiltersAsync(ctx.Guild.Id)
+            if (!await InteractivityUtil.WaitForConfirmationAsync(ctx))
+                return;
+
+            if (SharedData.GuildFilters.ContainsKey(ctx.Guild.Id))
+                SharedData.GuildFilters.TryRemove(ctx.Guild.Id, out _);
+
+            try {
+                await DatabaseService.RemoveAllGuildFiltersAsync(ctx.Guild.Id)
+                    .ConfigureAwait(false);
+            } catch {
+                throw new CommandFailedException("Failed to delete filters from the database.");
+            }
+
+            await ReplyWithEmbedAsync(ctx, "Removed all filters!")
                 .ConfigureAwait(false);
         }
         #endregion

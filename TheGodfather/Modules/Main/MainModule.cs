@@ -287,7 +287,7 @@ namespace TheGodfather.Modules.Main
             if (string.IsNullOrWhiteSpace(s))
                 throw new InvalidCommandUsageException("Text missing.");
 
-            if (ctx.Services.GetService<SharedData>().ContainsFilter(ctx.Guild.Id, s))
+            if (ctx.Services.GetService<SharedData>().MessageContainsFilter(ctx.Guild.Id, s))
                 throw new CommandFailedException("You can't make me say something that contains filtered content for this guild.");
             
             await ctx.RespondAsync(s)
@@ -304,7 +304,7 @@ namespace TheGodfather.Modules.Main
             if (string.IsNullOrWhiteSpace(s))
                 throw new InvalidCommandUsageException("Text missing.");
 
-            if (ctx.Services.GetService<SharedData>().ContainsFilter(ctx.Guild.Id, s))
+            if (ctx.Services.GetService<SharedData>().MessageContainsFilter(ctx.Guild.Id, s))
                 throw new CommandFailedException("You can't make me say something that contains filtered content for this guild.");
 
             await ctx.RespondAsync(s, isTTS: true)
