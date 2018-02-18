@@ -206,21 +206,6 @@ namespace TheGodfather
 
             return emojis.AsReadOnly();
         }
-
-        public bool TryAddGuildEmojiReaction(ulong gid, DiscordEmoji emoji, string[] triggers)
-        {
-            return true;
-        }
-
-        public bool TryRemoveGuildEmojiReactions(ulong gid, string[] triggers)
-        {
-            return true;
-        }
-
-        public void DeleteAllGuildEmojiReactions(ulong gid)
-        {
-
-        }
         #endregion
 
         #region TRIGGERS
