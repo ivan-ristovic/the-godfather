@@ -14,13 +14,13 @@ using DSharpPlus.Interactivity;
 
 namespace TheGodfather.Modules.Games
 {
-    public partial class GamesModule : GodfatherBaseModule
+    public partial class GamesModule : TheGodfatherBaseModule
     {
         [Group("othello")]
         [Description("Starts an \"Othello\" game. Play a move by writing a pair of numbers from 1 to 10 corresponding to the row and column where you wish to play.")]
         [Aliases("reversi", "oth", "rev")]
         [UsageExample("!game othello")]
-        public class OthelloModule : GodfatherBaseModule
+        public class OthelloModule : TheGodfatherBaseModule
         {
 
             public OthelloModule(SharedData shared, DatabaseService db) : base(shared, db) { }

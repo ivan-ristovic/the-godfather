@@ -23,7 +23,7 @@ namespace TheGodfather.Modules.Games
         [UsageExample("!game numberrace")]
         [Cooldown(2, 5, CooldownBucketType.User), Cooldown(3, 5, CooldownBucketType.Channel)]
         [ListeningCheck]
-        public class NumberRaceModule : GodfatherBaseModule
+        public class NumberRaceModule : TheGodfatherBaseModule
         {
 
             public NumberRaceModule(DatabaseService db) : base(db: db) { }

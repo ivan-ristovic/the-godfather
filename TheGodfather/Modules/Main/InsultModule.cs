@@ -17,21 +17,22 @@ using DSharpPlus.Entities;
 namespace TheGodfather.Modules.Main
 {
     [Group("insult")]
-    [Description("Burns a user!")]
-    [Aliases("burn", "insults")]
+    [Description("Insults manipulation. If invoked without subcommands, insults a given user.")]
+    [Aliases("burn", "insults", "ins")]
+    [UsageExample("!insult @Someone")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
-    [ListeningCheckAttribute]
-    public class InsultModule : BaseCommandModule
+    [ListeningCheck]
+    public class InsultModule : TheGodfatherBaseModule
     {
 
         [GroupCommand]
         public async Task ExecuteGroupAsync(CommandContext ctx, 
-                                           [Description("User.")] DiscordUser u = null)
+                                           [Description("User.")] DiscordUser user = null)
         {
-            if (u == null)
-                u = ctx.User;
+            if (user == null)
+                user = ctx.User;
 
-            if (u.Id == ctx.Client.CurrentUser.Id) {
+            if (user.Id == ctx.Client.CurrentUser.Id) {
                 await ctx.RespondAsync("How original, trying to make me insult myself. Sadly it won't work.")
                     .ConfigureAwait(false);
                 return;
@@ -42,7 +43,7 @@ namespace TheGodfather.Modules.Main
             if (insult == null)
                 throw new CommandFailedException("No available insults.");
 
-            await ctx.RespondAsync(insult.Replace("%user%", u.Mention))
+            await ctx.RespondAsync(insult.Replace("%user%", user.Mention))
                 .ConfigureAwait(false);
         }
 

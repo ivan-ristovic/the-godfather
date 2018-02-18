@@ -14,13 +14,13 @@ using DSharpPlus.Interactivity;
 
 namespace TheGodfather.Modules.Games
 {
-    public partial class GamesModule : GodfatherBaseModule
+    public partial class GamesModule : TheGodfatherBaseModule
     {
         [Group("connect4")]
         [Description("Starts a \"Connect 4\" game. Play a move by writing a number from 1 to 9 corresponding to the column where you wish to insert your piece.")]
         [Aliases("connectfour", "chain4", "chainfour", "c4")]
         [UsageExample("!game connect4")]
-        public class ConnectFourModule : GodfatherBaseModule
+        public class ConnectFourModule : TheGodfatherBaseModule
         {
 
             public ConnectFourModule(SharedData shared, DatabaseService db) : base(shared, db) { }

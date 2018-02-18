@@ -19,7 +19,7 @@ namespace TheGodfather.Modules.Games
         [UsageExample("!game quiz ")]
         [Cooldown(2, 5, CooldownBucketType.User), Cooldown(3, 5, CooldownBucketType.Channel)]
         [ListeningCheck]
-        public partial class QuizModule : GodfatherBaseModule
+        public partial class QuizModule : TheGodfatherBaseModule
         {
 
             public QuizModule(DatabaseService db) : base(db: db) { }

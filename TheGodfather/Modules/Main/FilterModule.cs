@@ -25,7 +25,7 @@ namespace TheGodfather.Modules.Messages
     [UsageExample("!filter fuck fk f+u+c+k+")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
     [ListeningCheck]
-    public class FilterModule : GodfatherBaseModule
+    public class FilterModule : TheGodfatherBaseModule
     {
 
         public FilterModule(SharedData shared, DatabaseService db) : base(shared, db) { }

@@ -30,7 +30,7 @@ namespace TheGodfather.Modules.Administration
     [Aliases("admin", "o")]
     [RequireOwner, Hidden]
     [Cooldown(3, 5, CooldownBucketType.Global)]
-    public class BotOwnerModule : GodfatherBaseModule
+    public class BotOwnerModule : TheGodfatherBaseModule
     {
 
         public BotOwnerModule(DatabaseService db) : base(db: db) { }
@@ -488,7 +488,7 @@ namespace TheGodfather.Modules.Administration
         [Description("Bot status manipulation.")]
         [Aliases("status", "botstatus")]
         [ListeningCheck]
-        public class StatusModule : GodfatherBaseModule
+        public class StatusModule : TheGodfatherBaseModule
         {
 
             public StatusModule(DatabaseService db) : base(db: db) { }

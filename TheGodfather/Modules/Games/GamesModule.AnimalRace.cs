@@ -24,7 +24,7 @@ namespace TheGodfather.Modules.Games
         [UsageExample("!game animalrace")]
         [Cooldown(2, 5, CooldownBucketType.User), Cooldown(3, 5, CooldownBucketType.Channel)]
         [ListeningCheck]
-        public class RaceModule : GodfatherBaseModule
+        public class RaceModule : TheGodfatherBaseModule
         {
 
             public RaceModule(DatabaseService db) : base(db: db) { }

@@ -26,7 +26,7 @@ namespace TheGodfather.Modules.Messages
     [UsageExample("!emojireaction :smile: haha laughing")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
     [ListeningCheck]
-    public class EmojiReactionsModule : GodfatherBaseModule
+    public class EmojiReactionsModule : TheGodfatherBaseModule
     {
 
         public EmojiReactionsModule(SharedData shared, DatabaseService db) : base(shared, db) { }

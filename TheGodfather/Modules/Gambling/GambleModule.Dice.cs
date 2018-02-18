@@ -14,7 +14,7 @@ using DSharpPlus.CommandsNext.Attributes;
 
 namespace TheGodfather.Modules.Gambling
 {
-    public partial class GambleModule : GodfatherBaseModule
+    public partial class GambleModule : TheGodfatherBaseModule
     {
         [Command("dice"), Priority(1)]
         [Description("Roll a dice and bet on the outcome.")]

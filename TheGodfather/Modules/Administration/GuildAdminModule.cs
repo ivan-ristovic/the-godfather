@@ -24,7 +24,7 @@ namespace TheGodfather.Modules.Administration
     [Aliases("server", "g")]
     [Cooldown(2, 5, CooldownBucketType.Guild)]
     [ListeningCheck]
-    public class GuildAdminModule : GodfatherBaseModule
+    public class GuildAdminModule : TheGodfatherBaseModule
     {
 
         public GuildAdminModule(DatabaseService db) : base(db: db) { }
@@ -354,7 +354,7 @@ namespace TheGodfather.Modules.Administration
         [UsageExample("!guild selfassignableroles")]
         [Cooldown(2, 5, CooldownBucketType.Guild)]
         [ListeningCheck]
-        public class SelfAssignableRolesModule : GodfatherBaseModule
+        public class SelfAssignableRolesModule : TheGodfatherBaseModule
         {
 
             public SelfAssignableRolesModule(DatabaseService db) : base(db: db) { }

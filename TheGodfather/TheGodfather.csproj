@@ -282,7 +282,7 @@
     <Compile Include="Modules\Games\GamesModule.TicTacToe.cs" />
     <Compile Include="Modules\Games\GamesModule.ConnectFour.cs" />
     <Compile Include="Modules\Games\GamesModule.Caro.cs" />
-    <Compile Include="Modules\GodfatherBaseModule.cs" />
+    <Compile Include="Modules\TheGodfatherBaseModule.cs" />
     <Compile Include="Modules\Search\JokesModule.cs" />
     <Compile Include="Exceptions\DatabaseServiceException.cs" />
     <Compile Include="Services\DatabaseService\DatabaseService.Ranks.cs" />

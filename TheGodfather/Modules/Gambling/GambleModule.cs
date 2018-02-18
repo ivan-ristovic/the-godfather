@@ -12,7 +12,7 @@ namespace TheGodfather.Modules.Gambling
     [Aliases("bet")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
     [ListeningCheck]
-    public partial class GambleModule : GodfatherBaseModule
+    public partial class GambleModule : TheGodfatherBaseModule
     {
         public GambleModule(DatabaseService db) : base(db: db) { }
     }
