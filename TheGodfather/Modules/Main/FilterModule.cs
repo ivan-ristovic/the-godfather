@@ -102,38 +102,45 @@ namespace TheGodfather.Modules.Messages
                 .ConfigureAwait(false);
         }
         #endregion
-        
+
         #region COMMAND_FILTER_DELETE
         [Command("delete")]
-        [Description("Remove filter from guild filter list.")]
+        [Description("Remove filters from guild filter list.")]
         [Aliases("-", "remove", "del")]
+        [UsageExample("!filter delete fuck f+u+c+k+")]
         [RequireUserPermissions(Permissions.ManageGuild)]
-        public async Task DeleteAsync(CommandContext ctx, 
-                                     [RemainingText, Description("Filter to remove.")] string filter)
+        public async Task DeleteAsync(CommandContext ctx,
+                                     [RemainingText, Description("Filters to remove.")] params string[] filters)
         {
             if (!SharedData.GuildFilters.ContainsKey(ctx.Guild.Id))
                 throw new CommandFailedException("This guild has no filters registered.");
 
-            //var rstr = $@"\b{filter}\b";
-            //GuildFilters[gid].RemoveWhere(r => r.ToString() == rstr) > 0;
+            var errors = new StringBuilder();
+            foreach (var filter in filters) {
+                var rstr = $@"\b{filter}\b";
+                if (SharedData.GuildFilters[ctx.Guild.Id].RemoveWhere(r => r.ToString() == rstr) == 0) {
+                    errors.AppendLine($"Error: Filter {Formatter.Bold(filter)} does not exist.");
+                    continue;
+                }
 
-            /*
-            if (SharedData.TryRemoveGuildFilter(ctx.Guild.Id, filter)) {
-                await ctx.RespondAsync($"Filter successfully removed.")
-                    .ConfigureAwait(false);
-                await ctx.Services.GetService<DatabaseService>().RemoveFilterAsync(ctx.Guild.Id, filter)
-                    .ConfigureAwait(false);
-            } else {
-                throw new CommandFailedException("Given filter does not exist.");
-            }*/
+                try {
+                    await ctx.Services.GetService<DatabaseService>().RemoveFilterAsync(ctx.Guild.Id, filter)
+                        .ConfigureAwait(false);
+                } catch {
+                    errors.AppendLine($"Warning: Failed to remove filter {Formatter.Bold(filter)} from the database.");
+                }
+            }
+
+            await ReplyWithEmbedAsync(ctx, $"Done!\n\n{errors.ToString()}")
+                .ConfigureAwait(false);
         }
         #endregion
-        
+
         #region COMMAND_FILTER_LIST
         [Command("list")]
         [Description("Show all filters for this guild.")]
         [Aliases("ls", "l")]
-        public async Task ListAsync(CommandContext ctx, 
+        public async Task ListAsync(CommandContext ctx,
                                    [Description("Page")] int page = 1)
         {
             var filters = await ctx.Services.GetService<DatabaseService>().GetFiltersForGuildAsync(ctx.Guild.Id)
@@ -147,7 +154,7 @@ namespace TheGodfather.Modules.Messages
 
             if (page < 1 || page > filters.Count / 20 + 1)
                 throw new CommandFailedException("No filters on that page.");
-            
+
             int starti = (page - 1) * 20;
             int len = starti + 20 < filters.Count ? 20 : filters.Count - starti;
 
@@ -158,7 +165,7 @@ namespace TheGodfather.Modules.Messages
             }.Build()).ConfigureAwait(false);
         }
         #endregion
-        
+
         #region COMMAND_FILTERS_CLEAR
         [Command("clear")]
         [Description("Delete all filters for the current guild.")]
