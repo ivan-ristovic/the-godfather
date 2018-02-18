@@ -1,8 +1,8 @@
 ﻿#region USING_DIRECTIVES
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -54,11 +54,12 @@ namespace TheGodfather.Modules.Messages
             if (triggers == null)
                 throw new InvalidCommandUsageException("Missing trigger words!");
 
-            var failed = new List<string>();
-
+            var errors = new StringBuilder();
             foreach (var trigger in triggers.Select(t => t.ToLowerInvariant())) {
-                if (trigger.Length > 120)
-                    failed.Add(trigger);
+                if (trigger.Length > 120) {
+                    errors.AppendLine($"Error: Trigger {Formatter.Bold(trigger)} is too long (120 chars max).");
+                    continue;
+                }
 
                 if (!SharedData.GuildEmojiReactions.ContainsKey(ctx.Guild.Id))
                     SharedData.GuildEmojiReactions.TryAdd(ctx.Guild.Id, new ConcurrentDictionary<string, ConcurrentHashSet<Regex>>());
@@ -67,12 +68,12 @@ namespace TheGodfather.Modules.Messages
                 try {
                     regex = new Regex($@"\b{trigger}\b");
                 } catch (ArgumentException) {
-                    failed.Add(trigger);
+                    errors.AppendLine($"Error: Trigger {Formatter.Bold(trigger)} is not a valid regular expression.");
                     continue;
                 }
 
                 if (SharedData.GuildEmojiReactions[ctx.Guild.Id].Values.Any(set => set.Any(r => r.ToString() == regex.ToString()))) {
-                    failed.Add(trigger);
+                    errors.AppendLine($"Note: Trigger {Formatter.Bold(trigger)} already exists.");
                     continue;
                 }
 
@@ -86,14 +87,12 @@ namespace TheGodfather.Modules.Messages
                     await DatabaseService.AddEmojiReactionAsync(ctx.Guild.Id, trigger, reaction)
                         .ConfigureAwait(false);
                 } catch {
-                    failed.Add(trigger);
+                    errors.AppendLine($"Warning: Failed to add trigger {Formatter.Bold(trigger)} to the database.");
                 }
             }
 
-            if (failed.Any())
-                await ReplyWithEmbedAsync(ctx, $"Failed to add: {string.Join(", ", failed.Select(s => Formatter.Bold(s)))}.\n\nTriggers must be valid regular expressions and cannot be added if they already exist or if they are longer than 120 characters.", ":negative_squared_cross_mark:").ConfigureAwait(false);
-            else
-                await ReplyWithEmbedAsync(ctx).ConfigureAwait(false);
+            await ReplyWithEmbedAsync(ctx, $"Done!\n\n{errors.ToString()}")
+                .ConfigureAwait(false);
         }
 
         [Command("add"), Priority(0)]
@@ -120,9 +119,15 @@ namespace TheGodfather.Modules.Messages
             if (SharedData.GuildEmojiReactions[ctx.Guild.Id].ContainsKey(reaction))
                 SharedData.GuildEmojiReactions[ctx.Guild.Id].TryRemove(reaction, out _);
 
-            await DatabaseService.RemoveAllEmojiReactionTriggersForReactionAsync(ctx.Guild.Id, reaction)
-                .ConfigureAwait(false);
-            await ReplyWithEmbedAsync(ctx)
+            var errors = new StringBuilder();
+            try {
+                await DatabaseService.RemoveAllEmojiReactionTriggersForReactionAsync(ctx.Guild.Id, reaction)
+                    .ConfigureAwait(false);
+            } catch {
+                errors.AppendLine($"Warning: Failed to remove reactions from the database.");
+            }
+
+            await ReplyWithEmbedAsync(ctx, $"Done!\n\n{errors.ToString()}")
                 .ConfigureAwait(false);
         }
 
@@ -136,15 +141,20 @@ namespace TheGodfather.Modules.Messages
             if (!SharedData.GuildEmojiReactions.ContainsKey(ctx.Guild.Id))
                 throw new CommandFailedException("This guild has no emoji reactions registered.");
 
+            var errors = new StringBuilder();
             foreach (var trigger in triggers.Select(t => t.ToLowerInvariant())) {
                 string regex = $@"\b{trigger}\b";
                 foreach (var kvp in SharedData.GuildEmojiReactions[ctx.Guild.Id])
                     kvp.Value.RemoveWhere(r => r.ToString() == regex);
-                await DatabaseService.RemoveEmojiReactionTriggerAsync(ctx.Guild.Id, trigger)
-                    .ConfigureAwait(false);
+                try {
+                    await DatabaseService.RemoveEmojiReactionTriggerAsync(ctx.Guild.Id, trigger)
+                        .ConfigureAwait(false);
+                } catch {
+                    errors.AppendLine($"Warning: Failed to add trigger {Formatter.Bold(trigger)} to the database.");
+                }
             }
 
-            await ReplyWithEmbedAsync(ctx)
+            await ReplyWithEmbedAsync(ctx, $"Done!\n\n{errors.ToString()}")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -185,8 +195,13 @@ namespace TheGodfather.Modules.Messages
             if (SharedData.GuildEmojiReactions.ContainsKey(ctx.Guild.Id))
                 SharedData.GuildEmojiReactions.TryRemove(ctx.Guild.Id, out _);
 
-            await DatabaseService.DeleteAllGuildEmojiReactionsAsync(ctx.Guild.Id)
-                .ConfigureAwait(false);
+            try {
+                await DatabaseService.DeleteAllGuildEmojiReactionsAsync(ctx.Guild.Id)
+                    .ConfigureAwait(false);
+            } catch {
+                throw new CommandFailedException("Failed to delete reactions from the database.");
+            }
+
             await ReplyWithEmbedAsync(ctx, "Removed all emoji reactions!")
                 .ConfigureAwait(false);
         }
