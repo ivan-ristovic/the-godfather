@@ -1,6 +1,7 @@
 ﻿#region USING_DIRECTIVES
 using System;
 using System.Linq;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -8,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Attributes;
 using TheGodfather.Services;
 using TheGodfather.Exceptions;
+using TheGodfather.Extensions.Collections;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -18,47 +20,74 @@ using DSharpPlus.Entities;
 namespace TheGodfather.Modules.Messages
 {
     [Group("filter")]
-    [Description("Message filtering commands.")]
+    [Description("Message filtering commands. If invoked without subcommand, adds a new filter for the given word list. Words can be regular expressions.")]
     [Aliases("f", "filters")]
+    [UsageExample("!filter fuck fk f+u+c+k+")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
-    [ListeningCheckAttribute]
-    public class FilterModule : BaseCommandModule
+    [ListeningCheck]
+    public class FilterModule : GodfatherBaseModule
     {
+
+        public FilterModule(SharedData shared, DatabaseService db) : base(shared, db) { }
+
+
+        [GroupCommand]
+        [RequirePermissions(Permissions.ManageGuild)]
+        public async Task ExecuteGroupAsync(CommandContext ctx,
+                                           [RemainingText, Description("Trigger word list.")] params string[] filters)
+            => await AddAsync(ctx, filters).ConfigureAwait(false);
+
+
         #region COMMAND_FILTER_ADD
         [Command("add")]
         [Description("Add filter to guild filter list.")]
         [Aliases("+", "new", "a")]
+        [UsageExample("!filter add fuck f+u+c+k+")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task AddAsync(CommandContext ctx,
-                                  [RemainingText, Description("Filter. Can be a regex (case insensitive).")] string filter)
+                                  [RemainingText, Description("Filter. Can be a regex (case insensitive).")] params string[] filters)
         {
-            if (string.IsNullOrWhiteSpace(filter))
-                throw new InvalidCommandUsageException("Filter trigger missing.");
+            if (filters == null || !filters.Any())
+                throw new InvalidCommandUsageException("Filter words missing.");
 
-            if (ctx.Services.GetService<SharedData>().TextTriggerExists(ctx.Guild.Id, filter))
-                throw new CommandFailedException("You cannot add a filter if a trigger for that trigger exists!");
+            List<string> failed = new List<string>();
+            foreach (var filter in filters) {
+                if (filter.Contains('%') || filter.Length < 3 || filter.Length > 60 || SharedData.TextTriggerExists(ctx.Guild.Id, filter)) {
+                    failed.Add(filter);
+                    continue;
+                }
 
-            if (filter.Contains("%") || filter.Length < 3 || filter.Length > 60)
-                throw new CommandFailedException($"Filter must not contain {Formatter.Bold("%")} or have less than 3 characters and not more than 60 characters.");
+                Regex regex;
+                try {
+                    regex = new Regex($@"\b{filter}\b", RegexOptions.IgnoreCase);
+                } catch (ArgumentException) {
+                    failed.Add(filter);
+                    continue;
+                }
 
-            Regex regex;
-            try {
-                regex = new Regex($@"\b{filter}\b", RegexOptions.IgnoreCase);
-            } catch (ArgumentException e) {
-                throw new CommandFailedException($"Invalid filter regex: {e.Message}");
+                if (ctx.Client.GetCommandsNext().RegisteredCommands.Any(kvp => regex.IsMatch(kvp.Key))) {
+                    failed.Add(filter);
+                    continue;
+                }
+
+                if (SharedData.GuildFilters.ContainsKey(ctx.Guild.Id)) {
+                    if (SharedData.GuildFilters[ctx.Guild.Id].Any(r => r.ToString() == regex.ToString())) {
+                        failed.Add(filter);
+                        continue;
+                    }
+                    SharedData.GuildFilters[ctx.Guild.Id].Add(regex);
+                } else {
+                    SharedData.GuildFilters.TryAdd(ctx.Guild.Id, new ConcurrentHashSet<Regex>() { regex });
+                }
+
+                await DatabaseService.AddFilterAsync(ctx.Guild.Id, filter)
+                    .ConfigureAwait(false);
             }
 
-            if (ctx.Client.GetCommandsNext().RegisteredCommands.Any(kv => regex.Match(kv.Key).Success))
-                throw new CommandFailedException("You cannot add a filter that matches one of the commands!");
-            
-            if (ctx.Services.GetService<SharedData>().TryAddGuildFilter(ctx.Guild.Id, regex)) {
-                await ctx.RespondAsync($"Filter successfully added.")
-                    .ConfigureAwait(false);
-                await ctx.Services.GetService<DatabaseService>().AddFilterAsync(ctx.Guild.Id, filter)
-                    .ConfigureAwait(false);
-            } else {
-                throw new CommandFailedException("Filter already exists!");
-            }
+            if (failed.Any())
+                await ReplyWithEmbedAsync(ctx, $"Failed to add: {string.Join(", ", failed.Select(s => Formatter.Bold(s)))}.\n\nFilters must be valid regular expressions and cannot be added if they already exist or if they are longer than 60 or less than 3 characters. Also filters must not overlap an existing text reaction or bot command.", ":negative_squared_cross_mark:").ConfigureAwait(false);
+            else
+                await ReplyWithEmbedAsync(ctx).ConfigureAwait(false);
         }
         #endregion
         
@@ -70,14 +99,21 @@ namespace TheGodfather.Modules.Messages
         public async Task DeleteAsync(CommandContext ctx, 
                                      [RemainingText, Description("Filter to remove.")] string filter)
         {
-            if (ctx.Services.GetService<SharedData>().TryRemoveGuildFilter(ctx.Guild.Id, filter)) {
+            if (!SharedData.GuildFilters.ContainsKey(ctx.Guild.Id))
+                throw new CommandFailedException("This guild has no filters registered.");
+
+            //var rstr = $@"\b{filter}\b";
+            //GuildFilters[gid].RemoveWhere(r => r.ToString() == rstr) > 0;
+
+            /*
+            if (SharedData.TryRemoveGuildFilter(ctx.Guild.Id, filter)) {
                 await ctx.RespondAsync($"Filter successfully removed.")
                     .ConfigureAwait(false);
                 await ctx.Services.GetService<DatabaseService>().RemoveFilterAsync(ctx.Guild.Id, filter)
                     .ConfigureAwait(false);
             } else {
                 throw new CommandFailedException("Given filter does not exist.");
-            }
+            }*/
         }
         #endregion
         

@@ -307,9 +307,10 @@ namespace TheGodfather
                                     .ConfigureAwait(false);
                                 break;
                             } catch (ArgumentException) {
-                                Client.DebugLogger.LogMessage(LogLevel.Warning, "TheGodfather", "Emoji name is not valid!", DateTime.Now);
+                                await e.Channel.SendMessageAsync($"Emoji reaction set, but emoji: {reaction.Key} doesn't exist!")
+                                    .ConfigureAwait(false);
                             } catch (UnauthorizedException) {
-                                await e.Channel.SendMessageAsync($"I have a reaction for that message set up but I do not have permissions to add reactions. Fix your shit pls.")
+                                await e.Channel.SendMessageAsync("I have a reaction for that message set up but I do not have permissions to add reactions. Fix your shit pls.")
                                     .ConfigureAwait(false);
                             }
                         }

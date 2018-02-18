@@ -1,4 +1,5 @@
 ﻿#region USING_DIRECTIVES
+using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -62,7 +63,14 @@ namespace TheGodfather.Modules.Messages
                 if (!SharedData.GuildEmojiReactions.ContainsKey(ctx.Guild.Id))
                     SharedData.GuildEmojiReactions.TryAdd(ctx.Guild.Id, new ConcurrentDictionary<string, ConcurrentHashSet<Regex>>());
 
-                var regex = new Regex($@"\b{trigger}\b");
+                Regex regex;
+                try {
+                    regex = new Regex($@"\b{trigger}\b");
+                } catch (ArgumentException) {
+                    failed.Add(trigger);
+                    continue;
+                }
+
                 if (SharedData.GuildEmojiReactions[ctx.Guild.Id].Values.Any(set => set.Any(r => r.ToString() == regex.ToString()))) {
                     failed.Add(trigger);
                     continue;
@@ -83,7 +91,7 @@ namespace TheGodfather.Modules.Messages
             }
 
             if (failed.Any())
-                await ReplyWithEmbedAsync(ctx, $"Failed to add: {string.Join(", ", failed.Select(s => Formatter.Bold(s)))}.\nTriggers cannot be added if they already exist or if they are longer than 120 characters.", ":negative_squared_cross_mark:").ConfigureAwait(false);
+                await ReplyWithEmbedAsync(ctx, $"Failed to add: {string.Join(", ", failed.Select(s => Formatter.Bold(s)))}.\n\nTriggers must be valid regular expressions and cannot be added if they already exist or if they are longer than 120 characters.", ":negative_squared_cross_mark:").ConfigureAwait(false);
             else
                 await ReplyWithEmbedAsync(ctx).ConfigureAwait(false);
         }
@@ -103,7 +111,7 @@ namespace TheGodfather.Modules.Messages
         [UsageExample("!emojireaction delete :joy:")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task DeleteAsync(CommandContext ctx,
-                                     [Description("Emoji to send.")] DiscordEmoji emoji)
+                                     [Description("Emoji to remove reactions for.")] DiscordEmoji emoji)
         {
             if (!SharedData.GuildEmojiReactions.ContainsKey(ctx.Guild.Id))
                 throw new CommandFailedException("This guild has no emoji reactions registered.");
@@ -120,7 +128,7 @@ namespace TheGodfather.Modules.Messages
 
         [Command("delete"), Priority(0)]
         public async Task DeleteAsync(CommandContext ctx,
-                                     [RemainingText, Description("Trigger word list.")] params string[] triggers)
+                                     [RemainingText, Description("Trigger words to remove.")] params string[] triggers)
         {
             if (triggers == null)
                 throw new InvalidCommandUsageException("Missing trigger words!");
