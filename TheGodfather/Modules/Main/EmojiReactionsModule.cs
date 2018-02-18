@@ -42,7 +42,7 @@ namespace TheGodfather.Modules.Messages
 
 
         #region COMMAND_EMOJI_REACTIONS_ADD
-        [Command("add")]
+        [Command("add"), Priority(1)]
         [Description("Add emoji reaction to guild reaction list.")]
         [Aliases("+", "new", "a")]
         [UsageExample("!emojireaction add :smile: haha")]
@@ -83,13 +83,19 @@ namespace TheGodfather.Modules.Messages
             }
 
             if (failed.Any())
-                await ReplyWithEmbedAsync(ctx, $"Failed to add: {string.Join(", ", failed)}. Triggers cannot be added if they already exist or if they are longer than 120 characters.").ConfigureAwait(false);
+                await ReplyWithEmbedAsync(ctx, $"Failed to add: {string.Join(", ", failed.Select(s => Formatter.Bold(s)))}.\nTriggers cannot be added if they already exist or if they are longer than 120 characters.", ":negative_squared_cross_mark:").ConfigureAwait(false);
             else
                 await ReplyWithEmbedAsync(ctx).ConfigureAwait(false);
         }
+
+        [Command("add"), Priority(0)]
+        public async Task AddAsync(CommandContext ctx,
+                                  [Description("Trigger word (case-insensitive).")] string trigger,
+                                  [Description("Emoji to send.")] DiscordEmoji emoji)
+            => await AddAsync(ctx, emoji, trigger).ConfigureAwait(false);
         #endregion
 
-        #region COMMAND_EMOJI_REACTIONS_DELETE
+            #region COMMAND_EMOJI_REACTIONS_DELETE
         [Command("delete")]
         [Description("Remove emoji reactions for given trigger words.")]
         [Aliases("-", "remove", "del", "rm", "d")]
