@@ -40,9 +40,9 @@ namespace TheGodfather.Services
             return images.Take(num);
         }
 
-        public async Task<string> UploadImageAsync(FileStream fs, string name)
+        public async Task<string> UploadImageAsync(Stream stream, string name = null)
         {
-            var img = await _iendpoint.UploadImageStreamAsync(fs, name: name)
+            var img = await _iendpoint.UploadImageStreamAsync(stream, name: name)
                 .ConfigureAwait(false);
             return img.Link;
         }
