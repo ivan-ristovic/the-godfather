@@ -271,14 +271,14 @@ namespace TheGodfather.Modules.Administration
 
             foreach (var cmd in commands) {
                 if (cmd is CommandGroup || cmd.Parent == null) 
-                    sb.AppendLine(cmd is CommandGroup ? "## Group: " + cmd.QualifiedName : cmd.QualifiedName);
+                    sb.Append("## ").Append(cmd is CommandGroup ? "Group: " : "").AppendLine(cmd.QualifiedName);
                 else
-                    sb.AppendLine("### " + cmd.QualifiedName);
+                    sb.Append("### ").AppendFormat(cmd.QualifiedName);
 
                 if (cmd.IsHidden)
-                    sb.AppendLine(Formatter.Italic("Hidden.") + "\n");
+                    sb.AppendLine(Formatter.Italic("Hidden.")).AppendLine();
 
-                sb.AppendLine(Formatter.Italic(cmd.Description ?? "No description provided.") + "\n");
+                sb.AppendLine(Formatter.Italic(cmd.Description ?? "No description provided.")).AppendLine();
 
                 var allchecks = cmd.ExecutionChecks.Union(cmd.Parent?.ExecutionChecks ?? Enumerable.Empty<CheckBaseAttribute>());
                 var permissions = allchecks.Where(chk => chk is RequirePermissionsAttribute)
@@ -294,20 +294,20 @@ namespace TheGodfather.Modules.Administration
                     sb.AppendLine(Formatter.Bold("Owner-only.") + "\n");
                 if (permissions.Any()) {
                     sb.AppendLine(Formatter.Bold("Requires permissions:"));
-                    sb.AppendLine(Formatter.InlineCode(string.Join(", ", permissions)) + "\n");
+                    sb.AppendLine(Formatter.InlineCode(string.Join(", ", permissions))).AppendLine();
                 }
                 if (userpermissions.Any()) {
                     sb.AppendLine(Formatter.Bold("Requires user permissions:"));
-                    sb.AppendLine(Formatter.InlineCode(string.Join(", ", userpermissions)) + "\n");
+                    sb.AppendLine(Formatter.InlineCode(string.Join(", ", userpermissions))).AppendLine();
                 }
                 if (botpermissions.Any()) {
                     sb.AppendLine(Formatter.Bold("Requires bot permissions:"));
-                    sb.AppendLine(Formatter.InlineCode(string.Join(", ", botpermissions)) + "\n");
+                    sb.AppendLine(Formatter.InlineCode(string.Join(", ", botpermissions))).AppendLine();
                 }
 
                 if (cmd.Aliases.Any()) {
                     sb.AppendLine(Formatter.Bold("Aliases:"));
-                    sb.AppendLine(Formatter.InlineCode(string.Join(", ", cmd.Aliases)) + "\n");
+                    sb.AppendLine(Formatter.InlineCode(string.Join(", ", cmd.Aliases))).AppendLine();
                 }
                 sb.AppendLine();
 
@@ -315,7 +315,7 @@ namespace TheGodfather.Modules.Administration
                     if (!overload.Arguments.Any())
                         continue;
 
-                    sb.AppendLine(Formatter.Bold(cmd.Overloads.Count > 1 ? $"Overload {overload.Priority.ToString()}:" : "Arguments:") + "\n");
+                    sb.AppendLine(Formatter.Bold(cmd.Overloads.Count > 1 ? $"Overload {overload.Priority.ToString()}:" : "Arguments:")).AppendLine();
                     foreach (var arg in overload.Arguments) {
                         if (arg.IsOptional)
                             sb.Append("(optional) ");
@@ -340,13 +340,13 @@ namespace TheGodfather.Modules.Administration
                 var examples = cmd.CustomAttributes.Where(chk => chk is UsageExampleAttribute)
                                                    .Select(chk => chk as UsageExampleAttribute);
                 if (examples.Any()) {
-                    sb.AppendLine(Formatter.Bold("Examples:") + "\n```");
+                    sb.AppendLine(Formatter.Bold("Examples:")).AppendLine().Append("```");
                     foreach (var example in examples)
                         sb.AppendLine(example.Example);
                     sb.AppendLine("```");
                 }
 
-                sb.AppendLine("---\n");
+                sb.AppendLine("---").AppendLine();
             }
 
             try {
