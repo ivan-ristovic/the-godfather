@@ -63,7 +63,6 @@ namespace TheGodfather
             return GuildFilters[gid].Any(f => f.IsMatch(message));
         }
 
-        #region PREFIXES
         public string GetGuildPrefix(ulong gid)
         {
             if (GuildPrefixes.ContainsKey(gid) && !string.IsNullOrWhiteSpace(GuildPrefixes[gid]))
@@ -71,17 +70,6 @@ namespace TheGodfather
             else
                 return BotConfiguration.DefaultPrefix;
         }
-
-        public bool TrySetGuildPrefix(ulong gid, string prefix)
-        {
-            if (GuildPrefixes.ContainsKey(gid)) {
-                GuildPrefixes[gid] = prefix;
-                return true;
-            } else {
-                return GuildPrefixes.TryAdd(gid, prefix);
-            }
-        }
-        #endregion
 
         #region RANKS
         public int UpdateMessageCount(ulong uid)
