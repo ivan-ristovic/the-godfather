@@ -282,6 +282,7 @@
     <Compile Include="Modules\Games\GamesModule.TicTacToe.cs" />
     <Compile Include="Modules\Games\GamesModule.ConnectFour.cs" />
     <Compile Include="Modules\Games\GamesModule.Caro.cs" />
+    <Compile Include="Modules\Memes\MemeModule.Templates.cs" />
     <Compile Include="Modules\TheGodfatherBaseModule.cs" />
     <Compile Include="Modules\Search\JokesModule.cs" />
     <Compile Include="Exceptions\DatabaseServiceException.cs" />
@@ -308,7 +309,7 @@
     <Compile Include="Modules\Search\GiphyModule.cs" />
     <Compile Include="Modules\Search\ImgurModule.cs" />
     <Compile Include="Modules\Main\InsultModule.cs" />
-    <Compile Include="Modules\Main\MemeModule.cs" />
+    <Compile Include="Modules\Memes\MemeModule.cs" />
     <Compile Include="Modules\Administration\MessageAdminModule.cs" />
     <Compile Include="Modules\Main\MainModule.cs" />
     <Compile Include="Modules\Main\RanksModule.cs" />

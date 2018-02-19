@@ -21,37 +21,39 @@ using DSharpPlus.Entities;
 using Imgur.API;
 #endregion
 
-namespace TheGodfather.Modules.Main
+namespace TheGodfather.Modules.Memes
 {
     [Group("meme")]
-    [Description("Manipulate memes. When invoked without name, returns a random one.")]
+    [Description("Manipulate guild memes. When invoked without subcommands, returns a meme from this guild's meme list given by name, otherwise returns random one.")]
     [Aliases("memes", "mm")]
+    [UsageExample("!meme")]
+    [UsageExample("!meme SomeMemeNameWhichYouAdded")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
-    [ListeningCheckAttribute]
-    public class MemeModule : BaseCommandModule
+    [ListeningCheck]
+    public partial class MemeModule : TheGodfatherBaseModule
     {
+
+        public MemeModule(DatabaseService db) : base(db: db) { }
+
 
         [GroupCommand]
         public async Task ExecuteGroupAsync(CommandContext ctx,
                                            [RemainingText, Description("Meme name.")] string name = null)
         {
-            string url;
             if (string.IsNullOrWhiteSpace(name)) {
-                var db = ctx.Services.GetService<DatabaseService>();
-                await SendRandomMemeAsync(ctx.Client, db, ctx.Guild.Id, ctx.Channel.Id)
+                await SendRandomMemeAsync(ctx.Client, ctx.Guild.Id, ctx.Channel.Id)
                     .ConfigureAwait(false);
                 return;
             }
 
-            url = await ctx.Services.GetService<DatabaseService>().GetGuildMemeUrlAsync(ctx.Guild.Id, name)
+            string url = await DatabaseService.GetGuildMemeUrlAsync(ctx.Guild.Id, name)
                 .ConfigureAwait(false);
             if (url == null) {
                 await ctx.RespondAsync("No meme registered with that name, here is a random one: ")
                     .ConfigureAwait(false);
                 await Task.Delay(500)
                     .ConfigureAwait(false);
-                var db = ctx.Services.GetService<DatabaseService>();
-                await SendRandomMemeAsync(ctx.Client, db, ctx.Guild.Id, ctx.Channel.Id)
+                await SendRandomMemeAsync(ctx.Client, ctx.Guild.Id, ctx.Channel.Id)
                     .ConfigureAwait(false);
             } else {
                 await SendMemeAsync(ctx.Client, ctx.Channel.Id, url)
@@ -233,113 +235,6 @@ namespace TheGodfather.Modules.Main
         #endregion
 
 
-        [Group("templates")]
-        [Description("Manipulate meme templates.")]
-        [Aliases("template", "t")]
-        [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
-        public class CommandsMemeTemplates
-        {
-
-            [GroupCommand]
-            public async Task ExecuteGroupAsync(CommandContext ctx)
-            {
-                await ListAsync(ctx)
-                    .ConfigureAwait(false);
-            }
-
-
-            #region COMMAND_MEME_TEMPLATE_ADD
-            [Command("add")]
-            [Description("Add a new meme template.")]
-            [Aliases("+", "new")]
-            [RequireOwner]
-            public async Task AddAsync(CommandContext ctx,
-                                      [Description("Template name.")] string name,
-                                      [Description("URL.")] string url)
-            {
-                string filename = $"Temp/tmp-template-{DateTime.Now.Ticks}.png";
-                try {
-                    if (!Directory.Exists("Temp"))
-                        Directory.CreateDirectory("Temp");
-                    using (WebClient webClient = new WebClient()) {
-                        byte[] data = webClient.DownloadData(url);
-
-                        using (MemoryStream mem = new MemoryStream(data))
-                        using (Image image = Image.FromStream(mem))
-                            image.Save(filename, System.Drawing.Imaging.ImageFormat.Jpeg);
-                    }
-                    if (File.Exists(filename))
-                        File.Move(filename, $"Resources/meme-templates/{name}.jpg");
-                } catch (WebException e) {
-                    throw new CommandFailedException("URL error.", e);
-                } catch (Exception e) {
-                    throw new CommandFailedException("An error occured. Contact owner please.", e);
-                }
-
-                await ctx.RespondAsync($"Template {Formatter.Bold(name)} successfully added!")
-                    .ConfigureAwait(false);
-            }
-            #endregion
-
-            #region COMMAND_MEME_TEMPLATE_DELETE
-            [Command("delete")]
-            [Description("Add a new meme template.")]
-            [Aliases("-", "remove", "del", "rm", "d")]
-            [RequireOwner]
-            public async Task DeleteAsync(CommandContext ctx,
-                                         [Description("Template name.")] string name)
-            {
-                string filename = $"Resources/meme-templates/{name}.jpg";
-                if (File.Exists(filename)) {
-                    try {
-                        File.Delete(filename);
-                    } catch (Exception e) {
-                        throw new CommandFailedException("An error occured. Contact owner please.", e);
-                    }
-                    await ctx.RespondAsync($"Template {Formatter.Bold(name)} successfully removed!")
-                        .ConfigureAwait(false);
-                } else {
-                    throw new CommandFailedException("No such template found!");
-                }
-            }
-            #endregion
-
-            #region COMMAND_MEME_TEMPLATE_LIST
-            [Command("list")]
-            [Description("List all registered memes.")]
-            [Aliases("ls", "l")]
-            public async Task ListAsync(CommandContext ctx)
-            {
-                string dir = "Resources/meme-templates/";
-                var templates = Directory.GetFiles(dir)
-                    .Select(s => s.Substring(dir.Length, s.Length - dir.Length - 4))
-                    .ToList();
-                templates.Sort();
-                await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
-                    Title = $"Available meme templates:",
-                    Description = string.Join(", ", templates),
-                    Color = DiscordColor.Green
-                }.Build()).ConfigureAwait(false);
-            }
-            #endregion
-
-            #region COMMAND_MEME_TEMPLATE_PREVIEW
-            [Command("preview")]
-            [Description("Preview a meme template.")]
-            [Aliases("p", "pr", "view")]
-            public async Task PreviewAsync(CommandContext ctx,
-                                          [Description("Template name.")] string name)
-            {
-                string filename = $"Resources/meme-templates/{name.ToLower()}.jpg";
-                if (!File.Exists(filename))
-                    throw new CommandFailedException("Such template does not exist!");
-
-                using (var fs = new FileStream(filename, FileMode.Open))
-                    await ctx.RespondWithFileAsync(fs);
-            }
-            #endregion
-        }
-
 
         #region HELPER_FUNCTIONS
         private async Task SendMemeAsync(DiscordClient client, ulong cid, string url)
@@ -350,12 +245,12 @@ namespace TheGodfather.Modules.Main
                 .ConfigureAwait(false);
         }
 
-        private async Task SendRandomMemeAsync(DiscordClient client, DatabaseService db, ulong gid, ulong cid)
+        private async Task SendRandomMemeAsync(DiscordClient client, ulong gid, ulong cid)
         {
             var chn = await client.GetChannelAsync(cid)
                 .ConfigureAwait(false);
 
-            string url = await db.GetRandomGuildMemeAsync(gid)
+            string url = await DatabaseService.GetRandomGuildMemeAsync(gid)
                 .ConfigureAwait(false);
 
             if (url == null) {
