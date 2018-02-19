@@ -1,6 +1,6 @@
 # Command list
 
-## 8ball
+8ball
 *An almighty ball which knows answer to everything.*
 
 
@@ -10,8 +10,8 @@
 
 ---
 
-## bank
-*Bank manipulation.*
+## Group: bank
+*Bank manipulation. If invoked alone, prints out your bank balance.*
 
 **Aliases:**
 `$, $$, $$$`
@@ -21,10 +21,14 @@
 
 (optional) `[user]` : *User.* (def: `None`)
 
+**Examples:**
+```
+!bank
+```
 ---
 
 ### bank balance
-*View account balance for given user. If the user is no given, checks sender's balance.*
+*View account balance for given user. If the user is not given, checks sender's balance.*
 
 **Aliases:**
 `s, status, bal, money, credits`
@@ -41,7 +45,7 @@
 ---
 
 ### bank grant
-*Magically give funds to a user.*
+*Magically give funds to some user.*
 
 **Requires user permissions:**
 `Administrator`
@@ -70,7 +74,7 @@
 ---
 
 ### bank register
-*Create an account in WM bank.*
+*Create an account for you in WM bank.*
 
 **Aliases:**
 `r, signup, activate`
@@ -96,7 +100,7 @@
 ---
 
 ### bank transfer
-*Transfer funds from one account to another.*
+*Transfer funds from your account to another one.*
 
 **Aliases:**
 `lend`
@@ -121,7 +125,7 @@
 ```
 ---
 
-## cards
+## Group: cards
 *Manipulate a deck of cards.*
 
 **Aliases:**
@@ -548,7 +552,7 @@
 ```
 ---
 
-## coinflip
+coinflip
 *Throw a coin.*
 
 **Aliases:**
@@ -557,7 +561,7 @@
 
 ---
 
-## connect
+connect
 *Connects me to a voice channel.*
 
 **Owner-only.**
@@ -572,7 +576,7 @@
 
 ---
 
-## dice
+dice
 *Throw a coin.*
 
 **Aliases:**
@@ -581,7 +585,7 @@
 
 ---
 
-## disconnect
+disconnect
 *Disconnects from voice channel.*
 
 **Owner-only.**
@@ -589,7 +593,7 @@
 
 ---
 
-## embed
+embed
 *Embed an image given as an URL.*
 
 **Requires permissions:**
@@ -602,7 +606,7 @@
 
 ---
 
-## emoji
+## Group: emoji
 *Manipulate guild emoji. Standalone call lists all guild emoji.*
 
 **Aliases:**
@@ -716,8 +720,8 @@
 ```
 ---
 
-## emojireaction
-*Emoji reaction handling.*
+## Group: emojireaction
+*Orders a bot to react with given emoji to a message containing a trigger word inside (guild specific). If invoked without subcommands, adds a new emoji reaction to a given trigger word list. Note: Trigger words can be regular expressions.*
 
 **Aliases:**
 `ereact, er, emojir, emojireactions`
@@ -729,24 +733,39 @@
 
 `[string...]` : *Trigger word list.*
 
+**Examples:**
+```
+!emojireaction :smile: haha laughing
+```
 ---
 
 ### emojireaction add
-*Add emoji reactions to guild reaction list.*
+*Add emoji reaction to guild reaction list.*
 
 **Requires user permissions:**
 `Manage guild`
 
 **Aliases:**
-`+, new`
+`+, new, a`
 
 
-**Arguments:**
+**Overload 1:**
 
 `[emoji]` : *Emoji to send.*
 
-`[string...]` : *Trigger word list.*
+`[string...]` : *Trigger word list (case-insensitive).*
 
+**Overload 0:**
+
+`[string]` : *Trigger word (case-insensitive).*
+
+`[emoji]` : *Emoji to send.*
+
+**Examples:**
+```
+!emojireaction add :smile: haha
+!emojireaction add haha :smile:
+```
 ---
 
 ### emojireaction clear
@@ -756,9 +775,13 @@
 `Administrator`
 
 **Aliases:**
-`da, c`
+`da, c, ca, cl, clearall`
 
 
+**Examples:**
+```
+!emojireactions clear
+```
 ---
 
 ### emojireaction delete
@@ -771,23 +794,49 @@
 `-, remove, del, rm, d`
 
 
+**Overload 1:**
+
+`[emoji]` : *Emoji to remove reactions for.*
+
+**Overload 0:**
+
+`[string...]` : *Trigger words to remove.*
+
+**Examples:**
+```
+!emojireaction delete haha sometrigger
+!emojireaction delete :joy:
+```
+---
+
+### emojireaction list
+*Show all emoji reactions for this guild.*
+
+**Aliases:**
+`ls, l, view`
+
+
+**Examples:**
+```
+!emojireaction list
+```
+---
+
+## Group: filter
+*Message filtering commands. If invoked without subcommand, adds a new filter for the given word list. Words can be regular expressions.*
+
+**Aliases:**
+`f, filters`
+
+
 **Arguments:**
 
 `[string...]` : *Trigger word list.*
 
----
-
-### emojireaction list
-*Show all emoji reactions.*
-
-**Aliases:**
-`ls, l`
-
-
-**Arguments:**
-
-(optional) `[int]` : *Page.* (def: `1`)
-
+**Examples:**
+```
+!filter fuck fk f+u+c+k+
+```
 ---
 
 ### filter add
@@ -804,6 +853,10 @@
 
 `[string...]` : *Filter. Can be a regex (case insensitive).*
 
+**Examples:**
+```
+!filter add fuck f+u+c+k+
+```
 ---
 
 ### filter clear
@@ -813,25 +866,33 @@
 `Administrator`
 
 **Aliases:**
-`c, da`
+`da, c, ca, cl, clearall`
 
 
+**Examples:**
+```
+!filter clear
+```
 ---
 
 ### filter delete
-*Remove filter from guild filter list.*
+*Remove filters from guild filter list.*
 
 **Requires user permissions:**
 `Manage guild`
 
 **Aliases:**
-`-, remove, del`
+`-, remove, del, rm, rem, d`
 
 
 **Arguments:**
 
-`[string...]` : *Filter to remove.*
+`[string...]` : *Filters to remove.*
 
+**Examples:**
+```
+!filter delete fuck f+u+c+k+
+```
 ---
 
 ### filter list
@@ -841,10 +902,10 @@
 `ls, l`
 
 
-**Arguments:**
-
-(optional) `[int]` : *Page* (def: `1`)
-
+**Examples:**
+```
+!filter list
+```
 ---
 
 ### gamble coinflip
@@ -916,7 +977,33 @@
 ```
 ---
 
-## game caro
+## Group: game animalrace
+*Start a new animal race!*
+
+**Aliases:**
+`r, race, ar`
+
+
+**Examples:**
+```
+!game animalrace
+```
+---
+
+### game animalrace join
+*Join an existing animal race game.*
+
+**Aliases:**
+`+, compete, enter, j`
+
+
+**Examples:**
+```
+!game animalrace join
+```
+---
+
+## Group: game caro
 *Starts a "Caro" game. Play a move by writing a pair of numbers from 1 to 10 corresponding to the row and column where you wish to play.*
 
 **Aliases:**
@@ -929,7 +1016,7 @@
 ```
 ---
 
-## game connect4
+## Group: game connect4
 *Starts a "Connect 4" game. Play a move by writing a number from 1 to 9 corresponding to the column where you wish to insert your piece.*
 
 **Aliases:**
@@ -985,34 +1072,46 @@
 ```
 ---
 
-## game nunchi
-*Nunchi game commands*
+## Group: game numberrace
+*Number racing game commands.*
 
 **Aliases:**
-`n`
+`nr, n, nunchi, numbers, numbersrace`
 
 
+**Examples:**
+```
+!game numberrace
+```
 ---
 
-### game nunchi join
-*Join a nunchi game.*
+### game numberrace join
+*Join an existing number race game.*
 
 **Aliases:**
-`+, compete`
+`+, compete, j, enter`
 
 
+**Examples:**
+```
+!game numberrace join
+```
 ---
 
-### game nunchi rules
-*Explain the game.*
+### game numberrace rules
+*Explain the number race rules.*
 
 **Aliases:**
-`help`
+`help, h, ruling, rule`
 
 
+**Examples:**
+```
+!game numberrace rules
+```
 ---
 
-## game othello
+## Group: game othello
 *Starts an "Othello" game. Play a move by writing a pair of numbers from 1 to 10 corresponding to the row and column where you wish to play.*
 
 **Aliases:**
@@ -1025,31 +1124,30 @@
 ```
 ---
 
+## Group: game quiz
+*List all available quiz categories.*
+
+**Aliases:**
+`trivia, q`
+
+
+**Examples:**
+```
+!game quiz 
+```
+---
+
 ### game quiz countries
-*Country flags quiz.*
+*Country flags guessing quiz.*
 
 **Aliases:**
 `flags`
 
 
----
-
-## game race
-*Racing!*
-
-**Aliases:**
-`r`
-
-
----
-
-### game race join
-*Join a race.*
-
-**Aliases:**
-`+, compete`
-
-
+**Examples:**
+```
+!game quiz countries
+```
 ---
 
 ### game rps
@@ -1100,7 +1198,7 @@
 ```
 ---
 
-## game tictactoe
+## Group: game tictactoe
 *Starts a "Tic-Tac-Toe" game. Play a move by writing a number from 1 to 9 corresponding to the field where you wish to play.*
 
 **Aliases:**
@@ -1113,16 +1211,20 @@
 ```
 ---
 
-### game typing
+### game typingrace
 *Typing race.*
 
 **Aliases:**
-`type, typerace, typingrace`
+`type, typerace, typing`
 
 
+**Examples:**
+```
+!game typingrace
+```
 ---
 
-## gif
+## Group: gif
 *GIPHY commands.*
 
 **Aliases:**
@@ -1157,7 +1259,23 @@
 
 ---
 
-## greet
+giveme
+*Grants you a role from this guild's self-assignable roles list.*
+
+**Requires bot permissions:**
+`Manage roles`
+
+**Aliases:**
+`giverole, gimme, grantme`
+
+
+**Arguments:**
+
+`[role]` : *Role.*
+
+---
+
+greet
 *Greets a user and starts a conversation.*
 
 **Aliases:**
@@ -1340,6 +1458,80 @@
 ```
 ---
 
+## Group: guild selfassignableroles
+*Commands to manipulate self-assignable roles. If invoked alone, lists all allowed self-assignable roles in this guild.*
+
+**Aliases:**
+`sar`
+
+
+**Examples:**
+```
+!guild selfassignableroles
+```
+---
+
+### guild selfassignableroles add
+*Add a self-assignable role (or roles) for this guild.*
+
+**Requires user permissions:**
+`Administrator`
+
+**Requires bot permissions:**
+`Manage roles`
+
+**Aliases:**
+`a, +`
+
+
+**Arguments:**
+
+`[role...]` : *Roles to add.*
+
+**Examples:**
+```
+!guild sar add @Notifications
+!guild sar add @Notifications @Role1 @Role2
+```
+---
+
+### guild selfassignableroles delete
+*Remove self-assignable role (or roles).*
+
+**Requires user permissions:**
+`Administrator`
+
+**Requires bot permissions:**
+`Manage roles`
+
+**Aliases:**
+`remove, del, -, d`
+
+
+**Arguments:**
+
+`[role...]` : *Roles to delete.*
+
+**Examples:**
+```
+!guild sar delete @Notifications
+!guild sar delete @Notifications @Role1 @Role2
+```
+---
+
+### guild selfassignableroles list
+*View all self-assignable roles in the current guild.*
+
+**Aliases:**
+`print, show, l, p`
+
+
+**Examples:**
+```
+!guild sar list
+```
+---
+
 ### guild seticon
 *Change icon of the guild.*
 
@@ -1402,7 +1594,7 @@
 ```
 ---
 
-## help
+help
 *Displays command help.*
 
 
@@ -1412,7 +1604,7 @@
 
 ---
 
-## imgur
+## Group: imgur
 *Search imgur. Invoking without sub command searches top.*
 
 **Aliases:**
@@ -1459,32 +1651,40 @@
 
 ---
 
-## insult
-*Burns a user!*
+## Group: insult
+*Insults manipulation. If invoked without subcommands, insults a given user.*
 
 **Aliases:**
-`burn, insults`
+`burn, insults, ins`
 
 
 **Arguments:**
 
-(optional) `[user]` : *User.* (def: `None`)
+(optional) `[user]` : *User to insult.* (def: `None`)
 
+**Examples:**
+```
+!insult @Someone
+```
 ---
 
 ### insult add
-*Add insult to list (Use % to code mention).*
+*Add insult to list (use %user% instead of user mention).*
 
 **Owner-only.**
 
 **Aliases:**
-`+, new`
+`+, new, a`
 
 
 **Arguments:**
 
-`[string...]` : *Response.*
+`[string...]` : *Insult (must contain ``%user%``).*
 
+**Examples:**
+```
+!insult add You are so dumb, %user%!
+```
 ---
 
 ### insult clear
@@ -1493,37 +1693,48 @@
 **Owner-only.**
 
 **Aliases:**
-`clearall`
+`da, c, ca, cl, clearall`
 
 
+**Examples:**
+```
+!insults clear
+```
 ---
 
 ### insult delete
-*Remove insult with a given index from list. (use ``!insults list`` to view indexes)*
+*Remove insult with a given index from list. (use ``!insults list`` to view insult indexes).*
 
 **Owner-only.**
 
 **Aliases:**
-`-, remove, del, rm`
+`-, remove, del, rm, rem, d`
 
 
 **Arguments:**
 
-`[int]` : *Index.*
+`[int]` : *Index of the insult to remove.*
 
+**Examples:**
+```
+!insult delete 2
+```
 ---
 
 ### insult list
 *Show all insults.*
 
+**Aliases:**
+`ls, l`
 
-**Arguments:**
 
-(optional) `[int]` : *Page.* (def: `1`)
-
+**Examples:**
+```
+!insult list
+```
 ---
 
-## invite
+invite
 *Get an instant invite link for the current channel.*
 
 **Requires permissions:**
@@ -1535,7 +1746,7 @@
 
 ---
 
-## joke
+## Group: joke
 *Send a joke.*
 
 **Aliases:**
@@ -1566,7 +1777,7 @@
 
 ---
 
-## leave
+leave
 *Makes Godfather leave the server.*
 
 **Requires user permissions:**
@@ -1575,7 +1786,7 @@
 
 ---
 
-## leet
+leet
 *Wr1t3s m3ss@g3 1n 1337sp34k.*
 
 
@@ -1585,7 +1796,7 @@
 
 ---
 
-## meme
+## Group: meme
 *Manipulate memes. When invoked without name, returns a random one.*
 
 **Aliases:**
@@ -2097,7 +2308,7 @@
 
 **Examples:**
 ```
-!owner status delete Playing CS:GO
+!owner status delete 1
 ```
 ---
 
@@ -2150,7 +2361,7 @@
 ```
 ---
 
-## penis
+penis
 *An accurate size of the user's manhood.*
 
 **Aliases:**
@@ -2163,13 +2374,13 @@
 
 ---
 
-## ping
+ping
 *Ping the bot.*
 
 
 ---
 
-## play
+## Group: play
 *Plays a mp3 file from URL or server filesystem.*
 
 **Owner-only.**
@@ -2202,7 +2413,7 @@
 
 ---
 
-## poll
+poll
 *Starts a poll in the channel.*
 
 **Aliases:**
@@ -2215,7 +2426,7 @@
 
 ---
 
-## pollr
+pollr
 *Starts a poll with reactions in the channel.*
 
 **Aliases:**
@@ -2228,7 +2439,7 @@
 
 ---
 
-## prefix
+prefix
 *Get current guild prefix, or change it.*
 
 **Requires user permissions:**
@@ -2279,7 +2490,7 @@
 
 ---
 
-## rank
+## Group: rank
 *User ranking commands.*
 
 **Aliases:**
@@ -2307,7 +2518,7 @@
 
 ---
 
-## rate
+rate
 *An accurate graph of a user's humanity.*
 
 **Aliases:**
@@ -2320,7 +2531,7 @@
 
 ---
 
-## remind
+remind
 *Resend a message after some time.*
 
 
@@ -2332,7 +2543,7 @@
 
 ---
 
-## report
+report
 *Send a report message to owner about a bug (please don't abuse... please).*
 
 
@@ -2342,7 +2553,7 @@
 
 ---
 
-## roles
+## Group: roles
 *Miscellaneous role control commands.*
 
 **Aliases:**
@@ -2570,7 +2781,7 @@
 ```
 ---
 
-## rss
+## Group: rss
 *RSS feed operations.*
 
 **Aliases:**
@@ -2598,7 +2809,7 @@
 
 ---
 
-## rss reddit
+## Group: rss reddit
 *Reddit feed manipulation.*
 
 **Aliases:**
@@ -2683,7 +2894,7 @@
 
 ---
 
-## rss youtube
+## Group: rss youtube
 *Youtube feed manipulation.*
 
 **Aliases:**
@@ -2730,7 +2941,7 @@
 
 ---
 
-## say
+say
 *Repeats after you.*
 
 **Aliases:**
@@ -2756,7 +2967,7 @@
 
 ---
 
-## stop
+stop
 *Stops current voice playback.*
 
 **Owner-only.**
@@ -2870,7 +3081,7 @@
 
 ---
 
-## textreaction
+## Group: textreaction
 *Text reaction handling.*
 
 **Aliases:**
@@ -2944,7 +3155,7 @@
 
 ---
 
-## tts
+tts
 *Repeats after you but uses tts.*
 
 
@@ -2954,7 +3165,7 @@
 
 ---
 
-## urbandict
+urbandict
 *Search Urban Dictionary for a query.*
 
 **Aliases:**
@@ -3373,7 +3584,7 @@
 ```
 ---
 
-## youtube
+## Group: youtube
 *Youtube search commands.*
 
 **Aliases:**
@@ -3440,7 +3651,7 @@
 
 ---
 
-## zugify
+zugify
 *I don't even...*
 
 **Aliases:**

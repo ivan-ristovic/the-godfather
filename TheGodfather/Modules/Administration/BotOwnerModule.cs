@@ -271,7 +271,7 @@ namespace TheGodfather.Modules.Administration
 
             foreach (var cmd in commands) {
                 if (cmd is CommandGroup || cmd.Parent == null) 
-                    sb.AppendLine("## " + cmd.QualifiedName);
+                    sb.AppendLine(cmd is CommandGroup ? "## Group: " + cmd.QualifiedName : cmd.QualifiedName);
                 else
                     sb.AppendLine("### " + cmd.QualifiedName);
 
@@ -533,7 +533,7 @@ namespace TheGodfather.Modules.Administration
             [Command("delete")]
             [Description("Remove status from running queue.")]
             [Aliases("-", "remove", "rm", "del")]
-            [UsageExample("!owner status delete Playing CS:GO")]
+            [UsageExample("!owner status delete 1")]
             public async Task DeleteAsync(CommandContext ctx,
                                          [Description("Status ID.")] int id)
             {
