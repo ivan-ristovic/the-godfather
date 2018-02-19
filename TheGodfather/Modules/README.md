@@ -23,11 +23,13 @@
 
 **Examples:**
 
-```!bank
+```
+!bank
 ```
 ---
 
-### bank balance*View account balance for given user. If the user is not given, checks sender's balance.*
+### bank balance
+*View account balance for given user. If the user is not given, checks sender's balance.*
 
 **Aliases:**
 `s, status, bal, money, credits`
@@ -39,11 +41,13 @@
 
 **Examples:**
 
-```!bank balance @Someone
+```
+!bank balance @Someone
 ```
 ---
 
-### bank grant*Magically give funds to some user.*
+### bank grant
+*Magically give funds to some user.*
 
 **Requires user permissions:**
 `Administrator`
@@ -66,12 +70,14 @@
 
 **Examples:**
 
-```!bank grant @Someone 1000
+```
+!bank grant @Someone 1000
 !bank grant 1000 @Someone
 ```
 ---
 
-### bank register*Create an account for you in WM bank.*
+### bank register
+*Create an account for you in WM bank.*
 
 **Aliases:**
 `r, signup, activate`
@@ -79,11 +85,13 @@
 
 **Examples:**
 
-```!bank register
+```
+!bank register
 ```
 ---
 
-### bank top*Print the richest users.*
+### bank top
+*Print the richest users.*
 
 **Aliases:**
 `leaderboard, elite`
@@ -91,11 +99,13 @@
 
 **Examples:**
 
-```!bank top
+```
+!bank top
 ```
 ---
 
-### bank transfer*Transfer funds from your account to another one.*
+### bank transfer
+*Transfer funds from your account to another one.*
 
 **Aliases:**
 `lend`
@@ -115,7 +125,8 @@
 
 **Examples:**
 
-```!bank transfer @Someone 40
+```
+!bank transfer @Someone 40
 !bank transfer 40 @Someone
 ```
 ---
@@ -129,7 +140,8 @@
 
 ---
 
-### cards draw*Draw cards from the top of the deck. If amount of cards is not specified, draws one card.*
+### cards draw
+*Draw cards from the top of the deck. If amount of cards is not specified, draws one card.*
 
 **Aliases:**
 `take`
@@ -141,11 +153,13 @@
 
 **Examples:**
 
-```!deck draw 5
+```
+!deck draw 5
 ```
 ---
 
-### cards reset*Opens a brand new card deck.*
+### cards reset
+*Opens a brand new card deck.*
 
 **Aliases:**
 `new, opennew, open`
@@ -153,11 +167,13 @@
 
 **Examples:**
 
-```!deck draw 5
+```
+!deck draw 5
 ```
 ---
 
-### cards shuffle*Shuffles current deck.*
+### cards shuffle
+*Shuffles current deck.*
 
 **Aliases:**
 `s, sh, mix`
@@ -165,11 +181,13 @@
 
 **Examples:**
 
-```!deck shuffle
+```
+!deck shuffle
 ```
 ---
 
-### channel createcategory*Create new channel category.*
+### channel createcategory
+*Create new channel category.*
 
 **Requires permissions:**
 `Manage channels`
@@ -184,11 +202,13 @@
 
 **Examples:**
 
-```!channel createcategory My New Category
+```
+!channel createcategory My New Category
 ```
 ---
 
-### channel createtext*Create new text channel.*
+### channel createtext
+*Create new text channel.*
 
 **Requires permissions:**
 `Manage channels`
@@ -223,13 +243,15 @@
 
 **Examples:**
 
-```!channel createtext newtextchannel ParentCategory no
+```
+!channel createtext newtextchannel ParentCategory no
 !channel createtext newtextchannel no
 !channel createtext ParentCategory newtextchannel
 ```
 ---
 
-### channel createvoice*Create new voice channel.*
+### channel createvoice
+*Create new voice channel.*
 
 **Requires permissions:**
 `Manage channels`
@@ -270,13 +292,15 @@
 
 **Examples:**
 
-```!channel createtext "My voice channel" ParentCategory 0 96000
+```
+!channel createtext "My voice channel" ParentCategory 0 96000
 !channel createtext "My voice channel" 10 96000
 !channel createtext ParentCategory "My voice channel" 10 96000
 ```
 ---
 
-### channel delete*Delete a given channel or category. If the channel isn't given, deletes the current one.*
+### channel delete
+*Delete a given channel or category. If the channel isn't given, deletes the current one.*
 
 **Requires permissions:**
 `Manage channels`
@@ -297,13 +321,15 @@
 
 **Examples:**
 
-```!channel delete
+```
+!channel delete
 !channel delete "My voice channel"
 !channel delete "My voice channel" Because I can!
 ```
 ---
 
-### channel info*Get information about a given channel. If the channel isn't given, uses the current one.*
+### channel info
+*Get information about a given channel. If the channel isn't given, uses the current one.*
 
 **Requires permissions:**
 `Read messages`
@@ -318,12 +344,14 @@
 
 **Examples:**
 
-```!channel info
+```
+!channel info
 !channel info "My voice channel"
 ```
 ---
 
-### channel modify*Modify a given voice channel. Set 0 if you wish to keep the value as it is.*
+### channel modify
+*Modify a given voice channel. Set 0 if you wish to keep the value as it is.*
 
 **Requires permissions:**
 `Manage channels`
@@ -352,11 +380,13 @@
 
 **Examples:**
 
-```!channel modify "My voice channel" 20 96000 Some reason
+```
+!channel modify "My voice channel" 20 96000 Some reason
 ```
 ---
 
-### channel rename*Rename channel. If the channel isn't given, uses the current one.*
+### channel rename
+*Rename channel. If the channel isn't given, uses the current one.*
 
 **Requires permissions:**
 `Manage channels`
@@ -385,13 +415,15 @@
 
 **Examples:**
 
-```!channel rename New name for this channel
+```
+!channel rename New name for this channel
 !channel rename "My voice channel" "My old voice channel"
 !channel rename "My reason" "My voice channel" "My old voice channel"
 ```
 ---
 
-### channel setparent*Change the parent of the given channel. If the channel isn't given, uses the current one.*
+### channel setparent
+*Change the parent of the given channel. If the channel isn't given, uses the current one.*
 
 **Requires permissions:**
 `Manage channels`
@@ -416,12 +448,14 @@
 
 **Examples:**
 
-```!channel setparent "My channel" ParentCategory
+```
+!channel setparent "My channel" ParentCategory
 !channel setparent ParentCategory I set a new parent for this channel!
 ```
 ---
 
-### channel setposition*Change the position of the given channel in the guild channel list. If the channel isn't given, uses the current one.*
+### channel setposition
+*Change the position of the given channel in the guild channel list. If the channel isn't given, uses the current one.*
 
 **Requires permissions:**
 `Manage channels`
@@ -454,13 +488,15 @@
 
 **Examples:**
 
-```!channel setposition 4
+```
+!channel setposition 4
 !channel setposition "My channel" 1
 !channel setposition "My channel" 4 I changed position :)
 ```
 ---
 
-### channel settopic*Set channel topic. If the channel isn't given, uses the current one.*
+### channel settopic
+*Set channel topic. If the channel isn't given, uses the current one.*
 
 **Requires permissions:**
 `Manage channels`
@@ -489,12 +525,14 @@
 
 **Examples:**
 
-```!channel settopic New channel topic
+```
+!channel settopic New channel topic
 !channel settopic "My channel" New channel topic
 ```
 ---
 
-### channel viewperms*View permissions for a member or role in the given channel. If the member is not given, lists the sender's permissions. If the channel is not given, uses current one.*
+### channel viewperms
+*View permissions for a member or role in the given channel. If the member is not given, lists the sender's permissions. If the channel is not given, uses current one.*
 
 **Aliases:**
 `tp, perms, permsfor, testperms, listperms`
@@ -526,7 +564,8 @@
 
 **Examples:**
 
-```!channel viewperms @Someone
+```
+!channel viewperms @Someone
 !channel viewperms Admins
 !channel viewperms #private everyone
 !channel viewperms everyone #private
@@ -596,11 +635,13 @@
 
 **Examples:**
 
-```!emoji
+```
+!emoji
 ```
 ---
 
-### emoji add*Add emoji.*
+### emoji add
+*Add emoji.*
 
 **Requires permissions:**
 `Manage emoji`
@@ -617,11 +658,13 @@
 
 **Examples:**
 
-```!emoji add pepe http://i0.kym-cdn.com/photos/images/facebook/000/862/065/0e9.jpg
+```
+!emoji add pepe http://i0.kym-cdn.com/photos/images/facebook/000/862/065/0e9.jpg
 ```
 ---
 
-### emoji delete*Remove guild emoji. Note: bots can only delete emojis they created.*
+### emoji delete
+*Remove guild emoji. Note: bots can only delete emojis they created.*
 
 **Requires permissions:**
 `Manage emoji`
@@ -636,11 +679,13 @@
 
 **Examples:**
 
-```!emoji delete pepe
+```
+!emoji delete pepe
 ```
 ---
 
-### emoji details*Get details for guild emoji.*
+### emoji details
+*Get details for guild emoji.*
 
 **Aliases:**
 `det`
@@ -652,11 +697,13 @@
 
 **Examples:**
 
-```!emoji details pepe
+```
+!emoji details pepe
 ```
 ---
 
-### emoji list*View guild emojis.*
+### emoji list
+*View guild emojis.*
 
 **Aliases:**
 `print, show, l, p`
@@ -664,11 +711,13 @@
 
 **Examples:**
 
-```!emoji list
+```
+!emoji list
 ```
 ---
 
-### emoji modify*Edit name of an existing guild emoji.*
+### emoji modify
+*Edit name of an existing guild emoji.*
 
 **Requires permissions:**
 `Manage emoji`
@@ -691,7 +740,8 @@
 
 **Examples:**
 
-```!emoji modify :pepe: newname
+```
+!emoji modify :pepe: newname
 !emoji modify newname :pepe:
 ```
 ---
@@ -711,11 +761,13 @@
 
 **Examples:**
 
-```!emojireaction :smile: haha laughing
+```
+!emojireaction :smile: haha laughing
 ```
 ---
 
-### emojireaction add*Add emoji reaction to guild reaction list.*
+### emojireaction add
+*Add emoji reaction to guild reaction list.*
 
 **Requires user permissions:**
 `Manage guild`
@@ -738,12 +790,14 @@
 
 **Examples:**
 
-```!emojireaction add :smile: haha
+```
+!emojireaction add :smile: haha
 !emojireaction add haha :smile:
 ```
 ---
 
-### emojireaction clear*Delete all reactions for the current guild.*
+### emojireaction clear
+*Delete all reactions for the current guild.*
 
 **Requires user permissions:**
 `Administrator`
@@ -754,11 +808,13 @@
 
 **Examples:**
 
-```!emojireactions clear
+```
+!emojireactions clear
 ```
 ---
 
-### emojireaction delete*Remove emoji reactions for given trigger words.*
+### emojireaction delete
+*Remove emoji reactions for given trigger words.*
 
 **Requires user permissions:**
 `Manage guild`
@@ -777,12 +833,14 @@
 
 **Examples:**
 
-```!emojireaction delete haha sometrigger
+```
+!emojireaction delete haha sometrigger
 !emojireaction delete :joy:
 ```
 ---
 
-### emojireaction list*Show all emoji reactions for this guild.*
+### emojireaction list
+*Show all emoji reactions for this guild.*
 
 **Aliases:**
 `ls, l, view`
@@ -790,7 +848,8 @@
 
 **Examples:**
 
-```!emojireaction list
+```
+!emojireaction list
 ```
 ---
 
@@ -807,11 +866,13 @@
 
 **Examples:**
 
-```!filter fuck fk f+u+c+k+
+```
+!filter fuck fk f+u+c+k+
 ```
 ---
 
-### filter add*Add filter to guild filter list.*
+### filter add
+*Add filter to guild filter list.*
 
 **Requires user permissions:**
 `Manage guild`
@@ -826,11 +887,13 @@
 
 **Examples:**
 
-```!filter add fuck f+u+c+k+
+```
+!filter add fuck f+u+c+k+
 ```
 ---
 
-### filter clear*Delete all filters for the current guild.*
+### filter clear
+*Delete all filters for the current guild.*
 
 **Requires user permissions:**
 `Administrator`
@@ -841,11 +904,13 @@
 
 **Examples:**
 
-```!filter clear
+```
+!filter clear
 ```
 ---
 
-### filter delete*Remove filters from guild filter list.*
+### filter delete
+*Remove filters from guild filter list.*
 
 **Requires user permissions:**
 `Manage guild`
@@ -860,11 +925,13 @@
 
 **Examples:**
 
-```!filter delete fuck f+u+c+k+
+```
+!filter delete fuck f+u+c+k+
 ```
 ---
 
-### filter list*Show all filters for this guild.*
+### filter list
+*Show all filters for this guild.*
 
 **Aliases:**
 `ls, l`
@@ -872,11 +939,13 @@
 
 **Examples:**
 
-```!filter list
+```
+!filter list
 ```
 ---
 
-### gamble coinflip*Flip a coin and bet on the outcome.*
+### gamble coinflip
+*Flip a coin and bet on the outcome.*
 
 **Aliases:**
 `coin, flip`
@@ -896,12 +965,14 @@
 
 **Examples:**
 
-```!bet coinflip 10 heads
+```
+!bet coinflip 10 heads
 !bet coinflip tails 20
 ```
 ---
 
-### gamble dice*Roll a dice and bet on the outcome.*
+### gamble dice
+*Roll a dice and bet on the outcome.*
 
 **Aliases:**
 `roll, die`
@@ -921,12 +992,14 @@
 
 **Examples:**
 
-```!dice 50 six
+```
+!dice 50 six
 !dice three 10
 ```
 ---
 
-### gamble slot*Roll a slot machine.*
+### gamble slot
+*Roll a slot machine.*
 
 **Aliases:**
 `slotmachine`
@@ -938,7 +1011,8 @@
 
 **Examples:**
 
-```!gamble slot 20
+```
+!gamble slot 20
 ```
 ---
 
@@ -951,11 +1025,13 @@
 
 **Examples:**
 
-```!game animalrace
+```
+!game animalrace
 ```
 ---
 
-### game animalrace join*Join an existing animal race game.*
+### game animalrace join
+*Join an existing animal race game.*
 
 **Aliases:**
 `+, compete, enter, j`
@@ -963,7 +1039,8 @@
 
 **Examples:**
 
-```!game animalrace join
+```
+!game animalrace join
 ```
 ---
 
@@ -976,7 +1053,8 @@
 
 **Examples:**
 
-```!game caro
+```
+!game caro
 ```
 ---
 
@@ -989,11 +1067,13 @@
 
 **Examples:**
 
-```!game connect4
+```
+!game connect4
 ```
 ---
 
-### game duel*Starts a duel which I will commentate.*
+### game duel
+*Starts a duel which I will commentate.*
 
 **Aliases:**
 `fight, vs, d`
@@ -1005,11 +1085,13 @@
 
 **Examples:**
 
-```!game duel @Someone
+```
+!game duel @Someone
 ```
 ---
 
-### game hangman*Starts a hangman game.*
+### game hangman
+*Starts a hangman game.*
 
 **Aliases:**
 `h, hang`
@@ -1017,11 +1099,13 @@
 
 **Examples:**
 
-```!game hangman
+```
+!game hangman
 ```
 ---
 
-### game leaderboard*View the global game leaderboard.*
+### game leaderboard
+*View the global game leaderboard.*
 
 **Aliases:**
 `globalstats`
@@ -1029,7 +1113,8 @@
 
 **Examples:**
 
-```!game leaderboard
+```
+!game leaderboard
 ```
 ---
 
@@ -1042,11 +1127,13 @@
 
 **Examples:**
 
-```!game numberrace
+```
+!game numberrace
 ```
 ---
 
-### game numberrace join*Join an existing number race game.*
+### game numberrace join
+*Join an existing number race game.*
 
 **Aliases:**
 `+, compete, j, enter`
@@ -1054,11 +1141,13 @@
 
 **Examples:**
 
-```!game numberrace join
+```
+!game numberrace join
 ```
 ---
 
-### game numberrace rules*Explain the number race rules.*
+### game numberrace rules
+*Explain the number race rules.*
 
 **Aliases:**
 `help, h, ruling, rule`
@@ -1066,7 +1155,8 @@
 
 **Examples:**
 
-```!game numberrace rules
+```
+!game numberrace rules
 ```
 ---
 
@@ -1079,7 +1169,8 @@
 
 **Examples:**
 
-```!game othello
+```
+!game othello
 ```
 ---
 
@@ -1092,11 +1183,13 @@
 
 **Examples:**
 
-```!game quiz 
+```
+!game quiz 
 ```
 ---
 
-### game quiz countries*Country flags guessing quiz.*
+### game quiz countries
+*Country flags guessing quiz.*
 
 **Aliases:**
 `flags`
@@ -1104,11 +1197,13 @@
 
 **Examples:**
 
-```!game quiz countries
+```
+!game quiz countries
 ```
 ---
 
-### game rps*Rock, paper, scissors game against TheGodfather*
+### game rps
+*Rock, paper, scissors game against TheGodfather*
 
 **Aliases:**
 `rockpaperscissors`
@@ -1120,11 +1215,13 @@
 
 **Examples:**
 
-```!game rps scissors
+```
+!game rps scissors
 ```
 ---
 
-### game stats*Print game stats for given user.*
+### game stats
+*Print game stats for given user.*
 
 **Aliases:**
 `s, st`
@@ -1136,12 +1233,14 @@
 
 **Examples:**
 
-```!game stats
+```
+!game stats
 !game stats @Someone
 ```
 ---
 
-### game tictactoe*Starts a game of tic-tac-toe. Play by posting a number from 1 to 9 corresponding to field you wish to place your move on.*
+### game tictactoe
+*Starts a game of tic-tac-toe. Play by posting a number from 1 to 9 corresponding to field you wish to place your move on.*
 
 **Aliases:**
 `ttt`
@@ -1149,7 +1248,8 @@
 
 **Examples:**
 
-```!game tictactoe
+```
+!game tictactoe
 ```
 ---
 
@@ -1162,11 +1262,13 @@
 
 **Examples:**
 
-```!game tictactoe
+```
+!game tictactoe
 ```
 ---
 
-### game typingrace*Typing race.*
+### game typingrace
+*Typing race.*
 
 **Aliases:**
 `type, typerace, typing`
@@ -1174,7 +1276,8 @@
 
 **Examples:**
 
-```!game typingrace
+```
+!game typingrace
 ```
 ---
 
@@ -1191,7 +1294,8 @@
 
 ---
 
-### gif random*Return a random GIF.*
+### gif random
+*Return a random GIF.*
 
 **Aliases:**
 `r, rand, rnd`
@@ -1199,7 +1303,8 @@
 
 ---
 
-### gif trending*Return an amount of trending GIFs.*
+### gif trending
+*Return an amount of trending GIFs.*
 
 **Aliases:**
 `t, tr, trend`
@@ -1236,7 +1341,8 @@
 
 ---
 
-### guild bans*Get guild ban list.*
+### guild bans
+*Get guild ban list.*
 
 **Requires permissions:**
 `View audit log`
@@ -1247,11 +1353,13 @@
 
 **Examples:**
 
-```!guild banlist
+```
+!guild banlist
 ```
 ---
 
-### guild deleteleavechannel*Remove leave message channel for this guild.*
+### guild deleteleavechannel
+*Remove leave message channel for this guild.*
 
 **Requires user permissions:**
 `Manage guild`
@@ -1262,11 +1370,13 @@
 
 **Examples:**
 
-```!guild deletewelcomechannel
+```
+!guild deletewelcomechannel
 ```
 ---
 
-### guild deletewelcomechannel*Remove welcome message channel for this guild.*
+### guild deletewelcomechannel
+*Remove welcome message channel for this guild.*
 
 **Requires user permissions:**
 `Manage guild`
@@ -1277,11 +1387,13 @@
 
 **Examples:**
 
-```!guild deletewelcomechannel
+```
+!guild deletewelcomechannel
 ```
 ---
 
-### guild getleavechannel*Get current leave message channel for this guild.*
+### guild getleavechannel
+*Get current leave message channel for this guild.*
 
 **Requires user permissions:**
 `Manage guild`
@@ -1292,11 +1404,13 @@
 
 **Examples:**
 
-```!guild getleavechannel
+```
+!guild getleavechannel
 ```
 ---
 
-### guild getwelcomechannel*Get current welcome message channel for this guild.*
+### guild getwelcomechannel
+*Get current welcome message channel for this guild.*
 
 **Requires user permissions:**
 `Manage guild`
@@ -1307,11 +1421,13 @@
 
 **Examples:**
 
-```!guild getwelcomechannel
+```
+!guild getwelcomechannel
 ```
 ---
 
-### guild info*Get guild information.*
+### guild info
+*Get guild information.*
 
 **Aliases:**
 `i, information`
@@ -1319,11 +1435,13 @@
 
 **Examples:**
 
-```!guild info
+```
+!guild info
 ```
 ---
 
-### guild listmembers*Get guild member list.*
+### guild listmembers
+*Get guild member list.*
 
 **Aliases:**
 `memberlist, lm, members`
@@ -1331,11 +1449,13 @@
 
 **Examples:**
 
-```!guild memberlist
+```
+!guild memberlist
 ```
 ---
 
-### guild log*Get audit logs.*
+### guild log
+*Get audit logs.*
 
 **Requires permissions:**
 `View audit log`
@@ -1346,11 +1466,13 @@
 
 **Examples:**
 
-```!guild logs
+```
+!guild logs
 ```
 ---
 
-### guild prune*Kick guild members who weren't active in given amount of days (1-7).*
+### guild prune
+*Kick guild members who weren't active in given amount of days (1-7).*
 
 **Requires permissions:**
 `Kick members`
@@ -1370,11 +1492,13 @@
 
 **Examples:**
 
-```!guild prune 5 Kicking inactives..
+```
+!guild prune 5 Kicking inactives..
 ```
 ---
 
-### guild rename*Rename guild.*
+### guild rename
+*Rename guild.*
 
 **Requires permissions:**
 `Manage guild`
@@ -1395,7 +1519,8 @@
 
 **Examples:**
 
-```!guild rename New guild name
+```
+!guild rename New guild name
 !guild rename "Reason for renaming" New guild name
 ```
 ---
@@ -1409,11 +1534,13 @@
 
 **Examples:**
 
-```!guild selfassignableroles
+```
+!guild selfassignableroles
 ```
 ---
 
-### guild selfassignableroles add*Add a self-assignable role (or roles) for this guild.*
+### guild selfassignableroles add
+*Add a self-assignable role (or roles) for this guild.*
 
 **Requires user permissions:**
 `Administrator`
@@ -1431,12 +1558,14 @@
 
 **Examples:**
 
-```!guild sar add @Notifications
+```
+!guild sar add @Notifications
 !guild sar add @Notifications @Role1 @Role2
 ```
 ---
 
-### guild selfassignableroles delete*Remove self-assignable role (or roles).*
+### guild selfassignableroles delete
+*Remove self-assignable role (or roles).*
 
 **Requires user permissions:**
 `Administrator`
@@ -1454,12 +1583,14 @@
 
 **Examples:**
 
-```!guild sar delete @Notifications
+```
+!guild sar delete @Notifications
 !guild sar delete @Notifications @Role1 @Role2
 ```
 ---
 
-### guild selfassignableroles list*View all self-assignable roles in the current guild.*
+### guild selfassignableroles list
+*View all self-assignable roles in the current guild.*
 
 **Aliases:**
 `print, show, l, p`
@@ -1467,11 +1598,13 @@
 
 **Examples:**
 
-```!guild sar list
+```
+!guild sar list
 ```
 ---
 
-### guild seticon*Change icon of the guild.*
+### guild seticon
+*Change icon of the guild.*
 
 **Requires permissions:**
 `Manage guild`
@@ -1486,11 +1619,13 @@
 
 **Examples:**
 
-```!guild seticon http://imgur.com/someimage.png
+```
+!guild seticon http://imgur.com/someimage.png
 ```
 ---
 
-### guild setleavechannel*Set leave message channel for this guild. If the channel isn't given, uses the current one.*
+### guild setleavechannel
+*Set leave message channel for this guild. If the channel isn't given, uses the current one.*
 
 **Requires user permissions:**
 `Manage guild`
@@ -1505,12 +1640,14 @@
 
 **Examples:**
 
-```!guild setleavechannel
+```
+!guild setleavechannel
 !guild setleavechannel #bb
 ```
 ---
 
-### guild setwelcomechannel*Set welcome message channel for this guild. If the channel isn't given, uses the current one.*
+### guild setwelcomechannel
+*Set welcome message channel for this guild. If the channel isn't given, uses the current one.*
 
 **Requires user permissions:**
 `Manage guild`
@@ -1525,7 +1662,8 @@
 
 **Examples:**
 
-```!guild setwelcomechannel
+```
+!guild setwelcomechannel
 !guild setwelcomechannel #welcome
 ```
 ---
@@ -1555,7 +1693,8 @@
 
 ---
 
-### imgur latest*Return latest images for query.*
+### imgur latest
+*Return latest images for query.*
 
 **Aliases:**
 `l, new, newest`
@@ -1569,7 +1708,8 @@
 
 ---
 
-### imgur top*Return most rated images for query.*
+### imgur top
+*Return most rated images for query.*
 
 **Aliases:**
 `t`
@@ -1598,11 +1738,13 @@
 
 **Examples:**
 
-```!insult @Someone
+```
+!insult @Someone
 ```
 ---
 
-### insult add*Add insult to list (use %user% instead of user mention).*
+### insult add
+*Add insult to list (use %user% instead of user mention).*
 
 **Owner-only.**
 
@@ -1616,11 +1758,13 @@
 
 **Examples:**
 
-```!insult add You are so dumb, %user%!
+```
+!insult add You are so dumb, %user%!
 ```
 ---
 
-### insult clear*Delete all insults.*
+### insult clear
+*Delete all insults.*
 
 **Owner-only.**
 
@@ -1630,11 +1774,13 @@
 
 **Examples:**
 
-```!insults clear
+```
+!insults clear
 ```
 ---
 
-### insult delete*Remove insult with a given index from list. (use ``!insults list`` to view insult indexes).*
+### insult delete
+*Remove insult with a given index from list. (use ``!insults list`` to view insult indexes).*
 
 **Owner-only.**
 
@@ -1648,11 +1794,13 @@
 
 **Examples:**
 
-```!insult delete 2
+```
+!insult delete 2
 ```
 ---
 
-### insult list*Show all insults.*
+### insult list
+*Show all insults.*
 
 **Aliases:**
 `ls, l`
@@ -1660,7 +1808,8 @@
 
 **Examples:**
 
-```!insult list
+```
+!insult list
 ```
 ---
 
@@ -1685,7 +1834,8 @@
 
 ---
 
-### joke search*Search for the joke containing the query.*
+### joke search
+*Search for the joke containing the query.*
 
 **Aliases:**
 `s`
@@ -1697,7 +1847,8 @@
 
 ---
 
-### joke yourmom*Yo mama so...*
+### joke yourmom
+*Yo mama so...*
 
 **Aliases:**
 `mama, m, yomomma, yomom, yomoma, yomamma, yomama`
@@ -1737,7 +1888,8 @@
 
 ---
 
-### meme add*Add a new meme to the list.*
+### meme add
+*Add a new meme to the list.*
 
 **Owner-only.**
 
@@ -1753,7 +1905,8 @@
 
 ---
 
-### meme create*Creates a new meme from blank template.*
+### meme create
+*Creates a new meme from blank template.*
 
 **Aliases:**
 `maker, c, make, m`
@@ -1769,7 +1922,8 @@
 
 ---
 
-### meme delete*Deletes a meme from list.*
+### meme delete
+*Deletes a meme from list.*
 
 **Owner-only.**
 
@@ -1783,7 +1937,8 @@
 
 ---
 
-### meme list*List all registered memes.*
+### meme list
+*List all registered memes.*
 
 **Aliases:**
 `ls, l`
@@ -1795,7 +1950,8 @@
 
 ---
 
-### message attachments*View all message attachments. If the message is not provided, uses the last sent message before command invocation.*
+### message attachments
+*View all message attachments. If the message is not provided, uses the last sent message before command invocation.*
 
 **Aliases:**
 `a, files, la`
@@ -1807,12 +1963,14 @@
 
 **Examples:**
 
-```!message attachments
+```
+!message attachments
 !message attachments 408226948855234561
 ```
 ---
 
-### message delete*Deletes the specified amount of most-recent messages from the channel.*
+### message delete
+*Deletes the specified amount of most-recent messages from the channel.*
 
 **Requires permissions:**
 `Manage messages`
@@ -1832,12 +1990,14 @@
 
 **Examples:**
 
-```!messages delete 10
+```
+!messages delete 10
 !messages delete 10 Cleaning spam
 ```
 ---
 
-### message deletefrom*Deletes given amount of most-recent messages from given user.*
+### message deletefrom
+*Deletes given amount of most-recent messages from given user.*
 
 **Requires permissions:**
 `Manage messages`
@@ -1867,12 +2027,14 @@
 
 **Examples:**
 
-```!messages deletefrom @Someone 10 Cleaning spam
+```
+!messages deletefrom @Someone 10 Cleaning spam
 !messages deletefrom 10 @Someone Cleaning spam
 ```
 ---
 
-### message deletereactions*Deletes all reactions from the given message.*
+### message deletereactions
+*Deletes all reactions from the given message.*
 
 **Requires permissions:**
 `Manage messages`
@@ -1892,11 +2054,13 @@
 
 **Examples:**
 
-```!messages deletereactions 408226948855234561
+```
+!messages deletereactions 408226948855234561
 ```
 ---
 
-### message deleteregex*Deletes given amount of most-recent messages that match a given regular expression.*
+### message deleteregex
+*Deletes given amount of most-recent messages that match a given regular expression.*
 
 **Requires permissions:**
 `Manage messages`
@@ -1926,12 +2090,14 @@
 
 **Examples:**
 
-```!messages deletefrom s+p+a+m+ 10 Cleaning spam
+```
+!messages deletefrom s+p+a+m+ 10 Cleaning spam
 !messages deletefrom 10 s+p+a+m+ Cleaning spam
 ```
 ---
 
-### message listpinned*List pinned messages in this channel.*
+### message listpinned
+*List pinned messages in this channel.*
 
 **Aliases:**
 `lp, listpins, listpin, pinned`
@@ -1939,11 +2105,13 @@
 
 **Examples:**
 
-```!messages listpinned
+```
+!messages listpinned
 ```
 ---
 
-### message modify*Modify the given message.*
+### message modify
+*Modify the given message.*
 
 **Requires permissions:**
 `Manage messages`
@@ -1960,11 +2128,13 @@
 
 **Examples:**
 
-```!messages modify 408226948855234561 modified text
+```
+!messages modify 408226948855234561 modified text
 ```
 ---
 
-### message pin*Pins the message given by ID. If the message is not provided, pins the last sent message before command invocation.*
+### message pin
+*Pins the message given by ID. If the message is not provided, pins the last sent message before command invocation.*
 
 **Requires permissions:**
 `Manage messages`
@@ -1979,12 +2149,14 @@
 
 **Examples:**
 
-```!messages pin
+```
+!messages pin
 !messages pin 408226948855234561
 ```
 ---
 
-### message unpin*Unpins the message at given index (starting from 1). If the index is not given, unpins the most recent one.*
+### message unpin
+*Unpins the message at given index (starting from 1). If the index is not given, unpins the most recent one.*
 
 **Requires permissions:**
 `Manage messages`
@@ -1999,12 +2171,14 @@
 
 **Examples:**
 
-```!messages unpin
+```
+!messages unpin
 !messages unpin 10
 ```
 ---
 
-### message unpinall*Unpins all pinned messages in this channel.*
+### message unpinall
+*Unpins all pinned messages in this channel.*
 
 **Requires permissions:**
 `Manage messages`
@@ -2015,11 +2189,13 @@
 
 **Examples:**
 
-```!messages unpinall
+```
+!messages unpinall
 ```
 ---
 
-### owner botavatar*Set bot avatar.*
+### owner botavatar
+*Set bot avatar.*
 
 **Owner-only.**
 
@@ -2033,11 +2209,13 @@
 
 **Examples:**
 
-```!owner botavatar http://someimage.png
+```
+!owner botavatar http://someimage.png
 ```
 ---
 
-### owner botname*Set bot name.*
+### owner botname
+*Set bot name.*
 
 **Owner-only.**
 
@@ -2051,11 +2229,13 @@
 
 **Examples:**
 
-```!owner setname TheBotfather
+```
+!owner setname TheBotfather
 ```
 ---
 
-### owner clearlog*Clear application logs.*
+### owner clearlog
+*Clear application logs.*
 
 **Owner-only.**
 
@@ -2065,11 +2245,13 @@
 
 **Examples:**
 
-```!owner clearlog
+```
+!owner clearlog
 ```
 ---
 
-### owner dbquery*Clear application logs.*
+### owner dbquery
+*Clear application logs.*
 
 **Owner-only.**
 
@@ -2083,11 +2265,13 @@
 
 **Examples:**
 
-```!owner dbquery SELECT * FROM gf.msgcount;
+```
+!owner dbquery SELECT * FROM gf.msgcount;
 ```
 ---
 
-### owner eval*Evaluates a snippet of C# code, in context. Surround the code in the code block.*
+### owner eval
+*Evaluates a snippet of C# code, in context. Surround the code in the code block.*
 
 **Owner-only.**
 
@@ -2101,11 +2285,13 @@
 
 **Examples:**
 
-```!owner eval ```await Context.RespondAsync("Hello!");```
+```
+!owner eval ```await Context.RespondAsync("Hello!");```
 ```
 ---
 
-### owner generatecommandlist*Generates a markdown command-list. You can also provide a file path for the output.*
+### owner generatecommandlist
+*Generates a markdown command-list. You can also provide a file path for the output.*
 
 **Owner-only.**
 
@@ -2119,12 +2305,14 @@
 
 **Examples:**
 
-```!owner generatecommandlist
+```
+!owner generatecommandlist
 !owner generatecommandlist Temp/blabla.md
 ```
 ---
 
-### owner leaveguilds*Leaves the given guilds.*
+### owner leaveguilds
+*Leaves the given guilds.*
 
 **Owner-only.**
 
@@ -2138,12 +2326,14 @@
 
 **Examples:**
 
-```!owner leave 337570344149975050
+```
+!owner leave 337570344149975050
 !owner leave 337570344149975050 201315884709576708
 ```
 ---
 
-### owner sendmessage*Sends a message to a user or channel.*
+### owner sendmessage
+*Sends a message to a user or channel.*
 
 **Owner-only.**
 
@@ -2161,12 +2351,14 @@
 
 **Examples:**
 
-```!owner send u 303463460233150464 Hi to user!
+```
+!owner send u 303463460233150464 Hi to user!
 !owner send c 120233460278590414 Hi to channel!
 ```
 ---
 
-### owner shutdown*Triggers the dying in the vineyard scene (power off the bot).*
+### owner shutdown
+*Triggers the dying in the vineyard scene (power off the bot).*
 
 **Owner-only.**
 
@@ -2176,11 +2368,13 @@
 
 **Examples:**
 
-```!owner shutdown
+```
+!owner shutdown
 ```
 ---
 
-### owner statuses add*Add a status to running status queue.*
+### owner statuses add
+*Add a status to running status queue.*
 
 **Aliases:**
 `+, a`
@@ -2194,12 +2388,14 @@
 
 **Examples:**
 
-```!owner status add Playing CS:GO
+```
+!owner status add Playing CS:GO
 !owner status add Streaming on Twitch
 ```
 ---
 
-### owner statuses delete*Remove status from running queue.*
+### owner statuses delete
+*Remove status from running queue.*
 
 **Aliases:**
 `-, remove, rm, del`
@@ -2211,11 +2407,13 @@
 
 **Examples:**
 
-```!owner status delete 1
+```
+!owner status delete 1
 ```
 ---
 
-### owner statuses list*List all bot statuses.*
+### owner statuses list
+*List all bot statuses.*
 
 **Aliases:**
 `ls`
@@ -2223,11 +2421,13 @@
 
 **Examples:**
 
-```!owner status list
+```
+!owner status list
 ```
 ---
 
-### owner sudo*Executes a command as another user.*
+### owner sudo
+*Executes a command as another user.*
 
 **Owner-only.**
 
@@ -2243,11 +2443,13 @@
 
 **Examples:**
 
-```!owner sudo @Someone !rate
+```
+!owner sudo @Someone !rate
 ```
 ---
 
-### owner toggleignore*Toggle bot's reaction to commands.*
+### owner toggleignore
+*Toggle bot's reaction to commands.*
 
 **Owner-only.**
 
@@ -2257,7 +2459,8 @@
 
 **Examples:**
 
-```!owner toggleignore
+```
+!owner toggleignore
 ```
 ---
 
@@ -2295,7 +2498,8 @@
 
 ---
 
-### play file*Plays an audio file from server filesystem.*
+### play file
+*Plays an audio file from server filesystem.*
 
 **Owner-only.**
 
@@ -2354,12 +2558,14 @@
 
 ---
 
-### random cat*Get a random cat image.*
+### random cat
+*Get a random cat image.*
 
 
 ---
 
-### random choose*!choose option1, option2, option3...*
+### random choose
+*!choose option1, option2, option3...*
 
 **Aliases:**
 `select`
@@ -2371,12 +2577,14 @@
 
 ---
 
-### random dog*Get a random dog image.*
+### random dog
+*Get a random dog image.*
 
 
 ---
 
-### random raffle*Choose a user from the online members list belonging to a given role.*
+### random raffle
+*Choose a user from the online members list belonging to a given role.*
 
 
 **Arguments:**
@@ -2398,7 +2606,8 @@
 
 ---
 
-### rank list*Print all available ranks.*
+### rank list
+*Print all available ranks.*
 
 **Aliases:**
 `levels`
@@ -2406,7 +2615,8 @@
 
 ---
 
-### rank top*Get rank leaderboard.*
+### rank top
+*Get rank leaderboard.*
 
 
 ---
@@ -2455,7 +2665,8 @@
 
 ---
 
-### roles create*Create a new role.*
+### roles create
+*Create a new role.*
 
 **Requires permissions:**
 `Manage roles`
@@ -2486,13 +2697,15 @@
 
 **Examples:**
 
-```!roles create "My role" #C77B0F no no
+```
+!roles create "My role" #C77B0F no no
 !roles create 
 !roles create #C77B0F My new role
 ```
 ---
 
-### roles delete*Create a new role.*
+### roles delete
+*Create a new role.*
 
 **Requires permissions:**
 `Manage roles`
@@ -2509,12 +2722,14 @@
 
 **Examples:**
 
-```!role delete My role
+```
+!role delete My role
 !role delete @admins
 ```
 ---
 
-### roles info*Get information about a given role.*
+### roles info
+*Get information about a given role.*
 
 **Requires permissions:**
 `Manage roles`
@@ -2529,11 +2744,13 @@
 
 **Examples:**
 
-```!role info Admins
+```
+!role info Admins
 ```
 ---
 
-### roles mentionall*Mention all users from given role.*
+### roles mentionall
+*Mention all users from given role.*
 
 **Requires permissions:**
 `Mention everyone`
@@ -2548,11 +2765,13 @@
 
 **Examples:**
 
-```!role mentionall Admins
+```
+!role mentionall Admins
 ```
 ---
 
-### roles setcolor*Set a color for the role.*
+### roles setcolor
+*Set a color for the role.*
 
 **Requires permissions:**
 `Manage roles`
@@ -2575,12 +2794,14 @@
 
 **Examples:**
 
-```!role setcolor #FF0000 Admins
+```
+!role setcolor #FF0000 Admins
 !role setcolor Admins #FF0000
 ```
 ---
 
-### roles setmentionable*Set role mentionable var.*
+### roles setmentionable
+*Set role mentionable var.*
 
 **Requires permissions:**
 `Manage roles`
@@ -2603,13 +2824,15 @@
 
 **Examples:**
 
-```!role setmentionable Admins
+```
+!role setmentionable Admins
 !role setmentionable Admins false
 !role setmentionable false Admins
 ```
 ---
 
-### roles setname*Set a name for the role.*
+### roles setname
+*Set a name for the role.*
 
 **Requires permissions:**
 `Manage roles`
@@ -2632,12 +2855,14 @@
 
 **Examples:**
 
-```!role setname @Admins Administrators
+```
+!role setname @Admins Administrators
 !role setname Administrators @Admins
 ```
 ---
 
-### roles setvisible*Set role hoisted var (visibility in online list).*
+### roles setvisible
+*Set role hoisted var (visibility in online list).*
 
 **Requires permissions:**
 `Manage roles`
@@ -2660,7 +2885,8 @@
 
 **Examples:**
 
-```!role setvisible Admins
+```
+!role setvisible Admins
 !role setvisible Admins false
 !role setvisible false Admins
 ```
@@ -2679,7 +2905,8 @@
 
 ---
 
-### rss listsubs*Get feed list for the current channel.*
+### rss listsubs
+*Get feed list for the current channel.*
 
 **Aliases:**
 `ls, list`
@@ -2687,7 +2914,8 @@
 
 ---
 
-### rss news*Get newest world news.*
+### rss news
+*Get newest world news.*
 
 
 ---
@@ -2705,7 +2933,8 @@
 
 ---
 
-### rss reddit subscribe*Add new feed for a subreddit.*
+### rss reddit subscribe
+*Add new feed for a subreddit.*
 
 **Requires permissions:**
 `Manage guild`
@@ -2720,7 +2949,8 @@
 
 ---
 
-### rss reddit unsubscribe*Remove a subreddit feed.*
+### rss reddit unsubscribe
+*Remove a subreddit feed.*
 
 **Requires permissions:**
 `Manage guild`
@@ -2735,7 +2965,8 @@
 
 ---
 
-### rss subscribe*Subscribe to given url.*
+### rss subscribe
+*Subscribe to given url.*
 
 **Requires permissions:**
 `Manage guild`
@@ -2752,7 +2983,8 @@
 
 ---
 
-### rss unsubscribe*Remove an existing feed subscription.*
+### rss unsubscribe
+*Remove an existing feed subscription.*
 
 **Requires permissions:**
 `Manage guild`
@@ -2767,7 +2999,8 @@
 
 ---
 
-### rss wm*Get newest topics from WM forum.*
+### rss wm
+*Get newest topics from WM forum.*
 
 
 ---
@@ -2785,7 +3018,8 @@
 
 ---
 
-### rss youtube subscribe*Add new feed for a YouTube channel.*
+### rss youtube subscribe
+*Add new feed for a YouTube channel.*
 
 **Requires permissions:**
 `Manage guild`
@@ -2802,7 +3036,8 @@
 
 ---
 
-### rss youtube unsubscribe*Remove a YouTube channel feed.*
+### rss youtube unsubscribe
+*Remove a YouTube channel feed.*
 
 **Requires permissions:**
 `Manage guild`
@@ -2830,7 +3065,8 @@
 
 ---
 
-### steam profile*Get Steam user information from ID.*
+### steam profile
+*Get Steam user information from ID.*
 
 **Aliases:**
 `id`
@@ -2850,7 +3086,8 @@
 
 ---
 
-### swat query*Return server information.*
+### swat query
+*Return server information.*
 
 **Aliases:**
 `q, info, i`
@@ -2864,12 +3101,14 @@
 
 ---
 
-### swat serverlist*Print the serverlist with current player numbers.*
+### swat serverlist
+*Print the serverlist with current player numbers.*
 
 
 ---
 
-### swat servers add*Add a server to serverlist.*
+### swat servers add
+*Add a server to serverlist.*
 
 **Requires user permissions:**
 `Administrator`
@@ -2888,7 +3127,8 @@
 
 ---
 
-### swat servers delete*Remove a server from serverlist.*
+### swat servers delete
+*Remove a server from serverlist.*
 
 **Requires user permissions:**
 `Administrator`
@@ -2903,7 +3143,8 @@
 
 ---
 
-### swat servers list*List all registered servers.*
+### swat servers list
+*List all registered servers.*
 
 **Aliases:**
 `ls, l`
@@ -2915,7 +3156,8 @@
 
 ---
 
-### swat settimeout*Set checking timeout.*
+### swat settimeout
+*Set checking timeout.*
 
 **Owner-only.**
 
@@ -2926,7 +3168,8 @@
 
 ---
 
-### swat startcheck*Notifies of free space in server.*
+### swat startcheck
+*Notifies of free space in server.*
 
 **Aliases:**
 `checkspace, spacecheck`
@@ -2940,7 +3183,8 @@
 
 ---
 
-### swat stopcheck*Stops space checking.*
+### swat stopcheck
+*Stops space checking.*
 
 **Aliases:**
 `checkstop`
@@ -2963,7 +3207,8 @@
 
 ---
 
-### textreaction add*Add text reaction to guild text reaction list.*
+### textreaction add
+*Add text reaction to guild text reaction list.*
 
 **Requires user permissions:**
 `Manage guild`
@@ -2980,7 +3225,8 @@
 
 ---
 
-### textreaction clear*Delete all text reactions for the current guild.*
+### textreaction clear
+*Delete all text reactions for the current guild.*
 
 **Requires user permissions:**
 `Administrator`
@@ -2991,7 +3237,8 @@
 
 ---
 
-### textreaction delete*Remove text reaction from guild text reaction list.*
+### textreaction delete
+*Remove text reaction from guild text reaction list.*
 
 **Requires user permissions:**
 `Manage guild`
@@ -3006,7 +3253,8 @@
 
 ---
 
-### textreaction list*Show all text reactions for the guild. Each page has 10 text reactions.*
+### textreaction list
+*Show all text reactions for the guild. Each page has 10 text reactions.*
 
 **Aliases:**
 `ls, l`
@@ -3041,7 +3289,8 @@
 
 ---
 
-### user addrole*Assign a role to a member.*
+### user addrole
+*Assign a role to a member.*
 
 **Requires permissions:**
 `Manage roles`
@@ -3064,12 +3313,14 @@
 
 **Examples:**
 
-```!user addrole @User Admins
+```
+!user addrole @User Admins
 !user addrole Admins @User
 ```
 ---
 
-### user avatar*Get avatar from user.*
+### user avatar
+*Get avatar from user.*
 
 **Aliases:**
 `a, pic, profilepic`
@@ -3081,11 +3332,13 @@
 
 **Examples:**
 
-```!user avatar @Someone
+```
+!user avatar @Someone
 ```
 ---
 
-### user ban*Bans the user from the guild.*
+### user ban
+*Bans the user from the guild.*
 
 **Requires permissions:**
 `Ban members`
@@ -3102,12 +3355,14 @@
 
 **Examples:**
 
-```!user ban @Someone
+```
+!user ban @Someone
 !user ban @Someone Troublemaker
 ```
 ---
 
-### user banid*Bans the ID from the server.*
+### user banid
+*Bans the ID from the server.*
 
 **Requires permissions:**
 `Ban members`
@@ -3124,12 +3379,14 @@
 
 **Examples:**
 
-```!user banid 154956794490845232
+```
+!user banid 154956794490845232
 !user banid 154558794490846232 Troublemaker
 ```
 ---
 
-### user deafen*Deafen a member.*
+### user deafen
+*Deafen a member.*
 
 **Requires permissions:**
 `Deafen voice chat members`
@@ -3146,11 +3403,13 @@
 
 **Examples:**
 
-```!user deafen @Someone
+```
+!user deafen @Someone
 ```
 ---
 
-### user info*Print the information about the given user. If the user is not given, uses the sender.*
+### user info
+*Print the information about the given user. If the user is not given, uses the sender.*
 
 **Aliases:**
 `i, information`
@@ -3162,11 +3421,13 @@
 
 **Examples:**
 
-```!user info @Someone
+```
+!user info @Someone
 ```
 ---
 
-### user kick*Kicks the member from the guild.*
+### user kick
+*Kicks the member from the guild.*
 
 **Requires permissions:**
 `Kick members`
@@ -3183,12 +3444,14 @@
 
 **Examples:**
 
-```!user kick @Someone
+```
+!user kick @Someone
 !user kick @Someone Troublemaker
 ```
 ---
 
-### user mute*Mute a member.*
+### user mute
+*Mute a member.*
 
 **Requires permissions:**
 `Mute voice chat members`
@@ -3205,12 +3468,14 @@
 
 **Examples:**
 
-```!user mute @Someone
+```
+!user mute @Someone
 !user mute @Someone Trashtalk
 ```
 ---
 
-### user removeallroles*Revoke all roles from user.*
+### user removeallroles
+*Revoke all roles from user.*
 
 **Requires permissions:**
 `Manage roles`
@@ -3227,11 +3492,13 @@
 
 **Examples:**
 
-```!user removeallroles @Someone
+```
+!user removeallroles @Someone
 ```
 ---
 
-### user removerole*Revoke a role from member.*
+### user removerole
+*Revoke a role from member.*
 
 **Requires permissions:**
 `Manage roles`
@@ -3264,12 +3531,14 @@
 
 **Examples:**
 
-```!user removerole @Someone Admins
+```
+!user removerole @Someone Admins
 !user removerole Admins @Someone
 ```
 ---
 
-### user setname*Gives someone a new nickname.*
+### user setname
+*Gives someone a new nickname.*
 
 **Requires permissions:**
 `Manage nicknames`
@@ -3286,11 +3555,13 @@
 
 **Examples:**
 
-```!user setname @Someone Newname
+```
+!user setname @Someone Newname
 ```
 ---
 
-### user softban*Bans the member from the guild and then unbans him immediately.*
+### user softban
+*Bans the member from the guild and then unbans him immediately.*
 
 **Requires permissions:**
 `Ban members`
@@ -3307,12 +3578,14 @@
 
 **Examples:**
 
-```!user sban @Someone
+```
+!user sban @Someone
 !user sban @Someone Troublemaker
 ```
 ---
 
-### user tempban*Temporarily ans the user from the server and then unbans him after given timespan.*
+### user tempban
+*Temporarily ans the user from the server and then unbans him after given timespan.*
 
 **Requires permissions:**
 `Ban members`
@@ -3339,13 +3612,15 @@
 
 **Examples:**
 
-```!user tempban @Someone 3h4m
+```
+!user tempban @Someone 3h4m
 !user tempban 5d @Someone Troublemaker
 !user tempban @Someone 5h30m30s Troublemaker
 ```
 ---
 
-### user unban*Unbans the user ID from the server.*
+### user unban
+*Unbans the user ID from the server.*
 
 **Requires permissions:**
 `Ban members`
@@ -3362,11 +3637,13 @@
 
 **Examples:**
 
-```!user unban 154956794490845232
+```
+!user unban 154956794490845232
 ```
 ---
 
-### user undeafen*Undeafen a member.*
+### user undeafen
+*Undeafen a member.*
 
 **Requires permissions:**
 `Deafen voice chat members`
@@ -3383,11 +3660,13 @@
 
 **Examples:**
 
-```!user undeafen @Someone
+```
+!user undeafen @Someone
 ```
 ---
 
-### user unmute*Unmute a member.*
+### user unmute
+*Unmute a member.*
 
 **Requires permissions:**
 `Mute voice chat members`
@@ -3404,12 +3683,14 @@
 
 **Examples:**
 
-```!user unmute @Someone
+```
+!user unmute @Someone
 !user unmute @Someone Some reason
 ```
 ---
 
-### user warn*Warn a member in private message by sending a given warning text.*
+### user warn
+*Warn a member in private message by sending a given warning text.*
 
 **Requires permissions:**
 `Kick members`
@@ -3426,7 +3707,8 @@
 
 **Examples:**
 
-```!user warn @Someone Stop spamming or kick!
+```
+!user warn @Someone Stop spamming or kick!
 ```
 ---
 
@@ -3443,7 +3725,8 @@
 
 ---
 
-### youtube search*Advanced youtube search.*
+### youtube search
+*Advanced youtube search.*
 
 **Aliases:**
 `s`
@@ -3457,7 +3740,8 @@
 
 ---
 
-### youtube searchc*Advanced youtube search for channels only.*
+### youtube searchc
+*Advanced youtube search for channels only.*
 
 **Aliases:**
 `sc, searchchannel`
@@ -3469,7 +3753,8 @@
 
 ---
 
-### youtube searchp*Advanced youtube search for playlists only.*
+### youtube searchp
+*Advanced youtube search for playlists only.*
 
 **Aliases:**
 `sp, searchplaylist`
@@ -3481,7 +3766,8 @@
 
 ---
 
-### youtube searchv*Advanced youtube search for videos only.*
+### youtube searchv
+*Advanced youtube search for videos only.*
 
 **Aliases:**
 `sv, searchvideo`

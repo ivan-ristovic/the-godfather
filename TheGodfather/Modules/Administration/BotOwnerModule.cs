@@ -273,7 +273,7 @@ namespace TheGodfather.Modules.Administration
                 if (cmd is CommandGroup || cmd.Parent == null) 
                     sb.Append("## ").Append(cmd is CommandGroup ? "Group: " : "").AppendLine(cmd.QualifiedName);
                 else
-                    sb.Append("### ").AppendFormat(cmd.QualifiedName);
+                    sb.Append("### ").AppendLine(cmd.QualifiedName);
 
                 if (cmd.IsHidden)
                     sb.AppendLine(Formatter.Italic("Hidden.")).AppendLine();
@@ -340,7 +340,7 @@ namespace TheGodfather.Modules.Administration
                 var examples = cmd.CustomAttributes.Where(chk => chk is UsageExampleAttribute)
                                                    .Select(chk => chk as UsageExampleAttribute);
                 if (examples.Any()) {
-                    sb.AppendLine(Formatter.Bold("Examples:")).AppendLine().Append("```");
+                    sb.AppendLine(Formatter.Bold("Examples:")).AppendLine().AppendLine("```");
                     foreach (var example in examples)
                         sb.AppendLine(example.Example);
                     sb.AppendLine("```");
