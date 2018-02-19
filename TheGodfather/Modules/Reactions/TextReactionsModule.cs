@@ -14,7 +14,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 #endregion
 
-namespace TheGodfather.Modules.Messages
+namespace TheGodfather.Modules.Reactions
 {
     [Group("textreaction")]
     [Description("Text reaction handling.")]

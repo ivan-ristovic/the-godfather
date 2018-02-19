@@ -297,14 +297,14 @@
     <Compile Include="Modules\Games\GamesModule.Quiz.cs" />
     <Compile Include="Modules\Games\GamesModule.AnimalRace.cs" />
     <Compile Include="Modules\Main\RandomModule.cs" />
-    <Compile Include="Modules\Main\TextReactionsModule.cs" />
+    <Compile Include="Modules\Reactions\TextReactionsModule.cs" />
     <Compile Include="Modules\Administration\ChannelAdminModule.cs" />
     <Compile Include="Modules\Gambling\GambleModule.cs" />
     <Compile Include="Modules\Games\GamesModule.cs" />
     <Compile Include="Modules\Administration\GuildAdminModule.cs" />
     <Compile Include="Modules\Main\FilterModule.cs" />
     <Compile Include="Modules\Main\PollModule.cs" />
-    <Compile Include="Modules\Main\EmojiReactionsModule.cs" />
+    <Compile Include="Modules\Reactions\EmojiReactionsModule.cs" />
     <Compile Include="Modules\Search\GiphyModule.cs" />
     <Compile Include="Modules\Search\ImgurModule.cs" />
     <Compile Include="Modules\Main\InsultModule.cs" />

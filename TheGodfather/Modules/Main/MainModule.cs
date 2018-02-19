@@ -18,9 +18,8 @@ using DSharpPlus.Entities;
 
 namespace TheGodfather.Modules.Main
 {
-    [Description("Main bot commands.")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
-    [ListeningCheckAttribute]
+    [ListeningCheck]
     public class MainModule : BaseCommandModule
     {
         #region COMMAND_EMBED
