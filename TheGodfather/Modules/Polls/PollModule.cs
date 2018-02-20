@@ -21,21 +21,19 @@ using DSharpPlus.EventArgs;
 
 namespace TheGodfather.Modules.Polls
 {
-    [Group("poll")]
-    [Description("Miscellaneous poll commands. If invoked without a subcommand, starts a new poll in the channel.")]
-    [Aliases("vote")]
-    [UsageExample("!poll Do you vote for User1 or User2?")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
     [ListeningCheck]
     public class PollModule : TheGodfatherBaseModule
     {
 
-        public PollModule(SharedData shared) : base(shared) { }
-
-        
-        [GroupCommand]
-        public async Task ExecuteGroupAsync(CommandContext ctx, 
-                                           [RemainingText, Description("Question.")] string question)
+        #region COMMAND_POLL
+        [Command("poll"), Priority(1)]
+        [Description("Starts a new poll in the current channel. You can provide also the time for the poll to run.")]
+        [UsageExample("!poll Do you vote for User1 or User2?")]
+        [UsageExample("!poll 5m Do you vote for User1 or User2?")]
+        public async Task PollAsync(CommandContext ctx,
+                                   [Description("Time for poll to run.")] TimeSpan timeout,
+                                   [RemainingText, Description("Question.")] string question)
         {
             if (string.IsNullOrWhiteSpace(question))
                 throw new InvalidCommandUsageException("Poll requires a question.");
@@ -55,7 +53,7 @@ namespace TheGodfather.Modules.Polls
                 poll.SetOptions(options);
                 await ctx.RespondAsync(embed: poll.EmbedPoll())
                     .ConfigureAwait(false);
-                await poll.RunAsync(TimeSpan.FromSeconds(30))
+                await poll.RunAsync(timeout)
                     .ConfigureAwait(false);
                 await ctx.RespondAsync(embed: poll.EmbedPollResults())
                     .ConfigureAwait(false);
@@ -63,6 +61,35 @@ namespace TheGodfather.Modules.Polls
                 Poll.UnregisterPollInChannel(ctx.Channel.Id);
             }
         }
+
+        [Command("poll"), Priority(0)]
+        public async Task PollAsync(CommandContext ctx,
+                                   [RemainingText, Description("Question.")] string question)
+            => await PollAsync(ctx, TimeSpan.FromMinutes(1), question).ConfigureAwait(false);
+        #endregion
+
+        #region COMMAND_VOTE
+        [Command("vote")]
+        [Description("Vote for an option in the current running poll.")]
+        [UsageExample("!poll Do you vote for User1 or User2?")]
+        public async Task VoteAsync(CommandContext ctx,
+                                   [Description("Option to vote for.")] int option)
+        {
+            var poll = Poll.GetPollInChannel(ctx.Channel.Id);
+            if (poll == null || !poll.Running)
+                throw new CommandFailedException("There are no polls running in this channel.");
+
+            if (!poll.IsValidVote(option))
+                throw new CommandFailedException($"Invalid poll option. Valid range: [1, {poll.OptionCount}].");
+
+            if (poll.UserVoted(ctx.User.Id))
+                throw new CommandFailedException("You have already voted in this poll!");
+
+            poll.VoteFor(ctx.User.Id, option);
+            await ReplyWithEmbedAsync(ctx, $"{ctx.User.Mention} voted for: **{poll.OptionWithId(option)}** in poll: {Formatter.Italic($"\"{poll.Question}\"")}")
+                .ConfigureAwait(false);
+        }
+        #endregion
 
         #region COMMAND_POLLR
         [Command("pollr")]

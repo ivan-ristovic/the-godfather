@@ -34,7 +34,7 @@ namespace TheGodfather.Modules.Games
             public async Task ExecuteGroupAsync(CommandContext ctx)
             {
                 if (Game.RunningInChannel(ctx.Channel.Id)) {
-                    if (Game.GetRunningGameInChannel(ctx.Channel.Id) is AnimalRace)
+                    if (Game.GetGameInChannel(ctx.Channel.Id) is AnimalRace)
                         await JoinRaceAsync(ctx).ConfigureAwait(false);
                     else
                         throw new CommandFailedException("Another game is already running in the current channel.");
@@ -75,7 +75,7 @@ namespace TheGodfather.Modules.Games
             [UsageExample("!game animalrace join")]
             public async Task JoinRaceAsync(CommandContext ctx)
             {
-                var game = Game.GetRunningGameInChannel(ctx.Channel.Id) as AnimalRace;
+                var game = Game.GetGameInChannel(ctx.Channel.Id) as AnimalRace;
                 if (game == null)
                     throw new CommandFailedException("There is no animal race game running in this channel.");
 

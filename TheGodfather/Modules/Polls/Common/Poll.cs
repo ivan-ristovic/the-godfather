@@ -22,6 +22,9 @@ namespace TheGodfather.Modules.Polls.Common
         #region STATIC_FIELDS
         private static ConcurrentDictionary<ulong, Poll> _polls = new ConcurrentDictionary<ulong, Poll>();
 
+        public static Poll GetPollInChannel(ulong cid)
+            => _polls.ContainsKey(cid) ? _polls[cid] : null;
+
         public static bool RunningInChannel(ulong cid)
             => _polls.ContainsKey(cid) && _polls[cid] != null;
 
@@ -38,10 +41,10 @@ namespace TheGodfather.Modules.Polls.Common
         #endregion
 
         public string Question { get; }
+        public bool Running { get; private set; }
         private List<PollOption> _options = new List<PollOption>();
+        public int OptionCount => _options.Count;
         private List<ulong> _voted = new List<ulong>();
-        private bool _listening = false;
-        private object _lock = new object();
         private DiscordChannel _channel;
         private InteractivityExtension _interactivity;
 
@@ -56,10 +59,10 @@ namespace TheGodfather.Modules.Polls.Common
 
         public async Task RunAsync(TimeSpan timespan)
         {
-            var mctx = await _interactivity.WaitForMessageAsync(
-                m => HandlePosiblePollReply(m).GetAwaiter().GetResult()
-                , timespan
-            ).ConfigureAwait(false);
+            Running = true;
+            await Task.Delay(timespan)
+                .ConfigureAwait(false);
+            Running = false;
         }
 
         public void SetOptions(List<string> options)
@@ -68,10 +71,26 @@ namespace TheGodfather.Modules.Polls.Common
                 _options.Add(new PollOption { Option = option, Votes = 0 });
         }
 
+        public bool UserVoted(ulong uid)
+            => _voted.Contains(uid);
+
+        public bool IsValidVote(int vote)
+            => vote > 0 && vote <= _options.Count;
+
+        public void VoteFor(ulong uid, int vote)
+        {
+            _voted.Add(uid);
+            _options[vote - 1].Votes++;
+        }
+
+        public string OptionWithId(int id)
+            => _options[id].Option;
+
         public DiscordEmbed EmbedPoll()
         {
             var emb = new DiscordEmbedBuilder() {
                 Title = Question,
+                Description = $"Vote by typing {Formatter.InlineCode("!vote <number>")}",
                 Color = DiscordColor.Orange
             };
             for (int i = 0; i < _options.Count; i++)
@@ -91,33 +110,6 @@ namespace TheGodfather.Modules.Polls.Common
                 emb.AddField(option.Option, option.Votes.ToString(), inline: true);
 
             return emb.Build();
-        }
-
-        private async Task<bool> HandlePosiblePollReply(DiscordMessage m)
-        {
-            if (m.Author.IsBot || m.Channel.Id != _channel.Id)
-                return false;
-
-            if (!int.TryParse(m.Content, out int vote))
-                return false;
-
-            if (vote > 0 && vote <= _options.Count) {
-                if (_voted.Contains(m.Author.Id)) {
-                    await _channel.SendMessageAsync("You have already voted!")
-                        .ConfigureAwait(false);
-                    return false;
-                }
-
-                _voted.Add(m.Author.Id);
-                _options[vote - 1].Votes++;
-                await _channel.SendMessageAsync($"{m.Author.Mention} voted for: **{vote}**!")
-                    .ConfigureAwait(false);
-            } else {
-                await _channel.SendMessageAsync($"Invalid poll option. Valid range: [1, {_options.Count}].")
-                    .ConfigureAwait(false);
-            }
-
-            return false;
         }
 
 
