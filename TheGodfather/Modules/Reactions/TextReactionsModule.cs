@@ -1,12 +1,15 @@
 ﻿#region USING_DIRECTIVES
 using System;
 using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 
 using TheGodfather.Attributes;
-using TheGodfather.Services;
 using TheGodfather.Exceptions;
+using TheGodfather.Extensions;
+using TheGodfather.Extensions.Collections;
+using TheGodfather.Services;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -17,44 +20,96 @@ using DSharpPlus.Entities;
 namespace TheGodfather.Modules.Reactions
 {
     [Group("textreaction")]
-    [Description("Text reaction handling.")]
+    [Description("Orders a bot to react with given text to a message containing a trigger word inside (guild specific). If invoked without subcommands, adds a new text reaction to a given trigger word. Note: Trigger words can be regular expressions. You can also use \"%user%\" inside response and the bot will replace it with mention for the user who triggers the reaction.")]
     [Aliases("treact", "tr", "txtr", "textreactions")]
+    [UsageExample("!textreaction hi hello")]
+    [UsageExample("!textreaction h(i|ey|ola) Hello")]
+    [UsageExample("!textreaction \"hi\" \"Hello, %user%!\"")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
-    [ListeningCheckAttribute]
-    public class TextReactionsModule : BaseCommandModule
+    [ListeningCheck]
+    public class TextReactionsModule : TheGodfatherBaseModule
     {
+
+        public TextReactionsModule(SharedData shared, DatabaseService db) : base(shared, db) { }
+
 
         [GroupCommand]
         [RequirePermissions(Permissions.ManageGuild)]
         public async Task ExecuteGroupAsync(CommandContext ctx, 
                                            [Description("Trigger (case sensitive).")] string trigger,
                                            [RemainingText, Description("Response.")] string response)
-        {
-            await AddAsync(ctx, trigger, response).ConfigureAwait(false);
-        }
+            => await AddAsync(ctx, trigger, response).ConfigureAwait(false);
 
 
         #region COMMAND_TEXT_REACTION_ADD
         [Command("add")]
-        [Description("Add text reaction to guild text reaction list.")]
-        [Aliases("+", "new")]
+        [Description("Add a new text reaction to guild text reaction list.")]
+        [Aliases("+", "new", "a")]
+        [UsageExample("!textreaction add \"hi\" \"Hello, %user%!\"")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task AddAsync(CommandContext ctx,
                                   [Description("Trigger (case sensitive).")] string trigger,
                                   [RemainingText, Description("Response.")] string response)
         {
-            if (string.IsNullOrWhiteSpace(trigger) || string.IsNullOrWhiteSpace(response))
-                throw new InvalidCommandUsageException("Trigger or response missing or invalid.");
+            if (string.IsNullOrWhiteSpace(response))
+                throw new InvalidCommandUsageException("Response missing or invalid.");
 
             if (trigger.Length > 120 || response.Length > 120)
                 throw new CommandFailedException("Trigger or response cannot be longer than 120 characters.");
 
-            if (ctx.Services.GetService<SharedData>().TryAddGuildTextTrigger(ctx.Guild.Id, trigger, response))
-                await ctx.RespondAsync($"Text reaction {Formatter.Bold(trigger)} successfully set.").ConfigureAwait(false);
-            else
-                throw new CommandFailedException("Failed to add text reaction.");
+            if (!SharedData.GuildTextReactions.ContainsKey(ctx.Guild.Id))
+                SharedData.GuildTextReactions.TryAdd(ctx.Guild.Id, new ConcurrentHashSet<(Regex, string)>());
 
-            await ctx.Services.GetService<DatabaseService>().AddTextReactionAsync(ctx.Guild.Id, trigger, response)
+            Regex regex;
+            string errors = "";
+            try {
+                regex = new Regex($@"\b{trigger.ToLowerInvariant()}\b", RegexOptions.IgnoreCase);
+            } catch (ArgumentException) {
+                throw new CommandFailedException($"Trigger {Formatter.Bold(trigger)} is not a valid regular expression.");
+            }
+
+            if (SharedData.TextTriggerExists(ctx.Guild.Id, trigger))
+                throw new CommandFailedException($"Trigger {Formatter.Bold(trigger)} already exists.");
+
+            if (!SharedData.GuildTextReactions[ctx.Guild.Id].Add((regex, response)))
+                throw new CommandFailedException($"Failed to add trigger {Formatter.Bold(trigger)}.");
+
+            try {
+                await DatabaseService.AddTextReactionAsync(ctx.Guild.Id, trigger, response)
+                    .ConfigureAwait(false);
+            } catch {
+                errors = $"Warning: Failed to add trigger {Formatter.Bold(trigger)} to the database.";
+            }
+
+            await ReplyWithEmbedAsync(ctx, $"Done!\n\n{errors}")
+                .ConfigureAwait(false);
+        }
+        #endregion
+
+        #region COMMAND_TEXT_REACTION_CLEAR
+        [Command("clear")]
+        [Description("Delete all text reactions for the current guild.")]
+        [Aliases("da", "c", "ca", "cl", "clearall")]
+        [UsageExample("!textreactions clear")]
+        [RequireUserPermissions(Permissions.Administrator)]
+        public async Task ClearAsync(CommandContext ctx)
+        {
+            await ReplyWithEmbedAsync(ctx, "Are you sure you want to delete all text reactions for this guild?", ":question:")
+                .ConfigureAwait(false);
+            if (!await InteractivityUtil.WaitForConfirmationAsync(ctx))
+                return;
+
+            if (SharedData.GuildTextReactions.ContainsKey(ctx.Guild.Id))
+                SharedData.GuildTextReactions.TryRemove(ctx.Guild.Id, out _);
+
+            try {
+                await DatabaseService.DeleteAllGuildTextReactionsAsync(ctx.Guild.Id)
+                    .ConfigureAwait(false);
+            } catch {
+                throw new CommandFailedException("Failed to delete text reactions from the database.");
+            }
+
+            await ReplyWithEmbedAsync(ctx, "Removed all text reactions!")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -63,68 +118,70 @@ namespace TheGodfather.Modules.Reactions
         [Command("delete")]
         [Description("Remove text reaction from guild text reaction list.")]
         [Aliases("-", "remove", "del", "rm", "d")]
+        [UsageExample("!textreaction delete hi")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task DeleteAsync(CommandContext ctx, 
                                      [RemainingText, Description("Trigger words to remove.")] params string[] triggers)
         {
             if (triggers == null)
-                throw new InvalidCommandUsageException("Trigger words missing.");
+                throw new InvalidCommandUsageException("Triggers missing.");
 
-            if (ctx.Services.GetService<SharedData>().TryRemoveGuildTriggers(ctx.Guild.Id, triggers))
-                await ctx.RespondAsync("Text reactions successfully removed.").ConfigureAwait(false);
-            else
-                throw new CommandFailedException("Failed to remove some text reactions.");
+            if (!SharedData.GuildTextReactions.ContainsKey(ctx.Guild.Id))
+                throw new CommandFailedException("This guild has no text reactions registered.");
 
-            foreach (var trigger in triggers)
-                await ctx.Services.GetService<DatabaseService>().RemoveTextReactionAsync(ctx.Guild.Id, trigger)
-                    .ConfigureAwait(false);
+            var errors = new StringBuilder();
+            foreach (var trigger in triggers) {
+                if (string.IsNullOrWhiteSpace(trigger))
+                    continue;
+
+                Regex regex;
+                try {
+                    regex = new Regex($@"\b{trigger.ToLowerInvariant()}\b");
+                } catch (ArgumentException) {
+                    errors.AppendLine($"Error: Trigger {Formatter.Bold(trigger)} is not a valid regular expression.");
+                    continue;
+                }
+
+                if (!SharedData.TextTriggerExists(ctx.Guild.Id, trigger)) {
+                    errors.AppendLine($"Warning: Trigger {Formatter.Bold(trigger)} does not exist in this guild.");
+                    continue;
+                }
+
+                if (SharedData.GuildTextReactions[ctx.Guild.Id].RemoveWhere(tup => tup.Item1.ToString() == regex.ToString()) == 0) {
+                    errors.AppendLine($"Warning: Failed to remove text reaction for trigger {Formatter.Bold(trigger)}.");
+                    continue;
+                }
+
+                try {
+                    await DatabaseService.RemoveTextReactionAsync(ctx.Guild.Id, trigger)
+                        .ConfigureAwait(false);
+                } catch {
+                    errors.AppendLine($"Warning: Failed to remove trigger {Formatter.Bold(trigger)} from the database.");
+                }
+            }
+
+            await ReplyWithEmbedAsync(ctx, $"Done!\n\n{errors.ToString()}")
+                .ConfigureAwait(false);
         }
         #endregion
 
         #region COMMAND_TEXT_REACTION_LIST
         [Command("list")]
-        [Description("Show all text reactions for the guild. Each page has 10 text reactions.")]
-        [Aliases("ls", "l")]
-        public async Task ListAsync(CommandContext ctx, 
-                                   [Description("Page.")] int page = 1)
+        [Description("Show all text reactions for the guild.")]
+        [Aliases("ls", "l", "view")]
+        [UsageExample("!textreactions list")]
+        public async Task ListAsync(CommandContext ctx)
         {
-            var treactions = ctx.Services.GetService<SharedData>().GetAllGuildTextReactions(ctx.Guild.Id);
-
-            if (treactions == null) {
-                await ctx.RespondAsync("No text reactions registered for this guild.");
-                return;
-            }
-
-            if (page < 1 || page > treactions.Count / 10 + 1)
-                throw new CommandFailedException("No text reactions on that page.");
-
-            string desc = "";
-            int starti = (page - 1) * 10;
-            int endi = starti + 10 < treactions.Count ? starti + 10 : treactions.Count;
-            var keys = treactions.Keys.OrderBy(k => k).Take(page * 10).ToArray();
-            for (var i = starti; i < endi; i++)
-                desc += $"{Formatter.Bold(keys[i])} : {treactions[keys[i]]}\n";
-
-            await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
-                Title = $"Available text reactions (page {page}/{treactions.Count / 10 + 1}) :",
-                Description = desc,
-                Color = DiscordColor.Green
-            }.Build()).ConfigureAwait(false);
-        }
-        #endregion
-
-        #region COMMAND_TEXT_REACTION_CLEAR
-        [Command("clear")]
-        [Description("Delete all text reactions for the current guild.")]
-        [Aliases("c", "da")]
-        [RequireUserPermissions(Permissions.Administrator)]
-        public async Task ClearAsync(CommandContext ctx)
-        {
-            ctx.Services.GetService<SharedData>().DeleteAllGuildTextReactions(ctx.Guild.Id);
-            await ctx.RespondAsync("Successfully removed all text reactions for this guild.")
-                .ConfigureAwait(false);
-            await ctx.Services.GetService<DatabaseService>().DeleteAllGuildTextReactionsAsync(ctx.Guild.Id)
-                .ConfigureAwait(false);
+            if (!SharedData.GuildTextReactions.ContainsKey(ctx.Guild.Id) || !SharedData.GuildTextReactions[ctx.Guild.Id].Any())
+                throw new CommandFailedException("This guild has no text reactions registered.");
+            
+            await InteractivityUtil.SendPaginatedCollectionAsync(
+                ctx,
+                "Text reactions for this guild",
+                SharedData.GuildTextReactions[ctx.Guild.Id],
+                tup => $"{tup.Item1.ToString().Replace(@"\b", "")} => {tup.Item2}",
+                DiscordColor.Blue
+            ).ConfigureAwait(false);
         }
         #endregion
     }

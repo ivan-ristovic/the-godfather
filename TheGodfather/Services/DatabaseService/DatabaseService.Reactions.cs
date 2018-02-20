@@ -13,9 +13,9 @@ namespace TheGodfather.Services
     public partial class DatabaseService
     {
         #region TEXT_REACTION_SERVICES
-        public async Task<Dictionary<ulong, Dictionary<string, string>>> GetAllTextReactionsAsync()
+        public async Task<Dictionary<ulong, List<(Regex, string)>>> GetAllTextReactionsAsync()
         {
-            var triggers = new Dictionary<ulong, Dictionary<string, string>>();
+            var triggers = new Dictionary<ulong, List<(Regex, string)>>();
 
             await _sem.WaitAsync();
             try {
@@ -30,11 +30,12 @@ namespace TheGodfather.Services
                             ulong gid = (ulong)(long)reader["gid"];
                             if (triggers.ContainsKey(gid)) {
                                 if (triggers[gid] == null)
-                                    triggers[gid] = new Dictionary<string, string>();
+                                    triggers[gid] = new List<(Regex, string)>();
                             } else {
-                                triggers.Add(gid, new Dictionary<string, string>());
+                                triggers.Add(gid, new List<(Regex, string)>());
                             }
-                            triggers[gid].Add((string)reader["trigger"], (string)reader["response"]);
+                            var regex = new Regex($@"\b{(string)reader["trigger"]}\b", RegexOptions.IgnoreCase);
+                            triggers[gid].Add((regex, (string)reader["response"]));
                         }
                     }
                 }
@@ -135,7 +136,8 @@ namespace TheGodfather.Services
                                 triggers[gid].Add(reaction, new List<Regex>());
                             }
 
-                            triggers[gid][reaction].Add(new Regex($@"\b{(string)reader["trigger"]}\b"));
+                            var regex = new Regex($@"\b{(string)reader["trigger"]}\b", RegexOptions.IgnoreCase);
+                            triggers[gid][reaction].Add(regex);
                         }
                     }
                 }

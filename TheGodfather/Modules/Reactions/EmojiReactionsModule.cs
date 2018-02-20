@@ -66,7 +66,7 @@ namespace TheGodfather.Modules.Reactions
 
                 Regex regex;
                 try {
-                    regex = new Regex($@"\b{trigger}\b");
+                    regex = new Regex($@"\b{trigger.ToLowerInvariant()}\b", RegexOptions.IgnoreCase);
                 } catch (ArgumentException) {
                     errors.AppendLine($"Error: Trigger {Formatter.Bold(trigger)} is not a valid regular expression.");
                     continue;
@@ -145,14 +145,15 @@ namespace TheGodfather.Modules.Reactions
 
             string reaction = emoji.GetDiscordName();
             if (SharedData.GuildEmojiReactions[ctx.Guild.Id].ContainsKey(reaction))
-                SharedData.GuildEmojiReactions[ctx.Guild.Id].TryRemove(reaction, out _);
+                if (!SharedData.GuildEmojiReactions[ctx.Guild.Id].TryRemove(reaction, out _))
+                    throw new CommandFailedException("Failed to remove reaction.");
 
             var errors = new StringBuilder();
             try {
                 await DatabaseService.RemoveAllEmojiReactionTriggersForReactionAsync(ctx.Guild.Id, reaction)
                     .ConfigureAwait(false);
             } catch {
-                errors.AppendLine($"Warning: Failed to remove reactions from the database.");
+                errors.AppendLine($"Warning: Failed to remove reaction from the database.");
             }
 
             await ReplyWithEmbedAsync(ctx, $"Done!\n\n{errors.ToString()}")

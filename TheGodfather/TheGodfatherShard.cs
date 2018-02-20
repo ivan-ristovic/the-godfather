@@ -273,16 +273,18 @@ namespace TheGodfather
             }
 
             // Check if message has a text reaction
-            var response = _shared.GetResponseForTextReaction(e.Guild.Id, e.Message.Content);
-            if (response != null) {
-                Log(LogLevel.Debug,
-                    $"Text reaction detected:<br>" +
-                    $"Message: {e.Message.Content}<br>" +
-                    $"{e.Message.Author.ToString()}<br>" +
-                    $"{e.Guild.ToString()} ; {e.Channel.ToString()}"
-                );
-                await e.Channel.SendMessageAsync(response.Replace("%user%", e.Author.Mention))
-                    .ConfigureAwait(false);
+            if (_shared.GuildTextReactions.ContainsKey(e.Guild.Id)) {
+                var treaction = _shared.GuildTextReactions[e.Guild.Id].Where(tup => tup.Item1.IsMatch(e.Message.Content));
+                if (treaction.Any()) {
+                    Log(LogLevel.Debug,
+                        $"Text reaction detected:<br>" +
+                        $"Message: {e.Message.Content}<br>" +
+                        $"{e.Message.Author.ToString()}<br>" +
+                        $"{e.Guild.ToString()} ; {e.Channel.ToString()}"
+                    );
+                    await e.Channel.SendMessageAsync(treaction.First().Item2.Replace("%user%", e.Author.Mention))
+                        .ConfigureAwait(false);
+                }
             }
 
             if (!e.Channel.PermissionsFor(e.Guild.CurrentMember).HasFlag(Permissions.AddReactions))

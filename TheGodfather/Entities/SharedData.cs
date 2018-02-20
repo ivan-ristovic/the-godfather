@@ -22,7 +22,7 @@ namespace TheGodfather
         public BotConfig BotConfiguration { get; internal set; }
         public ConcurrentDictionary<ulong, string> GuildPrefixes { get; internal set; }
         public ConcurrentDictionary<ulong, ConcurrentHashSet<Regex>> GuildFilters { get; internal set; }
-        public ConcurrentDictionary<ulong, ConcurrentDictionary<string, string>> GuildTextReactions { get; internal set; }
+        public ConcurrentDictionary<ulong, ConcurrentHashSet<(Regex, string)>> GuildTextReactions { get; internal set; }
         public ConcurrentDictionary<ulong, ConcurrentDictionary<string, ConcurrentHashSet<Regex>>> GuildEmojiReactions { get; internal set; }
         public ConcurrentDictionary<ulong, ulong> MessageCount { get; internal set; }
         public ConcurrentDictionary<ulong, Deck> CardDecks { get; internal set; } = new ConcurrentDictionary<ulong, Deck>();
@@ -103,68 +103,10 @@ namespace TheGodfather
                 await db.UpdateMessageCountForUserAsync(entry.Key, entry.Value).ConfigureAwait(false);
         }
 
-        #region TRIGGERS
-        public IReadOnlyDictionary<string, string> GetAllGuildTextReactions(ulong gid)
-        {
-            if (GuildTextReactions.ContainsKey(gid) && GuildTextReactions[gid] != null)
-                return GuildTextReactions[gid];
-            else
-                return null;
-        }
-
         public bool TextTriggerExists(ulong gid, string trigger)
         {
-            return GuildTextReactions.ContainsKey(gid) && GuildTextReactions[gid] != null && GuildTextReactions[gid].ContainsKey(trigger);
+            string regex = $@"\b{trigger}\b".ToLowerInvariant();
+            return GuildTextReactions.ContainsKey(gid) && GuildTextReactions[gid] != null && GuildTextReactions[gid].Any(tup => tup.Item1.ToString() == regex);
         }
-
-        public string GetResponseForTextReaction(ulong gid, string trigger)
-        {
-            trigger = trigger.ToLower();
-            if (TextTriggerExists(gid, trigger))
-                return GuildTextReactions[gid][trigger];
-            else
-                return null;
-        }
-
-        public bool TryAddGuildTextTrigger(ulong gid, string trigger, string response)
-        {
-            trigger = trigger.ToLower();
-            if (GuildTextReactions.ContainsKey(gid)) {
-                if (GuildTextReactions[gid] == null)
-                    GuildTextReactions[gid] = new ConcurrentDictionary<string, string>();
-            } else {
-                if (!GuildTextReactions.TryAdd(gid, new ConcurrentDictionary<string, string>()))
-                    return false;
-            }
-
-            return GuildTextReactions[gid].TryAdd(trigger, response);
-        }
-
-        public bool TryRemoveGuildTriggers(ulong gid, string[] triggers)
-        {
-            if (!GuildTextReactions.ContainsKey(gid))
-                return true;
-
-            bool conflict_found = false;
-            foreach (var trigger in triggers) {
-                if (string.IsNullOrWhiteSpace(trigger))
-                    continue;
-                if (GuildTextReactions[gid].ContainsKey(trigger))
-                    conflict_found |= !GuildTextReactions[gid].TryRemove(trigger, out _);
-                else
-                    conflict_found = true;
-            }
-
-            return !conflict_found;
-        }
-
-        public void DeleteAllGuildTextReactions(ulong gid)
-        {
-            if (!GuildTextReactions.ContainsKey(gid))
-                return;
-
-            GuildTextReactions[gid].Clear();
-        }
-        #endregion
     }
 }
