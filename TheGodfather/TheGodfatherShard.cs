@@ -413,12 +413,12 @@ namespace TheGodfather
                 var attr = exc.FailedChecks.First();
                 if (attr is CooldownAttribute)
                     return;
-                else if (attr is RequireUserPermissionsAttribute)
-                    emb.Description = $"{emoji} You do not have the required permissions to run this command!";
-                else if (attr is RequirePermissionsAttribute)
-                    emb.Description = $"{emoji} Permissions to execute that command aren't met!";
-                else if (attr is RequireBotPermissionsAttribute)
-                    emb.Description = $"{emoji} I do not have the required permissions to run this command!";
+                else if (attr is RequireUserPermissionsAttribute uperms)
+                    emb.Description = $"{emoji} You do not have the required permissions ({uperms.Permissions.ToPermissionString()}) to run this command!";
+                else if (attr is RequirePermissionsAttribute perms)
+                    emb.Description = $"{emoji} Permissions to execute that command ({perms.Permissions.ToPermissionString()}) aren't met!";
+                else if (attr is RequireBotPermissionsAttribute bperms)
+                    emb.Description = $"{emoji} I do not have the required permissions ({bperms.Permissions.ToPermissionString()}) to run this command!";
                 else if (attr is RequireOwnerAttribute)
                     emb.Description = $"{emoji} That command is reserved for the bot owner only!";
                 else
