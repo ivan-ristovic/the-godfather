@@ -1,18 +1,14 @@
 ﻿#region USING_DIRECTIVES
 using System;
 using System.IO;
-using System.Net;
 using System.Linq;
-using System.Drawing;
-using System.Drawing.Text;
-using System.Drawing.Drawing2D;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 
 using TheGodfather.Attributes;
-using TheGodfather.Services;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
+using TheGodfather.Services;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
