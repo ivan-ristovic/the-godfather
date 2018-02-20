@@ -21,7 +21,7 @@ namespace TheGodfather.Modules.Administration
     [Aliases("role", "r", "rl")]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
     [ListeningCheck]
-    public class RoleAdminModule : TheGodfatherBaseModule
+    public class RoleModule : TheGodfatherBaseModule
     {
 
         [GroupCommand]

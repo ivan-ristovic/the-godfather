@@ -17,7 +17,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 #endregion
 
-namespace TheGodfather.Modules.Main
+namespace TheGodfather.Modules.Administration
 {
     [Group("filter")]
     [Description("Message filtering commands. If invoked without subcommand, adds a new filter for the given word list. Words can be regular expressions.")]

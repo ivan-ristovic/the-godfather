@@ -23,10 +23,10 @@ namespace TheGodfather.Modules.Administration
     [Aliases("channels", "c", "chn")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     [ListeningCheck]
-    public class ChannelAdminModule : TheGodfatherBaseModule
+    public class ChannelModule : TheGodfatherBaseModule
     {
 
-        public ChannelAdminModule(DatabaseService db) : base(db: db) { }
+        public ChannelModule(DatabaseService db) : base(db: db) { }
 
 
         #region COMMAND_CHANNEL_CREATECATEGORY

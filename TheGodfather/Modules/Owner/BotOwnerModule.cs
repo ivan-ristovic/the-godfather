@@ -14,7 +14,7 @@ using Microsoft.CodeAnalysis.Scripting;
 using TheGodfather.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-using TheGodfather.Modules.Administration.Common;
+using TheGodfather.Modules.Owner.Common;
 using TheGodfather.Services;
 
 using DSharpPlus;
@@ -23,7 +23,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 #endregion
 
-namespace TheGodfather.Modules.Administration
+namespace TheGodfather.Modules.Owner
 {
     [Group("owner")]
     [Description("Owner-only bot administration commands.")]

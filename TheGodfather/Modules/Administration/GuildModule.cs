@@ -24,10 +24,10 @@ namespace TheGodfather.Modules.Administration
     [Aliases("server", "g")]
     [Cooldown(2, 5, CooldownBucketType.Guild)]
     [ListeningCheck]
-    public class GuildAdminModule : TheGodfatherBaseModule
+    public class GuildModule : TheGodfatherBaseModule
     {
 
-        public GuildAdminModule(DatabaseService db) : base(db: db) { }
+        public GuildModule(DatabaseService db) : base(db: db) { }
 
 
         #region COMMAND_GUILD_GETBANS

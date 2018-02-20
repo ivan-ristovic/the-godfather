@@ -14,7 +14,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 #endregion
 
-namespace TheGodfather.Modules.Main
+namespace TheGodfather.Modules.Misc
 {
     [Group("insult")]
     [Description("Insults manipulation. If invoked without subcommands, insults a given user.")]
