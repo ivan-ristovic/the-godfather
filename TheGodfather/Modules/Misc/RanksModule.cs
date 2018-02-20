@@ -10,39 +10,45 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using DSharpPlus.Exceptions;
 #endregion
 
 namespace TheGodfather.Modules.Misc
 {
     [Group("rank")]
-    [Description("User ranking commands.")]
-    [Aliases("ranks", "ranking")]
+    [Description("User ranking commands. If invoked without subcommands, prints sender's rank.")]
+    [Aliases("ranks", "ranking", "level")]
+    [UsageExample("!rank")]
+    [UsageExample("!rank @Someone")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
-    [ListeningCheckAttribute]
-    public class RanksModule : BaseCommandModule
+    [ListeningCheck]
+    public class RanksModule : TheGodfatherBaseModule
     {
+
+        public RanksModule(SharedData shared) : base(shared) { }
+
 
         [GroupCommand]
         public async Task ExecuteGroupAsync(CommandContext ctx,
-                                           [Description("User.")] DiscordUser u = null)
+                                           [Description("User.")] DiscordUser user = null)
         {
-            if (u == null)
-                u = ctx.User;
+            if (user == null)
+                user = ctx.User;
+            
+            var rank = SharedData.GetRankForUser(user.Id);
+            var msgcount = SharedData.GetMessageCountForId(user.Id);
 
-            var shared = ctx.Services.GetService<SharedData>();
-            var rank = shared.GetRankForId(u.Id);
-            var msgcount = shared.GetMessageCountForId(u.Id);
-
-            var em = new DiscordEmbedBuilder() {
-                Title = u.Username,
+            var emb = new DiscordEmbedBuilder() {
+                Title = user.Username,
                 Description = "User status",
                 Color = DiscordColor.Aquamarine,
-                ThumbnailUrl = u.AvatarUrl
+                ThumbnailUrl = user.AvatarUrl
             };
-            em.AddField("Rank", $"{Formatter.Italic(rank < shared.Ranks.Count ? shared.Ranks[rank] : "Low")} (#{rank})");
-            em.AddField("XP", $"{msgcount}", inline: true);
-            em.AddField("XP needed for next rank", $"{(rank + 1) * (rank + 1) * 10}", inline: true);
-            await ctx.RespondAsync(embed: em.Build())
+            emb.AddField("Rank", $"{Formatter.Italic(rank < SharedData.Ranks.Count ? SharedData.Ranks[rank] : "Low")} (#{rank})")
+               .AddField("XP", $"{msgcount}", inline: true)
+               .AddField("XP needed for next rank", $"{(rank + 1) * (rank + 1) * 10}", inline: true);
+
+            await ctx.RespondAsync(embed: emb.Build())
                 .ConfigureAwait(false);
         }
         
@@ -51,20 +57,20 @@ namespace TheGodfather.Modules.Misc
         [Command("list")]
         [Description("Print all available ranks.")]
         [Aliases("levels")]
+        [UsageExample("!rank list")]
         public async Task RankListAsync(CommandContext ctx)
         {
-            var em = new DiscordEmbedBuilder() {
-                Title = "Ranks: ",
+            var emb = new DiscordEmbedBuilder() {
+                Title = "Available ranks",
                 Color = DiscordColor.IndianRed
             };
-
-            var shared = ctx.Services.GetService<SharedData>();
-            for (int i = 1; i < shared.Ranks.Count; i++) {
-                var xpneeded = shared.XpNeededForRankWithIndex(i);
-                em.AddField($"(#{i}) {shared.Ranks[i]}", $"XP needed: {xpneeded}", inline: true);
+            
+            for (int i = 1; i < SharedData.Ranks.Count; i++) {
+                var xpneeded = SharedData.XpNeededForRankWithIndex(i);
+                emb.AddField($"(#{i}) {SharedData.Ranks[i]}", $"XP needed: {xpneeded}", inline: true);
             }
 
-            await ctx.RespondAsync(embed: em.Build())
+            await ctx.RespondAsync(embed: emb.Build())
                 .ConfigureAwait(false);
         }
         #endregion
@@ -72,25 +78,33 @@ namespace TheGodfather.Modules.Misc
         #region COMMAND_RANK_TOP
         [Command("top")]
         [Description("Get rank leaderboard.")]
+        [UsageExample("!rank top")]
         public async Task TopAsync(CommandContext ctx)
         {
-            var shared = ctx.Services.GetService<SharedData>();
-            var msgcount = shared.MessageCount;
-            var ranks = shared.Ranks;
+            var top = SharedData.MessageCount.OrderByDescending(v => v.Value).Take(10);
+            var emb = new DiscordEmbedBuilder() {
+                Title = "Top ranked users (globally): ",
+                Color = DiscordColor.Purple
+            };
 
-            var top = msgcount.OrderByDescending(v => v.Value).Take(10);
-            var em = new DiscordEmbedBuilder() { Title = "Top ranked users (globally): ", Color = DiscordColor.Purple };
-            foreach (var v in top) {
-                var u = await ctx.Client.GetUserAsync(v.Key)
-                    .ConfigureAwait(false);
-                var rank = shared.GetRankForMessageCount(v.Value);
-                if (rank < ranks.Count)
-                    em.AddField(u.Username, $"{ranks[rank]} ({rank}) ({v.Value} XP)");
+            foreach (var kvp in top) {
+                DiscordUser u = null;
+                string unknown = "<unknown>";
+                try {
+                    u = await ctx.Client.GetUserAsync(kvp.Key)
+                        .ConfigureAwait(false);
+                } catch (NotFoundException) {
+                    u = null;
+
+                }
+                var rank = SharedData.GetRankForMessageCount(kvp.Value);
+                if (rank < SharedData.Ranks.Count)
+                    emb.AddField(u.Username ?? unknown, $"{SharedData.Ranks[rank]} ({rank}) ({kvp.Value} XP)");
                 else
-                    em.AddField(u.Username, $"Low ({v.Value} XP)");
+                    emb.AddField(u.Username ?? unknown, $"Low ({kvp.Value} XP)");
             }
 
-            await ctx.RespondAsync(embed: em)
+            await ctx.RespondAsync(embed: emb.Build())
                 .ConfigureAwait(false);
         }
         #endregion

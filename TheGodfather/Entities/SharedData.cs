@@ -70,8 +70,7 @@ namespace TheGodfather
             else
                 return BotConfiguration.DefaultPrefix;
         }
-
-        #region RANKS
+        
         public int UpdateMessageCount(ulong uid)
         {
             if (MessageCount.ContainsKey(uid)) {
@@ -86,40 +85,23 @@ namespace TheGodfather
             return curr != prev ? curr : -1;
         }
 
-        public int GetRankForId(ulong uid)
-        {
-            if (MessageCount.ContainsKey(uid))
-                return GetRankForMessageCount(MessageCount[uid]);
-            else
-                return 0;
-        }
+        public int GetRankForUser(ulong uid)
+            =>  
 
         public ulong GetMessageCountForId(ulong uid)
-        {
-            if (MessageCount.ContainsKey(uid))
-                return MessageCount[uid];
-            else
-                return 0;
-        }
+            => MessageCount.ContainsKey(uid) ? MessageCount[uid] : 0;
 
         public int GetRankForMessageCount(ulong msgcount)
-        {
-            return (int)Math.Floor(Math.Sqrt(msgcount / 10));
-        }
+            => (int)Math.Floor(Math.Sqrt(msgcount / 10));
 
         public uint XpNeededForRankWithIndex(int index)
-        {
-            return (uint)(index * index * 10);
-        }
+            => (uint)(index * index * 10);
 
         public async Task SaveRanksToDatabaseAsync(DatabaseService db)
         {
-            //lock (_rankLock) {
             foreach (var entry in MessageCount)
                 await db.UpdateMessageCountForUserAsync(entry.Key, entry.Value).ConfigureAwait(false);
-            //}
         }
-        #endregion
 
         #region TRIGGERS
         public IReadOnlyDictionary<string, string> GetAllGuildTextReactions(ulong gid)
