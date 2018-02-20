@@ -86,7 +86,7 @@ namespace TheGodfather
         }
 
         public int GetRankForUser(ulong uid)
-            =>  
+            => MessageCount.ContainsKey(uid)? GetRankForMessageCount(MessageCount[uid]) : 0;
 
         public ulong GetMessageCountForId(ulong uid)
             => MessageCount.ContainsKey(uid) ? MessageCount[uid] : 0;
