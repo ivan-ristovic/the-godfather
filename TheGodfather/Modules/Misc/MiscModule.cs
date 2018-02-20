@@ -1,19 +1,20 @@
 ﻿#region USING_DIRECTIVES
 using System;
+using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 
 using TheGodfather.Attributes;
-using TheGodfather.Services;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
+using TheGodfather.Modules.Misc.Common;
+using TheGodfather.Services;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Interactivity;
 using DSharpPlus.Entities;
 #endregion
 
@@ -21,11 +22,53 @@ namespace TheGodfather.Modules.Misc
 {
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
     [ListeningCheck]
-    public class MainModule : TheGodfatherBaseModule
+    public class MiscModule : TheGodfatherBaseModule
     {
 
-        public MainModule(SharedData shared, DatabaseService db) : base(shared, db) { }
+        public MiscModule(SharedData shared, DatabaseService db) : base(shared, db) { }
 
+
+        #region COMMAND_8BALL
+        [Command("8ball")]
+        [Description("An almighty ball which knows the answer to any question you ask. Alright, it's random answer, so what?")]
+        [Aliases("8b")]
+        [UsageExample("!8ball Am I gay?")]
+        public async Task EightBallAsync(CommandContext ctx,
+                                        [RemainingText, Description("A question for the almighty ball.")] string question)
+        {
+            if (string.IsNullOrWhiteSpace(question))
+                throw new InvalidCommandUsageException("The almighty ball requires a question.");
+
+            await ReplyWithEmbedAsync(ctx, EightBall.Answer, ":8ball:")
+                .ConfigureAwait(false);
+        }
+        #endregion
+
+        #region COMMAND_COINFLIP
+        [Command("coinflip")]
+        [Description("Flip a coin.")]
+        [Aliases("coin", "flip")]
+        [UsageExample("!coinflip")]
+        public async Task CoinflipAsync(CommandContext ctx)
+        {
+            string flip = new Random().Next(2) == 0 ? "Heads" : "Tails";
+            await ReplyWithEmbedAsync(ctx, $"{ctx.User.Mention} flipped {Formatter.Bold(flip)}", flip == "Heads" ? ":full_moon_with_face:" : ":new_moon_with_face:")
+                .ConfigureAwait(false);
+        }
+        #endregion
+
+        #region COMMAND_DICE
+        [Command("dice")]
+        [Description("Roll a dice.")]
+        [Aliases("die", "roll")]
+        [UsageExample("!dice")]
+        public async Task DiceAsync(CommandContext ctx)
+        {
+            string roll = new Random().Next(1, 7).ToString();
+            await ReplyWithEmbedAsync(ctx, $"{ctx.User.Mention} rolled a {Formatter.Bold(roll)}", ":game_die:")
+                .ConfigureAwait(false);
+        }
+        #endregion
 
         #region COMMAND_GIVEME
         [Command("giveme")]
@@ -125,6 +168,27 @@ namespace TheGodfather.Modules.Misc
         }
         #endregion
 
+        #region COMMAND_PENIS
+        [Command("penis")]
+        [Description("An accurate measurement.")]
+        [Aliases("size", "length", "manhood", "dick")]
+        [UsageExample("!penis @Someone")]
+        public async Task PenisAsync(CommandContext ctx,
+                                    [Description("Who to measure.")] DiscordUser user)
+        {
+            if (user.Id == ctx.Client.CurrentUser.Id) {
+                await ReplyWithEmbedAsync(ctx, $"{user.Mention}'s size:\n\n{Formatter.Bold("8===============================================")}\n{Formatter.Italic("(Please plug in a second monitor for the entire display)")}", ":straight_ruler:")
+                    .ConfigureAwait(false);
+                return;
+            }
+
+            var sb = new StringBuilder();
+            sb.Append('8').Append('=', (int)(user.Id % 40)).Append('D');
+            await ReplyWithEmbedAsync(ctx, $"{user.Mention}'s size:\n\n{Formatter.Bold(sb.ToString())}", ":straight_ruler:")
+                .ConfigureAwait(false);
+        }
+        #endregion
+
         #region COMMAND_PING
         [Command("ping")]
         [Description("Ping the bot.")]
@@ -164,6 +228,42 @@ namespace TheGodfather.Modules.Misc
                     .ConfigureAwait(false);
             } catch {
                 throw new CommandFailedException("Warning: Failed to add prefix to the database.");
+            }
+        }
+        #endregion
+
+        #region COMMAND_RATE
+        [Command("rate")]
+        [Description("Gives a rating chart for the user. If the user is not provided, rates sender.")]
+        [Aliases("score", "graph")]
+        [UsageExample("!rate @Someone")]
+        [RequireBotPermissions(Permissions.AttachFiles)]
+        public async Task RateAsync(CommandContext ctx,
+                                   [Description("Who to measure.")] DiscordUser user = null)
+        {
+            if (user == null)
+                user = ctx.User;
+
+            try {
+                using (var chart = new Bitmap("Resources/graph.png"))
+                using (var g = Graphics.FromImage(chart)) {
+                    int start_x = ((int)user.Id % (chart.Width - 133)) + 110;
+                    int start_y = ((int)user.Id % (chart.Height - 45)) + 30;
+                    g.FillEllipse(Brushes.Red, start_x, start_y, 10, 10);
+                    g.Flush();
+
+                    using (var ms = new MemoryStream()) {
+                        chart.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
+                        ms.Position = 0;
+                        await ctx.RespondWithFileAsync("Rating.jpg", ms, embed: new DiscordEmbedBuilder() {
+                            Description = Formatter.Bold($"{user.Mention}'s rating"),
+                            Color = DiscordColor.Cyan
+                        }).ConfigureAwait(false);
+                    }
+                }
+            } catch (FileNotFoundException e) {
+                ctx.Client.DebugLogger.LogMessage(LogLevel.Error, "TheGodfather", $"graph.png load failed! Details: {e.ToString()}", DateTime.Now);
+                throw new CommandFailedException("I can't find the graph image on server machine, please contact owner and tell him.");
             }
         }
         #endregion
