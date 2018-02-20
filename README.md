@@ -1,8 +1,6 @@
 # the-godfather
 
-Just another Discord bot. Written using DSharpPlus.
-
-[Project website](https://ivan-ristovic.github.io/the-godfather/)
+Just another general-purpose Discord bot. Written in C# using [DSharpPlus](https://github.com/DSharpPlus/DSharpPlus).
 
 ---
 
@@ -43,8 +41,10 @@ Each command can be invoked in various ways, each of those ways being called an 
 For example, one way to call ``!user kick`` is by giving a ``user`` and a ``string...`` which correspond to user and reason for kick, respectively. 
 Another way to call ``!user kick`` is by giving a ``string`` and a ``user``. The reason why they both exist is so that it doesn't matter if you provide the user first or the reason first, as long as you provide the user (since it is nececary). So both of these calling attempts will work:
 
-```!user kick @User My reason for doing this is because I am a terrible person.```
-```!user kick "My reason for doing this is because I am a terrible person." @User```
+```
+!user kick @User My reason for doing this is because I am a terrible person.
+!user kick "My reason for doing this is because I am a terrible person." @User
+```
 
 Note that in the second overload the reason is a ``string`` and not ``string...`` unlike in the first one. This is because ``string...`` captures the remaining text of the command invocation message and looks at it like plain text, which in this case would capture the ``user`` as well. 
 So, the following command invocation attempt will cause an error:

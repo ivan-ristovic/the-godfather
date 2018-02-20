@@ -9,7 +9,6 @@ using System.Threading.Tasks;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Games.Common;
 
-using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 #endregion
@@ -27,7 +26,7 @@ namespace TheGodfather.Modules.Games
         #endregion
 
         #region PRIVATE_FIELDS
-        private ConcurrentQueue<RaceParticipant> _participants = new ConcurrentQueue<RaceParticipant>();
+        private ConcurrentQueue<AnimalRaceParticipant> _participants = new ConcurrentQueue<AnimalRaceParticipant>();
         private ConcurrentBag<DiscordEmoji> _animals = new ConcurrentBag<DiscordEmoji>(EmojiUtil.Animals);
         #endregion
 
@@ -75,7 +74,7 @@ namespace TheGodfather.Modules.Games
             if (!_animals.TryTake(out emoji))
                 return false;
 
-            _participants.Enqueue(new RaceParticipant {
+            _participants.Enqueue(new AnimalRaceParticipant {
                 User = user,
                 Emoji = emoji,
                 Progress = 0
@@ -85,12 +84,12 @@ namespace TheGodfather.Modules.Games
 
         private async Task PrintRaceAsync(DiscordMessage msg)
         {
-            StringBuilder sb = new StringBuilder("LIVE RACING BROADCAST\n🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🔚🔚\n");
+            StringBuilder sb = new StringBuilder("LIVE RACING BROADCAST\n🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🔚\n");
             foreach (var participant in _participants) {
                 sb.Append("|");
-                sb.Append(new string('‣', participant.Progress));
+                sb.Append('‣', participant.Progress);
                 sb.Append(participant.Emoji);
-                sb.Append(new string('‣', TRACK_SIZE - participant.Progress));
+                sb.Append('‣', TRACK_SIZE - participant.Progress);
                 sb.Append("| " + participant.User.Mention);
                 if (participant.Progress == TRACK_SIZE)
                     sb.Append(" " + EmojiUtil.Trophy);
@@ -101,7 +100,7 @@ namespace TheGodfather.Modules.Games
         }
         
 
-        private sealed class RaceParticipant
+        private sealed class AnimalRaceParticipant
         {
             public DiscordUser User { get; internal set; }
             public int Progress { get; internal set; }

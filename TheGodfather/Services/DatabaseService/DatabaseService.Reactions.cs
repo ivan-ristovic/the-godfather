@@ -1,6 +1,7 @@
 ﻿#region USING_DIRECTIVES
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 using Npgsql;
@@ -12,9 +13,9 @@ namespace TheGodfather.Services
     public partial class DatabaseService
     {
         #region TEXT_REACTION_SERVICES
-        public async Task<Dictionary<ulong, Dictionary<string, string>>> GetAllTextReactionsAsync()
+        public async Task<Dictionary<ulong, List<(Regex, string)>>> GetAllTextReactionsAsync()
         {
-            var triggers = new Dictionary<ulong, Dictionary<string, string>>();
+            var triggers = new Dictionary<ulong, List<(Regex, string)>>();
 
             await _sem.WaitAsync();
             try {
@@ -29,11 +30,12 @@ namespace TheGodfather.Services
                             ulong gid = (ulong)(long)reader["gid"];
                             if (triggers.ContainsKey(gid)) {
                                 if (triggers[gid] == null)
-                                    triggers[gid] = new Dictionary<string, string>();
+                                    triggers[gid] = new List<(Regex, string)>();
                             } else {
-                                triggers.Add(gid, new Dictionary<string, string>());
+                                triggers.Add(gid, new List<(Regex, string)>());
                             }
-                            triggers[gid].Add((string)reader["trigger"], (string)reader["response"]);
+                            var regex = new Regex($@"\b{(string)reader["trigger"]}\b", RegexOptions.IgnoreCase);
+                            triggers[gid].Add((regex, (string)reader["response"]));
                         }
                     }
                 }
@@ -103,9 +105,9 @@ namespace TheGodfather.Services
         #endregion
 
         #region EMOJI_REACTION_SERVICES
-        public async Task<Dictionary<ulong, Dictionary<string, string>>> GetAllEmojiReactionsAsync()
+        public async Task<Dictionary<ulong, Dictionary<string, List<Regex>>>> GetAllEmojiReactionsAsync()
         {
-            var triggers = new Dictionary<ulong, Dictionary<string, string>>();
+            var triggers = new Dictionary<ulong, Dictionary<string, List<Regex>>>();
 
             await _sem.WaitAsync();
             try {
@@ -118,13 +120,24 @@ namespace TheGodfather.Services
                     using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
                         while (await reader.ReadAsync().ConfigureAwait(false)) {
                             ulong gid = (ulong)(long)reader["gid"];
+
                             if (triggers.ContainsKey(gid)) {
                                 if (triggers[gid] == null)
-                                    triggers[gid] = new Dictionary<string, string>();
+                                    triggers[gid] = new Dictionary<string, List<Regex>>();
                             } else {
-                                triggers.Add(gid, new Dictionary<string, string>());
+                                triggers.Add(gid, new Dictionary<string, List<Regex>>());
                             }
-                            triggers[gid].Add((string)reader["trigger"], (string)reader["reaction"]);
+
+                            string reaction = (string)reader["reaction"];
+                            if (triggers[gid].ContainsKey(reaction)) {
+                                if (triggers[gid][reaction] == null)
+                                    triggers[gid][reaction] = new List<Regex>();
+                            } else {
+                                triggers[gid].Add(reaction, new List<Regex>());
+                            }
+
+                            var regex = new Regex($@"\b{(string)reader["trigger"]}\b", RegexOptions.IgnoreCase);
+                            triggers[gid][reaction].Add(regex);
                         }
                     }
                 }
@@ -155,7 +168,7 @@ namespace TheGodfather.Services
             }
         }
 
-        public async Task RemoveEmojiReactionAsync(ulong gid, string trigger)
+        public async Task RemoveEmojiReactionTriggerAsync(ulong gid, string trigger)
         {
             await _sem.WaitAsync();
             try {
@@ -166,6 +179,25 @@ namespace TheGodfather.Services
                     cmd.CommandText = "DELETE FROM gf.emoji_reactions WHERE gid = @gid AND trigger = @trigger;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
                     cmd.Parameters.AddWithValue("trigger", NpgsqlDbType.Varchar, trigger);
+
+                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                }
+            } finally {
+                _sem.Release();
+            }
+        }
+
+        public async Task RemoveAllEmojiReactionTriggersForReactionAsync(ulong gid, string reaction)
+        {
+            await _sem.WaitAsync();
+            try {
+                using (var con = new NpgsqlConnection(_connectionString))
+                using (var cmd = con.CreateCommand()) {
+                    await con.OpenAsync().ConfigureAwait(false);
+
+                    cmd.CommandText = "DELETE FROM gf.emoji_reactions WHERE gid = @gid AND reaction = @reaction;";
+                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
+                    cmd.Parameters.AddWithValue("reaction", NpgsqlDbType.Varchar, reaction);
 
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }

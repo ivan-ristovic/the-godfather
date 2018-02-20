@@ -14,7 +14,7 @@ using Microsoft.CodeAnalysis.Scripting;
 using TheGodfather.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-using TheGodfather.Modules.Administration.Common;
+using TheGodfather.Modules.Owner.Common;
 using TheGodfather.Services;
 
 using DSharpPlus;
@@ -23,14 +23,14 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 #endregion
 
-namespace TheGodfather.Modules.Administration
+namespace TheGodfather.Modules.Owner
 {
     [Group("owner")]
     [Description("Owner-only bot administration commands.")]
     [Aliases("admin", "o")]
     [RequireOwner, Hidden]
     [Cooldown(3, 5, CooldownBucketType.Global)]
-    public class BotOwnerModule : GodfatherBaseModule
+    public class BotOwnerModule : TheGodfatherBaseModule
     {
 
         public BotOwnerModule(DatabaseService db) : base(db: db) { }
@@ -271,14 +271,14 @@ namespace TheGodfather.Modules.Administration
 
             foreach (var cmd in commands) {
                 if (cmd is CommandGroup || cmd.Parent == null) 
-                    sb.AppendLine("## " + cmd.QualifiedName);
+                    sb.Append("## ").Append(cmd is CommandGroup ? "Group: " : "").AppendLine(cmd.QualifiedName);
                 else
-                    sb.AppendLine("### " + cmd.QualifiedName);
+                    sb.Append("### ").AppendLine(cmd.QualifiedName);
 
                 if (cmd.IsHidden)
-                    sb.AppendLine(Formatter.Italic("Hidden.") + "\n");
+                    sb.AppendLine(Formatter.Italic("Hidden.")).AppendLine();
 
-                sb.AppendLine(Formatter.Italic(cmd.Description ?? "No description provided.") + "\n");
+                sb.AppendLine(Formatter.Italic(cmd.Description ?? "No description provided.")).AppendLine();
 
                 var allchecks = cmd.ExecutionChecks.Union(cmd.Parent?.ExecutionChecks ?? Enumerable.Empty<CheckBaseAttribute>());
                 var permissions = allchecks.Where(chk => chk is RequirePermissionsAttribute)
@@ -294,20 +294,20 @@ namespace TheGodfather.Modules.Administration
                     sb.AppendLine(Formatter.Bold("Owner-only.") + "\n");
                 if (permissions.Any()) {
                     sb.AppendLine(Formatter.Bold("Requires permissions:"));
-                    sb.AppendLine(Formatter.InlineCode(string.Join(", ", permissions)) + "\n");
+                    sb.AppendLine(Formatter.InlineCode(string.Join(", ", permissions))).AppendLine();
                 }
                 if (userpermissions.Any()) {
                     sb.AppendLine(Formatter.Bold("Requires user permissions:"));
-                    sb.AppendLine(Formatter.InlineCode(string.Join(", ", userpermissions)) + "\n");
+                    sb.AppendLine(Formatter.InlineCode(string.Join(", ", userpermissions))).AppendLine();
                 }
                 if (botpermissions.Any()) {
                     sb.AppendLine(Formatter.Bold("Requires bot permissions:"));
-                    sb.AppendLine(Formatter.InlineCode(string.Join(", ", botpermissions)) + "\n");
+                    sb.AppendLine(Formatter.InlineCode(string.Join(", ", botpermissions))).AppendLine();
                 }
 
                 if (cmd.Aliases.Any()) {
                     sb.AppendLine(Formatter.Bold("Aliases:"));
-                    sb.AppendLine(Formatter.InlineCode(string.Join(", ", cmd.Aliases)) + "\n");
+                    sb.AppendLine(Formatter.InlineCode(string.Join(", ", cmd.Aliases))).AppendLine();
                 }
                 sb.AppendLine();
 
@@ -315,7 +315,7 @@ namespace TheGodfather.Modules.Administration
                     if (!overload.Arguments.Any())
                         continue;
 
-                    sb.AppendLine(Formatter.Bold(cmd.Overloads.Count > 1 ? $"Overload {overload.Priority.ToString()}:" : "Arguments:") + "\n");
+                    sb.AppendLine(Formatter.Bold(cmd.Overloads.Count > 1 ? $"Overload {overload.Priority.ToString()}:" : "Arguments:")).AppendLine();
                     foreach (var arg in overload.Arguments) {
                         if (arg.IsOptional)
                             sb.Append("(optional) ");
@@ -340,13 +340,13 @@ namespace TheGodfather.Modules.Administration
                 var examples = cmd.CustomAttributes.Where(chk => chk is UsageExampleAttribute)
                                                    .Select(chk => chk as UsageExampleAttribute);
                 if (examples.Any()) {
-                    sb.AppendLine(Formatter.Bold("Examples:") + "\n```");
+                    sb.AppendLine(Formatter.Bold("Examples:")).AppendLine().AppendLine("```");
                     foreach (var example in examples)
                         sb.AppendLine(example.Example);
                     sb.AppendLine("```");
                 }
 
-                sb.AppendLine("---\n");
+                sb.AppendLine("---").AppendLine();
             }
 
             try {
@@ -488,7 +488,7 @@ namespace TheGodfather.Modules.Administration
         [Description("Bot status manipulation.")]
         [Aliases("status", "botstatus")]
         [ListeningCheck]
-        public class StatusModule : GodfatherBaseModule
+        public class StatusModule : TheGodfatherBaseModule
         {
 
             public StatusModule(DatabaseService db) : base(db: db) { }
@@ -533,7 +533,7 @@ namespace TheGodfather.Modules.Administration
             [Command("delete")]
             [Description("Remove status from running queue.")]
             [Aliases("-", "remove", "rm", "del")]
-            [UsageExample("!owner status delete Playing CS:GO")]
+            [UsageExample("!owner status delete 1")]
             public async Task DeleteAsync(CommandContext ctx,
                                          [Description("Status ID.")] int id)
             {

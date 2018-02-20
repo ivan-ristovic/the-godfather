@@ -86,5 +86,18 @@ namespace TheGodfather.Extensions
             else
                 return null;
         }
+
+        public static async Task<List<string>> WaitAndParsePollOptionsAsync(CommandContext ctx)
+        {
+            var interactivity = ctx.Client.GetInteractivity();
+            var mctx = await interactivity.WaitForMessageAsync(
+                xm => xm.Author.Id == ctx.User.Id && xm.Channel.Id == ctx.Channel.Id,
+                TimeSpan.FromMinutes(1)
+            ).ConfigureAwait(false);
+            if (mctx == null)
+                return null;
+
+            return mctx.Message.Content.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries).Distinct().ToList();
+        }
     }
 }

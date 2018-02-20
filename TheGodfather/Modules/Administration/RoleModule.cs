@@ -21,7 +21,7 @@ namespace TheGodfather.Modules.Administration
     [Aliases("role", "r", "rl")]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
     [ListeningCheck]
-    public class RoleAdminModule : GodfatherBaseModule
+    public class RoleModule : TheGodfatherBaseModule
     {
 
         [GroupCommand]
@@ -129,6 +129,7 @@ namespace TheGodfather.Modules.Administration
         [Aliases("mention", "@", "ma")]
         [UsageExample("!role mentionall Admins")]
         [RequirePermissions(Permissions.MentionEveryone)]
+        [RequireBotPermissions(Permissions.ManageRoles)]
         public async Task MentionAllFromRoleAsync(CommandContext ctx, 
                                                  [Description("Role.")] DiscordRole role)
         {
@@ -141,21 +142,12 @@ namespace TheGodfather.Modules.Administration
             if (!ctx.Channel.PermissionsFor(ctx.Member).HasPermission(Permissions.Administrator))
                 throw new CommandFailedException("Only administrator can mention the non-mentionable roles.");
 
-            var users = await ctx.Guild.GetAllMembersAsync()
+            await role.UpdateAsync(mentionable: true)
                 .ConfigureAwait(false);
-
-            StringBuilder sb = new StringBuilder();
-            foreach (var user in users.Where(u => u.Roles.Contains(role)))
-                sb.Append(user.Mention).Append(" ");
-
-            string warning = "";
-            if (sb.Length >= 2000)
-                warning = " (failed to mention all role members)";
-
-            await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
-                Title = $"Mentioning everyone in role {role.Name}:" + warning,
-                Description = sb.ToString(0, 2000)
-            }).ConfigureAwait(false);
+            await ctx.RespondAsync(role.Mention)
+                .ConfigureAwait(false);
+            await role.UpdateAsync(mentionable: false)
+                .ConfigureAwait(false);
         }
         #endregion
 

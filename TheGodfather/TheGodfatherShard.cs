@@ -57,8 +57,6 @@ namespace TheGodfather
         ~TheGodfatherShard()
         {
             Client.DisconnectAsync().GetAwaiter().GetResult();
-            if (Directory.Exists("Temp"))
-                Directory.Delete("Temp", recursive: true);
         }
 
 
@@ -189,7 +187,7 @@ namespace TheGodfather
                 while (exc is AggregateException)
                     exc = exc.InnerException;
                 Log(LogLevel.Error,
-                    $"Failed to send a welcome message!<br>" + 
+                    $"Failed to send a welcome message!<br>" +
                     $"Channel ID: {cid}<br>" +
                     $"{e.Guild.ToString()}<br>" +
                     $"Exception: {exc.GetType()}<br>" +
@@ -221,7 +219,7 @@ namespace TheGodfather
                     $"Failed to send a leaving message!<br>" +
                     $"Channel ID: {cid}<br>" +
                     $"{e.Guild.ToString()}<br>" +
-                    $"Exception: {exc.GetType()}<br>" + 
+                    $"Exception: {exc.GetType()}<br>" +
                     $"Message: {exc.Message}"
                 );
             }
@@ -238,14 +236,14 @@ namespace TheGodfather
             }
 
             // Check if message contains filter
-            if (e.Message.Content != null && _shared.ContainsFilter(e.Guild.Id, e.Message.Content)) {
+            if (e.Message.Content != null && _shared.MessageContainsFilter(e.Guild.Id, e.Message.Content)) {
                 try {
                     await e.Channel.DeleteMessageAsync(e.Message)
                         .ConfigureAwait(false);
                     Log(LogLevel.Debug,
-                        $"Filter triggered:<br>" + 
+                        $"Filter triggered:<br>" +
                         $"Message: {e.Message.Content}<br>" +
-                        $"{e.Message.Author.ToString()}<br>" + 
+                        $"{e.Message.Author.ToString()}<br>" +
                         $"{e.Guild.ToString()} ; {e.Channel.ToString()}"
                     );
                 } catch (UnauthorizedException) {
@@ -275,43 +273,48 @@ namespace TheGodfather
             }
 
             // Check if message has a text reaction
-            var response = _shared.GetResponseForTextReaction(e.Guild.Id, e.Message.Content);
-            if (response != null) {
-                Log(LogLevel.Debug,
-                    $"Text reaction detected:<br>" + 
-                    $"Message: {e.Message.Content}<br>" +
-                    $"{e.Message.Author.ToString()}<br>" +
-                    $"{e.Guild.ToString()} ; {e.Channel.ToString()}"
-                );
-                await e.Channel.SendMessageAsync(response.Replace("%user%", e.Author.Mention))
-                    .ConfigureAwait(false);
+            if (_shared.GuildTextReactions.ContainsKey(e.Guild.Id)) {
+                var treaction = _shared.GuildTextReactions[e.Guild.Id].Where(tup => tup.Item1.IsMatch(e.Message.Content));
+                if (treaction.Any()) {
+                    Log(LogLevel.Debug,
+                        $"Text reaction detected:<br>" +
+                        $"Message: {e.Message.Content}<br>" +
+                        $"{e.Message.Author.ToString()}<br>" +
+                        $"{e.Guild.ToString()} ; {e.Channel.ToString()}"
+                    );
+                    await e.Channel.SendMessageAsync(treaction.First().Item2.Replace("%user%", e.Author.Mention))
+                        .ConfigureAwait(false);
+                }
             }
 
             if (!e.Channel.PermissionsFor(e.Guild.CurrentMember).HasFlag(Permissions.AddReactions))
                 return;
 
             // Check if message has an emoji reaction
-            var emojilist = _shared.GetEmojisForEmojiReaction(Client, e.Guild.Id, e.Message.Content);
-            if (emojilist.Count > 0) {
+            if (_shared.GuildEmojiReactions.ContainsKey(e.Guild.Id) && _shared.GuildEmojiReactions[e.Guild.Id] != null) {
                 Log(LogLevel.Debug,
-                    $"Emoji reaction detected:<br>" + 
+                    $"Emoji reaction detected:<br>" +
                     $"Message: {e.Message.Content}<br>" +
-                    $"{e.Message.Author.ToString()}<br>" + 
+                    $"{e.Message.Author.ToString()}<br>" +
                     $"{e.Guild.ToString()} ; {e.Channel.ToString()}"
                 );
-                foreach (var emoji in emojilist) {
-                    try {
-                        await e.Message.CreateReactionAsync(emoji)
-                            .ConfigureAwait(false);
-                    } catch (ArgumentException) {
-                        await e.Channel.SendMessageAsync($"I have a reaction for that message set up ({emoji}) but that emoji doesn't exits. Fix your shit pls.")
-                            .ConfigureAwait(false);
-                    } catch (UnauthorizedException) {
-                        await e.Channel.SendMessageAsync($"I have a reaction for that message set up ({emoji}) but I do not have permissions to add reactions. Fix your shit pls.")
-                            .ConfigureAwait(false);
+                foreach (var reaction in _shared.GuildEmojiReactions[e.Guild.Id]) {
+                    foreach (var trigger in reaction.Value) {
+                        if (trigger.IsMatch(e.Message.Content)) {
+                            try {
+                                var emoji = DiscordEmoji.FromName(Client, reaction.Key);
+                                await e.Message.CreateReactionAsync(emoji)
+                                    .ConfigureAwait(false);
+                                break;
+                            } catch (ArgumentException) {
+                                await e.Channel.SendMessageAsync($"Emoji reaction set, but emoji: {reaction.Key} doesn't exist!")
+                                    .ConfigureAwait(false);
+                            } catch (UnauthorizedException) {
+                                await e.Channel.SendMessageAsync("I have a reaction for that message set up but I do not have permissions to add reactions. Fix your shit pls.")
+                                    .ConfigureAwait(false);
+                            }
+                        }
                     }
-                    await Task.Delay(250)
-                        .ConfigureAwait(false);
                 }
             }
         }
@@ -322,21 +325,21 @@ namespace TheGodfather
                 return;
 
             // Check if message contains filter
-            if (!e.Author.IsBot && e.Message.Content != null && _shared.ContainsFilter(e.Guild.Id, e.Message.Content)) {
+            if (!e.Author.IsBot && e.Message.Content != null && _shared.MessageContainsFilter(e.Guild.Id, e.Message.Content)) {
                 try {
                     await e.Channel.DeleteMessageAsync(e.Message)
                         .ConfigureAwait(false);
                     Log(LogLevel.Debug,
                         $"Filter triggered in edit of a message:<br>" +
-                        $"Message: {e.Message.Content}<br>" + 
-                        $"{e.Message.Author.ToString()}<br>" + 
+                        $"Message: {e.Message.Content}<br>" +
+                        $"{e.Message.Author.ToString()}<br>" +
                         $"{e.Guild.ToString()} ; {e.Channel.ToString()}"
                     );
                 } catch (UnauthorizedException) {
                     Log(LogLevel.Warning,
                         $"Filter triggered in edited message but missing permissions to delete!<br>" +
-                        $"Message: '{e.Message.Content}<br>" + 
-                        $"{e.Message.Author.ToString()}<br>" + 
+                        $"Message: '{e.Message.Content}<br>" +
+                        $"{e.Message.Author.ToString()}<br>" +
                         $"{e.Guild.ToString()} ; {e.Channel.ToString()}"
                     );
                     await e.Channel.SendMessageAsync("The edited message contains the filtered word but I do not have permissions to delete it.")
@@ -355,7 +358,7 @@ namespace TheGodfather
 
             Log(LogLevel.Info,
                 $"Executed: {e.Command?.QualifiedName ?? "<unknown command>"}<br>" +
-                $"{e.Context.User.ToString()}<br>" + 
+                $"{e.Context.User.ToString()}<br>" +
                 $"{e.Context.Guild.ToString()}; {e.Context.Channel.ToString()}"
             );
         }
@@ -410,12 +413,12 @@ namespace TheGodfather
                 var attr = exc.FailedChecks.First();
                 if (attr is CooldownAttribute)
                     return;
-                else if (attr is RequireUserPermissionsAttribute)
-                    emb.Description = $"{emoji} You do not have the required permissions to run this command!";
-                else if (attr is RequirePermissionsAttribute)
-                    emb.Description = $"{emoji} Permissions to execute that command aren't met!";
-                else if (attr is RequireBotPermissionsAttribute)
-                    emb.Description = $"{emoji} I do not have the required permissions to run this command!";
+                else if (attr is RequireUserPermissionsAttribute uperms)
+                    emb.Description = $"{emoji} You do not have the required permissions ({uperms.Permissions.ToPermissionString()}) to run this command!";
+                else if (attr is RequirePermissionsAttribute perms)
+                    emb.Description = $"{emoji} Permissions to execute that command ({perms.Permissions.ToPermissionString()}) aren't met!";
+                else if (attr is RequireBotPermissionsAttribute bperms)
+                    emb.Description = $"{emoji} I do not have the required permissions ({bperms.Permissions.ToPermissionString()}) to run this command!";
                 else if (attr is RequireOwnerAttribute)
                     emb.Description = $"{emoji} That command is reserved for the bot owner only!";
                 else

@@ -22,7 +22,7 @@ namespace TheGodfather.Modules.Administration
     [Aliases("m", "msg", "msgs", "messages")]
     [Cooldown(2, 5, CooldownBucketType.User)]
     [ListeningCheck]
-    public class MessageAdminModule : GodfatherBaseModule
+    public class MessageModule : TheGodfatherBaseModule
     {
         #region COMMAND_MESSAGES_ATTACHMENTS
         [Command("attachments")]

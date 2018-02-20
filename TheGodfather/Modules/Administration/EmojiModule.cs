@@ -24,7 +24,7 @@ namespace TheGodfather.Modules.Administration
     [UsageExample("!emoji")]
     [Cooldown(2, 5, CooldownBucketType.Guild)]
     [ListeningCheck]
-    public class EmojiAdminModule : GodfatherBaseModule
+    public class EmojiModule : TheGodfatherBaseModule
     {
 
         [GroupCommand]

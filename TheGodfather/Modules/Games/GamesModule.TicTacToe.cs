@@ -14,13 +14,13 @@ using DSharpPlus.Interactivity;
 
 namespace TheGodfather.Modules.Games
 {
-    public partial class GamesModule : GodfatherBaseModule
+    public partial class GamesModule : TheGodfatherBaseModule
     {
         [Group("tictactoe")]
         [Description("Starts a \"Tic-Tac-Toe\" game. Play a move by writing a number from 1 to 9 corresponding to the field where you wish to play.")]
         [Aliases("ttt")]
         [UsageExample("!game tictactoe")]
-        public class TicTacToeModule : GodfatherBaseModule
+        public class TicTacToeModule : TheGodfatherBaseModule
         {
 
             public TicTacToeModule(SharedData shared, DatabaseService db) : base(shared, db) { }

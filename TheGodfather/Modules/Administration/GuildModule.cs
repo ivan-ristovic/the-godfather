@@ -24,10 +24,10 @@ namespace TheGodfather.Modules.Administration
     [Aliases("server", "g")]
     [Cooldown(2, 5, CooldownBucketType.Guild)]
     [ListeningCheck]
-    public class GuildAdminModule : GodfatherBaseModule
+    public class GuildModule : TheGodfatherBaseModule
     {
 
-        public GuildAdminModule(DatabaseService db) : base(db: db) { }
+        public GuildModule(DatabaseService db) : base(db: db) { }
 
 
         #region COMMAND_GUILD_GETBANS
@@ -192,23 +192,14 @@ namespace TheGodfather.Modules.Administration
             
             if (!IsValidImageURL(url, out Uri uri))
                 throw new CommandFailedException("URL must point to an image and use http or https protocols.");
-
-            string filename = $"Temp/tmp-icon-{DateTime.Now.Ticks}.png";
+            
             try {
-                if (!Directory.Exists("Temp"))
-                    Directory.CreateDirectory("Temp");
-
                 using (var wc = new WebClient()) {
                     byte[] data = wc.DownloadData(uri.AbsoluteUri);
-
                     using (var ms = new MemoryStream(data))
-                        await ctx.Guild.ModifyAsync(new Action<GuildEditModel>(e =>
-                            e.Icon = ms
-                        )).ConfigureAwait(false);
+                        await ctx.Guild.ModifyAsync(new Action<GuildEditModel>(e => e.Icon = ms))
+                            .ConfigureAwait(false);
                 }
-
-                if (File.Exists(filename))
-                    File.Delete(filename);
             } catch (WebException e) {
                 throw new CommandFailedException("Error getting the image.", e);
             } catch (Exception e) {
@@ -354,7 +345,7 @@ namespace TheGodfather.Modules.Administration
         [UsageExample("!guild selfassignableroles")]
         [Cooldown(2, 5, CooldownBucketType.Guild)]
         [ListeningCheck]
-        public class SelfAssignableRolesModule : GodfatherBaseModule
+        public class SelfAssignableRolesModule : TheGodfatherBaseModule
         {
 
             public SelfAssignableRolesModule(DatabaseService db) : base(db: db) { }

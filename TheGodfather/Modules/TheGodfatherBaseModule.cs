@@ -14,13 +14,13 @@ using DSharpPlus.Entities;
 
 namespace TheGodfather.Modules
 {
-    public abstract class GodfatherBaseModule : BaseCommandModule
+    public abstract class TheGodfatherBaseModule : BaseCommandModule
     {
         protected SharedData SharedData { get; }
         protected DatabaseService DatabaseService { get; }
 
 
-        protected GodfatherBaseModule(SharedData shared = null, DatabaseService db = null)
+        protected TheGodfatherBaseModule(SharedData shared = null, DatabaseService db = null)
         {
             SharedData = shared;
             DatabaseService = db;
@@ -68,13 +68,17 @@ namespace TheGodfather.Modules
             if (!IsValidURL(url, out uri))
                 return false;
 
-            if (WebRequest.Create(uri) is HttpWebRequest request) {
-                string contentType = "";
-                if (request.GetResponse() is HttpWebResponse response)
-                    contentType = response.ContentType;
-                if (!contentType.StartsWith("image/"))
+            try {
+                if (WebRequest.Create(uri) is HttpWebRequest request) {
+                    string contentType = "";
+                    if (request.GetResponse() is HttpWebResponse response)
+                        contentType = response.ContentType;
+                    if (!contentType.StartsWith("image/"))
+                        return false;
+                } else {
                     return false;
-            } else {
+                }
+            } catch {
                 return false;
             }
 

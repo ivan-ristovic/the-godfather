@@ -20,7 +20,7 @@ namespace TheGodfather.Modules.Gambling
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
     [UsageExample("!bank")]
     [ListeningCheck]
-    public class BankModule : GodfatherBaseModule
+    public class BankModule : TheGodfatherBaseModule
     {
 
         public BankModule(DatabaseService db) : base(db: db) { }

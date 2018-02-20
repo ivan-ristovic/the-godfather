@@ -4,7 +4,7 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
 #endregion
 
-namespace TheGodfather.Modules.Administration.Common
+namespace TheGodfather.Modules.Owner.Common
 {
     public sealed class EvaluationEnvironment
     {

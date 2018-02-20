@@ -17,7 +17,7 @@ namespace TheGodfather.Modules.Gambling
     [Aliases("deck")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
     [ListeningCheck]
-    public class CardsModule : GodfatherBaseModule
+    public class CardsModule : TheGodfatherBaseModule
     {
 
         public CardsModule(SharedData shared) : base(shared: shared) { }

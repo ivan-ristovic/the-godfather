@@ -15,7 +15,7 @@ using DSharpPlus.Entities;
 
 namespace TheGodfather.Modules.Gambling
 {
-    public partial class GambleModule : GodfatherBaseModule
+    public partial class GambleModule : TheGodfatherBaseModule
     {
         #region COMMAND_SLOT
         [Command("slot")]
