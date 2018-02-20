@@ -1,14 +1,12 @@
 ﻿#region USING_DIRECTIVES
 using System;
-using System.IO;
 using System.Net;
 using System.Linq;
-using System.Drawing;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 
 using TheGodfather.Attributes;
 using TheGodfather.Exceptions;
+using TheGodfather.Services;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -21,37 +19,41 @@ namespace TheGodfather.Modules.Misc
     [Group("random")]
     [Description("Return random things.")]
     [Aliases("rnd", "rand")]
-    public class CommandsRandomGroup : BaseCommandModule
+    [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
+    [ListeningCheck]
+    public class CommandsRandomGroup : TheGodfatherBaseModule
     {
         #region COMMAND_CAT
         [Command("cat")]
         [Description("Get a random cat image.")]
+        [UsageExample("!random cat")]
         public async Task RandomCatAsync(CommandContext ctx)
         {
-            try {
-                var wc = new WebClient();
-                var jsondata = JsonConvert.DeserializeObject<DeserializedData>(wc.DownloadString("http://random.cat/meow"));
-                await ctx.RespondAsync(jsondata.URL)
-                    .ConfigureAwait(false);
-            } catch (WebException e) {
-                throw new CommandFailedException("Connection to random.cat failed!", e);
-            }
+            string url = PetImagesService.RandomCatImage();
+            if (url == null)
+                throw new CommandFailedException("Connection to random.cat failed!");
+
+            await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
+                Description = DiscordEmoji.FromName(ctx.Client, ":cat:"),
+                ImageUrl = url
+            }).ConfigureAwait(false);
         }
         #endregion
 
         #region COMMAND_DOG
         [Command("dog")]
         [Description("Get a random dog image.")]
+        [UsageExample("!random dog")]
         public async Task RandomDogAsync(CommandContext ctx)
         {
-            try {
-                var wc = new WebClient();
-                var data = wc.DownloadString("https://random.dog/woof");
-                await ctx.RespondAsync("https://random.dog/" + data)
-                    .ConfigureAwait(false);
-            } catch (WebException e) {
-                throw new CommandFailedException("Connection to random.dog failed!", e);
-            }
+            string url = PetImagesService.RandomDogImage();
+            if (url == null)
+                throw new CommandFailedException("Connection to random.dog failed!");
+
+            await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
+                Description = DiscordEmoji.FromName(ctx.Client, ":dog:"),
+                ImageUrl = url
+            }).ConfigureAwait(false);
         }
         #endregion
 
@@ -90,11 +92,5 @@ namespace TheGodfather.Modules.Misc
                 .ConfigureAwait(false);
         }
         #endregion
-
-        private sealed class DeserializedData
-        {
-            [JsonProperty("file")]
-            public string URL { get; set; }
-        }
     }
 }

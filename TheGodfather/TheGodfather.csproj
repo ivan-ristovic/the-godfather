@@ -291,6 +291,7 @@
     <Compile Include="Modules\TheGodfatherBaseModule.cs" />
     <Compile Include="Modules\Search\JokesModule.cs" />
     <Compile Include="Exceptions\DatabaseServiceException.cs" />
+    <Compile Include="Modules\TheGodfatherServiceModule.cs" />
     <Compile Include="Services\DatabaseService\DatabaseService.Ranks.cs" />
     <Compile Include="Services\FeedService\FeedEntry.cs" />
     <Compile Include="Entities\GameStats.cs" />
@@ -329,6 +330,7 @@
     <Compile Include="Modules\Voice\VoiceModule.cs" />
     <Compile Include="Entities\SWAT\SwatServer.cs" />
     <Compile Include="Entities\SWAT\SwatServerInfo.cs" />
+    <Compile Include="Services\PetImagesService.cs" />
     <Compile Include="TheGodfather.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\DatabaseService\DatabaseService.Bank.cs" />

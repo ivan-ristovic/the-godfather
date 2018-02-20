@@ -3,7 +3,6 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 
 using TheGodfather.Attributes;
 using TheGodfather.Exceptions;
@@ -14,8 +13,6 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-
-using Imgur.API;
 #endregion
 
 namespace TheGodfather.Modules.Memes
@@ -27,10 +24,10 @@ namespace TheGodfather.Modules.Memes
     [UsageExample("!meme SomeMemeNameWhichYouAdded")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
     [ListeningCheck]
-    public partial class MemeModule : TheGodfatherBaseModule
+    public partial class MemeModule : TheGodfatherServiceModule<ImgurService>
     {
 
-        public MemeModule(DatabaseService db) : base(db: db) { }
+        public MemeModule(ImgurService imgur, DatabaseService db) : base(imgur, db: db) { }
 
 
         [GroupCommand]
@@ -130,7 +127,7 @@ namespace TheGodfather.Modules.Memes
                 bottomText = bottomText.ToUpperInvariant();
             template = template.ToLower();
 
-            string url = await ctx.Services.GetService<ImgurService>().CreateAndUploadMemeAsync(filename, topText, bottomText)
+            string url = await Service.CreateAndUploadMemeAsync(filename, topText, bottomText)
                 .ConfigureAwait(false);
             if (url == null)
                 throw new CommandFailedException("Uploading meme to Imgur failed.");
@@ -169,7 +166,7 @@ namespace TheGodfather.Modules.Memes
         [UsageExample("!meme list")]
         public async Task ListAsync(CommandContext ctx)
         {
-            var memes = await ctx.Services.GetService<DatabaseService>().GetAllGuildMemesAsync(ctx.Guild.Id)
+            var memes = await DatabaseService.GetAllGuildMemesAsync(ctx.Guild.Id)
                 .ConfigureAwait(false); ;
 
             await InteractivityUtil.SendPaginatedCollectionAsync(
