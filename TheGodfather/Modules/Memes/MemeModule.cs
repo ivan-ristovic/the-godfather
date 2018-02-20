@@ -112,78 +112,23 @@ namespace TheGodfather.Modules.Memes
             if (string.IsNullOrWhiteSpace(topText))
                 topText = "";
             else
-                topText = topText.ToUpper();
+                topText = topText.ToUpperInvariant();
             if (string.IsNullOrWhiteSpace(bottomText))
                 bottomText = "";
             else
-                bottomText = bottomText.ToUpper();
+                bottomText = bottomText.ToUpperInvariant();
             template = template.ToLower();
 
-            string url = null;
-            try {
-                using (var image = new Bitmap(filename))
-                using (var g = Graphics.FromImage(image)) {
-                    var topLayout = new Rectangle(0, 0, image.Width, image.Height / 3);
-                    var botLayout = new Rectangle(0, (int)(0.66 * image.Height), image.Width, image.Height / 3);
-                    g.InterpolationMode = InterpolationMode.High;
-                    g.SmoothingMode = SmoothingMode.HighQuality;
-                    g.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
-                    g.CompositingQuality = CompositingQuality.HighQuality;
-                    using (var p = new GraphicsPath()) {
-                        var font = GetBestFittingFont(g, topText, topLayout.Size, new Font("Impact", 60));
-                        var fmt = new StringFormat() {
-                            Alignment = StringAlignment.Center,
-                            LineAlignment = StringAlignment.Near,
-                            FormatFlags = StringFormatFlags.FitBlackBox
-                        };
-                        p.AddString(topText, font.FontFamily, (int)FontStyle.Regular, font.Size, topLayout, fmt);
-                        g.DrawPath(new Pen(Color.Black, 3), p);
-                        g.FillPath(Brushes.White, p);
-                    }
-                    using (var p = new GraphicsPath()) {
-                        var font = GetBestFittingFont(g, bottomText, botLayout.Size, new Font("Impact", 60));
-                        var fmt = new StringFormat() {
-                            Alignment = StringAlignment.Center,
-                            LineAlignment = StringAlignment.Far,
-                            FormatFlags = StringFormatFlags.FitBlackBox
-                        };
-                        p.AddString(bottomText, font.FontFamily, (int)FontStyle.Regular, font.Size, botLayout, fmt);
-                        g.DrawPath(new Pen(Color.Black, 3), p);
-                        g.FillPath(Brushes.White, p);
-                    }
-                    g.Flush();
+            string url = await ctx.Services.GetService<ImgurService>().CreateAndUploadMemeAsync(filename, topText, bottomText)
+                .ConfigureAwait(false);
+            if (url == null)
+                throw new CommandFailedException("Uploading meme to Imgur failed.");
 
-                    using (var ms = new MemoryStream()) {
-                        image.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
-                        ms.Position = 0;
-                        url = await ctx.Services.GetService<ImgurService>().UploadImageAsync(ms)
-                            .ConfigureAwait(false);
-                    }
-                }
-
-                if (url == null)
-                    throw new CommandFailedException("Uploading meme to Imgur failed.");
-
-                await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
-                    Title = url,
-                    Url = url,
-                    ImageUrl = url
-                }).ConfigureAwait(false);
-            } catch (ImgurException e) {
-                throw new CommandFailedException("Uploading meme to Imgur failed.", e);
-            }
-        }
-
-        private Font GetBestFittingFont(Graphics g, string text, Size rect, Font font)
-        {
-            SizeF realSize = g.MeasureString(text, font);
-            if ((realSize.Width <= rect.Width) && (realSize.Height <= rect.Height))
-                return font;
-
-            var rows = Math.Ceiling(realSize.Width / rect.Width);
-
-            float ScaleFontSize = font.Size / ((float)Math.Log(rows) + 1) * 1.5f;
-            return new Font(font.FontFamily, ScaleFontSize, font.Style);
+            await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
+                Title = url,
+                Url = url,
+                ImageUrl = url
+            }).ConfigureAwait(false);
         }
         #endregion
 
