@@ -94,6 +94,21 @@ namespace TheGodfather.Modules.Memes
         }
         #endregion
 
+        #region COMMAND_MEME_CLEAR
+        [Command("clear")]
+        [Description("Deletes all guild memes.")]
+        [Aliases("da", "c", "ca", "cl", "clearall")]
+        [UsageExample("!memes clear")]
+        [RequireUserPermissions(Permissions.Administrator)]
+        public async Task ClearMemesAsync(CommandContext ctx)
+        {
+            await DatabaseService.DeleteAllGuildMemesAsync(ctx.Guild.Id)
+                .ConfigureAwait(false);
+            await ReplyWithEmbedAsync(ctx)
+                .ConfigureAwait(false);
+        }
+        #endregion
+
         #region COMMAND_MEME_CREATE
         [Command("create")]
         [Description("Creates a new meme from blank template.")]
@@ -134,7 +149,7 @@ namespace TheGodfather.Modules.Memes
 
         #region COMMAND_MEME_DELETE
         [Command("delete")]
-        [Description("Deletes a meme from list.")]
+        [Description("Deletes a meme from this guild's meme list.")]
         [Aliases("-", "del", "remove", "rm", "d", "rem")]
         [UsageExample("!meme delete pepe")]
         [RequireUserPermissions(Permissions.ManageGuild)]
