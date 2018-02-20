@@ -12,6 +12,7 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using System.Collections.Generic;
 #endregion
 
 namespace TheGodfather.Modules.Misc
@@ -59,16 +60,20 @@ namespace TheGodfather.Modules.Misc
 
         #region COMMAND_CHOOSE
         [Command("choose")]
-        [Description("!choose option1, option2, option3...")]
+        [Description("Choose one of the provided options separated by comma.")]
         [Aliases("select")]
+        [UsageExample("!random choose option 1, option 2, option 3...")]
         public async Task ChooseAsync(CommandContext ctx,
-                                     [RemainingText, Description("Option list (separated with a comma).")] string s)
+                                     [RemainingText, Description("Option list (separated by comma).")] string text)
         {
-            if (string.IsNullOrWhiteSpace(s))
+            if (string.IsNullOrWhiteSpace(text))
                 throw new InvalidCommandUsageException("Missing list to choose from.");
 
-            var options = s.Split(new string[] { "," }, StringSplitOptions.RemoveEmptyEntries);
-            await ctx.RespondAsync(options[new Random().Next(options.Length)].Trim())
+            var options = text.Split(',')
+                              .Distinct()
+                              .Select(s => s.Trim())
+                              .Where(s => !string.IsNullOrWhiteSpace(s));
+            await ReplyWithEmbedAsync(ctx, options.ElementAt(new Random().Next(options.Count())), ":arrow_right:")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -76,19 +81,22 @@ namespace TheGodfather.Modules.Misc
         #region COMMAND_RAFFLE
         [Command("raffle")]
         [Description("Choose a user from the online members list belonging to a given role.")]
+        [Aliases("chooseuser")]
+        [UsageExample("!random raffle")]
+        [UsageExample("!random raffle Admins")]
         public async Task RaffleAsync(CommandContext ctx,
                                      [Description("Role.")] DiscordRole role = null)
         {
-            if (role == null)
-                role = ctx.Guild.EveryoneRole;
+            var online = ctx.Guild.Members.Where(m => m.Presence != null && m.Presence.Status != UserStatus.Offline);
 
-            var members = await ctx.Guild.GetAllMembersAsync()
-                .ConfigureAwait(false);
-            var online = members.Where(
-                m => m.Roles.Contains(role) && m.Presence?.Status != UserStatus.Offline
-            );
+            if (role != null)
+                online = online.Where(m => m.Roles.Any(r => r.Id == role.Id));
 
-            await ctx.RespondAsync("Raffled: " + online.ElementAt(new Random().Next(online.Count())).Mention)
+            if (online.Count() == 0)
+                throw new CommandFailedException("No online members to raffle from.");
+
+            var raffled = online.ElementAt(new Random().Next(online.Count()));
+            await ReplyWithEmbedAsync(ctx, $"Raffled: {raffled.Mention}", ":game_die:")
                 .ConfigureAwait(false);
         }
         #endregion
