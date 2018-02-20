@@ -57,8 +57,6 @@ namespace TheGodfather
         ~TheGodfatherShard()
         {
             Client.DisconnectAsync().GetAwaiter().GetResult();
-            if (Directory.Exists("Temp"))
-                Directory.Delete("Temp", recursive: true);
         }
 
 
