@@ -1,17 +1,11 @@
 ﻿#region USING_DIRECTIVES
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Collections.Concurrent;
-using System.Threading;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-
-using TheGodfather.Extensions.Collections;
 
 using DSharpPlus;
 using DSharpPlus.Entities;
-using DSharpPlus.EventArgs;
 using DSharpPlus.Interactivity;
 #endregion
 
@@ -41,12 +35,12 @@ namespace TheGodfather.Modules.Polls.Common
         #endregion
 
         public string Question { get; }
-        public bool Running { get; private set; }
-        private List<PollOption> _options = new List<PollOption>();
+        public bool Running { get; protected set; }
+        protected List<PollOption> _options = new List<PollOption>();
         public int OptionCount => _options.Count;
-        private List<ulong> _voted = new List<ulong>();
-        private DiscordChannel _channel;
-        private InteractivityExtension _interactivity;
+        protected List<ulong> _voted = new List<ulong>();
+        protected DiscordChannel _channel;
+        protected InteractivityExtension _interactivity;
 
 
         public Poll(InteractivityExtension interactivity, DiscordChannel channel, string question)
@@ -57,10 +51,14 @@ namespace TheGodfather.Modules.Polls.Common
         }
 
 
-        public async Task RunAsync(TimeSpan timespan)
+        public virtual async Task RunAsync(TimeSpan timespan)
         {
             Running = true;
+            await _channel.SendMessageAsync(embed: EmbedPoll())
+                .ConfigureAwait(false);
             await Task.Delay(timespan)
+                .ConfigureAwait(false);
+            await _channel.SendMessageAsync(embed: EmbedPollResults())
                 .ConfigureAwait(false);
             Running = false;
         }
@@ -113,7 +111,7 @@ namespace TheGodfather.Modules.Polls.Common
         }
 
 
-        private sealed class PollOption
+        protected sealed class PollOption
         {
             public string Option;
             public int Votes;
