@@ -192,52 +192,6 @@ namespace TheGodfather.Modules.Games
         }
         #endregion
 
-        #region COMMAND_GAMES_TICTACTOE
-        [Command("tictactoe")]
-        [Description("Starts a game of tic-tac-toe. Play by posting a number from 1 to 9 corresponding to field you wish to place your move on.")]
-        [Aliases("ttt")]
-        [UsageExample("!game tictactoe")]
-        public async Task TicTacToeAsync(CommandContext ctx)
-        {
-            if (Game.RunningInChannel(ctx.Channel.Id))
-                throw new CommandFailedException("Another game is already running in the current channel!");
-
-            await ctx.RespondAsync($"Who wants to play tic-tac-toe with {ctx.User.Username}?")
-                .ConfigureAwait(false);
-            var opponent = await InteractivityUtil.WaitForGameOpponentAsync(ctx)
-                .ConfigureAwait(false);
-            if (opponent == null)
-                return;
-
-            var ttt = new TicTacToe(ctx.Client.GetInteractivity(), ctx.Channel, ctx.User, opponent);
-            Game.RegisterGameInChannel(ttt, ctx.Channel.Id);
-            try {
-                await ttt.RunAsync()
-                    .ConfigureAwait(false);
-
-                if (ttt.Winner != null) {
-                    await ctx.RespondAsync($"The winner is: {ttt.Winner.Mention}!")
-                        .ConfigureAwait(false);
-
-                    await DatabaseService.UpdateUserStatsAsync(ttt.Winner.Id, "ttt_won")
-                        .ConfigureAwait(false);
-                    if (ttt.Winner.Id == ctx.User.Id)
-                        await DatabaseService.UpdateUserStatsAsync(opponent.Id, "ttt_lost").ConfigureAwait(false);
-                    else
-                        await DatabaseService.UpdateUserStatsAsync(ctx.User.Id, "ttt_lost").ConfigureAwait(false);
-                } else if (ttt.NoReply == false) {
-                    await ctx.RespondAsync("A draw... Pathetic...")
-                        .ConfigureAwait(false);
-                } else {
-                    await ctx.RespondAsync("No reply, aborting TicTacToe game...")
-                        .ConfigureAwait(false);
-                }
-            } finally {
-                Game.UnregisterGameInChannel(ctx.Channel.Id);
-            }
-        }
-        #endregion
-
         #region COMMAND_GAMES_TYPING
         [Command("typingrace")]
         [Description("Typing race.")]
