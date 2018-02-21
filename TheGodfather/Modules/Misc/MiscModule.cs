@@ -247,8 +247,14 @@ namespace TheGodfather.Modules.Misc
             try {
                 using (var chart = new Bitmap("Resources/graph.png"))
                 using (var g = Graphics.FromImage(chart)) {
-                    int start_x = ((int)user.Id % (chart.Width - 133)) + 110;
-                    int start_y = ((int)user.Id % (chart.Height - 45)) + 30;
+                    int start_x, start_y;
+                    if (user.Id == ctx.Client.CurrentUser.Id) {
+                        start_x = chart.Width - 10;
+                        start_y = 0;
+                    } else {
+                        start_x = (int)(user.Id % (ulong)(chart.Width - 133)) + 110;
+                        start_y = (int)(user.Id % (ulong)(chart.Height - 45)) + 30;
+                    }
                     g.FillEllipse(Brushes.Red, start_x, start_y, 10, 10);
                     g.Flush();
 
