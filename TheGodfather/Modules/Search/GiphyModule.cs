@@ -1,45 +1,48 @@
 ﻿#region USING_DIRECTIVES
-using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 
 using TheGodfather.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Services;
 
-using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-
-using GiphyDotNet.Model.GiphyImage;
 #endregion
 
 namespace TheGodfather.Modules.Search
 {
     [Group("gif")]
-    [Description("GIPHY commands.")]
+    [Description("GIPHY commands. If invoked without a subcommand, searches GIPHY with given query.")]
     [Aliases("giphy")]
-    [Cooldown(2, 5, CooldownBucketType.User), Cooldown(4, 5, CooldownBucketType.Channel)]
-    [ListeningCheckAttribute]
-    public class GiphyModule : BaseCommandModule
+    [UsageExample("!gif wat")]
+    [Cooldown(2, 5, CooldownBucketType.User), Cooldown(2, 5, CooldownBucketType.Channel)]
+    [ListeningCheck]
+    public class GiphyModule : TheGodfatherServiceModule<GiphyService>
     {
+
+        public GiphyModule(GiphyService giphy) : base(giphy) { }
+
 
         [GroupCommand]
         public async Task ExecuteGroupAsync(CommandContext ctx,
-                                           [RemainingText, Description("Query.")] string q)
+                                           [RemainingText, Description("Query.")] string query)
         {
-            if (string.IsNullOrWhiteSpace(q))
-                throw new InvalidCommandUsageException("Query missing!");
+            if (string.IsNullOrWhiteSpace(query))
+                throw new InvalidCommandUsageException("Missing search query.");
 
-            var res = await ctx.Services.GetService<GiphyService>().SearchAsync(q)
+            var res = await Service.SearchAsync(query)
                 .ConfigureAwait(false);
 
-            if (res.Count() != 0)
-                await ctx.RespondAsync(res[0].Url).ConfigureAwait(false);
-            else
-                await ctx.RespondAsync("No results...").ConfigureAwait(false);
+            if (!res.Any()) {
+                await ReplyWithEmbedAsync(ctx, "No results...", ":negative_squared_cross_mark:")
+                    .ConfigureAwait(false);
+                return;
+            }
+
+            await ctx.RespondAsync(res.First().Url)
+                .ConfigureAwait(false);
         }
 
 
@@ -47,11 +50,12 @@ namespace TheGodfather.Modules.Search
         [Command("random")]
         [Description("Return a random GIF.")]
         [Aliases("r", "rand", "rnd")]
+        [UsageExample("!gif random")]
         public async Task RandomAsync(CommandContext ctx)
         {
-            var res = await ctx.Services.GetService<GiphyService>().GetRandomGifAsync()
+            var res = await Service.GetRandomGifAsync()
                 .ConfigureAwait(false);
-            await ctx.RespondAsync(res.ImageUrl)
+            await ctx.RespondAsync(res.Url)
                 .ConfigureAwait(false);
         }
         #endregion
@@ -60,20 +64,27 @@ namespace TheGodfather.Modules.Search
         [Command("trending")]
         [Description("Return an amount of trending GIFs.")]
         [Aliases("t", "tr", "trend")]
+        [UsageExample("!gif trending 3")]
+        [UsageExample("!gif trending")]
         public async Task TrendingAsync(CommandContext ctx,
                                        [Description("Number of results (1-10).")] int n = 5)
         {
             if (n < 1 || n > 10)
-                throw new CommandFailedException("Number of results must be 1-10.", new ArgumentOutOfRangeException());
+                throw new CommandFailedException("Number of results must be in range [1-10].");
 
-            var res = await ctx.Services.GetService<GiphyService>().GetTrendingGifsAsync(n)
+            var res = await Service.GetTrendingGifsAsync(n)
                 .ConfigureAwait(false);
 
-            await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
+            var emb = new DiscordEmbedBuilder() {
                 Title = "Trending gifs:",
-                Description = res.Aggregate("", (string s, Data r) => s += r.Url + '\n'),
                 Color = DiscordColor.Gold
-            }.Build()).ConfigureAwait(false);
+            };
+
+            foreach (var r in res)
+                emb.AddField($"{r.Username} (rating: {r.Rating})", r.EmbedUrl);
+
+            await ctx.RespondAsync(embed: emb.Build())
+                .ConfigureAwait(false);
         }
         #endregion
     }

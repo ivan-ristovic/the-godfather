@@ -18,7 +18,7 @@ using Imgur.API;
 
 namespace TheGodfather.Services
 {
-    public class ImgurService
+    public class ImgurService : IGodfatherService
     {
         private ImgurClient _imgur { get; set; }
         private GalleryEndpoint _gendpoint { get; set; }

@@ -296,6 +296,7 @@
     <Compile Include="Modules\Polls\Common\ReactionsPoll.cs" />
     <Compile Include="Modules\Polls\ReactionsPollModule.cs" />
     <Compile Include="Modules\Polls\VotingModule.cs" />
+    <Compile Include="Services\IGodfatherService.cs" />
     <Compile Include="Modules\TheGodfatherBaseModule.cs" />
     <Compile Include="Modules\Search\JokesModule.cs" />
     <Compile Include="Exceptions\DatabaseServiceException.cs" />

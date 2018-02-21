@@ -1,18 +1,13 @@
 ﻿#region USING_DIRECTIVES
-using System;
-using System.Linq;
 using System.Threading.Tasks;
 
-using TheGodfather.Entities;
-
-using GiphyDotNet;
 using GiphyDotNet.Manager;
 using GiphyDotNet.Model.Parameters;
 #endregion
 
 namespace TheGodfather.Services
 {
-    public class GiphyService
+    public class GiphyService : IGodfatherService
     {
         private Giphy _giphy { get; set; }
 

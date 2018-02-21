@@ -19,7 +19,7 @@ using Steam.Models.SteamPlayer;
 
 namespace TheGodfather.Services
 {
-    public class SteamService
+    public class SteamService : IGodfatherService
     {
         private SteamUser _steam { get; set; }
 

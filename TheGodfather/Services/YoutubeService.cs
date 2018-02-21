@@ -22,7 +22,7 @@ using Google.Apis.Util.Store;
 
 namespace TheGodfather.Services
 {
-    public class YoutubeService
+    public class YoutubeService : IGodfatherService
     {
         private YouTubeService _yt { get; set; }
         private string _key { get; set; }
