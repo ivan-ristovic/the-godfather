@@ -72,7 +72,8 @@ namespace TheGodfather.Extensions
                 pb.Append(Formatter.Bold("Bot permissions: ")).AppendLine(Formatter.InlineCode(string.Join(", ", botpermissions)));
 
             string perms = pb.ToString();
-            _emb.AddField("Required permissions", string.IsNullOrWhiteSpace(perms) ? "None" : perms);
+            if (!string.IsNullOrWhiteSpace(perms))
+                _emb.AddField("Required permissions",  perms);
 
             if (command.Overloads?.Any() == true) {
                 foreach (var overload in command.Overloads.OrderByDescending(o => o.Priority)) {
@@ -99,7 +100,7 @@ namespace TheGodfather.Extensions
                     }
 
                     string args = ab.ToString();
-                    _emb.AddField($"{(command.Overloads.Count > 1 ? $"Overload #{overload.Priority}" : "Arguments")}" , string.IsNullOrWhiteSpace(args) ? "None": args);
+                    _emb.AddField($"{(command.Overloads.Count > 1 ? $"Overload #{overload.Priority}" : "Arguments")}" , string.IsNullOrWhiteSpace(args) ? "None": args, inline: true);
                 }
             }
 
@@ -113,7 +114,8 @@ namespace TheGodfather.Extensions
                 eb.AppendLine("```");
             }
             string examplestr = eb.ToString();
-            _emb.AddField("Examples", string.IsNullOrWhiteSpace(examplestr) ? "None" : examplestr);
+            if (!string.IsNullOrWhiteSpace(examplestr))
+                _emb.AddField("Examples of use", examplestr);
 
             return this;
         }
