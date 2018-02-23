@@ -18,11 +18,12 @@ using DSharpPlus.Entities;
 namespace TheGodfather.Modules.Search
 {
     [Group("joke")]
-    [Description("Send a joke.")]
+    [Description("Group for searching jokes. If invoked without a subcommand, returns a random joke.")]
     [Aliases("jokes", "j")]
+    [UsageExample("!joke")]
     [Cooldown(2, 5, CooldownBucketType.User), Cooldown(4, 5, CooldownBucketType.Channel)]
-    [ListeningCheckAttribute]
-    public class JokesModule : BaseCommandModule
+    [ListeningCheck]
+    public class JokesModule : TheGodfatherBaseModule
     {
 
         [GroupCommand]
@@ -32,43 +33,39 @@ namespace TheGodfather.Modules.Search
             try {
                 joke = await JokesService.GetRandomJokeAsync()
                     .ConfigureAwait(false);
-            } catch (WebException e) {
-                throw new CommandFailedException("Connection to remote site failed!", e);
-            } catch (Exception e) {
-                throw new CommandFailedException("Exception occured!", e);
+            } catch {
+                throw new CommandFailedException("Failed to retrieve a joke. Please report this.");
             }
 
-            await ctx.RespondAsync(embed: new DiscordEmbedBuilder() { Description = joke }.Build())
+            await ReplyWithEmbedAsync(ctx, joke, ":joy:")
                 .ConfigureAwait(false);
         }
 
 
         #region COMMAND_JOKE_SEARCH
         [Command("search")]
-        [Description("Search for the joke containing the query.")]
+        [Description("Search for the joke containing the given query.")]
         [Aliases("s")]
+        [UsageExample("!joke search blonde")]
         public async Task SearchAsync(CommandContext ctx,
                                      [RemainingText, Description("Query.")] string query)
         {
             if (string.IsNullOrWhiteSpace(query))
                 throw new InvalidCommandUsageException("Query missing.");
-
-            string jokes = null;
+            
             try {
-                jokes = await JokesService.SearchForJokesAsync(query)
+                var jokes = await JokesService.SearchForJokesAsync(query)
                     .ConfigureAwait(false);
-            } catch (WebException e) {
-                throw new CommandFailedException("Connection to remote site failed!", e);
-            } catch (Exception e) {
-                throw new CommandFailedException("Exception occured!", e);
+                if (jokes == null) {
+                    await ReplyWithEmbedAsync(ctx, "No results...", ":frowning:")
+                        .ConfigureAwait(false);
+                    return;
+                }
+                await ReplyWithEmbedAsync(ctx, $"Results:\n\n{string.Join("\n", jokes.Take(5))}", ":joy:")
+                    .ConfigureAwait(false);
+            } catch {
+                throw new CommandFailedException("Failed to retrieve jokes. Please report this.");
             }
-
-            if (string.IsNullOrWhiteSpace(jokes))
-                jokes = "No results...";
-
-            await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
-                Description = string.Join("\n\n", jokes.Split('\n').Take(10))
-            }.Build()).ConfigureAwait(false);
         }
         #endregion
 
@@ -76,17 +73,16 @@ namespace TheGodfather.Modules.Search
         [Command("yourmom")]
         [Description("Yo mama so...")]
         [Aliases("mama", "m", "yomomma", "yomom", "yomoma", "yomamma", "yomama")]
+        [UsageExample("!joke yourmom")]
         public async Task YomamaAsync(CommandContext ctx)
         {
             try {
-                var joke = await JokesService.GetYoMommaJokeAsync();
-                await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
-                    Description = joke
-                }.Build()).ConfigureAwait(false);
-            } catch (WebException e) {
-                throw new CommandFailedException("Connection to remote site failed!", e);
-            } catch (Exception e) {
-                throw new CommandFailedException("Exception occured!", e);
+                var joke = await JokesService.GetYoMommaJokeAsync()
+                    .ConfigureAwait(false);
+                await ReplyWithEmbedAsync(ctx, joke, ":joy:")
+                    .ConfigureAwait(false);
+            } catch {
+                throw new CommandFailedException("Failed to retrieve a joke. Please report this.");
             }
         }
         #endregion

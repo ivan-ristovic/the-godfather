@@ -1,22 +1,20 @@
 ﻿#region USING_DIRECTIVES
-using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 
 using TheGodfather.Attributes;
-using TheGodfather.Services;
 using TheGodfather.Exceptions;
+using TheGodfather.Services;
 
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Entities;
 
+using Imgur.API;
 using Imgur.API.Enums;
 using Imgur.API.Models;
 using Imgur.API.Models.Impl;
-using Imgur.API;
-using DSharpPlus.Entities;
 #endregion
 
 namespace TheGodfather.Modules.Search

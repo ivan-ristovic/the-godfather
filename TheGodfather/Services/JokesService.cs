@@ -20,11 +20,13 @@ namespace TheGodfather.Services
             return res;
         }
 
-        public static async Task<string> SearchForJokesAsync(string query)
+        public static async Task<IReadOnlyList<string>> SearchForJokesAsync(string query)
         {
             var res = await GetStringResponseAsync("https://icanhazdadjoke.com/search?term=" + query.Replace(' ', '+'))
                 .ConfigureAwait(false);
-            return res;
+            if (string.IsNullOrWhiteSpace(res))
+                return null;
+            return res.Split('\n');
         }
 
         public static async Task<string> GetYoMommaJokeAsync()
