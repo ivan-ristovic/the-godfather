@@ -66,7 +66,7 @@ namespace TheGodfather.Modules.Reactions
 
                 Regex regex;
                 try {
-                    regex = new Regex($@"\b{trigger.ToLowerInvariant()}\b", RegexOptions.IgnoreCase);
+                    regex = new Regex($@"\b({trigger.ToLowerInvariant()})\b", RegexOptions.IgnoreCase);
                 } catch (ArgumentException) {
                     errors.AppendLine($"Error: Trigger {Formatter.Bold(trigger)} is not a valid regular expression.");
                     continue;

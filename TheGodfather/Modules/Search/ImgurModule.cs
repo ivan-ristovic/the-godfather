@@ -16,110 +16,142 @@ using Imgur.API.Enums;
 using Imgur.API.Models;
 using Imgur.API.Models.Impl;
 using Imgur.API;
+using DSharpPlus.Entities;
 #endregion
 
 namespace TheGodfather.Modules.Search
 {
     [Group("imgur")]
-    [Description("Search imgur. Invoking without sub command searches top.")]
+    [Description("Search imgur. Invoking without subcommand retrieves top ranked images from given subreddit.")]
     [Aliases("img", "im", "i")]
+    [UsageExample("!imgur aww")]
+    [UsageExample("!imgur 10 aww")]
+    [UsageExample("!imgur aww 10")]
     [Cooldown(2, 5, CooldownBucketType.User), Cooldown(4, 5, CooldownBucketType.Channel)]
-    [ListeningCheckAttribute]
-    public class ImgurModule : BaseCommandModule
+    [ListeningCheck]
+    public class ImgurModule : TheGodfatherServiceModule<ImgurService>
     {
 
-        [GroupCommand]
+        public ImgurModule(ImgurService imgur) : base(imgur) { }
+
+
+        [GroupCommand, Priority(1)]
         public async Task ExecuteGroupAsync(CommandContext ctx,
-                                           [Description("Number of images to print [1-10].")] int n,
-                                           [RemainingText, Description("Query.")] string sub)
+                                           [Description("Number of images to print [1-10].")] int amount,
+                                           [RemainingText, Description("Subreddit.")] string sub)
         {
             if (string.IsNullOrWhiteSpace(sub))
                 throw new InvalidCommandUsageException("Missing search query.");
-            if (n < 1 || n > 10)
-                throw new CommandFailedException("Invalid amount (must be 1-10).", new ArgumentOutOfRangeException());
+            if (amount < 1 || amount > 10)
+                throw new CommandFailedException("Number of results must be in range [1-10].");
 
-            var res = await ctx.Services.GetService<ImgurService>().GetItemsFromSubAsync(
+            var res = await Service.GetItemsFromSubAsync(
                 sub,
-                n,
+                amount,
                 SubredditGallerySortOrder.Top,
                 TimeWindow.Day
             ).ConfigureAwait(false);
 
-            await PrintImagesAsync(ctx, res, n)
+            await PrintImagesAsync(ctx.Channel, res, amount)
                 .ConfigureAwait(false);
         }
 
+        [GroupCommand, Priority(0)]
+        public async Task ExecuteGroupAsync(CommandContext ctx,
+                                           [Description("Subreddit.")] string sub,
+                                           [Description("Number of images to print [1-10].")] int n = 1)
+            => await ExecuteGroupAsync(ctx, n, sub).ConfigureAwait(false);
 
         #region COMMAND_IMGUR_LATEST
-        [Command("latest")]
-        [Description("Return latest images for query.")]
+        [Command("latest"), Priority(1)]
+        [Description("Return latest images from given subreddit.")]
         [Aliases("l", "new", "newest")]
+        [UsageExample("!imgur latest 5 aww")]
+        [UsageExample("!imgur latest aww 5")]
         public async Task LatestAsync(CommandContext ctx,
-                                     [Description("Number of images to print [1-10].")] int n,
-                                     [Description("Query.")] string sub)
+                                     [Description("Number of images to print [1-10].")] int amount,
+                                     [RemainingText, Description("Subreddit.")] string sub)
         {
             if (string.IsNullOrWhiteSpace(sub))
-                throw new InvalidCommandUsageException("Missing search query.");
-            if (n < 1 || n > 10)
-                throw new CommandFailedException("Invalid amount (must be 1-10).", new ArgumentOutOfRangeException());
+                throw new InvalidCommandUsageException("Missing subreddit.");
+            if (amount < 1 || amount > 10)
+                throw new CommandFailedException("Number of results must be in range [1-10].");
 
-
-            var res = await ctx.Services.GetService<ImgurService>().GetItemsFromSubAsync(
+            var res = await Service.GetItemsFromSubAsync(
                 sub, 
-                n, 
+                amount, 
                 SubredditGallerySortOrder.Time, 
                 TimeWindow.Day
             ).ConfigureAwait(false);
 
-            await PrintImagesAsync(ctx, res, n)
+            await PrintImagesAsync(ctx.Channel, res, amount)
                 .ConfigureAwait(false);
         }
+
+        [Command("latest"), Priority(0)]
+        public async Task LatestAsync(CommandContext ctx,
+                                     [Description("Subreddit.")] string sub,
+                                     [Description("Number of images to print [1-10].")] int n)
+            => await LatestAsync(ctx, n, sub).ConfigureAwait(false);
         #endregion
 
         #region COMMAND_IMGUR_TOP
-        [Command("top")]
-        [Description("Return most rated images for query.")]
+        [Command("top"), Priority(3)]
+        [Description("Return amount of top rated images in the given subreddit for given timespan.")]
         [Aliases("t")]
+        [UsageExample("!imgur top day 10 aww")]
+        [UsageExample("!imgur top 10 day aww")]
+        [UsageExample("!imgur top 5 aww")]
+        [UsageExample("!imgur top day aww")]
         public async Task TopAsync(CommandContext ctx,
-                                  [Description("Time window (day/month/week/year/all).")] string time = "day",
-                                  [Description("Number of images to print [1-10].")] int n = 1,
-                                  [RemainingText, Description("Query.")] string sub = null)
+                                  [Description("Timespan in which to search (day/week/month/year/all).")] TimeWindow timespan,
+                                  [Description("Number of images to print [1-10].")] int amount,
+                                  [RemainingText, Description("Subreddit.")] string sub)
         {
             if (string.IsNullOrWhiteSpace(sub))
-                throw new InvalidCommandUsageException("Missing search query.");
-            if (n < 1 || n > 10)
-                throw new CommandFailedException("Invalid amount (must be 1-10).", new ArgumentOutOfRangeException());
+                throw new InvalidCommandUsageException("Missing subreddit.");
+            if (amount < 1 || amount > 10)
+                throw new CommandFailedException("Number of results must be in range [1-10].");
 
-            TimeWindow t = TimeWindow.Day;
-            if (time == "day" || time == "d")
-                t = TimeWindow.Day;
-            else if (time == "week" || time == "w")
-                t = TimeWindow.Week;
-            else if (time == "month" || time == "m")
-                t = TimeWindow.Month;
-            else if(time == "year" || time == "y")
-                t = TimeWindow.Year;
-            else if (time == "all" || time == "a")
-                t = TimeWindow.All;
-
-            var res = await ctx.Services.GetService<ImgurService>().GetItemsFromSubAsync(
+            var res = await Service.GetItemsFromSubAsync(
                 sub,
-                n,
+                amount,
                 SubredditGallerySortOrder.Time,
-                t
+                timespan
             ).ConfigureAwait(false);
 
-            await PrintImagesAsync(ctx, res, n)
+            await PrintImagesAsync(ctx.Channel, res, amount)
                 .ConfigureAwait(false);
         }
+
+        [Command("top"), Priority(2)]
+        public async Task TopAsync(CommandContext ctx,
+                                  [Description("Timespan in which to search (day/week/month/year/all).")] TimeWindow timespan,
+                                  [Description("Subreddit.")] string sub,
+                                  [Description("Number of images to print [1-10].")] int amount = 1)
+            => await TopAsync(ctx, timespan, amount, sub).ConfigureAwait(false);
+
+        [Command("top"), Priority(1)]
+        public async Task TopAsync(CommandContext ctx,
+                                  [Description("Number of images to print [1-10].")] int amount,
+                                  [Description("Timespan in which to search (day/week/month/year/all).")] TimeWindow timespan,
+                                  [RemainingText, Description("Subreddit.")] string sub)
+            => await TopAsync(ctx, timespan, amount, sub).ConfigureAwait(false);
+
+        [Command("top"), Priority(0)]
+        public async Task TopAsync(CommandContext ctx,
+                                  [Description("Number of images to print [1-10].")] int amount,
+                                  [RemainingText, Description("Subreddit.")] string sub)
+            => await TopAsync(ctx, TimeWindow.Day, amount, sub).ConfigureAwait(false);
+
         #endregion
 
 
         #region HELPER_FUNCTIONS
-        private async Task PrintImagesAsync(CommandContext ctx, IEnumerable<IGalleryItem> results, int num)
+        private async Task PrintImagesAsync(DiscordChannel channel, IEnumerable<IGalleryItem> results, int num)
         {
             if (!results.Any()) {
-                await ctx.RespondAsync("No results...")
+                await channel.SendMessageAsync("No results...")
                     .ConfigureAwait(false);
                 return;
             }
@@ -128,15 +160,15 @@ namespace TheGodfather.Modules.Search
                 foreach (var im in results) {
                     if (im.GetType().Name == "GalleryImage") {
                         var img = ((GalleryImage)im);
-                        if (!ctx.Channel.IsNSFW && img.Nsfw != null && img.Nsfw == true)
+                        if (!channel.IsNSFW && img.Nsfw != null && img.Nsfw == true)
                             throw new CommandFailedException("This is not a NSFW channel!");
-                        await ctx.RespondAsync(img.Link)
+                        await channel.SendMessageAsync(img.Link)
                             .ConfigureAwait(false);
                     } else if (im.GetType().Name == "GalleryAlbum") {
                         var img = ((GalleryAlbum)im);
-                        if (!ctx.Channel.IsNSFW && img.Nsfw != null && img.Nsfw == true)
+                        if (!channel.IsNSFW && img.Nsfw != null && img.Nsfw == true)
                             throw new CommandFailedException("This is not a NSFW channel!");
-                        await ctx.RespondAsync(img.Link)
+                        await channel.SendMessageAsync(img.Link)
                             .ConfigureAwait(false);
                     } else
                         throw new CommandFailedException("Imgur API error.");
@@ -144,12 +176,12 @@ namespace TheGodfather.Modules.Search
                     await Task.Delay(1000)
                         .ConfigureAwait(false);
                 }
-            } catch (ImgurException ie) {
-                throw new CommandFailedException("Imgur API error.", ie);
+            } catch (ImgurException e) {
+                throw new CommandFailedException("Imgur API error.", e);
             }
 
             if (results.Count() != num) {
-                await ctx.RespondAsync("These are all of the results returned.")
+                await channel.SendMessageAsync("These are all of the results returned.")
                     .ConfigureAwait(false);
             }
         }

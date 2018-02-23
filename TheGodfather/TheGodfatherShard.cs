@@ -1,6 +1,5 @@
 ﻿#region USING_DIRECTIVES
 using System;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -10,7 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-using TheGodfather.Entities;
+using TheGodfather.Extensions.Converters;
 using TheGodfather.Services;
 
 using DSharpPlus;
@@ -126,6 +125,7 @@ namespace TheGodfather
             Commands.SetHelpFormatter<CustomHelpFormatter>();
             Commands.RegisterCommands(Assembly.GetExecutingAssembly());
             Commands.RegisterConverter(new CustomBoolConverter());
+            Commands.RegisterConverter(new CustomTimeWindowConverter());
 
             Commands.CommandExecuted += Commands_CommandExecuted;
             Commands.CommandErrored += Commands_CommandErrored;

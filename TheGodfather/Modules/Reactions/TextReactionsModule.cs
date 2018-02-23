@@ -63,7 +63,7 @@ namespace TheGodfather.Modules.Reactions
             Regex regex;
             string errors = "";
             try {
-                regex = new Regex($@"\b{trigger.ToLowerInvariant()}\b", RegexOptions.IgnoreCase);
+                regex = new Regex($@"\b({trigger.ToLowerInvariant()})\b", RegexOptions.IgnoreCase);
             } catch (ArgumentException) {
                 throw new CommandFailedException($"Trigger {Formatter.Bold(trigger)} is not a valid regular expression.");
             }

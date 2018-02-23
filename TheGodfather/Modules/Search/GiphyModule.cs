@@ -67,12 +67,12 @@ namespace TheGodfather.Modules.Search
         [UsageExample("!gif trending 3")]
         [UsageExample("!gif trending")]
         public async Task TrendingAsync(CommandContext ctx,
-                                       [Description("Number of results (1-10).")] int n = 5)
+                                       [Description("Number of results (1-10).")] int amount = 5)
         {
-            if (n < 1 || n > 10)
+            if (amount < 1 || amount > 10)
                 throw new CommandFailedException("Number of results must be in range [1-10].");
 
-            var res = await Service.GetTrendingGifsAsync(n)
+            var res = await Service.GetTrendingGifsAsync(amount)
                 .ConfigureAwait(false);
 
             var emb = new DiscordEmbedBuilder() {

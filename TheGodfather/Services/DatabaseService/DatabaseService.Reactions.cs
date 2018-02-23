@@ -34,7 +34,7 @@ namespace TheGodfather.Services
                             } else {
                                 triggers.Add(gid, new List<(Regex, string)>());
                             }
-                            var regex = new Regex($@"\b{(string)reader["trigger"]}\b", RegexOptions.IgnoreCase);
+                            var regex = new Regex($@"\b({(string)reader["trigger"]})\b", RegexOptions.IgnoreCase);
                             triggers[gid].Add((regex, (string)reader["response"]));
                         }
                     }
@@ -136,7 +136,7 @@ namespace TheGodfather.Services
                                 triggers[gid].Add(reaction, new List<Regex>());
                             }
 
-                            var regex = new Regex($@"\b{(string)reader["trigger"]}\b", RegexOptions.IgnoreCase);
+                            var regex = new Regex($@"\b({(string)reader["trigger"]})\b", RegexOptions.IgnoreCase);
                             triggers[gid][reaction].Add(regex);
                         }
                     }
