@@ -135,7 +135,7 @@ namespace TheGodfather.Services
 
             id = url.Split('/').Last();
 
-            var results = FeedService.GetFeedResults(GetYoutubeRSSFeedLinkForChannelId(id));
+            var results = RSSService.GetFeedResults(GetYoutubeRSSFeedLinkForChannelId(id));
             if (results == null) {
                 try {
                     var wc = new WebClient();

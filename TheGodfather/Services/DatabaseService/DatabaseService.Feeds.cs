@@ -55,7 +55,7 @@ namespace TheGodfather.Services
 
         public async Task<bool> AddFeedAsync(ulong cid, string url, string qname = null)
         {
-            var newest = FeedService.GetFeedResults(url)?.First();
+            var newest = RSSService.GetFeedResults(url)?.First();
             if (newest == null)
                 return false;
 
@@ -76,7 +76,7 @@ namespace TheGodfather.Services
                     }
 
                     // If it doesnt, add it
-                    if (id == null) {
+                    if (!id.HasValue) {
                         using (var cmd = con.CreateCommand()) {
                             cmd.CommandText = "INSERT INTO gf.feeds VALUES (DEFAULT, @url, @savedurl);";
                             cmd.Parameters.AddWithValue("url", NpgsqlDbType.Text, url);

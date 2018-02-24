@@ -12,14 +12,14 @@ using DSharpPlus.Entities;
 
 namespace TheGodfather.Services
 {
-    public static class FeedService
+    public static class RSSService
     {
-        public static IEnumerable<SyndicationItem> GetFeedResults(string url)
+        public static IEnumerable<SyndicationItem> GetFeedResults(string url, int amount = 5)
         {
             try {
                 using (var reader = XmlReader.Create(url)) {
                     var feed = SyndicationFeed.Load(reader);
-                    return feed.Items.Take(5);
+                    return feed.Items.Take(amount);
                 }
             } catch {
                 return null;

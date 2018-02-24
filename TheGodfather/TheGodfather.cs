@@ -171,7 +171,7 @@ namespace TheGodfather
         {
             var client = _ as DiscordClient;
             try {
-                FeedService.CheckFeedsForChangesAsync(client, DatabaseService).ConfigureAwait(false).GetAwaiter().GetResult();
+                RSSService.CheckFeedsForChangesAsync(client, DatabaseService).ConfigureAwait(false).GetAwaiter().GetResult();
             } catch (Exception e) {
                 Logger.LogMessage(LogLevel.Error,
                     $"Exception occured while checking for feed updates: {e.GetType()}<br>" + 

@@ -68,10 +68,7 @@ namespace TheGodfather
         }
 
         public async Task StartAsync()
-        {
-            await Client.ConnectAsync()
-                .ConfigureAwait(false);
-        }
+            => await Client.ConnectAsync().ConfigureAwait(false);
 
         public void Log(LogLevel level, string message)
             => Client.DebugLogger.LogMessage(level, "TheGodfather", message, DateTime.Now);

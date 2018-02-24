@@ -13,6 +13,7 @@ using DSharpPlus.CommandsNext.Attributes;
 
 namespace TheGodfather.Modules.Search
 {
+    /*
     [Group("reddit")]
     [Description("Reddit commands.")]
     [Aliases("r")]
@@ -22,7 +23,7 @@ namespace TheGodfather.Modules.Search
     [Hidden]
     public class RedditModule : BaseCommandModule
     {
-        /*
+        
         public async Task ExecuteGroupAsync(CommandContext ctx)
         {
             var wa = new BotWebAgent();
@@ -33,6 +34,7 @@ namespace TheGodfather.Modules.Search
                 await ctx.RespondAsync(post.Title);
             }
         }
-        */
+        
     }
+    */
 }

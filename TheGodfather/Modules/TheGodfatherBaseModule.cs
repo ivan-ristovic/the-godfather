@@ -1,16 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿#region USING_DIRECTIVES
+using System;
 using System.Net;
+using System.ServiceModel.Syndication;
 using System.Threading.Tasks;
+using System.Xml;
 
-using TheGodfather.Services;
 using TheGodfather.Extensions;
+using TheGodfather.Services;
 
-using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
+#endregion
 
 namespace TheGodfather.Modules
 {
@@ -82,6 +82,16 @@ namespace TheGodfather.Modules
                 return false;
             }
 
+            return true;
+        }
+
+        protected bool IsValidRSSFeedURL(string url)
+        {
+            try {
+                var feed = SyndicationFeed.Load(XmlReader.Create(url));
+            } catch {
+                return false;
+            }
             return true;
         }
     }
