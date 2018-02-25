@@ -1,9 +1,7 @@
 ﻿#region USING_DIRECTIVES
 using System;
 using System.Net;
-using System.ServiceModel.Syndication;
 using System.Threading.Tasks;
-using System.Xml;
 
 using TheGodfather.Extensions;
 using TheGodfather.Services;
@@ -82,16 +80,6 @@ namespace TheGodfather.Modules
                 return false;
             }
 
-            return true;
-        }
-
-        protected bool IsValidRSSFeedURL(string url)
-        {
-            try {
-                var feed = SyndicationFeed.Load(XmlReader.Create(url));
-            } catch {
-                return false;
-            }
             return true;
         }
     }

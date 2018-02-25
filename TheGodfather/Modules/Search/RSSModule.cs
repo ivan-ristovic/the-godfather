@@ -37,7 +37,13 @@ namespace TheGodfather.Modules.Search
             if (string.IsNullOrWhiteSpace(url))
                 throw new InvalidCommandUsageException("URL missing.");
 
-            await SendFeedResultsAsync(ctx.Channel, RSSService.GetFeedResults(url))
+            if (!RSSService.IsValidRSSFeedURL(url))
+                throw new InvalidCommandUsageException("Given URL isn't a valid RSS feed URL.");
+
+            var res = RSSService.GetFeedResults(url);
+            if (res == null)
+                throw new CommandFailedException("Error getting feed from given URL.");
+            await RSSService.SendFeedResultsAsync(ctx.Channel, res)
                 .ConfigureAwait(false);
         }
 
@@ -72,7 +78,10 @@ namespace TheGodfather.Modules.Search
         [UsageExample("!rss news")]
         public async Task NewsRssAsync(CommandContext ctx)
         {
-            await SendFeedResultsAsync(ctx.Channel, RSSService.GetFeedResults("https://news.google.com/news/rss/headlines/section/topic/WORLD?ned=us&hl=en"))
+            var res = RSSService.GetFeedResults("https://news.google.com/news/rss/headlines/section/topic/WORLD?ned=us&hl=en");
+            if (res == null)
+                throw new CommandFailedException("Error getting world news.");
+            await RSSService.SendFeedResultsAsync(ctx.Channel, res)
                 .ConfigureAwait(false);
         }
         #endregion
@@ -90,6 +99,9 @@ namespace TheGodfather.Modules.Search
         {
             if (string.IsNullOrWhiteSpace(url))
                 throw new InvalidCommandUsageException("URL missing.");
+
+            if (!RSSService.IsValidRSSFeedURL(url))
+                throw new InvalidCommandUsageException("Given URL isn't a valid RSS feed URL.");
 
             if (!await DatabaseService.AddFeedAsync(ctx.Channel.Id, url, name ?? url).ConfigureAwait(false))
                 throw new CommandFailedException("You are already subscribed to this RSS feed URL!");
@@ -121,73 +133,14 @@ namespace TheGodfather.Modules.Search
         [UsageExample("!rss wm")]
         public async Task WmRssAsync(CommandContext ctx)
         {
-            await SendFeedResultsAsync(ctx.Channel, RSSService.GetFeedResults("http://worldmafia.net/forum/forums/-/index.rss"))
+            var res = RSSService.GetFeedResults("http://worldmafia.net/forum/forums/-/index.rss");
+            if (res == null)
+                throw new CommandFailedException("An error occured while reaching WM forum. Possibly Pakistani didn't pay this month?");
+            await RSSService.SendFeedResultsAsync(ctx.Channel, res)
                 .ConfigureAwait(false);
         }
         #endregion
 
-
-        #region GROUP_RSS_REDDIT
-        [Group("reddit")]
-        [Description("Reddit feed manipulation.")]
-        [Aliases("r")]
-        public class CommandsRSSReddit : RSSModule
-        {
-
-            public CommandsRSSReddit(DatabaseService db) : base(db: db) { }
-
-
-            [GroupCommand]
-            public new async Task ExecuteGroupAsync(CommandContext ctx,
-                                                   [Description("Subreddit.")] string sub = "all")
-            {
-                if (string.IsNullOrWhiteSpace(sub))
-                    throw new InvalidCommandUsageException("Subreddit missing.");
-
-                string url = $"https://www.reddit.com/r/{ sub.ToLower() }/new/.rss";
-                await SendFeedResultsAsync(ctx.Channel, RSSService.GetFeedResults(url))
-                    .ConfigureAwait(false);
-            }
-
-
-            #region COMMAND_RSS_REDDIT_SUBSCRIBE
-            [Command("subscribe")]
-            [Description("Add new feed for a subreddit.")]
-            [Aliases("add", "a", "+", "sub")]
-            [RequirePermissions(Permissions.ManageGuild)]
-            public async Task SubscribeAsync(CommandContext ctx,
-                                            [Description("Subreddit.")] string sub)
-            {
-                if (string.IsNullOrWhiteSpace(sub))
-                    throw new InvalidCommandUsageException("Subreddit missing.");
-
-                string url = $"https://www.reddit.com/r/{ sub.ToLower() }/new/.rss";
-                if (await ctx.Services.GetService<DatabaseService>().AddFeedAsync(ctx.Channel.Id, url, "/r/" + sub).ConfigureAwait(false))
-                    await ctx.RespondAsync($"Subscribed to {Formatter.Bold("/r/" + sub)} !").ConfigureAwait(false);
-                else
-                    await ctx.RespondAsync("Either the subreddit you gave doesn't exist or you are already subscribed to it!").ConfigureAwait(false);
-            }
-            #endregion
-
-            #region COMMAND_RSS_REDDIT_UNSUBSCRIBE
-            [Command("unsubscribe")]
-            [Description("Remove a subreddit feed.")]
-            [Aliases("del", "d", "rm", "-", "unsub")]
-            [RequirePermissions(Permissions.ManageGuild)]
-            public async Task UnsubscribeAsync(CommandContext ctx,
-                                              [Description("Subreddit.")] string sub)
-            {
-                if (string.IsNullOrWhiteSpace(sub))
-                    throw new InvalidCommandUsageException("Subreddit missing.");
-
-                await ctx.Services.GetService<DatabaseService>().RemoveSubscriptionUsingNameAsync(ctx.Channel.Id, "/r/" + sub)
-                    .ConfigureAwait(false);
-                await ctx.RespondAsync($"Unsubscribed from {Formatter.Bold("/r/" + sub)} !")
-                    .ConfigureAwait(false);
-            }
-            #endregion
-        }
-        #endregion
 
         #region GROUP_RSS_YOUTUBE
         [Group("youtube")]
@@ -209,7 +162,9 @@ namespace TheGodfather.Modules.Search
                 var ytid = await ctx.Services.GetService<YoutubeService>().GetYoutubeIdAsync(url)
                     .ConfigureAwait(false);
                 var res = RSSService.GetFeedResults(YoutubeService.GetYoutubeRSSFeedLinkForChannelId(ytid));
-                await SendFeedResultsAsync(ctx.Channel, res)
+                if (res == null)
+                    throw new CommandFailedException("An error occured while reading the YouTube data.");
+                await RSSService.SendFeedResultsAsync(ctx.Channel, res)
                     .ConfigureAwait(false);
             }
 
@@ -264,26 +219,6 @@ namespace TheGodfather.Modules.Search
                     .ConfigureAwait(false);
             }
             #endregion
-        }
-        #endregion
-
-
-        #region HELPER_FUNCTIONS
-        protected async Task SendFeedResultsAsync(DiscordChannel channel, IEnumerable<SyndicationItem> results)
-        {
-            if (results == null)
-                throw new CommandFailedException("Error getting RSS feed.");
-
-            var emb = new DiscordEmbedBuilder() {
-                Title = "Topics active recently",
-                Color = DiscordColor.Green
-            };
-
-            foreach (var res in results)
-                emb.AddField(res.Title.Text, res.Links[0].Uri.ToString());
-
-            await channel.SendMessageAsync(embed: emb.Build())
-                .ConfigureAwait(false);
         }
         #endregion
     }
