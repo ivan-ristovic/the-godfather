@@ -1,15 +1,10 @@
 ﻿#region USING_DIRECTIVES
-using System;
-using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 
 using TheGodfather.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Services;
 
-using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Interactivity;
@@ -32,9 +27,9 @@ namespace TheGodfather.Modules.Search
         [GroupCommand]
         public async Task ExecuteGroupAsync(CommandContext ctx,
                                            [RemainingText, Description("Search query.")] string query)
-            => await AdvancedSearchAsync(ctx, 5, query).ConfigureAwait(false);
+            => await SearchAndSendResultsAsync(ctx, 5, query).ConfigureAwait(false);
 
-        
+
         #region COMMAND_YOUTUBE_SEARCH
         [Command("search")]
         [Description("Advanced youtube search.")]
@@ -43,6 +38,39 @@ namespace TheGodfather.Modules.Search
         public async Task AdvancedSearchAsync(CommandContext ctx,
                                              [Description("Amount of results. [1-10]")] int amount,
                                              [RemainingText, Description("Search query.")] string query)
+            => await SearchAndSendResultsAsync(ctx, amount, query).ConfigureAwait(false);
+        #endregion
+        
+        #region COMMAND_YOUTUBE_SEARCHVIDEO
+        [Command("searchv")]
+        [Description("Advanced youtube search for videos only.")]
+        [Aliases("sv", "searchvideo")]
+        public async Task SearchVideoAsync(CommandContext ctx,
+                                          [RemainingText, Description("Search query.")] string query)
+            => await SearchAndSendResultsAsync(ctx, 5, query, "video").ConfigureAwait(false);
+        #endregion
+
+        #region COMMAND_YOUTUBE_SEARCHCHANNEL
+        [Command("searchc")]
+        [Description("Advanced youtube search for channels only.")]
+        [Aliases("sc", "searchchannel")]
+        public async Task SearchChannelAsync(CommandContext ctx,
+                                            [RemainingText, Description("Search query.")] string query)
+            => await SearchAndSendResultsAsync(ctx, 5, query, "channel").ConfigureAwait(false);
+        #endregion
+
+        #region COMMAND_YOUTUBE_SEARCHPLAYLIST
+        [Command("searchp")]
+        [Description("Advanced youtube search for playlists only.")]
+        [Aliases("sp", "searchplaylist")]
+        public async Task SearchPlaylistAsync(CommandContext ctx,
+                                             [RemainingText, Description("Search query.")] string query)
+            => await SearchAndSendResultsAsync(ctx, 5, query, "playlist").ConfigureAwait(false);
+        #endregion
+
+
+        #region HELPER_FUNCTIONS
+        private async Task SearchAndSendResultsAsync(CommandContext ctx, int amount, string query, string type = null)
         {
             if (string.IsNullOrWhiteSpace(query))
                 throw new InvalidCommandUsageException("Search query missing.");
@@ -50,7 +78,7 @@ namespace TheGodfather.Modules.Search
             if (amount < 1 || amount > 10)
                 throw new CommandFailedException("Invalid amount (must be 1-10).");
 
-            var pages = await Service.GetPaginatedResults(query, amount)
+            var pages = await Service.GetPaginatedResults(query, amount, type)
                 .ConfigureAwait(false);
             if (pages == null) {
                 await ReplyWithFailedEmbedAsync(ctx, "No results found!")
@@ -62,52 +90,5 @@ namespace TheGodfather.Modules.Search
                 .ConfigureAwait(false);
         }
         #endregion
-        /*
-        #region COMMAND_YOUTUBE_SEARCHVIDEO
-        [Command("searchv")]
-        [Description("Advanced youtube search for videos only.")]
-        [Aliases("sv", "searchvideo")]
-        public async Task SearchVideoAsync(CommandContext ctx,
-                                          [RemainingText, Description("Search query.")] string query)
-        {
-            if (string.IsNullOrWhiteSpace(query))
-                throw new InvalidCommandUsageException("Search query missing.");
-
-            await SendYouTubeResults(ctx, query, 5, "video")
-                .ConfigureAwait(false);
-        }
-        #endregion
-
-        /*
-        #region COMMAND_YOUTUBE_SEARCHCHANNEL
-        [Command("searchc")]
-        [Description("Advanced youtube search for channels only.")]
-        [Aliases("sc", "searchchannel")]
-        public async Task SearchChannelAsync(CommandContext ctx,
-                                            [RemainingText, Description("Search query.")] string query)
-        {
-            if (string.IsNullOrWhiteSpace(query))
-                throw new InvalidCommandUsageException("Search query missing.");
-
-            await SendYouTubeResults(ctx, query, 5, "channel")
-                .ConfigureAwait(false);
-        }
-        #endregion
-
-        #region COMMAND_YOUTUBE_SEARCHPLAYLIST
-        [Command("searchp")]
-        [Description("Advanced youtube search for playlists only.")]
-        [Aliases("sp", "searchplaylist")]
-        public async Task SearchPlaylistAsync(CommandContext ctx,
-                                             [RemainingText, Description("Search query.")] string query)
-        {
-            if (string.IsNullOrWhiteSpace(query))
-                throw new InvalidCommandUsageException("Search query missing.");
-
-            await SendYouTubeResults(ctx, query, 5, "playlist")
-                .ConfigureAwait(false);
-        }
-        #endregion
-        */
     }
 }
