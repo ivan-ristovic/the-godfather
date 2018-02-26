@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 
 using DSharpPlus.Entities;
+using DSharpPlus.Interactivity;
 
 using Google.Apis.Services;
 using Google.Apis.YouTube.v3;
@@ -60,11 +61,11 @@ namespace TheGodfather.Services
             return "https://www.youtube.com/watch?v=" + res.First().Id.VideoId;
         }
 
-        public async Task<DiscordEmbed> GetEmbeddedResults(string query, int amount, string type = null)
+        public async Task<IReadOnlyList<Page>> GetPaginatedResults(string query, int amount = 1, string type = null)
         {
             var res = await GetResultsAsync(query, amount, type)
                 .ConfigureAwait(false);
-            return EmbedYouTubeResults(res);
+            return PaginateSearchResult(res);
         }
 
         public async Task<string> TryDownloadYoutubeAudioAsync(string url)
@@ -97,33 +98,34 @@ namespace TheGodfather.Services
             return videos;
         }
 
-        private DiscordEmbed EmbedYouTubeResults(List<SearchResult> results)
+        private IReadOnlyList<Page> PaginateSearchResult(IEnumerable<SearchResult> results)
         {
-            if (results == null || results.Count == 0)
-                return new DiscordEmbedBuilder() { Description = "No results...", Color = DiscordColor.Red };
+            if (results == null || !results.Any())
+                return null;
 
-            if (results.Count > 25)
-                results = results.Take(25).ToList();
-
-            var em = new DiscordEmbedBuilder() {
-                Color = DiscordColor.Red
-            };
-            foreach (var r in results) {
-                switch (r.Id.Kind) {
+            List<Page> pages = new List<Page>();
+            foreach (var res in results.Take(10)) {
+                var emb = new DiscordEmbedBuilder() {
+                    Title = res.Snippet.Title,
+                    Color = DiscordColor.Red
+                };
+                switch (res.Id.Kind) {
                     case "youtube#video":
-                        em.AddField(r.Snippet.Title, "https://www.youtube.com/watch?v=" + r.Id.VideoId);
+                        emb.WithDescription("https://www.youtube.com/watch?v=" + res.Id.VideoId);
                         break;
 
                     case "youtube#channel":
-                        em.AddField(r.Snippet.Title, "https://www.youtube.com/channel/" + r.Id.ChannelId);
+                        emb.WithDescription("https://www.youtube.com/channel/" + res.Id.ChannelId);
                         break;
 
                     case "youtube#playlist":
-                        em.AddField(r.Snippet.Title, "https://www.youtube.com/playlist?list=" + r.Id.PlaylistId);
+                        emb.WithDescription("https://www.youtube.com/playlist?list=" + res.Id.PlaylistId);
                         break;
                 }
+                pages.Add(new Page() { Embed = emb.Build() });
             }
-            return em.Build();
+
+            return pages.AsReadOnly();
         }
         
         public async Task<string> GetYoutubeIdAsync(string url)

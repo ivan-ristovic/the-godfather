@@ -33,6 +33,9 @@ namespace TheGodfather.Modules
             }).ConfigureAwait(false);
         }
 
+        protected async Task ReplyWithFailedEmbedAsync(CommandContext ctx, string msg)
+            => await ReplyWithEmbedAsync(ctx, msg, ":negative_squared_cross_mark:").ConfigureAwait(false);
+
         protected async Task<bool> AskYesNoQuestionAsync(CommandContext ctx, string question)
         {
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder {

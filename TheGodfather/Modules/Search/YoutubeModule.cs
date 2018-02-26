@@ -12,17 +12,22 @@ using TheGodfather.Services;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Interactivity;
 #endregion
 
 namespace TheGodfather.Modules.Search
 {
     [Group("youtube")]
-    [Description("Youtube search commands.")]
-    [Aliases("y", "yt")]
+    [Description("Youtube search commands. If invoked without subcommands, searches YouTube for given query.")]
+    [Aliases("y", "yt", "ytube")]
+    [UsageExample("!youtube never gonna give you up")]
     [Cooldown(2, 5, CooldownBucketType.User), Cooldown(4, 5, CooldownBucketType.Channel)]
-    [ListeningCheckAttribute]
-    public class YoutubeModule : BaseCommandModule
+    [ListeningCheck]
+    public class YoutubeModule : TheGodfatherServiceModule<YoutubeService>
     {
+
+        public YoutubeModule(YoutubeService yt) : base(yt) { }
+
 
         [GroupCommand]
         public async Task ExecuteGroupAsync(CommandContext ctx,
@@ -31,11 +36,19 @@ namespace TheGodfather.Modules.Search
             if (string.IsNullOrWhiteSpace(query))
                 throw new InvalidCommandUsageException("Search query missing.");
 
-            await SendYouTubeResults(ctx, query, 1)
+            var pages = await Service.GetPaginatedResults(query, 5)
+                .ConfigureAwait(false);
+            if (pages == null) {
+                await ReplyWithFailedEmbedAsync(ctx, "No results found!")
+                    .ConfigureAwait(false);
+                return;
+            }
+
+            await ctx.Client.GetInteractivity().SendPaginatedMessage(ctx.Channel, ctx.User, pages)
                 .ConfigureAwait(false);
         }
 
-
+        /*
         #region COMMAND_YOUTUBE_SEARCH
         [Command("search")]
         [Description("Advanced youtube search.")]
@@ -98,16 +111,6 @@ namespace TheGodfather.Modules.Search
                 .ConfigureAwait(false);
         }
         #endregion
-
-
-        #region HELPER_FUNCTIONS
-        private async Task SendYouTubeResults(CommandContext ctx, string query, int amount, string type = null)
-        {
-            var em = await ctx.Services.GetService<YoutubeService>().GetEmbeddedResults(query, amount, type)
-                .ConfigureAwait(false);
-            await ctx.RespondAsync($"Search result for {Formatter.Bold(query)}", embed: em)
-                .ConfigureAwait(false);
-        }
-        #endregion
+        */
     }
 }
