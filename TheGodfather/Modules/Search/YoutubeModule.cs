@@ -32,11 +32,25 @@ namespace TheGodfather.Modules.Search
         [GroupCommand]
         public async Task ExecuteGroupAsync(CommandContext ctx,
                                            [RemainingText, Description("Search query.")] string query)
+            => await AdvancedSearchAsync(ctx, 5, query).ConfigureAwait(false);
+
+        
+        #region COMMAND_YOUTUBE_SEARCH
+        [Command("search")]
+        [Description("Advanced youtube search.")]
+        [Aliases("s")]
+        [UsageExample("!youtube search 5 rick astley")]
+        public async Task AdvancedSearchAsync(CommandContext ctx,
+                                             [Description("Amount of results. [1-10]")] int amount,
+                                             [RemainingText, Description("Search query.")] string query)
         {
             if (string.IsNullOrWhiteSpace(query))
                 throw new InvalidCommandUsageException("Search query missing.");
 
-            var pages = await Service.GetPaginatedResults(query, 5)
+            if (amount < 1 || amount > 10)
+                throw new CommandFailedException("Invalid amount (must be 1-10).");
+
+            var pages = await Service.GetPaginatedResults(query, amount)
                 .ConfigureAwait(false);
             if (pages == null) {
                 await ReplyWithFailedEmbedAsync(ctx, "No results found!")
@@ -47,26 +61,8 @@ namespace TheGodfather.Modules.Search
             await ctx.Client.GetInteractivity().SendPaginatedMessage(ctx.Channel, ctx.User, pages)
                 .ConfigureAwait(false);
         }
-
-        /*
-        #region COMMAND_YOUTUBE_SEARCH
-        [Command("search")]
-        [Description("Advanced youtube search.")]
-        [Aliases("s")]
-        public async Task AdvancedSearchAsync(CommandContext ctx,
-                                             [Description("Amount of results. [1-10]")] int amount,
-                                             [RemainingText, Description("Search query.")] string query)
-        {
-            if (string.IsNullOrWhiteSpace(query))
-                throw new InvalidCommandUsageException("Search query missing.");
-            if (amount < 1 || amount > 10)
-                throw new CommandFailedException("Invalid amount (must be 1-10).");
-
-            await SendYouTubeResults(ctx, query, amount)
-                .ConfigureAwait(false);
-        }
         #endregion
-
+        /*
         #region COMMAND_YOUTUBE_SEARCHVIDEO
         [Command("searchv")]
         [Description("Advanced youtube search for videos only.")]
@@ -82,6 +78,7 @@ namespace TheGodfather.Modules.Search
         }
         #endregion
 
+        /*
         #region COMMAND_YOUTUBE_SEARCHCHANNEL
         [Command("searchc")]
         [Description("Advanced youtube search for channels only.")]

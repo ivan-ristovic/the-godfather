@@ -57,7 +57,8 @@ namespace TheGodfather.Services
 
         public async Task<string> GetFirstVideoResultAsync(string query)
         {
-            var res = await GetResultsAsync(query, 1, "video").ConfigureAwait(false);
+            var res = await GetResultsAsync(query, 1, "video")
+                .ConfigureAwait(false);
             return "https://www.youtube.com/watch?v=" + res.First().Id.VideoId;
         }
 
@@ -80,6 +81,33 @@ namespace TheGodfather.Services
             await yt.DownloadMediaStreamAsync(info, filename);
             return filename;
         }
+
+        public async Task<string> GetYoutubeIdAsync(string url)
+        {
+            if (YoutubeClient.TryParseChannelId(url, out string id))
+                return id;
+
+            id = url.Split('/').Last();
+
+            var results = RSSService.GetFeedResults(GetYoutubeRSSFeedLinkForChannelId(id));
+            if (results == null) {
+                try {
+                    var wc = new WebClient();
+                    var jsondata = await wc.DownloadStringTaskAsync("https://www.googleapis.com/youtube/v3/channels?key=" + _key + "&forUsername=" + id + "&part=id")
+                        .ConfigureAwait(false);
+                    var data = JsonConvert.DeserializeObject<DeserializedData>(jsondata);
+                    if (data.Items != null)
+                        return data.Items[0]["id"];
+                } catch {
+
+                }
+            } else {
+                return id;
+            }
+
+            return null;
+        }
+
 
         private async Task<List<SearchResult>> GetResultsAsync(string query, int amount, string type = null)
         {
@@ -107,11 +135,16 @@ namespace TheGodfather.Services
             foreach (var res in results.Take(10)) {
                 var emb = new DiscordEmbedBuilder() {
                     Title = res.Snippet.Title,
-                    Color = DiscordColor.Red
+                    Description = res.Snippet.Description,
+                    Color = DiscordColor.Red,
+                    ThumbnailUrl = res.Snippet.Thumbnails.Default__.Url,
+                    Timestamp = res.Snippet.PublishedAt ?? DateTime.Now
                 };
                 switch (res.Id.Kind) {
                     case "youtube#video":
-                        emb.WithDescription("https://www.youtube.com/watch?v=" + res.Id.VideoId);
+                        
+                        emb.WithUrl("https://www.youtube.com/watch?v=" + res.Id.VideoId);
+                        //emb.AddField("Duration", res.Snippet.)
                         break;
 
                     case "youtube#channel":
@@ -127,39 +160,11 @@ namespace TheGodfather.Services
 
             return pages.AsReadOnly();
         }
-        
-        public async Task<string> GetYoutubeIdAsync(string url)
-        {
-            string id;
 
-            if (!YoutubeClient.TryParseChannelId(url, out id))
-                return id;
-
-            id = url.Split('/').Last();
-
-            var results = RSSService.GetFeedResults(GetYoutubeRSSFeedLinkForChannelId(id));
-            if (results == null) {
-                try {
-                    var wc = new WebClient();
-                    var jsondata = await wc.DownloadStringTaskAsync("https://www.googleapis.com/youtube/v3/channels?key=" + _key + "&forUsername=" + id + "&part=id")
-                        .ConfigureAwait(false);
-                    var data = JsonConvert.DeserializeObject<DeserializedData>(jsondata);
-                    if (data.Items != null)
-                        return data.Items[0]["id"];
-                } catch {
-
-                }
-            } else {
-                return id;
-            }
-
-            return null;
-        }
-        
         private sealed class DeserializedData
         {
             [JsonProperty("items")]
-            public List<Dictionary<string, string>> Items { get; set; }
+            public List<Dictionary<string, string>> Items { get; }
         }
     }
 }
