@@ -80,7 +80,6 @@ namespace TheGodfather.Services
                         using (var cmd = con.CreateCommand()) {
                             cmd.CommandText = "INSERT INTO gf.feeds VALUES (DEFAULT, @url, @savedurl);";
                             cmd.Parameters.AddWithValue("url", NpgsqlDbType.Text, url);
-                            cmd.Parameters.AddWithValue("name", NpgsqlDbType.Varchar, qname);
                             cmd.Parameters.AddWithValue("savedurl", NpgsqlDbType.Text, newest.Links[0].Uri.ToString());
                             await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                         }

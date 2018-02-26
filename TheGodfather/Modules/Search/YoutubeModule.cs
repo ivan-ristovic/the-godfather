@@ -5,6 +5,7 @@ using TheGodfather.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Services;
 
+using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Interactivity;
@@ -21,7 +22,7 @@ namespace TheGodfather.Modules.Search
     public class YoutubeModule : TheGodfatherServiceModule<YoutubeService>
     {
 
-        public YoutubeModule(YoutubeService yt) : base(yt) { }
+        public YoutubeModule(YoutubeService yt, DatabaseService db) : base(yt, db: db) { }
 
 
         [GroupCommand]
@@ -40,20 +41,22 @@ namespace TheGodfather.Modules.Search
                                              [RemainingText, Description("Search query.")] string query)
             => await SearchAndSendResultsAsync(ctx, amount, query).ConfigureAwait(false);
         #endregion
-        
+
         #region COMMAND_YOUTUBE_SEARCHVIDEO
-        [Command("searchv")]
+        [Command("searchvideo")]
         [Description("Advanced youtube search for videos only.")]
-        [Aliases("sv", "searchvideo")]
+        [Aliases("sv", "searchv")]
+        [UsageExample("!youtube searchvideo 5 rick astley")]
         public async Task SearchVideoAsync(CommandContext ctx,
                                           [RemainingText, Description("Search query.")] string query)
             => await SearchAndSendResultsAsync(ctx, 5, query, "video").ConfigureAwait(false);
         #endregion
 
         #region COMMAND_YOUTUBE_SEARCHCHANNEL
-        [Command("searchc")]
+        [Command("searchchannel")]
         [Description("Advanced youtube search for channels only.")]
-        [Aliases("sc", "searchchannel")]
+        [Aliases("sc", "searchc")]
+        [UsageExample("!youtube searchchannel 5 rick astley")]
         public async Task SearchChannelAsync(CommandContext ctx,
                                             [RemainingText, Description("Search query.")] string query)
             => await SearchAndSendResultsAsync(ctx, 5, query, "channel").ConfigureAwait(false);
@@ -63,9 +66,67 @@ namespace TheGodfather.Modules.Search
         [Command("searchp")]
         [Description("Advanced youtube search for playlists only.")]
         [Aliases("sp", "searchplaylist")]
+        [UsageExample("!youtube searchplaylist 5 rick astley")]
         public async Task SearchPlaylistAsync(CommandContext ctx,
                                              [RemainingText, Description("Search query.")] string query)
             => await SearchAndSendResultsAsync(ctx, 5, query, "playlist").ConfigureAwait(false);
+        #endregion
+
+        #region COMMAND_YOUTUBE_SUBSCRIBE
+        [Command("subscribe")]
+        [Description("Add a new subscription for a YouTube channel.")]
+        [Aliases("add", "a", "+", "sub")]
+        [UsageExample("!youtube subscribe https://www.youtube.com/user/RickAstleyVEVO")]
+        [UsageExample("!youtube subscribe https://www.youtube.com/user/RickAstleyVEVO rick")]
+        [RequirePermissions(Permissions.ManageGuild)]
+        public async Task SubscribeAsync(CommandContext ctx,
+                                        [Description("Channel URL.")] string url,
+                                        [Description("Friendly name.")] string name = null)
+        {
+            if (string.IsNullOrWhiteSpace(url))
+                throw new InvalidCommandUsageException("Channel URL missing.");
+
+            var chid = await Service.GetYoutubeIdAsync(url)
+                .ConfigureAwait(false);
+
+            if (chid == null)
+                throw new CommandFailedException("Failed retrieving channel ID for that URL.");
+
+            var feedurl = YoutubeService.GetYoutubeRSSFeedLinkForChannelId(chid);
+            if (await DatabaseService.AddFeedAsync(ctx.Channel.Id, feedurl, string.IsNullOrWhiteSpace(name) ? url : name).ConfigureAwait(false))
+                await ReplyWithEmbedAsync(ctx, "Subscribed!").ConfigureAwait(false);
+            else
+                await ReplyWithFailedEmbedAsync(ctx, "Either the channel URL you is invalid or you are already subscribed to it!").ConfigureAwait(false);
+        }
+        #endregion
+
+        #region COMMAND_YOUTUBE_UNSUBSCRIBE
+        [Command("unsubscribe")]
+        [Description("Remove a YouTube channel subscription.")]
+        [Aliases("del", "d", "rm", "-", "unsub")]
+        [UsageExample("!youtube unsubscribe https://www.youtube.com/user/RickAstleyVEVO")]
+        [UsageExample("!youtube unsubscribe rick")]
+        [RequirePermissions(Permissions.ManageGuild)]
+        public async Task UnsubscribeAsync(CommandContext ctx,
+                                          [Description("Channel URL or subscription name.")] string name_url)
+        {
+            if (string.IsNullOrWhiteSpace(name_url))
+                throw new InvalidCommandUsageException("Channel URL missing.");
+
+            var chid = await Service.GetYoutubeIdAsync(name_url)
+                .ConfigureAwait(false);
+            if (chid == null) {
+                await DatabaseService.RemoveSubscriptionUsingNameAsync(ctx.Channel.Id, name_url)
+                    .ConfigureAwait(false);
+            } else {
+                var feedurl = YoutubeService.GetYoutubeRSSFeedLinkForChannelId(chid);
+                await DatabaseService.RemoveSubscriptionUsingUrlAsync(ctx.Channel.Id, feedurl)
+                    .ConfigureAwait(false);
+            }
+
+            await ReplyWithEmbedAsync(ctx, "Unsubscribed!")
+                .ConfigureAwait(false);
+        }
         #endregion
 
 

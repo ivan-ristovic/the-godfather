@@ -87,22 +87,17 @@ namespace TheGodfather.Services
             if (YoutubeClient.TryParseChannelId(url, out string id))
                 return id;
 
-            id = url.Split('/').Last();
-
-            var results = RSSService.GetFeedResults(GetYoutubeRSSFeedLinkForChannelId(id));
-            if (results == null) {
-                try {
-                    var wc = new WebClient();
-                    var jsondata = await wc.DownloadStringTaskAsync("https://www.googleapis.com/youtube/v3/channels?key=" + _key + "&forUsername=" + id + "&part=id")
+            try {
+                using (var wc = new WebClient()) {
+                    var u = "https://www.googleapis.com/youtube/v3/channels?key=" + _key + "&forUsername=" + id + "&part=id";
+                    var jsondata = await wc.DownloadStringTaskAsync(u)
                         .ConfigureAwait(false);
                     var data = JsonConvert.DeserializeObject<DeserializedData>(jsondata);
                     if (data.Items != null)
-                        return data.Items[0]["id"];
-                } catch {
-
+                        return data.Items.First()["id"];
                 }
-            } else {
-                return id;
+            } catch {
+
             }
 
             return null;
@@ -142,9 +137,7 @@ namespace TheGodfather.Services
                 };
                 switch (res.Id.Kind) {
                     case "youtube#video":
-                        
                         emb.WithUrl("https://www.youtube.com/watch?v=" + res.Id.VideoId);
-                        //emb.AddField("Duration", res.Snippet.)
                         break;
 
                     case "youtube#channel":
@@ -161,7 +154,8 @@ namespace TheGodfather.Services
             return pages.AsReadOnly();
         }
 
-        private sealed class DeserializedData
+
+        public sealed class DeserializedData
         {
             [JsonProperty("items")]
             public List<Dictionary<string, string>> Items { get; }
