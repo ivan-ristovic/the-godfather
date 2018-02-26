@@ -16,11 +16,19 @@ namespace TheGodfather.Services
     {
         public static async Task<UrbanDictData> GetDefinitionForTermAsync(string query)
         {
-            using (var http = new HttpClient()) {
-                var result = await http.GetStringAsync($"http://api.urbandictionary.com/v0/define?term={ WebUtility.UrlEncode(query) }")
-                    .ConfigureAwait(false);
-                return JsonConvert.DeserializeObject<UrbanDictData>(result);
+            try {
+                using (var http = new HttpClient()) {
+                    var result = await http.GetStringAsync($"http://api.urbandictionary.com/v0/define?term={ WebUtility.UrlEncode(query) }")
+                        .ConfigureAwait(false);
+                    var data = JsonConvert.DeserializeObject<UrbanDictData>(result);
+                    if (data.ResultType != "no_results")
+                        return data;
+                }
+            } catch {
+
             }
+
+            return null;
         }
 
         

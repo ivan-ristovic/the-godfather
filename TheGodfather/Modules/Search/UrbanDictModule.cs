@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 using TheGodfather.Attributes;
 using TheGodfather.Exceptions;
+using TheGodfather.Extensions;
 using TheGodfather.Services;
 
 using DSharpPlus;
@@ -16,53 +17,41 @@ using DSharpPlus.Interactivity;
 
 namespace TheGodfather.Modules.Search
 {
-    public class UrbanDictModule : BaseCommandModule
+    [Group("urbandict")]
+    [Description("Urban Dictionary commands. If invoked without subcommand, searches Urban Dictionary for a given query.")]
+    [Aliases("ud", "urban")]
+    [UsageExample("!urbandict blonde")]
+    [Cooldown(2, 5, CooldownBucketType.User), Cooldown(4, 5, CooldownBucketType.Channel)]
+    [ListeningCheck]
+    public class UrbanDictModule : TheGodfatherBaseModule
     {
-        [Command("urbandict")]
-        [Description("Search Urban Dictionary for a query.")]
-        [Aliases("ud", "urban")]
-        [Cooldown(2, 5, CooldownBucketType.User), Cooldown(4, 5, CooldownBucketType.Channel)]
-        [ListeningCheckAttribute]
-        public async Task UrbanDictAsync(CommandContext ctx,
-                                        [RemainingText, Description("Query.")] string q)
+
+        [GroupCommand]
+        public async Task ExecuteGroupAsync(CommandContext ctx,
+                                           [RemainingText, Description("Query.")] string query)
         {
-            if (string.IsNullOrWhiteSpace(q))
+            if (string.IsNullOrWhiteSpace(query))
                 throw new InvalidCommandUsageException("Query missing.");
 
-            UrbanDictService.UrbanDictData data;
-            try {
-                data = await UrbanDictService.GetDefinitionForTermAsync(q)
+            var data = await UrbanDictService.GetDefinitionForTermAsync(query)
+                .ConfigureAwait(false);
+
+            if (data == null) {
+                await ReplyWithEmbedAsync(ctx, "No results found!", ":negative_squared_cross_mark:")
                     .ConfigureAwait(false);
-            } catch (Exception e) {
-                throw new CommandFailedException("Error occured while connecting to Urban Dictionary.", e);
+                return;
             }
 
-            if (data.ResultType != "no_results") {
-                foreach (var v in data.List) {
-                    var eb = new DiscordEmbedBuilder() {
-                        Title = $"Urban Dictionary definition for \"{q}\" by {v.Author}",
-                        Description = v.Definition.Length < 1000 ? v.Definition : v.Definition.Take(1000) + "...",
-                        Color = DiscordColor.CornflowerBlue,
-                        Url = v.Permalink
-                    };
-                    if (!string.IsNullOrWhiteSpace(v.Example))
-                        eb.AddField("Example", v.Example);
-
-                    await ctx.RespondAsync(embed: eb.Build())
-                        .ConfigureAwait(false);
-
-                    var msg = await ctx.Client.GetInteractivity().WaitForMessageAsync(
-                        m => m.Channel.Id == ctx.Channel.Id && m.Content.ToLower() == "next"
-                        , TimeSpan.FromSeconds(5)
-                    ).ConfigureAwait(false);
-                    if (msg == null)
-                        break;
-                }
-            } else {
-                await ctx.RespondAsync("No results found!")
-                    .ConfigureAwait(false);
-            }
+            await InteractivityUtil.SendPaginatedCollectionAsync(
+                ctx,
+                $"Urban Dictionary definitions for \"{query}\"",
+                data.List,
+                res => $"Definition by {Formatter.Bold(res.Author)}:\n\n" +
+                       $"{Formatter.Italic((res.Definition.Length < 1000 ? res.Definition : res.Definition.Take(1000) + "..."))}\n\n" +
+                       $"{res.Permalink}",
+                DiscordColor.CornflowerBlue,
+                1
+            ).ConfigureAwait(false);
         }
     }
-
 }
