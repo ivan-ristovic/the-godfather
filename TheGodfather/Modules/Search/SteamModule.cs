@@ -35,7 +35,7 @@ namespace TheGodfather.Modules.Search
                 .ConfigureAwait(false);
 
             if (em == null) {
-                await ReplyWithEmbedAsync(ctx, "User with such ID does not exist!", ":negative_squared_cross_mark:")
+                await ReplyWithFailedEmbedAsync(ctx, "User with such ID does not exist!")
                     .ConfigureAwait(false);
                 return;
             }

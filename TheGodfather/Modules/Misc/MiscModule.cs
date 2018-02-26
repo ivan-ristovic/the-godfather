@@ -329,7 +329,7 @@ namespace TheGodfather.Modules.Misc
                 await ReplyWithEmbedAsync(ctx, "Your issue has been reported.")
                     .ConfigureAwait(false);
             } else {
-                await ReplyWithEmbedAsync(ctx, "Your issue has not been reported.", ":negative_squared_cross_mark:")
+                await ReplyWithFailedEmbedAsync(ctx, "Your issue has not been reported.")
                     .ConfigureAwait(false);
             }
         }

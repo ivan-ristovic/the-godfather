@@ -36,7 +36,7 @@ namespace TheGodfather.Modules.Search
                 .ConfigureAwait(false);
 
             if (!res.Any()) {
-                await ReplyWithEmbedAsync(ctx, "No results...", ":negative_squared_cross_mark:")
+                await ReplyWithFailedEmbedAsync(ctx, "No results...")
                     .ConfigureAwait(false);
                 return;
             }
