@@ -20,8 +20,7 @@ namespace TheGodfather.Extensions
                     do {
                         provider.GetBytes(box);
                         boxSum = box.Sum(b => b);
-                    }
-                    while (!(boxSum < n * ((Byte.MaxValue * box.Length) / n)));
+                    } while (!(boxSum < n * ((Byte.MaxValue * box.Length) / n)));
                     var k = (boxSum % n);
                     n--;
                     var value = list[k];

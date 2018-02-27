@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,9 +25,13 @@ namespace TheGodfather.Modules.SWAT
     [Description("SWAT4 related commands.")]
     [Aliases("s4", "swat4")]
     [Cooldown(2, 5, CooldownBucketType.User), Cooldown(4, 5, CooldownBucketType.Channel)]
-    [ListeningCheckAttribute]
-    public class SwatModule : BaseCommandModule
+    [ListeningCheck]
+    public partial class SwatModule : TheGodfatherBaseModule
     {
+
+        public SwatModule(SharedData shared, DatabaseService db) : base(shared, db) { }
+
+
         #region PRIVATE_FIELDS
         private ConcurrentDictionary<ulong, bool> _UserIDsCheckingForSpace = new ConcurrentDictionary<ulong, bool>();
         private int _checktimeout = 200;
@@ -38,6 +41,7 @@ namespace TheGodfather.Modules.SWAT
         #region COMMAND_SERVERLIST
         [Command("serverlist")]
         [Description("Print the serverlist with current player numbers.")]
+        [UsageExample("!swat serverlist")]
         public async Task ServerlistAsync(CommandContext ctx)
         {
             var em = new DiscordEmbedBuilder() {
@@ -45,14 +49,11 @@ namespace TheGodfather.Modules.SWAT
                 Color = DiscordColor.DarkBlue
             };
             
-            var servers = await ctx.Services.GetService<DatabaseService>().GetAllSwatServersAsync()
+            var servers = await DatabaseService.GetAllSwatServersAsync()
                 .ConfigureAwait(false);
 
-            if (servers == null || !servers.Any()) {
-                await ctx.RespondAsync("No servers registered.")
-                    .ConfigureAwait(false);
-                return;
-            }
+            if (servers == null || !servers.Any())
+                throw new CommandFailedException("No servers found in the database.");
 
             foreach (var server in servers) {
                 var info = await SwatServerInfo.QueryIPAsync(server.IP, server.QueryPort)
@@ -183,91 +184,5 @@ namespace TheGodfather.Modules.SWAT
                 .ConfigureAwait(false);
         }
         #endregion
-
-
-        [Group("servers")]
-        [Description("SWAT4 serverlist manipulation commands.")]
-        [Aliases("s", "srv")]
-        public class CommandsServers : BaseCommandModule
-        {
-            #region COMMAND_SERVERS_ADD
-            [Command("add")]
-            [Description("Add a server to serverlist.")]
-            [Aliases("+", "a")]
-            [RequireUserPermissions(Permissions.Administrator)]
-            public async Task AddAsync(CommandContext ctx,
-                                      [Description("Name.")] string name,
-                                      [Description("IP.")] string ip,
-                                      [Description("Query port")] int queryport = 10481)
-            {
-                if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(ip))
-                    throw new InvalidCommandUsageException("Invalid name or IP.");
-
-                if (queryport <= 0 || queryport > 65535)
-                    throw new InvalidCommandUsageException("Port range invalid (must be in range [1-65535])!");
-
-                var server = SwatServer.FromIP(ip, queryport, name);
-
-                await ctx.Services.GetService<DatabaseService>().AddSwatServerAsync(name, server)
-                    .ConfigureAwait(false);
-                await ctx.RespondAsync("Server added. You can now query it using the name provided.")
-                    .ConfigureAwait(false);
-            }
-            #endregion
-
-            #region COMMAND_SERVERS_DELETE
-            [Command("delete")]
-            [Description("Remove a server from serverlist.")]
-            [Aliases("-", "del", "d")]
-            [RequireUserPermissions(Permissions.Administrator)]
-            public async Task DeleteAsync(CommandContext ctx,
-                                         [Description("Name.")] string name)
-            {
-                if (string.IsNullOrWhiteSpace(name))
-                    throw new InvalidCommandUsageException("Name missing.");
-
-                await ctx.Services.GetService<DatabaseService>().RemoveSwatServerAsync(name)
-                    .ConfigureAwait(false);
-                await ctx.RespondAsync("Server removed.")
-                    .ConfigureAwait(false);
-            }
-            #endregion
-
-            #region COMMAND_SERVERS_LIST
-            [Command("list")]
-            [Description("List all registered servers.")]
-            [Aliases("ls", "l")]
-            public async Task ListAsync(CommandContext ctx,
-                                       [Description("Page.")] int page = 1)
-            {
-                var servers = await ctx.Services.GetService<DatabaseService>().GetAllSwatServersAsync()
-                    .ConfigureAwait(false);
-
-                if (servers == null || !servers.Any()) {
-                    await ctx.RespondAsync("No servers registered.")
-                        .ConfigureAwait(false);
-                    return;
-                }
-
-                if (page < 1 || page > servers.Count / 20 + 1)
-                    throw new CommandFailedException("No servers on that page.");
-
-                int starti = (page - 1) * 20;
-                int len = starti + 20 < servers.Count ? 20 : servers.Count - starti;
-
-                StringBuilder sb = new StringBuilder();
-                foreach (var server in servers.OrderBy(v => v).ToList().GetRange(starti, len)) {
-                    sb.Append($"{Formatter.Bold(server.Name)} : {server.IP}:{server.JoinPort}");
-                    sb.AppendLine();
-                }
-
-                await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
-                    Title = $"Available servers (page {page}/{servers.Count / 20 + 1}) :",
-                    Description = sb.ToString(),
-                    Color = DiscordColor.Green
-                }.Build()).ConfigureAwait(false);
-            }
-            #endregion
-        }
     }
 }
