@@ -94,9 +94,7 @@ namespace TheGodfather.Modules.Reactions
         [RequireUserPermissions(Permissions.Administrator)]
         public async Task ClearAsync(CommandContext ctx)
         {
-            await ReplyWithEmbedAsync(ctx, "Are you sure you want to delete all text reactions for this guild?", ":question:")
-                .ConfigureAwait(false);
-            if (!await InteractivityUtil.WaitForConfirmationAsync(ctx))
+            if (!await AskYesNoQuestionAsync(ctx, "Are you sure you want to delete all text reactions for this guild?").ConfigureAwait(false))
                 return;
 
             if (SharedData.GuildTextReactions.ContainsKey(ctx.Guild.Id))

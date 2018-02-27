@@ -78,9 +78,7 @@ namespace TheGodfather.Modules.Administration
                 throw new InvalidCommandUsageException("Name must be longer than 2 and shorter than 100 characters.");
 
             if (ctx.Guild.Channels.Any(chn => chn.Name == name.ToLower())) {
-                await ctx.RespondAsync("A channel with that name already exists. Continue anyway?")
-                    .ConfigureAwait(false);
-                if (!await InteractivityUtil.WaitForConfirmationAsync(ctx).ConfigureAwait(false))
+                if (!await AskYesNoQuestionAsync(ctx, "A channel with that name already exists. Continue anyway?").ConfigureAwait(false))
                     return;
             }
 
@@ -130,9 +128,7 @@ namespace TheGodfather.Modules.Administration
                 throw new InvalidCommandUsageException("Name must be longer than 2 and shorter than 100 characters.");
 
             if (ctx.Guild.Channels.Any(chn => chn.Name == name.ToLower())) {
-                await ctx.RespondAsync("A channel with that name already exists. Continue anyway?")
-                    .ConfigureAwait(false);
-                if (!await InteractivityUtil.WaitForConfirmationAsync(ctx).ConfigureAwait(false))
+                if (!await AskYesNoQuestionAsync(ctx, "A channel with that name already exists. Continue anyway?").ConfigureAwait(false))
                     return;
             }
 
@@ -180,8 +176,7 @@ namespace TheGodfather.Modules.Administration
                 channel = ctx.Channel;
 
             if (channel.Type == ChannelType.Category && channel.Children.Count() > 0) {
-                await ctx.RespondAsync("The channel specified is a non-empty category. Delete all channels in it recursively?");
-                if (await InteractivityUtil.WaitForConfirmationAsync(ctx)) {
+                if (await AskYesNoQuestionAsync(ctx, "The channel specified is a non-empty category. Delete all channels in it recursively?")) {
                     foreach (var chn in channel.Children.ToList()) {
                         await chn.DeleteAsync(reason: GetReasonString(ctx, reason))
                             .ConfigureAwait(false);

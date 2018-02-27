@@ -161,9 +161,7 @@ namespace TheGodfather.Modules.SWAT
                     var info = await SwatServerInfo.QueryIPAsync(server.IP, server.QueryPort)
                         .ConfigureAwait(false);
                     if (info == null) {
-                        await ReplyWithFailedEmbedAsync(ctx, "No reply from server. Should I try again?")
-                            .ConfigureAwait(false);
-                        if (!await InteractivityUtil.WaitForConfirmationAsync(ctx)) {
+                        if (!await AskYesNoQuestionAsync(ctx, "No reply from server. Should I try again?").ConfigureAwait(false)) {
                             await StopCheckAsync(ctx)
                                 .ConfigureAwait(false);
                             return;

@@ -111,9 +111,7 @@ namespace TheGodfather.Modules.Administration
         [RequireUserPermissions(Permissions.Administrator)]
         public async Task ClearAsync(CommandContext ctx)
         {
-            await ReplyWithEmbedAsync(ctx, "Are you sure you want to delete all filters for this guild?", ":question:")
-                .ConfigureAwait(false);
-            if (!await InteractivityUtil.WaitForConfirmationAsync(ctx))
+            if (!await AskYesNoQuestionAsync(ctx, "Are you sure you want to delete all filters for this guild?").ConfigureAwait(false))
                 return;
 
             if (SharedData.GuildFilters.ContainsKey(ctx.Guild.Id))

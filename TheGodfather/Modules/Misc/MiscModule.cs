@@ -120,15 +120,13 @@ namespace TheGodfather.Modules.Misc
         [RequireUserPermissions(Permissions.Administrator)]
         public async Task LeaveAsync(CommandContext ctx)
         {
-            await ctx.RespondAsync("Are you sure you want me to leave this guild?")
-                .ConfigureAwait(false);
-            if (await InteractivityUtil.WaitForConfirmationAsync(ctx)) {
-                await ctx.RespondAsync("Go find a new bot, since this one is leaving!")
+            if (await AskYesNoQuestionAsync(ctx, "Are you sure you want me to leave this guild?").ConfigureAwait(false)) {
+                await ReplyWithEmbedAsync(ctx, "Go find a new bot, since this one is leaving!", ":wave:")
                     .ConfigureAwait(false);
                 await ctx.Guild.LeaveAsync()
                     .ConfigureAwait(false);
             } else {
-                await ctx.RespondAsync("Guess I'll stay then.")
+                await ReplyWithEmbedAsync(ctx, "Guess I'll stay then.", ":no_mouth:")
                     .ConfigureAwait(false);
             }
         }
@@ -309,9 +307,7 @@ namespace TheGodfather.Modules.Misc
             if (string.IsNullOrWhiteSpace(issue))
                 throw new InvalidCommandUsageException("Text missing.");
 
-            await ctx.RespondAsync("Are you okay with your user and guild info being sent for further inspection?")
-                .ConfigureAwait(false);
-            if (await InteractivityUtil.WaitForConfirmationAsync(ctx)) {
+            if (await AskYesNoQuestionAsync(ctx, "Are you okay with your user and guild info being sent for further inspection?").ConfigureAwait(false)) {
                 ctx.Client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", $"Report from {ctx.User.Username} ({ctx.User.Id}): {issue}", DateTime.Now);
                 var dm = await InteractivityUtil.CreateDmChannelAsync(ctx.Client, ctx.Client.CurrentApplication.Owner.Id)
                     .ConfigureAwait(false);

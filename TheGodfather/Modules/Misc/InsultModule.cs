@@ -85,9 +85,7 @@ namespace TheGodfather.Modules.Misc
         [RequireOwner]
         public async Task ClearAllInsultsAsync(CommandContext ctx)
         {
-            await ReplyWithEmbedAsync(ctx, "Are you sure you want to delete all insults?", ":question:")
-                .ConfigureAwait(false);
-            if (!await InteractivityUtil.WaitForConfirmationAsync(ctx))
+            if (!await AskYesNoQuestionAsync(ctx, "Are you sure you want to delete all insults?").ConfigureAwait(false))
                 return;
 
             await DatabaseService.DeleteAllInsultsAsync()
