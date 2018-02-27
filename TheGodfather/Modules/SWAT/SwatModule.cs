@@ -34,34 +34,25 @@ namespace TheGodfather.Modules.SWAT
         private ConcurrentDictionary<ulong, bool> _UserIDsCheckingForSpace = new ConcurrentDictionary<ulong, bool>();
         private int _checktimeout = 200;
         #endregion
-        
 
-        #region COMMAND_SERVERLIST
-        [Command("serverlist")]
-        [Description("Print the serverlist with current player numbers.")]
-        [UsageExample("!swat serverlist")]
-        public async Task ServerlistAsync(CommandContext ctx)
+
+        #region COMMAND_IP
+        [Command("ip")]
+        [Description("Return IP of the registered server by name.")]
+        [Aliases("getip")]
+        [UsageExample("!s4 ip wm")]
+        public async Task QueryAsync(CommandContext ctx,
+                                    [Description("Registered name.")] string name)
         {
-            var em = new DiscordEmbedBuilder() {
-                Title = "Servers",
-                Color = DiscordColor.DarkBlue
-            };
-            
-            var servers = await DatabaseService.GetAllSwatServersAsync()
+            if (string.IsNullOrWhiteSpace(name))
+                throw new InvalidCommandUsageException("Name missing.");
+
+            var server = await DatabaseService.GetSwatServerFromDatabaseAsync(name)
                 .ConfigureAwait(false);
+            if (server == null)
+                throw new CommandFailedException("Server with such name isn't found in the database.");
 
-            if (servers == null || !servers.Any())
-                throw new CommandFailedException("No servers found in the database.");
-
-            foreach (var server in servers) {
-                var info = await SwatServerInfo.QueryIPAsync(server.IP, server.QueryPort)
-                    .ConfigureAwait(false);
-                if (info != null)
-                    em.AddField(info.HostName, $"IP: {server.IP}:{server.JoinPort}\nPlayers: {Formatter.Bold(info.Players + " / " + info.MaxPlayers)}");
-                else
-                    em.AddField(server.Name, $"IP: {server.IP}:{server.JoinPort}\nPlayers: Offline");
-            }
-            await ctx.RespondAsync(embed: em.Build())
+            await ReplyWithEmbedAsync(ctx, $"IP: {Formatter.Bold($"{server.IP}:{server.JoinPort}")}")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -108,6 +99,36 @@ namespace TheGodfather.Modules.SWAT
                 throw new InvalidCommandUsageException("Timeout not in valid range [100-1000] ms.");
             _checktimeout = timeout;
             await ctx.RespondAsync("Timeout changed to: " + Formatter.Bold(_checktimeout.ToString()))
+                .ConfigureAwait(false);
+        }
+        #endregion
+
+        #region COMMAND_SERVERLIST
+        [Command("serverlist")]
+        [Description("Print the serverlist with current player numbers.")]
+        [UsageExample("!swat serverlist")]
+        public async Task ServerlistAsync(CommandContext ctx)
+        {
+            var em = new DiscordEmbedBuilder() {
+                Title = "Servers",
+                Color = DiscordColor.DarkBlue
+            };
+
+            var servers = await DatabaseService.GetAllSwatServersAsync()
+                .ConfigureAwait(false);
+
+            if (servers == null || !servers.Any())
+                throw new CommandFailedException("No servers found in the database.");
+
+            foreach (var server in servers) {
+                var info = await SwatServerInfo.QueryIPAsync(server.IP, server.QueryPort)
+                    .ConfigureAwait(false);
+                if (info != null)
+                    em.AddField(info.HostName, $"IP: {server.IP}:{server.JoinPort}\nPlayers: {Formatter.Bold(info.Players + " / " + info.MaxPlayers)}");
+                else
+                    em.AddField(server.Name, $"IP: {server.IP}:{server.JoinPort}\nPlayers: Offline");
+            }
+            await ctx.RespondAsync(embed: em.Build())
                 .ConfigureAwait(false);
         }
         #endregion
