@@ -22,18 +22,17 @@ namespace TheGodfather.Modules.SWAT
     [Group("swat")]
     [Description("SWAT4 related commands.")]
     [Aliases("s4", "swat4")]
-    [Cooldown(2, 5, CooldownBucketType.User), Cooldown(4, 5, CooldownBucketType.Channel)]
+    [Cooldown(2, 5, CooldownBucketType.User), Cooldown(3, 5, CooldownBucketType.Guild)]
     [ListeningCheck]
     public partial class SwatModule : TheGodfatherBaseModule
     {
-
-        public SwatModule(SharedData shared, DatabaseService db) : base(shared, db) { }
-
-
         #region PRIVATE_FIELDS
         private ConcurrentDictionary<ulong, bool> _UserIDsCheckingForSpace = new ConcurrentDictionary<ulong, bool>();
         private int _checktimeout = 200;
         #endregion
+
+
+        public SwatModule(SharedData shared, DatabaseService db) : base(shared, db) { }
 
 
         #region COMMAND_IP
@@ -47,7 +46,7 @@ namespace TheGodfather.Modules.SWAT
             if (string.IsNullOrWhiteSpace(name))
                 throw new InvalidCommandUsageException("Name missing.");
 
-            var server = await DatabaseService.GetSwatServerFromDatabaseAsync(name)
+            var server = await DatabaseService.GetSwatServerFromDatabaseAsync(name.ToLowerInvariant())
                 .ConfigureAwait(false);
             if (server == null)
                 throw new CommandFailedException("Server with such name isn't found in the database.");
@@ -74,7 +73,7 @@ namespace TheGodfather.Modules.SWAT
             if (queryport <= 0 || queryport > 65535)
                 throw new InvalidCommandUsageException("Port range invalid (must be in range [1-65535])!");
 
-            var server = await DatabaseService.GetSwatServerAsync(ip, queryport, name: ip)
+            var server = await DatabaseService.GetSwatServerAsync(ip, queryport, name: ip.ToLowerInvariant())
                 .ConfigureAwait(false);
 
             var info = await SwatServerInfo.QueryIPAsync(server.IP, server.QueryPort)
@@ -156,7 +155,7 @@ namespace TheGodfather.Modules.SWAT
             if (_UserIDsCheckingForSpace.Count > 10)
                 throw new CommandFailedException("Maximum number of checks reached, please try later!");
 
-            var server = await DatabaseService.GetSwatServerAsync(ip, queryport, name: ip)
+            var server = await DatabaseService.GetSwatServerAsync(ip, queryport, name: ip.ToLowerInvariant())
                 .ConfigureAwait(false);
             await ReplyWithEmbedAsync(ctx, $"Starting check on {server.IP}:{server.JoinPort}...")
                 .ConfigureAwait(false);
