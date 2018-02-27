@@ -16,6 +16,8 @@ namespace TheGodfather.Entities.SWAT
 {
     public class SwatServerInfo
     {
+        public static int CheckTimeout { get; set; } = 200;
+
         public string IP { get; private set; }
         public string HostName { get; private set; }
         public string Players { get; private set; }
@@ -46,15 +48,15 @@ namespace TheGodfather.Entities.SWAT
             };
         }
 
-        public static async Task<SwatServerInfo> QueryIPAsync(string ip, int port, int timeout = 200)
+        public static async Task<SwatServerInfo> QueryIPAsync(string ip, int port)
         {
             byte[] receivedData = null;
             try {
                 using (var client = new UdpClient()) {
                     IPEndPoint ep = new IPEndPoint(IPAddress.Parse(ip), port);
                     client.Connect(ep);
-                    client.Client.SendTimeout = timeout;
-                    client.Client.ReceiveTimeout = timeout;
+                    client.Client.SendTimeout = CheckTimeout;
+                    client.Client.ReceiveTimeout = CheckTimeout;
                     string query = "\\status\\";
                     await client.SendAsync(Encoding.ASCII.GetBytes(query), query.Length)
                         .ConfigureAwait(false);

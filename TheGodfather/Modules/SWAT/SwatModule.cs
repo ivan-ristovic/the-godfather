@@ -26,11 +26,6 @@ namespace TheGodfather.Modules.SWAT
     [ListeningCheck]
     public partial class SwatModule : TheGodfatherBaseModule
     {
-        #region PRIVATE_FIELDS
-        private ConcurrentDictionary<ulong, bool> _UserIDsCheckingForSpace = new ConcurrentDictionary<ulong, bool>();
-        private int _checktimeout = 200;
-        #endregion
-
 
         public SwatModule(SharedData shared, DatabaseService db) : base(shared, db) { }
 
@@ -63,7 +58,7 @@ namespace TheGodfather.Modules.SWAT
         [UsageExample("!s4 q 109.70.149.158")]
         [UsageExample("!s4 q 109.70.149.158:10480")]
         [UsageExample("!s4 q wm")]
-        public async Task QueryAsync(CommandContext ctx, 
+        public async Task QueryAsync(CommandContext ctx,
                                     [Description("Registered name or IP.")] string ip,
                                     [Description("Query port")] int queryport = 10481)
         {
@@ -96,8 +91,8 @@ namespace TheGodfather.Modules.SWAT
         {
             if (timeout < 100 || timeout > 1000)
                 throw new InvalidCommandUsageException("Timeout not in valid range [100-1000] ms.");
-            _checktimeout = timeout;
-            await ctx.RespondAsync("Timeout changed to: " + Formatter.Bold(_checktimeout.ToString()))
+            SwatServerInfo.CheckTimeout = timeout;
+            await ctx.RespondAsync("Timeout changed to: " + Formatter.Bold(timeout.ToString()))
                 .ConfigureAwait(false);
         }
         #endregion
@@ -139,7 +134,7 @@ namespace TheGodfather.Modules.SWAT
         [UsageExample("!s4 startcheck 109.70.149.158")]
         [UsageExample("!s4 startcheck 109.70.149.158:10480")]
         [UsageExample("!swat startcheck wm")]
-        public async Task StartCheckAsync(CommandContext ctx, 
+        public async Task StartCheckAsync(CommandContext ctx,
                                          [Description("Registered name or IP.")] string ip,
                                          [Description("Query port")] int queryport = 10481)
         {
@@ -149,10 +144,10 @@ namespace TheGodfather.Modules.SWAT
             if (queryport <= 0 || queryport > 65535)
                 throw new InvalidCommandUsageException("Port range invalid (must be in range [1-65535])!");
 
-            if (_UserIDsCheckingForSpace.ContainsKey(ctx.User.Id))
+            if (SharedData.UserIDsCheckingForSpace.Contains(ctx.User.Id))
                 throw new CommandFailedException("Already checking space for you!");
 
-            if (_UserIDsCheckingForSpace.Count > 10)
+            if (SharedData.UserIDsCheckingForSpace.Count > 10)
                 throw new CommandFailedException("Maximum number of checks reached, please try later!");
 
             var server = await DatabaseService.GetSwatServerAsync(ip, queryport, name: ip.ToLowerInvariant())
@@ -160,9 +155,9 @@ namespace TheGodfather.Modules.SWAT
             await ReplyWithEmbedAsync(ctx, $"Starting check on {server.IP}:{server.JoinPort}...")
                 .ConfigureAwait(false);
 
-            _UserIDsCheckingForSpace.TryAdd(ctx.User.Id, true);
-            while (_UserIDsCheckingForSpace[ctx.User.Id]) {
-                try {
+            SharedData.UserIDsCheckingForSpace.Add(ctx.User.Id);
+            try {
+                while (SharedData.UserIDsCheckingForSpace.Contains(ctx.User.Id)) {
                     var info = await SwatServerInfo.QueryIPAsync(server.IP, server.QueryPort)
                         .ConfigureAwait(false);
                     if (info == null) {
@@ -177,17 +172,16 @@ namespace TheGodfather.Modules.SWAT
                         await ReplyWithEmbedAsync(ctx, $"{ctx.User.Mention}, there is space on {info.HostName}!", ":alarm_clock:")
                             .ConfigureAwait(false);
                     }
-                } catch (Exception e) {
-                    await StopCheckAsync(ctx)
+                    await Task.Delay(TimeSpan.FromSeconds(2))
                         .ConfigureAwait(false);
-                    _UserIDsCheckingForSpace.TryRemove(ctx.User.Id, out _);
-                    throw e;
                 }
-                await Task.Delay(TimeSpan.FromSeconds(2))
+            } catch (Exception e) {
+                await StopCheckAsync(ctx)
                     .ConfigureAwait(false);
+                throw e;
+            } finally {
+                SharedData.UserIDsCheckingForSpace.TryRemove(ctx.User.Id);
             }
-            
-            _UserIDsCheckingForSpace.TryRemove(ctx.User.Id, out _);
         }
         #endregion
 
@@ -198,9 +192,9 @@ namespace TheGodfather.Modules.SWAT
         [UsageExample("!swat stopcheck")]
         public async Task StopCheckAsync(CommandContext ctx)
         {
-            if (!_UserIDsCheckingForSpace.ContainsKey(ctx.User.Id))
+            if (!SharedData.UserIDsCheckingForSpace.Contains(ctx.User.Id))
                 throw new CommandFailedException("No checks started from you.");
-            _UserIDsCheckingForSpace.TryUpdate(ctx.User.Id, false, true);
+            SharedData.UserIDsCheckingForSpace.TryRemove(ctx.User.Id);
             await ReplyWithEmbedAsync(ctx, "Checking stopped.")
                 .ConfigureAwait(false);
         }

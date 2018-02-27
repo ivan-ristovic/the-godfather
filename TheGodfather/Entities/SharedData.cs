@@ -26,6 +26,7 @@ namespace TheGodfather
         public ConcurrentDictionary<ulong, ConcurrentDictionary<string, ConcurrentHashSet<Regex>>> GuildEmojiReactions { get; internal set; }
         public ConcurrentDictionary<ulong, ulong> MessageCount { get; internal set; }
         public ConcurrentDictionary<ulong, Deck> CardDecks { get; internal set; } = new ConcurrentDictionary<ulong, Deck>();
+        public ConcurrentHashSet<ulong> UserIDsCheckingForSpace = new ConcurrentHashSet<ulong>();
         public IReadOnlyList<string> Ranks = new List<string>() {
             #region RANKS
             // If you make more than 25 ranks, then fix the embed
