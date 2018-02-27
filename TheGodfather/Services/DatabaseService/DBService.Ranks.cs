@@ -10,7 +10,7 @@ using NpgsqlTypes;
 
 namespace TheGodfather.Services
 {
-    public partial class DatabaseService
+    public partial class DBService
     {
         public async Task<IReadOnlyDictionary<ulong, ulong>> GetMessageCountForAllUsersAsync()
         {
@@ -58,24 +58,6 @@ namespace TheGodfather.Services
             }
 
             return msgcount;
-        }
-
-        public async Task StartTrackingMessageCountForUserAsync(ulong uid)
-        {
-            await _sem.WaitAsync();
-            try {
-                using (var con = new NpgsqlConnection(_connectionString))
-                using (var cmd = con.CreateCommand()) {
-                    await con.OpenAsync().ConfigureAwait(false);
-
-                    cmd.CommandText = "INSERT INTO gf.msgcount VALUES(@uid, 1);";
-                    cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
-
-                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
-                }
-            } finally {
-                _sem.Release();
-            }
         }
 
         public async Task UpdateMessageCountForUserAsync(ulong uid, ulong count)

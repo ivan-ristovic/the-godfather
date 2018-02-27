@@ -17,7 +17,7 @@ using NpgsqlTypes;
 
 namespace TheGodfather.Services
 {
-    public partial class DatabaseService
+    public partial class DBService
     {
         private string _connectionString { get; }
         private SemaphoreSlim _sem { get; }
@@ -25,7 +25,7 @@ namespace TheGodfather.Services
         private DatabaseConfig _cfg { get; }
 
 
-        public DatabaseService(DatabaseConfig config)
+        public DBService(DatabaseConfig config)
         {
             _sem = new SemaphoreSlim(100, 100);
             _tsem = new SemaphoreSlim(1, 1);
@@ -42,10 +42,8 @@ namespace TheGodfather.Services
                 Username = _cfg.Username,
                 Password = _cfg.Password,
                 Pooling = true
-                /*
-                SslMode = SslMode.Require,
-                TrustServerCertificate = true
-                */
+                //SslMode = SslMode.Require,
+                //TrustServerCertificate = true
             };
             _connectionString = csb.ConnectionString;
         }

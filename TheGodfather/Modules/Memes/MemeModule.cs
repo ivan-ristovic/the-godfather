@@ -27,7 +27,7 @@ namespace TheGodfather.Modules.Memes
     public partial class MemeModule : TheGodfatherServiceModule<ImgurService>
     {
 
-        public MemeModule(ImgurService imgur, DatabaseService db) : base(imgur, db: db) { }
+        public MemeModule(ImgurService imgur, DBService db) : base(imgur, db: db) { }
 
 
         [GroupCommand]
@@ -38,13 +38,13 @@ namespace TheGodfather.Modules.Memes
             string text = "DANK MEME YOU ASKED FOR";
 
             if (string.IsNullOrWhiteSpace(name)) {
-                url = await DatabaseService.GetRandomGuildMemeAsync(ctx.Guild.Id)
+                url = await Database.GetRandomGuildMemeAsync(ctx.Guild.Id)
                     .ConfigureAwait(false);
             } else {
-                url = await DatabaseService.GetGuildMemeUrlAsync(ctx.Guild.Id, name)
+                url = await Database.GetGuildMemeUrlAsync(ctx.Guild.Id, name)
                     .ConfigureAwait(false);
                 if (url == null) {
-                    url = await DatabaseService.GetRandomGuildMemeAsync(ctx.Guild.Id)
+                    url = await Database.GetRandomGuildMemeAsync(ctx.Guild.Id)
                         .ConfigureAwait(false);
                     text = "No meme registered with that name, here is a random one:";
                 }
@@ -80,7 +80,7 @@ namespace TheGodfather.Modules.Memes
             if (name.Length > 30 || url.Length > 120)
                 throw new CommandFailedException("Name/URL is too long. Name must be shorter than 30 characters, and URL must be shorter than 120 characters.");
 
-            await DatabaseService.AddGuildMemeAsync(ctx.Guild.Id, name, uri.AbsoluteUri)
+            await Database.AddGuildMemeAsync(ctx.Guild.Id, name, uri.AbsoluteUri)
                 .ConfigureAwait(false);
             await ReplyWithEmbedAsync(ctx, $"Meme {Formatter.Bold(name)} successfully added!")
                 .ConfigureAwait(false);
@@ -95,7 +95,7 @@ namespace TheGodfather.Modules.Memes
         [RequireUserPermissions(Permissions.Administrator)]
         public async Task ClearMemesAsync(CommandContext ctx)
         {
-            await DatabaseService.DeleteAllGuildMemesAsync(ctx.Guild.Id)
+            await Database.DeleteAllGuildMemesAsync(ctx.Guild.Id)
                 .ConfigureAwait(false);
             await ReplyWithEmbedAsync(ctx)
                 .ConfigureAwait(false);
@@ -127,7 +127,7 @@ namespace TheGodfather.Modules.Memes
                 bottomText = bottomText.ToUpperInvariant();
             template = template.ToLower();
 
-            string url = await Service.CreateAndUploadMemeAsync(filename, topText, bottomText)
+            string url = await _Service.CreateAndUploadMemeAsync(filename, topText, bottomText)
                 .ConfigureAwait(false);
             if (url == null)
                 throw new CommandFailedException("Uploading meme to Imgur failed.");
@@ -152,7 +152,7 @@ namespace TheGodfather.Modules.Memes
             if (string.IsNullOrWhiteSpace(name))
                 throw new InvalidCommandUsageException("Name missing.");
 
-            await DatabaseService.RemoveGuildMemeAsync(ctx.Guild.Id, name)
+            await Database.RemoveGuildMemeAsync(ctx.Guild.Id, name)
                 .ConfigureAwait(false);
             await ReplyWithEmbedAsync(ctx, $"Meme {Formatter.Bold(name)} successfully removed!")
                 .ConfigureAwait(false);
@@ -166,7 +166,7 @@ namespace TheGodfather.Modules.Memes
         [UsageExample("!meme list")]
         public async Task ListAsync(CommandContext ctx)
         {
-            var memes = await DatabaseService.GetAllGuildMemesAsync(ctx.Guild.Id)
+            var memes = await Database.GetAllGuildMemesAsync(ctx.Guild.Id)
                 .ConfigureAwait(false); ;
 
             await InteractivityUtil.SendPaginatedCollectionAsync(

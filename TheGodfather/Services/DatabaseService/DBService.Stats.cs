@@ -1,7 +1,6 @@
 ﻿#region USING_DIRECTIVES
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -18,7 +17,7 @@ using DSharpPlus.Exceptions;
 
 namespace TheGodfather.Services
 {
-    public partial class DatabaseService
+    public partial class DBService
     {
         public async Task<GameStats> GetStatsForUserAsync(ulong uid)
         {

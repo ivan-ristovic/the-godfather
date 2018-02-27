@@ -26,7 +26,7 @@ namespace TheGodfather.Modules.SWAT
         public class SwatServersModule : TheGodfatherBaseModule
         {
 
-            public SwatServersModule(DatabaseService db) : base(db: db) { }
+            public SwatServersModule(DBService db) : base(db: db) { }
 
 
             #region COMMAND_SERVERS_ADD
@@ -48,7 +48,7 @@ namespace TheGodfather.Modules.SWAT
 
                 var server = SwatServer.FromIP(ip, queryport, name);
 
-                await DatabaseService.AddSwatServerAsync(name, server)
+                await Database.AddSwatServerAsync(name, server)
                     .ConfigureAwait(false);
                 await ReplyWithEmbedAsync(ctx, "Server added. You can now query it using the name provided.")
                     .ConfigureAwait(false);
@@ -66,7 +66,7 @@ namespace TheGodfather.Modules.SWAT
                 if (string.IsNullOrWhiteSpace(name))
                     throw new InvalidCommandUsageException("Name missing.");
 
-                await DatabaseService.RemoveSwatServerAsync(name)
+                await Database.RemoveSwatServerAsync(name)
                     .ConfigureAwait(false);
                 await ReplyWithEmbedAsync(ctx, "Server successfully removed.")
                     .ConfigureAwait(false);
@@ -80,7 +80,7 @@ namespace TheGodfather.Modules.SWAT
             [UsageExample("!swat servers list")]
             public async Task ListAsync(CommandContext ctx)
             {
-                var servers = await DatabaseService.GetAllSwatServersAsync()
+                var servers = await Database.GetAllSwatServersAsync()
                     .ConfigureAwait(false);
 
                 await InteractivityUtil.SendPaginatedCollectionAsync(

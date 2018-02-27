@@ -25,7 +25,7 @@ namespace TheGodfather.Modules.Misc
     public class MiscModule : TheGodfatherBaseModule
     {
 
-        public MiscModule(SharedData shared, DatabaseService db) : base(shared, db) { }
+        public MiscModule(SharedData shared, DBService db) : base(shared, db) { }
 
 
         #region COMMAND_8BALL
@@ -79,7 +79,7 @@ namespace TheGodfather.Modules.Misc
         public async Task GiveRoleAsync(CommandContext ctx,
                                        [Description("Role to grant.")] DiscordRole role)
         {
-            if (!await DatabaseService.SelfAssignableRoleExistsAsync(ctx.Guild.Id, role.Id))
+            if (!await Database.SelfAssignableRoleExistsAsync(ctx.Guild.Id, role.Id))
                 throw new CommandFailedException("That role is not in this guild's self-assignable roles list.");
 
             await ctx.Member.GrantRoleAsync(role, GetReasonString(ctx, "Granted self-assignable role."))
@@ -209,7 +209,7 @@ namespace TheGodfather.Modules.Misc
                                              [Description("Prefix to set.")] string prefix = null)
         {
             if (string.IsNullOrWhiteSpace(prefix)) {
-                string p = SharedData.GetGuildPrefix(ctx.Guild.Id);
+                string p = Shared.GetGuildPrefix(ctx.Guild.Id);
                 await ReplyWithEmbedAsync(ctx, $"Current prefix for this guild: {Formatter.Bold(p)}", ":information_source:")
                     .ConfigureAwait(false);
                 return;
@@ -218,11 +218,11 @@ namespace TheGodfather.Modules.Misc
             if (prefix.Length > 12)
                 throw new CommandFailedException("Prefix length cannot be longer than 12 characters.");
 
-            SharedData.GuildPrefixes.AddOrUpdate(ctx.Guild.Id, prefix, (id, oldp) => prefix);
+            Shared.GuildPrefixes.AddOrUpdate(ctx.Guild.Id, prefix, (id, oldp) => prefix);
             await ReplyWithEmbedAsync(ctx, $"Successfully changed the prefix for this guild to: {Formatter.Bold(prefix)}")
                 .ConfigureAwait(false);
             try {
-                await DatabaseService.SetGuildPrefixAsync(ctx.Guild.Id, prefix)
+                await Database.SetGuildPrefixAsync(ctx.Guild.Id, prefix)
                     .ConfigureAwait(false);
             } catch {
                 throw new CommandFailedException("Warning: Failed to add prefix to the database.");
@@ -342,7 +342,7 @@ namespace TheGodfather.Modules.Misc
             if (string.IsNullOrWhiteSpace(text))
                 throw new InvalidCommandUsageException("Text missing.");
 
-            if (SharedData.MessageContainsFilter(ctx.Guild.Id, text))
+            if (Shared.MessageContainsFilter(ctx.Guild.Id, text))
                 throw new CommandFailedException("You can't make me say something that contains filtered content for this guild.");
 
             await ctx.RespondAsync(text)
@@ -360,7 +360,7 @@ namespace TheGodfather.Modules.Misc
             if (string.IsNullOrWhiteSpace(text))
                 throw new InvalidCommandUsageException("Text missing.");
 
-            if (SharedData.MessageContainsFilter(ctx.Guild.Id, text))
+            if (Shared.MessageContainsFilter(ctx.Guild.Id, text))
                 throw new CommandFailedException("You can't make me say something that contains filtered content for this guild.");
 
             await ctx.RespondAsync(text, isTTS: true)

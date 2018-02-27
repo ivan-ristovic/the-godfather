@@ -27,7 +27,7 @@ namespace TheGodfather.Modules.Administration
     public class GuildModule : TheGodfatherBaseModule
     {
 
-        public GuildModule(DatabaseService db) : base(db: db) { }
+        public GuildModule(DBService db) : base(db: db) { }
 
 
         #region COMMAND_GUILD_GETBANS
@@ -222,7 +222,7 @@ namespace TheGodfather.Modules.Administration
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task GetWelcomeChannelAsync(CommandContext ctx)
         {
-            ulong cid = await DatabaseService.GetGuildWelcomeChannelIdAsync(ctx.Guild.Id)
+            ulong cid = await Database.GetGuildWelcomeChannelIdAsync(ctx.Guild.Id)
                 .ConfigureAwait(false);
             if (cid != 0) {
                 var c = ctx.Guild.GetChannel(cid);
@@ -245,7 +245,7 @@ namespace TheGodfather.Modules.Administration
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task GetLeaveChannelAsync(CommandContext ctx)
         {
-            ulong cid = await DatabaseService.GetGuildLeaveChannelIdAsync(ctx.Guild.Id)
+            ulong cid = await Database.GetGuildLeaveChannelIdAsync(ctx.Guild.Id)
                 .ConfigureAwait(false);
             if (cid != 0) {
                 var c = ctx.Guild.GetChannel(cid);
@@ -276,7 +276,7 @@ namespace TheGodfather.Modules.Administration
             if (channel.Type != ChannelType.Text)
                 throw new CommandFailedException("Given channel must be a text channel.");
 
-            await DatabaseService.SetGuildWelcomeChannelAsync(ctx.Guild.Id, channel.Id)
+            await Database.SetGuildWelcomeChannelAsync(ctx.Guild.Id, channel.Id)
                 .ConfigureAwait(false);
             await ReplyWithEmbedAsync(ctx, $"Default welcome message channel set to {Formatter.Bold(channel.Name)}.")
                 .ConfigureAwait(false);
@@ -299,7 +299,7 @@ namespace TheGodfather.Modules.Administration
             if (channel.Type != ChannelType.Text)
                 throw new CommandFailedException("Given channel must be a text channel.");
 
-            await DatabaseService.SetGuildLeaveChannelAsync(ctx.Guild.Id, channel.Id)
+            await Database.SetGuildLeaveChannelAsync(ctx.Guild.Id, channel.Id)
                 .ConfigureAwait(false);
             await ReplyWithEmbedAsync(ctx, $"Default leave message channel set to {Formatter.Bold(channel.Name)}.")
                 .ConfigureAwait(false);
@@ -314,7 +314,7 @@ namespace TheGodfather.Modules.Administration
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task RemoveWelcomeChannelAsync(CommandContext ctx)
         {
-            await DatabaseService.RemoveGuildWelcomeChannelAsync(ctx.Guild.Id)
+            await Database.RemoveGuildWelcomeChannelAsync(ctx.Guild.Id)
                 .ConfigureAwait(false);
             await ReplyWithEmbedAsync(ctx, "Default welcome message channel removed.")
                 .ConfigureAwait(false);
@@ -329,7 +329,7 @@ namespace TheGodfather.Modules.Administration
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task DeleteLeaveChannelAsync(CommandContext ctx)
         {
-            await DatabaseService.RemoveGuildLeaveChannelAsync(ctx.Guild.Id)
+            await Database.RemoveGuildLeaveChannelAsync(ctx.Guild.Id)
                 .ConfigureAwait(false);
             await ReplyWithEmbedAsync(ctx, "Default leave message channel removed.")
                 .ConfigureAwait(false);
@@ -348,7 +348,7 @@ namespace TheGodfather.Modules.Administration
         public class SelfAssignableRolesModule : TheGodfatherBaseModule
         {
 
-            public SelfAssignableRolesModule(DatabaseService db) : base(db: db) { }
+            public SelfAssignableRolesModule(DBService db) : base(db: db) { }
 
 
             [GroupCommand]
@@ -368,7 +368,7 @@ namespace TheGodfather.Modules.Administration
                                             [Description("Roles to add.")] params DiscordRole[] roles)
             {
                 foreach (var role in roles)
-                    await DatabaseService.AddSelfAssignableRoleAsync(ctx.Guild.Id, role.Id)
+                    await Database.AddSelfAssignableRoleAsync(ctx.Guild.Id, role.Id)
                         .ConfigureAwait(false);
 
                 await ReplyWithEmbedAsync(ctx)
@@ -388,7 +388,7 @@ namespace TheGodfather.Modules.Administration
                                                [Description("Roles to delete.")] params DiscordRole[] roles)
             {
                 foreach (var role in roles)
-                    await DatabaseService.RemoveSelfAssignableRoleAsync(ctx.Guild.Id, role.Id)
+                    await Database.RemoveSelfAssignableRoleAsync(ctx.Guild.Id, role.Id)
                         .ConfigureAwait(false);
 
                 await ReplyWithEmbedAsync(ctx)
@@ -403,7 +403,7 @@ namespace TheGodfather.Modules.Administration
             [UsageExample("!guild sar list")]
             public async Task ListSARolesAsync(CommandContext ctx)
             {
-                var rids = await DatabaseService.GetSelfAssignableRolesListAsync(ctx.Guild.Id)
+                var rids = await Database.GetSelfAssignableRolesListAsync(ctx.Guild.Id)
                     .ConfigureAwait(false);
                 
                 await InteractivityUtil.SendPaginatedCollectionAsync(

@@ -44,7 +44,7 @@ namespace TheGodfather.Modules.Gambling
                     throw new CommandFailedException($"Invalid guess. Has to be a number from {Formatter.Bold("one")} to {Formatter.Bold("six")})");
             }
 
-            if (!await DatabaseService.RetrieveCreditsAsync(ctx.User.Id, bid).ConfigureAwait(false))
+            if (!await Database.RetrieveCreditsAsync(ctx.User.Id, bid).ConfigureAwait(false))
                 throw new CommandFailedException("You do not have enough credits in WM bank!");
 
             int rnd = new Random().Next(1, 7);
@@ -61,7 +61,7 @@ namespace TheGodfather.Modules.Gambling
                 .ConfigureAwait(false);
 
             if (rnd == guess_int)
-                await DatabaseService.IncreaseBalanceForUserAsync(ctx.User.Id, bid * 6)
+                await Database.IncreaseBalanceForUserAsync(ctx.User.Id, bid * 6)
                     .ConfigureAwait(false);
         }
 

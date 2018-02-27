@@ -14,6 +14,6 @@ namespace TheGodfather.Modules.Gambling
     [ListeningCheck]
     public partial class GambleModule : TheGodfatherBaseModule
     {
-        public GambleModule(DatabaseService db) : base(db: db) { }
+        public GambleModule(DBService db) : base(db: db) { }
     }
 }

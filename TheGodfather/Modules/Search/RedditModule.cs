@@ -22,7 +22,7 @@ namespace TheGodfather.Modules.Search
     public class RedditModule : TheGodfatherBaseModule
     {
 
-        public RedditModule(DatabaseService db) : base(db: db) { }
+        public RedditModule(DBService db) : base(db: db) { }
 
 
         [GroupCommand]
@@ -57,7 +57,7 @@ namespace TheGodfather.Modules.Search
             if (url == null)
                 throw new CommandFailedException("That subreddit doesn't exist.");
 
-            if (!await DatabaseService.AddFeedAsync(ctx.Channel.Id, url, sub).ConfigureAwait(false))
+            if (!await Database.AddFeedAsync(ctx.Channel.Id, url, sub).ConfigureAwait(false))
                 throw new CommandFailedException("You are already subscribed to this subreddit!");
 
             await ReplyWithEmbedAsync(ctx, $"Subscribed to {Formatter.Bold(rsub)} !")
@@ -78,7 +78,7 @@ namespace TheGodfather.Modules.Search
             if (RSSService.GetRedditFeedURLForSubreddit(sub, out string rsub) == null)
                 throw new CommandFailedException("That subreddit doesn't exist.");
 
-            await DatabaseService.RemoveSubscriptionUsingNameAsync(ctx.Channel.Id, rsub)
+            await Database.RemoveSubscriptionUsingNameAsync(ctx.Channel.Id, rsub)
                 .ConfigureAwait(false);
             await ReplyWithEmbedAsync(ctx, $"Unsubscribed from {Formatter.Bold(rsub)} !")
                 .ConfigureAwait(false);
@@ -88,7 +88,7 @@ namespace TheGodfather.Modules.Search
         public async Task UnsubscribeAsync(CommandContext ctx,
                                           [Description("Subscription ID.")] int id)
         {
-            await DatabaseService.RemoveSubscriptionAsync(ctx.Channel.Id, id)
+            await Database.RemoveSubscriptionAsync(ctx.Channel.Id, id)
                 .ConfigureAwait(false);
             await ReplyWithEmbedAsync(ctx)
                 .ConfigureAwait(false);

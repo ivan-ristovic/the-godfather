@@ -40,7 +40,7 @@ namespace TheGodfather.Modules.Gambling
             else
                 throw new CommandFailedException($"Invalid coin outcome call (has to be {Formatter.Bold("heads")} or {Formatter.Bold("tails")})");
 
-            if (!await DatabaseService.RetrieveCreditsAsync(ctx.User.Id, bid).ConfigureAwait(false))
+            if (!await Database.RetrieveCreditsAsync(ctx.User.Id, bid).ConfigureAwait(false))
                 throw new CommandFailedException("You do not have enough credits in WM bank!");
 
             int rnd = new Random().Next(2);
@@ -58,7 +58,7 @@ namespace TheGodfather.Modules.Gambling
                 .ConfigureAwait(false);
 
             if (rnd == guess)
-                await DatabaseService.IncreaseBalanceForUserAsync(ctx.User.Id, bid * 2)
+                await Database.IncreaseBalanceForUserAsync(ctx.User.Id, bid * 2)
                     .ConfigureAwait(false);
         }
 

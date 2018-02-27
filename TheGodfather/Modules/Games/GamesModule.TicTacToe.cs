@@ -23,7 +23,7 @@ namespace TheGodfather.Modules.Games
         public class TicTacToeModule : TheGodfatherBaseModule
         {
 
-            public TicTacToeModule(SharedData shared, DatabaseService db) : base(shared, db) { }
+            public TicTacToeModule(SharedData shared, DBService db) : base(shared, db) { }
 
 
             [GroupCommand]
@@ -49,12 +49,12 @@ namespace TheGodfather.Modules.Games
                         await ReplyWithEmbedAsync(ctx, $"The winner is: {ttt.Winner.Mention}!", ":trophy:")
                             .ConfigureAwait(false);
 
-                        await DatabaseService.UpdateUserStatsAsync(ttt.Winner.Id, "ttt_won")
+                        await Database.UpdateUserStatsAsync(ttt.Winner.Id, "ttt_won")
                             .ConfigureAwait(false);
                         if (ttt.Winner.Id == ctx.User.Id)
-                            await DatabaseService.UpdateUserStatsAsync(opponent.Id, "ttt_lost").ConfigureAwait(false);
+                            await Database.UpdateUserStatsAsync(opponent.Id, "ttt_lost").ConfigureAwait(false);
                         else
-                            await DatabaseService.UpdateUserStatsAsync(ctx.User.Id, "ttt_lost").ConfigureAwait(false);
+                            await Database.UpdateUserStatsAsync(ctx.User.Id, "ttt_lost").ConfigureAwait(false);
                     } else if (ttt.NoReply == false) {
                         await ReplyWithEmbedAsync(ctx, "A draw... Pathetic...", ":video_game:")
                             .ConfigureAwait(false);

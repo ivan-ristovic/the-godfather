@@ -23,7 +23,7 @@ namespace TheGodfather.Modules.Games
         public class CaroModule : TheGodfatherBaseModule
         {
 
-            public CaroModule(SharedData shared, DatabaseService db) : base(shared, db) { }
+            public CaroModule(SharedData shared, DBService db) : base(shared, db) { }
 
 
             [GroupCommand]
@@ -49,12 +49,12 @@ namespace TheGodfather.Modules.Games
                         await ReplyWithEmbedAsync(ctx, $"The winner is: {caro.Winner.Mention}!", ":trophy:")
                             .ConfigureAwait(false);
 
-                        await DatabaseService.UpdateUserStatsAsync(caro.Winner.Id, "caro_won")
+                        await Database.UpdateUserStatsAsync(caro.Winner.Id, "caro_won")
                             .ConfigureAwait(false);
                         if (caro.Winner.Id == ctx.User.Id)
-                            await DatabaseService.UpdateUserStatsAsync(opponent.Id, "caro_lost").ConfigureAwait(false);
+                            await Database.UpdateUserStatsAsync(opponent.Id, "caro_lost").ConfigureAwait(false);
                         else
-                            await DatabaseService.UpdateUserStatsAsync(ctx.User.Id, "caro_lost").ConfigureAwait(false);
+                            await Database.UpdateUserStatsAsync(ctx.User.Id, "caro_lost").ConfigureAwait(false);
                     } else if (caro.NoReply == false) {
                         await ReplyWithEmbedAsync(ctx, "A draw... Pathetic...", ":video_game:")
                             .ConfigureAwait(false);

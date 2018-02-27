@@ -35,8 +35,8 @@ namespace TheGodfather.Modules.Misc
             if (user == null)
                 user = ctx.User;
             
-            var rank = SharedData.GetRankForUser(user.Id);
-            var msgcount = SharedData.GetMessageCountForId(user.Id);
+            var rank = Shared.GetRankForUser(user.Id);
+            var msgcount = Shared.GetMessageCountForId(user.Id);
 
             var emb = new DiscordEmbedBuilder() {
                 Title = user.Username,
@@ -44,7 +44,7 @@ namespace TheGodfather.Modules.Misc
                 Color = DiscordColor.Aquamarine,
                 ThumbnailUrl = user.AvatarUrl
             };
-            emb.AddField("Rank", $"{Formatter.Italic(rank < SharedData.Ranks.Count ? SharedData.Ranks[rank] : "Low")} (#{rank})")
+            emb.AddField("Rank", $"{Formatter.Italic(rank < Shared.Ranks.Count ? Shared.Ranks[rank] : "Low")} (#{rank})")
                .AddField("XP", $"{msgcount}", inline: true)
                .AddField("XP needed for next rank", $"{(rank + 1) * (rank + 1) * 10}", inline: true);
 
@@ -65,9 +65,9 @@ namespace TheGodfather.Modules.Misc
                 Color = DiscordColor.IndianRed
             };
             
-            for (int i = 1; i < SharedData.Ranks.Count; i++) {
-                var xpneeded = SharedData.XpNeededForRankWithIndex(i);
-                emb.AddField($"(#{i}) {SharedData.Ranks[i]}", $"XP needed: {xpneeded}", inline: true);
+            for (int i = 1; i < Shared.Ranks.Count; i++) {
+                var xpneeded = Shared.XpNeededForRankWithIndex(i);
+                emb.AddField($"(#{i}) {Shared.Ranks[i]}", $"XP needed: {xpneeded}", inline: true);
             }
 
             await ctx.RespondAsync(embed: emb.Build())
@@ -81,7 +81,7 @@ namespace TheGodfather.Modules.Misc
         [UsageExample("!rank top")]
         public async Task TopAsync(CommandContext ctx)
         {
-            var top = SharedData.MessageCount.OrderByDescending(v => v.Value).Take(10);
+            var top = Shared.MessageCount.OrderByDescending(v => v.Value).Take(10);
             var emb = new DiscordEmbedBuilder() {
                 Title = "Top ranked users (globally): ",
                 Color = DiscordColor.Purple
@@ -97,9 +97,9 @@ namespace TheGodfather.Modules.Misc
                     u = null;
 
                 }
-                var rank = SharedData.GetRankForMessageCount(kvp.Value);
-                if (rank < SharedData.Ranks.Count)
-                    emb.AddField(u.Username ?? unknown, $"{SharedData.Ranks[rank]} ({rank}) ({kvp.Value} XP)");
+                var rank = Shared.GetRankForMessageCount(kvp.Value);
+                if (rank < Shared.Ranks.Count)
+                    emb.AddField(u.Username ?? unknown, $"{Shared.Ranks[rank]} ({rank}) ({kvp.Value} XP)");
                 else
                     emb.AddField(u.Username ?? unknown, $"Low ({kvp.Value} XP)");
             }

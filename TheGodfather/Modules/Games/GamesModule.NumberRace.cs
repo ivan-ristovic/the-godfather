@@ -26,7 +26,7 @@ namespace TheGodfather.Modules.Games
         public class NumberRaceModule : TheGodfatherBaseModule
         {
 
-            public NumberRaceModule(DatabaseService db) : base(db: db) { }
+            public NumberRaceModule(DBService db) : base(db: db) { }
 
 
             [GroupCommand]
@@ -68,7 +68,7 @@ namespace TheGodfather.Modules.Games
                         }
 
                         if (game.Winner != null)
-                            await DatabaseService.UpdateUserStatsAsync(game.Winner.Id, "numraces_won")
+                            await Database.UpdateUserStatsAsync(game.Winner.Id, "numraces_won")
                                 .ConfigureAwait(false);
                     } else {
                         await ReplyWithEmbedAsync(ctx, "Not enough users joined the race.", ":alarm_clock:")

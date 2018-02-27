@@ -26,7 +26,7 @@ namespace TheGodfather.Modules.Games
     public partial class GamesModule : TheGodfatherBaseModule
     {
 
-        public GamesModule(DatabaseService db) : base(db: db) { }
+        public GamesModule(DBService db) : base(db: db) { }
 
 
         #region COMMAND_GAMES_DUEL
@@ -64,9 +64,9 @@ namespace TheGodfather.Modules.Games
                 await ctx.RespondAsync($"{duel.Winner.Username} {duel.FinishingMove ?? "wins"}!")
                     .ConfigureAwait(false);
 
-                await DatabaseService.UpdateUserStatsAsync(duel.Winner.Id, "duels_won")
+                await Database.UpdateUserStatsAsync(duel.Winner.Id, "duels_won")
                     .ConfigureAwait(false);
-                await DatabaseService.UpdateUserStatsAsync(duel.Winner.Id == ctx.User.Id ? opponent.Id : ctx.User.Id, "duels_lost")
+                await Database.UpdateUserStatsAsync(duel.Winner.Id == ctx.User.Id ? opponent.Id : ctx.User.Id, "duels_lost")
                     .ConfigureAwait(false);
             } finally {
                 Game.UnregisterGameInChannel(ctx.Channel.Id);
@@ -113,7 +113,7 @@ namespace TheGodfather.Modules.Games
                 await hangman.RunAsync()
                     .ConfigureAwait(false);
                 if (hangman.Winner != null)
-                    await DatabaseService.UpdateUserStatsAsync(hangman.Winner.Id, "hangman_won")
+                    await Database.UpdateUserStatsAsync(hangman.Winner.Id, "hangman_won")
                         .ConfigureAwait(false);
             } finally {
                 Game.UnregisterGameInChannel(ctx.Channel.Id);
@@ -128,7 +128,7 @@ namespace TheGodfather.Modules.Games
         [UsageExample("!game leaderboard")]
         public async Task LeaderboardAsync(CommandContext ctx)
         {
-            var em = await DatabaseService.GetStatsLeaderboardAsync(ctx.Client)
+            var em = await Database.GetStatsLeaderboardAsync(ctx.Client)
                 .ConfigureAwait(false);
             await ctx.RespondAsync(embed: em)
                 .ConfigureAwait(false);
@@ -185,7 +185,7 @@ namespace TheGodfather.Modules.Games
             if (user == null)
                 user = ctx.User;
 
-            var em = await DatabaseService.GetEmbeddedStatsForUserAsync(user)
+            var em = await Database.GetEmbeddedStatsForUserAsync(user)
                 .ConfigureAwait(false);
             await ctx.RespondAsync(embed: em)
                 .ConfigureAwait(false);

@@ -11,7 +11,7 @@ using NpgsqlTypes;
 
 namespace TheGodfather.Services
 {
-    public partial class DatabaseService
+    public partial class DBService
     {
         public async Task<bool> HasBankAccountAsync(ulong uid)
         {
@@ -22,7 +22,8 @@ namespace TheGodfather.Services
 
         public async Task<bool> RetrieveCreditsAsync(ulong uid, int amount)
         {
-            int? balance = await GetBalanceForUserAsync(uid).ConfigureAwait(false);
+            int? balance = await GetBalanceForUserAsync(uid)
+                .ConfigureAwait(false);
             if (!balance.HasValue || balance.Value < amount)
                 return false;
 

@@ -30,7 +30,7 @@ namespace TheGodfather.Modules.Reactions
     public class TextReactionsModule : TheGodfatherBaseModule
     {
 
-        public TextReactionsModule(SharedData shared, DatabaseService db) : base(shared, db) { }
+        public TextReactionsModule(SharedData shared, DBService db) : base(shared, db) { }
 
 
         [GroupCommand]
@@ -57,8 +57,8 @@ namespace TheGodfather.Modules.Reactions
             if (trigger.Length > 120 || response.Length > 120)
                 throw new CommandFailedException("Trigger or response cannot be longer than 120 characters.");
 
-            if (!SharedData.GuildTextReactions.ContainsKey(ctx.Guild.Id))
-                SharedData.GuildTextReactions.TryAdd(ctx.Guild.Id, new ConcurrentHashSet<(Regex, string)>());
+            if (!Shared.GuildTextReactions.ContainsKey(ctx.Guild.Id))
+                Shared.GuildTextReactions.TryAdd(ctx.Guild.Id, new ConcurrentHashSet<(Regex, string)>());
 
             Regex regex;
             string errors = "";
@@ -68,14 +68,14 @@ namespace TheGodfather.Modules.Reactions
                 throw new CommandFailedException($"Trigger {Formatter.Bold(trigger)} is not a valid regular expression.");
             }
 
-            if (SharedData.TextTriggerExists(ctx.Guild.Id, trigger))
+            if (Shared.TextTriggerExists(ctx.Guild.Id, trigger))
                 throw new CommandFailedException($"Trigger {Formatter.Bold(trigger)} already exists.");
 
-            if (!SharedData.GuildTextReactions[ctx.Guild.Id].Add((regex, response)))
+            if (!Shared.GuildTextReactions[ctx.Guild.Id].Add((regex, response)))
                 throw new CommandFailedException($"Failed to add trigger {Formatter.Bold(trigger)}.");
 
             try {
-                await DatabaseService.AddTextReactionAsync(ctx.Guild.Id, trigger, response)
+                await Database.AddTextReactionAsync(ctx.Guild.Id, trigger, response)
                     .ConfigureAwait(false);
             } catch {
                 errors = $"Warning: Failed to add trigger {Formatter.Bold(trigger)} to the database.";
@@ -97,11 +97,11 @@ namespace TheGodfather.Modules.Reactions
             if (!await AskYesNoQuestionAsync(ctx, "Are you sure you want to delete all text reactions for this guild?").ConfigureAwait(false))
                 return;
 
-            if (SharedData.GuildTextReactions.ContainsKey(ctx.Guild.Id))
-                SharedData.GuildTextReactions.TryRemove(ctx.Guild.Id, out _);
+            if (Shared.GuildTextReactions.ContainsKey(ctx.Guild.Id))
+                Shared.GuildTextReactions.TryRemove(ctx.Guild.Id, out _);
 
             try {
-                await DatabaseService.DeleteAllGuildTextReactionsAsync(ctx.Guild.Id)
+                await Database.DeleteAllGuildTextReactionsAsync(ctx.Guild.Id)
                     .ConfigureAwait(false);
             } catch {
                 throw new CommandFailedException("Failed to delete text reactions from the database.");
@@ -124,7 +124,7 @@ namespace TheGodfather.Modules.Reactions
             if (triggers == null)
                 throw new InvalidCommandUsageException("Triggers missing.");
 
-            if (!SharedData.GuildTextReactions.ContainsKey(ctx.Guild.Id))
+            if (!Shared.GuildTextReactions.ContainsKey(ctx.Guild.Id))
                 throw new CommandFailedException("This guild has no text reactions registered.");
 
             var errors = new StringBuilder();
@@ -140,18 +140,18 @@ namespace TheGodfather.Modules.Reactions
                     continue;
                 }
 
-                if (!SharedData.TextTriggerExists(ctx.Guild.Id, trigger)) {
+                if (!Shared.TextTriggerExists(ctx.Guild.Id, trigger)) {
                     errors.AppendLine($"Warning: Trigger {Formatter.Bold(trigger)} does not exist in this guild.");
                     continue;
                 }
 
-                if (SharedData.GuildTextReactions[ctx.Guild.Id].RemoveWhere(tup => tup.Item1.ToString() == regex.ToString()) == 0) {
+                if (Shared.GuildTextReactions[ctx.Guild.Id].RemoveWhere(tup => tup.Item1.ToString() == regex.ToString()) == 0) {
                     errors.AppendLine($"Warning: Failed to remove text reaction for trigger {Formatter.Bold(trigger)}.");
                     continue;
                 }
 
                 try {
-                    await DatabaseService.RemoveTextReactionAsync(ctx.Guild.Id, trigger)
+                    await Database.RemoveTextReactionAsync(ctx.Guild.Id, trigger)
                         .ConfigureAwait(false);
                 } catch {
                     errors.AppendLine($"Warning: Failed to remove trigger {Formatter.Bold(trigger)} from the database.");
@@ -170,13 +170,13 @@ namespace TheGodfather.Modules.Reactions
         [UsageExample("!textreactions list")]
         public async Task ListAsync(CommandContext ctx)
         {
-            if (!SharedData.GuildTextReactions.ContainsKey(ctx.Guild.Id) || !SharedData.GuildTextReactions[ctx.Guild.Id].Any())
+            if (!Shared.GuildTextReactions.ContainsKey(ctx.Guild.Id) || !Shared.GuildTextReactions[ctx.Guild.Id].Any())
                 throw new CommandFailedException("This guild has no text reactions registered.");
             
             await InteractivityUtil.SendPaginatedCollectionAsync(
                 ctx,
                 "Text reactions for this guild",
-                SharedData.GuildTextReactions[ctx.Guild.Id],
+                Shared.GuildTextReactions[ctx.Guild.Id],
                 tup => $"{tup.Item1.ToString().Replace(@"\b", "")} => {tup.Item2}",
                 DiscordColor.Blue
             ).ConfigureAwait(false);

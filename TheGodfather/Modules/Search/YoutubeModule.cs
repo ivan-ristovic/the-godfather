@@ -22,7 +22,7 @@ namespace TheGodfather.Modules.Search
     public class YoutubeModule : TheGodfatherServiceModule<YoutubeService>
     {
 
-        public YoutubeModule(YoutubeService yt, DatabaseService db) : base(yt, db: db) { }
+        public YoutubeModule(YoutubeService yt, DBService db) : base(yt, db: db) { }
 
 
         [GroupCommand]
@@ -86,14 +86,14 @@ namespace TheGodfather.Modules.Search
             if (string.IsNullOrWhiteSpace(url))
                 throw new InvalidCommandUsageException("Channel URL missing.");
 
-            var chid = await Service.GetYoutubeIdAsync(url)
+            var chid = await _Service.GetYoutubeIdAsync(url)
                 .ConfigureAwait(false);
 
             if (chid == null)
                 throw new CommandFailedException("Failed retrieving channel ID for that URL.");
 
             var feedurl = YoutubeService.GetYoutubeRSSFeedLinkForChannelId(chid);
-            if (await DatabaseService.AddFeedAsync(ctx.Channel.Id, feedurl, string.IsNullOrWhiteSpace(name) ? url : name).ConfigureAwait(false))
+            if (await Database.AddFeedAsync(ctx.Channel.Id, feedurl, string.IsNullOrWhiteSpace(name) ? url : name).ConfigureAwait(false))
                 await ReplyWithEmbedAsync(ctx, "Subscribed!").ConfigureAwait(false);
             else
                 await ReplyWithFailedEmbedAsync(ctx, "Either the channel URL you is invalid or you are already subscribed to it!").ConfigureAwait(false);
@@ -113,14 +113,14 @@ namespace TheGodfather.Modules.Search
             if (string.IsNullOrWhiteSpace(name_url))
                 throw new InvalidCommandUsageException("Channel URL missing.");
 
-            var chid = await Service.GetYoutubeIdAsync(name_url)
+            var chid = await _Service.GetYoutubeIdAsync(name_url)
                 .ConfigureAwait(false);
             if (chid == null) {
-                await DatabaseService.RemoveSubscriptionUsingNameAsync(ctx.Channel.Id, name_url)
+                await Database.RemoveSubscriptionUsingNameAsync(ctx.Channel.Id, name_url)
                     .ConfigureAwait(false);
             } else {
                 var feedurl = YoutubeService.GetYoutubeRSSFeedLinkForChannelId(chid);
-                await DatabaseService.RemoveSubscriptionUsingUrlAsync(ctx.Channel.Id, feedurl)
+                await Database.RemoveSubscriptionUsingUrlAsync(ctx.Channel.Id, feedurl)
                     .ConfigureAwait(false);
             }
 
@@ -139,7 +139,7 @@ namespace TheGodfather.Modules.Search
             if (amount < 1 || amount > 10)
                 throw new CommandFailedException("Invalid amount (must be 1-10).");
 
-            var pages = await Service.GetPaginatedResults(query, amount, type)
+            var pages = await _Service.GetPaginatedResults(query, amount, type)
                 .ConfigureAwait(false);
             if (pages == null) {
                 await ReplyWithFailedEmbedAsync(ctx, "No results found!")

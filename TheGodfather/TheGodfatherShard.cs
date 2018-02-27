@@ -42,11 +42,11 @@ namespace TheGodfather
 
         #region PRIVATE_FIELDS
         private SharedData _shared { get; }
-        private DatabaseService _db { get; }
+        private DBService _db { get; }
         #endregion
 
 
-        public TheGodfatherShard(int sid, DatabaseService db, SharedData sd)
+        public TheGodfatherShard(int sid, DBService db, SharedData sd)
         {
             ShardId = sid;
             _db = db;

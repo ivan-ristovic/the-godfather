@@ -23,7 +23,7 @@ namespace TheGodfather.Modules.Games
         public class ConnectFourModule : TheGodfatherBaseModule
         {
 
-            public ConnectFourModule(SharedData shared, DatabaseService db) : base(shared, db) { }
+            public ConnectFourModule(SharedData shared, DBService db) : base(shared, db) { }
 
 
             [GroupCommand]
@@ -49,11 +49,11 @@ namespace TheGodfather.Modules.Games
                         await ReplyWithEmbedAsync(ctx, $"The winner is: {connect4.Winner.Mention}!", ":trophy:")
                             .ConfigureAwait(false);
 
-                        await DatabaseService.UpdateUserStatsAsync(connect4.Winner.Id, "chain4_won").ConfigureAwait(false);
+                        await Database.UpdateUserStatsAsync(connect4.Winner.Id, "chain4_won").ConfigureAwait(false);
                         if (connect4.Winner.Id == ctx.User.Id)
-                            await DatabaseService.UpdateUserStatsAsync(opponent.Id, "chain4_lost").ConfigureAwait(false);
+                            await Database.UpdateUserStatsAsync(opponent.Id, "chain4_lost").ConfigureAwait(false);
                         else
-                            await DatabaseService.UpdateUserStatsAsync(ctx.User.Id, "chain4_lost").ConfigureAwait(false);
+                            await Database.UpdateUserStatsAsync(ctx.User.Id, "chain4_lost").ConfigureAwait(false);
                     } else if (connect4.NoReply == false) {
                         await ReplyWithEmbedAsync(ctx, "A draw... Pathetic...", ":video_game:")
                             .ConfigureAwait(false);

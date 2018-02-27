@@ -1,7 +1,7 @@
 ﻿#region USING_DIRECTIVES
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 using TheGodfather.Services.FeedServices;
@@ -12,7 +12,7 @@ using NpgsqlTypes;
 
 namespace TheGodfather.Services
 {
-    public partial class DatabaseService
+    public partial class DBService
     {
         public async Task<IReadOnlyList<FeedEntry>> GetAllSubscriptionsAsync()
         {

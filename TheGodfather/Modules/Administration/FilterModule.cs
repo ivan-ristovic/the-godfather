@@ -28,7 +28,7 @@ namespace TheGodfather.Modules.Administration
     public class FilterModule : TheGodfatherBaseModule
     {
 
-        public FilterModule(SharedData shared, DatabaseService db) : base(shared, db) { }
+        public FilterModule(SharedData shared, DBService db) : base(shared, db) { }
 
 
         [GroupCommand]
@@ -62,7 +62,7 @@ namespace TheGodfather.Modules.Administration
                     continue;
                 }
 
-                if (SharedData.TextTriggerExists(ctx.Guild.Id, filter)) {
+                if (Shared.TextTriggerExists(ctx.Guild.Id, filter)) {
                     errors.AppendLine($"Error: Filter {Formatter.Bold(filter)} cannot be added because of a conflict with an existing text trigger in this guild.");
                     continue;
                 }
@@ -80,18 +80,18 @@ namespace TheGodfather.Modules.Administration
                     continue;
                 }
 
-                if (SharedData.GuildFilters.ContainsKey(ctx.Guild.Id)) {
-                    if (SharedData.GuildFilters[ctx.Guild.Id].Any(r => r.ToString() == regex.ToString())) {
+                if (Shared.GuildFilters.ContainsKey(ctx.Guild.Id)) {
+                    if (Shared.GuildFilters[ctx.Guild.Id].Any(r => r.ToString() == regex.ToString())) {
                         errors.AppendLine($"Error: Filter {Formatter.Bold(filter)} already exists.");
                         continue;
                     }
-                    SharedData.GuildFilters[ctx.Guild.Id].Add(regex);
+                    Shared.GuildFilters[ctx.Guild.Id].Add(regex);
                 } else {
-                    SharedData.GuildFilters.TryAdd(ctx.Guild.Id, new ConcurrentHashSet<Regex>() { regex });
+                    Shared.GuildFilters.TryAdd(ctx.Guild.Id, new ConcurrentHashSet<Regex>() { regex });
                 }
 
                 try {
-                    await DatabaseService.AddFilterAsync(ctx.Guild.Id, filter)
+                    await Database.AddFilterAsync(ctx.Guild.Id, filter)
                         .ConfigureAwait(false);
                 } catch {
                     errors.AppendLine($"Warning: Failed to add filter {Formatter.Bold(filter)} to the database.");
@@ -114,11 +114,11 @@ namespace TheGodfather.Modules.Administration
             if (!await AskYesNoQuestionAsync(ctx, "Are you sure you want to delete all filters for this guild?").ConfigureAwait(false))
                 return;
 
-            if (SharedData.GuildFilters.ContainsKey(ctx.Guild.Id))
-                SharedData.GuildFilters.TryRemove(ctx.Guild.Id, out _);
+            if (Shared.GuildFilters.ContainsKey(ctx.Guild.Id))
+                Shared.GuildFilters.TryRemove(ctx.Guild.Id, out _);
 
             try {
-                await DatabaseService.RemoveAllGuildFiltersAsync(ctx.Guild.Id)
+                await Database.RemoveAllGuildFiltersAsync(ctx.Guild.Id)
                     .ConfigureAwait(false);
             } catch {
                 throw new CommandFailedException("Failed to delete filters from the database.");
@@ -138,19 +138,19 @@ namespace TheGodfather.Modules.Administration
         public async Task DeleteAsync(CommandContext ctx,
                                      [RemainingText, Description("Filters to remove.")] params string[] filters)
         {
-            if (!SharedData.GuildFilters.ContainsKey(ctx.Guild.Id))
+            if (!Shared.GuildFilters.ContainsKey(ctx.Guild.Id))
                 throw new CommandFailedException("This guild has no filters registered.");
 
             var errors = new StringBuilder();
             foreach (var filter in filters) {
                 var rstr = $@"\b{filter}\b";
-                if (SharedData.GuildFilters[ctx.Guild.Id].RemoveWhere(r => r.ToString() == rstr) == 0) {
+                if (Shared.GuildFilters[ctx.Guild.Id].RemoveWhere(r => r.ToString() == rstr) == 0) {
                     errors.AppendLine($"Error: Filter {Formatter.Bold(filter)} does not exist.");
                     continue;
                 }
 
                 try {
-                    await DatabaseService.RemoveFilterAsync(ctx.Guild.Id, filter)
+                    await Database.RemoveFilterAsync(ctx.Guild.Id, filter)
                         .ConfigureAwait(false);
                 } catch {
                     errors.AppendLine($"Warning: Failed to remove filter {Formatter.Bold(filter)} from the database.");
@@ -169,13 +169,13 @@ namespace TheGodfather.Modules.Administration
         [UsageExample("!filter list")]
         public async Task ListAsync(CommandContext ctx)
         {
-            if (!SharedData.GuildFilters.ContainsKey(ctx.Guild.Id) || !SharedData.GuildFilters[ctx.Guild.Id].Any())
+            if (!Shared.GuildFilters.ContainsKey(ctx.Guild.Id) || !Shared.GuildFilters[ctx.Guild.Id].Any())
                 throw new CommandFailedException("No filters registered for this guild.");
 
             await InteractivityUtil.SendPaginatedCollectionAsync(
                 ctx,
                 "Filters in this guild",
-                SharedData.GuildFilters[ctx.Guild.Id],
+                Shared.GuildFilters[ctx.Guild.Id],
                 r => r.ToString().Replace(@"\b", ""),
                 DiscordColor.DarkGreen
             ).ConfigureAwait(false);

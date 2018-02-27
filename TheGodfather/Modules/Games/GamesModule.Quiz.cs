@@ -22,7 +22,7 @@ namespace TheGodfather.Modules.Games
         public partial class QuizModule : TheGodfatherBaseModule
         {
 
-            public QuizModule(DatabaseService db) : base(db: db) { }
+            public QuizModule(DBService db) : base(db: db) { }
 
 
             [GroupCommand]

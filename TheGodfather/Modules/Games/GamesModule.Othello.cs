@@ -23,7 +23,7 @@ namespace TheGodfather.Modules.Games
         public class OthelloModule : TheGodfatherBaseModule
         {
 
-            public OthelloModule(SharedData shared, DatabaseService db) : base(shared, db) { }
+            public OthelloModule(SharedData shared, DBService db) : base(shared, db) { }
 
 
             [GroupCommand]
@@ -49,12 +49,12 @@ namespace TheGodfather.Modules.Games
                         await ReplyWithEmbedAsync(ctx, $"The winner is: {othello.Winner.Mention}!", ":trophy:")
                             .ConfigureAwait(false);
                         
-                        await DatabaseService.UpdateUserStatsAsync(othello.Winner.Id, "othello_won")
+                        await Database.UpdateUserStatsAsync(othello.Winner.Id, "othello_won")
                             .ConfigureAwait(false);
                         if (othello.Winner.Id == ctx.User.Id)
-                            await DatabaseService.UpdateUserStatsAsync(opponent.Id, "othello_lost").ConfigureAwait(false);
+                            await Database.UpdateUserStatsAsync(opponent.Id, "othello_lost").ConfigureAwait(false);
                         else
-                            await DatabaseService.UpdateUserStatsAsync(ctx.User.Id, "othello_lost").ConfigureAwait(false);
+                            await Database.UpdateUserStatsAsync(ctx.User.Id, "othello_lost").ConfigureAwait(false);
                     } else if (othello.NoReply == false) {
                         await ReplyWithEmbedAsync(ctx, "A draw... Pathetic...", ":video_game:")
                             .ConfigureAwait(false);

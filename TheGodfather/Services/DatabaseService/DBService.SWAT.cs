@@ -1,7 +1,5 @@
 ﻿#region USING_DIRECTIVES
-using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 
 using TheGodfather.Entities.SWAT;
@@ -12,7 +10,7 @@ using NpgsqlTypes;
 
 namespace TheGodfather.Services
 {
-    public partial class DatabaseService
+    public partial class DBService
     {
         public async Task<IReadOnlyList<SwatServer>> GetAllSwatServersAsync()
         {

@@ -63,7 +63,7 @@ namespace TheGodfather.Modules.Games
                             Description = string.Join("\n", results.Select(t => $"{t.Item1.Mention} : {t.Item2}")),
                             Color = DiscordColor.Azure
                         }.Build()).ConfigureAwait(false);
-                        await DatabaseService.UpdateUserStatsAsync(results.First().Item1.Id, "quizes_won")
+                        await Database.UpdateUserStatsAsync(results.First().Item1.Id, "quizes_won")
                             .ConfigureAwait(false);
                     } else {
                         await ReplyWithEmbedAsync(ctx, "Trying to improve stats by playing alone? Won't work...", ":joy:")

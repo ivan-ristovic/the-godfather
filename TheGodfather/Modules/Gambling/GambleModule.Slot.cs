@@ -28,7 +28,7 @@ namespace TheGodfather.Modules.Gambling
             if (bid <= 0)
                 throw new InvalidCommandUsageException("Invalid bid amount!");
 
-            if (!await DatabaseService.RetrieveCreditsAsync(ctx.User.Id, bid).ConfigureAwait(false))
+            if (!await Database.RetrieveCreditsAsync(ctx.User.Id, bid).ConfigureAwait(false))
                 throw new CommandFailedException("You do not have enough credits in WM bank!");
 
             DiscordEmoji[,] res = RollSlot(ctx);
@@ -45,7 +45,7 @@ namespace TheGodfather.Modules.Gambling
                 .ConfigureAwait(false);
 
             if (won > 0)
-                await DatabaseService.IncreaseBalanceForUserAsync(ctx.User.Id, won)
+                await Database.IncreaseBalanceForUserAsync(ctx.User.Id, won)
                     .ConfigureAwait(false);
         }
         #endregion

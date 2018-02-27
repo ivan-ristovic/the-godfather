@@ -27,7 +27,7 @@ namespace TheGodfather.Modules.Games
         public class RaceModule : TheGodfatherBaseModule
         {
 
-            public RaceModule(DatabaseService db) : base(db: db) { }
+            public RaceModule(DBService db) : base(db: db) { }
 
 
             [GroupCommand]
@@ -56,7 +56,7 @@ namespace TheGodfather.Modules.Games
                             .ConfigureAwait(false);
 
                         foreach (var uid in game.WinnerIds)
-                            await DatabaseService.UpdateUserStatsAsync(uid, "races_won")
+                            await Database.UpdateUserStatsAsync(uid, "races_won")
                                 .ConfigureAwait(false);
                     } else {
                         await ReplyWithEmbedAsync(ctx, "Not enough users joined the race.", ":alarm_clock:")

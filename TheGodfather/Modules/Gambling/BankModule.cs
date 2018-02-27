@@ -23,7 +23,7 @@ namespace TheGodfather.Modules.Gambling
     public class BankModule : TheGodfatherBaseModule
     {
 
-        public BankModule(DatabaseService db) : base(db: db) { }
+        public BankModule(DBService db) : base(db: db) { }
 
 
         [GroupCommand]
@@ -45,7 +45,7 @@ namespace TheGodfather.Modules.Gambling
             if (user == null)
                 user = ctx.User;
 
-            int? balance = await DatabaseService.GetBalanceForUserAsync(user.Id)
+            int? balance = await Database.GetBalanceForUserAsync(user.Id)
                 .ConfigureAwait(false);
 
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
@@ -70,10 +70,10 @@ namespace TheGodfather.Modules.Gambling
             if (amount <= 0 || amount > 100000)
                 throw new InvalidCommandUsageException("Invalid amount. Must be in range [1-100000].");
 
-            if (!await DatabaseService.HasBankAccountAsync(ctx.User.Id).ConfigureAwait(false))
+            if (!await Database.HasBankAccountAsync(ctx.User.Id).ConfigureAwait(false))
                 throw new CommandFailedException("Given user does not have a WM bank account!");
 
-            await DatabaseService.IncreaseBalanceForUserAsync(user.Id, amount)
+            await Database.IncreaseBalanceForUserAsync(user.Id, amount)
                 .ConfigureAwait(false);
             await ReplyWithEmbedAsync(ctx, $"{Formatter.Bold(user.Mention)} won {Formatter.Bold(amount.ToString())} credits on the Serbian lottery! (seems legit)", ":moneybag:")
                 .ConfigureAwait(false);
@@ -93,10 +93,10 @@ namespace TheGodfather.Modules.Gambling
         [UsageExample("!bank register")]
         public async Task RegisterAsync(CommandContext ctx)
         {
-            if (await DatabaseService.HasBankAccountAsync(ctx.User.Id).ConfigureAwait(false))
+            if (await Database.HasBankAccountAsync(ctx.User.Id).ConfigureAwait(false))
                 throw new CommandFailedException("You already own an account in WM bank!");
 
-            await DatabaseService.OpenBankAccountForUserAsync(ctx.User.Id)
+            await Database.OpenBankAccountForUserAsync(ctx.User.Id)
                 .ConfigureAwait(false);
             await ReplyWithEmbedAsync(ctx, $"Account opened for you, {ctx.User.Mention}! Since WM bank is so generous, you get 25 credits for free.", ":moneybag:")
                 .ConfigureAwait(false);
@@ -110,7 +110,7 @@ namespace TheGodfather.Modules.Gambling
         [UsageExample("!bank top")]
         public async Task GetLeaderboardAsync(CommandContext ctx)
         {
-            var top = await DatabaseService.GetTopTenBankAccountsAsync()
+            var top = await Database.GetTopTenBankAccountsAsync()
                 .ConfigureAwait(false);
 
             StringBuilder sb = new StringBuilder();
@@ -146,7 +146,7 @@ namespace TheGodfather.Modules.Gambling
             if (user.Id == ctx.User.Id)
                 throw new CommandFailedException("You can't transfer funds to yourself.");
 
-            await DatabaseService.TransferCurrencyAsync(ctx.User.Id, user.Id, amount)
+            await Database.TransferCurrencyAsync(ctx.User.Id, user.Id, amount)
                 .ConfigureAwait(false);
 
             await ReplyWithEmbedAsync(ctx, $"Transfer from {Formatter.Bold(ctx.User.Username)} to {Formatter.Bold(user.Username)} is complete.", ":moneybag:")

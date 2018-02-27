@@ -1,5 +1,4 @@
 ﻿#region USING_DIRECTIVES
-using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -10,7 +9,7 @@ using NpgsqlTypes;
 
 namespace TheGodfather.Services
 {
-    public partial class DatabaseService
+    public partial class DBService
     {
         #region TEXT_REACTION_SERVICES
         public async Task<Dictionary<ulong, List<(Regex, string)>>> GetAllTextReactionsAsync()

@@ -33,7 +33,7 @@ namespace TheGodfather.Modules.Owner
     public class BotOwnerModule : TheGodfatherBaseModule
     {
 
-        public BotOwnerModule(DatabaseService db) : base(db: db) { }
+        public BotOwnerModule(DBService db) : base(db: db) { }
 
 
         #region COMMAND_BOTAVATAR
@@ -119,7 +119,7 @@ namespace TheGodfather.Modules.Owner
 
             IReadOnlyList<IReadOnlyDictionary<string, string>> res;
             try {
-                res = await DatabaseService.ExecuteRawQueryAsync(query)
+                res = await Database.ExecuteRawQueryAsync(query)
                     .ConfigureAwait(false);
             } catch (Npgsql.NpgsqlException e) {
                 throw new CommandFailedException("An error occured while attempting to execute the query.", e);
@@ -491,7 +491,7 @@ namespace TheGodfather.Modules.Owner
         public class StatusModule : TheGodfatherBaseModule
         {
 
-            public StatusModule(DatabaseService db) : base(db: db) { }
+            public StatusModule(DBService db) : base(db: db) { }
 
 
             #region COMMAND_STATUS_ADD
@@ -522,7 +522,7 @@ namespace TheGodfather.Modules.Owner
                 if (status.Length > 60)
                     throw new CommandFailedException("Status length cannot be greater than 60 characters.");
 
-                await DatabaseService.AddBotStatusAsync(status, activity)
+                await Database.AddBotStatusAsync(status, activity)
                     .ConfigureAwait(false);
                 await ReplyWithEmbedAsync(ctx)
                     .ConfigureAwait(false);
@@ -537,7 +537,7 @@ namespace TheGodfather.Modules.Owner
             public async Task DeleteAsync(CommandContext ctx,
                                          [Description("Status ID.")] int id)
             {
-                await DatabaseService.RemoveBotStatusAsync(id)
+                await Database.RemoveBotStatusAsync(id)
                     .ConfigureAwait(false);
                 await ReplyWithEmbedAsync(ctx)
                     .ConfigureAwait(false);
@@ -551,7 +551,7 @@ namespace TheGodfather.Modules.Owner
             [UsageExample("!owner status list")]
             public async Task ListAsync(CommandContext ctx)
             {
-                var statuses = await DatabaseService.GetBotStatusesAsync(ctx.Client)
+                var statuses = await Database.GetBotStatusesAsync(ctx.Client)
                     .ConfigureAwait(false);
 
                 await InteractivityUtil.SendPaginatedCollectionAsync(

@@ -9,7 +9,7 @@ using NpgsqlTypes;
 
 namespace TheGodfather.Services
 {
-    public partial class DatabaseService
+    public partial class DBService
     {
         public async Task<IReadOnlyList<Tuple<ulong, string>>> GetAllGuildFiltersAsync()
         {

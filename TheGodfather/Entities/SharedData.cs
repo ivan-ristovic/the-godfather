@@ -98,7 +98,7 @@ namespace TheGodfather
         public uint XpNeededForRankWithIndex(int index)
             => (uint)(index * index * 10);
 
-        public async Task SaveRanksToDatabaseAsync(DatabaseService db)
+        public async Task SaveRanksToDatabaseAsync(DBService db)
         {
             foreach (var entry in MessageCount)
                 await db.UpdateMessageCountForUserAsync(entry.Key, entry.Value).ConfigureAwait(false);

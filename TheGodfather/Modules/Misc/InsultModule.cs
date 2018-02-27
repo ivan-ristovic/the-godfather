@@ -25,7 +25,7 @@ namespace TheGodfather.Modules.Misc
     public class InsultModule : TheGodfatherBaseModule
     {
 
-        public InsultModule(DatabaseService db) : base(db: db) { }
+        public InsultModule(DBService db) : base(db: db) { }
 
 
         [GroupCommand]
@@ -41,7 +41,7 @@ namespace TheGodfather.Modules.Misc
                 return;
             }
 
-            string insult = await DatabaseService.GetRandomInsultAsync()
+            string insult = await Database.GetRandomInsultAsync()
                 .ConfigureAwait(false);
             if (insult == null)
                 throw new CommandFailedException("No available insults.");
@@ -69,7 +69,7 @@ namespace TheGodfather.Modules.Misc
             if (insult.Split(new string[] { "%user%" }, StringSplitOptions.None).Count() < 2)
                 throw new InvalidCommandUsageException($"Insult not in correct format (missing {Formatter.Bold("%user%")} in the insult)!");
 
-            await DatabaseService.AddInsultAsync(insult)
+            await Database.AddInsultAsync(insult)
                 .ConfigureAwait(false);
 
             await ReplyWithEmbedAsync(ctx)
@@ -88,7 +88,7 @@ namespace TheGodfather.Modules.Misc
             if (!await AskYesNoQuestionAsync(ctx, "Are you sure you want to delete all insults?").ConfigureAwait(false))
                 return;
 
-            await DatabaseService.DeleteAllInsultsAsync()
+            await Database.DeleteAllInsultsAsync()
                 .ConfigureAwait(false);
             await ReplyWithEmbedAsync(ctx, "All insults successfully removed.")
                 .ConfigureAwait(false);
@@ -104,7 +104,7 @@ namespace TheGodfather.Modules.Misc
         public async Task DeleteInsultAsync(CommandContext ctx, 
                                            [Description("Index of the insult to remove.")] int index)
         {
-            await DatabaseService.RemoveInsultByIdAsync(index)
+            await Database.RemoveInsultByIdAsync(index)
                 .ConfigureAwait(false);
             await ReplyWithEmbedAsync(ctx)
                 .ConfigureAwait(false);
@@ -118,7 +118,7 @@ namespace TheGodfather.Modules.Misc
         [UsageExample("!insult list")]
         public async Task ListInsultsAsync(CommandContext ctx)
         {
-            var insults = await DatabaseService.GetAllInsultsAsync()
+            var insults = await Database.GetAllInsultsAsync()
                 .ConfigureAwait(false);
 
             if (insults == null || !insults.Any())

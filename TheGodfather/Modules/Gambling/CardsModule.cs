@@ -36,10 +36,10 @@ namespace TheGodfather.Modules.Gambling
         public async Task DrawAsync(CommandContext ctx,
                                    [Description("Amount (in range [1-10]).")] int amount = 1)
         {
-            if (!SharedData.CardDecks.ContainsKey(ctx.Channel.Id) || SharedData.CardDecks[ctx.Channel.Id] == null)
+            if (!Shared.CardDecks.ContainsKey(ctx.Channel.Id) || Shared.CardDecks[ctx.Channel.Id] == null)
                 throw new CommandFailedException($"No deck to deal from. Type {Formatter.InlineCode("!deck")} to open a deck.");
 
-            var deck = SharedData.CardDecks[ctx.Channel.Id];
+            var deck = Shared.CardDecks[ctx.Channel.Id];
 
             if (deck.CardCount == 0)
                 throw new CommandFailedException($"Current deck has no more cards. Type {Formatter.InlineCode("!deck reset")} to reset the deck.");
@@ -62,11 +62,11 @@ namespace TheGodfather.Modules.Gambling
         [UsageExample("!deck draw 5")]
         public async Task ResetDeckAsync(CommandContext ctx)
         {
-            if (SharedData.CardDecks.ContainsKey(ctx.Channel.Id))
+            if (Shared.CardDecks.ContainsKey(ctx.Channel.Id))
                 throw new CommandFailedException($"A deck is already opened in this channel! If you want to reset it, use {Formatter.InlineCode("!deck new")}");
 
-            SharedData.CardDecks[ctx.Channel.Id] = new Deck();
-            SharedData.CardDecks[ctx.Channel.Id].Shuffle();
+            Shared.CardDecks[ctx.Channel.Id] = new Deck();
+            Shared.CardDecks[ctx.Channel.Id].Shuffle();
 
             await ReplyWithEmbedAsync(ctx, "A new shuffled deck is opened in this channel!", ":spades:")
                 .ConfigureAwait(false);
@@ -80,10 +80,10 @@ namespace TheGodfather.Modules.Gambling
         [UsageExample("!deck shuffle")]
         public async Task ShuffleDeckAsync(CommandContext ctx)
         {
-            if (!SharedData.CardDecks.ContainsKey(ctx.Channel.Id) || SharedData.CardDecks[ctx.Channel.Id] == null)
+            if (!Shared.CardDecks.ContainsKey(ctx.Channel.Id) || Shared.CardDecks[ctx.Channel.Id] == null)
                 throw new CommandFailedException($"No decks to shuffle. Type {Formatter.InlineCode("!deck")} to open a new shuffled deck.");
 
-            SharedData.CardDecks[ctx.Channel.Id].Shuffle();
+            Shared.CardDecks[ctx.Channel.Id].Shuffle();
             await ReplyWithEmbedAsync(ctx, emojistr: ":ticket:")
                 .ConfigureAwait(false);
         }

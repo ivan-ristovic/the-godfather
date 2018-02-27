@@ -27,7 +27,7 @@ namespace TheGodfather.Modules.Search
     public class RSSModule : TheGodfatherBaseModule
     {
 
-        public RSSModule(DatabaseService db) : base(db: db) { }
+        public RSSModule(DBService db) : base(db: db) { }
 
 
         [GroupCommand]
@@ -55,7 +55,7 @@ namespace TheGodfather.Modules.Search
         [UsageExample("!feed list")]
         public async Task FeedListAsync(CommandContext ctx)
         {
-            var subs = await DatabaseService.GetSubscriptionsForChannelAsync(ctx.Channel.Id)
+            var subs = await Database.GetSubscriptionsForChannelAsync(ctx.Channel.Id)
                 .ConfigureAwait(false);
 
             await InteractivityUtil.SendPaginatedCollectionAsync(
@@ -103,7 +103,7 @@ namespace TheGodfather.Modules.Search
             if (!RSSService.IsValidRSSFeedURL(url))
                 throw new InvalidCommandUsageException("Given URL isn't a valid RSS feed URL.");
 
-            if (!await DatabaseService.AddFeedAsync(ctx.Channel.Id, url, name ?? url).ConfigureAwait(false))
+            if (!await Database.AddFeedAsync(ctx.Channel.Id, url, name ?? url).ConfigureAwait(false))
                 throw new CommandFailedException("You are already subscribed to this RSS feed URL!");
 
             await ReplyWithEmbedAsync(ctx, $"Subscribed to {url}!")
@@ -120,7 +120,7 @@ namespace TheGodfather.Modules.Search
         public async Task UnsubscribeAsync(CommandContext ctx,
                                           [Description("ID of the subscription.")] int id)
         {
-            await DatabaseService.RemoveSubscriptionAsync(ctx.Channel.Id, id)
+            await Database.RemoveSubscriptionAsync(ctx.Channel.Id, id)
                 .ConfigureAwait(false);
             await ReplyWithEmbedAsync(ctx, $"Unsubscribed from feed with ID {Formatter.Bold(id.ToString())}")
                 .ConfigureAwait(false);

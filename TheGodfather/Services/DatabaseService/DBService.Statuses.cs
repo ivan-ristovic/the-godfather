@@ -13,7 +13,7 @@ using NpgsqlTypes;
 
 namespace TheGodfather.Services
 {
-    public partial class DatabaseService
+    public partial class DBService
     {
         public async Task<IReadOnlyDictionary<int, string>> GetBotStatusesAsync(DiscordClient client)
         {

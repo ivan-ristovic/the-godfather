@@ -26,7 +26,7 @@ namespace TheGodfather.Modules.Administration
     public class ChannelModule : TheGodfatherBaseModule
     {
 
-        public ChannelModule(DatabaseService db) : base(db: db) { }
+        public ChannelModule(DBService db) : base(db: db) { }
 
 
         #region COMMAND_CHANNEL_CREATECATEGORY

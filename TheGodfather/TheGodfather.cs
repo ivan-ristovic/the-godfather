@@ -23,7 +23,7 @@ namespace TheGodfather
     internal static class TheGodfather
     {
         private static List<TheGodfatherShard> Shards { get; set; }
-        private static DatabaseService DatabaseService { get; set; }
+        private static DBService DatabaseService { get; set; }
         private static SharedData SharedData { get; set; }
         private static Timer BotStatusTimer { get; set; }
         private static Timer DatabaseSyncTimer { get; set; }
@@ -76,7 +76,7 @@ namespace TheGodfather
 
             Console.Write("\r[2/5] Booting PostgreSQL connection...");
 
-            DatabaseService = new DatabaseService(cfg.DatabaseConfig);
+            DatabaseService = new DBService(cfg.DatabaseConfig);
             await DatabaseService.InitializeAsync();
 
 
