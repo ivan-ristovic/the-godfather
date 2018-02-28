@@ -88,7 +88,7 @@ namespace TheGodfather.Modules.Reactions
                     await Database.AddEmojiReactionAsync(ctx.Guild.Id, trigger, reaction)
                         .ConfigureAwait(false);
                 } catch (Exception e) {
-                    Logger.LogException(LogLevel.Debug, e);
+                    Logger.LogException(LogLevel.Warning, e);
                     errors.AppendLine($"Warning: Failed to add trigger {Formatter.Bold(trigger)} to the database.");
                 }
             }
@@ -122,7 +122,7 @@ namespace TheGodfather.Modules.Reactions
                 await Database.DeleteAllGuildEmojiReactionsAsync(ctx.Guild.Id)
                     .ConfigureAwait(false);
             } catch (Exception e) {
-                Logger.LogException(LogLevel.Debug, e);
+                Logger.LogException(LogLevel.Warning, e);
                 throw new CommandFailedException("Failed to delete emoji reactions from the database.");
             }
 
@@ -154,7 +154,7 @@ namespace TheGodfather.Modules.Reactions
                 await Database.RemoveAllEmojiReactionTriggersForReactionAsync(ctx.Guild.Id, reaction)
                     .ConfigureAwait(false);
             } catch (Exception e) {
-                Logger.LogException(LogLevel.Debug, e);
+                Logger.LogException(LogLevel.Warning, e);
                 errors.AppendLine($"Warning: Failed to remove reaction from the database.");
             }
 
@@ -181,7 +181,7 @@ namespace TheGodfather.Modules.Reactions
                     await Database.RemoveEmojiReactionTriggerAsync(ctx.Guild.Id, trigger)
                         .ConfigureAwait(false);
                 } catch (Exception e) {
-                    Logger.LogException(LogLevel.Debug, e);
+                    Logger.LogException(LogLevel.Warning, e);
                     errors.AppendLine($"Warning: Failed to remove trigger {Formatter.Bold(trigger)} from the database.");
                 }
             }

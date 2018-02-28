@@ -51,7 +51,7 @@ namespace TheGodfather.Services
                     return feed.Items.Take(amount);
                 }
             } catch (Exception e) {
-                Logger.LogException(LogLevel.Debug, e);
+                Logger.LogException(LogLevel.Warning, e);
                 return null;
             }
         }
@@ -79,7 +79,7 @@ namespace TheGodfather.Services
                                 chn = await client.GetChannelAsync(sub.ChannelId)
                                     .ConfigureAwait(false);
                             } catch (Exception e) {
-                                Logger.LogException(LogLevel.Debug, e);
+                                Logger.LogException(LogLevel.Warning, e);
                                 await db.RemoveSubscriptionAsync(sub.ChannelId, feed.Id)
                                     .ConfigureAwait(false);
                                 continue;
@@ -107,7 +107,7 @@ namespace TheGodfather.Services
                         }
                     }
                 } catch (Exception e) {
-                    Logger.LogException(LogLevel.Debug, e);
+                    Logger.LogException(LogLevel.Warning, e);
                 }
             }
         }

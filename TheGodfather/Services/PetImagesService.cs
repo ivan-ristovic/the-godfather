@@ -21,7 +21,7 @@ namespace TheGodfather.Services
                     return jsondata.URL;
                 }
             } catch (Exception e) {
-                Logger.LogException(LogLevel.Debug, e);
+                Logger.LogException(LogLevel.Warning, e);
                 return null;
             }
         }
@@ -34,7 +34,7 @@ namespace TheGodfather.Services
                     return "https://random.dog/" + data;
                 }
             } catch (Exception e) {
-                Logger.LogException(LogLevel.Debug, e);
+                Logger.LogException(LogLevel.Warning, e);
                 return null;
             }
         }

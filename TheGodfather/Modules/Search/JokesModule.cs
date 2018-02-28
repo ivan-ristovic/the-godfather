@@ -32,7 +32,7 @@ namespace TheGodfather.Modules.Search
                 joke = await JokesService.GetRandomJokeAsync()
                     .ConfigureAwait(false);
             } catch (Exception e) {
-                Logger.LogException(LogLevel.Debug, e);
+                Logger.LogException(LogLevel.Warning, e);
                 throw new CommandFailedException("Failed to retrieve a joke. Please report this.");
             }
 

@@ -36,7 +36,7 @@ namespace TheGodfather.Services
                 summary = await _steam.GetPlayerSummaryAsync(id)
                     .ConfigureAwait(false);
             } catch (Exception e) {
-                Logger.LogException(LogLevel.Debug, e);
+                Logger.LogException(LogLevel.Warning, e);
             }
 
             if (profile == null || summary == null || summary.Data == null)

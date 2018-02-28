@@ -226,7 +226,7 @@ namespace TheGodfather.Modules.Misc
                 await Database.SetGuildPrefixAsync(ctx.Guild.Id, prefix)
                     .ConfigureAwait(false);
             } catch (Exception e) {
-                Logger.LogException(LogLevel.Debug, e);
+                Logger.LogException(LogLevel.Warning, e);
                 throw new CommandFailedException("Warning: Failed to add prefix to the database.");
             }
         }

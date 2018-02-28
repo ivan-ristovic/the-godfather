@@ -65,7 +65,7 @@ namespace TheGodfather.Entities.SWAT
             } catch (FormatException) {
                 throw new CommandFailedException("Invalid IP format.");
             } catch (Exception e) {
-                Logger.LogException(LogLevel.Debug, e);
+                Logger.LogException(LogLevel.Warning, e);
                 return null;
             }
 

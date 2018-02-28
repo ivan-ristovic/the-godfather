@@ -86,7 +86,7 @@ namespace TheGodfather
                 ShardCount = _shared.BotConfiguration.ShardCount,
                 ShardId = ShardId,
                 UseInternalLogHandler = false,
-                LogLevel = LogLevel.Debug
+                LogLevel = LogLevel.Info
             };
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && Environment.OSVersion.Version <= new Version(6, 1, 7601, 65536))
@@ -153,13 +153,13 @@ namespace TheGodfather
         #region CLIENT_EVENTS
         private Task Client_Error(ClientErrorEventArgs e)
         {
-            Log(LogLevel.Error, $"Client errored: {e.Exception.GetType()}: {e.Exception.Message}");
+            Log(LogLevel.Critical, $"Client errored: {e.Exception.GetType()}: {e.Exception.Message}");
             return Task.CompletedTask;
         }
 
         private async Task Client_GuildAvailable(GuildCreateEventArgs e)
         {
-            Log(LogLevel.Debug, $"Guild available: {e.Guild.ToString()}");
+            Log(LogLevel.Info, $"Guild available: {e.Guild.ToString()}");
             if (await _db.AddGuildIfNotExistsAsync(e.Guild.Id).ConfigureAwait(false))
                 await e.Guild.GetDefaultChannel().SendMessageAsync($"Thank you for adding me! Type {Formatter.InlineCode("!help / !help <command>")} to view my command list or get help for a specific command.")
                     .ConfigureAwait(false);
@@ -167,7 +167,7 @@ namespace TheGodfather
 
         private async Task Client_GuildMemberAdd(GuildMemberAddEventArgs e)
         {
-            Log(LogLevel.Debug,
+            Log(LogLevel.Info,
                 $"Member joined: {e.Member.ToString()}<br>" +
                 $"{e.Guild.ToString()}"
             );
@@ -196,7 +196,7 @@ namespace TheGodfather
 
         private async Task Client_GuildMemberRemove(GuildMemberRemoveEventArgs e)
         {
-            Log(LogLevel.Debug,
+            Log(LogLevel.Info,
                 $"Member left: {e.Member.ToString()}<br>" +
                 e.Guild.ToString()
             );
@@ -238,14 +238,14 @@ namespace TheGodfather
                 try {
                     await e.Channel.DeleteMessageAsync(e.Message)
                         .ConfigureAwait(false);
-                    Log(LogLevel.Debug,
+                    Log(LogLevel.Info,
                         $"Filter triggered:<br>" +
                         $"Message: {e.Message.Content}<br>" +
                         $"{e.Message.Author.ToString()}<br>" +
                         $"{e.Guild.ToString()} ; {e.Channel.ToString()}"
                     );
                 } catch (UnauthorizedException) {
-                    Log(LogLevel.Debug,
+                    Log(LogLevel.Warning,
                         $"Filter triggered in message but missing permissions to delete!<br>" +
                         $"Message: {e.Message.Content}<br>" +
                         $"{e.Message.Author.ToString()}<br>" +
@@ -274,8 +274,8 @@ namespace TheGodfather
             if (_shared.GuildTextReactions.ContainsKey(e.Guild.Id)) {
                 var treaction = _shared.GuildTextReactions[e.Guild.Id].Where(tup => tup.Item1.IsMatch(e.Message.Content));
                 if (treaction.Any()) {
-                    Log(LogLevel.Debug,
-                        $"Text reaction detected: {treaction.First().Item2}< br>" +
+                    Log(LogLevel.Info,
+                        $"Text reaction detected: {treaction.First().Item2}<br>" +
                         $"Message: {e.Message.Content}<br>" +
                         $"{e.Message.Author.ToString()}<br>" +
                         $"{e.Guild.ToString()} ; {e.Channel.ToString()}"
@@ -293,7 +293,7 @@ namespace TheGodfather
                 foreach (var reaction in _shared.GuildEmojiReactions[e.Guild.Id]) {
                     foreach (var trigger in reaction.Value) {
                         if (trigger.IsMatch(e.Message.Content)) {
-                            Log(LogLevel.Debug,
+                            Log(LogLevel.Info,
                                 $"Emoji reaction detected: {reaction.Key}<br>" +
                                 $"Message: {e.Message.Content}<br>" +
                                 $"{e.Message.Author.ToString()}<br>" +
@@ -327,14 +327,14 @@ namespace TheGodfather
                 try {
                     await e.Channel.DeleteMessageAsync(e.Message)
                         .ConfigureAwait(false);
-                    Log(LogLevel.Debug,
+                    Log(LogLevel.Info,
                         $"Filter triggered in edit of a message:<br>" +
                         $"Message: {e.Message.Content}<br>" +
                         $"{e.Message.Author.ToString()}<br>" +
                         $"{e.Guild.ToString()} ; {e.Channel.ToString()}"
                     );
                 } catch (UnauthorizedException) {
-                    Log(LogLevel.Debug,
+                    Log(LogLevel.Warning,
                         $"Filter triggered in edited message but missing permissions to delete!<br>" +
                         $"Message: '{e.Message.Content}<br>" +
                         $"{e.Message.Author.ToString()}<br>" +
@@ -354,7 +354,7 @@ namespace TheGodfather
         {
             await Task.Yield();
 
-            Log(LogLevel.Debug,
+            Log(LogLevel.Info,
                 $"Executed: {e.Command?.QualifiedName ?? "<unknown command>"}<br>" +
                 $"{e.Context.User.ToString()}<br>" +
                 $"{e.Context.Guild.ToString()}; {e.Context.Channel.ToString()}"
@@ -373,7 +373,7 @@ namespace TheGodfather
             if (ex is ChecksFailedException chke && chke.FailedChecks.Any(c => c is ListeningCheckAttribute))
                 return;
 
-            Log(LogLevel.Debug,
+            Log(LogLevel.Error,
                 $"Tried executing: {e.Command?.QualifiedName ?? "<unknown command>"}<br>" +
                 $"{e.Context.User.ToString()}<br>" +
                 $"{e.Context.Guild.ToString()}; {e.Context.Channel.ToString()}<br>" +
