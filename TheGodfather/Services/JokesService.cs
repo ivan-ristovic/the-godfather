@@ -42,7 +42,7 @@ namespace TheGodfather.Services
             try {
                 string data = null;
                 using (WebClient wc = new WebClient()) {
-                    data = await wc.DownloadStringTaskAsync("http://api.yomomma.infoa/")
+                    data = await wc.DownloadStringTaskAsync("http://api.yomomma.info/")
                         .ConfigureAwait(false);
                 }
                 return JObject.Parse(data)["joke"].ToString();

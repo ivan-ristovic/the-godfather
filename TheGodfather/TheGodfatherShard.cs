@@ -2,8 +2,8 @@
 using System;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 
 using TheGodfather.Attributes;
@@ -15,14 +15,14 @@ using TheGodfather.Services;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
-using DSharpPlus.Interactivity;
 using DSharpPlus.CommandsNext.Exceptions;
 using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.VoiceNext;
-using DSharpPlus.EventArgs;
-using DSharpPlus.Net.WebSocket;
 using DSharpPlus.Entities;
+using DSharpPlus.EventArgs;
 using DSharpPlus.Exceptions;
+using DSharpPlus.Interactivity;
+using DSharpPlus.Net.WebSocket;
+using DSharpPlus.VoiceNext;
 #endregion
 
 namespace TheGodfather

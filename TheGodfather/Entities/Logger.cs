@@ -1,5 +1,6 @@
 ﻿#region USING_DIRECTIVES
 using System;
+using System.IO;
 
 using DSharpPlus;
 using DSharpPlus.EventArgs;
@@ -10,6 +11,8 @@ namespace TheGodfather.Entities
     public static class Logger
     {
         private static object _lock = new object();
+        private static bool LogToFile = true;
+        private static string _path = "log.txt";
 
 
         public static void Clear()
@@ -19,16 +22,18 @@ namespace TheGodfather.Entities
             }
         }
 
-        public static void LogMessage(LogLevel level, string message, DateTime? timestamp = null)
+        public static void LogMessage(LogLevel level, string message, DateTime? timestamp = null, bool filelog = true)
         {
             lock (_lock) {
                 PrintTimestamp(timestamp);
                 PrintLevel(level);
                 PrintLogMessage(message);
+                if (filelog && LogToFile)
+                    WriteToLogFile(level, message, timestamp);
             }
         }
-        
-        public static void LogMessage(int shardid, DebugLogMessageEventArgs e)
+
+        public static void LogMessage(int shardid, DebugLogMessageEventArgs e, bool filelog = true)
         {
             lock (_lock) {
                 PrintTimestamp(e.Timestamp);
@@ -41,21 +46,75 @@ namespace TheGodfather.Entities
 
                 PrintLevel(e.Level);
                 PrintLogMessage(e.Message);
+                if (filelog && LogToFile)
+                    WriteToLogFile(shardid, e);
             }
         }
-        
-        public static void LogException(LogLevel level, Exception e, DateTime? timestamp = null)
+
+        public static void LogException(LogLevel level, Exception e, DateTime? timestamp = null, bool filelog = true)
         {
             lock (_lock) {
                 PrintTimestamp(timestamp);
                 PrintLevel(level);
                 PrintLogMessage($"Exception occured: {e.GetType()}<br>Details: {e.Message}<br>");
                 if (e.InnerException != null)
-                    PrintLogMessage($"{e.InnerException}<br>");
+                    PrintLogMessage($"Inner exception: {e.InnerException}<br>");
                 PrintLogMessage($"Stack trace: {e.StackTrace}");
+                if (filelog && LogToFile)
+                    WriteToLogFile(level, e);
             }
         }
 
+
+        private static void WriteToLogFile(LogLevel level, string message, DateTime? timestamp = null)
+        {
+            try {
+                using (FileStream fs = new FileStream(_path, FileMode.Append, FileAccess.Write))
+                using (StreamWriter sw = new StreamWriter(fs)) {
+                    sw.Write("[{0:yyyy-MM-dd HH:mm:ss zzz}] ", timestamp ?? DateTime.Now);
+                    sw.WriteLine("[{0}]", level.ToString());
+                    sw.WriteLine(message.Replace("<br>", Environment.NewLine + " "));
+                    fs.Flush();
+                }
+            } catch (Exception e) {
+                LogException(LogLevel.Error, e, filelog: false);
+            }
+        }
+
+        private static void WriteToLogFile(int shardid, DebugLogMessageEventArgs e)
+        {
+            try {
+                using (FileStream fs = new FileStream(_path, FileMode.Append, FileAccess.Write))
+                using (StreamWriter sw = new StreamWriter(fs)) {
+                    sw.Write("[{0:yyyy-MM-dd HH:mm:ss zzz}] ", e.Timestamp);
+                    sw.Write("[#{0}] ", shardid.ToString());
+                    sw.Write("[{0}] ", e.Application);
+                    sw.WriteLine("[{0}]", e.Level.ToString());
+                    sw.WriteLine(e.Message.Replace("<br>", Environment.NewLine + " "));
+                    fs.Flush();
+                }
+            } catch (Exception exc) {
+                LogException(LogLevel.Error, exc, filelog: false);
+            }
+        }
+
+        private static void WriteToLogFile(LogLevel level, Exception e, DateTime? timestamp = null)
+        {
+            try {
+                using (FileStream fs = new FileStream(_path, FileMode.Append, FileAccess.Write))
+                using (StreamWriter sw = new StreamWriter(fs)) {
+                    sw.Write("[{0:yyyy-MM-dd HH:mm:ss zzz}] ", timestamp ?? DateTime.Now);
+                    sw.WriteLine("[{0}]", level.ToString());
+                    sw.WriteLine($" Exception occured: {e.GetType()}{Environment.NewLine} Details: {e.Message}");
+                    if (e.InnerException != null)
+                        sw.WriteLine($" Inner exception: {e.InnerException}");
+                    sw.WriteLine($" Stack trace: {e.StackTrace}");
+                    fs.Flush();
+                }
+            } catch (Exception exc) {
+                LogException(LogLevel.Error, exc, filelog: false);
+            }
+        }
 
         private static void PrintLevel(LogLevel level)
         {
@@ -92,7 +151,7 @@ namespace TheGodfather.Entities
         {
             Console.BackgroundColor = ConsoleColor.Black;
             Console.ForegroundColor = ConsoleColor.White;
-            Console.Write("[{0:yyyy-MM-dd HH:mm:ss zzz}] ", timestamp.HasValue ? timestamp.Value : DateTime.Now);
+            Console.Write("[{0:yyyy-MM-dd HH:mm:ss zzz}] ", timestamp ?? DateTime.Now);
         }
 
         private static void PrintLogMessage(string message)

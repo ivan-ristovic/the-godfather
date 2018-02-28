@@ -1,7 +1,7 @@
 ﻿#region USING_DIRECTIVES
 using System;
-using System.Collections.Generic;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -9,13 +9,11 @@ using System.Threading.Tasks;
 using System.Threading;
 using Newtonsoft.Json;
 
-using DSharpPlus;
-using DSharpPlus.Entities;
-
-using TheGodfather.Services;
 using TheGodfather.Entities;
-using TheGodfather.Extensions;
 using TheGodfather.Extensions.Collections;
+using TheGodfather.Services;
+
+using DSharpPlus;
 #endregion
 
 namespace TheGodfather
@@ -144,6 +142,7 @@ namespace TheGodfather
             FeedCheckTimer = new Timer(FeedCheckTimerCallback, Shards[0].Client, TimeSpan.FromSeconds(30), TimeSpan.FromMinutes(1));
 
             GC.Collect();
+            Logger.LogMessage(LogLevel.Info, "<br><br>-------------- NEW INSTANCE STARTED --------------<br><br>");
             await Task.Delay(-1);
         }
 

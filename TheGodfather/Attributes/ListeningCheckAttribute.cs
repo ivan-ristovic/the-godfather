@@ -19,8 +19,8 @@ namespace TheGodfather.Attributes
                     ctx.Client.DebugLogger.LogMessage(LogLevel.Debug, "TheGodfather",
                         $"Executing: {ctx.Command?.QualifiedName ?? "<unknown command>"}<br>" + 
                         $"User: {ctx.User.ToString()}<br>" +
-                        $"{ctx.Guild.ToString()} ; {ctx.Channel.ToString()}" +
-                        $"Full message: {ctx.Message.Content}" + Environment.NewLine,
+                        $"{ctx.Guild.ToString()} ; {ctx.Channel.ToString()}<br>" +
+                        $"Full message: {ctx.Message.Content}",
                         DateTime.Now
                     );
                     ctx.TriggerTypingAsync();
