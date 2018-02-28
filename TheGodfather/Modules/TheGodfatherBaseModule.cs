@@ -3,9 +3,11 @@ using System;
 using System.Net;
 using System.Threading.Tasks;
 
+using TheGodfather.Entities;
 using TheGodfather.Extensions;
 using TheGodfather.Services;
 
+using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
 #endregion
@@ -79,7 +81,8 @@ namespace TheGodfather.Modules
                 } else {
                     return false;
                 }
-            } catch {
+            } catch (Exception e) {
+                Logger.LogException(LogLevel.Debug, e);
                 return false;
             }
 

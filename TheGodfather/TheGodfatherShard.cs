@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 using Microsoft.Extensions.DependencyInjection;
 
 using TheGodfather.Attributes;
+using TheGodfather.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Extensions.Converters;
@@ -85,7 +86,7 @@ namespace TheGodfather
                 ShardCount = _shared.BotConfiguration.ShardCount,
                 ShardId = ShardId,
                 UseInternalLogHandler = false,
-                LogLevel = LogLevel.Info
+                LogLevel = LogLevel.Debug
             };
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && Environment.OSVersion.Version <= new Version(6, 1, 7601, 65536))
@@ -158,7 +159,7 @@ namespace TheGodfather
 
         private async Task Client_GuildAvailable(GuildCreateEventArgs e)
         {
-            Log(LogLevel.Info, $"Guild available: {e.Guild.ToString()}");
+            Log(LogLevel.Debug, $"Guild available: {e.Guild.ToString()}");
             if (await _db.AddGuildIfNotExistsAsync(e.Guild.Id).ConfigureAwait(false))
                 await e.Guild.GetDefaultChannel().SendMessageAsync($"Thank you for adding me! Type {Formatter.InlineCode("!help / !help <command>")} to view my command list or get help for a specific command.")
                     .ConfigureAwait(false);
@@ -166,7 +167,7 @@ namespace TheGodfather
 
         private async Task Client_GuildMemberAdd(GuildMemberAddEventArgs e)
         {
-            Log(LogLevel.Info,
+            Log(LogLevel.Debug,
                 $"Member joined: {e.Member.ToString()}<br>" +
                 $"{e.Guild.ToString()}"
             );
@@ -195,7 +196,7 @@ namespace TheGodfather
 
         private async Task Client_GuildMemberRemove(GuildMemberRemoveEventArgs e)
         {
-            Log(LogLevel.Info,
+            Log(LogLevel.Debug,
                 $"Member left: {e.Member.ToString()}<br>" +
                 e.Guild.ToString()
             );
@@ -244,7 +245,7 @@ namespace TheGodfather
                         $"{e.Guild.ToString()} ; {e.Channel.ToString()}"
                     );
                 } catch (UnauthorizedException) {
-                    Log(LogLevel.Warning,
+                    Log(LogLevel.Debug,
                         $"Filter triggered in message but missing permissions to delete!<br>" +
                         $"Message: {e.Message.Content}<br>" +
                         $"{e.Message.Author.ToString()}<br>" +
@@ -333,7 +334,7 @@ namespace TheGodfather
                         $"{e.Guild.ToString()} ; {e.Channel.ToString()}"
                     );
                 } catch (UnauthorizedException) {
-                    Log(LogLevel.Warning,
+                    Log(LogLevel.Debug,
                         $"Filter triggered in edited message but missing permissions to delete!<br>" +
                         $"Message: '{e.Message.Content}<br>" +
                         $"{e.Message.Author.ToString()}<br>" +
@@ -353,7 +354,7 @@ namespace TheGodfather
         {
             await Task.Yield();
 
-            Log(LogLevel.Info,
+            Log(LogLevel.Debug,
                 $"Executed: {e.Command?.QualifiedName ?? "<unknown command>"}<br>" +
                 $"{e.Context.User.ToString()}<br>" +
                 $"{e.Context.Guild.ToString()}; {e.Context.Channel.ToString()}"
@@ -372,7 +373,7 @@ namespace TheGodfather
             if (ex is ChecksFailedException chke && chke.FailedChecks.Any(c => c is ListeningCheckAttribute))
                 return;
 
-            Log(LogLevel.Error,
+            Log(LogLevel.Debug,
                 $"Tried executing: {e.Command?.QualifiedName ?? "<unknown command>"}<br>" +
                 $"{e.Context.User.ToString()}<br>" +
                 $"{e.Context.Guild.ToString()}; {e.Context.Channel.ToString()}<br>" +

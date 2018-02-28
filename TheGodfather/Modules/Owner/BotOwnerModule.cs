@@ -12,6 +12,7 @@ using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
 
 using TheGodfather.Attributes;
+using TheGodfather.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Owner.Common;

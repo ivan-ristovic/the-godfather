@@ -1,5 +1,12 @@
-﻿using System.Net;
+﻿#region USING_DIRECTIVES
+using System;
+using System.Net;
 using Newtonsoft.Json;
+
+using TheGodfather.Entities;
+
+using DSharpPlus;
+#endregion;
 
 namespace TheGodfather.Services
 {
@@ -13,7 +20,8 @@ namespace TheGodfather.Services
                     var jsondata = JsonConvert.DeserializeObject<DeserializedData>(data);
                     return jsondata.URL;
                 }
-            } catch {
+            } catch (Exception e) {
+                Logger.LogException(LogLevel.Debug, e);
                 return null;
             }
         }
@@ -25,7 +33,8 @@ namespace TheGodfather.Services
                     var data = wc.DownloadString("https://random.dog/woof");
                     return "https://random.dog/" + data;
                 }
-            } catch {
+            } catch (Exception e) {
+                Logger.LogException(LogLevel.Debug, e);
                 return null;
             }
         }

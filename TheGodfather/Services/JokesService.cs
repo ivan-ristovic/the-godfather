@@ -1,12 +1,15 @@
 ﻿#region USING_DIRECTIVES
 using System;
-using System.IO;
-using System.Net;
-using System.Linq;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+
+using TheGodfather.Entities;
+
+using DSharpPlus;
 #endregion
 
 namespace TheGodfather.Services
@@ -22,25 +25,30 @@ namespace TheGodfather.Services
 
         public static async Task<IReadOnlyList<string>> SearchForJokesAsync(string query)
         {
-            var res = await GetStringResponseAsync("https://icanhazdadjoke.com/search?term=" + query.Replace(' ', '+'))
-                .ConfigureAwait(false);
-            if (string.IsNullOrWhiteSpace(res))
+            try {
+                var res = await GetStringResponseAsync("https://icanhazdadjoke.com/search?term=" + query.Replace(' ', '+'))
+                    .ConfigureAwait(false);
+                if (string.IsNullOrWhiteSpace(res))
+                    return Enumerable.Empty<string>().ToList().AsReadOnly();
+                return res.Split('\n').ToList().AsReadOnly();
+            } catch (Exception e) {
+                Logger.LogException(LogLevel.Warning, e);
                 return null;
-            return res.Split('\n');
+            }
         }
 
         public static async Task<string> GetYoMommaJokeAsync()
         {
-            string data = null;
-            using (WebClient wc = new WebClient()) {
-                data = await wc.DownloadStringTaskAsync("http://api.yomomma.info/")
-                    .ConfigureAwait(false);
-            }
-
             try {
+                string data = null;
+                using (WebClient wc = new WebClient()) {
+                    data = await wc.DownloadStringTaskAsync("http://api.yomomma.infoa/")
+                        .ConfigureAwait(false);
+                }
                 return JObject.Parse(data)["joke"].ToString();
-            } catch (JsonException) {
-                throw new WebException();
+            } catch (Exception e) {
+                Logger.LogException(LogLevel.Warning, e);
+                return null;
             }
         }
 

@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using TheGodfather.Attributes;
+using TheGodfather.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Misc.Common;
@@ -224,7 +225,8 @@ namespace TheGodfather.Modules.Misc
             try {
                 await Database.SetGuildPrefixAsync(ctx.Guild.Id, prefix)
                     .ConfigureAwait(false);
-            } catch {
+            } catch (Exception e) {
+                Logger.LogException(LogLevel.Debug, e);
                 throw new CommandFailedException("Warning: Failed to add prefix to the database.");
             }
         }

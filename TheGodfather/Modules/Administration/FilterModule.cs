@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 using TheGodfather.Attributes;
+using TheGodfather.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Extensions.Collections;
@@ -93,7 +94,8 @@ namespace TheGodfather.Modules.Administration
                 try {
                     await Database.AddFilterAsync(ctx.Guild.Id, filter)
                         .ConfigureAwait(false);
-                } catch {
+                } catch (Exception e) {
+                    Logger.LogException(LogLevel.Debug, e);
                     errors.AppendLine($"Warning: Failed to add filter {Formatter.Bold(filter)} to the database.");
                 }
             }
@@ -120,7 +122,8 @@ namespace TheGodfather.Modules.Administration
             try {
                 await Database.RemoveAllGuildFiltersAsync(ctx.Guild.Id)
                     .ConfigureAwait(false);
-            } catch {
+            } catch (Exception e) {
+                Logger.LogException(LogLevel.Debug, e);
                 throw new CommandFailedException("Failed to delete filters from the database.");
             }
 
@@ -152,7 +155,8 @@ namespace TheGodfather.Modules.Administration
                 try {
                     await Database.RemoveFilterAsync(ctx.Guild.Id, filter)
                         .ConfigureAwait(false);
-                } catch {
+                } catch (Exception e) {
+                    Logger.LogException(LogLevel.Debug, e);
                     errors.AppendLine($"Warning: Failed to remove filter {Formatter.Bold(filter)} from the database.");
                 }
             }

@@ -103,7 +103,7 @@ namespace TheGodfather.Modules.Search
             if (!RSSService.IsValidRSSFeedURL(url))
                 throw new InvalidCommandUsageException("Given URL isn't a valid RSS feed URL.");
 
-            if (!await Database.AddFeedAsync(ctx.Channel.Id, url, name ?? url).ConfigureAwait(false))
+            if (!await Database.AddSubscriptionAsync(ctx.Channel.Id, url, name ?? url).ConfigureAwait(false))
                 throw new CommandFailedException("You are already subscribed to this RSS feed URL!");
 
             await ReplyWithEmbedAsync(ctx, $"Subscribed to {url}!")

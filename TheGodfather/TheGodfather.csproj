@@ -261,7 +261,7 @@
     <Compile Include="Extensions\EmojiUtil.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Extensions\InteractivityUtil.cs" />
-    <Compile Include="Extensions\Logger.cs" />
+    <Compile Include="Entities\Logger.cs" />
     <Compile Include="Modules\Administration\EmojiModule.cs" />
     <Compile Include="Modules\Gambling\Cards\CardSuit.cs" />
     <Compile Include="Modules\Gambling\Cards\Card.cs" />

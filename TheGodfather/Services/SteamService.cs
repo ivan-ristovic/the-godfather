@@ -1,20 +1,16 @@
 ﻿#region USING_DIRECTIVES
 using System;
-using System.Linq;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 
+using TheGodfather.Entities;
+
+using DSharpPlus;
 using DSharpPlus.Entities;
 
-using SteamWebAPI2;
-using SteamWebAPI2.Models;
 using SteamWebAPI2.Utilities;
-using SteamWebAPI2.Exceptions;
 using SteamWebAPI2.Interfaces;
 using Steam.Models.SteamCommunity;
-using Steam.Models.SteamStore;
-using Steam.Models.SteamPlayer;
 #endregion
 
 namespace TheGodfather.Services
@@ -39,8 +35,8 @@ namespace TheGodfather.Services
                     .ConfigureAwait(false);
                 summary = await _steam.GetPlayerSummaryAsync(id)
                     .ConfigureAwait(false);
-            } catch {
-                return null;
+            } catch (Exception e) {
+                Logger.LogException(LogLevel.Debug, e);
             }
 
             if (profile == null || summary == null || summary.Data == null)

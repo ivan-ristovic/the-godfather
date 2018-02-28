@@ -1,18 +1,16 @@
 ﻿#region USING_DIRECTIVES
 using System;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Net;
 
 using TheGodfather.Attributes;
+using TheGodfather.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Services;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
 #endregion
 
 namespace TheGodfather.Modules.Search
@@ -33,7 +31,8 @@ namespace TheGodfather.Modules.Search
             try {
                 joke = await JokesService.GetRandomJokeAsync()
                     .ConfigureAwait(false);
-            } catch {
+            } catch (Exception e) {
+                Logger.LogException(LogLevel.Debug, e);
                 throw new CommandFailedException("Failed to retrieve a joke. Please report this.");
             }
 
@@ -52,20 +51,19 @@ namespace TheGodfather.Modules.Search
         {
             if (string.IsNullOrWhiteSpace(query))
                 throw new InvalidCommandUsageException("Query missing.");
-            
-            try {
-                var jokes = await JokesService.SearchForJokesAsync(query)
+
+            var jokes = await JokesService.SearchForJokesAsync(query)
+                .ConfigureAwait(false);
+            if (jokes == null)
+                throw new CommandFailedException("Failed to retrieve joke. Please report this.");
+
+            if (!jokes.Any()) {
+                await ReplyWithEmbedAsync(ctx, "No results...", ":frowning:")
                     .ConfigureAwait(false);
-                if (jokes == null) {
-                    await ReplyWithEmbedAsync(ctx, "No results...", ":frowning:")
-                        .ConfigureAwait(false);
-                    return;
-                }
-                await ReplyWithEmbedAsync(ctx, $"Results:\n\n{string.Join("\n", jokes.Take(5))}", ":joy:")
-                    .ConfigureAwait(false);
-            } catch {
-                throw new CommandFailedException("Failed to retrieve jokes. Please report this.");
+                return;
             }
+            await ReplyWithEmbedAsync(ctx, $"Results:\n\n{string.Join("\n", jokes.Take(5))}", ":joy:")
+                .ConfigureAwait(false);
         }
         #endregion
 
@@ -76,14 +74,13 @@ namespace TheGodfather.Modules.Search
         [UsageExample("!joke yourmom")]
         public async Task YomamaAsync(CommandContext ctx)
         {
-            try {
-                var joke = await JokesService.GetYoMommaJokeAsync()
-                    .ConfigureAwait(false);
-                await ReplyWithEmbedAsync(ctx, joke, ":joy:")
-                    .ConfigureAwait(false);
-            } catch {
-                throw new CommandFailedException("Failed to retrieve a joke. Please report this.");
-            }
+            var joke = await JokesService.GetYoMommaJokeAsync()
+                .ConfigureAwait(false);
+            if (joke == null)
+                throw new CommandFailedException("Failed to retrieve joke. Please report this.");
+
+            await ReplyWithEmbedAsync(ctx, joke, ":joy:")
+                .ConfigureAwait(false);
         }
         #endregion
     }

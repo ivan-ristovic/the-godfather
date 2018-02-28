@@ -93,7 +93,7 @@ namespace TheGodfather.Modules.Search
                 throw new CommandFailedException("Failed retrieving channel ID for that URL.");
 
             var feedurl = YoutubeService.GetYoutubeRSSFeedLinkForChannelId(chid);
-            if (await Database.AddFeedAsync(ctx.Channel.Id, feedurl, string.IsNullOrWhiteSpace(name) ? url : name).ConfigureAwait(false))
+            if (await Database.AddSubscriptionAsync(ctx.Channel.Id, feedurl, string.IsNullOrWhiteSpace(name) ? url : name).ConfigureAwait(false))
                 await ReplyWithEmbedAsync(ctx, "Subscribed!").ConfigureAwait(false);
             else
                 await ReplyWithFailedEmbedAsync(ctx, "Either the channel URL you is invalid or you are already subscribed to it!").ConfigureAwait(false);

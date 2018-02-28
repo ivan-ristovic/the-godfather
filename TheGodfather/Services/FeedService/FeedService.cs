@@ -1,4 +1,5 @@
-﻿using System;
+﻿#region USING_DIRECTIVES
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel.Syndication;
@@ -6,14 +7,18 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml;
 
+using TheGodfather.Entities;
+
 using DSharpPlus;
 using DSharpPlus.Entities;
+#endregion
 
 namespace TheGodfather.Services
 {
     public static class RSSService
     {
         private static Regex SuredditbPrefixRegex = new Regex("^/?r/", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
+        private static Regex UrlRegex = new Regex("<span> *<a +href *= *\"([^\"]+)\"> *\\[link\\] *</a> *</span>", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
 
 
         public static bool IsValidRSSFeedURL(string url)
@@ -26,12 +31,12 @@ namespace TheGodfather.Services
             return true;
         }
 
-        public static string GetRedditFeedURLForSubreddit(string sub, out string fixedsub)
+        public static string GetFeedURLForSubreddit(string sub, out string rsub)
         {
             sub = SuredditbPrefixRegex.Replace(sub, "");
-            fixedsub = "/r/" + sub.ToLowerInvariant();
+            rsub = "/r/" + sub.ToLowerInvariant();
 
-            string url = $"https://www.reddit.com{fixedsub}/new/.rss";
+            string url = $"https://www.reddit.com{rsub}/new/.rss";
             if (!IsValidRSSFeedURL(url))
                 return null;
 
@@ -45,7 +50,8 @@ namespace TheGodfather.Services
                     var feed = SyndicationFeed.Load(reader);
                     return feed.Items.Take(amount);
                 }
-            } catch {
+            } catch (Exception e) {
+                Logger.LogException(LogLevel.Debug, e);
                 return null;
             }
         }
@@ -55,20 +61,29 @@ namespace TheGodfather.Services
             var _feeds = await db.GetAllSubscriptionsAsync()
                 .ConfigureAwait(false);
             foreach (var feed in _feeds) {
-
-                // TODO ?
-                if (feed.Subscriptions.Count == 0)
-                    continue;
-
                 try {
+                    if (!feed.Subscriptions.Any()) {
+                        await db.RemoveFeedAsync(feed.Id)
+                            .ConfigureAwait(false);
+                        continue;
+                    }
+
                     var newest = GetFeedResults(feed.URL).First();
-                    var url = newest.Links[0].Uri.ToString();
-                    if (url != feed.SavedURL) {
+                    var url = newest.Links.First().Uri.ToString();
+                    if (string.Compare(url, feed.SavedURL, true) != 0) {
                         await db.UpdateFeedSavedURLAsync(feed.Id, url)
                             .ConfigureAwait(false);
                         foreach (var sub in feed.Subscriptions) {
-                            var chn = await client.GetChannelAsync(sub.ChannelId)
-                                .ConfigureAwait(false);
+                            DiscordChannel chn;
+                            try {
+                                chn = await client.GetChannelAsync(sub.ChannelId)
+                                    .ConfigureAwait(false);
+                            } catch (Exception e) {
+                                Logger.LogException(LogLevel.Debug, e);
+                                await db.RemoveSubscriptionAsync(sub.ChannelId, feed.Id)
+                                    .ConfigureAwait(false);
+                                continue;
+                            }
                             var em = new DiscordEmbedBuilder() {
                                 Title = $"{newest.Title.Text}",
                                 Url = url,
@@ -78,8 +93,7 @@ namespace TheGodfather.Services
 
                             // FIXME reddit hack
                             if (newest.Content is TextSyndicationContent content) {
-                                var r = new Regex("<span> *<a +href *= *\"([^\"]+)\"> *\\[link\\] *</a> *</span>");
-                                var matches = r.Match(content.Text);
+                                var matches = UrlRegex.Match(content.Text);
                                 if (matches.Success)
                                     em.WithImageUrl(matches.Groups[1].Value);
                             }
@@ -88,12 +102,12 @@ namespace TheGodfather.Services
                             em.AddField("Link to content", url);
                             await chn.SendMessageAsync(embed: em.Build())
                                 .ConfigureAwait(false);
-                            await Task.Delay(250)
+                            await Task.Delay(100)
                                 .ConfigureAwait(false);
                         }
                     }
-                } catch {
-
+                } catch (Exception e) {
+                    Logger.LogException(LogLevel.Debug, e);
                 }
             }
         }
@@ -109,7 +123,7 @@ namespace TheGodfather.Services
             };
 
             foreach (var res in results)
-                emb.AddField(res.Title.Text, res.Links[0].Uri.ToString());
+                emb.AddField(res.Title.Text, res.Links.First().Uri.ToString());
 
             await channel.SendMessageAsync(embed: emb.Build())
                 .ConfigureAwait(false);

@@ -1,8 +1,13 @@
 ﻿#region USING_DIRECTIVES
+using System;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+
+using TheGodfather.Entities;
+
+using DSharpPlus;
 #endregion
 
 namespace TheGodfather.Services
@@ -19,14 +24,15 @@ namespace TheGodfather.Services
                     if (data.ResultType != "no_results")
                         return data;
                 }
-            } catch {
-
+            } catch (Exception e) {
+                Logger.LogException(LogLevel.Debug, e);
             }
 
             return null;
         }
 
-        
+
+
         public class UrbanDictData
         {
             [JsonProperty("tags")]

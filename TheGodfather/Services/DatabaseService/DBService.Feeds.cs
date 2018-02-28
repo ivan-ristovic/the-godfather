@@ -53,7 +53,7 @@ namespace TheGodfather.Services
             return feeds.AsReadOnly();
         }
 
-        public async Task<bool> AddFeedAsync(ulong cid, string url, string qname = null)
+        public async Task<bool> AddSubscriptionAsync(ulong cid, string url, string qname = null)
         {
             var newest = RSSService.GetFeedResults(url)?.First();
             if (newest == null)
@@ -116,6 +116,22 @@ namespace TheGodfather.Services
             }
 
             return true;
+        }
+
+        public async Task RemoveFeedAsync(int fid)
+        {
+            await _sem.WaitAsync();
+            try {
+                using (var con = new NpgsqlConnection(_connectionString))
+                using (var cmd = con.CreateCommand()) {
+                    await con.OpenAsync().ConfigureAwait(false);
+                    cmd.CommandText = "DELETE FROM gf.feeds WHERE id = @fid;";
+                    cmd.Parameters.AddWithValue("fid", NpgsqlDbType.Integer, fid);
+                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                }
+            } finally {
+                _sem.Release();
+            }
         }
 
         public async Task RemoveSubscriptionAsync(ulong cid, int id)

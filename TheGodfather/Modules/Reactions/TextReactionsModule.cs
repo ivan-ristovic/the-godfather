@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 using TheGodfather.Attributes;
+using TheGodfather.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Extensions.Collections;
@@ -77,7 +78,8 @@ namespace TheGodfather.Modules.Reactions
             try {
                 await Database.AddTextReactionAsync(ctx.Guild.Id, trigger, response)
                     .ConfigureAwait(false);
-            } catch {
+            } catch (Exception e) {
+                Logger.LogException(LogLevel.Debug, e);
                 errors = $"Warning: Failed to add trigger {Formatter.Bold(trigger)} to the database.";
             }
 
@@ -103,7 +105,8 @@ namespace TheGodfather.Modules.Reactions
             try {
                 await Database.DeleteAllGuildTextReactionsAsync(ctx.Guild.Id)
                     .ConfigureAwait(false);
-            } catch {
+            } catch (Exception e) {
+                Logger.LogException(LogLevel.Debug, e);
                 throw new CommandFailedException("Failed to delete text reactions from the database.");
             }
 
@@ -153,7 +156,8 @@ namespace TheGodfather.Modules.Reactions
                 try {
                     await Database.RemoveTextReactionAsync(ctx.Guild.Id, trigger)
                         .ConfigureAwait(false);
-                } catch {
+                } catch (Exception e) {
+                    Logger.LogException(LogLevel.Debug, e);
                     errors.AppendLine($"Warning: Failed to remove trigger {Formatter.Bold(trigger)} from the database.");
                 }
             }

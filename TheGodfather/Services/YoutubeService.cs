@@ -6,6 +6,9 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
+using TheGodfather.Entities;
+
+using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 
@@ -96,8 +99,8 @@ namespace TheGodfather.Services
                     if (data.Items != null)
                         return data.Items.First()["id"];
                 }
-            } catch {
-
+            } catch (Exception e) {
+                Logger.LogException(LogLevel.Debug, e);
             }
 
             return null;

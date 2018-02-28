@@ -5,7 +5,7 @@ using DSharpPlus;
 using DSharpPlus.EventArgs;
 #endregion
 
-namespace TheGodfather.Extensions
+namespace TheGodfather.Entities
 {
     public static class Logger
     {
@@ -27,7 +27,7 @@ namespace TheGodfather.Extensions
                 PrintLogMessage(message);
             }
         }
-
+        
         public static void LogMessage(int shardid, DebugLogMessageEventArgs e)
         {
             lock (_lock) {
@@ -41,6 +41,18 @@ namespace TheGodfather.Extensions
 
                 PrintLevel(e.Level);
                 PrintLogMessage(e.Message);
+            }
+        }
+        
+        public static void LogException(LogLevel level, Exception e, DateTime? timestamp = null)
+        {
+            lock (_lock) {
+                PrintTimestamp(timestamp);
+                PrintLevel(level);
+                PrintLogMessage($"Exception occured: {e.GetType()}<br>Details: {e.Message}<br>");
+                if (e.InnerException != null)
+                    PrintLogMessage($"{e.InnerException}<br>");
+                PrintLogMessage($"Stack trace: {e.StackTrace}");
             }
         }
 
