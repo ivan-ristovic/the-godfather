@@ -229,7 +229,7 @@ namespace TheGodfather
                 return;
 
             if (e.Channel.IsPrivate) {
-                Log(LogLevel.Info, $"IGNORED DM FROM {e.Author.ToString()}:<br>{e.Message}");
+                Log(LogLevel.Info, $"IGNORED DM FROM {e.Author.ToString()}:<br>Message: {e.Message}");
                 return;
             }
 

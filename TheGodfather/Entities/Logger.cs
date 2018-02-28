@@ -1,6 +1,7 @@
 ﻿#region USING_DIRECTIVES
 using System;
 using System.IO;
+using System.Text;
 
 using DSharpPlus;
 using DSharpPlus.EventArgs;
@@ -13,6 +14,7 @@ namespace TheGodfather.Entities
         private static object _lock = new object();
         private static bool LogToFile = true;
         private static string _path = "log.txt";
+        private static readonly int BUFFER_SIZE = 512;
 
 
         public static void Clear()
@@ -27,7 +29,7 @@ namespace TheGodfather.Entities
             lock (_lock) {
                 PrintTimestamp(timestamp);
                 PrintLevel(level);
-                PrintLogMessage(message);
+                PrintLogMessage(message.Replace('\n', ' '));
                 if (filelog && LogToFile)
                     WriteToLogFile(level, message, timestamp);
             }
@@ -45,7 +47,7 @@ namespace TheGodfather.Entities
                 Console.Write("[{0}] ", e.Application);
 
                 PrintLevel(e.Level);
-                PrintLogMessage(e.Message);
+                PrintLogMessage(e.Message.Replace('\n', ' '));
                 if (filelog && LogToFile)
                     WriteToLogFile(shardid, e);
             }
@@ -56,7 +58,7 @@ namespace TheGodfather.Entities
             lock (_lock) {
                 PrintTimestamp(timestamp);
                 PrintLevel(level);
-                PrintLogMessage($"Exception occured: {e.GetType()}<br>Details: {e.Message}<br>");
+                PrintLogMessage($"Exception occured: {e.GetType()}<br>Details: {e.Message.Replace('\n', ' ')}<br>");
                 if (e.InnerException != null)
                     PrintLogMessage($"Inner exception: {e.InnerException}<br>");
                 PrintLogMessage($"Stack trace: {e.StackTrace}");
@@ -69,12 +71,12 @@ namespace TheGodfather.Entities
         private static void WriteToLogFile(LogLevel level, string message, DateTime? timestamp = null)
         {
             try {
-                using (FileStream fs = new FileStream(_path, FileMode.Append, FileAccess.Write))
-                using (StreamWriter sw = new StreamWriter(fs)) {
+                using (StreamWriter sw = new StreamWriter(_path, true, Encoding.UTF8, BUFFER_SIZE)) {
                     sw.Write("[{0:yyyy-MM-dd HH:mm:ss zzz}] ", timestamp ?? DateTime.Now);
                     sw.WriteLine("[{0}]", level.ToString());
-                    sw.WriteLine(message.Replace("<br>", Environment.NewLine + " "));
-                    fs.Flush();
+                    sw.WriteLine(message.Replace("<br>", Environment.NewLine).Trim());
+                    sw.WriteLine();
+                    sw.Flush();
                 }
             } catch (Exception e) {
                 LogException(LogLevel.Error, e, filelog: false);
@@ -84,14 +86,14 @@ namespace TheGodfather.Entities
         private static void WriteToLogFile(int shardid, DebugLogMessageEventArgs e)
         {
             try {
-                using (FileStream fs = new FileStream(_path, FileMode.Append, FileAccess.Write))
-                using (StreamWriter sw = new StreamWriter(fs)) {
+                using (StreamWriter sw = new StreamWriter(_path, true, Encoding.UTF8, BUFFER_SIZE)) {
                     sw.Write("[{0:yyyy-MM-dd HH:mm:ss zzz}] ", e.Timestamp);
                     sw.Write("[#{0}] ", shardid.ToString());
                     sw.Write("[{0}] ", e.Application);
                     sw.WriteLine("[{0}]", e.Level.ToString());
-                    sw.WriteLine(e.Message.Replace("<br>", Environment.NewLine + " "));
-                    fs.Flush();
+                    sw.WriteLine(e.Message.Replace("<br>", Environment.NewLine).Trim());
+                    sw.WriteLine();
+                    sw.Flush();
                 }
             } catch (Exception exc) {
                 LogException(LogLevel.Error, exc, filelog: false);
@@ -101,15 +103,16 @@ namespace TheGodfather.Entities
         private static void WriteToLogFile(LogLevel level, Exception e, DateTime? timestamp = null)
         {
             try {
-                using (FileStream fs = new FileStream(_path, FileMode.Append, FileAccess.Write))
-                using (StreamWriter sw = new StreamWriter(fs)) {
+                using (StreamWriter sw = new StreamWriter(_path, true, Encoding.UTF8, BUFFER_SIZE)) {
                     sw.Write("[{0:yyyy-MM-dd HH:mm:ss zzz}] ", timestamp ?? DateTime.Now);
                     sw.WriteLine("[{0}]", level.ToString());
-                    sw.WriteLine($" Exception occured: {e.GetType()}{Environment.NewLine} Details: {e.Message}");
+                    sw.WriteLine($"Exception occured: {e.GetType()}");
+                    sw.WriteLine($"Details: {e.Message}");
                     if (e.InnerException != null)
-                        sw.WriteLine($" Inner exception: {e.InnerException}");
-                    sw.WriteLine($" Stack trace: {e.StackTrace}");
-                    fs.Flush();
+                        sw.WriteLine($"Inner exception: {e.InnerException}");
+                    sw.WriteLine($"Stack trace: {e.StackTrace}");
+                    sw.WriteLine();
+                    sw.Flush();
                 }
             } catch (Exception exc) {
                 LogException(LogLevel.Error, exc, filelog: false);
@@ -144,7 +147,6 @@ namespace TheGodfather.Entities
 
             Console.ForegroundColor = ConsoleColor.Gray;
             Console.BackgroundColor = ConsoleColor.Black;
-            Console.Write(" ");
         }
 
         private static void PrintTimestamp(DateTime? timestamp = null)
@@ -155,6 +157,6 @@ namespace TheGodfather.Entities
         }
 
         private static void PrintLogMessage(string message)
-            => Console.WriteLine(message.Replace("<br>", Environment.NewLine + " ").Trim());
+            => Console.WriteLine(message.Replace("<br>", Environment.NewLine).Trim() + Environment.NewLine);
     }
 }
