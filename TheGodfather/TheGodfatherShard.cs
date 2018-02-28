@@ -275,7 +275,7 @@ namespace TheGodfather
                 var treaction = _shared.GuildTextReactions[e.Guild.Id].Where(tup => tup.Item1.IsMatch(e.Message.Content));
                 if (treaction.Any()) {
                     Log(LogLevel.Debug,
-                        $"Text reaction detected:<br>" +
+                        $"Text reaction detected: {treaction.First().Item2}< br>" +
                         $"Message: {e.Message.Content}<br>" +
                         $"{e.Message.Author.ToString()}<br>" +
                         $"{e.Guild.ToString()} ; {e.Channel.ToString()}"
@@ -290,15 +290,15 @@ namespace TheGodfather
 
             // Check if message has an emoji reaction
             if (_shared.GuildEmojiReactions.ContainsKey(e.Guild.Id) && _shared.GuildEmojiReactions[e.Guild.Id] != null) {
-                Log(LogLevel.Debug,
-                    $"Emoji reaction detected:<br>" +
-                    $"Message: {e.Message.Content}<br>" +
-                    $"{e.Message.Author.ToString()}<br>" +
-                    $"{e.Guild.ToString()} ; {e.Channel.ToString()}"
-                );
                 foreach (var reaction in _shared.GuildEmojiReactions[e.Guild.Id]) {
                     foreach (var trigger in reaction.Value) {
                         if (trigger.IsMatch(e.Message.Content)) {
+                            Log(LogLevel.Debug,
+                                $"Emoji reaction detected: {reaction.Key}<br>" +
+                                $"Message: {e.Message.Content}<br>" +
+                                $"{e.Message.Author.ToString()}<br>" +
+                                $"{e.Guild.ToString()} ; {e.Channel.ToString()}"
+                            );
                             try {
                                 var emoji = DiscordEmoji.FromName(Client, reaction.Key);
                                 await e.Message.CreateReactionAsync(emoji)
