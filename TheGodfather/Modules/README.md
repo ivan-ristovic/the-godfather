@@ -1,13 +1,21 @@
 # Command list
 
 ## 8ball
-*An almighty ball which knows answer to everything.*
+*An almighty ball which knows the answer to any question you ask. Alright, it's random answer, so what?*
+
+**Aliases:**
+`8b`
 
 
 **Arguments:**
 
 `[string...]` : *A question for the almighty ball.*
 
+**Examples:**
+
+```
+!8ball Am I gay?
+```
 ---
 
 ## Group: bank
@@ -573,12 +581,17 @@
 ---
 
 ## coinflip
-*Throw a coin.*
+*Flip a coin.*
 
 **Aliases:**
-`coin`
+`coin, flip`
 
 
+**Examples:**
+
+```
+!coinflip
+```
 ---
 
 ## connect
@@ -597,12 +610,17 @@
 ---
 
 ## dice
-*Throw a coin.*
+*Roll a dice.*
 
 **Aliases:**
 `die, roll`
 
 
+**Examples:**
+
+```
+!dice
+```
 ---
 
 ## disconnect
@@ -610,19 +628,6 @@
 
 **Owner-only.**
 
-
----
-
-## embed
-*Embed an image given as an URL.*
-
-**Requires permissions:**
-`Attach files`
-
-
-**Arguments:**
-
-`[string]` : *Image URL.*
 
 ---
 
@@ -1239,20 +1244,6 @@
 ```
 ---
 
-### game tictactoe
-*Starts a game of tic-tac-toe. Play by posting a number from 1 to 9 corresponding to field you wish to place your move on.*
-
-**Aliases:**
-`ttt`
-
-
-**Examples:**
-
-```
-!game tictactoe
-```
----
-
 ## Group: game tictactoe
 *Starts a "Tic-Tac-Toe" game. Play a move by writing a number from 1 to 9 corresponding to the field where you wish to play.*
 
@@ -1282,7 +1273,7 @@
 ---
 
 ## Group: gif
-*GIPHY commands.*
+*GIPHY commands. If invoked without a subcommand, searches GIPHY with given query.*
 
 **Aliases:**
 `giphy`
@@ -1292,6 +1283,11 @@
 
 `[string...]` : *Query.*
 
+**Examples:**
+
+```
+!gif wat
+```
 ---
 
 ### gif random
@@ -1301,6 +1297,11 @@
 `r, rand, rnd`
 
 
+**Examples:**
+
+```
+!gif random
+```
 ---
 
 ### gif trending
@@ -1314,6 +1315,12 @@
 
 (optional) `[int]` : *Number of results (1-10).* (def: `5`)
 
+**Examples:**
+
+```
+!gif trending 3
+!gif trending
+```
 ---
 
 ## giveme
@@ -1328,17 +1335,13 @@
 
 **Arguments:**
 
-`[role]` : *Role.*
+`[role]` : *Role to grant.*
 
----
+**Examples:**
 
-## greet
-*Greets a user and starts a conversation.*
-
-**Aliases:**
-`hello, hi, halo, hey, howdy, sup`
-
-
+```
+!giveme @Announcements
+```
 ---
 
 ### guild bans
@@ -1679,50 +1682,105 @@
 ---
 
 ## Group: imgur
-*Search imgur. Invoking without sub command searches top.*
+*Search imgur. Invoking without subcommand retrieves top ranked images from given subreddit.*
 
 **Aliases:**
 `img, im, i`
 
 
-**Arguments:**
+**Overload 1:**
 
 `[int]` : *Number of images to print [1-10].*
 
-`[string...]` : *Query.*
+`[string...]` : *Subreddit.*
 
+**Overload 0:**
+
+`[string]` : *Subreddit.*
+
+(optional) `[int]` : *Number of images to print [1-10].* (def: `1`)
+
+**Examples:**
+
+```
+!imgur aww
+!imgur 10 aww
+!imgur aww 10
+```
 ---
 
 ### imgur latest
-*Return latest images for query.*
+*Return latest images from given subreddit.*
 
 **Aliases:**
 `l, new, newest`
 
 
-**Arguments:**
+**Overload 1:**
 
 `[int]` : *Number of images to print [1-10].*
 
-`[string]` : *Query.*
+`[string...]` : *Subreddit.*
 
+**Overload 0:**
+
+`[string]` : *Subreddit.*
+
+`[int]` : *Number of images to print [1-10].*
+
+**Examples:**
+
+```
+!imgur latest 5 aww
+!imgur latest aww 5
+```
 ---
 
 ### imgur top
-*Return most rated images for query.*
+*Return amount of top rated images in the given subreddit for given timespan.*
 
 **Aliases:**
 `t`
 
 
-**Arguments:**
+**Overload 3:**
 
-(optional) `[string]` : *Time window (day/month/week/year/all).* (def: `day`)
+`[TimeWindow]` : *Timespan in which to search (day/week/month/year/all).*
+
+`[int]` : *Number of images to print [1-10].*
+
+`[string...]` : *Subreddit.*
+
+**Overload 2:**
+
+`[TimeWindow]` : *Timespan in which to search (day/week/month/year/all).*
+
+`[string]` : *Subreddit.*
 
 (optional) `[int]` : *Number of images to print [1-10].* (def: `1`)
 
-(optional) `[string...]` : *Query.* (def: `None`)
+**Overload 1:**
 
+`[int]` : *Number of images to print [1-10].*
+
+`[TimeWindow]` : *Timespan in which to search (day/week/month/year/all).*
+
+`[string...]` : *Subreddit.*
+
+**Overload 0:**
+
+`[int]` : *Number of images to print [1-10].*
+
+`[string...]` : *Subreddit.*
+
+**Examples:**
+
+```
+!imgur top day 10 aww
+!imgur top 10 day aww
+!imgur top 5 aww
+!imgur top day aww
+```
 ---
 
 ## Group: insult
@@ -1814,7 +1872,7 @@
 ---
 
 ## invite
-*Get an instant invite link for the current channel.*
+*Get an instant invite link for the current guild.*
 
 **Requires permissions:**
 `Create instant invites`
@@ -1823,19 +1881,29 @@
 `getinvite`
 
 
+**Examples:**
+
+```
+!invite
+```
 ---
 
 ## Group: joke
-*Send a joke.*
+*Group for searching jokes. If invoked without a subcommand, returns a random joke.*
 
 **Aliases:**
 `jokes, j`
 
 
+**Examples:**
+
+```
+!joke
+```
 ---
 
 ### joke search
-*Search for the joke containing the query.*
+*Search for the joke containing the given query.*
 
 **Aliases:**
 `s`
@@ -1845,6 +1913,11 @@
 
 `[string...]` : *Query.*
 
+**Examples:**
+
+```
+!joke search blonde
+```
 ---
 
 ### joke yourmom
@@ -1854,29 +1927,47 @@
 `mama, m, yomomma, yomom, yomoma, yomamma, yomama`
 
 
+**Examples:**
+
+```
+!joke yourmom
+```
 ---
 
 ## leave
-*Makes Godfather leave the server.*
+*Makes Godfather leave the guild.*
 
 **Requires user permissions:**
-`Kick members`
+`Administrator`
 
 
+**Examples:**
+
+```
+!leave
+```
 ---
 
 ## leet
 *Wr1t3s m3ss@g3 1n 1337sp34k.*
 
+**Aliases:**
+`l33t`
+
 
 **Arguments:**
 
-`[string...]` : *Text*
+`[string...]` : *Text.*
 
+**Examples:**
+
+```
+!leet Some sentence
+```
 ---
 
 ## Group: meme
-*Manipulate memes. When invoked without name, returns a random one.*
+*Manipulate guild memes. When invoked without subcommands, returns a meme from this guild's meme list given by name, otherwise returns random one.*
 
 **Aliases:**
 `memes, mm`
@@ -1886,12 +1977,19 @@
 
 (optional) `[string...]` : *Meme name.* (def: `None`)
 
+**Examples:**
+
+```
+!meme
+!meme SomeMemeNameWhichYouAdded
+```
 ---
 
 ### meme add
 *Add a new meme to the list.*
 
-**Owner-only.**
+**Requires user permissions:**
+`Manage guild`
 
 **Aliases:**
 `+, new, a`
@@ -1903,10 +2001,35 @@
 
 `[string]` : *URL.*
 
+**Examples:**
+
+```
+!meme add pepe http://i0.kym-cdn.com/photos/images/facebook/000/862/065/0e9.jpg
+```
+---
+
+### meme clear
+*Deletes all guild memes.*
+
+**Requires user permissions:**
+`Administrator`
+
+**Aliases:**
+`da, c, ca, cl, clearall`
+
+
+**Examples:**
+
+```
+!memes clear
+```
 ---
 
 ### meme create
 *Creates a new meme from blank template.*
+
+**Requires permissions:**
+`Use embeds`
 
 **Aliases:**
 `maker, c, make, m`
@@ -1920,34 +2043,134 @@
 
 `[string]` : *Bottom Text.*
 
+**Examples:**
+
+```
+!meme create 1stworld "Top text" "Bottom text"
+```
 ---
 
 ### meme delete
-*Deletes a meme from list.*
+*Deletes a meme from this guild's meme list.*
 
-**Owner-only.**
+**Requires user permissions:**
+`Manage guild`
 
 **Aliases:**
-`-, del, remove, rm, d`
+`-, del, remove, rm, d, rem`
 
 
 **Arguments:**
 
 `[string]` : *Short name (case insensitive).*
 
+**Examples:**
+
+```
+!meme delete pepe
+```
 ---
 
 ### meme list
+*List all registered memes for this guild.*
+
+**Aliases:**
+`ls, l`
+
+
+**Examples:**
+
+```
+!meme list
+```
+---
+
+## Group: meme templates
+*Manipulate meme templates. If invoked without subcommand, lists all templates.*
+
+**Aliases:**
+`template, t`
+
+
+**Examples:**
+
+```
+!meme templates
+```
+---
+
+### meme templates add
+*Add a new meme template.*
+
+**Owner-only.**
+
+**Aliases:**
+`+, new, a`
+
+
+**Arguments:**
+
+`[string]` : *Template name.*
+
+`[string]` : *URL.*
+
+**Examples:**
+
+```
+!meme template add evilracoon https://imgflip.com/s/meme/Evil-Plotting-Raccoon.jpg
+```
+---
+
+### meme templates delete
+*Add a new meme template.*
+
+**Owner-only.**
+
+**Aliases:**
+`-, remove, del, rm, d, rem`
+
+
+**Arguments:**
+
+`[string]` : *Template name.*
+
+**Examples:**
+
+```
+!meme template delete evilracoon
+```
+---
+
+### meme templates list
 *List all registered memes.*
 
 **Aliases:**
 `ls, l`
 
 
+**Examples:**
+
+```
+!meme template list
+```
+---
+
+### meme templates preview
+*Preview a meme template.*
+
+**Aliases:**
+`p, pr, view`
+
+
 **Arguments:**
 
-(optional) `[int]` : *Page.* (def: `1`)
+`[string]` : *Template name.*
 
+**Examples:**
+
+```
+!meme template preview evilracoon
+```
 ---
 
 ### message attachments
@@ -2465,7 +2688,7 @@
 ---
 
 ## penis
-*An accurate size of the user's manhood.*
+*An accurate measurement.*
 
 **Aliases:**
 `size, length, manhood, dick`
@@ -2473,14 +2696,24 @@
 
 **Arguments:**
 
-`[user]` : *Who to measure*
+`[user]` : *Who to measure.*
 
+**Examples:**
+
+```
+!penis @Someone
+```
 ---
 
 ## ping
 *Ping the bot.*
 
 
+**Examples:**
+
+```
+!ping
+```
 ---
 
 ## Group: play
@@ -2517,29 +2750,25 @@
 ---
 
 ## poll
-*Starts a poll in the channel.*
-
-**Aliases:**
-`vote`
+*Starts a new poll in the current channel. You can provide also the time for the poll to run.*
 
 
-**Arguments:**
+**Overload 1:**
+
+`[time span]` : *Time for poll to run.*
 
 `[string...]` : *Question.*
 
----
+**Overload 0:**
 
-## pollr
-*Starts a poll with reactions in the channel.*
+`[string...]` : *Question.*
 
-**Aliases:**
-`voter`
+**Examples:**
 
-
-**Arguments:**
-
-`[emoji...]` : *Options*
-
+```
+!poll Do you vote for User1 or User2?
+!poll 5m Do you vote for User1 or User2?
+```
 ---
 
 ## prefix
@@ -2549,23 +2778,34 @@
 `Administrator`
 
 **Aliases:**
-`setprefix`
+`setprefix, pref, setpref`
 
 
 **Arguments:**
 
 (optional) `[string]` : *Prefix to set.* (def: `None`)
 
+**Examples:**
+
+```
+!prefix
+!prefix ;
+```
 ---
 
 ### random cat
 *Get a random cat image.*
 
 
+**Examples:**
+
+```
+!random cat
+```
 ---
 
 ### random choose
-*!choose option1, option2, option3...*
+*Choose one of the provided options separated by comma.*
 
 **Aliases:**
 `select`
@@ -2573,37 +2813,62 @@
 
 **Arguments:**
 
-`[string...]` : *Option list (separated with a comma).*
+`[string...]` : *Option list (separated by comma).*
 
+**Examples:**
+
+```
+!random choose option 1, option 2, option 3...
+```
 ---
 
 ### random dog
 *Get a random dog image.*
 
 
+**Examples:**
+
+```
+!random dog
+```
 ---
 
 ### random raffle
 *Choose a user from the online members list belonging to a given role.*
+
+**Aliases:**
+`chooseuser`
 
 
 **Arguments:**
 
 (optional) `[role]` : *Role.* (def: `None`)
 
+**Examples:**
+
+```
+!random raffle
+!random raffle Admins
+```
 ---
 
 ## Group: rank
-*User ranking commands.*
+*User ranking commands. If invoked without subcommands, prints sender's rank.*
 
 **Aliases:**
-`ranks, ranking`
+`ranks, ranking, level`
 
 
 **Arguments:**
 
 (optional) `[user]` : *User.* (def: `None`)
 
+**Examples:**
+
+```
+!rank
+!rank @Someone
+```
 ---
 
 ### rank list
@@ -2613,16 +2878,29 @@
 `levels`
 
 
+**Examples:**
+
+```
+!rank list
+```
 ---
 
 ### rank top
 *Get rank leaderboard.*
 
 
+**Examples:**
+
+```
+!rank top
+```
 ---
 
 ## rate
-*An accurate graph of a user's humanity.*
+*Gives a rating chart for the user. If the user is not provided, rates sender.*
+
+**Requires bot permissions:**
+`Attach files`
 
 **Aliases:**
 `score, graph`
@@ -2630,20 +2908,102 @@
 
 **Arguments:**
 
-`[user]` : *Who to measure.*
+(optional) `[user]` : *Who to measure.* (def: `None`)
 
+**Examples:**
+
+```
+!rate @Someone
+```
 ---
 
-## remind
-*Resend a message after some time.*
+## reactionspoll
+*Starts a poll with reactions in the channel.*
+
+**Aliases:**
+`rpoll, pollr, voter`
+
+
+**Overload 1:**
+
+`[time span]` : *Time for poll to run.*
+
+`[string...]` : *Question.*
+
+**Overload 0:**
+
+`[string...]` : *Question.*
+
+**Examples:**
+
+```
+!rpoll :smile: :joy:
+```
+---
+
+## Group: reddit
+*Reddit commands.*
+
+**Aliases:**
+`r`
 
 
 **Arguments:**
 
-`[int]` : *Time to wait before repeat (in seconds).*
+(optional) `[string]` : *Subreddit.* (def: `all`)
 
-`[string...]` : *What to repeat.*
+**Examples:**
 
+```
+!reddit aww
+```
+---
+
+### reddit subscribe
+*Add new feed for a subreddit.*
+
+**Requires permissions:**
+`Manage guild`
+
+**Aliases:**
+`add, a, +, sub`
+
+
+**Arguments:**
+
+`[string]` : *Subreddit.*
+
+**Examples:**
+
+```
+!reddit sub aww
+```
+---
+
+### reddit unsubscribe
+*Remove a subreddit feed using subreddit name or subscription ID (use ``!feed list`` to see IDs).*
+
+**Requires permissions:**
+`Manage guild`
+
+**Aliases:**
+`del, d, rm, -, unsub`
+
+
+**Overload 1:**
+
+`[string]` : *Subreddit.*
+
+**Overload 0:**
+
+`[int]` : *Subscription ID.*
+
+**Examples:**
+
+```
+!reddit unsub aww
+!reddit unsub 12
+```
 ---
 
 ## report
@@ -2652,15 +3012,20 @@
 
 **Arguments:**
 
-`[string...]` : *Text.*
+`[string...]` : *Issue text.*
 
+**Examples:**
+
+```
+!report Your bot sucks!
+```
 ---
 
 ## Group: roles
 *Miscellaneous role control commands.*
 
 **Aliases:**
-`role, r, rl`
+`role, rl`
 
 
 ---
@@ -2754,6 +3119,9 @@
 
 **Requires permissions:**
 `Mention everyone`
+
+**Requires bot permissions:**
+`Manage roles`
 
 **Aliases:**
 `mention, @, ma`
@@ -2893,7 +3261,7 @@
 ---
 
 ## Group: rss
-*RSS feed operations.*
+*Commands for RSS feed querying or subscribing. If invoked without subcommand, gives the latest topic from the given RSS URL.*
 
 **Aliases:**
 `feed`
@@ -2901,72 +3269,45 @@
 
 **Arguments:**
 
-`[string...]` : *URL.*
+`[string...]` : *RSS URL.*
 
+**Examples:**
+
+```
+!rss https://news.google.com/news/rss/
+```
 ---
 
-### rss listsubs
+### rss list
 *Get feed list for the current channel.*
 
 **Aliases:**
-`ls, list`
+`ls, listsubs, listfeeds`
 
 
+**Examples:**
+
+```
+!feed list
+```
 ---
 
 ### rss news
 *Get newest world news.*
 
-
----
-
-## Group: rss reddit
-*Reddit feed manipulation.*
-
 **Aliases:**
-`r`
+`worldnews`
 
 
-**Arguments:**
+**Examples:**
 
-(optional) `[string]` : *Subreddit.* (def: `all`)
-
----
-
-### rss reddit subscribe
-*Add new feed for a subreddit.*
-
-**Requires permissions:**
-`Manage guild`
-
-**Aliases:**
-`add, a, +, sub`
-
-
-**Arguments:**
-
-`[string]` : *Subreddit.*
-
----
-
-### rss reddit unsubscribe
-*Remove a subreddit feed.*
-
-**Requires permissions:**
-`Manage guild`
-
-**Aliases:**
-`del, d, rm, -, unsub`
-
-
-**Arguments:**
-
-`[string]` : *Subreddit.*
-
+```
+!rss news
+```
 ---
 
 ### rss subscribe
-*Subscribe to given url.*
+*Subscribe to given RSS feed URL. The bot will send a message when the latest topic is changed.*
 
 **Requires permissions:**
 `Manage guild`
@@ -2977,10 +3318,16 @@
 
 **Arguments:**
 
-`[string...]` : *URL.*
+`[string]` : *URL.*
 
 (optional) `[string]` : *Friendly name.* (def: `None`)
 
+**Examples:**
+
+```
+!rss subscribe https://news.google.com/news/rss/
+!rss subscribe https://news.google.com/news/rss/ news
+```
 ---
 
 ### rss unsubscribe
@@ -2995,65 +3342,28 @@
 
 **Arguments:**
 
-`[int]` : *ID.*
+`[int]` : *ID of the subscription.*
 
+**Examples:**
+
+```
+!rss unsubscribe 1
+```
 ---
 
 ### rss wm
 *Get newest topics from WM forum.*
 
 
----
+**Examples:**
 
-## Group: rss youtube
-*Youtube feed manipulation.*
-
-**Aliases:**
-`yt, y`
-
-
-**Arguments:**
-
-`[string]` : *Channel URL.*
-
----
-
-### rss youtube subscribe
-*Add new feed for a YouTube channel.*
-
-**Requires permissions:**
-`Manage guild`
-
-**Aliases:**
-`add, a, +, sub`
-
-
-**Arguments:**
-
-`[string]` : *Channel URL.*
-
-(optional) `[string]` : *Friendly name.* (def: `None`)
-
----
-
-### rss youtube unsubscribe
-*Remove a YouTube channel feed.*
-
-**Requires permissions:**
-`Manage guild`
-
-**Aliases:**
-`del, d, rm, -, unsub`
-
-
-**Arguments:**
-
-`[string]` : *Channel URL.*
-
+```
+!rss wm
+```
 ---
 
 ## say
-*Repeats after you.*
+*Echo echo echo.*
 
 **Aliases:**
 `repeat`
@@ -3063,13 +3373,18 @@
 
 `[string...]` : *Text.*
 
+**Examples:**
+
+```
+!say I am gay.
+```
 ---
 
 ### steam profile
-*Get Steam user information from ID.*
+*Get Steam user information for user based on his ID.*
 
 **Aliases:**
-`id`
+`id, user`
 
 
 **Arguments:**
@@ -3086,6 +3401,24 @@
 
 ---
 
+### swat ip
+*Return IP of the registered server by name.*
+
+**Aliases:**
+`getip`
+
+
+**Arguments:**
+
+`[string]` : *Registered name.*
+
+**Examples:**
+
+```
+!s4 ip wm
+```
+---
+
 ### swat query
 *Return server information.*
 
@@ -3099,19 +3432,30 @@
 
 (optional) `[int]` : *Query port* (def: `10481`)
 
+**Examples:**
+
+```
+!s4 q 109.70.149.158
+!s4 q 109.70.149.158:10480
+!s4 q wm
+```
 ---
 
 ### swat serverlist
 *Print the serverlist with current player numbers.*
 
 
+**Examples:**
+
+```
+!swat serverlist
+```
 ---
 
 ### swat servers add
 *Add a server to serverlist.*
 
-**Requires user permissions:**
-`Administrator`
+**Owner-only.**
 
 **Aliases:**
 `+, a`
@@ -3125,13 +3469,18 @@
 
 (optional) `[int]` : *Query port* (def: `10481`)
 
+**Examples:**
+
+```
+!swat servers add 4u 109.70.149.158:10480
+!swat servers add 4u 109.70.149.158:10480 10481
+```
 ---
 
 ### swat servers delete
 *Remove a server from serverlist.*
 
-**Requires user permissions:**
-`Administrator`
+**Owner-only.**
 
 **Aliases:**
 `-, del, d`
@@ -3141,19 +3490,27 @@
 
 `[string]` : *Name.*
 
+**Examples:**
+
+```
+!swat servers delete 4u
+```
 ---
 
 ### swat servers list
 *List all registered servers.*
 
+**Owner-only.**
+
 **Aliases:**
 `ls, l`
 
 
-**Arguments:**
+**Examples:**
 
-(optional) `[int]` : *Page.* (def: `1`)
-
+```
+!swat servers list
+```
 ---
 
 ### swat settimeout
@@ -3166,10 +3523,15 @@
 
 `[int]` : *Timeout (in ms).*
 
+**Examples:**
+
+```
+!swat settimeout 500
+```
 ---
 
 ### swat startcheck
-*Notifies of free space in server.*
+*Start listening for space on a given server and notifies you when there is space.*
 
 **Aliases:**
 `checkspace, spacecheck`
@@ -3181,6 +3543,13 @@
 
 (optional) `[int]` : *Query port* (def: `10481`)
 
+**Examples:**
+
+```
+!s4 startcheck 109.70.149.158
+!s4 startcheck 109.70.149.158:10480
+!swat startcheck wm
+```
 ---
 
 ### swat stopcheck
@@ -3190,10 +3559,15 @@
 `checkstop`
 
 
+**Examples:**
+
+```
+!swat stopcheck
+```
 ---
 
 ## Group: textreaction
-*Text reaction handling.*
+*Orders a bot to react with given text to a message containing a trigger word inside (guild specific). If invoked without subcommands, adds a new text reaction to a given trigger word. Note: Trigger words can be regular expressions. You can also use "%user%" inside response and the bot will replace it with mention for the user who triggers the reaction.*
 
 **Aliases:**
 `treact, tr, txtr, textreactions`
@@ -3205,16 +3579,23 @@
 
 `[string...]` : *Response.*
 
+**Examples:**
+
+```
+!textreaction hi hello
+!textreaction h(i|ey|ola) Hello
+!textreaction "hi" "Hello, %user%!"
+```
 ---
 
 ### textreaction add
-*Add text reaction to guild text reaction list.*
+*Add a new text reaction to guild text reaction list.*
 
 **Requires user permissions:**
 `Manage guild`
 
 **Aliases:**
-`+, new`
+`+, new, a`
 
 
 **Arguments:**
@@ -3223,6 +3604,11 @@
 
 `[string...]` : *Response.*
 
+**Examples:**
+
+```
+!textreaction add "hi" "Hello, %user%!"
+```
 ---
 
 ### textreaction clear
@@ -3232,9 +3618,14 @@
 `Administrator`
 
 **Aliases:**
-`c, da`
+`da, c, ca, cl, clearall`
 
 
+**Examples:**
+
+```
+!textreactions clear
+```
 ---
 
 ### textreaction delete
@@ -3251,33 +3642,44 @@
 
 `[string...]` : *Trigger words to remove.*
 
+**Examples:**
+
+```
+!textreaction delete hi
+```
 ---
 
 ### textreaction list
-*Show all text reactions for the guild. Each page has 10 text reactions.*
+*Show all text reactions for the guild.*
 
 **Aliases:**
-`ls, l`
+`ls, l, view`
 
 
-**Arguments:**
+**Examples:**
 
-(optional) `[int]` : *Page.* (def: `1`)
-
+```
+!textreactions list
+```
 ---
 
 ## tts
-*Repeats after you but uses tts.*
+*Sends a tts message.*
 
 
 **Arguments:**
 
 `[string...]` : *Text.*
 
+**Examples:**
+
+```
+!tts I am gay.
+```
 ---
 
-## urbandict
-*Search Urban Dictionary for a query.*
+## Group: urbandict
+*Urban Dictionary commands. If invoked without subcommand, searches Urban Dictionary for a given query.*
 
 **Aliases:**
 `ud, urban`
@@ -3287,6 +3689,11 @@
 
 `[string...]` : *Query.*
 
+**Examples:**
+
+```
+!urbandict blonde
+```
 ---
 
 ### user addrole
@@ -3712,17 +4119,37 @@
 ```
 ---
 
+## vote
+*Vote for an option in the current running poll.*
+
+
+**Arguments:**
+
+`[int]` : *Option to vote for.*
+
+**Examples:**
+
+```
+!poll Do you vote for User1 or User2?
+```
+---
+
 ## Group: youtube
-*Youtube search commands.*
+*Youtube search commands. If invoked without subcommands, searches YouTube for given query.*
 
 **Aliases:**
-`y, yt`
+`y, yt, ytube`
 
 
 **Arguments:**
 
 `[string...]` : *Search query.*
 
+**Examples:**
+
+```
+!youtube never gonna give you up
+```
 ---
 
 ### youtube search
@@ -3738,19 +4165,29 @@
 
 `[string...]` : *Search query.*
 
+**Examples:**
+
+```
+!youtube search 5 rick astley
+```
 ---
 
-### youtube searchc
+### youtube searchchannel
 *Advanced youtube search for channels only.*
 
 **Aliases:**
-`sc, searchchannel`
+`sc, searchc`
 
 
 **Arguments:**
 
 `[string...]` : *Search query.*
 
+**Examples:**
+
+```
+!youtube searchchannel 5 rick astley
+```
 ---
 
 ### youtube searchp
@@ -3764,19 +4201,75 @@
 
 `[string...]` : *Search query.*
 
+**Examples:**
+
+```
+!youtube searchplaylist 5 rick astley
+```
 ---
 
-### youtube searchv
+### youtube searchvideo
 *Advanced youtube search for videos only.*
 
 **Aliases:**
-`sv, searchvideo`
+`sv, searchv`
 
 
 **Arguments:**
 
 `[string...]` : *Search query.*
 
+**Examples:**
+
+```
+!youtube searchvideo 5 rick astley
+```
+---
+
+### youtube subscribe
+*Add a new subscription for a YouTube channel.*
+
+**Requires permissions:**
+`Manage guild`
+
+**Aliases:**
+`add, a, +, sub`
+
+
+**Arguments:**
+
+`[string]` : *Channel URL.*
+
+(optional) `[string]` : *Friendly name.* (def: `None`)
+
+**Examples:**
+
+```
+!youtube subscribe https://www.youtube.com/user/RickAstleyVEVO
+!youtube subscribe https://www.youtube.com/user/RickAstleyVEVO rick
+```
+---
+
+### youtube unsubscribe
+*Remove a YouTube channel subscription.*
+
+**Requires permissions:**
+`Manage guild`
+
+**Aliases:**
+`del, d, rm, -, unsub`
+
+
+**Arguments:**
+
+`[string]` : *Channel URL or subscription name.*
+
+**Examples:**
+
+```
+!youtube unsubscribe https://www.youtube.com/user/RickAstleyVEVO
+!youtube unsubscribe rick
+```
 ---
 
 ## zugify
@@ -3790,5 +4283,10 @@
 
 `[string...]` : *Text.*
 
+**Examples:**
+
+```
+!zugify Some random text
+```
 ---
 
