@@ -136,20 +136,28 @@ namespace TheGodfather
             }
 
 
-            Console.WriteLine("Done! Starting periodic actions...");
-            DatabaseSyncTimer = new Timer(DatabaseSyncTimerCallback, Shards[0].Client, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(5));
-            BotStatusTimer = new Timer(BotStatusTimerCallback, Shards[0].Client, TimeSpan.FromSeconds(10), TimeSpan.FromMinutes(5));
+            Console.WriteLine("\rBooting complete!                       ");
+            Console.Write("Starting periodic actions...");
+            DatabaseSyncTimer = new Timer(DatabaseSyncTimerCallback, Shards[0].Client, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(3));
+            BotStatusTimer = new Timer(BotStatusTimerCallback, Shards[0].Client, TimeSpan.FromSeconds(10), TimeSpan.FromMinutes(10));
             FeedCheckTimer = new Timer(FeedCheckTimerCallback, Shards[0].Client, TimeSpan.FromSeconds(30), TimeSpan.FromMinutes(1));
 
+            Console.WriteLine(" Done!");
+            Console.WriteLine();
+
             GC.Collect();
-            Logger.LogMessage(LogLevel.Info, "<br><br>-------------- NEW INSTANCE STARTED --------------<br><br>");
+            Logger.LogMessage(LogLevel.Info, "<br>-------------- NEW INSTANCE STARTED --------------<br>");
             await Task.Delay(-1);
         }
 
         private static void BotStatusTimerCallback(object _)
         {
             var client = _ as DiscordClient;
-            DatabaseService.UpdateBotStatusAsync(client).ConfigureAwait(false).GetAwaiter().GetResult();
+            try {
+                DatabaseService.UpdateBotStatusAsync(client).ConfigureAwait(false).GetAwaiter().GetResult();
+            } catch (Exception e) {
+                Logger.LogException(LogLevel.Error, e);
+            }
         }
 
         private static void DatabaseSyncTimerCallback(object _)
@@ -158,11 +166,7 @@ namespace TheGodfather
             try {
                 SharedData.SaveRanksToDatabaseAsync(DatabaseService).ConfigureAwait(false).GetAwaiter().GetResult();
             } catch (Exception e) {
-                Logger.LogMessage(LogLevel.Error, 
-                    $"Exception occured while syncing with the database: {e.GetType()}<br>" + 
-                    $"Message: {e.Message}<br>" +
-                    (e.InnerException != null ? $" Inner exception: {e.InnerException.GetType()} : {e.InnerException.Message}" : "")
-                );
+                Logger.LogException(LogLevel.Error, e);
             }
         }
 
@@ -172,11 +176,7 @@ namespace TheGodfather
             try {
                 RSSService.CheckFeedsForChangesAsync(client, DatabaseService).ConfigureAwait(false).GetAwaiter().GetResult();
             } catch (Exception e) {
-                Logger.LogMessage(LogLevel.Error,
-                    $"Exception occured while checking for feed updates: {e.GetType()}<br>" + 
-                    $"Message: {e.Message}<br>" +
-                    (e.InnerException != null ? $" Inner exception: {e.InnerException.GetType()} : {e.InnerException.Message}" : "") 
-                );
+                Logger.LogException(LogLevel.Error, e);
             }
         }
     }
