@@ -19,6 +19,7 @@ namespace TheGodfather.Modules.Games.Common
         protected int[,] _board;
         protected int _move = 0;
         protected bool _deletefailed = false;
+        protected TimeSpan _movetime;
 
         protected int BoardElementAt(int row, int col)
         {
@@ -29,7 +30,7 @@ namespace TheGodfather.Modules.Games.Common
         }
 
 
-        protected BoardGame(InteractivityExtension interactivity, DiscordChannel channel, DiscordUser p1, DiscordUser p2, int size_x, int size_y)
+        protected BoardGame(InteractivityExtension interactivity, DiscordChannel channel, DiscordUser p1, DiscordUser p2, int size_x, int size_y, TimeSpan? movetime = null)
             : base(interactivity, channel)
         {
             BOARD_SIZE_X = size_x;
@@ -37,6 +38,7 @@ namespace TheGodfather.Modules.Games.Common
             _board = new int[BOARD_SIZE_Y, BOARD_SIZE_X];
             _p1 = p1;
             _p2 = p2;
+            _movetime = movetime ?? TimeSpan.FromSeconds(30);
         }
 
 
@@ -84,7 +86,7 @@ namespace TheGodfather.Modules.Games.Common
                     if (!int.TryParse(split[1], out col)) return false;
                     return row > 0 && row <= BOARD_SIZE_Y && col > 0 && col <= BOARD_SIZE_X;
                 },
-                TimeSpan.FromMinutes(1)
+                _movetime
             ).ConfigureAwait(false);
             if (mctx == null) {
                 NoReply = true;

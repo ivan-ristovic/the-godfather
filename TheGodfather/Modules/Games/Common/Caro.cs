@@ -1,4 +1,5 @@
 ﻿#region USING_DIRECTIVES
+using System;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -15,8 +16,8 @@ namespace TheGodfather.Modules.Games.Common
         private static string _header = DiscordEmoji.FromUnicode("\U0001f199") + string.Join("", EmojiUtil.Numbers);
 
 
-        public Caro(InteractivityExtension interactivity, DiscordChannel channel, DiscordUser player1, DiscordUser player2)
-            : base(interactivity, channel, player1, player2, 10, 10) { }
+        public Caro(InteractivityExtension interactivity, DiscordChannel channel, DiscordUser player1, DiscordUser player2, TimeSpan? movetime = null)
+            : base(interactivity, channel, player1, player2, 10, 10, movetime) { }
         
 
         protected override bool GameOver()
