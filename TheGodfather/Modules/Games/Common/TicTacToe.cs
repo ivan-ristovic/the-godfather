@@ -16,8 +16,8 @@ namespace TheGodfather.Modules.Games
     {
         public TicTacToe(InteractivityExtension interactivity, DiscordChannel channel, DiscordUser p1, DiscordUser p2)
             : base(interactivity, channel, p1, p2, 3, 3) { }
-        
-        
+
+
         protected override async Task AdvanceAsync()
         {
             int field = 0;
@@ -37,10 +37,21 @@ namespace TheGodfather.Modules.Games
                 return;
             }
 
-            if (TryPlayMove(player1plays ? 1 : 2, (field - 1) / BOARD_SIZE_Y, (field - 1) % BOARD_SIZE_X))
+            if (TryPlayMove(player1plays ? 1 : 2, (field - 1) / BOARD_SIZE_Y, (field - 1) % BOARD_SIZE_X)) {
                 _move++;
-            else
+                if (!_deletefailed) {
+                    try {
+                        await mctx.Message.DeleteAsync()
+                            .ConfigureAwait(false);
+                    } catch {
+                        await _channel.SendMessageAsync("Consider giving me the permissions to delete messages so that I can clean up the move posts and keep the board at the bottom.")
+                            .ConfigureAwait(false);
+                        _deletefailed = true;
+                    }
+                }
+            } else {
                 await _channel.SendMessageAsync("Invalid move.").ConfigureAwait(false);
+            }
         }
 
         protected override bool GameOver()

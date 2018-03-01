@@ -59,7 +59,7 @@ namespace TheGodfather.Modules.Gambling
         [Command("reset")]
         [Description("Opens a brand new card deck.")]
         [Aliases("new", "opennew", "open")]
-        [UsageExample("!deck draw 5")]
+        [UsageExample("!deck reset")]
         public async Task ResetDeckAsync(CommandContext ctx)
         {
             if (Shared.CardDecks.ContainsKey(ctx.Channel.Id))

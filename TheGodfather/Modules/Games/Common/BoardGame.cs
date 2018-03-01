@@ -3,7 +3,6 @@ using System;
 using System.Threading.Tasks;
 
 using DSharpPlus.Entities;
-using DSharpPlus.Exceptions;
 using DSharpPlus.Interactivity;
 #endregion
 
@@ -30,7 +29,7 @@ namespace TheGodfather.Modules.Games.Common
         }
 
 
-        protected BoardGame(InteractivityExtension interactivity, DiscordChannel channel, DiscordUser p1, DiscordUser p2, int size_x, int size_y) 
+        protected BoardGame(InteractivityExtension interactivity, DiscordChannel channel, DiscordUser p1, DiscordUser p2, int size_x, int size_y)
             : base(interactivity, channel)
         {
             BOARD_SIZE_X = size_x;
@@ -61,7 +60,7 @@ namespace TheGodfather.Modules.Games.Common
             await UpdateBoardAsync()
                 .ConfigureAwait(false);
         }
-        
+
         protected virtual bool TryPlayMove(int val, int row, int col)
         {
             if (_board[row, col] != 0)
@@ -69,7 +68,7 @@ namespace TheGodfather.Modules.Games.Common
             _board[row, col] = val;
             return true;
         }
-        
+
         protected virtual async Task AdvanceAsync()
         {
             int row = 0, col = 0;
@@ -98,7 +97,7 @@ namespace TheGodfather.Modules.Games.Common
                     try {
                         await mctx.Message.DeleteAsync()
                             .ConfigureAwait(false);
-                    } catch (UnauthorizedException) {
+                    } catch {
                         await _channel.SendMessageAsync("Consider giving me the permissions to delete messages so that I can clean up the move posts.")
                             .ConfigureAwait(false);
                         _deletefailed = true;
