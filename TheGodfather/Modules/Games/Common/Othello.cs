@@ -1,4 +1,5 @@
 ﻿#region USING_DIRECTIVES
+using System;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,8 +17,8 @@ namespace TheGodfather.Modules.Games.Common
         private static string _header = DiscordEmoji.FromUnicode("\U0001f199") + string.Join("", EmojiUtil.Numbers.Take(8));
 
 
-        public Othello(InteractivityExtension interactivity, DiscordChannel channel, DiscordUser player1, DiscordUser player2)
-            : base(interactivity, channel, player1, player2, 8, 8)
+        public Othello(InteractivityExtension interactivity, DiscordChannel channel, DiscordUser player1, DiscordUser player2, TimeSpan? movetime = null)
+            : base(interactivity, channel, player1, player2, 8, 8, movetime)
         {
             _board[3, 3] = _board[4, 4] = 1;
             _board[3, 4] = _board[4, 3] = 2;
@@ -100,6 +101,24 @@ namespace TheGodfather.Modules.Games.Common
             await _msg.ModifyAsync(embed: new DiscordEmbedBuilder() {
                 Description = sb.ToString()
             }.Build()).ConfigureAwait(false);
+        }
+
+        protected override void ResolveWinner()
+        {
+            int p1count = 0, p2count = 0;
+            for (int i = 0; i < BOARD_SIZE_Y; i++) {
+                for (int j = 0; j < BOARD_SIZE_X; j++) {
+                    if (_board[i, j] == 0)
+                        p1count++;
+                    else
+                        p2count++;
+                }
+            }
+
+            if (p1count == p2count)
+                Winner = null;
+            else
+                Winner = (p1count > p2count) ? _p1 : _p2;
         }
     }
 }
