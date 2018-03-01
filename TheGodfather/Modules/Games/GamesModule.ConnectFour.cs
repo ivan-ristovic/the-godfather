@@ -73,7 +73,7 @@ namespace TheGodfather.Modules.Games
             }
 
 
-            #region COMMAND_CARO_RULES
+            #region COMMAND_CONNECT4_RULES
             [Command("rules")]
             [Description("Explain the Connect4 game rules.")]
             [Aliases("help", "h", "ruling", "rule")]
