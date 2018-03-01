@@ -19,7 +19,7 @@ namespace TheGodfather.Modules.Games
     {
         [Group("connect4")]
         [Description("Starts a \"Connect 4\" game. Play a move by writing a number from 1 to 9 corresponding to the column where you wish to insert your piece. You can also specify a time window in which player must submit their move.")]
-        [Aliases("connectfour", "chain4", "chainfour", "c4")]
+        [Aliases("connectfour", "chain4", "chainfour", "c4", "fourinarow", "fourinaline", "4row", "4line", "cfour")]
         [UsageExample("!game connect4")]
         [UsageExample("!game connect4 10s")]
         public class ConnectFourModule : TheGodfatherBaseModule
@@ -71,6 +71,25 @@ namespace TheGodfather.Modules.Games
                     Game.UnregisterGameInChannel(ctx.Channel.Id);
                 }
             }
+
+
+            #region COMMAND_CARO_RULES
+            [Command("rules")]
+            [Description("Explain the Connect4 game rules.")]
+            [Aliases("help", "h", "ruling", "rule")]
+            [UsageExample("!game connect4 rules")]
+            public async Task RulesAsync(CommandContext ctx)
+            {
+                await ReplyWithEmbedAsync(
+                    ctx,
+                    "\nConnect Four (also known as ``Four in a Row``, ``Four in a Line``) is a two-player connection game " +
+                    "in which the players first choose a color and then take turns dropping colored discs from the top into a seven-column, " +
+                    "six-row vertically suspended grid. The pieces fall straight down, occupying the next available space within the column. " +
+                    "The objective of the game is to be the first to form a horizontal, vertical, or diagonal line of four of one's own discs.",
+                    ":book:"
+                ).ConfigureAwait(false);
+            }
+            #endregion
         }
     }
 }

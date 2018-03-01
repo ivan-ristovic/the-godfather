@@ -75,7 +75,7 @@ namespace TheGodfather.Modules.Games
 
             #region COMMAND_CARO_RULES
             [Command("rules")]
-            [Description("Explain the caro game rules.")]
+            [Description("Explain the Caro game rules.")]
             [Aliases("help", "h", "ruling", "rule")]
             [UsageExample("!game caro rules")]
             public async Task RulesAsync(CommandContext ctx)
