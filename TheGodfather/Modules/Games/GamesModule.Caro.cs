@@ -18,7 +18,7 @@ namespace TheGodfather.Modules.Games
     {
         [Group("caro")]
         [Description("Starts a \"Caro\" game. Play a move by writing a pair of numbers from 1 to 10 corresponding to the row and column where you wish to play.")]
-        [Aliases("c")]
+        [Aliases("c", "gomoku", "gobang")]
         [UsageExample("!game caro")]
         public class CaroModule : TheGodfatherBaseModule
         {
@@ -66,6 +66,24 @@ namespace TheGodfather.Modules.Games
                     Game.UnregisterGameInChannel(ctx.Channel.Id);
                 }
             }
+
+
+            #region COMMAND_CARO_RULES
+            [Command("rules")]
+            [Description("Explain the caro game rules.")]
+            [Aliases("help", "h", "ruling", "rule")]
+            [UsageExample("!game caro rules")]
+            public async Task RulesAsync(CommandContext ctx)
+            {
+                await ReplyWithEmbedAsync(
+                    ctx,
+                    "Caro (aka ``Gomoku`` or ``Gobang``) is basically a Tic-Tac-Toe game played on a 10x10 board." +
+                    "The goal is to have an unbroken row of 5 symbols in order to win the game." +
+                    "Players play in turns, placing their symbols on the board. The game ends when someone makes 5 symbols " +
+                    "in a row or when there are no more empty fields on the board."
+                ).ConfigureAwait(false);
+            }
+            #endregion
         }
     }
 }
