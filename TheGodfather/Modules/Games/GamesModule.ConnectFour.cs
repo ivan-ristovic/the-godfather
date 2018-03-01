@@ -1,4 +1,5 @@
 ﻿#region USING_DIRECTIVES
+using System;
 using System.Threading.Tasks;
 
 using TheGodfather.Attributes;
@@ -17,9 +18,10 @@ namespace TheGodfather.Modules.Games
     public partial class GamesModule : TheGodfatherBaseModule
     {
         [Group("connect4")]
-        [Description("Starts a \"Connect 4\" game. Play a move by writing a number from 1 to 9 corresponding to the column where you wish to insert your piece.")]
+        [Description("Starts a \"Connect 4\" game. Play a move by writing a number from 1 to 9 corresponding to the column where you wish to insert your piece. You can also specify a time window in which player must submit their move.")]
         [Aliases("connectfour", "chain4", "chainfour", "c4")]
         [UsageExample("!game connect4")]
+        [UsageExample("!game connect4 10s")]
         public class ConnectFourModule : TheGodfatherBaseModule
         {
 
@@ -27,7 +29,8 @@ namespace TheGodfather.Modules.Games
 
 
             [GroupCommand]
-            public async Task ExecuteGroupAsync(CommandContext ctx)
+            public async Task ExecuteGroupAsync(CommandContext ctx,
+                                               [Description("Move time (def. 30s).")] TimeSpan? movetime = null)
             {
                 if (Game.RunningInChannel(ctx.Channel.Id))
                     throw new CommandFailedException("Another game is already running in the current channel!");
@@ -39,26 +42,29 @@ namespace TheGodfather.Modules.Games
                 if (opponent == null)
                     return;
 
-                var connect4 = new Connect4(ctx.Client.GetInteractivity(), ctx.Channel, ctx.User, opponent);
+                if (movetime?.TotalSeconds > 120 || movetime?.TotalSeconds < 2)
+                    throw new InvalidCommandUsageException("Move time must be in range of [2-120] seconds.");
+
+                var connect4 = new Connect4(ctx.Client.GetInteractivity(), ctx.Channel, ctx.User, opponent, movetime);
                 Game.RegisterGameInChannel(connect4, ctx.Channel.Id);
                 try {
                     await connect4.RunAsync()
                         .ConfigureAwait(false);
 
                     if (connect4.Winner != null) {
-                        await ReplyWithEmbedAsync(ctx, $"The winner is: {connect4.Winner.Mention}!", ":trophy:")
+                        if (connect4.NoReply == false)
+                            await ReplyWithEmbedAsync(ctx, $"The winner is: {connect4.Winner.Mention}!", ":trophy:").ConfigureAwait(false);
+                        else
+                            await ReplyWithEmbedAsync(ctx, $"{connect4.Winner.Mention} won due to no replies from opponent!", ":trophy:").ConfigureAwait(false);
+                        
+                        await Database.UpdateUserStatsAsync(connect4.Winner.Id, "chain4_won")
                             .ConfigureAwait(false);
-
-                        await Database.UpdateUserStatsAsync(connect4.Winner.Id, "chain4_won").ConfigureAwait(false);
                         if (connect4.Winner.Id == ctx.User.Id)
                             await Database.UpdateUserStatsAsync(opponent.Id, "chain4_lost").ConfigureAwait(false);
                         else
                             await Database.UpdateUserStatsAsync(ctx.User.Id, "chain4_lost").ConfigureAwait(false);
-                    } else if (connect4.NoReply == false) {
-                        await ReplyWithEmbedAsync(ctx, "A draw... Pathetic...", ":video_game:")
-                            .ConfigureAwait(false);
                     } else {
-                        await ReplyWithEmbedAsync(ctx, "No reply, aborting Connect4 game...", ":alarm_clock:")
+                        await ReplyWithEmbedAsync(ctx, "A draw... Pathetic...", ":video_game:")
                             .ConfigureAwait(false);
                     }
                 } finally {

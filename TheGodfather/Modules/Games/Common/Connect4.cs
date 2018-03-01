@@ -19,8 +19,8 @@ namespace TheGodfather.Modules.Games
         private static string _header = string.Join("", EmojiUtil.Numbers.Take(9));
 
 
-        public Connect4(InteractivityExtension interactivity, DiscordChannel channel, DiscordUser player1, DiscordUser player2)
-            : base(interactivity, channel, player1, player2, 9, 7) { }
+        public Connect4(InteractivityExtension interactivity, DiscordChannel channel, DiscordUser player1, DiscordUser player2, TimeSpan? movetime = null)
+            : base(interactivity, channel, player1, player2, 9, 7, movetime) { }
 
 
         protected override async Task AdvanceAsync()
@@ -35,10 +35,11 @@ namespace TheGodfather.Modules.Games
                     if (!int.TryParse(xm.Content, out column)) return false;
                     return column > 0 && column <= BOARD_SIZE_X;
                 },
-                TimeSpan.FromMinutes(1)
+                _movetime
             ).ConfigureAwait(false);
-            if (column == 0) {
+            if (mctx == null) {
                 NoReply = true;
+                Winner = player1plays ? _p2 : _p1;
                 return;
             }
 

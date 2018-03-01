@@ -59,7 +59,6 @@ namespace TheGodfather.Modules.Games
 
                         await Database.UpdateUserStatsAsync(caro.Winner.Id, "caro_won")
                             .ConfigureAwait(false);
-
                         if (caro.Winner.Id == ctx.User.Id)
                             await Database.UpdateUserStatsAsync(opponent.Id, "caro_lost").ConfigureAwait(false);
                         else
