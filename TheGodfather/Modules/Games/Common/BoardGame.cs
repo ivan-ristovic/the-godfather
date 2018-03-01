@@ -56,8 +56,6 @@ namespace TheGodfather.Modules.Games.Common
 
             if (GameOver())
                 Winner = (_move % 2 == 0) ? _p2 : _p1;
-            else
-                Winner = null;
 
             await UpdateBoardAsync()
                 .ConfigureAwait(false);
@@ -90,6 +88,7 @@ namespace TheGodfather.Modules.Games.Common
             ).ConfigureAwait(false);
             if (mctx == null) {
                 NoReply = true;
+                Winner = player1plays ? _p2 : _p1;
                 return;
             }
 

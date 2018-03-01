@@ -52,22 +52,22 @@ namespace TheGodfather.Modules.Games
                         .ConfigureAwait(false);
 
                     if (caro.Winner != null) {
-                        await ReplyWithEmbedAsync(ctx, $"The winner is: {caro.Winner.Mention}!", ":trophy:")
-                            .ConfigureAwait(false);
+                        if (caro.NoReply == false)
+                            await ReplyWithEmbedAsync(ctx, $"The winner is: {caro.Winner.Mention}!", ":trophy:").ConfigureAwait(false);
+                        else
+                            await ReplyWithEmbedAsync(ctx, $"{caro.Winner.Mention} won due to no replies from opponent!", ":trophy:").ConfigureAwait(false);
 
                         await Database.UpdateUserStatsAsync(caro.Winner.Id, "caro_won")
                             .ConfigureAwait(false);
+
                         if (caro.Winner.Id == ctx.User.Id)
                             await Database.UpdateUserStatsAsync(opponent.Id, "caro_lost").ConfigureAwait(false);
                         else
                             await Database.UpdateUserStatsAsync(ctx.User.Id, "caro_lost").ConfigureAwait(false);
-                    } else if (caro.NoReply == false) {
+                    } else {
                         await ReplyWithEmbedAsync(ctx, "A draw... Pathetic...", ":video_game:")
                             .ConfigureAwait(false);
-                    } else {
-                        await ReplyWithEmbedAsync(ctx, "No reply, aborting Caro game...", ":alarm_clock:")
-                            .ConfigureAwait(false);
-                    }
+                    } 
                 } finally {
                     Game.UnregisterGameInChannel(ctx.Channel.Id);
                 }
