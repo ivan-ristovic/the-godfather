@@ -1,4 +1,5 @@
 ﻿#region USING_DIRECTIVES
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using TheGodfather.Attributes;
@@ -10,7 +11,6 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 #endregion
-
 
 namespace TheGodfather.Modules.Administration
 {
@@ -40,7 +40,6 @@ namespace TheGodfather.Modules.Administration
             [UsageExample("!guild sar add @Notifications")]
             [UsageExample("!guild sar add @Notifications @Role1 @Role2")]
             [RequireUserPermissions(Permissions.Administrator)]
-            [RequireBotPermissions(Permissions.ManageRoles)]
             public async Task AddSARoleAsync(CommandContext ctx,
                                             [Description("Roles to add.")] params DiscordRole[] roles)
             {
@@ -60,7 +59,6 @@ namespace TheGodfather.Modules.Administration
             [UsageExample("!guild sar delete @Notifications")]
             [UsageExample("!guild sar delete @Notifications @Role1 @Role2")]
             [RequireUserPermissions(Permissions.Administrator)]
-            [RequireBotPermissions(Permissions.ManageRoles)]
             public async Task RemoveSARoleAsync(CommandContext ctx,
                                                [Description("Roles to delete.")] params DiscordRole[] roles)
             {
@@ -83,11 +81,20 @@ namespace TheGodfather.Modules.Administration
                 var rids = await Database.GetSelfAssignableRolesListAsync(ctx.Guild.Id)
                     .ConfigureAwait(false);
 
+                List<DiscordRole> roles = new List<DiscordRole>();
+                foreach (var rid in rids) {
+                    var role = ctx.Guild.GetRole(rid);
+                    if (role == null)
+                        await Database.RemoveSelfAssignableRoleAsync(ctx.Guild.Id, rid).ConfigureAwait(false);
+                    else
+                        roles.Add(role);
+                }
+
                 await InteractivityUtil.SendPaginatedCollectionAsync(
                     ctx,
                     "Self-Assignable roles for this guild:",
-                    rids,
-                    rid => ctx.Guild.GetRole(rid).Name,
+                    roles,
+                    r => r.Name,
                     DiscordColor.Lilac
                 ).ConfigureAwait(false);
             }
