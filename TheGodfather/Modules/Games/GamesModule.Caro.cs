@@ -25,7 +25,7 @@ namespace TheGodfather.Modules.Games
         public class CaroModule : TheGodfatherBaseModule
         {
 
-            public CaroModule(SharedData shared, DBService db) : base(shared, db) { }
+            public CaroModule(DBService db) : base(db: db) { }
 
 
             [GroupCommand]

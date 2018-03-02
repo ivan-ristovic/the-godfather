@@ -25,7 +25,7 @@ namespace TheGodfather.Modules.Games
         public class TicTacToeModule : TheGodfatherBaseModule
         {
 
-            public TicTacToeModule(SharedData shared, DBService db) : base(shared, db) { }
+            public TicTacToeModule(DBService db) : base(db: db) { }
 
 
             [GroupCommand]
@@ -71,6 +71,25 @@ namespace TheGodfather.Modules.Games
                     Game.UnregisterGameInChannel(ctx.Channel.Id);
                 }
             }
+
+
+            #region COMMAND_TICTACTOE_RULES
+            [Command("rules")]
+            [Description("Explain the Tic-Tac-Toe game rules.")]
+            [Aliases("help", "h", "ruling", "rule")]
+            [UsageExample("!game tictactoe rules")]
+            public async Task RulesAsync(CommandContext ctx)
+            {
+                await ReplyWithEmbedAsync(
+                    ctx,
+                    "The object of Tic Tac Toe is to get three in a row. " +
+                    "You play on a three by three game board. The first player is known as X and the second is O. " +
+                    "Players alternate placing Xs and Os on the game board until either oppent has three in a row " +
+                    "or all nine squares are filled.",
+                    ":book:"
+                ).ConfigureAwait(false);
+            }
+            #endregion
         }
     }
 }

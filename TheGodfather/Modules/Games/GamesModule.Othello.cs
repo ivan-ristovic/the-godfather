@@ -25,7 +25,7 @@ namespace TheGodfather.Modules.Games
         public class OthelloModule : TheGodfatherBaseModule
         {
 
-            public OthelloModule(SharedData shared, DBService db) : base(shared, db) { }
+            public OthelloModule(DBService db) : base(db: db) { }
 
 
             [GroupCommand]

@@ -25,7 +25,7 @@ namespace TheGodfather.Modules.Games
         public class ConnectFourModule : TheGodfatherBaseModule
         {
 
-            public ConnectFourModule(SharedData shared, DBService db) : base(shared, db) { }
+            public ConnectFourModule(DBService db) : base(db: db) { }
 
 
             [GroupCommand]
