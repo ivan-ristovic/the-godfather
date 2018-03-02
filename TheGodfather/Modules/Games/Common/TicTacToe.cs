@@ -14,8 +14,8 @@ namespace TheGodfather.Modules.Games
 {
     public class TicTacToe : BoardGame
     {
-        public TicTacToe(InteractivityExtension interactivity, DiscordChannel channel, DiscordUser p1, DiscordUser p2)
-            : base(interactivity, channel, p1, p2, 3, 3) { }
+        public TicTacToe(InteractivityExtension interactivity, DiscordChannel channel, DiscordUser p1, DiscordUser p2, TimeSpan? movetime = null)
+            : base(interactivity, channel, p1, p2, 3, 3, movetime) { }
 
 
         protected override async Task AdvanceAsync()
@@ -30,10 +30,11 @@ namespace TheGodfather.Modules.Games
                     if (!int.TryParse(xm.Content, out field)) return false;
                     return field > 0 && field < 10;
                 },
-                TimeSpan.FromMinutes(1)
+                _movetime
             ).ConfigureAwait(false);
             if (mctx == null) {
                 NoReply = true;
+                Winner = player1plays ? _p2 : _p1;
                 return;
             }
 
