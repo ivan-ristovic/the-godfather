@@ -111,10 +111,11 @@ namespace TheGodfather
                 EnableMentionPrefix = true,
                 PrefixResolver = PrefixResolverAsync,
                 Services = new ServiceCollection()
-                    .AddSingleton(new YoutubeService(_shared.BotConfiguration.YoutubeKey))
+                    .AddSingleton(new YoutubeService(_shared.BotConfiguration.YouTubeKey))
                     .AddSingleton(new GiphyService(_shared.BotConfiguration.GiphyKey))
                     .AddSingleton(new ImgurService(_shared.BotConfiguration.ImgurKey))
                     .AddSingleton(new SteamService(_shared.BotConfiguration.SteamKey))
+                    .AddSingleton(new WeatherService(_shared.BotConfiguration.WeatherKey))
                     .AddSingleton(this)
                     .AddSingleton(_db)
                     .AddSingleton(_shared)

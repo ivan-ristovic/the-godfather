@@ -26,8 +26,11 @@ namespace TheGodfather.Entities
         [JsonProperty("key-imgur")]
         public string ImgurKey { get; private set; }
 
+        [JsonProperty("key-weather")]
+        public string WeatherKey { get; private set; }
+
         [JsonProperty("key-youtube")]
-        public string YoutubeKey { get; private set; }
+        public string YouTubeKey { get; private set; }
 
         [JsonProperty("db-config")]
         public DatabaseConfig DatabaseConfig { get; private set; }
@@ -58,10 +61,11 @@ namespace TheGodfather.Entities
                     Token = "<insert token here>",
                     ShardCount = 1,
                     DefaultPrefix = "!",
-                    GiphyKey = "",
-                    SteamKey = "",
-                    ImgurKey = "",
-                    YoutubeKey = "",
+                    GiphyKey = "<insert GIPHY API key>",
+                    SteamKey = "<insert Steam API key>",
+                    ImgurKey = "<insert Imgur API key>",
+                    WeatherKey = "<insert OpenWeatherMaps API key>",
+                    YouTubeKey = "<insert YouTube API key>",
                     DatabaseConfig = DatabaseConfig.Default
                 };
             }

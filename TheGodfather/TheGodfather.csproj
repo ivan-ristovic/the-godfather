@@ -272,6 +272,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Attributes\UsageExampleAttribute.cs" />
+    <Compile Include="Entities\WeatherData.cs" />
     <Compile Include="Extensions\Converters\CustomBoolConverter.cs" />
     <Compile Include="Extensions\Converters\CustomTimeWindowConverter.cs" />
     <Compile Include="Extensions\EmojiUtil.cs" />
@@ -314,6 +315,7 @@
     <Compile Include="Modules\Polls\Common\ReactionsPoll.cs" />
     <Compile Include="Modules\Polls\ReactionsPollModule.cs" />
     <Compile Include="Modules\Polls\VotingModule.cs" />
+    <Compile Include="Modules\Search\WeatherModule.cs" />
     <Compile Include="Modules\SWAT\SwatModule.Servers.cs" />
     <Compile Include="Services\IGodfatherService.cs" />
     <Compile Include="Modules\TheGodfatherBaseModule.cs" />
@@ -360,6 +362,7 @@
     <Compile Include="Entities\SWAT\SwatServerInfo.cs" />
     <Compile Include="Services\MemeGenService.cs" />
     <Compile Include="Services\PetImagesService.cs" />
+    <Compile Include="Services\WeatherService.cs" />
     <Compile Include="TheGodfather.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\DatabaseService\DBService.Bank.cs" />
