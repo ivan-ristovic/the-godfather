@@ -188,6 +188,33 @@ namespace TheGodfather.Modules.Misc
         }
         #endregion
 
+        #region COMMAND_PENISCOMPARE
+        [Command("peniscompare")]
+        [Description("Comparison of the results given by ``!penis`` command.")]
+        [Aliases("sizecompare", "comparesize", "comparepenis", "cmppenis", "peniscmp")]
+        [UsageExample("!peniscompare @Someone")]
+        [UsageExample("!peniscompare @Someone @SomeoneElse")]
+        public async Task PenisCompareAsync(CommandContext ctx,
+                                           [Description("User1.")] DiscordUser user1,
+                                           [Description("User2 (def. sender).")] DiscordUser user2 = null)
+        {
+            if (user2 == null)
+                user2 = ctx.User;
+
+            if (user1.Id == ctx.Client.CurrentUser.Id || user2.Id == ctx.Client.CurrentUser.Id) {
+                await ReplyWithEmbedAsync(ctx, "Please, I do not want to make everyone laugh at you...", ":straight_ruler:")
+                    .ConfigureAwait(false);
+                return;
+            }
+
+            var sb = new StringBuilder();
+            sb.Append('8').Append('=', (int)(user1.Id % 40)).Append("D ").AppendLine(user1.Mention);
+            sb.Append('8').Append('=', (int)(user2.Id % 40)).Append("D ").AppendLine(user2.Mention);
+            await ReplyWithEmbedAsync(ctx, $"Comparing...\n\n{Formatter.Bold(sb.ToString())}", ":straight_ruler:")
+                .ConfigureAwait(false);
+        }
+        #endregion
+
         #region COMMAND_PING
         [Command("ping")]
         [Description("Ping the bot.")]
