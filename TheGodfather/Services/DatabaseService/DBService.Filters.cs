@@ -98,7 +98,7 @@ namespace TheGodfather.Services
             }
         }
 
-        public async Task RemoveAllGuildFiltersAsync(ulong gid)
+        public async Task DeleteAllGuildFiltersAsync(ulong gid)
         {
             await _sem.WaitAsync();
             try {

@@ -190,5 +190,23 @@ namespace TheGodfather.Services
             }
             return false;
         }
+
+        public async Task DeleteAllSelfAssignableRolesAsync(ulong gid)
+        {
+            await _sem.WaitAsync();
+            try {
+                using (var con = new NpgsqlConnection(_connectionString))
+                using (var cmd = con.CreateCommand()) {
+                    await con.OpenAsync().ConfigureAwait(false);
+
+                    cmd.CommandText = "DELETE FROM gf.assignable_roles WHERE gid = @gid;";
+                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
+
+                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                }
+            } finally {
+                _sem.Release();
+            }
+        }
     }
 }

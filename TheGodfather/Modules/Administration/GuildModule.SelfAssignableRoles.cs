@@ -52,6 +52,25 @@ namespace TheGodfather.Modules.Administration
             }
             #endregion
 
+            #region COMMAND_GUILD_SAR_CLEAR
+            [Command("clear")]
+            [Description("Delete all self-assignable roles for the current guild.")]
+            [Aliases("da", "c", "ca", "cl", "clearall")]
+            [UsageExample("!guild sar clear")]
+            [RequireUserPermissions(Permissions.Administrator)]
+            public async Task ClearAsync(CommandContext ctx)
+            {
+                if (!await AskYesNoQuestionAsync(ctx, "Are you sure you want to delete all self-assignable roles for this guild?").ConfigureAwait(false))
+                    return;
+
+                await Database.DeleteAllSelfAssignableRolesAsync(ctx.Guild.Id)
+                    .ConfigureAwait(false);
+
+                await ReplyWithEmbedAsync(ctx)
+                    .ConfigureAwait(false);
+            }
+            #endregion
+
             #region COMMAND_GUILD_SAR_DELETE
             [Command("delete")]
             [Description("Remove self-assignable role (or roles).")]
