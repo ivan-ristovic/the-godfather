@@ -204,8 +204,8 @@ namespace TheGodfather.Modules.Reactions
             await InteractivityUtil.SendPaginatedCollectionAsync(
                 ctx,
                 "Emoji reactions for this guild",
-                Shared.GuildEmojiReactions[ctx.Guild.Id].Where(kvp => kvp.Value.Any()),
-                kvp => $"{kvp.Key} => {string.Join(", ", kvp.Value.Select(r => r.ToString().Replace(@"\b", "")))}",
+                Shared.GuildEmojiReactions[ctx.Guild.Id].Where(kvp => kvp.Value.Any()).OrderBy(kvp => kvp.Key),
+                kvp => $"{DiscordEmoji.FromName(ctx.Client, kvp.Key)} => {string.Join(", ", kvp.Value.Select(r => r.ToString().Replace(@"\b", "")))}",
                 DiscordColor.Blue
             ).ConfigureAwait(false);
         }

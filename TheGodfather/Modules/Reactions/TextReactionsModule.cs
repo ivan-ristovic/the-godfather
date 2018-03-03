@@ -180,7 +180,7 @@ namespace TheGodfather.Modules.Reactions
             await InteractivityUtil.SendPaginatedCollectionAsync(
                 ctx,
                 "Text reactions for this guild",
-                Shared.GuildTextReactions[ctx.Guild.Id],
+                Shared.GuildTextReactions[ctx.Guild.Id].OrderBy(kvp => kvp.Item1.ToString()),
                 tup => $"{tup.Item1.ToString().Replace(@"\b", "")} => {tup.Item2}",
                 DiscordColor.Blue
             ).ConfigureAwait(false);
