@@ -112,7 +112,7 @@ namespace TheGodfather.Modules.Search
         #endregion
 
         #region COMMAND_RSS_UNSUBSCRIBE
-        [Command("unsubscribe")]
+        [Command("unsubscribe"), Priority(1)]
         [Description("Remove an existing feed subscription.")]
         [Aliases("del", "d", "rm", "-", "unsub")]
         [UsageExample("!rss unsubscribe 1")]
@@ -123,6 +123,16 @@ namespace TheGodfather.Modules.Search
             await Database.RemoveSubscriptionAsync(ctx.Channel.Id, id)
                 .ConfigureAwait(false);
             await ReplyWithEmbedAsync(ctx, $"Unsubscribed from feed with ID {Formatter.Bold(id.ToString())}")
+                .ConfigureAwait(false);
+        }
+
+        [Command("unsubscribe"), Priority(0)]
+        public async Task UnsubscribeAsync(CommandContext ctx,
+                                          [Description("Name of the subscription.")] string name)
+        {
+            await Database.RemoveSubscriptionUsingNameAsync(ctx.Channel.Id, name)
+                .ConfigureAwait(false);
+            await ReplyWithEmbedAsync(ctx, $"Unsubscribed from feed with name {Formatter.Bold(name)}")
                 .ConfigureAwait(false);
         }
         #endregion
