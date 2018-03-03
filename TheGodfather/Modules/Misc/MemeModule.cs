@@ -15,7 +15,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 #endregion
 
-namespace TheGodfather.Modules.Memes
+namespace TheGodfather.Modules.Misc
 {
     [Group("meme")]
     [Description("Manipulate guild memes. When invoked without subcommands, returns a meme from this guild's meme list given by name, otherwise returns random one.")]
@@ -24,10 +24,10 @@ namespace TheGodfather.Modules.Memes
     [UsageExample("!meme SomeMemeNameWhichYouAdded")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
     [ListeningCheck]
-    public partial class MemeModule : TheGodfatherServiceModule<ImgurService>
+    public partial class MemeModule : TheGodfatherBaseModule
     {
 
-        public MemeModule(ImgurService imgur, DBService db) : base(imgur, db: db) { }
+        public MemeModule(DBService db) : base(db: db) { }
 
 
         [GroupCommand]
@@ -90,7 +90,7 @@ namespace TheGodfather.Modules.Memes
         #region COMMAND_MEME_CLEAR
         [Command("clear")]
         [Description("Deletes all guild memes.")]
-        [Aliases("da", "c", "ca", "cl", "clearall")]
+        [Aliases("da", "ca", "cl", "clearall")]
         [UsageExample("!memes clear")]
         [RequireUserPermissions(Permissions.Administrator)]
         public async Task ClearMemesAsync(CommandContext ctx)
@@ -113,25 +113,7 @@ namespace TheGodfather.Modules.Memes
                                          [Description("Top Text.")] string topText,
                                          [Description("Bottom Text.")] string bottomText)
         {
-            string filename = $"Resources/meme-templates/{template}.jpg";
-            if (!File.Exists(filename))
-                throw new CommandFailedException("Unknown template name.");
-
-            if (string.IsNullOrWhiteSpace(topText))
-                topText = "";
-            else
-                topText = topText.ToUpperInvariant();
-            if (string.IsNullOrWhiteSpace(bottomText))
-                bottomText = "";
-            else
-                bottomText = bottomText.ToUpperInvariant();
-            template = template.ToLower();
-
-            string url = await _Service.CreateAndUploadMemeAsync(filename, topText, bottomText)
-                .ConfigureAwait(false);
-            if (url == null)
-                throw new CommandFailedException("Uploading meme to Imgur failed.");
-
+            var url = MemeGenService.GetMemeGenerateUrl(template, topText, bottomText);
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
                 Title = url,
                 Url = url,
@@ -175,6 +157,28 @@ namespace TheGodfather.Modules.Memes
                 memes.OrderBy(kvp => kvp.Key),
                 kvp => $"{Formatter.Bold(kvp.Key)} ({kvp.Value})",
                 DiscordColor.Orange
+            ).ConfigureAwait(false);
+        }
+        #endregion
+        
+        #region COMMAND_MEME_TEMPLATES
+        [Command("templates")]
+        [Description("Lists all available meme templates.")]
+        [Aliases("template", "t")]
+        [UsageExample("!meme templates")]
+        public async Task TemplatesAsync(CommandContext ctx)
+        {
+            var templates = await MemeGenService.GetMemeTemplatesAsync()
+                .ConfigureAwait(false);
+            if (templates == null)
+                throw new CommandFailedException("Failed to retrieve meme templates.");
+
+            await InteractivityUtil.SendPaginatedCollectionAsync(
+                ctx,
+                "Meme templates",
+                templates,
+                s => s,
+                DiscordColor.Brown
             ).ConfigureAwait(false);
         }
         #endregion

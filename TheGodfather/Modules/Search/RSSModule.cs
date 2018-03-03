@@ -48,7 +48,7 @@ namespace TheGodfather.Modules.Search
         }
 
 
-        #region COMMAND_FEED_LIST
+        #region COMMAND_RSS_LIST
         [Command("list")]
         [Description("Get feed list for the current channel.")]
         [Aliases("ls", "listsubs", "listfeeds")]
