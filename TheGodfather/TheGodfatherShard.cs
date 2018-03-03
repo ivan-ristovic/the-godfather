@@ -259,14 +259,14 @@ namespace TheGodfather
                         .ConfigureAwait(false);
                     Log(LogLevel.Info,
                         $"Filter triggered:<br>" +
-                        $"Message: {e.Message.Content}<br>" +
+                        $"Message: {e.Message.Content.Replace('\n', ' ')}<br>" +
                         $"{e.Message.Author.ToString()}<br>" +
                         $"{e.Guild.ToString()} ; {e.Channel.ToString()}"
                     );
                 } catch (UnauthorizedException) {
                     Log(LogLevel.Warning,
                         $"Filter triggered in message but missing permissions to delete!<br>" +
-                        $"Message: {e.Message.Content}<br>" +
+                        $"Message: {e.Message.Content.Replace('\n', ' ')}<br>" +
                         $"{e.Message.Author.ToString()}<br>" +
                         $"{e.Guild.ToString()} ; {e.Channel.ToString()}"
                     );
@@ -295,7 +295,7 @@ namespace TheGodfather
                 if (treaction.Any()) {
                     Log(LogLevel.Info,
                         $"Text reaction detected: {treaction.First().Item2}<br>" +
-                        $"Message: {e.Message.Content}<br>" +
+                        $"Message: {e.Message.Content.Replace('\n', ' ')}<br>" +
                         $"{e.Message.Author.ToString()}<br>" +
                         $"{e.Guild.ToString()} ; {e.Channel.ToString()}"
                     );
@@ -314,7 +314,7 @@ namespace TheGodfather
                         if (trigger.IsMatch(e.Message.Content)) {
                             Log(LogLevel.Info,
                                 $"Emoji reaction detected: {reaction.Key}<br>" +
-                                $"Message: {e.Message.Content}<br>" +
+                                $"Message: {e.Message.Content.Replace('\n', ' ')}<br>" +
                                 $"{e.Message.Author.ToString()}<br>" +
                                 $"{e.Guild.ToString()} ; {e.Channel.ToString()}"
                             );
@@ -348,14 +348,14 @@ namespace TheGodfather
                         .ConfigureAwait(false);
                     Log(LogLevel.Info,
                         $"Filter triggered in edit of a message:<br>" +
-                        $"Message: {e.Message.Content}<br>" +
+                        $"Message: {e.Message.Content.Replace('\n', ' ')}<br>" +
                         $"{e.Message.Author.ToString()}<br>" +
                         $"{e.Guild.ToString()} ; {e.Channel.ToString()}"
                     );
                 } catch (UnauthorizedException) {
                     Log(LogLevel.Warning,
                         $"Filter triggered in edited message but missing permissions to delete!<br>" +
-                        $"Message: '{e.Message.Content}<br>" +
+                        $"Message: '{e.Message.Content.Replace('\n', ' ')}<br>" +
                         $"{e.Message.Author.ToString()}<br>" +
                         $"{e.Guild.ToString()} ; {e.Channel.ToString()}"
                     );

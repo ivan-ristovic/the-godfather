@@ -18,6 +18,7 @@ namespace TheGodfather.Modules.Polls
     [ListeningCheck]
     public class PollModule : TheGodfatherBaseModule
     {
+        #region COMMAND_POLL
         [Command("poll"), Priority(1)]
         [Description("Starts a new poll in the current channel. You can provide also the time for the poll to run.")]
         [UsageExample("!poll Do you vote for User1 or User2?")]
@@ -53,5 +54,6 @@ namespace TheGodfather.Modules.Polls
         public async Task PollAsync(CommandContext ctx,
                                    [RemainingText, Description("Question.")] string question)
             => await PollAsync(ctx, TimeSpan.FromMinutes(1), question).ConfigureAwait(false);
+        #endregion
     }
 }

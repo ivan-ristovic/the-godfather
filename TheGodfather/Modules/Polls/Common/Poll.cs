@@ -1,5 +1,6 @@
 ﻿#region USING_DIRECTIVES
 using System;
+using System.Linq;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -36,9 +37,9 @@ namespace TheGodfather.Modules.Polls.Common
 
         public string Question { get; }
         public bool Running { get; protected set; }
-        protected List<PollOption> _options = new List<PollOption>();
+        protected List<string> _options = new List<string>();
         public int OptionCount => _options.Count;
-        protected List<ulong> _voted = new List<ulong>();
+        protected ConcurrentDictionary<ulong, int> _votes = new ConcurrentDictionary<ulong, int>();
         protected DiscordChannel _channel;
         protected InteractivityExtension _interactivity;
 
@@ -65,24 +66,31 @@ namespace TheGodfather.Modules.Polls.Common
 
         public void SetOptions(List<string> options)
         {
-            foreach (var option in options)
-                _options.Add(new PollOption { Option = option, Votes = 0 });
+            _options = options;
         }
 
         public bool UserVoted(ulong uid)
-            => _voted.Contains(uid);
+            => _votes.ContainsKey(uid);
 
         public bool IsValidVote(int vote)
-            => vote > 0 && vote <= _options.Count;
+            => vote >= 0 && vote < _options.Count;
 
-        public void VoteFor(ulong uid, int vote)
+        public bool VoteFor(ulong uid, int vote)
         {
-            _voted.Add(uid);
-            _options[vote - 1].Votes++;
+            if (_votes.ContainsKey(uid))
+                return false;
+            return _votes.TryAdd(uid, vote);
+        }
+
+        public bool CancelVote(ulong uid)
+        {
+            if (!_votes.ContainsKey(uid))
+                return true;
+            return _votes.TryRemove(uid, out _);
         }
 
         public string OptionWithId(int id)
-            => _options[id].Option;
+            => (id >= 0 && id < _options.Count) ? _options[id] : null;
 
         public DiscordEmbed EmbedPoll()
         {
@@ -92,29 +100,22 @@ namespace TheGodfather.Modules.Polls.Common
                 Color = DiscordColor.Orange
             };
             for (int i = 0; i < _options.Count; i++)
-                if (!string.IsNullOrWhiteSpace(_options[i].Option))
-                    emb.AddField($"{i + 1}", _options[i].Option, inline: true);
+                if (!string.IsNullOrWhiteSpace(_options[i]))
+                    emb.AddField($"{i + 1}", _options[i], inline: true);
 
             return emb.Build();
         }
 
-        public DiscordEmbed EmbedPollResults()
+        public virtual DiscordEmbed EmbedPollResults()
         {
             var emb = new DiscordEmbedBuilder() {
                 Title = Question + " (results)",
                 Color = DiscordColor.Orange
             };
-            foreach (var option in _options)
-                emb.AddField(option.Option, option.Votes.ToString(), inline: true);
+            for (int i = 0; i < _options.Count; i++)
+                emb.AddField(_options[i], _votes.Count(kvp => kvp.Value == i).ToString(), inline: true);
 
             return emb.Build();
-        }
-
-
-        protected sealed class PollOption
-        {
-            public string Option;
-            public int Votes;
         }
     }
 }

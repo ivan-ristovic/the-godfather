@@ -29,6 +29,7 @@ namespace TheGodfather.Modules.Polls.Common
 
 
         private DiscordMessage _message;
+        private ReactionCollectionContext _result;
 
 
         public ReactionsPoll(InteractivityExtension interactivity, DiscordChannel channel, string question)
@@ -40,13 +41,23 @@ namespace TheGodfather.Modules.Polls.Common
             Running = true;
             _message = await _channel.SendMessageAsync(embed: EmbedPoll())
                 .ConfigureAwait(false);
-            var results = await _interactivity.CreatePollAsync(_message, EmojiUtil.Numbers.Take(OptionCount), timespan)
+            _result = await _interactivity.CreatePollAsync(_message, EmojiUtil.Numbers.Take(OptionCount), timespan)
                 .ConfigureAwait(false);
-            foreach (var kvp in results.Reactions)
-                _options[_emojiid[kvp.Key.Name]].Votes = kvp.Value;
             await _channel.SendMessageAsync(embed: EmbedPollResults())
                 .ConfigureAwait(false);
             Running = false;
+        }
+
+        public override DiscordEmbed EmbedPollResults()
+        {
+            var emb = new DiscordEmbedBuilder() {
+                Title = Question + " (results)",
+                Color = DiscordColor.Orange
+            };
+            foreach (var kvp in _result.Reactions) 
+                emb.AddField(_options[_emojiid[kvp.Key.Name]], kvp.Value.ToString(), inline: true);
+
+            return emb.Build();
         }
     }
 }
