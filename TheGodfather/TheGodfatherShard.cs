@@ -172,15 +172,22 @@ namespace TheGodfather
                 $"{e.Guild.ToString()}"
             );
 
-            ulong cid = await _db.GetGuildWelcomeChannelIdAsync(e.Guild.Id)
-                .ConfigureAwait(false);
+            ulong cid = 0;
+            try {
+                cid = await _db.GetGuildWelcomeChannelIdAsync(e.Guild.Id)
+                    .ConfigureAwait(false);
+            } catch (Exception exc) {
+                Logger.LogException(LogLevel.Warning, exc);
+            }
+
             if (cid == 0)
                 return;
 
             try {
                 var chn = e.Guild.GetChannel(cid);
                 if (chn != null)
-                    await chn.SendMessageAsync($"Welcome to {Formatter.Bold(e.Guild.Name)}, {e.Member.Mention}!").ConfigureAwait(false);
+                    await chn.SendMessageAsync($"Welcome to {Formatter.Bold(e.Guild.Name)}, {e.Member.Mention}!")
+                        .ConfigureAwait(false);
             } catch (Exception exc) {
                 while (exc is AggregateException)
                     exc = exc.InnerException;
@@ -191,6 +198,9 @@ namespace TheGodfather
                     $"Exception: {exc.GetType()}<br>" +
                     $"Message: {exc.Message}"
                 );
+                if (exc is NotFoundException)
+                    await _db.RemoveGuildWelcomeChannelAsync(e.Guild.Id)
+                        .ConfigureAwait(false);
             }
         }
 
@@ -201,8 +211,14 @@ namespace TheGodfather
                 e.Guild.ToString()
             );
 
-            ulong cid = await _db.GetGuildLeaveChannelIdAsync(e.Guild.Id)
-                .ConfigureAwait(false);
+            ulong cid = 0;
+            try {
+                cid = await _db.GetGuildLeaveChannelIdAsync(e.Guild.Id)
+                    .ConfigureAwait(false);
+            } catch (Exception exc) {
+                Logger.LogException(LogLevel.Warning, exc);
+            }
+
             if (cid == 0)
                 return;
 
@@ -220,6 +236,9 @@ namespace TheGodfather
                     $"Exception: {exc.GetType()}<br>" +
                     $"Message: {exc.Message}"
                 );
+                if (exc is NotFoundException)
+                    await _db.RemoveGuildLeaveChannelAsync(e.Guild.Id)
+                        .ConfigureAwait(false);
             }
         }
 
