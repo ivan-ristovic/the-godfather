@@ -229,7 +229,7 @@ namespace TheGodfather
                 return;
 
             if (e.Channel.IsPrivate) {
-                Log(LogLevel.Info, $"IGNORED DM FROM {e.Author.ToString()}:<br>Message: {e.Message}");
+                Log(LogLevel.Info, $"Ignored DM from {e.Author.ToString()}:<br>{e.Message}");
                 return;
             }
 
@@ -373,7 +373,7 @@ namespace TheGodfather
             if (ex is ChecksFailedException chke && chke.FailedChecks.Any(c => c is ListeningCheckAttribute))
                 return;
 
-            Log(LogLevel.Error,
+            Log(LogLevel.Info,
                 $"Tried executing: {e.Command?.QualifiedName ?? "<unknown command>"}<br>" +
                 $"{e.Context.User.ToString()}<br>" +
                 $"{e.Context.Guild.ToString()}; {e.Context.Channel.ToString()}<br>" +

@@ -71,6 +71,9 @@ namespace TheGodfather.Modules.Administration
 
             var msgs = await ctx.Channel.GetMessagesAsync(amount)
                 .ConfigureAwait(false);
+            if (!msgs.Any())
+                throw new CommandFailedException("None of the messages in the given range match your description.");
+
             await ctx.Channel.DeleteMessagesAsync(msgs, GetReasonString(ctx, reason))
                 .ConfigureAwait(false);
         }
@@ -94,7 +97,11 @@ namespace TheGodfather.Modules.Administration
 
             var msgs = await ctx.Channel.GetMessagesAsync(100)
                 .ConfigureAwait(false);
-            await ctx.Channel.DeleteMessagesAsync(msgs.Where(m => m.Author.Id == user.Id).Take(amount), GetReasonString(ctx, reason))
+            var del = msgs.Where(m => m.Author.Id == user.Id).Take(amount);
+            if (!del.Any())
+                throw new CommandFailedException("None of the messages in the given range match your description.");
+
+            await ctx.Channel.DeleteMessagesAsync(del, GetReasonString(ctx, reason))
                 .ConfigureAwait(false);
             await ReplyWithEmbedAsync(ctx)
                 .ConfigureAwait(false);
@@ -161,7 +168,11 @@ namespace TheGodfather.Modules.Administration
 
             var msgs = await ctx.Channel.GetMessagesBeforeAsync(ctx.Channel.LastMessageId, 100)
                 .ConfigureAwait(false);
-            await ctx.Channel.DeleteMessagesAsync(msgs.Where(m => regex.IsMatch(m.Content)).Take(amount), GetReasonString(ctx, reason))
+            var del = msgs.Where(m => regex.IsMatch(m.Content)).Take(amount);
+            if (!del.Any())
+                throw new CommandFailedException("None of the messages in the given range match your description.");
+
+            await ctx.Channel.DeleteMessagesAsync(del, GetReasonString(ctx, reason))
                 .ConfigureAwait(false);
             await ReplyWithEmbedAsync(ctx)
                 .ConfigureAwait(false);
