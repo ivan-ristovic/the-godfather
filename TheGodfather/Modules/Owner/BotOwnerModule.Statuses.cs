@@ -90,7 +90,7 @@ namespace TheGodfather.Modules.Owner
                     ctx,
                     "Statuses:",
                     statuses,
-                    kvp => kvp.Value,
+                    kvp => $"{Formatter.Bold(kvp.Key.ToString())}: {kvp.Value}",
                     DiscordColor.Azure,
                     10
                 ).ConfigureAwait(false);
@@ -130,6 +130,22 @@ namespace TheGodfather.Modules.Owner
 
                 Shared.StatusRotationEnabled = false;
                 await ctx.Client.UpdateStatusAsync(new DiscordActivity(status, activity))
+                 .ConfigureAwait(false);
+                await ReplyWithEmbedAsync(ctx)
+                    .ConfigureAwait(false);
+            }
+
+            [Command("set"), Priority(0)]
+            public async Task SetAsync(CommandContext ctx,
+                                      [Description("Status ID.")] int id)
+            {
+                var status = await Database.GetBotStatusWithIdAsync(id)
+                    .ConfigureAwait(false);
+                if (string.IsNullOrWhiteSpace(status.Item2))
+                    throw new CommandFailedException("Status with given ID doesn't exist!");
+
+                Shared.StatusRotationEnabled = false;
+                await ctx.Client.UpdateStatusAsync(new DiscordActivity(status.Item2, status.Item1))
                  .ConfigureAwait(false);
                 await ReplyWithEmbedAsync(ctx)
                     .ConfigureAwait(false);
