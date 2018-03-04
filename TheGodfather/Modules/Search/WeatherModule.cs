@@ -11,6 +11,8 @@ using DSharpPlus.CommandsNext.Attributes;
 
 namespace TheGodfather.Modules.Search
 {
+    [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
+    [ListeningCheck]
     public class WeatherModule : TheGodfatherServiceModule<WeatherService>
     {
 
@@ -30,6 +32,9 @@ namespace TheGodfather.Modules.Search
 
             var em = await _Service.GetEmbeddedWeatherDataAsync(query)
                 .ConfigureAwait(false);
+            if (em == null)
+                throw new CommandFailedException("Cannot find weather data for given query.");
+
             await ctx.RespondAsync(embed: em)
                 .ConfigureAwait(false);
         }
