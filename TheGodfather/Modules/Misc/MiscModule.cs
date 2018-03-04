@@ -190,7 +190,7 @@ namespace TheGodfather.Modules.Misc
 
         #region COMMAND_PENISCOMPARE
         [Command("peniscompare")]
-        [Description("Comparison of the results given by ``!penis`` command.")]
+        [Description("Comparison of the results given by ``penis`` command.")]
         [Aliases("sizecompare", "comparesize", "comparepenis", "cmppenis", "peniscmp")]
         [UsageExample("!peniscompare @Someone")]
         [UsageExample("!peniscompare @Someone @SomeoneElse")]

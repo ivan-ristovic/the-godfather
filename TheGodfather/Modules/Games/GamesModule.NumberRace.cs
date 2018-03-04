@@ -43,7 +43,7 @@ namespace TheGodfather.Modules.Games
                 var game = new NumberRace(ctx.Client.GetInteractivity(), ctx.Channel);
                 Game.RegisterGameInChannel(game, ctx.Channel.Id);
                 try {
-                    await ReplyWithEmbedAsync(ctx, $"The race will start in 30s or when there are 10 participants. Type {Formatter.InlineCode("!game numberrace")} to join the race.", ":clock1:")
+                    await ReplyWithEmbedAsync(ctx, $"The race will start in 30s or when there are 10 participants. Use command {Formatter.InlineCode("game numberrace")} to join the race.", ":clock1:")
                         .ConfigureAwait(false);
                     await JoinRaceAsync(ctx)
                         .ConfigureAwait(false);

@@ -67,7 +67,7 @@ namespace TheGodfather.Modules.Search
 
         #region COMMAND_RSS_REDDIT_UNSUBSCRIBE
         [Command("unsubscribe"), Priority(1)]
-        [Description("Remove a subreddit feed using subreddit name or subscription ID (use ``!feed list`` to see IDs).")]
+        [Description("Remove a subreddit feed using subreddit name or subscription ID (use command ``feed list`` to see IDs).")]
         [Aliases("del", "d", "rm", "-", "unsub")]
         [UsageExample("!reddit unsub aww")]
         [UsageExample("!reddit unsub 12")]

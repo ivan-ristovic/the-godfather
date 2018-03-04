@@ -97,7 +97,7 @@ namespace TheGodfather.Modules.Misc
 
         #region COMMAND_INSULTS_DELETE
         [Command("delete")]
-        [Description("Remove insult with a given index from list. (use ``!insults list`` to view insult indexes).")]
+        [Description("Remove insult with a given index from list. (use command ``insults list`` to view insult indexes).")]
         [Aliases("-", "remove", "del", "rm", "rem", "d")]
         [UsageExample("!insult delete 2")]
         [RequireOwner]

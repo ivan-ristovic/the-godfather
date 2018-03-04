@@ -37,12 +37,12 @@ namespace TheGodfather.Modules.Gambling
                                    [Description("Amount (in range [1-10]).")] int amount = 1)
         {
             if (!Shared.CardDecks.ContainsKey(ctx.Channel.Id) || Shared.CardDecks[ctx.Channel.Id] == null)
-                throw new CommandFailedException($"No deck to deal from. Type {Formatter.InlineCode("!deck")} to open a deck.");
+                throw new CommandFailedException($"No deck to deal from. Use command {Formatter.InlineCode("deck")} to open a deck.");
 
             var deck = Shared.CardDecks[ctx.Channel.Id];
 
             if (deck.CardCount == 0)
-                throw new CommandFailedException($"Current deck has no more cards. Type {Formatter.InlineCode("!deck reset")} to reset the deck.");
+                throw new CommandFailedException($"Current deck has no more cards. Use command {Formatter.InlineCode("deck reset")} to reset the deck.");
 
             if (amount <= 0 || amount >= 10)
                 throw new InvalidCommandUsageException("Cannot draw less than 1 or more than 10 cards...");
@@ -81,7 +81,7 @@ namespace TheGodfather.Modules.Gambling
         public async Task ShuffleDeckAsync(CommandContext ctx)
         {
             if (!Shared.CardDecks.ContainsKey(ctx.Channel.Id) || Shared.CardDecks[ctx.Channel.Id] == null)
-                throw new CommandFailedException($"No decks to shuffle. Type {Formatter.InlineCode("!deck")} to open a new shuffled deck.");
+                throw new CommandFailedException($"No decks to shuffle. Use command {Formatter.InlineCode("deck")} to open a new shuffled deck.");
 
             Shared.CardDecks[ctx.Channel.Id].Shuffle();
             await ReplyWithEmbedAsync(ctx, emojistr: ":ticket:")
