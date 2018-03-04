@@ -17,20 +17,38 @@ namespace TheGodfather.Extensions.Converters
             await Task.Delay(0);
 
             TimeWindow t = TimeWindow.Day;
-            if (string.Compare(value, "day", false) == 0 || string.Compare(value, "d", false) == 0)
-                t = TimeWindow.Day;
-            else if (string.Compare(value, "week", false) == 0 || string.Compare(value, "w", false) == 0)
-                t = TimeWindow.Week;
-            else if (string.Compare(value, "month", false) == 0 || string.Compare(value, "m", false) == 0)
-                t = TimeWindow.Month;
-            else if (string.Compare(value, "year", false) == 0 || string.Compare(value, "y", false) == 0)
-                t = TimeWindow.Year;
-            else if (string.Compare(value, "all", false) == 0 || string.Compare(value, "a", false) == 0)
-                t = TimeWindow.All;
+            bool parses = true;
+            switch (value.ToLowerInvariant()) {
+                case "day":
+                case "d":
+                    t = TimeWindow.Day;
+                    break;
+                case "week":
+                case "7d":
+                case "w":
+                    t = TimeWindow.Week;
+                    break;
+                case "month":
+                case "m":
+                    t = TimeWindow.Month;
+                    break;
+                case "year":
+                case "y":
+                    t = TimeWindow.Year;
+                    break;
+                case "all":
+                case "a":
+                    t = TimeWindow.All;
+                    break;
+                default:
+                    parses = false;
+                    break;
+            }
+
+            if (parses)
+                return new Optional<TimeWindow>(t);
             else
                 return new Optional<TimeWindow>();
-
-            return new Optional<TimeWindow>(t);
         }
     }
 }

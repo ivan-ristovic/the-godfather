@@ -15,7 +15,7 @@ namespace TheGodfather.Extensions.Converters
             await Task.Delay(0);
             bool result = false;
             bool parses = true;
-            switch (value.ToLower()) {
+            switch (value.ToLowerInvariant()) {
                 case "t":
                 case "y":
                 case "ye":

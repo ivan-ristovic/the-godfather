@@ -123,6 +123,7 @@ namespace TheGodfather
             });
             Commands.SetHelpFormatter<CustomHelpFormatter>();
             Commands.RegisterCommands(Assembly.GetExecutingAssembly());
+            Commands.RegisterConverter(new CustomActivityTypeConverter());
             Commands.RegisterConverter(new CustomBoolConverter());
             Commands.RegisterConverter(new CustomTimeWindowConverter());
 
