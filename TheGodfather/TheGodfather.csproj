@@ -282,7 +282,7 @@
     <Compile Include="Entities\Logger.cs" />
     <Compile Include="Modules\Administration\EmojiModule.cs" />
     <Compile Include="Modules\Administration\GuildModule.NotificationChannels.cs" />
-    <Compile Include="Modules\Administration\GuildModule.SelfAssignableRoles.cs" />
+    <Compile Include="Modules\Administration\SelfAssignableRolesModule.cs" />
     <Compile Include="Modules\Gambling\Cards\CardSuit.cs" />
     <Compile Include="Modules\Gambling\Cards\Card.cs" />
     <Compile Include="Modules\Gambling\GambleModule.Coinflip.cs" />
