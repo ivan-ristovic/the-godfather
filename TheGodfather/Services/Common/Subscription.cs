@@ -1,4 +1,4 @@
-﻿namespace TheGodfather.Services.FeedServices
+﻿namespace TheGodfather.Services.Common
 {
     public sealed class Subscription
     {

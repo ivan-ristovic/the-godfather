@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 #endregion
 
-namespace TheGodfather.Entities
+namespace TheGodfather.Services.Common
 {
     public class Coord
     {

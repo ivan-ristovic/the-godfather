@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-using TheGodfather.Services.FeedServices;
+using TheGodfather.Services.Common;
 
 using Npgsql;
 using NpgsqlTypes;

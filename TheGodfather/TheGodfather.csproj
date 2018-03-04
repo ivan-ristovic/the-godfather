@@ -272,7 +272,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Attributes\UsageExampleAttribute.cs" />
-    <Compile Include="Entities\WeatherData.cs" />
+    <Compile Include="Services\Common\WeatherData.cs" />
     <Compile Include="Extensions\Converters\CustomBoolConverter.cs" />
     <Compile Include="Extensions\Converters\CustomActivityTypeConverter.cs" />
     <Compile Include="Extensions\Converters\CustomTimeWindowConverter.cs" />
@@ -325,7 +325,7 @@
     <Compile Include="Exceptions\DatabaseServiceException.cs" />
     <Compile Include="Modules\TheGodfatherServiceModule.cs" />
     <Compile Include="Services\DatabaseService\DBService.Ranks.cs" />
-    <Compile Include="Services\FeedService\FeedEntry.cs" />
+    <Compile Include="Services\Common\FeedEntry.cs" />
     <Compile Include="Entities\GameStats.cs" />
     <Compile Include="Attributes\ListeningCheckAttribute.cs" />
     <Compile Include="Extensions\CustomHelpFormatter.cs" />
@@ -379,8 +379,8 @@
     <Compile Include="Services\DatabaseService\DBService.Stats.cs" />
     <Compile Include="Services\DatabaseService\DBService.Statuses.cs" />
     <Compile Include="Services\DatabaseService\DBService.SWAT.cs" />
-    <Compile Include="Services\FeedService\FeedService.cs" />
-    <Compile Include="Services\FeedService\Subscription.cs" />
+    <Compile Include="Services\FeedService.cs" />
+    <Compile Include="Services\Common\Subscription.cs" />
     <Compile Include="Services\GiphyService.cs" />
     <Compile Include="Services\ImgurService.cs" />
     <Compile Include="Services\JokesService.cs" />

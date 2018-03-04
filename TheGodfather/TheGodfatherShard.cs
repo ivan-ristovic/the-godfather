@@ -193,7 +193,7 @@ namespace TheGodfather
             } catch (Exception exc) {
                 while (exc is AggregateException)
                     exc = exc.InnerException;
-                Log(LogLevel.Error,
+                Log(LogLevel.Warning,
                     $"Failed to send a welcome message!<br>" +
                     $"Channel ID: {cid}<br>" +
                     $"{e.Guild.ToString()}<br>" +
@@ -227,11 +227,12 @@ namespace TheGodfather
             try {
                 var chn = e.Guild.GetChannel(cid);
                 if (chn != null)
-                    await chn.SendMessageAsync($"{Formatter.Bold(e.Member?.Username ?? "<unknown>")} left the server. Cya never!").ConfigureAwait(false);
+                    await chn.SendMessageAsync($"{Formatter.Bold(e.Member?.Username ?? "<unknown>")} left the server. Cya never!")
+                        .ConfigureAwait(false);
             } catch (Exception exc) {
                 while (exc is AggregateException)
                     exc = exc.InnerException;
-                Log(LogLevel.Error,
+                Log(LogLevel.Warning,
                     $"Failed to send a leaving message!<br>" +
                     $"Channel ID: {cid}<br>" +
                     $"{e.Guild.ToString()}<br>" +
