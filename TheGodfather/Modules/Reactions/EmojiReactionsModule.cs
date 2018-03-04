@@ -173,10 +173,16 @@ namespace TheGodfather.Modules.Reactions
                 throw new CommandFailedException("This guild has no emoji reactions registered.");
 
             var errors = new StringBuilder();
-            foreach (var trigger in triggers.Select(t => t.ToLowerInvariant())) {
-                string regex = $@"\b{trigger}\b";
+            foreach (var trigger in triggers) {
+                Regex regex;
+                try {
+                    regex = new Regex($@"\b({trigger.ToLowerInvariant()})\b");
+                } catch (ArgumentException) {
+                    errors.AppendLine($"Error: Trigger {Formatter.Bold(trigger)} is not a valid regular expression.");
+                    continue;
+                }
                 foreach (var kvp in Shared.GuildEmojiReactions[ctx.Guild.Id])
-                    kvp.Value.RemoveWhere(r => r.ToString() == regex);
+                    kvp.Value.RemoveWhere(r => r.ToString() == regex.ToString());
                 try {
                     await Database.RemoveEmojiReactionTriggerAsync(ctx.Guild.Id, trigger)
                         .ConfigureAwait(false);

@@ -88,7 +88,7 @@ namespace TheGodfather.Services
                                 Title = $"{newest.Title.Text}",
                                 Url = url,
                                 Timestamp = newest.LastUpdatedTime,
-                                Color = DiscordColor.Orange,
+                                Color = DiscordColor.White,
                             };
 
                             // FIXME reddit hack
@@ -119,7 +119,7 @@ namespace TheGodfather.Services
 
             var emb = new DiscordEmbedBuilder() {
                 Title = "Topics active recently",
-                Color = DiscordColor.Green
+                Color = DiscordColor.White
             };
 
             foreach (var res in results)

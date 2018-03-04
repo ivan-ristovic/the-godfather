@@ -33,7 +33,7 @@ namespace TheGodfather.Modules.Polls
             if (!poll.CancelVote(ctx.User.Id))
                 throw new CommandFailedException("Failed to cancel your vote!");
 
-            await ReplyWithEmbedAsync(ctx)
+            await ReplyWithEmbedAsync(ctx, "Your vote has been cancelled!")
                 .ConfigureAwait(false);
         }
         #endregion
