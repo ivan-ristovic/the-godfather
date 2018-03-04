@@ -279,8 +279,8 @@ namespace TheGodfather.Modules.Misc
                         start_x = chart.Width - 10;
                         start_y = 0;
                     } else {
-                        start_x = (int)(user.Id % (ulong)(chart.Width - 133)) + 110;
-                        start_y = (int)(user.Id % (ulong)(chart.Height - 45)) + 30;
+                        start_x = (int)(user.Id % (ulong)(chart.Width - 143)) + 110;
+                        start_y = (int)(user.Id % (ulong)(chart.Height - 55)) + 15;
                     }
                     g.FillEllipse(Brushes.Red, start_x, start_y, 10, 10);
                     g.Flush();
