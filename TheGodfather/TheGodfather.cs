@@ -152,6 +152,9 @@ namespace TheGodfather
 
         private static void BotStatusTimerCallback(object _)
         {
+            if (!SharedData.StatusRotationEnabled)
+                return;
+
             var client = _ as DiscordClient;
             try {
                 DatabaseService.UpdateBotStatusAsync(client).ConfigureAwait(false).GetAwaiter().GetResult();

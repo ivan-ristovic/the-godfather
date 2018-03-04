@@ -53,6 +53,7 @@ namespace TheGodfather
             "Generalissimo (tribute to Raptor)"
             #endregion
         }.AsReadOnly();
+        public bool StatusRotationEnabled { get; set; } = true;
 
 
         public bool MessageContainsFilter(ulong gid, string message)
