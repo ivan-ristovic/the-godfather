@@ -11,10 +11,19 @@ namespace TheGodfather.Entities
 {
     public static class Logger
     {
-        private static object _lock = new object();
-        private static bool LogToFile = true;
-        private static string _path = "log.txt";
+        public static bool LogToFile {
+            get => _filelog;
+            set {
+                lock (_lock)
+                    _filelog = value;
+            }
+        }
+
         private static readonly int BUFFER_SIZE = 512;
+
+        private static object _lock = new object();
+        private static string _path = "log.txt";
+        private static bool _filelog = true;
 
 
         public static bool Clear()
@@ -37,7 +46,7 @@ namespace TheGodfather.Entities
                 PrintTimestamp(timestamp);
                 PrintLevel(level);
                 PrintLogMessage(message.Replace('\n', ' '));
-                if (filelog && LogToFile)
+                if (filelog && _filelog)
                     WriteToLogFile(level, message, timestamp);
             }
         }
@@ -55,7 +64,7 @@ namespace TheGodfather.Entities
 
                 PrintLevel(e.Level);
                 PrintLogMessage(e.Message.Replace('\n', ' '));
-                if (filelog && LogToFile)
+                if (filelog && _filelog)
                     WriteToLogFile(shardid, e);
             }
         }
@@ -69,7 +78,7 @@ namespace TheGodfather.Entities
                 if (e.InnerException != null)
                     PrintLogMessage($"Inner exception: {e.InnerException}<br>");
                 PrintLogMessage($"Stack trace: {e.StackTrace}");
-                if (filelog && LogToFile)
+                if (filelog && _filelog)
                     WriteToLogFile(level, e);
             }
         }

@@ -246,6 +246,23 @@ namespace TheGodfather.Modules.Owner
         }
         #endregion
 
+        #region COMMAND_FILELOG
+        [Command("filelog")]
+        [Description("Toggle writing to log file.")]
+        [Aliases("setfl", "fl", "setfilelog")]
+        [UsageExample("!owner filelog yes")]
+        [UsageExample("!owner filelog false")]
+        [ListeningCheck]
+        public async Task FileLogAsync(CommandContext ctx,
+                                      [Description("True/False")] bool b = true)
+        {
+            Logger.LogToFile = b;
+
+            await ReplyWithEmbedAsync(ctx, $"File logging set to {b}")
+                .ConfigureAwait(false);
+        }
+        #endregion
+
         #region COMMAND_GENERATECOMMANDS
         [Command("generatecommandlist")]
         [Description("Generates a markdown command-list. You can also provide a file path for the output.")]
