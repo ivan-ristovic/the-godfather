@@ -100,7 +100,9 @@ namespace TheGodfather.Modules.Owner
             if (!await AskYesNoQuestionAsync(ctx, "Are you sure you want to clear the logs?").ConfigureAwait(false))
                 return;
 
-            Logger.Clear();
+            if (!Logger.Clear())
+                throw new CommandFailedException("Failed to delete log file!");
+
             await ReplyWithEmbedAsync(ctx)
                 .ConfigureAwait(false);
         }

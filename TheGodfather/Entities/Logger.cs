@@ -17,11 +17,18 @@ namespace TheGodfather.Entities
         private static readonly int BUFFER_SIZE = 512;
 
 
-        public static void Clear()
+        public static bool Clear()
         {
             lock (_lock) {
                 Console.Clear();
+                try {
+                    File.Delete(_path);
+                } catch (Exception e) {
+                    LogException(LogLevel.Error, e);
+                    return false;
+                }
             }
+            return true;
         }
 
         public static void LogMessage(LogLevel level, string message, DateTime? timestamp = null, bool filelog = true)
