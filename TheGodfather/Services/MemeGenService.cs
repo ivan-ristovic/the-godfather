@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
-using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -15,7 +14,7 @@ using DSharpPlus;
 
 namespace TheGodfather.Services
 {
-    public static class MemeGenService
+    public class MemeGenService : HttpService
     {
         private static readonly ImmutableDictionary<char, string> _map = new Dictionary<char, string>() {
             {'?', "~q"},
@@ -35,15 +34,10 @@ namespace TheGodfather.Services
         public static async Task<IReadOnlyList<string>> GetMemeTemplatesAsync()
         {
             try {
-                var handler = new HttpClientHandler {
-                    AllowAutoRedirect = false
-                };
-                using (var hc = new HttpClient(handler)) {
-                    var json = await hc.GetStringAsync("https://memegen.link/api/templates/")
-                        .ConfigureAwait(false);
-                    var data = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
-                    return data.Keys.OrderBy(s => s).ToList().AsReadOnly();
-                }
+                var json = await _http.GetStringAsync("https://memegen.link/api/templates/")
+                    .ConfigureAwait(false);
+                var data = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+                return data.Keys.OrderBy(s => s).ToList().AsReadOnly();
             } catch (Exception e) {
                 Logger.LogException(LogLevel.Warning, e);
             }

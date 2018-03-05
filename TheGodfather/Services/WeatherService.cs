@@ -14,7 +14,7 @@ using DSharpPlus.Entities;
 
 namespace TheGodfather.Services
 {
-    public class WeatherService : IGodfatherService
+    public class WeatherService : HttpService
     {
         private string _key;
 
@@ -32,16 +32,11 @@ namespace TheGodfather.Services
             };
             WeatherData data = null;
             try {
-                var handler = new HttpClientHandler {
-                    AllowAutoRedirect = false
-                };
-                using (var hc = new HttpClient(handler)) {
-                    var response = await hc.GetStringAsync($"http://api.openweathermap.org/data/2.5/weather?q={query}&appid={_key}&units=metric")
-                        .ConfigureAwait(false);
-                    data = JsonConvert.DeserializeObject<WeatherData>(response);
-                }
+                var response = await _http.GetStringAsync($"http://api.openweathermap.org/data/2.5/weather?q={query}&appid={_key}&units=metric")
+                    .ConfigureAwait(false);
+                data = JsonConvert.DeserializeObject<WeatherData>(response);
             } catch (Exception e) {
-                Logger.LogException(LogLevel.Warning, e);
+                Logger.LogException(LogLevel.Debug, e);
                 return null;
             }
 

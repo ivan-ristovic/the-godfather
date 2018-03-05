@@ -1,6 +1,7 @@
 ﻿#region USING_DIRECTIVES
 using System;
-using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 
 using TheGodfather.Entities;
@@ -10,29 +11,27 @@ using DSharpPlus;
 
 namespace TheGodfather.Services
 {
-    public static class PetImagesService
+    public class PetImagesService : HttpService
     {
-        public static string RandomCatImage()
+        public static async Task<string> GetRandomCatImageAsync()
         {
             try {
-                using (var wc = new WebClient()) {
-                    var data = wc.DownloadString("http://random.cat/meow");
-                    var jsondata = JsonConvert.DeserializeObject<DeserializedData>(data);
-                    return jsondata.URL;
-                }
+                var data = await _http.GetStringAsync("http://random.cat/meow")
+                    .ConfigureAwait(false);
+                var jsondata = JsonConvert.DeserializeObject<DeserializedData>(data);
+                return jsondata.URL;
             } catch (Exception e) {
                 Logger.LogException(LogLevel.Warning, e);
                 return null;
             }
         }
 
-        public static string RandomDogImage()
+        public static async Task<string> GetRandomDogImageAsync()
         {
             try {
-                using (var wc = new WebClient()) {
-                    var data = wc.DownloadString("https://random.dog/woof");
-                    return "https://random.dog/" + data;
-                }
+                var data = await _http.GetStringAsync("https://random.dog/woof")
+                    .ConfigureAwait(false);
+                return "https://random.dog/" + data;
             } catch (Exception e) {
                 Logger.LogException(LogLevel.Warning, e);
                 return null;

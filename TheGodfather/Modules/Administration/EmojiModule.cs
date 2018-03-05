@@ -49,11 +49,13 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException("URL must point to an image and use http or https protocols.");
 
             try {
-                using (var wc = new WebClient()) {
-                    var data = wc.DownloadData(uri.AbsoluteUri);
-                    using (var ms = new MemoryStream(data))
-                        await ctx.Guild.CreateEmojiAsync(name, ms, reason: GetReasonString(ctx))
-                            .ConfigureAwait(false);
+                var stream = await HTTPClient.GetStreamAsync(uri)
+                   .ConfigureAwait(false);
+                using (var ms = new MemoryStream()) {
+                    await stream.CopyToAsync(ms)
+                        .ConfigureAwait(false);
+                    await ctx.Guild.CreateEmojiAsync(name, ms, reason: GetReasonString(ctx))
+                        .ConfigureAwait(false);
                 }
             } catch (WebException e) {
                 throw new CommandFailedException("Error getting the image.", e);

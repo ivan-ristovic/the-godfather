@@ -27,7 +27,7 @@ using Google.Apis.Util.Store;
 
 namespace TheGodfather.Services
 {
-    public class YoutubeService : IGodfatherService
+    public class YoutubeService : HttpService
     {
         private YouTubeService _yt { get; set; }
         private string _key { get; set; }
@@ -93,19 +93,14 @@ namespace TheGodfather.Services
 
             id = url.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries).Last();
             try {
-                var handler = new HttpClientHandler {
-                    AllowAutoRedirect = false
-                };
-                using (var hc = new HttpClient(handler)) {
-                    var u = $"https://www.googleapis.com/youtube/v3/channels?key={_key}&forUsername={id}&part=id";
-                    var jsondata = await hc.GetStringAsync(u)
-                        .ConfigureAwait(false);
-                    var data = JsonConvert.DeserializeObject<YoutubeResponse>(jsondata);
-                    if (data.Items != null)
-                        return data.Items.First()["id"];
-                }
+                var u = $"https://www.googleapis.com/youtube/v3/channels?key={_key}&forUsername={id}&part=id";
+                var jsondata = await _http.GetStringAsync(u)
+                    .ConfigureAwait(false);
+                var data = JsonConvert.DeserializeObject<YoutubeResponse>(jsondata);
+                if (data.Items != null)
+                    return data.Items.First()["id"];
             } catch (Exception e) {
-                Logger.LogException(LogLevel.Warning, e);
+                Logger.LogException(LogLevel.Debug, e);
             }
 
             return null;

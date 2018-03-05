@@ -1,82 +1,32 @@
 ﻿#region USING_DIRECTIVES
 using System;
 using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
 using TheGodfather.Entities;
+using TheGodfather.Services.Common;
 
 using DSharpPlus;
 #endregion
 
 namespace TheGodfather.Services
 {
-    public static class UrbanDictService
+    public class UrbanDictService : HttpService
     {
         public static async Task<UrbanDictData> GetDefinitionForTermAsync(string query)
         {
             try {
-                using (var http = new HttpClient()) {
-                    var result = await http.GetStringAsync($"http://api.urbandictionary.com/v0/define?term={ WebUtility.UrlEncode(query) }")
-                        .ConfigureAwait(false);
-                    var data = JsonConvert.DeserializeObject<UrbanDictData>(result);
-                    if (data.ResultType != "no_results")
-                        return data;
-                }
+                var result = await _http.GetStringAsync($"http://api.urbandictionary.com/v0/define?term={ WebUtility.UrlEncode(query) }")
+                    .ConfigureAwait(false);
+                var data = JsonConvert.DeserializeObject<UrbanDictData>(result);
+                if (data.ResultType != "no_results")
+                    return data;
             } catch (Exception e) {
-                Logger.LogException(LogLevel.Warning, e);
+                Logger.LogException(LogLevel.Debug, e);
             }
 
             return null;
         }
-
-
-
-        public class UrbanDictData
-        {
-            [JsonProperty("tags")]
-            public string[] Tags { get; set; }
-
-            [JsonProperty("result_type")]
-            public string ResultType { get; set; }
-
-            [JsonProperty("list")]
-            public UrbanDictList[] List { get; set; }
-
-            [JsonProperty("sounds")]
-            public string[] Sounds { get; set; }
-        }
-
-        public class UrbanDictList
-        {
-            [JsonProperty("definition")]
-            public string Definition { get; set; }
-
-            [JsonProperty("permalink")]
-            public string Permalink { get; set; }
-
-            [JsonProperty("thumbs_up")]
-            public int ThumbsUp { get; set; }
-
-            [JsonProperty("author")]
-            public string Author { get; set; }
-
-            [JsonProperty("word")]
-            public string Word { get; set; }
-
-            [JsonProperty("defid")]
-            public int Defid { get; set; }
-
-            [JsonProperty("current_vote")]
-            public string CurrentVote { get; set; }
-
-            [JsonProperty("example")]
-            public string Example { get; set; }
-
-            [JsonProperty("thumbs_down")]
-            public int ThumbsDown { get; set; }
-        }
     }
-
 }

@@ -1,6 +1,7 @@
 ﻿#region USING_DIRECTIVES
 using System;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 using TheGodfather.Entities;
@@ -16,6 +17,9 @@ namespace TheGodfather.Modules
 {
     public abstract class TheGodfatherBaseModule : BaseCommandModule
     {
+        private static HttpClientHandler _handler = new HttpClientHandler { AllowAutoRedirect = false };
+        protected static HttpClient HTTPClient { get; } = new HttpClient(_handler, true);
+
         protected SharedData Shared { get; }
         protected DBService Database { get; }
 

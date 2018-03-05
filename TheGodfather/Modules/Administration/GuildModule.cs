@@ -2,13 +2,14 @@
 using System;
 using System.IO;
 using System.Linq;
-using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 using TheGodfather.Attributes;
-using TheGodfather.Services;
+using TheGodfather.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
+using TheGodfather.Services;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -42,10 +43,10 @@ namespace TheGodfather.Modules.Administration
                 .ConfigureAwait(false);
 
             await InteractivityUtil.SendPaginatedCollectionAsync(
-                ctx, 
-                "Guild bans", 
-                bans, 
-                b => $"- {b.User.ToString()} | Reason: {b.Reason} ", 
+                ctx,
+                "Guild bans",
+                bans,
+                b => $"- {b.User.ToString()} | Reason: {b.Reason} ",
                 DiscordColor.Red
             ).ConfigureAwait(false);
         }
@@ -189,20 +190,21 @@ namespace TheGodfather.Modules.Administration
         {
             if (string.IsNullOrWhiteSpace(url))
                 throw new InvalidCommandUsageException("URL missing.");
-            
+
             if (!IsValidImageURL(url, out Uri uri))
                 throw new CommandFailedException("URL must point to an image and use http or https protocols.");
-            
+
             try {
-                using (var wc = new WebClient()) {
-                    byte[] data = wc.DownloadData(uri.AbsoluteUri);
-                    using (var ms = new MemoryStream(data))
-                        await ctx.Guild.ModifyAsync(new Action<GuildEditModel>(e => e.Icon = ms))
-                            .ConfigureAwait(false);
+                var stream = await HTTPClient.GetStreamAsync(uri)
+                    .ConfigureAwait(false);
+                using (var ms = new MemoryStream()) {
+                    await stream.CopyToAsync(ms)
+                        .ConfigureAwait(false);
+                    await ctx.Guild.ModifyAsync(new Action<GuildEditModel>(e => e.Icon = ms))
+                        .ConfigureAwait(false);
                 }
-            } catch (WebException e) {
-                throw new CommandFailedException("Error getting the image.", e);
             } catch (Exception e) {
+                Logger.LogException(LogLevel.Debug, e);
                 throw new CommandFailedException("Unknown error occured.", e);
             }
 

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 
@@ -14,7 +15,7 @@ using DSharpPlus;
 
 namespace TheGodfather.Services
 {
-    public static class JokesService
+    public class JokesService : HttpService
     {
         public static async Task<string> GetRandomJokeAsync()
         {
@@ -26,7 +27,7 @@ namespace TheGodfather.Services
         public static async Task<IReadOnlyList<string>> SearchForJokesAsync(string query)
         {
             try {
-                var res = await GetStringResponseAsync("https://icanhazdadjoke.com/search?term=" + query.Replace(' ', '+'))
+                var res = await GetStringResponseAsync($"https://icanhazdadjoke.com/search?term={ WebUtility.UrlEncode(query) }")
                     .ConfigureAwait(false);
                 if (string.IsNullOrWhiteSpace(res))
                     return Enumerable.Empty<string>().ToList().AsReadOnly();
@@ -40,11 +41,8 @@ namespace TheGodfather.Services
         public static async Task<string> GetYoMommaJokeAsync()
         {
             try {
-                string data = null;
-                using (WebClient wc = new WebClient()) {
-                    data = await wc.DownloadStringTaskAsync("http://api.yomomma.info/")
-                        .ConfigureAwait(false);
-                }
+                string data = await _http.GetStringAsync("http://api.yomomma.info/")
+                    .ConfigureAwait(false);
                 return JObject.Parse(data)["joke"].ToString();
             } catch (Exception e) {
                 Logger.LogException(LogLevel.Warning, e);

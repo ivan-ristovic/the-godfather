@@ -30,7 +30,8 @@ namespace TheGodfather.Modules.Misc
         [UsageExample("!random cat")]
         public async Task RandomCatAsync(CommandContext ctx)
         {
-            string url = PetImagesService.RandomCatImage();
+            string url = await PetImagesService.GetRandomCatImageAsync()
+                .ConfigureAwait(false);
             if (url == null)
                 throw new CommandFailedException("Connection to random.cat failed!");
 
@@ -47,7 +48,8 @@ namespace TheGodfather.Modules.Misc
         [UsageExample("!random dog")]
         public async Task RandomDogAsync(CommandContext ctx)
         {
-            string url = PetImagesService.RandomDogImage();
+            string url = await PetImagesService.GetRandomDogImageAsync()
+                .ConfigureAwait(false);
             if (url == null)
                 throw new CommandFailedException("Connection to random.dog failed!");
 
