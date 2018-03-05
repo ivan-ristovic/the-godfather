@@ -1,12 +1,13 @@
 ﻿#region USING_DIRECTIVES
 using System;
-using System.Net;
+using System.Net.Http;
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
 using TheGodfather.Entities;
+using TheGodfather.Services.Common;
 
 using DSharpPlus;
 using DSharpPlus.Entities;
@@ -90,12 +91,16 @@ namespace TheGodfather.Services
             if (YoutubeClient.TryParseChannelId(url, out string id))
                 return id;
 
+            id = url.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries).Last();
             try {
-                using (var wc = new WebClient()) {
-                    var u = "https://www.googleapis.com/youtube/v3/channels?key=" + _key + "&forUsername=" + id + "&part=id";
-                    var jsondata = await wc.DownloadStringTaskAsync(u)
+                var handler = new HttpClientHandler {
+                    AllowAutoRedirect = false
+                };
+                using (var hc = new HttpClient(handler)) {
+                    var u = $"https://www.googleapis.com/youtube/v3/channels?key={_key}&forUsername={id}&part=id";
+                    var jsondata = await hc.GetStringAsync(u)
                         .ConfigureAwait(false);
-                    var data = JsonConvert.DeserializeObject<DeserializedData>(jsondata);
+                    var data = JsonConvert.DeserializeObject<YoutubeResponse>(jsondata);
                     if (data.Items != null)
                         return data.Items.First()["id"];
                 }
@@ -155,13 +160,6 @@ namespace TheGodfather.Services
             }
 
             return pages.AsReadOnly();
-        }
-
-
-        public sealed class DeserializedData
-        {
-            [JsonProperty("items")]
-            public List<Dictionary<string, string>> Items { get; }
         }
     }
 }
