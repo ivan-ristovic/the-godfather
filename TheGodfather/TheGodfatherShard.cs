@@ -162,9 +162,8 @@ namespace TheGodfather
         private async Task Client_GuildAvailable(GuildCreateEventArgs e)
         {
             Log(LogLevel.Info, $"Guild available: {e.Guild.ToString()}");
-            if (await _db.AddGuildIfNotExistsAsync(e.Guild.Id).ConfigureAwait(false))
-                await e.Guild.GetDefaultChannel().SendMessageAsync($"Thank you for adding me! Type {Formatter.InlineCode("!help / !help <command>")} to view my command list or get help for a specific command.")
-                    .ConfigureAwait(false);
+            await _db.AddGuildIfNotExistsAsync(e.Guild.Id)
+                .ConfigureAwait(false);
         }
 
         private async Task Client_GuildMemberAdd(GuildMemberAddEventArgs e)

@@ -47,6 +47,9 @@ namespace TheGodfather.Services
 
         private static string Replace(string input)
         {
+            if (string.IsNullOrWhiteSpace(input))
+                return "_";
+
             var sb = new StringBuilder();
             foreach (var c in input) {
                 if (_map.TryGetValue(c, out var tmp))
