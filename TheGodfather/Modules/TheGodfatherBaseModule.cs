@@ -49,12 +49,13 @@ namespace TheGodfather.Modules
                 Color = DiscordColor.Yellow
             }).ConfigureAwait(false);
 
-            bool answer = await InteractivityUtil.WaitForConfirmationAsync(ctx).ConfigureAwait(false);
-            if (!answer)
+            if (!await InteractivityUtil.WaitForConfirmationAsync(ctx).ConfigureAwait(false)) {
                 await ReplyWithEmbedAsync(ctx, "Alright, aborting...")
                     .ConfigureAwait(false);
+                return false;
+            }
 
-            return answer;
+            return true;
         }
 
         protected string GetReasonString(CommandContext ctx, string reason = null)

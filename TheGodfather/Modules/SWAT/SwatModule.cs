@@ -173,10 +173,6 @@ namespace TheGodfather.Modules.SWAT
                     await Task.Delay(TimeSpan.FromSeconds(2))
                         .ConfigureAwait(false);
                 }
-            } catch (Exception e) {
-                await StopCheckAsync(ctx)
-                    .ConfigureAwait(false);
-                throw e;
             } finally {
                 Shared.UserIDsCheckingForSpace.TryRemove(ctx.User.Id);
             }

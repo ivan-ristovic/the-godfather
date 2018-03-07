@@ -29,7 +29,7 @@ namespace TheGodfather.Services
 
 
         public static string GetMemeGenerateUrl(string template, string topText, string bottomText)
-            => $"http://memegen.link/{template}/{Replace(topText)}/{Replace(bottomText)}.jpg";
+            => $"http://memegen.link/{Replace(template)}/{Replace(topText)}/{Replace(bottomText)}.jpg";
 
         public static async Task<IReadOnlyList<string>> GetMemeTemplatesAsync()
         {
