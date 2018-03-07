@@ -36,7 +36,7 @@ namespace TheGodfather.Modules.Misc
                 user = ctx.User;
 
             if (user.Id == ctx.Client.CurrentUser.Id) {
-                await ReplyWithEmbedAsync(ctx, "How original, trying to make me insult myself. Sadly it won't work.", ":middle_finger:")
+                await ctx.RespondWithIconEmbedAsync("How original, trying to make me insult myself. Sadly it won't work.", ":middle_finger:")
                     .ConfigureAwait(false);
                 return;
             }
@@ -46,7 +46,7 @@ namespace TheGodfather.Modules.Misc
             if (insult == null)
                 throw new CommandFailedException("No available insults.");
 
-            await ReplyWithEmbedAsync(ctx, insult.Replace("%user%", user.Mention), ":middle_finger:")
+            await ctx.RespondWithIconEmbedAsync(insult.Replace("%user%", user.Mention), ":middle_finger:")
                 .ConfigureAwait(false);
         }
 
@@ -72,7 +72,7 @@ namespace TheGodfather.Modules.Misc
             await Database.AddInsultAsync(insult)
                 .ConfigureAwait(false);
 
-            await ReplyWithEmbedAsync(ctx)
+            await ctx.RespondWithIconEmbedAsync()
                 .ConfigureAwait(false);
         }
         #endregion
@@ -85,12 +85,12 @@ namespace TheGodfather.Modules.Misc
         [RequireOwner]
         public async Task ClearAllInsultsAsync(CommandContext ctx)
         {
-            if (!await AskYesNoQuestionAsync(ctx, "Are you sure you want to delete all insults?").ConfigureAwait(false))
+            if (!await ctx.AskYesNoQuestionAsync("Are you sure you want to delete all insults?").ConfigureAwait(false))
                 return;
 
             await Database.DeleteAllInsultsAsync()
                 .ConfigureAwait(false);
-            await ReplyWithEmbedAsync(ctx, "All insults successfully removed.")
+            await ctx.RespondWithIconEmbedAsync("All insults successfully removed.")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -106,7 +106,7 @@ namespace TheGodfather.Modules.Misc
         {
             await Database.RemoveInsultByIdAsync(index)
                 .ConfigureAwait(false);
-            await ReplyWithEmbedAsync(ctx)
+            await ctx.RespondWithIconEmbedAsync()
                 .ConfigureAwait(false);
         }
         #endregion

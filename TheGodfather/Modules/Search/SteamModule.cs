@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 using TheGodfather.Attributes;
-using TheGodfather.Exceptions;
+using TheGodfather.Extensions;
 using TheGodfather.Services;
 
 using DSharpPlus.CommandsNext;
@@ -35,7 +35,7 @@ namespace TheGodfather.Modules.Search
                 .ConfigureAwait(false);
 
             if (em == null) {
-                await ReplyWithFailedEmbedAsync(ctx, "User with such ID does not exist!")
+                await ctx.RespondWithFailedEmbedAsync("User with such ID does not exist!")
                     .ConfigureAwait(false);
                 return;
             }

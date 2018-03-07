@@ -50,13 +50,13 @@ namespace TheGodfather.Modules.Games
                         await mctx.Message.DeleteAsync()
                             .ConfigureAwait(false);
                     } catch (UnauthorizedException) {
-                        await _channel.SendMessageAsync("Consider giving me the permissions to delete messages so that I can clean up the move posts.")
+                        await _channel.SendFailedEmbedAsync("Consider giving me the permissions to delete messages so that I can clean up the move posts.")
                             .ConfigureAwait(false);
                         _deletefailed = true;
                     }
                 }
             } else {
-                await _channel.SendMessageAsync("Invalid move.")
+                await _channel.SendFailedEmbedAsync("Invalid move.")
                     .ConfigureAwait(false);
             }
         }

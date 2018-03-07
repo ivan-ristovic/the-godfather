@@ -54,7 +54,7 @@ namespace TheGodfather.Modules.Administration
                 using (var ms = new MemoryStream()) {
                     await stream.CopyToAsync(ms)
                         .ConfigureAwait(false);
-                    await ctx.Guild.CreateEmojiAsync(name, ms, reason: GetReasonString(ctx))
+                    await ctx.Guild.CreateEmojiAsync(name, ms, reason: ctx.BuildReasonString())
                         .ConfigureAwait(false);
                 }
             } catch (WebException e) {
@@ -65,7 +65,7 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException("An error occured.", e);
             }
 
-            await ReplyWithEmbedAsync(ctx, $"Emoji {Formatter.Bold(name)} successfully added!")
+            await ctx.RespondWithIconEmbedAsync($"Emoji {Formatter.Bold(name)} successfully added!")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -83,9 +83,9 @@ namespace TheGodfather.Modules.Administration
                 var gemoji = await ctx.Guild.GetEmojiAsync(emoji.Id)
                     .ConfigureAwait(false);
                 string name = gemoji.Name;
-                await ctx.Guild.DeleteEmojiAsync(gemoji, GetReasonString(ctx))
+                await ctx.Guild.DeleteEmojiAsync(gemoji, ctx.BuildReasonString())
                     .ConfigureAwait(false);
-                await ReplyWithEmbedAsync(ctx, $"Emoji {Formatter.Bold(name)} successfully deleted!")
+                await ctx.RespondWithIconEmbedAsync($"Emoji {Formatter.Bold(name)} successfully deleted!")
                     .ConfigureAwait(false);
             } catch (NotFoundException) {
                 throw new CommandFailedException("Can't find that emoji in list of emoji that I made for this guild.");
@@ -127,12 +127,10 @@ namespace TheGodfather.Modules.Administration
         [UsageExample("!emoji list")]
         public async Task ListEmojiAsync(CommandContext ctx)
         {
-            var emojis = ctx.Guild.Emojis;
-            emojis.ToList().Sort((e1, e2) => string.Compare(e1.Name, e2.Name, true));
             await InteractivityUtil.SendPaginatedCollectionAsync(
                 ctx,
                 "Guild specific emojis:",
-                emojis,
+                ctx.Guild.Emojis.OrderBy(e => e.Name),
                 e => $"{e}  {e.Name}",
                 DiscordColor.CornflowerBlue
             ).ConfigureAwait(false);
@@ -156,9 +154,9 @@ namespace TheGodfather.Modules.Administration
             try {
                 var gemoji = await ctx.Guild.GetEmojiAsync(emoji.Id)
                     .ConfigureAwait(false);
-                await ctx.Guild.ModifyEmojiAsync(gemoji, name: newname, reason: GetReasonString(ctx))
+                await ctx.Guild.ModifyEmojiAsync(gemoji, name: newname, reason: ctx.BuildReasonString())
                     .ConfigureAwait(false);
-                await ReplyWithEmbedAsync(ctx)
+                await ctx.RespondWithIconEmbedAsync()
                     .ConfigureAwait(false);
             } catch (NotFoundException) {
                 throw new CommandFailedException("Can't find that emoji in list of emoji that I made for this guild.");

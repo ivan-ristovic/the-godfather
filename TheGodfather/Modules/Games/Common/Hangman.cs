@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
+using TheGodfather.Extensions;
 using TheGodfather.Modules.Games.Common;
 
 using DSharpPlus;
@@ -20,7 +21,7 @@ namespace TheGodfather.Modules.Games
         private char[] _hidden;
         private int _lives = 6;
         private bool _gameOver = false;
-        private List<char> _badguesses = new List<char>();
+        private SortedSet<char> _badguesses = new SortedSet<char>();
         #endregion
 
 
@@ -34,7 +35,7 @@ namespace TheGodfather.Modules.Games
 
         public override async Task RunAsync()
         {
-            _msg = await _channel.SendMessageAsync("Game starts!")
+            _msg = await _channel.SendIconEmbedAsync("Game starts!", EmojiUtil.Joystick)
                 .ConfigureAwait(false);
 
             await UpdateHangmanAsync()
@@ -44,7 +45,7 @@ namespace TheGodfather.Modules.Games
                     .ConfigureAwait(false);
             }
 
-            await _channel.SendMessageAsync("Game over! The word was: " + Formatter.Bold(_word))
+            await _channel.SendIconEmbedAsync($"Game over! The word was: {Formatter.Bold(_word)}", EmojiUtil.Joystick)
                 .ConfigureAwait(false);
         }
 
@@ -55,7 +56,7 @@ namespace TheGodfather.Modules.Games
                           !xm.Author.IsBot && 
                           xm.Content.Length == 1 && 
                           Char.IsLetterOrDigit(xm.Content[0]) &&
-                          !_badguesses.Contains(xm.Content[0])) || xm.Content.ToLower() == _word
+                          !_badguesses.Contains(Char.ToLowerInvariant(xm.Content[0]))) || xm.Content.ToLowerInvariant() == _word
                     , TimeSpan.FromMinutes(1)
                 ).ConfigureAwait(false);
             if (mctx == null) {
@@ -68,7 +69,7 @@ namespace TheGodfather.Modules.Games
                 _gameOver = true;
             }
 
-            char guess_char = Char.ToLower(mctx.Message.Content[0]);
+            char guess_char = Char.ToLowerInvariant(mctx.Message.Content[0]);
             if (_word.IndexOf(guess_char) != -1) {
                 for (int i = 0; i < _word.Length; i++)
                     if (_word[i] == guess_char)

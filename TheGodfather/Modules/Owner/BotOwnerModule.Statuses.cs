@@ -56,7 +56,7 @@ namespace TheGodfather.Modules.Owner
 
                 await Database.AddBotStatusAsync(status, activity)
                     .ConfigureAwait(false);
-                await ReplyWithEmbedAsync(ctx)
+                await ctx.RespondWithIconEmbedAsync()
                     .ConfigureAwait(false);
             }
             #endregion
@@ -71,7 +71,7 @@ namespace TheGodfather.Modules.Owner
             {
                 await Database.RemoveBotStatusAsync(id)
                     .ConfigureAwait(false);
-                await ReplyWithEmbedAsync(ctx)
+                await ctx.RespondWithIconEmbedAsync()
                     .ConfigureAwait(false);
             }
             #endregion
@@ -107,7 +107,7 @@ namespace TheGodfather.Modules.Owner
                                               [Description("True/False")] bool b = true)
             {
                 Shared.StatusRotationEnabled = b;
-                await ReplyWithEmbedAsync(ctx)
+                await ctx.RespondWithIconEmbedAsync()
                     .ConfigureAwait(false);
             }
             #endregion
@@ -131,7 +131,7 @@ namespace TheGodfather.Modules.Owner
                 Shared.StatusRotationEnabled = false;
                 await ctx.Client.UpdateStatusAsync(new DiscordActivity(status, activity))
                  .ConfigureAwait(false);
-                await ReplyWithEmbedAsync(ctx)
+                await ctx.RespondWithIconEmbedAsync()
                     .ConfigureAwait(false);
             }
 
@@ -147,7 +147,7 @@ namespace TheGodfather.Modules.Owner
                 Shared.StatusRotationEnabled = false;
                 await ctx.Client.UpdateStatusAsync(new DiscordActivity(status.Item2, status.Item1))
                  .ConfigureAwait(false);
-                await ReplyWithEmbedAsync(ctx)
+                await ctx.RespondWithIconEmbedAsync()
                     .ConfigureAwait(false);
             }
             #endregion

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 
 using TheGodfather.Attributes;
 using TheGodfather.Exceptions;
+using TheGodfather.Extensions;
 using TheGodfather.Modules.Games.Common;
 using TheGodfather.Services;
 
@@ -44,7 +45,7 @@ namespace TheGodfather.Modules.Games
                 var game = new AnimalRace(ctx.Client.GetInteractivity(), ctx.Channel);
                 Game.RegisterGameInChannel(game, ctx.Channel.Id);
                 try {
-                    await ReplyWithEmbedAsync(ctx, $"The race will start in 30s or when there are 10 participants. Use command {Formatter.InlineCode("game animalrace")} to join the race.", ":clock1:")
+                    await ctx.RespondWithIconEmbedAsync($"The race will start in 30s or when there are 10 participants. Use command {Formatter.InlineCode("game animalrace")} to join the race.", ":clock1:")
                         .ConfigureAwait(false);
                     await JoinRaceAsync(ctx)
                         .ConfigureAwait(false);
@@ -59,7 +60,7 @@ namespace TheGodfather.Modules.Games
                             await Database.UpdateUserStatsAsync(uid, "races_won")
                                 .ConfigureAwait(false);
                     } else {
-                        await ReplyWithEmbedAsync(ctx, "Not enough users joined the race.", ":alarm_clock:")
+                        await ctx.RespondWithIconEmbedAsync("Not enough users joined the race.", ":alarm_clock:")
                             .ConfigureAwait(false);
                     }
                 } finally {
@@ -88,7 +89,7 @@ namespace TheGodfather.Modules.Games
                 if (!game.AddParticipant(ctx.User, out DiscordEmoji emoji))
                     throw new CommandFailedException("You are already participating in the race!");
 
-                await ReplyWithEmbedAsync(ctx, $"{ctx.User.Mention} joined the race as {emoji}", ":bicyclist:")
+                await ctx.RespondWithIconEmbedAsync($"{ctx.User.Mention} joined the race as {emoji}", ":bicyclist:")
                     .ConfigureAwait(false);
             }
             #endregion

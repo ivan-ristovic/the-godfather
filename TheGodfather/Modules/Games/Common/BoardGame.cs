@@ -2,6 +2,8 @@
 using System;
 using System.Threading.Tasks;
 
+using TheGodfather.Extensions;
+
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 #endregion
@@ -99,13 +101,13 @@ namespace TheGodfather.Modules.Games.Common
                         await mctx.Message.DeleteAsync()
                             .ConfigureAwait(false);
                     } catch {
-                        await _channel.SendMessageAsync("Consider giving me the permissions to delete messages so that I can clean up the move posts.")
+                        await _channel.SendFailedEmbedAsync("Consider giving me the permissions to delete messages so that I can clean up the move posts.")
                             .ConfigureAwait(false);
                         _deletefailed = true;
                     }
                 }
             } else {
-                await _channel.SendMessageAsync($"Move [{row} {col}] is invalid.")
+                await _channel.SendFailedEmbedAsync($"Move [{row} {col}] is invalid.")
                     .ConfigureAwait(false);
             }
         }

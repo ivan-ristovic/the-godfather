@@ -1,9 +1,9 @@
 ﻿#region USING_DIRECTIVES
-using System;
 using System.Threading.Tasks;
 
 using TheGodfather.Attributes;
 using TheGodfather.Exceptions;
+using TheGodfather.Extensions;
 using TheGodfather.Services;
 
 using DSharpPlus;
@@ -60,7 +60,7 @@ namespace TheGodfather.Modules.Search
             if (!await Database.AddSubscriptionAsync(ctx.Channel.Id, url, sub).ConfigureAwait(false))
                 throw new CommandFailedException("You are already subscribed to this subreddit!");
 
-            await ReplyWithEmbedAsync(ctx, $"Subscribed to {Formatter.Bold(rsub)} !")
+            await ctx.RespondWithIconEmbedAsync($"Subscribed to {Formatter.Bold(rsub)} !")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -80,7 +80,7 @@ namespace TheGodfather.Modules.Search
 
             await Database.RemoveSubscriptionUsingNameAsync(ctx.Channel.Id, rsub)
                 .ConfigureAwait(false);
-            await ReplyWithEmbedAsync(ctx, $"Unsubscribed from {Formatter.Bold(rsub)} !")
+            await ctx.RespondWithIconEmbedAsync($"Unsubscribed from {Formatter.Bold(rsub)} !")
                 .ConfigureAwait(false);
         }
 
@@ -90,7 +90,7 @@ namespace TheGodfather.Modules.Search
         {
             await Database.RemoveSubscriptionAsync(ctx.Channel.Id, id)
                 .ConfigureAwait(false);
-            await ReplyWithEmbedAsync(ctx)
+            await ctx.RespondWithIconEmbedAsync()
                 .ConfigureAwait(false);
         }
         #endregion

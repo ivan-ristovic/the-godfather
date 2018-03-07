@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 
 using TheGodfather.Attributes;
 using TheGodfather.Exceptions;
+using TheGodfather.Extensions;
 using TheGodfather.Services;
 
 using DSharpPlus;
@@ -75,7 +76,7 @@ namespace TheGodfather.Modules.Gambling
 
             await Database.IncreaseBalanceForUserAsync(user.Id, amount)
                 .ConfigureAwait(false);
-            await ReplyWithEmbedAsync(ctx, $"{Formatter.Bold(user.Mention)} won {Formatter.Bold(amount.ToString())} credits on the Serbian lottery! (seems legit)", ":moneybag:")
+            await ctx.RespondWithIconEmbedAsync($"{Formatter.Bold(user.Mention)} won {Formatter.Bold(amount.ToString())} credits on the Serbian lottery! (seems legit)", ":moneybag:")
                 .ConfigureAwait(false);
         }
 
@@ -98,7 +99,7 @@ namespace TheGodfather.Modules.Gambling
 
             await Database.OpenBankAccountForUserAsync(ctx.User.Id)
                 .ConfigureAwait(false);
-            await ReplyWithEmbedAsync(ctx, $"Account opened for you, {ctx.User.Mention}! Since WM bank is so generous, you get 25 credits for free.", ":moneybag:")
+            await ctx.RespondWithIconEmbedAsync($"Account opened for you, {ctx.User.Mention}! Since WM bank is so generous, you get 25 credits for free.", ":moneybag:")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -149,7 +150,7 @@ namespace TheGodfather.Modules.Gambling
             await Database.TransferCurrencyAsync(ctx.User.Id, user.Id, amount)
                 .ConfigureAwait(false);
 
-            await ReplyWithEmbedAsync(ctx, $"Transfer from {Formatter.Bold(ctx.User.Username)} to {Formatter.Bold(user.Username)} is complete.", ":moneybag:")
+            await ctx.RespondWithIconEmbedAsync($"Transfer from {Formatter.Bold(ctx.User.Username)} to {Formatter.Bold(user.Username)} is complete.", ":moneybag:")
                 .ConfigureAwait(false);
         }
 

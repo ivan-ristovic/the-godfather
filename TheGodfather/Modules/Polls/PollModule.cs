@@ -36,7 +36,7 @@ namespace TheGodfather.Modules.Polls
             var poll = new Poll(ctx.Client.GetInteractivity(), ctx.Channel, question);
             Poll.RegisterPollInChannel(poll, ctx.Channel.Id);
             try {
-                await ReplyWithEmbedAsync(ctx, "And what will be the possible answers? (separate with semicolon ``;``)", ":question:")
+                await ctx.RespondWithIconEmbedAsync("And what will be the possible answers? (separate with semicolon ``;``)", ":question:")
                     .ConfigureAwait(false);
                 var options = await InteractivityUtil.WaitAndParsePollOptionsAsync(ctx)
                     .ConfigureAwait(false);

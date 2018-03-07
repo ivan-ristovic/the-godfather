@@ -35,7 +35,7 @@ namespace TheGodfather.Modules.Games
                 if (Game.RunningInChannel(ctx.Channel.Id))
                     throw new CommandFailedException("Another game is already running in the current channel!");
 
-                await ReplyWithEmbedAsync(ctx, $"Who wants to play Connect4 with {ctx.User.Username}?", ":question:")
+                await ctx.RespondWithIconEmbedAsync($"Who wants to play Connect4 with {ctx.User.Username}?", ":question:")
                     .ConfigureAwait(false);
                 var opponent = await InteractivityUtil.WaitForGameOpponentAsync(ctx)
                     .ConfigureAwait(false);
@@ -53,9 +53,9 @@ namespace TheGodfather.Modules.Games
 
                     if (connect4.Winner != null) {
                         if (connect4.NoReply == false)
-                            await ReplyWithEmbedAsync(ctx, $"The winner is: {connect4.Winner.Mention}!", ":trophy:").ConfigureAwait(false);
+                            await ctx.RespondWithIconEmbedAsync($"The winner is: {connect4.Winner.Mention}!", ":trophy:").ConfigureAwait(false);
                         else
-                            await ReplyWithEmbedAsync(ctx, $"{connect4.Winner.Mention} won due to no replies from opponent!", ":trophy:").ConfigureAwait(false);
+                            await ctx.RespondWithIconEmbedAsync($"{connect4.Winner.Mention} won due to no replies from opponent!", ":trophy:").ConfigureAwait(false);
                         
                         await Database.UpdateUserStatsAsync(connect4.Winner.Id, "chain4_won")
                             .ConfigureAwait(false);
@@ -64,7 +64,7 @@ namespace TheGodfather.Modules.Games
                         else
                             await Database.UpdateUserStatsAsync(ctx.User.Id, "chain4_lost").ConfigureAwait(false);
                     } else {
-                        await ReplyWithEmbedAsync(ctx, "A draw... Pathetic...", ":video_game:")
+                        await ctx.RespondWithIconEmbedAsync("A draw... Pathetic...", ":video_game:")
                             .ConfigureAwait(false);
                     }
                 } finally {
@@ -80,8 +80,7 @@ namespace TheGodfather.Modules.Games
             [UsageExample("!game connect4 rules")]
             public async Task RulesAsync(CommandContext ctx)
             {
-                await ReplyWithEmbedAsync(
-                    ctx,
+                await ctx.RespondWithIconEmbedAsync(
                     "\nConnect Four (also known as ``Four in a Row``, ``Four in a Line``) is a two-player connection game " +
                     "in which the players first choose a color and then take turns dropping colored discs from the top into a seven-column, " +
                     "six-row vertically suspended grid. The pieces fall straight down, occupying the next available space within the column. " +

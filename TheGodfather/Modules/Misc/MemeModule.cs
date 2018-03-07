@@ -82,7 +82,7 @@ namespace TheGodfather.Modules.Misc
 
             await Database.AddGuildMemeAsync(ctx.Guild.Id, name, uri.AbsoluteUri)
                 .ConfigureAwait(false);
-            await ReplyWithEmbedAsync(ctx, $"Meme {Formatter.Bold(name)} successfully added!")
+            await ctx.RespondWithIconEmbedAsync($"Meme {Formatter.Bold(name)} successfully added!")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -97,7 +97,7 @@ namespace TheGodfather.Modules.Misc
         {
             await Database.DeleteAllGuildMemesAsync(ctx.Guild.Id)
                 .ConfigureAwait(false);
-            await ReplyWithEmbedAsync(ctx)
+            await ctx.RespondWithIconEmbedAsync()
                 .ConfigureAwait(false);
         }
         #endregion
@@ -136,7 +136,7 @@ namespace TheGodfather.Modules.Misc
 
             await Database.RemoveGuildMemeAsync(ctx.Guild.Id, name)
                 .ConfigureAwait(false);
-            await ReplyWithEmbedAsync(ctx, $"Meme {Formatter.Bold(name)} successfully removed!")
+            await ctx.RespondWithIconEmbedAsync($"Meme {Formatter.Bold(name)} successfully removed!")
                 .ConfigureAwait(false);
         }
         #endregion

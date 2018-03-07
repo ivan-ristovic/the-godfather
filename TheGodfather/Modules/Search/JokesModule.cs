@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using TheGodfather.Attributes;
 using TheGodfather.Entities;
 using TheGodfather.Exceptions;
+using TheGodfather.Extensions;
 using TheGodfather.Services;
 
 using DSharpPlus;
@@ -36,7 +37,7 @@ namespace TheGodfather.Modules.Search
                 throw new CommandFailedException("Failed to retrieve a joke. Please report this.");
             }
 
-            await ReplyWithEmbedAsync(ctx, joke, ":joy:")
+            await ctx.RespondWithIconEmbedAsync(joke, ":joy:")
                 .ConfigureAwait(false);
         }
 
@@ -58,11 +59,11 @@ namespace TheGodfather.Modules.Search
                 throw new CommandFailedException("Failed to retrieve joke. Please report this.");
 
             if (!jokes.Any()) {
-                await ReplyWithEmbedAsync(ctx, "No results...", ":frowning:")
+                await ctx.RespondWithIconEmbedAsync("No results...", ":frowning:")
                     .ConfigureAwait(false);
                 return;
             }
-            await ReplyWithEmbedAsync(ctx, $"Results:\n\n{string.Join("\n", jokes.Take(5))}", ":joy:")
+            await ctx.RespondWithIconEmbedAsync($"Results:\n\n{string.Join("\n", jokes.Take(5))}", ":joy:")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -79,7 +80,7 @@ namespace TheGodfather.Modules.Search
             if (joke == null)
                 throw new CommandFailedException("Failed to retrieve joke. Please report this.");
 
-            await ReplyWithEmbedAsync(ctx, joke, ":joy:")
+            await ctx.RespondWithIconEmbedAsync(joke, ":joy:")
                 .ConfigureAwait(false);
         }
         #endregion

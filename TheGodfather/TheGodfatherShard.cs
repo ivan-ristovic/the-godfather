@@ -187,7 +187,7 @@ namespace TheGodfather
             try {
                 var chn = e.Guild.GetChannel(cid);
                 if (chn != null)
-                    await chn.SendMessageAsync($"Welcome to {Formatter.Bold(e.Guild.Name)}, {e.Member.Mention}!")
+                    await chn.SendIconEmbedAsync($"Welcome to {Formatter.Bold(e.Guild.Name)}, {e.Member.Mention}!", DiscordEmoji.FromName(Client, ":wave:"))
                         .ConfigureAwait(false);
             } catch (Exception exc) {
                 while (exc is AggregateException)
@@ -226,7 +226,7 @@ namespace TheGodfather
             try {
                 var chn = e.Guild.GetChannel(cid);
                 if (chn != null)
-                    await chn.SendMessageAsync($"{Formatter.Bold(e.Member?.Username ?? "<unknown>")} left the server. Cya never!")
+                    await chn.SendIconEmbedAsync($"{Formatter.Bold(e.Member?.Username ?? "<unknown>")} left the server. Cya never!", EmojiUtil.Wave)
                         .ConfigureAwait(false);
             } catch (Exception exc) {
                 while (exc is AggregateException)
@@ -273,7 +273,7 @@ namespace TheGodfather
                         $"{e.Guild.ToString()} ; {e.Channel.ToString()}"
                     );
                     if (e.Channel.PermissionsFor(e.Guild.CurrentMember).HasFlag(Permissions.SendMessages))
-                        await e.Channel.SendMessageAsync("The message contains the filtered word but I do not have permissions to delete it.")
+                        await e.Channel.SendFailedEmbedAsync("The message contains the filtered word but I do not have permissions to delete it.")
                             .ConfigureAwait(false);
                 }
                 return;
@@ -287,7 +287,7 @@ namespace TheGodfather
             int rank = _shared.UpdateMessageCount(e.Author.Id);
             if (rank != -1) {
                 var ranks = _shared.Ranks;
-                await e.Channel.SendMessageAsync($"GG {e.Author.Mention}! You have advanced to level {rank} ({(rank < ranks.Count ? ranks[rank] : "Low")})!")
+                await e.Channel.SendIconEmbedAsync($"GG {e.Author.Mention}! You have advanced to level {rank} ({(rank < ranks.Count ? ranks[rank] : "Low")})!", DiscordEmoji.FromName(Client, ":military_medal:"))
                     .ConfigureAwait(false);
             }
 
@@ -326,10 +326,10 @@ namespace TheGodfather
                                     .ConfigureAwait(false);
                                 break;
                             } catch (ArgumentException) {
-                                await e.Channel.SendMessageAsync($"Emoji reaction set, but emoji: {reaction.Key} doesn't exist!")
+                                await e.Channel.SendFailedEmbedAsync($"Emoji reaction set, but emoji: {reaction.Key} doesn't exist!")
                                     .ConfigureAwait(false);
                             } catch (UnauthorizedException) {
-                                await e.Channel.SendMessageAsync("I have a reaction for that message set up but I do not have permissions to add reactions. Fix your shit pls.")
+                                await e.Channel.SendFailedEmbedAsync("I have a reaction for that message set up but I do not have permissions to add reactions. Fix your shit pls.")
                                     .ConfigureAwait(false);
                             }
                         }
@@ -361,10 +361,10 @@ namespace TheGodfather
                         $"{e.Message.Author.ToString()}<br>" +
                         $"{e.Guild.ToString()} ; {e.Channel.ToString()}"
                     );
-                    await e.Channel.SendMessageAsync("The edited message contains the filtered word but I do not have permissions to delete it.")
+                    await e.Channel.SendFailedEmbedAsync("The edited message contains the filtered word but I do not have permissions to delete it.")
                         .ConfigureAwait(false);
                 }
-                await e.Channel.SendMessageAsync($"Nice try, {e.Author.Mention}! But I see throught it!")
+                await e.Channel.SendFailedEmbedAsync($"Nice try, {e.Author.Mention}! But I see throught it!")
                     .ConfigureAwait(false);
             }
         }

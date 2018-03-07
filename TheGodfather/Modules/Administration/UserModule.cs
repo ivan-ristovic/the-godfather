@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 using TheGodfather.Attributes;
 using TheGodfather.Exceptions;
+using TheGodfather.Extensions;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -37,10 +38,10 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException("You are not authorised to grant some of these roles.");
 
             foreach (var role in roles)
-                await member.GrantRoleAsync(role, reason: GetReasonString(ctx))
+                await member.GrantRoleAsync(role, reason: ctx.BuildReasonString())
                     .ConfigureAwait(false);
 
-            await ReplyWithEmbedAsync(ctx, $"Successfully granted given roles to {Formatter.Bold(member.DisplayName)}.")
+            await ctx.RespondWithIconEmbedAsync($"Successfully granted given roles to {Formatter.Bold(member.DisplayName)}.")
                 .ConfigureAwait(false);
         }
 
@@ -81,9 +82,9 @@ namespace TheGodfather.Modules.Administration
             if (member.Id == ctx.User.Id)
                 throw new CommandFailedException("You can't ban yourself.");
 
-            await member.BanAsync(delete_message_days: 7, reason: GetReasonString(ctx, reason))
+            await member.BanAsync(delete_message_days: 7, reason: ctx.BuildReasonString(reason))
                 .ConfigureAwait(false);
-            await ReplyWithEmbedAsync(ctx, $"{Formatter.Bold(ctx.User.Username)} BANNED {Formatter.Bold(member.Username)}!")
+            await ctx.RespondWithIconEmbedAsync($"{Formatter.Bold(ctx.User.Username)} BANNED {Formatter.Bold(member.Username)}!")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -105,10 +106,10 @@ namespace TheGodfather.Modules.Administration
             var u = await ctx.Client.GetUserAsync(id)
                 .ConfigureAwait(false);
 
-            await ctx.Guild.BanMemberAsync(u.Id, delete_message_days: 7, reason: GetReasonString(ctx, reason))
+            await ctx.Guild.BanMemberAsync(u.Id, delete_message_days: 7, reason: ctx.BuildReasonString(reason))
                 .ConfigureAwait(false);
 
-            await ReplyWithEmbedAsync(ctx, $"{Formatter.Bold(ctx.User.Username)} BANNED {Formatter.Bold(u.ToString())}!")
+            await ctx.RespondWithIconEmbedAsync($"{Formatter.Bold(ctx.User.Username)} BANNED {Formatter.Bold(u.ToString())}!")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -127,11 +128,11 @@ namespace TheGodfather.Modules.Administration
             if (member.Id == ctx.User.Id)
                 throw new CommandFailedException("You can't ban yourself.");
 
-            await member.BanAsync(delete_message_days: 7, reason: GetReasonString(ctx, "(softban) " + reason))
+            await member.BanAsync(delete_message_days: 7, reason: ctx.BuildReasonString("(softban) " + reason))
                 .ConfigureAwait(false);
-            await member.UnbanAsync(ctx.Guild, reason: GetReasonString(ctx, "(softban) " + reason))
+            await member.UnbanAsync(ctx.Guild, reason: ctx.BuildReasonString("(softban) " + reason))
                 .ConfigureAwait(false);
-            await ReplyWithEmbedAsync(ctx, $"{Formatter.Bold(ctx.User.Username)} SOFTBANNED {Formatter.Bold(member.Username)}!")
+            await ctx.RespondWithIconEmbedAsync($"{Formatter.Bold(ctx.User.Username)} SOFTBANNED {Formatter.Bold(member.Username)}!")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -152,9 +153,9 @@ namespace TheGodfather.Modules.Administration
             if (member.Id == ctx.User.Id)
                 throw new CommandFailedException("You can't ban yourself.");
 
-            await member.BanAsync(delete_message_days: 7, reason: GetReasonString(ctx, $"(tempban for {time.ToString()}) " + reason))
+            await member.BanAsync(delete_message_days: 7, reason: ctx.BuildReasonString($"(tempban for {time.ToString()}) " + reason))
                 .ConfigureAwait(false);
-            await ReplyWithEmbedAsync(ctx, $"{Formatter.Bold(ctx.User.Username)} BANNED {Formatter.Bold(member.Username)} for {Formatter.Bold(time.ToString())}!")
+            await ctx.RespondWithIconEmbedAsync($"{Formatter.Bold(ctx.User.Username)} BANNED {Formatter.Bold(member.Username)} for {Formatter.Bold(time.ToString())}!")
                 .ConfigureAwait(false);
 
             // TODO change this when tasks are added to db
@@ -183,9 +184,9 @@ namespace TheGodfather.Modules.Administration
                                      [Description("Member.")] DiscordMember member,
                                      [RemainingText, Description("Reason.")] string reason = null)
         {
-            await member.SetDeafAsync(true, reason: GetReasonString(ctx, reason))
+            await member.SetDeafAsync(true, reason: ctx.BuildReasonString(reason))
                 .ConfigureAwait(false);
-            await ReplyWithEmbedAsync(ctx, "Successfully deafened " + Formatter.Bold(member.DisplayName))
+            await ctx.RespondWithIconEmbedAsync("Successfully deafened " + Formatter.Bold(member.DisplayName))
                 .ConfigureAwait(false);
         }
         #endregion
@@ -200,9 +201,9 @@ namespace TheGodfather.Modules.Administration
                                        [Description("Member.")] DiscordMember member,
                                        [RemainingText, Description("Reason.")] string reason = null)
         {
-            await member.SetDeafAsync(false, reason: GetReasonString(ctx, reason))
+            await member.SetDeafAsync(false, reason: ctx.BuildReasonString(reason))
                 .ConfigureAwait(false);
-            await ReplyWithEmbedAsync(ctx, "Successfully undeafened " + Formatter.Bold(member.DisplayName))
+            await ctx.RespondWithIconEmbedAsync("Successfully undeafened " + Formatter.Bold(member.DisplayName))
                 .ConfigureAwait(false);
         }
         #endregion
@@ -253,9 +254,9 @@ namespace TheGodfather.Modules.Administration
             if (member.Id == ctx.User.Id)
                 throw new CommandFailedException("You can't kick yourself.");
 
-            await member.RemoveAsync(reason: GetReasonString(ctx, reason))
+            await member.RemoveAsync(reason: ctx.BuildReasonString(reason))
                 .ConfigureAwait(false);
-            await ReplyWithEmbedAsync(ctx, $"{Formatter.Bold(ctx.User.Username)} kicked {Formatter.Bold(member.DisplayName)} in the cojones.")
+            await ctx.RespondWithIconEmbedAsync($"{Formatter.Bold(ctx.User.Username)} kicked {Formatter.Bold(member.DisplayName)} in the cojones.")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -271,9 +272,9 @@ namespace TheGodfather.Modules.Administration
                                    [Description("member.")] DiscordMember member,
                                    [RemainingText, Description("Reason.")] string reason = null)
         {
-            await member.SetMuteAsync(true, reason: GetReasonString(ctx, reason))
+            await member.SetMuteAsync(true, reason: ctx.BuildReasonString(reason))
                 .ConfigureAwait(false);
-            await ReplyWithEmbedAsync(ctx, "Successfully muted " + Formatter.Bold(member.DisplayName))
+            await ctx.RespondWithIconEmbedAsync("Successfully muted " + Formatter.Bold(member.DisplayName))
                 .ConfigureAwait(false);
         }
         #endregion
@@ -289,9 +290,9 @@ namespace TheGodfather.Modules.Administration
                                      [Description("member.")] DiscordMember member,
                                      [RemainingText, Description("Reason.")] string reason = null)
         {
-            await member.SetMuteAsync(false, reason: GetReasonString(ctx, reason))
+            await member.SetMuteAsync(false, reason: ctx.BuildReasonString(reason))
                 .ConfigureAwait(false);
-            await ReplyWithEmbedAsync(ctx, "Successfully unmuted " + Formatter.Bold(member.DisplayName))
+            await ctx.RespondWithIconEmbedAsync("Successfully unmuted " + Formatter.Bold(member.DisplayName))
                 .ConfigureAwait(false);
         }
         #endregion
@@ -311,9 +312,9 @@ namespace TheGodfather.Modules.Administration
             if (role.Position >= ctx.Member.Roles.Max(r => r.Position))
                 throw new CommandFailedException("You cannot revoke that role.");
 
-            await member.RevokeRoleAsync(role, reason: GetReasonString(ctx, reason))
+            await member.RevokeRoleAsync(role, reason: ctx.BuildReasonString(reason))
                 .ConfigureAwait(false);
-            await ReplyWithEmbedAsync(ctx, $"Successfully removed role {Formatter.Bold(role.Name)} from {Formatter.Bold(member.DisplayName)}.")
+            await ctx.RespondWithIconEmbedAsync($"Successfully removed role {Formatter.Bold(role.Name)} from {Formatter.Bold(member.DisplayName)}.")
                 .ConfigureAwait(false);
         }
 
@@ -333,9 +334,9 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException("You cannot revoke some of the given roles.");
 
             foreach (var role in roles)
-                await member.RevokeRoleAsync(role, reason: GetReasonString(ctx))
+                await member.RevokeRoleAsync(role, reason: ctx.BuildReasonString())
                     .ConfigureAwait(false);
-            await ReplyWithEmbedAsync(ctx, $"Successfully revoked all given roles from {Formatter.Bold(member.DisplayName)}.")
+            await ctx.RespondWithIconEmbedAsync($"Successfully revoked all given roles from {Formatter.Bold(member.DisplayName)}.")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -353,9 +354,9 @@ namespace TheGodfather.Modules.Administration
             if (member.Roles.Max(r => r.Position) >= ctx.Member.Roles.Max(r => r.Position))
                 throw new CommandFailedException("You are not authorised to remove roles from this user.");
 
-            await member.ReplaceRolesAsync(Enumerable.Empty<DiscordRole>(), reason: GetReasonString(ctx, reason))
+            await member.ReplaceRolesAsync(Enumerable.Empty<DiscordRole>(), reason: ctx.BuildReasonString(reason))
                 .ConfigureAwait(false);
-            await ReplyWithEmbedAsync(ctx)
+            await ctx.RespondWithIconEmbedAsync()
                 .ConfigureAwait(false);
         }
         #endregion
@@ -375,9 +376,9 @@ namespace TheGodfather.Modules.Administration
 
             await member.ModifyAsync(new Action<MemberEditModel>(m => {
                 m.Nickname = newname;
-                m.AuditLogReason = GetReasonString(ctx);
+                m.AuditLogReason = ctx.BuildReasonString();
             })).ConfigureAwait(false);
-            await ReplyWithEmbedAsync(ctx)
+            await ctx.RespondWithIconEmbedAsync()
                 .ConfigureAwait(false);
         }
         #endregion
@@ -398,9 +399,9 @@ namespace TheGodfather.Modules.Administration
             var u = await ctx.Client.GetUserAsync(id)
                 .ConfigureAwait(false);
 
-            await ctx.Guild.UnbanMemberAsync(id, reason: GetReasonString(ctx, reason))
+            await ctx.Guild.UnbanMemberAsync(id, reason: ctx.BuildReasonString(reason))
                 .ConfigureAwait(false);
-            await ReplyWithEmbedAsync(ctx, $"{Formatter.Bold(ctx.User.Username)} removed an ID ban for {Formatter.Bold(u.ToString())}!")
+            await ctx.RespondWithIconEmbedAsync($"{Formatter.Bold(ctx.User.Username)} removed an ID ban for {Formatter.Bold(u.ToString())}!")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -418,7 +419,7 @@ namespace TheGodfather.Modules.Administration
             if (member == null)
                 throw new InvalidCommandUsageException("User missing.");
 
-            var em = new DiscordEmbedBuilder() {
+            var emb = new DiscordEmbedBuilder() {
                 Title = "Warning received!",
                 Description = $"Guild {Formatter.Bold(ctx.Guild.Name)} issued a warning to you through me.",
                 Color = DiscordColor.Red,
@@ -426,15 +427,15 @@ namespace TheGodfather.Modules.Administration
             };
 
             if (!string.IsNullOrWhiteSpace(msg))
-                em.AddField("Warning message", msg);
+                emb.AddField("Warning message", msg);
 
             var dm = await member.CreateDmChannelAsync()
                 .ConfigureAwait(false);
             if (dm == null)
                 throw new CommandFailedException("I can't talk to that user...");
-            await dm.SendMessageAsync(embed: em.Build())
+            await dm.SendMessageAsync(embed: emb.Build())
                 .ConfigureAwait(false);
-            await ReplyWithEmbedAsync(ctx, $"Successfully warned {Formatter.Bold(member.Username)}.")
+            await ctx.RespondWithIconEmbedAsync($"Successfully warned {Formatter.Bold(member.Username)}.")
                 .ConfigureAwait(false);
         }
         #endregion

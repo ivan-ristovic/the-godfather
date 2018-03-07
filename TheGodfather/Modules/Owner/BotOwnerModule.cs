@@ -67,7 +67,7 @@ namespace TheGodfather.Modules.Owner
                 throw new CommandFailedException("An error occured.", e);
             }
 
-            await ReplyWithEmbedAsync(ctx)
+            await ctx.RespondWithIconEmbedAsync()
                 .ConfigureAwait(false);
         }
         #endregion
@@ -86,7 +86,7 @@ namespace TheGodfather.Modules.Owner
 
             await ctx.Client.UpdateCurrentUserAsync(username: name)
                 .ConfigureAwait(false);
-            await ReplyWithEmbedAsync(ctx)
+            await ctx.RespondWithIconEmbedAsync()
                 .ConfigureAwait(false);
         }
         #endregion
@@ -99,13 +99,13 @@ namespace TheGodfather.Modules.Owner
         [ListeningCheck]
         public async Task ClearLogAsync(CommandContext ctx)
         {
-            if (!await AskYesNoQuestionAsync(ctx, "Are you sure you want to clear the logs?").ConfigureAwait(false))
+            if (!await ctx.AskYesNoQuestionAsync("Are you sure you want to clear the logs?").ConfigureAwait(false))
                 return;
 
             if (!Logger.Clear())
                 throw new CommandFailedException("Failed to delete log file!");
 
-            await ReplyWithEmbedAsync(ctx)
+            await ctx.RespondWithIconEmbedAsync()
                 .ConfigureAwait(false);
         }
         #endregion
@@ -260,7 +260,7 @@ namespace TheGodfather.Modules.Owner
         {
             Logger.LogToFile = b;
 
-            await ReplyWithEmbedAsync(ctx, $"File logging set to {b}")
+            await ctx.RespondWithIconEmbedAsync($"File logging set to {b}")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -377,7 +377,7 @@ namespace TheGodfather.Modules.Owner
                 throw new CommandFailedException("IO Exception occured!", e);
             }
 
-            await ReplyWithEmbedAsync(ctx, $"Command list created at path: {Formatter.InlineCode(filepath)}!")
+            await ctx.RespondWithIconEmbedAsync($"Command list created at path: {Formatter.InlineCode(filepath)}!")
                 .ConfigureAwait(false);
         }
 
@@ -422,7 +422,7 @@ namespace TheGodfather.Modules.Owner
                     sb.AppendLine($"Failed to leave guild with ID: {Formatter.InlineCode(gid.ToString())}!");
                 }
             }
-            await ReplyWithEmbedAsync(ctx, sb.ToString())
+            await ctx.RespondWithIconEmbedAsync(sb.ToString())
                 .ConfigureAwait(false);
         }
         #endregion
@@ -458,7 +458,7 @@ namespace TheGodfather.Modules.Owner
                 throw new InvalidCommandUsageException("Descriptor can only be 'u' or 'c'.");
             }
 
-            await ReplyWithEmbedAsync(ctx)
+            await ctx.RespondWithIconEmbedAsync()
                 .ConfigureAwait(false);
         }
         #endregion
@@ -503,7 +503,7 @@ namespace TheGodfather.Modules.Owner
         public async Task ToggleIgnoreAsync(CommandContext ctx)
         {
             TheGodfatherShard.Listening = !TheGodfatherShard.Listening;
-            await ReplyWithEmbedAsync(ctx, $"Listening status set to: {Formatter.Bold(TheGodfatherShard.Listening.ToString())}")
+            await ctx.RespondWithIconEmbedAsync($"Listening status set to: {Formatter.Bold(TheGodfatherShard.Listening.ToString())}")
                 .ConfigureAwait(false);
         }
         #endregion

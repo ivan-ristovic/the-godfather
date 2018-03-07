@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 
 using TheGodfather.Attributes;
 using TheGodfather.Exceptions;
+using TheGodfather.Extensions;
 using TheGodfather.Modules.Games.Common;
 using TheGodfather.Services;
 
@@ -43,7 +44,7 @@ namespace TheGodfather.Modules.Games
                 var game = new NumberRace(ctx.Client.GetInteractivity(), ctx.Channel);
                 Game.RegisterGameInChannel(game, ctx.Channel.Id);
                 try {
-                    await ReplyWithEmbedAsync(ctx, $"The race will start in 30s or when there are 10 participants. Use command {Formatter.InlineCode("game numberrace")} to join the race.", ":clock1:")
+                    await ctx.RespondWithIconEmbedAsync($"The race will start in 30s or when there are 10 participants. Use command {Formatter.InlineCode("game numberrace")} to join the race.", ":clock1:")
                         .ConfigureAwait(false);
                     await JoinRaceAsync(ctx)
                         .ConfigureAwait(false);
@@ -56,14 +57,14 @@ namespace TheGodfather.Modules.Games
 
                         if (game.NoReply) {
                             if (game.Winner != null) {
-                                await ReplyWithEmbedAsync(ctx, $"{game.Winner.Mention} won due to no replies from other users!", ":trophy:")
+                                await ctx.RespondWithIconEmbedAsync($"{game.Winner.Mention} won due to no replies from other users!", ":trophy:")
                                     .ConfigureAwait(false);
                             } else {
-                                await ReplyWithEmbedAsync(ctx, "No replies, aborting Number Race...", ":alarm_clock:")
+                                await ctx.RespondWithIconEmbedAsync("No replies, aborting Number Race...", ":alarm_clock:")
                                         .ConfigureAwait(false);
                             }
                         } else {
-                            await ReplyWithEmbedAsync(ctx, "Winner: " + game.Winner.Mention, ":trophy:")
+                            await ctx.RespondWithIconEmbedAsync("Winner: " + game.Winner.Mention, ":trophy:")
                                 .ConfigureAwait(false);
                         }
 
@@ -71,7 +72,7 @@ namespace TheGodfather.Modules.Games
                             await Database.UpdateUserStatsAsync(game.Winner.Id, "numraces_won")
                                 .ConfigureAwait(false);
                     } else {
-                        await ReplyWithEmbedAsync(ctx, "Not enough users joined the race.", ":alarm_clock:")
+                        await ctx.RespondWithIconEmbedAsync("Not enough users joined the race.", ":alarm_clock:")
                             .ConfigureAwait(false);
                     }
                 } finally {
@@ -100,7 +101,7 @@ namespace TheGodfather.Modules.Games
                 if (!game.AddParticipant(ctx.User))
                     throw new CommandFailedException("You are already participating in the race!");
 
-                await ReplyWithEmbedAsync(ctx, $"{ctx.User.Mention} joined the game.", ":bicyclist:")
+                await ctx.RespondWithIconEmbedAsync($"{ctx.User.Mention} joined the game.", ":bicyclist:")
                     .ConfigureAwait(false);
             }
             #endregion
@@ -112,8 +113,7 @@ namespace TheGodfather.Modules.Games
             [UsageExample("!game numberrace rules")]
             public async Task RulesAsync(CommandContext ctx)
             {
-                await ReplyWithEmbedAsync(
-                    ctx,
+                await ctx.RespondWithIconEmbedAsync(
                     "I will start by typing a number. Users have to count up by 1 from that number. " +
                     "If someone makes a mistake (types an incorrent number, or repeats the same number) " +
                     "they are out of the game. If nobody posts a number 20s after the last number was posted, " +

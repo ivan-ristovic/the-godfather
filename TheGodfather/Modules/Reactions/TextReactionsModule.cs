@@ -83,7 +83,7 @@ namespace TheGodfather.Modules.Reactions
                 errors = $"Warning: Failed to add trigger {Formatter.Bold(trigger)} to the database.";
             }
 
-            await ReplyWithEmbedAsync(ctx, $"Done!\n\n{errors}")
+            await ctx.RespondWithIconEmbedAsync($"Done!\n\n{errors}")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -96,7 +96,7 @@ namespace TheGodfather.Modules.Reactions
         [RequireUserPermissions(Permissions.Administrator)]
         public async Task ClearAsync(CommandContext ctx)
         {
-            if (!await AskYesNoQuestionAsync(ctx, "Are you sure you want to delete all text reactions for this guild?").ConfigureAwait(false))
+            if (!await ctx.AskYesNoQuestionAsync("Are you sure you want to delete all text reactions for this guild?").ConfigureAwait(false))
                 return;
 
             if (Shared.GuildTextReactions.ContainsKey(ctx.Guild.Id))
@@ -110,7 +110,7 @@ namespace TheGodfather.Modules.Reactions
                 throw new CommandFailedException("Failed to delete text reactions from the database.");
             }
 
-            await ReplyWithEmbedAsync(ctx, "Removed all text reactions!")
+            await ctx.RespondWithIconEmbedAsync("Removed all text reactions!")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -162,7 +162,7 @@ namespace TheGodfather.Modules.Reactions
                 }
             }
 
-            await ReplyWithEmbedAsync(ctx, $"Done!\n\n{errors.ToString()}")
+            await ctx.RespondWithIconEmbedAsync($"Done!\n\n{errors.ToString()}")
                 .ConfigureAwait(false);
         }
         #endregion

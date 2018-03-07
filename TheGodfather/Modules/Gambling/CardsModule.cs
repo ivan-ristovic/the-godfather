@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 
 using TheGodfather.Attributes;
 using TheGodfather.Exceptions;
+using TheGodfather.Extensions;
 using TheGodfather.Modules.Gambling.Cards;
 
 using DSharpPlus;
@@ -50,7 +51,7 @@ namespace TheGodfather.Modules.Gambling
             if (deck.CardCount < amount)
                 throw new InvalidCommandUsageException($"The deck has only {deck.CardCount} cards...");
             
-            await ReplyWithEmbedAsync(ctx, $"{ctx.User.Mention} drew {string.Join(" ", deck.Draw(amount))}", ":ticket:")
+            await ctx.RespondWithIconEmbedAsync($"{ctx.User.Mention} drew {string.Join(" ", deck.Draw(amount))}", ":ticket:")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -68,7 +69,7 @@ namespace TheGodfather.Modules.Gambling
             Shared.CardDecks[ctx.Channel.Id] = new Deck();
             Shared.CardDecks[ctx.Channel.Id].Shuffle();
 
-            await ReplyWithEmbedAsync(ctx, "A new shuffled deck is opened in this channel!", ":spades:")
+            await ctx.RespondWithIconEmbedAsync("A new shuffled deck is opened in this channel!", ":spades:")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -84,7 +85,7 @@ namespace TheGodfather.Modules.Gambling
                 throw new CommandFailedException($"No decks to shuffle. Use command {Formatter.InlineCode("deck")} to open a new shuffled deck.");
 
             Shared.CardDecks[ctx.Channel.Id].Shuffle();
-            await ReplyWithEmbedAsync(ctx, emojistr: ":ticket:")
+            await ctx.RespondWithIconEmbedAsync(icon_emoji: ":ticket:")
                 .ConfigureAwait(false);
         }
         #endregion

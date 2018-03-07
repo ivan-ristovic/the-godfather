@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 
 using TheGodfather.Attributes;
 using TheGodfather.Exceptions;
+using TheGodfather.Extensions;
 using TheGodfather.Modules.Polls.Common;
 
 using DSharpPlus;
@@ -33,7 +34,7 @@ namespace TheGodfather.Modules.Polls
             if (!poll.CancelVote(ctx.User.Id))
                 throw new CommandFailedException("Failed to cancel your vote!");
 
-            await ReplyWithEmbedAsync(ctx, "Your vote has been cancelled!")
+            await ctx.RespondWithIconEmbedAsync("Your vote has been cancelled!")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -57,7 +58,7 @@ namespace TheGodfather.Modules.Polls
                 throw new CommandFailedException("You have already voted in this poll!");
 
             poll.VoteFor(ctx.User.Id, option);
-            await ReplyWithEmbedAsync(ctx, $"{ctx.User.Mention} voted for: **{poll.OptionWithId(option)}** in poll: {Formatter.Italic($"\"{poll.Question}\"")}")
+            await ctx.RespondWithIconEmbedAsync($"{ctx.User.Mention} voted for: **{poll.OptionWithId(option)}** in poll: {Formatter.Italic($"\"{poll.Question}\"")}")
                 .ConfigureAwait(false);
         }
         #endregion

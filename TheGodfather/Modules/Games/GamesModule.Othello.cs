@@ -35,7 +35,7 @@ namespace TheGodfather.Modules.Games
                 if (Game.RunningInChannel(ctx.Channel.Id))
                     throw new CommandFailedException("Another game is already running in the current channel!");
 
-                await ReplyWithEmbedAsync(ctx, $"Who wants to play Othello with {ctx.User.Username}?", ":question:")
+                await ctx.RespondWithIconEmbedAsync($"Who wants to play Othello with {ctx.User.Username}?", ":question:")
                     .ConfigureAwait(false);
                 var opponent = await InteractivityUtil.WaitForGameOpponentAsync(ctx)
                     .ConfigureAwait(false);
@@ -53,9 +53,9 @@ namespace TheGodfather.Modules.Games
                     
                     if (othello.Winner != null) {
                         if (othello.NoReply == false)
-                            await ReplyWithEmbedAsync(ctx, $"The winner is: {othello.Winner.Mention}!", ":trophy:").ConfigureAwait(false);
+                            await ctx.RespondWithIconEmbedAsync($"The winner is: {othello.Winner.Mention}!", ":trophy:").ConfigureAwait(false);
                         else
-                            await ReplyWithEmbedAsync(ctx, $"{othello.Winner.Mention} won due to no replies from opponent!", ":trophy:").ConfigureAwait(false);
+                            await ctx.RespondWithIconEmbedAsync($"{othello.Winner.Mention} won due to no replies from opponent!", ":trophy:").ConfigureAwait(false);
 
                         await Database.UpdateUserStatsAsync(othello.Winner.Id, "othello_won")
                             .ConfigureAwait(false);
@@ -64,7 +64,7 @@ namespace TheGodfather.Modules.Games
                         else
                             await Database.UpdateUserStatsAsync(ctx.User.Id, "othello_lost").ConfigureAwait(false);
                     } else {
-                        await ReplyWithEmbedAsync(ctx, "A draw... Pathetic...", ":video_game:")
+                        await ctx.RespondWithIconEmbedAsync("A draw... Pathetic...", ":video_game:")
                             .ConfigureAwait(false);
                     }
                 } finally {
@@ -80,8 +80,7 @@ namespace TheGodfather.Modules.Games
             [UsageExample("!game othello rules")]
             public async Task RulesAsync(CommandContext ctx)
             {
-                await ReplyWithEmbedAsync(
-                    ctx,
+                await ctx.RespondWithIconEmbedAsync(
                     "Othello (or ``Reversi``) is a strategy board game for two players, played on an 8×8 uncheckered board. " +
                     "There are sixty-four identical game pieces called disks (often spelled \"discs\"), " +
                     "which are light on one side and dark on the other. Players take turns placing disks on the " +

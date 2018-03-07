@@ -40,7 +40,7 @@ namespace TheGodfather.Modules.Misc
             if (string.IsNullOrWhiteSpace(question))
                 throw new InvalidCommandUsageException("The almighty ball requires a question.");
 
-            await ReplyWithEmbedAsync(ctx, EightBall.Answer, ":8ball:")
+            await ctx.RespondWithIconEmbedAsync(EightBall.Answer, ":8ball:")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -53,7 +53,7 @@ namespace TheGodfather.Modules.Misc
         public async Task CoinflipAsync(CommandContext ctx)
         {
             string flip = new Random().Next(2) == 0 ? "Heads" : "Tails";
-            await ReplyWithEmbedAsync(ctx, $"{ctx.User.Mention} flipped {Formatter.Bold(flip)}", flip == "Heads" ? ":full_moon_with_face:" : ":new_moon_with_face:")
+            await ctx.RespondWithIconEmbedAsync($"{ctx.User.Mention} flipped {Formatter.Bold(flip)}", flip == "Heads" ? ":full_moon_with_face:" : ":new_moon_with_face:")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -66,7 +66,7 @@ namespace TheGodfather.Modules.Misc
         public async Task DiceAsync(CommandContext ctx)
         {
             string roll = new Random().Next(1, 7).ToString();
-            await ReplyWithEmbedAsync(ctx, $"{ctx.User.Mention} rolled a {Formatter.Bold(roll)}", ":game_die:")
+            await ctx.RespondWithIconEmbedAsync($"{ctx.User.Mention} rolled a {Formatter.Bold(roll)}", ":game_die:")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -83,9 +83,9 @@ namespace TheGodfather.Modules.Misc
             if (!await Database.SelfAssignableRoleExistsAsync(ctx.Guild.Id, role.Id))
                 throw new CommandFailedException("That role is not in this guild's self-assignable roles list.");
 
-            await ctx.Member.GrantRoleAsync(role, GetReasonString(ctx, "Granted self-assignable role."))
+            await ctx.Member.GrantRoleAsync(role, ctx.BuildReasonString("Granted self-assignable role."))
                 .ConfigureAwait(false);
-            await ReplyWithEmbedAsync(ctx)
+            await ctx.RespondWithIconEmbedAsync()
                 .ConfigureAwait(false);
         }
         #endregion
@@ -106,7 +106,7 @@ namespace TheGodfather.Modules.Misc
                 await ctx.RespondAsync(permanent.First().ToString())
                     .ConfigureAwait(false);
             } else {
-                var invite = await ctx.Channel.CreateInviteAsync(max_age: 3600, temporary: true, reason: GetReasonString(ctx))
+                var invite = await ctx.Channel.CreateInviteAsync(max_age: 3600, temporary: true, reason: ctx.BuildReasonString())
                     .ConfigureAwait(false);
                 await ctx.RespondAsync($"{invite} {Formatter.Italic("(This invite will expire in one hour!)")}")
                     .ConfigureAwait(false);
@@ -121,13 +121,13 @@ namespace TheGodfather.Modules.Misc
         [RequireUserPermissions(Permissions.Administrator)]
         public async Task LeaveAsync(CommandContext ctx)
         {
-            if (await AskYesNoQuestionAsync(ctx, "Are you sure you want me to leave this guild?").ConfigureAwait(false)) {
-                await ReplyWithEmbedAsync(ctx, "Go find a new bot, since this one is leaving!", ":wave:")
+            if (await ctx.AskYesNoQuestionAsync("Are you sure you want me to leave this guild?").ConfigureAwait(false)) {
+                await ctx.RespondWithIconEmbedAsync("Go find a new bot, since this one is leaving!", ":wave:")
                     .ConfigureAwait(false);
                 await ctx.Guild.LeaveAsync()
                     .ConfigureAwait(false);
             } else {
-                await ReplyWithEmbedAsync(ctx, "Guess I'll stay then.", ":no_mouth:")
+                await ctx.RespondWithIconEmbedAsync("Guess I'll stay then.", ":no_mouth:")
                     .ConfigureAwait(false);
             }
         }
@@ -176,14 +176,14 @@ namespace TheGodfather.Modules.Misc
                                     [Description("Who to measure.")] DiscordUser user)
         {
             if (user.Id == ctx.Client.CurrentUser.Id) {
-                await ReplyWithEmbedAsync(ctx, $"{user.Mention}'s size:\n\n{Formatter.Bold("8===============================================")}\n{Formatter.Italic("(Please plug in a second monitor for the entire display)")}", ":straight_ruler:")
+                await ctx.RespondWithIconEmbedAsync($"{user.Mention}'s size:\n\n{Formatter.Bold("8===============================================")}\n{Formatter.Italic("(Please plug in a second monitor for the entire display)")}", ":straight_ruler:")
                     .ConfigureAwait(false);
                 return;
             }
 
             var sb = new StringBuilder();
             sb.Append('8').Append('=', (int)(user.Id % 40)).Append('D');
-            await ReplyWithEmbedAsync(ctx, $"{user.Mention}'s size:\n\n{Formatter.Bold(sb.ToString())}", ":straight_ruler:")
+            await ctx.RespondWithIconEmbedAsync($"{user.Mention}'s size:\n\n{Formatter.Bold(sb.ToString())}", ":straight_ruler:")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -202,7 +202,7 @@ namespace TheGodfather.Modules.Misc
                 user2 = ctx.User;
 
             if (user1.Id == ctx.Client.CurrentUser.Id || user2.Id == ctx.Client.CurrentUser.Id) {
-                await ReplyWithEmbedAsync(ctx, "Please, I do not want to make everyone laugh at you...", ":straight_ruler:")
+                await ctx.RespondWithIconEmbedAsync("Please, I do not want to make everyone laugh at you...", ":straight_ruler:")
                     .ConfigureAwait(false);
                 return;
             }
@@ -210,7 +210,7 @@ namespace TheGodfather.Modules.Misc
             var sb = new StringBuilder();
             sb.Append('8').Append('=', (int)(user1.Id % 40)).Append("D ").AppendLine(user1.Mention);
             sb.Append('8').Append('=', (int)(user2.Id % 40)).Append("D ").AppendLine(user2.Mention);
-            await ReplyWithEmbedAsync(ctx, $"Comparing...\n\n{Formatter.Bold(sb.ToString())}", ":straight_ruler:")
+            await ctx.RespondWithIconEmbedAsync($"Comparing...\n\n{Formatter.Bold(sb.ToString())}", ":straight_ruler:")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -221,7 +221,7 @@ namespace TheGodfather.Modules.Misc
         [UsageExample("!ping")]
         public async Task PingAsync(CommandContext ctx)
         {
-            await ReplyWithEmbedAsync(ctx, $"Pong! {ctx.Client.Ping}ms", ":heartbeat:")
+            await ctx.RespondWithIconEmbedAsync($"Pong! {ctx.Client.Ping}ms", ":heartbeat:")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -238,7 +238,7 @@ namespace TheGodfather.Modules.Misc
         {
             if (string.IsNullOrWhiteSpace(prefix)) {
                 string p = Shared.GetGuildPrefix(ctx.Guild.Id);
-                await ReplyWithEmbedAsync(ctx, $"Current prefix for this guild: {Formatter.Bold(p)}", ":information_source:")
+                await ctx.RespondWithIconEmbedAsync($"Current prefix for this guild: {Formatter.Bold(p)}", ":information_source:")
                     .ConfigureAwait(false);
                 return;
             }
@@ -247,7 +247,7 @@ namespace TheGodfather.Modules.Misc
                 throw new CommandFailedException("Prefix length cannot be longer than 12 characters.");
 
             Shared.GuildPrefixes.AddOrUpdate(ctx.Guild.Id, prefix, (id, oldp) => prefix);
-            await ReplyWithEmbedAsync(ctx, $"Successfully changed the prefix for this guild to: {Formatter.Bold(prefix)}")
+            await ctx.RespondWithIconEmbedAsync($"Successfully changed the prefix for this guild to: {Formatter.Bold(prefix)}")
                 .ConfigureAwait(false);
             try {
                 await Database.SetGuildPrefixAsync(ctx.Guild.Id, prefix)
@@ -336,7 +336,7 @@ namespace TheGodfather.Modules.Misc
             if (string.IsNullOrWhiteSpace(issue))
                 throw new InvalidCommandUsageException("Text missing.");
 
-            if (await AskYesNoQuestionAsync(ctx, "Are you okay with your user and guild info being sent for further inspection?").ConfigureAwait(false)) {
+            if (await ctx.AskYesNoQuestionAsync("Are you okay with your user and guild info being sent for further inspection?").ConfigureAwait(false)) {
                 ctx.Client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", $"Report from {ctx.User.Username} ({ctx.User.Id}): {issue}", DateTime.Now);
                 var dm = await InteractivityUtil.CreateDmChannelAsync(ctx.Client, ctx.Client.CurrentApplication.Owner.Id)
                     .ConfigureAwait(false);
@@ -351,10 +351,10 @@ namespace TheGodfather.Modules.Misc
 
                 await dm.SendMessageAsync("A new issue has been reported!", embed: emb.Build())
                     .ConfigureAwait(false);
-                await ReplyWithEmbedAsync(ctx, "Your issue has been reported.")
+                await ctx.RespondWithIconEmbedAsync("Your issue has been reported.")
                     .ConfigureAwait(false);
             } else {
-                await ReplyWithFailedEmbedAsync(ctx, "Your issue has not been reported.")
+                await ctx.RespondWithFailedEmbedAsync("Your issue has not been reported.")
                     .ConfigureAwait(false);
             }
         }

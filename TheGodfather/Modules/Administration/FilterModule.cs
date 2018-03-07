@@ -100,7 +100,7 @@ namespace TheGodfather.Modules.Administration
                 }
             }
 
-            await ReplyWithEmbedAsync(ctx, $"Done!\n\n{errors.ToString()}")
+            await ctx.RespondWithIconEmbedAsync($"Done!\n\n{errors.ToString()}")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -113,7 +113,7 @@ namespace TheGodfather.Modules.Administration
         [RequireUserPermissions(Permissions.Administrator)]
         public async Task ClearAsync(CommandContext ctx)
         {
-            if (!await AskYesNoQuestionAsync(ctx, "Are you sure you want to delete all filters for this guild?").ConfigureAwait(false))
+            if (!await ctx.AskYesNoQuestionAsync("Are you sure you want to delete all filters for this guild?").ConfigureAwait(false))
                 return;
 
             if (Shared.GuildFilters.ContainsKey(ctx.Guild.Id))
@@ -127,7 +127,7 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException("Failed to delete filters from the database.");
             }
 
-            await ReplyWithEmbedAsync(ctx, "Removed all filters!")
+            await ctx.RespondWithIconEmbedAsync("Removed all filters!")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -161,7 +161,7 @@ namespace TheGodfather.Modules.Administration
                 }
             }
 
-            await ReplyWithEmbedAsync(ctx, $"Done!\n\n{errors.ToString()}")
+            await ctx.RespondWithIconEmbedAsync($"Done!\n\n{errors.ToString()}")
                 .ConfigureAwait(false);
         }
         #endregion

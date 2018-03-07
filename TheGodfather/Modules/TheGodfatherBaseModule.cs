@@ -31,36 +31,6 @@ namespace TheGodfather.Modules
         }
 
 
-        protected async Task ReplyWithEmbedAsync(CommandContext ctx, string msg = "Done!", string emojistr = ":white_check_mark:")
-        {
-            await ctx.RespondAsync(embed: new DiscordEmbedBuilder {
-                Description = $"{(string.IsNullOrWhiteSpace(emojistr) ? "" : DiscordEmoji.FromName(ctx.Client, emojistr))} {msg}",
-                Color = DiscordColor.Green
-            }).ConfigureAwait(false);
-        }
-
-        protected async Task ReplyWithFailedEmbedAsync(CommandContext ctx, string msg)
-            => await ReplyWithEmbedAsync(ctx, msg, ":negative_squared_cross_mark:").ConfigureAwait(false);
-
-        protected async Task<bool> AskYesNoQuestionAsync(CommandContext ctx, string question)
-        {
-            await ctx.RespondAsync(embed: new DiscordEmbedBuilder {
-                Description = $"{DiscordEmoji.FromName(ctx.Client, ":question:")} {question}",
-                Color = DiscordColor.Yellow
-            }).ConfigureAwait(false);
-
-            if (!await InteractivityUtil.WaitForConfirmationAsync(ctx).ConfigureAwait(false)) {
-                await ReplyWithEmbedAsync(ctx, "Alright, aborting...")
-                    .ConfigureAwait(false);
-                return false;
-            }
-
-            return true;
-        }
-
-        protected string GetReasonString(CommandContext ctx, string reason = null)
-            => $"{ctx.User.ToString()} : {reason ?? "No reason provided."} | Invoked in: {ctx.Channel.ToString()}";
-
         protected bool IsValidURL(string url, out Uri uri)
         {
             uri = null;

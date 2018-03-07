@@ -55,6 +55,8 @@ namespace TheGodfather.Extensions
         public static DiscordEmoji WhiteSquare => DiscordEmoji.FromUnicode("\u2b1c");
         public static DiscordEmoji Syringe => DiscordEmoji.FromUnicode("\U0001f489");
         public static DiscordEmoji Trophy => DiscordEmoji.FromUnicode("\U0001f3c6");
+        public static DiscordEmoji Joystick => DiscordEmoji.FromUnicode("\U0001f579");
+        public static DiscordEmoji Wave => DiscordEmoji.FromUnicode("\U0001f44b");
 
 
         public static DiscordEmoji GetRandomDuelWeapon(Random rng = null)

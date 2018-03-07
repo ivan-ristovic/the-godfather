@@ -93,7 +93,7 @@ namespace TheGodfather.Modules.Reactions
                 }
             }
 
-            await ReplyWithEmbedAsync(ctx, $"Done!\n\n{errors.ToString()}")
+            await ctx.RespondWithIconEmbedAsync($"Done!\n\n{errors.ToString()}")
                 .ConfigureAwait(false);
         }
 
@@ -112,7 +112,7 @@ namespace TheGodfather.Modules.Reactions
         [RequireUserPermissions(Permissions.Administrator)]
         public async Task ClearAsync(CommandContext ctx)
         {
-            if (!await AskYesNoQuestionAsync(ctx, "Are you sure you want to delete all emoji reactions for this guild?").ConfigureAwait(false))
+            if (!await ctx.AskYesNoQuestionAsync("Are you sure you want to delete all emoji reactions for this guild?").ConfigureAwait(false))
                 return;
 
             if (Shared.GuildEmojiReactions.ContainsKey(ctx.Guild.Id))
@@ -126,7 +126,7 @@ namespace TheGodfather.Modules.Reactions
                 throw new CommandFailedException("Failed to delete emoji reactions from the database.");
             }
 
-            await ReplyWithEmbedAsync(ctx, "Removed all emoji reactions!")
+            await ctx.RespondWithIconEmbedAsync("Removed all emoji reactions!")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -158,7 +158,7 @@ namespace TheGodfather.Modules.Reactions
                 errors.AppendLine($"Warning: Failed to remove reaction from the database.");
             }
 
-            await ReplyWithEmbedAsync(ctx, $"Done!\n\n{errors.ToString()}")
+            await ctx.RespondWithIconEmbedAsync($"Done!\n\n{errors.ToString()}")
                 .ConfigureAwait(false);
         }
 
@@ -192,7 +192,7 @@ namespace TheGodfather.Modules.Reactions
                 }
             }
 
-            await ReplyWithEmbedAsync(ctx, $"Done!\n\n{errors.ToString()}")
+            await ctx.RespondWithIconEmbedAsync($"Done!\n\n{errors.ToString()}")
                 .ConfigureAwait(false);
         }
         #endregion

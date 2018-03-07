@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 using TheGodfather.Attributes;
 using TheGodfather.Exceptions;
+using TheGodfather.Extensions;
 using TheGodfather.Modules.Games.Common;
-using TheGodfather.Services;
 
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
@@ -35,7 +35,7 @@ namespace TheGodfather.Modules.Games
                 var quiz = new QuizCountries(ctx.Client.GetInteractivity(), ctx.Channel);
                 Game.RegisterGameInChannel(quiz, ctx.Channel.Id);
                 try {
-                    await ReplyWithEmbedAsync(ctx, "Quiz will start in 10s! Get ready!", ":clock1:")
+                    await ctx.RespondWithIconEmbedAsync("Quiz will start in 10s! Get ready!", ":clock1:")
                         .ConfigureAwait(false);
                     await Task.Delay(TimeSpan.FromSeconds(10))
                         .ConfigureAwait(false);
@@ -43,7 +43,7 @@ namespace TheGodfather.Modules.Games
                         .ConfigureAwait(false);
 
                     if (quiz.NoReply) {
-                        await ReplyWithEmbedAsync(ctx, "Aborting quiz due to no replies...", ":alarm_clock:")
+                        await ctx.RespondWithIconEmbedAsync("Aborting quiz due to no replies...", ":alarm_clock:")
                             .ConfigureAwait(false);
                         return;
                     }
@@ -66,7 +66,7 @@ namespace TheGodfather.Modules.Games
                         await Database.UpdateUserStatsAsync(results.First().Item1.Id, "quizes_won")
                             .ConfigureAwait(false);
                     } else {
-                        await ReplyWithEmbedAsync(ctx, "Trying to improve stats by playing alone? Won't work...", ":joy:")
+                        await ctx.RespondWithIconEmbedAsync("Trying to improve stats by playing alone? Won't work...", ":joy:")
                             .ConfigureAwait(false);
                     }
                 } finally {

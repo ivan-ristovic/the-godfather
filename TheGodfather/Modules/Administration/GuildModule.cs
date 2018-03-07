@@ -106,13 +106,10 @@ namespace TheGodfather.Modules.Administration
             var members = await ctx.Guild.GetAllMembersAsync()
                 .ConfigureAwait(false);
 
-            var sorted = members.ToList();
-            sorted.Sort((m1, m2) => string.Compare(m1.Username, m2.Username));
-
             await InteractivityUtil.SendPaginatedCollectionAsync(
                 ctx,
                 "Members",
-                sorted,
+                members.OrderBy(m => m.Username),
                 m => m.ToString(),
                 DiscordColor.SapGreen
             ).ConfigureAwait(false);
@@ -141,12 +138,12 @@ namespace TheGodfather.Modules.Administration
                 return;
             }
 
-            if (!await AskYesNoQuestionAsync(ctx, $"Pruning will remove {Formatter.Bold(count.ToString())} member(s). Continue?").ConfigureAwait(false))
+            if (!await ctx.AskYesNoQuestionAsync($"Pruning will remove {Formatter.Bold(count.ToString())} member(s). Continue?").ConfigureAwait(false))
                 return;
 
-            await ctx.Guild.PruneAsync(days, GetReasonString(ctx, reason))
+            await ctx.Guild.PruneAsync(days, ctx.BuildReasonString(reason))
                 .ConfigureAwait(false);
-            await ReplyWithEmbedAsync(ctx)
+            await ctx.RespondWithIconEmbedAsync()
                 .ConfigureAwait(false);
         }
         #endregion
@@ -167,9 +164,9 @@ namespace TheGodfather.Modules.Administration
 
             await ctx.Guild.ModifyAsync(new Action<GuildEditModel>(m => {
                 m.Name = newname;
-                m.AuditLogReason = GetReasonString(ctx, reason);
+                m.AuditLogReason = ctx.BuildReasonString(reason);
             })).ConfigureAwait(false);
-            await ReplyWithEmbedAsync(ctx)
+            await ctx.RespondWithIconEmbedAsync()
                 .ConfigureAwait(false);
         }
 
@@ -208,7 +205,7 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException("Unknown error occured.", e);
             }
 
-            await ReplyWithEmbedAsync(ctx)
+            await ctx.RespondWithIconEmbedAsync()
                 .ConfigureAwait(false);
         }
         #endregion

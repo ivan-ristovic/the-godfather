@@ -35,7 +35,7 @@ namespace TheGodfather.Modules.Games
                 if (Game.RunningInChannel(ctx.Channel.Id))
                     throw new CommandFailedException("Another game is already running in the current channel!");
 
-                await ReplyWithEmbedAsync(ctx, $"Who wants to play Tic-Tac-Toe with {ctx.User.Username}?", ":question:")
+                await ctx.RespondWithIconEmbedAsync($"Who wants to play Tic-Tac-Toe with {ctx.User.Username}?", ":question:")
                     .ConfigureAwait(false);
                 var opponent = await InteractivityUtil.WaitForGameOpponentAsync(ctx)
                     .ConfigureAwait(false);
@@ -53,9 +53,9 @@ namespace TheGodfather.Modules.Games
 
                     if (ttt.Winner != null) {
                         if (ttt.NoReply == false)
-                            await ReplyWithEmbedAsync(ctx, $"The winner is: {ttt.Winner.Mention}!", ":trophy:").ConfigureAwait(false);
+                            await ctx.RespondWithIconEmbedAsync($"The winner is: {ttt.Winner.Mention}!", ":trophy:").ConfigureAwait(false);
                         else
-                            await ReplyWithEmbedAsync(ctx, $"{ttt.Winner.Mention} won due to no replies from opponent!", ":trophy:").ConfigureAwait(false);
+                            await ctx.RespondWithIconEmbedAsync($"{ttt.Winner.Mention} won due to no replies from opponent!", ":trophy:").ConfigureAwait(false);
 
                         await Database.UpdateUserStatsAsync(ttt.Winner.Id, "ttt_won")
                             .ConfigureAwait(false);
@@ -64,7 +64,7 @@ namespace TheGodfather.Modules.Games
                         else
                             await Database.UpdateUserStatsAsync(ctx.User.Id, "ttt_lost").ConfigureAwait(false);
                     } else {
-                        await ReplyWithEmbedAsync(ctx, "A draw... Pathetic...", ":video_game:")
+                        await ctx.RespondWithIconEmbedAsync("A draw... Pathetic...", ":video_game:")
                             .ConfigureAwait(false);
                     }
                 } finally {
@@ -80,8 +80,7 @@ namespace TheGodfather.Modules.Games
             [UsageExample("!game tictactoe rules")]
             public async Task RulesAsync(CommandContext ctx)
             {
-                await ReplyWithEmbedAsync(
-                    ctx,
+                await ctx.RespondWithIconEmbedAsync(
                     "The object of Tic Tac Toe is to get three in a row. " +
                     "You play on a three by three game board. The first player is known as X and the second is O. " +
                     "Players alternate placing Xs and Os on the game board until either oppent has three in a row " +

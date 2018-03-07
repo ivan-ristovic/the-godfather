@@ -168,7 +168,7 @@ namespace TheGodfather.Modules.Games
                     gfe = DiscordEmoji.FromName(ctx.Client, ":scissors:");
                     break;
             }
-            await ReplyWithEmbedAsync(ctx, $"{ctx.User.Mention} {usre} {gfe} {ctx.Client.CurrentUser.Mention}", null)
+            await ctx.RespondWithIconEmbedAsync($"{ctx.User.Mention} {usre} {gfe} {ctx.Client.CurrentUser.Mention}", null)
                  .ConfigureAwait(false);
         }
         #endregion
@@ -205,7 +205,7 @@ namespace TheGodfather.Modules.Games
             var game = new TypingRace(ctx.Client.GetInteractivity(), ctx.Channel);
             Game.RegisterGameInChannel(game, ctx.Channel.Id);
             try {
-                await ReplyWithEmbedAsync(ctx, "I will send a text in 5s. First one to types it wins. FOCUS!", ":clock1:")
+                await ctx.RespondWithIconEmbedAsync("I will send a text in 5s. First one to types it wins. FOCUS!", ":clock1:")
                     .ConfigureAwait(false);
                 await Task.Delay(TimeSpan.FromSeconds(5))
                     .ConfigureAwait(false);
@@ -214,10 +214,10 @@ namespace TheGodfather.Modules.Games
                     .ConfigureAwait(false);
 
                 if (game.NoReply == true) {
-                    await ReplyWithEmbedAsync(ctx, "ROFL what a nabs...", ":alarm_clock:")
+                    await ctx.RespondWithIconEmbedAsync("ROFL what a nabs...", ":alarm_clock:")
                         .ConfigureAwait(false);
                 } else {
-                    await ReplyWithEmbedAsync(ctx, $"The winner is {game.Winner?.Mention ?? "<unknown>"}!", ":trophy:")
+                    await ctx.RespondWithIconEmbedAsync($"The winner is {game.Winner?.Mention ?? "<unknown>"}!", ":trophy:")
                         .ConfigureAwait(false);
                 }
             } finally {

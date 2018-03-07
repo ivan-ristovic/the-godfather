@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 
 using TheGodfather.Attributes;
+using TheGodfather.Extensions;
 using TheGodfather.Services;
 
 using DSharpPlus;
@@ -28,8 +29,7 @@ namespace TheGodfather.Modules.Games
             [GroupCommand]
             public async Task ExecuteGroupAsync(CommandContext ctx)
             {
-                await ReplyWithEmbedAsync(
-                    ctx,
+                await ctx.RespondWithIconEmbedAsync(
                     "Available quiz categories:\n" +
                     $"- {Formatter.Bold("countries")}",
                     ":information_source:"

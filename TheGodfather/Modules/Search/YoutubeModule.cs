@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 
 using TheGodfather.Attributes;
 using TheGodfather.Exceptions;
+using TheGodfather.Extensions;
 using TheGodfather.Services;
 
 using DSharpPlus;
@@ -94,9 +95,9 @@ namespace TheGodfather.Modules.Search
 
             var feedurl = YoutubeService.GetYoutubeRSSFeedLinkForChannelId(chid);
             if (await Database.AddSubscriptionAsync(ctx.Channel.Id, feedurl, string.IsNullOrWhiteSpace(name) ? url : name).ConfigureAwait(false))
-                await ReplyWithEmbedAsync(ctx, "Subscribed!").ConfigureAwait(false);
+                await ctx.RespondWithIconEmbedAsync("Subscribed!").ConfigureAwait(false);
             else
-                await ReplyWithFailedEmbedAsync(ctx, "Either the channel URL you is invalid or you are already subscribed to it!").ConfigureAwait(false);
+                await ctx.RespondWithFailedEmbedAsync("Either the channel URL you is invalid or you are already subscribed to it!").ConfigureAwait(false);
         }
         #endregion
 
@@ -124,7 +125,7 @@ namespace TheGodfather.Modules.Search
                     .ConfigureAwait(false);
             }
 
-            await ReplyWithEmbedAsync(ctx, "Unsubscribed!")
+            await ctx.RespondWithIconEmbedAsync("Unsubscribed!")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -142,7 +143,7 @@ namespace TheGodfather.Modules.Search
             var pages = await _Service.GetPaginatedResults(query, amount, type)
                 .ConfigureAwait(false);
             if (pages == null) {
-                await ReplyWithFailedEmbedAsync(ctx, "No results found!")
+                await ctx.RespondWithFailedEmbedAsync("No results found!")
                     .ConfigureAwait(false);
                 return;
             }

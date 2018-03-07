@@ -3,6 +3,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
+using TheGodfather.Extensions;
 using TheGodfather.Extensions.Collections;
 using TheGodfather.Modules.Games.Common;
 
@@ -31,7 +32,7 @@ namespace TheGodfather.Modules.Games
             Started = true;
 
             int num = new Random().Next(1000);
-            await _channel.SendMessageAsync(num.ToString())
+            await _channel.SendIconEmbedAsync(num.ToString(), DiscordEmoji.FromUnicode("\U0001f199"))
                 .ConfigureAwait(false);
             
             while (ParticipantCount > 1) {
@@ -52,7 +53,7 @@ namespace TheGodfather.Modules.Games
                     num++;
                     Winner = mctx.User;
                 } else {
-                    await _channel.SendMessageAsync(mctx.User.Mention + " lost!")
+                    await _channel.SendIconEmbedAsync($"{mctx.User.Mention} lost!", DiscordEmoji.FromUnicode("\u2757"))
                         .ConfigureAwait(false);
                     if (Winner != null && Winner.Id == mctx.User.Id)
                         Winner = null;

@@ -1,18 +1,16 @@
 ﻿#region USING_DIRECTIVES
 using System;
-using System.Net;
 using System.Linq;
 using System.Threading.Tasks;
 
 using TheGodfather.Attributes;
 using TheGodfather.Exceptions;
+using TheGodfather.Extensions;
 using TheGodfather.Services;
 
-using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-using System.Collections.Generic;
 #endregion
 
 namespace TheGodfather.Modules.Misc
@@ -75,7 +73,7 @@ namespace TheGodfather.Modules.Misc
                               .Distinct()
                               .Select(s => s.Trim())
                               .Where(s => !string.IsNullOrWhiteSpace(s));
-            await ReplyWithEmbedAsync(ctx, options.ElementAt(new Random().Next(options.Count())), ":arrow_right:")
+            await ctx.RespondWithIconEmbedAsync(options.ElementAt(new Random().Next(options.Count())), ":arrow_right:")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -98,7 +96,7 @@ namespace TheGodfather.Modules.Misc
                 throw new CommandFailedException("No online members to raffle from.");
 
             var raffled = online.ElementAt(new Random().Next(online.Count()));
-            await ReplyWithEmbedAsync(ctx, $"Raffled: {raffled.Mention}", ":game_die:")
+            await ctx.RespondWithIconEmbedAsync($"Raffled: {raffled.Mention}", ":game_die:")
                 .ConfigureAwait(false);
         }
         #endregion

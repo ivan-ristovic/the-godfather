@@ -21,9 +21,11 @@ namespace TheGodfather.Extensions
         {
             return string.Equals(message, "yes", StringComparison.OrdinalIgnoreCase)
                 || string.Equals(message, "y", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(message, "yeah", StringComparison.OrdinalIgnoreCase)
                 || string.Equals(message, "1", StringComparison.OrdinalIgnoreCase)
                 || string.Equals(message, "yea", StringComparison.OrdinalIgnoreCase)
                 || string.Equals(message, "ye", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(message, "yep", StringComparison.OrdinalIgnoreCase)
                 || string.Equals(message, "ya", StringComparison.OrdinalIgnoreCase)
                 || string.Equals(message, "ja", StringComparison.OrdinalIgnoreCase)
                 || string.Equals(message, "si", StringComparison.OrdinalIgnoreCase)

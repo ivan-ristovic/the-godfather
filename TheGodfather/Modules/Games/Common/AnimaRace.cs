@@ -42,7 +42,7 @@ namespace TheGodfather.Modules.Games
         {
             Started = true;
 
-            var msg = await _channel.SendMessageAsync("Race starting...")
+            var msg = await _channel.SendFailedEmbedAsync("Race starting...")
                 .ConfigureAwait(false);
             var rnd = new Random();
             while (!_participants.Any(p => p.Progress >= TRACK_SIZE)) {

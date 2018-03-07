@@ -51,7 +51,8 @@ namespace TheGodfather.Modules.Games
                     }
                 }
             } else {
-                await _channel.SendMessageAsync("Invalid move.").ConfigureAwait(false);
+                await _channel.SendMessageAsync("Invalid move.")
+                    .ConfigureAwait(false);
             }
         }
 

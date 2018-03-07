@@ -46,7 +46,7 @@ namespace TheGodfather.Modules.SWAT
             if (server == null)
                 throw new CommandFailedException("Server with such name isn't found in the database.");
 
-            await ReplyWithEmbedAsync(ctx, $"IP: {Formatter.Bold($"{server.IP}:{server.JoinPort}")}")
+            await ctx.RespondWithIconEmbedAsync($"IP: {Formatter.Bold($"{server.IP}:{server.JoinPort}")}")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -77,7 +77,7 @@ namespace TheGodfather.Modules.SWAT
             if (info != null)
                 await ctx.RespondAsync(embed: info.EmbedData()).ConfigureAwait(false);
             else
-                await ReplyWithFailedEmbedAsync(ctx, "No reply from server.").ConfigureAwait(false);
+                await ctx.RespondWithFailedEmbedAsync("No reply from server.").ConfigureAwait(false);
         }
         #endregion
 
@@ -152,7 +152,7 @@ namespace TheGodfather.Modules.SWAT
 
             var server = await Database.GetSwatServerAsync(ip, queryport, name: ip.ToLowerInvariant())
                 .ConfigureAwait(false);
-            await ReplyWithEmbedAsync(ctx, $"Starting check on {server.IP}:{server.JoinPort}...")
+            await ctx.RespondWithIconEmbedAsync($"Starting check on {server.IP}:{server.JoinPort}...")
                 .ConfigureAwait(false);
 
             Shared.UserIDsCheckingForSpace.Add(ctx.User.Id);
@@ -161,13 +161,13 @@ namespace TheGodfather.Modules.SWAT
                     var info = await SwatServerInfo.QueryIPAsync(server.IP, server.QueryPort)
                         .ConfigureAwait(false);
                     if (info == null) {
-                        if (!await AskYesNoQuestionAsync(ctx, "No reply from server. Should I try again?").ConfigureAwait(false)) {
+                        if (!await ctx.AskYesNoQuestionAsync("No reply from server. Should I try again?").ConfigureAwait(false)) {
                             await StopCheckAsync(ctx)
                                 .ConfigureAwait(false);
                             return;
                         }
                     } else if (info.HasSpace()) {
-                        await ReplyWithEmbedAsync(ctx, $"{ctx.User.Mention}, there is space on {info.HostName}!", ":alarm_clock:")
+                        await ctx.RespondWithIconEmbedAsync($"{ctx.User.Mention}, there is space on {info.HostName}!", ":alarm_clock:")
                             .ConfigureAwait(false);
                     }
                     await Task.Delay(TimeSpan.FromSeconds(2))
@@ -189,7 +189,7 @@ namespace TheGodfather.Modules.SWAT
             if (!Shared.UserIDsCheckingForSpace.Contains(ctx.User.Id))
                 throw new CommandFailedException("No checks started from you.");
             Shared.UserIDsCheckingForSpace.TryRemove(ctx.User.Id);
-            await ReplyWithEmbedAsync(ctx, "Checking stopped.")
+            await ctx.RespondWithIconEmbedAsync("Checking stopped.")
                 .ConfigureAwait(false);
         }
         #endregion

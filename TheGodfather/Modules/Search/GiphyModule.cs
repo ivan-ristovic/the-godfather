@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 
 using TheGodfather.Attributes;
 using TheGodfather.Exceptions;
+using TheGodfather.Extensions;
 using TheGodfather.Services;
 
 using DSharpPlus.CommandsNext;
@@ -36,7 +37,7 @@ namespace TheGodfather.Modules.Search
                 .ConfigureAwait(false);
 
             if (!res.Any()) {
-                await ReplyWithFailedEmbedAsync(ctx, "No results...")
+                await ctx.RespondWithFailedEmbedAsync("No results...")
                     .ConfigureAwait(false);
                 return;
             }

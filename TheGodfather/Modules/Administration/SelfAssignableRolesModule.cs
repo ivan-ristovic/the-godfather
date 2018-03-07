@@ -45,7 +45,7 @@ namespace TheGodfather.Modules.Administration
                 await Database.AddSelfAssignableRoleAsync(ctx.Guild.Id, role.Id)
                     .ConfigureAwait(false);
 
-            await ReplyWithEmbedAsync(ctx)
+            await ctx.RespondWithIconEmbedAsync()
                 .ConfigureAwait(false);
         }
         #endregion
@@ -58,13 +58,13 @@ namespace TheGodfather.Modules.Administration
         [RequireUserPermissions(Permissions.Administrator)]
         public async Task ClearAsync(CommandContext ctx)
         {
-            if (!await AskYesNoQuestionAsync(ctx, "Are you sure you want to delete all self-assignable roles for this guild?").ConfigureAwait(false))
+            if (!await ctx.AskYesNoQuestionAsync("Are you sure you want to delete all self-assignable roles for this guild?").ConfigureAwait(false))
                 return;
 
             await Database.DeleteAllSelfAssignableRolesAsync(ctx.Guild.Id)
                 .ConfigureAwait(false);
 
-            await ReplyWithEmbedAsync(ctx)
+            await ctx.RespondWithIconEmbedAsync()
                 .ConfigureAwait(false);
         }
         #endregion
@@ -83,7 +83,7 @@ namespace TheGodfather.Modules.Administration
                 await Database.RemoveSelfAssignableRoleAsync(ctx.Guild.Id, role.Id)
                     .ConfigureAwait(false);
 
-            await ReplyWithEmbedAsync(ctx)
+            await ctx.RespondWithIconEmbedAsync()
                 .ConfigureAwait(false);
         }
         #endregion

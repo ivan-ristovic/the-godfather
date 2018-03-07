@@ -56,12 +56,12 @@ namespace TheGodfather.Modules.Administration
                 throw new InvalidCommandUsageException("Missing role name.");
 
             if (ctx.Guild.Roles.Any(r => string.Compare(r.Name, name, true) == 0)) 
-                if (!await AskYesNoQuestionAsync(ctx, "A role with that name already exists. Continue?").ConfigureAwait(false))
+                if (!await ctx.AskYesNoQuestionAsync("A role with that name already exists. Continue?").ConfigureAwait(false))
                     return;
 
-            await ctx.Guild.CreateRoleAsync(name, null, color, hoisted, mentionable, GetReasonString(ctx))
+            await ctx.Guild.CreateRoleAsync(name, null, color, hoisted, mentionable, ctx.BuildReasonString())
                 .ConfigureAwait(false);
-            await ReplyWithEmbedAsync(ctx, $"Successfully created role {Formatter.Bold(name)}!")
+            await ctx.RespondWithIconEmbedAsync($"Successfully created role {Formatter.Bold(name)}!")
                 .ConfigureAwait(false);
         }
 
@@ -89,9 +89,9 @@ namespace TheGodfather.Modules.Administration
                                          [RemainingText, Description("Reason.")] string reason = null)
         {
             string name = role.Name;
-            await role.DeleteAsync(GetReasonString(ctx, reason))
+            await role.DeleteAsync(ctx.BuildReasonString(reason))
                 .ConfigureAwait(false);
-            await ReplyWithEmbedAsync(ctx, $"Successfully removed role {Formatter.Bold(name)}!")
+            await ctx.RespondWithIconEmbedAsync($"Successfully removed role {Formatter.Bold(name)}!")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -162,9 +162,9 @@ namespace TheGodfather.Modules.Administration
                                            [Description("Role.")] DiscordRole role,
                                            [Description("Color.")] DiscordColor color)
         {
-            await role.UpdateAsync(color: color, reason: GetReasonString(ctx))
+            await role.UpdateAsync(color: color, reason: ctx.BuildReasonString())
                 .ConfigureAwait(false);
-            await ReplyWithEmbedAsync(ctx, $"Successfully changed color for {Formatter.Bold(role.Name)}!")
+            await ctx.RespondWithIconEmbedAsync($"Successfully changed color for {Formatter.Bold(role.Name)}!")
                 .ConfigureAwait(false);
         }
 
@@ -189,9 +189,9 @@ namespace TheGodfather.Modules.Administration
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentException("I need a new name for the role.");
 
-            await role.UpdateAsync(name: name, reason: GetReasonString(ctx))
+            await role.UpdateAsync(name: name, reason: ctx.BuildReasonString())
                 .ConfigureAwait(false);
-            await ReplyWithEmbedAsync(ctx, $"Successfully changed role name to {Formatter.Bold(name)}.")
+            await ctx.RespondWithIconEmbedAsync($"Successfully changed role name to {Formatter.Bold(name)}.")
                 .ConfigureAwait(false);
         }
 
@@ -214,9 +214,9 @@ namespace TheGodfather.Modules.Administration
                                                  [Description("Role.")] DiscordRole role,
                                                  [Description("Mentionable?")] bool mentionable = true)
         {
-            await role.UpdateAsync(mentionable: mentionable, reason: GetReasonString(ctx))
+            await role.UpdateAsync(mentionable: mentionable, reason: ctx.BuildReasonString())
                 .ConfigureAwait(false);
-            await ReplyWithEmbedAsync(ctx, $"Successfully set mentionable var for {Formatter.Bold(role.Name)} to {Formatter.Bold(mentionable.ToString())}.")
+            await ctx.RespondWithIconEmbedAsync($"Successfully set mentionable var for {Formatter.Bold(role.Name)} to {Formatter.Bold(mentionable.ToString())}.")
                 .ConfigureAwait(false);
         }
 
@@ -239,9 +239,9 @@ namespace TheGodfather.Modules.Administration
                                              [Description("Role.")] DiscordRole role,
                                              [Description("Hoisted (visible in online list)?")] bool hoisted = false)
         {
-            await role.UpdateAsync(hoist: hoisted, reason: GetReasonString(ctx))
+            await role.UpdateAsync(hoist: hoisted, reason: ctx.BuildReasonString())
                 .ConfigureAwait(false);
-            await ReplyWithEmbedAsync(ctx, $"Successfully set hoisted var for role {Formatter.Bold(role.Name)} to {Formatter.Bold(hoisted.ToString())}.")
+            await ctx.RespondWithIconEmbedAsync($"Successfully set hoisted var for role {Formatter.Bold(role.Name)} to {Formatter.Bold(hoisted.ToString())}.")
                 .ConfigureAwait(false);
         }
 

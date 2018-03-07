@@ -74,7 +74,7 @@ namespace TheGodfather.Modules.Administration
             if (!msgs.Any())
                 throw new CommandFailedException("None of the messages in the given range match your description.");
 
-            await ctx.Channel.DeleteMessagesAsync(msgs, GetReasonString(ctx, reason))
+            await ctx.Channel.DeleteMessagesAsync(msgs, ctx.BuildReasonString(reason))
                 .ConfigureAwait(false);
         }
         #endregion
@@ -101,9 +101,9 @@ namespace TheGodfather.Modules.Administration
             if (!del.Any())
                 throw new CommandFailedException("None of the messages in the given range match your description.");
 
-            await ctx.Channel.DeleteMessagesAsync(del, GetReasonString(ctx, reason))
+            await ctx.Channel.DeleteMessagesAsync(del, ctx.BuildReasonString(reason))
                 .ConfigureAwait(false);
-            await ReplyWithEmbedAsync(ctx)
+            await ctx.RespondWithIconEmbedAsync()
                 .ConfigureAwait(false);
         }
 
@@ -136,9 +136,9 @@ namespace TheGodfather.Modules.Administration
                 msg = _.First();
             }
 
-            await msg.DeleteAllReactionsAsync(GetReasonString(ctx, reason))
+            await msg.DeleteAllReactionsAsync(ctx.BuildReasonString(reason))
                 .ConfigureAwait(false);
-            await ReplyWithEmbedAsync(ctx)
+            await ctx.RespondWithIconEmbedAsync()
                 .ConfigureAwait(false);
         }
         #endregion
@@ -172,9 +172,9 @@ namespace TheGodfather.Modules.Administration
             if (!del.Any())
                 throw new CommandFailedException("None of the messages in the given range match your description.");
 
-            await ctx.Channel.DeleteMessagesAsync(del, GetReasonString(ctx, reason))
+            await ctx.Channel.DeleteMessagesAsync(del, ctx.BuildReasonString(reason))
                 .ConfigureAwait(false);
-            await ReplyWithEmbedAsync(ctx)
+            await ctx.RespondWithIconEmbedAsync()
                 .ConfigureAwait(false);
         }
 
@@ -197,7 +197,7 @@ namespace TheGodfather.Modules.Administration
                 .ConfigureAwait(false);
             
             if (!pinned.Any()) {
-                await ReplyWithEmbedAsync(ctx, "No pinned messages in this channel")
+                await ctx.RespondWithIconEmbedAsync("No pinned messages in this channel")
                     .ConfigureAwait(false);
                 return;
             }
@@ -260,7 +260,7 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException("That message cannot be pinned!", e);
             }
 
-            await ReplyWithEmbedAsync(ctx)
+            await ctx.RespondWithIconEmbedAsync()
                 .ConfigureAwait(false);
         }
         #endregion
@@ -283,7 +283,7 @@ namespace TheGodfather.Modules.Administration
 
             await pinned.ElementAt(index - 1).UnpinAsync()
                 .ConfigureAwait(false);
-            await ReplyWithEmbedAsync(ctx)
+            await ctx.RespondWithIconEmbedAsync()
                 .ConfigureAwait(false);
         }
         #endregion
@@ -308,7 +308,7 @@ namespace TheGodfather.Modules.Administration
                     failed++;
                 }
             }
-            await ReplyWithEmbedAsync(ctx, failed > 0 ? $"Failed to unpin {failed} messages!" : "All messages successfully unpinned!")
+            await ctx.RespondWithIconEmbedAsync(failed > 0 ? $"Failed to unpin {failed} messages!" : "All messages successfully unpinned!")
                 .ConfigureAwait(false);
         }
         #endregion
