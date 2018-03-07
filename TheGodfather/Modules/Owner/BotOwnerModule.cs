@@ -129,7 +129,7 @@ namespace TheGodfather.Modules.Owner
             } catch (Npgsql.NpgsqlException e) {
                 throw new CommandFailedException("An error occured while attempting to execute the query.", e);
             }
-             
+
             if (!res.Any() || !res.First().Any()) {
                 await ctx.RespondAsync("No results.")
                     .ConfigureAwait(false);
@@ -231,7 +231,7 @@ namespace TheGodfather.Modules.Owner
                     .ConfigureAwait(false);
                 return;
             }
-            
+
             emb = new DiscordEmbedBuilder {
                 Title = "Evaluation successful",
                 Color = DiscordColor.Aquamarine
@@ -292,7 +292,7 @@ namespace TheGodfather.Modules.Owner
             commands.Sort((c1, c2) => string.Compare(c1.QualifiedName, c2.QualifiedName, true));
 
             foreach (var cmd in commands) {
-                if (cmd is CommandGroup || cmd.Parent == null) 
+                if (cmd is CommandGroup || cmd.Parent == null)
                     sb.Append("## ").Append(cmd is CommandGroup ? "Group: " : "").AppendLine(cmd.QualifiedName);
                 else
                     sb.Append("### ").AppendLine(cmd.QualifiedName);
@@ -407,16 +407,19 @@ namespace TheGodfather.Modules.Owner
             if (!gids.Any())
                 throw new InvalidCommandUsageException("IDs missing.");
 
-            StringBuilder sb = new StringBuilder("Operation results:");
-            sb.AppendLine();
+            var sb = new StringBuilder("Operation results:\n\n");
             foreach (var gid in gids) {
                 try {
-                    var guild = ctx.Client.Guilds[gid];
-                    await guild.LeaveAsync()
-                        .ConfigureAwait(false);
-                    sb.AppendLine($"Left: {Formatter.Bold(guild.ToString())}, Owner: {Formatter.Bold(guild.Owner.ToString())}");
-                } catch (KeyNotFoundException) {
-                    sb.AppendLine($"I am not a member of the guild with ID: {Formatter.InlineCode(gid.ToString())}!");
+                    if (ctx.Client.Guilds.ContainsKey(gid)) {
+                        var guild = ctx.Client.Guilds[gid];
+                        await guild.LeaveAsync()
+                            .ConfigureAwait(false);
+                        sb.AppendLine($"Left: {Formatter.Bold(guild.ToString())}, Owner: {Formatter.Bold(guild.Owner.ToString())}");
+                    } else {
+                        sb.AppendLine($"I am not a member of the guild with ID: {Formatter.InlineCode(gid.ToString())}!");
+                    }
+                } catch {
+                    sb.AppendLine($"Failed to leave guild with ID: {Formatter.InlineCode(gid.ToString())}!");
                 }
             }
             await ReplyWithEmbedAsync(ctx, sb.ToString())
