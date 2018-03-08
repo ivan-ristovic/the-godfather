@@ -10,9 +10,8 @@ namespace TheGodfather.Extensions.Converters
 {
     public class CustomBoolConverter : IArgumentConverter<bool>
     {
-        public async Task<Optional<bool>> ConvertAsync(string value, CommandContext ctx)
+        public static bool? TryConvert(string value)
         {
-            await Task.Delay(0);
             bool result = false;
             bool parses = true;
             switch (value.ToLowerInvariant()) {
@@ -41,7 +40,18 @@ namespace TheGodfather.Extensions.Converters
                     break;
             }
             if (parses)
-                return new Optional<bool>(result);
+                return result;
+            else
+                return null;
+        }
+
+
+        public async Task<Optional<bool>> ConvertAsync(string value, CommandContext ctx)
+        {
+            await Task.Delay(0);
+            bool? b = TryConvert(value);
+            if (b.HasValue)
+                return new Optional<bool>(b.Value);
             else
                 return new Optional<bool>();
         }

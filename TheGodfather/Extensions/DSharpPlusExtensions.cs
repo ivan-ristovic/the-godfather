@@ -18,7 +18,12 @@ namespace TheGodfather.Extensions
         }
 
         public static Task<DiscordMessage> RespondWithFailedEmbedAsync(this CommandContext ctx, string msg)
-            => RespondWithIconEmbedAsync(ctx, msg, ":negative_squared_cross_mark:");
+        {
+            return ctx.RespondAsync(embed: new DiscordEmbedBuilder {
+                Description = $"{EmojiUtil.BoardPieceX} {msg}",
+                Color = DiscordColor.IndianRed
+            });
+        }
 
         public static async Task<bool> AskYesNoQuestionAsync(this CommandContext ctx, string question)
         {
@@ -48,6 +53,6 @@ namespace TheGodfather.Extensions
         }
 
         public static Task<DiscordMessage> SendFailedEmbedAsync(this DiscordChannel chn, string msg)
-            => SendIconEmbedAsync(chn, msg, DiscordEmoji.FromUnicode("\u274e"));
+            => SendIconEmbedAsync(chn, msg, EmojiUtil.BoardPieceX);
     }
 }

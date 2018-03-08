@@ -3,9 +3,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using DSharpPlus.CommandsNext;
+
+using TheGodfather.Extensions.Converters;
 
 using DSharpPlus;
+using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 #endregion
@@ -14,32 +16,20 @@ namespace TheGodfather.Extensions
 {
     public static class InteractivityUtil
     {
-        public static bool IsConfirmation(MessageContext mctx)
-            => IsConfirmation(mctx.Message.Content);
-
-        public static bool IsConfirmation(string message)
-        {
-            return string.Equals(message, "yes", StringComparison.OrdinalIgnoreCase)
-                || string.Equals(message, "y", StringComparison.OrdinalIgnoreCase)
-                || string.Equals(message, "yeah", StringComparison.OrdinalIgnoreCase)
-                || string.Equals(message, "1", StringComparison.OrdinalIgnoreCase)
-                || string.Equals(message, "yea", StringComparison.OrdinalIgnoreCase)
-                || string.Equals(message, "ye", StringComparison.OrdinalIgnoreCase)
-                || string.Equals(message, "yep", StringComparison.OrdinalIgnoreCase)
-                || string.Equals(message, "ya", StringComparison.OrdinalIgnoreCase)
-                || string.Equals(message, "ja", StringComparison.OrdinalIgnoreCase)
-                || string.Equals(message, "si", StringComparison.OrdinalIgnoreCase)
-                || string.Equals(message, "da", StringComparison.OrdinalIgnoreCase);
-        }
-
         public static async Task<bool> WaitForConfirmationAsync(CommandContext ctx)
         {
+            bool response = false;
             var mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(
-                m => m.ChannelId == ctx.Channel.Id && m.Author.Id == ctx.User.Id
+                m => {
+                    if (m.ChannelId != ctx.Channel.Id || m.Author.Id != ctx.User.Id)
+                        return false;
+                    bool? b = CustomBoolConverter.TryConvert(m.Content);
+                    response = b ?? false;
+                    return b.HasValue;
+                }
             ).ConfigureAwait(false);
-            if (mctx != null && IsConfirmation(mctx))
-                return true;
-            return false;
+
+            return response;
         }
 
         public static async Task<DiscordUser> WaitForGameOpponentAsync(CommandContext ctx)
