@@ -139,6 +139,20 @@
 ```
 ---
 
+## cancelvote
+*Vote for an option in the current running poll.*
+
+**Aliases:**
+`cvote, resetvote`
+
+
+**Examples:**
+
+```
+!vote 1
+```
+---
+
 ## Group: cards
 *Manipulate a deck of cards.*
 
@@ -176,7 +190,7 @@
 **Examples:**
 
 ```
-!deck draw 5
+!deck reset
 ```
 ---
 
@@ -1050,30 +1064,68 @@
 ---
 
 ## Group: game caro
-*Starts a "Caro" game. Play a move by writing a pair of numbers from 1 to 10 corresponding to the row and column where you wish to play.*
+*Starts a "Caro" game. Play a move by writing a pair of numbers from 1 to 10 corresponding to the row and column where you wish to play. You can also specify a time window in which player must submit their move.*
 
 **Aliases:**
-`c`
+`c, gomoku, gobang`
 
+
+**Arguments:**
+
+(optional) `[time span]` : *Move time (def. 30s).* (def: `None`)
 
 **Examples:**
 
 ```
 !game caro
+!game caro 10s
 ```
 ---
 
-## Group: game connect4
-*Starts a "Connect 4" game. Play a move by writing a number from 1 to 9 corresponding to the column where you wish to insert your piece.*
+### game caro rules
+*Explain the Caro game rules.*
 
 **Aliases:**
-`connectfour, chain4, chainfour, c4`
+`help, h, ruling, rule`
 
 
 **Examples:**
 
 ```
+!game caro rules
+```
+---
+
+## Group: game connect4
+*Starts a "Connect 4" game. Play a move by writing a number from 1 to 9 corresponding to the column where you wish to insert your piece. You can also specify a time window in which player must submit their move.*
+
+**Aliases:**
+`connectfour, chain4, chainfour, c4, fourinarow, fourinaline, 4row, 4line, cfour`
+
+
+**Arguments:**
+
+(optional) `[time span]` : *Move time (def. 30s).* (def: `None`)
+
+**Examples:**
+
+```
 !game connect4
+!game connect4 10s
+```
+---
+
+### game connect4 rules
+*Explain the Connect4 game rules.*
+
+**Aliases:**
+`help, h, ruling, rule`
+
+
+**Examples:**
+
+```
+!game connect4 rules
 ```
 ---
 
@@ -1166,16 +1218,35 @@
 ---
 
 ## Group: game othello
-*Starts an "Othello" game. Play a move by writing a pair of numbers from 1 to 10 corresponding to the row and column where you wish to play.*
+*Starts an "Othello" game. Play a move by writing a pair of numbers from 1 to 10 corresponding to the row and column where you wish to play. You can also specify a time window in which player must submit their move.*
 
 **Aliases:**
 `reversi, oth, rev`
 
 
+**Arguments:**
+
+(optional) `[time span]` : *Move time (def. 30s).* (def: `None`)
+
 **Examples:**
 
 ```
 !game othello
+!game othello 10s
+```
+---
+
+### game othello rules
+*Explain the Othello game rules.*
+
+**Aliases:**
+`help, h, ruling, rule`
+
+
+**Examples:**
+
+```
+!game othello rules
 ```
 ---
 
@@ -1245,16 +1316,35 @@
 ---
 
 ## Group: game tictactoe
-*Starts a "Tic-Tac-Toe" game. Play a move by writing a number from 1 to 9 corresponding to the field where you wish to play.*
+*Starts a "Tic-Tac-Toe" game. Play a move by writing a number from 1 to 9 corresponding to the field where you wish to play. You can also specify a time window in which player must submit their move.*
 
 **Aliases:**
 `ttt`
 
 
+**Arguments:**
+
+(optional) `[time span]` : *Move time (def. 30s).* (def: `None`)
+
 **Examples:**
 
 ```
 !game tictactoe
+!game tictactoe 10s
+```
+---
+
+### game tictactoe rules
+*Explain the Tic-Tac-Toe game rules.*
+
+**Aliases:**
+`help, h, ruling, rule`
+
+
+**Examples:**
+
+```
+!game tictactoe rules
 ```
 ---
 
@@ -1528,84 +1618,6 @@
 ```
 ---
 
-## Group: guild selfassignableroles
-*Commands to manipulate self-assignable roles. If invoked alone, lists all allowed self-assignable roles in this guild.*
-
-**Aliases:**
-`sar`
-
-
-**Examples:**
-
-```
-!guild selfassignableroles
-```
----
-
-### guild selfassignableroles add
-*Add a self-assignable role (or roles) for this guild.*
-
-**Requires user permissions:**
-`Administrator`
-
-**Requires bot permissions:**
-`Manage roles`
-
-**Aliases:**
-`a, +`
-
-
-**Arguments:**
-
-`[role...]` : *Roles to add.*
-
-**Examples:**
-
-```
-!guild sar add @Notifications
-!guild sar add @Notifications @Role1 @Role2
-```
----
-
-### guild selfassignableroles delete
-*Remove self-assignable role (or roles).*
-
-**Requires user permissions:**
-`Administrator`
-
-**Requires bot permissions:**
-`Manage roles`
-
-**Aliases:**
-`remove, del, -, d`
-
-
-**Arguments:**
-
-`[role...]` : *Roles to delete.*
-
-**Examples:**
-
-```
-!guild sar delete @Notifications
-!guild sar delete @Notifications @Role1 @Role2
-```
----
-
-### guild selfassignableroles list
-*View all self-assignable roles in the current guild.*
-
-**Aliases:**
-`print, show, l, p`
-
-
-**Examples:**
-
-```
-!guild sar list
-```
----
-
 ### guild seticon
 *Change icon of the guild.*
 
@@ -1838,7 +1850,7 @@
 ---
 
 ### insult delete
-*Remove insult with a given index from list. (use ``!insults list`` to view insult indexes).*
+*Remove insult with a given index from list. (use command ``insults list`` to view insult indexes).*
 
 **Owner-only.**
 
@@ -2015,7 +2027,7 @@
 `Administrator`
 
 **Aliases:**
-`da, c, ca, cl, clearall`
+`da, ca, cl, clearall`
 
 
 **Examples:**
@@ -2085,8 +2097,8 @@
 ```
 ---
 
-## Group: meme templates
-*Manipulate meme templates. If invoked without subcommand, lists all templates.*
+### meme templates
+*Lists all available meme templates.*
 
 **Aliases:**
 `template, t`
@@ -2096,80 +2108,6 @@
 
 ```
 !meme templates
-```
----
-
-### meme templates add
-*Add a new meme template.*
-
-**Owner-only.**
-
-**Aliases:**
-`+, new, a`
-
-
-**Arguments:**
-
-`[string]` : *Template name.*
-
-`[string]` : *URL.*
-
-**Examples:**
-
-```
-!meme template add evilracoon https://imgflip.com/s/meme/Evil-Plotting-Raccoon.jpg
-```
----
-
-### meme templates delete
-*Add a new meme template.*
-
-**Owner-only.**
-
-**Aliases:**
-`-, remove, del, rm, d, rem`
-
-
-**Arguments:**
-
-`[string]` : *Template name.*
-
-**Examples:**
-
-```
-!meme template delete evilracoon
-```
----
-
-### meme templates list
-*List all registered memes.*
-
-**Aliases:**
-`ls, l`
-
-
-**Examples:**
-
-```
-!meme template list
-```
----
-
-### meme templates preview
-*Preview a meme template.*
-
-**Aliases:**
-`p, pr, view`
-
-
-**Arguments:**
-
-`[string]` : *Template name.*
-
-**Examples:**
-
-```
-!meme template preview evilracoon
 ```
 ---
 
@@ -2513,6 +2451,27 @@
 ```
 ---
 
+### owner filelog
+*Toggle writing to log file.*
+
+**Owner-only.**
+
+**Aliases:**
+`setfl, fl, setfilelog`
+
+
+**Arguments:**
+
+(optional) `[boolean]` : *True/False* (def: `True`)
+
+**Examples:**
+
+```
+!owner filelog yes
+!owner filelog false
+```
+---
+
 ### owner generatecommandlist
 *Generates a markdown command-list. You can also provide a file path for the output.*
 
@@ -2605,7 +2564,7 @@
 
 **Arguments:**
 
-`[string]` : *Activity type.*
+`[ActivityType]` : *Activity type (Playing/Watching/Streaming/ListeningTo).*
 
 `[string...]` : *Status.*
 
@@ -2646,6 +2605,50 @@
 
 ```
 !owner status list
+```
+---
+
+### owner statuses set
+*Set status to given string or status with given index in database. This sets rotation to false.*
+
+**Aliases:**
+`s`
+
+
+**Overload 1:**
+
+`[ActivityType]` : *Activity type (Playing/Watching/Streaming/ListeningTo).*
+
+`[string...]` : *Status.*
+
+**Overload 0:**
+
+`[int]` : *Status ID.*
+
+**Examples:**
+
+```
+!owner status set Playing with fire
+!owner status set 5
+```
+---
+
+### owner statuses setrotation
+*Set automatic rotation of bot statuses.*
+
+**Aliases:**
+`sr, setr`
+
+
+**Arguments:**
+
+(optional) `[boolean]` : *True/False* (def: `True`)
+
+**Examples:**
+
+```
+!owner status setrotation
+!owner status setrotation false
 ```
 ---
 
@@ -2702,6 +2705,27 @@
 
 ```
 !penis @Someone
+```
+---
+
+## peniscompare
+*Comparison of the results given by ``penis`` command.*
+
+**Aliases:**
+`sizecompare, comparesize, comparepenis, cmppenis, peniscmp`
+
+
+**Arguments:**
+
+`[user]` : *User1.*
+
+(optional) `[user]` : *User2 (def. sender).* (def: `None`)
+
+**Examples:**
+
+```
+!peniscompare @Someone
+!peniscompare @Someone @SomeoneElse
 ```
 ---
 
@@ -2981,7 +3005,7 @@
 ---
 
 ### reddit unsubscribe
-*Remove a subreddit feed using subreddit name or subscription ID (use ``!feed list`` to see IDs).*
+*Remove a subreddit feed using subreddit name or subscription ID (use command ``feed list`` to see IDs).*
 
 **Requires permissions:**
 `Manage guild`
@@ -3340,9 +3364,13 @@
 `del, d, rm, -, unsub`
 
 
-**Arguments:**
+**Overload 1:**
 
 `[int]` : *ID of the subscription.*
+
+**Overload 0:**
+
+`[string]` : *Name of the subscription.*
 
 **Examples:**
 
@@ -3377,6 +3405,95 @@
 
 ```
 !say I am gay.
+```
+---
+
+## Group: selfassignableroles
+*Commands to manipulate self-assignable roles. If invoked alone, lists all allowed self-assignable roles in this guild.*
+
+**Aliases:**
+`sar`
+
+
+**Examples:**
+
+```
+!sar
+```
+---
+
+### selfassignableroles add
+*Add a self-assignable role (or roles) for this guild.*
+
+**Requires user permissions:**
+`Administrator`
+
+**Aliases:**
+`a, +`
+
+
+**Arguments:**
+
+`[role...]` : *Roles to add.*
+
+**Examples:**
+
+```
+!sar add @Notifications
+!sar add @Notifications @Role1 @Role2
+```
+---
+
+### selfassignableroles clear
+*Delete all self-assignable roles for the current guild.*
+
+**Requires user permissions:**
+`Administrator`
+
+**Aliases:**
+`da, c, ca, cl, clearall`
+
+
+**Examples:**
+
+```
+!sar clear
+```
+---
+
+### selfassignableroles delete
+*Remove self-assignable role (or roles).*
+
+**Requires user permissions:**
+`Administrator`
+
+**Aliases:**
+`remove, del, -, d`
+
+
+**Arguments:**
+
+`[role...]` : *Roles to delete.*
+
+**Examples:**
+
+```
+!sar delete @Notifications
+!sar delete @Notifications @Role1 @Role2
+```
+---
+
+### selfassignableroles list
+*View all self-assignable roles in the current guild.*
+
+**Aliases:**
+`print, show, l, p`
+
+
+**Examples:**
+
+```
+!sar list
 ```
 ---
 
@@ -4130,7 +4247,25 @@
 **Examples:**
 
 ```
-!poll Do you vote for User1 or User2?
+!vote 1
+```
+---
+
+## weather
+*Return weather information for given query.*
+
+**Aliases:**
+`w`
+
+
+**Arguments:**
+
+`[string...]` : *Query.*
+
+**Examples:**
+
+```
+!weather london
 ```
 ---
 
