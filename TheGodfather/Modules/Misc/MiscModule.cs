@@ -167,6 +167,21 @@ namespace TheGodfather.Modules.Misc
         }
         #endregion
 
+        #region COMMAND_NEWS
+        [Command("news")]
+        [Description("Get newest world news.")]
+        [Aliases("worldnews")]
+        [UsageExample("!news")]
+        public async Task NewsRssAsync(CommandContext ctx)
+        {
+            var res = RSSService.GetFeedResults("https://news.google.com/news/rss/headlines/section/topic/WORLD?ned=us&hl=en");
+            if (res == null)
+                throw new CommandFailedException("Error getting world news.");
+            await RSSService.SendFeedResultsAsync(ctx.Channel, res)
+                .ConfigureAwait(false);
+        }
+        #endregion
+
         #region COMMAND_PENIS
         [Command("penis")]
         [Description("An accurate measurement.")]

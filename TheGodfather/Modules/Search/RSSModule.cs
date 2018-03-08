@@ -71,22 +71,7 @@ namespace TheGodfather.Modules.Search
         }
         #endregion
 
-        #region COMMAND_RSS_NEWS
-        [Command("news")]
-        [Description("Get newest world news.")]
-        [Aliases("worldnews")]
-        [UsageExample("!rss news")]
-        public async Task NewsRssAsync(CommandContext ctx)
-        {
-            var res = RSSService.GetFeedResults("https://news.google.com/news/rss/headlines/section/topic/WORLD?ned=us&hl=en");
-            if (res == null)
-                throw new CommandFailedException("Error getting world news.");
-            await RSSService.SendFeedResultsAsync(ctx.Channel, res)
-                .ConfigureAwait(false);
-        }
-        #endregion
-
-        #region COMMAND_SUBSCRIBE
+        #region COMMAND_RSS_SUBSCRIBE
         [Command("subscribe")]
         [Description("Subscribe to given RSS feed URL. The bot will send a message when the latest topic is changed.")]
         [Aliases("sub", "add", "+")]

@@ -368,7 +368,7 @@
     <Compile Include="Services\DatabaseService\DBService.Stats.cs" />
     <Compile Include="Services\DatabaseService\DBService.Statuses.cs" />
     <Compile Include="Services\DatabaseService\DBService.SWAT.cs" />
-    <Compile Include="Services\FeedService.cs" />
+    <Compile Include="Services\RSSService.cs" />
     <Compile Include="Services\Common\Subscription.cs" />
     <Compile Include="Services\GiphyService.cs" />
     <Compile Include="Services\ImgurService.cs" />

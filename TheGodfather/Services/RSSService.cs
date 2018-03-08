@@ -17,8 +17,8 @@ namespace TheGodfather.Services
 {
     public static class RSSService
     {
-        private static Regex SuredditbPrefixRegex = new Regex("^/?r/", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
-        private static Regex UrlRegex = new Regex("<span> *<a +href *= *\"([^\"]+)\"> *\\[link\\] *</a> *</span>", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
+        private static Regex _subPrefixRegex = new Regex("^/?r?/", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
+        private static Regex _urlRegex = new Regex("<span> *<a +href *= *\"([^\"]+)\"> *\\[link\\] *</a> *</span>", RegexOptions.Compiled | RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
 
 
         public static bool IsValidRSSFeedURL(string url)
@@ -33,7 +33,7 @@ namespace TheGodfather.Services
 
         public static string GetFeedURLForSubreddit(string sub, out string rsub)
         {
-            sub = SuredditbPrefixRegex.Replace(sub, "");
+            sub = _subPrefixRegex.Replace(sub, "");
             rsub = "/r/" + sub.ToLowerInvariant();
 
             string url = $"https://www.reddit.com{rsub}/new/.rss";
@@ -50,8 +50,7 @@ namespace TheGodfather.Services
                     var feed = SyndicationFeed.Load(reader);
                     return feed.Items.Take(amount);
                 }
-            } catch (Exception e) {
-                Logger.LogException(LogLevel.Warning, e);
+            } catch {
                 return null;
             }
         }
@@ -93,7 +92,7 @@ namespace TheGodfather.Services
 
                             // FIXME reddit hack
                             if (newest.Content is TextSyndicationContent content) {
-                                var matches = UrlRegex.Match(content.Text);
+                                var matches = _urlRegex.Match(content.Text);
                                 if (matches.Success)
                                     em.WithImageUrl(matches.Groups[1].Value);
                             }
