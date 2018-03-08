@@ -48,12 +48,12 @@ namespace TheGodfather.Extensions
                 xm => {
                     if (xm.Author.Id == ctx.User.Id || xm.Channel.Id != ctx.Channel.Id)
                         return false;
-                    var word = xm.Content.ToLowerInvariant().Split(' ')[0];
-                    return word == "me" || word == "i";
+                    var split = xm.Content.ToLowerInvariant().Split(' ');
+                    return split.Length == 1 && (split[0] == "me" || split[0] == "i");
                 }
             ).ConfigureAwait(false);
 
-            return mctx != null ? mctx.User : null;
+            return mctx?.User;
         }
 
         public static async Task SendPaginatedCollectionAsync<T>(CommandContext ctx,

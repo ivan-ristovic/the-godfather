@@ -75,6 +75,7 @@ namespace TheGodfather.Services
 
         public async Task<string> TryDownloadYoutubeAudioAsync(string url)
         {
+            /* TESTING */
             if (!YoutubeClient.TryParseVideoId(url, out string id))
                 return null;
 
@@ -133,20 +134,19 @@ namespace TheGodfather.Services
             foreach (var res in results.Take(10)) {
                 var emb = new DiscordEmbedBuilder() {
                     Title = res.Snippet.Title,
-                    Description = res.Snippet.Description,
+                    Description = Formatter.Italic(res.Snippet.Description),
                     Color = DiscordColor.Red,
-                    ThumbnailUrl = res.Snippet.Thumbnails.Default__.Url,
-                    Timestamp = res.Snippet.PublishedAt ?? DateTime.Now
+                    ThumbnailUrl = res.Snippet.Thumbnails.Default__.Url
                 };
+                emb.AddField("Channel", res.Snippet.ChannelTitle, inline: true);
+                emb.AddField("Published at", $"{res.Snippet.PublishedAt ?? DateTime.Now}", inline: true);
                 switch (res.Id.Kind) {
                     case "youtube#video":
                         emb.WithUrl("https://www.youtube.com/watch?v=" + res.Id.VideoId);
                         break;
-
                     case "youtube#channel":
                         emb.WithDescription("https://www.youtube.com/channel/" + res.Id.ChannelId);
                         break;
-
                     case "youtube#playlist":
                         emb.WithDescription("https://www.youtube.com/playlist?list=" + res.Id.PlaylistId);
                         break;
