@@ -36,7 +36,7 @@ namespace TheGodfather.Modules.Reactions
         [GroupCommand]
         [RequirePermissions(Permissions.ManageGuild)]
         public async Task ExecuteGroupAsync(CommandContext ctx,
-                                           [Description("Emoji to send.")] DiscordEmoji emoji = null,
+                                           [Description("Emoji to send.")] DiscordEmoji emoji,
                                            [RemainingText, Description("Trigger word list.")] params string[] triggers)
             => await AddAsync(ctx, emoji, triggers).ConfigureAwait(false);
 

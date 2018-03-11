@@ -56,11 +56,20 @@ namespace TheGodfather.Services.Tests
                 RSSService.GetFeedURLForSubreddit("/AwW", out s)
             );
             Assert.AreEqual(s, "/r/aww");
+
             Assert.AreEqual(
                 "https://www.reddit.com/r/globaloffensive/new/.rss",
                 RSSService.GetFeedURLForSubreddit("GlobalOffensive", out s)
             );
             Assert.AreEqual(s, "/r/globaloffensive");
+
+            Assert.IsNull(RSSService.GetFeedURLForSubreddit("Global Offensive", out s));
+            Assert.IsNull(RSSService.GetFeedURLForSubreddit("Global.Offensive", out s));
+            //Assert.IsNull(RSSService.GetFeedURLForSubreddit("Global-Offensive", out s));
+            //Assert.IsNull(RSSService.GetFeedURLForSubreddit("Global*Offensive", out s));
+            //Assert.IsNull(RSSService.GetFeedURLForSubreddit("Global1Offensive", out s));
+            //Assert.IsNull(RSSService.GetFeedURLForSubreddit("Global+Offensive", out s));
+            //Assert.IsNull(RSSService.GetFeedURLForSubreddit("Global?Offensive", out s));
         }
 
         [TestMethod()]
