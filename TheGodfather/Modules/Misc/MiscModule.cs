@@ -188,8 +188,11 @@ namespace TheGodfather.Modules.Misc
         [Aliases("size", "length", "manhood", "dick")]
         [UsageExample("!penis @Someone")]
         public async Task PenisAsync(CommandContext ctx,
-                                    [Description("Who to measure.")] DiscordUser user)
+                                    [Description("Who to measure.")] DiscordUser user = null)
         {
+            if (user == null)
+                user = ctx.User;
+
             if (user.Id == ctx.Client.CurrentUser.Id) {
                 await ctx.RespondWithIconEmbedAsync($"{user.Mention}'s size:\n\n{Formatter.Bold("8===============================================")}\n{Formatter.Italic("(Please plug in a second monitor for the entire display)")}", ":straight_ruler:")
                     .ConfigureAwait(false);

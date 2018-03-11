@@ -38,7 +38,7 @@ namespace TheGodfather.Modules.Search
                 throw new InvalidCommandUsageException("URL missing.");
 
             if (!RSSService.IsValidRSSFeedURL(url))
-                throw new InvalidCommandUsageException("Given URL isn't a valid RSS feed URL.");
+                throw new InvalidCommandUsageException("No results found for given URL (maybe forbidden?).");
 
             var res = RSSService.GetFeedResults(url);
             if (res == null)
