@@ -139,7 +139,7 @@ namespace TheGodfather
             Console.WriteLine("\rBooting complete!                       ");
             Console.Write("Starting periodic actions...");
             DatabaseSyncTimer = new Timer(DatabaseSyncTimerCallback, Shards[0].Client, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(3));
-            BotStatusTimer = new Timer(BotStatusTimerCallback, Shards[0].Client, TimeSpan.FromSeconds(10), TimeSpan.FromMinutes(10));
+            BotStatusTimer = new Timer(BotActivityTimerCallback, Shards[0].Client, TimeSpan.FromSeconds(10), TimeSpan.FromMinutes(10));
             FeedCheckTimer = new Timer(FeedCheckTimerCallback, Shards[0].Client, TimeSpan.FromSeconds(30), TimeSpan.FromMinutes(1));
 
             Console.WriteLine(" Done!");
@@ -150,14 +150,14 @@ namespace TheGodfather
             await Task.Delay(-1);
         }
 
-        private static void BotStatusTimerCallback(object _)
+        private static void BotActivityTimerCallback(object _)
         {
             if (!SharedData.StatusRotationEnabled)
                 return;
 
             var client = _ as DiscordClient;
             try {
-                DatabaseService.UpdateBotStatusAsync(client).ConfigureAwait(false).GetAwaiter().GetResult();
+                DatabaseService.UpdateBotActivityAsync(client).ConfigureAwait(false).GetAwaiter().GetResult();
             } catch (Exception e) {
                 Logger.LogException(LogLevel.Error, e);
             }

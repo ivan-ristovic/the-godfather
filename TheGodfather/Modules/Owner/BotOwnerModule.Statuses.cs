@@ -30,7 +30,7 @@ namespace TheGodfather.Modules.Owner
     {
         [Group("statuses")]
         [Description("Bot status manipulation.")]
-        [Aliases("status", "botstatus")]
+        [Aliases("status", "botstatus", "activity", "activities")]
         [ListeningCheck]
         public class StatusModule : TheGodfatherBaseModule
         {

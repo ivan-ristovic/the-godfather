@@ -70,7 +70,7 @@ namespace TheGodfather.Services
             return new ReadOnlyDictionary<int, string>(dict);
         }
 
-        public async Task UpdateBotStatusAsync(DiscordClient client)
+        public async Task UpdateBotActivityAsync(DiscordClient client)
         {
             int type = 0;
             string status = null;
