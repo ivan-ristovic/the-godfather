@@ -40,12 +40,14 @@ namespace TheGodfather.Modules.Owner
 
 
             #region COMMAND_BLOCKEDUSERS_ADD
-            [Command("add")]
+            [Command("add"), Priority(2)]
             [Description("Add users to blocked users list.")]
             [Aliases("+", "a")]
             [UsageExample("!owner blockedusers add @Someone")]
+            [UsageExample("!owner blockedusers add @Someone Troublemaker and spammer")]
             [UsageExample("!owner blockedusers add 123123123123123")]
             [UsageExample("!owner blockedusers add @Someone 123123123123123")]
+            [UsageExample("!owner blockedusers add \"This is some reason\" @Someone 123123123123123")]
             public async Task AddAsync(CommandContext ctx,
                                       [Description("Users to block.")] params DiscordUser[] users)
             {
@@ -59,7 +61,7 @@ namespace TheGodfather.Modules.Owner
                         continue;
                     }
 
-                    if (!Shared.BlockedUsers.Add(user.Id)) { 
+                    if (!Shared.BlockedUsers.Add(user.Id)) {
                         sb.AppendLine($"Error: Failed to add {user.ToString()} to blocked users list!");
                         continue;
                     }
@@ -78,13 +80,81 @@ namespace TheGodfather.Modules.Owner
                 await ctx.RespondWithIconEmbedAsync(sb.ToString())
                     .ConfigureAwait(false);
             }
+
+            [Command("add"), Priority(1)]
+            public async Task AddAsync(CommandContext ctx,
+                                      [Description("Reason (max 60 chars).")] string reason,
+                                      [Description("Users to block.")] params DiscordUser[] users)
+            {
+                if (reason.Length >= 60)
+                    throw new InvalidCommandUsageException("Reason cannot exceed 60 characters");
+
+                if (!users.Any())
+                    throw new InvalidCommandUsageException("Missing users to block.");
+
+                var sb = new StringBuilder("Action results:\n\n");
+                foreach (var user in users) {
+                    if (Shared.BlockedUsers.Contains(user.Id)) {
+                        sb.AppendLine($"Error: {user.ToString()} is already blocked!");
+                        continue;
+                    }
+
+                    if (!Shared.BlockedUsers.Add(user.Id)) {
+                        sb.AppendLine($"Error: Failed to add {user.ToString()} to blocked users list!");
+                        continue;
+                    }
+
+                    try {
+                        await Database.AddBlockedUserAsync(user.Id, reason)
+                            .ConfigureAwait(false);
+                    } catch {
+                        sb.AppendLine($"Warning: Failed to add blocked {user.ToString()} to the database!");
+                        continue;
+                    }
+
+                    sb.AppendLine($"Blocked: {user.ToString()}!");
+                }
+
+                await ctx.RespondWithIconEmbedAsync(sb.ToString())
+                    .ConfigureAwait(false);
+            }
+
+            [Command("add"), Priority(0)]
+            public async Task AddAsync(CommandContext ctx,
+                                      [Description("Users to block.")] DiscordUser user,
+                                      [RemainingText, Description("Reason (max 60 chars).")] string reason)
+            {
+                if (string.IsNullOrWhiteSpace(reason))
+                    throw new InvalidCommandUsageException("Reason missing.");
+
+                if (reason.Length >= 60)
+                    throw new InvalidCommandUsageException("Reason cannot exceed 60 characters");
+
+                if (Shared.BlockedUsers.Contains(user.Id))
+                    throw new CommandFailedException($"Error: {user.ToString()} is already blocked!");
+
+                if (!Shared.BlockedUsers.Add(user.Id))
+                    throw new CommandFailedException($"Error: Failed to add {user.ToString()} to blocked users list!");
+
+                try {
+                    await Database.AddBlockedUserAsync(user.Id, reason)
+                        .ConfigureAwait(false);
+                } catch (Exception e) {
+                    throw new CommandFailedException($"Warning: Failed to add blocked {user.ToString()} to the database!", e);
+                }
+
+                await ctx.RespondWithIconEmbedAsync($"Blocked: {user.ToString()}!")
+                    .ConfigureAwait(false);
+            }
             #endregion
 
             #region COMMAND_BLOCKEDUSERS_DELETE
             [Command("delete")]
             [Description("Remove users from blocked users list..")]
             [Aliases("-", "remove", "rm", "del")]
-            [UsageExample("!owner blockedusers delete 1")]
+            [UsageExample("!owner blockedusers remove @Someone")]
+            [UsageExample("!owner blockedusers remove 123123123123123")]
+            [UsageExample("!owner blockedusers remove @Someone 123123123123123")]
             public async Task DeleteAsync(CommandContext ctx,
                                          [Description("Users to unblock.")] params DiscordUser[] users)
             {
@@ -126,26 +196,27 @@ namespace TheGodfather.Modules.Owner
             [UsageExample("!owner blockedusers list")]
             public async Task ListAsync(CommandContext ctx)
             {
-                var uids = await Database.GetBlockedUsersAsync()
+                var blocked = await Database.GetBlockedUsersAsync()
                     .ConfigureAwait(false);
 
-                HashSet<DiscordUser> blocked = new HashSet<DiscordUser>();
-                foreach (var uid in uids) {
+                List<string> lines = new List<string>();
+                foreach (var tup in blocked) {
                     try {
-                        var user = await ctx.Client.GetUserAsync(uid)
+                        var user = await ctx.Client.GetUserAsync(tup.Item1)
                             .ConfigureAwait(false);
+                        lines.Add($"{user.ToString()} ({Formatter.Italic(tup.Item2)})");
                     } catch (NotFoundException) {
-                        await ctx.RespondWithFailedEmbedAsync($"User with ID {uid} does not exist!")
+                        await ctx.RespondWithFailedEmbedAsync($"User with ID {tup} does not exist!")
                             .ConfigureAwait(false);
                     }
                 }
 
                 await ctx.SendPaginatedCollectionAsync(
                     "Blocked users:",
-                    blocked,
-                    u => u.ToString(),
+                    lines,
+                    line => line,
                     DiscordColor.Azure,
-                    10
+                    5
                 ).ConfigureAwait(false);
             }
             #endregion

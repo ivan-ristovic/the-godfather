@@ -11,9 +11,9 @@ namespace TheGodfather.Services
 {
     public partial class DBService
     {
-        public async Task<IReadOnlyList<ulong>> GetBlockedUsersAsync()
+        public async Task<IReadOnlyList<(ulong, string)>> GetBlockedUsersAsync()
         {
-            var blocked = new List<ulong>();
+            var blocked = new List<(ulong, string)>();
 
             await _sem.WaitAsync();
             try {
@@ -25,7 +25,7 @@ namespace TheGodfather.Services
 
                     using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
                         while (await reader.ReadAsync().ConfigureAwait(false))
-                            blocked.Add((ulong)(long)reader["uid"]);
+                            blocked.Add(((ulong)(long)reader["uid"], (string)reader["reason"]));
                     }
                 }
             } finally {
