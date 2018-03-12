@@ -35,14 +35,46 @@ namespace TheGodfather.Services
             return blocked.AsReadOnly();
         }
 
-        public async Task AddBlockedUserAsync(ulong uid)
+        public async Task AddBlockedUserAsync(ulong uid, string reason = null)
         {
+            await _sem.WaitAsync();
+            try {
+                using (var con = new NpgsqlConnection(_connectionString))
+                using (var cmd = con.CreateCommand()) {
+                    await con.OpenAsync().ConfigureAwait(false);
 
+                    if (string.IsNullOrWhiteSpace(reason)) {
+                        cmd.CommandText = "INSERT INTO gf.blocked_users VALUES (@uid, NULL);";
+                        cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, uid);
+                    } else {
+                        cmd.CommandText = "INSERT INTO gf.blocked_users VALUES (@uid, @reason);";
+                        cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, uid);
+                        cmd.Parameters.AddWithValue("reason", NpgsqlDbType.Varchar, reason);
+                    }
+
+                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                }
+            } finally {
+                _sem.Release();
+            }
         }
 
         public async Task RemoveBlockedUserAsync(ulong uid)
         {
+            await _sem.WaitAsync();
+            try {
+                using (var con = new NpgsqlConnection(_connectionString))
+                using (var cmd = con.CreateCommand()) {
+                    await con.OpenAsync().ConfigureAwait(false);
 
+                    cmd.CommandText = "DELETE FROM gf.blocked_users WHERE uid = @uid;";
+                    cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, uid);
+
+                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                }
+            } finally {
+                _sem.Release();
+            }
         }
 
         public async Task<IReadOnlyList<ulong>> GetBlockedChannelsAsync()
