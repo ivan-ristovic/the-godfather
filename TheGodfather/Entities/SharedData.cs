@@ -54,6 +54,7 @@ namespace TheGodfather
             #endregion
         }.AsReadOnly();
         public bool StatusRotationEnabled { get; set; } = true;
+        public ConcurrentHashSet<ulong> BlockedUsers { get; set; } = new ConcurrentHashSet<ulong>();
 
 
         public bool MessageContainsFilter(ulong gid, string message)
