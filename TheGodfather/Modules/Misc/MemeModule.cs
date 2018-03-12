@@ -151,8 +151,7 @@ namespace TheGodfather.Modules.Misc
             var memes = await Database.GetAllGuildMemesAsync(ctx.Guild.Id)
                 .ConfigureAwait(false); ;
 
-            await InteractivityUtil.SendPaginatedCollectionAsync(
-                ctx,
+            await ctx.SendPaginatedCollectionAsync(
                 "Memes registered in this guild",
                 memes.OrderBy(kvp => kvp.Key),
                 kvp => $"{Formatter.Bold(kvp.Key)} ({kvp.Value})",
@@ -173,8 +172,7 @@ namespace TheGodfather.Modules.Misc
             if (templates == null)
                 throw new CommandFailedException("Failed to retrieve meme templates.");
 
-            await InteractivityUtil.SendPaginatedCollectionAsync(
-                ctx,
+            await ctx.SendPaginatedCollectionAsync(
                 "Meme templates",
                 templates,
                 s => s,

@@ -84,7 +84,7 @@ namespace TheGodfather.Modules.Games
             if (Game.RunningInChannel(ctx.Channel.Id))
                 throw new CommandFailedException("Another game is already running in the current channel!");
 
-            var dm = await InteractivityUtil.CreateDmChannelAsync(ctx.Client, ctx.User.Id)
+            var dm = await ctx.Client.CreateDmChannelAsync(ctx.User.Id)
                 .ConfigureAwait(false);
             if (dm == null)
                 throw new CommandFailedException("Please enable direct messages, so I can ask you about the word to guess.");

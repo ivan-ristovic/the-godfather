@@ -176,8 +176,7 @@ namespace TheGodfather.Modules.Administration
             if (!Shared.GuildFilters.ContainsKey(ctx.Guild.Id) || !Shared.GuildFilters[ctx.Guild.Id].Any())
                 throw new CommandFailedException("No filters registered for this guild.");
 
-            await InteractivityUtil.SendPaginatedCollectionAsync(
-                ctx,
+            await ctx.SendPaginatedCollectionAsync(
                 "Filters in this guild",
                 Shared.GuildFilters[ctx.Guild.Id],
                 r => r.ToString().Replace(@"\b", ""),

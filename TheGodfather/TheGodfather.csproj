@@ -261,6 +261,8 @@
   <ItemGroup>
     <Compile Include="Attributes\UsageExampleAttribute.cs" />
     <Compile Include="Extensions\DSharpPlusExtensions.cs" />
+    <Compile Include="Modules\Owner\BotOwnerModule.BlockedUsers.cs" />
+    <Compile Include="Modules\Owner\BotOwnerModule.BlockedChannels.cs" />
     <Compile Include="Services\Common\UrbanDictData.cs" />
     <Compile Include="Services\Common\WeatherData.cs" />
     <Compile Include="Extensions\Converters\CustomBoolConverter.cs" />
@@ -268,7 +270,6 @@
     <Compile Include="Extensions\Converters\CustomTimeWindowConverter.cs" />
     <Compile Include="Extensions\EmojiUtil.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
-    <Compile Include="Extensions\InteractivityUtil.cs" />
     <Compile Include="Entities\Logger.cs" />
     <Compile Include="Modules\Administration\EmojiModule.cs" />
     <Compile Include="Modules\Administration\GuildModule.NotificationChannels.cs" />
@@ -307,6 +308,7 @@
     <Compile Include="Modules\Search\WeatherModule.cs" />
     <Compile Include="Modules\SWAT\SwatModule.Servers.cs" />
     <Compile Include="Services\Common\YouTubeResponse.cs" />
+    <Compile Include="Services\DatabaseService\DBService.Blocked.cs" />
     <Compile Include="Services\IGodfatherService.cs" />
     <Compile Include="Modules\TheGodfatherBaseModule.cs" />
     <Compile Include="Modules\Search\JokesModule.cs" />

@@ -107,8 +107,7 @@ namespace TheGodfather.Modules.Administration
                     roles.Add(role);
             }
 
-            await InteractivityUtil.SendPaginatedCollectionAsync(
-                ctx,
+            await ctx.SendPaginatedCollectionAsync(
                 "Self-Assignable roles for this guild:",
                 roles,
                 r => r.Name,

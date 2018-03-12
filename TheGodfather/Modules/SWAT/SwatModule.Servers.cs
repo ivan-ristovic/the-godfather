@@ -83,8 +83,7 @@ namespace TheGodfather.Modules.SWAT
                 var servers = await Database.GetAllSwatServersAsync()
                     .ConfigureAwait(false);
 
-                await InteractivityUtil.SendPaginatedCollectionAsync(
-                    ctx,
+                await ctx.SendPaginatedCollectionAsync(
                     "Available servers",
                     servers,
                     server => $"{Formatter.Bold(server.Name)} : {server.IP}:{server.JoinPort}",

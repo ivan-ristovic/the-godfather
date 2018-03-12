@@ -207,8 +207,7 @@ namespace TheGodfather.Modules.Reactions
             if (!Shared.GuildEmojiReactions.ContainsKey(ctx.Guild.Id) || !Shared.GuildEmojiReactions[ctx.Guild.Id].Any())
                 throw new CommandFailedException("No emoji reactions registered for this guild.");
 
-            await InteractivityUtil.SendPaginatedCollectionAsync(
-                ctx,
+            await ctx.SendPaginatedCollectionAsync(
                 "Emoji reactions for this guild",
                 Shared.GuildEmojiReactions[ctx.Guild.Id].Where(kvp => kvp.Value.Any()).OrderBy(kvp => kvp.Key),
                 kvp => $"{DiscordEmoji.FromName(ctx.Client, kvp.Key)} => {string.Join(", ", kvp.Value.Select(r => r.ToString().Replace(@"\b", "")))}",

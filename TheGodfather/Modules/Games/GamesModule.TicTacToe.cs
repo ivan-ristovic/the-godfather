@@ -37,7 +37,7 @@ namespace TheGodfather.Modules.Games
 
                 await ctx.RespondWithIconEmbedAsync($"Who wants to play Tic-Tac-Toe with {ctx.User.Username}?", ":question:")
                     .ConfigureAwait(false);
-                var opponent = await InteractivityUtil.WaitForGameOpponentAsync(ctx)
+                var opponent = await ctx.WaitForGameOpponentAsync()
                     .ConfigureAwait(false);
                 if (opponent == null)
                     return;

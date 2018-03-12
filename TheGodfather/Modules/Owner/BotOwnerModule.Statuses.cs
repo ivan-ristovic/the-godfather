@@ -86,8 +86,7 @@ namespace TheGodfather.Modules.Owner
                 var statuses = await Database.GetBotStatusesAsync(ctx.Client)
                     .ConfigureAwait(false);
 
-                await InteractivityUtil.SendPaginatedCollectionAsync(
-                    ctx,
+                await ctx.SendPaginatedCollectionAsync(
                     "Statuses:",
                     statuses,
                     kvp => $"{Formatter.Bold(kvp.Key.ToString())}: {kvp.Value}",

@@ -80,6 +80,16 @@ namespace TheGodfather
 
             Console.Write("\r[3/5] Loading data from database...   ");
 
+            var blockedusr_db = await DatabaseService.GetBlockedUsersAsync();
+            var blockedusr = new ConcurrentHashSet<ulong>();
+            foreach (var tup in blockedusr_db)
+                blockedusr.Add(tup.Item1);
+
+            var blockedchn_db = await DatabaseService.GetBlockedChannelsAsync();
+            var blockedchn = new ConcurrentHashSet<ulong>();
+            foreach (var tup in blockedchn_db)
+                blockedchn.Add(tup.Item1);
+
             var gprefixes_db = await DatabaseService.GetGuildPrefixesAsync();
             var gprefixes = new ConcurrentDictionary<ulong, string>();
             foreach (var gprefix in gprefixes_db)
@@ -105,12 +115,15 @@ namespace TheGodfather
                 foreach (var reaction in greactionlist.Value)
                     gemojireactions[greactionlist.Key].TryAdd(reaction.Key, new ConcurrentHashSet<Regex>(reaction.Value));
             }
+
             var msgcount_db = await DatabaseService.GetMessageCountForAllUsersAsync();
             var msgcount = new ConcurrentDictionary<ulong, ulong>();
             foreach (var entry in msgcount_db)
                 msgcount.TryAdd(entry.Key, entry.Value);
 
             SharedData = new SharedData() {
+                BlockedChannels = blockedchn,
+                BlockedUsers = blockedusr,
                 BotConfiguration = cfg,
                 GuildPrefixes = gprefixes,
                 GuildFilters = gfilters,
