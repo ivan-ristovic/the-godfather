@@ -30,13 +30,18 @@ namespace TheGodfather.Modules.Owner
     public partial class BotOwnerModule
     {
         [Group("blockedusers")]
-        [Description("Manipulate blocked users. Bot ignores blocked users.")]
+        [Description("Manipulate blocked users. Bot will not allow blocked users to invoke commands and will not react (either with text or emoji) to their messages.")]
         [Aliases("bu", "blockedu", "blockuser", "busers", "buser", "busr")]
         [ListeningCheck]
         public class BlockedUsersModule : TheGodfatherBaseModule
         {
 
             public BlockedUsersModule(SharedData shared, DBService db) : base(shared, db) { }
+
+
+            [GroupCommand]
+            public async Task ExecuteGroupAsync(CommandContext ctx)
+                => await ListAsync(ctx).ConfigureAwait(false);
 
 
             #region COMMAND_BLOCKEDUSERS_ADD
@@ -204,7 +209,7 @@ namespace TheGodfather.Modules.Owner
                     try {
                         var user = await ctx.Client.GetUserAsync(tup.Item1)
                             .ConfigureAwait(false);
-                        lines.Add($"{user.ToString()} ({Formatter.Italic(tup.Item2)})");
+                        lines.Add($"{user.ToString()} ({Formatter.Italic(string.IsNullOrWhiteSpace(tup.Item2) ? "No reason provided." : tup.Item2)})");
                     } catch (NotFoundException) {
                         await ctx.RespondWithFailedEmbedAsync($"User with ID {tup} does not exist!")
                             .ConfigureAwait(false);
@@ -212,7 +217,7 @@ namespace TheGodfather.Modules.Owner
                 }
 
                 await ctx.SendPaginatedCollectionAsync(
-                    "Blocked users:",
+                    "Blocked users (in database):",
                     lines,
                     line => line,
                     DiscordColor.Azure,

@@ -126,7 +126,7 @@ namespace TheGodfather
             Commands.RegisterConverter(new CustomActivityTypeConverter());
             Commands.RegisterConverter(new CustomBoolConverter());
             Commands.RegisterConverter(new CustomTimeWindowConverter());
-
+            
             Commands.CommandExecuted += Commands_CommandExecuted;
             Commands.CommandErrored += Commands_CommandErrored;
         }
@@ -278,6 +278,10 @@ namespace TheGodfather
                 }
                 return;
             }
+
+            // If the user is blocked, ignore
+            if (_shared.BlockedUsers.Contains(e.Author.Id))
+                return;
 
             // Since below actions require SendMessages permission, checking it now
             if (!e.Channel.PermissionsFor(e.Guild.CurrentMember).HasFlag(Permissions.SendMessages))
