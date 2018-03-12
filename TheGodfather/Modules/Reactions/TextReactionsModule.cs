@@ -177,8 +177,7 @@ namespace TheGodfather.Modules.Reactions
             if (!Shared.GuildTextReactions.ContainsKey(ctx.Guild.Id) || !Shared.GuildTextReactions[ctx.Guild.Id].Any())
                 throw new CommandFailedException("This guild has no text reactions registered.");
             
-            await InteractivityUtil.SendPaginatedCollectionAsync(
-                ctx,
+            await ctx.SendPaginatedCollectionAsync(
                 "Text reactions for this guild",
                 Shared.GuildTextReactions[ctx.Guild.Id].OrderBy(kvp => kvp.Item1.ToString()),
                 tup => $"{tup.Item1.ToString().Replace(@"\b", "")} => {tup.Item2}",

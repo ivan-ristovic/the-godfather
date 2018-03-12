@@ -124,8 +124,7 @@ namespace TheGodfather.Modules.Misc
             if (insults == null || !insults.Any())
                 throw new CommandFailedException("No insults registered.");
 
-            await InteractivityUtil.SendPaginatedCollectionAsync(
-                ctx,
+            await ctx.SendPaginatedCollectionAsync(
                 "Available insults",
                 insults.Values,
                 i => Formatter.Italic(i),

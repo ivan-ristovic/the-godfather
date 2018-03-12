@@ -127,8 +127,7 @@ namespace TheGodfather.Modules.Administration
         [UsageExample("!emoji list")]
         public async Task ListEmojiAsync(CommandContext ctx)
         {
-            await InteractivityUtil.SendPaginatedCollectionAsync(
-                ctx,
+            await ctx.SendPaginatedCollectionAsync(
                 "Guild specific emojis:",
                 ctx.Guild.Emojis.OrderBy(e => e.Name),
                 e => $"{e}  {e.Name}",

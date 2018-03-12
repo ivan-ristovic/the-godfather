@@ -42,8 +42,7 @@ namespace TheGodfather.Modules.Search
                 return;
             }
 
-            await InteractivityUtil.SendPaginatedCollectionAsync(
-                ctx,
+            await ctx.SendPaginatedCollectionAsync(
                 $"Urban Dictionary definitions for \"{query}\"",
                 data.List,
                 res => $"Definition by {Formatter.Bold(res.Author)}:\n\n" +

@@ -356,7 +356,7 @@ namespace TheGodfather.Modules.Misc
 
             if (await ctx.AskYesNoQuestionAsync("Are you okay with your user and guild info being sent for further inspection?").ConfigureAwait(false)) {
                 ctx.Client.DebugLogger.LogMessage(LogLevel.Info, "TheGodfather", $"Report from {ctx.User.Username} ({ctx.User.Id}): {issue}", DateTime.Now);
-                var dm = await InteractivityUtil.CreateDmChannelAsync(ctx.Client, ctx.Client.CurrentApplication.Owner.Id)
+                var dm = await ctx.Client.CreateDmChannelAsync(ctx.Client.CurrentApplication.Owner.Id)
                     .ConfigureAwait(false);
                 if (dm == null)
                     throw new CommandFailedException("Owner has disabled DMs.");

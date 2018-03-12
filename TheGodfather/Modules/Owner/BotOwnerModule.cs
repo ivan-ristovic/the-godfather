@@ -138,8 +138,7 @@ namespace TheGodfather.Modules.Owner
 
             var maxlen = res.First().Select(r => r.Key).OrderByDescending(r => r.Length).First().Length + 1;
 
-            await InteractivityUtil.SendPaginatedCollectionAsync(
-                ctx,
+            await ctx.SendPaginatedCollectionAsync(
                 $"Results ({res.Count}):",
                 res,
                 row => {
@@ -443,7 +442,7 @@ namespace TheGodfather.Modules.Owner
                 throw new InvalidCommandUsageException();
 
             if (desc == "u") {
-                var dm = await InteractivityUtil.CreateDmChannelAsync(ctx.Client, xid)
+                var dm = await ctx.Client.CreateDmChannelAsync(xid)
                     .ConfigureAwait(false);
                 if (dm == null)
                     throw new CommandFailedException("I can't talk to that user...");

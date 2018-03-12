@@ -27,8 +27,7 @@ namespace TheGodfather.Modules.Administration
         [GroupCommand]
         public async Task ExecuteGroupAsync(CommandContext ctx)
         {
-            await InteractivityUtil.SendPaginatedCollectionAsync(
-                ctx,
+            await ctx.SendPaginatedCollectionAsync(
                 "Roles in this guild:",
                 ctx.Guild.Roles.OrderByDescending(r => r.Position),
                 r => $"{Formatter.Bold(r.Name)} | {r.Color.ToString()} | ID: {Formatter.InlineCode(r.Id.ToString())}",

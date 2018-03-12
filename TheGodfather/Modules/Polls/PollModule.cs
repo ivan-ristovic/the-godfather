@@ -38,7 +38,7 @@ namespace TheGodfather.Modules.Polls
             try {
                 await ctx.RespondWithIconEmbedAsync("And what will be the possible answers? (separate with semicolon ``;``)", ":question:")
                     .ConfigureAwait(false);
-                var options = await InteractivityUtil.WaitAndParsePollOptionsAsync(ctx)
+                var options = await ctx.WaitAndParsePollOptionsAsync()
                     .ConfigureAwait(false);
                 if (options.Count < 2 || options.Count > 10)
                     throw new CommandFailedException("Poll must have minimum 2 and maximum 10 options!");

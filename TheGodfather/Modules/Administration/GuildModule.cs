@@ -42,8 +42,7 @@ namespace TheGodfather.Modules.Administration
             var bans = await ctx.Guild.GetBansAsync()
                 .ConfigureAwait(false);
 
-            await InteractivityUtil.SendPaginatedCollectionAsync(
-                ctx,
+            await ctx.SendPaginatedCollectionAsync(
                 "Guild bans",
                 bans,
                 b => $"- {b.User.ToString()} | Reason: {b.Reason} ",
@@ -63,8 +62,7 @@ namespace TheGodfather.Modules.Administration
             var bans = await ctx.Guild.GetAuditLogsAsync()
                 .ConfigureAwait(false);
 
-            await InteractivityUtil.SendPaginatedCollectionAsync(
-                ctx,
+            await ctx.SendPaginatedCollectionAsync(
                 "Audit log",
                 bans,
                 le => $"- {le.CreationTimestamp} {Formatter.Bold(le.UserResponsible.Username)} | {Formatter.Bold(le.ActionType.ToString())} | Reason: {le.Reason}",
@@ -106,8 +104,7 @@ namespace TheGodfather.Modules.Administration
             var members = await ctx.Guild.GetAllMembersAsync()
                 .ConfigureAwait(false);
 
-            await InteractivityUtil.SendPaginatedCollectionAsync(
-                ctx,
+            await ctx.SendPaginatedCollectionAsync(
                 "Members",
                 members.OrderBy(m => m.Username),
                 m => m.ToString(),

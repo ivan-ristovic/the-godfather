@@ -58,8 +58,7 @@ namespace TheGodfather.Modules.Search
             var subs = await Database.GetSubscriptionsForChannelAsync(ctx.Channel.Id)
                 .ConfigureAwait(false);
 
-            await InteractivityUtil.SendPaginatedCollectionAsync(
-                ctx,
+            await ctx.SendPaginatedCollectionAsync(
                 "Subscriptions for this channel:",
                 subs,
                 fe => {
