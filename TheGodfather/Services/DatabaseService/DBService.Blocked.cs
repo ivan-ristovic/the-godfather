@@ -77,19 +77,70 @@ namespace TheGodfather.Services
             }
         }
 
-        public async Task<IReadOnlyList<ulong>> GetBlockedChannelsAsync()
+        public async Task<IReadOnlyList<(ulong, string)>> GetBlockedChannelsAsync()
         {
-            return new List<ulong>();
+            var blocked = new List<(ulong, string)>();
+
+            await _sem.WaitAsync();
+            try {
+                using (var con = new NpgsqlConnection(_connectionString))
+                using (var cmd = con.CreateCommand()) {
+                    await con.OpenAsync().ConfigureAwait(false);
+
+                    cmd.CommandText = "SELECT * FROM gf.blocked_channels;";
+
+                    using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
+                        while (await reader.ReadAsync().ConfigureAwait(false))
+                            blocked.Add(((ulong)(long)reader["cid"], reader["reason"] is DBNull ? null : (string)reader["reason"]));
+                    }
+                }
+            } finally {
+                _sem.Release();
+            }
+
+            return blocked.AsReadOnly();
         }
 
-        public async Task AddBlockedChannelAsync(ulong cid)
+        public async Task AddBlockedChannelAsync(ulong cid, string reason = null)
         {
+            await _sem.WaitAsync();
+            try {
+                using (var con = new NpgsqlConnection(_connectionString))
+                using (var cmd = con.CreateCommand()) {
+                    await con.OpenAsync().ConfigureAwait(false);
 
+                    if (string.IsNullOrWhiteSpace(reason)) {
+                        cmd.CommandText = "INSERT INTO gf.blocked_channels VALUES (@cid, NULL);";
+                        cmd.Parameters.AddWithValue("cid", NpgsqlDbType.Bigint, cid);
+                    } else {
+                        cmd.CommandText = "INSERT INTO gf.blocked_channels VALUES (@cid, @reason);";
+                        cmd.Parameters.AddWithValue("cid", NpgsqlDbType.Bigint, cid);
+                        cmd.Parameters.AddWithValue("reason", NpgsqlDbType.Varchar, reason);
+                    }
+
+                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                }
+            } finally {
+                _sem.Release();
+            }
         }
 
         public async Task RemoveBlockedChannelAsync(ulong cid)
         {
+            await _sem.WaitAsync();
+            try {
+                using (var con = new NpgsqlConnection(_connectionString))
+                using (var cmd = con.CreateCommand()) {
+                    await con.OpenAsync().ConfigureAwait(false);
 
+                    cmd.CommandText = "DELETE FROM gf.blocked_channels WHERE cid = @cid;";
+                    cmd.Parameters.AddWithValue("cid", NpgsqlDbType.Bigint, cid);
+
+                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                }
+            } finally {
+                _sem.Release();
+            }
         }
     }
 }

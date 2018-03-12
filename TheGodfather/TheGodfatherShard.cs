@@ -254,6 +254,9 @@ namespace TheGodfather
                 return;
             }
 
+            if (_shared.BlockedChannels.Contains(e.Channel.Id))
+                return;
+
             // Check if message contains filter
             if (e.Message.Content != null && _shared.MessageContainsFilter(e.Guild.Id, e.Message.Content)) {
                 try {
@@ -345,6 +348,9 @@ namespace TheGodfather
         private async Task Client_MessageUpdated(MessageUpdateEventArgs e)
         {
             if (e.Author == null || e.Message == null)
+                return;
+
+            if (_shared.BlockedChannels.Contains(e.Channel.Id))
                 return;
 
             // Check if message contains filter

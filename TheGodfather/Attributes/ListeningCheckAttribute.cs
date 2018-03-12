@@ -16,7 +16,8 @@ namespace TheGodfather.Attributes
         public override Task<bool> ExecuteCheckAsync(CommandContext ctx, bool help)
         {
             if (TheGodfatherShard.Listening) {
-                if (ctx.Services.GetService<SharedData>().BlockedUsers.Contains(ctx.User.Id))
+                var shared = ctx.Services.GetService<SharedData>();
+                if (shared.BlockedUsers.Contains(ctx.User.Id) || shared.BlockedChannels.Contains(ctx.Channel.Id))
                     return Task.FromResult(false);
                 if (!help) {
                     ctx.Client.DebugLogger.LogMessage(LogLevel.Debug, "TheGodfather",

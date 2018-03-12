@@ -262,6 +262,7 @@
     <Compile Include="Attributes\UsageExampleAttribute.cs" />
     <Compile Include="Extensions\DSharpPlusExtensions.cs" />
     <Compile Include="Modules\Owner\BotOwnerModule.BlockedUsers.cs" />
+    <Compile Include="Modules\Owner\BotOwnerModule.BlockedChannels.cs" />
     <Compile Include="Services\Common\UrbanDictData.cs" />
     <Compile Include="Services\Common\WeatherData.cs" />
     <Compile Include="Extensions\Converters\CustomBoolConverter.cs" />

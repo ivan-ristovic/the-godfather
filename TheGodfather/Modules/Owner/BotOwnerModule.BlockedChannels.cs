@@ -21,14 +21,14 @@ namespace TheGodfather.Modules.Owner
 {
     public partial class BotOwnerModule
     {
-        [Group("blockedusers")]
-        [Description("Manipulate blocked users. Bot will not allow blocked users to invoke commands and will not react (either with text or emoji) to their messages.")]
-        [Aliases("bu", "blockedu", "blockuser", "busers", "buser", "busr")]
+        [Group("blockedchannels")]
+        [Description("Manipulate blocked channels. Bot will not listen for commands in blocked channels or react (either with text or emoji) to messages inside.")]
+        [Aliases("bc", "blockedc", "blockchannel", "bchannels", "bchannel", "bchn")]
         [ListeningCheck]
-        public class BlockedUsersModule : TheGodfatherBaseModule
+        public class BlockedChannelsModule : TheGodfatherBaseModule
         {
 
-            public BlockedUsersModule(SharedData shared, DBService db) : base(shared, db) { }
+            public BlockedChannelsModule(SharedData shared, DBService db) : base(shared, db) { }
 
 
             [GroupCommand]
@@ -36,42 +36,47 @@ namespace TheGodfather.Modules.Owner
                 => await ListAsync(ctx).ConfigureAwait(false);
 
 
-            #region COMMAND_BLOCKEDUSERS_ADD
+            #region COMMAND_BLOCKEDCHANNELS_ADD
             [Command("add"), Priority(2)]
-            [Description("Add users to blocked users list.")]
+            [Description("Add channel to blocked channels list.")]
             [Aliases("+", "a")]
-            [UsageExample("!owner blockedusers add @Someone")]
-            [UsageExample("!owner blockedusers add @Someone Troublemaker and spammer")]
-            [UsageExample("!owner blockedusers add 123123123123123")]
-            [UsageExample("!owner blockedusers add @Someone 123123123123123")]
-            [UsageExample("!owner blockedusers add \"This is some reason\" @Someone 123123123123123")]
+            [UsageExample("!owner blockedchannels add #channel")]
+            [UsageExample("!owner blockedchannels add #channel Some reason for blocking")]
+            [UsageExample("!owner blockedchannels add 123123123123123")]
+            [UsageExample("!owner blockedchannels add #channel 123123123123123")]
+            [UsageExample("!owner blockedchannels add \"This is some reason\" #channel 123123123123123")]
             public async Task AddAsync(CommandContext ctx,
-                                      [Description("Users to block.")] params DiscordUser[] users)
+                                      [Description("Channels to block.")] params DiscordChannel[] channels)
             {
-                if (!users.Any())
-                    throw new InvalidCommandUsageException("Missing users to block.");
+                if (!channels.Any())
+                    throw new InvalidCommandUsageException("Missing channels to block.");
 
                 var sb = new StringBuilder("Action results:\n\n");
-                foreach (var user in users) {
-                    if (Shared.BlockedUsers.Contains(user.Id)) {
-                        sb.AppendLine($"Error: {user.ToString()} is already blocked!");
+                foreach (var channel in channels) {
+                    if (channel.Type != ChannelType.Text) {
+                        sb.AppendLine($"Error: {channel.ToString()} is not a text channel!");
                         continue;
                     }
 
-                    if (!Shared.BlockedUsers.Add(user.Id)) {
-                        sb.AppendLine($"Error: Failed to add {user.ToString()} to blocked users list!");
+                    if (Shared.BlockedChannels.Contains(channel.Id)) {
+                        sb.AppendLine($"Error: {channel.ToString()} is already blocked!");
+                        continue;
+                    }
+
+                    if (!Shared.BlockedChannels.Add(channel.Id)) {
+                        sb.AppendLine($"Error: Failed to add {channel.ToString()} to blocked channels list!");
                         continue;
                     }
 
                     try {
-                        await Database.AddBlockedUserAsync(user.Id)
+                        await Database.AddBlockedChannelAsync(channel.Id)
                             .ConfigureAwait(false);
                     } catch {
-                        sb.AppendLine($"Warning: Failed to add blocked {user.ToString()} to the database!");
+                        sb.AppendLine($"Warning: Failed to add blocked {channel.ToString()} to the database!");
                         continue;
                     }
 
-                    sb.AppendLine($"Blocked: {user.ToString()}!");
+                    sb.AppendLine($"Blocked: {channel.ToString()}!");
                 }
 
                 await ctx.RespondWithIconEmbedAsync(sb.ToString())
@@ -81,7 +86,7 @@ namespace TheGodfather.Modules.Owner
             [Command("add"), Priority(1)]
             public async Task AddAsync(CommandContext ctx,
                                       [Description("Reason (max 60 chars).")] string reason,
-                                      [Description("Users to block.")] params DiscordUser[] users)
+                                      [Description("Channels to block.")] params DiscordChannel[] users)
             {
                 if (reason.Length >= 60)
                     throw new InvalidCommandUsageException("Reason cannot exceed 60 characters");
@@ -118,7 +123,7 @@ namespace TheGodfather.Modules.Owner
 
             [Command("add"), Priority(0)]
             public async Task AddAsync(CommandContext ctx,
-                                      [Description("Users to block.")] DiscordUser user,
+                                      [Description("Channels to block.")] DiscordChannel user,
                                       [RemainingText, Description("Reason (max 60 chars).")] string reason)
             {
                 if (string.IsNullOrWhiteSpace(reason))
@@ -145,40 +150,40 @@ namespace TheGodfather.Modules.Owner
             }
             #endregion
 
-            #region COMMAND_BLOCKEDUSERS_DELETE
+            #region COMMAND_BLOCKEDCHANNELS_DELETE
             [Command("delete")]
-            [Description("Remove users from blocked users list..")]
+            [Description("Remove channel from blocked channels list..")]
             [Aliases("-", "remove", "rm", "del")]
-            [UsageExample("!owner blockedusers remove @Someone")]
-            [UsageExample("!owner blockedusers remove 123123123123123")]
-            [UsageExample("!owner blockedusers remove @Someone 123123123123123")]
+            [UsageExample("!owner blockedchannels remove #channel")]
+            [UsageExample("!owner blockedchannels remove 123123123123123")]
+            [UsageExample("!owner blockedchannels remove @Someone 123123123123123")]
             public async Task DeleteAsync(CommandContext ctx,
-                                         [Description("Users to unblock.")] params DiscordUser[] users)
+                                         [Description("Channels to unblock.")] params DiscordChannel[] channels)
             {
-                if (!users.Any())
-                    throw new InvalidCommandUsageException("Missing users to block.");
+                if (!channels.Any())
+                    throw new InvalidCommandUsageException("Missing channels to block.");
 
                 var sb = new StringBuilder("Action results:\n\n");
-                foreach (var user in users) {
-                    if (!Shared.BlockedUsers.Contains(user.Id)) {
-                        sb.AppendLine($"Warning: {user.ToString()} is not blocked!");
+                foreach (var channel in channels) {
+                    if (!Shared.BlockedChannels.Contains(channel.Id)) {
+                        sb.AppendLine($"Warning: {channel.ToString()} is not blocked!");
                         continue;
                     }
 
-                    if (!Shared.BlockedUsers.TryRemove(user.Id)) {
-                        sb.AppendLine($"Error: Failed to remove {user.ToString()} from blocked users list!");
+                    if (!Shared.BlockedChannels.TryRemove(channel.Id)) {
+                        sb.AppendLine($"Error: Failed to remove {channel.ToString()} from blocked channels list!");
                         continue;
                     }
 
                     try {
-                        await Database.RemoveBlockedUserAsync(user.Id)
+                        await Database.RemoveBlockedChannelAsync(channel.Id)
                             .ConfigureAwait(false);
                     } catch {
-                        sb.AppendLine($"Warning: Failed to remove {user.ToString()} from the database!");
+                        sb.AppendLine($"Warning: Failed to remove {channel.ToString()} from the database!");
                         continue;
                     }
 
-                    sb.AppendLine($"Unblocked: {user.ToString()}!");
+                    sb.AppendLine($"Unblocked: {channel.ToString()}!");
                 }
 
                 await ctx.RespondWithIconEmbedAsync(sb.ToString())
@@ -186,30 +191,30 @@ namespace TheGodfather.Modules.Owner
             }
             #endregion
 
-            #region COMMAND_BLOCKEDUSERS_LIST
+            #region COMMAND_BLOCKEDCHANNELS_LIST
             [Command("list")]
-            [Description("List all blocked users.")]
+            [Description("List all blocked channels.")]
             [Aliases("ls")]
-            [UsageExample("!owner blockedusers list")]
+            [UsageExample("!owner blockedchannels list")]
             public async Task ListAsync(CommandContext ctx)
             {
-                var blocked = await Database.GetBlockedUsersAsync()
+                var blocked = await Database.GetBlockedChannelsAsync()
                     .ConfigureAwait(false);
 
                 List<string> lines = new List<string>();
                 foreach (var tup in blocked) {
                     try {
-                        var user = await ctx.Client.GetUserAsync(tup.Item1)
+                        var channel = await ctx.Client.GetChannelAsync(tup.Item1)
                             .ConfigureAwait(false);
-                        lines.Add($"{user.ToString()} ({Formatter.Italic(string.IsNullOrWhiteSpace(tup.Item2) ? "No reason provided." : tup.Item2)})");
+                        lines.Add($"{channel.ToString()} ({Formatter.Italic(string.IsNullOrWhiteSpace(tup.Item2) ? "No reason provided." : tup.Item2)})");
                     } catch (NotFoundException) {
-                        await ctx.RespondWithFailedEmbedAsync($"User with ID {tup.Item1} does not exist!")
+                        await ctx.RespondWithFailedEmbedAsync($"Channel with ID {tup.Item1} does not exist!")
                             .ConfigureAwait(false);
                     }
                 }
 
                 await ctx.SendPaginatedCollectionAsync(
-                    "Blocked users (in database):",
+                    "Blocked channels (in database):",
                     lines,
                     line => line,
                     DiscordColor.Azure,

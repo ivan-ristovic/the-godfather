@@ -85,6 +85,11 @@ namespace TheGodfather
             foreach (var tup in blockedusr_db)
                 blockedusr.Add(tup.Item1);
 
+            var blockedchn_db = await DatabaseService.GetBlockedChannelsAsync();
+            var blockedchn = new ConcurrentHashSet<ulong>();
+            foreach (var tup in blockedchn_db)
+                blockedchn.Add(tup.Item1);
+
             var gprefixes_db = await DatabaseService.GetGuildPrefixesAsync();
             var gprefixes = new ConcurrentDictionary<ulong, string>();
             foreach (var gprefix in gprefixes_db)
@@ -117,6 +122,7 @@ namespace TheGodfather
                 msgcount.TryAdd(entry.Key, entry.Value);
 
             SharedData = new SharedData() {
+                BlockedChannels = blockedchn,
                 BlockedUsers = blockedusr,
                 BotConfiguration = cfg,
                 GuildPrefixes = gprefixes,
