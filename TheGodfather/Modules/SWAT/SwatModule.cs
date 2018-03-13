@@ -105,7 +105,7 @@ namespace TheGodfather.Modules.SWAT
         {
             var em = new DiscordEmbedBuilder() {
                 Title = "Servers",
-                Color = DiscordColor.DarkBlue
+                Color = DiscordColor.Black
             };
 
             var servers = await Database.GetAllSwatServersAsync()

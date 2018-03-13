@@ -65,7 +65,7 @@ namespace TheGodfather.Entities.SWAT
             } catch (FormatException) {
                 throw new CommandFailedException("Invalid IP format.");
             } catch (Exception e) {
-                Logger.LogException(LogLevel.Warning, e);
+                Logger.LogException(LogLevel.Debug, e);
                 return null;
             }
 
@@ -95,7 +95,7 @@ namespace TheGodfather.Entities.SWAT
                 Url = "https://swat4stats.com/servers/" + IP + ":" + JoinPort,
                 Title = HostName,
                 Description = IP + ":" + JoinPort,
-                Color = DiscordColor.DarkBlue
+                Color = DiscordColor.Black
             };
             emb.AddField("Players", Players + "/" + MaxPlayers, inline: true)
                .AddField("Game", string.IsNullOrWhiteSpace(Game) ? Formatter.Italic("unknown") : Game, inline: true)

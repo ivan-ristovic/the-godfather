@@ -87,7 +87,7 @@ namespace TheGodfather.Modules.SWAT
                     "Available servers",
                     servers,
                     server => $"{Formatter.Bold(server.Name)} : {server.IP}:{server.JoinPort}",
-                    DiscordColor.Green
+                    DiscordColor.Black
                 ).ConfigureAwait(false);
             }
             #endregion

@@ -178,7 +178,7 @@ namespace TheGodfather
                 cid = await _db.GetGuildWelcomeChannelIdAsync(e.Guild.Id)
                     .ConfigureAwait(false);
             } catch (Exception exc) {
-                Logger.LogException(LogLevel.Warning, exc);
+                Logger.LogException(LogLevel.Debug, exc);
             }
 
             if (cid == 0)
@@ -192,7 +192,7 @@ namespace TheGodfather
             } catch (Exception exc) {
                 while (exc is AggregateException)
                     exc = exc.InnerException;
-                Log(LogLevel.Warning,
+                Log(LogLevel.Debug,
                     $"Failed to send a welcome message!<br>" +
                     $"Channel ID: {cid}<br>" +
                     $"{e.Guild.ToString()}<br>" +
@@ -217,7 +217,7 @@ namespace TheGodfather
                 cid = await _db.GetGuildLeaveChannelIdAsync(e.Guild.Id)
                     .ConfigureAwait(false);
             } catch (Exception exc) {
-                Logger.LogException(LogLevel.Warning, exc);
+                Logger.LogException(LogLevel.Debug, exc);
             }
 
             if (cid == 0)
@@ -231,7 +231,7 @@ namespace TheGodfather
             } catch (Exception exc) {
                 while (exc is AggregateException)
                     exc = exc.InnerException;
-                Log(LogLevel.Warning,
+                Log(LogLevel.Debug,
                     $"Failed to send a leaving message!<br>" +
                     $"Channel ID: {cid}<br>" +
                     $"{e.Guild.ToString()}<br>" +
@@ -269,7 +269,7 @@ namespace TheGodfather
                         $"{e.Guild.ToString()} ; {e.Channel.ToString()}"
                     );
                 } catch (UnauthorizedException) {
-                    Log(LogLevel.Warning,
+                    Log(LogLevel.Debug,
                         $"Filter triggered in message but missing permissions to delete!<br>" +
                         $"Message: {e.Message.Content.Replace('\n', ' ')}<br>" +
                         $"{e.Message.Author.ToString()}<br>" +
@@ -365,7 +365,7 @@ namespace TheGodfather
                         $"{e.Guild.ToString()} ; {e.Channel.ToString()}"
                     );
                 } catch (UnauthorizedException) {
-                    Log(LogLevel.Warning,
+                    Log(LogLevel.Debug,
                         $"Filter triggered in edited message but missing permissions to delete!<br>" +
                         $"Message: '{e.Message.Content.Replace('\n', ' ')}<br>" +
                         $"{e.Message.Author.ToString()}<br>" +

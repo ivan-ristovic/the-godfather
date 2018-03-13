@@ -57,7 +57,7 @@ namespace TheGodfather.Modules
                     return false;
                 }
             } catch (Exception e) {
-                Logger.LogException(LogLevel.Warning, e);
+                Logger.LogException(LogLevel.Debug, e);
                 return false;
             }
 

@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using TheGodfather.Attributes;
+using TheGodfather.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Services;
@@ -66,8 +67,9 @@ namespace TheGodfather.Modules.Owner
                     try {
                         await Database.AddBlockedUserAsync(user.Id)
                             .ConfigureAwait(false);
-                    } catch {
+                    } catch (Exception e) {
                         sb.AppendLine($"Warning: Failed to add blocked {user.ToString()} to the database!");
+                        Logger.LogException(LogLevel.Warning, e);
                         continue;
                     }
 
@@ -173,8 +175,9 @@ namespace TheGodfather.Modules.Owner
                     try {
                         await Database.RemoveBlockedUserAsync(user.Id)
                             .ConfigureAwait(false);
-                    } catch {
+                    } catch (Exception e) {
                         sb.AppendLine($"Warning: Failed to remove {user.ToString()} from the database!");
+                        Logger.LogException(LogLevel.Warning, e);
                         continue;
                     }
 
