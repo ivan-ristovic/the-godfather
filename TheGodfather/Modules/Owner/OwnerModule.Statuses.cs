@@ -26,7 +26,7 @@ using DSharpPlus.Entities;
 
 namespace TheGodfather.Modules.Owner
 {
-    public partial class BotOwnerModule
+    public partial class OwnerModule
     {
         [Group("statuses")]
         [Description("Bot status manipulation.")]

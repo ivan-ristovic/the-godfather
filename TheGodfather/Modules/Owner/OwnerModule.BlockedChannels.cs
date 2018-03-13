@@ -20,7 +20,7 @@ using DSharpPlus.Exceptions;
 
 namespace TheGodfather.Modules.Owner
 {
-    public partial class BotOwnerModule
+    public partial class OwnerModule
     {
         [Group("blockedchannels")]
         [Description("Manipulate blocked channels. Bot will not listen for commands in blocked channels or react (either with text or emoji) to messages inside.")]

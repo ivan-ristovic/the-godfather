@@ -6,13 +6,14 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
+using TheGodfather.Entities;
 using TheGodfather.Exceptions;
 
 using DSharpPlus;
 using DSharpPlus.Entities;
 #endregion
 
-namespace TheGodfather.Entities.SWAT
+namespace TheGodfather.Modules.SWAT.Common
 {
     public class SwatServerInfo
     {

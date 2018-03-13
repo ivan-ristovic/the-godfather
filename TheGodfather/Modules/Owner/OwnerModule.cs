@@ -31,10 +31,10 @@ namespace TheGodfather.Modules.Owner
     [Aliases("admin", "o")]
     [RequireOwner, Hidden]
     [Cooldown(3, 5, CooldownBucketType.Global)]
-    public partial class BotOwnerModule : TheGodfatherBaseModule
+    public partial class OwnerModule : TheGodfatherBaseModule
     {
 
-        public BotOwnerModule(DBService db) : base(db: db) { }
+        public OwnerModule(DBService db) : base(db: db) { }
 
 
         #region COMMAND_BOTAVATAR

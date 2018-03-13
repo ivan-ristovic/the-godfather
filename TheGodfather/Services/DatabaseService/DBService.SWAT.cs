@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-using TheGodfather.Entities.SWAT;
+using TheGodfather.Modules.SWAT.Common;
 
 using Npgsql;
 using NpgsqlTypes;

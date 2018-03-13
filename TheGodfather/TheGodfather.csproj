@@ -261,8 +261,8 @@
   <ItemGroup>
     <Compile Include="Attributes\UsageExampleAttribute.cs" />
     <Compile Include="Extensions\DSharpPlusExtensions.cs" />
-    <Compile Include="Modules\Owner\BotOwnerModule.BlockedUsers.cs" />
-    <Compile Include="Modules\Owner\BotOwnerModule.BlockedChannels.cs" />
+    <Compile Include="Modules\Owner\OwnerModule.BlockedUsers.cs" />
+    <Compile Include="Modules\Owner\OwnerModule.BlockedChannels.cs" />
     <Compile Include="Services\Common\UrbanDictData.cs" />
     <Compile Include="Services\Common\WeatherData.cs" />
     <Compile Include="Extensions\Converters\CustomBoolConverter.cs" />
@@ -293,7 +293,7 @@
     <Compile Include="Entities\BotConfig.cs" />
     <Compile Include="Extensions\Collections\ConcurrentHashSet.cs" />
     <Compile Include="Modules\Misc\Common\EightBall.cs" />
-    <Compile Include="Modules\Owner\BotOwnerModule.Statuses.cs" />
+    <Compile Include="Modules\Owner\OwnerModule.Statuses.cs" />
     <Compile Include="Modules\Owner\Common\EvaluationEnvironment.cs" />
     <Compile Include="Modules\Games\Common\TypingRace.cs" />
     <Compile Include="Modules\Games\GamesModule.Othello.cs" />
@@ -319,7 +319,7 @@
     <Compile Include="Entities\GameStats.cs" />
     <Compile Include="Attributes\ListeningCheckAttribute.cs" />
     <Compile Include="Extensions\CustomHelpFormatter.cs" />
-    <Compile Include="Modules\Owner\BotOwnerModule.cs" />
+    <Compile Include="Modules\Owner\OwnerModule.cs" />
     <Compile Include="Modules\Gambling\BankModule.cs" />
     <Compile Include="Modules\Gambling\CardsModule.cs" />
     <Compile Include="Modules\Games\GamesModule.NumberRace.cs" />
@@ -350,8 +350,8 @@
     <Compile Include="Modules\SWAT\SwatModule.cs" />
     <Compile Include="Modules\Administration\UserModule.cs" />
     <Compile Include="Modules\Voice\VoiceModule.cs" />
-    <Compile Include="Entities\SWAT\SwatServer.cs" />
-    <Compile Include="Entities\SWAT\SwatServerInfo.cs" />
+    <Compile Include="Modules\SWAT\Common\SwatServer.cs" />
+    <Compile Include="Modules\SWAT\Common\SwatServerInfo.cs" />
     <Compile Include="Services\MemeGenService.cs" />
     <Compile Include="Services\PetImagesService.cs" />
     <Compile Include="Services\HttpService.cs" />

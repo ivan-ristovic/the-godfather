@@ -10,9 +10,6 @@ using TheGodfather.Entities;
 using TheGodfather.Extensions.Collections;
 using TheGodfather.Modules.Gambling.Cards;
 using TheGodfather.Services;
-
-using DSharpPlus;
-using DSharpPlus.Entities;
 #endregion
 
 namespace TheGodfather
@@ -24,9 +21,12 @@ namespace TheGodfather
         public ConcurrentDictionary<ulong, ConcurrentHashSet<Regex>> GuildFilters { get; internal set; }
         public ConcurrentDictionary<ulong, ConcurrentHashSet<(Regex, string)>> GuildTextReactions { get; internal set; }
         public ConcurrentDictionary<ulong, ConcurrentDictionary<string, ConcurrentHashSet<Regex>>> GuildEmojiReactions { get; internal set; }
-        public ConcurrentDictionary<ulong, ulong> MessageCount { get; internal set; }
         public ConcurrentDictionary<ulong, Deck> CardDecks { get; internal set; } = new ConcurrentDictionary<ulong, Deck>();
         public ConcurrentHashSet<ulong> UserIDsCheckingForSpace = new ConcurrentHashSet<ulong>();
+        public ConcurrentHashSet<ulong> BlockedUsers { get; set; } = new ConcurrentHashSet<ulong>();
+        public ConcurrentHashSet<ulong> BlockedChannels { get; set; } = new ConcurrentHashSet<ulong>();
+        public ConcurrentDictionary<ulong, ulong> MessageCount { get; internal set; }
+        public bool StatusRotationEnabled { get; set; } = true;
         public IReadOnlyList<string> Ranks = new List<string>() {
             #region RANKS
             // If you make more than 25 ranks, then fix the embed
@@ -53,9 +53,6 @@ namespace TheGodfather
             "Generalissimo (tribute to Raptor)"
             #endregion
         }.AsReadOnly();
-        public bool StatusRotationEnabled { get; set; } = true;
-        public ConcurrentHashSet<ulong> BlockedUsers { get; set; } = new ConcurrentHashSet<ulong>();
-        public ConcurrentHashSet<ulong> BlockedChannels { get; set; } = new ConcurrentHashSet<ulong>();
 
 
         public bool MessageContainsFilter(ulong gid, string message)
