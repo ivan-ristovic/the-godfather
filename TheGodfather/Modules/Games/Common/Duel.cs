@@ -100,7 +100,7 @@ namespace TheGodfather.Modules.Games
         {
             var mctx = await _interactivity.WaitForMessageAsync(
                 msg =>
-                    msg.ChannelId == _channel.Id && msg.Content.ToLower() == "hp" &&
+                    msg.ChannelId == _channel.Id && msg.Content.ToLowerInvariant() == "hp" &&
                     ((!_pot1used && msg.Author.Id == _p1.Id) || (!_pot2used && msg.Author.Id == _p2.Id))
                 , TimeSpan.FromSeconds(2)
             ).ConfigureAwait(false);

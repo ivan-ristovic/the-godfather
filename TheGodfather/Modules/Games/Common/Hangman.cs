@@ -28,7 +28,7 @@ namespace TheGodfather.Modules.Games
         public Hangman(InteractivityExtension interactivity, DiscordChannel channel, string word)
             : base(interactivity, channel)
         {
-            _word = word.ToLower();
+            _word = word.ToLowerInvariant();
             _hidden = new string('?', _word.Length).ToCharArray();
         }
 
@@ -64,7 +64,7 @@ namespace TheGodfather.Modules.Games
                 return;
             }
 
-            if (mctx.Message.Content.ToLower() == _word) {
+            if (mctx.Message.Content.ToLowerInvariant() == _word) {
                 Winner = mctx.User;
                 _gameOver = true;
             }

@@ -45,7 +45,7 @@ namespace TheGodfather.Modules.Games
             int timeouts = 0;
             for (int i = 1; i < 10; i++) {
                 string question = questions[rnd.Next(questions.Count)];
-                string answer = _countries[question].ToLower();
+                string answer = _countries[question].ToLowerInvariant();
 
                 await _channel.TriggerTypingAsync()
                     .ConfigureAwait(false);
@@ -57,7 +57,7 @@ namespace TheGodfather.Modules.Games
                     xm => {
                         if (xm.ChannelId != _channel.Id) return false;
                         norep = false;
-                        return !xm.Author.IsBot && xm.Content.ToLower() == answer;
+                        return !xm.Author.IsBot && xm.Content.ToLowerInvariant() == answer;
                     }
                 ).ConfigureAwait(false);
                 if (msg == null) {

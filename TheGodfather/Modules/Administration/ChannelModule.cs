@@ -44,7 +44,7 @@ namespace TheGodfather.Modules.Administration
             if (name.Length < 2 || name.Length > 100)
                 throw new InvalidCommandUsageException("Name must be longer than 2 and shorter than 100 characters.");
 
-            if (ctx.Guild.Channels.Any(chn => chn.Name == name.ToLower()))
+            if (ctx.Guild.Channels.Any(chn => chn.Name == name.ToLowerInvariant()))
                 if (!await ctx.AskYesNoQuestionAsync("A channel with that name already exists. Continue?").ConfigureAwait(false))
                     return;
 
@@ -77,7 +77,7 @@ namespace TheGodfather.Modules.Administration
             if (name.Length < 2 || name.Length > 100)
                 throw new InvalidCommandUsageException("Name must be longer than 2 and shorter than 100 characters.");
 
-            if (ctx.Guild.Channels.Any(chn => chn.Name == name.ToLower())) {
+            if (ctx.Guild.Channels.Any(chn => chn.Name == name.ToLowerInvariant())) {
                 if (!await ctx.AskYesNoQuestionAsync("A channel with that name already exists. Continue anyway?").ConfigureAwait(false))
                     return;
             }
@@ -127,7 +127,7 @@ namespace TheGodfather.Modules.Administration
             if (name.Length < 2 || name.Length > 100)
                 throw new InvalidCommandUsageException("Name must be longer than 2 and shorter than 100 characters.");
 
-            if (ctx.Guild.Channels.Any(chn => chn.Name == name.ToLower())) {
+            if (ctx.Guild.Channels.Any(chn => chn.Name == name.ToLowerInvariant())) {
                 if (!await ctx.AskYesNoQuestionAsync("A channel with that name already exists. Continue anyway?").ConfigureAwait(false))
                     return;
             }

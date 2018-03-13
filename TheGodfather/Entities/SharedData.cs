@@ -63,7 +63,7 @@ namespace TheGodfather
             if (!GuildFilters.ContainsKey(gid) || GuildFilters[gid] == null)
                 return false;
 
-            message = message.ToLower();
+            message = message.ToLowerInvariant();
             return GuildFilters[gid].Any(f => f.IsMatch(message));
         }
 

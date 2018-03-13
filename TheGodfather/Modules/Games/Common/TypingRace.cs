@@ -56,7 +56,7 @@ namespace TheGodfather.Modules.Games.Common
             }
 
             var mctx = await _interactivity.WaitForMessageAsync(
-                m => m.ChannelId == _channel.Id && m.Content.ToLower() == msg,
+                m => m.ChannelId == _channel.Id && m.Content.ToLowerInvariant() == msg,
                 TimeSpan.FromSeconds(60)
             ).ConfigureAwait(false);
 
