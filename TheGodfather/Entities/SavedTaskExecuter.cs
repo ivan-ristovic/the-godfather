@@ -11,6 +11,7 @@ using TheGodfather.Services;
 using TheGodfather.Services.Common;
 
 using DSharpPlus;
+using DSharpPlus.Entities;
 #endregion
 
 namespace TheGodfather.Entities
@@ -46,20 +47,17 @@ namespace TheGodfather.Entities
             try {
                 switch (SavedTask.Type) {
                     case SavedTaskType.SendMessage:
-                        var channel = _client.GetChannelAsync(SavedTask.ChannelId)
-                            .ConfigureAwait(false).GetAwaiter().GetResult();
-                        _client.SendMessageAsync(channel, SavedTask.Comment)
-                            .ConfigureAwait(false).GetAwaiter().GetResult();
+                        SendMessageAsync().ConfigureAwait(false).GetAwaiter().GetResult();
                         break;
                     case SavedTaskType.Unban:
-                        // TODO
+                        UnbanUserAsync().ConfigureAwait(false).GetAwaiter().GetResult();
                         break;
                 }
-
-                RemoveTaskFromDatabase().ConfigureAwait(false).GetAwaiter().GetResult();
-
+                Logger.LogMessage(LogLevel.Debug, $"Saved task executed: {nameof(SavedTask.Type)} ({SavedTask.Comment})<br>User ID: {SavedTask.UserId}<br>Guild ID: {SavedTask.GuildId}");
             } catch (Exception e) {
                 Logger.LogException(LogLevel.Warning, e);
+            } finally {
+                RemoveTaskFromDatabase().ConfigureAwait(false).GetAwaiter().GetResult();
             }
         }
 
@@ -71,11 +69,46 @@ namespace TheGodfather.Entities
                 .ConfigureAwait(false);
         }
 
-        public async Task ReportMissedExecutionAsync()
+        public async Task HandleMissedTaskExecutionAsync()
+        {
+            try {
+                switch (SavedTask.Type) {
+                    case SavedTaskType.SendMessage:
+                        var channel = await _client.GetChannelAsync(SavedTask.ChannelId)
+                            .ConfigureAwait(false);
+                        var user = await _client.GetUserAsync(SavedTask.UserId)
+                            .ConfigureAwait(false);
+                        await channel.SendFailedEmbedAsync($"I have been asleep and failed to remind {user.Mention} to:\n\n{Formatter.Italic(SavedTask.Comment)}\n\nat {SavedTask.ExecutionTime}")
+                            .ConfigureAwait(false);
+                        break;
+                    case SavedTaskType.Unban:
+                        await UnbanUserAsync()
+                            .ConfigureAwait(false);
+                        break;
+                }
+                Logger.LogMessage(LogLevel.Warning, $"Missed saved task executed: {nameof(SavedTask.Type)} ({SavedTask.Comment})<br>User ID: {SavedTask.UserId}<br>Guild ID: {SavedTask.GuildId}");
+            } catch (Exception e) {
+                Logger.LogException(LogLevel.Warning, e);
+            } finally {
+                RemoveTaskFromDatabase().ConfigureAwait(false).GetAwaiter().GetResult();
+            }
+        }
+
+        private async Task SendMessageAsync()
         {
             var channel = await _client.GetChannelAsync(SavedTask.ChannelId)
                 .ConfigureAwait(false);
-            await channel.SendFailedEmbedAsync("Execution missed!")
+            await channel.SendIconEmbedAsync(SavedTask.Comment, DiscordEmoji.FromName(_client, ":alarm_clock:"))
+                .ConfigureAwait(false);
+        }
+
+        private async Task UnbanUserAsync()
+        {
+            var guild = await _client.GetGuildAsync(SavedTask.GuildId)
+                .ConfigureAwait(false);
+            var user = await _client.GetUserAsync(SavedTask.UserId)
+                .ConfigureAwait(false);
+            await guild.UnbanMemberAsync(user, "Scheduled unban")
                 .ConfigureAwait(false);
         }
     }

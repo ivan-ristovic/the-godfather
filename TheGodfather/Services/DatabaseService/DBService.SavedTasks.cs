@@ -34,6 +34,7 @@ namespace TheGodfather.Services
                                     ChannelId = (ulong)(long)reader["cid"],
                                     Comment = (string)reader["comment"],
                                     ExecutionTime = (DateTime)reader["execution_time"],
+                                    GuildId = (ulong)(long)reader["gid"],
                                     Type = (SavedTaskType)(short)reader["type"],
                                     UserId = (ulong)(long)reader["uid"],
                                 }
@@ -56,10 +57,11 @@ namespace TheGodfather.Services
                 using (var cmd = con.CreateCommand()) {
                     await con.OpenAsync().ConfigureAwait(false);
 
-                    cmd.CommandText = "INSERT INTO gf.saved_tasks(type, cid, uid, execution_time, comment) VALUES (@type, @cid, @uid, @execution_time, @comment);";
+                    cmd.CommandText = "INSERT INTO gf.saved_tasks(type, cid, uid, gid, execution_time, comment) VALUES (@type, @cid, @uid, @gid, @execution_time, @comment);";
                     cmd.Parameters.AddWithValue("type", NpgsqlDbType.Smallint, task.Type);
                     cmd.Parameters.AddWithValue("cid", NpgsqlDbType.Bigint, task.ChannelId);
                     cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, task.UserId);
+                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, task.GuildId);
                     cmd.Parameters.AddWithValue("execution_time", NpgsqlDbType.Timestamp, task.ExecutionTime);
                     cmd.Parameters.AddWithValue("comment", NpgsqlDbType.Varchar, task.Comment);
 

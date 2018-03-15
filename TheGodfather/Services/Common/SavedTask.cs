@@ -13,6 +13,7 @@ namespace TheGodfather.Services.Common
         public SavedTaskType Type { get; set; }
         public ulong UserId { get; set; }
         public ulong ChannelId { get; set; }
+        public ulong GuildId { get; set; }
         public DateTime ExecutionTime { get; set; }
         public string Comment { get; set; }
 
