@@ -381,7 +381,7 @@
     <Compile Include="Services\SteamService.cs" />
     <Compile Include="Services\UrbanDictService.cs" />
     <Compile Include="Services\YoutubeService.cs" />
-    <Compile Include="Entities\SharedData.cs" />
+    <Compile Include="SharedData.cs" />
     <Compile Include="TheGodfatherShard.cs" />
   </ItemGroup>
   <ItemGroup>

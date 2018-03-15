@@ -4,7 +4,7 @@ namespace TheGodfather.Services.Common
 {
     public enum SavedTaskType
     {
-        Remind = 0,
+        SendMessage = 0,
         Unban = 1
     }
 

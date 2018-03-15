@@ -48,12 +48,12 @@ namespace TheGodfather.Services
             return new ReadOnlyDictionary<int, SavedTask>(tasks);
         }
 
-        public async Task AddSavedTaskAsync()
+        public async Task AddSavedTaskAsync(SavedTask task)
         {
 
         }
 
-        public async Task RemoveSavedTaskAsync()
+        public async Task RemoveSavedTaskAsync(int id)
         {
 
         }

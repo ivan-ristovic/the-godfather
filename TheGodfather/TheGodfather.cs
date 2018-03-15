@@ -12,7 +12,6 @@ using Newtonsoft.Json;
 using TheGodfather.Entities;
 using TheGodfather.Extensions.Collections;
 using TheGodfather.Services;
-using TheGodfather.Services.Common;
 
 using DSharpPlus;
 #endregion
@@ -168,7 +167,7 @@ namespace TheGodfather
             Console.Write("Registering saved tasks...");
             var tasks_db = await DatabaseService.GetAllSavedTasksAsync();
             foreach (var kvp in tasks_db) {
-                var texec = new SavedTaskExecuter(Shards[0].Client, kvp.Value);
+                var texec = new SavedTaskExecuter(kvp.Key, Shards[0].Client, kvp.Value, SharedData, DatabaseService);
                 SharedData.SavedTasks.TryAdd(kvp.Key, texec);
                 texec.ScheduleExecution();
             }
