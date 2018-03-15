@@ -17,6 +17,7 @@ namespace TheGodfather
     public sealed class SharedData
     {
         public BotConfig BotConfiguration { get; internal set; }
+        public ConcurrentDictionary<int, SavedTaskExecuter> SavedTasks { get; set; } = new ConcurrentDictionary<int, SavedTaskExecuter>();
         public ConcurrentDictionary<ulong, string> GuildPrefixes { get; internal set; }
         public ConcurrentDictionary<ulong, ConcurrentHashSet<Regex>> GuildFilters { get; internal set; }
         public ConcurrentDictionary<ulong, ConcurrentHashSet<(Regex, string)>> GuildTextReactions { get; internal set; }
