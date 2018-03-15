@@ -33,7 +33,7 @@ namespace TheGodfather.Services
                                 new SavedTask() {
                                     ChannelId = (ulong)(long)reader["cid"],
                                     Comment = (string)reader["comment"],
-                                    DispatchAt = (DateTime)reader["dispatch_time"],
+                                    ExecutionTime = (DateTime)reader["dispatch_time"],
                                     Type = (SavedTaskType)(short)reader["type"],
                                     UserId = (ulong)(long)reader["uid"],
                                 }

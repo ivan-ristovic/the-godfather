@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
+using TheGodfather.Extensions;
 using TheGodfather.Services;
 using TheGodfather.Services.Common;
 
@@ -18,8 +19,6 @@ namespace TheGodfather.Entities
     {
         public int Id { get; }
         public SavedTask SavedTask { get; }
-        public bool Completed 
-            => (SavedTask.DispatchAt.ToUniversalTime() - DateTime.UtcNow).CompareTo(TimeSpan.Zero) < 0;
 
         private DiscordClient _client;
         private SharedData _shared;
@@ -39,13 +38,7 @@ namespace TheGodfather.Entities
 
         public void ScheduleExecution()
         {
-            TimeSpan t = SavedTask.DispatchAt.ToUniversalTime() - DateTime.UtcNow;
-            if (t.CompareTo(TimeSpan.Zero) < 0) {
-                RemoveTaskFromDatabase();
-                return; // TODO
-            }
-
-            _timer = new Timer(Execute, null, (int)t.TotalMilliseconds, Timeout.Infinite);
+            _timer = new Timer(Execute, null, (int)SavedTask.TimeUntilExecution.TotalMilliseconds, Timeout.Infinite);
         }
 
         private void Execute(object _)
@@ -72,8 +65,17 @@ namespace TheGodfather.Entities
 
         private void RemoveTaskFromDatabase()
         {
-            _shared.SavedTasks.TryRemove(Id, out var _);
+            if (_shared.SavedTasks.ContainsKey(Id))
+                _shared.SavedTasks.TryRemove(Id, out var _);
             _db.RemoveSavedTaskAsync(Id).ConfigureAwait(false).GetAwaiter().GetResult();
+        }
+
+        public async Task ReportMissedExecutionAsync()
+        {
+            var channel = await _client.GetChannelAsync(SavedTask.ChannelId)
+                .ConfigureAwait(false);
+            await channel.SendFailedEmbedAsync("Execution missed!")
+                .ConfigureAwait(false);
         }
     }
 }

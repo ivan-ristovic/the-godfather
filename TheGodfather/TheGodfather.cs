@@ -168,8 +168,12 @@ namespace TheGodfather
             var tasks_db = await DatabaseService.GetAllSavedTasksAsync();
             foreach (var kvp in tasks_db) {
                 var texec = new SavedTaskExecuter(kvp.Key, Shards[0].Client, kvp.Value, SharedData, DatabaseService);
-                SharedData.SavedTasks.TryAdd(kvp.Key, texec);
-                texec.ScheduleExecution();
+                if (texec.SavedTask.IsExecutionTimeReached) {
+                    await texec.ReportMissedExecutionAsync();
+                } else {
+                    SharedData.SavedTasks.TryAdd(kvp.Key, texec);
+                    texec.ScheduleExecution();
+                }
             }
             Console.WriteLine(" Done!");
             Console.WriteLine();
