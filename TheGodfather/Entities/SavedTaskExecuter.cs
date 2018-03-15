@@ -56,18 +56,19 @@ namespace TheGodfather.Entities
                         break;
                 }
 
-                RemoveTaskFromDatabase();
+                RemoveTaskFromDatabase().ConfigureAwait(false).GetAwaiter().GetResult();
 
             } catch (Exception e) {
                 Logger.LogException(LogLevel.Warning, e);
             }
         }
 
-        private void RemoveTaskFromDatabase()
+        public async Task RemoveTaskFromDatabase()
         {
             if (_shared.SavedTasks.ContainsKey(Id))
                 _shared.SavedTasks.TryRemove(Id, out var _);
-            _db.RemoveSavedTaskAsync(Id).ConfigureAwait(false).GetAwaiter().GetResult();
+            await _db.RemoveSavedTaskAsync(Id)
+                .ConfigureAwait(false);
         }
 
         public async Task ReportMissedExecutionAsync()

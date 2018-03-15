@@ -170,6 +170,7 @@ namespace TheGodfather
                 var texec = new SavedTaskExecuter(kvp.Key, Shards[0].Client, kvp.Value, SharedData, DatabaseService);
                 if (texec.SavedTask.IsExecutionTimeReached) {
                     await texec.ReportMissedExecutionAsync();
+                    await texec.RemoveTaskFromDatabase();
                 } else {
                     SharedData.SavedTasks.TryAdd(kvp.Key, texec);
                     texec.ScheduleExecution();
