@@ -260,6 +260,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Attributes\UsageExampleAttribute.cs" />
+    <Compile Include="Entities\SavedTaskExecuter.cs" />
+    <Compile Include="Services\Common\SavedTask.cs" />
     <Compile Include="Extensions\DSharpPlusExtensions.cs" />
     <Compile Include="Modules\Owner\OwnerModule.BlockedUsers.cs" />
     <Compile Include="Modules\Owner\OwnerModule.BlockedChannels.cs" />
@@ -308,6 +310,7 @@
     <Compile Include="Modules\Search\WeatherModule.cs" />
     <Compile Include="Modules\SWAT\SwatModule.Servers.cs" />
     <Compile Include="Services\Common\YouTubeResponse.cs" />
+    <Compile Include="Services\DatabaseService\DBService.SavedTasks.cs" />
     <Compile Include="Services\DatabaseService\DBService.Blocked.cs" />
     <Compile Include="Services\IGodfatherService.cs" />
     <Compile Include="Modules\TheGodfatherBaseModule.cs" />
@@ -378,7 +381,7 @@
     <Compile Include="Services\SteamService.cs" />
     <Compile Include="Services\UrbanDictService.cs" />
     <Compile Include="Services\YoutubeService.cs" />
-    <Compile Include="Entities\SharedData.cs" />
+    <Compile Include="SharedData.cs" />
     <Compile Include="TheGodfatherShard.cs" />
   </ItemGroup>
   <ItemGroup>

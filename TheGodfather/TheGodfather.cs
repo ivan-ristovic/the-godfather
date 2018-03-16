@@ -150,16 +150,33 @@ namespace TheGodfather
 
 
             Console.WriteLine("\rBooting complete!                       ");
+
+
             Console.Write("Starting periodic actions...");
             DatabaseSyncTimer = new Timer(DatabaseSyncTimerCallback, Shards[0].Client, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(3));
             BotStatusTimer = new Timer(BotActivityTimerCallback, Shards[0].Client, TimeSpan.FromSeconds(10), TimeSpan.FromMinutes(10));
             FeedCheckTimer = new Timer(FeedCheckTimerCallback, Shards[0].Client, TimeSpan.FromSeconds(30), TimeSpan.FromMinutes(1));
-
             Console.WriteLine(" Done!");
             Console.WriteLine();
 
+
             GC.Collect();
             Logger.LogMessage(LogLevel.Info, "<br>-------------- NEW INSTANCE STARTED --------------<br>");
+
+
+            Console.WriteLine("Registering saved tasks...");
+            var tasks_db = await DatabaseService.GetAllSavedTasksAsync();
+            foreach (var kvp in tasks_db) {
+                var texec = new SavedTaskExecuter(kvp.Key, Shards[0].Client, kvp.Value, SharedData, DatabaseService);
+                if (texec.SavedTask.IsExecutionTimeReached)
+                    await texec.HandleMissedTaskExecutionAsync();
+                else
+                    texec.ScheduleExecutionAsync();
+            }
+            Console.WriteLine("Done!");
+            Console.WriteLine();
+
+
             await Task.Delay(-1);
         }
 
@@ -170,7 +187,8 @@ namespace TheGodfather
 
             var client = _ as DiscordClient;
             try {
-                DatabaseService.UpdateBotActivityAsync(client).ConfigureAwait(false).GetAwaiter().GetResult();
+                DatabaseService.UpdateBotActivityAsync(client)
+                    .ConfigureAwait(false).GetAwaiter().GetResult();
             } catch (Exception e) {
                 Logger.LogException(LogLevel.Error, e);
             }
@@ -180,7 +198,8 @@ namespace TheGodfather
         {
             var client = _ as DiscordClient;
             try {
-                SharedData.SaveRanksToDatabaseAsync(DatabaseService).ConfigureAwait(false).GetAwaiter().GetResult();
+                SharedData.SaveRanksToDatabaseAsync(DatabaseService)
+                    .ConfigureAwait(false).GetAwaiter().GetResult();
             } catch (Exception e) {
                 Logger.LogException(LogLevel.Error, e);
             }
@@ -190,7 +209,8 @@ namespace TheGodfather
         {
             var client = _ as DiscordClient;
             try {
-                RSSService.CheckFeedsForChangesAsync(client, DatabaseService).ConfigureAwait(false).GetAwaiter().GetResult();
+                RSSService.CheckFeedsForChangesAsync(client, DatabaseService)
+                    .ConfigureAwait(false).GetAwaiter().GetResult();
             } catch (Exception e) {
                 Logger.LogException(LogLevel.Error, e);
             }
