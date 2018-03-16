@@ -171,7 +171,7 @@ namespace TheGodfather
                 if (texec.SavedTask.IsExecutionTimeReached)
                     await texec.HandleMissedTaskExecutionAsync();
                 else
-                    await texec.ScheduleExecutionAsync(add_to_db: false);
+                    texec.ScheduleExecutionAsync();
             }
             Console.WriteLine("Done!");
             Console.WriteLine();

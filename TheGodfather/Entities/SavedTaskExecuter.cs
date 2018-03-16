@@ -25,22 +25,29 @@ namespace TheGodfather.Entities
         private Timer _timer;
 
 
-        public static async Task ScheduleAsync(SharedData shared, DBService db, CommandContext ctx, SavedTaskType type, string comment, DateTime exectime)
+        public static async Task<bool> ScheduleAsync(DiscordClient client, SharedData shared, DBService db, 
+            ulong uid, ulong cid, ulong gid, SavedTaskType type, string comment, DateTime exectime)
         {
             var task = new SavedTask() {
-                ChannelId = ctx.Channel.Id,
+                ChannelId = cid,
                 Comment = comment,
                 ExecutionTime = exectime,
-                GuildId = ctx.Guild.Id,
+                GuildId = gid,
                 Type = type,
-                UserId = ctx.User.Id
+                UserId = uid
             };
 
-            var id = shared.GetAvailableTaskId();
-            var texec = new SavedTaskExecuter(id, ctx.Client, task, shared, db);
+            try {
+                var id = await db.AddSavedTaskAsync(task)
+                    .ConfigureAwait(false);
+                var texec = new SavedTaskExecuter(id, client, task, shared, db);
+                texec.ScheduleExecutionAsync();
+            } catch (Exception e) {
+                Logger.LogException(LogLevel.Warning, e);
+                return false;
+            }
 
-            await texec.ScheduleExecutionAsync()
-                .ConfigureAwait(false);
+            return true;
         }
 
 
@@ -54,10 +61,8 @@ namespace TheGodfather.Entities
         }
 
 
-        public async Task ScheduleExecutionAsync(bool add_to_db = true)
+        public void ScheduleExecutionAsync()
         {
-            if (add_to_db)
-                Id = await _db.AddSavedTaskAsync(SavedTask).ConfigureAwait(false);
             _shared.SavedTasks.TryAdd(Id, this);
             _timer = new Timer(Execute, null, (int)SavedTask.TimeUntilExecution.TotalMilliseconds, Timeout.Infinite);
         }
@@ -120,7 +125,7 @@ namespace TheGodfather.Entities
                 .ConfigureAwait(false);
             var user = await _client.GetUserAsync(SavedTask.UserId)
                 .ConfigureAwait(false);
-            await channel.SendIconEmbedAsync($"{user.Mention} told to remind you to:\n\n{Formatter.Italic(SavedTask.Comment)}", DiscordEmoji.FromName(_client, ":alarm_clock:"))
+            await channel.SendIconEmbedAsync($"{user.Mention}'s reminder:\n\n{Formatter.Italic(SavedTask.Comment)}", DiscordEmoji.FromName(_client, ":alarm_clock:"))
                 .ConfigureAwait(false);
         }
 

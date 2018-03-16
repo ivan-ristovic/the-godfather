@@ -323,6 +323,7 @@ namespace TheGodfather.Modules.Misc
         #region COMMAND_REMIND
         [Command("remind")]
         [Description("Resend a message after some time.")]
+        [UsageExample("!remind 1h Drink water!")]
         public async Task RemindAsync(CommandContext ctx,
                                      [Description("Time span until reminder.")] TimeSpan timespan,
                                      [RemainingText, Description("Remind you of?")] string message)
@@ -337,7 +338,7 @@ namespace TheGodfather.Modules.Misc
                 throw new InvalidCommandUsageException("Time span cannot be less than 1 minute or greater than 1 week.");
 
             DateTime when = DateTime.UtcNow + timespan;
-            await SavedTaskExecuter.ScheduleAsync(Shared, Database, ctx, SavedTaskType.SendMessage, message, when)
+            await SavedTaskExecuter.ScheduleAsync(ctx.Client, Shared, Database, ctx.User.Id, ctx.Channel.Id, ctx.Guild.Id, SavedTaskType.SendMessage, message, when)
                 .ConfigureAwait(false);
 
             await ctx.RespondWithIconEmbedAsync($"I will remind you at {Formatter.Bold(when.ToLongTimeString())} UTC to:\n\n{Formatter.Italic(message)}", ":alarm_clock:")

@@ -54,15 +54,7 @@ namespace TheGodfather
             "Generalissimo (tribute to Raptor)"
             #endregion
         }.AsReadOnly();
-
-
-        public int GetAvailableTaskId()
-        {
-            int i = 1;
-            while (SavedTasks.ContainsKey(i))
-                i++;
-            return i;
-        }
+        
 
         public string GetGuildPrefix(ulong gid)
         {
