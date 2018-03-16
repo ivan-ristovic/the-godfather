@@ -32,7 +32,7 @@ namespace TheGodfather.Services
                                 (int)reader["id"], 
                                 new SavedTask() {
                                     ChannelId = (ulong)(long)reader["cid"],
-                                    Comment = (string)reader["comment"],
+                                    Comment = reader["comment"] is DBNull ? null : (string)reader["comment"],
                                     ExecutionTime = (DateTime)reader["execution_time"],
                                     GuildId = (ulong)(long)reader["gid"],
                                     Type = (SavedTaskType)(short)reader["type"],
@@ -65,7 +65,10 @@ namespace TheGodfather.Services
                     cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, task.UserId);
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, task.GuildId);
                     cmd.Parameters.AddWithValue("execution_time", NpgsqlDbType.Timestamp, task.ExecutionTime);
-                    cmd.Parameters.AddWithValue("comment", NpgsqlDbType.Varchar, task.Comment);
+                    if (string.IsNullOrWhiteSpace(task.Comment))
+                        cmd.Parameters.AddWithValue("comment", NpgsqlDbType.Varchar, DBNull.Value);
+                    else
+                        cmd.Parameters.AddWithValue("comment", NpgsqlDbType.Varchar, task.Comment);
 
                     var res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
                     if (res != null && !(res is DBNull))

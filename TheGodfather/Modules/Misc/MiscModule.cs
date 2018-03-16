@@ -338,8 +338,8 @@ namespace TheGodfather.Modules.Misc
                 throw new InvalidCommandUsageException("Time span cannot be less than 1 minute or greater than 1 week.");
 
             DateTime when = DateTime.UtcNow + timespan;
-            await SavedTaskExecuter.ScheduleAsync(ctx.Client, Shared, Database, ctx.User.Id, ctx.Channel.Id, ctx.Guild.Id, SavedTaskType.SendMessage, message, when)
-                .ConfigureAwait(false);
+            if (!await SavedTaskExecuter.ScheduleAsync(ctx.Client, Shared, Database, ctx.User.Id, ctx.Channel.Id, ctx.Guild.Id, SavedTaskType.SendMessage, message, when).ConfigureAwait(false))
+                throw new DatabaseServiceException("Failed to set a reminder in the database!");
 
             await ctx.RespondWithIconEmbedAsync($"I will remind you at {Formatter.Bold(when.ToLongTimeString())} UTC to:\n\n{Formatter.Italic(message)}", ":alarm_clock:")
                 .ConfigureAwait(false);

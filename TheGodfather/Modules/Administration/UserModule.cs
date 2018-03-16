@@ -4,8 +4,10 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using TheGodfather.Attributes;
+using TheGodfather.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
+using TheGodfather.Services;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -23,6 +25,10 @@ namespace TheGodfather.Modules.Administration
     [ListeningCheck]
     public class UserModule : TheGodfatherBaseModule
     {
+
+        public UserModule(SharedData shared, DBService db) : base(shared, db) { }
+
+
         #region COMMAND_USER_ADDROLE
         [Command("addrole"), Priority(1)]
         [Description("Assign a role to a member.")]
@@ -146,24 +152,22 @@ namespace TheGodfather.Modules.Administration
         [UsageExample("!user tempban @Someone 5h30m30s Troublemaker")]
         [RequirePermissions(Permissions.BanMembers)]
         public async Task TempBanAsync(CommandContext ctx,
-                                      [Description("Time span.")] TimeSpan time,
+                                      [Description("Time span.")] TimeSpan timespan,
                                       [Description("Member.")] DiscordMember member,
                                       [RemainingText, Description("Reason.")] string reason = null)
         {
             if (member.Id == ctx.User.Id)
                 throw new CommandFailedException("You can't ban yourself.");
 
-            await member.BanAsync(delete_message_days: 7, reason: ctx.BuildReasonString($"(tempban for {time.ToString()}) " + reason))
-                .ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync($"{Formatter.Bold(ctx.User.Username)} BANNED {Formatter.Bold(member.Username)} for {Formatter.Bold(time.ToString())}!")
+            await member.BanAsync(delete_message_days: 7, reason: ctx.BuildReasonString($"(tempban for {timespan.ToString()}) " + reason))
                 .ConfigureAwait(false);
 
-            // TODO change this when tasks are added to db
-            await Task.Delay(time)
+            DateTime until = DateTime.UtcNow + timespan;
+            await ctx.RespondWithIconEmbedAsync($"{Formatter.Bold(ctx.User.Username)} BANNED {Formatter.Bold(member.Username)} for {Formatter.Bold(until.ToLongTimeString())} UTC!")
                 .ConfigureAwait(false);
 
-            await member.UnbanAsync(ctx.Guild, reason: "(tempban removed) " + reason)
-                .ConfigureAwait(false);
+            if (!await SavedTaskExecuter.ScheduleAsync(ctx.Client, Shared, Database, member.Id, ctx.Channel.Id, ctx.Guild.Id, Services.Common.SavedTaskType.Unban, null, until).ConfigureAwait(false))
+                throw new CommandFailedException("Failed to schedule the unban task!");
         }
 
         [Command("tempban"), Priority(0)]
