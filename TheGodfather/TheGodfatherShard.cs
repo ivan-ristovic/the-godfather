@@ -53,12 +53,7 @@ namespace TheGodfather
             _db = db;
             _shared = sd;
         }
-
-        ~TheGodfatherShard()
-        {
-            Client.DisconnectAsync().GetAwaiter().GetResult();
-        }
-
+        
 
         public void Initialize()
         {
@@ -66,6 +61,12 @@ namespace TheGodfather
             SetupCommands();
             SetupInteractivity();
             SetupVoice();
+        }
+
+        public async Task DisconnectAndDispose()
+        {
+            await Client.DisconnectAsync();
+            Client.Dispose();
         }
 
         public async Task StartAsync()
