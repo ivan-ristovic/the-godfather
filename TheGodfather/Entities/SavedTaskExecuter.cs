@@ -110,6 +110,8 @@ namespace TheGodfather.Entities
                         await UnbanUserAsync()
                             .ConfigureAwait(false);
                         break;
+                    default:
+                        break;
                 }
                 Logger.LogMessage(LogLevel.Warning, $"Executed missed saved task!<br>User ID: {SavedTask.UserId}<br>Guild ID: {SavedTask.GuildId}");
             } catch (Exception e) {
@@ -137,6 +139,11 @@ namespace TheGodfather.Entities
                 .ConfigureAwait(false);
             await guild.UnbanMemberAsync(user, $"Remove temporary ban for {user.ToString()} (ban time expired)")
                 .ConfigureAwait(false);
+        }
+
+        public void Dispose()
+        {
+            _timer.Dispose();
         }
     }
 }

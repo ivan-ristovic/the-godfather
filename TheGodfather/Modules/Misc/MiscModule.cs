@@ -210,7 +210,7 @@ namespace TheGodfather.Modules.Misc
         #region COMMAND_PENISCOMPARE
         [Command("peniscompare")]
         [Description("Comparison of the results given by ``penis`` command.")]
-        [Aliases("sizecompare", "comparesize", "comparepenis", "cmppenis", "peniscmp")]
+        [Aliases("sizecompare", "comparesize", "comparepenis", "cmppenis", "peniscmp", "comppenis")]
         [UsageExample("!peniscompare @Someone")]
         [UsageExample("!peniscompare @Someone @SomeoneElse")]
         public async Task PenisCompareAsync(CommandContext ctx,
