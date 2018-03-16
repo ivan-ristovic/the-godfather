@@ -34,7 +34,7 @@ namespace TheGodfather.Modules.Owner
     public partial class OwnerModule : TheGodfatherBaseModule
     {
 
-        public OwnerModule(DBService db) : base(db: db) { }
+        public OwnerModule(SharedData shared, DBService db) : base(shared, db) { }
 
 
         #region COMMAND_BOTAVATAR
@@ -463,16 +463,23 @@ namespace TheGodfather.Modules.Owner
         #endregion
 
         #region COMMAND_SHUTDOWN
-        [Command("shutdown")]
+        [Command("shutdown"), Priority(1)]
         [Description("Triggers the dying in the vineyard scene (power off the bot).")]
         [Aliases("disable", "poweroff", "exit", "quit")]
         [UsageExample("!owner shutdown")]
         [ListeningCheck]
+        public async Task ExitAsync(CommandContext ctx,
+                                   [Description("Time until shutdown.")] TimeSpan timespan)
+        {
+            await Task.Delay(0).ConfigureAwait(false);
+            Shared.CTS.CancelAfter(timespan);
+        }
+
+        [Command("shutdown"), Priority(0)]
         public async Task ExitAsync(CommandContext ctx)
         {
-            await ctx.RespondAsync("https://www.youtube.com/watch?v=4rbfuw0UN2A")
-                .ConfigureAwait(false);
-            Environment.Exit(0);
+            await Task.Delay(0).ConfigureAwait(false);
+            Shared.CTS.Cancel();
         }
         #endregion
 

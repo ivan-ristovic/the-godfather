@@ -3,6 +3,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -20,6 +21,7 @@ namespace TheGodfather
 {
     internal static class TheGodfather
     {
+        private static CancellationTokenSource CTS { get; set; } = new CancellationTokenSource();
         private static List<TheGodfatherShard> Shards { get; set; }
         private static DBService DatabaseService { get; set; }
         private static SharedData SharedData { get; set; }
@@ -125,6 +127,7 @@ namespace TheGodfather
                 BlockedChannels = blockedchn,
                 BlockedUsers = blockedusr,
                 BotConfiguration = cfg,
+                CTS = CTS,
                 GuildPrefixes = gprefixes,
                 GuildFilters = gfilters,
                 GuildTextReactions = gtextreactions,
@@ -177,7 +180,18 @@ namespace TheGodfather
             Console.WriteLine();
 
 
-            await Task.Delay(-1);
+            await WaitForCancellationAsync();
+
+
+            Console.WriteLine("Disposing objects...");
+            BotStatusTimer.Dispose();
+            DatabaseSyncTimer.Dispose();
+            FeedCheckTimer.Dispose();
+            foreach (var shard in Shards)
+                await shard.DisconnectAndDispose();
+            CTS.Dispose();
+            SharedData.Dispose();
+            Console.WriteLine("Done! Bye!");
         }
 
         private static void BotActivityTimerCallback(object _)
@@ -197,23 +211,23 @@ namespace TheGodfather
         private static void DatabaseSyncTimerCallback(object _)
         {
             var client = _ as DiscordClient;
-            try {
-                SharedData.SaveRanksToDatabaseAsync(DatabaseService)
-                    .ConfigureAwait(false).GetAwaiter().GetResult();
-            } catch (Exception e) {
-                Logger.LogException(LogLevel.Error, e);
-            }
+            SharedData.SyncDataWithDatabaseAsync(DatabaseService).ConfigureAwait(false).GetAwaiter().GetResult();
         }
 
         private static void FeedCheckTimerCallback(object _)
         {
             var client = _ as DiscordClient;
             try {
-                RSSService.CheckFeedsForChangesAsync(client, DatabaseService)
-                    .ConfigureAwait(false).GetAwaiter().GetResult();
+                RSSService.CheckFeedsForChangesAsync(client, DatabaseService).ConfigureAwait(false).GetAwaiter().GetResult();
             } catch (Exception e) {
                 Logger.LogException(LogLevel.Error, e);
             }
+        }
+
+        private static async Task WaitForCancellationAsync()
+        {
+            while (!CTS.IsCancellationRequested)
+                await Task.Delay(500);
         }
     }
 }

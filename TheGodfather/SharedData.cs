@@ -4,18 +4,22 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 using TheGodfather.Entities;
 using TheGodfather.Extensions.Collections;
 using TheGodfather.Modules.Gambling.Cards;
 using TheGodfather.Services;
+
+using DSharpPlus;
 #endregion
 
 namespace TheGodfather
 {
     public sealed class SharedData
     {
+        public CancellationTokenSource CTS { get; set; }
         public ConcurrentHashSet<ulong> BlockedUsers { get; set; } = new ConcurrentHashSet<ulong>();
         public ConcurrentHashSet<ulong> BlockedChannels { get; set; } = new ConcurrentHashSet<ulong>();
         public BotConfig BotConfiguration { get; internal set; }
@@ -110,5 +114,21 @@ namespace TheGodfather
 
         public uint XpNeededForRankWithIndex(int index)
             => (uint)(index * index * 10);
+
+        public async Task SyncDataWithDatabaseAsync(DBService db)
+        {
+            try {
+                await SaveRanksToDatabaseAsync(db)
+                    .ConfigureAwait(false);
+            } catch (Exception e) {
+                Logger.LogException(LogLevel.Error, e);
+            }
+        }
+
+        public void Dispose()
+        {
+            foreach (var kvp in SavedTasks)
+                kvp.Value.Dispose();
+        }
     }
 }
