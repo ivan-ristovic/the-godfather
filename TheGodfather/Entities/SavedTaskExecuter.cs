@@ -1,8 +1,5 @@
 ﻿#region USING_DIRECTIVES
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -11,6 +8,7 @@ using TheGodfather.Services;
 using TheGodfather.Services.Common;
 
 using DSharpPlus;
+using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
 #endregion
 
@@ -18,13 +16,32 @@ namespace TheGodfather.Entities
 {
     public class SavedTaskExecuter
     {
-        public int Id { get; }
+        public int Id { get; private set; }
         public SavedTask SavedTask { get; }
 
         private DiscordClient _client;
         private SharedData _shared;
         private DBService _db;
         private Timer _timer;
+
+
+        public static async Task ScheduleAsync(SharedData shared, DBService db, CommandContext ctx, SavedTaskType type, string comment, DateTime exectime)
+        {
+            var task = new SavedTask() {
+                ChannelId = ctx.Channel.Id,
+                Comment = comment,
+                ExecutionTime = exectime,
+                GuildId = ctx.Guild.Id,
+                Type = type,
+                UserId = ctx.User.Id
+            };
+
+            var id = shared.GetAvailableTaskId();
+            var texec = new SavedTaskExecuter(id, ctx.Client, task, shared, db);
+
+            await texec.ScheduleExecutionAsync()
+                .ConfigureAwait(false);
+        }
 
 
         public SavedTaskExecuter(int id, DiscordClient client, SavedTask task, SharedData data, DBService db)
@@ -37,8 +54,11 @@ namespace TheGodfather.Entities
         }
 
 
-        public void ScheduleExecution()
+        public async Task ScheduleExecutionAsync(bool add_to_db = true)
         {
+            if (add_to_db)
+                Id = await _db.AddSavedTaskAsync(SavedTask).ConfigureAwait(false);
+            _shared.SavedTasks.TryAdd(Id, this);
             _timer = new Timer(Execute, null, (int)SavedTask.TimeUntilExecution.TotalMilliseconds, Timeout.Infinite);
         }
 
@@ -53,7 +73,7 @@ namespace TheGodfather.Entities
                         UnbanUserAsync().ConfigureAwait(false).GetAwaiter().GetResult();
                         break;
                 }
-                Logger.LogMessage(LogLevel.Debug, $"Saved task executed: {nameof(SavedTask.Type)} ({SavedTask.Comment})<br>User ID: {SavedTask.UserId}<br>Guild ID: {SavedTask.GuildId}");
+                Logger.LogMessage(LogLevel.Info, $"Saved task executed: {nameof(SavedTask.Type)} ({SavedTask.Comment})<br>User ID: {SavedTask.UserId}<br>Guild ID: {SavedTask.GuildId}");
             } catch (Exception e) {
                 Logger.LogException(LogLevel.Warning, e);
             } finally {
@@ -78,7 +98,7 @@ namespace TheGodfather.Entities
                             .ConfigureAwait(false);
                         var user = await _client.GetUserAsync(SavedTask.UserId)
                             .ConfigureAwait(false);
-                        await channel.SendFailedEmbedAsync($"I have been asleep and failed to remind {user.Mention} to:\n\n{Formatter.Italic(SavedTask.Comment)}\n\nat {SavedTask.ExecutionTime}")
+                        await channel.SendFailedEmbedAsync($"I have been asleep and failed to remind {user.Mention} to:\n\n{Formatter.Italic(SavedTask.Comment)}\n\nat {SavedTask.ExecutionTime.ToLongTimeString()} UTC")
                             .ConfigureAwait(false);
                         break;
                     case SavedTaskType.Unban:
@@ -86,7 +106,7 @@ namespace TheGodfather.Entities
                             .ConfigureAwait(false);
                         break;
                 }
-                Logger.LogMessage(LogLevel.Warning, $"Missed saved task executed: {nameof(SavedTask.Type)} ({SavedTask.Comment})<br>User ID: {SavedTask.UserId}<br>Guild ID: {SavedTask.GuildId}");
+                Logger.LogMessage(LogLevel.Warning, $"Missed saved task: {nameof(SavedTask.Type)} ({SavedTask.Comment})<br>User ID: {SavedTask.UserId}<br>Guild ID: {SavedTask.GuildId}");
             } catch (Exception e) {
                 Logger.LogException(LogLevel.Warning, e);
             } finally {
@@ -98,7 +118,9 @@ namespace TheGodfather.Entities
         {
             var channel = await _client.GetChannelAsync(SavedTask.ChannelId)
                 .ConfigureAwait(false);
-            await channel.SendIconEmbedAsync(SavedTask.Comment, DiscordEmoji.FromName(_client, ":alarm_clock:"))
+            var user = await _client.GetUserAsync(SavedTask.UserId)
+                .ConfigureAwait(false);
+            await channel.SendIconEmbedAsync($"{user.Mention} told to remind you to:\n\n{Formatter.Italic(SavedTask.Comment)}", DiscordEmoji.FromName(_client, ":alarm_clock:"))
                 .ConfigureAwait(false);
         }
 

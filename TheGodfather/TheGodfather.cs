@@ -164,19 +164,16 @@ namespace TheGodfather
             Logger.LogMessage(LogLevel.Info, "<br>-------------- NEW INSTANCE STARTED --------------<br>");
 
 
-            Console.Write("Registering saved tasks...");
+            Console.WriteLine("Registering saved tasks...");
             var tasks_db = await DatabaseService.GetAllSavedTasksAsync();
             foreach (var kvp in tasks_db) {
                 var texec = new SavedTaskExecuter(kvp.Key, Shards[0].Client, kvp.Value, SharedData, DatabaseService);
-                if (texec.SavedTask.IsExecutionTimeReached) {
+                if (texec.SavedTask.IsExecutionTimeReached)
                     await texec.HandleMissedTaskExecutionAsync();
-                    await texec.RemoveTaskFromDatabase();
-                } else {
-                    SharedData.SavedTasks.TryAdd(kvp.Key, texec);
-                    texec.ScheduleExecution();
-                }
+                else
+                    await texec.ScheduleExecutionAsync(add_to_db: false);
             }
-            Console.WriteLine(" Done!");
+            Console.WriteLine("Done!");
             Console.WriteLine();
 
 

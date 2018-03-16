@@ -49,15 +49,17 @@ namespace TheGodfather.Services
             return new ReadOnlyDictionary<int, SavedTask>(tasks);
         }
 
-        public async Task AddSavedTaskAsync(SavedTask task)
+        public async Task<int> AddSavedTaskAsync(SavedTask task)
         {
+            int id = 0;
+
             await _sem.WaitAsync();
             try {
                 using (var con = new NpgsqlConnection(_connectionString))
                 using (var cmd = con.CreateCommand()) {
                     await con.OpenAsync().ConfigureAwait(false);
 
-                    cmd.CommandText = "INSERT INTO gf.saved_tasks(type, cid, uid, gid, execution_time, comment) VALUES (@type, @cid, @uid, @gid, @execution_time, @comment);";
+                    cmd.CommandText = "INSERT INTO gf.saved_tasks(type, cid, uid, gid, execution_time, comment) VALUES (@type, @cid, @uid, @gid, @execution_time, @comment) RETURNING id;";
                     cmd.Parameters.AddWithValue("type", NpgsqlDbType.Smallint, task.Type);
                     cmd.Parameters.AddWithValue("cid", NpgsqlDbType.Bigint, task.ChannelId);
                     cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, task.UserId);
@@ -65,11 +67,15 @@ namespace TheGodfather.Services
                     cmd.Parameters.AddWithValue("execution_time", NpgsqlDbType.Timestamp, task.ExecutionTime);
                     cmd.Parameters.AddWithValue("comment", NpgsqlDbType.Varchar, task.Comment);
 
-                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                    var res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
+                    if (res != null && !(res is DBNull))
+                        id = (int)res;
                 }
             } finally {
                 _sem.Release();
             }
+
+            return id;
         }
 
         public async Task RemoveSavedTaskAsync(int id)

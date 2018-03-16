@@ -18,7 +18,7 @@ namespace TheGodfather.Services.Common
         public string Comment { get; set; }
 
         public TimeSpan TimeUntilExecution
-            => ExecutionTime.ToUniversalTime() - DateTime.UtcNow;
+            => ExecutionTime - DateTime.UtcNow;
 
         public bool IsExecutionTimeReached
             => TimeUntilExecution.CompareTo(TimeSpan.Zero) < 0;

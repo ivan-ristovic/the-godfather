@@ -12,6 +12,7 @@ using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Misc.Common;
 using TheGodfather.Services;
+using TheGodfather.Services.Common;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -319,30 +320,30 @@ namespace TheGodfather.Modules.Misc
         }
         #endregion
 
-        /* TODO remind timer
         #region COMMAND_REMIND
         [Command("remind")]
         [Description("Resend a message after some time.")]
         public async Task RemindAsync(CommandContext ctx,
-                                     [Description("Time to wait before repeat (in seconds).")] int time,
-                                     [RemainingText, Description("What to repeat.")] string s)
+                                     [Description("Time span until reminder.")] TimeSpan timespan,
+                                     [RemainingText, Description("Remind you of?")] string message)
         {
-             
-            if (time == 0 || string.IsNullOrWhiteSpace(s))
+            if (string.IsNullOrWhiteSpace(message))
                 throw new InvalidCommandUsageException("Missing time or repeat string.");
 
-            if (time < 0 || time > 604800)
-                throw new CommandFailedException("Time cannot be less than 0 or greater than 1 week.", new ArgumentOutOfRangeException());
+            if (message.Length > 120)
+                throw new InvalidCommandUsageException("Message must be shorter than 120 characters.");
 
-            await ctx.RespondAsync($"I will remind you to: \"{s}\" in {Formatter.Bold(time.ToString())} seconds.")
+            if (timespan.TotalMinutes < 1 || timespan.TotalDays > 7)
+                throw new InvalidCommandUsageException("Time span cannot be less than 1 minute or greater than 1 week.");
+
+            DateTime when = DateTime.UtcNow + timespan;
+            await SavedTaskExecuter.ScheduleAsync(Shared, Database, ctx, SavedTaskType.SendMessage, message, when)
                 .ConfigureAwait(false);
-            await Task.Delay(TimeSpan.FromSeconds(time))
-                .ConfigureAwait(false);
-            await ctx.RespondAsync($"I was told to remind you to: \"{s}\".")
+
+            await ctx.RespondWithIconEmbedAsync($"I will remind you at {Formatter.Bold(when.ToLongTimeString())} UTC to:\n\n{Formatter.Italic(message)}", ":alarm_clock:")
                 .ConfigureAwait(false);
         }
         #endregion
-        */
 
         #region COMMAND_REPORT
         [Command("report")]
