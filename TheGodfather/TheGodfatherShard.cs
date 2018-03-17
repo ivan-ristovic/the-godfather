@@ -300,8 +300,8 @@ namespace TheGodfather
             }
 
             // Check if message has a text reaction
-            if (_shared.GuildTextReactions.ContainsKey(e.Guild.Id)) {
-                var tr = _shared.GuildTextReactions[e.Guild.Id]?.FirstOrDefault(r => r.Matches(e.Message.Content));
+            if (_shared.TextReactions.ContainsKey(e.Guild.Id)) {
+                var tr = _shared.TextReactions[e.Guild.Id]?.FirstOrDefault(r => r.Matches(e.Message.Content));
                 if (tr != null) {
                     Log(LogLevel.Debug,
                         $"Text reaction detected: {tr.Response}<br>" +
@@ -318,8 +318,8 @@ namespace TheGodfather
                 return;
 
             // Check if message has an emoji reaction
-            if (_shared.GuildEmojiReactions.ContainsKey(e.Guild.Id)) {
-                var ereactions = _shared.GuildEmojiReactions[e.Guild.Id].Where(er => er.Matches(e.Message.Content));
+            if (_shared.EmojiReactions.ContainsKey(e.Guild.Id)) {
+                var ereactions = _shared.EmojiReactions[e.Guild.Id].Where(er => er.Matches(e.Message.Content));
                 foreach (var er in ereactions) {
                     Log(LogLevel.Debug,
                         $"Emoji reaction detected: {er.Response}<br>" +

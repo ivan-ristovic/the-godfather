@@ -81,14 +81,14 @@ namespace TheGodfather.Modules.Administration
                     continue;
                 }
 
-                if (Shared.GuildFilters.ContainsKey(ctx.Guild.Id)) {
-                    if (Shared.GuildFilters[ctx.Guild.Id].Any(r => r.ToString() == regex.ToString())) {
+                if (Shared.Filters.ContainsKey(ctx.Guild.Id)) {
+                    if (Shared.Filters[ctx.Guild.Id].Any(r => r.ToString() == regex.ToString())) {
                         errors.AppendLine($"Error: Filter {Formatter.Bold(filter)} already exists.");
                         continue;
                     }
-                    Shared.GuildFilters[ctx.Guild.Id].Add(regex);
+                    Shared.Filters[ctx.Guild.Id].Add(regex);
                 } else {
-                    Shared.GuildFilters.TryAdd(ctx.Guild.Id, new ConcurrentHashSet<Regex>() { regex });
+                    Shared.Filters.TryAdd(ctx.Guild.Id, new ConcurrentHashSet<Regex>() { regex });
                 }
 
                 try {
@@ -116,8 +116,8 @@ namespace TheGodfather.Modules.Administration
             if (!await ctx.AskYesNoQuestionAsync("Are you sure you want to delete all filters for this guild?").ConfigureAwait(false))
                 return;
 
-            if (Shared.GuildFilters.ContainsKey(ctx.Guild.Id))
-                Shared.GuildFilters.TryRemove(ctx.Guild.Id, out _);
+            if (Shared.Filters.ContainsKey(ctx.Guild.Id))
+                Shared.Filters.TryRemove(ctx.Guild.Id, out _);
 
             try {
                 await Database.DeleteAllGuildFiltersAsync(ctx.Guild.Id)
@@ -141,13 +141,13 @@ namespace TheGodfather.Modules.Administration
         public async Task DeleteAsync(CommandContext ctx,
                                      [RemainingText, Description("Filters to remove.")] params string[] filters)
         {
-            if (!Shared.GuildFilters.ContainsKey(ctx.Guild.Id))
+            if (!Shared.Filters.ContainsKey(ctx.Guild.Id))
                 throw new CommandFailedException("This guild has no filters registered.");
 
             var errors = new StringBuilder();
             foreach (var filter in filters) {
                 var rstr = $@"\b{filter}\b";
-                if (Shared.GuildFilters[ctx.Guild.Id].RemoveWhere(r => r.ToString() == rstr) == 0) {
+                if (Shared.Filters[ctx.Guild.Id].RemoveWhere(r => r.ToString() == rstr) == 0) {
                     errors.AppendLine($"Error: Filter {Formatter.Bold(filter)} does not exist.");
                     continue;
                 }
@@ -173,12 +173,12 @@ namespace TheGodfather.Modules.Administration
         [UsageExample("!filter list")]
         public async Task ListAsync(CommandContext ctx)
         {
-            if (!Shared.GuildFilters.ContainsKey(ctx.Guild.Id) || !Shared.GuildFilters[ctx.Guild.Id].Any())
+            if (!Shared.Filters.ContainsKey(ctx.Guild.Id) || !Shared.Filters[ctx.Guild.Id].Any())
                 throw new CommandFailedException("No filters registered for this guild.");
 
             await ctx.SendPaginatedCollectionAsync(
                 "Filters in this guild",
-                Shared.GuildFilters[ctx.Guild.Id],
+                Shared.Filters[ctx.Guild.Id],
                 r => r.ToString().Replace(@"\b", ""),
                 DiscordColor.DarkGreen
             ).ConfigureAwait(false);

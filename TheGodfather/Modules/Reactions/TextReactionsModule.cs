@@ -76,8 +76,8 @@ namespace TheGodfather.Modules.Reactions
             if (!await ctx.AskYesNoQuestionAsync("Are you sure you want to delete all text reactions for this guild?").ConfigureAwait(false))
                 return;
 
-            if (Shared.GuildTextReactions.ContainsKey(ctx.Guild.Id))
-                Shared.GuildTextReactions.TryRemove(ctx.Guild.Id, out _);
+            if (Shared.TextReactions.ContainsKey(ctx.Guild.Id))
+                Shared.TextReactions.TryRemove(ctx.Guild.Id, out _);
 
             try {
                 await Database.DeleteAllGuildTextReactionsAsync(ctx.Guild.Id)
@@ -104,7 +104,7 @@ namespace TheGodfather.Modules.Reactions
             if (triggers == null)
                 throw new InvalidCommandUsageException("Triggers missing.");
 
-            if (!Shared.GuildTextReactions.ContainsKey(ctx.Guild.Id))
+            if (!Shared.TextReactions.ContainsKey(ctx.Guild.Id))
                 throw new CommandFailedException("This guild has no text reactions registered.");
 
             var errors = new StringBuilder();
@@ -117,13 +117,17 @@ namespace TheGodfather.Modules.Reactions
                     continue;
                 }
 
-                if (!Shared.TextTriggerExists(ctx.Guild.Id, trigger)) {
+                var found = Shared.TextReactions[ctx.Guild.Id].Where(tr => tr.ContainsTriggerPattern(trigger));
+                if (!found.Any()) {
                     errors.AppendLine($"Warning: Trigger {Formatter.Bold(trigger)} does not exist in this guild.");
                     continue;
                 }
 
-                if (Shared.GuildTextReactions[ctx.Guild.Id].RemoveWhere(tr => tr.ContainsTriggerPattern(trigger)) == 0) {
-                    errors.AppendLine($"Warning: Failed to remove text reaction for trigger {Formatter.Bold(trigger)}.");
+                bool success = true;
+                foreach (var tr in found)
+                    success |= tr.RemoveTrigger(trigger);
+                if (!success) {
+                    errors.AppendLine($"Warning: Failed to remove some text reactions for trigger {Formatter.Bold(trigger)}.");
                     continue;
                 }
 
@@ -138,6 +142,8 @@ namespace TheGodfather.Modules.Reactions
 
             await ctx.RespondWithIconEmbedAsync($"Done!\n\n{errors.ToString()}")
                 .ConfigureAwait(false);
+
+            Shared.TextReactions[ctx.Guild.Id].RemoveWhere(tr => tr.TriggerRegexes.Count == 0);
         }
         #endregion
 
@@ -148,12 +154,12 @@ namespace TheGodfather.Modules.Reactions
         [UsageExample("!textreactions list")]
         public async Task ListAsync(CommandContext ctx)
         {
-            if (!Shared.GuildTextReactions.ContainsKey(ctx.Guild.Id) || !Shared.GuildTextReactions[ctx.Guild.Id].Any())
+            if (!Shared.TextReactions.ContainsKey(ctx.Guild.Id) || !Shared.TextReactions[ctx.Guild.Id].Any())
                 throw new CommandFailedException("This guild has no text reactions registered.");
             
             await ctx.SendPaginatedCollectionAsync(
                 "Text reactions for this guild",
-                Shared.GuildTextReactions[ctx.Guild.Id].OrderBy(tr => tr.OrderedTriggerStrings.First()),
+                Shared.TextReactions[ctx.Guild.Id].OrderBy(tr => tr.OrderedTriggerStrings.First()),
                 tr => $"{tr.Response} | Triggers: {string.Join(", ", tr.TriggerStrings)}",
                 DiscordColor.Blue
             ).ConfigureAwait(false);
@@ -173,34 +179,34 @@ namespace TheGodfather.Modules.Reactions
             if (trigger.Length > 120 || response.Length > 120)
                 throw new CommandFailedException("Trigger or response cannot be longer than 120 characters.");
 
-            if (!Shared.GuildTextReactions.ContainsKey(ctx.Guild.Id))
-                Shared.GuildTextReactions.TryAdd(ctx.Guild.Id, new ConcurrentHashSet<TextReaction>());
+            if (!Shared.TextReactions.ContainsKey(ctx.Guild.Id))
+                Shared.TextReactions.TryAdd(ctx.Guild.Id, new ConcurrentHashSet<TextReaction>());
 
             if (is_regex_trigger && !IsValidRegex(trigger))
                 throw new CommandFailedException($"Trigger {Formatter.Bold(trigger)} is not a valid regular expression.");
 
-            var errors = new StringBuilder();
             if (Shared.TextTriggerExists(ctx.Guild.Id, trigger))
-                errors.AppendLine($"Note: Trigger {Formatter.Bold(trigger)} already exists.");
+                throw new CommandFailedException($"Trigger {Formatter.Bold(trigger)} already exists.");
 
-            var reaction = Shared.GuildTextReactions[ctx.Guild.Id].FirstOrDefault(tr => tr.Response == response);
+            var reaction = Shared.TextReactions[ctx.Guild.Id].FirstOrDefault(tr => tr.Response == response);
             if (reaction != null) {
                 if (!reaction.AddTrigger(trigger, is_regex_trigger))
                     throw new CommandFailedException($"Failed to add trigger {Formatter.Bold(trigger)}.");
             } else {
-                if (!Shared.GuildTextReactions[ctx.Guild.Id].Add(new TextReaction(trigger, response, is_regex_trigger)))
+                if (!Shared.TextReactions[ctx.Guild.Id].Add(new TextReaction(trigger, response, is_regex_trigger)))
                     throw new CommandFailedException($"Failed to add trigger {Formatter.Bold(trigger)}.");
             }
 
+            string errors = "";
             try {
                 await Database.AddTextReactionAsync(ctx.Guild.Id, trigger, response, is_regex_trigger)
                     .ConfigureAwait(false);
             } catch (Exception e) {
                 Logger.LogException(LogLevel.Warning, e);
-                errors.AppendLine($"Warning: Failed to add trigger {Formatter.Bold(trigger)} to the database.");
+                errors = $"Warning: Failed to add trigger {Formatter.Bold(trigger)} to the database.";
             }
 
-            await ctx.RespondWithIconEmbedAsync($"Done!\n\n{errors.ToString()}")
+            await ctx.RespondWithIconEmbedAsync($"Done!\n\n{errors}")
                 .ConfigureAwait(false);
         }
         #endregion

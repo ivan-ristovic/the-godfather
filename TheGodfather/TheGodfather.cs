@@ -126,9 +126,9 @@ namespace TheGodfather
                 BotConfiguration = cfg,
                 CTS = CTS,
                 GuildPrefixes = gprefixes,
-                GuildFilters = gfilters,
-                GuildTextReactions = gtextreactions,
-                GuildEmojiReactions = gemojireactions,
+                Filters = gfilters,
+                TextReactions = gtextreactions,
+                EmojiReactions = gemojireactions,
                 MessageCount = msgcount
             };
 

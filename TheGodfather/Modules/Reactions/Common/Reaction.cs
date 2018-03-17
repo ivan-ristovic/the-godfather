@@ -9,7 +9,7 @@ using TheGodfather.Extensions.Collections;
 
 namespace TheGodfather.Modules.Reactions.Common
 {
-    public abstract class Reaction
+    public abstract class Reaction : IEquatable<Reaction>
     {
         private static string GetRegexString(string s)
             => $@"\b{s.ToLowerInvariant()}\b";
@@ -35,10 +35,10 @@ namespace TheGodfather.Modules.Reactions.Common
                 return TriggerRegexes.Add(new Regex(GetRegexString(Regex.Escape(trigger.ToLowerInvariant())), RegexOptions.IgnoreCase));
         }
 
-        public void RemoveTrigger(string trigger)
+        public bool RemoveTrigger(string trigger)
         {
             var rstr = GetRegexString(trigger);
-            TriggerRegexes.RemoveWhere(r => r.ToString() == rstr);
+            return TriggerRegexes.RemoveWhere(r => r.ToString() == rstr) > 0;
         }
 
         public bool Matches(string str)
@@ -49,5 +49,8 @@ namespace TheGodfather.Modules.Reactions.Common
 
         public bool HasSameResponseAs<T>(T other) where T : Reaction
             => Response == other.Response;
+
+        public bool Equals(Reaction other)
+            => HasSameResponseAs(other);
     }
 }

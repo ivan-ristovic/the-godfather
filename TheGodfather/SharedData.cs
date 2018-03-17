@@ -26,9 +26,9 @@ namespace TheGodfather
         public ConcurrentDictionary<ulong, Deck> CardDecks { get; internal set; } = new ConcurrentDictionary<ulong, Deck>();
         public CancellationTokenSource CTS { get; internal set; }
         public ConcurrentDictionary<ulong, string> GuildPrefixes { get; internal set; }
-        public ConcurrentDictionary<ulong, ConcurrentHashSet<Regex>> GuildFilters { get; internal set; }
-        public ConcurrentDictionary<ulong, ConcurrentHashSet<TextReaction>> GuildTextReactions { get; internal set; }
-        public ConcurrentDictionary<ulong, ConcurrentHashSet<EmojiReaction>> GuildEmojiReactions { get; internal set; }
+        public ConcurrentDictionary<ulong, ConcurrentHashSet<Regex>> Filters { get; internal set; }
+        public ConcurrentDictionary<ulong, ConcurrentHashSet<TextReaction>> TextReactions { get; internal set; }
+        public ConcurrentDictionary<ulong, ConcurrentHashSet<EmojiReaction>> EmojiReactions { get; internal set; }
         public ConcurrentDictionary<ulong, ulong> MessageCount { get; internal set; }
         public ConcurrentDictionary<int, SavedTaskExecuter> SavedTasks { get; internal set; } = new ConcurrentDictionary<int, SavedTaskExecuter>();
         public bool StatusRotationEnabled { get; internal set; } = true;
@@ -80,21 +80,21 @@ namespace TheGodfather
 
         public bool MessageContainsFilter(ulong gid, string message)
         {
-            if (!GuildFilters.ContainsKey(gid) || GuildFilters[gid] == null)
+            if (!Filters.ContainsKey(gid) || Filters[gid] == null)
                 return false;
 
             message = message.ToLowerInvariant();
-            return GuildFilters[gid].Any(f => f.IsMatch(message));
+            return Filters[gid].Any(f => f.IsMatch(message));
         }
 
         public bool TextTriggerExists(ulong gid, string trigger)
         {
-            return GuildTextReactions.ContainsKey(gid) && GuildTextReactions[gid] != null && GuildTextReactions[gid].Any(tr => tr.ContainsTriggerPattern(trigger));
+            return TextReactions.ContainsKey(gid) && TextReactions[gid] != null && TextReactions[gid].Any(tr => tr.ContainsTriggerPattern(trigger));
         }
 
         public bool EmojiTriggerExists(ulong gid, string trigger)
         {
-            return GuildEmojiReactions.ContainsKey(gid) && GuildEmojiReactions[gid] != null && GuildEmojiReactions[gid].Any(er => er.ContainsTriggerPattern(trigger));
+            return EmojiReactions.ContainsKey(gid) && EmojiReactions[gid] != null && EmojiReactions[gid].Any(er => er.ContainsTriggerPattern(trigger));
         }
 
         public int UpdateMessageCount(ulong uid)
