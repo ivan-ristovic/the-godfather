@@ -10,6 +10,7 @@ using TheGodfather.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Extensions.Collections;
+using TheGodfather.Modules.Reactions.Common;
 using TheGodfather.Services;
 
 using DSharpPlus;
@@ -59,22 +60,18 @@ namespace TheGodfather.Modules.Reactions
                 throw new CommandFailedException("Trigger or response cannot be longer than 120 characters.");
 
             if (!Shared.GuildTextReactions.ContainsKey(ctx.Guild.Id))
-                Shared.GuildTextReactions.TryAdd(ctx.Guild.Id, new ConcurrentHashSet<(Regex, string)>());
+                Shared.GuildTextReactions.TryAdd(ctx.Guild.Id, new ConcurrentHashSet<TextReaction>());
 
-            Regex regex;
-            string errors = "";
-            try {
-                regex = new Regex($@"\b({trigger.ToLowerInvariant()})\b", RegexOptions.IgnoreCase);
-            } catch (ArgumentException) {
+            if (!IsValidRegex(trigger))
                 throw new CommandFailedException($"Trigger {Formatter.Bold(trigger)} is not a valid regular expression.");
-            }
 
             if (Shared.TextTriggerExists(ctx.Guild.Id, trigger))
                 throw new CommandFailedException($"Trigger {Formatter.Bold(trigger)} already exists.");
 
-            if (!Shared.GuildTextReactions[ctx.Guild.Id].Add((regex, response)))
+            if (!Shared.GuildTextReactions[ctx.Guild.Id].Add(new TextReaction(trigger, response, is_regex_trigger: true)))
                 throw new CommandFailedException($"Failed to add trigger {Formatter.Bold(trigger)}.");
 
+            string errors = "";
             try {
                 await Database.AddTextReactionAsync(ctx.Guild.Id, trigger, response)
                     .ConfigureAwait(false);
@@ -135,10 +132,7 @@ namespace TheGodfather.Modules.Reactions
                 if (string.IsNullOrWhiteSpace(trigger))
                     continue;
 
-                Regex regex;
-                try {
-                    regex = new Regex($@"\b({trigger.ToLowerInvariant()})\b");
-                } catch (ArgumentException) {
+                if (!IsValidRegex(trigger)) {
                     errors.AppendLine($"Error: Trigger {Formatter.Bold(trigger)} is not a valid regular expression.");
                     continue;
                 }
@@ -148,7 +142,7 @@ namespace TheGodfather.Modules.Reactions
                     continue;
                 }
 
-                if (Shared.GuildTextReactions[ctx.Guild.Id].RemoveWhere(tup => tup.Item1.ToString() == regex.ToString()) == 0) {
+                if (Shared.GuildTextReactions[ctx.Guild.Id].RemoveWhere(tr => tr.EqualsToString(trigger)) == 0) {
                     errors.AppendLine($"Warning: Failed to remove text reaction for trigger {Formatter.Bold(trigger)}.");
                     continue;
                 }
@@ -179,8 +173,8 @@ namespace TheGodfather.Modules.Reactions
             
             await ctx.SendPaginatedCollectionAsync(
                 "Text reactions for this guild",
-                Shared.GuildTextReactions[ctx.Guild.Id].OrderBy(kvp => kvp.Item1.ToString()),
-                tup => $"{tup.Item1.ToString().Replace(@"\b", "")} => {tup.Item2}",
+                Shared.GuildTextReactions[ctx.Guild.Id].OrderBy(tr => tr.TriggerString),
+                tr => $"{tr.TriggerString} => {tr.Response}",
                 DiscordColor.Blue
             ).ConfigureAwait(false);
         }

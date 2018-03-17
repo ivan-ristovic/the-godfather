@@ -2,15 +2,13 @@
 using System;
 using System.Net;
 using System.Net.Http;
-using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 
 using TheGodfather.Entities;
-using TheGodfather.Extensions;
 using TheGodfather.Services;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
-using DSharpPlus.Entities;
 #endregion
 
 namespace TheGodfather.Modules
@@ -58,6 +56,20 @@ namespace TheGodfather.Modules
                 }
             } catch (Exception e) {
                 Logger.LogException(LogLevel.Debug, e);
+                return false;
+            }
+
+            return true;
+        }
+
+        protected bool IsValidRegex(string pattern)
+        {
+            if (string.IsNullOrEmpty(pattern))
+                return false;
+
+            try {
+                Regex.Match("", pattern);
+            } catch (ArgumentException) {
                 return false;
             }
 

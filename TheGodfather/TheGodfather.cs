@@ -3,7 +3,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -12,6 +11,7 @@ using Newtonsoft.Json;
 
 using TheGodfather.Entities;
 using TheGodfather.Extensions.Collections;
+using TheGodfather.Modules.Reactions.Common;
 using TheGodfather.Services;
 
 using DSharpPlus;
@@ -106,9 +106,9 @@ namespace TheGodfather
             }
 
             var gtextreactions_db = await DatabaseService.GetAllTextReactionsAsync();
-            var gtextreactions = new ConcurrentDictionary<ulong, ConcurrentHashSet<(Regex, string)>>();
+            var gtextreactions = new ConcurrentDictionary<ulong, ConcurrentHashSet<TextReaction>>();
             foreach (var reaction in gtextreactions_db)
-                gtextreactions.TryAdd(reaction.Key, new ConcurrentHashSet<(Regex, string)>(reaction.Value));
+                gtextreactions.TryAdd(reaction.Key, new ConcurrentHashSet<TextReaction>(reaction.Value));
 
             var gemojireactions_db = await DatabaseService.GetAllEmojiReactionsAsync();
             var gemojireactions = new ConcurrentDictionary<ulong, ConcurrentDictionary<string, ConcurrentHashSet<Regex>>>();

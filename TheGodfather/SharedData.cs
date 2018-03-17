@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using TheGodfather.Entities;
 using TheGodfather.Extensions.Collections;
 using TheGodfather.Modules.Gambling.Cards;
+using TheGodfather.Modules.Reactions.Common;
 using TheGodfather.Services;
 
 using DSharpPlus;
@@ -19,18 +20,18 @@ namespace TheGodfather
 {
     public sealed class SharedData
     {
-        public CancellationTokenSource CTS { get; set; }
-        public ConcurrentHashSet<ulong> BlockedUsers { get; set; } = new ConcurrentHashSet<ulong>();
-        public ConcurrentHashSet<ulong> BlockedChannels { get; set; } = new ConcurrentHashSet<ulong>();
+        public ConcurrentHashSet<ulong> BlockedUsers { get; internal set; } = new ConcurrentHashSet<ulong>();
+        public ConcurrentHashSet<ulong> BlockedChannels { get; internal set; } = new ConcurrentHashSet<ulong>();
         public BotConfig BotConfiguration { get; internal set; }
         public ConcurrentDictionary<ulong, Deck> CardDecks { get; internal set; } = new ConcurrentDictionary<ulong, Deck>();
+        public CancellationTokenSource CTS { get; internal set; }
         public ConcurrentDictionary<ulong, string> GuildPrefixes { get; internal set; }
         public ConcurrentDictionary<ulong, ConcurrentHashSet<Regex>> GuildFilters { get; internal set; }
-        public ConcurrentDictionary<ulong, ConcurrentHashSet<(Regex, string)>> GuildTextReactions { get; internal set; }
+        public ConcurrentDictionary<ulong, ConcurrentHashSet<TextReaction>> GuildTextReactions { get; internal set; }
         public ConcurrentDictionary<ulong, ConcurrentDictionary<string, ConcurrentHashSet<Regex>>> GuildEmojiReactions { get; internal set; }
         public ConcurrentDictionary<ulong, ulong> MessageCount { get; internal set; }
-        public ConcurrentDictionary<int, SavedTaskExecuter> SavedTasks { get; set; } = new ConcurrentDictionary<int, SavedTaskExecuter>();
-        public bool StatusRotationEnabled { get; set; } = true;
+        public ConcurrentDictionary<int, SavedTaskExecuter> SavedTasks { get; internal set; } = new ConcurrentDictionary<int, SavedTaskExecuter>();
+        public bool StatusRotationEnabled { get; internal set; } = true;
         public ConcurrentHashSet<ulong> UserIDsCheckingForSpace = new ConcurrentHashSet<ulong>();
         public IReadOnlyList<string> Ranks = new List<string>() {
             #region RANKS
@@ -58,7 +59,7 @@ namespace TheGodfather
             "Generalissimo (tribute to Raptor)"
             #endregion
         }.AsReadOnly();
-        
+
 
         public string GetGuildPrefix(ulong gid)
         {
@@ -94,8 +95,7 @@ namespace TheGodfather
 
         public bool TextTriggerExists(ulong gid, string trigger)
         {
-            string regex = $@"\b{trigger}\b".ToLowerInvariant();
-            return GuildTextReactions.ContainsKey(gid) && GuildTextReactions[gid] != null && GuildTextReactions[gid].Any(tup => tup.Item1.ToString() == regex);
+            return GuildTextReactions.ContainsKey(gid) && GuildTextReactions[gid] != null && GuildTextReactions[gid].Any(tr => tr.EqualsToString(trigger));
         }
 
         public int UpdateMessageCount(ulong uid)

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
+using TheGodfather.Modules.Reactions.Common;
+
 using Npgsql;
 using NpgsqlTypes;
 #endregion
@@ -12,9 +14,9 @@ namespace TheGodfather.Services
     public partial class DBService
     {
         #region TEXT_REACTION_SERVICES
-        public async Task<Dictionary<ulong, List<(Regex, string)>>> GetAllTextReactionsAsync()
+        public async Task<Dictionary<ulong, List<TextReaction>>> GetAllTextReactionsAsync()
         {
-            var triggers = new Dictionary<ulong, List<(Regex, string)>>();
+            var triggers = new Dictionary<ulong, List<TextReaction>>();
 
             await _sem.WaitAsync();
             try {
@@ -29,12 +31,11 @@ namespace TheGodfather.Services
                             ulong gid = (ulong)(long)reader["gid"];
                             if (triggers.ContainsKey(gid)) {
                                 if (triggers[gid] == null)
-                                    triggers[gid] = new List<(Regex, string)>();
+                                    triggers[gid] = new List<TextReaction>();
                             } else {
-                                triggers.Add(gid, new List<(Regex, string)>());
+                                triggers.Add(gid, new List<TextReaction>());
                             }
-                            var regex = new Regex($@"\b({(string)reader["trigger"]})\b", RegexOptions.IgnoreCase);
-                            triggers[gid].Add((regex, (string)reader["response"]));
+                            triggers[gid].Add(new TextReaction((string)reader["trigger"], (string)reader["response"]));
                         }
                     }
                 }
