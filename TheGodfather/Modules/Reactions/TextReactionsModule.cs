@@ -55,6 +55,9 @@ namespace TheGodfather.Modules.Reactions
             if (string.IsNullOrWhiteSpace(response))
                 throw new InvalidCommandUsageException("Response missing or invalid.");
 
+            if (trigger.Length < 2 || response.Length < 2)
+                throw new CommandFailedException("Trigger or response cannot be shorter than 2 characters.");
+
             if (trigger.Length > 120 || response.Length > 120)
                 throw new CommandFailedException("Trigger or response cannot be longer than 120 characters.");
 
@@ -66,10 +69,10 @@ namespace TheGodfather.Modules.Reactions
 
             var reaction = Shared.GuildTextReactions[ctx.Guild.Id].FirstOrDefault(tr => tr.Response == response);
             if (reaction != null) {
-                if (!reaction.AddTrigger(trigger, is_regex_trigger: false))
+                if (!reaction.AddTrigger(trigger))
                     throw new CommandFailedException($"Failed to add trigger {Formatter.Bold(trigger)}.");
             } else {
-                if (!Shared.GuildTextReactions[ctx.Guild.Id].Add(new TextReaction(trigger, response, is_regex_trigger: false)))
+                if (!Shared.GuildTextReactions[ctx.Guild.Id].Add(new TextReaction(trigger, response)))
                     throw new CommandFailedException($"Failed to add trigger {Formatter.Bold(trigger)}.");
             }
 
@@ -100,6 +103,9 @@ namespace TheGodfather.Modules.Reactions
             if (string.IsNullOrWhiteSpace(response))
                 throw new InvalidCommandUsageException("Response missing or invalid.");
 
+            if (trigger.Length < 2 || response.Length < 2)
+                throw new CommandFailedException("Trigger or response cannot be shorter than 2 characters.");
+
             if (trigger.Length > 120 || response.Length > 120)
                 throw new CommandFailedException("Trigger or response cannot be longer than 120 characters.");
 
@@ -123,7 +129,7 @@ namespace TheGodfather.Modules.Reactions
 
             string errors = "";
             try {
-                await Database.AddTextReactionAsync(ctx.Guild.Id, trigger, response)
+                await Database.AddTextReactionAsync(ctx.Guild.Id, trigger, response, is_regex_trigger: true)
                     .ConfigureAwait(false);
             } catch (Exception e) {
                 Logger.LogException(LogLevel.Warning, e);

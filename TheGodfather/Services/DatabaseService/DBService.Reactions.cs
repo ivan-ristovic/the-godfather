@@ -53,8 +53,11 @@ namespace TheGodfather.Services
             return treactions;
         }
 
-        public async Task AddTextReactionAsync(ulong gid, string trigger, string response)
+        public async Task AddTextReactionAsync(ulong gid, string trigger, string response, bool is_regex_trigger = false)
         {
+            if (!is_regex_trigger)
+                trigger = Regex.Escape(trigger);
+
             await _sem.WaitAsync();
             try {
                 using (var con = new NpgsqlConnection(_connectionString))

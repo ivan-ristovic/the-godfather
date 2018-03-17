@@ -9,16 +9,16 @@ namespace TheGodfather.Modules.Reactions.Common
     public abstract class Reaction
     {
         public ConcurrentHashSet<Regex> TriggerRegexes { get; protected set; } = new ConcurrentHashSet<Regex>();
-        public IEnumerable<string> TriggerStrings => TriggerRegexes.Select(rgx => rgx.ToString().Substring(3, rgx.ToString().Length - 6));
+        public IEnumerable<string> TriggerStrings => TriggerRegexes.Select(rgx => rgx.ToString().Substring(2, rgx.ToString().Length - 4));
         public IEnumerable<string> OrderedTriggerStrings => TriggerStrings.OrderBy(s => s);
 
 
         public bool AddTrigger(string trigger, bool is_regex_trigger = false)
         {
             if (is_regex_trigger)
-                return TriggerRegexes.Add(new Regex($@"\b({trigger.ToLowerInvariant()})\b", RegexOptions.IgnoreCase));
+                return TriggerRegexes.Add(new Regex($@"\b{trigger.ToLowerInvariant()}\b", RegexOptions.IgnoreCase));
             else
-                return TriggerRegexes.Add(new Regex(Regex.Escape(trigger.ToLowerInvariant())));
+                return TriggerRegexes.Add(new Regex($@"\b{Regex.Escape(trigger.ToLowerInvariant())}\b", RegexOptions.IgnoreCase));
         }
 
 
