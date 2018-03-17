@@ -179,8 +179,9 @@ namespace TheGodfather.Modules.Reactions
             if (is_regex_trigger && !IsValidRegex(trigger))
                 throw new CommandFailedException($"Trigger {Formatter.Bold(trigger)} is not a valid regular expression.");
 
+            var errors = new StringBuilder();
             if (Shared.TextTriggerExists(ctx.Guild.Id, trigger))
-                throw new CommandFailedException($"Trigger {Formatter.Bold(trigger)} already exists.");
+                errors.AppendLine($"Note: Trigger {Formatter.Bold(trigger)} already exists.");
 
             var reaction = Shared.GuildTextReactions[ctx.Guild.Id].FirstOrDefault(tr => tr.Response == response);
             if (reaction != null) {
@@ -191,16 +192,15 @@ namespace TheGodfather.Modules.Reactions
                     throw new CommandFailedException($"Failed to add trigger {Formatter.Bold(trigger)}.");
             }
 
-            string errors = "";
             try {
                 await Database.AddTextReactionAsync(ctx.Guild.Id, trigger, response, is_regex_trigger)
                     .ConfigureAwait(false);
             } catch (Exception e) {
                 Logger.LogException(LogLevel.Warning, e);
-                errors = $"Warning: Failed to add trigger {Formatter.Bold(trigger)} to the database.";
+                errors.AppendLine($"Warning: Failed to add trigger {Formatter.Bold(trigger)} to the database.");
             }
 
-            await ctx.RespondWithIconEmbedAsync($"Done!\n\n{errors}")
+            await ctx.RespondWithIconEmbedAsync($"Done!\n\n{errors.ToString()}")
                 .ConfigureAwait(false);
         }
         #endregion

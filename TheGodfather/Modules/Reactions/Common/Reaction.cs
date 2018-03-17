@@ -11,6 +11,9 @@ namespace TheGodfather.Modules.Reactions.Common
 {
     public abstract class Reaction
     {
+        private static string GetRegexString(string s)
+            => $@"\b{s.ToLowerInvariant()}\b";
+
         public ConcurrentHashSet<Regex> TriggerRegexes { get; protected set; } = new ConcurrentHashSet<Regex>();
         public IEnumerable<string> TriggerStrings => TriggerRegexes.Select(rgx => rgx.ToString().Substring(2, rgx.ToString().Length - 4));
         public IEnumerable<string> OrderedTriggerStrings => TriggerStrings.OrderBy(s => s);
@@ -27,13 +30,19 @@ namespace TheGodfather.Modules.Reactions.Common
         public bool AddTrigger(string trigger, bool is_regex_trigger = false)
         {
             if (is_regex_trigger)
-                return TriggerRegexes.Add(new Regex($@"\b{trigger.ToLowerInvariant()}\b", RegexOptions.IgnoreCase));
+                return TriggerRegexes.Add(new Regex(GetRegexString(trigger.ToLowerInvariant()), RegexOptions.IgnoreCase));
             else
-                return TriggerRegexes.Add(new Regex($@"\b{Regex.Escape(trigger.ToLowerInvariant())}\b", RegexOptions.IgnoreCase));
+                return TriggerRegexes.Add(new Regex(GetRegexString(Regex.Escape(trigger.ToLowerInvariant())), RegexOptions.IgnoreCase));
         }
 
         public void RemoveTrigger(string trigger)
-            => TriggerRegexes.RemoveWhere(r => r.ToString() == trigger);
+        {
+            var rstr = GetRegexString(trigger);
+            TriggerRegexes.RemoveWhere(r => r.ToString() == rstr);
+        }
+
+        public bool Matches(string str)
+            => TriggerRegexes.Any(rgx => rgx.IsMatch(str));
 
         public bool ContainsTriggerPattern(string pattern)
             => TriggerStrings.Any(s => pattern == s);
