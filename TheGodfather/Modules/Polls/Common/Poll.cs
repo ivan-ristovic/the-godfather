@@ -92,11 +92,11 @@ namespace TheGodfather.Modules.Polls.Common
         public string OptionWithId(int id)
             => (id >= 0 && id < _options.Count) ? _options[id] : null;
 
-        public DiscordEmbed EmbedPoll()
+        public DiscordEmbed EmbedPoll(string desc = null)
         {
             var emb = new DiscordEmbedBuilder() {
                 Title = Question,
-                Description = $"Vote by typing {Formatter.InlineCode("!vote <number>")}",
+                Description = desc ?? $"Vote by typing {Formatter.InlineCode("!vote <number>")}",
                 Color = DiscordColor.Orange
             };
             for (int i = 0; i < _options.Count; i++)

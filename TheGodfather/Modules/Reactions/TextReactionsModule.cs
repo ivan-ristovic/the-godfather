@@ -41,6 +41,7 @@ namespace TheGodfather.Modules.Reactions
                                            [RemainingText, Description("Response.")] string response)
             => await AddAsync(ctx, trigger, response).ConfigureAwait(false);
 
+
         #region COMMAND_TEXT_REACTION_ADD
         [Command("add")]
         [Description("Add a new text reaction to guild text reaction list.")]

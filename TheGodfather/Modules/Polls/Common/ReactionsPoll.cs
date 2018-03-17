@@ -39,7 +39,7 @@ namespace TheGodfather.Modules.Polls.Common
         public override async Task RunAsync(TimeSpan timespan)
         {
             Running = true;
-            _message = await _channel.SendMessageAsync(embed: EmbedPoll())
+            _message = await _channel.SendMessageAsync(embed: EmbedPoll("Vote by clicking on the reactions!"))
                 .ConfigureAwait(false);
             _result = await _interactivity.CreatePollAsync(_message, EmojiUtil.Numbers.Take(OptionCount), timespan)
                 .ConfigureAwait(false);
