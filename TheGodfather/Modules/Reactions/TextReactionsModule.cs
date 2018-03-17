@@ -142,7 +142,7 @@ namespace TheGodfather.Modules.Reactions
                     continue;
                 }
 
-                if (Shared.GuildTextReactions[ctx.Guild.Id].RemoveWhere(tr => tr.EqualsToString(trigger)) == 0) {
+                if (Shared.GuildTextReactions[ctx.Guild.Id].RemoveWhere(tr => tr.ContainsPattern(trigger)) == 0) {
                     errors.AppendLine($"Warning: Failed to remove text reaction for trigger {Formatter.Bold(trigger)}.");
                     continue;
                 }
@@ -173,8 +173,8 @@ namespace TheGodfather.Modules.Reactions
             
             await ctx.SendPaginatedCollectionAsync(
                 "Text reactions for this guild",
-                Shared.GuildTextReactions[ctx.Guild.Id].OrderBy(tr => tr.TriggerString),
-                tr => $"{tr.TriggerString} => {tr.Response}",
+                Shared.GuildTextReactions[ctx.Guild.Id].OrderBy(tr => tr.OrderedTriggerStrings.First()),
+                tr => $"{tr.Response} => {string.Join(", ", tr.TriggerStrings)}",
                 DiscordColor.Blue
             ).ConfigureAwait(false);
         }

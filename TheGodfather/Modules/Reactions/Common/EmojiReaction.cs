@@ -12,9 +12,17 @@ namespace TheGodfather.Modules.Reactions.Common
 
 
         public EmojiReaction(string trigger, DiscordEmoji reaction, bool is_regex_trigger = false)
-            : base(trigger, is_regex_trigger)
         {
+            AddTrigger(trigger, is_regex_trigger);
             Reaction = reaction;
+        }
+
+
+        public override bool HasSameResponseAs(Reaction other)
+        {
+            if (!(other is EmojiReaction er))
+                return false;
+            return Reaction == er.Reaction;
         }
     }
 }

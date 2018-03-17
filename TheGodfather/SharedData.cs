@@ -95,7 +95,7 @@ namespace TheGodfather
 
         public bool TextTriggerExists(ulong gid, string trigger)
         {
-            return GuildTextReactions.ContainsKey(gid) && GuildTextReactions[gid] != null && GuildTextReactions[gid].Any(tr => tr.EqualsToString(trigger));
+            return GuildTextReactions.ContainsKey(gid) && GuildTextReactions[gid] != null && GuildTextReactions[gid].Any(tr => tr.ContainsPattern(trigger));
         }
 
         public int UpdateMessageCount(ulong uid)

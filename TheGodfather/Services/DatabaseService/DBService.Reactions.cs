@@ -1,5 +1,6 @@
 ﻿#region USING_DIRECTIVES
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
@@ -16,7 +17,7 @@ namespace TheGodfather.Services
         #region TEXT_REACTION_SERVICES
         public async Task<Dictionary<ulong, List<TextReaction>>> GetAllTextReactionsAsync()
         {
-            var triggers = new Dictionary<ulong, List<TextReaction>>();
+            var treactions = new Dictionary<ulong, List<TextReaction>>();
 
             await _sem.WaitAsync();
             try {
@@ -29,13 +30,19 @@ namespace TheGodfather.Services
                     using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
                         while (await reader.ReadAsync().ConfigureAwait(false)) {
                             ulong gid = (ulong)(long)reader["gid"];
-                            if (triggers.ContainsKey(gid)) {
-                                if (triggers[gid] == null)
-                                    triggers[gid] = new List<TextReaction>();
+                            if (treactions.ContainsKey(gid)) {
+                                if (treactions[gid] == null)
+                                    treactions[gid] = new List<TextReaction>();
                             } else {
-                                triggers.Add(gid, new List<TextReaction>());
+                                treactions.Add(gid, new List<TextReaction>());
                             }
-                            triggers[gid].Add(new TextReaction((string)reader["trigger"], (string)reader["response"]));
+
+                            string response = (string)reader["response"];
+                            var reaction = treactions[gid].FirstOrDefault(tr => tr.Response == response);
+                            if (reaction != null)
+                                reaction.AddTrigger((string)reader["trigger"], is_regex_trigger: true);
+                            else
+                                treactions[gid].Add(new TextReaction((string)reader["trigger"], (string)reader["response"], is_regex_trigger: true));
                         }
                     }
                 }
@@ -43,7 +50,7 @@ namespace TheGodfather.Services
                 _sem.Release();
             }
 
-            return triggers;
+            return treactions;
         }
 
         public async Task AddTextReactionAsync(ulong gid, string trigger, string response)

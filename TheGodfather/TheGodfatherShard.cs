@@ -301,10 +301,10 @@ namespace TheGodfather
 
             // Check if message has a text reaction
             if (_shared.GuildTextReactions.ContainsKey(e.Guild.Id)) {
-                var tr = _shared.GuildTextReactions[e.Guild.Id].FirstOrDefault(r => r.TriggerRegex.IsMatch(e.Message.Content));
+                var tr = _shared.GuildTextReactions[e.Guild.Id].FirstOrDefault(r => r.TriggerRegexes.Any(rgx => rgx.IsMatch(e.Message.Content)));
                 if (tr != null) {
                     Log(LogLevel.Info,
-                        $"Text reaction detected: {tr.TriggerRegex} : {tr.Response}<br>" +
+                        $"Text reaction detected: {tr.Response}<br>" +
                         $"Message: {e.Message.Content.Replace('\n', ' ')}<br>" +
                         $"{e.Message.Author.ToString()}<br>" +
                         $"{e.Guild.ToString()} ; {e.Channel.ToString()}"

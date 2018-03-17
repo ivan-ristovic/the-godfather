@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-
-namespace TheGodfather.Modules.Reactions.Common
+﻿namespace TheGodfather.Modules.Reactions.Common
 {
     public class TextReaction : Reaction
     {
@@ -12,9 +6,17 @@ namespace TheGodfather.Modules.Reactions.Common
 
 
         public TextReaction(string trigger, string response, bool is_regex_trigger = false)
-            : base(trigger, is_regex_trigger)
         {
+            AddTrigger(trigger, is_regex_trigger);
             Response = response;
+        }
+
+
+        public override bool HasSameResponseAs(Reaction other)
+        {
+            if (!(other is TextReaction tr))
+                return false;
+            return Response == tr.Response;
         }
     }
 }

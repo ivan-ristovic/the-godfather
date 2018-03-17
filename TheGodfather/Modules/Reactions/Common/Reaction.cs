@@ -2,29 +2,29 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+using TheGodfather.Extensions.Collections;
 
 namespace TheGodfather.Modules.Reactions.Common
 {
     public abstract class Reaction
     {
-        public Regex TriggerRegex { get; protected set; }
-        public string TriggerString { get; protected set; }
+        public ConcurrentHashSet<Regex> TriggerRegexes { get; protected set; } = new ConcurrentHashSet<Regex>();
+        public IEnumerable<string> TriggerStrings => TriggerRegexes.Select(rgx => rgx.ToString().Substring(3, rgx.ToString().Length - 6));
+        public IEnumerable<string> OrderedTriggerStrings => TriggerStrings.OrderBy(s => s);
 
 
-        protected Reaction(string trigger, bool is_regex_trigger = false)
+        public bool AddTrigger(string trigger, bool is_regex_trigger = false)
         {
-            TriggerString = trigger.ToLowerInvariant();
             if (is_regex_trigger)
-                TriggerRegex = new Regex($@"\b({TriggerString})\b", RegexOptions.IgnoreCase);
+                return TriggerRegexes.Add(new Regex($@"\b({trigger.ToLowerInvariant()})\b", RegexOptions.IgnoreCase));
             else
-                TriggerRegex = new Regex(Regex.Escape(TriggerString));
+                return TriggerRegexes.Add(new Regex(Regex.Escape(trigger.ToLowerInvariant())));
         }
 
 
-        public bool EqualsToString(string pattern)
-        {
-            return TriggerString.Equals($@"\b{pattern.ToLowerInvariant()}\b");
-        }
+        public bool ContainsPattern(string pattern)
+            => TriggerStrings.Any(s => pattern == s);
+
+        public abstract bool HasSameResponseAs(Reaction other);
     }
 }
