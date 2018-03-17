@@ -185,7 +185,7 @@ namespace TheGodfather
             DatabaseSyncTimer.Dispose();
             FeedCheckTimer.Dispose();
             foreach (var shard in Shards)
-                await shard.DisconnectAndDispose();
+                await shard.DisconnectAndDisposeAsync();
             CTS.Dispose();
             SharedData.Dispose();
             Console.WriteLine("Done! Bye!");

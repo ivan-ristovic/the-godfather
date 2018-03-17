@@ -63,7 +63,7 @@ namespace TheGodfather
             SetupVoice();
         }
 
-        public async Task DisconnectAndDispose()
+        public async Task DisconnectAndDisposeAsync()
         {
             await Client.DisconnectAsync();
             Client.Dispose();
@@ -302,7 +302,7 @@ namespace TheGodfather
             // Check if message has a text reaction
             if (_shared.TextReactions.ContainsKey(e.Guild.Id)) {
                 var tr = _shared.TextReactions[e.Guild.Id]?.FirstOrDefault(r => r.Matches(e.Message.Content));
-                if (tr != null) {
+                if (tr != null && await tr.CanSendAsync().ConfigureAwait(false)) {
                     Log(LogLevel.Debug,
                         $"Text reaction detected: {tr.Response}<br>" +
                         $"Message: {e.Message.Content.Replace('\n', ' ')}<br>" +
