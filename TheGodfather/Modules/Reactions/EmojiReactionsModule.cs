@@ -23,7 +23,7 @@ using DSharpPlus.Entities;
 namespace TheGodfather.Modules.Reactions
 {
     [Group("emojireaction")]
-    [Description("Orders a bot to react with given emoji to a message containing a trigger word inside (guild specific). If invoked without subcommands, adds a new emoji reaction to a given trigger word list. Note: Trigger words can be regular expressions.")]
+    [Description("Orders a bot to react with given emoji to a message containing a trigger word inside (guild specific). If invoked without subcommands, adds a new emoji reaction to a given trigger word list. Note: Trigger words can be regular expressions (use ``emojireaction addregex`` command).")]
     [Aliases("ereact", "er", "emojir", "emojireactions")]
     [UsageExample("!emojireaction :smile: haha laughing")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
@@ -39,7 +39,7 @@ namespace TheGodfather.Modules.Reactions
         public async Task ExecuteGroupAsync(CommandContext ctx,
                                            [Description("Emoji to send.")] DiscordEmoji emoji,
                                            [RemainingText, Description("Trigger word list.")] params string[] triggers)
-            => await AddAsync(ctx, emoji, triggers).ConfigureAwait(false);
+            => await AddEmojiReactionAsync(ctx, emoji, false, triggers).ConfigureAwait(false);
 
 
         #region COMMAND_EMOJI_REACTIONS_ADD
@@ -52,58 +52,32 @@ namespace TheGodfather.Modules.Reactions
         public async Task AddAsync(CommandContext ctx,
                                   [Description("Emoji to send.")] DiscordEmoji emoji,
                                   [RemainingText, Description("Trigger word list (case-insensitive).")] params string[] triggers)
-        {
-            if (triggers == null)
-                throw new InvalidCommandUsageException("Missing trigger words!");
-
-            var errors = new StringBuilder();
-            foreach (var trigger in triggers.Select(t => t.ToLowerInvariant())) {
-                if (trigger.Length > 120) {
-                    errors.AppendLine($"Error: Trigger {Formatter.Bold(trigger)} is too long (120 chars max).");
-                    continue;
-                }
-
-                if (!Shared.GuildEmojiReactions.ContainsKey(ctx.Guild.Id))
-                    Shared.GuildEmojiReactions.TryAdd(ctx.Guild.Id, new ConcurrentHashSet<EmojiReaction>());
-
-                if (!IsValidRegex(trigger)) {
-                    errors.AppendLine($"Error: Trigger {Formatter.Bold(trigger)} is not a valid regular expression.");
-                    continue;
-                }
-
-                if (Shared.EmojiTriggerExists(ctx.Guild.Id, trigger)) {
-                    errors.AppendLine($"Note: Trigger {Formatter.Bold(trigger)} already exists.");
-                    continue;
-                }
-
-                var ename = emoji.GetDiscordName();
-                var reaction = Shared.GuildEmojiReactions[ctx.Guild.Id].FirstOrDefault(tr => tr.Response == ename);
-                if (reaction != null) {
-                    if (!reaction.AddTrigger(trigger, is_regex_trigger: true))
-                        throw new CommandFailedException($"Failed to add trigger {Formatter.Bold(trigger)}.");
-                } else {
-                    if (!Shared.GuildEmojiReactions[ctx.Guild.Id].Add(new EmojiReaction(trigger, ename, is_regex_trigger: true)))
-                        throw new CommandFailedException($"Failed to add trigger {Formatter.Bold(trigger)}.");
-                }
-
-                try {
-                    await Database.AddEmojiReactionAsync(ctx.Guild.Id, trigger, ename, is_regex_trigger: true)
-                        .ConfigureAwait(false);
-                } catch (Exception e) {
-                    Logger.LogException(LogLevel.Warning, e);
-                    errors.AppendLine($"Warning: Failed to add trigger {Formatter.Bold(trigger)} to the database.");
-                }
-            }
-
-            await ctx.RespondWithIconEmbedAsync($"Done!\n\n{errors.ToString()}")
-                .ConfigureAwait(false);
-        }
+            => await AddEmojiReactionAsync(ctx, emoji, false, triggers).ConfigureAwait(false);
 
         [Command("add"), Priority(0)]
         public async Task AddAsync(CommandContext ctx,
                                   [Description("Trigger word (case-insensitive).")] string trigger,
                                   [Description("Emoji to send.")] DiscordEmoji emoji)
-            => await AddAsync(ctx, emoji, trigger).ConfigureAwait(false);
+            => await AddEmojiReactionAsync(ctx, emoji, false, trigger).ConfigureAwait(false);
+        #endregion
+
+        #region COMMAND_EMOJI_REACTIONS_ADDREGEX
+        [Command("addregex"), Priority(1)]
+        [Description("Add emoji reaction triggered by a regex to guild reaction list.")]
+        [Aliases("+r", "+regex", "+regexp", "+rgx", "newregex", "addrgx")]
+        [UsageExample("!emojireaction addregex :smile: (ha)+")]
+        [UsageExample("!emojireaction addregex (ha)+ :smile:")]
+        [RequireUserPermissions(Permissions.ManageGuild)]
+        public async Task AddRegexAsync(CommandContext ctx,
+                                       [Description("Emoji to send.")] DiscordEmoji emoji,
+                                       [RemainingText, Description("Trigger word list (case-insensitive).")] params string[] triggers)
+            => await AddEmojiReactionAsync(ctx, emoji, true, triggers).ConfigureAwait(false);
+
+        [Command("addregex"), Priority(0)]
+        public async Task AddRegexAsync(CommandContext ctx,
+                                       [Description("Trigger word (case-insensitive).")] string trigger,
+                                       [Description("Emoji to send.")] DiscordEmoji emoji)
+            => await AddEmojiReactionAsync(ctx, emoji, true, trigger).ConfigureAwait(false);
         #endregion
 
         #region COMMAND_EMOJI_REACTIONS_CLEAR
@@ -211,6 +185,57 @@ namespace TheGodfather.Modules.Reactions
                 er => $"{DiscordEmoji.FromName(ctx.Client, er.Response)} | Triggers: {string.Join(", ", er.TriggerStrings)}",
                 DiscordColor.Blue
             ).ConfigureAwait(false);
+        }
+        #endregion
+
+
+        #region HELPER_FUNCTIONS
+        public async Task AddEmojiReactionAsync(CommandContext ctx, DiscordEmoji emoji, bool is_regex, params string[] triggers)
+        {
+            if (triggers == null)
+                throw new InvalidCommandUsageException("Missing trigger words!");
+
+            var errors = new StringBuilder();
+            foreach (var trigger in triggers.Select(t => t.ToLowerInvariant())) {
+                if (trigger.Length > 120) {
+                    errors.AppendLine($"Error: Trigger {Formatter.Bold(trigger)} is too long (120 chars max).");
+                    continue;
+                }
+
+                if (!Shared.GuildEmojiReactions.ContainsKey(ctx.Guild.Id))
+                    Shared.GuildEmojiReactions.TryAdd(ctx.Guild.Id, new ConcurrentHashSet<EmojiReaction>());
+
+                if (!IsValidRegex(trigger)) {
+                    errors.AppendLine($"Error: Trigger {Formatter.Bold(trigger)} is not a valid regular expression.");
+                    continue;
+                }
+
+                if (Shared.EmojiTriggerExists(ctx.Guild.Id, trigger)) {
+                    errors.AppendLine($"Note: Trigger {Formatter.Bold(trigger)} already exists.");
+                    continue;
+                }
+
+                var ename = emoji.GetDiscordName();
+                var reaction = Shared.GuildEmojiReactions[ctx.Guild.Id].FirstOrDefault(tr => tr.Response == ename);
+                if (reaction != null) {
+                    if (!reaction.AddTrigger(trigger, is_regex_trigger: is_regex))
+                        throw new CommandFailedException($"Failed to add trigger {Formatter.Bold(trigger)}.");
+                } else {
+                    if (!Shared.GuildEmojiReactions[ctx.Guild.Id].Add(new EmojiReaction(trigger, ename, is_regex_trigger: is_regex)))
+                        throw new CommandFailedException($"Failed to add trigger {Formatter.Bold(trigger)}.");
+                }
+
+                try {
+                    await Database.AddEmojiReactionAsync(ctx.Guild.Id, trigger, ename, is_regex_trigger: is_regex)
+                        .ConfigureAwait(false);
+                } catch (Exception e) {
+                    Logger.LogException(LogLevel.Warning, e);
+                    errors.AppendLine($"Warning: Failed to add trigger {Formatter.Bold(trigger)} to the database.");
+                }
+            }
+
+            await ctx.RespondWithIconEmbedAsync($"Done!\n\n{errors.ToString()}")
+                .ConfigureAwait(false);
         }
         #endregion
     }
