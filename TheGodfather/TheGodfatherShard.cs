@@ -53,7 +53,7 @@ namespace TheGodfather
             _db = db;
             _shared = sd;
         }
-        
+
 
         public void Initialize()
         {
@@ -127,7 +127,7 @@ namespace TheGodfather
             Commands.RegisterConverter(new CustomActivityTypeConverter());
             Commands.RegisterConverter(new CustomBoolConverter());
             Commands.RegisterConverter(new CustomTimeWindowConverter());
-            
+
             Commands.CommandExecuted += Commands_CommandExecuted;
             Commands.CommandErrored += Commands_CommandErrored;
         }
@@ -301,7 +301,7 @@ namespace TheGodfather
 
             // Check if message has a text reaction
             if (_shared.GuildTextReactions.ContainsKey(e.Guild.Id)) {
-                var tr = _shared.GuildTextReactions[e.Guild.Id].FirstOrDefault(r => r.TriggerRegexes.Any(rgx => rgx.IsMatch(e.Message.Content)));
+                var tr = _shared.GuildTextReactions[e.Guild.Id]?.FirstOrDefault(r => r.TriggerRegexes.Any(rgx => rgx.IsMatch(e.Message.Content)));
                 if (tr != null) {
                     Log(LogLevel.Info,
                         $"Text reaction detected: {tr.Response}<br>" +
@@ -318,29 +318,26 @@ namespace TheGodfather
                 return;
 
             // Check if message has an emoji reaction
-            if (_shared.GuildEmojiReactions.ContainsKey(e.Guild.Id) && _shared.GuildEmojiReactions[e.Guild.Id] != null) {
-                foreach (var reaction in _shared.GuildEmojiReactions[e.Guild.Id]) {
-                    foreach (var trigger in reaction.Value) {
-                        if (trigger.IsMatch(e.Message.Content)) {
-                            Log(LogLevel.Info,
-                                $"Emoji reaction detected: {reaction.Key}<br>" +
-                                $"Message: {e.Message.Content.Replace('\n', ' ')}<br>" +
-                                $"{e.Message.Author.ToString()}<br>" +
-                                $"{e.Guild.ToString()} ; {e.Channel.ToString()}"
-                            );
-                            try {
-                                var emoji = DiscordEmoji.FromName(Client, reaction.Key);
-                                await e.Message.CreateReactionAsync(emoji)
-                                    .ConfigureAwait(false);
-                                break;
-                            } catch (ArgumentException) {
-                                await e.Channel.SendFailedEmbedAsync($"Emoji reaction set, but emoji: {reaction.Key} doesn't exist!")
-                                    .ConfigureAwait(false);
-                            } catch (UnauthorizedException) {
-                                await e.Channel.SendFailedEmbedAsync("I have a reaction for that message set up but I do not have permissions to add reactions. Fix your shit pls.")
-                                    .ConfigureAwait(false);
-                            }
-                        }
+            if (_shared.GuildEmojiReactions.ContainsKey(e.Guild.Id)) {
+                var ereactions = _shared.GuildEmojiReactions[e.Guild.Id].Where(r => r.TriggerRegexes.Any(rgx => rgx.IsMatch(e.Message.Content)));
+                foreach (var er in ereactions) {
+                    Log(LogLevel.Info,
+                        $"Emoji reaction detected: {er.Response}<br>" +
+                        $"Message: {e.Message.Content.Replace('\n', ' ')}<br>" +
+                        $"{e.Message.Author.ToString()}<br>" +
+                        $"{e.Guild.ToString()} ; {e.Channel.ToString()}"
+                    );
+                    try {
+                        var emoji = DiscordEmoji.FromName(Client, er.Response);
+                        await e.Message.CreateReactionAsync(emoji)
+                            .ConfigureAwait(false);
+                        break;
+                    } catch (ArgumentException) {
+                        await e.Channel.SendFailedEmbedAsync($"Emoji reaction set, but emoji: {er.Response} doesn't exist!")
+                            .ConfigureAwait(false);
+                    } catch (UnauthorizedException) {
+                        await e.Channel.SendFailedEmbedAsync("I have a reaction for that message set up but I do not have permissions to add reactions. Fix your shit pls.")
+                            .ConfigureAwait(false);
                     }
                 }
             }

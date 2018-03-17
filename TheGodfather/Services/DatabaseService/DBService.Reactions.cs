@@ -115,9 +115,9 @@ namespace TheGodfather.Services
         #endregion
 
         #region EMOJI_REACTION_SERVICES
-        public async Task<Dictionary<ulong, Dictionary<string, List<Regex>>>> GetAllEmojiReactionsAsync()
+        public async Task<Dictionary<ulong, List<EmojiReaction>>> GetAllEmojiReactionsAsync()
         {
-            var triggers = new Dictionary<ulong, Dictionary<string, List<Regex>>>();
+            var ereactions = new Dictionary<ulong, List<EmojiReaction>>();
 
             await _sem.WaitAsync();
             try {
@@ -131,23 +131,19 @@ namespace TheGodfather.Services
                         while (await reader.ReadAsync().ConfigureAwait(false)) {
                             ulong gid = (ulong)(long)reader["gid"];
 
-                            if (triggers.ContainsKey(gid)) {
-                                if (triggers[gid] == null)
-                                    triggers[gid] = new Dictionary<string, List<Regex>>();
+                            if (ereactions.ContainsKey(gid)) {
+                                if (ereactions[gid] == null)
+                                    ereactions[gid] = new List<EmojiReaction>();
                             } else {
-                                triggers.Add(gid, new Dictionary<string, List<Regex>>());
+                                ereactions.Add(gid, new List<EmojiReaction>());
                             }
 
-                            string reaction = (string)reader["reaction"];
-                            if (triggers[gid].ContainsKey(reaction)) {
-                                if (triggers[gid][reaction] == null)
-                                    triggers[gid][reaction] = new List<Regex>();
-                            } else {
-                                triggers[gid].Add(reaction, new List<Regex>());
-                            }
-
-                            var regex = new Regex($@"\b({(string)reader["trigger"]})\b", RegexOptions.IgnoreCase);
-                            triggers[gid][reaction].Add(regex);
+                            string emoji = (string)reader["reaction"];
+                            var reaction = ereactions[gid].FirstOrDefault(tr => tr.Response == emoji);
+                            if (reaction != null)
+                                reaction.AddTrigger((string)reader["trigger"], is_regex_trigger: true);
+                            else
+                                ereactions[gid].Add(new EmojiReaction((string)reader["trigger"], emoji, is_regex_trigger: true));
                         }
                     }
                 }
@@ -155,11 +151,14 @@ namespace TheGodfather.Services
                 _sem.Release();
             }
 
-            return triggers;
+            return ereactions;
         }
 
-        public async Task AddEmojiReactionAsync(ulong gid, string trigger, string reaction)
+        public async Task AddEmojiReactionAsync(ulong gid, string trigger, string reaction, bool is_regex_trigger = false)
         {
+            if (!is_regex_trigger)
+                trigger = Regex.Escape(trigger);
+
             await _sem.WaitAsync();
             try {
                 using (var con = new NpgsqlConnection(_connectionString))

@@ -28,7 +28,7 @@ namespace TheGodfather
         public ConcurrentDictionary<ulong, string> GuildPrefixes { get; internal set; }
         public ConcurrentDictionary<ulong, ConcurrentHashSet<Regex>> GuildFilters { get; internal set; }
         public ConcurrentDictionary<ulong, ConcurrentHashSet<TextReaction>> GuildTextReactions { get; internal set; }
-        public ConcurrentDictionary<ulong, ConcurrentDictionary<string, ConcurrentHashSet<Regex>>> GuildEmojiReactions { get; internal set; }
+        public ConcurrentDictionary<ulong, ConcurrentHashSet<EmojiReaction>> GuildEmojiReactions { get; internal set; }
         public ConcurrentDictionary<ulong, ulong> MessageCount { get; internal set; }
         public ConcurrentDictionary<int, SavedTaskExecuter> SavedTasks { get; internal set; } = new ConcurrentDictionary<int, SavedTaskExecuter>();
         public bool StatusRotationEnabled { get; internal set; } = true;
@@ -87,15 +87,14 @@ namespace TheGodfather
             return GuildFilters[gid].Any(f => f.IsMatch(message));
         }
 
-        public async Task SaveRanksToDatabaseAsync(DBService db)
-        {
-            foreach (var entry in MessageCount)
-                await db.UpdateMessageCountForUserAsync(entry.Key, entry.Value).ConfigureAwait(false);
-        }
-
         public bool TextTriggerExists(ulong gid, string trigger)
         {
-            return GuildTextReactions.ContainsKey(gid) && GuildTextReactions[gid] != null && GuildTextReactions[gid].Any(tr => tr.ContainsPattern(trigger));
+            return GuildTextReactions.ContainsKey(gid) && GuildTextReactions[gid] != null && GuildTextReactions[gid].Any(tr => tr.ContainsTriggerPattern(trigger));
+        }
+
+        public bool EmojiTriggerExists(ulong gid, string trigger)
+        {
+            return GuildEmojiReactions.ContainsKey(gid) && GuildEmojiReactions[gid] != null && GuildEmojiReactions[gid].Any(er => er.ContainsTriggerPattern(trigger));
         }
 
         public int UpdateMessageCount(ulong uid)
@@ -123,6 +122,12 @@ namespace TheGodfather
             } catch (Exception e) {
                 Logger.LogException(LogLevel.Error, e);
             }
+        }
+
+        public async Task SaveRanksToDatabaseAsync(DBService db)
+        {
+            foreach (var entry in MessageCount)
+                await db.UpdateMessageCountForUserAsync(entry.Key, entry.Value).ConfigureAwait(false);
         }
 
         public void Dispose()

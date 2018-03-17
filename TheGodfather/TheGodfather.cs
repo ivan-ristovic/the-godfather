@@ -111,12 +111,9 @@ namespace TheGodfather
                 gtextreactions.TryAdd(reaction.Key, new ConcurrentHashSet<TextReaction>(reaction.Value));
 
             var gemojireactions_db = await DatabaseService.GetAllEmojiReactionsAsync();
-            var gemojireactions = new ConcurrentDictionary<ulong, ConcurrentDictionary<string, ConcurrentHashSet<Regex>>>();
-            foreach (var greactionlist in gemojireactions_db) {
-                gemojireactions.TryAdd(greactionlist.Key, new ConcurrentDictionary<string, ConcurrentHashSet<Regex>>());
-                foreach (var reaction in greactionlist.Value)
-                    gemojireactions[greactionlist.Key].TryAdd(reaction.Key, new ConcurrentHashSet<Regex>(reaction.Value));
-            }
+            var gemojireactions = new ConcurrentDictionary<ulong, ConcurrentHashSet<EmojiReaction>>();
+            foreach (var reaction in gemojireactions_db)
+                gemojireactions.TryAdd(reaction.Key, new ConcurrentHashSet<EmojiReaction>(reaction.Value));
 
             var msgcount_db = await DatabaseService.GetMessageCountForAllUsersAsync();
             var msgcount = new ConcurrentDictionary<ulong, ulong>();
