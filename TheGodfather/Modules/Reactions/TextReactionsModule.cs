@@ -51,43 +51,7 @@ namespace TheGodfather.Modules.Reactions
         public async Task AddAsync(CommandContext ctx,
                                   [Description("Trigger string (case insensitive).")] string trigger,
                                   [RemainingText, Description("Response.")] string response)
-        {
-            if (string.IsNullOrWhiteSpace(response))
-                throw new InvalidCommandUsageException("Response missing or invalid.");
-
-            if (trigger.Length < 2 || response.Length < 2)
-                throw new CommandFailedException("Trigger or response cannot be shorter than 2 characters.");
-
-            if (trigger.Length > 120 || response.Length > 120)
-                throw new CommandFailedException("Trigger or response cannot be longer than 120 characters.");
-
-            if (!Shared.GuildTextReactions.ContainsKey(ctx.Guild.Id))
-                Shared.GuildTextReactions.TryAdd(ctx.Guild.Id, new ConcurrentHashSet<TextReaction>());
-
-            if (Shared.TextTriggerExists(ctx.Guild.Id, trigger))
-                throw new CommandFailedException($"Trigger {Formatter.Bold(trigger)} already exists.");
-
-            var reaction = Shared.GuildTextReactions[ctx.Guild.Id].FirstOrDefault(tr => tr.Response == response);
-            if (reaction != null) {
-                if (!reaction.AddTrigger(trigger))
-                    throw new CommandFailedException($"Failed to add trigger {Formatter.Bold(trigger)}.");
-            } else {
-                if (!Shared.GuildTextReactions[ctx.Guild.Id].Add(new TextReaction(trigger, response)))
-                    throw new CommandFailedException($"Failed to add trigger {Formatter.Bold(trigger)}.");
-            }
-
-            string errors = "";
-            try {
-                await Database.AddTextReactionAsync(ctx.Guild.Id, trigger, response)
-                    .ConfigureAwait(false);
-            } catch (Exception e) {
-                Logger.LogException(LogLevel.Warning, e);
-                errors = $"Warning: Failed to add trigger {Formatter.Bold(trigger)} to the database.";
-            }
-
-            await ctx.RespondWithIconEmbedAsync($"Done!\n\n{errors}")
-                .ConfigureAwait(false);
-        }
+            => await AddTextReactionAsync(ctx, trigger, response, false).ConfigureAwait(false);
         #endregion
 
         #region COMMAND_TEXT_REACTION_ADDREGEX
@@ -99,46 +63,7 @@ namespace TheGodfather.Modules.Reactions
         public async Task AddRegexAsync(CommandContext ctx,
                                        [Description("Regex (case insensitive).")] string trigger,
                                        [RemainingText, Description("Response.")] string response)
-        {
-            if (string.IsNullOrWhiteSpace(response))
-                throw new InvalidCommandUsageException("Response missing or invalid.");
-
-            if (trigger.Length < 2 || response.Length < 2)
-                throw new CommandFailedException("Trigger or response cannot be shorter than 2 characters.");
-
-            if (trigger.Length > 120 || response.Length > 120)
-                throw new CommandFailedException("Trigger or response cannot be longer than 120 characters.");
-
-            if (!Shared.GuildTextReactions.ContainsKey(ctx.Guild.Id))
-                Shared.GuildTextReactions.TryAdd(ctx.Guild.Id, new ConcurrentHashSet<TextReaction>());
-
-            if (!IsValidRegex(trigger))
-                throw new CommandFailedException($"Trigger {Formatter.Bold(trigger)} is not a valid regular expression.");
-
-            if (Shared.TextTriggerExists(ctx.Guild.Id, trigger))
-                throw new CommandFailedException($"Trigger {Formatter.Bold(trigger)} already exists.");
-
-            var reaction = Shared.GuildTextReactions[ctx.Guild.Id].FirstOrDefault(tr => tr.Response == response);
-            if (reaction != null) {
-                if (!reaction.AddTrigger(trigger, is_regex_trigger: true))
-                    throw new CommandFailedException($"Failed to add trigger {Formatter.Bold(trigger)}.");
-            } else {
-                if (!Shared.GuildTextReactions[ctx.Guild.Id].Add(new TextReaction(trigger, response, is_regex_trigger: true)))
-                    throw new CommandFailedException($"Failed to add trigger {Formatter.Bold(trigger)}.");
-            }
-
-            string errors = "";
-            try {
-                await Database.AddTextReactionAsync(ctx.Guild.Id, trigger, response, is_regex_trigger: true)
-                    .ConfigureAwait(false);
-            } catch (Exception e) {
-                Logger.LogException(LogLevel.Warning, e);
-                errors = $"Warning: Failed to add trigger {Formatter.Bold(trigger)} to the database.";
-            }
-
-            await ctx.RespondWithIconEmbedAsync($"Done!\n\n{errors}")
-                .ConfigureAwait(false);
-        }
+            => await AddTextReactionAsync(ctx, trigger, response, true).ConfigureAwait(false);
         #endregion
 
         #region COMMAND_TEXT_REACTION_CLEAR
@@ -230,9 +155,54 @@ namespace TheGodfather.Modules.Reactions
             await ctx.SendPaginatedCollectionAsync(
                 "Text reactions for this guild",
                 Shared.GuildTextReactions[ctx.Guild.Id].OrderBy(tr => tr.OrderedTriggerStrings.First()),
-                tr => $"{tr.Response} => {string.Join(", ", tr.TriggerStrings)}",
+                tr => $"{tr.Response} | Triggers: {string.Join(", ", tr.TriggerStrings)}",
                 DiscordColor.Blue
             ).ConfigureAwait(false);
+        }
+        #endregion
+
+
+        #region HELPER_FUNCTIONS
+        private async Task AddTextReactionAsync(CommandContext ctx, string trigger, string response, bool is_regex_trigger)
+        {
+            if (string.IsNullOrWhiteSpace(response))
+                throw new InvalidCommandUsageException("Response missing or invalid.");
+
+            if (trigger.Length < 2 || response.Length < 2)
+                throw new CommandFailedException("Trigger or response cannot be shorter than 2 characters.");
+
+            if (trigger.Length > 120 || response.Length > 120)
+                throw new CommandFailedException("Trigger or response cannot be longer than 120 characters.");
+
+            if (!Shared.GuildTextReactions.ContainsKey(ctx.Guild.Id))
+                Shared.GuildTextReactions.TryAdd(ctx.Guild.Id, new ConcurrentHashSet<TextReaction>());
+
+            if (is_regex_trigger && !IsValidRegex(trigger))
+                throw new CommandFailedException($"Trigger {Formatter.Bold(trigger)} is not a valid regular expression.");
+
+            if (Shared.TextTriggerExists(ctx.Guild.Id, trigger))
+                throw new CommandFailedException($"Trigger {Formatter.Bold(trigger)} already exists.");
+
+            var reaction = Shared.GuildTextReactions[ctx.Guild.Id].FirstOrDefault(tr => tr.Response == response);
+            if (reaction != null) {
+                if (!reaction.AddTrigger(trigger, is_regex_trigger: true))
+                    throw new CommandFailedException($"Failed to add trigger {Formatter.Bold(trigger)}.");
+            } else {
+                if (!Shared.GuildTextReactions[ctx.Guild.Id].Add(new TextReaction(trigger, response, is_regex_trigger)))
+                    throw new CommandFailedException($"Failed to add trigger {Formatter.Bold(trigger)}.");
+            }
+
+            string errors = "";
+            try {
+                await Database.AddTextReactionAsync(ctx.Guild.Id, trigger, response, is_regex_trigger)
+                    .ConfigureAwait(false);
+            } catch (Exception e) {
+                Logger.LogException(LogLevel.Warning, e);
+                errors = $"Warning: Failed to add trigger {Formatter.Bold(trigger)} to the database.";
+            }
+
+            await ctx.RespondWithIconEmbedAsync($"Done!\n\n{errors}")
+                .ConfigureAwait(false);
         }
         #endregion
     }
