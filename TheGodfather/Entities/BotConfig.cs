@@ -2,6 +2,8 @@
 using System;
 using System.IO;
 using Newtonsoft.Json;
+
+using DSharpPlus;
 #endregion
 
 namespace TheGodfather.Entities
@@ -16,6 +18,9 @@ namespace TheGodfather.Entities
 
         [JsonProperty("prefix")]
         public string DefaultPrefix { get; private set; }
+
+        [JsonProperty("log-level")]
+        public LogLevel LogLevel { get; private set; }
 
         [JsonProperty("key-giphy")]
         public string GiphyKey { get; private set; }
@@ -61,6 +66,7 @@ namespace TheGodfather.Entities
                     Token = "<insert token here>",
                     ShardCount = 1,
                     DefaultPrefix = "!",
+                    LogLevel = LogLevel.Info,
                     GiphyKey = "<insert GIPHY API key>",
                     SteamKey = "<insert Steam API key>",
                     ImgurKey = "<insert Imgur API key>",

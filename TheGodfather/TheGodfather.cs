@@ -136,7 +136,7 @@ namespace TheGodfather
 
             Shards = new List<TheGodfatherShard>();
             for (var i = 0; i < cfg.ShardCount; i++) {
-                var shard = new TheGodfatherShard(i, DatabaseService, SharedData);
+                var shard = new TheGodfatherShard(i, DatabaseService, SharedData, cfg.LogLevel);
                 Shards.Add(shard);
             }
 

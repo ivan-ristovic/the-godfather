@@ -18,9 +18,9 @@ namespace TheGodfather.Entities
                     _filelog = value;
             }
         }
+        public static LogLevel LogLevel { get; set; } = LogLevel.Debug;
 
         private static readonly int BUFFER_SIZE = 512;
-
         private static object _lock = new object();
         private static string _path = "log.txt";
         private static bool _filelog = true;

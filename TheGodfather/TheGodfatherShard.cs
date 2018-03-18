@@ -47,11 +47,12 @@ namespace TheGodfather
         #endregion
 
 
-        public TheGodfatherShard(int sid, DBService db, SharedData sd)
+        public TheGodfatherShard(int sid, DBService db, SharedData sd, LogLevel lvl)
         {
             ShardId = sid;
             _db = db;
             _shared = sd;
+            Logger.LogLevel = lvl;
         }
 
 
@@ -87,7 +88,7 @@ namespace TheGodfather
                 ShardCount = _shared.BotConfiguration.ShardCount,
                 ShardId = ShardId,
                 UseInternalLogHandler = false,
-                LogLevel = LogLevel.Info
+                LogLevel = Logger.LogLevel
             };
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && Environment.OSVersion.Version <= new Version(6, 1, 7601, 65536))
