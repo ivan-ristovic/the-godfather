@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -29,7 +30,7 @@ namespace TheGodfather.Services
 
 
         public static string GetMemeGenerateUrl(string template, string topText, string bottomText)
-            => $"http://memegen.link/{Replace(template)}/{Replace(topText)}/{Replace(bottomText)}.jpg";
+            => $"http://memegen.link/{Replace(template)}/{Replace(topText)}/{Replace(bottomText)}.jpg?font=impact";
 
         public static async Task<IReadOnlyList<string>> GetMemeTemplatesAsync()
         {
@@ -37,7 +38,7 @@ namespace TheGodfather.Services
                 var json = await _http.GetStringAsync("https://memegen.link/api/templates/")
                     .ConfigureAwait(false);
                 var data = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
-                return data.Keys.OrderBy(s => s).ToList().AsReadOnly();
+                return data.OrderBy(kvp => kvp.Key).Select(kvp => $"{Formatter.Bold(kvp.Key)} {Path.GetFileName(kvp.Value)}").ToList().AsReadOnly();
             } catch (Exception e) {
                 Logger.LogException(LogLevel.Warning, e);
             }
