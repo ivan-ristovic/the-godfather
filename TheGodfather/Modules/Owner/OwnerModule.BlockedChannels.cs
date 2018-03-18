@@ -211,7 +211,7 @@ namespace TheGodfather.Modules.Owner
                             .ConfigureAwait(false);
                         lines.Add($"{channel.ToString()} ({Formatter.Italic(string.IsNullOrWhiteSpace(tup.Item2) ? "No reason provided." : tup.Item2)})");
                     } catch (NotFoundException) {
-                        await ctx.RespondWithFailedEmbedAsync($"Channel with ID {tup.Item1} does not exist!")
+                        await Database.RemoveBlockedChannelAsync(tup.Item1)
                             .ConfigureAwait(false);
                     }
                 }

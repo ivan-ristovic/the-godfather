@@ -276,9 +276,6 @@ namespace TheGodfather
                         $"{e.Message.Author.ToString()}<br>" +
                         $"{e.Guild.ToString()} ; {e.Channel.ToString()}"
                     );
-                    if (e.Channel.PermissionsFor(e.Guild.CurrentMember).HasFlag(Permissions.SendMessages))
-                        await e.Channel.SendFailedEmbedAsync("The message contains the filtered word but I do not have permissions to delete it.")
-                            .ConfigureAwait(false);
                 }
                 return;
             }
@@ -332,7 +329,7 @@ namespace TheGodfather
                         await e.Message.CreateReactionAsync(emoji)
                             .ConfigureAwait(false);
                     } catch (ArgumentException) {
-                        await e.Channel.SendFailedEmbedAsync($"Emoji reaction set, but emoji: {er.Response} doesn't exist!")
+                        await _db.RemoveAllEmojiReactionTriggersForReactionAsync(e.Guild.Id, er.Response)
                             .ConfigureAwait(false);
                     } catch (UnauthorizedException) {
                         await e.Channel.SendFailedEmbedAsync("I have a reaction for that message set up but I do not have permissions to add reactions. Fix your shit pls.")
@@ -372,8 +369,6 @@ namespace TheGodfather
                     await e.Channel.SendFailedEmbedAsync("The edited message contains the filtered word but I do not have permissions to delete it.")
                         .ConfigureAwait(false);
                 }
-                await e.Channel.SendFailedEmbedAsync($"Nice try, {e.Author.Mention}! But I see throught it!")
-                    .ConfigureAwait(false);
             }
         }
         #endregion
@@ -435,7 +430,7 @@ namespace TheGodfather
             else if (e.Exception is BadRequestException)
                 emb.Description = $"{emoji} Bad request. Please check if the parameters are valid.";
             else if (e.Exception is Npgsql.NpgsqlException)
-                emb.Description = $"{emoji} This is what happens when I use a Serbian database... Please {Formatter.InlineCode("!report")}.";
+                emb.Description = $"{emoji} Serbian database failed to respond... Please {Formatter.InlineCode("report")} this.";
             else if (ex is ChecksFailedException exc) {
                 var attr = exc.FailedChecks.First();
                 if (attr is CooldownAttribute)
@@ -453,7 +448,7 @@ namespace TheGodfather
             } else if (e.Exception is UnauthorizedException)
                 emb.Description = $"{emoji} I am not authorized to do that.";
             else
-                emb.Description = $"{emoji} Unknown error occured (probably because a Serbian made this bot). Please {Formatter.InlineCode("!report")}.";
+                return;
 
             await e.Context.RespondAsync(embed: emb.Build())
                 .ConfigureAwait(false);
