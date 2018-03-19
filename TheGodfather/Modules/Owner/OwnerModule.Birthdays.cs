@@ -21,13 +21,18 @@ namespace TheGodfather.Modules.Owner
     public partial class OwnerModule
     {
         [Group("birthdays")]
-        [Description("Birthday notifications management.")]
+        [Description("Birthday notifications management. If invoked without subcommand, lists all birthdays registered.")]
         [Aliases("birthday", "bday", "bd", "bdays")]
         [ListeningCheck]
         public class BirthdayModule : TheGodfatherBaseModule
         {
 
             public BirthdayModule(DBService db) : base(db: db) { }
+
+
+            [GroupCommand]
+            public async Task ExecuteGroupAsync(CommandContext ctx)
+                => await ListAsync(ctx).ConfigureAwait(false);
 
 
             #region COMMAND_BIRTHDAY_ADD

@@ -766,7 +766,7 @@
 ---
 
 ## Group: emojireaction
-*Orders a bot to react with given emoji to a message containing a trigger word inside (guild specific). If invoked without subcommands, adds a new emoji reaction to a given trigger word list. Note: Trigger words can be regular expressions.*
+*Orders a bot to react with given emoji to a message containing a trigger word inside (guild specific). If invoked without subcommands, adds a new emoji reaction to a given trigger word list. Note: Trigger words can be regular expressions (use ``emojireaction addregex`` command).*
 
 **Aliases:**
 `ereact, er, emojir, emojireactions`
@@ -774,7 +774,7 @@
 
 **Arguments:**
 
-(optional) `[emoji]` : *Emoji to send.* (def: `None`)
+`[emoji]` : *Emoji to send.*
 
 `[string...]` : *Trigger word list.*
 
@@ -812,6 +812,36 @@
 ```
 !emojireaction add :smile: haha
 !emojireaction add haha :smile:
+```
+---
+
+### emojireaction addregex
+*Add emoji reaction triggered by a regex to guild reaction list.*
+
+**Requires user permissions:**
+`Manage guild`
+
+**Aliases:**
+`+r, +regex, +regexp, +rgx, newregex, addrgx`
+
+
+**Overload 1:**
+
+`[emoji]` : *Emoji to send.*
+
+`[string...]` : *Trigger word list (case-insensitive).*
+
+**Overload 0:**
+
+`[string]` : *Trigger word (case-insensitive).*
+
+`[emoji]` : *Emoji to send.*
+
+**Examples:**
+
+```
+!emojireaction addregex :smile: (ha)+
+!emojireaction addregex (ha)+ :smile:
 ```
 ---
 
@@ -2355,6 +2385,255 @@
 ```
 ---
 
+## news
+*Get newest world news.*
+
+**Aliases:**
+`worldnews`
+
+
+**Examples:**
+
+```
+!news
+```
+---
+
+## Group: owner birthdays
+*Birthday notifications management. If invoked without subcommand, lists all birthdays registered.*
+
+**Owner-only.**
+
+**Aliases:**
+`birthday, bday, bd, bdays`
+
+
+---
+
+### owner birthdays add
+*Add a birthday to the database. If date is not specified, uses the current date as a birthday date. If the channel is not specified, uses the current channel.*
+
+**Aliases:**
+`+, a`
+
+
+**Overload 1:**
+
+`[user]` : *Birthday boy/girl.*
+
+(optional) `[string]` : *Birth date.* (def: `None`)
+
+(optional) `[channel]` : *Channel to send a greeting message to.* (def: `None`)
+
+**Overload 0:**
+
+`[user]` : *Birthday boy/girl.*
+
+(optional) `[channel]` : *Channel to send a greeting message to.* (def: `None`)
+
+(optional) `[string]` : *Birth date.* (def: `None`)
+
+**Examples:**
+
+```
+!owner birthday add @Someone
+!owner birthday add @Someone #channel_to_send_message_to
+!owner birthday add @Someone 15.2.1990
+!owner birthday add @Someone #channel_to_send_message_to 15.2.1990
+!owner birthday add @Someone 15.2.1990 #channel_to_send_message_to
+```
+---
+
+### owner birthdays delete
+*Remove status from running queue.*
+
+**Aliases:**
+`-, remove, rm, del`
+
+
+**Arguments:**
+
+`[user]` : *User whose birthday to remove.*
+
+**Examples:**
+
+```
+!owner birthday delete @Someone
+```
+---
+
+### owner birthdays list
+*List all registered birthdays.*
+
+**Aliases:**
+`ls`
+
+
+**Examples:**
+
+```
+!owner birthday list
+```
+---
+
+## Group: owner blockedchannels
+*Manipulate blocked channels. Bot will not listen for commands in blocked channels or react (either with text or emoji) to messages inside.*
+
+**Owner-only.**
+
+**Aliases:**
+`bc, blockedc, blockchannel, bchannels, bchannel, bchn`
+
+
+---
+
+### owner blockedchannels add
+*Add channel to blocked channels list.*
+
+**Aliases:**
+`+, a`
+
+
+**Overload 2:**
+
+`[channel...]` : *Channels to block.*
+
+**Overload 1:**
+
+`[string]` : *Reason (max 60 chars).*
+
+`[channel...]` : *Channels to block.*
+
+**Overload 0:**
+
+`[channel]` : *Channels to block.*
+
+`[string...]` : *Reason (max 60 chars).*
+
+**Examples:**
+
+```
+!owner blockedchannels add #channel
+!owner blockedchannels add #channel Some reason for blocking
+!owner blockedchannels add 123123123123123
+!owner blockedchannels add #channel 123123123123123
+!owner blockedchannels add "This is some reason" #channel 123123123123123
+```
+---
+
+### owner blockedchannels delete
+*Remove channel from blocked channels list..*
+
+**Aliases:**
+`-, remove, rm, del`
+
+
+**Arguments:**
+
+`[channel...]` : *Channels to unblock.*
+
+**Examples:**
+
+```
+!owner blockedchannels remove #channel
+!owner blockedchannels remove 123123123123123
+!owner blockedchannels remove @Someone 123123123123123
+```
+---
+
+### owner blockedchannels list
+*List all blocked channels.*
+
+**Aliases:**
+`ls`
+
+
+**Examples:**
+
+```
+!owner blockedchannels list
+```
+---
+
+## Group: owner blockedusers
+*Manipulate blocked users. Bot will not allow blocked users to invoke commands and will not react (either with text or emoji) to their messages.*
+
+**Owner-only.**
+
+**Aliases:**
+`bu, blockedu, blockuser, busers, buser, busr`
+
+
+---
+
+### owner blockedusers add
+*Add users to blocked users list.*
+
+**Aliases:**
+`+, a`
+
+
+**Overload 2:**
+
+`[user...]` : *Users to block.*
+
+**Overload 1:**
+
+`[string]` : *Reason (max 60 chars).*
+
+`[user...]` : *Users to block.*
+
+**Overload 0:**
+
+`[user]` : *Users to block.*
+
+`[string...]` : *Reason (max 60 chars).*
+
+**Examples:**
+
+```
+!owner blockedusers add @Someone
+!owner blockedusers add @Someone Troublemaker and spammer
+!owner blockedusers add 123123123123123
+!owner blockedusers add @Someone 123123123123123
+!owner blockedusers add "This is some reason" @Someone 123123123123123
+```
+---
+
+### owner blockedusers delete
+*Remove users from blocked users list..*
+
+**Aliases:**
+`-, remove, rm, del`
+
+
+**Arguments:**
+
+`[user...]` : *Users to unblock.*
+
+**Examples:**
+
+```
+!owner blockedusers remove @Someone
+!owner blockedusers remove 123123123123123
+!owner blockedusers remove @Someone 123123123123123
+```
+---
+
+### owner blockedusers list
+*List all blocked users.*
+
+**Aliases:**
+`ls`
+
+
+**Examples:**
+
+```
+!owner blockedusers list
+```
+---
+
 ### owner botavatar
 *Set bot avatar.*
 
@@ -2548,6 +2827,10 @@
 `disable, poweroff, exit, quit`
 
 
+**Overload 1:**
+
+`[time span]` : *Time until shutdown.*
+
 **Examples:**
 
 ```
@@ -2699,7 +2982,7 @@
 
 **Arguments:**
 
-`[user]` : *Who to measure.*
+(optional) `[user]` : *Who to measure.* (def: `None`)
 
 **Examples:**
 
@@ -2712,7 +2995,7 @@
 *Comparison of the results given by ``penis`` command.*
 
 **Aliases:**
-`sizecompare, comparesize, comparepenis, cmppenis, peniscmp`
+`sizecompare, comparesize, comparepenis, cmppenis, peniscmp, comppenis`
 
 
 **Arguments:**
@@ -3030,6 +3313,26 @@
 ```
 ---
 
+## remind
+*Resend a message after some time.*
+
+**Requires user permissions:**
+`Administrator`
+
+
+**Arguments:**
+
+`[time span]` : *Time span until reminder.*
+
+`[string...]` : *Remind you of?*
+
+**Examples:**
+
+```
+!remind 1h Drink water!
+```
+---
+
 ## report
 *Send a report message to owner about a bug (please don't abuse... please).*
 
@@ -3313,20 +3616,6 @@
 
 ```
 !feed list
-```
----
-
-### rss news
-*Get newest world news.*
-
-**Aliases:**
-`worldnews`
-
-
-**Examples:**
-
-```
-!rss news
 ```
 ---
 
@@ -3684,7 +3973,7 @@
 ---
 
 ## Group: textreaction
-*Orders a bot to react with given text to a message containing a trigger word inside (guild specific). If invoked without subcommands, adds a new text reaction to a given trigger word. Note: Trigger words can be regular expressions. You can also use "%user%" inside response and the bot will replace it with mention for the user who triggers the reaction.*
+*Orders a bot to react with given text to a message containing a trigger word inside (guild specific). If invoked without subcommands, adds a new text reaction to a given trigger word. Note: Trigger words can be regular expressions (use ``textreaction addregex`` command). You can also use "%user%" inside response and the bot will replace it with mention for the user who triggers the reaction.*
 
 **Aliases:**
 `treact, tr, txtr, textreactions`
@@ -3692,7 +3981,7 @@
 
 **Arguments:**
 
-`[string]` : *Trigger (case sensitive).*
+`[string]` : *Trigger string (case insensitive).*
 
 `[string...]` : *Response.*
 
@@ -3700,7 +3989,6 @@
 
 ```
 !textreaction hi hello
-!textreaction h(i|ey|ola) Hello
 !textreaction "hi" "Hello, %user%!"
 ```
 ---
@@ -3717,7 +4005,7 @@
 
 **Arguments:**
 
-`[string]` : *Trigger (case sensitive).*
+`[string]` : *Trigger string (case insensitive).*
 
 `[string...]` : *Response.*
 
@@ -3725,6 +4013,29 @@
 
 ```
 !textreaction add "hi" "Hello, %user%!"
+```
+---
+
+### textreaction addregex
+*Add a new text reaction triggered by a regex to guild text reaction list.*
+
+**Requires user permissions:**
+`Manage guild`
+
+**Aliases:**
+`+r, +regex, +regexp, +rgx, newregex, addrgx`
+
+
+**Arguments:**
+
+`[string]` : *Regex (case insensitive).*
+
+`[string...]` : *Response.*
+
+**Examples:**
+
+```
+!textreaction addregex "h(i|ey|ello|owdy)" "Hello, %user%!"
 ```
 ---
 
@@ -4216,7 +4527,7 @@
 ### user warn
 *Warn a member in private message by sending a given warning text.*
 
-**Requires permissions:**
+**Requires user permissions:**
 `Kick members`
 
 **Aliases:**
