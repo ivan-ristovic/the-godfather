@@ -10,11 +10,13 @@ using System.Threading;
 using Newtonsoft.Json;
 
 using TheGodfather.Entities;
+using TheGodfather.Extensions;
 using TheGodfather.Extensions.Collections;
 using TheGodfather.Modules.Reactions.Common;
 using TheGodfather.Services;
 
 using DSharpPlus;
+using DSharpPlus.Entities;
 #endregion
 
 namespace TheGodfather
@@ -28,6 +30,7 @@ namespace TheGodfather
         private static Timer BotStatusTimer { get; set; }
         private static Timer DatabaseSyncTimer { get; set; }
         private static Timer FeedCheckTimer { get; set; }
+        private static Timer BirthdayCheckTimer { get; set; }
 
 
         internal static void Main(string[] args)
@@ -156,6 +159,7 @@ namespace TheGodfather
             DatabaseSyncTimer = new Timer(DatabaseSyncTimerCallback, Shards[0].Client, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(3));
             BotStatusTimer = new Timer(BotActivityTimerCallback, Shards[0].Client, TimeSpan.FromSeconds(10), TimeSpan.FromMinutes(10));
             FeedCheckTimer = new Timer(FeedCheckTimerCallback, Shards[0].Client, TimeSpan.FromSeconds(30), TimeSpan.FromMinutes(1));
+            BirthdayCheckTimer = new Timer(BirthdayCheckTimerCallback, Shards[0].Client, TimeSpan.FromSeconds(5), TimeSpan.FromHours(1));
             Console.WriteLine(" Done!");
             Console.WriteLine();
 
@@ -191,6 +195,7 @@ namespace TheGodfather
             Console.WriteLine("Done! Bye!");
         }
 
+
         private static void BotActivityTimerCallback(object _)
         {
             if (!SharedData.StatusRotationEnabled)
@@ -216,6 +221,25 @@ namespace TheGodfather
             var client = _ as DiscordClient;
             try {
                 RSSService.CheckFeedsForChangesAsync(client, DatabaseService).ConfigureAwait(false).GetAwaiter().GetResult();
+            } catch (Exception e) {
+                Logger.LogException(LogLevel.Error, e);
+            }
+        }
+
+        private static void BirthdayCheckTimerCallback(object _)
+        {
+            var client = _ as DiscordClient;
+            try {
+                var birthdays = DatabaseService.GetTodayBirthdaysAsync()
+                    .ConfigureAwait(false).GetAwaiter().GetResult();
+                foreach (var birthday in birthdays) {
+                    var channel = client.GetChannelAsync(birthday.ChannelId)
+                        .ConfigureAwait(false).GetAwaiter().GetResult();
+                    var user = client.GetChannelAsync(birthday.UserId)
+                        .ConfigureAwait(false).GetAwaiter().GetResult();
+                    channel.SendIconEmbedAsync($"Happy birthday, {user.Mention}!", DiscordEmoji.FromName(client, ":tada:"))
+                        .ConfigureAwait(false).GetAwaiter().GetResult();
+                }
             } catch (Exception e) {
                 Logger.LogException(LogLevel.Error, e);
             }

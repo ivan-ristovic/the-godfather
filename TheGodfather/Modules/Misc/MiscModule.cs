@@ -324,6 +324,7 @@ namespace TheGodfather.Modules.Misc
         [Command("remind")]
         [Description("Resend a message after some time.")]
         [UsageExample("!remind 1h Drink water!")]
+        [RequireUserPermissions(Permissions.Administrator)] // TODO
         public async Task RemindAsync(CommandContext ctx,
                                      [Description("Time span until reminder.")] TimeSpan timespan,
                                      [RemainingText, Description("Remind you of?")] string message)

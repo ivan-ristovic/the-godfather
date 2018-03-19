@@ -415,7 +415,7 @@ namespace TheGodfather.Modules.Administration
         [Description("Warn a member in private message by sending a given warning text.")]
         [Aliases("w")]
         [UsageExample("!user warn @Someone Stop spamming or kick!")]
-        [RequirePermissions(Permissions.KickMembers)]
+        [RequireUserPermissions(Permissions.KickMembers)]
         public async Task WarnAsync(CommandContext ctx,
                                    [Description("Member.")] DiscordMember member,
                                    [RemainingText, Description("Warning message.")] string msg = null)
