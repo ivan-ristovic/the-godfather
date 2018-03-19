@@ -14,6 +14,35 @@ namespace TheGodfather.Services
 {
     public partial class DBService
     {
+        public async Task<IReadOnlyList<Birthday>> GetAllBirthdaysAsync()
+        {
+            var birthdays = new List<Birthday>();
+
+            await _sem.WaitAsync();
+            try {
+                using (var con = new NpgsqlConnection(_connectionString))
+                using (var cmd = con.CreateCommand()) {
+                    await con.OpenAsync().ConfigureAwait(false);
+
+                    cmd.CommandText = "SELECT * FROM gf.birthdays;";
+
+                    using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
+                        while (await reader.ReadAsync().ConfigureAwait(false)) {
+                            birthdays.Add(new Birthday(
+                                (ulong)(long)reader["uid"],
+                                (ulong)(long)reader["cid"],
+                                (DateTime)reader["bday"]
+                            ));
+                        }
+                    }
+                }
+            } finally {
+                _sem.Release();
+            }
+
+            return birthdays.AsReadOnly();
+        }
+
         public async Task<IReadOnlyList<Birthday>> GetTodayBirthdaysAsync()
         {
             var birthdays = new List<Birthday>();
@@ -24,7 +53,7 @@ namespace TheGodfather.Services
                 using (var cmd = con.CreateCommand()) {
                     await con.OpenAsync().ConfigureAwait(false);
 
-                    cmd.CommandText = "SELECT * FROM gf.birthdays WHERE bday = @today;";
+                    cmd.CommandText = "SELECT * FROM gf.birthdays WHERE bday = @today AND last_updated != date_part('year', CURRENT_DATE);";
                     cmd.Parameters.AddWithValue("today", NpgsqlDbType.Date, DateTime.UtcNow.Date);
 
                     using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
@@ -39,17 +68,15 @@ namespace TheGodfather.Services
             return birthdays.AsReadOnly();
         }
 
-        public async Task<int> AddBirthdayAsync(ulong uid, ulong cid)
+        public async Task AddBirthdayAsync(ulong uid, ulong cid)
         {
-            int id = 0;
-
             await _sem.WaitAsync();
             try {
                 using (var con = new NpgsqlConnection(_connectionString))
                 using (var cmd = con.CreateCommand()) {
                     await con.OpenAsync().ConfigureAwait(false);
 
-                    cmd.CommandText = "INSERT INTO gf.birthdays VALUES (@uid, @cid, CURRENT_DATE, date_part('year', CURRENT_DATE));";
+                    cmd.CommandText = "INSERT INTO gf.birthdays VALUES (@uid, @cid, CURRENT_DATE, date_part('year', CURRENT_DATE)) ON CONFLICT DO NOTHING;";
                     cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, uid);
                     cmd.Parameters.AddWithValue("cid", NpgsqlDbType.Bigint, cid);
 
@@ -58,11 +85,28 @@ namespace TheGodfather.Services
             } finally {
                 _sem.Release();
             }
-
-            return id;
         }
 
-        public async Task RemoveBirthdayAsync(int uid)
+        public async Task UpdateBirthdayAsync(ulong uid, ulong cid)
+        {
+            await _sem.WaitAsync();
+            try {
+                using (var con = new NpgsqlConnection(_connectionString))
+                using (var cmd = con.CreateCommand()) {
+                    await con.OpenAsync().ConfigureAwait(false);
+
+                    cmd.CommandText = "UPDATE gf.birthdays SET last_updated = date_part('year', CURRENT_DATE) WHERE uid = @uid AND cid = @cid;";
+                    cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, uid);
+                    cmd.Parameters.AddWithValue("cid", NpgsqlDbType.Bigint, cid);
+
+                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                }
+            } finally {
+                _sem.Release();
+            }
+        }
+
+        public async Task RemoveBirthdayAsync(ulong uid)
         {
             await _sem.WaitAsync();
             try {
@@ -71,7 +115,7 @@ namespace TheGodfather.Services
                     await con.OpenAsync().ConfigureAwait(false);
 
                     cmd.CommandText = "DELETE FROM gf.birthdays WHERE uid = @uid;";
-                    cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Integer, uid);
+                    cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, uid);
 
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }

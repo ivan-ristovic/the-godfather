@@ -235,9 +235,11 @@ namespace TheGodfather
                 foreach (var birthday in birthdays) {
                     var channel = client.GetChannelAsync(birthday.ChannelId)
                         .ConfigureAwait(false).GetAwaiter().GetResult();
-                    var user = client.GetChannelAsync(birthday.UserId)
+                    var user = client.GetUserAsync(birthday.UserId)
                         .ConfigureAwait(false).GetAwaiter().GetResult();
                     channel.SendIconEmbedAsync($"Happy birthday, {user.Mention}!", DiscordEmoji.FromName(client, ":tada:"))
+                        .ConfigureAwait(false).GetAwaiter().GetResult();
+                    DatabaseService.UpdateBirthdayAsync(birthday.UserId, channel.Id)
                         .ConfigureAwait(false).GetAwaiter().GetResult();
                 }
             } catch (Exception e) {
