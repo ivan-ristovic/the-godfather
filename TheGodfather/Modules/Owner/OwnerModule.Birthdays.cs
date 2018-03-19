@@ -1,21 +1,12 @@
 ﻿#region USING_DIRECTIVES
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Net;
-using System.Text;
 using System.Threading.Tasks;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Scripting;
-using Microsoft.CodeAnalysis.Scripting;
 
 using TheGodfather.Attributes;
-using TheGodfather.Entities;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-using TheGodfather.Modules.Owner.Common;
 using TheGodfather.Services;
 
 using DSharpPlus;
@@ -40,23 +31,38 @@ namespace TheGodfather.Modules.Owner
 
 
             #region COMMAND_BIRTHDAY_ADD
-            [Command("add")]
-            [Description("Add a birthday to the database.")]
+            [Command("add"), Priority(1)]
+            [Description("Add a birthday to the database. If date is not specified, uses the current date as a birthday date. If the channel is not specified, uses the current channel.")]
             [Aliases("+", "a")]
             [UsageExample("!owner birthday add @Someone")]
             [UsageExample("!owner birthday add @Someone #channel_to_send_message_to")]
+            [UsageExample("!owner birthday add @Someone 15.2.1990")]
+            [UsageExample("!owner birthday add @Someone #channel_to_send_message_to 15.2.1990")]
+            [UsageExample("!owner birthday add @Someone 15.2.1990 #channel_to_send_message_to")]
             public async Task AddAsync(CommandContext ctx,
                                       [Description("Birthday boy/girl.")] DiscordUser user,
+                                      [Description("Birth date.")] string date_str = null,
                                       [Description("Channel to send a greeting message to.")] DiscordChannel channel = null)
             {
+                var date = DateTime.UtcNow.Date;
+                if (!string.IsNullOrWhiteSpace(date_str))
+                    DateTime.TryParse(date_str, out date);
+
                 if (channel == null)
                     channel = ctx.Channel;
 
-                await Database.AddBirthdayAsync(user.Id, channel.Id)
+                await Database.AddBirthdayAsync(user.Id, channel.Id, date)
                     .ConfigureAwait(false);
                 await ctx.RespondWithIconEmbedAsync()
                     .ConfigureAwait(false);
             }
+
+            [Command("add"), Priority(0)]
+            public async Task AddAsync(CommandContext ctx,
+                                      [Description("Birthday boy/girl.")] DiscordUser user,
+                                      [Description("Channel to send a greeting message to.")] DiscordChannel channel = null,
+                                      [Description("Birth date.")] string date_str = null)
+                => await AddAsync(ctx, user, date_str, channel).ConfigureAwait(false);
             #endregion
 
             #region COMMAND_BIRTHDAY_DELETE
@@ -76,13 +82,16 @@ namespace TheGodfather.Modules.Owner
 
             #region COMMAND_BIRTHDAY_LIST
             [Command("list")]
-            [Description("List all bot statuses.")]
+            [Description("List all registered birthdays.")]
             [Aliases("ls")]
-            [UsageExample("!owner status list")]
+            [UsageExample("!owner birthday list")]
             public async Task ListAsync(CommandContext ctx)
             {
                 var birthdays = await Database.GetAllBirthdaysAsync()
                     .ConfigureAwait(false);
+
+                if (!birthdays.Any())
+                    throw new CommandFailedException("No birthdays registered!");
 
                 List<string> lines = new List<string>();
                 foreach (var birthday in birthdays) {

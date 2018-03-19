@@ -204,6 +204,9 @@ namespace TheGodfather.Modules.Owner
                 var blocked = await Database.GetBlockedChannelsAsync()
                     .ConfigureAwait(false);
 
+                if (!blocked.Any())
+                    throw new CommandFailedException("No blocked channels registered!");
+
                 List<string> lines = new List<string>();
                 foreach (var tup in blocked) {
                     try {

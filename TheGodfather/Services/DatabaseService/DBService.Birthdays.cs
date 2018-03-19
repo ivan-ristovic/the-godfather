@@ -68,7 +68,7 @@ namespace TheGodfather.Services
             return birthdays.AsReadOnly();
         }
 
-        public async Task AddBirthdayAsync(ulong uid, ulong cid)
+        public async Task AddBirthdayAsync(ulong uid, ulong cid, DateTime? date = null)
         {
             await _sem.WaitAsync();
             try {
@@ -76,9 +76,10 @@ namespace TheGodfather.Services
                 using (var cmd = con.CreateCommand()) {
                     await con.OpenAsync().ConfigureAwait(false);
 
-                    cmd.CommandText = "INSERT INTO gf.birthdays VALUES (@uid, @cid, CURRENT_DATE, date_part('year', CURRENT_DATE)) ON CONFLICT DO NOTHING;";
+                    cmd.CommandText = "INSERT INTO gf.birthdays VALUES (@uid, @cid, @date, date_part('year', CURRENT_DATE)) ON CONFLICT DO NOTHING;";
                     cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, uid);
                     cmd.Parameters.AddWithValue("cid", NpgsqlDbType.Bigint, cid);
+                    cmd.Parameters.AddWithValue("date", NpgsqlDbType.Date, date?.Date ?? DateTime.Now.Date);
 
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }

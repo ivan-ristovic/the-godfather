@@ -199,6 +199,9 @@ namespace TheGodfather.Modules.Owner
                 var blocked = await Database.GetBlockedUsersAsync()
                     .ConfigureAwait(false);
 
+                if (!blocked.Any())
+                    throw new CommandFailedException("No blocked users registered!");
+
                 List<string> lines = new List<string>();
                 foreach (var tup in blocked) {
                     try {
