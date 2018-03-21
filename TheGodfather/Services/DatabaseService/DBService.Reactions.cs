@@ -1,4 +1,5 @@
 ﻿#region USING_DIRECTIVES
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -76,17 +77,17 @@ namespace TheGodfather.Services
             }
         }
 
-        public async Task RemoveTextReactionAsync(ulong gid, string trigger)
+        public async Task RemoveTextReactionTriggersAsync(ulong gid, string[] triggers)
         {
             await _sem.WaitAsync();
             try {
                 using (var con = new NpgsqlConnection(_connectionString))
                 using (var cmd = con.CreateCommand()) {
                     await con.OpenAsync().ConfigureAwait(false);
-
-                    cmd.CommandText = "DELETE FROM gf.text_reactions WHERE gid = @gid AND trigger = @trigger;";
+                    
+                    cmd.CommandText = "DELETE FROM gf.text_reactions WHERE gid = @gid AND trigger = ANY(:triggers);";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
-                    cmd.Parameters.AddWithValue("trigger", NpgsqlDbType.Varchar, trigger);
+                    cmd.Parameters.Add("triggers", NpgsqlDbType.Array | NpgsqlDbType.Varchar).Value = triggers;
 
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
@@ -177,7 +178,7 @@ namespace TheGodfather.Services
             }
         }
 
-        public async Task RemoveEmojiReactionTriggerAsync(ulong gid, string trigger)
+        public async Task RemoveEmojiReactionTriggersAsync(ulong gid, string[] triggers)
         {
             await _sem.WaitAsync();
             try {
@@ -185,9 +186,9 @@ namespace TheGodfather.Services
                 using (var cmd = con.CreateCommand()) {
                     await con.OpenAsync().ConfigureAwait(false);
 
-                    cmd.CommandText = "DELETE FROM gf.emoji_reactions WHERE gid = @gid AND trigger = @trigger;";
+                    cmd.CommandText = "DELETE FROM gf.emoji_reactions WHERE gid = @gid AND trigger = ANY(:triggers);";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
-                    cmd.Parameters.AddWithValue("trigger", NpgsqlDbType.Varchar, trigger);
+                    cmd.Parameters.Add("triggers", NpgsqlDbType.Array | NpgsqlDbType.Varchar).Value = triggers;
 
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }

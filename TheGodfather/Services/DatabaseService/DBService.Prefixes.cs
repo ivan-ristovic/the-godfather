@@ -44,22 +44,29 @@ namespace TheGodfather.Services
                 using (var cmd = con.CreateCommand()) {
                     await con.OpenAsync().ConfigureAwait(false);
 
-                    cmd.CommandText = "SELECT * FROM gf.prefixes WHERE gid = @gid LIMIT 1;";
-                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
+                    cmd.CommandText = "INSERT INTO gf.prefixes VALUES(@gid, @prefix) ON CONFLICT (gid) DO UPDATE SET prefix = @prefix;";
+                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
+                    cmd.Parameters.AddWithValue("prefix", NpgsqlDbType.Varchar, prefix);
 
-                    var res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
-                    using (var cmd1 = con.CreateCommand()) {
-                        if (res == null || res is DBNull) {
-                            cmd.CommandText = "INSERT INTO gf.prefixes VALUES(@gid, @prefix);";
-                            cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
-                            cmd.Parameters.AddWithValue("prefix", NpgsqlDbType.Varchar, prefix);
-                        } else {
-                            cmd.CommandText = "UPDATE gf.prefixes SET prefix = @prefix WHERE gid = @gid;";
-                            cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
-                            cmd.Parameters.AddWithValue("prefix", NpgsqlDbType.Varchar, prefix);
-                        }
-                        await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
-                    }
+                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                }
+            } finally {
+                _sem.Release();
+            }
+        }
+
+        public async Task RemoveGuildPrefixAsync(ulong gid)
+        {
+            await _sem.WaitAsync();
+            try {
+                using (var con = new NpgsqlConnection(_connectionString))
+                using (var cmd = con.CreateCommand()) {
+                    await con.OpenAsync().ConfigureAwait(false);
+
+                    cmd.CommandText = "DELETE FROM gf.prefixes WHERE gid = @gid;";
+                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
+
+                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
             } finally {
                 _sem.Release();

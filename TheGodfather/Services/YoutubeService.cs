@@ -98,7 +98,7 @@ namespace TheGodfather.Services
                 var jsondata = await _http.GetStringAsync(u)
                     .ConfigureAwait(false);
                 var data = JsonConvert.DeserializeObject<YoutubeResponse>(jsondata);
-                if (data.Items != null)
+                if (data.Items != null && data.Items.Any())
                     return data.Items.First()["id"];
             } catch (Exception e) {
                 Logger.LogException(LogLevel.Debug, e);

@@ -268,9 +268,15 @@ namespace TheGodfather.Modules.Misc
             Shared.GuildPrefixes.AddOrUpdate(ctx.Guild.Id, prefix, (id, oldp) => prefix);
             await ctx.RespondWithIconEmbedAsync($"Successfully changed the prefix for this guild to: {Formatter.Bold(prefix)}")
                 .ConfigureAwait(false);
+
             try {
-                await Database.SetGuildPrefixAsync(ctx.Guild.Id, prefix)
-                    .ConfigureAwait(false);
+                if (prefix == Shared.BotConfiguration.DefaultPrefix) {
+                    await Database.RemoveGuildPrefixAsync(ctx.Guild.Id)
+                        .ConfigureAwait(false);
+                } else {
+                    await Database.SetGuildPrefixAsync(ctx.Guild.Id, prefix)
+                        .ConfigureAwait(false);
+                }
             } catch (Exception e) {
                 Logger.LogException(LogLevel.Warning, e);
                 throw new CommandFailedException("Warning: Failed to add prefix to the database.");

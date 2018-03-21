@@ -59,66 +59,40 @@ namespace TheGodfather.Services
             if (newest == null)
                 return false;
 
+            int? sid = null;
             await _sem.WaitAsync();
             try {
                 using (var con = new NpgsqlConnection(_connectionString)) {
                     await con.OpenAsync().ConfigureAwait(false);
 
                     int? id = null;
-
-                    // Check if this feed already exists
                     using (var cmd = con.CreateCommand()) {
-                        cmd.CommandText = "SELECT id FROM gf.feeds WHERE url = @url LIMIT 1;";
+                        cmd.CommandText = "INSERT INTO gf.feeds VALUES (DEFAULT, @url, @savedurl) ON CONFLICT (url) DO UPDATE SET url = EXCLUDED.url RETURNING id;";
                         cmd.Parameters.AddWithValue("url", NpgsqlDbType.Text, url);
+                        cmd.Parameters.AddWithValue("savedurl", NpgsqlDbType.Text, newest.Links[0].Uri.ToString());
                         var res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
                         if (res != null && !(res is DBNull))
                             id = (int)res;
                     }
 
-                    // If it doesnt, add it
-                    if (!id.HasValue) {
-                        using (var cmd = con.CreateCommand()) {
-                            cmd.CommandText = "INSERT INTO gf.feeds VALUES (DEFAULT, @url, @savedurl);";
-                            cmd.Parameters.AddWithValue("url", NpgsqlDbType.Text, url);
-                            cmd.Parameters.AddWithValue("savedurl", NpgsqlDbType.Text, newest.Links[0].Uri.ToString());
-                            await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
-                        }
-                        using (var cmd = con.CreateCommand()) {
-                            cmd.CommandText = "SELECT id FROM gf.feeds WHERE url = @url;";
-                            cmd.Parameters.AddWithValue("url", NpgsqlDbType.Text, url);
-                            var res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
-                            if (res != null && !(res is DBNull))
-                                id = (int)res;
-                        }
-                    }
-
-                    // Check if subscription exists
                     using (var cmd = con.CreateCommand()) {
-                        cmd.CommandText = "SELECT * FROM gf.subscriptions WHERE id = @id AND cid = @cid;";
-                        cmd.Parameters.AddWithValue("id", NpgsqlDbType.Integer, id.Value);
-                        cmd.Parameters.AddWithValue("cid", NpgsqlDbType.Bigint, cid);
-                        var res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
-                        if (res != null && !(res is DBNull))
-                            return false;
-                    }
-
-                    // Add subscription
-                    using (var cmd = con.CreateCommand()) {
-                        cmd.CommandText = "INSERT INTO gf.subscriptions VALUES (@id, @cid, @qname);";
+                        cmd.CommandText = "INSERT INTO gf.subscriptions VALUES (@id, @cid, @qname) ON CONFLICT DO NOTHING RETURNING id;";
                         cmd.Parameters.AddWithValue("id", NpgsqlDbType.Integer, id.Value);
                         cmd.Parameters.AddWithValue("cid", NpgsqlDbType.Bigint, cid);
                         cmd.Parameters.AddWithValue("qname", NpgsqlDbType.Varchar, qname);
-                        await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                        var res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
+                        if (res != null && !(res is DBNull))
+                            sid = (int)res;
                     }
                 }
             } finally {
                 _sem.Release();
             }
 
-            return true;
+            return sid.HasValue;
         }
 
-        public async Task RemoveFeedAsync(int fid)
+        public async Task RemoveFeedAsync(int id)
         {
             await _sem.WaitAsync();
             try {
@@ -126,7 +100,7 @@ namespace TheGodfather.Services
                 using (var cmd = con.CreateCommand()) {
                     await con.OpenAsync().ConfigureAwait(false);
                     cmd.CommandText = "DELETE FROM gf.feeds WHERE id = @fid;";
-                    cmd.Parameters.AddWithValue("fid", NpgsqlDbType.Integer, fid);
+                    cmd.Parameters.AddWithValue("fid", NpgsqlDbType.Integer, id);
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
             } finally {

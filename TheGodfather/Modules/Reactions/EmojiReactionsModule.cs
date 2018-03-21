@@ -167,14 +167,14 @@ namespace TheGodfather.Modules.Reactions
                     errors.AppendLine($"Warning: Failed to remove some emoji reactions for trigger {Formatter.Bold(trigger)}.");
                     continue;
                 }
+            }
 
-                try {
-                    await Database.RemoveEmojiReactionTriggerAsync(ctx.Guild.Id, trigger)
-                        .ConfigureAwait(false);
-                } catch (Exception e) {
-                    Logger.LogException(LogLevel.Warning, e);
-                    errors.AppendLine($"Warning: Failed to remove trigger {Formatter.Bold(trigger)} from the database.");
-                }
+            try {
+                await Database.RemoveEmojiReactionTriggersAsync(ctx.Guild.Id, triggers)
+                    .ConfigureAwait(false);
+            } catch (Exception e) {
+                Logger.LogException(LogLevel.Warning, e);
+                errors.AppendLine($"Warning: Failed to remove some triggers from the database.");
             }
 
             await ctx.RespondWithIconEmbedAsync($"Done!\n\n{errors.ToString()}")

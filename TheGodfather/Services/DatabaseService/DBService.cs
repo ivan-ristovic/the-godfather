@@ -93,16 +93,13 @@ namespace TheGodfather.Services
 
         public async Task<bool> AddGuildIfNotExistsAsync(ulong gid)
         {
-            if (await GuildConfigExistsAsync(gid).ConfigureAwait(false))
-                return false;
-
             await _sem.WaitAsync();
             try {
                 using (var con = new NpgsqlConnection(_connectionString))
                 using (var cmd = con.CreateCommand()) {
                     await con.OpenAsync().ConfigureAwait(false);
 
-                    cmd.CommandText = "INSERT INTO gf.guild_cfg VALUES (@gid, NULL, NULL);";
+                    cmd.CommandText = "INSERT INTO gf.guild_cfg VALUES (@gid, NULL, NULL) ON CONFLICT DO NOTHING;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
 
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
@@ -112,30 +109,6 @@ namespace TheGodfather.Services
             }
 
             return true;
-        }
-
-        public async Task<bool> GuildConfigExistsAsync(ulong gid)
-        {
-            bool exists = false;
-
-            await _sem.WaitAsync();
-            try {
-                using (var con = new NpgsqlConnection(_connectionString))
-                using (var cmd = con.CreateCommand()) {
-                    await con.OpenAsync().ConfigureAwait(false);
-
-                    cmd.CommandText = "SELECT * FROM gf.guild_cfg WHERE gid = @gid LIMIT 1;";
-                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
-
-                    var res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
-                    if (res != null && !(res is DBNull))
-                        exists = true;
-                }
-            } finally {
-                _sem.Release();
-            }
-
-            return exists;
         }
     }
 }
