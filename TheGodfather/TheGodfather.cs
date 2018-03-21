@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using Newtonsoft.Json;
 
+using TheGodfather.Attributes;
 using TheGodfather.Entities;
 using TheGodfather.Extensions;
 using TheGodfather.Extensions.Collections;
@@ -134,6 +135,7 @@ namespace TheGodfather
                 EmojiReactions = gemojireactions,
                 MessageCount = msgcount
             };
+            ListeningCheckAttribute.Shared = SharedData;
 
             Console.Write("\r[4/5] Creating {0} shards...          ", cfg.ShardCount);
 

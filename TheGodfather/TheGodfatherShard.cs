@@ -264,18 +264,18 @@ namespace TheGodfather
                 try {
                     await e.Channel.DeleteMessageAsync(e.Message)
                         .ConfigureAwait(false);
-                    Log(LogLevel.Info,
+                    Log(LogLevel.Debug,
                         $"Filter triggered:<br>" +
                         $"Message: {e.Message.Content.Replace('\n', ' ')}<br>" +
                         $"{e.Message.Author.ToString()}<br>" +
-                        $"{e.Guild.ToString()} ; {e.Channel.ToString()}"
+                        $"{e.Guild.ToString()} | {e.Channel.ToString()}"
                     );
                 } catch (UnauthorizedException) {
                     Log(LogLevel.Debug,
                         $"Filter triggered in message but missing permissions to delete!<br>" +
                         $"Message: {e.Message.Content.Replace('\n', ' ')}<br>" +
                         $"{e.Message.Author.ToString()}<br>" +
-                        $"{e.Guild.ToString()} ; {e.Channel.ToString()}"
+                        $"{e.Guild.ToString()} | {e.Channel.ToString()}"
                     );
                 }
                 return;
@@ -305,7 +305,7 @@ namespace TheGodfather
                         $"Text reaction detected: {tr.Response}<br>" +
                         $"Message: {e.Message.Content.Replace('\n', ' ')}<br>" +
                         $"{e.Message.Author.ToString()}<br>" +
-                        $"{e.Guild.ToString()} ; {e.Channel.ToString()}"
+                        $"{e.Guild.ToString()} | {e.Channel.ToString()}"
                     );
                     await e.Channel.SendMessageAsync(tr.Response.Replace("%user%", e.Author.Mention))
                         .ConfigureAwait(false);
@@ -323,7 +323,7 @@ namespace TheGodfather
                         $"Emoji reaction detected: {er.Response}<br>" +
                         $"Message: {e.Message.Content.Replace('\n', ' ')}<br>" +
                         $"{e.Message.Author.ToString()}<br>" +
-                        $"{e.Guild.ToString()} ; {e.Channel.ToString()}"
+                        $"{e.Guild.ToString()} | {e.Channel.ToString()}"
                     );
                     try {
                         var emoji = DiscordEmoji.FromName(Client, er.Response);
@@ -333,8 +333,12 @@ namespace TheGodfather
                         await _db.RemoveAllEmojiReactionTriggersForReactionAsync(e.Guild.Id, er.Response)
                             .ConfigureAwait(false);
                     } catch (UnauthorizedException) {
-                        await e.Channel.SendFailedEmbedAsync("I have a reaction for that message set up but I do not have permissions to add reactions. Fix your shit pls.")
-                            .ConfigureAwait(false);
+                        Log(LogLevel.Debug,
+                            $"Emoji reaction trigger found but missing permissions to add reactions!<br>" +
+                            $"Message: '{e.Message.Content.Replace('\n', ' ')}<br>" +
+                            $"{e.Message.Author.ToString()}<br>" +
+                            $"{e.Guild.ToString()} | {e.Channel.ToString()}"
+                        );
                         break;
                     }
                 }
@@ -358,17 +362,15 @@ namespace TheGodfather
                         $"Filter triggered in edit of a message:<br>" +
                         $"Message: {e.Message.Content.Replace('\n', ' ')}<br>" +
                         $"{e.Message.Author.ToString()}<br>" +
-                        $"{e.Guild.ToString()} ; {e.Channel.ToString()}"
+                        $"{e.Guild.ToString()} | {e.Channel.ToString()}"
                     );
                 } catch (UnauthorizedException) {
                     Log(LogLevel.Debug,
                         $"Filter triggered in edited message but missing permissions to delete!<br>" +
                         $"Message: '{e.Message.Content.Replace('\n', ' ')}<br>" +
                         $"{e.Message.Author.ToString()}<br>" +
-                        $"{e.Guild.ToString()} ; {e.Channel.ToString()}"
+                        $"{e.Guild.ToString()} | {e.Channel.ToString()}"
                     );
-                    await e.Channel.SendFailedEmbedAsync("The edited message contains the filtered word but I do not have permissions to delete it.")
-                        .ConfigureAwait(false);
                 }
             }
         }
@@ -412,41 +414,41 @@ namespace TheGodfather
                 Color = DiscordColor.Red
             };
 
-            if (e.Exception is CommandNotFoundException)
+            if (ex is CommandNotFoundException)
                 return;
-            else if (e.Exception is InvalidCommandUsageException)
+            else if (ex is InvalidCommandUsageException)
                 emb.Description = $"{emoji} Invalid usage! {ex.Message}";
-            else if (e.Exception is ArgumentException)
+            else if (ex is ArgumentException)
                 emb.Description = $"{emoji} Argument specified is invalid (please see {Formatter.Bold("!help <command>")} and make sure the arguments are valid).";
-            else if (e.Exception is CommandFailedException)
+            else if (ex is CommandFailedException)
                 emb.Description = $"{emoji} {ex.Message} {(ex.InnerException != null ? "Details: " + ex.InnerException.Message : "")}";
-            else if (e.Exception is DatabaseServiceException)
+            else if (ex is DatabaseServiceException)
                 emb.Description = $"{emoji} {ex.Message} Details: {ex.InnerException?.Message ?? "<none>"}";
-            else if (e.Exception is NotSupportedException)
+            else if (ex is NotSupportedException)
                 emb.Description = $"{emoji} Not supported. {ex.Message}";
-            else if (e.Exception is InvalidOperationException)
+            else if (ex is InvalidOperationException)
                 emb.Description = $"{emoji} Invalid operation. {ex.Message}";
-            else if (e.Exception is NotFoundException)
+            else if (ex is NotFoundException)
                 emb.Description = $"{emoji} 404: Not found.";
-            else if (e.Exception is BadRequestException)
+            else if (ex is BadRequestException)
                 emb.Description = $"{emoji} Bad request. Please check if the parameters are valid.";
-            else if (e.Exception is Npgsql.NpgsqlException)
+            else if (ex is Npgsql.NpgsqlException)
                 emb.Description = $"{emoji} Serbian database failed to respond... Please {Formatter.InlineCode("report")} this.";
             else if (ex is ChecksFailedException exc) {
                 var attr = exc.FailedChecks.First();
                 if (attr is CooldownAttribute)
                     return;
-                else if (attr is RequireUserPermissionsAttribute uperms)
-                    emb.Description = $"{emoji} You do not have the required permissions ({uperms.Permissions.ToPermissionString()}) to run this command!";
                 else if (attr is RequirePermissionsAttribute perms)
                     emb.Description = $"{emoji} Permissions to execute that command ({perms.Permissions.ToPermissionString()}) aren't met!";
+                else if (attr is RequireUserPermissionsAttribute uperms)
+                    emb.Description = $"{emoji} You do not have the required permissions ({uperms.Permissions.ToPermissionString()}) to run this command!";
                 else if (attr is RequireBotPermissionsAttribute bperms)
                     emb.Description = $"{emoji} I do not have the required permissions ({bperms.Permissions.ToPermissionString()}) to run this command!";
                 else if (attr is RequireOwnerAttribute)
                     emb.Description = $"{emoji} That command is reserved for the bot owner only!";
                 else
                     emb.Description = $"{emoji} Command execution checks failed!";
-            } else if (e.Exception is UnauthorizedException)
+            } else if (ex is UnauthorizedException)
                 emb.Description = $"{emoji} I am not authorized to do that.";
             else
                 return;

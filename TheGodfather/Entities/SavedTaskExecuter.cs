@@ -78,7 +78,7 @@ namespace TheGodfather.Entities
                         UnbanUserAsync().ConfigureAwait(false).GetAwaiter().GetResult();
                         break;
                 }
-                Logger.LogMessage(LogLevel.Info, $"Saved task executed: {nameof(SavedTask.Type)} ({SavedTask.Comment})<br>User ID: {SavedTask.UserId}<br>Guild ID: {SavedTask.GuildId}");
+                Logger.LogMessage(LogLevel.Info, $"Saved task executed: {SavedTask.Type.GetType()} ({SavedTask.Comment})<br>User ID: {SavedTask.UserId}<br>Guild ID: {SavedTask.GuildId}");
             } catch (Exception e) {
                 Logger.LogException(LogLevel.Warning, e);
             } finally {
@@ -113,7 +113,7 @@ namespace TheGodfather.Entities
                     default:
                         break;
                 }
-                Logger.LogMessage(LogLevel.Warning, $"Executed missed saved task!<br>User ID: {SavedTask.UserId}<br>Guild ID: {SavedTask.GuildId}");
+                Logger.LogMessage(LogLevel.Warning, $"Executed missed saved task of type {SavedTask.Type.GetType()}!<br>User ID: {SavedTask.UserId}<br>Guild ID: {SavedTask.GuildId}");
             } catch (Exception e) {
                 Logger.LogException(LogLevel.Warning, e);
             } finally {

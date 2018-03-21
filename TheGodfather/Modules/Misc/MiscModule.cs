@@ -321,13 +321,14 @@ namespace TheGodfather.Modules.Misc
         #endregion
 
         #region COMMAND_REMIND
-        [Command("remind")]
+        [Command("remind"), Priority(2)]
         [Description("Resend a message after some time.")]
         [UsageExample("!remind 1h Drink water!")]
         [RequireUserPermissions(Permissions.Administrator)] // TODO
         public async Task RemindAsync(CommandContext ctx,
                                      [Description("Time span until reminder.")] TimeSpan timespan,
-                                     [RemainingText, Description("Remind you of?")] string message)
+                                     [Description("Channel to send message to.")] DiscordChannel channel,
+                                     [RemainingText, Description("What to send?")] string message)
         {
             if (string.IsNullOrWhiteSpace(message))
                 throw new InvalidCommandUsageException("Missing time or repeat string.");
@@ -335,16 +336,32 @@ namespace TheGodfather.Modules.Misc
             if (message.Length > 120)
                 throw new InvalidCommandUsageException("Message must be shorter than 120 characters.");
 
+            if (channel == null)
+                channel = ctx.Channel;
+
             if (timespan.TotalMinutes < 1 || timespan.TotalDays > 7)
                 throw new InvalidCommandUsageException("Time span cannot be less than 1 minute or greater than 1 week.");
 
             DateTime when = DateTime.UtcNow + timespan;
-            if (!await SavedTaskExecuter.ScheduleAsync(ctx.Client, Shared, Database, ctx.User.Id, ctx.Channel.Id, ctx.Guild.Id, SavedTaskType.SendMessage, message, when).ConfigureAwait(false))
+            if (!await SavedTaskExecuter.ScheduleAsync(ctx.Client, Shared, Database, ctx.User.Id, channel.Id, ctx.Guild.Id, SavedTaskType.SendMessage, message, when).ConfigureAwait(false))
                 throw new DatabaseServiceException("Failed to set a reminder in the database!");
 
-            await ctx.RespondWithIconEmbedAsync($"I will remind you at {Formatter.Bold(when.ToLongTimeString())} UTC to:\n\n{Formatter.Italic(message)}", ":alarm_clock:")
+            await ctx.RespondWithIconEmbedAsync($"I will remind {channel.Name} at {Formatter.Bold(when.ToLongTimeString())} UTC to:\n\n{Formatter.Italic(message)}", ":alarm_clock:")
                 .ConfigureAwait(false);
         }
+
+        [Command("remind"), Priority(1)]
+        public async Task RemindAsync(CommandContext ctx,
+                                     [Description("Channel to send message to.")] DiscordChannel channel,
+                                     [Description("Time span until reminder.")] TimeSpan timespan,
+                                     [RemainingText, Description("What to send?")] string message)
+            => await RemindAsync(ctx, timespan, channel, message).ConfigureAwait(false);
+
+        [Command("remind"), Priority(0)]
+        public async Task RemindAsync(CommandContext ctx,
+                                     [Description("Time span until reminder.")] TimeSpan timespan,
+                                     [RemainingText, Description("What to send?")] string message)
+            => await RemindAsync(ctx, timespan, null, message).ConfigureAwait(false);
         #endregion
 
         #region COMMAND_REPORT
@@ -373,9 +390,6 @@ namespace TheGodfather.Modules.Misc
                 await dm.SendMessageAsync("A new issue has been reported!", embed: emb.Build())
                     .ConfigureAwait(false);
                 await ctx.RespondWithIconEmbedAsync("Your issue has been reported.")
-                    .ConfigureAwait(false);
-            } else {
-                await ctx.RespondWithFailedEmbedAsync("Your issue has not been reported.")
                     .ConfigureAwait(false);
             }
         }
