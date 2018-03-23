@@ -123,7 +123,7 @@ namespace TheGodfather.Modules.Administration
         #region COMMAND_EMOJI_LIST
         [Command("list")]
         [Description("View guild emojis.")]
-        [Aliases("print", "show", "l", "p")]
+        [Aliases("print", "show", "l", "p", "ls")]
         [UsageExample("!emoji list")]
         public async Task ListEmojiAsync(CommandContext ctx)
         {
@@ -139,7 +139,7 @@ namespace TheGodfather.Modules.Administration
         #region COMMAND_EMOJI_MODIFY
         [Command("modify"), Priority(1)]
         [Description("Edit name of an existing guild emoji.")]
-        [Aliases("edit", "mod", "e", "m")]
+        [Aliases("edit", "mod", "e", "m", "rename")]
         [UsageExample("!emoji modify :pepe: newname")]
         [UsageExample("!emoji modify newname :pepe:")]
         [RequirePermissions(Permissions.ManageEmojis)]

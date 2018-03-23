@@ -75,5 +75,15 @@ namespace TheGodfather.Modules
 
             return true;
         }
+
+        protected bool TryParseRegex(string pattern, out Regex result)
+        {
+            result = null;
+            if (!IsValidRegex(pattern))
+                return false;
+
+            result = new Regex($@"\b{pattern}\b", RegexOptions.IgnoreCase);
+            return true;
+        }
     }
 }

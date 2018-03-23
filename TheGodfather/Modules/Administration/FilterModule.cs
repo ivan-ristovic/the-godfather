@@ -35,7 +35,7 @@ namespace TheGodfather.Modules.Administration
         [GroupCommand]
         [RequirePermissions(Permissions.ManageGuild)]
         public async Task ExecuteGroupAsync(CommandContext ctx,
-                                           [RemainingText, Description("Trigger word list.")] params string[] filters)
+                                           [RemainingText, Description("Filter list. Filter is a regular expression (case insensitive).")] params string[] filters)
             => await AddAsync(ctx, filters).ConfigureAwait(false);
 
 
@@ -46,10 +46,10 @@ namespace TheGodfather.Modules.Administration
         [UsageExample("!filter add fuck f+u+c+k+")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task AddAsync(CommandContext ctx,
-                                  [RemainingText, Description("Filter. Can be a regex (case insensitive).")] params string[] filters)
+                                  [RemainingText, Description("Filter list. Filter is a regular expression (case insensitive).")] params string[] filters)
         {
             if (filters == null || !filters.Any())
-                throw new InvalidCommandUsageException("Filter words missing.");
+                throw new InvalidCommandUsageException("Filter regexes missing.");
 
             var errors = new StringBuilder();
             foreach (var filter in filters) {
@@ -68,10 +68,7 @@ namespace TheGodfather.Modules.Administration
                     continue;
                 }
 
-                Regex regex;
-                try {
-                    regex = new Regex($@"\b{filter}\b", RegexOptions.IgnoreCase);
-                } catch (ArgumentException) {
+                if (!TryParseRegex(filter, out var regex)) {
                     errors.AppendLine($"Error: Filter {Formatter.Bold(filter)} is not a valid regular expression.");
                     continue;
                 }
