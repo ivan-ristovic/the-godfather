@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using TheGodfather.Entities;
+using TheGodfather.Extensions;
 
 using DSharpPlus.Entities;
 
@@ -103,7 +104,7 @@ namespace TheGodfather.Services
         public async Task<DiscordEmbed> GetStatsLeaderboardAsync(DiscordClient client)
         {
             var emb = new DiscordEmbedBuilder {
-                Title = DiscordEmoji.FromName(client, ":trophy:") + " HALL OF FAME " + DiscordEmoji.FromName(client, ":trophy:"),
+                Title = $"{EmojiUtil.Trophy} HALL OF FAME {EmojiUtil.Trophy}",
                 Color = DiscordColor.Chartreuse
             };
 

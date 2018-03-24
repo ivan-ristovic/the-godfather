@@ -25,8 +25,14 @@ namespace TheGodfather.Services
                     cmd.CommandText = "SELECT name, ip, joinport, queryport FROM gf.swat_servers;";
 
                     using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
-                        while (await reader.ReadAsync().ConfigureAwait(false))
-                            servers.Add(new SwatServer((string)reader["name"], (string)reader["ip"], (int)reader["joinport"], (int)reader["queryport"]));
+                        while (await reader.ReadAsync().ConfigureAwait(false)) {
+                            servers.Add(new SwatServer(
+                                (string)reader["name"],
+                                (string)reader["ip"],
+                                (int)reader["joinport"],
+                                (int)reader["queryport"]
+                            ));
+                        }
                     }
                 }
             } finally {
