@@ -19,7 +19,7 @@ Each command receives arguments which are some of the following types:
 * ``double`` : Floating point number (positive or negative), can also be integer (for example 5.64)
 * ``string`` : Word consisting of Unicode characters WITHOUT spaces. If you want to include spaces, then surround it with ``"``
 * ``string...`` : Some Unicode text, can include spaces. Can be surrounded with ``"``
-* ``boolean`` : ``true`` or ``false`` (can be converted from ``yes`` or ``no`` in various forms, see: [CustomBoolConverter](TheGodfather/Extensions/CustomBoolConverter.cs))
+* ``boolean`` : ``true`` or ``false`` (can be converted from ``yes`` or ``no`` in various forms, see: [CustomBoolConverter](TheGodfather/Extensions/Converters/CustomBoolConverter.cs))
 * ``user`` : Discord user, given by ``@mention``, ``Username`` or UID (User ID)
 * ``channel`` : Discord channel, given by ``name``, ``#name`` or CID (Channel ID)
 * ``role`` : An existing role, given with ``@mentionrole`` or ``Role name``

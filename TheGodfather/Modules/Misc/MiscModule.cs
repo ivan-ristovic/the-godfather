@@ -22,7 +22,7 @@ using DSharpPlus.Entities;
 
 namespace TheGodfather.Modules.Misc
 {
-    [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
+    [Cooldown(5, 3, CooldownBucketType.Channel)]
     [ListeningCheck]
     public class MiscModule : TheGodfatherBaseModule
     {
@@ -355,7 +355,7 @@ namespace TheGodfather.Modules.Misc
             await ctx.RespondWithIconEmbedAsync($"I will remind {channel.Name} at {Formatter.Bold(when.ToLongTimeString())} UTC to:\n\n{Formatter.Italic(message)}", ":alarm_clock:")
                 .ConfigureAwait(false);
         }
-
+        
         [Command("remind"), Priority(1)]
         public async Task RemindAsync(CommandContext ctx,
                                      [Description("Channel to send message to.")] DiscordChannel channel,
