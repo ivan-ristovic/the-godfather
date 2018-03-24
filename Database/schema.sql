@@ -5,8 +5,6 @@
 -- Dumped from database version 9.6.6
 -- Dumped by pg_dump version 9.6.6
 
--- Started on 2018-03-24 18:56:30
-
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
@@ -17,7 +15,6 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- TOC entry 8 (class 2615 OID 16607)
 -- Name: gf; Type: SCHEMA; Schema: -; Owner: postgres
 --
 
@@ -27,7 +24,6 @@ CREATE SCHEMA gf;
 ALTER SCHEMA gf OWNER TO postgres;
 
 --
--- TOC entry 2 (class 3079 OID 12387)
 -- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
 --
 
@@ -35,29 +31,10 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 
 
 --
--- TOC entry 2278 (class 0 OID 0)
--- Dependencies: 2
 -- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
 --
 
 COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
-
-
---
--- TOC entry 1 (class 3079 OID 16516)
--- Name: tsm_system_rows; Type: EXTENSION; Schema: -; Owner: 
---
-
-CREATE EXTENSION IF NOT EXISTS tsm_system_rows WITH SCHEMA pg_catalog;
-
-
---
--- TOC entry 2279 (class 0 OID 0)
--- Dependencies: 1
--- Name: EXTENSION tsm_system_rows; Type: COMMENT; Schema: -; Owner: 
---
-
-COMMENT ON EXTENSION tsm_system_rows IS 'TABLESAMPLE method which accepts number of rows as a limit';
 
 
 SET search_path = gf, pg_catalog;
@@ -67,7 +44,6 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- TOC entry 186 (class 1259 OID 16608)
 -- Name: accounts; Type: TABLE; Schema: gf; Owner: postgres
 --
 
@@ -80,7 +56,6 @@ CREATE TABLE accounts (
 ALTER TABLE accounts OWNER TO postgres;
 
 --
--- TOC entry 204 (class 1259 OID 18519)
 -- Name: assignable_roles; Type: TABLE; Schema: gf; Owner: postgres
 --
 
@@ -93,7 +68,6 @@ CREATE TABLE assignable_roles (
 ALTER TABLE assignable_roles OWNER TO postgres;
 
 --
--- TOC entry 209 (class 1259 OID 29294)
 -- Name: birthdays; Type: TABLE; Schema: gf; Owner: postgres
 --
 
@@ -108,7 +82,6 @@ CREATE TABLE birthdays (
 ALTER TABLE birthdays OWNER TO postgres;
 
 --
--- TOC entry 205 (class 1259 OID 28686)
 -- Name: blocked_channels; Type: TABLE; Schema: gf; Owner: postgres
 --
 
@@ -121,7 +94,6 @@ CREATE TABLE blocked_channels (
 ALTER TABLE blocked_channels OWNER TO postgres;
 
 --
--- TOC entry 206 (class 1259 OID 28689)
 -- Name: blocked_users; Type: TABLE; Schema: gf; Owner: postgres
 --
 
@@ -134,7 +106,6 @@ CREATE TABLE blocked_users (
 ALTER TABLE blocked_users OWNER TO postgres;
 
 --
--- TOC entry 187 (class 1259 OID 16612)
 -- Name: emoji_reactions; Type: TABLE; Schema: gf; Owner: postgres
 --
 
@@ -149,7 +120,6 @@ CREATE TABLE emoji_reactions (
 ALTER TABLE emoji_reactions OWNER TO postgres;
 
 --
--- TOC entry 210 (class 1259 OID 29322)
 -- Name: emoji_reactions_id_seq; Type: SEQUENCE; Schema: gf; Owner: postgres
 --
 
@@ -164,8 +134,6 @@ CREATE SEQUENCE emoji_reactions_id_seq
 ALTER TABLE emoji_reactions_id_seq OWNER TO postgres;
 
 --
--- TOC entry 2280 (class 0 OID 0)
--- Dependencies: 210
 -- Name: emoji_reactions_id_seq; Type: SEQUENCE OWNED BY; Schema: gf; Owner: postgres
 --
 
@@ -173,7 +141,6 @@ ALTER SEQUENCE emoji_reactions_id_seq OWNED BY emoji_reactions.id;
 
 
 --
--- TOC entry 188 (class 1259 OID 16615)
 -- Name: feeds; Type: TABLE; Schema: gf; Owner: postgres
 --
 
@@ -187,7 +154,6 @@ CREATE TABLE feeds (
 ALTER TABLE feeds OWNER TO postgres;
 
 --
--- TOC entry 189 (class 1259 OID 16622)
 -- Name: feeds_id_seq; Type: SEQUENCE; Schema: gf; Owner: postgres
 --
 
@@ -202,8 +168,6 @@ CREATE SEQUENCE feeds_id_seq
 ALTER TABLE feeds_id_seq OWNER TO postgres;
 
 --
--- TOC entry 2281 (class 0 OID 0)
--- Dependencies: 189
 -- Name: feeds_id_seq; Type: SEQUENCE OWNED BY; Schema: gf; Owner: postgres
 --
 
@@ -211,7 +175,6 @@ ALTER SEQUENCE feeds_id_seq OWNED BY feeds.id;
 
 
 --
--- TOC entry 190 (class 1259 OID 16624)
 -- Name: filters; Type: TABLE; Schema: gf; Owner: postgres
 --
 
@@ -224,21 +187,21 @@ CREATE TABLE filters (
 ALTER TABLE filters OWNER TO postgres;
 
 --
--- TOC entry 191 (class 1259 OID 16627)
 -- Name: guild_cfg; Type: TABLE; Schema: gf; Owner: postgres
 --
 
 CREATE TABLE guild_cfg (
     gid bigint NOT NULL,
     welcome_cid bigint,
-    leave_cid bigint
+    leave_cid bigint,
+    welcome_msg character varying(128),
+    leave_msg character varying(128)
 );
 
 
 ALTER TABLE guild_cfg OWNER TO postgres;
 
 --
--- TOC entry 192 (class 1259 OID 16630)
 -- Name: insults; Type: TABLE; Schema: gf; Owner: postgres
 --
 
@@ -251,7 +214,6 @@ CREATE TABLE insults (
 ALTER TABLE insults OWNER TO postgres;
 
 --
--- TOC entry 193 (class 1259 OID 16633)
 -- Name: insults_id_seq; Type: SEQUENCE; Schema: gf; Owner: postgres
 --
 
@@ -266,8 +228,6 @@ CREATE SEQUENCE insults_id_seq
 ALTER TABLE insults_id_seq OWNER TO postgres;
 
 --
--- TOC entry 2282 (class 0 OID 0)
--- Dependencies: 193
 -- Name: insults_id_seq; Type: SEQUENCE OWNED BY; Schema: gf; Owner: postgres
 --
 
@@ -275,7 +235,6 @@ ALTER SEQUENCE insults_id_seq OWNED BY insults.id;
 
 
 --
--- TOC entry 194 (class 1259 OID 16635)
 -- Name: memes; Type: TABLE; Schema: gf; Owner: postgres
 --
 
@@ -289,7 +248,6 @@ CREATE TABLE memes (
 ALTER TABLE memes OWNER TO postgres;
 
 --
--- TOC entry 195 (class 1259 OID 16638)
 -- Name: msgcount; Type: TABLE; Schema: gf; Owner: postgres
 --
 
@@ -302,7 +260,6 @@ CREATE TABLE msgcount (
 ALTER TABLE msgcount OWNER TO postgres;
 
 --
--- TOC entry 196 (class 1259 OID 16642)
 -- Name: prefixes; Type: TABLE; Schema: gf; Owner: postgres
 --
 
@@ -315,7 +272,6 @@ CREATE TABLE prefixes (
 ALTER TABLE prefixes OWNER TO postgres;
 
 --
--- TOC entry 207 (class 1259 OID 28692)
 -- Name: saved_tasks; Type: TABLE; Schema: gf; Owner: postgres
 --
 
@@ -333,7 +289,6 @@ CREATE TABLE saved_tasks (
 ALTER TABLE saved_tasks OWNER TO postgres;
 
 --
--- TOC entry 208 (class 1259 OID 28695)
 -- Name: saved_tasks_id_seq; Type: SEQUENCE; Schema: gf; Owner: postgres
 --
 
@@ -348,8 +303,6 @@ CREATE SEQUENCE saved_tasks_id_seq
 ALTER TABLE saved_tasks_id_seq OWNER TO postgres;
 
 --
--- TOC entry 2283 (class 0 OID 0)
--- Dependencies: 208
 -- Name: saved_tasks_id_seq; Type: SEQUENCE OWNED BY; Schema: gf; Owner: postgres
 --
 
@@ -357,7 +310,6 @@ ALTER SEQUENCE saved_tasks_id_seq OWNED BY saved_tasks.id;
 
 
 --
--- TOC entry 197 (class 1259 OID 16645)
 -- Name: stats; Type: TABLE; Schema: gf; Owner: postgres
 --
 
@@ -383,7 +335,6 @@ CREATE TABLE stats (
 ALTER TABLE stats OWNER TO postgres;
 
 --
--- TOC entry 198 (class 1259 OID 16660)
 -- Name: statuses; Type: TABLE; Schema: gf; Owner: postgres
 --
 
@@ -397,7 +348,6 @@ CREATE TABLE statuses (
 ALTER TABLE statuses OWNER TO postgres;
 
 --
--- TOC entry 203 (class 1259 OID 16734)
 -- Name: statuses_id_seq; Type: SEQUENCE; Schema: gf; Owner: postgres
 --
 
@@ -412,8 +362,6 @@ CREATE SEQUENCE statuses_id_seq
 ALTER TABLE statuses_id_seq OWNER TO postgres;
 
 --
--- TOC entry 2284 (class 0 OID 0)
--- Dependencies: 203
 -- Name: statuses_id_seq; Type: SEQUENCE OWNED BY; Schema: gf; Owner: postgres
 --
 
@@ -421,7 +369,6 @@ ALTER SEQUENCE statuses_id_seq OWNED BY statuses.id;
 
 
 --
--- TOC entry 199 (class 1259 OID 16663)
 -- Name: subscriptions; Type: TABLE; Schema: gf; Owner: postgres
 --
 
@@ -435,7 +382,6 @@ CREATE TABLE subscriptions (
 ALTER TABLE subscriptions OWNER TO postgres;
 
 --
--- TOC entry 200 (class 1259 OID 16667)
 -- Name: subscriptions_id_seq; Type: SEQUENCE; Schema: gf; Owner: postgres
 --
 
@@ -450,8 +396,6 @@ CREATE SEQUENCE subscriptions_id_seq
 ALTER TABLE subscriptions_id_seq OWNER TO postgres;
 
 --
--- TOC entry 2285 (class 0 OID 0)
--- Dependencies: 200
 -- Name: subscriptions_id_seq; Type: SEQUENCE OWNED BY; Schema: gf; Owner: postgres
 --
 
@@ -459,7 +403,6 @@ ALTER SEQUENCE subscriptions_id_seq OWNED BY subscriptions.id;
 
 
 --
--- TOC entry 201 (class 1259 OID 16669)
 -- Name: swat_servers; Type: TABLE; Schema: gf; Owner: postgres
 --
 
@@ -474,7 +417,6 @@ CREATE TABLE swat_servers (
 ALTER TABLE swat_servers OWNER TO postgres;
 
 --
--- TOC entry 202 (class 1259 OID 16672)
 -- Name: text_reactions; Type: TABLE; Schema: gf; Owner: postgres
 --
 
@@ -489,7 +431,6 @@ CREATE TABLE text_reactions (
 ALTER TABLE text_reactions OWNER TO postgres;
 
 --
--- TOC entry 211 (class 1259 OID 29332)
 -- Name: text_reactions_id_seq; Type: SEQUENCE; Schema: gf; Owner: postgres
 --
 
@@ -504,8 +445,6 @@ CREATE SEQUENCE text_reactions_id_seq
 ALTER TABLE text_reactions_id_seq OWNER TO postgres;
 
 --
--- TOC entry 2286 (class 0 OID 0)
--- Dependencies: 211
 -- Name: text_reactions_id_seq; Type: SEQUENCE OWNED BY; Schema: gf; Owner: postgres
 --
 
@@ -513,7 +452,6 @@ ALTER SEQUENCE text_reactions_id_seq OWNED BY text_reactions.id;
 
 
 --
--- TOC entry 2088 (class 2604 OID 29324)
 -- Name: emoji_reactions id; Type: DEFAULT; Schema: gf; Owner: postgres
 --
 
@@ -521,7 +459,6 @@ ALTER TABLE ONLY emoji_reactions ALTER COLUMN id SET DEFAULT nextval('emoji_reac
 
 
 --
--- TOC entry 2090 (class 2604 OID 28697)
 -- Name: feeds id; Type: DEFAULT; Schema: gf; Owner: postgres
 --
 
@@ -529,7 +466,6 @@ ALTER TABLE ONLY feeds ALTER COLUMN id SET DEFAULT nextval('feeds_id_seq'::regcl
 
 
 --
--- TOC entry 2091 (class 2604 OID 28698)
 -- Name: insults id; Type: DEFAULT; Schema: gf; Owner: postgres
 --
 
@@ -537,7 +473,6 @@ ALTER TABLE ONLY insults ALTER COLUMN id SET DEFAULT nextval('insults_id_seq'::r
 
 
 --
--- TOC entry 2111 (class 2604 OID 28699)
 -- Name: saved_tasks id; Type: DEFAULT; Schema: gf; Owner: postgres
 --
 
@@ -545,7 +480,6 @@ ALTER TABLE ONLY saved_tasks ALTER COLUMN id SET DEFAULT nextval('saved_tasks_id
 
 
 --
--- TOC entry 2108 (class 2604 OID 28700)
 -- Name: statuses id; Type: DEFAULT; Schema: gf; Owner: postgres
 --
 
@@ -553,7 +487,6 @@ ALTER TABLE ONLY statuses ALTER COLUMN id SET DEFAULT nextval('statuses_id_seq':
 
 
 --
--- TOC entry 2109 (class 2604 OID 28701)
 -- Name: subscriptions id; Type: DEFAULT; Schema: gf; Owner: postgres
 --
 
@@ -561,7 +494,6 @@ ALTER TABLE ONLY subscriptions ALTER COLUMN id SET DEFAULT nextval('subscription
 
 
 --
--- TOC entry 2110 (class 2604 OID 29334)
 -- Name: text_reactions id; Type: DEFAULT; Schema: gf; Owner: postgres
 --
 
@@ -569,7 +501,6 @@ ALTER TABLE ONLY text_reactions ALTER COLUMN id SET DEFAULT nextval('text_reacti
 
 
 --
--- TOC entry 2113 (class 2606 OID 16679)
 -- Name: accounts accounts_pkey; Type: CONSTRAINT; Schema: gf; Owner: postgres
 --
 
@@ -578,7 +509,14 @@ ALTER TABLE ONLY accounts
 
 
 --
--- TOC entry 2154 (class 2606 OID 29298)
+-- Name: assignable_roles assignable_roles_pkey; Type: CONSTRAINT; Schema: gf; Owner: postgres
+--
+
+ALTER TABLE ONLY assignable_roles
+    ADD CONSTRAINT assignable_roles_pkey PRIMARY KEY (gid, rid);
+
+
+--
 -- Name: birthdays birthdays_pkey; Type: CONSTRAINT; Schema: gf; Owner: postgres
 --
 
@@ -587,7 +525,6 @@ ALTER TABLE ONLY birthdays
 
 
 --
--- TOC entry 2148 (class 2606 OID 28703)
 -- Name: blocked_channels blocked_channels_pkey; Type: CONSTRAINT; Schema: gf; Owner: postgres
 --
 
@@ -596,7 +533,6 @@ ALTER TABLE ONLY blocked_channels
 
 
 --
--- TOC entry 2150 (class 2606 OID 28705)
 -- Name: blocked_users blocked_users_pkey; Type: CONSTRAINT; Schema: gf; Owner: postgres
 --
 
@@ -605,7 +541,6 @@ ALTER TABLE ONLY blocked_users
 
 
 --
--- TOC entry 2115 (class 2606 OID 29331)
 -- Name: emoji_reactions emoji_reactions_pkey; Type: CONSTRAINT; Schema: gf; Owner: postgres
 --
 
@@ -614,7 +549,6 @@ ALTER TABLE ONLY emoji_reactions
 
 
 --
--- TOC entry 2118 (class 2606 OID 16681)
 -- Name: feeds feeds_pkey; Type: CONSTRAINT; Schema: gf; Owner: postgres
 --
 
@@ -623,7 +557,14 @@ ALTER TABLE ONLY feeds
 
 
 --
--- TOC entry 2120 (class 2606 OID 19929)
+-- Name: feeds feeds_url_key; Type: CONSTRAINT; Schema: gf; Owner: postgres
+--
+
+ALTER TABLE ONLY feeds
+    ADD CONSTRAINT feeds_url_key UNIQUE (url);
+
+
+--
 -- Name: filters filters_pkey; Type: CONSTRAINT; Schema: gf; Owner: postgres
 --
 
@@ -632,7 +573,6 @@ ALTER TABLE ONLY filters
 
 
 --
--- TOC entry 2123 (class 2606 OID 16683)
 -- Name: guild_cfg guild_cfg_pkey; Type: CONSTRAINT; Schema: gf; Owner: postgres
 --
 
@@ -641,7 +581,6 @@ ALTER TABLE ONLY guild_cfg
 
 
 --
--- TOC entry 2125 (class 2606 OID 16685)
 -- Name: insults insults_pkey; Type: CONSTRAINT; Schema: gf; Owner: postgres
 --
 
@@ -650,7 +589,6 @@ ALTER TABLE ONLY insults
 
 
 --
--- TOC entry 2127 (class 2606 OID 16687)
 -- Name: memes memes_pkey; Type: CONSTRAINT; Schema: gf; Owner: postgres
 --
 
@@ -659,7 +597,6 @@ ALTER TABLE ONLY memes
 
 
 --
--- TOC entry 2129 (class 2606 OID 16689)
 -- Name: msgcount msgcount_pkey; Type: CONSTRAINT; Schema: gf; Owner: postgres
 --
 
@@ -668,7 +605,6 @@ ALTER TABLE ONLY msgcount
 
 
 --
--- TOC entry 2131 (class 2606 OID 16691)
 -- Name: prefixes prefixes_pkey; Type: CONSTRAINT; Schema: gf; Owner: postgres
 --
 
@@ -677,7 +613,6 @@ ALTER TABLE ONLY prefixes
 
 
 --
--- TOC entry 2152 (class 2606 OID 28707)
 -- Name: saved_tasks saved_tasks_pkey; Type: CONSTRAINT; Schema: gf; Owner: postgres
 --
 
@@ -686,7 +621,6 @@ ALTER TABLE ONLY saved_tasks
 
 
 --
--- TOC entry 2133 (class 2606 OID 16693)
 -- Name: stats stats_pkey; Type: CONSTRAINT; Schema: gf; Owner: postgres
 --
 
@@ -695,7 +629,6 @@ ALTER TABLE ONLY stats
 
 
 --
--- TOC entry 2135 (class 2606 OID 16741)
 -- Name: statuses statuses_pkey; Type: CONSTRAINT; Schema: gf; Owner: postgres
 --
 
@@ -704,7 +637,6 @@ ALTER TABLE ONLY statuses
 
 
 --
--- TOC entry 2137 (class 2606 OID 16714)
 -- Name: subscriptions subscriptions_pkey; Type: CONSTRAINT; Schema: gf; Owner: postgres
 --
 
@@ -713,7 +645,6 @@ ALTER TABLE ONLY subscriptions
 
 
 --
--- TOC entry 2139 (class 2606 OID 16712)
 -- Name: swat_servers swat_servers_name_key; Type: CONSTRAINT; Schema: gf; Owner: postgres
 --
 
@@ -722,7 +653,6 @@ ALTER TABLE ONLY swat_servers
 
 
 --
--- TOC entry 2141 (class 2606 OID 16710)
 -- Name: swat_servers swat_servers_pkey; Type: CONSTRAINT; Schema: gf; Owner: postgres
 --
 
@@ -731,7 +661,6 @@ ALTER TABLE ONLY swat_servers
 
 
 --
--- TOC entry 2143 (class 2606 OID 29343)
 -- Name: text_reactions text_reactions_gid_trigger_key; Type: CONSTRAINT; Schema: gf; Owner: postgres
 --
 
@@ -740,7 +669,6 @@ ALTER TABLE ONLY text_reactions
 
 
 --
--- TOC entry 2145 (class 2606 OID 29341)
 -- Name: text_reactions text_reactions_pkey; Type: CONSTRAINT; Schema: gf; Owner: postgres
 --
 
@@ -749,7 +677,6 @@ ALTER TABLE ONLY text_reactions
 
 
 --
--- TOC entry 2116 (class 1259 OID 28708)
 -- Name: emoji_reactions_trigger_idx; Type: INDEX; Schema: gf; Owner: postgres
 --
 
@@ -757,17 +684,58 @@ CREATE INDEX emoji_reactions_trigger_idx ON emoji_reactions USING btree (trigger
 
 
 --
--- TOC entry 2121 (class 1259 OID 16699)
 -- Name: gid_index; Type: INDEX; Schema: gf; Owner: postgres
 --
 
 CREATE INDEX gid_index ON filters USING btree (gid);
 
-ALTER TABLE filters CLUSTER ON gid_index;
+
+--
+-- Name: index_bday; Type: INDEX; Schema: gf; Owner: postgres
+--
+
+CREATE INDEX index_bday ON birthdays USING btree (bday);
+
+ALTER TABLE birthdays CLUSTER ON index_bday;
 
 
 --
--- TOC entry 2146 (class 1259 OID 16700)
+-- Name: index_er_gid; Type: INDEX; Schema: gf; Owner: postgres
+--
+
+CREATE INDEX index_er_gid ON emoji_reactions USING btree (gid);
+
+ALTER TABLE emoji_reactions CLUSTER ON index_er_gid;
+
+
+--
+-- Name: index_filters_gid; Type: INDEX; Schema: gf; Owner: postgres
+--
+
+CREATE INDEX index_filters_gid ON filters USING btree (gid);
+
+ALTER TABLE filters CLUSTER ON index_filters_gid;
+
+
+--
+-- Name: index_memes_cluster; Type: INDEX; Schema: gf; Owner: postgres
+--
+
+CREATE UNIQUE INDEX index_memes_cluster ON memes USING btree (gid, name);
+
+ALTER TABLE memes CLUSTER ON index_memes_cluster;
+
+
+--
+-- Name: index_tr_gid; Type: INDEX; Schema: gf; Owner: postgres
+--
+
+CREATE INDEX index_tr_gid ON text_reactions USING btree (gid);
+
+ALTER TABLE text_reactions CLUSTER ON index_tr_gid;
+
+
+--
 -- Name: trigger_index; Type: INDEX; Schema: gf; Owner: postgres
 --
 
@@ -775,15 +743,12 @@ CREATE INDEX trigger_index ON text_reactions USING btree (trigger);
 
 
 --
--- TOC entry 2155 (class 2606 OID 16701)
 -- Name: subscriptions subscriptions_id_fkey; Type: FK CONSTRAINT; Schema: gf; Owner: postgres
 --
 
 ALTER TABLE ONLY subscriptions
     ADD CONSTRAINT subscriptions_id_fkey FOREIGN KEY (id) REFERENCES feeds(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
-
--- Completed on 2018-03-24 18:56:30
 
 --
 -- PostgreSQL database dump complete
