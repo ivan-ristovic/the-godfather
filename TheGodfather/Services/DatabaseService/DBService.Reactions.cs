@@ -170,7 +170,7 @@ namespace TheGodfather.Services
                             if (reaction != null)
                                 reaction.AddTrigger((string)reader["trigger"], is_regex_trigger: true);
                             else
-                                ereactions[gid].Add(new EmojiReaction(0, (string)reader["trigger"], emoji, is_regex_trigger: true));
+                                ereactions[gid].Add(new EmojiReaction((int)reader["id"], (string)reader["trigger"], emoji, is_regex_trigger: true));
                         }
                     }
                 }
@@ -181,10 +181,12 @@ namespace TheGodfather.Services
             return ereactions;
         }
 
-        public async Task AddEmojiReactionAsync(ulong gid, string trigger, string reaction, bool is_regex_trigger = false)
+        public async Task<int> AddEmojiReactionAsync(ulong gid, string trigger, string reaction, bool is_regex_trigger = false)
         {
             if (!is_regex_trigger)
                 trigger = Regex.Escape(trigger);
+
+            int id = 0;
 
             await _sem.WaitAsync();
             try {
@@ -192,16 +194,20 @@ namespace TheGodfather.Services
                 using (var cmd = con.CreateCommand()) {
                     await con.OpenAsync().ConfigureAwait(false);
 
-                    cmd.CommandText = "INSERT INTO gf.emoji_reactions VALUES (@gid, @trigger, @reaction);";
+                    cmd.CommandText = "INSERT INTO gf.emoji_reactions VALUES (@gid, @trigger, @reaction) RETURNING id;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
                     cmd.Parameters.AddWithValue("trigger", NpgsqlDbType.Varchar, trigger);
                     cmd.Parameters.AddWithValue("reaction", NpgsqlDbType.Varchar, reaction);
 
-                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                    var res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
+                    if (res != null && !(res is DBNull))
+                        id = (int)res;
                 }
             } finally {
                 _sem.Release();
             }
+
+            return id;
         }
 
         public async Task RemoveEmojiReactionTriggersAsync(ulong gid, string[] triggers)
@@ -215,6 +221,25 @@ namespace TheGodfather.Services
                     cmd.CommandText = "DELETE FROM gf.emoji_reactions WHERE gid = @gid AND trigger = ANY(:triggers);";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
                     cmd.Parameters.Add("triggers", NpgsqlDbType.Array | NpgsqlDbType.Varchar).Value = triggers;
+
+                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                }
+            } finally {
+                _sem.Release();
+            }
+        }
+
+        public async Task RemoveEmojiReactionsAsync(ulong gid, params int[] ids)
+        {
+            await _sem.WaitAsync();
+            try {
+                using (var con = new NpgsqlConnection(_connectionString))
+                using (var cmd = con.CreateCommand()) {
+                    await con.OpenAsync().ConfigureAwait(false);
+
+                    cmd.CommandText = "DELETE FROM gf.emoji_reactions WHERE gid = @gid AND id = ANY(:ids);";
+                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
+                    cmd.Parameters.Add("ids", NpgsqlDbType.Array | NpgsqlDbType.Integer).Value = ids;
 
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }

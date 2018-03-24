@@ -125,7 +125,7 @@ namespace TheGodfather.Modules.Reactions
 
             int removed = Shared.TextReactions[ctx.Guild.Id].RemoveWhere(tr => ids.Contains(tr.Id));
 
-            await ctx.RespondWithIconEmbedAsync($"Removed {removed} reactions!\n\n", sb.ToString())
+            await ctx.RespondWithIconEmbedAsync($"Removed {removed} reactions!\n\n{sb.ToString()}")
                 .ConfigureAwait(false);
         }
 

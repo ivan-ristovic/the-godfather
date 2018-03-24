@@ -108,10 +108,12 @@ namespace TheGodfather.Modules.Reactions
         #endregion
 
         #region COMMAND_EMOJI_REACTIONS_DELETE
-        [Command("delete"), Priority(1)]
+        [Command("delete"), Priority(2)]
         [Description("Remove emoji reactions for given trigger words.")]
         [Aliases("-", "remove", "del", "rm", "d")]
         [UsageExample("!emojireaction delete haha sometrigger")]
+        [UsageExample("!emojireaction delete 5")]
+        [UsageExample("!emojireaction delete 5 4")]
         [UsageExample("!emojireaction delete :joy:")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task DeleteAsync(CommandContext ctx,
@@ -134,6 +136,35 @@ namespace TheGodfather.Modules.Reactions
             }
 
             await ctx.RespondWithIconEmbedAsync($"Done!\n\n{errors.ToString()}")
+                .ConfigureAwait(false);
+        }
+
+        [Command("delete"), Priority(1)]
+        public async Task DeleteAsync(CommandContext ctx,
+                                     [Description("IDs of the reactions to remove.")] params int[] ids)
+        {
+            if (!Shared.TextReactions.ContainsKey(ctx.Guild.Id))
+                throw new CommandFailedException("This guild has no emoji reactions registered.");
+
+            var sb = new StringBuilder();
+            foreach (var id in ids) {
+                if (!Shared.EmojiReactions[ctx.Guild.Id].Any(tr => tr.Id == id)) {
+                    sb.AppendLine($"Note: Reaction with ID {id} does not exist in this guild.");
+                    continue;
+                }
+            }
+
+            try {
+                await Database.RemoveEmojiReactionsAsync(ctx.Guild.Id, ids)
+                    .ConfigureAwait(false);
+            } catch (Exception e) {
+                Logger.LogException(LogLevel.Warning, e);
+                sb.AppendLine($"Warning: Failed to remove some reactions from the database.");
+            }
+
+            int removed = Shared.EmojiReactions[ctx.Guild.Id].RemoveWhere(tr => ids.Contains(tr.Id));
+
+            await ctx.RespondWithIconEmbedAsync($"Removed {removed} reactions!\n\n{sb.ToString()}")
                 .ConfigureAwait(false);
         }
 
@@ -195,9 +226,9 @@ namespace TheGodfather.Modules.Reactions
                 throw new CommandFailedException("No emoji reactions registered for this guild.");
 
             await ctx.SendPaginatedCollectionAsync(
-                "Text reactions for this guild",
+                "Emoji reactions for this guild",
                 Shared.EmojiReactions[ctx.Guild.Id].OrderBy(er => er.OrderedTriggerStrings.First()),
-                er => $"{DiscordEmoji.FromName(ctx.Client, er.Response)} | Triggers: {string.Join(", ", er.TriggerStrings)}",
+                er => $"{er.Id} : {DiscordEmoji.FromName(ctx.Client, er.Response)} | Triggers: {string.Join(", ", er.TriggerStrings)}",
                 DiscordColor.Blue
             ).ConfigureAwait(false);
         }
@@ -232,21 +263,22 @@ namespace TheGodfather.Modules.Reactions
                     continue;
                 }
 
+                int id = 0;
+                try {
+                    id = await Database.AddEmojiReactionAsync(ctx.Guild.Id, trigger, ename, is_regex_trigger: is_regex)
+                        .ConfigureAwait(false);
+                } catch (Exception e) {
+                    Logger.LogException(LogLevel.Warning, e);
+                    errors.AppendLine($"Warning: Failed to add trigger {Formatter.Bold(trigger)} to the database.");
+                }
+
                 var reaction = Shared.EmojiReactions[ctx.Guild.Id].FirstOrDefault(tr => tr.Response == ename);
                 if (reaction != null) {
                     if (!reaction.AddTrigger(trigger, is_regex_trigger: is_regex))
                         throw new CommandFailedException($"Failed to add trigger {Formatter.Bold(trigger)}.");
                 } else {
-                    if (!Shared.EmojiReactions[ctx.Guild.Id].Add(new EmojiReaction(0, trigger, ename, is_regex_trigger: is_regex)))
+                    if (!Shared.EmojiReactions[ctx.Guild.Id].Add(new EmojiReaction(id, trigger, ename, is_regex_trigger: is_regex)))
                         throw new CommandFailedException($"Failed to add trigger {Formatter.Bold(trigger)}.");
-                }
-
-                try {
-                    await Database.AddEmojiReactionAsync(ctx.Guild.Id, trigger, ename, is_regex_trigger: is_regex)
-                        .ConfigureAwait(false);
-                } catch (Exception e) {
-                    Logger.LogException(LogLevel.Warning, e);
-                    errors.AppendLine($"Warning: Failed to add trigger {Formatter.Bold(trigger)} to the database.");
                 }
             }
 
