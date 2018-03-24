@@ -39,11 +39,12 @@ namespace TheGodfather.Services
                             }
 
                             string response = (string)reader["response"];
+                            var r = new TextReaction((int)reader["id"], (string)reader["trigger"], (string)reader["response"], is_regex_trigger: true);
                             var reaction = treactions[gid].FirstOrDefault(tr => tr.Response == response);
                             if (reaction != null)
                                 reaction.AddTrigger((string)reader["trigger"], is_regex_trigger: true);
                             else
-                                treactions[gid].Add(new TextReaction((string)reader["trigger"], (string)reader["response"], is_regex_trigger: true));
+                                treactions[gid].Add(r);
                         }
                     }
                 }
@@ -54,10 +55,12 @@ namespace TheGodfather.Services
             return treactions;
         }
 
-        public async Task AddTextReactionAsync(ulong gid, string trigger, string response, bool is_regex_trigger = false)
+        public async Task<int> AddTextReactionAsync(ulong gid, string trigger, string response, bool is_regex_trigger = false)
         {
             if (!is_regex_trigger)
                 trigger = Regex.Escape(trigger);
+
+            int id = 0;
 
             await _sem.WaitAsync();
             try {
@@ -65,10 +68,33 @@ namespace TheGodfather.Services
                 using (var cmd = con.CreateCommand()) {
                     await con.OpenAsync().ConfigureAwait(false);
 
-                    cmd.CommandText = "INSERT INTO gf.text_reactions VALUES (@gid, @trigger, @response);";
+                    cmd.CommandText = "INSERT INTO gf.text_reactions VALUES (@gid, @trigger, @response) RETURNING id;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
                     cmd.Parameters.AddWithValue("trigger", NpgsqlDbType.Varchar, trigger);
                     cmd.Parameters.AddWithValue("response", NpgsqlDbType.Varchar, response);
+
+                    var res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
+                    if (res != null && !(res is DBNull))
+                        id = (int)res;
+                }
+            } finally {
+                _sem.Release();
+            }
+
+            return id;
+        }
+
+        public async Task RemoveTextReactionsAsync(ulong gid, params int[] ids)
+        {
+            await _sem.WaitAsync();
+            try {
+                using (var con = new NpgsqlConnection(_connectionString))
+                using (var cmd = con.CreateCommand()) {
+                    await con.OpenAsync().ConfigureAwait(false);
+
+                    cmd.CommandText = "DELETE FROM gf.text_reactions WHERE gid = @gid AND id = ANY(:ids);";
+                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
+                    cmd.Parameters.Add("ids", NpgsqlDbType.Array | NpgsqlDbType.Integer).Value = ids;
 
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
@@ -144,7 +170,7 @@ namespace TheGodfather.Services
                             if (reaction != null)
                                 reaction.AddTrigger((string)reader["trigger"], is_regex_trigger: true);
                             else
-                                ereactions[gid].Add(new EmojiReaction((string)reader["trigger"], emoji, is_regex_trigger: true));
+                                ereactions[gid].Add(new EmojiReaction(0, (string)reader["trigger"], emoji, is_regex_trigger: true));
                         }
                     }
                 }

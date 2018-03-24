@@ -94,11 +94,42 @@ namespace TheGodfather.Modules.Reactions
         #endregion
 
         #region COMMAND_TEXT_REACTION_DELETE
-        [Command("delete")]
+        [Command("delete"), Priority(1)]
         [Description("Remove text reaction from guild text reaction list.")]
         [Aliases("-", "remove", "del", "rm", "d")]
+        [UsageExample("!textreaction delete 5")]
+        [UsageExample("!textreaction delete 5 8")]
         [UsageExample("!textreaction delete hi")]
         [RequireUserPermissions(Permissions.ManageGuild)]
+        public async Task DeleteAsync(CommandContext ctx,
+                                     [Description("IDs of the reactions to remove.")] params int[] ids)
+        {
+            if (!Shared.TextReactions.ContainsKey(ctx.Guild.Id))
+                throw new CommandFailedException("This guild has no text reactions registered.");
+
+            var sb = new StringBuilder();
+            foreach (var id in ids) {
+                if (!Shared.TextReactions[ctx.Guild.Id].Any(tr => tr.Id == id)) {
+                    sb.AppendLine($"Note: Reaction with ID {id} does not exist in this guild.");
+                    continue;
+                }
+            }
+
+            try {
+                await Database.RemoveTextReactionsAsync(ctx.Guild.Id, ids)
+                    .ConfigureAwait(false);
+            } catch (Exception e) {
+                Logger.LogException(LogLevel.Warning, e);
+                sb.AppendLine($"Warning: Failed to remove some reactions from the database.");
+            }
+
+            int removed = Shared.TextReactions[ctx.Guild.Id].RemoveWhere(tr => ids.Contains(tr.Id));
+
+            await ctx.RespondWithIconEmbedAsync($"Removed {removed} reactions!\n\n", sb.ToString())
+                .ConfigureAwait(false);
+        }
+
+        [Command("delete"), Priority(0)]
         public async Task DeleteAsync(CommandContext ctx, 
                                      [RemainingText, Description("Trigger words to remove.")] params string[] triggers)
         {
@@ -141,10 +172,10 @@ namespace TheGodfather.Modules.Reactions
                 errors.AppendLine($"Warning: Failed to remove some triggers from the database.");
             }
 
-            await ctx.RespondWithIconEmbedAsync($"Done!\n\n{errors.ToString()}")
-                .ConfigureAwait(false);
+            int removed = Shared.TextReactions[ctx.Guild.Id].RemoveWhere(tr => tr.TriggerRegexes.Count == 0);
 
-            Shared.TextReactions[ctx.Guild.Id].RemoveWhere(tr => tr.TriggerRegexes.Count == 0);
+            await ctx.RespondWithIconEmbedAsync($"Removed {removed} reactions!\n\n{errors.ToString()}")
+                .ConfigureAwait(false);
         }
         #endregion
 
@@ -161,7 +192,7 @@ namespace TheGodfather.Modules.Reactions
             await ctx.SendPaginatedCollectionAsync(
                 "Text reactions for this guild",
                 Shared.TextReactions[ctx.Guild.Id].OrderBy(tr => tr.OrderedTriggerStrings.First()),
-                tr => $"{tr.Response} | Triggers: {string.Join(", ", tr.TriggerStrings)}",
+                tr => $"{tr.Id} : {tr.Response} | Triggers: {string.Join(", ", tr.TriggerStrings)}",
                 DiscordColor.Blue
             ).ConfigureAwait(false);
         }
@@ -189,22 +220,23 @@ namespace TheGodfather.Modules.Reactions
             if (Shared.TextTriggerExists(ctx.Guild.Id, trigger))
                 throw new CommandFailedException($"Trigger {Formatter.Bold(trigger)} already exists.");
 
+            string errors = "";
+            int id = 0;
+            try {
+                id = await Database.AddTextReactionAsync(ctx.Guild.Id, trigger, response, is_regex_trigger)
+                    .ConfigureAwait(false);
+            } catch (Exception e) {
+                Logger.LogException(LogLevel.Warning, e);
+                errors = $"Warning: Failed to add trigger {Formatter.Bold(trigger)} to the database.";
+            }
+
             var reaction = Shared.TextReactions[ctx.Guild.Id].FirstOrDefault(tr => tr.Response == response);
             if (reaction != null) {
                 if (!reaction.AddTrigger(trigger, is_regex_trigger))
                     throw new CommandFailedException($"Failed to add trigger {Formatter.Bold(trigger)}.");
             } else {
-                if (!Shared.TextReactions[ctx.Guild.Id].Add(new TextReaction(trigger, response, is_regex_trigger)))
+                if (!Shared.TextReactions[ctx.Guild.Id].Add(new TextReaction(id, trigger, response, is_regex_trigger)))
                     throw new CommandFailedException($"Failed to add trigger {Formatter.Bold(trigger)}.");
-            }
-
-            string errors = "";
-            try {
-                await Database.AddTextReactionAsync(ctx.Guild.Id, trigger, response, is_regex_trigger)
-                    .ConfigureAwait(false);
-            } catch (Exception e) {
-                Logger.LogException(LogLevel.Warning, e);
-                errors = $"Warning: Failed to add trigger {Formatter.Bold(trigger)} to the database.";
             }
 
             await ctx.RespondWithIconEmbedAsync($"Done!\n\n{errors}")

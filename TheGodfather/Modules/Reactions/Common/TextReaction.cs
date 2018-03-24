@@ -10,8 +10,8 @@ namespace TheGodfather.Modules.Reactions.Common
         private object _lock = new object();
 
 
-        public TextReaction(string trigger, string response, bool is_regex_trigger = false)
-            : base(trigger, response, is_regex_trigger)
+        public TextReaction(int id, string trigger, string response, bool is_regex_trigger = false)
+            : base(id, trigger, response, is_regex_trigger)
         {
             _resetTime = DateTimeOffset.UtcNow + TimeSpan.FromSeconds(RESET_TIME_S);
         }

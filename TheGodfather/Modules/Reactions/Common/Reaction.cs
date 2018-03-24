@@ -17,11 +17,13 @@ namespace TheGodfather.Modules.Reactions.Common
         public ConcurrentHashSet<Regex> TriggerRegexes { get; protected set; } = new ConcurrentHashSet<Regex>();
         public IEnumerable<string> TriggerStrings => TriggerRegexes.Select(rgx => rgx.ToString().Substring(2, rgx.ToString().Length - 4));
         public IEnumerable<string> OrderedTriggerStrings => TriggerStrings.OrderBy(s => s);
-        public string Response { get; protected set; }
+        public int Id { get; }
+        public string Response { get; }
 
 
-        protected Reaction(string trigger, string response, bool is_regex_trigger = false)
+        protected Reaction(int id, string trigger, string response, bool is_regex_trigger = false)
         {
+            Id = id;
             AddTrigger(trigger, is_regex_trigger);
             Response = response;
         }

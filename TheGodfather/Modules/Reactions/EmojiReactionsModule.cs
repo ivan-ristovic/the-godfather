@@ -237,7 +237,7 @@ namespace TheGodfather.Modules.Reactions
                     if (!reaction.AddTrigger(trigger, is_regex_trigger: is_regex))
                         throw new CommandFailedException($"Failed to add trigger {Formatter.Bold(trigger)}.");
                 } else {
-                    if (!Shared.EmojiReactions[ctx.Guild.Id].Add(new EmojiReaction(trigger, ename, is_regex_trigger: is_regex)))
+                    if (!Shared.EmojiReactions[ctx.Guild.Id].Add(new EmojiReaction(0, trigger, ename, is_regex_trigger: is_regex)))
                         throw new CommandFailedException($"Failed to add trigger {Formatter.Bold(trigger)}.");
                 }
 
