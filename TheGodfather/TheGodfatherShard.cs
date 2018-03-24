@@ -188,9 +188,14 @@ namespace TheGodfather
 
             try {
                 var chn = e.Guild.GetChannel(cid);
-                if (chn != null)
-                    await chn.SendIconEmbedAsync($"Welcome to {Formatter.Bold(e.Guild.Name)}, {e.Member.Mention}!", DiscordEmoji.FromName(Client, ":wave:"))
+                if (chn != null) {
+                    var msg = await _db.GetGuildWelcomeMessageAsync(e.Guild.Id)
                         .ConfigureAwait(false);
+                    if (string.IsNullOrWhiteSpace(msg))
+                        await chn.SendIconEmbedAsync($"Welcome to {Formatter.Bold(e.Guild.Name)}, {e.Member.Mention}!", DiscordEmoji.FromName(Client, ":wave:")).ConfigureAwait(false);
+                    else
+                        await chn.SendIconEmbedAsync(msg.Replace("%user%", e.Member.Mention), DiscordEmoji.FromName(Client, ":wave:")).ConfigureAwait(false);
+                }
             } catch (Exception exc) {
                 while (exc is AggregateException)
                     exc = exc.InnerException;
@@ -227,9 +232,14 @@ namespace TheGodfather
 
             try {
                 var chn = e.Guild.GetChannel(cid);
-                if (chn != null)
-                    await chn.SendIconEmbedAsync($"{Formatter.Bold(e.Member?.Username ?? "<unknown>")} left the server. Cya never!", EmojiUtil.Wave)
+                if (chn != null) {
+                    var msg = await _db.GetGuildLeaveMessageAsync(e.Guild.Id)
                         .ConfigureAwait(false);
+                    if (string.IsNullOrWhiteSpace(msg))
+                        await chn.SendIconEmbedAsync($"{Formatter.Bold(e.Member?.Username ?? "<unknown>")} left the server! Bye!", EmojiUtil.Wave).ConfigureAwait(false);
+                    else
+                        await chn.SendIconEmbedAsync(msg.Replace("%user%", e.Member.Mention), DiscordEmoji.FromName(Client, ":wave:")).ConfigureAwait(false);
+                }
             } catch (Exception exc) {
                 while (exc is AggregateException)
                     exc = exc.InnerException;
