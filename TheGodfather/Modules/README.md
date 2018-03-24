@@ -725,7 +725,7 @@
 *View guild emojis.*
 
 **Aliases:**
-`print, show, l, p`
+`print, show, l, p, ls`
 
 
 **Examples:**
@@ -742,7 +742,7 @@
 `Manage emoji`
 
 **Aliases:**
-`edit, mod, e, m`
+`edit, mod, e, m, rename`
 
 
 **Overload 1:**
@@ -872,9 +872,13 @@
 `-, remove, del, rm, d`
 
 
-**Overload 1:**
+**Overload 2:**
 
 `[emoji]` : *Emoji to remove reactions for.*
+
+**Overload 1:**
+
+`[int...]` : *IDs of the reactions to remove.*
 
 **Overload 0:**
 
@@ -884,6 +888,8 @@
 
 ```
 !emojireaction delete haha sometrigger
+!emojireaction delete 5
+!emojireaction delete 5 4
 !emojireaction delete :joy:
 ```
 ---
@@ -911,7 +917,7 @@
 
 **Arguments:**
 
-`[string...]` : *Trigger word list.*
+`[string...]` : *Filter list. Filter is a regular expression (case insensitive).*
 
 **Examples:**
 
@@ -932,7 +938,7 @@
 
 **Arguments:**
 
-`[string...]` : *Filter. Can be a regex (case insensitive).*
+`[string...]` : *Filter list. Filter is a regular expression (case insensitive).*
 
 **Examples:**
 
@@ -3320,11 +3326,27 @@
 `Administrator`
 
 
-**Arguments:**
+**Overload 2:**
 
 `[time span]` : *Time span until reminder.*
 
-`[string...]` : *Remind you of?*
+`[channel]` : *Channel to send message to.*
+
+`[string...]` : *What to send?*
+
+**Overload 1:**
+
+`[channel]` : *Channel to send message to.*
+
+`[time span]` : *Time span until reminder.*
+
+`[string...]` : *What to send?*
+
+**Overload 0:**
+
+`[time span]` : *Time span until reminder.*
+
+`[string...]` : *What to send?*
 
 **Examples:**
 
@@ -4066,13 +4088,19 @@
 `-, remove, del, rm, d`
 
 
-**Arguments:**
+**Overload 1:**
+
+`[int...]` : *IDs of the reactions to remove.*
+
+**Overload 0:**
 
 `[string...]` : *Trigger words to remove.*
 
 **Examples:**
 
 ```
+!textreaction delete 5
+!textreaction delete 5 8
 !textreaction delete hi
 ```
 ---
