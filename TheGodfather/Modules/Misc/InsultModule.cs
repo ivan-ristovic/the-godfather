@@ -18,7 +18,7 @@ namespace TheGodfather.Modules.Misc
 {
     [Group("insult")]
     [Description("Insults manipulation. If invoked without subcommands, insults a given user.")]
-    [Aliases("burn", "insults", "ins")]
+    [Aliases("burn", "insults", "ins", "roast")]
     [UsageExample("!insult @Someone")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
     [ListeningCheck]
