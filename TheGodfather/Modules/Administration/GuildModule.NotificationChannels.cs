@@ -68,7 +68,7 @@ namespace TheGodfather.Modules.Administration
         {
             var msg = await Database.GetGuildWelcomeMessageAsync(ctx.Guild.Id)
                 .ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync(msg ?? "Welcome message isn't set for this guild.")
+            await ctx.RespondWithIconEmbedAsync($"Welcome message:\n\n{Formatter.Italic(msg ?? "Not set.")}")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -82,7 +82,7 @@ namespace TheGodfather.Modules.Administration
         {
             var msg = await Database.GetGuildLeaveMessageAsync(ctx.Guild.Id)
                 .ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync(msg ?? "Leave message isn't set for this guild.")
+            await ctx.RespondWithIconEmbedAsync($"Leave message:\n\n{Formatter.Italic(msg ?? "Not set.")}")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -143,13 +143,21 @@ namespace TheGodfather.Modules.Administration
         public async Task SetWelcomeMessageAsync(CommandContext ctx,
                                                 [RemainingText, Description("Message.")] string message = null)
         {
-            if (string.IsNullOrWhiteSpace(message))
-                await Database.RemoveGuildWelcomeMessageAsync(ctx.Guild.Id).ConfigureAwait(false);
-            else 
-                await Database.SetGuildWelcomeMessageAsync(ctx.Guild.Id, message).ConfigureAwait(false);
+            if (string.IsNullOrWhiteSpace(message)) {
+                await Database.RemoveGuildWelcomeMessageAsync(ctx.Guild.Id)
+                    .ConfigureAwait(false);
+                await ctx.RespondWithIconEmbedAsync("Welcome message set to default message.")
+                    .ConfigureAwait(false);
+            } else {
+                if (message.Length < 3 || message.Length > 120)
+                    throw new CommandFailedException("Message cannot be shorter than 3 or longer than 120 characters!");
 
-            await ctx.RespondWithIconEmbedAsync($"Welcome message set to: {Formatter.Bold(message ?? "Default message")}.")
-                .ConfigureAwait(false);
+                await Database.SetGuildWelcomeMessageAsync(ctx.Guild.Id, message)
+                    .ConfigureAwait(false);
+
+                await ctx.RespondWithIconEmbedAsync($"Welcome message set to: {Formatter.Bold(message ?? "Default message")}.")
+                    .ConfigureAwait(false);
+            }
         }
         #endregion
 
@@ -163,13 +171,21 @@ namespace TheGodfather.Modules.Administration
         public async Task SetLeaveMessageAsync(CommandContext ctx,
                                               [RemainingText, Description("Message.")] string message = null)
         {
-            if (string.IsNullOrWhiteSpace(message))
-                await Database.RemoveGuildLeaveMessageAsync(ctx.Guild.Id).ConfigureAwait(false);
-            else
-                await Database.SetGuildLeaveMessageAsync(ctx.Guild.Id, message).ConfigureAwait(false);
+            if (string.IsNullOrWhiteSpace(message)) {
+                await Database.RemoveGuildLeaveMessageAsync(ctx.Guild.Id)
+                    .ConfigureAwait(false);
+                await ctx.RespondWithIconEmbedAsync("Leave message set to default message.")
+                    .ConfigureAwait(false);
+            } else {
+                if (message.Length < 3 || message.Length > 120)
+                    throw new CommandFailedException("Message cannot be shorter than 3 or longer than 120 characters!");
 
-            await ctx.RespondWithIconEmbedAsync($"Leave message set to: {Formatter.Bold(message ?? "Default message")}.")
-                .ConfigureAwait(false);
+                await Database.SetGuildLeaveMessageAsync(ctx.Guild.Id, message)
+                    .ConfigureAwait(false);
+
+                await ctx.RespondWithIconEmbedAsync($"Leave message set to: {Formatter.Bold(message ?? "Default message")}.")
+                    .ConfigureAwait(false);
+            }
         }
         #endregion
 
