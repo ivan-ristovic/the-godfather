@@ -17,6 +17,7 @@ namespace TheGodfather.Modules.Games
     {
         #region PRIVATE_FIELDS
         private DiscordMessage _msg;
+        private DiscordUser _initiator;
         private string _word;
         private char[] _hidden;
         private int _lives = 6;
@@ -25,9 +26,10 @@ namespace TheGodfather.Modules.Games
         #endregion
 
 
-        public Hangman(InteractivityExtension interactivity, DiscordChannel channel, string word)
+        public Hangman(InteractivityExtension interactivity, DiscordChannel channel, string word, DiscordUser initiator)
             : base(interactivity, channel)
         {
+            _initiator = initiator;
             _word = word.ToLowerInvariant();
             _hidden = new string('?', _word.Length).ToCharArray();
         }
@@ -45,22 +47,36 @@ namespace TheGodfather.Modules.Games
                     .ConfigureAwait(false);
             }
 
-            await _channel.SendIconEmbedAsync($"Game over! The word was: {Formatter.Bold(_word)}", EmojiUtil.Joystick)
-                .ConfigureAwait(false);
+            if (NoReply) {
+                Winner = null;
+                await _channel.SendIconEmbedAsync($"Nobody replies so I am stopping the game... The word was: {Formatter.Bold(_word)}", EmojiUtil.Joystick)
+                    .ConfigureAwait(false);
+                return;
+            }
+
+            if (_lives > 0) {
+                await _channel.SendIconEmbedAsync($"{Winner.Mention} won the game!", EmojiUtil.Joystick)
+                    .ConfigureAwait(false);
+            } else {
+                Winner = _initiator;
+                await _channel.SendIconEmbedAsync($"Nobody guessed the word so {Winner.Mention} won the game! The word was: {Formatter.Bold(_word)}", EmojiUtil.Joystick)
+                    .ConfigureAwait(false);
+            }
         }
 
         private async Task AdvanceAsync()
         {
             var mctx = await _interactivity.WaitForMessageAsync(
-                    xm => (xm.Channel.Id == _channel.Id && 
-                          !xm.Author.IsBot && 
-                          xm.Content.Length == 1 && 
+                    xm => (xm.Channel.Id == _channel.Id && xm.Author.Id != _initiator.Id &&
+                          !xm.Author.IsBot &&
+                          xm.Content.Length == 1 &&
                           Char.IsLetterOrDigit(xm.Content[0]) &&
                           !_badguesses.Contains(Char.ToLowerInvariant(xm.Content[0]))) || xm.Content.ToLowerInvariant() == _word
                     , TimeSpan.FromMinutes(1)
                 ).ConfigureAwait(false);
             if (mctx == null) {
                 _gameOver = true;
+                NoReply = true;
                 return;
             }
 

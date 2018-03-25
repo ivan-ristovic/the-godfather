@@ -42,22 +42,20 @@ namespace TheGodfather.Modules.Games
                     .ConfigureAwait(false);
                 await ctx.RespondAsync(ctx.User.Mention + ", check your DM. When you give me the word, the game will start.")
                     .ConfigureAwait(false);
-
-                var interactivity = ctx.Client.GetInteractivity();
-                var msg = await interactivity.WaitForMessageAsync(
+                var mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(
                     xm => xm.Channel == dm && xm.Author.Id == ctx.User.Id,
                     TimeSpan.FromMinutes(1)
                 ).ConfigureAwait(false);
-                if (msg == null) {
+                if (mctx == null) {
                     await ctx.RespondAsync("I didn't get the word, so I will abort the game.")
                         .ConfigureAwait(false);
                     return;
                 } else {
-                    await dm.SendMessageAsync("Alright! The word is: " + Formatter.Bold(msg.Message.Content))
+                    await dm.SendMessageAsync("Alright! The word is: " + Formatter.Bold(mctx.Message.Content))
                         .ConfigureAwait(false);
                 }
 
-                var hangman = new Hangman(ctx.Client.GetInteractivity(), ctx.Channel, msg.Message.Content);
+                var hangman = new Hangman(ctx.Client.GetInteractivity(), ctx.Channel, mctx.Message.Content, mctx.User);
                 Game.RegisterGameInChannel(hangman, ctx.Channel.Id);
                 try {
                     await hangman.RunAsync()

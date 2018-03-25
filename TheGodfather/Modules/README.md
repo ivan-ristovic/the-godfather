@@ -1504,6 +1504,23 @@
 ```
 ---
 
+### guild deleteleavemessage
+*Remove leave message for this guild.*
+
+**Requires user permissions:**
+`Manage guild`
+
+**Aliases:**
+`delleavem, dellm, delleavemsg, dlm, deletelm, dwlsg`
+
+
+**Examples:**
+
+```
+!guild deleteleavemessage
+```
+---
+
 ### guild deletewelcomechannel
 *Remove welcome message channel for this guild.*
 
@@ -1521,14 +1538,28 @@
 ```
 ---
 
-### guild getleavechannel
-*Get current leave message channel for this guild.*
+### guild deletewelcomemessage
+*Remove welcome message for this guild.*
 
 **Requires user permissions:**
 `Manage guild`
 
 **Aliases:**
-`getleavec, getlc, getleave, leavechannel, lc`
+`delwelcomem, delwm, delwelcomemsg, dwm, deletewm, dwmsg`
+
+
+**Examples:**
+
+```
+!guild deletewelcomemessage
+```
+---
+
+### guild getleavechannel
+*Get current leave message channel for this guild.*
+
+**Aliases:**
+`getleavec, getlc, leavechannel, lc`
 
 
 **Examples:**
@@ -1538,20 +1569,45 @@
 ```
 ---
 
+### guild getleavemessage
+*Get current leave message for this guild.*
+
+**Aliases:**
+`getleavem, getlm, leavemessage, lm, leavemsg, lmsg`
+
+
+**Examples:**
+
+```
+!guild getwelcomemessage
+```
+---
+
 ### guild getwelcomechannel
 *Get current welcome message channel for this guild.*
 
-**Requires user permissions:**
-`Manage guild`
-
 **Aliases:**
-`getwelcomec, getwc, getwelcome, welcomechannel, wc`
+`getwelcomec, getwc, welcomechannel, wc`
 
 
 **Examples:**
 
 ```
 !guild getwelcomechannel
+```
+---
+
+### guild getwelcomemessage
+*Get current welcome message for this guild.*
+
+**Aliases:**
+`getwelcomem, getwm, welcomemessage, wm, welcomemsg, wmsg`
+
+
+**Examples:**
+
+```
+!guild getwelcomemessage
 ```
 ---
 
@@ -1697,6 +1753,28 @@
 ```
 ---
 
+### guild setleavemessage
+*Set leave message for this guild. Any occurances of ``%user%`` inside the string will be replaced with newly joined user mention. Invoking command without a message will reset the current leave message to a default one.*
+
+**Requires user permissions:**
+`Manage guild`
+
+**Aliases:**
+`setlm, setleavem, setleavemsg, setlmsg`
+
+
+**Arguments:**
+
+(optional) `[string...]` : *Message.* (def: `None`)
+
+**Examples:**
+
+```
+!guild setleavemessage
+!guild setleavemessage Bye, %user%!
+```
+---
+
 ### guild setwelcomechannel
 *Set welcome message channel for this guild. If the channel isn't given, uses the current one.*
 
@@ -1716,6 +1794,28 @@
 ```
 !guild setwelcomechannel
 !guild setwelcomechannel #welcome
+```
+---
+
+### guild setwelcomemessage
+*Set welcome message for this guild. Any occurances of ``%user%`` inside the string will be replaced with newly joined user mention. Invoking command without a message will reset the current welcome message to a default one.*
+
+**Requires user permissions:**
+`Manage guild`
+
+**Aliases:**
+`setwm, setwelcomem, setwelcomemsg, setwmsg`
+
+
+**Arguments:**
+
+(optional) `[string...]` : *Message.* (def: `None`)
+
+**Examples:**
+
+```
+!guild setwelcomemessage
+!guild setwelcomemessage Welcome, %user%!
 ```
 ---
 
@@ -1835,7 +1935,7 @@
 *Insults manipulation. If invoked without subcommands, insults a given user.*
 
 **Aliases:**
-`burn, insults, ins`
+`burn, insults, ins, roast`
 
 
 **Arguments:**
