@@ -51,10 +51,18 @@ namespace TheGodfather.Extensions
         public static string BuildReasonString(this CommandContext ctx, string reason = null)
             => $"{ctx.User.ToString()} : {reason ?? "No reason provided."} | Invoked in: {ctx.Channel.ToString()}";
 
-        public static Task<DiscordMessage> RespondWithIconEmbedAsync(this CommandContext ctx, string msg = "Done!", string icon_emoji = ":white_check_mark:")
+        public static Task<DiscordMessage> RespondWithIconEmbedAsync(this CommandContext ctx, string msg = "Done!", string icon_emoji = null)
         {
             return ctx.RespondAsync(embed: new DiscordEmbedBuilder {
-                Description = $"{(string.IsNullOrWhiteSpace(icon_emoji) ? "" : DiscordEmoji.FromName(ctx.Client, icon_emoji))} {msg}",
+                Description = $"{(icon_emoji == null ? EmojiUtil.CheckMarkSuccess : DiscordEmoji.FromName(ctx.Client, icon_emoji))} {msg}",
+                Color = DiscordColor.Green
+            });
+        }
+
+        public static Task<DiscordMessage> RespondWithIconEmbedAsync(this CommandContext ctx, DiscordEmoji emoji, string msg = "Done!")
+        {
+            return ctx.RespondAsync(embed: new DiscordEmbedBuilder {
+                Description = $"{(emoji ?? EmojiUtil.CheckMarkSuccess)} {msg}",
                 Color = DiscordColor.Green
             });
         }

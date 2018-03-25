@@ -53,9 +53,9 @@ namespace TheGodfather.Modules.Games
 
                     if (ttt.Winner != null) {
                         if (ttt.NoReply == false)
-                            await ctx.RespondWithIconEmbedAsync($"The winner is: {ttt.Winner.Mention}!", ":trophy:").ConfigureAwait(false);
+                            await ctx.RespondWithIconEmbedAsync(EmojiUtil.Trophy, $"The winner is: {ttt.Winner.Mention}!").ConfigureAwait(false);
                         else
-                            await ctx.RespondWithIconEmbedAsync($"{ttt.Winner.Mention} won due to no replies from opponent!", ":trophy:").ConfigureAwait(false);
+                            await ctx.RespondWithIconEmbedAsync(EmojiUtil.Trophy, $"{ttt.Winner.Mention} won due to no replies from opponent!").ConfigureAwait(false);
 
                         await Database.UpdateUserStatsAsync(ttt.Winner.Id, "ttt_won")
                             .ConfigureAwait(false);
@@ -87,6 +87,21 @@ namespace TheGodfather.Modules.Games
                     "or all nine squares are filled.",
                     ":book:"
                 ).ConfigureAwait(false);
+            }
+            #endregion
+
+            #region COMMAND_TICTACTOE_STATS
+            [Command("stats")]
+            [Description("Print the leaderboard for this game.")]
+            [Aliases("top", "leaderboard")]
+            [UsageExample("!game tictactoe stats")]
+            public async Task StatsAsync(CommandContext ctx)
+            {
+                var top = await Database.GetTopTTTPlayersStringAsync(ctx.Client)
+                    .ConfigureAwait(false);
+
+                await ctx.RespondWithIconEmbedAsync(EmojiUtil.Trophy, $"Top players in Tic-Tac-Toe:\n\n{top}")
+                    .ConfigureAwait(false);
             }
             #endregion
         }

@@ -44,7 +44,8 @@ namespace TheGodfather.Extensions
             DiscordEmoji.FromUnicode("\U0001f428"),     // :koala:
             DiscordEmoji.FromUnicode("\U0001f42f")      // :tiger:
         };
-        
+
+        public static DiscordEmoji CheckMarkSuccess => DiscordEmoji.FromUnicode("\u2705");
         public static DiscordEmoji DuelSwords => DiscordEmoji.FromUnicode("\u2694");
         public static DiscordEmoji BoardSquare => DiscordEmoji.FromUnicode("\u25fb");
         public static DiscordEmoji BoardPieceX => DiscordEmoji.FromUnicode("\u274c");

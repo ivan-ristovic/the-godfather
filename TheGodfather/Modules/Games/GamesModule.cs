@@ -27,101 +27,9 @@ namespace TheGodfather.Modules.Games
     {
 
         public GamesModule(DBService db) : base(db: db) { }
+        
 
-
-        #region COMMAND_GAMES_DUEL
-        [Command("duel")]
-        [Description("Starts a duel which I will commentate.")]
-        [Aliases("fight", "vs", "d")]
-        [UsageExample("!game duel @Someone")]
-        public async Task DuelAsync(CommandContext ctx,
-                                   [Description("Who to fight with?")] DiscordUser opponent)
-        {
-            if (Game.RunningInChannel(ctx.Channel.Id))
-                throw new CommandFailedException("Another game is already running in the current channel!");
-
-            if (opponent.Id == ctx.User.Id)
-                throw new CommandFailedException("You can't duel yourself...");
-
-            if (opponent.Id == ctx.Client.CurrentUser.Id) {
-                await ctx.RespondAsync(
-                    $"{ctx.User.Mention} {string.Join("", Enumerable.Repeat(DiscordEmoji.FromName(ctx.Client, ":black_large_square:"), 5))} :crossed_swords: " +
-                    $"{string.Join("", Enumerable.Repeat(DiscordEmoji.FromName(ctx.Client, ":white_large_square:"), 5))} {opponent.Mention}" +
-                    $"\n{ctx.Client.CurrentUser.Mention} {DiscordEmoji.FromName(ctx.Client, ":zap:")} {ctx.User.Mention}"
-                ).ConfigureAwait(false);
-                await ctx.RespondAsync($"{ctx.Client.CurrentUser.Mention} wins!")
-                    .ConfigureAwait(false);
-                return;
-            }
-
-            var duel = new Duel(ctx.Client.GetInteractivity(), ctx.Channel, ctx.User, opponent);
-            Game.RegisterGameInChannel(duel, ctx.Channel.Id);
-
-            try {
-                await duel.RunAsync()
-                    .ConfigureAwait(false);
-
-                await ctx.RespondAsync($"{duel.Winner.Username} {duel.FinishingMove ?? "wins"}!")
-                    .ConfigureAwait(false);
-
-                await Database.UpdateUserStatsAsync(duel.Winner.Id, "duels_won")
-                    .ConfigureAwait(false);
-                await Database.UpdateUserStatsAsync(duel.Winner.Id == ctx.User.Id ? opponent.Id : ctx.User.Id, "duels_lost")
-                    .ConfigureAwait(false);
-            } finally {
-                Game.UnregisterGameInChannel(ctx.Channel.Id);
-            }
-        }
-        #endregion
-
-        #region COMMAND_GAMES_HANGMAN
-        [Command("hangman")]
-        [Description("Starts a hangman game.")]
-        [Aliases("h", "hang")]
-        [UsageExample("!game hangman")]
-        public async Task HangmanAsync(CommandContext ctx)
-        {
-            if (Game.RunningInChannel(ctx.Channel.Id))
-                throw new CommandFailedException("Another game is already running in the current channel!");
-
-            var dm = await ctx.Client.CreateDmChannelAsync(ctx.User.Id)
-                .ConfigureAwait(false);
-            if (dm == null)
-                throw new CommandFailedException("Please enable direct messages, so I can ask you about the word to guess.");
-            await dm.SendMessageAsync("What is the secret word?")
-                .ConfigureAwait(false);
-            await ctx.RespondAsync(ctx.User.Mention + ", check your DM. When you give me the word, the game will start.")
-                .ConfigureAwait(false);
-
-            var interactivity = ctx.Client.GetInteractivity();
-            var msg = await interactivity.WaitForMessageAsync(
-                xm => xm.Channel == dm && xm.Author.Id == ctx.User.Id,
-                TimeSpan.FromMinutes(1)
-            ).ConfigureAwait(false);
-            if (msg == null) {
-                await ctx.RespondAsync("I didn't get the word, so I will abort the game.")
-                    .ConfigureAwait(false);
-                return;
-            } else {
-                await dm.SendMessageAsync("Alright! The word is: " + Formatter.Bold(msg.Message.Content))
-                    .ConfigureAwait(false);
-            }
-
-            var hangman = new Hangman(ctx.Client.GetInteractivity(), ctx.Channel, msg.Message.Content);
-            Game.RegisterGameInChannel(hangman, ctx.Channel.Id);
-            try {
-                await hangman.RunAsync()
-                    .ConfigureAwait(false);
-                if (hangman.Winner != null)
-                    await Database.UpdateUserStatsAsync(hangman.Winner.Id, "hangman_won")
-                        .ConfigureAwait(false);
-            } finally {
-                Game.UnregisterGameInChannel(ctx.Channel.Id);
-            }
-        }
-        #endregion
-
-        #region COMMAND_GAMES_LEADERBOARD
+        #region COMMAND_GAME_LEADERBOARD
         [Command("leaderboard")]
         [Description("View the global game leaderboard.")]
         [Aliases("globalstats")]
@@ -135,7 +43,7 @@ namespace TheGodfather.Modules.Games
         }
         #endregion
 
-        #region COMMAND_GAMES_RPS
+        #region COMMAND_GAME_RPS
         [Command("rps")]
         [Description("Rock, paper, scissors game against TheGodfather")]
         [Aliases("rockpaperscissors")]
@@ -173,7 +81,7 @@ namespace TheGodfather.Modules.Games
         }
         #endregion
 
-        #region COMMAND_GAMES_STATS
+        #region COMMAND_GAME_STATS
         [Command("stats")]
         [Description("Print game stats for given user.")]
         [Aliases("s", "st")]
@@ -192,7 +100,7 @@ namespace TheGodfather.Modules.Games
         }
         #endregion
 
-        #region COMMAND_GAMES_TYPING
+        #region COMMAND_GAME_TYPING
         [Command("typingrace")]
         [Description("Typing race.")]
         [Aliases("type", "typerace", "typing")]
@@ -217,7 +125,7 @@ namespace TheGodfather.Modules.Games
                     await ctx.RespondWithIconEmbedAsync("ROFL what a nabs...", ":alarm_clock:")
                         .ConfigureAwait(false);
                 } else {
-                    await ctx.RespondWithIconEmbedAsync($"The winner is {game.Winner?.Mention ?? "<unknown>"}!", ":trophy:")
+                    await ctx.RespondWithIconEmbedAsync(EmojiUtil.Trophy, $"The winner is {game.Winner?.Mention ?? "<unknown>"}!")
                         .ConfigureAwait(false);
                 }
             } finally {

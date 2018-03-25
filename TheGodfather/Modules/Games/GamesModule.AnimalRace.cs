@@ -93,6 +93,21 @@ namespace TheGodfather.Modules.Games
                     .ConfigureAwait(false);
             }
             #endregion
+
+            #region COMMAND_ANIMALRACE_STATS
+            [Command("stats")]
+            [Description("Print the leaderboard for this game.")]
+            [Aliases("top", "leaderboard")]
+            [UsageExample("!game animalrace stats")]
+            public async Task StatsAsync(CommandContext ctx)
+            {
+                var top = await Database.GetTopRacersStringAsync(ctx.Client)
+                    .ConfigureAwait(false);
+
+                await ctx.RespondWithIconEmbedAsync(EmojiUtil.Trophy, $"Top players in Animal Race:\n\n{top}")
+                    .ConfigureAwait(false);
+            }
+            #endregion
         }
     }
 }

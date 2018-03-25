@@ -261,6 +261,8 @@
   <ItemGroup>
     <Compile Include="Attributes\UsageExampleAttribute.cs" />
     <Compile Include="Entities\SavedTaskExecuter.cs" />
+    <Compile Include="Modules\Games\GamesModule.Duel.cs" />
+    <Compile Include="Modules\Games\GamesModule.Hangman.cs" />
     <Compile Include="Modules\Owner\OwnerModule.Birthdays.cs" />
     <Compile Include="Modules\Reactions\Common\EmojiReaction.cs" />
     <Compile Include="Modules\Reactions\Common\Reaction.cs" />

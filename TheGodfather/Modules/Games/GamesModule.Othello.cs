@@ -53,9 +53,9 @@ namespace TheGodfather.Modules.Games
                     
                     if (othello.Winner != null) {
                         if (othello.NoReply == false)
-                            await ctx.RespondWithIconEmbedAsync($"The winner is: {othello.Winner.Mention}!", ":trophy:").ConfigureAwait(false);
+                            await ctx.RespondWithIconEmbedAsync(EmojiUtil.Trophy, $"The winner is: {othello.Winner.Mention}!").ConfigureAwait(false);
                         else
-                            await ctx.RespondWithIconEmbedAsync($"{othello.Winner.Mention} won due to no replies from opponent!", ":trophy:").ConfigureAwait(false);
+                            await ctx.RespondWithIconEmbedAsync(EmojiUtil.Trophy, $"{othello.Winner.Mention} won due to no replies from opponent!").ConfigureAwait(false);
 
                         await Database.UpdateUserStatsAsync(othello.Winner.Id, "othello_won")
                             .ConfigureAwait(false);
@@ -91,6 +91,21 @@ namespace TheGodfather.Modules.Games
                     "the last playable empty square is filled.",
                     ":book:"
                 ).ConfigureAwait(false);
+            }
+            #endregion
+
+            #region COMMAND_OTHELLO_STATS
+            [Command("stats")]
+            [Description("Print the leaderboard for this game.")]
+            [Aliases("top", "leaderboard")]
+            [UsageExample("!game othello stats")]
+            public async Task StatsAsync(CommandContext ctx)
+            {
+                var top = await Database.GetTopOthelloPlayersStringAsync(ctx.Client)
+                    .ConfigureAwait(false);
+
+                await ctx.RespondWithIconEmbedAsync(EmojiUtil.Trophy, $"Top players in Othello:\n\n{top}")
+                    .ConfigureAwait(false);
             }
             #endregion
         }

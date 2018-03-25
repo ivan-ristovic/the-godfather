@@ -35,6 +35,22 @@ namespace TheGodfather.Modules.Games
                     ":information_source:"
                 ).ConfigureAwait(false);
             }
+
+
+            #region COMMAND_QUIZ_STATS
+            [Command("stats")]
+            [Description("Print the leaderboard for this game.")]
+            [Aliases("top", "leaderboard")]
+            [UsageExample("!game quiz stats")]
+            public async Task StatsAsync(CommandContext ctx)
+            {
+                var top = await Database.GetTopQuizPlayersStringAsync(ctx.Client)
+                    .ConfigureAwait(false);
+
+                await ctx.RespondWithIconEmbedAsync(EmojiUtil.Trophy, $"Top players in Quiz:\n\n{top}")
+                    .ConfigureAwait(false);
+            }
+            #endregion
         }
     }
 }

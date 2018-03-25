@@ -53,9 +53,9 @@ namespace TheGodfather.Modules.Games
 
                     if (caro.Winner != null) {
                         if (caro.NoReply == false)
-                            await ctx.RespondWithIconEmbedAsync($"The winner is: {caro.Winner.Mention}!", ":trophy:").ConfigureAwait(false);
+                            await ctx.RespondWithIconEmbedAsync(EmojiUtil.Trophy, $"The winner is: {caro.Winner.Mention}!").ConfigureAwait(false);
                         else
-                            await ctx.RespondWithIconEmbedAsync($"{caro.Winner.Mention} won due to no replies from opponent!", ":trophy:").ConfigureAwait(false);
+                            await ctx.RespondWithIconEmbedAsync(EmojiUtil.Trophy, $"{caro.Winner.Mention} won due to no replies from opponent!").ConfigureAwait(false);
 
                         await Database.UpdateUserStatsAsync(caro.Winner.Id, "caro_won")
                             .ConfigureAwait(false);
@@ -87,6 +87,21 @@ namespace TheGodfather.Modules.Games
                     "in a row or when there are no more empty fields on the board.",
                     ":book:"
                 ).ConfigureAwait(false);
+            }
+            #endregion
+
+            #region COMMAND_CARO_STATS
+            [Command("stats")]
+            [Description("Print the leaderboard for this game.")]
+            [Aliases("top", "leaderboard")]
+            [UsageExample("!game caro stats")]
+            public async Task StatsAsync(CommandContext ctx)
+            {
+                var top = await Database.GetTopCaroPlayersStringAsync(ctx.Client)
+                    .ConfigureAwait(false);
+
+                await ctx.RespondWithIconEmbedAsync(EmojiUtil.Trophy, $"Top players in Caro:\n\n{top}")
+                    .ConfigureAwait(false);
             }
             #endregion
         }

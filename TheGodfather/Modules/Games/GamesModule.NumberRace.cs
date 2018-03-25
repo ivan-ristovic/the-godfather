@@ -57,14 +57,14 @@ namespace TheGodfather.Modules.Games
 
                         if (game.NoReply) {
                             if (game.Winner != null) {
-                                await ctx.RespondWithIconEmbedAsync($"{game.Winner.Mention} won due to no replies from other users!", ":trophy:")
+                                await ctx.RespondWithIconEmbedAsync(EmojiUtil.Trophy, $"{game.Winner.Mention} won due to no replies from other users!")
                                     .ConfigureAwait(false);
                             } else {
                                 await ctx.RespondWithIconEmbedAsync("No replies, aborting Number Race...", ":alarm_clock:")
                                         .ConfigureAwait(false);
                             }
                         } else {
-                            await ctx.RespondWithIconEmbedAsync("Winner: " + game.Winner.Mention, ":trophy:")
+                            await ctx.RespondWithIconEmbedAsync(EmojiUtil.Trophy, "Winner: " + game.Winner.Mention)
                                 .ConfigureAwait(false);
                         }
 
@@ -120,6 +120,21 @@ namespace TheGodfather.Modules.Games
                     "then the user that posted that number wins the game. The game ends when only one user remains.",
                     ":information_source:"
                 ).ConfigureAwait(false);
+            }
+            #endregion
+
+            #region COMMAND_NUMBERRACE_STATS
+            [Command("stats")]
+            [Description("Print the leaderboard for this game.")]
+            [Aliases("top", "leaderboard")]
+            [UsageExample("!game numberrace stats")]
+            public async Task StatsAsync(CommandContext ctx)
+            {
+                var top = await Database.GetTopNunchiPlayersStringAsync(ctx.Client)
+                    .ConfigureAwait(false);
+
+                await ctx.RespondWithIconEmbedAsync(EmojiUtil.Trophy, $"Top players in Number Race:\n\n{top}")
+                    .ConfigureAwait(false);
             }
             #endregion
         }

@@ -53,9 +53,9 @@ namespace TheGodfather.Modules.Games
 
                     if (connect4.Winner != null) {
                         if (connect4.NoReply == false)
-                            await ctx.RespondWithIconEmbedAsync($"The winner is: {connect4.Winner.Mention}!", ":trophy:").ConfigureAwait(false);
+                            await ctx.RespondWithIconEmbedAsync(EmojiUtil.Trophy, $"The winner is: {connect4.Winner.Mention}!").ConfigureAwait(false);
                         else
-                            await ctx.RespondWithIconEmbedAsync($"{connect4.Winner.Mention} won due to no replies from opponent!", ":trophy:").ConfigureAwait(false);
+                            await ctx.RespondWithIconEmbedAsync(EmojiUtil.Trophy, $"{connect4.Winner.Mention} won due to no replies from opponent!").ConfigureAwait(false);
                         
                         await Database.UpdateUserStatsAsync(connect4.Winner.Id, "chain4_won")
                             .ConfigureAwait(false);
@@ -87,6 +87,23 @@ namespace TheGodfather.Modules.Games
                     "The objective of the game is to be the first to form a horizontal, vertical, or diagonal line of four of one's own discs.",
                     ":book:"
                 ).ConfigureAwait(false);
+            }
+
+
+            #endregion
+
+            #region COMMAND_CONNECT4_STATS
+            [Command("stats")]
+            [Description("Print the leaderboard for this game.")]
+            [Aliases("top", "leaderboard")]
+            [UsageExample("!game connect4 stats")]
+            public async Task StatsAsync(CommandContext ctx)
+            {
+                var top = await Database.GetTopChain4PlayersStringAsync(ctx.Client)
+                    .ConfigureAwait(false);
+
+                await ctx.RespondWithIconEmbedAsync(EmojiUtil.Trophy, $"Top players in Connect Four:\n\n{top}")
+                    .ConfigureAwait(false);
             }
             #endregion
         }

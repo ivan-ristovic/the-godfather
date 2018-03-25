@@ -72,7 +72,7 @@ namespace TheGodfather.Modules.Games
             UpdateHpBars();
 
             _msg = await _msg.ModifyAsync($"{_p1.Mention} {_hp1bar} {EmojiUtil.DuelSwords} {_hp2bar} {_p2.Mention}", embed: new DiscordEmbedBuilder() {
-                Title = "CNN LIVE DUEL COVERAGE",
+                Title = "ITS TIME TO DUDUDUDU... DUEL!",
                 Description = _events.ToString(),
                 Color = DiscordColor.Chartreuse
             }.Build()).ConfigureAwait(false);
