@@ -38,16 +38,13 @@ namespace TheGodfather.Services
 
         public async Task AddSelfAssignableRoleAsync(ulong gid, ulong rid)
         {
-            if (await SelfAssignableRoleExistsAsync(gid, rid))
-                return;
-
             await _sem.WaitAsync();
             try {
                 using (var con = new NpgsqlConnection(_connectionString))
                 using (var cmd = con.CreateCommand()) {
                     await con.OpenAsync().ConfigureAwait(false);
 
-                    cmd.CommandText = "INSERT INTO gf.assignable_roles VALUES (@gid, @rid);";
+                    cmd.CommandText = "INSERT INTO gf.assignable_roles VALUES (@gid, @rid) ON CONFLICT DO NOTHING;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
                     cmd.Parameters.AddWithValue("rid", NpgsqlDbType.Bigint, rid);
 
@@ -76,7 +73,7 @@ namespace TheGodfather.Services
                 _sem.Release();
             }
         }
-
+        
         public async Task<bool> SelfAssignableRoleExistsAsync(ulong gid, ulong rid)
         {
             await _sem.WaitAsync();
@@ -98,7 +95,7 @@ namespace TheGodfather.Services
             }
             return false;
         }
-
+        
         public async Task DeleteAllSelfAssignableRolesAsync(ulong gid)
         {
             await _sem.WaitAsync();
@@ -144,16 +141,13 @@ namespace TheGodfather.Services
 
         public async Task AddAutomaticRoleAsync(ulong gid, ulong rid)
         {
-            if (await AutomaticRoleExistsAsync(gid, rid))
-                return;
-
             await _sem.WaitAsync();
             try {
                 using (var con = new NpgsqlConnection(_connectionString))
                 using (var cmd = con.CreateCommand()) {
                     await con.OpenAsync().ConfigureAwait(false);
 
-                    cmd.CommandText = "INSERT INTO gf.automatic_roles VALUES (@gid, @rid);";
+                    cmd.CommandText = "INSERT INTO gf.automatic_roles VALUES (@gid, @rid) ON CONFLICT DO NOTHING;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
                     cmd.Parameters.AddWithValue("rid", NpgsqlDbType.Bigint, rid);
 
@@ -181,28 +175,6 @@ namespace TheGodfather.Services
             } finally {
                 _sem.Release();
             }
-        }
-
-        public async Task<bool> AutomaticRoleExistsAsync(ulong gid, ulong rid)
-        {
-            await _sem.WaitAsync();
-            try {
-                using (var con = new NpgsqlConnection(_connectionString))
-                using (var cmd = con.CreateCommand()) {
-                    await con.OpenAsync().ConfigureAwait(false);
-
-                    cmd.CommandText = "SELECT rid FROM gf.automatic_roles WHERE gid = @gid AND rid = @rid LIMIT 1;";
-                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
-                    cmd.Parameters.AddWithValue("rid", NpgsqlDbType.Bigint, rid);
-
-                    var res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
-                    if (res != null && !(res is DBNull))
-                        return true;
-                }
-            } finally {
-                _sem.Release();
-            }
-            return false;
         }
 
         public async Task DeleteAllAutomaticRolesAsync(ulong gid)
