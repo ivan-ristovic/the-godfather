@@ -11,30 +11,7 @@ namespace TheGodfather.Services
 {
     public partial class DBService
     {
-        public async Task<IReadOnlyList<(ulong, string)>> GetBlockedUsersAsync()
-        {
-            var blocked = new List<(ulong, string)>();
-
-            await _sem.WaitAsync();
-            try {
-                using (var con = new NpgsqlConnection(_connectionString))
-                using (var cmd = con.CreateCommand()) {
-                    await con.OpenAsync().ConfigureAwait(false);
-
-                    cmd.CommandText = "SELECT * FROM gf.blocked_users;";
-
-                    using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
-                        while (await reader.ReadAsync().ConfigureAwait(false))
-                            blocked.Add(((ulong)(long)reader["uid"], reader["reason"] is DBNull ? null : (string)reader["reason"]));
-                    }
-                }
-            } finally {
-                _sem.Release();
-            }
-
-            return blocked.AsReadOnly();
-        }
-
+        #region BLOCKED_USERS
         public async Task AddBlockedUserAsync(ulong uid, string reason = null)
         {
             await _sem.WaitAsync();
@@ -59,6 +36,30 @@ namespace TheGodfather.Services
             }
         }
 
+        public async Task<IReadOnlyList<(ulong, string)>> GetAllBlockedUsersAsync()
+        {
+            var blocked = new List<(ulong, string)>();
+
+            await _sem.WaitAsync();
+            try {
+                using (var con = new NpgsqlConnection(_connectionString))
+                using (var cmd = con.CreateCommand()) {
+                    await con.OpenAsync().ConfigureAwait(false);
+
+                    cmd.CommandText = "SELECT * FROM gf.blocked_users;";
+
+                    using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
+                        while (await reader.ReadAsync().ConfigureAwait(false))
+                            blocked.Add(((ulong)(long)reader["uid"], reader["reason"] is DBNull ? null : (string)reader["reason"]));
+                    }
+                }
+            } finally {
+                _sem.Release();
+            }
+
+            return blocked.AsReadOnly();
+        }
+
         public async Task RemoveBlockedUserAsync(ulong uid)
         {
             await _sem.WaitAsync();
@@ -76,31 +77,9 @@ namespace TheGodfather.Services
                 _sem.Release();
             }
         }
+        #endregion
 
-        public async Task<IReadOnlyList<(ulong, string)>> GetBlockedChannelsAsync()
-        {
-            var blocked = new List<(ulong, string)>();
-
-            await _sem.WaitAsync();
-            try {
-                using (var con = new NpgsqlConnection(_connectionString))
-                using (var cmd = con.CreateCommand()) {
-                    await con.OpenAsync().ConfigureAwait(false);
-
-                    cmd.CommandText = "SELECT * FROM gf.blocked_channels;";
-
-                    using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
-                        while (await reader.ReadAsync().ConfigureAwait(false))
-                            blocked.Add(((ulong)(long)reader["cid"], reader["reason"] is DBNull ? null : (string)reader["reason"]));
-                    }
-                }
-            } finally {
-                _sem.Release();
-            }
-
-            return blocked.AsReadOnly();
-        }
-
+        #region BLOCKED_CHANNELS
         public async Task AddBlockedChannelAsync(ulong cid, string reason = null)
         {
             await _sem.WaitAsync();
@@ -125,6 +104,30 @@ namespace TheGodfather.Services
             }
         }
 
+        public async Task<IReadOnlyList<(ulong, string)>> GetAllBlockedChannelsAsync()
+        {
+            var blocked = new List<(ulong, string)>();
+
+            await _sem.WaitAsync();
+            try {
+                using (var con = new NpgsqlConnection(_connectionString))
+                using (var cmd = con.CreateCommand()) {
+                    await con.OpenAsync().ConfigureAwait(false);
+
+                    cmd.CommandText = "SELECT * FROM gf.blocked_channels;";
+
+                    using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
+                        while (await reader.ReadAsync().ConfigureAwait(false))
+                            blocked.Add(((ulong)(long)reader["cid"], reader["reason"] is DBNull ? null : (string)reader["reason"]));
+                    }
+                }
+            } finally {
+                _sem.Release();
+            }
+
+            return blocked.AsReadOnly();
+        }
+
         public async Task RemoveBlockedChannelAsync(ulong cid)
         {
             await _sem.WaitAsync();
@@ -142,5 +145,6 @@ namespace TheGodfather.Services
                 _sem.Release();
             }
         }
+        #endregion
     }
 }

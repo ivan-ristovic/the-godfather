@@ -63,7 +63,7 @@ namespace TheGodfather.Modules.Administration
             if (!await ctx.AskYesNoQuestionAsync("Are you sure you want to delete all self-assignable roles for this guild?").ConfigureAwait(false))
                 return;
 
-            await Database.DeleteAllSelfAssignableRolesAsync(ctx.Guild.Id)
+            await Database.RemoveAllSelfAssignableRolesForGuildAsync(ctx.Guild.Id)
                 .ConfigureAwait(false);
 
             await ctx.RespondWithIconEmbedAsync()
@@ -97,7 +97,7 @@ namespace TheGodfather.Modules.Administration
         [UsageExample("!sar list")]
         public async Task ListSARolesAsync(CommandContext ctx)
         {
-            var rids = await Database.GetSelfAssignableRolesListAsync(ctx.Guild.Id)
+            var rids = await Database.GetSelfAssignableRolesForGuildAsync(ctx.Guild.Id)
                 .ConfigureAwait(false);
 
             if (!rids.Any())

@@ -12,6 +12,24 @@ namespace TheGodfather.Services
 {
     public partial class DBService
     {
+        public async Task AddInsultAsync(string insult)
+        {
+            await _sem.WaitAsync();
+            try {
+                using (var con = new NpgsqlConnection(_connectionString))
+                using (var cmd = con.CreateCommand()) {
+                    await con.OpenAsync().ConfigureAwait(false);
+
+                    cmd.CommandText = "INSERT INTO gf.insults(insult) VALUES (@insult);";
+                    cmd.Parameters.AddWithValue("insult", NpgsqlDbType.Varchar, insult);
+
+                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                }
+            } finally {
+                _sem.Release();
+            }
+        }
+
         public async Task<IReadOnlyDictionary<int, string>> GetAllInsultsAsync()
         {
             var insults = new Dictionary<int, string>();
@@ -59,25 +77,7 @@ namespace TheGodfather.Services
             return insult;
         }
 
-        public async Task AddInsultAsync(string insult)
-        {
-            await _sem.WaitAsync();
-            try {
-                using (var con = new NpgsqlConnection(_connectionString))
-                using (var cmd = con.CreateCommand()) {
-                    await con.OpenAsync().ConfigureAwait(false);
-
-                    cmd.CommandText = "INSERT INTO gf.insults(insult) VALUES (@insult);";
-                    cmd.Parameters.AddWithValue("insult", NpgsqlDbType.Varchar, insult);
-
-                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
-                }
-            } finally {
-                _sem.Release();
-            }
-        }
-
-        public async Task RemoveInsultByIdAsync(int index)
+        public async Task RemoveInsultAsync(int id)
         {
             await _sem.WaitAsync();
             try {
@@ -86,7 +86,7 @@ namespace TheGodfather.Services
                     await con.OpenAsync().ConfigureAwait(false);
 
                     cmd.CommandText = "DELETE FROM gf.insults WHERE id = @id;";
-                    cmd.Parameters.AddWithValue("id", NpgsqlDbType.Bigint, index);
+                    cmd.Parameters.AddWithValue("id", NpgsqlDbType.Bigint, id);
 
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
@@ -95,7 +95,7 @@ namespace TheGodfather.Services
             }
         }
 
-        public async Task DeleteAllInsultsAsync()
+        public async Task RemoveAllInsultsAsync()
         {
             await _sem.WaitAsync();
             try {

@@ -83,7 +83,7 @@ namespace TheGodfather.Modules.Owner
             [UsageExample("!owner status list")]
             public async Task ListAsync(CommandContext ctx)
             {
-                var statuses = await Database.GetBotStatusesAsync(ctx.Client)
+                var statuses = await Database.GetAllBotStatusesAsync()
                     .ConfigureAwait(false);
 
                 await ctx.SendPaginatedCollectionAsync(

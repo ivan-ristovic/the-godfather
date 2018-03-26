@@ -11,7 +11,7 @@ namespace TheGodfather.Services
 {
     public partial class DBService
     {
-        public async Task<IReadOnlyList<Tuple<ulong, string>>> GetAllGuildFiltersAsync()
+        public async Task<IReadOnlyList<Tuple<ulong, string>>> GetFiltersForAllGuildsAsync()
         {
             var filters = new List<Tuple<ulong, string>>();
 
@@ -98,7 +98,7 @@ namespace TheGodfather.Services
             }
         }
 
-        public async Task DeleteAllGuildFiltersAsync(ulong gid)
+        public async Task RemoveAllGuildFiltersAsync(ulong gid)
         {
             await _sem.WaitAsync();
             try {

@@ -12,6 +12,27 @@ namespace TheGodfather.Services
 {
     public partial class DBService
     {
+        public async Task AddSwatServerAsync(string name, SwatServer server)
+        {
+            await _sem.WaitAsync();
+            try {
+                using (var con = new NpgsqlConnection(_connectionString))
+                using (var cmd = con.CreateCommand()) {
+                    await con.OpenAsync().ConfigureAwait(false);
+
+                    cmd.CommandText = "INSERT INTO gf.swat_servers(ip, joinport, queryport, name) VALUES (@ip, @joinport, @queryport, @name);";
+                    cmd.Parameters.AddWithValue("ip", NpgsqlDbType.Varchar, server.IP);
+                    cmd.Parameters.AddWithValue("joinport", NpgsqlDbType.Integer, server.JoinPort);
+                    cmd.Parameters.AddWithValue("queryport", NpgsqlDbType.Integer, server.QueryPort);
+                    cmd.Parameters.AddWithValue("name", NpgsqlDbType.Varchar, server.Name);
+
+                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                }
+            } finally {
+                _sem.Release();
+            }
+        }
+
         public async Task<IReadOnlyList<SwatServer>> GetAllSwatServersAsync()
         {
             var servers = new List<SwatServer>();
@@ -40,45 +61,6 @@ namespace TheGodfather.Services
             }
 
             return servers.AsReadOnly();
-        }
-
-        public async Task AddSwatServerAsync(string name, SwatServer server)
-        {
-            await _sem.WaitAsync();
-            try {
-                using (var con = new NpgsqlConnection(_connectionString))
-                using (var cmd = con.CreateCommand()) {
-                    await con.OpenAsync().ConfigureAwait(false);
-
-                    cmd.CommandText = "INSERT INTO gf.swat_servers(ip, joinport, queryport, name) VALUES (@ip, @joinport, @queryport, @name);";
-                    cmd.Parameters.AddWithValue("ip", NpgsqlDbType.Varchar, server.IP);
-                    cmd.Parameters.AddWithValue("joinport", NpgsqlDbType.Integer, server.JoinPort);
-                    cmd.Parameters.AddWithValue("queryport", NpgsqlDbType.Integer, server.QueryPort);
-                    cmd.Parameters.AddWithValue("name", NpgsqlDbType.Varchar, server.Name);
-
-                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
-                }
-            } finally {
-                _sem.Release();
-            }
-        }
-
-        public async Task RemoveSwatServerAsync(string name)
-        {
-            await _sem.WaitAsync();
-            try {
-                using (var con = new NpgsqlConnection(_connectionString))
-                using (var cmd = con.CreateCommand()) {
-                    await con.OpenAsync().ConfigureAwait(false);
-
-                    cmd.CommandText = "DELETE FROM gf.swat_servers WHERE name = @name;";
-                    cmd.Parameters.AddWithValue("name", NpgsqlDbType.Varchar, name);
-
-                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
-                }
-            } finally {
-                _sem.Release();
-            }
         }
 
         public async Task<SwatServer> GetSwatServerAsync(string ip, int queryport, string name = null)
@@ -114,6 +96,24 @@ namespace TheGodfather.Services
             }
 
             return server;
+        }
+
+        public async Task RemoveSwatServerAsync(string name)
+        {
+            await _sem.WaitAsync();
+            try {
+                using (var con = new NpgsqlConnection(_connectionString))
+                using (var cmd = con.CreateCommand()) {
+                    await con.OpenAsync().ConfigureAwait(false);
+
+                    cmd.CommandText = "DELETE FROM gf.swat_servers WHERE name = @name;";
+                    cmd.Parameters.AddWithValue("name", NpgsqlDbType.Varchar, name);
+
+                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                }
+            } finally {
+                _sem.Release();
+            }
         }
     }
 }

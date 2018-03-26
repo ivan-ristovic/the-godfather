@@ -16,7 +16,36 @@ namespace TheGodfather.Services
     public partial class DBService
     {
         #region TEXT_REACTION_SERVICES
-        public async Task<Dictionary<ulong, List<TextReaction>>> GetAllTextReactionsAsync()
+        public async Task<int> AddTextReactionAsync(ulong gid, string trigger, string response, bool is_regex_trigger = false)
+        {
+            if (!is_regex_trigger)
+                trigger = Regex.Escape(trigger);
+
+            int id = 0;
+
+            await _sem.WaitAsync();
+            try {
+                using (var con = new NpgsqlConnection(_connectionString))
+                using (var cmd = con.CreateCommand()) {
+                    await con.OpenAsync().ConfigureAwait(false);
+
+                    cmd.CommandText = "INSERT INTO gf.text_reactions VALUES (@gid, @trigger, @response) RETURNING id;";
+                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
+                    cmd.Parameters.AddWithValue("trigger", NpgsqlDbType.Varchar, trigger);
+                    cmd.Parameters.AddWithValue("response", NpgsqlDbType.Varchar, response);
+
+                    var res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
+                    if (res != null && !(res is DBNull))
+                        id = (int)res;
+                }
+            } finally {
+                _sem.Release();
+            }
+
+            return id;
+        }
+
+        public async Task<Dictionary<ulong, List<TextReaction>>> GetTextReactionsForAllGuildsAsync()
         {
             var treactions = new Dictionary<ulong, List<TextReaction>>();
 
@@ -55,33 +84,22 @@ namespace TheGodfather.Services
             return treactions;
         }
 
-        public async Task<int> AddTextReactionAsync(ulong gid, string trigger, string response, bool is_regex_trigger = false)
+        public async Task RemoveAllGuildTextReactionsAsync(ulong gid)
         {
-            if (!is_regex_trigger)
-                trigger = Regex.Escape(trigger);
-
-            int id = 0;
-
             await _sem.WaitAsync();
             try {
                 using (var con = new NpgsqlConnection(_connectionString))
                 using (var cmd = con.CreateCommand()) {
                     await con.OpenAsync().ConfigureAwait(false);
 
-                    cmd.CommandText = "INSERT INTO gf.text_reactions VALUES (@gid, @trigger, @response) RETURNING id;";
+                    cmd.CommandText = "DELETE FROM gf.text_reactions WHERE gid = @gid;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
-                    cmd.Parameters.AddWithValue("trigger", NpgsqlDbType.Varchar, trigger);
-                    cmd.Parameters.AddWithValue("response", NpgsqlDbType.Varchar, response);
 
-                    var res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
-                    if (res != null && !(res is DBNull))
-                        id = (int)res;
+                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
             } finally {
                 _sem.Release();
             }
-
-            return id;
         }
 
         public async Task RemoveTextReactionsAsync(ulong gid, params int[] ids)
@@ -121,28 +139,39 @@ namespace TheGodfather.Services
                 _sem.Release();
             }
         }
+        #endregion
 
-        public async Task DeleteAllGuildTextReactionsAsync(ulong gid)
+        #region EMOJI_REACTION_SERVICES
+        public async Task<int> AddEmojiReactionAsync(ulong gid, string trigger, string reaction, bool is_regex_trigger = false)
         {
+            if (!is_regex_trigger)
+                trigger = Regex.Escape(trigger);
+
+            int id = 0;
+
             await _sem.WaitAsync();
             try {
                 using (var con = new NpgsqlConnection(_connectionString))
                 using (var cmd = con.CreateCommand()) {
                     await con.OpenAsync().ConfigureAwait(false);
 
-                    cmd.CommandText = "DELETE FROM gf.text_reactions WHERE gid = @gid;";
+                    cmd.CommandText = "INSERT INTO gf.emoji_reactions VALUES (@gid, @trigger, @reaction) RETURNING id;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
+                    cmd.Parameters.AddWithValue("trigger", NpgsqlDbType.Varchar, trigger);
+                    cmd.Parameters.AddWithValue("reaction", NpgsqlDbType.Varchar, reaction);
 
-                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                    var res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
+                    if (res != null && !(res is DBNull))
+                        id = (int)res;
                 }
             } finally {
                 _sem.Release();
             }
-        }
-        #endregion
 
-        #region EMOJI_REACTION_SERVICES
-        public async Task<Dictionary<ulong, List<EmojiReaction>>> GetAllEmojiReactionsAsync()
+            return id;
+        }
+
+        public async Task<Dictionary<ulong, List<EmojiReaction>>> GetEmojiReactionsForAllGuildsAsync()
         {
             var ereactions = new Dictionary<ulong, List<EmojiReaction>>();
 
@@ -181,36 +210,26 @@ namespace TheGodfather.Services
             return ereactions;
         }
 
-        public async Task<int> AddEmojiReactionAsync(ulong gid, string trigger, string reaction, bool is_regex_trigger = false)
+        public async Task RemoveAllEmojiReactionTriggersForReactionAsync(ulong gid, string reaction)
         {
-            if (!is_regex_trigger)
-                trigger = Regex.Escape(trigger);
-
-            int id = 0;
-
             await _sem.WaitAsync();
             try {
                 using (var con = new NpgsqlConnection(_connectionString))
                 using (var cmd = con.CreateCommand()) {
                     await con.OpenAsync().ConfigureAwait(false);
 
-                    cmd.CommandText = "INSERT INTO gf.emoji_reactions VALUES (@gid, @trigger, @reaction) RETURNING id;";
+                    cmd.CommandText = "DELETE FROM gf.emoji_reactions WHERE gid = @gid AND reaction = @reaction;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
-                    cmd.Parameters.AddWithValue("trigger", NpgsqlDbType.Varchar, trigger);
                     cmd.Parameters.AddWithValue("reaction", NpgsqlDbType.Varchar, reaction);
 
-                    var res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
-                    if (res != null && !(res is DBNull))
-                        id = (int)res;
+                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
             } finally {
                 _sem.Release();
             }
-
-            return id;
         }
 
-        public async Task RemoveEmojiReactionTriggersAsync(ulong gid, string[] triggers)
+        public async Task RemoveAllGuildEmojiReactionsAsync(ulong gid)
         {
             await _sem.WaitAsync();
             try {
@@ -218,9 +237,8 @@ namespace TheGodfather.Services
                 using (var cmd = con.CreateCommand()) {
                     await con.OpenAsync().ConfigureAwait(false);
 
-                    cmd.CommandText = "DELETE FROM gf.emoji_reactions WHERE gid = @gid AND trigger = ANY(:triggers);";
+                    cmd.CommandText = "DELETE FROM gf.emoji_reactions WHERE gid = @gid;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
-                    cmd.Parameters.Add("triggers", NpgsqlDbType.Array | NpgsqlDbType.Varchar).Value = triggers;
 
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
@@ -248,7 +266,7 @@ namespace TheGodfather.Services
             }
         }
 
-        public async Task RemoveAllEmojiReactionTriggersForReactionAsync(ulong gid, string reaction)
+        public async Task RemoveEmojiReactionTriggersAsync(ulong gid, string[] triggers)
         {
             await _sem.WaitAsync();
             try {
@@ -256,27 +274,9 @@ namespace TheGodfather.Services
                 using (var cmd = con.CreateCommand()) {
                     await con.OpenAsync().ConfigureAwait(false);
 
-                    cmd.CommandText = "DELETE FROM gf.emoji_reactions WHERE gid = @gid AND reaction = @reaction;";
+                    cmd.CommandText = "DELETE FROM gf.emoji_reactions WHERE gid = @gid AND trigger = ANY(:triggers);";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
-                    cmd.Parameters.AddWithValue("reaction", NpgsqlDbType.Varchar, reaction);
-
-                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
-                }
-            } finally {
-                _sem.Release();
-            }
-        }
-
-        public async Task DeleteAllGuildEmojiReactionsAsync(ulong gid)
-        {
-            await _sem.WaitAsync();
-            try {
-                using (var con = new NpgsqlConnection(_connectionString))
-                using (var cmd = con.CreateCommand()) {
-                    await con.OpenAsync().ConfigureAwait(false);
-
-                    cmd.CommandText = "DELETE FROM gf.emoji_reactions WHERE gid = @gid;";
-                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
+                    cmd.Parameters.Add("triggers", NpgsqlDbType.Array | NpgsqlDbType.Varchar).Value = triggers;
 
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }

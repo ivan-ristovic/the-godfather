@@ -8,6 +8,7 @@ using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Games.Common;
 using TheGodfather.Services;
+using TheGodfather.Services.Common;
 
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
@@ -60,9 +61,9 @@ namespace TheGodfather.Modules.Games
                     await ctx.RespondAsync($"{duel.Winner.Username} {duel.FinishingMove ?? "wins"}!")
                         .ConfigureAwait(false);
 
-                    await Database.UpdateUserStatsAsync(duel.Winner.Id, "duels_won")
+                    await Database.UpdateUserStatsAsync(duel.Winner.Id, GameStatsType.DuelsWon)
                         .ConfigureAwait(false);
-                    await Database.UpdateUserStatsAsync(duel.Winner.Id == ctx.User.Id ? opponent.Id : ctx.User.Id, "duels_lost")
+                    await Database.UpdateUserStatsAsync(duel.Winner.Id == ctx.User.Id ? opponent.Id : ctx.User.Id, GameStatsType.DuelsLost)
                         .ConfigureAwait(false);
                 } finally {
                     Game.UnregisterGameInChannel(ctx.Channel.Id);

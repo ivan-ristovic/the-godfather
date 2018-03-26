@@ -86,22 +86,22 @@ namespace TheGodfather
 
             Console.Write("\r[3/5] Loading data from database...   ");
 
-            var blockedusr_db = await DatabaseService.GetBlockedUsersAsync();
+            var blockedusr_db = await DatabaseService.GetAllBlockedUsersAsync();
             var blockedusr = new ConcurrentHashSet<ulong>();
             foreach (var tup in blockedusr_db)
                 blockedusr.Add(tup.Item1);
 
-            var blockedchn_db = await DatabaseService.GetBlockedChannelsAsync();
+            var blockedchn_db = await DatabaseService.GetAllBlockedChannelsAsync();
             var blockedchn = new ConcurrentHashSet<ulong>();
             foreach (var tup in blockedchn_db)
                 blockedchn.Add(tup.Item1);
 
-            var gprefixes_db = await DatabaseService.GetGuildPrefixesAsync();
+            var gprefixes_db = await DatabaseService.GetAllGuildPrefixesAsync();
             var gprefixes = new ConcurrentDictionary<ulong, string>();
             foreach (var gprefix in gprefixes_db)
                 gprefixes.TryAdd(gprefix.Key, gprefix.Value);
 
-            var gfilters_db = await DatabaseService.GetAllGuildFiltersAsync();
+            var gfilters_db = await DatabaseService.GetFiltersForAllGuildsAsync();
             var gfilters = new ConcurrentDictionary<ulong, ConcurrentHashSet<Regex>>();
             foreach (var gfilter in gfilters_db) {
                 if (!gfilters.ContainsKey(gfilter.Item1))
@@ -109,17 +109,17 @@ namespace TheGodfather
                 gfilters[gfilter.Item1].Add(new Regex($@"\b{gfilter.Item2}\b"));
             }
 
-            var gtextreactions_db = await DatabaseService.GetAllTextReactionsAsync();
+            var gtextreactions_db = await DatabaseService.GetTextReactionsForAllGuildsAsync();
             var gtextreactions = new ConcurrentDictionary<ulong, ConcurrentHashSet<TextReaction>>();
             foreach (var reaction in gtextreactions_db)
                 gtextreactions.TryAdd(reaction.Key, new ConcurrentHashSet<TextReaction>(reaction.Value));
 
-            var gemojireactions_db = await DatabaseService.GetAllEmojiReactionsAsync();
+            var gemojireactions_db = await DatabaseService.GetEmojiReactionsForAllGuildsAsync();
             var gemojireactions = new ConcurrentDictionary<ulong, ConcurrentHashSet<EmojiReaction>>();
             foreach (var reaction in gemojireactions_db)
                 gemojireactions.TryAdd(reaction.Key, new ConcurrentHashSet<EmojiReaction>(reaction.Value));
 
-            var msgcount_db = await DatabaseService.GetMessageCountForAllUsersAsync();
+            var msgcount_db = await DatabaseService.GetExperienceForAllUsersAsync();
             var msgcount = new ConcurrentDictionary<ulong, ulong>();
             foreach (var entry in msgcount_db)
                 msgcount.TryAdd(entry.Key, entry.Value);
@@ -205,7 +205,9 @@ namespace TheGodfather
 
             var client = _ as DiscordClient;
             try {
-                DatabaseService.UpdateBotActivityAsync(client)
+                var activity = DatabaseService.GetRandomBotActivityAsync()
+                    .ConfigureAwait(false).GetAwaiter().GetResult();
+                client.UpdateStatusAsync(activity)
                     .ConfigureAwait(false).GetAwaiter().GetResult();
             } catch (Exception e) {
                 Logger.LogException(LogLevel.Error, e);
@@ -241,7 +243,7 @@ namespace TheGodfather
                         .ConfigureAwait(false).GetAwaiter().GetResult();
                     channel.SendIconEmbedAsync($"Happy birthday, {user.Mention}!", DiscordEmoji.FromName(client, ":tada:"))
                         .ConfigureAwait(false).GetAwaiter().GetResult();
-                    DatabaseService.UpdateBirthdayAsync(birthday.UserId, channel.Id)
+                    DatabaseService.UpdateBirthdayLastNotifiedDateAsync(birthday.UserId, channel.Id)
                         .ConfigureAwait(false).GetAwaiter().GetResult();
                 }
             } catch (Exception e) {

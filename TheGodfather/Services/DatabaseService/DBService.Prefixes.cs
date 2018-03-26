@@ -12,7 +12,7 @@ namespace TheGodfather.Services
 {
     public partial class DBService
     {
-        public async Task<IReadOnlyDictionary<ulong, string>> GetGuildPrefixesAsync()
+        public async Task<IReadOnlyDictionary<ulong, string>> GetAllGuildPrefixesAsync()
         {
             var dict = new Dictionary<ulong, string>();
 
@@ -36,7 +36,7 @@ namespace TheGodfather.Services
             return new ReadOnlyDictionary<ulong, string>(dict);
         }
 
-        public async Task SetGuildPrefixAsync(ulong gid, string prefix)
+        public async Task SetPrefixAsync(ulong gid, string prefix)
         {
             await _sem.WaitAsync();
             try {
@@ -55,7 +55,7 @@ namespace TheGodfather.Services
             }
         }
 
-        public async Task RemoveGuildPrefixAsync(ulong gid)
+        public async Task ResetPrefixAsync(ulong gid)
         {
             await _sem.WaitAsync();
             try {

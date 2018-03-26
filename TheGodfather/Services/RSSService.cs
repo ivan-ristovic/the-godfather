@@ -57,7 +57,7 @@ namespace TheGodfather.Services
 
         public static async Task CheckFeedsForChangesAsync(DiscordClient client, DBService db)
         {
-            var _feeds = await db.GetAllSubscriptionsAsync()
+            var _feeds = await db.GetAllFeedEntriesAsync()
                 .ConfigureAwait(false);
             foreach (var feed in _feeds) {
                 try {
@@ -79,7 +79,7 @@ namespace TheGodfather.Services
                                     .ConfigureAwait(false);
                             } catch (Exception e) {
                                 Logger.LogException(LogLevel.Warning, e);
-                                await db.RemoveSubscriptionAsync(sub.ChannelId, feed.Id)
+                                await db.RemoveSubscriptionByIdAsync(sub.ChannelId, feed.Id)
                                     .ConfigureAwait(false);
                                 continue;
                             }

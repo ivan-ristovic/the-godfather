@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 
+using TheGodfather.Entities;
+
 using DSharpPlus;
 using DSharpPlus.Entities;
 
@@ -15,6 +17,55 @@ namespace TheGodfather.Services
 {
     public partial class DBService
     {
+        public async Task AddBotStatusAsync(string status, ActivityType type)
+        {
+            await _sem.WaitAsync();
+            try {
+                using (var con = new NpgsqlConnection(_connectionString))
+                using (var cmd = con.CreateCommand()) {
+                    await con.OpenAsync().ConfigureAwait(false);
+
+                    cmd.CommandText = "INSERT INTO gf.statuses(status, type) VALUES (@status, @type);";
+                    cmd.Parameters.AddWithValue("status", NpgsqlDbType.Varchar, status);
+                    cmd.Parameters.AddWithValue("type", NpgsqlDbType.Smallint, type);
+
+                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                }
+            } finally {
+                _sem.Release();
+            }
+        }
+
+        public async Task<IReadOnlyDictionary<int, string>> GetAllBotStatusesAsync()
+        {
+            var dict = new Dictionary<int, string>();
+
+            await _sem.WaitAsync();
+            try {
+                using (var con = new NpgsqlConnection(_connectionString))
+                using (var cmd = con.CreateCommand()) {
+                    await con.OpenAsync().ConfigureAwait(false);
+
+                    cmd.CommandText = "SELECT * FROM gf.statuses;";
+
+                    using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
+                        while (await reader.ReadAsync().ConfigureAwait(false)) {
+                            int type = (short)reader["type"];
+                            if (!Enum.IsDefined(typeof(ActivityType), type)) {
+                                Logger.LogMessage(LogLevel.Warning, "Undefined status activity found in database");
+                                type = 0;
+                            }
+                            dict[(int)reader["id"]] = ((ActivityType)type).ToString() + " " + (string)reader["status"];
+                        }
+                    }
+                }
+            } finally {
+                _sem.Release();
+            }
+
+            return new ReadOnlyDictionary<int, string>(dict);
+        }
+
         public async Task<(ActivityType, string)> GetBotStatusWithIdAsync(int id)
         {
             (ActivityType, string) status = (ActivityType.Playing, null);
@@ -40,37 +91,7 @@ namespace TheGodfather.Services
             return status;
         }
 
-        public async Task<IReadOnlyDictionary<int, string>> GetBotStatusesAsync(DiscordClient client)
-        {
-            var dict = new Dictionary<int, string>();
-
-            await _sem.WaitAsync();
-            try {
-                using (var con = new NpgsqlConnection(_connectionString))
-                using (var cmd = con.CreateCommand()) {
-                    await con.OpenAsync().ConfigureAwait(false);
-
-                    cmd.CommandText = "SELECT * FROM gf.statuses;";
-
-                    using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
-                        while (await reader.ReadAsync().ConfigureAwait(false)) {
-                            int type = (short)reader["type"];
-                            if (!Enum.IsDefined(typeof(ActivityType), type)) {
-                                client.DebugLogger.LogMessage(LogLevel.Warning, "TheGodfather", "Undefined status activity found in database", DateTime.Now);
-                                type = 0;
-                            }
-                            dict[(int)reader["id"]] = ((ActivityType)type).ToString() + " " + (string)reader["status"];
-                        }
-                    }
-                }
-            } finally {
-                _sem.Release();
-            }
-
-            return new ReadOnlyDictionary<int, string>(dict);
-        }
-
-        public async Task UpdateBotActivityAsync(DiscordClient client)
+        public async Task<DiscordActivity> GetRandomBotActivityAsync()
         {
             int type = 0;
             string status = null;
@@ -95,31 +116,11 @@ namespace TheGodfather.Services
             }
 
             if (!Enum.IsDefined(typeof(ActivityType), type)) {
-                client.DebugLogger.LogMessage(LogLevel.Warning, "TheGodfather", "Undefined status activity found in database", DateTime.Now);
+                Logger.LogMessage(LogLevel.Warning, "Undefined status activity found in database");
                 type = 0;
             }
 
-            await client.UpdateStatusAsync(new DiscordActivity(status ?? "@TheGodfather help", (ActivityType)type))
-                .ConfigureAwait(false);
-        }
-
-        public async Task AddBotStatusAsync(string status, ActivityType type)
-        {
-            await _sem.WaitAsync();
-            try {
-                using (var con = new NpgsqlConnection(_connectionString))
-                using (var cmd = con.CreateCommand()) {
-                    await con.OpenAsync().ConfigureAwait(false);
-
-                    cmd.CommandText = "INSERT INTO gf.statuses(status, type) VALUES (@status, @type);";
-                    cmd.Parameters.AddWithValue("status", NpgsqlDbType.Varchar, status);
-                    cmd.Parameters.AddWithValue("type", NpgsqlDbType.Smallint, type);
-
-                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
-                }
-            } finally {
-                _sem.Release();
-            }
+            return new DiscordActivity(status ?? "@TheGodfather help", (ActivityType)type);
         }
 
         public async Task RemoveBotStatusAsync(int id)

@@ -22,7 +22,7 @@ namespace TheGodfather.Modules.Administration
         [UsageExample("!guild getwelcomechannel")]
         public async Task GetWelcomeChannelAsync(CommandContext ctx)
         {
-            ulong cid = await Database.GetGuildWelcomeChannelIdAsync(ctx.Guild.Id)
+            ulong cid = await Database.GetWelcomeChannelIdAsync(ctx.Guild.Id)
                 .ConfigureAwait(false);
             if (cid != 0) {
                 var c = ctx.Guild.GetChannel(cid);
@@ -44,7 +44,7 @@ namespace TheGodfather.Modules.Administration
         [UsageExample("!guild getleavechannel")]
         public async Task GetLeaveChannelAsync(CommandContext ctx)
         {
-            ulong cid = await Database.GetGuildLeaveChannelIdAsync(ctx.Guild.Id)
+            ulong cid = await Database.GetLeaveChannelIdAsync(ctx.Guild.Id)
                 .ConfigureAwait(false);
             if (cid != 0) {
                 var c = ctx.Guild.GetChannel(cid);
@@ -66,7 +66,7 @@ namespace TheGodfather.Modules.Administration
         [UsageExample("!guild getwelcomemessage")]
         public async Task GetWelcomeMessageAsync(CommandContext ctx)
         {
-            var msg = await Database.GetGuildWelcomeMessageAsync(ctx.Guild.Id)
+            var msg = await Database.GetWelcomeMessageAsync(ctx.Guild.Id)
                 .ConfigureAwait(false);
             await ctx.RespondWithIconEmbedAsync($"Welcome message:\n\n{Formatter.Italic(msg ?? "Not set.")}")
                 .ConfigureAwait(false);
@@ -80,7 +80,7 @@ namespace TheGodfather.Modules.Administration
         [UsageExample("!guild getwelcomemessage")]
         public async Task GetLeaveMessageAsync(CommandContext ctx)
         {
-            var msg = await Database.GetGuildLeaveMessageAsync(ctx.Guild.Id)
+            var msg = await Database.GetLeaveMessageAsync(ctx.Guild.Id)
                 .ConfigureAwait(false);
             await ctx.RespondWithIconEmbedAsync($"Leave message:\n\n{Formatter.Italic(msg ?? "Not set.")}")
                 .ConfigureAwait(false);
@@ -103,7 +103,7 @@ namespace TheGodfather.Modules.Administration
             if (channel.Type != ChannelType.Text)
                 throw new CommandFailedException("Welcome channel must be a text channel.");
 
-            await Database.SetGuildWelcomeChannelAsync(ctx.Guild.Id, channel.Id)
+            await Database.SetWelcomeChannelAsync(ctx.Guild.Id, channel.Id)
                 .ConfigureAwait(false);
             await ctx.RespondWithIconEmbedAsync($"Welcome message channel set to {Formatter.Bold(channel.Name)}.")
                 .ConfigureAwait(false);
@@ -126,7 +126,7 @@ namespace TheGodfather.Modules.Administration
             if (channel.Type != ChannelType.Text)
                 throw new CommandFailedException("Leave channel must be a text channel.");
 
-            await Database.SetGuildLeaveChannelAsync(ctx.Guild.Id, channel.Id)
+            await Database.SetLeaveChannelAsync(ctx.Guild.Id, channel.Id)
                 .ConfigureAwait(false);
             await ctx.RespondWithIconEmbedAsync($"Leave message channel set to {Formatter.Bold(channel.Name)}.")
                 .ConfigureAwait(false);
@@ -144,7 +144,7 @@ namespace TheGodfather.Modules.Administration
                                                 [RemainingText, Description("Message.")] string message = null)
         {
             if (string.IsNullOrWhiteSpace(message)) {
-                await Database.RemoveGuildWelcomeMessageAsync(ctx.Guild.Id)
+                await Database.RemoveWelcomeMessageAsync(ctx.Guild.Id)
                     .ConfigureAwait(false);
                 await ctx.RespondWithIconEmbedAsync("Welcome message set to default message.")
                     .ConfigureAwait(false);
@@ -152,7 +152,7 @@ namespace TheGodfather.Modules.Administration
                 if (message.Length < 3 || message.Length > 120)
                     throw new CommandFailedException("Message cannot be shorter than 3 or longer than 120 characters!");
 
-                await Database.SetGuildWelcomeMessageAsync(ctx.Guild.Id, message)
+                await Database.SetWelcomeMessageAsync(ctx.Guild.Id, message)
                     .ConfigureAwait(false);
 
                 await ctx.RespondWithIconEmbedAsync($"Welcome message set to: {Formatter.Bold(message ?? "Default message")}.")
@@ -172,7 +172,7 @@ namespace TheGodfather.Modules.Administration
                                               [RemainingText, Description("Message.")] string message = null)
         {
             if (string.IsNullOrWhiteSpace(message)) {
-                await Database.RemoveGuildLeaveMessageAsync(ctx.Guild.Id)
+                await Database.RemoveLeaveMessageAsync(ctx.Guild.Id)
                     .ConfigureAwait(false);
                 await ctx.RespondWithIconEmbedAsync("Leave message set to default message.")
                     .ConfigureAwait(false);
@@ -180,7 +180,7 @@ namespace TheGodfather.Modules.Administration
                 if (message.Length < 3 || message.Length > 120)
                     throw new CommandFailedException("Message cannot be shorter than 3 or longer than 120 characters!");
 
-                await Database.SetGuildLeaveMessageAsync(ctx.Guild.Id, message)
+                await Database.SetLeaveMessageAsync(ctx.Guild.Id, message)
                     .ConfigureAwait(false);
 
                 await ctx.RespondWithIconEmbedAsync($"Leave message set to: {Formatter.Bold(message ?? "Default message")}.")
@@ -197,7 +197,7 @@ namespace TheGodfather.Modules.Administration
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task RemoveWelcomeChannelAsync(CommandContext ctx)
         {
-            await Database.RemoveGuildWelcomeChannelAsync(ctx.Guild.Id)
+            await Database.RemoveWelcomeChannelAsync(ctx.Guild.Id)
                 .ConfigureAwait(false);
             await ctx.RespondWithIconEmbedAsync("Default welcome message channel removed.")
                 .ConfigureAwait(false);
@@ -212,7 +212,7 @@ namespace TheGodfather.Modules.Administration
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task DeleteLeaveChannelAsync(CommandContext ctx)
         {
-            await Database.RemoveGuildLeaveChannelAsync(ctx.Guild.Id)
+            await Database.RemoveLeaveChannelAsync(ctx.Guild.Id)
                 .ConfigureAwait(false);
             await ctx.RespondWithIconEmbedAsync("Default leave message channel removed.")
                 .ConfigureAwait(false);
@@ -227,7 +227,7 @@ namespace TheGodfather.Modules.Administration
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task RemoveWelcomeMessageAsync(CommandContext ctx)
         {
-            await Database.RemoveGuildWelcomeMessageAsync(ctx.Guild.Id)
+            await Database.RemoveWelcomeMessageAsync(ctx.Guild.Id)
                 .ConfigureAwait(false);
             await ctx.RespondWithIconEmbedAsync("Default welcome message removed.")
                 .ConfigureAwait(false);
@@ -242,7 +242,7 @@ namespace TheGodfather.Modules.Administration
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task RemoveLeaveChannelAsync(CommandContext ctx)
         {
-            await Database.RemoveGuildLeaveMessageAsync(ctx.Guild.Id)
+            await Database.RemoveLeaveMessageAsync(ctx.Guild.Id)
                 .ConfigureAwait(false);
             await ctx.RespondWithIconEmbedAsync("Default leave message removed.")
                 .ConfigureAwait(false);

@@ -7,6 +7,7 @@ using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Games.Common;
 using TheGodfather.Services;
+using TheGodfather.Services.Common;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -57,7 +58,7 @@ namespace TheGodfather.Modules.Games
                             .ConfigureAwait(false);
 
                         foreach (var uid in game.WinnerIds)
-                            await Database.UpdateUserStatsAsync(uid, "races_won")
+                            await Database.UpdateUserStatsAsync(uid, GameStatsType.AnimalRacesWon)
                                 .ConfigureAwait(false);
                     } else {
                         await ctx.RespondWithIconEmbedAsync("Not enough users joined the race.", ":alarm_clock:")

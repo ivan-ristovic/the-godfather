@@ -51,7 +51,7 @@ namespace TheGodfather.Modules.Gambling
             else
                 throw new CommandFailedException($"Invalid coin outcome call (has to be {Formatter.Bold("heads")} or {Formatter.Bold("tails")})");
 
-            if (!await Database.RetrieveCreditsAsync(ctx.User.Id, bid).ConfigureAwait(false))
+            if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, bid).ConfigureAwait(false))
                 throw new CommandFailedException("You do not have enough credits in WM bank!");
 
             int rnd = new Random().Next(2);
@@ -69,7 +69,7 @@ namespace TheGodfather.Modules.Gambling
                 .ConfigureAwait(false);
 
             if (rnd == guess)
-                await Database.IncreaseBalanceForUserAsync(ctx.User.Id, bid * 2)
+                await Database.GiveCreditsToUserAsync(ctx.User.Id, bid * 2)
                     .ConfigureAwait(false);
         }
 
@@ -109,7 +109,7 @@ namespace TheGodfather.Modules.Gambling
                     throw new CommandFailedException($"Invalid guess. Has to be a number from {Formatter.Bold("one")} to {Formatter.Bold("six")})");
             }
 
-            if (!await Database.RetrieveCreditsAsync(ctx.User.Id, bid).ConfigureAwait(false))
+            if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, bid).ConfigureAwait(false))
                 throw new CommandFailedException("You do not have enough credits in WM bank!");
 
             int rnd = new Random().Next(1, 7);
@@ -126,7 +126,7 @@ namespace TheGodfather.Modules.Gambling
                 .ConfigureAwait(false);
 
             if (rnd == guess_int)
-                await Database.IncreaseBalanceForUserAsync(ctx.User.Id, bid * 6)
+                await Database.GiveCreditsToUserAsync(ctx.User.Id, bid * 6)
                     .ConfigureAwait(false);
         }
 
@@ -148,7 +148,7 @@ namespace TheGodfather.Modules.Gambling
             if (bid <= 0)
                 throw new InvalidCommandUsageException("Invalid bid amount!");
 
-            if (!await Database.RetrieveCreditsAsync(ctx.User.Id, bid).ConfigureAwait(false))
+            if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, bid).ConfigureAwait(false))
                 throw new CommandFailedException("You do not have enough credits in WM bank!");
 
             DiscordEmoji[,] res = RollSlot(ctx);
@@ -165,7 +165,7 @@ namespace TheGodfather.Modules.Gambling
                 .ConfigureAwait(false);
 
             if (won > 0)
-                await Database.IncreaseBalanceForUserAsync(ctx.User.Id, won)
+                await Database.GiveCreditsToUserAsync(ctx.User.Id, won)
                     .ConfigureAwait(false);
         }
         #endregion

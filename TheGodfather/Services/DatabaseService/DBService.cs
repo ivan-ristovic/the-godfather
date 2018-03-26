@@ -9,7 +9,6 @@ using TheGodfather.Entities;
 using TheGodfather.Exceptions;
 
 using Npgsql;
-using NpgsqlTypes;
 #endregion
 
 namespace TheGodfather.Services
@@ -89,26 +88,6 @@ namespace TheGodfather.Services
             }
 
             return new ReadOnlyCollection<IReadOnlyDictionary<string, string>>(dicts);
-        }
-
-        public async Task<bool> AddGuildIfNotExistsAsync(ulong gid)
-        {
-            await _sem.WaitAsync();
-            try {
-                using (var con = new NpgsqlConnection(_connectionString))
-                using (var cmd = con.CreateCommand()) {
-                    await con.OpenAsync().ConfigureAwait(false);
-
-                    cmd.CommandText = "INSERT INTO gf.guild_cfg VALUES (@gid, NULL, NULL) ON CONFLICT DO NOTHING;";
-                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
-
-                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
-                }
-            } finally {
-                _sem.Release();
-            }
-
-            return true;
         }
     }
 }

@@ -196,7 +196,7 @@ namespace TheGodfather.Modules.Owner
             [UsageExample("!owner blockedusers list")]
             public async Task ListAsync(CommandContext ctx)
             {
-                var blocked = await Database.GetBlockedUsersAsync()
+                var blocked = await Database.GetAllBlockedUsersAsync()
                     .ConfigureAwait(false);
 
                 if (!blocked.Any())

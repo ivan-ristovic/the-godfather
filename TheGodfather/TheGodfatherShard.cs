@@ -164,7 +164,7 @@ namespace TheGodfather
         private async Task Client_GuildAvailable(GuildCreateEventArgs e)
         {
             Log(LogLevel.Info, $"Guild available: {e.Guild.ToString()}");
-            await _db.AddGuildIfNotExistsAsync(e.Guild.Id)
+            await _db.RegisterGuildAsync(e.Guild.Id)
                 .ConfigureAwait(false);
         }
 
@@ -176,13 +176,13 @@ namespace TheGodfather
             );
 
             try {
-                var cid = await _db.GetGuildWelcomeChannelIdAsync(e.Guild.Id)
+                var cid = await _db.GetWelcomeChannelIdAsync(e.Guild.Id)
                     .ConfigureAwait(false);
                 if (cid != 0) {
                     try {
                         var chn = e.Guild.GetChannel(cid);
                         if (chn != null) {
-                            var msg = await _db.GetGuildWelcomeMessageAsync(e.Guild.Id)
+                            var msg = await _db.GetWelcomeMessageAsync(e.Guild.Id)
                                 .ConfigureAwait(false);
                             if (string.IsNullOrWhiteSpace(msg))
                                 await chn.SendIconEmbedAsync($"Welcome to {Formatter.Bold(e.Guild.Name)}, {e.Member.Mention}!", DiscordEmoji.FromName(Client, ":wave:")).ConfigureAwait(false);
@@ -200,7 +200,7 @@ namespace TheGodfather
                             $"Message: {exc.Message}"
                         );
                         if (exc is NotFoundException)
-                            await _db.RemoveGuildWelcomeChannelAsync(e.Guild.Id)
+                            await _db.RemoveWelcomeChannelAsync(e.Guild.Id)
                                 .ConfigureAwait(false);
                     }
                 }
@@ -209,7 +209,7 @@ namespace TheGodfather
             }
 
             try {
-                var rids = await _db.GetAutomaticRolesListAsync(e.Guild.Id)
+                var rids = await _db.GetAutomaticRolesForGuildAsync(e.Guild.Id)
                     .ConfigureAwait(false);
                 foreach (var rid in rids) {
                     try {
@@ -244,7 +244,7 @@ namespace TheGodfather
 
             ulong cid = 0;
             try {
-                cid = await _db.GetGuildLeaveChannelIdAsync(e.Guild.Id)
+                cid = await _db.GetLeaveChannelIdAsync(e.Guild.Id)
                     .ConfigureAwait(false);
             } catch (Exception exc) {
                 Logger.LogException(LogLevel.Debug, exc);
@@ -256,7 +256,7 @@ namespace TheGodfather
             try {
                 var chn = e.Guild.GetChannel(cid);
                 if (chn != null) {
-                    var msg = await _db.GetGuildLeaveMessageAsync(e.Guild.Id)
+                    var msg = await _db.GetLeaveMessageAsync(e.Guild.Id)
                         .ConfigureAwait(false);
                     if (string.IsNullOrWhiteSpace(msg))
                         await chn.SendIconEmbedAsync($"{Formatter.Bold(e.Member?.Username ?? "<unknown>")} left the server! Bye!", EmojiUtil.Wave).ConfigureAwait(false);
@@ -274,7 +274,7 @@ namespace TheGodfather
                     $"Message: {exc.Message}"
                 );
                 if (exc is NotFoundException)
-                    await _db.RemoveGuildLeaveChannelAsync(e.Guild.Id)
+                    await _db.RemoveLeaveChannelAsync(e.Guild.Id)
                         .ConfigureAwait(false);
             }
         }

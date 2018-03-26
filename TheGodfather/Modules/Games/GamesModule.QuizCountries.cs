@@ -8,6 +8,7 @@ using TheGodfather.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Games.Common;
+using TheGodfather.Services.Common;
 
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
@@ -63,7 +64,7 @@ namespace TheGodfather.Modules.Games
                             Description = string.Join("\n", results.Select(t => $"{t.Item1.Mention} : {t.Item2}")),
                             Color = DiscordColor.Azure
                         }.Build()).ConfigureAwait(false);
-                        await Database.UpdateUserStatsAsync(results.First().Item1.Id, "quizes_won")
+                        await Database.UpdateUserStatsAsync(results.First().Item1.Id, GameStatsType.QuizesWon)
                             .ConfigureAwait(false);
                     } else {
                         await ctx.RespondWithIconEmbedAsync("Trying to improve stats by playing alone? Won't work...", ":joy:")

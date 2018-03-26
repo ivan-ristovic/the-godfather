@@ -13,40 +13,21 @@ namespace TheGodfather.Services
 {
     public partial class DBService
     {
-        public async Task<bool> HasBankAccountAsync(ulong uid)
+        public async Task<bool> BankContainsUserAsync(ulong uid)
         {
-            int? balance = await GetBalanceForUserAsync(uid)
+            int? balance = await GetUserCreditAmountAsync(uid)
                 .ConfigureAwait(false);
             return balance.HasValue;
         }
 
-        public async Task<bool> RetrieveCreditsAsync(ulong uid, int amount)
+        public async Task<IReadOnlyList<IReadOnlyDictionary<string, string>>> GetTenRichestUsersAsync()
         {
-            int? balance = await GetBalanceForUserAsync(uid)
+            var res = await ExecuteRawQueryAsync("SELECT * FROM gf.accounts ORDER BY balance DESC LIMIT 10")
                 .ConfigureAwait(false);
-            if (!balance.HasValue || balance.Value < amount)
-                return false;
-
-            await _sem.WaitAsync();
-            try {
-                using (var con = new NpgsqlConnection(_connectionString))
-                using (var cmd = con.CreateCommand()) {
-                    await con.OpenAsync().ConfigureAwait(false);
-
-                    cmd.CommandText = "UPDATE gf.accounts SET balance = balance - @amount WHERE uid = @uid;";
-                    cmd.Parameters.AddWithValue("amount", NpgsqlDbType.Integer, amount);
-                    cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
-
-                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
-                }
-            } finally {
-                _sem.Release();
-            }
-
-            return true;
+            return res;
         }
 
-        public async Task<int?> GetBalanceForUserAsync(ulong uid)
+        public async Task<int?> GetUserCreditAmountAsync(ulong uid)
         {
             int? balance = null;
 
@@ -70,25 +51,7 @@ namespace TheGodfather.Services
             return balance;
         }
 
-        public async Task OpenBankAccountForUserAsync(ulong uid)
-        {
-            await _sem.WaitAsync();
-            try {
-                using (var con = new NpgsqlConnection(_connectionString))
-                using (var cmd = con.CreateCommand()) {
-                    await con.OpenAsync().ConfigureAwait(false);
-
-                    cmd.CommandText = "INSERT INTO gf.accounts VALUES(@uid, 25);";
-                    cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
-
-                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
-                }
-            } finally {
-                _sem.Release();
-            }
-        }
-
-        public async Task IncreaseBalanceForUserAsync(ulong uid, int amount)
+        public async Task GiveCreditsToUserAsync(ulong uid, int amount)
         {
             await _sem.WaitAsync();
             try {
@@ -107,7 +70,51 @@ namespace TheGodfather.Services
             }
         }
 
-        public async Task TransferCurrencyAsync(ulong source, ulong target, long amount)
+        public async Task OpenBankAccountForUserAsync(ulong uid)
+        {
+            await _sem.WaitAsync();
+            try {
+                using (var con = new NpgsqlConnection(_connectionString))
+                using (var cmd = con.CreateCommand()) {
+                    await con.OpenAsync().ConfigureAwait(false);
+
+                    cmd.CommandText = "INSERT INTO gf.accounts VALUES(@uid, 25);";
+                    cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
+
+                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                }
+            } finally {
+                _sem.Release();
+            }
+        }
+
+        public async Task<bool> TakeCreditsFromUserAsync(ulong uid, int amount)
+        {
+            int? balance = await GetUserCreditAmountAsync(uid)
+                .ConfigureAwait(false);
+            if (!balance.HasValue || balance.Value < amount)
+                return false;
+
+            await _sem.WaitAsync();
+            try {
+                using (var con = new NpgsqlConnection(_connectionString))
+                using (var cmd = con.CreateCommand()) {
+                    await con.OpenAsync().ConfigureAwait(false);
+
+                    cmd.CommandText = "UPDATE gf.accounts SET balance = balance - @amount WHERE uid = @uid;";
+                    cmd.Parameters.AddWithValue("amount", NpgsqlDbType.Integer, amount);
+                    cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
+
+                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                }
+            } finally {
+                _sem.Release();
+            }
+
+            return true;
+        }
+
+        public async Task TransferCreditsAsync(ulong source, ulong target, long amount)
         {
             await _sem.WaitAsync();
             try {
@@ -176,13 +183,6 @@ namespace TheGodfather.Services
             } finally {
                 _sem.Release();
             }
-        }
-
-        public async Task<IReadOnlyList<IReadOnlyDictionary<string, string>>> GetTopTenBankAccountsAsync()
-        {
-            var res = await ExecuteRawQueryAsync("SELECT * FROM gf.accounts ORDER BY balance DESC LIMIT 10")
-                .ConfigureAwait(false);
-            return res;
         }
     }
 }

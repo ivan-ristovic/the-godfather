@@ -7,6 +7,7 @@ using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Games.Common;
 using TheGodfather.Services;
+using TheGodfather.Services.Common;
 
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
@@ -57,12 +58,12 @@ namespace TheGodfather.Modules.Games
                         else
                             await ctx.RespondWithIconEmbedAsync(EmojiUtil.Trophy, $"{ttt.Winner.Mention} won due to no replies from opponent!").ConfigureAwait(false);
 
-                        await Database.UpdateUserStatsAsync(ttt.Winner.Id, "ttt_won")
+                        await Database.UpdateUserStatsAsync(ttt.Winner.Id, GameStatsType.TicTacToesWon)
                             .ConfigureAwait(false);
                         if (ttt.Winner.Id == ctx.User.Id)
-                            await Database.UpdateUserStatsAsync(opponent.Id, "ttt_lost").ConfigureAwait(false);
+                            await Database.UpdateUserStatsAsync(opponent.Id, GameStatsType.TicTacToesWon).ConfigureAwait(false);
                         else
-                            await Database.UpdateUserStatsAsync(ctx.User.Id, "ttt_lost").ConfigureAwait(false);
+                            await Database.UpdateUserStatsAsync(ctx.User.Id, GameStatsType.TicTacToesWon).ConfigureAwait(false);
                     } else {
                         await ctx.RespondWithIconEmbedAsync("A draw... Pathetic...", ":video_game:")
                             .ConfigureAwait(false);

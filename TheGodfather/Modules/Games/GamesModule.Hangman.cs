@@ -7,6 +7,7 @@ using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Games.Common;
 using TheGodfather.Services;
+using TheGodfather.Services.Common;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -61,7 +62,7 @@ namespace TheGodfather.Modules.Games
                     await hangman.RunAsync()
                         .ConfigureAwait(false);
                     if (hangman.Winner != null)
-                        await Database.UpdateUserStatsAsync(hangman.Winner.Id, "hangman_won")
+                        await Database.UpdateUserStatsAsync(hangman.Winner.Id, GameStatsType.HangmansWon)
                             .ConfigureAwait(false);
                 } finally {
                     Game.UnregisterGameInChannel(ctx.Channel.Id);

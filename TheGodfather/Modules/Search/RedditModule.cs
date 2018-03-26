@@ -78,7 +78,7 @@ namespace TheGodfather.Modules.Search
             if (RSSService.GetFeedURLForSubreddit(sub, out string rsub) == null)
                 throw new CommandFailedException("That subreddit doesn't exist.");
 
-            await Database.RemoveSubscriptionUsingNameAsync(ctx.Channel.Id, rsub)
+            await Database.RemoveSubscriptionByNameAsync(ctx.Channel.Id, rsub)
                 .ConfigureAwait(false);
             await ctx.RespondWithIconEmbedAsync($"Unsubscribed from {Formatter.Bold(rsub)} !")
                 .ConfigureAwait(false);
@@ -88,7 +88,7 @@ namespace TheGodfather.Modules.Search
         public async Task UnsubscribeAsync(CommandContext ctx,
                                           [Description("Subscription ID.")] int id)
         {
-            await Database.RemoveSubscriptionAsync(ctx.Channel.Id, id)
+            await Database.RemoveSubscriptionByIdAsync(ctx.Channel.Id, id)
                 .ConfigureAwait(false);
             await ctx.RespondWithIconEmbedAsync()
                 .ConfigureAwait(false);

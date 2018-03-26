@@ -12,7 +12,7 @@ namespace TheGodfather.Services
 {
     public partial class DBService
     {
-        public async Task<IReadOnlyDictionary<ulong, ulong>> GetMessageCountForAllUsersAsync()
+        public async Task<IReadOnlyDictionary<ulong, ulong>> GetExperienceForAllUsersAsync()
         {
             var msgcount = new Dictionary<ulong, ulong>();
 
@@ -35,32 +35,8 @@ namespace TheGodfather.Services
 
             return new ReadOnlyDictionary<ulong, ulong>(msgcount);
         }
-
-        public async Task<ulong> GetMessageCountForUserAsync(ulong uid)
-        {
-            ulong msgcount = 0;
-
-            await _sem.WaitAsync();
-            try {
-                using (var con = new NpgsqlConnection(_connectionString))
-                using (var cmd = con.CreateCommand()) {
-                    await con.OpenAsync().ConfigureAwait(false);
-
-                    cmd.CommandText = "SELECT count FROM gf.msgcount WHERE uid = @uid LIMIT 1;";
-                    cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
-
-                    var res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
-                    if (res == null || res is DBNull)
-                        msgcount = (ulong)(long)res;
-                }
-            } finally {
-                _sem.Release();
-            }
-
-            return msgcount;
-        }
-
-        public async Task UpdateMessageCountForUserAsync(ulong uid, ulong count)
+        
+        public async Task UpdateExperienceForUserAsync(ulong uid, ulong count)
         {
             await _sem.WaitAsync();
             try {

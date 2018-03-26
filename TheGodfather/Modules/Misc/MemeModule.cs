@@ -80,7 +80,7 @@ namespace TheGodfather.Modules.Misc
             if (name.Length > 30 || url.Length > 120)
                 throw new CommandFailedException("Name/URL is too long. Name must be shorter than 30 characters, and URL must be shorter than 120 characters.");
 
-            await Database.AddGuildMemeAsync(ctx.Guild.Id, name, uri.AbsoluteUri)
+            await Database.AddMemeAsync(ctx.Guild.Id, name, uri.AbsoluteUri)
                 .ConfigureAwait(false);
             await ctx.RespondWithIconEmbedAsync($"Meme {Formatter.Bold(name)} successfully added!")
                 .ConfigureAwait(false);
@@ -95,7 +95,7 @@ namespace TheGodfather.Modules.Misc
         [RequireUserPermissions(Permissions.Administrator)]
         public async Task ClearMemesAsync(CommandContext ctx)
         {
-            await Database.DeleteAllGuildMemesAsync(ctx.Guild.Id)
+            await Database.RemoveAllGuildMemesAsync(ctx.Guild.Id)
                 .ConfigureAwait(false);
             await ctx.RespondWithIconEmbedAsync()
                 .ConfigureAwait(false);
@@ -134,7 +134,7 @@ namespace TheGodfather.Modules.Misc
             if (string.IsNullOrWhiteSpace(name))
                 throw new InvalidCommandUsageException("Name missing.");
 
-            await Database.RemoveGuildMemeAsync(ctx.Guild.Id, name)
+            await Database.RemoveMemeAsync(ctx.Guild.Id, name)
                 .ConfigureAwait(false);
             await ctx.RespondWithIconEmbedAsync($"Meme {Formatter.Bold(name)} successfully removed!")
                 .ConfigureAwait(false);
@@ -148,7 +148,7 @@ namespace TheGodfather.Modules.Misc
         [UsageExample("!meme list")]
         public async Task ListAsync(CommandContext ctx)
         {
-            var memes = await Database.GetAllGuildMemesAsync(ctx.Guild.Id)
+            var memes = await Database.GetMemesForAllGuildsAsync(ctx.Guild.Id)
                 .ConfigureAwait(false); ;
 
             await ctx.SendPaginatedCollectionAsync(

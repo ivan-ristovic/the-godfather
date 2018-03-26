@@ -114,14 +114,14 @@ namespace TheGodfather.Modules.Search
             if (string.IsNullOrWhiteSpace(name_url))
                 throw new InvalidCommandUsageException("Channel URL missing.");
 
-            await Database.RemoveSubscriptionUsingNameAsync(ctx.Channel.Id, name_url)
+            await Database.RemoveSubscriptionByNameAsync(ctx.Channel.Id, name_url)
                 .ConfigureAwait(false);
 
             var chid = await _Service.GetYoutubeIdAsync(name_url)
                 .ConfigureAwait(false);
             if (chid != null) {
                 var feedurl = YoutubeService.GetYoutubeRSSFeedLinkForChannelId(chid);
-                await Database.RemoveSubscriptionUsingUrlAsync(ctx.Channel.Id, feedurl)
+                await Database.RemoveSubscriptionByUrlAsync(ctx.Channel.Id, feedurl)
                     .ConfigureAwait(false);
             }
 

@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-using TheGodfather.Entities;
 using TheGodfather.Extensions;
+using TheGodfather.Services.Common;
 
 using DSharpPlus.Entities;
 
@@ -20,7 +20,7 @@ namespace TheGodfather.Services
 {
     public partial class DBService
     {
-        public async Task<GameStats> GetStatsForUserAsync(ulong uid)
+        public async Task<GameStats> GetGameStatsForUserAsync(ulong uid)
         {
             var dict = new Dictionary<string, string>();
 
@@ -47,32 +47,61 @@ namespace TheGodfather.Services
             return dict.Any() ? new GameStats(dict) : null;
         }
 
-        public async Task<IEnumerable<GameStats>> GetOrderedUserStatsAsync(string orderstr, params string[] selectors)
+        public async Task UpdateUserStatsAsync(ulong uid, GameStatsType type, int add = 1)
         {
-            var res = await ExecuteRawQueryAsync($@"
-                SELECT uid, {string.Join(", ", selectors)} 
-                FROM gf.stats
-                ORDER BY {orderstr} DESC
-                LIMIT 5
-            ").ConfigureAwait(false);
-
-            return res.Select(sd => new GameStats(sd));
-        }
-
-        public async Task UpdateUserStatsAsync(ulong uid, string col, int add = 1)
-        {
-            var stats = await GetStatsForUserAsync(uid).ConfigureAwait(false);
-
             await _sem.WaitAsync();
             try {
                 using (var con = new NpgsqlConnection(_connectionString))
                 using (var cmd = con.CreateCommand()) {
                     await con.OpenAsync().ConfigureAwait(false);
 
-                    if (stats != null)
-                        cmd.CommandText = $"UPDATE gf.stats SET {col} = {col} + {add} WHERE uid = {uid};";
-                    else
-                        cmd.CommandText = $"INSERT INTO gf.stats (uid, {col}) VALUES ({uid}, {add});";
+                    switch (type) {
+                        case GameStatsType.AnimalRacesWon:
+                            cmd.CommandText = $"INSERT INTO gf.stats (uid, races_won) VALUES (@uid, @add) ON CONFLICT (uid) DO UPDATE SET races_won = stats.races_won + @add;";
+                            break;
+                        case GameStatsType.CarosLost:
+                            cmd.CommandText = $"INSERT INTO gf.stats (uid, caro_lost) VALUES (@uid, @add) ON CONFLICT (uid) DO UPDATE SET caro_lost = stats.caro_lost + @add;";
+                            break;
+                        case GameStatsType.CarosWon:
+                            cmd.CommandText = $"INSERT INTO gf.stats (uid, caro_won) VALUES (@uid, @add) ON CONFLICT (uid) DO UPDATE SET caro_won = stats.caro_won + @add;";
+                            break;
+                        case GameStatsType.Connect4sLost:
+                            cmd.CommandText = $"INSERT INTO gf.stats (uid, chain4_lost) VALUES (@uid, @add) ON CONFLICT (uid) DO UPDATE SET chain4_lost = stats.chain4_lost + @add;";
+                            break;
+                        case GameStatsType.Connect4sWon:
+                            cmd.CommandText = $"INSERT INTO gf.stats (uid, chain4_won) VALUES (@uid, @add) ON CONFLICT (uid) DO UPDATE SET chain4_won = stats.chain4_won + @add;";
+                            break;
+                        case GameStatsType.DuelsLost:
+                            cmd.CommandText = $"INSERT INTO gf.stats (uid, duels_lost) VALUES (@uid, @add) ON CONFLICT (uid) DO UPDATE SET duels_lost = stats.duels_lost + @add;";
+                            break;
+                        case GameStatsType.DuelsWon:
+                            cmd.CommandText = $"INSERT INTO gf.stats (uid, duels_won) VALUES (@uid, @add) ON CONFLICT (uid) DO UPDATE SET duels_won = stats.duels_won + @add;";
+                            break;
+                        case GameStatsType.HangmansWon:
+                            cmd.CommandText = $"INSERT INTO gf.stats (uid, hangman_won) VALUES (@uid, @add) ON CONFLICT (uid) DO UPDATE SET hangman_won = stats.hangman_won + @add;";
+                            break;
+                        case GameStatsType.NumberRacesWon:
+                            cmd.CommandText = $"INSERT INTO gf.stats (uid, nunchis_won) VALUES (@uid, @add) ON CONFLICT (uid) DO UPDATE SET nunchis_won = stats.nunchis_won + @add;";
+                            break;
+                        case GameStatsType.OthellosLost:
+                            cmd.CommandText = $"INSERT INTO gf.stats (uid, othello_lost) VALUES (@uid, @add) ON CONFLICT (uid) DO UPDATE SET othello_lost = stats.othello_lost + @add;";
+                            break;
+                        case GameStatsType.OthellosWon:
+                            cmd.CommandText = $"INSERT INTO gf.stats (uid, othello_won) VALUES (@uid, @add) ON CONFLICT (uid) DO UPDATE SET othello_won = stats.othello_won + @add;";
+                            break;
+                        case GameStatsType.QuizesWon:
+                            cmd.CommandText = $"INSERT INTO gf.stats (uid, quizes_won) VALUES (@uid, @add) ON CONFLICT (uid) DO UPDATE SET quizes_won = stats.quizes_won + @add;";
+                            break;
+                        case GameStatsType.TicTacToesLost:
+                            cmd.CommandText = $"INSERT INTO gf.stats (uid, ttt_lost) VALUES (@uid, @add) ON CONFLICT (uid) DO UPDATE SET ttt_lost = stats.ttt_lost + @add;";
+                            break;
+                        case GameStatsType.TicTacToesWon:
+                            cmd.CommandText = $"INSERT INTO gf.stats (uid, ttt_won) VALUES (@uid, @add) ON CONFLICT (uid) DO UPDATE SET ttt_won = stats.ttt_won + @add;";
+                            break;
+                    }
+
+                    cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, uid);
+                    cmd.Parameters.AddWithValue("add", NpgsqlDbType.Integer, add);
 
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
@@ -81,23 +110,23 @@ namespace TheGodfather.Services
             }
         }
 
-        public async Task<DiscordEmbed> GetEmbeddedStatsForUserAsync(DiscordUser u)
+        public async Task<DiscordEmbed> GetEmbeddedStatsForUserAsync(DiscordUser user)
         {
-            var stats = await GetStatsForUserAsync(u.Id)
+            var stats = await GetGameStatsForUserAsync(user.Id)
                 .ConfigureAwait(false);
 
             if (stats == null) {
                 return new DiscordEmbedBuilder() {
-                    Title = $"Stats for {u.Username}",
+                    Title = $"Stats for {user.Username}",
                     Description = "No games played yet!",
-                    ThumbnailUrl = u.AvatarUrl,
+                    ThumbnailUrl = user.AvatarUrl,
                     Color = DiscordColor.Chartreuse
                 }.Build();
             }
 
             var emb = stats.GetEmbedBuilder();
-            emb.WithTitle($"Stats for {u.Username}");
-            emb.WithThumbnailUrl(u.AvatarUrl);
+            emb.WithTitle($"Stats for {user.Username}");
+            emb.WithThumbnailUrl(user.AvatarUrl);
             return emb.Build();
         }
         
@@ -138,10 +167,23 @@ namespace TheGodfather.Services
             return emb.Build();
         }
 
+        private async Task<IEnumerable<GameStats>> GetOrderedGameStatsAsync(string orderstr, params string[] selectors)
+        {
+            var res = await ExecuteRawQueryAsync($@"
+                SELECT uid, {string.Join(", ", selectors)} 
+                FROM gf.stats
+                ORDER BY {orderstr} DESC
+                LIMIT 5
+            ").ConfigureAwait(false);
+
+            return res.Select(sd => new GameStats(sd));
+        }
+
+
         #region LEADERBOARD_HELPERS
         public async Task<string> GetTopDuelistsStringAsync(DiscordClient client)
         {
-            var topDuelists = await GetOrderedUserStatsAsync("coalesce(1.0 * duels_won / NULLIF(duels_won + duels_lost, 0), 0)", "duels_won", "duels_lost")
+            var topDuelists = await GetOrderedGameStatsAsync("coalesce(1.0 * duels_won / NULLIF(duels_won + duels_lost, 0), 0)", "duels_won", "duels_lost")
                 .ConfigureAwait(false);
 
             StringBuilder sb = new StringBuilder();
@@ -163,7 +205,7 @@ namespace TheGodfather.Services
 
         public async Task<string> GetTopTTTPlayersStringAsync(DiscordClient client)
         {
-            var topTTTPlayers = await GetOrderedUserStatsAsync("coalesce(1.0 * ttt_won / NULLIF(ttt_won + ttt_lost, 0), 0)", "ttt_won", "ttt_lost")
+            var topTTTPlayers = await GetOrderedGameStatsAsync("coalesce(1.0 * ttt_won / NULLIF(ttt_won + ttt_lost, 0), 0)", "ttt_won", "ttt_lost")
                 .ConfigureAwait(false);
 
             StringBuilder sb = new StringBuilder();
@@ -185,7 +227,7 @@ namespace TheGodfather.Services
 
         public async Task<string> GetTopCaroPlayersStringAsync(DiscordClient client)
         {
-            var topCaroPlayers = await GetOrderedUserStatsAsync("coalesce(1.0 * caro_won / NULLIF(caro_won + caro_lost, 0), 0)", "caro_won", "caro_lost")
+            var topCaroPlayers = await GetOrderedGameStatsAsync("coalesce(1.0 * caro_won / NULLIF(caro_won + caro_lost, 0), 0)", "caro_won", "caro_lost")
                 .ConfigureAwait(false);
 
             StringBuilder sb = new StringBuilder();
@@ -207,7 +249,7 @@ namespace TheGodfather.Services
 
         public async Task<string> GetTopChain4PlayersStringAsync(DiscordClient client)
         {
-            var topChain4Players = await GetOrderedUserStatsAsync("coalesce(1.0 * chain4_won / NULLIF(chain4_won + chain4_lost, 0), 0)", "chain4_won", "chain4_lost")
+            var topChain4Players = await GetOrderedGameStatsAsync("coalesce(1.0 * chain4_won / NULLIF(chain4_won + chain4_lost, 0), 0)", "chain4_won", "chain4_lost")
                 .ConfigureAwait(false);
 
             StringBuilder sb = new StringBuilder();
@@ -229,7 +271,7 @@ namespace TheGodfather.Services
 
         public async Task<string> GetTopNunchiPlayersStringAsync(DiscordClient client)
         {
-            var topNunchiPlayers = await GetOrderedUserStatsAsync("numraces_won", "numraces_won")
+            var topNunchiPlayers = await GetOrderedGameStatsAsync("numraces_won", "numraces_won")
                 .ConfigureAwait(false);
 
             StringBuilder sb = new StringBuilder();
@@ -251,7 +293,7 @@ namespace TheGodfather.Services
 
         public async Task<string> GetTopQuizPlayersStringAsync(DiscordClient client)
         {
-            var topQuizPlayers = await GetOrderedUserStatsAsync("quizes_won", "quizes_won")
+            var topQuizPlayers = await GetOrderedGameStatsAsync("quizes_won", "quizes_won")
                 .ConfigureAwait(false);
 
             StringBuilder sb = new StringBuilder();
@@ -273,7 +315,7 @@ namespace TheGodfather.Services
 
         public async Task<string> GetTopRacersStringAsync(DiscordClient client)
         {
-            var topRacers = await GetOrderedUserStatsAsync("races_won", "races_won")
+            var topRacers = await GetOrderedGameStatsAsync("races_won", "races_won")
                 .ConfigureAwait(false);
 
             StringBuilder sb = new StringBuilder();
@@ -295,7 +337,7 @@ namespace TheGodfather.Services
 
         public async Task<string> GetTopHangmanPlayersStringAsync(DiscordClient client)
         {
-            var topHangmanPlayers = await GetOrderedUserStatsAsync("hangman_won", "hangman_won")
+            var topHangmanPlayers = await GetOrderedGameStatsAsync("hangman_won", "hangman_won")
                 .ConfigureAwait(false);
 
             StringBuilder sb = new StringBuilder();
@@ -317,7 +359,7 @@ namespace TheGodfather.Services
         
         public async Task<string> GetTopOthelloPlayersStringAsync(DiscordClient client)
         {
-            var topOthelloPlayers = await GetOrderedUserStatsAsync("coalesce(1.0 * othello_won / NULLIF(othello_won + othello_lost, 0), 0)", "othello_won", "othello_lost")
+            var topOthelloPlayers = await GetOrderedGameStatsAsync("coalesce(1.0 * othello_won / NULLIF(othello_won + othello_lost, 0), 0)", "othello_won", "othello_lost")
                 .ConfigureAwait(false);
 
             StringBuilder sb = new StringBuilder();

@@ -81,7 +81,7 @@ namespace TheGodfather.Modules.Misc
         public async Task GiveRoleAsync(CommandContext ctx,
                                        [Description("Role to grant.")] DiscordRole role)
         {
-            if (!await Database.SelfAssignableRoleExistsAsync(ctx.Guild.Id, role.Id))
+            if (!await Database.SelfAssignableRoleExistsForGuildAsync(ctx.Guild.Id, role.Id))
                 throw new CommandFailedException("That role is not in this guild's self-assignable roles list.");
 
             await ctx.Member.GrantRoleAsync(role, ctx.BuildReasonString("Granted self-assignable role."))
@@ -271,10 +271,10 @@ namespace TheGodfather.Modules.Misc
 
             try {
                 if (prefix == Shared.BotConfiguration.DefaultPrefix) {
-                    await Database.RemoveGuildPrefixAsync(ctx.Guild.Id)
+                    await Database.ResetPrefixAsync(ctx.Guild.Id)
                         .ConfigureAwait(false);
                 } else {
-                    await Database.SetGuildPrefixAsync(ctx.Guild.Id, prefix)
+                    await Database.SetPrefixAsync(ctx.Guild.Id, prefix)
                         .ConfigureAwait(false);
                 }
             } catch (Exception e) {

@@ -95,7 +95,7 @@ namespace TheGodfather.Modules.Reactions
                 Shared.EmojiReactions.TryRemove(ctx.Guild.Id, out _);
 
             try {
-                await Database.DeleteAllGuildEmojiReactionsAsync(ctx.Guild.Id)
+                await Database.RemoveAllGuildEmojiReactionsAsync(ctx.Guild.Id)
                     .ConfigureAwait(false);
             } catch (Exception e) {
                 Logger.LogException(LogLevel.Warning, e);

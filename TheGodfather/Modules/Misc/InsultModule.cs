@@ -88,7 +88,7 @@ namespace TheGodfather.Modules.Misc
             if (!await ctx.AskYesNoQuestionAsync("Are you sure you want to delete all insults?").ConfigureAwait(false))
                 return;
 
-            await Database.DeleteAllInsultsAsync()
+            await Database.RemoveAllInsultsAsync()
                 .ConfigureAwait(false);
             await ctx.RespondWithIconEmbedAsync("All insults successfully removed.")
                 .ConfigureAwait(false);
@@ -104,7 +104,7 @@ namespace TheGodfather.Modules.Misc
         public async Task DeleteInsultAsync(CommandContext ctx, 
                                            [Description("Index of the insult to remove.")] int index)
         {
-            await Database.RemoveInsultByIdAsync(index)
+            await Database.RemoveInsultAsync(index)
                 .ConfigureAwait(false);
             await ctx.RespondWithIconEmbedAsync()
                 .ConfigureAwait(false);

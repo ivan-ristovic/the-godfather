@@ -63,7 +63,7 @@ namespace TheGodfather.Modules.Administration
             if (!await ctx.AskYesNoQuestionAsync("Are you sure you want to delete all automatic roles for this guild?").ConfigureAwait(false))
                 return;
 
-            await Database.DeleteAllAutomaticRolesAsync(ctx.Guild.Id)
+            await Database.RemoveAllAutomaticRolesForGuildAsync(ctx.Guild.Id)
                 .ConfigureAwait(false);
 
             await ctx.RespondWithIconEmbedAsync()
@@ -97,7 +97,7 @@ namespace TheGodfather.Modules.Administration
         [UsageExample("!ar list")]
         public async Task ListARolesAsync(CommandContext ctx)
         {
-            var rids = await Database.GetAutomaticRolesListAsync(ctx.Guild.Id)
+            var rids = await Database.GetAutomaticRolesForGuildAsync(ctx.Guild.Id)
                 .ConfigureAwait(false);
 
             if (!rids.Any())

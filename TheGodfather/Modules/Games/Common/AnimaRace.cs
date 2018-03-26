@@ -42,7 +42,7 @@ namespace TheGodfather.Modules.Games
         {
             Started = true;
 
-            var msg = await _channel.SendFailedEmbedAsync("Race starting...")
+            var msg = await _channel.SendIconEmbedAsync("Race starting...")
                 .ConfigureAwait(false);
             var rnd = new Random();
             while (!_participants.Any(p => p.Progress >= TRACK_SIZE)) {
@@ -84,7 +84,7 @@ namespace TheGodfather.Modules.Games
 
         private async Task PrintRaceAsync(DiscordMessage msg)
         {
-            StringBuilder sb = new StringBuilder("LIVE RACING BROADCAST\n🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🔚\n");
+            StringBuilder sb = new StringBuilder("🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🔚\n");
             foreach (var participant in _participants) {
                 sb.Append("|");
                 sb.Append('‣', participant.Progress);
@@ -95,8 +95,10 @@ namespace TheGodfather.Modules.Games
                     sb.Append(" " + EmojiUtil.Trophy);
                 sb.AppendLine();
             }
-            await msg.ModifyAsync(sb.ToString())
-                .ConfigureAwait(false);
+            await msg.ModifyAsync(embed: new DiscordEmbedBuilder() {
+                Title = "LIVE RACING BROADCAST",
+                Description = sb.ToString()
+            }.Build()).ConfigureAwait(false);
         }
         
 

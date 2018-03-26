@@ -117,7 +117,7 @@ namespace TheGodfather.Modules.Administration
                 Shared.Filters.TryRemove(ctx.Guild.Id, out _);
 
             try {
-                await Database.DeleteAllGuildFiltersAsync(ctx.Guild.Id)
+                await Database.RemoveAllGuildFiltersAsync(ctx.Guild.Id)
                     .ConfigureAwait(false);
             } catch (Exception e) {
                 Logger.LogException(LogLevel.Warning, e);

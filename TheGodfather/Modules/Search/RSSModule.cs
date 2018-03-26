@@ -55,7 +55,7 @@ namespace TheGodfather.Modules.Search
         [UsageExample("!feed list")]
         public async Task FeedListAsync(CommandContext ctx)
         {
-            var subs = await Database.GetSubscriptionsForChannelAsync(ctx.Channel.Id)
+            var subs = await Database.GetFeedEntriesForChannelAsync(ctx.Channel.Id)
                 .ConfigureAwait(false);
 
             await ctx.SendPaginatedCollectionAsync(
@@ -104,7 +104,7 @@ namespace TheGodfather.Modules.Search
         public async Task UnsubscribeAsync(CommandContext ctx,
                                           [Description("ID of the subscription.")] int id)
         {
-            await Database.RemoveSubscriptionAsync(ctx.Channel.Id, id)
+            await Database.RemoveSubscriptionByIdAsync(ctx.Channel.Id, id)
                 .ConfigureAwait(false);
             await ctx.RespondWithIconEmbedAsync($"Unsubscribed from feed with ID {Formatter.Bold(id.ToString())}")
                 .ConfigureAwait(false);
@@ -114,7 +114,7 @@ namespace TheGodfather.Modules.Search
         public async Task UnsubscribeAsync(CommandContext ctx,
                                           [Description("Name of the subscription.")] string name)
         {
-            await Database.RemoveSubscriptionUsingNameAsync(ctx.Channel.Id, name)
+            await Database.RemoveSubscriptionByNameAsync(ctx.Channel.Id, name)
                 .ConfigureAwait(false);
             await ctx.RespondWithIconEmbedAsync($"Unsubscribed from feed with name {Formatter.Bold(name)}")
                 .ConfigureAwait(false);

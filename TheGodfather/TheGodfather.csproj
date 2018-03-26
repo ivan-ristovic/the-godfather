@@ -269,6 +269,7 @@
     <Compile Include="Modules\Reactions\Common\Reaction.cs" />
     <Compile Include="Modules\Reactions\Common\TextReaction.cs" />
     <Compile Include="Services\Common\Birthday.cs" />
+    <Compile Include="Services\Common\GameStatsType.cs" />
     <Compile Include="Services\Common\SavedTask.cs" />
     <Compile Include="Extensions\DSharpPlusExtensions.cs" />
     <Compile Include="Modules\Owner\OwnerModule.BlockedUsers.cs" />
@@ -329,7 +330,7 @@
     <Compile Include="Modules\TheGodfatherServiceModule.cs" />
     <Compile Include="Services\DatabaseService\DBService.Ranks.cs" />
     <Compile Include="Services\Common\FeedEntry.cs" />
-    <Compile Include="Entities\GameStats.cs" />
+    <Compile Include="Services\Common\GameStats.cs" />
     <Compile Include="Attributes\ListeningCheckAttribute.cs" />
     <Compile Include="Extensions\CustomHelpFormatter.cs" />
     <Compile Include="Modules\Owner\OwnerModule.cs" />

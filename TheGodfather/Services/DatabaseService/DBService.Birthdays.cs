@@ -88,25 +88,6 @@ namespace TheGodfather.Services
             }
         }
 
-        public async Task UpdateBirthdayAsync(ulong uid, ulong cid)
-        {
-            await _sem.WaitAsync();
-            try {
-                using (var con = new NpgsqlConnection(_connectionString))
-                using (var cmd = con.CreateCommand()) {
-                    await con.OpenAsync().ConfigureAwait(false);
-
-                    cmd.CommandText = "UPDATE gf.birthdays SET last_updated = date_part('year', CURRENT_DATE) WHERE uid = @uid AND cid = @cid;";
-                    cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, uid);
-                    cmd.Parameters.AddWithValue("cid", NpgsqlDbType.Bigint, cid);
-
-                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
-                }
-            } finally {
-                _sem.Release();
-            }
-        }
-
         public async Task RemoveBirthdayAsync(ulong uid)
         {
             await _sem.WaitAsync();
@@ -117,6 +98,25 @@ namespace TheGodfather.Services
 
                     cmd.CommandText = "DELETE FROM gf.birthdays WHERE uid = @uid;";
                     cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, uid);
+
+                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                }
+            } finally {
+                _sem.Release();
+            }
+        }
+
+        public async Task UpdateBirthdayLastNotifiedDateAsync(ulong uid, ulong cid)
+        {
+            await _sem.WaitAsync();
+            try {
+                using (var con = new NpgsqlConnection(_connectionString))
+                using (var cmd = con.CreateCommand()) {
+                    await con.OpenAsync().ConfigureAwait(false);
+
+                    cmd.CommandText = "UPDATE gf.birthdays SET last_updated = date_part('year', CURRENT_DATE) WHERE uid = @uid AND cid = @cid;";
+                    cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, uid);
+                    cmd.Parameters.AddWithValue("cid", NpgsqlDbType.Bigint, cid);
 
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }

@@ -7,6 +7,7 @@ using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Games.Common;
 using TheGodfather.Services;
+using TheGodfather.Services.Common;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -69,7 +70,7 @@ namespace TheGodfather.Modules.Games
                         }
 
                         if (game.Winner != null)
-                            await Database.UpdateUserStatsAsync(game.Winner.Id, "numraces_won")
+                            await Database.UpdateUserStatsAsync(game.Winner.Id, GameStatsType.NumberRacesWon)
                                 .ConfigureAwait(false);
                     } else {
                         await ctx.RespondWithIconEmbedAsync("Not enough users joined the race.", ":alarm_clock:")
