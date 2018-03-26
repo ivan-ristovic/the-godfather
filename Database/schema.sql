@@ -68,6 +68,18 @@ CREATE TABLE assignable_roles (
 ALTER TABLE assignable_roles OWNER TO postgres;
 
 --
+-- Name: automatic_roles; Type: TABLE; Schema: gf; Owner: postgres
+--
+
+CREATE TABLE automatic_roles (
+    gid bigint NOT NULL,
+    rid bigint NOT NULL
+);
+
+
+ALTER TABLE automatic_roles OWNER TO postgres;
+
+--
 -- Name: birthdays; Type: TABLE; Schema: gf; Owner: postgres
 --
 
@@ -514,6 +526,14 @@ ALTER TABLE ONLY accounts
 
 ALTER TABLE ONLY assignable_roles
     ADD CONSTRAINT assignable_roles_pkey PRIMARY KEY (gid, rid);
+
+
+--
+-- Name: automatic_roles automatic_roles_pkey; Type: CONSTRAINT; Schema: gf; Owner: postgres
+--
+
+ALTER TABLE ONLY automatic_roles
+    ADD CONSTRAINT automatic_roles_pkey PRIMARY KEY (gid, rid);
 
 
 --
