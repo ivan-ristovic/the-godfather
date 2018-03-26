@@ -175,40 +175,63 @@ namespace TheGodfather
                 $"{e.Guild.ToString()}"
             );
 
-            ulong cid = 0;
             try {
-                cid = await _db.GetGuildWelcomeChannelIdAsync(e.Guild.Id)
+                var cid = await _db.GetGuildWelcomeChannelIdAsync(e.Guild.Id)
                     .ConfigureAwait(false);
+                if (cid != 0) {
+                    try {
+                        var chn = e.Guild.GetChannel(cid);
+                        if (chn != null) {
+                            var msg = await _db.GetGuildWelcomeMessageAsync(e.Guild.Id)
+                                .ConfigureAwait(false);
+                            if (string.IsNullOrWhiteSpace(msg))
+                                await chn.SendIconEmbedAsync($"Welcome to {Formatter.Bold(e.Guild.Name)}, {e.Member.Mention}!", DiscordEmoji.FromName(Client, ":wave:")).ConfigureAwait(false);
+                            else
+                                await chn.SendIconEmbedAsync(msg.Replace("%user%", e.Member.Mention), DiscordEmoji.FromName(Client, ":wave:")).ConfigureAwait(false);
+                        }
+                    } catch (Exception exc) {
+                        while (exc is AggregateException)
+                            exc = exc.InnerException;
+                        Log(LogLevel.Debug,
+                            $"Failed to send a welcome message!<br>" +
+                            $"Channel ID: {cid}<br>" +
+                            $"{e.Guild.ToString()}<br>" +
+                            $"Exception: {exc.GetType()}<br>" +
+                            $"Message: {exc.Message}"
+                        );
+                        if (exc is NotFoundException)
+                            await _db.RemoveGuildWelcomeChannelAsync(e.Guild.Id)
+                                .ConfigureAwait(false);
+                    }
+                }
             } catch (Exception exc) {
                 Logger.LogException(LogLevel.Debug, exc);
             }
 
-            if (cid == 0)
-                return;
-
             try {
-                var chn = e.Guild.GetChannel(cid);
-                if (chn != null) {
-                    var msg = await _db.GetGuildWelcomeMessageAsync(e.Guild.Id)
-                        .ConfigureAwait(false);
-                    if (string.IsNullOrWhiteSpace(msg))
-                        await chn.SendIconEmbedAsync($"Welcome to {Formatter.Bold(e.Guild.Name)}, {e.Member.Mention}!", DiscordEmoji.FromName(Client, ":wave:")).ConfigureAwait(false);
-                    else
-                        await chn.SendIconEmbedAsync(msg.Replace("%user%", e.Member.Mention), DiscordEmoji.FromName(Client, ":wave:")).ConfigureAwait(false);
+                var rids = await _db.GetAutomaticRolesListAsync(e.Guild.Id)
+                    .ConfigureAwait(false);
+                foreach (var rid in rids) {
+                    try {
+                        var role = e.Guild.GetRole(rid);
+                        if (role == null) {
+                            await _db.RemoveAutomaticRoleAsync(e.Guild.Id, rid)
+                                .ConfigureAwait(false);
+                        } else {
+                            await e.Member.GrantRoleAsync(role)
+                                .ConfigureAwait(false);
+                        }
+                    } catch (Exception exc) {
+                        Log(LogLevel.Debug,
+                            $"Failed to assign an automatic role to a new member!<br>" +
+                            $"{e.Guild.ToString()}<br>" +
+                            $"Exception: {exc.GetType()}<br>" +
+                            $"Message: {exc.Message}"
+                        );
+                    }
                 }
             } catch (Exception exc) {
-                while (exc is AggregateException)
-                    exc = exc.InnerException;
-                Log(LogLevel.Debug,
-                    $"Failed to send a welcome message!<br>" +
-                    $"Channel ID: {cid}<br>" +
-                    $"{e.Guild.ToString()}<br>" +
-                    $"Exception: {exc.GetType()}<br>" +
-                    $"Message: {exc.Message}"
-                );
-                if (exc is NotFoundException)
-                    await _db.RemoveGuildWelcomeChannelAsync(e.Guild.Id)
-                        .ConfigureAwait(false);
+                Logger.LogException(LogLevel.Debug, exc);
             }
         }
 

@@ -1,9 +1,11 @@
 ﻿#region USING_DIRECTIVES
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 using TheGodfather.Attributes;
 using TheGodfather.Services;
+using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 
 using DSharpPlus;
@@ -15,7 +17,7 @@ using DSharpPlus.Entities;
 namespace TheGodfather.Modules.Administration
 {
     [Group("selfassignableroles")]
-    [Description("Commands to manipulate self-assignable roles. If invoked alone, lists all allowed self-assignable roles in this guild.")]
+    [Description("Commands to manipulate self-assignable roles. If invoked without subcommands, lists all allowed self-assignable roles for this guild.")]
     [Aliases("sar")]
     [UsageExample("!sar")]
     [Cooldown(2, 5, CooldownBucketType.Guild)]
@@ -97,6 +99,9 @@ namespace TheGodfather.Modules.Administration
         {
             var rids = await Database.GetSelfAssignableRolesListAsync(ctx.Guild.Id)
                 .ConfigureAwait(false);
+
+            if (!rids.Any())
+                throw new CommandFailedException("This guild doesn't have any self-assignable roles set.");
 
             List<DiscordRole> roles = new List<DiscordRole>();
             foreach (var rid in rids) {

@@ -261,6 +261,7 @@
   <ItemGroup>
     <Compile Include="Attributes\UsageExampleAttribute.cs" />
     <Compile Include="Entities\SavedTaskExecuter.cs" />
+    <Compile Include="Modules\Administration\AutomaticRolesModule.cs" />
     <Compile Include="Modules\Games\GamesModule.Duel.cs" />
     <Compile Include="Modules\Games\GamesModule.Hangman.cs" />
     <Compile Include="Modules\Owner\OwnerModule.Birthdays.cs" />
@@ -320,6 +321,7 @@
     <Compile Include="Services\DatabaseService\DBService.Birthdays.cs" />
     <Compile Include="Services\DatabaseService\DBService.SavedTasks.cs" />
     <Compile Include="Services\DatabaseService\DBService.Blocked.cs" />
+    <Compile Include="Services\DatabaseService\DBService.SpecialRoles.cs" />
     <Compile Include="Services\IGodfatherService.cs" />
     <Compile Include="Modules\TheGodfatherBaseModule.cs" />
     <Compile Include="Modules\Search\JokesModule.cs" />

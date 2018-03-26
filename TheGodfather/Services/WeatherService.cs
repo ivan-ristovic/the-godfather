@@ -45,7 +45,7 @@ namespace TheGodfather.Services
                .AddField($"{DiscordEmoji.FromUnicode("\u2601")} Condition", string.Join(", ", data.Weather.Select(w => w.Main)), inline: true)
                .AddField($"{DiscordEmoji.FromUnicode("\U0001f4a6")} Humidity", $"{data.Main.Humidity}%", inline: true)
                .AddField($"{DiscordEmoji.FromUnicode("\U0001f321")} Temperature", $"{data.Main.Temp:F1}°C", inline: true)
-               .AddField($"{DiscordEmoji.FromUnicode("\U0001f321")} Min/Max Temp", $"{data.Main.TempMin:F1}°C - {data.Main.TempMax:F1}°C", inline: true)
+               .AddField($"{DiscordEmoji.FromUnicode("\U0001f321")} Min/Max Temp", $"{data.Main.TempMin:F1}°C / {data.Main.TempMax:F1}°C", inline: true)
                .AddField($"{DiscordEmoji.FromUnicode("\U0001f4a8")} Wind speed", data.Wind.Speed + " m/s", inline: true)
                .WithThumbnailUrl($"http://openweathermap.org/img/w/{data.Weather[0].Icon}.png")
                .WithFooter("Powered by openweathermap.org");
