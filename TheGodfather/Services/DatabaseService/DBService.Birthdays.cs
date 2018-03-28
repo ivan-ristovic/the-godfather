@@ -53,8 +53,9 @@ namespace TheGodfather.Services
                 using (var cmd = con.CreateCommand()) {
                     await con.OpenAsync().ConfigureAwait(false);
 
-                    cmd.CommandText = "SELECT * FROM gf.birthdays WHERE bday = @today AND last_updated != date_part('year', CURRENT_DATE);";
-                    cmd.Parameters.AddWithValue("today", NpgsqlDbType.Date, DateTime.UtcNow.Date);
+                    cmd.CommandText = "SELECT * FROM gf.birthdays WHERE date_part('day', bday) = @today_day AND date_part('month', bday) = @today_month AND last_updated != date_part('year', CURRENT_DATE);";
+                    cmd.Parameters.AddWithValue("today_day", NpgsqlDbType.Integer, DateTime.UtcNow.Day);
+                    cmd.Parameters.AddWithValue("today_month", NpgsqlDbType.Integer, DateTime.UtcNow.Month);
 
                     using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
                         while (await reader.ReadAsync().ConfigureAwait(false))

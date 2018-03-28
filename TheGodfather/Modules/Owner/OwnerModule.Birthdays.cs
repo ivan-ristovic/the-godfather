@@ -106,7 +106,7 @@ namespace TheGodfather.Modules.Owner
                         var user = await ctx.Client.GetUserAsync(birthday.UserId)
                             .ConfigureAwait(false);
                         lines.Add($"{Formatter.Bold(user.Username)} | {birthday.Date.ToShortDateString()} | {channel.Name}");
-                    } catch (NotFoundException) {
+                    } catch {
                         await Database.RemoveBirthdayAsync(birthday.UserId)
                             .ConfigureAwait(false);
                     }
