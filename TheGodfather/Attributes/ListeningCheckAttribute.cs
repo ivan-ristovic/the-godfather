@@ -1,6 +1,7 @@
 ﻿#region USING_DIRECTIVES
 using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -12,14 +13,13 @@ namespace TheGodfather.Attributes
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
     internal class ListeningCheckAttribute : CheckBaseAttribute
     {
-        public static SharedData Shared { get; set; }
-
-
         public override Task<bool> ExecuteCheckAsync(CommandContext ctx, bool help)
         {
-            if (TheGodfatherShard.Listening) {
-                if (Shared != null && (Shared.BlockedUsers.Contains(ctx.User.Id) || Shared.BlockedChannels.Contains(ctx.Channel.Id)))
+            if (TheGodfather.Listening) {
+                var shared = ctx.Services.GetService<SharedData>();
+                if (shared.BlockedUsers.Contains(ctx.User.Id) || shared.BlockedChannels.Contains(ctx.Channel.Id))
                     return Task.FromResult(false);
+
                 if (!help) {
                     ctx.Client.DebugLogger.LogMessage(LogLevel.Debug, "TheGodfather",
                         $"Executing: {ctx.Command?.QualifiedName ?? "<unknown command>"}<br>" + 

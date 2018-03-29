@@ -537,8 +537,8 @@ namespace TheGodfather.Modules.Owner
         [UsageExample("!owner toggleignore")]
         public async Task ToggleIgnoreAsync(CommandContext ctx)
         {
-            TheGodfatherShard.Listening = !TheGodfatherShard.Listening;
-            await ctx.RespondWithIconEmbedAsync($"Listening status set to: {Formatter.Bold(TheGodfatherShard.Listening.ToString())}")
+            TheGodfather.Listening = !TheGodfather.Listening;
+            await ctx.RespondWithIconEmbedAsync($"Listening status set to: {Formatter.Bold(TheGodfather.Listening.ToString())}")
                 .ConfigureAwait(false);
         }
         #endregion

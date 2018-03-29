@@ -29,10 +29,6 @@ namespace TheGodfather
 {
     internal sealed class TheGodfatherShard
     {
-        #region STATIC_FIELDS
-        public static bool Listening { get; set; } = true;
-        #endregion
-
         #region PUBLIC_FIELDS
         public int ShardId { get; }
         public DiscordClient Client { get; private set; }
@@ -410,20 +406,20 @@ namespace TheGodfather
         #endregion
 
         #region COMMAND_EVENTS
-        private async Task Commands_CommandExecuted(CommandExecutionEventArgs e)
+        private Task Commands_CommandExecuted(CommandExecutionEventArgs e)
         {
-            await Task.Yield();
-
             Log(LogLevel.Info,
                 $"Executed: {e.Command?.QualifiedName ?? "<unknown command>"}<br>" +
                 $"{e.Context.User.ToString()}<br>" +
                 $"{e.Context.Guild.ToString()}; {e.Context.Channel.ToString()}"
             );
+
+            return Task.CompletedTask;
         }
 
         private async Task Commands_CommandErrored(CommandErrorEventArgs e)
         {
-            if (!Listening || e.Exception == null)
+            if (!TheGodfather.Listening || e.Exception == null)
                 return;
 
             var ex = e.Exception;

@@ -24,6 +24,7 @@ namespace TheGodfather
 {
     internal static class TheGodfather
     {
+        public static bool Listening { get; set; } = true;
         public static List<TheGodfatherShard> Shards { get; set; }
         private static CancellationTokenSource CTS { get; set; } = new CancellationTokenSource();
         private static DBService DatabaseService { get; set; }
@@ -135,7 +136,6 @@ namespace TheGodfather
                 EmojiReactions = gemojireactions,
                 MessageCount = msgcount
             };
-            ListeningCheckAttribute.Shared = SharedData;
 
             Console.Write("\r[4/5] Creating {0} shards...          ", cfg.ShardCount);
 
