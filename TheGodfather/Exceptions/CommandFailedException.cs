@@ -2,7 +2,7 @@
 
 namespace TheGodfather.Exceptions
 {
-    public class CommandFailedException : Exception
+    internal class CommandFailedException : Exception
     {
         public CommandFailedException() : base() { }
 

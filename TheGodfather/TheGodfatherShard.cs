@@ -27,7 +27,7 @@ using DSharpPlus.VoiceNext;
 
 namespace TheGodfather
 {
-    public sealed class TheGodfatherShard
+    internal sealed class TheGodfatherShard
     {
         #region STATIC_FIELDS
         public static bool Listening { get; set; } = true;

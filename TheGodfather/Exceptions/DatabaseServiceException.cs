@@ -2,7 +2,7 @@
 
 namespace TheGodfather.Exceptions
 {
-    public class DatabaseServiceException : Exception
+    internal class DatabaseServiceException : Exception
     {
         public DatabaseServiceException() : base() { }
 

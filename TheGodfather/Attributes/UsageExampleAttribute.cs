@@ -5,7 +5,7 @@ using System;
 namespace TheGodfather.Attributes
 {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true)]
-    public class UsageExampleAttribute : Attribute
+    internal class UsageExampleAttribute : Attribute
     {
         public string Example { get; private set; }
 

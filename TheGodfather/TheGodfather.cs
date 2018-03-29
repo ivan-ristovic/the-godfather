@@ -24,7 +24,7 @@ namespace TheGodfather
 {
     internal static class TheGodfather
     {
-        internal static List<TheGodfatherShard> Shards { get; set; }
+        public static List<TheGodfatherShard> Shards { get; set; }
         private static CancellationTokenSource CTS { get; set; } = new CancellationTokenSource();
         private static DBService DatabaseService { get; set; }
         private static SharedData SharedData { get; set; }

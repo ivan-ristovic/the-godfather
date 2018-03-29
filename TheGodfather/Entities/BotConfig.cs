@@ -8,7 +8,7 @@ using DSharpPlus;
 
 namespace TheGodfather.Entities
 {
-    public class BotConfig
+    public sealed class BotConfig
     {
         [JsonProperty("token")]
         public string Token { get; private set; }
@@ -78,7 +78,7 @@ namespace TheGodfather.Entities
         }
     }
 
-    public class DatabaseConfig
+    public sealed class DatabaseConfig
     {
         [JsonProperty("hostname")]
         public string Hostname { get; private set; }

@@ -2,7 +2,7 @@
 
 namespace TheGodfather.Exceptions
 {
-    public class InvalidCommandUsageException : ArgumentException
+    internal class InvalidCommandUsageException : ArgumentException
     {
         public InvalidCommandUsageException() : base() { }
 

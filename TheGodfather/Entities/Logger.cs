@@ -9,7 +9,7 @@ using DSharpPlus.EventArgs;
 
 namespace TheGodfather.Entities
 {
-    public static class Logger
+    internal static class Logger
     {
         public static bool LogToFile {
             get => _filelog;

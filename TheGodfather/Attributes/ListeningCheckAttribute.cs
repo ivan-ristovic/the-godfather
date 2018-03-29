@@ -10,7 +10,7 @@ using DSharpPlus.CommandsNext.Attributes;
 namespace TheGodfather.Attributes
 {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
-    public class ListeningCheckAttribute : CheckBaseAttribute
+    internal class ListeningCheckAttribute : CheckBaseAttribute
     {
         public static SharedData Shared { get; set; }
 

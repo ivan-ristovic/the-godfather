@@ -14,7 +14,7 @@ using DSharpPlus.Entities;
 
 namespace TheGodfather.Entities
 {
-    public class SavedTaskExecuter
+    public sealed class SavedTaskExecuter
     {
         public int Id { get; private set; }
         public SavedTask SavedTask { get; }
