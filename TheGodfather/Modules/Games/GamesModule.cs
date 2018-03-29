@@ -123,7 +123,7 @@ namespace TheGodfather.Modules.Games
                     await ctx.RespondWithIconEmbedAsync("ROFL what a nabs...", ":alarm_clock:")
                         .ConfigureAwait(false);
                 } else {
-                    await ctx.RespondWithIconEmbedAsync(PremadeEmoji.Trophy, $"The winner is {game.Winner?.Mention ?? "<unknown>"}!")
+                    await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Trophy, $"The winner is {game.Winner?.Mention ?? "<unknown>"}!")
                         .ConfigureAwait(false);
                 }
             } finally {

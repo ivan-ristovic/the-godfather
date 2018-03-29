@@ -54,7 +54,7 @@ namespace TheGodfather.Extensions
         public static Task<DiscordMessage> RespondWithIconEmbedAsync(this CommandContext ctx, string msg = "Done!", string icon_emoji = null)
         {
             return ctx.RespondAsync(embed: new DiscordEmbedBuilder {
-                Description = $"{(icon_emoji == null ? PremadeEmoji.CheckMarkSuccess : DiscordEmoji.FromName(ctx.Client, icon_emoji))} {msg}",
+                Description = $"{(icon_emoji == null ? StaticDiscordEmoji.CheckMarkSuccess : DiscordEmoji.FromName(ctx.Client, icon_emoji))} {msg}",
                 Color = DiscordColor.Green
             });
         }
@@ -62,7 +62,7 @@ namespace TheGodfather.Extensions
         public static Task<DiscordMessage> RespondWithIconEmbedAsync(this CommandContext ctx, DiscordEmoji emoji, string msg = "Done!")
         {
             return ctx.RespondAsync(embed: new DiscordEmbedBuilder {
-                Description = $"{(emoji ?? PremadeEmoji.CheckMarkSuccess)} {msg}",
+                Description = $"{(emoji ?? StaticDiscordEmoji.CheckMarkSuccess)} {msg}",
                 Color = DiscordColor.Green
             });
         }
@@ -70,7 +70,7 @@ namespace TheGodfather.Extensions
         public static Task<DiscordMessage> RespondWithFailedEmbedAsync(this CommandContext ctx, string msg)
         {
             return ctx.RespondAsync(embed: new DiscordEmbedBuilder {
-                Description = $"{PremadeEmoji.BoardPieceX} {msg}",
+                Description = $"{StaticDiscordEmoji.BoardPieceX} {msg}",
                 Color = DiscordColor.IndianRed
             });
         }
@@ -84,7 +84,7 @@ namespace TheGodfather.Extensions
         }
 
         public static Task<DiscordMessage> SendFailedEmbedAsync(this DiscordChannel chn, string msg)
-            => SendIconEmbedAsync(chn, msg, PremadeEmoji.BoardPieceX);
+            => SendIconEmbedAsync(chn, msg, StaticDiscordEmoji.BoardPieceX);
 
         public static async Task<DiscordDmChannel> CreateDmChannelAsync(this DiscordClient client, ulong uid)
         {

@@ -133,7 +133,7 @@ namespace TheGodfather.Services
         public async Task<DiscordEmbed> GetStatsLeaderboardAsync(DiscordClient client)
         {
             var emb = new DiscordEmbedBuilder {
-                Title = $"{PremadeEmoji.Trophy} HALL OF FAME {PremadeEmoji.Trophy}",
+                Title = $"{StaticDiscordEmoji.Trophy} HALL OF FAME {StaticDiscordEmoji.Trophy}",
                 Color = DiscordColor.Chartreuse
             };
 

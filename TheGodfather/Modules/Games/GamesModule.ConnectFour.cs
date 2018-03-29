@@ -54,9 +54,9 @@ namespace TheGodfather.Modules.Games
 
                     if (connect4.Winner != null) {
                         if (connect4.NoReply == false)
-                            await ctx.RespondWithIconEmbedAsync(PremadeEmoji.Trophy, $"The winner is: {connect4.Winner.Mention}!").ConfigureAwait(false);
+                            await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Trophy, $"The winner is: {connect4.Winner.Mention}!").ConfigureAwait(false);
                         else
-                            await ctx.RespondWithIconEmbedAsync(PremadeEmoji.Trophy, $"{connect4.Winner.Mention} won due to no replies from opponent!").ConfigureAwait(false);
+                            await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Trophy, $"{connect4.Winner.Mention} won due to no replies from opponent!").ConfigureAwait(false);
                         
                         await Database.UpdateUserStatsAsync(connect4.Winner.Id, GameStatsType.Connect4sWon)
                             .ConfigureAwait(false);
@@ -103,7 +103,7 @@ namespace TheGodfather.Modules.Games
                 var top = await Database.GetTopChain4PlayersStringAsync(ctx.Client)
                     .ConfigureAwait(false);
 
-                await ctx.RespondWithIconEmbedAsync(PremadeEmoji.Trophy, $"Top players in Connect Four:\n\n{top}")
+                await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Trophy, $"Top players in Connect Four:\n\n{top}")
                     .ConfigureAwait(false);
             }
             #endregion

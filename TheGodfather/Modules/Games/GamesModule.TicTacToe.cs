@@ -54,9 +54,9 @@ namespace TheGodfather.Modules.Games
 
                     if (ttt.Winner != null) {
                         if (ttt.NoReply == false)
-                            await ctx.RespondWithIconEmbedAsync(PremadeEmoji.Trophy, $"The winner is: {ttt.Winner.Mention}!").ConfigureAwait(false);
+                            await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Trophy, $"The winner is: {ttt.Winner.Mention}!").ConfigureAwait(false);
                         else
-                            await ctx.RespondWithIconEmbedAsync(PremadeEmoji.Trophy, $"{ttt.Winner.Mention} won due to no replies from opponent!").ConfigureAwait(false);
+                            await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Trophy, $"{ttt.Winner.Mention} won due to no replies from opponent!").ConfigureAwait(false);
 
                         await Database.UpdateUserStatsAsync(ttt.Winner.Id, GameStatsType.TicTacToesWon)
                             .ConfigureAwait(false);
@@ -101,7 +101,7 @@ namespace TheGodfather.Modules.Games
                 var top = await Database.GetTopTTTPlayersStringAsync(ctx.Client)
                     .ConfigureAwait(false);
 
-                await ctx.RespondWithIconEmbedAsync(PremadeEmoji.Trophy, $"Top players in Tic-Tac-Toe:\n\n{top}")
+                await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Trophy, $"Top players in Tic-Tac-Toe:\n\n{top}")
                     .ConfigureAwait(false);
             }
             #endregion

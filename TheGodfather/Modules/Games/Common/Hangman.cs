@@ -37,7 +37,7 @@ namespace TheGodfather.Modules.Games
 
         public override async Task RunAsync()
         {
-            _msg = await _channel.SendIconEmbedAsync("Game starts!", PremadeEmoji.Joystick)
+            _msg = await _channel.SendIconEmbedAsync("Game starts!", StaticDiscordEmoji.Joystick)
                 .ConfigureAwait(false);
 
             await UpdateHangmanAsync()
@@ -49,17 +49,17 @@ namespace TheGodfather.Modules.Games
 
             if (NoReply) {
                 Winner = null;
-                await _channel.SendIconEmbedAsync($"Nobody replies so I am stopping the game... The word was: {Formatter.Bold(_word)}", PremadeEmoji.Joystick)
+                await _channel.SendIconEmbedAsync($"Nobody replies so I am stopping the game... The word was: {Formatter.Bold(_word)}", StaticDiscordEmoji.Joystick)
                     .ConfigureAwait(false);
                 return;
             }
 
             if (_lives > 0) {
-                await _channel.SendIconEmbedAsync($"{Winner.Mention} won the game!", PremadeEmoji.Joystick)
+                await _channel.SendIconEmbedAsync($"{Winner.Mention} won the game!", StaticDiscordEmoji.Joystick)
                     .ConfigureAwait(false);
             } else {
                 Winner = _initiator;
-                await _channel.SendIconEmbedAsync($"Nobody guessed the word so {Winner.Mention} won the game! The word was: {Formatter.Bold(_word)}", PremadeEmoji.Joystick)
+                await _channel.SendIconEmbedAsync($"Nobody guessed the word so {Winner.Mention} won the game! The word was: {Formatter.Bold(_word)}", StaticDiscordEmoji.Joystick)
                     .ConfigureAwait(false);
             }
         }

@@ -27,7 +27,7 @@ namespace TheGodfather.Modules.Games
 
         #region PRIVATE_FIELDS
         private ConcurrentQueue<AnimalRaceParticipant> _participants = new ConcurrentQueue<AnimalRaceParticipant>();
-        private ConcurrentBag<DiscordEmoji> _animals = new ConcurrentBag<DiscordEmoji>(PremadeEmoji.Animals);
+        private ConcurrentBag<DiscordEmoji> _animals = new ConcurrentBag<DiscordEmoji>(StaticDiscordEmoji.Animals);
         #endregion
 
 
@@ -92,7 +92,7 @@ namespace TheGodfather.Modules.Games
                 sb.Append('‣', TRACK_SIZE - participant.Progress);
                 sb.Append("| " + participant.User.Mention);
                 if (participant.Progress == TRACK_SIZE)
-                    sb.Append(" " + PremadeEmoji.Trophy);
+                    sb.Append(" " + StaticDiscordEmoji.Trophy);
                 sb.AppendLine();
             }
             await msg.ModifyAsync(embed: new DiscordEmbedBuilder() {

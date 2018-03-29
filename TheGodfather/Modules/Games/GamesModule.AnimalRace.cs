@@ -105,7 +105,7 @@ namespace TheGodfather.Modules.Games
                 var top = await Database.GetTopRacersStringAsync(ctx.Client)
                     .ConfigureAwait(false);
 
-                await ctx.RespondWithIconEmbedAsync(PremadeEmoji.Trophy, $"Top players in Animal Race:\n\n{top}")
+                await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Trophy, $"Top players in Animal Race:\n\n{top}")
                     .ConfigureAwait(false);
             }
             #endregion

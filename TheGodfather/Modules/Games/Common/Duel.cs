@@ -46,7 +46,7 @@ namespace TheGodfather.Modules.Games
         {
             UpdateHpBars();
             
-            _msg = await _channel.SendIconEmbedAsync($"{_p1.Mention} {_hp1bar} {PremadeEmoji.DuelSwords} {_hp2bar} {_p2.Mention}")
+            _msg = await _channel.SendIconEmbedAsync($"{_p1.Mention} {_hp1bar} {StaticDiscordEmoji.DuelSwords} {_hp2bar} {_p2.Mention}")
                 .ConfigureAwait(false);
 
             while (_hp1 > 0 && _hp2 > 0) {
@@ -56,7 +56,7 @@ namespace TheGodfather.Modules.Games
 
             Winner = _hp1 > 0 ? _p1 : _p2;
 
-            await _channel.SendIconEmbedAsync($"{PremadeEmoji.DuelSwords} {Winner.Mention}, FINISH HIM! {PremadeEmoji.DuelSwords}")
+            await _channel.SendIconEmbedAsync($"{StaticDiscordEmoji.DuelSwords} {Winner.Mention}, FINISH HIM! {StaticDiscordEmoji.DuelSwords}")
                 .ConfigureAwait(false);
             FinishingMove = await WaitForFinishingMoveAsync()
                 .ConfigureAwait(false);
@@ -71,7 +71,7 @@ namespace TheGodfather.Modules.Games
 
             UpdateHpBars();
 
-            _msg = await _msg.ModifyAsync($"{_p1.Mention} {_hp1bar} {PremadeEmoji.DuelSwords} {_hp2bar} {_p2.Mention}", embed: new DiscordEmbedBuilder() {
+            _msg = await _msg.ModifyAsync($"{_p1.Mention} {_hp1bar} {StaticDiscordEmoji.DuelSwords} {_hp2bar} {_p2.Mention}", embed: new DiscordEmbedBuilder() {
                 Title = "ITS TIME TO DUDUDUDU... DUEL!",
                 Description = _events.ToString(),
                 Color = DiscordColor.Chartreuse
@@ -80,18 +80,18 @@ namespace TheGodfather.Modules.Games
 
         private void UpdateHpBars()
         {
-            _hp1bar = string.Join("", Enumerable.Repeat(PremadeEmoji.WhiteSquare, _hp1)) + string.Join("", Enumerable.Repeat(PremadeEmoji.BlackSquare, 5 - _hp1));
-            _hp2bar = string.Join("", Enumerable.Repeat(PremadeEmoji.BlackSquare, 5 - _hp2)) + string.Join("", Enumerable.Repeat(PremadeEmoji.WhiteSquare, _hp2));
+            _hp1bar = string.Join("", Enumerable.Repeat(StaticDiscordEmoji.WhiteSquare, _hp1)) + string.Join("", Enumerable.Repeat(StaticDiscordEmoji.BlackSquare, 5 - _hp1));
+            _hp2bar = string.Join("", Enumerable.Repeat(StaticDiscordEmoji.BlackSquare, 5 - _hp2)) + string.Join("", Enumerable.Repeat(StaticDiscordEmoji.WhiteSquare, _hp2));
         }
 
         private void DealDamage()
         {
             int damage = 1;
             if (_rand.Next() % 2 == 0) {
-                _events.AppendLine($"{_p1.Username} {PremadeEmoji.GetRandomDuelWeapon(_rand)} {_p2.Username}");
+                _events.AppendLine($"{_p1.Username} {StaticDiscordEmoji.GetRandomDuelWeapon(_rand)} {_p2.Username}");
                 _hp2 -= damage;
             } else {
-                _events.AppendLine($"{_p2.Username} {PremadeEmoji.GetRandomDuelWeapon(_rand)} {_p1.Username}");
+                _events.AppendLine($"{_p2.Username} {StaticDiscordEmoji.GetRandomDuelWeapon(_rand)} {_p1.Username}");
                 _hp1 -= damage;
             }
         }
@@ -108,11 +108,11 @@ namespace TheGodfather.Modules.Games
                 if (mctx.User.Id == _p1.Id && !_pot1used) {
                     _hp1 = (_hp1 + 1 > 5) ? 5 : _hp1 + 1;
                     _pot1used = true;
-                    _events.AppendLine($"{_p1.Username} {PremadeEmoji.Syringe}");
+                    _events.AppendLine($"{_p1.Username} {StaticDiscordEmoji.Syringe}");
                 } else if (mctx.User.Id == _p2.Id && !_pot2used) {
                     _hp2 = (_hp2 + 1 > 5) ? 5 : _hp2 + 1;
                     _pot2used = true;
-                    _events.AppendLine($"{_p2.Username} {PremadeEmoji.Syringe}");
+                    _events.AppendLine($"{_p2.Username} {StaticDiscordEmoji.Syringe}");
                 }
             }
         }

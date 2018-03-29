@@ -13,7 +13,7 @@ namespace TheGodfather.Modules.Games.Common
 {
     public sealed class Caro : BoardGame
     {
-        private static string _header = DiscordEmoji.FromUnicode("\U0001f199") + string.Join("", PremadeEmoji.Numbers);
+        private static string _header = DiscordEmoji.FromUnicode("\U0001f199") + string.Join("", StaticDiscordEmoji.Numbers);
 
 
         public Caro(InteractivityExtension interactivity, DiscordChannel channel, DiscordUser player1, DiscordUser player2, TimeSpan? movetime = null)
@@ -70,12 +70,12 @@ namespace TheGodfather.Modules.Games.Common
             StringBuilder sb = new StringBuilder();
             sb.AppendLine(_header);
             for (int i = 0; i < BOARD_SIZE_Y; i++) {
-                sb.Append(PremadeEmoji.Numbers[i]);
+                sb.Append(StaticDiscordEmoji.Numbers[i]);
                 for (int j = 0; j < BOARD_SIZE_X; j++)
                     switch (_board[i, j]) {
-                        case 0: sb.Append(PremadeEmoji.BoardSquare); break;
-                        case 1: sb.Append(PremadeEmoji.BoardPieceX); break;
-                        case 2: sb.Append(PremadeEmoji.BoardPieceO); break;
+                        case 0: sb.Append(StaticDiscordEmoji.BoardSquare); break;
+                        case 1: sb.Append(StaticDiscordEmoji.BoardPieceX); break;
+                        case 2: sb.Append(StaticDiscordEmoji.BoardPieceO); break;
                     }
                 sb.AppendLine();
             }

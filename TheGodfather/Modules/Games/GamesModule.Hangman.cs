@@ -95,7 +95,7 @@ namespace TheGodfather.Modules.Games
                 var top = await Database.GetTopHangmanPlayersStringAsync(ctx.Client)
                     .ConfigureAwait(false);
 
-                await ctx.RespondWithIconEmbedAsync(PremadeEmoji.Trophy, $"Top players in Hangman:\n\n{top}")
+                await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Trophy, $"Top players in Hangman:\n\n{top}")
                     .ConfigureAwait(false);
             }
             #endregion
