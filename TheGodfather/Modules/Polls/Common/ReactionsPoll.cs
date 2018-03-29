@@ -38,14 +38,32 @@ namespace TheGodfather.Modules.Polls.Common
 
         public override async Task RunAsync(TimeSpan timespan)
         {
+            _endTime = DateTime.Now + timespan;
             Running = true;
-            _message = await _channel.SendMessageAsync(embed: EmbedPoll("Vote by clicking on the reactions!"))
+            _message = await _channel.SendMessageAsync(embed: EmbedPoll())
                 .ConfigureAwait(false);
             _result = await _interactivity.CreatePollAsync(_message, EmojiUtil.Numbers.Take(OptionCount), timespan)
                 .ConfigureAwait(false);
             await _channel.SendMessageAsync(embed: EmbedPollResults())
                 .ConfigureAwait(false);
             Running = false;
+        }
+
+        public override DiscordEmbed EmbedPoll()
+        {
+            var emb = new DiscordEmbedBuilder() {
+                Title = Question,
+                Description = "Vote by clicking on the reactions!",
+                Color = DiscordColor.Orange
+            };
+            for (int i = 0; i < _options.Count; i++)
+                if (!string.IsNullOrWhiteSpace(_options[i]))
+                    emb.AddField($"{i + 1}", _options[i], inline: true);
+
+            if (_endTime != null)
+                emb.WithFooter($"Poll ends at: {_endTime.ToUniversalTime().ToString()} UTC (in {UntilEnd:hh\\:mm\\:ss})");
+
+            return emb.Build();
         }
 
         public override DiscordEmbed EmbedPollResults()

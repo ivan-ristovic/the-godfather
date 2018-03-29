@@ -34,7 +34,8 @@ namespace TheGodfather.Modules.Polls
                 throw new CommandFailedException("Another poll is already running in this channel.");
 
             var poll = new Poll(ctx.Client.GetInteractivity(), ctx.Channel, question);
-            Poll.RegisterPollInChannel(poll, ctx.Channel.Id);
+            if (!Poll.RegisterPollInChannel(poll, ctx.Channel.Id))
+                throw new CommandFailedException("Failed to start the poll. Please try again.");
             try {
                 await ctx.RespondWithIconEmbedAsync("And what will be the possible answers? (separate with semicolon ``;``)", ":question:")
                     .ConfigureAwait(false);
@@ -54,6 +55,45 @@ namespace TheGodfather.Modules.Polls
         public async Task PollAsync(CommandContext ctx,
                                    [RemainingText, Description("Question.")] string question)
             => await PollAsync(ctx, TimeSpan.FromMinutes(1), question).ConfigureAwait(false);
+        #endregion
+
+        #region COMMAND_REACTIONSPOLL
+        [Command("reactionspoll"), Priority(1)]
+        [Description("Starts a poll with reactions in the channel.")]
+        [Aliases("rpoll", "pollr", "voter")]
+        [UsageExample("!rpoll :smile: :joy:")]
+        public async Task ReactionsPollAsync(CommandContext ctx,
+                                            [Description("Time for poll to run.")] TimeSpan timeout,
+                                            [RemainingText, Description("Question.")] string question)
+        {
+            if (string.IsNullOrWhiteSpace(question))
+                throw new InvalidCommandUsageException("Poll requires a question.");
+
+            if (Poll.RunningInChannel(ctx.Channel.Id))
+                throw new CommandFailedException("Another poll is already running in this channel.");
+
+            var rpoll = new ReactionsPoll(ctx.Client.GetInteractivity(), ctx.Channel, question);
+            if (!Poll.RegisterPollInChannel(rpoll, ctx.Channel.Id))
+                throw new CommandFailedException("Failed to start the poll. Please try again.");
+            try {
+                await ctx.RespondWithIconEmbedAsync("And what will be the possible answers? (separate with semicolon ``;``)", ":question:")
+                    .ConfigureAwait(false);
+                var options = await ctx.WaitAndParsePollOptionsAsync()
+                    .ConfigureAwait(false);
+                if (options.Count < 2 || options.Count > 10)
+                    throw new CommandFailedException("Poll must have minimum 2 and maximum 10 options!");
+                rpoll.SetOptions(options);
+                await rpoll.RunAsync(timeout)
+                    .ConfigureAwait(false);
+            } finally {
+                Poll.UnregisterPollInChannel(ctx.Channel.Id);
+            }
+        }
+
+        [Command("reactionspoll"), Priority(0)]
+        public async Task ReactionsPollAsync(CommandContext ctx,
+                                            [RemainingText, Description("Question.")] string question)
+            => await ReactionsPollAsync(ctx, TimeSpan.FromMinutes(1), question).ConfigureAwait(false);
         #endregion
     }
 }

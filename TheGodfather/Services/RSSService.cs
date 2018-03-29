@@ -57,9 +57,9 @@ namespace TheGodfather.Services
 
         public static async Task CheckFeedsForChangesAsync(DiscordClient client, DBService db)
         {
-            var _feeds = await db.GetAllFeedEntriesAsync()
+            var feeds = await db.GetAllFeedEntriesAsync()
                 .ConfigureAwait(false);
-            foreach (var feed in _feeds) {
+            foreach (var feed in feeds) {
                 try {
                     if (!feed.Subscriptions.Any()) {
                         await db.RemoveFeedAsync(feed.Id)
@@ -67,8 +67,14 @@ namespace TheGodfather.Services
                         continue;
                     }
 
-                    var newest = GetFeedResults(feed.URL).First();
-                    var url = newest.Links.First().Uri.ToString();
+                    var newest = GetFeedResults(feed.URL)?.FirstOrDefault();
+                    if (newest == null)
+                        continue;
+
+                    var url = newest.Links.FirstOrDefault()?.Uri.ToString();
+                    if (url == null)
+                        continue;
+
                     if (string.Compare(url, feed.SavedURL, true) != 0) {
                         await db.UpdateFeedSavedURLAsync(feed.Id, url)
                             .ConfigureAwait(false);
