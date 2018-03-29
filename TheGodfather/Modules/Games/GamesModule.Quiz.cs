@@ -47,7 +47,7 @@ namespace TheGodfather.Modules.Games
                 var top = await Database.GetTopQuizPlayersStringAsync(ctx.Client)
                     .ConfigureAwait(false);
 
-                await ctx.RespondWithIconEmbedAsync(EmojiUtil.Trophy, $"Top players in Quiz:\n\n{top}")
+                await ctx.RespondWithIconEmbedAsync(PremadeEmoji.Trophy, $"Top players in Quiz:\n\n{top}")
                     .ConfigureAwait(false);
             }
             #endregion

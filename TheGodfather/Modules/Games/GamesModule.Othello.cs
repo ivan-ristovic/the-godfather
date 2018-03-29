@@ -54,9 +54,9 @@ namespace TheGodfather.Modules.Games
                     
                     if (othello.Winner != null) {
                         if (othello.NoReply == false)
-                            await ctx.RespondWithIconEmbedAsync(EmojiUtil.Trophy, $"The winner is: {othello.Winner.Mention}!").ConfigureAwait(false);
+                            await ctx.RespondWithIconEmbedAsync(PremadeEmoji.Trophy, $"The winner is: {othello.Winner.Mention}!").ConfigureAwait(false);
                         else
-                            await ctx.RespondWithIconEmbedAsync(EmojiUtil.Trophy, $"{othello.Winner.Mention} won due to no replies from opponent!").ConfigureAwait(false);
+                            await ctx.RespondWithIconEmbedAsync(PremadeEmoji.Trophy, $"{othello.Winner.Mention} won due to no replies from opponent!").ConfigureAwait(false);
 
                         await Database.UpdateUserStatsAsync(othello.Winner.Id, GameStatsType.OthellosWon)
                             .ConfigureAwait(false);
@@ -105,7 +105,7 @@ namespace TheGodfather.Modules.Games
                 var top = await Database.GetTopOthelloPlayersStringAsync(ctx.Client)
                     .ConfigureAwait(false);
 
-                await ctx.RespondWithIconEmbedAsync(EmojiUtil.Trophy, $"Top players in Othello:\n\n{top}")
+                await ctx.RespondWithIconEmbedAsync(PremadeEmoji.Trophy, $"Top players in Othello:\n\n{top}")
                     .ConfigureAwait(false);
             }
             #endregion

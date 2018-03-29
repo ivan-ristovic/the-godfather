@@ -54,9 +54,9 @@ namespace TheGodfather.Modules.Games
 
                     if (caro.Winner != null) {
                         if (caro.NoReply == false)
-                            await ctx.RespondWithIconEmbedAsync(EmojiUtil.Trophy, $"The winner is: {caro.Winner.Mention}!").ConfigureAwait(false);
+                            await ctx.RespondWithIconEmbedAsync(PremadeEmoji.Trophy, $"The winner is: {caro.Winner.Mention}!").ConfigureAwait(false);
                         else
-                            await ctx.RespondWithIconEmbedAsync(EmojiUtil.Trophy, $"{caro.Winner.Mention} won due to no replies from opponent!").ConfigureAwait(false);
+                            await ctx.RespondWithIconEmbedAsync(PremadeEmoji.Trophy, $"{caro.Winner.Mention} won due to no replies from opponent!").ConfigureAwait(false);
 
                         await Database.UpdateUserStatsAsync(caro.Winner.Id, GameStatsType.CarosWon)
                             .ConfigureAwait(false);
@@ -101,7 +101,7 @@ namespace TheGodfather.Modules.Games
                 var top = await Database.GetTopCaroPlayersStringAsync(ctx.Client)
                     .ConfigureAwait(false);
 
-                await ctx.RespondWithIconEmbedAsync(EmojiUtil.Trophy, $"Top players in Caro:\n\n{top}")
+                await ctx.RespondWithIconEmbedAsync(PremadeEmoji.Trophy, $"Top players in Caro:\n\n{top}")
                     .ConfigureAwait(false);
             }
             #endregion

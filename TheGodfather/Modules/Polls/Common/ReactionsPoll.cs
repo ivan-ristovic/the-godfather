@@ -42,7 +42,7 @@ namespace TheGodfather.Modules.Polls.Common
             Running = true;
             _message = await _channel.SendMessageAsync(embed: EmbedPoll())
                 .ConfigureAwait(false);
-            _result = await _interactivity.CreatePollAsync(_message, EmojiUtil.Numbers.Take(OptionCount), timespan)
+            _result = await _interactivity.CreatePollAsync(_message, PremadeEmoji.Numbers.Take(OptionCount), timespan)
                 .ConfigureAwait(false);
             await _channel.SendMessageAsync(embed: EmbedPollResults())
                 .ConfigureAwait(false);

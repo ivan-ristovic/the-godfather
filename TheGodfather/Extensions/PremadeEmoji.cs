@@ -7,7 +7,7 @@ using DSharpPlus.Entities;
 
 namespace TheGodfather.Extensions
 {
-    public static class EmojiUtil
+    public static class PremadeEmoji
     {
         public static IReadOnlyList<DiscordEmoji> Numbers = new List<DiscordEmoji> {
             DiscordEmoji.FromUnicode("1\u20e3"),

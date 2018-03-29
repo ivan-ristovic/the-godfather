@@ -279,7 +279,7 @@
     <Compile Include="Extensions\Converters\CustomBoolConverter.cs" />
     <Compile Include="Extensions\Converters\CustomActivityTypeConverter.cs" />
     <Compile Include="Extensions\Converters\CustomTimeWindowConverter.cs" />
-    <Compile Include="Extensions\EmojiUtil.cs" />
+    <Compile Include="Extensions\PremadeEmoji.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Entities\Logger.cs" />
     <Compile Include="Modules\Administration\EmojiModule.cs" />

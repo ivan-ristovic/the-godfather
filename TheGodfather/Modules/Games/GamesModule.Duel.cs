@@ -95,7 +95,7 @@ namespace TheGodfather.Modules.Games
                 var top = await Database.GetTopDuelistsStringAsync(ctx.Client)
                     .ConfigureAwait(false);
 
-                await ctx.RespondWithIconEmbedAsync(EmojiUtil.Trophy, $"Top Duelists:\n\n{top}")
+                await ctx.RespondWithIconEmbedAsync(PremadeEmoji.Trophy, $"Top Duelists:\n\n{top}")
                     .ConfigureAwait(false);
             }
             #endregion

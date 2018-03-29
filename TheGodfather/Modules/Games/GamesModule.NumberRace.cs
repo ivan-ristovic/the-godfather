@@ -58,14 +58,14 @@ namespace TheGodfather.Modules.Games
 
                         if (game.NoReply) {
                             if (game.Winner != null) {
-                                await ctx.RespondWithIconEmbedAsync(EmojiUtil.Trophy, $"{game.Winner.Mention} won due to no replies from other users!")
+                                await ctx.RespondWithIconEmbedAsync(PremadeEmoji.Trophy, $"{game.Winner.Mention} won due to no replies from other users!")
                                     .ConfigureAwait(false);
                             } else {
                                 await ctx.RespondWithIconEmbedAsync("No replies, aborting Number Race...", ":alarm_clock:")
                                         .ConfigureAwait(false);
                             }
                         } else {
-                            await ctx.RespondWithIconEmbedAsync(EmojiUtil.Trophy, "Winner: " + game.Winner.Mention)
+                            await ctx.RespondWithIconEmbedAsync(PremadeEmoji.Trophy, "Winner: " + game.Winner.Mention)
                                 .ConfigureAwait(false);
                         }
 
@@ -134,7 +134,7 @@ namespace TheGodfather.Modules.Games
                 var top = await Database.GetTopNunchiPlayersStringAsync(ctx.Client)
                     .ConfigureAwait(false);
 
-                await ctx.RespondWithIconEmbedAsync(EmojiUtil.Trophy, $"Top players in Number Race:\n\n{top}")
+                await ctx.RespondWithIconEmbedAsync(PremadeEmoji.Trophy, $"Top players in Number Race:\n\n{top}")
                     .ConfigureAwait(false);
             }
             #endregion
