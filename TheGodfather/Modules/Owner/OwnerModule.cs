@@ -49,12 +49,19 @@ namespace TheGodfather.Modules.Owner
             if (!await ctx.AskYesNoQuestionAsync($"Are you sure you want to announce the messsage:\n\n{message}").ConfigureAwait(false))
                 return;
 
-            StringBuilder sb = new StringBuilder();
-            foreach (var guild in ctx.Client.Guilds.Values) {
-                sb.AppendLine(guild.Name);
+            var errors = new StringBuilder();
+            foreach (var shard in TheGodfather.Shards) {
+                foreach (var guild in shard.Client.Guilds.Values) {
+                    try {
+                        await guild.GetDefaultChannel().SendMessageAsync()
+                            .ConfigureAwait(false);
+                    } catch {
+                        errors.AppendLine($"Warning: Failed to send a message to {guild.ToString()}");
+                    }
+                }
             }
 
-            await ctx.RespondWithIconEmbedAsync(sb.ToString())
+            await ctx.RespondWithIconEmbedAsync($"Message sent!\n\n{errors.ToString()}")
                 .ConfigureAwait(false);
         }
         #endregion
