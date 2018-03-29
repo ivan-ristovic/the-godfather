@@ -33,6 +33,9 @@ namespace TheGodfather.Modules.Polls
             if (Poll.RunningInChannel(ctx.Channel.Id))
                 throw new CommandFailedException("Another poll is already running in this channel.");
 
+            if (timeout < TimeSpan.FromSeconds(10) || timeout >= TimeSpan.FromDays(1))
+                throw new InvalidCommandUsageException("Poll cannot run for less than 10 seconds or more than 1 day(s).");
+
             var poll = new Poll(ctx.Client.GetInteractivity(), ctx.Channel, question);
             if (!Poll.RegisterPollInChannel(poll, ctx.Channel.Id))
                 throw new CommandFailedException("Failed to start the poll. Please try again.");
@@ -71,6 +74,9 @@ namespace TheGodfather.Modules.Polls
 
             if (Poll.RunningInChannel(ctx.Channel.Id))
                 throw new CommandFailedException("Another poll is already running in this channel.");
+
+            if (timeout < TimeSpan.FromSeconds(10) || timeout >= TimeSpan.FromDays(1))
+                throw new InvalidCommandUsageException("Poll cannot run for less than 10 seconds or more than 1 day(s).");
 
             var rpoll = new ReactionsPoll(ctx.Client.GetInteractivity(), ctx.Channel, question);
             if (!Poll.RegisterPollInChannel(rpoll, ctx.Channel.Id))

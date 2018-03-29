@@ -37,6 +37,28 @@ namespace TheGodfather.Modules.Owner
         public OwnerModule(SharedData shared, DBService db) : base(shared, db) { }
 
 
+        #region COMMAND_ANNOUNCE
+        [Command("announce")]
+        [Description("Send a message to all guilds the bot is in.")]
+        [Aliases("a", "ann")]
+        [UsageExample("!owner announce SPAM SPAM")]
+        [ListeningCheck]
+        public async Task ClearLogAsync(CommandContext ctx,
+                                       [RemainingText, Description("Message to send.")] string message)
+        {
+            if (!await ctx.AskYesNoQuestionAsync($"Are you sure you want to announce the messsage:\n\n{message}").ConfigureAwait(false))
+                return;
+
+            StringBuilder sb = new StringBuilder();
+            foreach (var guild in ctx.Client.Guilds.Values) {
+                sb.AppendLine(guild.Name);
+            }
+
+            await ctx.RespondWithIconEmbedAsync(sb.ToString())
+                .ConfigureAwait(false);
+        }
+        #endregion
+
         #region COMMAND_BOTAVATAR
         [Command("botavatar")]
         [Description("Set bot avatar.")]

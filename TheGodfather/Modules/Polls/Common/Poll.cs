@@ -68,7 +68,7 @@ namespace TheGodfather.Modules.Polls.Common
                 .ConfigureAwait(false);
             
             _endTime = DateTime.Now + timespan;
-            while (UntilEnd > TimeSpan.Zero) {
+            while (true) {
                 try {
                     if (_channel.LastMessageId != msg.Id) {
                         await msg.DeleteAsync()
@@ -83,6 +83,10 @@ namespace TheGodfather.Modules.Polls.Common
                     msg = await _channel.SendMessageAsync(embed: EmbedPoll())
                         .ConfigureAwait(false);
                 }
+
+                if (UntilEnd.TotalSeconds < 1)
+                    break;
+
                 await Task.Delay(UntilEnd <= TimeSpan.FromSeconds(5) ? UntilEnd : TimeSpan.FromSeconds(5))
                     .ConfigureAwait(false);
             }
@@ -131,8 +135,12 @@ namespace TheGodfather.Modules.Polls.Common
                 if (!string.IsNullOrWhiteSpace(_options[i]))
                     emb.AddField($"{i + 1} : {_options[i]}", $"{_votes.Count(kvp => kvp.Value == i)} vote(s)");
 
-            if (_endTime != null)
-                emb.WithFooter($"Poll ends in: {UntilEnd:hh\\:mm\\:ss}");
+            if (_endTime != null) {
+                if (UntilEnd.TotalSeconds > 1)
+                    emb.WithFooter($"Poll ends in: {UntilEnd:hh\\:mm\\:ss}");
+                else
+                    emb.WithFooter($"Poll ended.");
+            }
 
             return emb.Build();
         }
