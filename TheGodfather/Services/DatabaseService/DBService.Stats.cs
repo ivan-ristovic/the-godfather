@@ -166,7 +166,7 @@ namespace TheGodfather.Services
 
             return emb.Build();
         }
-
+        
         private async Task<IEnumerable<GameStats>> GetOrderedGameStatsAsync(string orderstr, params string[] selectors)
         {
             var res = await ExecuteRawQueryAsync($@"

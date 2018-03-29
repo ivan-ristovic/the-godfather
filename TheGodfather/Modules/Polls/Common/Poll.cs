@@ -23,8 +23,15 @@ namespace TheGodfather.Modules.Polls.Common
         public static bool RunningInChannel(ulong cid)
             => _polls.ContainsKey(cid) && _polls[cid] != null;
 
-        public static void RegisterPollInChannel(Poll poll, ulong cid)
-            => _polls.AddOrUpdate(cid, poll, (c, g) => poll);
+        public static bool RegisterPollInChannel(Poll poll, ulong cid)
+        {
+            if (_polls.ContainsKey(cid)) {
+                _polls[cid] = poll;
+                return true;
+            }
+            
+            return _polls.TryAdd(cid, poll);
+        }
 
         public static void UnregisterPollInChannel(ulong cid)
         {
@@ -37,11 +44,13 @@ namespace TheGodfather.Modules.Polls.Common
 
         public string Question { get; }
         public bool Running { get; protected set; }
+        public TimeSpan UntilEnd => _endTime != null ? _endTime - DateTime.Now : TimeSpan.Zero;
         protected List<string> _options = new List<string>();
         public int OptionCount => _options.Count;
         protected ConcurrentDictionary<ulong, int> _votes = new ConcurrentDictionary<ulong, int>();
         protected DiscordChannel _channel;
         protected InteractivityExtension _interactivity;
+        protected DateTime _endTime;
 
 
         public Poll(InteractivityExtension interactivity, DiscordChannel channel, string question)
@@ -55,13 +64,32 @@ namespace TheGodfather.Modules.Polls.Common
         public virtual async Task RunAsync(TimeSpan timespan)
         {
             Running = true;
-            await _channel.SendMessageAsync(embed: EmbedPoll())
+            var msg = await _channel.SendMessageAsync(embed: EmbedPoll())
                 .ConfigureAwait(false);
-            await Task.Delay(timespan)
-                .ConfigureAwait(false);
+            
+            _endTime = DateTime.Now + timespan;
+            while (UntilEnd > TimeSpan.Zero) {
+                try {
+                    if (_channel.LastMessageId != msg.Id) {
+                        await msg.DeleteAsync()
+                            .ConfigureAwait(false);
+                        msg = await _channel.SendMessageAsync(embed: EmbedPoll())
+                            .ConfigureAwait(false);
+                    } else {
+                        await msg.ModifyAsync(embed: EmbedPoll())
+                            .ConfigureAwait(false);
+                    }
+                } catch {
+                    msg = await _channel.SendMessageAsync(embed: EmbedPoll())
+                        .ConfigureAwait(false);
+                }
+                await Task.Delay(UntilEnd <= TimeSpan.FromSeconds(5) ? UntilEnd : TimeSpan.FromSeconds(5))
+                    .ConfigureAwait(false);
+            }
+            Running = false;
+
             await _channel.SendMessageAsync(embed: EmbedPollResults())
                 .ConfigureAwait(false);
-            Running = false;
         }
 
         public void SetOptions(List<string> options)
@@ -92,16 +120,19 @@ namespace TheGodfather.Modules.Polls.Common
         public string OptionWithId(int id)
             => (id >= 0 && id < _options.Count) ? _options[id] : null;
 
-        public DiscordEmbed EmbedPoll(string desc = null)
+        public virtual DiscordEmbed EmbedPoll()
         {
             var emb = new DiscordEmbedBuilder() {
                 Title = Question,
-                Description = desc ?? $"Vote by typing {Formatter.InlineCode("!vote <number>")}",
+                Description = $"Vote by typing {Formatter.InlineCode("!vote <number>")}",
                 Color = DiscordColor.Orange
             };
             for (int i = 0; i < _options.Count; i++)
                 if (!string.IsNullOrWhiteSpace(_options[i]))
-                    emb.AddField($"{i + 1}", _options[i], inline: true);
+                    emb.AddField($"{i + 1} : {_options[i]}", $"{_votes.Count(kvp => kvp.Value == i)} vote(s)");
+
+            if (_endTime != null)
+                emb.WithFooter($"Poll ends in: {UntilEnd:hh\\:mm\\:ss}");
 
             return emb.Build();
         }
