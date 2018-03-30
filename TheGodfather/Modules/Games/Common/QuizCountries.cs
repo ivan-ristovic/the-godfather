@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-using TheGodfather.Modules.Games.Common;
+using TheGodfather.Common;
 
 using DSharpPlus;
 using DSharpPlus.Entities;
@@ -40,11 +40,10 @@ namespace TheGodfather.Modules.Games.Common
         {
             var questions = _countries.Keys.ToList();
             var participants = new Dictionary<ulong, int>();
-
-            var rnd = new Random();
+            
             int timeouts = 0;
             for (int i = 1; i < 10; i++) {
-                string question = questions[rnd.Next(questions.Count)];
+                string question = questions[GFRandom.Generator.Next(questions.Count)];
                 string answer = _countries[question].ToLowerInvariant();
 
                 await _channel.TriggerTypingAsync()

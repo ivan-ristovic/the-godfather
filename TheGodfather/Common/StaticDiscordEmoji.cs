@@ -60,7 +60,7 @@ namespace TheGodfather.Common
         public static DiscordEmoji Wave => DiscordEmoji.FromUnicode("\U0001f44b");
 
 
-        public static DiscordEmoji GetRandomDuelWeapon(Random rng = null)
-            => DuelWeapons[rng != null ? rng.Next(DuelWeapons.Count) : new Random().Next(DuelWeapons.Count)];
+        public static DiscordEmoji GetRandomDuelWeapon()
+            => DuelWeapons[GFRandom.Generator.Next(DuelWeapons.Count)];
     }
 }

@@ -3,6 +3,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
+using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
@@ -73,7 +74,7 @@ namespace TheGodfather.Modules.Misc
                               .Distinct()
                               .Select(s => s.Trim())
                               .Where(s => !string.IsNullOrWhiteSpace(s));
-            await ctx.RespondWithIconEmbedAsync(options.ElementAt(new Random().Next(options.Count())), ":arrow_right:")
+            await ctx.RespondWithIconEmbedAsync(options.ElementAt(GFRandom.Generator.Next(options.Count())), ":arrow_right:")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -95,7 +96,7 @@ namespace TheGodfather.Modules.Misc
             if (online.Count() == 0)
                 throw new CommandFailedException("No online members to raffle from.");
 
-            var raffled = online.ElementAt(new Random().Next(online.Count()));
+            var raffled = online.ElementAt(GFRandom.Generator.Next(online.Count()));
             await ctx.RespondWithIconEmbedAsync($"Raffled: {raffled.Mention}", ":game_die:")
                 .ConfigureAwait(false);
         }

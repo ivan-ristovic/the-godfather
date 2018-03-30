@@ -3,9 +3,9 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-using TheGodfather.Extensions;
+using TheGodfather.Common;
 using TheGodfather.Common.Collections;
-using TheGodfather.Modules.Games.Common;
+using TheGodfather.Extensions;
 
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
@@ -31,7 +31,7 @@ namespace TheGodfather.Modules.Games.Common
         {
             Started = true;
 
-            int num = new Random().Next(1000);
+            int num = GFRandom.Generator.Next(1000);
             await _channel.SendIconEmbedAsync(num.ToString(), DiscordEmoji.FromUnicode("\U0001f199"))
                 .ConfigureAwait(false);
             

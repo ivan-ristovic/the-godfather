@@ -30,7 +30,6 @@ namespace TheGodfather.Modules.Games.Common
         private bool _pot2used = false;
         private int _hp1 = 5;
         private int _hp2 = 5;
-        private Random _rand = new Random();
         private StringBuilder _events = new StringBuilder();
         #endregion
 
@@ -88,11 +87,11 @@ namespace TheGodfather.Modules.Games.Common
         private void DealDamage()
         {
             int damage = 1;
-            if (_rand.Next() % 2 == 0) {
-                _events.AppendLine($"{_p1.Username} {StaticDiscordEmoji.GetRandomDuelWeapon(_rand)} {_p2.Username}");
+            if (GFRandom.Generator.GetBool()) {
+                _events.AppendLine($"{_p1.Username} {StaticDiscordEmoji.GetRandomDuelWeapon()} {_p2.Username}");
                 _hp2 -= damage;
             } else {
-                _events.AppendLine($"{_p2.Username} {StaticDiscordEmoji.GetRandomDuelWeapon(_rand)} {_p1.Username}");
+                _events.AppendLine($"{_p2.Username} {StaticDiscordEmoji.GetRandomDuelWeapon()} {_p1.Username}");
                 _hp1 -= damage;
             }
         }

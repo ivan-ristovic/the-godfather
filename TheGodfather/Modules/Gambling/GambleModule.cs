@@ -1,8 +1,8 @@
 ﻿#region USING_DIRECTIVES
-using System;
 using System.Text;
 using System.Threading.Tasks;
 
+using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
@@ -43,34 +43,34 @@ namespace TheGodfather.Modules.Gambling
                 throw new InvalidCommandUsageException("Missing heads or tails call.");
             bet = bet.ToLowerInvariant();
 
-            int guess;
+            bool guess;
             if (bet == "heads" || bet == "head" || bet == "h")
-                guess = 0;
+                guess = true;
             else if (bet == "tails" || bet == "tail" || bet == "t")
-                guess = 1;
+                guess = false;
             else
                 throw new CommandFailedException($"Invalid coin outcome call (has to be {Formatter.Bold("heads")} or {Formatter.Bold("tails")})");
 
             if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, bid).ConfigureAwait(false))
                 throw new CommandFailedException("You do not have enough credits in WM bank!");
 
-            int rnd = new Random().Next(2);
+            bool rnd = GFRandom.Generator.GetBool();
 
             StringBuilder sb = new StringBuilder();
             sb.Append(ctx.User.Mention)
               .Append(" flipped ")
-              .Append(Formatter.Bold(rnd == 0 ? "Heads" : "Tails"))
+              .Append(Formatter.Bold(rnd ? "Heads" : "Tails"))
               .Append(" and ")
               .Append(guess == rnd ? "won " : "lost ")
               .Append(Formatter.Bold(bid.ToString()))
               .Append(" credits!");
 
-            await ctx.RespondWithIconEmbedAsync(sb.ToString(), ":game_die:")
-                .ConfigureAwait(false);
-
             if (rnd == guess)
                 await Database.GiveCreditsToUserAsync(ctx.User.Id, bid * 2)
                     .ConfigureAwait(false);
+
+            await ctx.RespondWithIconEmbedAsync(sb.ToString(), ":game_die:")
+                .ConfigureAwait(false);
         }
 
         [Command("coinflip"), Priority(0)]
@@ -112,7 +112,7 @@ namespace TheGodfather.Modules.Gambling
             if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, bid).ConfigureAwait(false))
                 throw new CommandFailedException("You do not have enough credits in WM bank!");
 
-            int rnd = new Random().Next(1, 7);
+            int rnd = GFRandom.Generator.Next(1, 7);
 
             StringBuilder sb = new StringBuilder();
             sb.Append(ctx.User.Mention)
@@ -182,12 +182,11 @@ namespace TheGodfather.Modules.Gambling
                 DiscordEmoji.FromName(ctx.Client, ":seven:"),
                 DiscordEmoji.FromName(ctx.Client, ":cherries:")
             };
-
-            var rnd = new Random();
+            
             DiscordEmoji[,] result = new DiscordEmoji[3, 3];
             for (int i = 0; i < 3; i++)
                 for (int j = 0; j < 3; j++)
-                    result[i, j] = emoji[rnd.Next(emoji.Length)];
+                    result[i, j] = emoji[GFRandom.Generator.Next(emoji.Length)];
 
             return result;
         }

@@ -64,7 +64,7 @@ namespace TheGodfather.Modules.Games
                 throw new CommandFailedException("Invalid pick. Must be rock, paper or scissors.");
 
             DiscordEmoji gfe;
-            switch (new Random().Next(0, 3)) {
+            switch (GFRandom.Generator.Next(3)) {
                 case 0:
                     gfe = DiscordEmoji.FromName(ctx.Client, ":new_moon:");
                     break;

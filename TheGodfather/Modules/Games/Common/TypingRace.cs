@@ -7,6 +7,8 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
+using TheGodfather.Common;
+
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 #endregion
@@ -24,8 +26,7 @@ namespace TheGodfather.Modules.Games.Common
 
         public override async Task RunAsync()
         {
-            var rnd = new Random();
-            var msg = new string(Enumerable.Repeat(' ', 30).Select(c => chars[rnd.Next(chars.Length)]).ToArray());
+            var msg = new string(Enumerable.Repeat(' ', 30).Select(c => chars[GFRandom.Generator.Next(chars.Length)]).ToArray());
 
             using (var image = new Bitmap(700, 150)) {
                 using (Graphics g = Graphics.FromImage(image)) {

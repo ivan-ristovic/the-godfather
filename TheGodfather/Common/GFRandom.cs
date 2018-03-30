@@ -7,9 +7,26 @@ namespace TheGodfather.Common
 {
     public sealed class GFRandom : IDisposable
     {
+        private static GFRandom _instance;
+        public static GFRandom Generator
+        {
+            get {
+                if (_instance == null) {
+                    _instance = new GFRandom();
+                }
+                return _instance;
+            }
+        }
+
         public bool IsDisposed { get; private set; } = false;
         private RandomNumberGenerator _rng { get; } = RandomNumberGenerator.Create();
 
+
+        private GFRandom() { }
+
+
+        public bool GetBool()
+            => Next(2) == 0;
 
         public byte[] GetBytes(int count)
         {

@@ -53,9 +53,12 @@ namespace TheGodfather.Modules.Misc
         [UsageExample("!coinflip")]
         public async Task CoinflipAsync(CommandContext ctx)
         {
-            string flip = new Random().Next(2) == 0 ? "Heads" : "Tails";
-            await ctx.RespondWithIconEmbedAsync($"{ctx.User.Mention} flipped {Formatter.Bold(flip)}", flip == "Heads" ? ":full_moon_with_face:" : ":new_moon_with_face:")
-                .ConfigureAwait(false);
+            if (GFRandom.Generator.GetBool())
+                await ctx.RespondWithIconEmbedAsync($"{ctx.User.Mention} flipped {Formatter.Bold("Heads")}", ":full_moon_with_face:")
+                    .ConfigureAwait(false);
+            else
+                await ctx.RespondWithIconEmbedAsync($"{ctx.User.Mention} flipped {Formatter.Bold("Tails")}", ":new_moon_with_face:")
+                    .ConfigureAwait(false);
         }
         #endregion
 
@@ -66,8 +69,7 @@ namespace TheGodfather.Modules.Misc
         [UsageExample("!dice")]
         public async Task DiceAsync(CommandContext ctx)
         {
-            string roll = new Random().Next(1, 7).ToString();
-            await ctx.RespondWithIconEmbedAsync($"{ctx.User.Mention} rolled a {Formatter.Bold(roll)}", ":game_die:")
+            await ctx.RespondWithIconEmbedAsync($"{ctx.User.Mention} rolled a {Formatter.Bold(GFRandom.Generator.Next(1, 7).ToString())}", ":game_die:")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -145,11 +147,10 @@ namespace TheGodfather.Modules.Misc
             if (string.IsNullOrWhiteSpace(text))
                 throw new InvalidCommandUsageException("Y0u d1dn'7 g1v3 m3 @ny 73x7...");
 
-            var rnd = new Random();
             var sb = new StringBuilder();
             foreach (char c in text) {
                 char add;
-                bool r = rnd.Next() % 2 == 0;
+                bool r = GFRandom.Generator.GetBool();
                 switch (c) {
                     case 'i': add = r ? 'i' : '1'; break;
                     case 'l': add = r ? 'l' : '1'; break;
@@ -160,7 +161,7 @@ namespace TheGodfather.Modules.Misc
                     case 's': add = r ? 's' : '5'; break;
                     default: add = c; break;
                 }
-                sb.Append((rnd.Next() % 2 == 0) ? Char.ToUpperInvariant(add) : Char.ToLowerInvariant(add));
+                sb.Append(GFRandom.Generator.GetBool() ? Char.ToUpperInvariant(add) : Char.ToLowerInvariant(add));
             }
 
             await ctx.RespondAsync(sb.ToString())

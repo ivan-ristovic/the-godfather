@@ -45,13 +45,12 @@ namespace TheGodfather.Modules.Games.Common
 
             var msg = await _channel.SendIconEmbedAsync("Race starting...")
                 .ConfigureAwait(false);
-            var rnd = new Random();
             while (!_participants.Any(p => p.Progress >= TRACK_SIZE)) {
                 await PrintRaceAsync(msg)
                     .ConfigureAwait(false);
 
                 foreach (var participant in _participants) {
-                    participant.Progress += rnd.Next(2, 7);
+                    participant.Progress += GFRandom.Generator.Next(2, 7);
                     if (participant.Progress > TRACK_SIZE)
                         participant.Progress = TRACK_SIZE;
                 }
