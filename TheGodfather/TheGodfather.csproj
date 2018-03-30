@@ -260,6 +260,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\Attributes\UsageExampleAttribute.cs" />
+    <Compile Include="Common\GFRandom.cs" />
     <Compile Include="Common\SavedTaskExecuter.cs" />
     <Compile Include="Modules\Administration\AutomaticRolesModule.cs" />
     <Compile Include="Modules\Games\GamesModule.Duel.cs" />
