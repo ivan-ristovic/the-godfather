@@ -52,7 +52,7 @@ namespace TheGodfather.Services
                         while (await reader.ReadAsync().ConfigureAwait(false)) {
                             int type = (short)reader["type"];
                             if (!Enum.IsDefined(typeof(ActivityType), type)) {
-                                Logger.LogMessage(LogLevel.Warning, "Undefined status activity found in database");
+                                TheGodfather.LogHandle.LogMessage(LogLevel.Warning, "Undefined status activity found in database");
                                 type = 0;
                             }
                             dict[(int)reader["id"]] = ((ActivityType)type).ToString() + " " + (string)reader["status"];
@@ -116,7 +116,7 @@ namespace TheGodfather.Services
             }
 
             if (!Enum.IsDefined(typeof(ActivityType), type)) {
-                Logger.LogMessage(LogLevel.Warning, "Undefined status activity found in database");
+                TheGodfather.LogHandle.LogMessage(LogLevel.Warning, "Undefined status activity found in database");
                 type = 0;
             }
 

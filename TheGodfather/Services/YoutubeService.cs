@@ -101,7 +101,7 @@ namespace TheGodfather.Services
                 if (data.Items != null && data.Items.Any())
                     return data.Items.First()["id"];
             } catch (Exception e) {
-                Logger.LogException(LogLevel.Debug, e);
+                TheGodfather.LogHandle.LogException(LogLevel.Debug, e);
             }
 
             return null;

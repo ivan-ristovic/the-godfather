@@ -43,12 +43,11 @@ namespace TheGodfather
         #endregion
 
 
-        public TheGodfatherShard(int sid, DBService db, SharedData sd, LogLevel lvl)
+        public TheGodfatherShard(int sid, DBService db, SharedData sd)
         {
             ShardId = sid;
             _db = db;
             _shared = sd;
-            Logger.LogLevel = lvl;
         }
 
 
@@ -84,7 +83,7 @@ namespace TheGodfather
                 ShardCount = _shared.BotConfiguration.ShardCount,
                 ShardId = ShardId,
                 UseInternalLogHandler = false,
-                LogLevel = Logger.LogLevel
+                LogLevel = TheGodfather.LogHandle.LogLevel
             };
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && Environment.OSVersion.Version <= new Version(6, 1, 7601, 65536))
@@ -93,7 +92,7 @@ namespace TheGodfather
             Client = new DiscordClient(cfg);
 
             Client.ClientErrored += Client_Error;
-            Client.DebugLogger.LogMessageReceived += (s, e) => Logger.LogMessage(ShardId, e);
+            Client.DebugLogger.LogMessageReceived += (s, e) => TheGodfather.LogHandle.LogMessage(ShardId, e);
             Client.GuildAvailable += Client_GuildAvailable;
             Client.GuildMemberAdded += Client_GuildMemberAdd;
             Client.GuildMemberRemoved += Client_GuildMemberRemove;
@@ -201,7 +200,7 @@ namespace TheGodfather
                     }
                 }
             } catch (Exception exc) {
-                Logger.LogException(LogLevel.Debug, exc);
+                TheGodfather.LogHandle.LogException(LogLevel.Debug, exc);
             }
 
             try {
@@ -227,7 +226,7 @@ namespace TheGodfather
                     }
                 }
             } catch (Exception exc) {
-                Logger.LogException(LogLevel.Debug, exc);
+                TheGodfather.LogHandle.LogException(LogLevel.Debug, exc);
             }
         }
 
@@ -243,7 +242,7 @@ namespace TheGodfather
                 cid = await _db.GetLeaveChannelIdAsync(e.Guild.Id)
                     .ConfigureAwait(false);
             } catch (Exception exc) {
-                Logger.LogException(LogLevel.Debug, exc);
+                TheGodfather.LogHandle.LogException(LogLevel.Debug, exc);
             }
 
             if (cid == 0)

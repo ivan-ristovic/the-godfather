@@ -9,24 +9,31 @@ using DSharpPlus.EventArgs;
 
 namespace TheGodfather.Common
 {
-    internal static class Logger
+    internal class Logger
     {
-        public static bool LogToFile {
+        public bool LogToFile {
             get => _filelog;
             set {
                 lock (_lock)
                     _filelog = value;
             }
         }
-        public static LogLevel LogLevel { get; set; } = LogLevel.Debug;
+        public LogLevel LogLevel { get; set; } = LogLevel.Debug;
 
-        private static readonly int BUFFER_SIZE = 512;
-        private static object _lock = new object();
-        private static string _path = "log.txt";
-        private static bool _filelog = true;
+        private readonly int BUFFER_SIZE;
+        private object _lock = new object();
+        private string _path;
+        private bool _filelog = true;
 
 
-        public static bool Clear()
+        public Logger(string filepath, int buffsize = 512)
+        {
+            _path = filepath;
+            BUFFER_SIZE = buffsize;
+        }
+
+
+        public bool Clear()
         {
             lock (_lock) {
                 Console.Clear();
@@ -40,7 +47,7 @@ namespace TheGodfather.Common
             return true;
         }
 
-        public static void LogMessage(LogLevel level, string message, DateTime? timestamp = null, bool filelog = true)
+        public void LogMessage(LogLevel level, string message, DateTime? timestamp = null, bool filelog = true)
         {
             lock (_lock) {
                 PrintTimestamp(timestamp);
@@ -51,7 +58,7 @@ namespace TheGodfather.Common
             }
         }
 
-        public static void LogMessage(int shardid, DebugLogMessageEventArgs e, bool filelog = true)
+        public void LogMessage(int shardid, DebugLogMessageEventArgs e, bool filelog = true)
         {
             lock (_lock) {
                 PrintTimestamp(e.Timestamp);
@@ -69,7 +76,7 @@ namespace TheGodfather.Common
             }
         }
 
-        public static void LogException(LogLevel level, Exception e, DateTime? timestamp = null, bool filelog = true)
+        public void LogException(LogLevel level, Exception e, DateTime? timestamp = null, bool filelog = true)
         {
             lock (_lock) {
                 PrintTimestamp(timestamp);
@@ -84,7 +91,7 @@ namespace TheGodfather.Common
         }
 
 
-        private static void WriteToLogFile(LogLevel level, string message, DateTime? timestamp = null)
+        private void WriteToLogFile(LogLevel level, string message, DateTime? timestamp = null)
         {
             try {
                 using (StreamWriter sw = new StreamWriter(_path, true, Encoding.UTF8, BUFFER_SIZE)) {
@@ -99,7 +106,7 @@ namespace TheGodfather.Common
             }
         }
 
-        private static void WriteToLogFile(int shardid, DebugLogMessageEventArgs e)
+        private void WriteToLogFile(int shardid, DebugLogMessageEventArgs e)
         {
             try {
                 using (StreamWriter sw = new StreamWriter(_path, true, Encoding.UTF8, BUFFER_SIZE)) {
@@ -116,7 +123,7 @@ namespace TheGodfather.Common
             }
         }
 
-        private static void WriteToLogFile(LogLevel level, Exception e, DateTime? timestamp = null)
+        private void WriteToLogFile(LogLevel level, Exception e, DateTime? timestamp = null)
         {
             try {
                 using (StreamWriter sw = new StreamWriter(_path, true, Encoding.UTF8, BUFFER_SIZE)) {
@@ -134,6 +141,7 @@ namespace TheGodfather.Common
                 LogException(LogLevel.Error, exc, filelog: false);
             }
         }
+
 
         private static void PrintLevel(LogLevel level)
         {

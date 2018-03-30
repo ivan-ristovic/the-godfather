@@ -69,7 +69,7 @@ namespace TheGodfather.Modules.Owner
                             .ConfigureAwait(false);
                     } catch (Exception e) {
                         sb.AppendLine($"Warning: Failed to add blocked {user.ToString()} to the database!");
-                        Logger.LogException(LogLevel.Warning, e);
+                        TheGodfather.LogHandle.LogException(LogLevel.Warning, e);
                         continue;
                     }
 
@@ -177,7 +177,7 @@ namespace TheGodfather.Modules.Owner
                             .ConfigureAwait(false);
                     } catch (Exception e) {
                         sb.AppendLine($"Warning: Failed to remove {user.ToString()} from the database!");
-                        Logger.LogException(LogLevel.Warning, e);
+                        TheGodfather.LogHandle.LogException(LogLevel.Warning, e);
                         continue;
                     }
 

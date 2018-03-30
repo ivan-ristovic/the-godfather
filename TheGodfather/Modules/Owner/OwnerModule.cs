@@ -131,7 +131,7 @@ namespace TheGodfather.Modules.Owner
             if (!await ctx.AskYesNoQuestionAsync("Are you sure you want to clear the logs?").ConfigureAwait(false))
                 return;
 
-            if (!Logger.Clear())
+            if (!TheGodfather.LogHandle.Clear())
                 throw new CommandFailedException("Failed to delete log file!");
 
             await ctx.RespondWithIconEmbedAsync()
@@ -286,7 +286,7 @@ namespace TheGodfather.Modules.Owner
         public async Task FileLogAsync(CommandContext ctx,
                                       [Description("True/False")] bool b = true)
         {
-            Logger.LogToFile = b;
+            TheGodfather.LogHandle.LogToFile = b;
 
             await ctx.RespondWithIconEmbedAsync($"File logging set to {b}")
                 .ConfigureAwait(false);

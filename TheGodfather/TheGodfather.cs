@@ -24,6 +24,7 @@ namespace TheGodfather
     internal static class TheGodfather
     {
         public static bool Listening { get; set; } = true;
+        public static Logger LogHandle { get; } = new Logger("log.txt");
         public static List<TheGodfatherShard> Shards { get; set; }
         private static CancellationTokenSource CTS { get; set; } = new CancellationTokenSource();
         private static DBService DatabaseService { get; set; }
@@ -76,6 +77,8 @@ namespace TheGodfather
             using (var sr = new StreamReader(fs, utf8))
                 json = await sr.ReadToEndAsync();
             var cfg = JsonConvert.DeserializeObject<BotConfig>(json);
+
+            LogHandle.LogLevel = cfg.LogLevel;
 
 
             Console.Write("\r[2/5] Booting PostgreSQL connection...");
@@ -136,11 +139,12 @@ namespace TheGodfather
                 MessageCount = msgcount
             };
 
+
             Console.Write("\r[4/5] Creating {0} shards...          ", cfg.ShardCount);
 
             Shards = new List<TheGodfatherShard>();
             for (var i = 0; i < cfg.ShardCount; i++) {
-                var shard = new TheGodfatherShard(i, DatabaseService, SharedData, cfg.LogLevel);
+                var shard = new TheGodfatherShard(i, DatabaseService, SharedData);
                 Shards.Add(shard);
             }
 
@@ -166,7 +170,7 @@ namespace TheGodfather
 
 
             GC.Collect();
-            Logger.LogMessage(LogLevel.Info, "<br>-------------- NEW INSTANCE STARTED --------------<br>");
+            LogHandle.LogMessage(LogLevel.Info, "<br>-------------- NEW INSTANCE STARTED --------------<br>");
 
 
             Console.WriteLine("Registering saved tasks...");
@@ -209,7 +213,7 @@ namespace TheGodfather
                 client.UpdateStatusAsync(activity)
                     .ConfigureAwait(false).GetAwaiter().GetResult();
             } catch (Exception e) {
-                Logger.LogException(LogLevel.Error, e);
+                LogHandle.LogException(LogLevel.Error, e);
             }
         }
 
@@ -225,7 +229,7 @@ namespace TheGodfather
             try {
                 RSSService.CheckFeedsForChangesAsync(client, DatabaseService).ConfigureAwait(false).GetAwaiter().GetResult();
             } catch (Exception e) {
-                Logger.LogException(LogLevel.Error, e);
+                LogHandle.LogException(LogLevel.Error, e);
             }
         }
 
@@ -246,7 +250,7 @@ namespace TheGodfather
                         .ConfigureAwait(false).GetAwaiter().GetResult();
                 }
             } catch (Exception e) {
-                Logger.LogException(LogLevel.Error, e);
+                LogHandle.LogException(LogLevel.Error, e);
             }
         }
 

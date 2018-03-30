@@ -97,7 +97,7 @@ namespace TheGodfather.Modules.Reactions
                 await Database.RemoveAllGuildEmojiReactionsAsync(ctx.Guild.Id)
                     .ConfigureAwait(false);
             } catch (Exception e) {
-                Logger.LogException(LogLevel.Warning, e);
+                TheGodfather.LogHandle.LogException(LogLevel.Warning, e);
                 throw new CommandFailedException("Failed to delete emoji reactions from the database.");
             }
 
@@ -130,7 +130,7 @@ namespace TheGodfather.Modules.Reactions
                 await Database.RemoveAllEmojiReactionTriggersForReactionAsync(ctx.Guild.Id, ename)
                     .ConfigureAwait(false);
             } catch (Exception e) {
-                Logger.LogException(LogLevel.Warning, e);
+                TheGodfather.LogHandle.LogException(LogLevel.Warning, e);
                 errors.AppendLine($"Warning: Failed to remove reaction from the database.");
             }
 
@@ -157,7 +157,7 @@ namespace TheGodfather.Modules.Reactions
                 await Database.RemoveEmojiReactionsAsync(ctx.Guild.Id, ids)
                     .ConfigureAwait(false);
             } catch (Exception e) {
-                Logger.LogException(LogLevel.Warning, e);
+                TheGodfather.LogHandle.LogException(LogLevel.Warning, e);
                 sb.AppendLine($"Warning: Failed to remove some reactions from the database.");
             }
 
@@ -203,7 +203,7 @@ namespace TheGodfather.Modules.Reactions
                 await Database.RemoveEmojiReactionTriggersAsync(ctx.Guild.Id, triggers)
                     .ConfigureAwait(false);
             } catch (Exception e) {
-                Logger.LogException(LogLevel.Warning, e);
+                TheGodfather.LogHandle.LogException(LogLevel.Warning, e);
                 errors.AppendLine($"Warning: Failed to remove some triggers from the database.");
             }
 
@@ -267,7 +267,7 @@ namespace TheGodfather.Modules.Reactions
                     id = await Database.AddEmojiReactionAsync(ctx.Guild.Id, trigger, ename, is_regex_trigger: is_regex)
                         .ConfigureAwait(false);
                 } catch (Exception e) {
-                    Logger.LogException(LogLevel.Warning, e);
+                    TheGodfather.LogHandle.LogException(LogLevel.Warning, e);
                     errors.AppendLine($"Warning: Failed to add trigger {Formatter.Bold(trigger)} to the database.");
                 }
 

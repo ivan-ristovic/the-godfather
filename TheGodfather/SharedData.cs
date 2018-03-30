@@ -120,7 +120,7 @@ namespace TheGodfather
                 await SaveRanksToDatabaseAsync(db)
                     .ConfigureAwait(false);
             } catch (Exception e) {
-                Logger.LogException(LogLevel.Error, e);
+                TheGodfather.LogHandle.LogException(LogLevel.Error, e);
             }
         }
 

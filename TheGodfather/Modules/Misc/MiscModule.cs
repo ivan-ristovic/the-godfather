@@ -278,7 +278,7 @@ namespace TheGodfather.Modules.Misc
                         .ConfigureAwait(false);
                 }
             } catch (Exception e) {
-                Logger.LogException(LogLevel.Warning, e);
+                TheGodfather.LogHandle.LogException(LogLevel.Warning, e);
                 throw new CommandFailedException("Warning: Failed to add prefix to the database.");
             }
         }

@@ -92,7 +92,7 @@ namespace TheGodfather.Modules.Administration
                     await Database.AddFilterAsync(ctx.Guild.Id, filter)
                         .ConfigureAwait(false);
                 } catch (Exception e) {
-                    Logger.LogException(LogLevel.Warning, e);
+                    TheGodfather.LogHandle.LogException(LogLevel.Warning, e);
                     errors.AppendLine($"Warning: Failed to add filter {Formatter.Bold(filter)} to the database.");
                 }
             }
@@ -120,7 +120,7 @@ namespace TheGodfather.Modules.Administration
                 await Database.RemoveAllGuildFiltersAsync(ctx.Guild.Id)
                     .ConfigureAwait(false);
             } catch (Exception e) {
-                Logger.LogException(LogLevel.Warning, e);
+                TheGodfather.LogHandle.LogException(LogLevel.Warning, e);
                 throw new CommandFailedException("Failed to delete filters from the database.");
             }
 
@@ -153,7 +153,7 @@ namespace TheGodfather.Modules.Administration
                     await Database.RemoveFilterAsync(ctx.Guild.Id, filter)
                         .ConfigureAwait(false);
                 } catch (Exception e) {
-                    Logger.LogException(LogLevel.Warning, e);
+                    TheGodfather.LogHandle.LogException(LogLevel.Warning, e);
                     errors.AppendLine($"Warning: Failed to remove filter {Formatter.Bold(filter)} from the database.");
                 }
             }

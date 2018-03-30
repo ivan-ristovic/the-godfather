@@ -197,7 +197,7 @@ namespace TheGodfather.Modules.Administration
                         .ConfigureAwait(false);
                 }
             } catch (Exception e) {
-                Logger.LogException(LogLevel.Debug, e);
+                TheGodfather.LogHandle.LogException(LogLevel.Debug, e);
                 throw new CommandFailedException("Unknown error occured.", e);
             }
 

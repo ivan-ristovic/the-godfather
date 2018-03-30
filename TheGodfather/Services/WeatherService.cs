@@ -36,7 +36,7 @@ namespace TheGodfather.Services
                     .ConfigureAwait(false);
                 data = JsonConvert.DeserializeObject<WeatherData>(response);
             } catch (Exception e) {
-                Logger.LogException(LogLevel.Debug, e);
+                TheGodfather.LogHandle.LogException(LogLevel.Debug, e);
                 return null;
             }
 
