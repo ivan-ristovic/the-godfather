@@ -5,24 +5,27 @@ using System.Security.Cryptography;
 
 namespace TheGodfather.Common
 {
-    public sealed class GFRandom : IDisposable
+    public sealed class GFRandom
     {
         private static GFRandom _instance;
         public static GFRandom Generator
         {
             get {
-                if (_instance == null) {
+                if (_instance == null)
                     _instance = new GFRandom();
-                }
                 return _instance;
             }
         }
-
-        public bool IsDisposed { get; private set; } = false;
-        private RandomNumberGenerator _rng { get; } = RandomNumberGenerator.Create();
+        
+        private RandomNumberGenerator _rng = RandomNumberGenerator.Create();
 
 
         private GFRandom() { }
+
+        ~GFRandom()
+        {
+            _rng.Dispose();
+        }
 
 
         public bool GetBool()
@@ -90,15 +93,6 @@ namespace TheGodfather.Common
             max += offset;
 
             return Math.Abs(GetS32()) % (max - min) + min - offset;
-        }
-
-        public void Dispose()
-        {
-            if (IsDisposed)
-                throw new ObjectDisposedException("Cannot dispose this object twice.");
-
-            IsDisposed = true;
-            _rng.Dispose();
         }
     }
 }
