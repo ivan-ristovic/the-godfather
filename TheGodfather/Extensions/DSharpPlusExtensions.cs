@@ -4,7 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-using TheGodfather.Extensions.Converters;
+using TheGodfather.Common;
+using TheGodfather.Common.Converters;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;

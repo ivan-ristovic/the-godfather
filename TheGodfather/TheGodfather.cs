@@ -9,10 +9,9 @@ using System.Threading.Tasks;
 using System.Threading;
 using Newtonsoft.Json;
 
-using TheGodfather.Attributes;
-using TheGodfather.Entities;
+using TheGodfather.Common;
+using TheGodfather.Common.Collections;
 using TheGodfather.Extensions;
-using TheGodfather.Extensions.Collections;
 using TheGodfather.Modules.Reactions.Common;
 using TheGodfather.Services;
 

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using TheGodfather.Extensions;
+using TheGodfather.Common;
 
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;

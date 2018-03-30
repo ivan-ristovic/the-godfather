@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-using TheGodfather.Attributes;
+using TheGodfather.Common.Attributes;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -13,7 +13,7 @@ using DSharpPlus.CommandsNext.Entities;
 using DSharpPlus.Entities;
 #endregion
 
-namespace TheGodfather.Extensions
+namespace TheGodfather.Common
 {
     public class CustomHelpFormatter : BaseHelpFormatter
     {

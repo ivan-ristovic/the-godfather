@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+using TheGodfather.Common;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Games.Common;
 
@@ -13,7 +14,7 @@ using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 #endregion
 
-namespace TheGodfather.Modules.Games
+namespace TheGodfather.Modules.Games.Common
 {
     public class AnimalRace : Game
     {

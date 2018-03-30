@@ -3,7 +3,7 @@ using System;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 
-using TheGodfather.Entities;
+using TheGodfather.Common;
 
 using DSharpPlus;
 using DSharpPlus.Entities;

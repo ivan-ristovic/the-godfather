@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 
-using TheGodfather.Attributes;
-using TheGodfather.Entities;
+using TheGodfather.Common;
+using TheGodfather.Common.Attributes;
+using TheGodfather.Common.Converters;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-using TheGodfather.Extensions.Converters;
 using TheGodfather.Services;
 
 using DSharpPlus;

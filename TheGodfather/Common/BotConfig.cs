@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 using DSharpPlus;
 #endregion
 
-namespace TheGodfather.Entities
+namespace TheGodfather.Common
 {
     public sealed class BotConfig
     {

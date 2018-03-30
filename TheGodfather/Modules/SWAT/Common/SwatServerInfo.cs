@@ -6,7 +6,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-using TheGodfather.Entities;
+using TheGodfather.Common;
 using TheGodfather.Exceptions;
 
 using DSharpPlus;

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using DSharpPlus.Entities;
 #endregion
 
-namespace TheGodfather.Extensions
+namespace TheGodfather.Common
 {
     public static class StaticDiscordEmoji
     {

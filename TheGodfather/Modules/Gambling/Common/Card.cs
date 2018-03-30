@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TheGodfather.Modules.Gambling.Cards
+namespace TheGodfather.Modules.Gambling.Common
 {
     public class Card : IComparable
     {

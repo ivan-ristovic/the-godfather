@@ -4,7 +4,7 @@ using System.Net;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 
-using TheGodfather.Entities;
+using TheGodfather.Common;
 using TheGodfather.Services;
 
 using DSharpPlus;

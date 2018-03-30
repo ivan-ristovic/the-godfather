@@ -5,7 +5,7 @@ using System.Collections.ObjectModel;
 using System.Threading;
 using System.Threading.Tasks;
 
-using TheGodfather.Entities;
+using TheGodfather.Common;
 using TheGodfather.Exceptions;
 
 using Npgsql;

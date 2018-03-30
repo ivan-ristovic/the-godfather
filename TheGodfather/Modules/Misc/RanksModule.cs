@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 
-using TheGodfather.Attributes;
+using TheGodfather.Common.Attributes;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;

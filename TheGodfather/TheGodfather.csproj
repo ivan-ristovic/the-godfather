@@ -259,8 +259,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Attributes\UsageExampleAttribute.cs" />
-    <Compile Include="Entities\SavedTaskExecuter.cs" />
+    <Compile Include="Common\Attributes\UsageExampleAttribute.cs" />
+    <Compile Include="Common\SavedTaskExecuter.cs" />
     <Compile Include="Modules\Administration\AutomaticRolesModule.cs" />
     <Compile Include="Modules\Games\GamesModule.Duel.cs" />
     <Compile Include="Modules\Games\GamesModule.Hangman.cs" />
@@ -276,18 +276,18 @@
     <Compile Include="Modules\Owner\OwnerModule.BlockedChannels.cs" />
     <Compile Include="Services\Common\UrbanDictData.cs" />
     <Compile Include="Services\Common\WeatherData.cs" />
-    <Compile Include="Extensions\Converters\CustomBoolConverter.cs" />
-    <Compile Include="Extensions\Converters\CustomActivityTypeConverter.cs" />
-    <Compile Include="Extensions\Converters\CustomTimeWindowConverter.cs" />
-    <Compile Include="Extensions\PremadeEmoji.cs" />
+    <Compile Include="Common\Converters\CustomBoolConverter.cs" />
+    <Compile Include="Common\Converters\CustomActivityTypeConverter.cs" />
+    <Compile Include="Common\Converters\CustomTimeWindowConverter.cs" />
+    <Compile Include="Common\StaticDiscordEmoji.cs" />
     <Compile Include="Extensions\EnumerableExtensions.cs" />
-    <Compile Include="Entities\Logger.cs" />
+    <Compile Include="Common\Logger.cs" />
     <Compile Include="Modules\Administration\EmojiModule.cs" />
     <Compile Include="Modules\Administration\GuildModule.NotificationChannels.cs" />
     <Compile Include="Modules\Administration\SelfAssignableRolesModule.cs" />
-    <Compile Include="Modules\Gambling\Cards\CardSuit.cs" />
-    <Compile Include="Modules\Gambling\Cards\Card.cs" />
-    <Compile Include="Modules\Gambling\Cards\Deck.cs" />
+    <Compile Include="Modules\Gambling\Common\CardSuit.cs" />
+    <Compile Include="Modules\Gambling\Common\Card.cs" />
+    <Compile Include="Modules\Gambling\Common\Deck.cs" />
     <Compile Include="Modules\Games\Common\BoardGame.cs" />
     <Compile Include="Modules\Games\Common\Othello.cs" />
     <Compile Include="Modules\Games\Common\Caro.cs" />
@@ -301,8 +301,8 @@
     <Compile Include="Modules\Games\Common\TicTacToe.cs" />
     <Compile Include="Exceptions\CommandFailedException.cs" />
     <Compile Include="Exceptions\InvalidCommandUsageException.cs" />
-    <Compile Include="Entities\BotConfig.cs" />
-    <Compile Include="Extensions\Collections\ConcurrentHashSet.cs" />
+    <Compile Include="Common\BotConfig.cs" />
+    <Compile Include="Common\Collections\ConcurrentHashSet.cs" />
     <Compile Include="Modules\Misc\Common\EightBall.cs" />
     <Compile Include="Modules\Owner\OwnerModule.Statuses.cs" />
     <Compile Include="Modules\Owner\Common\EvaluationEnvironment.cs" />
@@ -330,8 +330,8 @@
     <Compile Include="Services\DatabaseService\DBService.Ranks.cs" />
     <Compile Include="Services\Common\FeedEntry.cs" />
     <Compile Include="Services\Common\GameStats.cs" />
-    <Compile Include="Attributes\ListeningCheckAttribute.cs" />
-    <Compile Include="Extensions\CustomHelpFormatter.cs" />
+    <Compile Include="Common\Attributes\ListeningCheckAttribute.cs" />
+    <Compile Include="Common\CustomHelpFormatter.cs" />
     <Compile Include="Modules\Owner\OwnerModule.cs" />
     <Compile Include="Modules\Gambling\BankModule.cs" />
     <Compile Include="Modules\Gambling\CardsModule.cs" />

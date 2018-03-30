@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 
-using TheGodfather.Entities;
+using TheGodfather.Common;
 
 using DSharpPlus;
 using DSharpPlus.Entities;

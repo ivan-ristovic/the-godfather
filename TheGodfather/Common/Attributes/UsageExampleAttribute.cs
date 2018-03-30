@@ -2,7 +2,7 @@
 using System;
 #endregion
 
-namespace TheGodfather.Attributes
+namespace TheGodfather.Common.Attributes
 {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = true)]
     internal class UsageExampleAttribute : Attribute

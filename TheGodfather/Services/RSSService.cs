@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml;
 
-using TheGodfather.Entities;
+using TheGodfather.Common;
 
 using DSharpPlus;
 using DSharpPlus.Entities;

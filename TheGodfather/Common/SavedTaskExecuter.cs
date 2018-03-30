@@ -12,7 +12,7 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
 #endregion
 
-namespace TheGodfather.Entities
+namespace TheGodfather.Common
 {
     public sealed class SavedTaskExecuter
     {

@@ -1,10 +1,10 @@
 ﻿#region USING_DIRECTIVES
 using System.Threading.Tasks;
 
-using TheGodfather.Attributes;
+using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-using TheGodfather.Modules.Gambling.Cards;
+using TheGodfather.Modules.Gambling.Common;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;

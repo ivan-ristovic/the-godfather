@@ -1,7 +1,8 @@
 ﻿#region USING_DIRECTIVES
 using System.Threading.Tasks;
 
-using TheGodfather.Attributes;
+using TheGodfather.Common;
+using TheGodfather.Common.Attributes;
 using TheGodfather.Extensions;
 using TheGodfather.Services;
 

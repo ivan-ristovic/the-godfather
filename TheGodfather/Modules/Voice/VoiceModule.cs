@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 
-using TheGodfather.Attributes;
+using TheGodfather.Common.Attributes;
 using TheGodfather.Services;
 using TheGodfather.Exceptions;
 
@@ -18,6 +18,9 @@ using DSharpPlus.Entities;
 
 namespace TheGodfather.Modules.Voice
 {
+
+    // PENDING REWORK
+
     [Description("Voice & music commands.")]
     [ListeningCheckAttribute]
     [RequireOwner]

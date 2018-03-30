@@ -5,7 +5,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-using TheGodfather.Entities;
+using TheGodfather.Common;
 using TheGodfather.Services.Common;
 
 using DSharpPlus;

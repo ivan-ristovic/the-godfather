@@ -7,9 +7,9 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
-using TheGodfather.Entities;
-using TheGodfather.Extensions.Collections;
-using TheGodfather.Modules.Gambling.Cards;
+using TheGodfather.Common;
+using TheGodfather.Common.Collections;
+using TheGodfather.Modules.Gambling.Common;
 using TheGodfather.Modules.Reactions.Common;
 using TheGodfather.Services;
 

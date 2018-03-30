@@ -5,7 +5,7 @@ using System.Linq;
 using TheGodfather.Extensions;
 #endregion
 
-namespace TheGodfather.Modules.Gambling.Cards
+namespace TheGodfather.Modules.Gambling.Common
 {
     public class Deck
     {

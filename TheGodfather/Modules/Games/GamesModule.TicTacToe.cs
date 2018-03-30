@@ -2,7 +2,8 @@
 using System;
 using System.Threading.Tasks;
 
-using TheGodfather.Attributes;
+using TheGodfather.Common;
+using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Games.Common;

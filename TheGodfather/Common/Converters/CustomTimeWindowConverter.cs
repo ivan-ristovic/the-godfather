@@ -8,7 +8,7 @@ using DSharpPlus.Entities;
 using Imgur.API.Enums;
 #endregion
 
-namespace TheGodfather.Extensions.Converters
+namespace TheGodfather.Common.Converters
 {
     public class CustomTimeWindowConverter : IArgumentConverter<TimeWindow>
     {

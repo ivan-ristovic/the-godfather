@@ -1,4 +1,4 @@
-﻿namespace TheGodfather.Modules.Gambling.Cards
+﻿namespace TheGodfather.Modules.Gambling.Common
 {
     public enum CardSuit
     {

@@ -7,7 +7,7 @@ using DSharpPlus;
 using DSharpPlus.EventArgs;
 #endregion
 
-namespace TheGodfather.Entities
+namespace TheGodfather.Common
 {
     internal static class Logger
     {

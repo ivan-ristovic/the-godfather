@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-using TheGodfather.Extensions.Collections;
+using TheGodfather.Common.Collections;
 #endregion
 
 namespace TheGodfather.Modules.Reactions.Common

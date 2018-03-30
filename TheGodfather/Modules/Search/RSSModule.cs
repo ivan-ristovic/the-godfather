@@ -1,11 +1,8 @@
 ﻿#region USING_DIRECTIVES
-using System.Collections.Generic;
 using System.Linq;
-using System.ServiceModel.Syndication;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 
-using TheGodfather.Attributes;
+using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Services;

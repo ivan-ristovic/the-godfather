@@ -4,14 +4,14 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using TheGodfather.Extensions;
-using TheGodfather.Extensions.Collections;
+using TheGodfather.Common.Collections;
 using TheGodfather.Modules.Games.Common;
 
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 #endregion
 
-namespace TheGodfather.Modules.Games
+namespace TheGodfather.Modules.Games.Common
 {
     public class NumberRace : Game
     {

@@ -1,16 +1,15 @@
 ﻿#region USING_DIRECTIVES
 using System;
-using System.Collections.Concurrent;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-using TheGodfather.Attributes;
-using TheGodfather.Entities;
+using TheGodfather.Common;
+using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-using TheGodfather.Extensions.Collections;
+using TheGodfather.Common.Collections;
 using TheGodfather.Modules.Reactions.Common;
 using TheGodfather.Services;
 

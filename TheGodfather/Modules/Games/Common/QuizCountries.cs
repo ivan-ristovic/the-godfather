@@ -12,7 +12,7 @@ using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 #endregion
 
-namespace TheGodfather.Modules.Games
+namespace TheGodfather.Modules.Games.Common
 {
     public class QuizCountries : Game
     {

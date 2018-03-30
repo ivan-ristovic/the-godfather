@@ -6,7 +6,7 @@ using DSharpPlus.CommandsNext.Converters;
 using DSharpPlus.Entities;
 #endregion
 
-namespace TheGodfather.Extensions.Converters
+namespace TheGodfather.Common.Converters
 {
     public class CustomBoolConverter : IArgumentConverter<bool>
     {
