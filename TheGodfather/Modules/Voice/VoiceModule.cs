@@ -86,6 +86,7 @@ namespace TheGodfather.Modules.Voice
         #region COMMAND_STOP
         [Command("stop")]
         [Description("Stops current voice playback.")]
+        [UsageExample("!stop")]
         public async Task StopAsync(CommandContext ctx)
         {
             Shared.PlayingVoiceIn.TryRemove(ctx.Guild.Id);

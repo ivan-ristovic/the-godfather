@@ -35,25 +35,44 @@ namespace TheGodfather.Modules.Voice
 
             [GroupCommand]
             public async Task ExecuteGroupAsync(CommandContext ctx,
-                                               [RemainingText, Description("URL or YouTube search query.")] string data)
+                                               [RemainingText, Description("URL or YouTube search query.")] string data_or_url)
             {
-                if (!IsValidURL(data, out Uri uri))
-                    data = await _Service.GetFirstVideoResultAsync(data)
+                if (!IsValidURL(data_or_url, out Uri uri))
+                    data_or_url = await _Service.GetFirstVideoResultAsync(data_or_url)
                         .ConfigureAwait(false);
 
-                if (string.IsNullOrWhiteSpace(data))
+                if (string.IsNullOrWhiteSpace(data_or_url))
                     throw new CommandFailedException("No results found!");
 
-                string filename = await _Service.TryDownloadYoutubeAudioAsync(data)
+                var si = await _Service.GetSongInfoAsync(data_or_url)
                     .ConfigureAwait(false);
-                await PlayFileAsync(ctx, filename);
+                if (si == null)
+                    throw new CommandFailedException("Failed to retrieve song information for that URL.");
+
+                var vnext = ctx.Client.GetVoiceNext();
+                if (vnext == null)
+                    throw new CommandFailedException("VNext is not enabled or configured.");
+
+                var vnc = vnext.GetConnection(ctx.Guild);
+                if (vnc == null) {
+                    await ConnectAsync(ctx);
+                    vnc = vnext.GetConnection(ctx.Guild);
+                }
+
+                if (vnc.IsPlaying)
+                    return; // TODO
+
+                await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Headphones, $"Playing {Formatter.InlineCode(si.Uri)}.");
+                await PlayAsync(vnc, ctx.Guild.Id, si.Uri);
             }
 
 
             #region COMMAND_PLAY_FILE
             [Command("file")]
-            [Description("Plays an audio file from server filesystem.")]
+            [Description("Plays an audio file from the server filesystem.")]
             [Aliases("f")]
+            [UsageExample("!play file test.mp3")]
+            [RequireOwner]
             public async Task PlayFileAsync(CommandContext ctx,
                                            [RemainingText, Description("Full path to the file to play.")] string filename)
             {
@@ -71,17 +90,25 @@ namespace TheGodfather.Modules.Voice
                     throw new CommandFailedException($"File {Formatter.InlineCode(filename)} does not exist.", new FileNotFoundException());
 
                 while (vnc.IsPlaying)
-                    await vnc.WaitForPlaybackFinishAsync();
-
-                if (!Shared.PlayingVoiceIn.Add(ctx.Guild.Id))
-                    throw new CommandFailedException("Failed to setup the voice playing settings");
+                    return; // TODO
 
                 await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Headphones, $"Playing {Formatter.InlineCode(filename)}.");
+                await PlayAsync(vnc, ctx.Guild.Id, filename);
+            }
+            #endregion
+
+
+            #region HELPER_FUNCTIONS
+            private async Task PlayAsync(VoiceNextConnection vnc, ulong gid, string url)
+            {
+                if (!Shared.PlayingVoiceIn.Add(gid))
+                    throw new CommandFailedException("Failed to setup the voice playing settings");
+
                 await vnc.SendSpeakingAsync(true);
                 try {
                     var ffmpeg_inf = new ProcessStartInfo {
                         FileName = "ffmpeg",
-                        Arguments = $"-i \"{filename}\" -ac 2 -f s16le -ar 48000 pipe:1",
+                        Arguments = $"-i \"{url}\" -ac 2 -f s16le -ar 48000 pipe:1",
                         UseShellExecute = false,
                         RedirectStandardOutput = true,
                         RedirectStandardError = true
@@ -95,7 +122,7 @@ namespace TheGodfather.Modules.Voice
 
                         var buff = new byte[3840];
                         var br = 0;
-                        while (Shared.PlayingVoiceIn.Contains(ctx.Guild.Id) && (br = ms.Read(buff, 0, buff.Length)) > 0) {
+                        while (Shared.PlayingVoiceIn.Contains(gid) && (br = ms.Read(buff, 0, buff.Length)) > 0) {
                             if (br < buff.Length)
                                 for (var i = br; i < buff.Length; i++)
                                     buff[i] = 0;
@@ -107,7 +134,7 @@ namespace TheGodfather.Modules.Voice
                     TheGodfather.LogHandle.LogException(LogLevel.Error, e);
                 } finally {
                     await vnc.SendSpeakingAsync(false);
-                    Shared.PlayingVoiceIn.TryRemove(ctx.Guild.Id);
+                    Shared.PlayingVoiceIn.TryRemove(gid);
                 }
             }
             #endregion

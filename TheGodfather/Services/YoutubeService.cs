@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 
 using TheGodfather.Common;
+using TheGodfather.Modules.Voice.Common;
 using TheGodfather.Services.Common;
 
 using DSharpPlus;
@@ -19,6 +20,8 @@ using Google.Apis.YouTube.v3.Data;
 
 using YoutubeExplode;
 using YoutubeExplode.Models.MediaStreams;
+using System.Diagnostics;
+using System.Globalization;
 /*
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Util.Store;
@@ -75,18 +78,15 @@ namespace TheGodfather.Services
             return PaginateSearchResult(res);
         }
 
-        public async Task<string> TryDownloadYoutubeAudioAsync(string url)
+        public async Task<SongInfo> GetSongInfoAsync(string url)
         {
-            /* TESTING */
-            if (!YoutubeClient.TryParseVideoId(url, out string id))
-                return null;
+            SongInfo si = await GetSongInfoViaYtExplode(url)
+                .ConfigureAwait(false);
+            if (si != null)
+                return si;
 
-            var yt = new YoutubeClient();
-            var infos = await yt.GetVideoMediaStreamInfosAsync(id);
-            var info = infos.Audio.First();
-            string filename = "test.mp3";
-            await yt.DownloadMediaStreamAsync(info, filename);
-            return filename;
+            return await GetSongInfoViaYtDl(url)
+                .ConfigureAwait(false);
         }
 
         public async Task<string> GetYoutubeIdAsync(string url)
@@ -157,6 +157,80 @@ namespace TheGodfather.Services
             }
 
             return pages.AsReadOnly();
+        }
+
+        private async Task<SongInfo> GetSongInfoViaYtExplode(string url)
+        {
+            try {
+                if (!YoutubeClient.TryParseVideoId(url, out var id))
+                    return null;
+
+                var client = new YoutubeClient();
+                var video = await client.GetVideoAsync(id);
+                if (video == null)
+                    return null;
+
+                var streamInfo = await client.GetVideoMediaStreamInfosAsync(video.Id);
+                var stream = streamInfo.Audio.OrderByDescending(x => x.Bitrate).FirstOrDefault();
+                if (stream == null)
+                    return null;
+
+                return new SongInfo {
+                    Provider = "YouTube",
+                    Query = "https://youtube.com/watch?v=" + video.Id,
+                    Thumbnail = video.Thumbnails.MediumResUrl,
+                    TotalTime = video.Duration,
+                    Uri = stream.Url,
+                    VideoId = video.Id,
+                    Title = video.Title,
+                };
+            } catch (Exception e) {
+                TheGodfather.LogHandle.LogException(LogLevel.Debug, e);
+                return null;
+            }
+        }
+
+        private async Task<SongInfo> GetSongInfoViaYtDl(string url)
+        {
+            string[] data = null;
+            try {
+                var ytdlinfo = new ProcessStartInfo() {
+                    FileName = "youtube-dl",
+                    Arguments = $"-4 --geo-bypass -f bestaudio -e --get-url --get-id --get-thumbnail --get-duration --no-check-certificate --default-search \"ytsearch:\" \"{url}\"",
+                    UseShellExecute = false,
+                    RedirectStandardError = true,
+                    RedirectStandardOutput = true,
+                    CreateNoWindow = true,
+                };
+                using (var process = new Process() { StartInfo = ytdlinfo }) {
+                    process.Start();
+                    var str = await process.StandardOutput.ReadToEndAsync();
+                    var err = await process.StandardError.ReadToEndAsync();
+                    if (!string.IsNullOrEmpty(err))
+                        TheGodfather.LogHandle.LogMessage(LogLevel.Warning, err);
+                    if (!string.IsNullOrWhiteSpace(str))
+                        data = str.Split('\n');
+                }
+
+                if (data == null || data.Length < 6)
+                    return null;
+
+                if (!TimeSpan.TryParseExact(data[4], new[] { "ss", "m\\:ss", "mm\\:ss", "h\\:mm\\:ss", "hh\\:mm\\:ss", "hhh\\:mm\\:ss" }, CultureInfo.InvariantCulture, out var time))
+                    time = TimeSpan.FromHours(24);
+
+                return new SongInfo() {
+                    Title = data[0],
+                    VideoId = data[1],
+                    Uri = data[2],
+                    Thumbnail = data[3],
+                    TotalTime = time,
+                    Provider = "YouTube",
+                    Query = "https://youtube.com/watch?v=" + data[1],
+                };
+            } catch (Exception e) {
+                TheGodfather.LogHandle.LogException(LogLevel.Debug, e);
+                return null;
+            }
         }
     }
 }
