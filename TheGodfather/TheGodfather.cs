@@ -79,6 +79,7 @@ namespace TheGodfather
             var cfg = JsonConvert.DeserializeObject<BotConfig>(json);
 
             LogHandle.LogLevel = cfg.LogLevel;
+            LogHandle.LogToFile = cfg.FileLog;
 
 
             Console.Write("\r[2/5] Booting PostgreSQL connection...");

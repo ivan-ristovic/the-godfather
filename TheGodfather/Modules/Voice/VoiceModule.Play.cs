@@ -48,6 +48,7 @@ namespace TheGodfather.Modules.Voice
                     .ConfigureAwait(false);
                 if (si == null)
                     throw new CommandFailedException("Failed to retrieve song information for that URL.");
+                si.Queuer = ctx.User.Mention;
 
                 var vnext = ctx.Client.GetVoiceNext();
                 if (vnext == null)
@@ -58,11 +59,12 @@ namespace TheGodfather.Modules.Voice
                     await ConnectAsync(ctx);
                     vnc = vnext.GetConnection(ctx.Guild);
                 }
-
+                
                 if (vnc.IsPlaying)
                     return; // TODO
 
-                await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Headphones, $"Playing {Formatter.InlineCode(si.Uri)}.");
+                await ctx.RespondAsync("Now playing: ", embed: si.Embed())
+                    .ConfigureAwait(false);
                 await PlayAsync(vnc, ctx.Guild.Id, si.Uri);
             }
 

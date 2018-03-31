@@ -22,6 +22,9 @@ namespace TheGodfather.Common
         [JsonProperty("log-level")]
         public LogLevel LogLevel { get; private set; }
 
+        [JsonProperty("filelog")]
+        public bool FileLog { get; private set; }
+
         [JsonProperty("key-giphy")]
         public string GiphyKey { get; private set; }
 
@@ -67,6 +70,7 @@ namespace TheGodfather.Common
                     ShardCount = 1,
                     DefaultPrefix = "!",
                     LogLevel = LogLevel.Info,
+                    FileLog = true,
                     GiphyKey = "<insert GIPHY API key>",
                     SteamKey = "<insert Steam API key>",
                     ImgurKey = "<insert Imgur API key>",

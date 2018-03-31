@@ -1,12 +1,12 @@
 ﻿#region USING_DIRECTIVES
 using System;
-using System.Net.Http;
+using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-using TheGodfather.Common;
 using TheGodfather.Modules.Voice.Common;
 using TheGodfather.Services.Common;
 
@@ -19,13 +19,6 @@ using Google.Apis.YouTube.v3;
 using Google.Apis.YouTube.v3.Data;
 
 using YoutubeExplode;
-using YoutubeExplode.Models.MediaStreams;
-using System.Diagnostics;
-using System.Globalization;
-/*
-using Google.Apis.Auth.OAuth2;
-using Google.Apis.Util.Store;
-*/
 #endregion
 
 namespace TheGodfather.Services
@@ -38,22 +31,10 @@ namespace TheGodfather.Services
 
         public YoutubeService(string key)
         {
-            /*
-            UserCredential credential;
-            using (var stream = new FileStream("Resources/yt_secret.json", FileMode.Open, FileAccess.Read)) {
-                credential = await GoogleWebAuthorizationBroker.AuthorizeAsync(
-                    GoogleClientSecrets.Load(stream).Secrets,
-                    new[] { YouTubeService.Scope.YoutubeReadonly },
-                    "user", CancellationToken.None, new FileDataStore("Books.ListMyLibrary")
-                );
-            }
-            */
-
             _key = key;
             _yt = new YouTubeService(new BaseClientService.Initializer() {
                 ApiKey = key,
                 ApplicationName = "TheGodfather"
-                // HttpClientInitializer = credential
             });
         }
 
