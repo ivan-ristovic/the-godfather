@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using TheGodfather.Common;
 using TheGodfather.Common.Collections;
 using TheGodfather.Modules.Gambling.Common;
+using TheGodfather.Modules.Music.Common;
 using TheGodfather.Modules.Reactions.Common;
 using TheGodfather.Services;
 
@@ -59,7 +60,7 @@ namespace TheGodfather
             "Generalissimo (tribute to Raptor)"
             #endregion
         }.AsReadOnly();
-        public ConcurrentHashSet<ulong> PlayingVoiceIn = new ConcurrentHashSet<ulong>();
+        public ConcurrentDictionary<ulong, MusicPlayer> MusicPlayers = new ConcurrentDictionary<ulong, MusicPlayer>();
 
 
         public string GetGuildPrefix(ulong gid)

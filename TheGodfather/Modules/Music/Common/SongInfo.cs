@@ -25,7 +25,7 @@ namespace TheGodfather.Modules.Music.Common
             var emb = new DiscordEmbedBuilder() {
                 Title = $"{StaticDiscordEmoji.Headphones} {Title}",
                 Color = DiscordColor.Red,
-                ThumbnailUrl = Thumbnail,
+                ThumbnailUrl = Thumbnail ?? "https://i.imgur.com/8tkHOYD.jpg",
                 Url = Query
             };
             emb.AddField("Duration", $"{TotalTime:hh\\:mm\\:ss}", inline: true)

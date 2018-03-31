@@ -1,14 +1,14 @@
 ﻿#region USING_DIRECTIVES
 using System;
 using System.IO;
-using System.Diagnostics;
 using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
-using TheGodfather.Services;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
+using TheGodfather.Modules.Music.Common;
+using TheGodfather.Services;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -59,13 +59,17 @@ namespace TheGodfather.Modules.Music
                     await ConnectAsync(ctx);
                     vnc = vnext.GetConnection(ctx.Guild);
                 }
-                
-                if (vnc.IsPlaying)
-                    return; // TODO
 
-                await ctx.RespondAsync("Now playing: ", embed: si.Embed())
-                    .ConfigureAwait(false);
-                await PlayAsync(vnc, ctx.Guild.Id, si.Uri);
+                if (Shared.MusicPlayers.ContainsKey(ctx.Guild.Id)) {
+                    Shared.MusicPlayers[ctx.Guild.Id].Enqueue(si);
+                    await ctx.RespondAsync("Added to queue:", embed: si.Embed())
+                        .ConfigureAwait(false);
+                } else {
+                    if (!Shared.MusicPlayers.TryAdd(ctx.Guild.Id, new MusicPlayer(ctx.Channel, vnc)))
+                        throw new CommandFailedException("Failed to initialize music player!");
+                    Shared.MusicPlayers[ctx.Guild.Id].Enqueue(si);
+                    var t = Task.Run(() => Shared.MusicPlayers[ctx.Guild.Id].StartAsync());
+                }
             }
 
 
@@ -91,52 +95,22 @@ namespace TheGodfather.Modules.Music
                 if (!File.Exists(filename))
                     throw new CommandFailedException($"File {Formatter.InlineCode(filename)} does not exist.", new FileNotFoundException());
 
-                while (vnc.IsPlaying)
-                    return; // TODO
+                var si = new SongInfo() {
+                    Provider = "Server file system",
+                    Query = "https://i.imgur.com/8tkHOYD.jpg",
+                    Queuer = ctx.User.Mention,
+                    Uri = filename
+                };
 
-                await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Headphones, $"Playing {Formatter.InlineCode(filename)}.");
-                await PlayAsync(vnc, ctx.Guild.Id, filename);
-            }
-            #endregion
-
-
-            #region HELPER_FUNCTIONS
-            private async Task PlayAsync(VoiceNextConnection vnc, ulong gid, string url)
-            {
-                if (!Shared.PlayingVoiceIn.Add(gid))
-                    throw new CommandFailedException("Failed to setup the voice playing settings");
-
-                await vnc.SendSpeakingAsync(true);
-                try {
-                    var ffmpeg_inf = new ProcessStartInfo {
-                        FileName = "ffmpeg",
-                        Arguments = $"-i \"{url}\" -ac 2 -f s16le -ar 48000 pipe:1",
-                        UseShellExecute = false,
-                        RedirectStandardOutput = true,
-                        RedirectStandardError = true
-                    };
-                    var ffmpeg = Process.Start(ffmpeg_inf);
-                    var ffout = ffmpeg.StandardOutput.BaseStream;
-
-                    using (var ms = new MemoryStream()) {
-                        await ffout.CopyToAsync(ms);
-                        ms.Position = 0;
-
-                        var buff = new byte[3840];
-                        var br = 0;
-                        while (Shared.PlayingVoiceIn.Contains(gid) && (br = ms.Read(buff, 0, buff.Length)) > 0) {
-                            if (br < buff.Length)
-                                for (var i = br; i < buff.Length; i++)
-                                    buff[i] = 0;
-
-                            await vnc.SendAsync(buff, 20);
-                        }
-                    }
-                } catch (Exception e) {
-                    TheGodfather.LogHandle.LogException(LogLevel.Error, e);
-                } finally {
-                    await vnc.SendSpeakingAsync(false);
-                    Shared.PlayingVoiceIn.TryRemove(gid);
+                if (Shared.MusicPlayers.ContainsKey(ctx.Guild.Id)) {
+                    Shared.MusicPlayers[ctx.Guild.Id].Enqueue(si);
+                    await ctx.RespondAsync("Added to queue:", embed: si.Embed())
+                        .ConfigureAwait(false);
+                } else {
+                    if (!Shared.MusicPlayers.TryAdd(ctx.Guild.Id, new MusicPlayer(ctx.Channel, vnc)))
+                        throw new CommandFailedException("Failed to initialize music player!");
+                    Shared.MusicPlayers[ctx.Guild.Id].Enqueue(si);
+                    await Shared.MusicPlayers[ctx.Guild.Id].StartAsync();
                 }
             }
             #endregion
