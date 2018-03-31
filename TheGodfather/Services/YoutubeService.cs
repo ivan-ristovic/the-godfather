@@ -56,14 +56,16 @@ namespace TheGodfather.Services
 
 
         public static string GetYoutubeRSSFeedLinkForChannelId(string id) =>
-            "https://www.youtube.com/feeds/videos.xml?channel_id=" + id;
+            $"https://www.youtube.com/feeds/videos.xml?channel_id={ id }";
 
 
         public async Task<string> GetFirstVideoResultAsync(string query)
         {
             var res = await GetResultsAsync(query, 1, "video")
                 .ConfigureAwait(false);
-            return "https://www.youtube.com/watch?v=" + res.First().Id.VideoId;
+            if (!res.Any())
+                return null;
+            return $"https://www.youtube.com/watch?v={ res.FirstOrDefault()?.Id.VideoId }";
         }
 
         public async Task<IReadOnlyList<Page>> GetPaginatedResults(string query, int amount = 1, string type = null)
@@ -94,7 +96,7 @@ namespace TheGodfather.Services
 
             id = url.Split(new char[] { '/' }, StringSplitOptions.RemoveEmptyEntries).Last();
             try {
-                var u = $"https://www.googleapis.com/youtube/v3/channels?key={_key}&forUsername={id}&part=id";
+                var u = $"https://www.googleapis.com/youtube/v3/channels?key={ _key }&forUsername={ id }&part=id";
                 var jsondata = await _http.GetStringAsync(u)
                     .ConfigureAwait(false);
                 var data = JsonConvert.DeserializeObject<YoutubeResponse>(jsondata);

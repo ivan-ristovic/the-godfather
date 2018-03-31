@@ -59,6 +59,7 @@ namespace TheGodfather
             "Generalissimo (tribute to Raptor)"
             #endregion
         }.AsReadOnly();
+        public ConcurrentHashSet<ulong> PlayingVoiceIn = new ConcurrentHashSet<ulong>();
 
 
         public string GetGuildPrefix(ulong gid)
