@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-using TheGodfather.Modules.Voice.Common;
+using TheGodfather.Modules.Music.Common;
 using TheGodfather.Services.Common;
 
 using DSharpPlus;

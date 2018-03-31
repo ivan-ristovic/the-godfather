@@ -16,9 +16,9 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.VoiceNext;
 #endregion
 
-namespace TheGodfather.Modules.Voice
+namespace TheGodfather.Modules.Music
 {
-    public partial class VoiceModule
+    public partial class MusicModule
     {
         [Group("play")]
         [Description("Commands for playing music. If invoked without subcommand, plays given URL or searches YouTube for given query and plays the first result.")]
@@ -27,7 +27,7 @@ namespace TheGodfather.Modules.Voice
         [UsageExample("!play what is love?")]
         [RequireBotPermissions(Permissions.Speak)]
         [ListeningCheck]
-        public class PlayModule : VoiceModule
+        public class PlayModule : MusicModule
         {
 
             public PlayModule(YoutubeService yt, SharedData shared) : base(yt, shared) { }

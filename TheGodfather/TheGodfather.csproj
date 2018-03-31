@@ -269,8 +269,8 @@
     <Compile Include="Modules\Reactions\Common\EmojiReaction.cs" />
     <Compile Include="Modules\Reactions\Common\Reaction.cs" />
     <Compile Include="Modules\Reactions\Common\TextReaction.cs" />
-    <Compile Include="Modules\Voice\Common\SongInfo.cs" />
-    <Compile Include="Modules\Voice\VoiceModule.Play.cs" />
+    <Compile Include="Modules\Music\Common\SongInfo.cs" />
+    <Compile Include="Modules\Music\MusicModule.Play.cs" />
     <Compile Include="Services\Common\Birthday.cs" />
     <Compile Include="Services\Common\GameStatsType.cs" />
     <Compile Include="Services\Common\SavedTask.cs" />
@@ -365,7 +365,7 @@
     <Compile Include="Modules\Search\YoutubeModule.cs" />
     <Compile Include="Modules\SWAT\SwatModule.cs" />
     <Compile Include="Modules\Administration\UserModule.cs" />
-    <Compile Include="Modules\Voice\VoiceModule.cs" />
+    <Compile Include="Modules\Music\MusicModule.cs" />
     <Compile Include="Modules\SWAT\Common\SwatServer.cs" />
     <Compile Include="Modules\SWAT\Common\SwatServerInfo.cs" />
     <Compile Include="Services\MemeGenService.cs" />

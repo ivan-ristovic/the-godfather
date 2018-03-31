@@ -17,15 +17,15 @@ using DSharpPlus.VoiceNext;
 using DSharpPlus.Entities;
 #endregion
 
-namespace TheGodfather.Modules.Voice
+namespace TheGodfather.Modules.Music
 {
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
     [RequirePermissions(Permissions.UseVoice)]
     [ListeningCheck]
     [RequireOwner]
-    public partial class VoiceModule : TheGodfatherServiceModule<YoutubeService>
+    public partial class MusicModule : TheGodfatherServiceModule<YoutubeService>
     {
-        public VoiceModule(YoutubeService yt, SharedData shared) : base(yt, shared) { }
+        public MusicModule(YoutubeService yt, SharedData shared) : base(yt, shared) { }
 
 
         #region COMMAND_CONNECT

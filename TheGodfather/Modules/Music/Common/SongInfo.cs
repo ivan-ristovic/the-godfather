@@ -6,7 +6,7 @@ using TheGodfather.Common;
 using DSharpPlus.Entities;
 #endregion
 
-namespace TheGodfather.Modules.Voice.Common
+namespace TheGodfather.Modules.Music.Common
 {
     public class SongInfo
     {
