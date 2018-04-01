@@ -10,6 +10,7 @@ using TheGodfather.Services.Common;
 
 using DSharpPlus;
 using DSharpPlus.Entities;
+using System.Collections.Generic;
 #endregion
 
 namespace TheGodfather.Services
@@ -25,14 +26,11 @@ namespace TheGodfather.Services
         }
 
 
-        public async Task<DiscordEmbed> GetEmbeddedWeatherDataAsync(string query)
+        public async Task<DiscordEmbed> GetEmbeddedCurrentWeatherDataAsync(string query)
         {
-            var emb = new DiscordEmbedBuilder() {
-                Color = DiscordColor.Aquamarine
-            };
             WeatherData data = null;
             try {
-                var response = await _http.GetStringAsync($"http://api.openweathermap.org/data/2.5/weather?q={query}&appid={_key}&units=metric")
+                var response = await _http.GetStringAsync($"http://api.openweathermap.org/data/2.5/weather?q={ query }&appid={ _key }&units=metric")
                     .ConfigureAwait(false);
                 data = JsonConvert.DeserializeObject<WeatherData>(response);
             } catch (Exception e) {
@@ -40,17 +38,20 @@ namespace TheGodfather.Services
                 return null;
             }
 
-            emb.AddField($"{DiscordEmoji.FromUnicode("\U0001f30d")} Location", $"[{data.Name + ", " + data.Sys.Country}](https://openweathermap.org/city/{data.Id})", inline: true)
-               .AddField($"{DiscordEmoji.FromUnicode("\U0001f4cf")} Coordinates", $"{data.Coord.Lat}, {data.Coord.Lon}", inline: true)
-               .AddField($"{DiscordEmoji.FromUnicode("\u2601")} Condition", string.Join(", ", data.Weather.Select(w => w.Main)), inline: true)
-               .AddField($"{DiscordEmoji.FromUnicode("\U0001f4a6")} Humidity", $"{data.Main.Humidity}%", inline: true)
-               .AddField($"{DiscordEmoji.FromUnicode("\U0001f321")} Temperature", $"{data.Main.Temp:F1}°C", inline: true)
-               .AddField($"{DiscordEmoji.FromUnicode("\U0001f321")} Min/Max Temp", $"{data.Main.TempMin:F1}°C / {data.Main.TempMax:F1}°C", inline: true)
-               .AddField($"{DiscordEmoji.FromUnicode("\U0001f4a8")} Wind speed", data.Wind.Speed + " m/s", inline: true)
-               .WithThumbnailUrl($"http://openweathermap.org/img/w/{data.Weather[0].Icon}.png")
-               .WithFooter("Powered by openweathermap.org");
+            return data.Embed();
+        }
 
-            return emb.Build();
+        public async Task<IReadOnlyList<DiscordEmbed>> GetEmbeddedWeatherForecastAsync(string query, int amount = 7)
+        {
+            try {
+                var response = await _http.GetStringAsync($"http://api.openweathermap.org/data/2.5/forecast?q={ query }&appid={ _key }&units=metric")
+                    .ConfigureAwait(false);
+                var forecast = JsonConvert.DeserializeObject<Forecast>(response);
+                return forecast.GetEmbeds(amount);
+            } catch (Exception e) {
+                TheGodfather.LogHandle.LogException(LogLevel.Debug, e);
+                return null;
+            }
         }
     }
 }
