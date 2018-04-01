@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 
+using TheGodfather.Common;
+
 using DSharpPlus.Entities;
 #endregion
 
@@ -86,13 +88,13 @@ namespace TheGodfather.Services.Common
                 Color = DiscordColor.Aquamarine
             };
 
-            emb.AddField($"{DiscordEmoji.FromUnicode("\U0001f30d")} Location", $"[{Name + ", " + Sys.Country}](https://openweathermap.org/city/{ Id })", inline: true)
-               .AddField($"{DiscordEmoji.FromUnicode("\U0001f4cf")} Coordinates", $"{Coord.Lat}, {Coord.Lon}", inline: true)
-               .AddField($"{DiscordEmoji.FromUnicode("\u2601")} Condition", string.Join(", ", Weather.Select(w => w.Main)), inline: true)
-               .AddField($"{DiscordEmoji.FromUnicode("\U0001f4a6")} Humidity", $"{Main.Humidity}%", inline: true)
-               .AddField($"{DiscordEmoji.FromUnicode("\U0001f321")} Temperature", $"{Main.Temp:F1}°C", inline: true)
-               .AddField($"{DiscordEmoji.FromUnicode("\U0001f321")} Min/Max Temp", $"{Main.TempMin:F1}°C / {Main.TempMax:F1}°C", inline: true)
-               .AddField($"{DiscordEmoji.FromUnicode("\U0001f4a8")} Wind speed", Wind.Speed + " m/s", inline: true)
+            emb.AddField($"{StaticDiscordEmoji.Globe} Location", $"[{Name + ", " + Sys.Country}](https://openweathermap.org/city/{ Id })", inline: true)
+               .AddField($"{StaticDiscordEmoji.Ruler} Coordinates", $"{Coord.Lat}, {Coord.Lon}", inline: true)
+               .AddField($"{StaticDiscordEmoji.Cloud} Condition", string.Join(", ", Weather.Select(w => w.Main)), inline: true)
+               .AddField($"{StaticDiscordEmoji.Drops} Humidity", $"{Main.Humidity}%", inline: true)
+               .AddField($"{StaticDiscordEmoji.Thermometer} Temperature", $"{Main.Temp:F1}°C", inline: true)
+               .AddField($"{StaticDiscordEmoji.Thermometer} Min/Max Temp", $"{Main.TempMin:F1}°C / {Main.TempMax:F1}°C", inline: true)
+               .AddField($"{StaticDiscordEmoji.Wind} Wind speed", Wind.Speed + " m/s", inline: true)
                .WithThumbnailUrl($"http://openweathermap.org/img/w/{ Weather[0].Icon }.png")
                .WithFooter("Powered by openweathermap.org");
 
@@ -115,11 +117,11 @@ namespace TheGodfather.Services.Common
 
         public DiscordEmbedBuilder Embed(DiscordEmbedBuilder emb)
         {
-            emb.AddField($"{DiscordEmoji.FromUnicode("\u2601")} Condition", string.Join(", ", Weather.Select(w => w.Main)), inline: true)
-               .AddField($"{DiscordEmoji.FromUnicode("\U0001f4a6")} Humidity", $"{Main.Humidity}%", inline: true)
-               .AddField($"{DiscordEmoji.FromUnicode("\U0001f321")} Temperature", $"{Main.Temp:F1}°C", inline: true)
-               .AddField($"{DiscordEmoji.FromUnicode("\U0001f321")} Min/Max Temp", $"{Main.TempMin:F1}°C / {Main.TempMax:F1}°C", inline: true)
-               .AddField($"{DiscordEmoji.FromUnicode("\U0001f4a8")} Wind speed", Wind.Speed + " m/s", inline: true)
+            emb.AddField($"{StaticDiscordEmoji.Cloud} Condition", string.Join(", ", Weather.Select(w => w.Main)), inline: true)
+               .AddField($"{StaticDiscordEmoji.Drops} Humidity", $"{Main.Humidity}%", inline: true)
+               .AddField($"{StaticDiscordEmoji.Thermometer} Temperature", $"{Main.Temp:F1}°C", inline: true)
+               .AddField($"{StaticDiscordEmoji.Thermometer} Min/Max Temp", $"{Main.TempMin:F1}°C / {Main.TempMax:F1}°C", inline: true)
+               .AddField($"{StaticDiscordEmoji.Wind} Wind speed", Wind.Speed + " m/s", inline: true)
                .WithThumbnailUrl($"http://openweathermap.org/img/w/{ Weather[0].Icon }.png")
                .WithFooter("Powered by openweathermap.org");
             return emb;
@@ -147,8 +149,8 @@ namespace TheGodfather.Services.Common
                     Color = DiscordColor.Aquamarine
                 };
 
-                emb.AddField($"{DiscordEmoji.FromUnicode("\U0001f30d")} Location", $"[{City.Name + ", " + City.Country}](https://openweathermap.org/city/{ City.Id })", inline: true)
-                   .AddField($"{DiscordEmoji.FromUnicode("\U0001f4cf")} Coordinates", $"{City.Coord.Lat}, {City.Coord.Lon}", inline: true);
+                emb.AddField($"{StaticDiscordEmoji.Globe} Location", $"[{City.Name + ", " + City.Country}](https://openweathermap.org/city/{ City.Id })", inline: true)
+                   .AddField($"{StaticDiscordEmoji.Ruler} Coordinates", $"{City.Coord.Lat}, {City.Coord.Lon}", inline: true);
 
                 emb = data.Embed(emb);
                 embeds.Add(emb.Build());
