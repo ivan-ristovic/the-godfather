@@ -1,6 +1,10 @@
 ﻿#region USING_DIRECTIVES
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using Newtonsoft.Json;
+
+using DSharpPlus.Entities;
 #endregion
 
 namespace TheGodfather.Services.Common
@@ -9,6 +13,14 @@ namespace TheGodfather.Services.Common
     {
         public double Lon { get; set; }
         public double Lat { get; set; }
+    }
+
+    public class City
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public Coord Coord { get; set; }
+        public string Country { get; set; }
     }
 
     public class Weather
@@ -66,5 +78,83 @@ namespace TheGodfather.Services.Common
         public int Id { get; set; }
         public string Name { get; set; }
         public int Cod { get; set; }
+
+
+        public DiscordEmbed Embed()
+        {
+            var emb = new DiscordEmbedBuilder() {
+                Color = DiscordColor.Aquamarine
+            };
+
+            emb.AddField($"{DiscordEmoji.FromUnicode("\U0001f30d")} Location", $"[{Name + ", " + Sys.Country}](https://openweathermap.org/city/{ Id })", inline: true)
+               .AddField($"{DiscordEmoji.FromUnicode("\U0001f4cf")} Coordinates", $"{Coord.Lat}, {Coord.Lon}", inline: true)
+               .AddField($"{DiscordEmoji.FromUnicode("\u2601")} Condition", string.Join(", ", Weather.Select(w => w.Main)), inline: true)
+               .AddField($"{DiscordEmoji.FromUnicode("\U0001f4a6")} Humidity", $"{Main.Humidity}%", inline: true)
+               .AddField($"{DiscordEmoji.FromUnicode("\U0001f321")} Temperature", $"{Main.Temp:F1}°C", inline: true)
+               .AddField($"{DiscordEmoji.FromUnicode("\U0001f321")} Min/Max Temp", $"{Main.TempMin:F1}°C / {Main.TempMax:F1}°C", inline: true)
+               .AddField($"{DiscordEmoji.FromUnicode("\U0001f4a8")} Wind speed", Wind.Speed + " m/s", inline: true)
+               .WithThumbnailUrl($"http://openweathermap.org/img/w/{ Weather[0].Icon }.png")
+               .WithFooter("Powered by openweathermap.org");
+
+            return emb.Build();
+        }
+    }
+
+    public class PartialWeatherData
+    {
+        public List<Weather> Weather { get; set; }
+        public Main Main { get; set; }
+        public int Visibility { get; set; }
+        public Wind Wind { get; set; }
+        public Clouds Clouds { get; set; }
+        public int Dt { get; set; }
+        public Sys Sys { get; set; }
+        public int Id { get; set; }
+        public int Cod { get; set; }
+
+
+        public DiscordEmbedBuilder Embed(DiscordEmbedBuilder emb)
+        {
+            emb.AddField($"{DiscordEmoji.FromUnicode("\u2601")} Condition", string.Join(", ", Weather.Select(w => w.Main)), inline: true)
+               .AddField($"{DiscordEmoji.FromUnicode("\U0001f4a6")} Humidity", $"{Main.Humidity}%", inline: true)
+               .AddField($"{DiscordEmoji.FromUnicode("\U0001f321")} Temperature", $"{Main.Temp:F1}°C", inline: true)
+               .AddField($"{DiscordEmoji.FromUnicode("\U0001f321")} Min/Max Temp", $"{Main.TempMin:F1}°C / {Main.TempMax:F1}°C", inline: true)
+               .AddField($"{DiscordEmoji.FromUnicode("\U0001f4a8")} Wind speed", Wind.Speed + " m/s", inline: true)
+               .WithThumbnailUrl($"http://openweathermap.org/img/w/{ Weather[0].Icon }.png")
+               .WithFooter("Powered by openweathermap.org");
+            return emb;
+        }
+    }
+
+    public class Forecast
+    {
+        public City City { get; set; }
+
+        [JsonProperty("list")]
+        public List<PartialWeatherData> WeatherDataList { get; set; }
+
+
+        public IReadOnlyList<DiscordEmbed> GetEmbeds(int amount = 7)
+        {
+            List<DiscordEmbed> embeds = new List<DiscordEmbed>();
+
+            for (int i = 0; i < WeatherDataList.Count && i < amount; i++) {
+                var data = WeatherDataList[i];
+                var date = DateTime.UtcNow.AddDays(i + 1);
+
+                var emb = new DiscordEmbedBuilder() {
+                    Title = $"Forecast for {date.DayOfWeek}, {date.Date.ToUniversalTime().ToShortDateString()}",
+                    Color = DiscordColor.Aquamarine
+                };
+
+                emb.AddField($"{DiscordEmoji.FromUnicode("\U0001f30d")} Location", $"[{City.Name + ", " + City.Country}](https://openweathermap.org/city/{ City.Id })", inline: true)
+                   .AddField($"{DiscordEmoji.FromUnicode("\U0001f4cf")} Coordinates", $"{City.Coord.Lat}, {City.Coord.Lon}", inline: true);
+
+                emb = data.Embed(emb);
+                embeds.Add(emb.Build());
+            }
+
+            return embeds.AsReadOnly();
+        }
     }
 }
