@@ -203,7 +203,7 @@ namespace TheGodfather.Modules.Misc
 
             var sb = new StringBuilder();
             sb.Append('8').Append('=', (int)(user.Id % 40)).Append('D');
-            await ctx.RespondWithIconEmbedAsync($"{user.Mention}'s size:\n\n{Formatter.Bold(sb.ToString())}", ":straight_ruler:")
+            await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Ruler, $"{user.Mention}'s size:\n\n{Formatter.Bold(sb.ToString())}")
                 .ConfigureAwait(false);
         }
         #endregion
