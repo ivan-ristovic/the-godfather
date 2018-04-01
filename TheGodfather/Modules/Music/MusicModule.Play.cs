@@ -65,7 +65,7 @@ namespace TheGodfather.Modules.Music
                     await ctx.RespondAsync("Added to queue:", embed: si.Embed())
                         .ConfigureAwait(false);
                 } else {
-                    if (!Shared.MusicPlayers.TryAdd(ctx.Guild.Id, new MusicPlayer(ctx.Channel, vnc)))
+                    if (!Shared.MusicPlayers.TryAdd(ctx.Guild.Id, new MusicPlayer(ctx.Client, ctx.Channel, vnc)))
                         throw new CommandFailedException("Failed to initialize music player!");
                     Shared.MusicPlayers[ctx.Guild.Id].Enqueue(si);
                     var t = Task.Run(() => Shared.MusicPlayers[ctx.Guild.Id].StartAsync());
@@ -96,6 +96,7 @@ namespace TheGodfather.Modules.Music
                     throw new CommandFailedException($"File {Formatter.InlineCode(filename)} does not exist.", new FileNotFoundException());
 
                 var si = new SongInfo() {
+                    Title = filename,
                     Provider = "Server file system",
                     Query = "https://i.imgur.com/8tkHOYD.jpg",
                     Queuer = ctx.User.Mention,
@@ -107,7 +108,7 @@ namespace TheGodfather.Modules.Music
                     await ctx.RespondAsync("Added to queue:", embed: si.Embed())
                         .ConfigureAwait(false);
                 } else {
-                    if (!Shared.MusicPlayers.TryAdd(ctx.Guild.Id, new MusicPlayer(ctx.Channel, vnc)))
+                    if (!Shared.MusicPlayers.TryAdd(ctx.Guild.Id, new MusicPlayer(ctx.Client, ctx.Channel, vnc)))
                         throw new CommandFailedException("Failed to initialize music player!");
                     Shared.MusicPlayers[ctx.Guild.Id].Enqueue(si);
                     await Shared.MusicPlayers[ctx.Guild.Id].StartAsync();
