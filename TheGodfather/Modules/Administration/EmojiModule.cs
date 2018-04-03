@@ -93,11 +93,11 @@ namespace TheGodfather.Modules.Administration
         }
         #endregion
 
-        #region COMMAND_EMOJI_DETAILS
-        [Command("details")]
-        [Description("Get details for guild emoji.")]
-        [UsageExample("!emoji details pepe")]
-        [Aliases("det")]
+        #region COMMAND_EMOJI_INFO
+        [Command("info")]
+        [Description("Get information for given guild emoji.")]
+        [UsageExample("!emoji info pepe")]
+        [Aliases("details", "information", "i")]
         public async Task EmojiDetailsAsync(CommandContext ctx,
                                            [Description("Emoji.")] DiscordEmoji emoji)
         {
@@ -109,7 +109,7 @@ namespace TheGodfather.Modules.Administration
                     Description = gemoji,
                     Color = DiscordColor.CornflowerBlue
                 };
-                emb.AddField("Name", gemoji.Name, inline: true);
+                emb.AddField("Name", Formatter.InlineCode(gemoji.Name), inline: true);
                 emb.AddField("Created by", gemoji.User != null ? gemoji.User.Username : "<unknown>", inline: true);
                 emb.AddField("Integration managed", gemoji.IsManaged.ToString(), inline: true);
                 await ctx.RespondAsync(embed: emb.Build())

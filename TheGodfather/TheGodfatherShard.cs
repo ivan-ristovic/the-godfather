@@ -299,7 +299,7 @@ namespace TheGodfather
                         $"{e.Guild.ToString()} | {e.Channel.ToString()}"
                     );
                 } catch (UnauthorizedException) {
-                    Log(LogLevel.Debug,
+                    Log(LogLevel.Info,
                         $"Filter triggered in message but missing permissions to delete!<br>" +
                         $"Message: {e.Message.Content.Replace('\n', ' ')}<br>" +
                         $"{e.Message.Author.ToString()}<br>" +
@@ -393,7 +393,7 @@ namespace TheGodfather
                         $"{e.Guild.ToString()} | {e.Channel.ToString()}"
                     );
                 } catch (UnauthorizedException) {
-                    Log(LogLevel.Debug,
+                    Log(LogLevel.Info,
                         $"Filter triggered in edited message but missing permissions to delete!<br>" +
                         $"Message: '{e.Message.Content.Replace('\n', ' ')}<br>" +
                         $"{e.Message.Author.ToString()}<br>" +
