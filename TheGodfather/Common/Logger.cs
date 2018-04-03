@@ -19,18 +19,19 @@ namespace TheGodfather.Common
             }
         }
         public LogLevel LogLevel { get; set; } = LogLevel.Debug;
-
-        private readonly int BUFFER_SIZE;
-        private object _lock = new object();
-        private string _path;
-        private bool _filelog = true;
-
-
-        public Logger(string filepath, int buffsize = 512)
+        public string Path
         {
-            _path = filepath;
-            BUFFER_SIZE = buffsize;
+            get => _path;
+            set {
+                if (!string.IsNullOrWhiteSpace(value))
+                    _path = value;
+            }
         }
+        public int BufferSize { get; set; } = 512;
+        
+        private object _lock = new object();
+        private bool _filelog = true;
+        private string _path = "gf_log.txt";
 
 
         public bool Clear()
@@ -94,7 +95,7 @@ namespace TheGodfather.Common
         private void WriteToLogFile(LogLevel level, string message, DateTime? timestamp = null)
         {
             try {
-                using (StreamWriter sw = new StreamWriter(_path, true, Encoding.UTF8, BUFFER_SIZE)) {
+                using (StreamWriter sw = new StreamWriter(_path, true, Encoding.UTF8, BufferSize)) {
                     sw.Write("[{0:yyyy-MM-dd HH:mm:ss zzz}] ", timestamp ?? DateTime.Now);
                     sw.WriteLine("[{0}]", level.ToString());
                     sw.WriteLine(message.Replace("<br>", Environment.NewLine).Trim());
@@ -109,7 +110,7 @@ namespace TheGodfather.Common
         private void WriteToLogFile(int shardid, DebugLogMessageEventArgs e)
         {
             try {
-                using (StreamWriter sw = new StreamWriter(_path, true, Encoding.UTF8, BUFFER_SIZE)) {
+                using (StreamWriter sw = new StreamWriter(_path, true, Encoding.UTF8, BufferSize)) {
                     sw.Write("[{0:yyyy-MM-dd HH:mm:ss zzz}] ", e.Timestamp);
                     sw.Write("[#{0}] ", shardid.ToString());
                     sw.Write("[{0}] ", e.Application);
@@ -126,7 +127,7 @@ namespace TheGodfather.Common
         private void WriteToLogFile(LogLevel level, Exception e, DateTime? timestamp = null)
         {
             try {
-                using (StreamWriter sw = new StreamWriter(_path, true, Encoding.UTF8, BUFFER_SIZE)) {
+                using (StreamWriter sw = new StreamWriter(_path, true, Encoding.UTF8, BufferSize)) {
                     sw.Write("[{0:yyyy-MM-dd HH:mm:ss zzz}] ", timestamp ?? DateTime.Now);
                     sw.WriteLine("[{0}]", level.ToString());
                     sw.WriteLine($"Exception occured: {e.GetType()}");

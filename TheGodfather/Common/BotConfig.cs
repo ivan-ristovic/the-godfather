@@ -22,6 +22,12 @@ namespace TheGodfather.Common
         [JsonProperty("log-level")]
         public LogLevel LogLevel { get; private set; }
 
+        [JsonProperty("log-path")]
+        public string LogPath { get; private set; }
+
+        [JsonProperty("log-to-file")]
+        public bool LogToFile { get; private set; }
+
         [JsonProperty("key-giphy")]
         public string GiphyKey { get; private set; }
 
@@ -63,10 +69,12 @@ namespace TheGodfather.Common
         {
             get {
                 return new BotConfig {
-                    Token = "<insert token here>",
+                    Token = "<insert bot token here>",
                     ShardCount = 1,
                     DefaultPrefix = "!",
                     LogLevel = LogLevel.Info,
+                    LogPath = "log.txt",
+                    LogToFile = true,
                     GiphyKey = "<insert GIPHY API key>",
                     SteamKey = "<insert Steam API key>",
                     ImgurKey = "<insert Imgur API key>",
