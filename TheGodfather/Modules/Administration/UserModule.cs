@@ -231,7 +231,7 @@ namespace TheGodfather.Modules.Administration
             emb.AddField("Status", user.Presence != null ? user.Presence.Status.ToString() : "Offline", inline: true)
                .AddField("Discriminator", user.Discriminator, inline: true)
                .AddField("Created", user.CreationTimestamp.ToUniversalTime().ToString(), inline: true)
-               .AddField("ID", user.Id.ToString());
+               .AddField("ID", user.Id.ToString(), inline: true);
             if (!string.IsNullOrWhiteSpace(user.Email))
                 emb.AddField("E-mail", user.Email, inline: true);
             if (user.Verified != null)
