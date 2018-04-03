@@ -43,17 +43,22 @@ namespace TheGodfather.Modules.Search
 
 
         #region COMMAND_WEATHER_FORECAST
-        [Command("forecast")]
-        [Description("Get weather forecast for next 7 days.")]
+        [Command("forecast"), Priority(1)]
+        [Description("Get weather forecast for the following days (def: 7).")]
         [Aliases("f")]
         [UsageExample("!weather forecast london")]
+        [UsageExample("!weather forecast 5 london")]
         public async Task ForecastAsync(CommandContext ctx,
+                                       [Description("Amount of days to fetch the forecast for.")] int amount,
                                        [RemainingText, Description("Query.")] string query)
         {
             if (string.IsNullOrWhiteSpace(query))
                 throw new InvalidCommandUsageException("You need to specify a query (city usually).");
 
-            var ems = await _Service.GetEmbeddedWeatherForecastAsync(query)
+            if (amount < 1)
+                throw new InvalidCommandUsageException("Amount of days cannot be less than one.");
+
+            var ems = await _Service.GetEmbeddedWeatherForecastAsync(query, amount)
                 .ConfigureAwait(false);
             if (ems == null || !ems.Any())
                 throw new CommandFailedException("Cannot find weather data for given query.");
@@ -61,6 +66,11 @@ namespace TheGodfather.Modules.Search
             await ctx.Client.GetInteractivity().SendPaginatedMessage(ctx.Channel, ctx.User, ems.Select(e => new Page() { Embed = e }))
                 .ConfigureAwait(false);
         }
+
+        [Command("forecast"), Priority(0)]
+        public async Task ForecastAsync(CommandContext ctx,
+                                       [RemainingText, Description("Query.")] string query)
+            => await ForecastAsync(ctx, 7, query).ConfigureAwait(false);
         #endregion
     }
 }
