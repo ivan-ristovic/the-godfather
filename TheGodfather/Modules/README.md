@@ -18,6 +18,95 @@
 ```
 ---
 
+## Group: automaticroles
+*Commands to manipulate automatically assigned roles (roles which get automatically granted to a user who enters the guild). If invoked without subcommands, lists all allowed automatic roles for this guild.*
+
+**Aliases:**
+`ar`
+
+
+**Examples:**
+
+```
+!ar
+```
+---
+
+### automaticroles add
+*Add an automatic role (or roles) for this guild.*
+
+**Requires user permissions:**
+`Administrator`
+
+**Aliases:**
+`a, +`
+
+
+**Arguments:**
+
+`[role...]` : *Roles to add.*
+
+**Examples:**
+
+```
+!ar add @Notifications
+!ar add @Notifications @Role1 @Role2
+```
+---
+
+### automaticroles clear
+*Delete all automatic roles for the current guild.*
+
+**Requires user permissions:**
+`Administrator`
+
+**Aliases:**
+`da, c, ca, cl, clearall`
+
+
+**Examples:**
+
+```
+!ar clear
+```
+---
+
+### automaticroles delete
+*Remove automatic role (or roles).*
+
+**Requires user permissions:**
+`Administrator`
+
+**Aliases:**
+`remove, del, -, d`
+
+
+**Arguments:**
+
+`[role...]` : *Roles to delete.*
+
+**Examples:**
+
+```
+!ar delete @Notifications
+!ar delete @Notifications @Role1 @Role2
+```
+---
+
+### automaticroles list
+*View all automatic roles in the current guild.*
+
+**Aliases:**
+`print, show, l, p`
+
+
+**Examples:**
+
+```
+!ar list
+```
+---
+
 ## Group: bank
 *Bank manipulation. If invoked alone, prints out your bank balance.*
 
@@ -136,20 +225,6 @@
 ```
 !bank transfer @Someone 40
 !bank transfer 40 @Someone
-```
----
-
-## cancelvote
-*Vote for an option in the current running poll.*
-
-**Aliases:**
-`cvote, resetvote`
-
-
-**Examples:**
-
-```
-!vote 1
 ```
 ---
 
@@ -609,18 +684,27 @@
 ---
 
 ## connect
-*Connects me to a voice channel.*
+*Connect the bot to a voice channel. If the channel is not given, connects the bot to the same channel you are in.*
 
 **Owner-only.**
 
 **Requires permissions:**
 `Use voice chat`
 
+**Aliases:**
+`con, conn, enter`
+
 
 **Arguments:**
 
 (optional) `[channel]` : *Channel.* (def: `None`)
 
+**Examples:**
+
+```
+!connect
+!connect Music
+```
 ---
 
 ## dice
@@ -638,11 +722,22 @@
 ---
 
 ## disconnect
-*Disconnects from voice channel.*
+*Disconnects the bot from the voice channel.*
 
 **Owner-only.**
 
+**Requires permissions:**
+`Use voice chat`
 
+**Aliases:**
+`dcon, dconn, discon, disconn, dc`
+
+
+**Examples:**
+
+```
+!disconnect
+```
 ---
 
 ## Group: emoji
@@ -703,11 +798,11 @@
 ```
 ---
 
-### emoji details
-*Get details for guild emoji.*
+### emoji info
+*Get information for given guild emoji.*
 
 **Aliases:**
-`det`
+`details, information, i`
 
 
 **Arguments:**
@@ -717,7 +812,7 @@
 **Examples:**
 
 ```
-!emoji details pepe
+!emoji info pepe
 ```
 ---
 
@@ -1099,6 +1194,20 @@
 ```
 ---
 
+### game animalrace stats
+*Print the leaderboard for this game.*
+
+**Aliases:**
+`top, leaderboard`
+
+
+**Examples:**
+
+```
+!game animalrace stats
+```
+---
+
 ## Group: game caro
 *Starts a "Caro" game. Play a move by writing a pair of numbers from 1 to 10 corresponding to the row and column where you wish to play. You can also specify a time window in which player must submit their move.*
 
@@ -1129,6 +1238,20 @@
 
 ```
 !game caro rules
+```
+---
+
+### game caro stats
+*Print the leaderboard for this game.*
+
+**Aliases:**
+`top, leaderboard`
+
+
+**Examples:**
+
+```
+!game caro stats
 ```
 ---
 
@@ -1165,7 +1288,21 @@
 ```
 ---
 
-### game duel
+### game connect4 stats
+*Print the leaderboard for this game.*
+
+**Aliases:**
+`top, leaderboard`
+
+
+**Examples:**
+
+```
+!game connect4 stats
+```
+---
+
+## Group: game duel
 *Starts a duel which I will commentate.*
 
 **Aliases:**
@@ -1183,7 +1320,35 @@
 ```
 ---
 
-### game hangman
+### game duel rules
+*Explain the Duel game rules.*
+
+**Aliases:**
+`help, h, ruling, rule`
+
+
+**Examples:**
+
+```
+!game duel rules
+```
+---
+
+### game duel stats
+*Print the leaderboard for this game.*
+
+**Aliases:**
+`top, leaderboard`
+
+
+**Examples:**
+
+```
+!game duel stats
+```
+---
+
+## Group: game hangman
 *Starts a hangman game.*
 
 **Aliases:**
@@ -1194,6 +1359,34 @@
 
 ```
 !game hangman
+```
+---
+
+### game hangman rules
+*Explain the Hangman game rules.*
+
+**Aliases:**
+`help, h, ruling, rule`
+
+
+**Examples:**
+
+```
+!game hangman rules
+```
+---
+
+### game hangman stats
+*Print the leaderboard for this game.*
+
+**Aliases:**
+`top, leaderboard`
+
+
+**Examples:**
+
+```
+!game hangman stats
 ```
 ---
 
@@ -1253,6 +1446,20 @@
 ```
 ---
 
+### game numberrace stats
+*Print the leaderboard for this game.*
+
+**Aliases:**
+`top, leaderboard`
+
+
+**Examples:**
+
+```
+!game numberrace stats
+```
+---
+
 ## Group: game othello
 *Starts an "Othello" game. Play a move by writing a pair of numbers from 1 to 10 corresponding to the row and column where you wish to play. You can also specify a time window in which player must submit their move.*
 
@@ -1286,6 +1493,20 @@
 ```
 ---
 
+### game othello stats
+*Print the leaderboard for this game.*
+
+**Aliases:**
+`top, leaderboard`
+
+
+**Examples:**
+
+```
+!game othello stats
+```
+---
+
 ## Group: game quiz
 *List all available quiz categories.*
 
@@ -1311,6 +1532,20 @@
 
 ```
 !game quiz countries
+```
+---
+
+### game quiz stats
+*Print the leaderboard for this game.*
+
+**Aliases:**
+`top, leaderboard`
+
+
+**Examples:**
+
+```
+!game quiz stats
 ```
 ---
 
@@ -1381,6 +1616,20 @@
 
 ```
 !game tictactoe rules
+```
+---
+
+### game tictactoe stats
+*Print the leaderboard for this game.*
+
+**Aliases:**
+`top, leaderboard`
+
+
+**Examples:**
+
+```
+!game tictactoe stats
 ```
 ---
 
@@ -2505,6 +2754,26 @@
 ```
 ---
 
+### owner announce
+*Send a message to all guilds the bot is in.*
+
+**Owner-only.**
+
+**Aliases:**
+`a, ann`
+
+
+**Arguments:**
+
+`[string...]` : *Message to send.*
+
+**Examples:**
+
+```
+!owner announce SPAM SPAM
+```
+---
+
 ## Group: owner birthdays
 *Birthday notifications management. If invoked without subcommand, lists all birthdays registered.*
 
@@ -3130,9 +3399,10 @@
 ---
 
 ## Group: play
-*Plays a mp3 file from URL or server filesystem.*
+*Commands for playing music. If invoked without subcommand, plays given URL or searches YouTube for given query and plays the first result.*
 
-**Owner-only.**
+**Requires bot permissions:**
+`Speak`
 
 **Aliases:**
 `music, p`
@@ -3142,15 +3412,21 @@
 
 `[string...]` : *URL or YouTube search query.*
 
+**Examples:**
+
+```
+!play https://www.youtube.com/watch?v=dQw4w9WgXcQ
+!play what is love?
+```
 ---
 
 ### play file
-*Plays an audio file from server filesystem.*
+*Plays an audio file from the server filesystem.*
 
 **Owner-only.**
 
-**Requires permissions:**
-`Speak, Use voice chat`
+**Requires bot permissions:**
+`Speak`
 
 **Aliases:**
 `f`
@@ -3160,6 +3436,11 @@
 
 `[string...]` : *Full path to the file to play.*
 
+**Examples:**
+
+```
+!play file test.mp3
+```
 ---
 
 ## poll
@@ -3820,7 +4101,7 @@
 ---
 
 ## Group: selfassignableroles
-*Commands to manipulate self-assignable roles. If invoked alone, lists all allowed self-assignable roles in this guild.*
+*Commands to manipulate self-assignable roles. If invoked without subcommands, lists all allowed self-assignable roles for this guild.*
 
 **Aliases:**
 `sar`
@@ -3908,6 +4189,22 @@
 ```
 ---
 
+## skip
+*Skip current voice playback.*
+
+**Owner-only.**
+
+**Requires permissions:**
+`Use voice chat`
+
+
+**Examples:**
+
+```
+!skip
+```
+---
+
 ### steam profile
 *Get Steam user information for user based on his ID.*
 
@@ -3926,7 +4223,15 @@
 
 **Owner-only.**
 
+**Requires permissions:**
+`Use voice chat`
 
+
+**Examples:**
+
+```
+!stop
+```
 ---
 
 ### swat ip
@@ -4675,8 +4980,11 @@
 ```
 ---
 
-## vote
-*Vote for an option in the current running poll.*
+## Group: vote
+*Commands for voting in running polls. If invoked without subcommands, registers a vote in the current poll to the option you entered.*
+
+**Aliases:**
+`votefor, vf`
 
 
 **Arguments:**
@@ -4690,8 +4998,22 @@
 ```
 ---
 
-## weather
-*Return weather information for given query.*
+### vote cancel
+*Vote for an option in the current running poll.*
+
+**Aliases:**
+`c, reset`
+
+
+**Examples:**
+
+```
+!vote cancel
+```
+---
+
+## Group: weather
+*Weather search commands. If invoked without subcommands, returns weather information for given query.*
 
 **Aliases:**
 `w`
@@ -4705,6 +5027,31 @@
 
 ```
 !weather london
+```
+---
+
+### weather forecast
+*Get weather forecast for the following days (def: 7).*
+
+**Aliases:**
+`f`
+
+
+**Overload 1:**
+
+`[int]` : *Amount of days to fetch the forecast for.*
+
+`[string...]` : *Query.*
+
+**Overload 0:**
+
+`[string...]` : *Query.*
+
+**Examples:**
+
+```
+!weather forecast london
+!weather forecast 5 london
 ```
 ---
 
