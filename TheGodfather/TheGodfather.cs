@@ -23,9 +23,9 @@ namespace TheGodfather
 {
     internal static class TheGodfather
     {
-        public static bool Listening { get; set; } = true;
-        public static Logger LogHandle { get; } = new Logger("log.txt");
-        public static List<TheGodfatherShard> Shards { get; set; }
+        public static bool Listening { get; internal set; } = true;
+        public static Logger LogHandle { get; private set; }
+        public static List<TheGodfatherShard> Shards { get; private set; }
         private static CancellationTokenSource CTS { get; set; } = new CancellationTokenSource();
         private static DBService DatabaseService { get; set; }
         private static SharedData SharedData { get; set; }
@@ -78,8 +78,11 @@ namespace TheGodfather
                 json = await sr.ReadToEndAsync();
             var cfg = JsonConvert.DeserializeObject<BotConfig>(json);
 
-            LogHandle.LogLevel = cfg.LogLevel;
-            LogHandle.LogToFile = cfg.FileLog;
+            LogHandle = new Logger() {
+                LogLevel = cfg.LogLevel,
+                LogToFile = cfg.LogToFile,
+                Path = cfg.LogPath
+            };
 
 
             Console.Write("\r[2/5] Booting PostgreSQL connection...");

@@ -1,4 +1,4 @@
-﻿using TheGodfather.Common;
+﻿using System;
 
 namespace TheGodfather.Modules.Misc.Common
 {
