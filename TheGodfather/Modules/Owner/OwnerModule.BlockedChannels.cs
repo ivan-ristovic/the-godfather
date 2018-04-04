@@ -48,56 +48,21 @@ namespace TheGodfather.Modules.Owner
             [UsageExample("!owner blockedchannels add \"This is some reason\" #channel 123123123123123")]
             public async Task AddAsync(CommandContext ctx,
                                       [Description("Channels to block.")] params DiscordChannel[] channels)
-            {
-                if (!channels.Any())
-                    throw new InvalidCommandUsageException("Missing channels to block.");
-
-                var sb = new StringBuilder("Action results:\n\n");
-                foreach (var channel in channels) {
-                    if (channel.Type != ChannelType.Text) {
-                        sb.AppendLine($"Error: {channel.ToString()} is not a text channel!");
-                        continue;
-                    }
-
-                    if (Shared.BlockedChannels.Contains(channel.Id)) {
-                        sb.AppendLine($"Error: {channel.ToString()} is already blocked!");
-                        continue;
-                    }
-
-                    if (!Shared.BlockedChannels.Add(channel.Id)) {
-                        sb.AppendLine($"Error: Failed to add {channel.ToString()} to blocked channels list!");
-                        continue;
-                    }
-
-                    try {
-                        await Database.AddBlockedChannelAsync(channel.Id)
-                            .ConfigureAwait(false);
-                    } catch (Exception e) {
-                        sb.AppendLine($"Warning: Failed to add blocked {channel.ToString()} to the database!");
-                        TheGodfather.LogHandle.LogException(LogLevel.Warning, e);
-                        continue;
-                    }
-
-                    sb.AppendLine($"Blocked: {channel.ToString()}!");
-                }
-
-                await ctx.RespondWithIconEmbedAsync(sb.ToString())
-                    .ConfigureAwait(false);
-            }
+                => await AddAsync(ctx, null, channels).ConfigureAwait(false);
 
             [Command("add"), Priority(1)]
             public async Task AddAsync(CommandContext ctx,
                                       [Description("Reason (max 60 chars).")] string reason,
-                                      [Description("Channels to block.")] params DiscordChannel[] users)
+                                      [Description("Channels to block.")] params DiscordChannel[] channels)
             {
                 if (reason.Length >= 60)
                     throw new InvalidCommandUsageException("Reason cannot exceed 60 characters");
 
-                if (!users.Any())
+                if (!channels.Any())
                     throw new InvalidCommandUsageException("Missing users to block.");
 
                 var sb = new StringBuilder("Action results:\n\n");
-                foreach (var user in users) {
+                foreach (var user in channels) {
                     if (Shared.BlockedUsers.Contains(user.Id)) {
                         sb.AppendLine($"Error: {user.ToString()} is already blocked!");
                         continue;
@@ -125,31 +90,9 @@ namespace TheGodfather.Modules.Owner
 
             [Command("add"), Priority(0)]
             public async Task AddAsync(CommandContext ctx,
-                                      [Description("Channels to block.")] DiscordChannel user,
+                                      [Description("Channel to block.")] DiscordChannel channel,
                                       [RemainingText, Description("Reason (max 60 chars).")] string reason)
-            {
-                if (string.IsNullOrWhiteSpace(reason))
-                    throw new InvalidCommandUsageException("Reason missing.");
-
-                if (reason.Length >= 60)
-                    throw new InvalidCommandUsageException("Reason cannot exceed 60 characters");
-
-                if (Shared.BlockedUsers.Contains(user.Id))
-                    throw new CommandFailedException($"Error: {user.ToString()} is already blocked!");
-
-                if (!Shared.BlockedUsers.Add(user.Id))
-                    throw new CommandFailedException($"Error: Failed to add {user.ToString()} to blocked users list!");
-
-                try {
-                    await Database.AddBlockedUserAsync(user.Id, reason)
-                        .ConfigureAwait(false);
-                } catch (Exception e) {
-                    throw new CommandFailedException($"Warning: Failed to add blocked {user.ToString()} to the database!", e);
-                }
-
-                await ctx.RespondWithIconEmbedAsync($"Blocked: {user.ToString()}!")
-                    .ConfigureAwait(false);
-            }
+                => await AddAsync(ctx, reason, channel).ConfigureAwait(false);
             #endregion
 
             #region COMMAND_BLOCKEDCHANNELS_DELETE
