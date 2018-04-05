@@ -7,6 +7,7 @@ using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Polls.Common;
 
+using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Interactivity;
@@ -100,6 +101,23 @@ namespace TheGodfather.Modules.Polls
         public async Task ReactionsPollAsync(CommandContext ctx,
                                             [RemainingText, Description("Question.")] string question)
             => await ReactionsPollAsync(ctx, TimeSpan.FromMinutes(1), question).ConfigureAwait(false);
+        #endregion
+
+        #region COMMAND_STOP
+        [Command("stoppoll")]
+        [Description("Stops a running poll.")]
+        [UsageExample("!stoppoll")]
+        [RequireUserPermissions(Permissions.Administrator)]
+        public async Task StopAsync(CommandContext ctx)
+        {
+            await Task.Delay(0).ConfigureAwait(false);
+
+            var poll = Poll.GetPollInChannel(ctx.Channel.Id);
+            if (poll == null || poll is ReactionsPoll)
+                throw new CommandFailedException("There is no text poll running in this channel.");
+
+            poll.Stop();
+        }
         #endregion
     }
 }

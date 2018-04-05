@@ -3,7 +3,10 @@ using System;
 using System.Linq;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
+
+using TheGodfather.Extensions;
 
 using DSharpPlus;
 using DSharpPlus.Entities;
@@ -51,6 +54,7 @@ namespace TheGodfather.Modules.Polls.Common
         protected DiscordChannel _channel;
         protected InteractivityExtension _interactivity;
         protected DateTime _endTime;
+        protected CancellationTokenSource _cts = new CancellationTokenSource();
 
 
         public Poll(InteractivityExtension interactivity, DiscordChannel channel, string question)
@@ -68,7 +72,7 @@ namespace TheGodfather.Modules.Polls.Common
                 .ConfigureAwait(false);
             
             _endTime = DateTime.Now + timespan;
-            while (true) {
+            while (!_cts.IsCancellationRequested) {
                 try {
                     if (_channel.LastMessageId != msg.Id) {
                         await msg.DeleteAsync()
@@ -87,8 +91,13 @@ namespace TheGodfather.Modules.Polls.Common
                 if (UntilEnd.TotalSeconds < 1)
                     break;
 
-                await Task.Delay(UntilEnd <= TimeSpan.FromSeconds(5) ? UntilEnd : TimeSpan.FromSeconds(5))
-                    .ConfigureAwait(false);
+                try {
+                    await Task.Delay(UntilEnd <= TimeSpan.FromSeconds(5) ? UntilEnd : TimeSpan.FromSeconds(5), _cts.Token)
+                        .ConfigureAwait(false);
+                } catch (TaskCanceledException) {
+                    await _channel.SendFailedEmbedAsync("The poll has been cancelled!")
+                        .ConfigureAwait(false);
+                }
             }
             Running = false;
 
@@ -119,6 +128,11 @@ namespace TheGodfather.Modules.Polls.Common
             if (!_votes.ContainsKey(uid))
                 return true;
             return _votes.TryRemove(uid, out _);
+        }
+
+        public void Stop()
+        {
+            _cts.Cancel();
         }
 
         public string OptionWithId(int id)
