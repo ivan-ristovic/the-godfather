@@ -55,33 +55,33 @@ namespace TheGodfather.Modules.Owner
                                       [Description("Reason (max 60 chars).")] string reason,
                                       [Description("Channels to block.")] params DiscordChannel[] channels)
             {
-                if (reason.Length >= 60)
+                if (reason?.Length >= 60)
                     throw new InvalidCommandUsageException("Reason cannot exceed 60 characters");
 
                 if (!channels.Any())
-                    throw new InvalidCommandUsageException("Missing users to block.");
+                    throw new InvalidCommandUsageException("Missing channels to block.");
 
                 var sb = new StringBuilder("Action results:\n\n");
-                foreach (var user in channels) {
-                    if (Shared.BlockedUsers.Contains(user.Id)) {
-                        sb.AppendLine($"Error: {user.ToString()} is already blocked!");
+                foreach (var channel in channels) {
+                    if (Shared.BlockedChannels.Contains(channel.Id)) {
+                        sb.AppendLine($"Error: {channel.ToString()} is already blocked!");
                         continue;
                     }
 
-                    if (!Shared.BlockedUsers.Add(user.Id)) {
-                        sb.AppendLine($"Error: Failed to add {user.ToString()} to blocked users list!");
+                    if (!Shared.BlockedChannels.Add(channel.Id)) {
+                        sb.AppendLine($"Error: Failed to add {channel.ToString()} to blocked users list!");
                         continue;
                     }
 
                     try {
-                        await Database.AddBlockedUserAsync(user.Id, reason)
+                        await Database.AddBlockedChannelAsync(channel.Id, reason)
                             .ConfigureAwait(false);
                     } catch {
-                        sb.AppendLine($"Warning: Failed to add blocked {user.ToString()} to the database!");
+                        sb.AppendLine($"Warning: Failed to add blocked {channel.ToString()} to the database!");
                         continue;
                     }
 
-                    sb.AppendLine($"Blocked: {user.ToString()}!");
+                    sb.AppendLine($"Blocked: {channel.ToString()}!");
                 }
 
                 await ctx.RespondWithIconEmbedAsync(sb.ToString())
@@ -147,9 +147,6 @@ namespace TheGodfather.Modules.Owner
                 var blocked = await Database.GetAllBlockedChannelsAsync()
                     .ConfigureAwait(false);
 
-                if (!blocked.Any())
-                    throw new CommandFailedException("No blocked channels registered!");
-
                 List<string> lines = new List<string>();
                 foreach (var tup in blocked) {
                     try {
@@ -157,10 +154,14 @@ namespace TheGodfather.Modules.Owner
                             .ConfigureAwait(false);
                         lines.Add($"{channel.ToString()} ({Formatter.Italic(string.IsNullOrWhiteSpace(tup.Item2) ? "No reason provided." : tup.Item2)})");
                     } catch (NotFoundException) {
+                        TheGodfather.LogHandle.LogMessage(LogLevel.Warning, $"Removed 404 blocked channel with ID {tup.Item1}");
                         await Database.RemoveBlockedChannelAsync(tup.Item1)
                             .ConfigureAwait(false);
                     }
                 }
+
+                if (!lines.Any())
+                    throw new CommandFailedException("No blocked channels registered!");
 
                 await ctx.SendPaginatedCollectionAsync(
                     "Blocked channels (in database):",

@@ -55,7 +55,7 @@ namespace TheGodfather.Modules.Owner
                                       [Description("Reason (max 60 chars).")] string reason,
                                       [Description("Users to block.")] params DiscordUser[] users)
             {
-                if (reason.Length >= 60)
+                if (reason?.Length >= 60)
                     throw new InvalidCommandUsageException("Reason cannot exceed 60 characters");
 
                 if (!users.Any())
@@ -147,9 +147,6 @@ namespace TheGodfather.Modules.Owner
                 var blocked = await Database.GetAllBlockedUsersAsync()
                     .ConfigureAwait(false);
 
-                if (!blocked.Any())
-                    throw new CommandFailedException("No blocked users registered!");
-
                 List<string> lines = new List<string>();
                 foreach (var tup in blocked) {
                     try {
@@ -157,10 +154,14 @@ namespace TheGodfather.Modules.Owner
                             .ConfigureAwait(false);
                         lines.Add($"{user.ToString()} ({Formatter.Italic(string.IsNullOrWhiteSpace(tup.Item2) ? "No reason provided." : tup.Item2)})");
                     } catch (NotFoundException) {
-                        await ctx.RespondWithFailedEmbedAsync($"User with ID {tup.Item1} does not exist!")
+                        TheGodfather.LogHandle.LogMessage(LogLevel.Warning, $"Removed 404 blocked user with ID {tup.Item1}");
+                        await Database.RemoveBlockedUserAsync(tup.Item1)
                             .ConfigureAwait(false);
                     }
                 }
+
+                if (!lines.Any())
+                    throw new CommandFailedException("No blocked users registered!");
 
                 await ctx.SendPaginatedCollectionAsync(
                     "Blocked users (in database):",
