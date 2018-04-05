@@ -17,7 +17,7 @@ using DSharpPlus.Entities;
 namespace TheGodfather.Modules.Administration
 {
     [Group("automaticroles")]
-    [Description("Commands to manipulate automatically assigned roles (roles which get automatically granted to a user who enters the guild). If invoked without subcommands, lists all allowed automatic roles for this guild.")]
+    [Description("Commands to manipulate automatically assigned roles (roles which get automatically granted to a user who enters the guild). If invoked without command, either lists or adds automatic role depending if argument is given.")]
     [Aliases("ar")]
     [UsageExample("!ar")]
     [Cooldown(2, 5, CooldownBucketType.Guild)]
@@ -28,9 +28,16 @@ namespace TheGodfather.Modules.Administration
         public AutomaticRolesModule(DBService db) : base(db: db) { }
 
 
-        [GroupCommand]
+        [GroupCommand, Priority(1)]
         public async Task ExecuteGroupAsync(CommandContext ctx)
-            => await ListARolesAsync(ctx).ConfigureAwait(false);
+            => await ListAsync(ctx).ConfigureAwait(false);
+
+        [GroupCommand, Priority(0)]
+        [RequireUserPermissions(Permissions.Administrator)]
+        public async Task ExecuteGroupAsync(CommandContext ctx,
+                                           [Description("Roles to add.")] params DiscordRole[] roles)
+            => await AddAsync(ctx, roles).ConfigureAwait(false);
+
 
 
         #region COMMAND_AR_ADD
@@ -40,7 +47,7 @@ namespace TheGodfather.Modules.Administration
         [UsageExample("!ar add @Notifications")]
         [UsageExample("!ar add @Notifications @Role1 @Role2")]
         [RequireUserPermissions(Permissions.Administrator)]
-        public async Task AddARoleAsync(CommandContext ctx,
+        public async Task AddAsync(CommandContext ctx,
                                        [Description("Roles to add.")] params DiscordRole[] roles)
         {
             foreach (var role in roles)
@@ -78,8 +85,8 @@ namespace TheGodfather.Modules.Administration
         [UsageExample("!ar delete @Notifications")]
         [UsageExample("!ar delete @Notifications @Role1 @Role2")]
         [RequireUserPermissions(Permissions.Administrator)]
-        public async Task RemoveARoleAsync(CommandContext ctx,
-                                          [Description("Roles to delete.")] params DiscordRole[] roles)
+        public async Task DeleteAsync(CommandContext ctx,
+                                     [Description("Roles to delete.")] params DiscordRole[] roles)
         {
             foreach (var role in roles)
                 await Database.RemoveAutomaticRoleAsync(ctx.Guild.Id, role.Id)
@@ -95,7 +102,7 @@ namespace TheGodfather.Modules.Administration
         [Description("View all automatic roles in the current guild.")]
         [Aliases("print", "show", "l", "p")]
         [UsageExample("!ar list")]
-        public async Task ListARolesAsync(CommandContext ctx)
+        public async Task ListAsync(CommandContext ctx)
         {
             var rids = await Database.GetAutomaticRolesForGuildAsync(ctx.Guild.Id)
                 .ConfigureAwait(false);

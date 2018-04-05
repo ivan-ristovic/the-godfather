@@ -17,7 +17,7 @@ using DSharpPlus.Entities;
 namespace TheGodfather.Modules.Administration
 {
     [Group("selfassignableroles")]
-    [Description("Commands to manipulate self-assignable roles. If invoked without subcommands, lists all allowed self-assignable roles for this guild.")]
+    [Description("Commands to manipulate self-assignable roles. If invoked without subcommands, lists all self-assignable roles for this guild or adds a new self-assignable role depending of argument given.")]
     [Aliases("sar")]
     [UsageExample("!sar")]
     [Cooldown(2, 5, CooldownBucketType.Guild)]
@@ -28,9 +28,15 @@ namespace TheGodfather.Modules.Administration
         public SelfAssignableRolesModule(DBService db) : base(db: db) { }
 
 
-        [GroupCommand]
+        [GroupCommand, Priority(1)]
         public async Task ExecuteGroupAsync(CommandContext ctx)
-            => await ListSARolesAsync(ctx).ConfigureAwait(false);
+            => await ListAsync(ctx).ConfigureAwait(false);
+
+        [GroupCommand, Priority(0)]
+        [RequireUserPermissions(Permissions.Administrator)]
+        public async Task ExecuteGroupAsync(CommandContext ctx,
+                                           [Description("Roles to add.")] params DiscordRole[] roles)
+            => await AddAsync(ctx, roles).ConfigureAwait(false);
 
 
         #region COMMAND_SAR_ADD
@@ -40,8 +46,8 @@ namespace TheGodfather.Modules.Administration
         [UsageExample("!sar add @Notifications")]
         [UsageExample("!sar add @Notifications @Role1 @Role2")]
         [RequireUserPermissions(Permissions.Administrator)]
-        public async Task AddSARoleAsync(CommandContext ctx,
-                                        [Description("Roles to add.")] params DiscordRole[] roles)
+        public async Task AddAsync(CommandContext ctx,
+                                  [Description("Roles to add.")] params DiscordRole[] roles)
         {
             foreach (var role in roles)
                 await Database.AddSelfAssignableRoleAsync(ctx.Guild.Id, role.Id)
@@ -78,8 +84,8 @@ namespace TheGodfather.Modules.Administration
         [UsageExample("!sar delete @Notifications")]
         [UsageExample("!sar delete @Notifications @Role1 @Role2")]
         [RequireUserPermissions(Permissions.Administrator)]
-        public async Task RemoveSARoleAsync(CommandContext ctx,
-                                           [Description("Roles to delete.")] params DiscordRole[] roles)
+        public async Task DeleteAsync(CommandContext ctx,
+                                     [Description("Roles to delete.")] params DiscordRole[] roles)
         {
             foreach (var role in roles)
                 await Database.RemoveSelfAssignableRoleAsync(ctx.Guild.Id, role.Id)
@@ -95,7 +101,7 @@ namespace TheGodfather.Modules.Administration
         [Description("View all self-assignable roles in the current guild.")]
         [Aliases("print", "show", "l", "p")]
         [UsageExample("!sar list")]
-        public async Task ListSARolesAsync(CommandContext ctx)
+        public async Task ListAsync(CommandContext ctx)
         {
             var rids = await Database.GetSelfAssignableRolesForGuildAsync(ctx.Guild.Id)
                 .ConfigureAwait(false);

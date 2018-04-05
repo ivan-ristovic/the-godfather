@@ -21,7 +21,7 @@ using DSharpPlus.Entities;
 namespace TheGodfather.Modules.Administration
 {
     [Group("filter")]
-    [Description("Message filtering commands. If invoked without subcommand, adds a new filter for the given word list. Words can be regular expressions.")]
+    [Description("Message filtering commands. If invoked without subcommand, either lists all filters or adds a new filter for the given word list. Words can be regular expressions.")]
     [Aliases("f", "filters")]
     [UsageExample("!filter fuck fk f+u+c+k+")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
@@ -32,7 +32,11 @@ namespace TheGodfather.Modules.Administration
         public FilterModule(SharedData shared, DBService db) : base(shared, db) { }
 
 
-        [GroupCommand]
+        [GroupCommand, Priority(1)]
+        public async Task ExecuteGroupAsync(CommandContext ctx)
+            => await ListAsync(ctx).ConfigureAwait(false);
+
+        [GroupCommand, Priority(0)]
         [RequirePermissions(Permissions.ManageGuild)]
         public async Task ExecuteGroupAsync(CommandContext ctx,
                                            [RemainingText, Description("Filter list. Filter is a regular expression (case insensitive).")] params string[] filters)

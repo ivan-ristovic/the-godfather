@@ -20,7 +20,7 @@ namespace TheGodfather.Modules.Owner
     public partial class OwnerModule
     {
         [Group("birthdays")]
-        [Description("Birthday notifications management. If invoked without subcommand, lists all birthdays registered.")]
+        [Description("Birthday notifications management. If invoked without command, either lists or adds birthdays depending if argument is given.")]
         [Aliases("birthday", "bday", "bd", "bdays")]
         [ListeningCheck]
         public class BirthdayModule : TheGodfatherBaseModule
@@ -29,9 +29,23 @@ namespace TheGodfather.Modules.Owner
             public BirthdayModule(DBService db) : base(db: db) { }
 
 
-            [GroupCommand]
+            [GroupCommand, Priority(2)]
             public async Task ExecuteGroupAsync(CommandContext ctx)
                 => await ListAsync(ctx).ConfigureAwait(false);
+
+            [GroupCommand, Priority(1)]
+            public async Task ExecuteGroupAsync(CommandContext ctx,
+                                               [Description("Birthday boy/girl.")] DiscordUser user,
+                                               [Description("Birth date.")] string date_str = null,
+                                               [Description("Channel to send a greeting message to.")] DiscordChannel channel = null)
+                => await AddAsync(ctx, user, date_str, channel).ConfigureAwait(false);
+
+            [GroupCommand, Priority(0)]
+            public async Task ExecuteGroupAsync(CommandContext ctx,
+                                               [Description("Birthday boy/girl.")] DiscordUser user,
+                                               [Description("Channel to send a greeting message to.")] DiscordChannel channel = null,
+                                               [Description("Birth date.")] string date_str = null)
+                => await AddAsync(ctx, user, date_str, channel).ConfigureAwait(false);
 
 
             #region COMMAND_BIRTHDAY_ADD

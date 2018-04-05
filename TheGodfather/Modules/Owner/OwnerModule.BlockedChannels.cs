@@ -32,9 +32,26 @@ namespace TheGodfather.Modules.Owner
             public BlockedChannelsModule(SharedData shared, DBService db) : base(shared, db) { }
 
 
-            [GroupCommand]
+            [GroupCommand, Priority(3)]
             public async Task ExecuteGroupAsync(CommandContext ctx)
                 => await ListAsync(ctx).ConfigureAwait(false);
+
+            [GroupCommand, Priority(2)]
+            public async Task ExecuteGroupAsync(CommandContext ctx,
+                                               [Description("Users to block.")] params DiscordChannel[] channels)
+                => await AddAsync(ctx, null, channels).ConfigureAwait(false);
+
+            [GroupCommand, Priority(1)]
+            public async Task ExecuteGroupAsync(CommandContext ctx,
+                                               [Description("Reason (max 60 chars).")] string reason,
+                                               [Description("Users to block.")] params DiscordChannel[] channels)
+                => await AddAsync(ctx, reason, channels).ConfigureAwait(false);
+
+            [GroupCommand, Priority(0)]
+            public async Task ExecuteGroupAsync(CommandContext ctx,
+                                               [Description("Users to block.")] DiscordChannel channel,
+                                               [RemainingText, Description("Reason (max 60 chars).")] string reason)
+                => await AddAsync(ctx, reason, channel).ConfigureAwait(false);
 
 
             #region COMMAND_BLOCKEDCHANNELS_ADD

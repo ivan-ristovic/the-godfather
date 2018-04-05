@@ -34,7 +34,11 @@ namespace TheGodfather.Modules.Reactions
         public TextReactionsModule(SharedData shared, DBService db) : base(shared, db) { }
 
 
-        [GroupCommand]
+        [GroupCommand, Priority(1)]
+        public async Task ExecuteGroupAsync(CommandContext ctx)
+            => await ListAsync(ctx).ConfigureAwait(false);
+
+        [GroupCommand, Priority(0)]
         [RequirePermissions(Permissions.ManageGuild)]
         public async Task ExecuteGroupAsync(CommandContext ctx, 
                                            [Description("Trigger string (case insensitive).")] string trigger,

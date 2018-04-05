@@ -29,28 +29,36 @@ namespace TheGodfather.Modules.Misc
         public MemeModule(DBService db) : base(db: db) { }
 
 
-        [GroupCommand]
-        public async Task ExecuteGroupAsync(CommandContext ctx,
-                                           [RemainingText, Description("Meme name.")] string name = null)
+        [GroupCommand, Priority(1)]
+        public async Task ExecuteGroupAsync(CommandContext ctx)
         {
-            string url = null;
-            string text = "DANK MEME YOU ASKED FOR";
-
-            if (string.IsNullOrWhiteSpace(name)) {
-                url = await Database.GetRandomGuildMemeAsync(ctx.Guild.Id)
-                    .ConfigureAwait(false);
-            } else {
-                url = await Database.GetGuildMemeUrlAsync(ctx.Guild.Id, name)
-                    .ConfigureAwait(false);
-                if (url == null) {
-                    url = await Database.GetRandomGuildMemeAsync(ctx.Guild.Id)
-                        .ConfigureAwait(false);
-                    text = "No meme registered with that name, here is a random one:";
-                }
-            }
+            string url = await Database.GetRandomGuildMemeAsync(ctx.Guild.Id)
+                .ConfigureAwait(false);
 
             if (url == null)
                 throw new CommandFailedException("No memes registered in this guild!");
+
+            await ctx.RespondAsync(embed: new DiscordEmbedBuilder {
+                Title = "RANDOM DANK MEME FROM THIS GUILD MEME LIST",
+                ImageUrl = url,
+                Color = DiscordColor.Orange
+            }.Build()).ConfigureAwait(false);
+        }
+
+        [GroupCommand, Priority(0)]
+        public async Task ExecuteGroupAsync(CommandContext ctx,
+                                           [RemainingText, Description("Meme name.")] string name)
+        {
+            string text = "DANK MEME YOU ASKED FOR";
+            string url = await Database.GetGuildMemeUrlAsync(ctx.Guild.Id, name)
+                .ConfigureAwait(false);
+            if (url == null) {
+                url = await Database.GetRandomGuildMemeAsync(ctx.Guild.Id)
+                    .ConfigureAwait(false);
+                if (url == null)
+                    throw new CommandFailedException("No memes registered in this guild!");
+                text = "No meme registered with that name, here is a random one";
+            }
 
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder {
                 Title = text,
@@ -158,7 +166,7 @@ namespace TheGodfather.Modules.Misc
             ).ConfigureAwait(false);
         }
         #endregion
-        
+
         #region COMMAND_MEME_TEMPLATES
         [Command("templates")]
         [Description("Lists all available meme templates.")]

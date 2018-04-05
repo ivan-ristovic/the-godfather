@@ -33,12 +33,23 @@ namespace TheGodfather.Modules.Reactions
         public EmojiReactionsModule(SharedData shared, DBService db) : base(shared, db) { }
 
 
-        [GroupCommand]
+        [GroupCommand, Priority(2)]
+        public async Task ExecuteGroupAsync(CommandContext ctx)
+            => await ListAsync(ctx).ConfigureAwait(false);
+
+        [GroupCommand, Priority(1)]
         [RequirePermissions(Permissions.ManageGuild)]
         public async Task ExecuteGroupAsync(CommandContext ctx,
                                            [Description("Emoji to send.")] DiscordEmoji emoji,
                                            [RemainingText, Description("Trigger word list.")] params string[] triggers)
             => await AddEmojiReactionAsync(ctx, emoji, false, triggers).ConfigureAwait(false);
+
+        [GroupCommand, Priority(0)]
+        [RequirePermissions(Permissions.ManageGuild)]
+        public async Task ExecuteGroupAsync(CommandContext ctx,
+                                           [Description("Trigger word (case-insensitive).")] string trigger,
+                                           [Description("Emoji to send.")] DiscordEmoji emoji)
+            => await AddEmojiReactionAsync(ctx, emoji, false, trigger).ConfigureAwait(false);
 
 
         #region COMMAND_EMOJI_REACTIONS_ADD

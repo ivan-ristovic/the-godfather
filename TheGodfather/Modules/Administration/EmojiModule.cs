@@ -19,7 +19,7 @@ using DSharpPlus.Exceptions;
 namespace TheGodfather.Modules.Administration
 {
     [Group("emoji")]
-    [Description("Manipulate guild emoji. Standalone call lists all guild emoji.")]
+    [Description("Manipulate guild emoji. Standalone call lists all guild emoji or gives information about given emoji.")]
     [Aliases("emojis", "e")]
     [UsageExample("!emoji")]
     [Cooldown(2, 5, CooldownBucketType.Guild)]
@@ -27,9 +27,14 @@ namespace TheGodfather.Modules.Administration
     public class EmojiModule : TheGodfatherBaseModule
     {
 
-        [GroupCommand]
+        [GroupCommand, Priority(1)]
         public async Task ExecuteGroupAsync(CommandContext ctx)
-            => await ListEmojiAsync(ctx).ConfigureAwait(false);
+            => await ListAsync(ctx).ConfigureAwait(false);
+
+        [GroupCommand, Priority(1)]
+        public async Task ExecuteGroupAsync(CommandContext ctx,
+                                           [Description("Emoji.")] DiscordEmoji emoji)
+            => await InfoAsync(ctx, emoji).ConfigureAwait(false);
 
 
         #region COMMAND_EMOJI_ADD
@@ -38,9 +43,9 @@ namespace TheGodfather.Modules.Administration
         [Aliases("create", "a", "+")]
         [UsageExample("!emoji add pepe http://i0.kym-cdn.com/photos/images/facebook/000/862/065/0e9.jpg")]
         [RequirePermissions(Permissions.ManageEmojis)]
-        public async Task AddEmojiAsync(CommandContext ctx,
-                                       [Description("Name.")] string name,
-                                       [Description("URL.")] string url)
+        public async Task AddAsync(CommandContext ctx,
+                                  [Description("Name.")] string name,
+                                  [Description("URL.")] string url)
         {
             if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(url))
                 throw new InvalidCommandUsageException("Name or URL missing or invalid.");
@@ -76,8 +81,8 @@ namespace TheGodfather.Modules.Administration
         [Aliases("remove", "del", "-", "d")]
         [UsageExample("!emoji delete pepe")]
         [RequirePermissions(Permissions.ManageEmojis)]
-        public async Task DeleteEmojiAsync(CommandContext ctx,
-                                          [Description("Emoji to delete.")] DiscordEmoji emoji)
+        public async Task DeleteAsync(CommandContext ctx,
+                                     [Description("Emoji to delete.")] DiscordEmoji emoji)
         {
             try {
                 var gemoji = await ctx.Guild.GetEmojiAsync(emoji.Id)
@@ -98,8 +103,8 @@ namespace TheGodfather.Modules.Administration
         [Description("Get information for given guild emoji.")]
         [UsageExample("!emoji info pepe")]
         [Aliases("details", "information", "i")]
-        public async Task EmojiDetailsAsync(CommandContext ctx,
-                                           [Description("Emoji.")] DiscordEmoji emoji)
+        public async Task InfoAsync(CommandContext ctx,
+                                   [Description("Emoji.")] DiscordEmoji emoji)
         {
             try {
                 var gemoji = await ctx.Guild.GetEmojiAsync(emoji.Id)
@@ -125,7 +130,7 @@ namespace TheGodfather.Modules.Administration
         [Description("View guild emojis.")]
         [Aliases("print", "show", "l", "p", "ls")]
         [UsageExample("!emoji list")]
-        public async Task ListEmojiAsync(CommandContext ctx)
+        public async Task ListAsync(CommandContext ctx)
         {
             await ctx.SendPaginatedCollectionAsync(
                 "Guild specific emojis:",
@@ -143,9 +148,9 @@ namespace TheGodfather.Modules.Administration
         [UsageExample("!emoji modify :pepe: newname")]
         [UsageExample("!emoji modify newname :pepe:")]
         [RequirePermissions(Permissions.ManageEmojis)]
-        public async Task ModifyEmojiAsync(CommandContext ctx,
-                                          [Description("Emoji.")] DiscordEmoji emoji,
-                                          [Description("Name.")] string newname)
+        public async Task ModifyAsync(CommandContext ctx,
+                                     [Description("Emoji.")] DiscordEmoji emoji,
+                                     [Description("Name.")] string newname)
         {
             if (string.IsNullOrWhiteSpace(newname))
                 throw new InvalidCommandUsageException("Name missing.");
@@ -163,10 +168,10 @@ namespace TheGodfather.Modules.Administration
         }
 
         [Command("modify"), Priority(0)]
-        public async Task ModifyEmojiAsync(CommandContext ctx,
-                                          [Description("Name.")] string newname,
-                                          [Description("Emoji.")] DiscordEmoji emoji)
-            => await ModifyEmojiAsync(ctx, emoji, newname).ConfigureAwait(false);
+        public async Task ModifyAsync(CommandContext ctx,
+                                     [Description("Name.")] string newname,
+                                     [Description("Emoji.")] DiscordEmoji emoji)
+            => await ModifyAsync(ctx, emoji, newname).ConfigureAwait(false);
         #endregion
     }
 }

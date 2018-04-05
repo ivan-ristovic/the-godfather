@@ -32,9 +32,26 @@ namespace TheGodfather.Modules.Owner
             public BlockedUsersModule(SharedData shared, DBService db) : base(shared, db) { }
 
 
-            [GroupCommand]
+            [GroupCommand, Priority(3)]
             public async Task ExecuteGroupAsync(CommandContext ctx)
                 => await ListAsync(ctx).ConfigureAwait(false);
+
+            [GroupCommand, Priority(2)]
+            public async Task ExecuteGroupAsync(CommandContext ctx,
+                                               [Description("Users to block.")] params DiscordUser[] users)
+                => await AddAsync(ctx, null, users).ConfigureAwait(false);
+
+            [GroupCommand, Priority(1)]
+            public async Task ExecuteGroupAsync(CommandContext ctx,
+                                               [Description("Reason (max 60 chars).")] string reason,
+                                               [Description("Users to block.")] params DiscordUser[] users)
+                => await AddAsync(ctx, reason, users).ConfigureAwait(false);
+
+            [GroupCommand, Priority(0)]
+            public async Task ExecuteGroupAsync(CommandContext ctx,
+                                               [Description("Users to block.")] DiscordUser user,
+                                               [RemainingText, Description("Reason (max 60 chars).")] string reason)
+                => await AddAsync(ctx, reason, user).ConfigureAwait(false);
 
 
             #region COMMAND_BLOCKEDUSERS_ADD
@@ -48,7 +65,7 @@ namespace TheGodfather.Modules.Owner
             [UsageExample("!owner blockedusers add \"This is some reason\" @Someone 123123123123123")]
             public async Task AddAsync(CommandContext ctx,
                                       [Description("Users to block.")] params DiscordUser[] users)
-                => await AddAsync(ctx, users).ConfigureAwait(false);
+                => await AddAsync(ctx, null, users).ConfigureAwait(false);
 
             [Command("add"), Priority(1)]
             public async Task AddAsync(CommandContext ctx,

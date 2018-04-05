@@ -17,13 +17,24 @@ namespace TheGodfather.Modules.Owner
     public partial class OwnerModule
     {
         [Group("statuses")]
-        [Description("Bot status manipulation.")]
+        [Description("Bot status manipulation. If invoked without command, either lists or adds status depending if argument is given.")]
         [Aliases("status", "botstatus", "activity", "activities")]
         [ListeningCheck]
         public class StatusModule : TheGodfatherBaseModule
         {
 
             public StatusModule(SharedData shared, DBService db) : base(shared, db) { }
+
+
+            [GroupCommand, Priority(1)]
+            public async Task ExecuteGroupAsync(CommandContext ctx)
+                => await ListAsync(ctx).ConfigureAwait(false);
+
+            [GroupCommand, Priority(0)]
+            public async Task ExecuteGroupAsync(CommandContext ctx,
+                                               [Description("Activity type (Playing/Watching/Streaming/ListeningTo).")] ActivityType activity,
+                                               [RemainingText, Description("Status.")] string status)
+                => await AddAsync(ctx, activity, status).ConfigureAwait(false);
 
 
             #region COMMAND_STATUS_ADD
