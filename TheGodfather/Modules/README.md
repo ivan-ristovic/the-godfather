@@ -19,11 +19,15 @@
 ---
 
 ## Group: automaticroles
-*Commands to manipulate automatically assigned roles (roles which get automatically granted to a user who enters the guild). If invoked without subcommands, lists all allowed automatic roles for this guild.*
+*Commands to manipulate automatically assigned roles (roles which get automatically granted to a user who enters the guild). If invoked without command, either lists or adds automatic role depending if argument is given.*
 
 **Aliases:**
 `ar`
 
+
+**Overload 0:**
+
+`[role...]` : *Roles to add.*
 
 **Examples:**
 
@@ -741,11 +745,15 @@
 ---
 
 ## Group: emoji
-*Manipulate guild emoji. Standalone call lists all guild emoji.*
+*Manipulate guild emoji. Standalone call lists all guild emoji or gives information about given emoji.*
 
 **Aliases:**
 `emojis, e`
 
+
+**Overload 1:**
+
+`[emoji]` : *Emoji.*
 
 **Examples:**
 
@@ -867,11 +875,17 @@
 `ereact, er, emojir, emojireactions`
 
 
-**Arguments:**
+**Overload 1:**
 
 `[emoji]` : *Emoji to send.*
 
 `[string...]` : *Trigger word list.*
+
+**Overload 0:**
+
+`[string]` : *Trigger word (case-insensitive).*
+
+`[emoji]` : *Emoji to send.*
 
 **Examples:**
 
@@ -1004,13 +1018,13 @@
 ---
 
 ## Group: filter
-*Message filtering commands. If invoked without subcommand, adds a new filter for the given word list. Words can be regular expressions.*
+*Message filtering commands. If invoked without subcommand, either lists all filters or adds a new filter for the given word list. Words can be regular expressions.*
 
 **Aliases:**
 `f, filters`
 
 
-**Arguments:**
+**Overload 0:**
 
 `[string...]` : *Filter list. Filter is a regular expression (case insensitive).*
 
@@ -2370,9 +2384,9 @@
 `memes, mm`
 
 
-**Arguments:**
+**Overload 0:**
 
-(optional) `[string...]` : *Meme name.* (def: `None`)
+`[string...]` : *Meme name.*
 
 **Examples:**
 
@@ -2775,13 +2789,29 @@
 ---
 
 ## Group: owner birthdays
-*Birthday notifications management. If invoked without subcommand, lists all birthdays registered.*
+*Birthday notifications management. If invoked without command, either lists or adds birthdays depending if argument is given.*
 
 **Owner-only.**
 
 **Aliases:**
 `birthday, bday, bd, bdays`
 
+
+**Overload 1:**
+
+`[user]` : *Birthday boy/girl.*
+
+(optional) `[string]` : *Birth date.* (def: `None`)
+
+(optional) `[channel]` : *Channel to send a greeting message to.* (def: `None`)
+
+**Overload 0:**
+
+`[user]` : *Birthday boy/girl.*
+
+(optional) `[channel]` : *Channel to send a greeting message to.* (def: `None`)
+
+(optional) `[string]` : *Birth date.* (def: `None`)
 
 ---
 
@@ -2860,6 +2890,22 @@
 `bc, blockedc, blockchannel, bchannels, bchannel, bchn`
 
 
+**Overload 2:**
+
+`[channel...]` : *Users to block.*
+
+**Overload 1:**
+
+`[string]` : *Reason (max 60 chars).*
+
+`[channel...]` : *Users to block.*
+
+**Overload 0:**
+
+`[channel]` : *Users to block.*
+
+`[string...]` : *Reason (max 60 chars).*
+
 ---
 
 ### owner blockedchannels add
@@ -2881,7 +2927,7 @@
 
 **Overload 0:**
 
-`[channel]` : *Channels to block.*
+`[channel]` : *Channel to block.*
 
 `[string...]` : *Reason (max 60 chars).*
 
@@ -2938,6 +2984,22 @@
 **Aliases:**
 `bu, blockedu, blockuser, busers, buser, busr`
 
+
+**Overload 2:**
+
+`[user...]` : *Users to block.*
+
+**Overload 1:**
+
+`[string]` : *Reason (max 60 chars).*
+
+`[user...]` : *Users to block.*
+
+**Overload 0:**
+
+`[user]` : *Users to block.*
+
+`[string...]` : *Reason (max 60 chars).*
 
 ---
 
@@ -3211,6 +3273,23 @@
 ```
 !owner shutdown
 ```
+---
+
+## Group: owner statuses
+*Bot status manipulation. If invoked without command, either lists or adds status depending if argument is given.*
+
+**Owner-only.**
+
+**Aliases:**
+`status, botstatus, activity, activities`
+
+
+**Overload 0:**
+
+`[ActivityType]` : *Activity type (Playing/Watching/Streaming/ListeningTo).*
+
+`[string...]` : *Status.*
+
 ---
 
 ### owner statuses add
@@ -3758,6 +3837,10 @@
 `role, rl`
 
 
+**Overload 0:**
+
+`[role]` : *Role.*
+
 ---
 
 ### roles create
@@ -4101,11 +4184,15 @@
 ---
 
 ## Group: selfassignableroles
-*Commands to manipulate self-assignable roles. If invoked without subcommands, lists all allowed self-assignable roles for this guild.*
+*Commands to manipulate self-assignable roles. If invoked without subcommands, lists all self-assignable roles for this guild or adds a new self-assignable role depending of argument given.*
 
 **Aliases:**
 `sar`
 
+
+**Overload 0:**
+
+`[role...]` : *Roles to add.*
 
 **Examples:**
 
@@ -4406,7 +4493,7 @@
 `treact, tr, txtr, textreactions`
 
 
-**Arguments:**
+**Overload 0:**
 
 `[string]` : *Trigger string (case insensitive).*
 
