@@ -45,16 +45,21 @@ namespace TheGodfather.Modules.Polls.Common
         }
         #endregion
 
+        #region PUBLIC_FIELDS
         public string Question { get; }
         public bool Running { get; protected set; }
         public TimeSpan UntilEnd => _endTime != null ? _endTime - DateTime.Now : TimeSpan.Zero;
-        protected List<string> _options = new List<string>();
         public int OptionCount => _options.Count;
+        #endregion
+
+        #region PROTECTED_FIELDS
+        protected List<string> _options = new List<string>();
         protected ConcurrentDictionary<ulong, int> _votes = new ConcurrentDictionary<ulong, int>();
         protected DiscordChannel _channel;
         protected InteractivityExtension _interactivity;
         protected DateTime _endTime;
         protected CancellationTokenSource _cts = new CancellationTokenSource();
+        #endregion
 
 
         public Poll(InteractivityExtension interactivity, DiscordChannel channel, string question)
@@ -105,39 +110,6 @@ namespace TheGodfather.Modules.Polls.Common
                 .ConfigureAwait(false);
         }
 
-        public void SetOptions(List<string> options)
-        {
-            _options = options;
-        }
-
-        public bool UserVoted(ulong uid)
-            => _votes.ContainsKey(uid);
-
-        public bool IsValidVote(int vote)
-            => vote >= 0 && vote < _options.Count;
-
-        public bool VoteFor(ulong uid, int vote)
-        {
-            if (_votes.ContainsKey(uid))
-                return false;
-            return _votes.TryAdd(uid, vote);
-        }
-
-        public bool CancelVote(ulong uid)
-        {
-            if (!_votes.ContainsKey(uid))
-                return true;
-            return _votes.TryRemove(uid, out _);
-        }
-
-        public void Stop()
-        {
-            _cts.Cancel();
-        }
-
-        public string OptionWithId(int id)
-            => (id >= 0 && id < _options.Count) ? _options[id] : null;
-
         public virtual DiscordEmbed EmbedPoll()
         {
             var emb = new DiscordEmbedBuilder() {
@@ -169,6 +141,37 @@ namespace TheGodfather.Modules.Polls.Common
                 emb.AddField(_options[i], _votes.Count(kvp => kvp.Value == i).ToString(), inline: true);
 
             return emb.Build();
+        }
+
+        public bool CancelVote(ulong uid)
+        {
+            if (!_votes.ContainsKey(uid))
+                return true;
+            return _votes.TryRemove(uid, out _);
+        }
+
+        public bool IsValidVote(int vote)
+            => vote >= 0 && vote < _options.Count;
+
+        public string OptionWithId(int id)
+            => (id >= 0 && id < _options.Count) ? _options[id] : null;
+
+        public void SetOptions(List<string> options)
+        {
+            _options = options;
+        }
+
+        public void Stop()
+            => _cts.Cancel();
+
+        public bool UserVoted(ulong uid)
+            => _votes.ContainsKey(uid);
+
+        public bool VoteFor(ulong uid, int vote)
+        {
+            if (_votes.ContainsKey(uid))
+                return false;
+            return _votes.TryAdd(uid, vote);
         }
     }
 }

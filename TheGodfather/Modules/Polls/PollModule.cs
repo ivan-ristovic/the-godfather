@@ -15,18 +15,19 @@ using DSharpPlus.Interactivity;
 
 namespace TheGodfather.Modules.Polls
 {
+    [Group("poll")]
+    [Description("Starts a new poll in the current channel. You can provide also the time for the poll to run.")]
+    [UsageExample("!poll Do you vote for User1 or User2?")]
+    [UsageExample("!poll 5m Do you vote for User1 or User2?")]
     [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
     [ListeningCheck]
     public class PollModule : TheGodfatherBaseModule
     {
-        #region COMMAND_POLL
-        [Command("poll"), Priority(1)]
-        [Description("Starts a new poll in the current channel. You can provide also the time for the poll to run.")]
-        [UsageExample("!poll Do you vote for User1 or User2?")]
-        [UsageExample("!poll 5m Do you vote for User1 or User2?")]
-        public async Task PollAsync(CommandContext ctx,
-                                   [Description("Time for poll to run.")] TimeSpan timeout,
-                                   [RemainingText, Description("Question.")] string question)
+
+        [GroupCommand, Priority(2)]
+        public async Task ExecuteGroupAsync(CommandContext ctx,
+                                           [Description("Time for poll to run.")] TimeSpan timeout,
+                                           [RemainingText, Description("Question.")] string question)
         {
             if (string.IsNullOrWhiteSpace(question))
                 throw new InvalidCommandUsageException("Poll requires a question.");
@@ -55,58 +56,22 @@ namespace TheGodfather.Modules.Polls
             }
         }
 
-        [Command("poll"), Priority(0)]
-        public async Task PollAsync(CommandContext ctx,
-                                   [RemainingText, Description("Question.")] string question)
-            => await PollAsync(ctx, TimeSpan.FromMinutes(1), question).ConfigureAwait(false);
-        #endregion
+        [GroupCommand, Priority(1)]
+        public async Task ExecuteGroupAsync(CommandContext ctx,
+                                           [Description("Question.")] string question,
+                                           [Description("Time for poll to run.")] TimeSpan timeout)
+            => await ExecuteGroupAsync(ctx, timeout, question).ConfigureAwait(false);
 
-        #region COMMAND_REACTIONSPOLL
-        [Command("reactionspoll"), Priority(1)]
-        [Description("Starts a poll with reactions in the channel.")]
-        [Aliases("rpoll", "pollr", "voter")]
-        [UsageExample("!rpoll :smile: :joy:")]
-        public async Task ReactionsPollAsync(CommandContext ctx,
-                                            [Description("Time for poll to run.")] TimeSpan timeout,
-                                            [RemainingText, Description("Question.")] string question)
-        {
-            if (string.IsNullOrWhiteSpace(question))
-                throw new InvalidCommandUsageException("Poll requires a question.");
+        [GroupCommand, Priority(0)]
+        public async Task ExecuteGroupAsync(CommandContext ctx,
+                                           [RemainingText, Description("Question.")] string question)
+            => await ExecuteGroupAsync(ctx, TimeSpan.FromMinutes(1), question).ConfigureAwait(false);
 
-            if (Poll.RunningInChannel(ctx.Channel.Id))
-                throw new CommandFailedException("Another poll is already running in this channel.");
-
-            if (timeout < TimeSpan.FromSeconds(10) || timeout >= TimeSpan.FromDays(1))
-                throw new InvalidCommandUsageException("Poll cannot run for less than 10 seconds or more than 1 day(s).");
-
-            var rpoll = new ReactionsPoll(ctx.Client.GetInteractivity(), ctx.Channel, question);
-            if (!Poll.RegisterPollInChannel(rpoll, ctx.Channel.Id))
-                throw new CommandFailedException("Failed to start the poll. Please try again.");
-            try {
-                await ctx.RespondWithIconEmbedAsync("And what will be the possible answers? (separate with semicolon ``;``)", ":question:")
-                    .ConfigureAwait(false);
-                var options = await ctx.WaitAndParsePollOptionsAsync()
-                    .ConfigureAwait(false);
-                if (options.Count < 2 || options.Count > 10)
-                    throw new CommandFailedException("Poll must have minimum 2 and maximum 10 options!");
-                rpoll.SetOptions(options);
-                await rpoll.RunAsync(timeout)
-                    .ConfigureAwait(false);
-            } finally {
-                Poll.UnregisterPollInChannel(ctx.Channel.Id);
-            }
-        }
-
-        [Command("reactionspoll"), Priority(0)]
-        public async Task ReactionsPollAsync(CommandContext ctx,
-                                            [RemainingText, Description("Question.")] string question)
-            => await ReactionsPollAsync(ctx, TimeSpan.FromMinutes(1), question).ConfigureAwait(false);
-        #endregion
 
         #region COMMAND_STOP
-        [Command("stoppoll")]
+        [Command("stop")]
         [Description("Stops a running poll.")]
-        [UsageExample("!stoppoll")]
+        [UsageExample("!poll stop")]
         [RequireUserPermissions(Permissions.Administrator)]
         public async Task StopAsync(CommandContext ctx)
         {
@@ -114,7 +79,7 @@ namespace TheGodfather.Modules.Polls
 
             var poll = Poll.GetPollInChannel(ctx.Channel.Id);
             if (poll == null || poll is ReactionsPoll)
-                throw new CommandFailedException("There is no text poll running in this channel.");
+                throw new CommandFailedException("There are no text polls running in this channel.");
 
             poll.Stop();
         }

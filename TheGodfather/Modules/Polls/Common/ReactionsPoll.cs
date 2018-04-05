@@ -72,6 +72,10 @@ namespace TheGodfather.Modules.Polls.Common
                 Title = Question + " (results)",
                 Color = DiscordColor.Orange
             };
+
+            if (!_result.Reactions.Any())
+                return emb.WithDescription("Nobody voted!").Build();
+
             foreach (var kvp in _result.Reactions) 
                 emb.AddField(_options[_emojiid[kvp.Key.Name]], kvp.Value.ToString(), inline: true);
 
