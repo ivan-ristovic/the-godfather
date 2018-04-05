@@ -16,7 +16,7 @@ namespace TheGodfather.Modules.Gambling
     [Group("cards")]
     [Description("Manipulate a deck of cards.")]
     [Aliases("deck")]
-    [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
+    [Cooldown(3, 5, CooldownBucketType.Channel)]
     [ListeningCheck]
     public class CardsModule : TheGodfatherBaseModule
     {

@@ -19,7 +19,7 @@ namespace TheGodfather.Modules.Search
     [Description("Commands for RSS feed querying or subscribing. If invoked without subcommand, gives the latest topic from the given RSS URL.")]
     [Aliases("feed")]
     [UsageExample("!rss https://news.google.com/news/rss/")]
-    [Cooldown(2, 5, CooldownBucketType.User), Cooldown(2, 5, CooldownBucketType.Channel)]
+    [Cooldown(3, 5, CooldownBucketType.Channel)]
     [ListeningCheck]
     public class RSSModule : TheGodfatherBaseModule
     {

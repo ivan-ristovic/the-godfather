@@ -20,7 +20,7 @@ namespace TheGodfather.Modules.Search
     [Description("Group for searching jokes. If invoked without a subcommand, returns a random joke.")]
     [Aliases("jokes", "j")]
     [UsageExample("!joke")]
-    [Cooldown(2, 5, CooldownBucketType.User), Cooldown(4, 5, CooldownBucketType.Channel)]
+    [Cooldown(3, 5, CooldownBucketType.Channel)]
     [ListeningCheck]
     public class JokesModule : TheGodfatherBaseModule
     {

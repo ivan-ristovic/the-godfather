@@ -26,7 +26,7 @@ namespace TheGodfather.Modules.Reactions
     [Aliases("treact", "tr", "txtr", "textreactions")]
     [UsageExample("!textreaction hi hello")]
     [UsageExample("!textreaction \"hi\" \"Hello, %user%!\"")]
-    [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
+    [Cooldown(3, 5, CooldownBucketType.Guild)]
     [ListeningCheck]
     public class TextReactionsModule : TheGodfatherBaseModule
     {

@@ -19,7 +19,6 @@ namespace TheGodfather.Modules.Games
         [Description("List all available quiz categories.")]
         [Aliases("trivia", "q")]
         [UsageExample("!game quiz ")]
-        [Cooldown(2, 5, CooldownBucketType.User), Cooldown(3, 5, CooldownBucketType.Channel)]
         [ListeningCheck]
         public partial class QuizModule : TheGodfatherBaseModule
         {

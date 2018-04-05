@@ -17,7 +17,7 @@ namespace TheGodfather.Modules.Search
     [Description("Weather search commands. If invoked without subcommands, returns weather information for given query.")]
     [Aliases("w")]
     [UsageExample("!weather london")]
-    [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
+    [Cooldown(3, 5, CooldownBucketType.Channel)]
     [ListeningCheck]
     public class WeatherModule : TheGodfatherServiceModule<WeatherService>
     {

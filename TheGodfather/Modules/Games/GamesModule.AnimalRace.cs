@@ -25,7 +25,6 @@ namespace TheGodfather.Modules.Games
         [Description("Start a new animal race!")]
         [Aliases("r", "race", "ar")]
         [UsageExample("!game animalrace")]
-        [Cooldown(2, 5, CooldownBucketType.User), Cooldown(3, 5, CooldownBucketType.Channel)]
         [ListeningCheck]
         public class RaceModule : TheGodfatherBaseModule
         {

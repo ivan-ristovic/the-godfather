@@ -19,7 +19,7 @@ using DSharpPlus.Entities;
 
 namespace TheGodfather.Modules.Music
 {
-    [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
+    [Cooldown(3, 5, CooldownBucketType.Channel)]
     [RequirePermissions(Permissions.UseVoice)]
     [ListeningCheck]
     [RequireOwner]

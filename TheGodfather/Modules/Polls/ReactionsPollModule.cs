@@ -14,7 +14,7 @@ using DSharpPlus.Interactivity;
 
 namespace TheGodfather.Modules.Polls
 {
-    [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
+    [Cooldown(3, 5, CooldownBucketType.Channel)]
     [ListeningCheck]
     public class ReactionsPollModule : TheGodfatherBaseModule
     {

@@ -19,7 +19,7 @@ using DSharpPlus.Net.Models;
 namespace TheGodfather.Modules.Administration
 {
     [Group("channel")]
-    [Description("Miscellaneous channel control commands.")]
+    [Description("Miscellaneous channel control commands. If invoked without subcommands, prints out channel information.")]
     [Aliases("channels", "c", "chn")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     [ListeningCheck]
@@ -27,6 +27,12 @@ namespace TheGodfather.Modules.Administration
     {
 
         public ChannelModule(DBService db) : base(db: db) { }
+
+
+        [GroupCommand]
+        public async Task ExecuteGroupAsync(CommandContext ctx,
+                                           [Description("Channel.")] DiscordChannel channel = null)
+            => await InfoAsync(ctx, channel).ConfigureAwait(false);
 
 
         #region COMMAND_CHANNEL_CREATECATEGORY
@@ -168,9 +174,9 @@ namespace TheGodfather.Modules.Administration
         [UsageExample("!channel delete \"My voice channel\"")]
         [UsageExample("!channel delete \"My voice channel\" Because I can!")]
         [RequirePermissions(Permissions.ManageChannels)]
-        public async Task DeleteChannelAsync(CommandContext ctx,
-                                            [Description("Channel to delete.")] DiscordChannel channel = null,
-                                            [RemainingText, Description("Reason.")] string reason = null)
+        public async Task DeleteAsync(CommandContext ctx,
+                                     [Description("Channel to delete.")] DiscordChannel channel = null,
+                                     [RemainingText, Description("Reason.")] string reason = null)
         {
             if (channel == null)
                 channel = ctx.Channel;
@@ -193,9 +199,9 @@ namespace TheGodfather.Modules.Administration
         }
 
         [Command("delete"), Priority(0)]
-        public async Task DeleteChannelAsync(CommandContext ctx,
-                                            [RemainingText, Description("Reason.")] string reason)
-            => await DeleteChannelAsync(ctx, null, reason).ConfigureAwait(false);
+        public async Task DeleteAsync(CommandContext ctx,
+                                     [RemainingText, Description("Reason.")] string reason)
+            => await DeleteAsync(ctx, null, reason).ConfigureAwait(false);
         #endregion
 
         #region COMMAND_CHANNEL_INFO
@@ -205,7 +211,7 @@ namespace TheGodfather.Modules.Administration
         [UsageExample("!channel info")]
         [UsageExample("!channel info \"My voice channel\"")]
         [RequirePermissions(Permissions.AccessChannels)]
-        public async Task ChannelInfoAsync(CommandContext ctx,
+        public async Task InfoAsync(CommandContext ctx,
                                           [Description("Channel.")] DiscordChannel channel = null)
         {
             if (channel == null)
@@ -240,11 +246,11 @@ namespace TheGodfather.Modules.Administration
         [Aliases("edit", "mod", "m", "e")]
         [UsageExample("!channel modify \"My voice channel\" 20 96000 Some reason")]
         [RequirePermissions(Permissions.ManageChannels)]
-        public async Task ModifyChannelAsync(CommandContext ctx,
-                                            [Description("Voice channel to edit")] DiscordChannel channel,
-                                            [Description("User limit.")] int limit = 0,
-                                            [Description("Bitrate.")] int bitrate = 0,
-                                            [RemainingText, Description("Reason.")] string reason = null)
+        public async Task ModifyAsync(CommandContext ctx,
+                                     [Description("Voice channel to edit")] DiscordChannel channel,
+                                     [Description("User limit.")] int limit = 0,
+                                     [Description("Bitrate.")] int bitrate = 0,
+                                     [RemainingText, Description("Reason.")] string reason = null)
         {
             if (channel == null)
                 throw new InvalidCommandUsageException("Channel missing.");
@@ -265,11 +271,11 @@ namespace TheGodfather.Modules.Administration
         }
 
         [Command("modify"), Priority(0)]
-        public async Task ModifyChannelAsync(CommandContext ctx,
-                                            [Description("User limit.")] int limit = 0,
-                                            [Description("Bitrate.")] int bitrate = 0,
-                                            [RemainingText, Description("Reason.")] string reason = null)
-            => await ModifyChannelAsync(ctx, null, limit, bitrate, reason).ConfigureAwait(false);
+        public async Task ModifyAsync(CommandContext ctx,
+                                     [Description("User limit.")] int limit = 0,
+                                     [Description("Bitrate.")] int bitrate = 0,
+                                     [RemainingText, Description("Reason.")] string reason = null)
+            => await ModifyAsync(ctx, null, limit, bitrate, reason).ConfigureAwait(false);
         #endregion
 
         #region COMMAND_CHANNEL_RENAME
@@ -280,10 +286,10 @@ namespace TheGodfather.Modules.Administration
         [UsageExample("!channel rename \"My voice channel\" \"My old voice channel\"")]
         [UsageExample("!channel rename \"My reason\" \"My voice channel\" \"My old voice channel\"")]
         [RequirePermissions(Permissions.ManageChannels)]
-        public async Task RenameChannelAsync(CommandContext ctx,
-                                            [Description("Reason.")] string reason,
-                                            [Description("Channel to rename.")] DiscordChannel channel,
-                                            [RemainingText, Description("New name.")] string newname)
+        public async Task RenameAsync(CommandContext ctx,
+                                     [Description("Reason.")] string reason,
+                                     [Description("Channel to rename.")] DiscordChannel channel,
+                                     [RemainingText, Description("New name.")] string newname)
         {
             if (string.IsNullOrWhiteSpace(newname))
                 throw new InvalidCommandUsageException("Missing new channel name.");
@@ -311,15 +317,15 @@ namespace TheGodfather.Modules.Administration
         }
 
         [Command("rename"), Priority(1)]
-        public async Task RenameChannelAsync(CommandContext ctx,
-                                            [Description("Channel to rename.")] DiscordChannel channel,
-                                            [RemainingText, Description("New name.")] string newname)
-            => await RenameChannelAsync(ctx, null, channel, newname).ConfigureAwait(false);
+        public async Task RenameAsync(CommandContext ctx,
+                                     [Description("Channel to rename.")] DiscordChannel channel,
+                                     [RemainingText, Description("New name.")] string newname)
+            => await RenameAsync(ctx, null, channel, newname).ConfigureAwait(false);
 
         [Command("rename"), Priority(0)]
-        public async Task RenameChannelAsync(CommandContext ctx,
-                                            [RemainingText, Description("New name.")] string newname)
-            => await RenameChannelAsync(ctx, null, null, newname).ConfigureAwait(false);
+        public async Task RenameAsync(CommandContext ctx,
+                                     [RemainingText, Description("New name.")] string newname)
+            => await RenameAsync(ctx, null, null, newname).ConfigureAwait(false);
         #endregion
 
         #region COMMAND_CHANNEL_SETPARENT

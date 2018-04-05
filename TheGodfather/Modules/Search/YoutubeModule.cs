@@ -18,7 +18,7 @@ namespace TheGodfather.Modules.Search
     [Description("Youtube search commands. If invoked without subcommands, searches YouTube for given query.")]
     [Aliases("y", "yt", "ytube")]
     [UsageExample("!youtube never gonna give you up")]
-    [Cooldown(2, 5, CooldownBucketType.User), Cooldown(4, 5, CooldownBucketType.Channel)]
+    [Cooldown(3, 5, CooldownBucketType.Channel)]
     [ListeningCheck]
     public class YoutubeModule : TheGodfatherServiceModule<YoutubeService>
     {

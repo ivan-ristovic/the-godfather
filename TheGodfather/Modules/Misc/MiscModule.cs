@@ -22,7 +22,7 @@ using DSharpPlus.Entities;
 
 namespace TheGodfather.Modules.Misc
 {
-    [Cooldown(5, 3, CooldownBucketType.Channel)]
+    [Cooldown(3, 5, CooldownBucketType.Channel)]
     [ListeningCheck]
     public class MiscModule : TheGodfatherBaseModule
     {
@@ -331,7 +331,7 @@ namespace TheGodfather.Modules.Misc
         [Command("remind"), Priority(2)]
         [Description("Resend a message after some time.")]
         [UsageExample("!remind 1h Drink water!")]
-        [RequireUserPermissions(Permissions.Administrator)] // TODO
+        [RequireUserPermissions(Permissions.Administrator)]
         public async Task RemindAsync(CommandContext ctx,
                                      [Description("Time span until reminder.")] TimeSpan timespan,
                                      [Description("Channel to send message to.")] DiscordChannel channel,
@@ -353,10 +353,10 @@ namespace TheGodfather.Modules.Misc
             if (!await SavedTaskExecuter.ScheduleAsync(ctx.Client, Shared, Database, ctx.User.Id, channel.Id, ctx.Guild.Id, SavedTaskType.SendMessage, message, when).ConfigureAwait(false))
                 throw new DatabaseServiceException("Failed to set a reminder in the database!");
 
-            await ctx.RespondWithIconEmbedAsync($"I will remind {channel.Name} at {Formatter.Bold(when.ToLongTimeString())} UTC to:\n\n{Formatter.Italic(message)}", ":alarm_clock:")
+            await ctx.RespondWithIconEmbedAsync($"I will remind {channel.Name} at {Formatter.Bold(when.ToUniversalTime().ToString())} UTC to:\n\n{Formatter.Italic(message)}", ":alarm_clock:")
                 .ConfigureAwait(false);
         }
-        
+
         [Command("remind"), Priority(1)]
         public async Task RemindAsync(CommandContext ctx,
                                      [Description("Channel to send message to.")] DiscordChannel channel,

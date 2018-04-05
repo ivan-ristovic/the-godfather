@@ -19,14 +19,20 @@ using DSharpPlus.Net.Models;
 namespace TheGodfather.Modules.Administration
 {
     [Group("user")]
-    [Description("Miscellaneous user control commands.")]
+    [Description("Miscellaneous user control commands. If invoked without subcommands, prints out user information.")]
     [Aliases("users", "u", "usr")]
-    [Cooldown(3, 5, CooldownBucketType.User)]
+    [Cooldown(3, 5, CooldownBucketType.Channel)]
     [ListeningCheck]
     public class UserModule : TheGodfatherBaseModule
     {
 
         public UserModule(SharedData shared, DBService db) : base(shared, db) { }
+
+
+        [GroupCommand]
+        public async Task ExecuteGroupAsync(CommandContext ctx,
+                                           [Description("User.")] DiscordUser user = null)
+            => await InfoAsync(ctx, user).ConfigureAwait(false);
 
 
         #region COMMAND_USER_ADDROLE
@@ -217,8 +223,8 @@ namespace TheGodfather.Modules.Administration
         [Description("Print the information about the given user. If the user is not given, uses the sender.")]
         [Aliases("i", "information")]
         [UsageExample("!user info @Someone")]
-        public async Task GetInfoAsync(CommandContext ctx,
-                                      [Description("User.")] DiscordUser user = null)
+        public async Task InfoAsync(CommandContext ctx,
+                                   [Description("User.")] DiscordUser user = null)
         {
             if (user == null)
                 user = ctx.User;

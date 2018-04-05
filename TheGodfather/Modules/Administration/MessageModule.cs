@@ -20,7 +20,7 @@ namespace TheGodfather.Modules.Administration
     [Group("message")]
     [Description("Commands for manipulating messages.")]
     [Aliases("m", "msg", "msgs", "messages")]
-    [Cooldown(2, 5, CooldownBucketType.User)]
+    [Cooldown(3, 5, CooldownBucketType.Channel)]
     [ListeningCheck]
     public class MessageModule : TheGodfatherBaseModule
     {

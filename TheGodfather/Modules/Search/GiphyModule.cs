@@ -18,7 +18,7 @@ namespace TheGodfather.Modules.Search
     [Description("GIPHY commands. If invoked without a subcommand, searches GIPHY with given query.")]
     [Aliases("giphy")]
     [UsageExample("!gif wat")]
-    [Cooldown(2, 5, CooldownBucketType.User), Cooldown(2, 5, CooldownBucketType.Channel)]
+    [Cooldown(3, 5, CooldownBucketType.Channel)]
     [ListeningCheck]
     public class GiphyModule : TheGodfatherServiceModule<GiphyService>
     {

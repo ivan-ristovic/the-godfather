@@ -19,7 +19,7 @@ namespace TheGodfather.Modules.Polls
     [Description("Starts a new poll in the current channel. You can provide also the time for the poll to run.")]
     [UsageExample("!poll Do you vote for User1 or User2?")]
     [UsageExample("!poll 5m Do you vote for User1 or User2?")]
-    [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
+    [Cooldown(3, 5, CooldownBucketType.Channel)]
     [ListeningCheck]
     public class PollModule : TheGodfatherBaseModule
     {

@@ -25,7 +25,7 @@ namespace TheGodfather.Modules.Search
     [UsageExample("!imgur aww")]
     [UsageExample("!imgur 10 aww")]
     [UsageExample("!imgur aww 10")]
-    [Cooldown(2, 5, CooldownBucketType.User), Cooldown(4, 5, CooldownBucketType.Channel)]
+    [Cooldown(3, 5, CooldownBucketType.Channel)]
     [ListeningCheck]
     public class ImgurModule : TheGodfatherServiceModule<ImgurService>
     {

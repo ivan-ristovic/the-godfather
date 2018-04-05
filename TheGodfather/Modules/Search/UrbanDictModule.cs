@@ -21,7 +21,7 @@ namespace TheGodfather.Modules.Search
     [Description("Urban Dictionary commands. If invoked without subcommand, searches Urban Dictionary for a given query.")]
     [Aliases("ud", "urban")]
     [UsageExample("!urbandict blonde")]
-    [Cooldown(2, 5, CooldownBucketType.User), Cooldown(4, 5, CooldownBucketType.Channel)]
+    [Cooldown(3, 5, CooldownBucketType.Channel)]
     [ListeningCheck]
     public class UrbanDictModule : TheGodfatherBaseModule
     {

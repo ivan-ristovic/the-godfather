@@ -25,7 +25,7 @@ namespace TheGodfather.Modules.Reactions
     [Description("Orders a bot to react with given emoji to a message containing a trigger word inside (guild specific). If invoked without subcommands, adds a new emoji reaction to a given trigger word list. Note: Trigger words can be regular expressions (use ``emojireaction addregex`` command).")]
     [Aliases("ereact", "er", "emojir", "emojireactions")]
     [UsageExample("!emojireaction :smile: haha laughing")]
-    [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
+    [Cooldown(3, 5, CooldownBucketType.Guild)]
     [ListeningCheck]
     public class EmojiReactionsModule : TheGodfatherBaseModule
     {

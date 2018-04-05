@@ -21,7 +21,7 @@ namespace TheGodfather.Modules.SWAT
     [Group("swat")]
     [Description("SWAT4 related commands.")]
     [Aliases("s4", "swat4")]
-    [Cooldown(2, 5, CooldownBucketType.User), Cooldown(3, 5, CooldownBucketType.Guild)]
+    [Cooldown(3, 5, CooldownBucketType.Channel)]
     [ListeningCheck]
     public partial class SwatModule : TheGodfatherBaseModule
     {

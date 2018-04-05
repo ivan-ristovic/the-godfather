@@ -24,7 +24,6 @@ namespace TheGodfather.Modules.Games
         [Description("Number racing game commands.")]
         [Aliases("nr", "n", "nunchi", "numbers", "numbersrace")]
         [UsageExample("!game numberrace")]
-        [Cooldown(2, 5, CooldownBucketType.User), Cooldown(3, 5, CooldownBucketType.Channel)]
         [ListeningCheck]
         public class NumberRaceModule : TheGodfatherBaseModule
         {

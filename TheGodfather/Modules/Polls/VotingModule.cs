@@ -17,7 +17,7 @@ namespace TheGodfather.Modules.Polls
     [Description("Commands for voting in running polls. If invoked without subcommands, registers a vote in the current poll to the option you entered.")]
     [Aliases("votefor", "vf")]
     [UsageExample("!vote 1")]
-    [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
+    [Cooldown(3, 5, CooldownBucketType.Channel)]
     [ListeningCheck]
     public class VotingModule : TheGodfatherBaseModule
     {

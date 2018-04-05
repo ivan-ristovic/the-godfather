@@ -20,7 +20,7 @@ namespace TheGodfather.Modules.Administration
     [Description("Commands to manipulate automatically assigned roles (roles which get automatically granted to a user who enters the guild). If invoked without command, either lists or adds automatic role depending if argument is given.")]
     [Aliases("ar")]
     [UsageExample("!ar")]
-    [Cooldown(2, 5, CooldownBucketType.Guild)]
+    [Cooldown(3, 5, CooldownBucketType.Guild)]
     [ListeningCheck]
     public class AutomaticRolesModule : TheGodfatherBaseModule
     {

@@ -24,7 +24,7 @@ namespace TheGodfather.Modules.Administration
     [Description("Message filtering commands. If invoked without subcommand, either lists all filters or adds a new filter for the given word list. Words can be regular expressions.")]
     [Aliases("f", "filters")]
     [UsageExample("!filter fuck fk f+u+c+k+")]
-    [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
+    [Cooldown(3, 5, CooldownBucketType.Channel)]
     [ListeningCheck]
     public class FilterModule : TheGodfatherBaseModule
     {

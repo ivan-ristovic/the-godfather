@@ -22,7 +22,7 @@ namespace TheGodfather.Modules.Administration
     [Description("Manipulate guild emoji. Standalone call lists all guild emoji or gives information about given emoji.")]
     [Aliases("emojis", "e")]
     [UsageExample("!emoji")]
-    [Cooldown(2, 5, CooldownBucketType.Guild)]
+    [Cooldown(3, 5, CooldownBucketType.Guild)]
     [ListeningCheck]
     public class EmojiModule : TheGodfatherBaseModule
     {

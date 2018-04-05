@@ -18,7 +18,7 @@ namespace TheGodfather.Modules.Gambling
     [Group("bank")]
     [Description("Bank manipulation. If invoked alone, prints out your bank balance.")]
     [Aliases("$", "$$", "$$$")]
-    [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
+    [Cooldown(3, 5, CooldownBucketType.Channel)]
     [UsageExample("!bank")]
     [ListeningCheck]
     public class BankModule : TheGodfatherBaseModule

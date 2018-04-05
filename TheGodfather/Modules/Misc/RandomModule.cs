@@ -17,9 +17,9 @@ using DSharpPlus.Entities;
 namespace TheGodfather.Modules.Misc
 {
     [Group("random")]
-    [Description("Return random things.")]
+    [Description("Random gibberish.")]
     [Aliases("rnd", "rand")]
-    [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
+    [Cooldown(3, 5, CooldownBucketType.Channel)]
     [ListeningCheck]
     public class CommandsRandomGroup : TheGodfatherBaseModule
     {

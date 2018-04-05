@@ -21,7 +21,7 @@ namespace TheGodfather.Modules.Misc
     [Aliases("memes", "mm")]
     [UsageExample("!meme")]
     [UsageExample("!meme SomeMemeNameWhichYouAdded")]
-    [Cooldown(2, 3, CooldownBucketType.User), Cooldown(5, 3, CooldownBucketType.Channel)]
+    [Cooldown(3, 5, CooldownBucketType.Channel)]
     [ListeningCheck]
     public partial class MemeModule : TheGodfatherBaseModule
     {
