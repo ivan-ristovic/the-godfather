@@ -18,7 +18,7 @@ namespace TheGodfather.Modules.Games
         [Group("quiz"), Module(ModuleType.Games)]
         [Description("List all available quiz categories.")]
         [Aliases("trivia", "q")]
-        [UsageExample("!game quiz ")]
+        [UsageExample("!game quiz")]
         [ListeningCheck]
         public partial class QuizModule : TheGodfatherBaseModule
         {
@@ -30,7 +30,7 @@ namespace TheGodfather.Modules.Games
             public async Task ExecuteGroupAsync(CommandContext ctx)
             {
                 await ctx.RespondWithIconEmbedAsync(
-                    "Available quiz categories:\n" +
+                    "You need to specify a quiz type!\n\nAvailable quiz categories:\n" +
                     $"- {Formatter.Bold("countries")}",
                     ":information_source:"
                 ).ConfigureAwait(false);

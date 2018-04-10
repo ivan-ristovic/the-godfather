@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 using TheGodfather.Common;
@@ -51,16 +52,17 @@ namespace TheGodfather.Modules.Games.Common
                 await _channel.SendFileAsync(new FileStream(question, FileMode.Open), "flag.png", content: $"Question #{Formatter.Bold(i.ToString())}:")
                     .ConfigureAwait(false);
 
-                bool norep = true;
+                bool noresponse = true;
+                Regex ansregex = new Regex($"\b{answer}\b", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
                 var msg = await _interactivity.WaitForMessageAsync(
                     xm => {
-                        if (xm.ChannelId != _channel.Id) return false;
-                        norep = false;
-                        return !xm.Author.IsBot && xm.Content.ToLowerInvariant() == answer;
+                        if (xm.ChannelId != _channel.Id || xm.Author.IsBot) return false;
+                        noresponse = false;
+                        return ansregex.IsMatch(xm.Content);
                     }
                 ).ConfigureAwait(false);
                 if (msg == null) {
-                    if (norep)
+                    if (noresponse)
                         timeouts++;
                     else
                         timeouts = 0;

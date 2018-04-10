@@ -84,7 +84,7 @@ namespace TheGodfather.Modules.Games.Common
 
         private async Task PrintRaceAsync(DiscordMessage msg)
         {
-            StringBuilder sb = new StringBuilder("🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🔚\n");
+            StringBuilder sb = new StringBuilder("🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🏁🔚\n");
             foreach (var participant in _participants) {
                 sb.Append("|");
                 sb.Append('‣', participant.Progress);

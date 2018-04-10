@@ -28,10 +28,14 @@ namespace TheGodfather.Modules.Games
             [UsageExample("!game quiz countries")]
             public async Task CountriesQuizAsync(CommandContext ctx)
             {
-                QuizCountries.LoadCountries();
-
                 if (Game.RunningInChannel(ctx.Channel.Id))
                     throw new CommandFailedException("Another game is already running in the current channel.");
+
+                try {
+                    QuizCountries.LoadCountries();
+                } catch {
+                    throw new CommandFailedException("Failed to load country flags!");
+                }
 
                 var quiz = new QuizCountries(ctx.Client.GetInteractivity(), ctx.Channel);
                 Game.RegisterGameInChannel(quiz, ctx.Channel.Id);
