@@ -23,11 +23,16 @@ namespace TheGodfather.Modules.Games
         public partial class QuizModule
         {
             [Command("countries"), Module(ModuleType.Games)]
-            [Description("Country flags guessing quiz.")]
+            [Description("Country flags guessing quiz. You can also specify how many questions there will be in the quiz.")]
             [Aliases("flags")]
             [UsageExample("!game quiz countries")]
-            public async Task CountriesQuizAsync(CommandContext ctx)
+            [UsageExample("!game quiz countries 15")]
+            public async Task CountriesQuizAsync(CommandContext ctx,
+                                                [Description("Number of questions.")] int qnum = 10)
             {
+                if (qnum < 5 || qnum > 50)
+                    throw new InvalidCommandUsageException("Number of questions must be in range [5-50]");
+
                 if (Game.RunningInChannel(ctx.Channel.Id))
                     throw new CommandFailedException("Another game is already running in the current channel.");
 
@@ -37,7 +42,7 @@ namespace TheGodfather.Modules.Games
                     throw new CommandFailedException("Failed to load country flags!");
                 }
 
-                var quiz = new QuizCountries(ctx.Client.GetInteractivity(), ctx.Channel);
+                var quiz = new QuizCountries(ctx.Client.GetInteractivity(), ctx.Channel, qnum);
                 Game.RegisterGameInChannel(quiz, ctx.Channel.Id);
                 try {
                     await ctx.RespondWithIconEmbedAsync("Quiz will start in 10s! Get ready!", ":clock1:")

@@ -19,6 +19,7 @@ namespace TheGodfather.Modules.Games.Common
     {
         private static Dictionary<string, string> _countries = null;
         public IEnumerable<(ulong, int)> Results;
+        public int NumberOfQuestions { get; private set; }
 
         public static void LoadCountries()
         {
@@ -33,8 +34,11 @@ namespace TheGodfather.Modules.Games.Common
         }
 
 
-        public QuizCountries(InteractivityExtension interactivity, DiscordChannel channel)
-            : base(interactivity, channel) { }
+        public QuizCountries(InteractivityExtension interactivity, DiscordChannel channel, int questions)
+            : base(interactivity, channel)
+        {
+            NumberOfQuestions = questions;
+        }
 
 
         public override async Task RunAsync()
@@ -43,7 +47,7 @@ namespace TheGodfather.Modules.Games.Common
             var participants = new Dictionary<ulong, int>();
             
             int timeouts = 0;
-            for (int i = 1; i < 10; i++) {
+            for (int i = 1; i < NumberOfQuestions; i++) {
                 string question = questions[GFRandom.Generator.Next(questions.Count)];
                 string answer = _countries[question].ToLowerInvariant();
 
