@@ -429,7 +429,7 @@ namespace TheGodfather.Modules.Owner
             sb.AppendLine("# Command modules:");
             foreach (var module in modules) {
                 string mname = module.Key.Module.ToString();
-                sb.Append("* ").Append('[').Append(mname).Append(']').Append("(").Append(parts.Name).Append('/').Append(mname).AppendLine(")");
+                sb.Append("* ").Append('[').Append(mname).Append(']').Append("(").Append(parts.Name).Append('/').Append(mname).Append(".md").AppendLine(")");
             }
             
             try {
