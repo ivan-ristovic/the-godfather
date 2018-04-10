@@ -15,7 +15,7 @@ using DSharpPlus.Exceptions;
 
 namespace TheGodfather.Modules.Misc
 {
-    [Group("rank")]
+    [Group("rank"), Module(ModuleType.Miscellaneous)]
     [Description("User ranking commands. If invoked without subcommands, prints sender's rank.")]
     [Aliases("ranks", "ranking", "level")]
     [UsageExample("!rank")]
@@ -54,7 +54,7 @@ namespace TheGodfather.Modules.Misc
         
 
         #region COMMAND_RANK_LIST
-        [Command("list")]
+        [Command("list"), Module(ModuleType.Miscellaneous)]
         [Description("Print all available ranks.")]
         [Aliases("levels")]
         [UsageExample("!rank list")]
@@ -76,7 +76,7 @@ namespace TheGodfather.Modules.Misc
         #endregion
 
         #region COMMAND_RANK_TOP
-        [Command("top")]
+        [Command("top"), Module(ModuleType.Miscellaneous)]
         [Description("Get rank leaderboard.")]
         [UsageExample("!rank top")]
         public async Task TopAsync(CommandContext ctx)

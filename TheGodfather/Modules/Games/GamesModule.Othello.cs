@@ -19,7 +19,7 @@ namespace TheGodfather.Modules.Games
 {
     public partial class GamesModule : TheGodfatherBaseModule
     {
-        [Group("othello")]
+        [Group("othello"), Module(ModuleType.Games)]
         [Description("Starts an \"Othello\" game. Play a move by writing a pair of numbers from 1 to 10 corresponding to the row and column where you wish to play. You can also specify a time window in which player must submit their move.")]
         [Aliases("reversi", "oth", "rev")]
         [UsageExample("!game othello")]
@@ -76,7 +76,7 @@ namespace TheGodfather.Modules.Games
 
 
             #region COMMAND_OTHELLO_RULES
-            [Command("rules")]
+            [Command("rules"), Module(ModuleType.Games)]
             [Description("Explain the Othello game rules.")]
             [Aliases("help", "h", "ruling", "rule")]
             [UsageExample("!game othello rules")]
@@ -97,7 +97,7 @@ namespace TheGodfather.Modules.Games
             #endregion
 
             #region COMMAND_OTHELLO_STATS
-            [Command("stats")]
+            [Command("stats"), Module(ModuleType.Games)]
             [Description("Print the leaderboard for this game.")]
             [Aliases("top", "leaderboard")]
             [UsageExample("!game othello stats")]

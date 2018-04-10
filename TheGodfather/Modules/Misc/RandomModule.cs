@@ -16,7 +16,7 @@ using DSharpPlus.Entities;
 
 namespace TheGodfather.Modules.Misc
 {
-    [Group("random")]
+    [Group("random"), Module(ModuleType.Miscellaneous)]
     [Description("Random gibberish.")]
     [Aliases("rnd", "rand")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
@@ -24,7 +24,7 @@ namespace TheGodfather.Modules.Misc
     public class CommandsRandomGroup : TheGodfatherBaseModule
     {
         #region COMMAND_CAT
-        [Command("cat")]
+        [Command("cat"), Module(ModuleType.Miscellaneous)]
         [Description("Get a random cat image.")]
         [UsageExample("!random cat")]
         public async Task RandomCatAsync(CommandContext ctx)
@@ -42,7 +42,7 @@ namespace TheGodfather.Modules.Misc
         #endregion
 
         #region COMMAND_DOG
-        [Command("dog")]
+        [Command("dog"), Module(ModuleType.Miscellaneous)]
         [Description("Get a random dog image.")]
         [UsageExample("!random dog")]
         public async Task RandomDogAsync(CommandContext ctx)
@@ -60,7 +60,7 @@ namespace TheGodfather.Modules.Misc
         #endregion
 
         #region COMMAND_CHOOSE
-        [Command("choose")]
+        [Command("choose"), Module(ModuleType.Miscellaneous)]
         [Description("Choose one of the provided options separated by comma.")]
         [Aliases("select")]
         [UsageExample("!random choose option 1, option 2, option 3...")]
@@ -80,7 +80,7 @@ namespace TheGodfather.Modules.Misc
         #endregion
 
         #region COMMAND_RAFFLE
-        [Command("raffle")]
+        [Command("raffle"), Module(ModuleType.Miscellaneous)]
         [Description("Choose a user from the online members list belonging to a given role.")]
         [Aliases("chooseuser")]
         [UsageExample("!random raffle")]

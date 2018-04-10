@@ -19,7 +19,7 @@ namespace TheGodfather.Modules.Owner
 {
     public partial class OwnerModule
     {
-        [Group("birthdays")]
+        [Group("birthdays"), Module(ModuleType.Owner)]
         [Description("Birthday notifications management. If invoked without command, either lists or adds birthdays depending if argument is given.")]
         [Aliases("birthday", "bday", "bd", "bdays")]
         [ListeningCheck]
@@ -50,6 +50,7 @@ namespace TheGodfather.Modules.Owner
 
             #region COMMAND_BIRTHDAY_ADD
             [Command("add"), Priority(1)]
+            [Module(ModuleType.Owner)]
             [Description("Add a birthday to the database. If date is not specified, uses the current date as a birthday date. If the channel is not specified, uses the current channel.")]
             [Aliases("+", "a")]
             [UsageExample("!owner birthday add @Someone")]
@@ -84,7 +85,7 @@ namespace TheGodfather.Modules.Owner
             #endregion
 
             #region COMMAND_BIRTHDAY_DELETE
-            [Command("delete")]
+            [Command("delete"), Module(ModuleType.Owner)]
             [Description("Remove status from running queue.")]
             [Aliases("-", "remove", "rm", "del")]
             [UsageExample("!owner birthday delete @Someone")]
@@ -99,7 +100,7 @@ namespace TheGodfather.Modules.Owner
             #endregion
 
             #region COMMAND_BIRTHDAY_LIST
-            [Command("list")]
+            [Command("list"), Module(ModuleType.Owner)]
             [Description("List all registered birthdays.")]
             [Aliases("ls")]
             [UsageExample("!owner birthday list")]

@@ -12,7 +12,7 @@ using DSharpPlus.CommandsNext.Attributes;
 
 namespace TheGodfather.Modules.Search
 {
-    [Group("steam")]
+    [Group("steam"), Module(ModuleType.Searches)]
     [Description("Steam commands.")]
     [Aliases("s", "st")]
     [UsageExample("!steam profile 123456123")]
@@ -25,7 +25,7 @@ namespace TheGodfather.Modules.Search
 
 
         #region COMMAND_STEAM_PROFILE
-        [Command("profile")]
+        [Command("profile"), Module(ModuleType.Searches)]
         [Description("Get Steam user information for user based on his ID.")]
         [Aliases("id", "user")]
         public async Task InfoAsync(CommandContext ctx,

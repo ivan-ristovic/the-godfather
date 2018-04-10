@@ -16,7 +16,7 @@ using DSharpPlus.Entities;
 
 namespace TheGodfather.Modules.Misc
 {
-    [Group("insult")]
+    [Group("insult"), Module(ModuleType.Miscellaneous)]
     [Description("Insults manipulation. If invoked without subcommands, insults a given user.")]
     [Aliases("burn", "insults", "ins", "roast")]
     [UsageExample("!insult @Someone")]
@@ -52,7 +52,7 @@ namespace TheGodfather.Modules.Misc
 
 
         #region COMMAND_INSULTS_ADD
-        [Command("add")]
+        [Command("add"), Module(ModuleType.Miscellaneous)]
         [Description("Add insult to list (use %user% instead of user mention).")]
         [Aliases("+", "new", "a")]
         [UsageExample("!insult add You are so dumb, %user%!")]
@@ -78,7 +78,7 @@ namespace TheGodfather.Modules.Misc
         #endregion
         
         #region COMMAND_INSULTS_CLEAR
-        [Command("clear")]
+        [Command("clear"), Module(ModuleType.Miscellaneous)]
         [Description("Delete all insults.")]
         [Aliases("da", "c", "ca", "cl", "clearall")]
         [UsageExample("!insults clear")]
@@ -96,7 +96,7 @@ namespace TheGodfather.Modules.Misc
         #endregion
 
         #region COMMAND_INSULTS_DELETE
-        [Command("delete")]
+        [Command("delete"), Module(ModuleType.Miscellaneous)]
         [Description("Remove insult with a given index from list. (use command ``insults list`` to view insult indexes).")]
         [Aliases("-", "remove", "del", "rm", "rem", "d")]
         [UsageExample("!insult delete 2")]
@@ -112,7 +112,7 @@ namespace TheGodfather.Modules.Misc
         #endregion
 
         #region COMMAND_INSULTS_LIST
-        [Command("list")]
+        [Command("list"), Module(ModuleType.Miscellaneous)]
         [Description("Show all insults.")]
         [Aliases("ls", "l")]
         [UsageExample("!insult list")]

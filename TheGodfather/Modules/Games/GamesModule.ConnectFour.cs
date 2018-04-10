@@ -19,7 +19,7 @@ namespace TheGodfather.Modules.Games
 {
     public partial class GamesModule : TheGodfatherBaseModule
     {
-        [Group("connect4")]
+        [Group("connect4"), Module(ModuleType.Games)]
         [Description("Starts a \"Connect 4\" game. Play a move by writing a number from 1 to 9 corresponding to the column where you wish to insert your piece. You can also specify a time window in which player must submit their move.")]
         [Aliases("connectfour", "chain4", "chainfour", "c4", "fourinarow", "fourinaline", "4row", "4line", "cfour")]
         [UsageExample("!game connect4")]
@@ -76,7 +76,7 @@ namespace TheGodfather.Modules.Games
 
 
             #region COMMAND_CONNECT4_RULES
-            [Command("rules")]
+            [Command("rules"), Module(ModuleType.Games)]
             [Description("Explain the Connect4 game rules.")]
             [Aliases("help", "h", "ruling", "rule")]
             [UsageExample("!game connect4 rules")]
@@ -95,7 +95,7 @@ namespace TheGodfather.Modules.Games
             #endregion
 
             #region COMMAND_CONNECT4_STATS
-            [Command("stats")]
+            [Command("stats"), Module(ModuleType.Games)]
             [Description("Print the leaderboard for this game.")]
             [Aliases("top", "leaderboard")]
             [UsageExample("!game connect4 stats")]

@@ -3,10 +3,8 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 
-using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
-using TheGodfather.Extensions;
 using TheGodfather.Modules.Music.Common;
 using TheGodfather.Services;
 
@@ -20,7 +18,7 @@ namespace TheGodfather.Modules.Music
 {
     public partial class MusicModule
     {
-        [Group("play")]
+        [Group("play"), Module(ModuleType.Music)]
         [Description("Commands for playing music. If invoked without subcommand, plays given URL or searches YouTube for given query and plays the first result.")]
         [Aliases("music", "p")]
         [UsageExample("!play https://www.youtube.com/watch?v=dQw4w9WgXcQ")]
@@ -74,7 +72,7 @@ namespace TheGodfather.Modules.Music
 
 
             #region COMMAND_PLAY_FILE
-            [Command("file")]
+            [Command("file"), Module(ModuleType.Music)]
             [Description("Plays an audio file from the server filesystem.")]
             [Aliases("f")]
             [UsageExample("!play file test.mp3")]

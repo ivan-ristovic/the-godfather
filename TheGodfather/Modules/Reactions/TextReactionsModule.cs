@@ -5,7 +5,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
@@ -21,7 +20,7 @@ using DSharpPlus.Entities;
 
 namespace TheGodfather.Modules.Reactions
 {
-    [Group("textreaction")]
+    [Group("textreaction"), Module(ModuleType.Reactions)]
     [Description("Orders a bot to react with given text to a message containing a trigger word inside (guild specific). If invoked without subcommands, adds a new text reaction to a given trigger word. Note: Trigger words can be regular expressions (use ``textreaction addregex`` command). You can also use \"%user%\" inside response and the bot will replace it with mention for the user who triggers the reaction.")]
     [Aliases("treact", "tr", "txtr", "textreactions")]
     [UsageExample("!textreaction hi hello")]
@@ -47,7 +46,7 @@ namespace TheGodfather.Modules.Reactions
 
 
         #region COMMAND_TEXT_REACTION_ADD
-        [Command("add")]
+        [Command("add"), Module(ModuleType.Reactions)]
         [Description("Add a new text reaction to guild text reaction list.")]
         [Aliases("+", "new", "a")]
         [UsageExample("!textreaction add \"hi\" \"Hello, %user%!\"")]
@@ -59,7 +58,7 @@ namespace TheGodfather.Modules.Reactions
         #endregion
 
         #region COMMAND_TEXT_REACTION_ADDREGEX
-        [Command("addregex")]
+        [Command("addregex"), Module(ModuleType.Reactions)]
         [Description("Add a new text reaction triggered by a regex to guild text reaction list.")]
         [Aliases("+r", "+regex", "+regexp", "+rgx", "newregex", "addrgx")]
         [UsageExample("!textreaction addregex \"h(i|ey|ello|owdy)\" \"Hello, %user%!\"")]
@@ -71,7 +70,7 @@ namespace TheGodfather.Modules.Reactions
         #endregion
 
         #region COMMAND_TEXT_REACTION_CLEAR
-        [Command("clear")]
+        [Command("clear"), Module(ModuleType.Reactions)]
         [Description("Delete all text reactions for the current guild.")]
         [Aliases("da", "c", "ca", "cl", "clearall")]
         [UsageExample("!textreactions clear")]
@@ -99,6 +98,7 @@ namespace TheGodfather.Modules.Reactions
 
         #region COMMAND_TEXT_REACTION_DELETE
         [Command("delete"), Priority(1)]
+        [Module(ModuleType.Reactions)]
         [Description("Remove text reaction from guild text reaction list.")]
         [Aliases("-", "remove", "del", "rm", "d")]
         [UsageExample("!textreaction delete 5")]
@@ -184,7 +184,7 @@ namespace TheGodfather.Modules.Reactions
         #endregion
 
         #region COMMAND_TEXT_REACTION_LIST
-        [Command("list")]
+        [Command("list"), Module(ModuleType.Reactions)]
         [Description("Show all text reactions for the guild.")]
         [Aliases("ls", "l", "view")]
         [UsageExample("!textreactions list")]

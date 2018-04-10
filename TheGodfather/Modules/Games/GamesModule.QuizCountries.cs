@@ -22,7 +22,7 @@ namespace TheGodfather.Modules.Games
     {
         public partial class QuizModule
         {
-            [Command("countries")]
+            [Command("countries"), Module(ModuleType.Games)]
             [Description("Country flags guessing quiz.")]
             [Aliases("flags")]
             [UsageExample("!game quiz countries")]

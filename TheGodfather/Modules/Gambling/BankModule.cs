@@ -15,7 +15,7 @@ using DSharpPlus.Entities;
 
 namespace TheGodfather.Modules.Gambling
 {
-    [Group("bank")]
+    [Group("bank"), Module(ModuleType.Gambling)]
     [Description("Bank manipulation. If invoked alone, prints out your bank balance.")]
     [Aliases("$", "$$", "$$$")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
@@ -36,7 +36,7 @@ namespace TheGodfather.Modules.Gambling
 
 
         #region COMMAND_BALANCE
-        [Command("balance")]
+        [Command("balance"), Module(ModuleType.Gambling)]
         [Description("View account balance for given user. If the user is not given, checks sender's balance.")]
         [Aliases("s", "status", "bal", "money", "credits")]
         [UsageExample("!bank balance @Someone")]
@@ -59,6 +59,7 @@ namespace TheGodfather.Modules.Gambling
 
         #region COMMAND_GRANT
         [Command("grant"), Priority(1)]
+        [Module(ModuleType.Gambling)]
         [Description("Magically give funds to some user.")]
         [Aliases("give")]
         [UsageExample("!bank grant @Someone 1000")]
@@ -88,7 +89,7 @@ namespace TheGodfather.Modules.Gambling
         #endregion
 
         #region COMMAND_REGISTER
-        [Command("register")]
+        [Command("register"), Module(ModuleType.Gambling)]
         [Description("Create an account for you in WM bank.")]
         [Aliases("r", "signup", "activate")]
         [UsageExample("!bank register")]
@@ -105,7 +106,7 @@ namespace TheGodfather.Modules.Gambling
         #endregion
 
         #region COMMAND_TOP
-        [Command("top")]
+        [Command("top"), Module(ModuleType.Gambling)]
         [Description("Print the richest users.")]
         [Aliases("leaderboard", "elite")]
         [UsageExample("!bank top")]
@@ -133,6 +134,7 @@ namespace TheGodfather.Modules.Gambling
 
         #region COMMAND_TRANSFER
         [Command("transfer"), Priority(1)]
+        [Module(ModuleType.Gambling)]
         [Description("Transfer funds from your account to another one.")]
         [Aliases("lend")]
         [UsageExample("!bank transfer @Someone 40")]

@@ -15,7 +15,7 @@ namespace TheGodfather.Modules.Games
 {
     public partial class GamesModule
     {
-        [Group("quiz")]
+        [Group("quiz"), Module(ModuleType.Games)]
         [Description("List all available quiz categories.")]
         [Aliases("trivia", "q")]
         [UsageExample("!game quiz ")]
@@ -38,7 +38,7 @@ namespace TheGodfather.Modules.Games
 
 
             #region COMMAND_QUIZ_STATS
-            [Command("stats")]
+            [Command("stats"), Module(ModuleType.Games)]
             [Description("Print the leaderboard for this game.")]
             [Aliases("top", "leaderboard")]
             [UsageExample("!game quiz stats")]

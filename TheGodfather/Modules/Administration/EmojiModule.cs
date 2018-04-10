@@ -18,7 +18,7 @@ using DSharpPlus.Exceptions;
 
 namespace TheGodfather.Modules.Administration
 {
-    [Group("emoji")]
+    [Group("emoji"), Module(ModuleType.Administration)]
     [Description("Manipulate guild emoji. Standalone call lists all guild emoji or gives information about given emoji.")]
     [Aliases("emojis", "e")]
     [UsageExample("!emoji")]
@@ -31,14 +31,14 @@ namespace TheGodfather.Modules.Administration
         public async Task ExecuteGroupAsync(CommandContext ctx)
             => await ListAsync(ctx).ConfigureAwait(false);
 
-        [GroupCommand, Priority(1)]
+        [GroupCommand, Priority(0)]
         public async Task ExecuteGroupAsync(CommandContext ctx,
-                                           [Description("Emoji.")] DiscordEmoji emoji)
+                                           [Description("Emoji to print information about.")] DiscordEmoji emoji)
             => await InfoAsync(ctx, emoji).ConfigureAwait(false);
 
 
         #region COMMAND_EMOJI_ADD
-        [Command("add")]
+        [Command("add"), Module(ModuleType.Administration)]
         [Description("Add emoji.")]
         [Aliases("create", "a", "+")]
         [UsageExample("!emoji add pepe http://i0.kym-cdn.com/photos/images/facebook/000/862/065/0e9.jpg")]
@@ -76,7 +76,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_EMOJI_DELETE
-        [Command("delete")]
+        [Command("delete"), Module(ModuleType.Administration)]
         [Description("Remove guild emoji. Note: bots can only delete emojis they created.")]
         [Aliases("remove", "del", "-", "d")]
         [UsageExample("!emoji delete pepe")]
@@ -99,7 +99,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_EMOJI_INFO
-        [Command("info")]
+        [Command("info"), Module(ModuleType.Administration)]
         [Description("Get information for given guild emoji.")]
         [UsageExample("!emoji info pepe")]
         [Aliases("details", "information", "i")]
@@ -126,7 +126,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_EMOJI_LIST
-        [Command("list")]
+        [Command("list"), Module(ModuleType.Administration)]
         [Description("View guild emojis.")]
         [Aliases("print", "show", "l", "p", "ls")]
         [UsageExample("!emoji list")]
@@ -143,6 +143,7 @@ namespace TheGodfather.Modules.Administration
 
         #region COMMAND_EMOJI_MODIFY
         [Command("modify"), Priority(1)]
+        [Module(ModuleType.Administration)]
         [Description("Edit name of an existing guild emoji.")]
         [Aliases("edit", "mod", "e", "m", "rename")]
         [UsageExample("!emoji modify :pepe: newname")]

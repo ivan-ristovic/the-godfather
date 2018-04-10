@@ -26,7 +26,7 @@ using DSharpPlus.Entities;
 
 namespace TheGodfather.Modules.Owner
 {
-    [Group("owner")]
+    [Group("owner"), Module(ModuleType.Owner)]
     [Description("Owner-only bot administration commands.")]
     [Aliases("admin", "o")]
     [RequireOwner, Hidden]
@@ -38,7 +38,7 @@ namespace TheGodfather.Modules.Owner
 
 
         #region COMMAND_ANNOUNCE
-        [Command("announce")]
+        [Command("announce"), Module(ModuleType.Owner)]
         [Description("Send a message to all guilds the bot is in.")]
         [Aliases("a", "ann")]
         [UsageExample("!owner announce SPAM SPAM")]
@@ -67,7 +67,7 @@ namespace TheGodfather.Modules.Owner
         #endregion
 
         #region COMMAND_BOTAVATAR
-        [Command("botavatar")]
+        [Command("botavatar"), Module(ModuleType.Owner)]
         [Description("Set bot avatar.")]
         [Aliases("setbotavatar", "setavatar")]
         [UsageExample("!owner botavatar http://someimage.png")]
@@ -102,7 +102,7 @@ namespace TheGodfather.Modules.Owner
         #endregion
 
         #region COMMAND_BOTNAME
-        [Command("botname")]
+        [Command("botname"), Module(ModuleType.Owner)]
         [Description("Set bot name.")]
         [Aliases("setbotname", "setname")]
         [UsageExample("!owner setname TheBotfather")]
@@ -121,7 +121,7 @@ namespace TheGodfather.Modules.Owner
         #endregion
 
         #region COMMAND_CLEARLOG
-        [Command("clearlog")]
+        [Command("clearlog"), Module(ModuleType.Owner)]
         [Description("Clear application logs.")]
         [Aliases("clearlogs", "deletelogs", "deletelog")]
         [UsageExample("!owner clearlog")]
@@ -140,7 +140,7 @@ namespace TheGodfather.Modules.Owner
         #endregion
 
         #region COMMAND_DBQUERY
-        [Command("dbquery")]
+        [Command("dbquery"), Module(ModuleType.Owner)]
         [Description("Clear application logs.")]
         [Aliases("sql", "dbq", "q")]
         [UsageExample("!owner dbquery SELECT * FROM gf.msgcount;")]
@@ -184,7 +184,7 @@ namespace TheGodfather.Modules.Owner
 
         #region COMMAND_EVAL
         // Original code created by Emzi, edited by me to fit own requirements
-        [Command("eval")]
+        [Command("eval"), Module(ModuleType.Owner)]
         [Description("Evaluates a snippet of C# code, in context. Surround the code in the code block.")]
         [Aliases("compile", "run", "e", "c", "r")]
         [UsageExample("!owner eval ```await Context.RespondAsync(\"Hello!\");```")]
@@ -277,7 +277,7 @@ namespace TheGodfather.Modules.Owner
         #endregion
 
         #region COMMAND_FILELOG
-        [Command("filelog")]
+        [Command("filelog"), Module(ModuleType.Owner)]
         [Description("Toggle writing to log file.")]
         [Aliases("setfl", "fl", "setfilelog")]
         [UsageExample("!owner filelog yes")]
@@ -294,17 +294,27 @@ namespace TheGodfather.Modules.Owner
         #endregion
 
         #region COMMAND_GENERATECOMMANDS
-        [Command("generatecommandlist")]
-        [Description("Generates a markdown command-list. You can also provide a file path for the output.")]
+        [Command("generatecommandlist"), Module(ModuleType.Owner)]
+        [Description("Generates a markdown command-list. You can also provide a folder for the output.")]
         [Aliases("cmdlist", "gencmdlist", "gencmds", "gencmdslist")]
         [UsageExample("!owner generatecommandlist")]
         [UsageExample("!owner generatecommandlist Temp/blabla.md")]
         [ListeningCheck]
         public async Task GenerateCommandListAsync(CommandContext ctx,
-                                                  [RemainingText, Description("File path.")] string filepath = null)
+                                                  [RemainingText, Description("File path.")] string folder = null)
         {
-            if (string.IsNullOrWhiteSpace(filepath))
-                filepath = "Temp/cmds.md";
+            if (string.IsNullOrWhiteSpace(folder))
+                folder = "doc";
+
+            DirectoryInfo current;
+            DirectoryInfo parts;
+            try {
+                current = Directory.CreateDirectory(folder);
+                parts = Directory.CreateDirectory(Path.Combine(current.FullName, "modules"));
+            } catch (Exception e) {
+                TheGodfather.LogHandle.LogException(LogLevel.Warning, e);
+                throw new CommandFailedException("Failed to create the modules directory!", e);
+            }
 
             StringBuilder sb = new StringBuilder();
             sb.AppendLine("# Command list");
@@ -317,95 +327,116 @@ namespace TheGodfather.Modules.Owner
                 else
                     commands.Add(cmd);
             }
-            commands.Sort((c1, c2) => string.Compare(c1.QualifiedName, c2.QualifiedName, true));
 
-            foreach (var cmd in commands) {
-                if (cmd is CommandGroup || cmd.Parent == null)
-                    sb.Append("## ").Append(cmd is CommandGroup ? "Group: " : "").AppendLine(cmd.QualifiedName);
-                else
-                    sb.Append("### ").AppendLine(cmd.QualifiedName);
+            var modules = commands.GroupBy(c => c.CustomAttributes.FirstOrDefault(a => a is ModuleAttribute))
+                                  .OrderBy(g => (g.Key as ModuleAttribute)?.Module)
+                                  .ToDictionary(g => g.Key as ModuleAttribute ?? new ModuleAttribute(ModuleType.Uncategorized), g => g.OrderBy(c => c.QualifiedName).ToList());
 
-                if (cmd.IsHidden)
-                    sb.AppendLine(Formatter.Italic("Hidden.")).AppendLine();
+            foreach (var module in modules) {
+                sb.Append("# Module: ").Append(module.Key.Module.ToString()).AppendLine().AppendLine();
+                
+                foreach (var cmd in module.Value) {
+                    if (cmd is CommandGroup || cmd.Parent == null)
+                        sb.Append("## ").Append(cmd is CommandGroup ? "Group: " : "").AppendLine(cmd.QualifiedName);
+                    else
+                        sb.Append("### ").AppendLine(cmd.QualifiedName);
 
-                sb.AppendLine(Formatter.Italic(cmd.Description ?? "No description provided.")).AppendLine();
+                    if (cmd.IsHidden)
+                        sb.AppendLine(Formatter.Italic("Hidden.")).AppendLine();
 
-                var allchecks = cmd.ExecutionChecks.Union(cmd.Parent?.ExecutionChecks ?? Enumerable.Empty<CheckBaseAttribute>());
-                var permissions = allchecks.Where(chk => chk is RequirePermissionsAttribute)
-                                           .Select(chk => chk as RequirePermissionsAttribute)
-                                           .Select(chk => chk.Permissions.ToPermissionString());
-                var userpermissions = allchecks.Where(chk => chk is RequireUserPermissionsAttribute)
-                                               .Select(chk => chk as RequireUserPermissionsAttribute)
+                    sb.AppendLine(Formatter.Italic(cmd.Description ?? "No description provided.")).AppendLine();
+
+                    var allchecks = cmd.ExecutionChecks.Union(cmd.Parent?.ExecutionChecks ?? Enumerable.Empty<CheckBaseAttribute>());
+                    var permissions = allchecks.Where(chk => chk is RequirePermissionsAttribute)
+                                               .Select(chk => chk as RequirePermissionsAttribute)
                                                .Select(chk => chk.Permissions.ToPermissionString());
-                var botpermissions = allchecks.Where(chk => chk is RequireBotPermissionsAttribute)
-                                              .Select(chk => chk as RequireBotPermissionsAttribute)
-                                              .Select(chk => chk.Permissions.ToPermissionString());
-                if (allchecks.Any(chk => chk is RequireOwnerAttribute))
-                    sb.AppendLine(Formatter.Bold("Owner-only.") + "\n");
-                if (permissions.Any()) {
-                    sb.AppendLine(Formatter.Bold("Requires permissions:"));
-                    sb.AppendLine(Formatter.InlineCode(string.Join(", ", permissions))).AppendLine();
-                }
-                if (userpermissions.Any()) {
-                    sb.AppendLine(Formatter.Bold("Requires user permissions:"));
-                    sb.AppendLine(Formatter.InlineCode(string.Join(", ", userpermissions))).AppendLine();
-                }
-                if (botpermissions.Any()) {
-                    sb.AppendLine(Formatter.Bold("Requires bot permissions:"));
-                    sb.AppendLine(Formatter.InlineCode(string.Join(", ", botpermissions))).AppendLine();
-                }
-
-                if (cmd.Aliases.Any()) {
-                    sb.AppendLine(Formatter.Bold("Aliases:"));
-                    sb.AppendLine(Formatter.InlineCode(string.Join(", ", cmd.Aliases))).AppendLine();
-                }
-                sb.AppendLine();
-
-                foreach (var overload in cmd.Overloads.OrderByDescending(o => o.Priority)) {
-                    if (!overload.Arguments.Any())
-                        continue;
-
-                    sb.AppendLine(Formatter.Bold(cmd.Overloads.Count > 1 ? $"Overload {overload.Priority.ToString()}:" : "Arguments:")).AppendLine();
-                    foreach (var arg in overload.Arguments) {
-                        if (arg.IsOptional)
-                            sb.Append("(optional) ");
-
-                        string typestr = $"[{ctx.CommandsNext.GetUserFriendlyTypeName(arg.Type)}";
-                        if (arg.IsCatchAll)
-                            typestr += "...";
-                        typestr += "]";
-
-                        sb.Append(Formatter.InlineCode(typestr));
-                        sb.Append(" : ");
-
-                        sb.Append(string.IsNullOrWhiteSpace(arg.Description) ? "No description provided." : Formatter.Italic(arg.Description));
-
-                        if (arg.IsOptional)
-                            sb.Append(" (def: ").Append(Formatter.InlineCode(arg.DefaultValue != null ? arg.DefaultValue.ToString() : "None")).Append(")");
-
-                        sb.AppendLine("\n");
+                    var userpermissions = allchecks.Where(chk => chk is RequireUserPermissionsAttribute)
+                                                   .Select(chk => chk as RequireUserPermissionsAttribute)
+                                                   .Select(chk => chk.Permissions.ToPermissionString());
+                    var botpermissions = allchecks.Where(chk => chk is RequireBotPermissionsAttribute)
+                                                  .Select(chk => chk as RequireBotPermissionsAttribute)
+                                                  .Select(chk => chk.Permissions.ToPermissionString());
+                    if (allchecks.Any(chk => chk is RequireOwnerAttribute))
+                        sb.AppendLine(Formatter.Bold("Owner-only.")).AppendLine();
+                    if (permissions.Any()) {
+                        sb.AppendLine(Formatter.Bold("Requires permissions:"));
+                        sb.AppendLine(Formatter.InlineCode(string.Join(", ", permissions))).AppendLine();
                     }
+                    if (userpermissions.Any()) {
+                        sb.AppendLine(Formatter.Bold("Requires user permissions:"));
+                        sb.AppendLine(Formatter.InlineCode(string.Join(", ", userpermissions))).AppendLine();
+                    }
+                    if (botpermissions.Any()) {
+                        sb.AppendLine(Formatter.Bold("Requires bot permissions:"));
+                        sb.AppendLine(Formatter.InlineCode(string.Join(", ", botpermissions))).AppendLine();
+                    }
+
+                    if (cmd.Aliases.Any()) {
+                        sb.AppendLine(Formatter.Bold("Aliases:"));
+                        sb.AppendLine(Formatter.InlineCode(string.Join(", ", cmd.Aliases))).AppendLine();
+                    }
+
+                    foreach (var overload in cmd.Overloads.OrderByDescending(o => o.Priority)) {
+                        if (!overload.Arguments.Any())
+                            continue;
+
+                        sb.AppendLine(Formatter.Bold(cmd.Overloads.Count > 1 ? $"Overload {overload.Priority.ToString()}:" : "Arguments:")).AppendLine();
+                        foreach (var arg in overload.Arguments) {
+                            if (arg.IsOptional)
+                                sb.Append("(optional) ");
+
+                            string typestr = $"[{ctx.CommandsNext.GetUserFriendlyTypeName(arg.Type)}";
+                            if (arg.IsCatchAll)
+                                typestr += "...";
+                            typestr += "]";
+
+                            sb.Append(Formatter.InlineCode(typestr));
+                            sb.Append(" : ");
+
+                            sb.Append(string.IsNullOrWhiteSpace(arg.Description) ? "No description provided." : Formatter.Italic(arg.Description));
+
+                            if (arg.IsOptional)
+                                sb.Append(" (def: ").Append(Formatter.InlineCode(arg.DefaultValue != null ? arg.DefaultValue.ToString() : "None")).Append(")");
+
+                            sb.AppendLine().AppendLine();
+                        }
+                    }
+
+                    var examples = cmd.CustomAttributes.Where(chk => chk is UsageExampleAttribute)
+                                                       .Select(chk => chk as UsageExampleAttribute);
+                    if (examples.Any()) {
+                        sb.AppendLine(Formatter.Bold("Examples:")).AppendLine().AppendLine("```");
+                        foreach (var example in examples)
+                            sb.AppendLine(example.Example);
+                        sb.AppendLine("```");
+                    }
+
+                    sb.AppendLine("---").AppendLine();
                 }
 
-                var examples = cmd.CustomAttributes.Where(chk => chk is UsageExampleAttribute)
-                                                   .Select(chk => chk as UsageExampleAttribute);
-                if (examples.Any()) {
-                    sb.AppendLine(Formatter.Bold("Examples:")).AppendLine().AppendLine("```");
-                    foreach (var example in examples)
-                        sb.AppendLine(example.Example);
-                    sb.AppendLine("```");
+                string filename = Path.Combine(parts.FullName, $"{module.Key.Module.ToString()}.md");
+                try {
+                    File.WriteAllText(filename, sb.ToString());
+                } catch (IOException e) {
+                    throw new CommandFailedException($"IO Exception occured while saving {filename}!", e);
                 }
 
-                sb.AppendLine("---").AppendLine();
+                sb.Clear();
             }
 
+            sb.AppendLine("# Command modules:");
+            foreach (var module in modules) {
+                string mname = module.Key.Module.ToString();
+                sb.Append("* ").Append('[').Append(mname).Append(']').Append("(").Append(Path.Combine(parts.Name, mname)).AppendLine(")");
+            }
+            
             try {
-                File.WriteAllText(filepath, sb.ToString());
+                File.WriteAllText(Path.Combine(current.FullName, $"Command List.md"), sb.ToString());
             } catch (IOException e) {
-                throw new CommandFailedException("IO Exception occured!", e);
+                throw new CommandFailedException($"IO Exception occured while saving the main file!", e);
             }
 
-            await ctx.RespondWithIconEmbedAsync($"Command list created at path: {Formatter.InlineCode(filepath)}!")
+            await ctx.RespondWithIconEmbedAsync($"Command list created at path: {Formatter.InlineCode(current.FullName)}!")
                 .ConfigureAwait(false);
         }
 
@@ -423,7 +454,7 @@ namespace TheGodfather.Modules.Owner
         #endregion
 
         #region COMMAND_LEAVEGUILDS
-        [Command("leaveguilds")]
+        [Command("leaveguilds"), Module(ModuleType.Owner)]
         [Description("Leaves the given guilds.")]
         [Aliases("leave", "gtfo")]
         [UsageExample("!owner leave 337570344149975050")]
@@ -456,7 +487,7 @@ namespace TheGodfather.Modules.Owner
         #endregion
 
         #region COMMAND_SENDMESSAGE
-        [Command("sendmessage")]
+        [Command("sendmessage"), Module(ModuleType.Owner)]
         [Description("Sends a message to a user or channel.")]
         [Aliases("send", "s")]
         [UsageExample("!owner send u 303463460233150464 Hi to user!")]
@@ -493,6 +524,7 @@ namespace TheGodfather.Modules.Owner
 
         #region COMMAND_SHUTDOWN
         [Command("shutdown"), Priority(1)]
+        [Module(ModuleType.Owner)]
         [Description("Triggers the dying in the vineyard scene (power off the bot).")]
         [Aliases("disable", "poweroff", "exit", "quit")]
         [UsageExample("!owner shutdown")]
@@ -513,7 +545,7 @@ namespace TheGodfather.Modules.Owner
         #endregion
 
         #region COMMAND_SUDO
-        [Command("sudo")]
+        [Command("sudo"), Module(ModuleType.Owner)]
         [Description("Executes a command as another user.")]
         [Aliases("execas", "as")]
         [UsageExample("!owner sudo @Someone !rate")]
@@ -531,7 +563,7 @@ namespace TheGodfather.Modules.Owner
         #endregion
 
         #region COMMAND_TOGGLEIGNORE
-        [Command("toggleignore")]
+        [Command("toggleignore"), Module(ModuleType.Owner)]
         [Description("Toggle bot's reaction to commands.")]
         [Aliases("ti")]
         [UsageExample("!owner toggleignore")]

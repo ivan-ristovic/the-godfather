@@ -16,7 +16,7 @@ using DSharpPlus.CommandsNext.Attributes;
 
 namespace TheGodfather.Modules.Search
 {
-    [Group("joke")]
+    [Group("joke"), Module(ModuleType.Searches)]
     [Description("Group for searching jokes. If invoked without a subcommand, returns a random joke.")]
     [Aliases("jokes", "j")]
     [UsageExample("!joke")]
@@ -43,7 +43,7 @@ namespace TheGodfather.Modules.Search
 
 
         #region COMMAND_JOKE_SEARCH
-        [Command("search")]
+        [Command("search"), Module(ModuleType.Searches)]
         [Description("Search for the joke containing the given query.")]
         [Aliases("s")]
         [UsageExample("!joke search blonde")]
@@ -69,7 +69,7 @@ namespace TheGodfather.Modules.Search
         #endregion
 
         #region COMMAND_JOKE_YOURMOM
-        [Command("yourmom")]
+        [Command("yourmom"), Module(ModuleType.Searches)]
         [Description("Yo mama so...")]
         [Aliases("mama", "m", "yomomma", "yomom", "yomoma", "yomamma", "yomama")]
         [UsageExample("!joke yourmom")]

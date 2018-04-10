@@ -259,6 +259,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\Attributes\ModuleAttribute.cs" />
     <Compile Include="Common\Attributes\UsageExampleAttribute.cs" />
     <Compile Include="Common\GFRandom.cs" />
     <Compile Include="Common\SavedTaskExecuter.cs" />

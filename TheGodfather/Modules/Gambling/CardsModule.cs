@@ -13,7 +13,7 @@ using DSharpPlus.CommandsNext.Attributes;
 
 namespace TheGodfather.Modules.Gambling
 {
-    [Group("cards")]
+    [Group("cards"), Module(ModuleType.Gambling)]
     [Description("Manipulate a deck of cards.")]
     [Aliases("deck")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
@@ -30,7 +30,7 @@ namespace TheGodfather.Modules.Gambling
 
 
         #region COMMAND_DECK_DRAW
-        [Command("draw")]
+        [Command("draw"), Module(ModuleType.Gambling)]
         [Description("Draw cards from the top of the deck. If amount of cards is not specified, draws one card.")]
         [Aliases("take")]
         [UsageExample("!deck draw 5")]
@@ -57,7 +57,7 @@ namespace TheGodfather.Modules.Gambling
         #endregion
 
         #region COMMAND_DECK_RESET
-        [Command("reset")]
+        [Command("reset"), Module(ModuleType.Gambling)]
         [Description("Opens a brand new card deck.")]
         [Aliases("new", "opennew", "open")]
         [UsageExample("!deck reset")]
@@ -75,7 +75,7 @@ namespace TheGodfather.Modules.Gambling
         #endregion
 
         #region COMMAND_DECK_SHUFFLE
-        [Command("shuffle")]
+        [Command("shuffle"), Module(ModuleType.Gambling)]
         [Description("Shuffles current deck.")]
         [Aliases("s", "sh", "mix")]
         [UsageExample("!deck shuffle")]

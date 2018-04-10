@@ -15,7 +15,7 @@ using DSharpPlus.Entities;
 
 namespace TheGodfather.Modules.Administration
 {
-    [Group("roles")]
+    [Group("roles"), Module(ModuleType.Administration)]
     [Description("Miscellaneous role control commands.")]
     [Aliases("role", "rl")]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
@@ -43,6 +43,7 @@ namespace TheGodfather.Modules.Administration
 
         #region COMMAND_ROLES_CREATE
         [Command("create"), Priority(2)]
+        [Module(ModuleType.Administration)]
         [Description("Create a new role.")]
         [Aliases("new", "add", "+", "c")]
         [UsageExample("!roles create \"My role\" #C77B0F no no")]
@@ -81,7 +82,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_ROLES_DELETE
-        [Command("delete")]
+        [Command("delete"), Module(ModuleType.Administration)]
         [Description("Create a new role.")]
         [Aliases("del", "remove", "d", "-", "rm")]
         [UsageExample("!role delete My role")]
@@ -100,7 +101,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_ROLES_INFO
-        [Command("info")]
+        [Command("info"), Module(ModuleType.Administration)]
         [Description("Get information about a given role.")]
         [Aliases("i")]
         [UsageExample("!role info Admins")]
@@ -127,7 +128,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_ROLES_MENTIONALL
-        [Command("mentionall")]
+        [Command("mentionall"), Module(ModuleType.Administration)]
         [Description("Mention all users from given role.")]
         [Aliases("mention", "@", "ma")]
         [UsageExample("!role mentionall Admins")]
@@ -156,6 +157,7 @@ namespace TheGodfather.Modules.Administration
 
         #region COMMAND_ROLES_SETCOLOR
         [Command("setcolor"), Priority(1)]
+        [Module(ModuleType.Administration)]
         [Description("Set a color for the role.")]
         [Aliases("clr", "c", "sc", "setc")]
         [UsageExample("!role setcolor #FF0000 Admins")]
@@ -180,6 +182,7 @@ namespace TheGodfather.Modules.Administration
 
         #region COMMAND_ROLES_SETNAME
         [Command("setname"), Priority(1)]
+        [Module(ModuleType.Administration)]
         [Description("Set a name for the role.")]
         [Aliases("name", "rename", "n")]
         [UsageExample("!role setname @Admins Administrators")]
@@ -207,6 +210,7 @@ namespace TheGodfather.Modules.Administration
 
         #region COMMAND_ROLES_SETMENTIONABLE
         [Command("setmentionable"), Priority(1)]
+        [Module(ModuleType.Administration)]
         [Description("Set role mentionable var.")]
         [Aliases("mentionable", "m", "setm")]
         [UsageExample("!role setmentionable Admins")]
@@ -231,7 +235,8 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_ROLES_SETVISIBILITY
-        [Command("setvisible")]
+        [Command("setvisible"), Priority(1)]
+        [Module(ModuleType.Administration)]
         [Description("Set role hoisted var (visibility in online list).")]
         [Aliases("separate", "h", "seth", "hoist", "sethoist")]
         [UsageExample("!role setvisible Admins")]

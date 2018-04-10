@@ -20,7 +20,7 @@ using DSharpPlus.Entities;
 
 namespace TheGodfather.Modules.Administration
 {
-    [Group("filter")]
+    [Group("filter"), Module(ModuleType.Administration)]
     [Description("Message filtering commands. If invoked without subcommand, either lists all filters or adds a new filter for the given word list. Words can be regular expressions.")]
     [Aliases("f", "filters")]
     [UsageExample("!filter fuck fk f+u+c+k+")]
@@ -44,7 +44,7 @@ namespace TheGodfather.Modules.Administration
 
 
         #region COMMAND_FILTER_ADD
-        [Command("add")]
+        [Command("add"), Module(ModuleType.Administration)]
         [Description("Add filter to guild filter list.")]
         [Aliases("+", "new", "a")]
         [UsageExample("!filter add fuck f+u+c+k+")]
@@ -107,7 +107,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_FILTERS_CLEAR
-        [Command("clear")]
+        [Command("clear"), Module(ModuleType.Administration)]
         [Description("Delete all filters for the current guild.")]
         [Aliases("da", "c", "ca", "cl", "clearall")]
         [UsageExample("!filter clear")]
@@ -134,7 +134,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_FILTER_DELETE
-        [Command("delete")]
+        [Command("delete"), Module(ModuleType.Administration)]
         [Description("Remove filters from guild filter list.")]
         [Aliases("-", "remove", "del", "rm", "rem", "d")]
         [UsageExample("!filter delete fuck f+u+c+k+")]
@@ -168,7 +168,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_FILTER_LIST
-        [Command("list")]
+        [Command("list"), Module(ModuleType.Administration)]
         [Description("Show all filters for this guild.")]
         [Aliases("ls", "l")]
         [UsageExample("!filter list")]

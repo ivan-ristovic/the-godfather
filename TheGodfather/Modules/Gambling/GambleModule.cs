@@ -16,7 +16,7 @@ using DSharpPlus.Entities;
 
 namespace TheGodfather.Modules.Gambling
 {
-    [Group("gamble")]
+    [Group("gamble"), Module(ModuleType.Gambling)]
     [Description("Betting and gambling commands.")]
     [Aliases("bet")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
@@ -28,6 +28,7 @@ namespace TheGodfather.Modules.Gambling
 
         #region COMMAND_GAMBLE_COINFLIP
         [Command("coinflip"), Priority(1)]
+        [Module(ModuleType.Gambling)]
         [Description("Flip a coin and bet on the outcome.")]
         [Aliases("coin", "flip")]
         [UsageExample("!bet coinflip 10 heads")]
@@ -82,6 +83,7 @@ namespace TheGodfather.Modules.Gambling
 
         #region COMMAND_GAMBLE_DICE
         [Command("dice"), Priority(1)]
+        [Module(ModuleType.Gambling)]
         [Description("Roll a dice and bet on the outcome.")]
         [Aliases("roll", "die")]
         [UsageExample("!dice 50 six")]
@@ -138,7 +140,7 @@ namespace TheGodfather.Modules.Gambling
         #endregion
 
         #region COMMAND_SLOT
-        [Command("slot")]
+        [Command("slot"), Module(ModuleType.Gambling)]
         [Description("Roll a slot machine.")]
         [Aliases("slotmachine")]
         [UsageExample("!gamble slot 20")]

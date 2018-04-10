@@ -20,7 +20,7 @@ namespace TheGodfather.Modules.Games
 {
     public partial class GamesModule : TheGodfatherBaseModule
     {
-        [Group("duel")]
+        [Group("duel"), Module(ModuleType.Games)]
         [Description("Starts a duel which I will commentate.")]
         [Aliases("fight", "vs", "d")]
         [UsageExample("!game duel @Someone")]
@@ -72,7 +72,7 @@ namespace TheGodfather.Modules.Games
 
 
             #region COMMAND_DUEL_RULES
-            [Command("rules")]
+            [Command("rules"), Module(ModuleType.Games)]
             [Description("Explain the Duel game rules.")]
             [Aliases("help", "h", "ruling", "rule")]
             [UsageExample("!game duel rules")]
@@ -86,7 +86,7 @@ namespace TheGodfather.Modules.Games
             #endregion
 
             #region COMMAND_DUEL_STATS
-            [Command("stats")]
+            [Command("stats"), Module(ModuleType.Games)]
             [Description("Print the leaderboard for this game.")]
             [Aliases("top", "leaderboard")]
             [UsageExample("!game duel stats")]

@@ -17,7 +17,7 @@ using DSharpPlus.Interactivity;
 
 namespace TheGodfather.Modules.Search
 {
-    [Group("urbandict")]
+    [Group("urbandict"), Module(ModuleType.Searches)]
     [Description("Urban Dictionary commands. If invoked without subcommand, searches Urban Dictionary for a given query.")]
     [Aliases("ud", "urban")]
     [UsageExample("!urbandict blonde")]

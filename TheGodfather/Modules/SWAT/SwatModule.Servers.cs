@@ -18,7 +18,7 @@ namespace TheGodfather.Modules.SWAT
 {
     public partial class SwatModule
     {
-        [Group("servers")]
+        [Group("servers"), Module(ModuleType.SWAT)]
         [Description("SWAT4 serverlist manipulation commands.")]
         [Aliases("s", "srv")]
         [RequireOwner]
@@ -30,7 +30,7 @@ namespace TheGodfather.Modules.SWAT
 
 
             #region COMMAND_SERVERS_ADD
-            [Command("add")]
+            [Command("add"), Module(ModuleType.SWAT)]
             [Description("Add a server to serverlist.")]
             [Aliases("+", "a")]
             [UsageExample("!swat servers add 4u 109.70.149.158:10480")]
@@ -56,7 +56,7 @@ namespace TheGodfather.Modules.SWAT
             #endregion
 
             #region COMMAND_SERVERS_DELETE
-            [Command("delete")]
+            [Command("delete"), Module(ModuleType.SWAT)]
             [Description("Remove a server from serverlist.")]
             [Aliases("-", "del", "d")]
             [UsageExample("!swat servers delete 4u")]
@@ -74,7 +74,7 @@ namespace TheGodfather.Modules.SWAT
             #endregion
 
             #region COMMAND_SERVERS_LIST
-            [Command("list")]
+            [Command("list"), Module(ModuleType.SWAT)]
             [Description("List all registered servers.")]
             [Aliases("ls", "l")]
             [UsageExample("!swat servers list")]

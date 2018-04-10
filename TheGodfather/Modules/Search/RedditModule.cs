@@ -13,7 +13,7 @@ using DSharpPlus.CommandsNext.Attributes;
 
 namespace TheGodfather.Modules.Search
 {
-    [Group("reddit")]
+    [Group("reddit"), Module(ModuleType.Searches)]
     [Description("Reddit commands.")]
     [Aliases("r")]
     [UsageExample("!reddit aww")]
@@ -45,7 +45,7 @@ namespace TheGodfather.Modules.Search
 
 
         #region COMMAND_RSS_REDDIT_SUBSCRIBE
-        [Command("subscribe")]
+        [Command("subscribe"), Module(ModuleType.Searches)]
         [Description("Add new feed for a subreddit.")]
         [Aliases("add", "a", "+", "sub")]
         [UsageExample("!reddit sub aww")]
@@ -67,6 +67,7 @@ namespace TheGodfather.Modules.Search
 
         #region COMMAND_RSS_REDDIT_UNSUBSCRIBE
         [Command("unsubscribe"), Priority(1)]
+        [Module(ModuleType.Searches)]
         [Description("Remove a subreddit feed using subreddit name or subscription ID (use command ``feed list`` to see IDs).")]
         [Aliases("del", "d", "rm", "-", "unsub")]
         [UsageExample("!reddit unsub aww")]

@@ -16,7 +16,7 @@ using DSharpPlus.Entities;
 
 namespace TheGodfather.Modules.Misc
 {
-    [Group("meme")]
+    [Group("meme"), Module(ModuleType.Miscellaneous)]
     [Description("Manipulate guild memes. When invoked without subcommands, returns a meme from this guild's meme list given by name, otherwise returns random one.")]
     [Aliases("memes", "mm")]
     [UsageExample("!meme")]
@@ -69,7 +69,7 @@ namespace TheGodfather.Modules.Misc
 
 
         #region COMMAND_MEME_ADD
-        [Command("add")]
+        [Command("add"), Module(ModuleType.Miscellaneous)]
         [Description("Add a new meme to the list.")]
         [Aliases("+", "new", "a")]
         [UsageExample("!meme add pepe http://i0.kym-cdn.com/photos/images/facebook/000/862/065/0e9.jpg")]
@@ -95,7 +95,7 @@ namespace TheGodfather.Modules.Misc
         #endregion
 
         #region COMMAND_MEME_CLEAR
-        [Command("clear")]
+        [Command("clear"), Module(ModuleType.Miscellaneous)]
         [Description("Deletes all guild memes.")]
         [Aliases("da", "ca", "cl", "clearall")]
         [UsageExample("!memes clear")]
@@ -110,7 +110,7 @@ namespace TheGodfather.Modules.Misc
         #endregion
 
         #region COMMAND_MEME_CREATE
-        [Command("create")]
+        [Command("create"), Module(ModuleType.Miscellaneous)]
         [Description("Creates a new meme from blank template.")]
         [Aliases("maker", "c", "make", "m")]
         [UsageExample("!meme create 1stworld \"Top text\" \"Bottom text\"")]
@@ -130,7 +130,7 @@ namespace TheGodfather.Modules.Misc
         #endregion
 
         #region COMMAND_MEME_DELETE
-        [Command("delete")]
+        [Command("delete"), Module(ModuleType.Miscellaneous)]
         [Description("Deletes a meme from this guild's meme list.")]
         [Aliases("-", "del", "remove", "rm", "d", "rem")]
         [UsageExample("!meme delete pepe")]
@@ -149,7 +149,7 @@ namespace TheGodfather.Modules.Misc
         #endregion
 
         #region COMMAND_MEME_LIST
-        [Command("list")]
+        [Command("list"), Module(ModuleType.Miscellaneous)]
         [Description("List all registered memes for this guild.")]
         [Aliases("ls", "l")]
         [UsageExample("!meme list")]
@@ -168,7 +168,7 @@ namespace TheGodfather.Modules.Misc
         #endregion
 
         #region COMMAND_MEME_TEMPLATES
-        [Command("templates")]
+        [Command("templates"), Module(ModuleType.Miscellaneous)]
         [Description("Lists all available meme templates.")]
         [Aliases("template", "t")]
         [UsageExample("!meme templates")]

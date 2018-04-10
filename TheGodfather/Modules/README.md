@@ -287,6 +287,19 @@
 ```
 ---
 
+## Group: channel
+*Miscellaneous channel control commands. If invoked without subcommands, prints out channel information.*
+
+**Aliases:**
+`channels, c, chn`
+
+
+**Arguments:**
+
+(optional) `[channel]` : *Channel.* (def: `None`)
+
+---
+
 ### channel createcategory
 *Create new channel category.*
 
@@ -3522,15 +3535,21 @@
 ```
 ---
 
-## poll
+## Group: poll
 *Starts a new poll in the current channel. You can provide also the time for the poll to run.*
 
 
-**Overload 1:**
+**Overload 2:**
 
 `[time span]` : *Time for poll to run.*
 
 `[string...]` : *Question.*
+
+**Overload 1:**
+
+`[string]` : *Question.*
+
+`[time span]` : *Time for poll to run.*
 
 **Overload 0:**
 
@@ -3541,6 +3560,20 @@
 ```
 !poll Do you vote for User1 or User2?
 !poll 5m Do you vote for User1 or User2?
+```
+---
+
+### poll stop
+*Stops a running poll.*
+
+**Requires user permissions:**
+`Administrator`
+
+
+**Examples:**
+
+```
+!poll stop
 ```
 ---
 
@@ -4642,6 +4675,19 @@
 ```
 !urbandict blonde
 ```
+---
+
+## Group: user
+*Miscellaneous user control commands. If invoked without subcommands, prints out user information.*
+
+**Aliases:**
+`users, u, usr`
+
+
+**Arguments:**
+
+(optional) `[user]` : *User.* (def: `None`)
+
 ---
 
 ### user addrole

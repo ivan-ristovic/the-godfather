@@ -16,7 +16,7 @@ using DSharpPlus.Entities;
 
 namespace TheGodfather.Modules.Administration
 {
-    [Group("selfassignableroles")]
+    [Group("selfassignableroles"), Module(ModuleType.Administration)]
     [Description("Commands to manipulate self-assignable roles. If invoked without subcommands, lists all self-assignable roles for this guild or adds a new self-assignable role depending of argument given.")]
     [Aliases("sar")]
     [UsageExample("!sar")]
@@ -40,7 +40,7 @@ namespace TheGodfather.Modules.Administration
 
 
         #region COMMAND_SAR_ADD
-        [Command("add")]
+        [Command("add"), Module(ModuleType.Administration)]
         [Description("Add a self-assignable role (or roles) for this guild.")]
         [Aliases("a", "+")]
         [UsageExample("!sar add @Notifications")]
@@ -59,7 +59,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_SAR_CLEAR
-        [Command("clear")]
+        [Command("clear"), Module(ModuleType.Administration)]
         [Description("Delete all self-assignable roles for the current guild.")]
         [Aliases("da", "c", "ca", "cl", "clearall")]
         [UsageExample("!sar clear")]
@@ -78,7 +78,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_SAR_DELETE
-        [Command("delete")]
+        [Command("delete"), Module(ModuleType.Administration)]
         [Description("Remove self-assignable role (or roles).")]
         [Aliases("remove", "del", "-", "d")]
         [UsageExample("!sar delete @Notifications")]
@@ -97,7 +97,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_SAR_LIST
-        [Command("list")]
+        [Command("list"), Module(ModuleType.Administration)]
         [Description("View all self-assignable roles in the current guild.")]
         [Aliases("print", "show", "l", "p")]
         [UsageExample("!sar list")]

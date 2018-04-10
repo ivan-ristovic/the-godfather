@@ -19,7 +19,7 @@ namespace TheGodfather.Modules.Games
 {
     public partial class GamesModule : TheGodfatherBaseModule
     {
-        [Group("tictactoe")]
+        [Group("tictactoe"), Module(ModuleType.Games)]
         [Description("Starts a \"Tic-Tac-Toe\" game. Play a move by writing a number from 1 to 9 corresponding to the field where you wish to play. You can also specify a time window in which player must submit their move.")]
         [Aliases("ttt")]
         [UsageExample("!game tictactoe")]
@@ -76,7 +76,7 @@ namespace TheGodfather.Modules.Games
 
 
             #region COMMAND_TICTACTOE_RULES
-            [Command("rules")]
+            [Command("rules"), Module(ModuleType.Games)]
             [Description("Explain the Tic-Tac-Toe game rules.")]
             [Aliases("help", "h", "ruling", "rule")]
             [UsageExample("!game tictactoe rules")]
@@ -93,7 +93,7 @@ namespace TheGodfather.Modules.Games
             #endregion
 
             #region COMMAND_TICTACTOE_STATS
-            [Command("stats")]
+            [Command("stats"), Module(ModuleType.Games)]
             [Description("Print the leaderboard for this game.")]
             [Aliases("top", "leaderboard")]
             [UsageExample("!game tictactoe stats")]

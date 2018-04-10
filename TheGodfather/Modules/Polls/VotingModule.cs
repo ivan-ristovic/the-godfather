@@ -13,7 +13,7 @@ using DSharpPlus.CommandsNext.Attributes;
 
 namespace TheGodfather.Modules.Polls
 {
-    [Group("vote")]
+    [Group("vote"), Module(ModuleType.Polls)]
     [Description("Commands for voting in running polls. If invoked without subcommands, registers a vote in the current poll to the option you entered.")]
     [Aliases("votefor", "vf")]
     [UsageExample("!vote 1")]
@@ -44,7 +44,7 @@ namespace TheGodfather.Modules.Polls
 
 
         #region COMMAND_CANCEL
-        [Command("cancel")]
+        [Command("cancel"), Module(ModuleType.Polls)]
         [Description("Vote for an option in the current running poll.")]
         [Aliases("c", "reset")]
         [UsageExample("!vote cancel")]

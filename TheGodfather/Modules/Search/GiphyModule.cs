@@ -14,7 +14,7 @@ using DSharpPlus.Entities;
 
 namespace TheGodfather.Modules.Search
 {
-    [Group("gif")]
+    [Group("gif"), Module(ModuleType.Searches)]
     [Description("GIPHY commands. If invoked without a subcommand, searches GIPHY with given query.")]
     [Aliases("giphy")]
     [UsageExample("!gif wat")]
@@ -48,7 +48,7 @@ namespace TheGodfather.Modules.Search
 
 
         #region COMMAND_GIPHY_RANDOM
-        [Command("random")]
+        [Command("random"), Module(ModuleType.Searches)]
         [Description("Return a random GIF.")]
         [Aliases("r", "rand", "rnd")]
         [UsageExample("!gif random")]
@@ -62,7 +62,7 @@ namespace TheGodfather.Modules.Search
         #endregion
 
         #region COMMAND_GIPHY_TRENDING
-        [Command("trending")]
+        [Command("trending"), Module(ModuleType.Searches)]
         [Description("Return an amount of trending GIFs.")]
         [Aliases("t", "tr", "trend")]
         [UsageExample("!gif trending 3")]

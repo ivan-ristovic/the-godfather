@@ -1,0 +1,12 @@
+# Command modules:
+* [Uncategorized](modules\Uncategorized)
+* [Administration](modules\Administration)
+* [Gambling](modules\Gambling)
+* [Games](modules\Games)
+* [Miscellaneous](modules\Miscellaneous)
+* [Music](modules\Music)
+* [Owner](modules\Owner)
+* [Polls](modules\Polls)
+* [Reactions](modules\Reactions)
+* [Searches](modules\Searches)
+* [SWAT](modules\SWAT)

@@ -13,7 +13,7 @@ using DSharpPlus.Interactivity;
 
 namespace TheGodfather.Modules.Search
 {
-    [Group("weather")]
+    [Group("weather"), Module(ModuleType.Searches)]
     [Description("Weather search commands. If invoked without subcommands, returns weather information for given query.")]
     [Aliases("w")]
     [UsageExample("!weather london")]
@@ -44,6 +44,7 @@ namespace TheGodfather.Modules.Search
 
         #region COMMAND_WEATHER_FORECAST
         [Command("forecast"), Priority(1)]
+        [Module(ModuleType.Searches)]
         [Description("Get weather forecast for the following days (def: 7).")]
         [Aliases("f")]
         [UsageExample("!weather forecast london")]

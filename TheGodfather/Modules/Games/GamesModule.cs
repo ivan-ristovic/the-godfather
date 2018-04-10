@@ -17,7 +17,7 @@ using DSharpPlus.Interactivity;
 
 namespace TheGodfather.Modules.Games
 {
-    [Group("game")]
+    [Group("game"), Module(ModuleType.Games)]
     [Description("Starts a game for you to play!")]
     [Aliases("games", "gm")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
@@ -29,7 +29,7 @@ namespace TheGodfather.Modules.Games
         
 
         #region COMMAND_GAME_LEADERBOARD
-        [Command("leaderboard")]
+        [Command("leaderboard"), Module(ModuleType.Games)]
         [Description("View the global game leaderboard.")]
         [Aliases("globalstats")]
         [UsageExample("!game leaderboard")]
@@ -43,7 +43,7 @@ namespace TheGodfather.Modules.Games
         #endregion
 
         #region COMMAND_GAME_RPS
-        [Command("rps")]
+        [Command("rps"), Module(ModuleType.Games)]
         [Description("Rock, paper, scissors game against TheGodfather")]
         [Aliases("rockpaperscissors")]
         [UsageExample("!game rps scissors")]
@@ -81,7 +81,7 @@ namespace TheGodfather.Modules.Games
         #endregion
 
         #region COMMAND_GAME_STATS
-        [Command("stats")]
+        [Command("stats"), Module(ModuleType.Games)]
         [Description("Print game stats for given user.")]
         [Aliases("s", "st")]
         [UsageExample("!game stats")]
@@ -100,7 +100,7 @@ namespace TheGodfather.Modules.Games
         #endregion
 
         #region COMMAND_GAME_TYPING
-        [Command("typingrace")]
+        [Command("typingrace"), Module(ModuleType.Games)]
         [Description("Typing race.")]
         [Aliases("type", "typerace", "typing")]
         [UsageExample("!game typingrace")]

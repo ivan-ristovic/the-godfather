@@ -22,7 +22,7 @@ namespace TheGodfather.Modules.Owner
 {
     public partial class OwnerModule
     {
-        [Group("blockedusers")]
+        [Group("blockedusers"), Module(ModuleType.Owner)]
         [Description("Manipulate blocked users. Bot will not allow blocked users to invoke commands and will not react (either with text or emoji) to their messages.")]
         [Aliases("bu", "blockedu", "blockuser", "busers", "buser", "busr")]
         [ListeningCheck]
@@ -56,6 +56,7 @@ namespace TheGodfather.Modules.Owner
 
             #region COMMAND_BLOCKEDUSERS_ADD
             [Command("add"), Priority(2)]
+            [Module(ModuleType.Owner)]
             [Description("Add users to blocked users list.")]
             [Aliases("+", "a")]
             [UsageExample("!owner blockedusers add @Someone")]
@@ -113,7 +114,7 @@ namespace TheGodfather.Modules.Owner
             #endregion
 
             #region COMMAND_BLOCKEDUSERS_DELETE
-            [Command("delete")]
+            [Command("delete"), Module(ModuleType.Owner)]
             [Description("Remove users from blocked users list..")]
             [Aliases("-", "remove", "rm", "del")]
             [UsageExample("!owner blockedusers remove @Someone")]
@@ -155,7 +156,7 @@ namespace TheGodfather.Modules.Owner
             #endregion
 
             #region COMMAND_BLOCKEDUSERS_LIST
-            [Command("list")]
+            [Command("list"), Module(ModuleType.Owner)]
             [Description("List all blocked users.")]
             [Aliases("ls")]
             [UsageExample("!owner blockedusers list")]

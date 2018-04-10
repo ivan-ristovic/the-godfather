@@ -19,7 +19,7 @@ using Imgur.API.Models.Impl;
 
 namespace TheGodfather.Modules.Search
 {
-    [Group("imgur")]
+    [Group("imgur"), Module(ModuleType.Searches)]
     [Description("Search imgur. Invoking without subcommand retrieves top ranked images from given subreddit.")]
     [Aliases("img", "im", "i")]
     [UsageExample("!imgur aww")]
@@ -62,6 +62,7 @@ namespace TheGodfather.Modules.Search
 
         #region COMMAND_IMGUR_LATEST
         [Command("latest"), Priority(1)]
+        [Module(ModuleType.Searches)]
         [Description("Return latest images from given subreddit.")]
         [Aliases("l", "new", "newest")]
         [UsageExample("!imgur latest 5 aww")]
@@ -95,6 +96,7 @@ namespace TheGodfather.Modules.Search
 
         #region COMMAND_IMGUR_TOP
         [Command("top"), Priority(3)]
+        [Module(ModuleType.Searches)]
         [Description("Return amount of top rated images in the given subreddit for given timespan.")]
         [Aliases("t")]
         [UsageExample("!imgur top day 10 aww")]

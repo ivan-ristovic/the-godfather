@@ -14,7 +14,7 @@ using DSharpPlus.Interactivity;
 
 namespace TheGodfather.Modules.Search
 {
-    [Group("youtube")]
+    [Group("youtube"), Module(ModuleType.Searches)]
     [Description("Youtube search commands. If invoked without subcommands, searches YouTube for given query.")]
     [Aliases("y", "yt", "ytube")]
     [UsageExample("!youtube never gonna give you up")]
@@ -33,7 +33,7 @@ namespace TheGodfather.Modules.Search
 
 
         #region COMMAND_YOUTUBE_SEARCH
-        [Command("search")]
+        [Command("search"), Module(ModuleType.Searches)]
         [Description("Advanced youtube search.")]
         [Aliases("s")]
         [UsageExample("!youtube search 5 rick astley")]
@@ -44,7 +44,7 @@ namespace TheGodfather.Modules.Search
         #endregion
 
         #region COMMAND_YOUTUBE_SEARCHVIDEO
-        [Command("searchvideo")]
+        [Command("searchvideo"), Module(ModuleType.Searches)]
         [Description("Advanced youtube search for videos only.")]
         [Aliases("sv", "searchv")]
         [UsageExample("!youtube searchvideo 5 rick astley")]
@@ -54,7 +54,7 @@ namespace TheGodfather.Modules.Search
         #endregion
 
         #region COMMAND_YOUTUBE_SEARCHCHANNEL
-        [Command("searchchannel")]
+        [Command("searchchannel"), Module(ModuleType.Searches)]
         [Description("Advanced youtube search for channels only.")]
         [Aliases("sc", "searchc")]
         [UsageExample("!youtube searchchannel 5 rick astley")]
@@ -64,7 +64,7 @@ namespace TheGodfather.Modules.Search
         #endregion
 
         #region COMMAND_YOUTUBE_SEARCHPLAYLIST
-        [Command("searchp")]
+        [Command("searchp"), Module(ModuleType.Searches)]
         [Description("Advanced youtube search for playlists only.")]
         [Aliases("sp", "searchplaylist")]
         [UsageExample("!youtube searchplaylist 5 rick astley")]
@@ -74,7 +74,7 @@ namespace TheGodfather.Modules.Search
         #endregion
 
         #region COMMAND_YOUTUBE_SUBSCRIBE
-        [Command("subscribe")]
+        [Command("subscribe"), Module(ModuleType.Searches)]
         [Description("Add a new subscription for a YouTube channel.")]
         [Aliases("add", "a", "+", "sub")]
         [UsageExample("!youtube subscribe https://www.youtube.com/user/RickAstleyVEVO")]
@@ -102,7 +102,7 @@ namespace TheGodfather.Modules.Search
         #endregion
 
         #region COMMAND_YOUTUBE_UNSUBSCRIBE
-        [Command("unsubscribe")]
+        [Command("unsubscribe"), Module(ModuleType.Searches)]
         [Description("Remove a YouTube channel subscription.")]
         [Aliases("del", "d", "rm", "-", "unsub")]
         [UsageExample("!youtube unsubscribe https://www.youtube.com/user/RickAstleyVEVO")]

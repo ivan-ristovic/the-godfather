@@ -19,8 +19,8 @@ using DSharpPlus.Net.Models;
 
 namespace TheGodfather.Modules.Administration
 {
-    [Group("guild")]
-    [Description("Miscellaneous guild control commands.")]
+    [Group("guild"), Module(ModuleType.Administration)]
+    [Description("Miscellaneous guild control commands. If invoked without subcommands, prints guild information.")]
     [Aliases("server", "g")]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
     [ListeningCheck]
@@ -30,8 +30,13 @@ namespace TheGodfather.Modules.Administration
         public GuildModule(DBService db) : base(db: db) { }
 
 
+        [GroupCommand]
+        public async Task ExecuteGroupAsync(CommandContext ctx)
+            => await GuildInfoAsync(ctx).ConfigureAwait(false);
+
+
         #region COMMAND_GUILD_GETBANS
-        [Command("bans")]
+        [Command("bans"), Module(ModuleType.Administration)]
         [Description("Get guild ban list.")]
         [Aliases("banlist", "viewbanlist", "getbanlist", "getbans", "viewbans")]
         [UsageExample("!guild banlist")]
@@ -51,7 +56,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_GUILD_GETLOGS
-        [Command("log")]
+        [Command("log"), Module(ModuleType.Administration)]
         [Description("Get audit logs.")]
         [Aliases("auditlog", "viewlog", "getlog", "getlogs", "logs")]
         [UsageExample("!guild logs")]
@@ -72,7 +77,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_GUILD_INFO
-        [Command("info")]
+        [Command("info"), Module(ModuleType.Administration)]
         [Description("Get guild information.")]
         [UsageExample("!guild info")]
         [Aliases("i", "information")]
@@ -94,7 +99,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_GUILD_LISTMEMBERS
-        [Command("listmembers")]
+        [Command("listmembers"), Module(ModuleType.Administration)]
         [Description("Get guild member list.")]
         [UsageExample("!guild memberlist")]
         [Aliases("memberlist", "lm", "members")]
@@ -113,7 +118,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_GUILD_PRUNE
-        [Command("prune")]
+        [Command("prune"), Module(ModuleType.Administration)]
         [Description("Kick guild members who weren't active in given amount of days (1-7).")]
         [Aliases("p", "clean")]
         [UsageExample("!guild prune 5 Kicking inactives..")]
@@ -145,7 +150,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_GUILD_RENAME
-        [Command("rename")]
+        [Command("rename"), Module(ModuleType.Administration)]
         [Description("Rename guild.")]
         [Aliases("r", "name", "setname")]
         [UsageExample("!guild rename New guild name")]
@@ -173,7 +178,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_GUILD_SETICON
-        [Command("seticon")]
+        [Command("seticon"), Module(ModuleType.Administration)]
         [Description("Change icon of the guild.")]
         [Aliases("icon", "si")]
         [UsageExample("!guild seticon http://imgur.com/someimage.png")]

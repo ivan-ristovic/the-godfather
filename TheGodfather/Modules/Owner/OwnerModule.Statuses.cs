@@ -16,7 +16,7 @@ namespace TheGodfather.Modules.Owner
 {
     public partial class OwnerModule
     {
-        [Group("statuses")]
+        [Group("statuses"), Module(ModuleType.Owner)]
         [Description("Bot status manipulation. If invoked without command, either lists or adds status depending if argument is given.")]
         [Aliases("status", "botstatus", "activity", "activities")]
         [ListeningCheck]
@@ -38,7 +38,7 @@ namespace TheGodfather.Modules.Owner
 
 
             #region COMMAND_STATUS_ADD
-            [Command("add")]
+            [Command("add"), Module(ModuleType.Owner)]
             [Description("Add a status to running status queue.")]
             [Aliases("+", "a")]
             [UsageExample("!owner status add Playing CS:GO")]
@@ -61,7 +61,7 @@ namespace TheGodfather.Modules.Owner
             #endregion
 
             #region COMMAND_STATUS_DELETE
-            [Command("delete")]
+            [Command("delete"), Module(ModuleType.Owner)]
             [Description("Remove status from running queue.")]
             [Aliases("-", "remove", "rm", "del")]
             [UsageExample("!owner status delete 1")]
@@ -76,7 +76,7 @@ namespace TheGodfather.Modules.Owner
             #endregion
 
             #region COMMAND_STATUS_LIST
-            [Command("list")]
+            [Command("list"), Module(ModuleType.Owner)]
             [Description("List all bot statuses.")]
             [Aliases("ls")]
             [UsageExample("!owner status list")]
@@ -96,7 +96,7 @@ namespace TheGodfather.Modules.Owner
             #endregion
 
             #region COMMAND_STATUS_SETROTATION
-            [Command("setrotation")]
+            [Command("setrotation"), Module(ModuleType.Owner)]
             [Description("Set automatic rotation of bot statuses.")]
             [Aliases("sr", "setr")]
             [UsageExample("!owner status setrotation")]
@@ -112,6 +112,7 @@ namespace TheGodfather.Modules.Owner
 
             #region COMMAND_STATUS_SETSTATUS
             [Command("set"), Priority(1)]
+            [Module(ModuleType.Owner)]
             [Description("Set status to given string or status with given index in database. This sets rotation to false.")]
             [Aliases("s")]
             [UsageExample("!owner status set Playing with fire")]

@@ -20,7 +20,7 @@ namespace TheGodfather.Modules.Games
 {
     public partial class GamesModule
     {
-        [Group("numberrace")]
+        [Group("numberrace"), Module(ModuleType.Games)]
         [Description("Number racing game commands.")]
         [Aliases("nr", "n", "nunchi", "numbers", "numbersrace")]
         [UsageExample("!game numberrace")]
@@ -83,7 +83,7 @@ namespace TheGodfather.Modules.Games
 
 
             #region COMMAND_NUMBERRACE_JOIN
-            [Command("join")]
+            [Command("join"), Module(ModuleType.Games)]
             [Description("Join an existing number race game.")]
             [Aliases("+", "compete", "j", "enter")]
             [UsageExample("!game numberrace join")]
@@ -108,7 +108,7 @@ namespace TheGodfather.Modules.Games
             #endregion
 
             #region COMMAND_NUMBERRACE_RULES
-            [Command("rules")]
+            [Command("rules"), Module(ModuleType.Games)]
             [Description("Explain the number race rules.")]
             [Aliases("help", "h", "ruling", "rule")]
             [UsageExample("!game numberrace rules")]
@@ -125,7 +125,7 @@ namespace TheGodfather.Modules.Games
             #endregion
 
             #region COMMAND_NUMBERRACE_STATS
-            [Command("stats")]
+            [Command("stats"), Module(ModuleType.Games)]
             [Description("Print the leaderboard for this game.")]
             [Aliases("top", "leaderboard")]
             [UsageExample("!game numberrace stats")]

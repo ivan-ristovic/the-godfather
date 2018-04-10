@@ -17,7 +17,7 @@ using DSharpPlus.Exceptions;
 
 namespace TheGodfather.Modules.Administration
 {
-    [Group("message")]
+    [Group("message"), Module(ModuleType.Administration)]
     [Description("Commands for manipulating messages.")]
     [Aliases("m", "msg", "msgs", "messages")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
@@ -25,7 +25,7 @@ namespace TheGodfather.Modules.Administration
     public class MessageModule : TheGodfatherBaseModule
     {
         #region COMMAND_MESSAGES_ATTACHMENTS
-        [Command("attachments")]
+        [Command("attachments"), Module(ModuleType.Administration)]
         [Description("View all message attachments. If the message is not provided, uses the last sent message before command invocation.")]
         [Aliases("a", "files", "la")]
         [UsageExample("!message attachments")]
@@ -55,7 +55,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_MESSAGES_DELETE
-        [Command("delete")]
+        [Command("delete"), Module(ModuleType.Administration)]
         [Description("Deletes the specified amount of most-recent messages from the channel.")]
         [Aliases("-", "prune", "del", "d")]
         [UsageExample("!messages delete 10")]
@@ -81,6 +81,7 @@ namespace TheGodfather.Modules.Administration
 
         #region COMMAND_MESSAGES_DELETE_FROM
         [Command("deletefrom"), Priority(1)]
+        [Module(ModuleType.Administration)]
         [Description("Deletes given amount of most-recent messages from given user.")]
         [Aliases("-user", "-u", "deluser", "du", "dfu", "delfrom")]
         [UsageExample("!messages deletefrom @Someone 10 Cleaning spam")]
@@ -116,7 +117,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_MESSAGES_DELETE_REACTIONS
-        [Command("deletereactions")]
+        [Command("deletereactions"), Module(ModuleType.Administration)]
         [Description("Deletes all reactions from the given message.")]
         [Aliases("-reactions", "-r", "delreactions", "dr")]
         [UsageExample("!messages deletereactions 408226948855234561")]
@@ -145,6 +146,7 @@ namespace TheGodfather.Modules.Administration
 
         #region COMMAND_MESSAGES_DELETE_REGEX
         [Command("deleteregex"), Priority(1)]
+        [Module(ModuleType.Administration)]
         [Description("Deletes given amount of most-recent messages that match a given regular expression.")]
         [Aliases("-regex", "-rx", "delregex", "drx")]
         [UsageExample("!messages deletefrom s+p+a+m+ 10 Cleaning spam")]
@@ -187,7 +189,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_MESSAGES_LISTPINNED
-        [Command("listpinned")]
+        [Command("listpinned"), Module(ModuleType.Administration)]
         [Description("List pinned messages in this channel.")]
         [Aliases("lp", "listpins", "listpin", "pinned")]
         [UsageExample("!messages listpinned")]
@@ -213,7 +215,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_MESSAGES_MODIFY
-        [Command("modify")]
+        [Command("modify"), Module(ModuleType.Administration)]
         [Description("Modify the given message.")]
         [Aliases("edit", "mod", "e", "m")]
         [UsageExample("!messages modify 408226948855234561 modified text")]
@@ -233,7 +235,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_MESSAGES_PIN
-        [Command("pin")]
+        [Command("pin"), Module(ModuleType.Administration)]
         [Description("Pins the message given by ID. If the message is not provided, pins the last sent message before command invocation.")]
         [Aliases("p")]
         [UsageExample("!messages pin")]
@@ -265,7 +267,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_MESSAGES_UNPIN
-        [Command("unpin")]
+        [Command("unpin"), Module(ModuleType.Administration)]
         [Description("Unpins the message at given index (starting from 1). If the index is not given, unpins the most recent one.")]
         [Aliases("up")]
         [UsageExample("!messages unpin")]
@@ -288,7 +290,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_MESSAGES_UNPINALL
-        [Command("unpinall")]
+        [Command("unpinall"), Module(ModuleType.Administration)]
         [Description("Unpins all pinned messages in this channel.")]
         [Aliases("upa")]
         [UsageExample("!messages unpinall")]

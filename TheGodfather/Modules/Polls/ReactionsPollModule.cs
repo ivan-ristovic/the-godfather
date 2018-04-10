@@ -20,6 +20,7 @@ namespace TheGodfather.Modules.Polls
     {
         #region COMMAND_REACTIONSPOLL
         [Command("reactionspoll"), Priority(1)]
+        [Module(ModuleType.Polls)]
         [Description("Starts a poll with reactions in the channel.")]
         [Aliases("rpoll", "pollr", "voter")]
         [UsageExample("!rpoll :smile: :joy:")]

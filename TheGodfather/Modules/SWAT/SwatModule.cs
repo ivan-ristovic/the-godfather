@@ -18,7 +18,7 @@ using DSharpPlus.Entities;
 
 namespace TheGodfather.Modules.SWAT
 {
-    [Group("swat")]
+    [Group("swat"), Module(ModuleType.SWAT)]
     [Description("SWAT4 related commands.")]
     [Aliases("s4", "swat4")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
@@ -30,7 +30,7 @@ namespace TheGodfather.Modules.SWAT
 
 
         #region COMMAND_IP
-        [Command("ip")]
+        [Command("ip"), Module(ModuleType.SWAT)]
         [Description("Return IP of the registered server by name.")]
         [Aliases("getip")]
         [UsageExample("!s4 ip wm")]
@@ -51,7 +51,7 @@ namespace TheGodfather.Modules.SWAT
         #endregion
 
         #region COMMAND_QUERY
-        [Command("query")]
+        [Command("query"), Module(ModuleType.SWAT)]
         [Description("Return server information.")]
         [Aliases("q", "info", "i")]
         [UsageExample("!s4 q 109.70.149.158")]
@@ -81,7 +81,7 @@ namespace TheGodfather.Modules.SWAT
         #endregion
 
         #region COMMAND_SETTIMEOUT
-        [Command("settimeout")]
+        [Command("settimeout"), Module(ModuleType.SWAT)]
         [Description("Set checking timeout.")]
         [UsageExample("!swat settimeout 500")]
         [RequireOwner]
@@ -97,7 +97,7 @@ namespace TheGodfather.Modules.SWAT
         #endregion
 
         #region COMMAND_SERVERLIST
-        [Command("serverlist")]
+        [Command("serverlist"), Module(ModuleType.SWAT)]
         [Description("Print the serverlist with current player numbers.")]
         [UsageExample("!swat serverlist")]
         public async Task ServerlistAsync(CommandContext ctx)
@@ -127,7 +127,7 @@ namespace TheGodfather.Modules.SWAT
         #endregion
 
         #region COMMAND_STARTCHECK
-        [Command("startcheck")]
+        [Command("startcheck"), Module(ModuleType.SWAT)]
         [Description("Start listening for space on a given server and notifies you when there is space.")]
         [Aliases("checkspace", "spacecheck")]
         [UsageExample("!s4 startcheck 109.70.149.158")]
@@ -179,7 +179,7 @@ namespace TheGodfather.Modules.SWAT
         #endregion
 
         #region COMMAND_STOPCHECK
-        [Command("stopcheck")]
+        [Command("stopcheck"), Module(ModuleType.SWAT)]
         [Description("Stops space checking.")]
         [Aliases("checkstop")]
         [UsageExample("!swat stopcheck")]

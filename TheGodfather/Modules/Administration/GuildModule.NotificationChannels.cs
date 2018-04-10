@@ -16,7 +16,7 @@ namespace TheGodfather.Modules.Administration
     public partial class GuildModule
     {
         #region COMMAND_GUILD_GETWELCOMECHANNEL
-        [Command("getwelcomechannel")]
+        [Command("getwelcomechannel"), Module(ModuleType.Administration)]
         [Description("Get current welcome message channel for this guild.")]
         [Aliases("getwelcomec", "getwc", "welcomechannel", "wc")]
         [UsageExample("!guild getwelcomechannel")]
@@ -38,7 +38,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_GUILD_GETLEAVECHANNEL
-        [Command("getleavechannel")]
+        [Command("getleavechannel"), Module(ModuleType.Administration)]
         [Description("Get current leave message channel for this guild.")]
         [Aliases("getleavec", "getlc", "leavechannel", "lc")]
         [UsageExample("!guild getleavechannel")]
@@ -60,7 +60,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_GUILD_GETWELCOMEMESSAGE
-        [Command("getwelcomemessage")]
+        [Command("getwelcomemessage"), Module(ModuleType.Administration)]
         [Description("Get current welcome message for this guild.")]
         [Aliases("getwelcomem", "getwm", "welcomemessage", "wm", "welcomemsg", "wmsg")]
         [UsageExample("!guild getwelcomemessage")]
@@ -74,7 +74,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_GUILD_GETLEAVEMESSAGE
-        [Command("getleavemessage")]
+        [Command("getleavemessage"), Module(ModuleType.Administration)]
         [Description("Get current leave message for this guild.")]
         [Aliases("getleavem", "getlm", "leavemessage", "lm", "leavemsg", "lmsg")]
         [UsageExample("!guild getwelcomemessage")]
@@ -88,7 +88,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_GUILD_SETWELCOMECHANNEL
-        [Command("setwelcomechannel")]
+        [Command("setwelcomechannel"), Module(ModuleType.Administration)]
         [Description("Set welcome message channel for this guild. If the channel isn't given, uses the current one.")]
         [Aliases("setwc", "setwelcomec", "setwelcome")]
         [UsageExample("!guild setwelcomechannel")]
@@ -111,7 +111,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_GUILD_SETLEAVECHANNEL
-        [Command("setleavechannel")]
+        [Command("setleavechannel"), Module(ModuleType.Administration)]
         [Description("Set leave message channel for this guild. If the channel isn't given, uses the current one.")]
         [Aliases("leavec", "setlc", "setleave")]
         [UsageExample("!guild setleavechannel")]
@@ -134,7 +134,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_GUILD_SETWELCOMEMESSAGE
-        [Command("setwelcomemessage")]
+        [Command("setwelcomemessage"), Module(ModuleType.Administration)]
         [Description("Set welcome message for this guild. Any occurances of ``%user%`` inside the string will be replaced with newly joined user mention. Invoking command without a message will reset the current welcome message to a default one.")]
         [Aliases("setwm", "setwelcomem", "setwelcomemsg", "setwmsg")]
         [UsageExample("!guild setwelcomemessage")]
@@ -162,7 +162,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_GUILD_SETLEAVEMESSAGE
-        [Command("setleavemessage")]
+        [Command("setleavemessage"), Module(ModuleType.Administration)]
         [Description("Set leave message for this guild. Any occurances of ``%user%`` inside the string will be replaced with newly joined user mention. Invoking command without a message will reset the current leave message to a default one.")]
         [Aliases("setlm", "setleavem", "setleavemsg", "setlmsg")]
         [UsageExample("!guild setleavemessage")]
@@ -190,7 +190,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_GUILD_DELETEWELCOMECHANNEL
-        [Command("deletewelcomechannel")]
+        [Command("deletewelcomechannel"), Module(ModuleType.Administration)]
         [Description("Remove welcome message channel for this guild.")]
         [Aliases("delwelcomec", "delwc", "delwelcome", "dwc", "deletewc")]
         [UsageExample("!guild deletewelcomechannel")]
@@ -205,7 +205,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_GUILD_DELETELEAVECHANNEL
-        [Command("deleteleavechannel")]
+        [Command("deleteleavechannel"), Module(ModuleType.Administration)]
         [Description("Remove leave message channel for this guild.")]
         [Aliases("delleavec", "dellc", "delleave", "dlc")]
         [UsageExample("!guild deletewelcomechannel")]
@@ -220,7 +220,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_GUILD_DELETEWELCOMEMESSAGE
-        [Command("deletewelcomemessage")]
+        [Command("deletewelcomemessage"), Module(ModuleType.Administration)]
         [Description("Remove welcome message for this guild.")]
         [Aliases("delwelcomem", "delwm", "delwelcomemsg", "dwm", "deletewm", "dwmsg")]
         [UsageExample("!guild deletewelcomemessage")]
@@ -235,7 +235,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_GUILD_DELETEWELCOMEMESSAGE
-        [Command("deleteleavemessage")]
+        [Command("deleteleavemessage"), Module(ModuleType.Administration)]
         [Description("Remove leave message for this guild.")]
         [Aliases("delleavem", "dellm", "delleavemsg", "dlm", "deletelm", "dwlsg")]
         [UsageExample("!guild deleteleavemessage")]

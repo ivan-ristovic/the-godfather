@@ -21,7 +21,7 @@ namespace TheGodfather.Modules.Games
 {
     public partial class GamesModule
     {
-        [Group("animalrace")]
+        [Group("animalrace"), Module(ModuleType.Games)]
         [Description("Start a new animal race!")]
         [Aliases("r", "race", "ar")]
         [UsageExample("!game animalrace")]
@@ -71,7 +71,7 @@ namespace TheGodfather.Modules.Games
             
 
             #region COMMAND_ANIMALRACE_JOIN
-            [Command("join")]
+            [Command("join"), Module(ModuleType.Games)]
             [Description("Join an existing animal race game.")]
             [Aliases("+", "compete", "enter", "j")]
             [UsageExample("!game animalrace join")]
@@ -96,7 +96,7 @@ namespace TheGodfather.Modules.Games
             #endregion
 
             #region COMMAND_ANIMALRACE_STATS
-            [Command("stats")]
+            [Command("stats"), Module(ModuleType.Games)]
             [Description("Print the leaderboard for this game.")]
             [Aliases("top", "leaderboard")]
             [UsageExample("!game animalrace stats")]

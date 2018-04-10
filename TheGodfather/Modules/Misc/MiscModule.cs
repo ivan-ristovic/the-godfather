@@ -31,7 +31,7 @@ namespace TheGodfather.Modules.Misc
 
 
         #region COMMAND_8BALL
-        [Command("8ball")]
+        [Command("8ball"), Module(ModuleType.Miscellaneous)]
         [Description("An almighty ball which knows the answer to any question you ask. Alright, it's random answer, so what?")]
         [Aliases("8b")]
         [UsageExample("!8ball Am I gay?")]
@@ -47,7 +47,7 @@ namespace TheGodfather.Modules.Misc
         #endregion
 
         #region COMMAND_COINFLIP
-        [Command("coinflip")]
+        [Command("coinflip"), Module(ModuleType.Miscellaneous)]
         [Description("Flip a coin.")]
         [Aliases("coin", "flip")]
         [UsageExample("!coinflip")]
@@ -63,7 +63,7 @@ namespace TheGodfather.Modules.Misc
         #endregion
 
         #region COMMAND_DICE
-        [Command("dice")]
+        [Command("dice"), Module(ModuleType.Miscellaneous)]
         [Description("Roll a dice.")]
         [Aliases("die", "roll")]
         [UsageExample("!dice")]
@@ -75,7 +75,7 @@ namespace TheGodfather.Modules.Misc
         #endregion
 
         #region COMMAND_GIVEME
-        [Command("giveme")]
+        [Command("giveme"), Module(ModuleType.Miscellaneous)]
         [Description("Grants you a role from this guild's self-assignable roles list.")]
         [Aliases("giverole", "gimme", "grantme")]
         [UsageExample("!giveme @Announcements")]
@@ -94,7 +94,7 @@ namespace TheGodfather.Modules.Misc
         #endregion
 
         #region COMMAND_INVITE
-        [Command("invite")]
+        [Command("invite"), Module(ModuleType.Miscellaneous)]
         [Description("Get an instant invite link for the current guild.")]
         [Aliases("getinvite")]
         [UsageExample("!invite")]
@@ -118,7 +118,7 @@ namespace TheGodfather.Modules.Misc
         #endregion
 
         #region COMMAND_LEAVE
-        [Command("leave")]
+        [Command("leave"), Module(ModuleType.Miscellaneous)]
         [Description("Makes Godfather leave the guild.")]
         [UsageExample("!leave")]
         [RequireUserPermissions(Permissions.Administrator)]
@@ -137,7 +137,7 @@ namespace TheGodfather.Modules.Misc
         #endregion
 
         #region COMMAND_LEET
-        [Command("leet")]
+        [Command("leet"), Module(ModuleType.Miscellaneous)]
         [Description("Wr1t3s m3ss@g3 1n 1337sp34k.")]
         [Aliases("l33t")]
         [UsageExample("!leet Some sentence")]
@@ -170,7 +170,7 @@ namespace TheGodfather.Modules.Misc
         #endregion
 
         #region COMMAND_NEWS
-        [Command("news")]
+        [Command("news"), Module(ModuleType.Miscellaneous)]
         [Description("Get newest world news.")]
         [Aliases("worldnews")]
         [UsageExample("!news")]
@@ -185,7 +185,7 @@ namespace TheGodfather.Modules.Misc
         #endregion
 
         #region COMMAND_PENIS
-        [Command("penis")]
+        [Command("penis"), Module(ModuleType.Miscellaneous)]
         [Description("An accurate measurement.")]
         [Aliases("size", "length", "manhood", "dick")]
         [UsageExample("!penis @Someone")]
@@ -209,7 +209,7 @@ namespace TheGodfather.Modules.Misc
         #endregion
 
         #region COMMAND_PENISCOMPARE
-        [Command("peniscompare")]
+        [Command("peniscompare"), Module(ModuleType.Miscellaneous)]
         [Description("Comparison of the results given by ``penis`` command.")]
         [Aliases("sizecompare", "comparesize", "comparepenis", "cmppenis", "peniscmp", "comppenis")]
         [UsageExample("!peniscompare @Someone")]
@@ -236,7 +236,7 @@ namespace TheGodfather.Modules.Misc
         #endregion
 
         #region COMMAND_PING
-        [Command("ping")]
+        [Command("ping"), Module(ModuleType.Miscellaneous)]
         [Description("Ping the bot.")]
         [UsageExample("!ping")]
         public async Task PingAsync(CommandContext ctx)
@@ -247,7 +247,7 @@ namespace TheGodfather.Modules.Misc
         #endregion
 
         #region COMMAND_PREFIX
-        [Command("prefix")]
+        [Command("prefix"), Module(ModuleType.Miscellaneous)]
         [Description("Get current guild prefix, or change it.")]
         [Aliases("setprefix", "pref", "setpref")]
         [UsageExample("!prefix")]
@@ -286,7 +286,7 @@ namespace TheGodfather.Modules.Misc
         #endregion
 
         #region COMMAND_RATE
-        [Command("rate")]
+        [Command("rate"), Module(ModuleType.Miscellaneous)]
         [Description("Gives a rating chart for the user. If the user is not provided, rates sender.")]
         [Aliases("score", "graph")]
         [UsageExample("!rate @Someone")]
@@ -329,6 +329,7 @@ namespace TheGodfather.Modules.Misc
 
         #region COMMAND_REMIND
         [Command("remind"), Priority(2)]
+        [Module(ModuleType.Miscellaneous)]
         [Description("Resend a message after some time.")]
         [UsageExample("!remind 1h Drink water!")]
         [RequireUserPermissions(Permissions.Administrator)]
@@ -372,7 +373,7 @@ namespace TheGodfather.Modules.Misc
         #endregion
 
         #region COMMAND_REPORT
-        [Command("report")]
+        [Command("report"), Module(ModuleType.Miscellaneous)]
         [Description("Send a report message to owner about a bug (please don't abuse... please).")]
         [UsageExample("!report Your bot sucks!")]
         public async Task SendErrorReportAsync(CommandContext ctx,
@@ -403,7 +404,7 @@ namespace TheGodfather.Modules.Misc
         #endregion
 
         #region COMMAND_SAY
-        [Command("say")]
+        [Command("say"), Module(ModuleType.Miscellaneous)]
         [Description("Echo echo echo.")]
         [Aliases("repeat")]
         [UsageExample("!say I am gay.")]
@@ -422,7 +423,7 @@ namespace TheGodfather.Modules.Misc
         #endregion
 
         #region COMMAND_TTS
-        [Command("tts")]
+        [Command("tts"), Module(ModuleType.Miscellaneous)]
         [Description("Sends a tts message.")]
         [UsageExample("!tts I am gay.")]
         public async Task TTSAsync(CommandContext ctx,
@@ -440,7 +441,7 @@ namespace TheGodfather.Modules.Misc
         #endregion
 
         #region COMMAND_ZUGIFY
-        [Command("zugify")]
+        [Command("zugify"), Module(ModuleType.Miscellaneous)]
         [Description("I don't even...")]
         [Aliases("z")]
         [UsageExample("!zugify Some random text")]

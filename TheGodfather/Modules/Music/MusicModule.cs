@@ -1,7 +1,4 @@
 ﻿#region USING_DIRECTIVES
-using System;
-using System.IO;
-using System.Diagnostics;
 using System.Threading.Tasks;
 
 using TheGodfather.Common;
@@ -30,7 +27,7 @@ namespace TheGodfather.Modules.Music
 
 
         #region COMMAND_CONNECT
-        [Command("connect")]
+        [Command("connect"), Module(ModuleType.Music)]
         [Description("Connect the bot to a voice channel. If the channel is not given, connects the bot to the same channel you are in.")]
         [Aliases("con", "conn", "enter")]
         [UsageExample("!connect")]
@@ -62,7 +59,7 @@ namespace TheGodfather.Modules.Music
         #endregion
 
         #region COMMAND_DISCONNECT
-        [Command("disconnect")]
+        [Command("disconnect"), Module(ModuleType.Music)]
         [Description("Disconnects the bot from the voice channel.")]
         [Aliases("dcon", "dconn", "discon", "disconn", "dc")]
         [UsageExample("!disconnect")]
@@ -88,7 +85,7 @@ namespace TheGodfather.Modules.Music
         #endregion
 
         #region COMMAND_SKIP
-        [Command("skip")]
+        [Command("skip"), Module(ModuleType.Music)]
         [Description("Skip current voice playback.")]
         [UsageExample("!skip")]
         public async Task SkipAsync(CommandContext ctx)
@@ -102,7 +99,7 @@ namespace TheGodfather.Modules.Music
         #endregion
 
         #region COMMAND_STOP
-        [Command("stop")]
+        [Command("stop"), Module(ModuleType.Music)]
         [Description("Stops current voice playback.")]
         [UsageExample("!stop")]
         public async Task StopAsync(CommandContext ctx)

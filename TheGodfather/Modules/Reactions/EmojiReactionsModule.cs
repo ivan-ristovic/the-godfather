@@ -5,7 +5,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
@@ -21,7 +20,7 @@ using DSharpPlus.Entities;
 
 namespace TheGodfather.Modules.Reactions
 {
-    [Group("emojireaction")]
+    [Group("emojireaction"), Module(ModuleType.Reactions)]
     [Description("Orders a bot to react with given emoji to a message containing a trigger word inside (guild specific). If invoked without subcommands, adds a new emoji reaction to a given trigger word list. Note: Trigger words can be regular expressions (use ``emojireaction addregex`` command).")]
     [Aliases("ereact", "er", "emojir", "emojireactions")]
     [UsageExample("!emojireaction :smile: haha laughing")]
@@ -54,6 +53,7 @@ namespace TheGodfather.Modules.Reactions
 
         #region COMMAND_EMOJI_REACTIONS_ADD
         [Command("add"), Priority(1)]
+        [Module(ModuleType.Reactions)]
         [Description("Add emoji reaction to guild reaction list.")]
         [Aliases("+", "new", "a")]
         [UsageExample("!emojireaction add :smile: haha")]
@@ -73,6 +73,7 @@ namespace TheGodfather.Modules.Reactions
 
         #region COMMAND_EMOJI_REACTIONS_ADDREGEX
         [Command("addregex"), Priority(1)]
+        [Module(ModuleType.Reactions)]
         [Description("Add emoji reaction triggered by a regex to guild reaction list.")]
         [Aliases("+r", "+regex", "+regexp", "+rgx", "newregex", "addrgx")]
         [UsageExample("!emojireaction addregex :smile: (ha)+")]
@@ -91,7 +92,7 @@ namespace TheGodfather.Modules.Reactions
         #endregion
 
         #region COMMAND_EMOJI_REACTIONS_CLEAR
-        [Command("clear")]
+        [Command("clear"), Module(ModuleType.Reactions)]
         [Description("Delete all reactions for the current guild.")]
         [Aliases("da", "c", "ca", "cl", "clearall")]
         [UsageExample("!emojireactions clear")]
@@ -119,6 +120,7 @@ namespace TheGodfather.Modules.Reactions
 
         #region COMMAND_EMOJI_REACTIONS_DELETE
         [Command("delete"), Priority(2)]
+        [Module(ModuleType.Reactions)]
         [Description("Remove emoji reactions for given trigger words.")]
         [Aliases("-", "remove", "del", "rm", "d")]
         [UsageExample("!emojireaction delete haha sometrigger")]
@@ -226,7 +228,7 @@ namespace TheGodfather.Modules.Reactions
         #endregion
 
         #region COMMAND_EMOJI_REACTIONS_LIST
-        [Command("list")]
+        [Command("list"), Module(ModuleType.Reactions)]
         [Description("Show all emoji reactions for this guild.")]
         [Aliases("ls", "l", "view")]
         [UsageExample("!emojireaction list")]

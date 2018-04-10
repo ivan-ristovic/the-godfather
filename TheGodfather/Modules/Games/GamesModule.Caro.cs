@@ -19,7 +19,7 @@ namespace TheGodfather.Modules.Games
 {
     public partial class GamesModule : TheGodfatherBaseModule
     {
-        [Group("caro")]
+        [Group("caro"), Module(ModuleType.Games)]
         [Description("Starts a \"Caro\" game. Play a move by writing a pair of numbers from 1 to 10 corresponding to the row and column where you wish to play. You can also specify a time window in which player must submit their move.")]
         [Aliases("c", "gomoku", "gobang")]
         [UsageExample("!game caro")]
@@ -76,7 +76,7 @@ namespace TheGodfather.Modules.Games
 
 
             #region COMMAND_CARO_RULES
-            [Command("rules")]
+            [Command("rules"), Module(ModuleType.Games)]
             [Description("Explain the Caro game rules.")]
             [Aliases("help", "h", "ruling", "rule")]
             [UsageExample("!game caro rules")]
@@ -93,7 +93,7 @@ namespace TheGodfather.Modules.Games
             #endregion
 
             #region COMMAND_CARO_STATS
-            [Command("stats")]
+            [Command("stats"), Module(ModuleType.Games)]
             [Description("Print the leaderboard for this game.")]
             [Aliases("top", "leaderboard")]
             [UsageExample("!game caro stats")]

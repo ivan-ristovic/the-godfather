@@ -15,7 +15,7 @@ using DSharpPlus.Entities;
 
 namespace TheGodfather.Modules.Search
 {
-    [Group("rss")]
+    [Group("rss"), Module(ModuleType.Searches)]
     [Description("Commands for RSS feed querying or subscribing. If invoked without subcommand, gives the latest topic from the given RSS URL.")]
     [Aliases("feed")]
     [UsageExample("!rss https://news.google.com/news/rss/")]
@@ -46,7 +46,7 @@ namespace TheGodfather.Modules.Search
 
 
         #region COMMAND_RSS_LIST
-        [Command("list")]
+        [Command("list"), Module(ModuleType.Searches)]
         [Description("Get feed list for the current channel.")]
         [Aliases("ls", "listsubs", "listfeeds")]
         [UsageExample("!feed list")]
@@ -68,7 +68,7 @@ namespace TheGodfather.Modules.Search
         #endregion
 
         #region COMMAND_RSS_SUBSCRIBE
-        [Command("subscribe")]
+        [Command("subscribe"), Module(ModuleType.Searches)]
         [Description("Subscribe to given RSS feed URL. The bot will send a message when the latest topic is changed.")]
         [Aliases("sub", "add", "+")]
         [UsageExample("!rss subscribe https://news.google.com/news/rss/")]
@@ -94,6 +94,7 @@ namespace TheGodfather.Modules.Search
 
         #region COMMAND_RSS_UNSUBSCRIBE
         [Command("unsubscribe"), Priority(1)]
+        [Module(ModuleType.Searches)]
         [Description("Remove an existing feed subscription.")]
         [Aliases("del", "d", "rm", "-", "unsub")]
         [UsageExample("!rss unsubscribe 1")]
@@ -119,7 +120,7 @@ namespace TheGodfather.Modules.Search
         #endregion
 
         #region COMMAND_RSS_WM
-        [Command("wm")]
+        [Command("wm"), Module(ModuleType.Searches)]
         [Description("Get newest topics from WM forum.")]
         [UsageExample("!rss wm")]
         public async Task WmRssAsync(CommandContext ctx)

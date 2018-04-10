@@ -18,7 +18,7 @@ using DSharpPlus.Net.Models;
 
 namespace TheGodfather.Modules.Administration
 {
-    [Group("user")]
+    [Group("user"), Module(ModuleType.Administration)]
     [Description("Miscellaneous user control commands. If invoked without subcommands, prints out user information.")]
     [Aliases("users", "u", "usr")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
@@ -37,6 +37,7 @@ namespace TheGodfather.Modules.Administration
 
         #region COMMAND_USER_ADDROLE
         [Command("addrole"), Priority(1)]
+        [Module(ModuleType.Administration)]
         [Description("Assign a role to a member.")]
         [Aliases("+role", "+r", "ar", "addr", "+roles", "addroles", "giverole", "giveroles", "grantrole", "grantroles", "gr")]
         [UsageExample("!user addrole @User Admins")]
@@ -65,7 +66,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_USER_AVATAR
-        [Command("avatar")]
+        [Command("avatar"), Module(ModuleType.Administration)]
         [Description("Get avatar from user.")]
         [Aliases("a", "pic", "profilepic")]
         [UsageExample("!user avatar @Someone")]
@@ -81,7 +82,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_USER_BAN
-        [Command("ban")]
+        [Command("ban"), Module(ModuleType.Administration)]
         [Description("Bans the user from the guild.")]
         [Aliases("b")]
         [UsageExample("!user ban @Someone")]
@@ -102,7 +103,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_USER_BAN_ID
-        [Command("banid")]
+        [Command("banid"), Module(ModuleType.Administration)]
         [Description("Bans the ID from the server.")]
         [Aliases("bid")]
         [UsageExample("!user banid 154956794490845232")]
@@ -127,7 +128,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_USER_SOFTBAN
-        [Command("softban")]
+        [Command("softban"), Module(ModuleType.Administration)]
         [Description("Bans the member from the guild and then unbans him immediately.")]
         [Aliases("sb", "sban")]
         [UsageExample("!user sban @Someone")]
@@ -151,6 +152,7 @@ namespace TheGodfather.Modules.Administration
 
         #region COMMAND_USER_TEMPBAN
         [Command("tempban"), Priority(1)]
+        [Module(ModuleType.Administration)]
         [Description("Temporarily ans the user from the server and then unbans him after given timespan.")]
         [Aliases("tb", "tban", "tmpban", "tmpb")]
         [UsageExample("!user tempban @Someone 3h4m")]
@@ -185,9 +187,9 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_USER_DEAFEN_ON
-        [Command("deafen")]
+        [Command("deafen"), Module(ModuleType.Administration)]
         [Description("Deafen a member.")]
-        [Aliases("deaf", "d", "df")]
+        [Aliases("deaf", "d", "df", "deafenon")]
         [UsageExample("!user deafen @Someone")]
         [RequirePermissions(Permissions.DeafenMembers)]
         public async Task DeafenAsync(CommandContext ctx,
@@ -202,9 +204,9 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_USER_DEAFEN_OFF
-        [Command("undeafen")]
+        [Command("undeafen"), Module(ModuleType.Administration)]
         [Description("Undeafen a member.")]
-        [Aliases("udeaf", "ud", "udf")]
+        [Aliases("udeaf", "ud", "udf", "deafenoff")]
         [UsageExample("!user undeafen @Someone")]
         [RequirePermissions(Permissions.DeafenMembers)]
         public async Task UndeafenAsync(CommandContext ctx,
@@ -219,7 +221,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_USER_INFO
-        [Command("info")]
+        [Command("info"), Module(ModuleType.Administration)]
         [Description("Print the information about the given user. If the user is not given, uses the sender.")]
         [Aliases("i", "information")]
         [UsageExample("!user info @Someone")]
@@ -259,7 +261,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_USER_KICK
-        [Command("kick")]
+        [Command("kick"), Module(ModuleType.Administration)]
         [Description("Kicks the member from the guild.")]
         [Aliases("k")]
         [UsageExample("!user kick @Someone")]
@@ -280,7 +282,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_USER_MUTE_ON
-        [Command("mute")]
+        [Command("mute"), Module(ModuleType.Administration)]
         [Description("Mute a member.")]
         [Aliases("m")]
         [UsageExample("!user mute @Someone")]
@@ -298,7 +300,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_USER_MUTE_OFF
-        [Command("unmute")]
+        [Command("unmute"), Module(ModuleType.Administration)]
         [Description("Unmute a member.")]
         [Aliases("um")]
         [UsageExample("!user unmute @Someone")]
@@ -317,6 +319,7 @@ namespace TheGodfather.Modules.Administration
 
         #region COMMAND_USER_REMOVEROLE
         [Command("removerole"), Priority(1)]
+        [Module(ModuleType.Administration)]
         [Description("Revoke a role from member.")]
         [Aliases("remrole", "rmrole", "rr", "-role", "-r", "removeroles", "revokerole", "revokeroles")]
         [UsageExample("!user removerole @Someone Admins")]
@@ -360,7 +363,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_USER_REMOVEALLROLES
-        [Command("removeallroles")]
+        [Command("removeallroles"), Module(ModuleType.Administration)]
         [Description("Revoke all roles from user.")]
         [Aliases("remallroles", "-ra", "-rall", "-allr")]
         [UsageExample("!user removeallroles @Someone")]
@@ -380,7 +383,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_USER_SETNAME
-        [Command("setname")]
+        [Command("setname"), Module(ModuleType.Administration)]
         [Description("Gives someone a new nickname.")]
         [Aliases("nick", "newname", "name", "rename")]
         [UsageExample("!user setname @Someone Newname")]
@@ -402,7 +405,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_USER_UNBAN
-        [Command("unban")]
+        [Command("unban"), Module(ModuleType.Administration)]
         [Description("Unbans the user ID from the server.")]
         [Aliases("ub")]
         [UsageExample("!user unban 154956794490845232")]
@@ -425,7 +428,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_USER_WARN
-        [Command("warn")]
+        [Command("warn"), Module(ModuleType.Administration)]
         [Description("Warn a member in private message by sending a given warning text.")]
         [Aliases("w")]
         [UsageExample("!user warn @Someone Stop spamming or kick!")]

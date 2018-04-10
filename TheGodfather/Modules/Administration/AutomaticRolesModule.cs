@@ -16,7 +16,7 @@ using DSharpPlus.Entities;
 
 namespace TheGodfather.Modules.Administration
 {
-    [Group("automaticroles")]
+    [Group("automaticroles"), Module(ModuleType.Administration)]
     [Description("Commands to manipulate automatically assigned roles (roles which get automatically granted to a user who enters the guild). If invoked without command, either lists or adds automatic role depending if argument is given.")]
     [Aliases("ar")]
     [UsageExample("!ar")]
@@ -41,7 +41,7 @@ namespace TheGodfather.Modules.Administration
 
 
         #region COMMAND_AR_ADD
-        [Command("add")]
+        [Command("add"), Module(ModuleType.Administration)]
         [Description("Add an automatic role (or roles) for this guild.")]
         [Aliases("a", "+")]
         [UsageExample("!ar add @Notifications")]
@@ -60,7 +60,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_AR_CLEAR
-        [Command("clear")]
+        [Command("clear"), Module(ModuleType.Administration)]
         [Description("Delete all automatic roles for the current guild.")]
         [Aliases("da", "c", "ca", "cl", "clearall")]
         [UsageExample("!ar clear")]
@@ -79,7 +79,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_AR_DELETE
-        [Command("delete")]
+        [Command("delete"), Module(ModuleType.Administration)]
         [Description("Remove automatic role (or roles).")]
         [Aliases("remove", "del", "-", "d")]
         [UsageExample("!ar delete @Notifications")]
@@ -98,7 +98,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_AR_LIST
-        [Command("list")]
+        [Command("list"), Module(ModuleType.Administration)]
         [Description("View all automatic roles in the current guild.")]
         [Aliases("print", "show", "l", "p")]
         [UsageExample("!ar list")]

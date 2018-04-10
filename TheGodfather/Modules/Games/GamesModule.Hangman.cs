@@ -20,7 +20,7 @@ namespace TheGodfather.Modules.Games
 {
     public partial class GamesModule : TheGodfatherBaseModule
     {
-        [Group("hangman")]
+        [Group("hangman"), Module(ModuleType.Games)]
         [Description("Starts a hangman game.")]
         [Aliases("h", "hang")]
         [UsageExample("!game hangman")]
@@ -72,7 +72,7 @@ namespace TheGodfather.Modules.Games
 
 
             #region COMMAND_HANGMAN_RULES
-            [Command("rules")]
+            [Command("rules"), Module(ModuleType.Games)]
             [Description("Explain the Hangman game rules.")]
             [Aliases("help", "h", "ruling", "rule")]
             [UsageExample("!game hangman rules")]
@@ -87,7 +87,7 @@ namespace TheGodfather.Modules.Games
             #endregion
 
             #region COMMAND_HANGMAN_STATS
-            [Command("stats")]
+            [Command("stats"), Module(ModuleType.Games)]
             [Description("Print the leaderboard for this game.")]
             [Aliases("top", "leaderboard")]
             [UsageExample("!game hangman stats")]
