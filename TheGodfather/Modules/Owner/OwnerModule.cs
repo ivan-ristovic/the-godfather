@@ -312,7 +312,7 @@ namespace TheGodfather.Modules.Owner
                 if (Directory.Exists(folder))
                     Directory.Delete(folder, recursive: true);
                 current = Directory.CreateDirectory(folder);
-                parts = Directory.CreateDirectory(Path.Combine(current.FullName, "Modules"));
+                parts = Directory.CreateDirectory(Path.Combine(current.FullName, "Parts"));
             } catch (Exception e) {
                 TheGodfather.LogHandle.LogException(LogLevel.Warning, e);
                 throw new CommandFailedException("Failed to create directories!", e);
