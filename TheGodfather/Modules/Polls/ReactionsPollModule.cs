@@ -2,6 +2,7 @@
 using System;
 using System.Threading.Tasks;
 
+using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
@@ -41,7 +42,7 @@ namespace TheGodfather.Modules.Polls
             if (!Poll.RegisterPollInChannel(rpoll, ctx.Channel.Id))
                 throw new CommandFailedException("Failed to start the poll. Please try again.");
             try {
-                await ctx.RespondWithIconEmbedAsync("And what will be the possible answers? (separate with semicolon ``;``)", ":question:")
+                await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Question, "And what will be the possible answers? (separate with semicolon ``;``)")
                     .ConfigureAwait(false);
                 var options = await ctx.WaitAndParsePollOptionsAsync()
                     .ConfigureAwait(false);

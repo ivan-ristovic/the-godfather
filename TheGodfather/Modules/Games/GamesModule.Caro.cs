@@ -37,7 +37,7 @@ namespace TheGodfather.Modules.Games
                 if (Game.RunningInChannel(ctx.Channel.Id))
                     throw new CommandFailedException("Another game is already running in the current channel!");
 
-                await ctx.RespondWithIconEmbedAsync($"Who wants to play Caro with {ctx.User.Username}?", ":question:")
+                await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Question, $"Who wants to play Caro with {ctx.User.Username}?")
                     .ConfigureAwait(false);
                 var opponent = await ctx.WaitForGameOpponentAsync()
                     .ConfigureAwait(false);

@@ -31,6 +31,7 @@ namespace TheGodfather.Modules.Games
             {
                 await ctx.RespondWithIconEmbedAsync(
                     "You need to specify a quiz type!\n\nAvailable quiz categories:\n" +
+                    $"- {Formatter.Bold("capitals")}" +
                     $"- {Formatter.Bold("countries")}",
                     ":information_source:"
                 ).ConfigureAwait(false);

@@ -20,7 +20,7 @@ namespace TheGodfather.Extensions
         public static async Task<bool> AskYesNoQuestionAsync(this CommandContext ctx, string question)
         {
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder {
-                Description = $"{DiscordEmoji.FromName(ctx.Client, ":question:")} {question}",
+                Description = $"{StaticDiscordEmoji.Question} {question}",
                 Color = DiscordColor.Yellow
             }).ConfigureAwait(false);
 

@@ -472,7 +472,7 @@ namespace TheGodfather.Modules.Misc
                 } else if (c == ' ') {
                     sb.Append(DiscordEmoji.FromName(ctx.Client, ":large_blue_circle:"));
                 } else if (c == '?')
-                    sb.Append(DiscordEmoji.FromName(ctx.Client, ":question:"));
+                    sb.Append(StaticDiscordEmoji.Question);
                 else if (c == '!')
                     sb.Append(DiscordEmoji.FromName(ctx.Client, ":exclamation:"));
                 else if (c == '.')

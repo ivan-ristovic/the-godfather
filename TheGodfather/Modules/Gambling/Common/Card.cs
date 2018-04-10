@@ -1,4 +1,8 @@
-﻿using System;
+﻿#region USING_DIRECTIVES
+using System;
+
+using TheGodfather.Common;
+#endregion
 
 namespace TheGodfather.Modules.Gambling.Common
 {
@@ -55,7 +59,7 @@ namespace TheGodfather.Modules.Gambling.Common
                 case 13: return ":regional_indicator_k:" + suit;
             }
 
-            return ":question:" + suit;
+            return StaticDiscordEmoji.Question + suit;
         }
     }
 }

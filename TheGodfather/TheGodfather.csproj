@@ -269,8 +269,10 @@
     <Compile Include="Common\GFRandom.cs" />
     <Compile Include="Common\SavedTaskExecuter.cs" />
     <Compile Include="Modules\Administration\AutomaticRolesModule.cs" />
+    <Compile Include="Modules\Games\Common\QuizCapitals.cs" />
     <Compile Include="Modules\Games\GamesModule.Duel.cs" />
     <Compile Include="Modules\Games\GamesModule.Hangman.cs" />
+    <Compile Include="Modules\Games\GamesModule.QuizCapitals.cs" />
     <Compile Include="Modules\Music\Common\MusicPlayer.cs" />
     <Compile Include="Modules\Owner\OwnerModule.Birthdays.cs" />
     <Compile Include="Modules\Polls\ReactionsPollModule.cs" />
