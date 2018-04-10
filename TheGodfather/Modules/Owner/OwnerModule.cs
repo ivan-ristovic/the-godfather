@@ -304,16 +304,18 @@ namespace TheGodfather.Modules.Owner
                                                   [RemainingText, Description("File path.")] string folder = null)
         {
             if (string.IsNullOrWhiteSpace(folder))
-                folder = "doc";
+                folder = "Documentation";
 
             DirectoryInfo current;
             DirectoryInfo parts;
             try {
+                if (Directory.Exists(folder))
+                    Directory.Delete(folder, recursive: true);
                 current = Directory.CreateDirectory(folder);
-                parts = Directory.CreateDirectory(Path.Combine(current.FullName, "modules"));
+                parts = Directory.CreateDirectory(Path.Combine(current.FullName, "Modules"));
             } catch (Exception e) {
                 TheGodfather.LogHandle.LogException(LogLevel.Warning, e);
-                throw new CommandFailedException("Failed to create the modules directory!", e);
+                throw new CommandFailedException("Failed to create directories!", e);
             }
 
             StringBuilder sb = new StringBuilder();
@@ -427,11 +429,11 @@ namespace TheGodfather.Modules.Owner
             sb.AppendLine("# Command modules:");
             foreach (var module in modules) {
                 string mname = module.Key.Module.ToString();
-                sb.Append("* ").Append('[').Append(mname).Append(']').Append("(").Append(Path.Combine(parts.Name, mname)).AppendLine(")");
+                sb.Append("* ").Append('[').Append(mname).Append(']').Append("(").Append(parts.Name).Append('/').Append(mname).AppendLine(")");
             }
             
             try {
-                File.WriteAllText(Path.Combine(current.FullName, $"Command List.md"), sb.ToString());
+                File.WriteAllText(Path.Combine(current.FullName, $"README.md"), sb.ToString());
             } catch (IOException e) {
                 throw new CommandFailedException($"IO Exception occured while saving the main file!", e);
             }

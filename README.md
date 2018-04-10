@@ -60,6 +60,6 @@ In the second overload though, the reason is mandatory since it preceeds ``user`
 
 ```!user kick "I must type a reason here... Also surround it with quotes because it's a string and not text." @user```
 
-## Automatically generated command list
+## Command list
 
-[Auto-generated command list.](TheGodfather/Modules/README.md)
+Command list is available at the [Documentation](Documentation/README.md) directory.
