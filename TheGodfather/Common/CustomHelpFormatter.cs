@@ -47,6 +47,9 @@ namespace TheGodfather.Common
             _name = command is CommandGroup ? $"Group: {command.QualifiedName}" : command.QualifiedName;
             _desc = command.Description;
 
+            if (command.CustomAttributes.FirstOrDefault(a => a is ModuleAttribute) is ModuleAttribute modattr)
+                _emb.AddField("Module", modattr.Module.ToString());
+
             if (command.Aliases?.Any() == true)
                 _emb.AddField("Aliases", string.Join(", ", command.Aliases.Select(a => Formatter.InlineCode(a))));
 
