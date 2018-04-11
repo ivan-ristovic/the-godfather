@@ -165,6 +165,9 @@ namespace TheGodfather
 
         private async Task Client_GuildMemberAdd(GuildMemberAddEventArgs e)
         {
+            if (!TheGodfather.Listening)
+                return;
+
             Log(LogLevel.Info,
                 $"Member joined: {e.Member.ToString()}<br>" +
                 $"{e.Guild.ToString()}"
@@ -232,6 +235,9 @@ namespace TheGodfather
 
         private async Task Client_GuildMemberRemove(GuildMemberRemoveEventArgs e)
         {
+            if (!TheGodfather.Listening)
+                return;
+
             Log(LogLevel.Info,
                 $"Member left: {e.Member.ToString()}<br>" +
                 e.Guild.ToString()
@@ -276,7 +282,7 @@ namespace TheGodfather
 
         private async Task Client_MessageCreated(MessageCreateEventArgs e)
         {
-            if (e.Author.IsBot)
+            if (e.Author.IsBot || !TheGodfather.Listening)
                 return;
 
             if (e.Channel.IsPrivate) {
@@ -375,7 +381,7 @@ namespace TheGodfather
 
         private async Task Client_MessageUpdated(MessageUpdateEventArgs e)
         {
-            if (e.Author == null || e.Message == null)
+            if (e.Author == null || e.Message == null || !TheGodfather.Listening)
                 return;
 
             if (_shared.BlockedChannels.Contains(e.Channel.Id))

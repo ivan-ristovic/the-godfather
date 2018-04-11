@@ -1,9 +1,7 @@
-﻿using System;
+﻿#region USING_DIRECTIVES
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
+#endregion
 
 namespace TheGodfather.Services.Common
 {
