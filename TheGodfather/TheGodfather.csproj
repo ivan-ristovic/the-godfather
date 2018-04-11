@@ -269,6 +269,7 @@
     <Compile Include="Common\GFRandom.cs" />
     <Compile Include="Common\SavedTaskExecuter.cs" />
     <Compile Include="Modules\Administration\AutomaticRolesModule.cs" />
+    <Compile Include="Modules\Games\Common\Quiz.cs" />
     <Compile Include="Modules\Games\Common\QuizCapitals.cs" />
     <Compile Include="Modules\Games\GamesModule.Duel.cs" />
     <Compile Include="Modules\Games\GamesModule.Hangman.cs" />
@@ -283,6 +284,7 @@
     <Compile Include="Modules\Music\MusicModule.Play.cs" />
     <Compile Include="Services\Common\Birthday.cs" />
     <Compile Include="Services\Common\GameStatsType.cs" />
+    <Compile Include="Services\Common\QuizData.cs" />
     <Compile Include="Services\Common\SavedTask.cs" />
     <Compile Include="Extensions\DSharpPlusExtensions.cs" />
     <Compile Include="Modules\Owner\OwnerModule.BlockedUsers.cs" />
@@ -381,6 +383,7 @@
     <Compile Include="Services\MemeGenService.cs" />
     <Compile Include="Services\PetImagesService.cs" />
     <Compile Include="Services\HttpService.cs" />
+    <Compile Include="Services\QuizService.cs" />
     <Compile Include="Services\WeatherService.cs" />
     <Compile Include="TheGodfather.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

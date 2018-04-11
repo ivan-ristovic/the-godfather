@@ -59,14 +59,14 @@ namespace TheGodfather.Modules.Games.Common
 
                 bool noresponse = true;
                 Regex ansregex = new Regex($@"\b{_capitals[question]}\b", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
-                var msg = await _interactivity.WaitForMessageAsync(
+                var mctx = await _interactivity.WaitForMessageAsync(
                     xm => {
                         if (xm.ChannelId != _channel.Id || xm.Author.IsBot) return false;
                         noresponse = false;
                         return ansregex.IsMatch(xm.Content);
                     }
                 ).ConfigureAwait(false);
-                if (msg == null) {
+                if (mctx == null) {
                     if (noresponse)
                         timeouts++;
                     else
@@ -78,12 +78,12 @@ namespace TheGodfather.Modules.Games.Common
                     await _channel.SendMessageAsync($"Time is out! The correct answer was: {Formatter.Bold(_capitals[question])}")
                         .ConfigureAwait(false);
                 } else {
-                    await _channel.SendMessageAsync($"GG {msg.User.Mention}, you got it right!")
+                    await _channel.SendMessageAsync($"GG {mctx.User.Mention}, you got it right!")
                         .ConfigureAwait(false);
-                    if (participants.ContainsKey(msg.User.Id))
-                        participants[msg.User.Id]++;
+                    if (participants.ContainsKey(mctx.User.Id))
+                        participants[mctx.User.Id]++;
                     else
-                        participants.Add(msg.User.Id, 1);
+                        participants.Add(mctx.User.Id, 1);
                 }
                 questions.Remove(question);
 

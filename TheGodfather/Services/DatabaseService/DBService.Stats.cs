@@ -81,7 +81,7 @@ namespace TheGodfather.Services
                             cmd.CommandText = $"INSERT INTO gf.stats (uid, hangman_won) VALUES (@uid, @add) ON CONFLICT (uid) DO UPDATE SET hangman_won = stats.hangman_won + @add;";
                             break;
                         case GameStatsType.NumberRacesWon:
-                            cmd.CommandText = $"INSERT INTO gf.stats (uid, nunchis_won) VALUES (@uid, @add) ON CONFLICT (uid) DO UPDATE SET nunchis_won = stats.nunchis_won + @add;";
+                            cmd.CommandText = $"INSERT INTO gf.stats (uid, numraces_won) VALUES (@uid, @add) ON CONFLICT (uid) DO UPDATE SET numraces_won = stats.numraces_won + @add;";
                             break;
                         case GameStatsType.OthellosLost:
                             cmd.CommandText = $"INSERT INTO gf.stats (uid, othello_lost) VALUES (@uid, @add) ON CONFLICT (uid) DO UPDATE SET othello_lost = stats.othello_lost + @add;";

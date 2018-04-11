@@ -50,7 +50,7 @@ namespace TheGodfather.Extensions
         }
 
         public static string BuildReasonString(this CommandContext ctx, string reason = null)
-            => $"{ctx.User.ToString()} : {reason ?? "No reason provided."} | Invoked in: {ctx.Channel.ToString()}";
+        => $"{ctx.User.ToString()} : {reason ?? "No reason provided."} | Invoked in: {ctx.Channel.ToString()}";
 
         public static Task<DiscordMessage> RespondWithIconEmbedAsync(this CommandContext ctx, string msg = "Done!", string icon_emoji = null)
         {

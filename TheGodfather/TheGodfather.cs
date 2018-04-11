@@ -3,6 +3,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -175,6 +176,9 @@ namespace TheGodfather
 
             GC.Collect();
             LogHandle.LogMessage(LogLevel.Info, "<br>-------------- NEW INSTANCE STARTED --------------<br>");
+
+
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
 
 
             Console.WriteLine("Registering saved tasks...");
