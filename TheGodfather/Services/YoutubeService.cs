@@ -117,7 +117,7 @@ namespace TheGodfather.Services
             foreach (var res in results.Take(10)) {
                 var emb = new DiscordEmbedBuilder() {
                     Title = res.Snippet.Title,
-                    Description = Formatter.Italic(res.Snippet.Description),
+                    Description = Formatter.Italic(string.IsNullOrWhiteSpace(res.Snippet.Description) ? "No description provided" : res.Snippet.Description),
                     Color = DiscordColor.Red,
                     ThumbnailUrl = res.Snippet.Thumbnails.Default__.Url
                 };
