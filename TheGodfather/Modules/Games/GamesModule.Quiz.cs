@@ -27,6 +27,10 @@ namespace TheGodfather.Modules.Games
         [Description("List all available quiz categories.")]
         [Aliases("trivia", "q")]
         [UsageExample("!game quiz")]
+        [UsageExample("!game quiz countries")]
+        [UsageExample("!game quiz 9")]
+        [UsageExample("!game quiz 9 hard")]
+        [UsageExample("!game quiz 9 hard 15")]
         [ListeningCheck]
         public partial class QuizModule : TheGodfatherBaseModule
         {
@@ -34,14 +38,25 @@ namespace TheGodfather.Modules.Games
             public QuizModule(DBService db) : base(db: db) { }
 
 
-            [GroupCommand, Priority(1)]
+            [GroupCommand, Priority(2)]
             public async Task ExecuteGroupAsync(CommandContext ctx,
-                                               [Description("ID of the quiz category")] int id)
+                                               [Description("ID of the quiz category.")] int id,
+                                               [Description("Amount of questions.")] int amount = 10,
+                                               [Description("Difficulty. (easy/medium/hard)")] string diff = "easy")
             {
                 if (Game.RunningInChannel(ctx.Channel.Id))
                     throw new CommandFailedException("Another game is already running in the current channel.");
 
-                var questions = await QuizService.GetQuizQuestionsAsync(id)
+                if (amount < 5 || amount > 50)
+                    throw new CommandFailedException("Invalid amount of questions specified. Amount has to be in range [5-50]!");
+
+                QuestionDifficulty difficulty = QuestionDifficulty.Easy;
+                switch (diff.ToLowerInvariant()) {
+                    case "medium": difficulty = QuestionDifficulty.Medium; break;
+                    case "hard": difficulty = QuestionDifficulty.Hard; break;
+                }
+
+                var questions = await QuizService.GetQuizQuestionsAsync(id, amount, difficulty)
                     .ConfigureAwait(false);
 
                 if (questions == null || !questions.Any())
@@ -88,6 +103,12 @@ namespace TheGodfather.Modules.Games
                     Game.UnregisterGameInChannel(ctx.Channel.Id);
                 }
             }
+            [GroupCommand, Priority(1)]
+            public async Task ExecuteGroupAsync(CommandContext ctx,
+                                               [Description("ID of the quiz category.")] int id,
+                                               [Description("Difficulty. (easy/medium/hard)")] string diff = "easy",
+                                               [Description("Amount of questions.")] int amount = 10)
+                => await ExecuteGroupAsync(ctx, id, amount, diff).ConfigureAwait(false);
 
             [GroupCommand, Priority(0)]
             public async Task ExecuteGroupAsync(CommandContext ctx)
