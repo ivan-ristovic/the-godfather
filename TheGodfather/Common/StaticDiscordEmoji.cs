@@ -60,6 +60,10 @@ namespace TheGodfather.Common
         public static DiscordEmoji Wave => DiscordEmoji.FromUnicode("\U0001f44b");
         public static DiscordEmoji Headphones => DiscordEmoji.FromUnicode("\U0001f3a7");
         public static DiscordEmoji Question => DiscordEmoji.FromUnicode("\u2753");
+        public static DiscordEmoji Gun => DiscordEmoji.FromUnicode("\U0001f52b");
+        public static DiscordEmoji Relieved => DiscordEmoji.FromUnicode("\U0001f616");
+        public static DiscordEmoji Dead => DiscordEmoji.FromUnicode("\U0001f635");
+        public static DiscordEmoji Blast => DiscordEmoji.FromUnicode("\U0001f4a2");
 
         public static DiscordEmoji Globe => DiscordEmoji.FromUnicode("\U0001f30d");
         public static DiscordEmoji Ruler => DiscordEmoji.FromUnicode("\U0001f4cf");
