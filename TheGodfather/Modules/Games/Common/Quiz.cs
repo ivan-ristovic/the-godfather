@@ -21,7 +21,7 @@ namespace TheGodfather.Modules.Games.Common
     {
         private static IReadOnlyList<QuizQuestion> _questions = null;
         public IEnumerable<(ulong, int)> Results;
-        
+
 
         public Quiz(InteractivityExtension interactivity, DiscordChannel channel, IReadOnlyList<QuizQuestion> questions)
             : base(interactivity, channel)
@@ -61,38 +61,21 @@ namespace TheGodfather.Modules.Games.Common
                 bool noresponse = true;
                 MessageContext mctx;
                 ConcurrentHashSet<ulong> failed = new ConcurrentHashSet<ulong>();
-                if (question.Type == QuestionType.TrueFalse) {
-                    bool? ans = CustomBoolConverter.TryConvert(question.CorrectAnswer);
-                    mctx = await _interactivity.WaitForMessageAsync(
-                        xm => {
-                            if (xm.ChannelId != _channel.Id || xm.Author.IsBot || failed.Contains(xm.Author.Id))
-                                return false;
-                            bool? b = CustomBoolConverter.TryConvert(xm.Content);
-                            if (b.HasValue && b.Value == ans.Value)
-                                return true;
-                            failed.Add(xm.Author.Id);
+                Regex ansregex = new Regex($@"\b{question.CorrectAnswer}\b", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
+                mctx = await _interactivity.WaitForMessageAsync(
+                    xm => {
+                        if (xm.ChannelId != _channel.Id || xm.Author.IsBot || failed.Contains(xm.Author.Id))
                             return false;
-                        }
-                    ).ConfigureAwait(false);
-                } else {
-                    Regex ansregex = new Regex($@"\b{question.CorrectAnswer}\b", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
-                    mctx = await _interactivity.WaitForMessageAsync(
-                        xm => {
-                            if (xm.ChannelId != _channel.Id || xm.Author.IsBot || failed.Contains(xm.Author.Id))
-                                return false;
+                        if (int.TryParse(xm.Content, out int index) && index > 0 && index <= answers.Count) {
                             noresponse = false;
-                            if (int.TryParse(xm.Content, out int index) && index > 0 && index <= answers.Count) {
-                                if (answers[index - 1] == question.CorrectAnswer)
-                                    return true;
-                            } else {
-                                if (ansregex.IsMatch(xm.Content))
-                                    return true;
-                            }
-                            failed.Add(xm.Author.Id);
-                            return false;
+                            if (answers[index - 1] == question.CorrectAnswer)
+                                return true;
+                            else
+                                failed.Add(xm.Author.Id);
                         }
-                    ).ConfigureAwait(false);
-                }
+                        return false;
+                    }
+                ).ConfigureAwait(false);
                 if (mctx == null) {
                     if (noresponse)
                         timeouts++;

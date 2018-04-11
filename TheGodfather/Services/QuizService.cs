@@ -28,10 +28,10 @@ namespace TheGodfather.Services
             }
         }
 
-        public static async Task<IReadOnlyList<QuizQuestion>> GetQuizQuestionsAsync(int category, int amount = 10, QuestionDifficulty difficulty = QuestionDifficulty.Easy, QuestionType type = QuestionType.MultipleChoice)
+        public static async Task<IReadOnlyList<QuizQuestion>> GetQuizQuestionsAsync(int category, int amount = 10, QuestionDifficulty difficulty = QuestionDifficulty.Easy)
         {
             try {
-                var url = $"https://opentdb.com/api.php?amount={ amount }&category={ category }&difficulty={ difficulty.ToAPIString() }&type={ type.ToAPIString() }&encode=url3986";
+                var url = $"https://opentdb.com/api.php?amount={ amount }&category={ category }&difficulty={ difficulty.ToAPIString() }&type=multiple&encode=url3986";
                 var response = await _http.GetStringAsync(url)
                     .ConfigureAwait(false);
                 var data = JsonConvert.DeserializeObject<QuizData>(response);
@@ -40,7 +40,6 @@ namespace TheGodfather.Services
                         q.Content = WebUtility.UrlDecode(q.Content);
                         q.Category = WebUtility.UrlDecode(q.Category);
                         q.CorrectAnswer = WebUtility.UrlDecode(q.CorrectAnswer);
-                        q.Type = type;
                         q.Difficulty = difficulty;
                         q.IncorrectAnswers = q.IncorrectAnswers.Select(ans => WebUtility.UrlDecode(ans)).ToList();
                         return q;

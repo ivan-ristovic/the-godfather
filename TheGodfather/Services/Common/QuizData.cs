@@ -12,12 +12,6 @@ namespace TheGodfather.Services.Common
         Hard
     }
 
-    public enum QuestionType
-    {
-        TrueFalse,
-        MultipleChoice
-    }
-
     public static class QuizEnumDataExtensions
     {
         public static string ToAPIString(this QuestionDifficulty diff)
@@ -26,15 +20,6 @@ namespace TheGodfather.Services.Common
                 case QuestionDifficulty.Easy: return "easy";
                 case QuestionDifficulty.Medium: return "medium";
                 case QuestionDifficulty.Hard: return "hard";
-            }
-            return "unknown";
-        }
-
-        public static string ToAPIString(this QuestionType type)
-        {
-            switch (type) {
-                case QuestionType.MultipleChoice: return "multiple";
-                case QuestionType.TrueFalse: return "boolean";
             }
             return "unknown";
         }
@@ -54,9 +39,6 @@ namespace TheGodfather.Services.Common
     {
         [JsonProperty("category")]
         public string Category { get; set; }
-
-        [JsonIgnore]
-        public QuestionType Type { get; set; }
 
         [JsonIgnore]
         public QuestionDifficulty Difficulty { get; set; }
