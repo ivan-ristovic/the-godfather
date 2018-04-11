@@ -50,6 +50,9 @@ namespace TheGodfather.Common
 
         public void LogMessage(LogLevel level, string message, DateTime? timestamp = null, bool filelog = true)
         {
+            if (level > LogLevel)
+                return;
+
             lock (_lock) {
                 PrintTimestamp(timestamp);
                 PrintLevel(level);
@@ -61,6 +64,9 @@ namespace TheGodfather.Common
 
         public void LogMessage(int shardid, DebugLogMessageEventArgs e, bool filelog = true)
         {
+            if (e.Level > LogLevel)
+                return;
+
             lock (_lock) {
                 PrintTimestamp(e.Timestamp);
 
@@ -79,6 +85,9 @@ namespace TheGodfather.Common
 
         public void LogException(LogLevel level, Exception e, DateTime? timestamp = null, bool filelog = true)
         {
+            if (level > LogLevel)
+                return;
+
             lock (_lock) {
                 PrintTimestamp(timestamp);
                 PrintLevel(level);
