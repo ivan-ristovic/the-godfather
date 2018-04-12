@@ -33,25 +33,25 @@ namespace TheGodfather.Modules.Owner
 
 
             [GroupCommand, Priority(3)]
-            public async Task ExecuteGroupAsync(CommandContext ctx)
-                => await ListAsync(ctx).ConfigureAwait(false);
+            public Task ExecuteGroupAsync(CommandContext ctx)
+                => ListAsync(ctx);
 
             [GroupCommand, Priority(2)]
-            public async Task ExecuteGroupAsync(CommandContext ctx,
-                                               [Description("Users to block.")] params DiscordChannel[] channels)
-                => await AddAsync(ctx, null, channels).ConfigureAwait(false);
+            public Task ExecuteGroupAsync(CommandContext ctx,
+                                         [Description("Users to block.")] params DiscordChannel[] channels)
+                => AddAsync(ctx, null, channels);
 
             [GroupCommand, Priority(1)]
-            public async Task ExecuteGroupAsync(CommandContext ctx,
-                                               [Description("Reason (max 60 chars).")] string reason,
-                                               [Description("Users to block.")] params DiscordChannel[] channels)
-                => await AddAsync(ctx, reason, channels).ConfigureAwait(false);
+            public Task ExecuteGroupAsync(CommandContext ctx,
+                                         [Description("Reason (max 60 chars).")] string reason,
+                                         [Description("Users to block.")] params DiscordChannel[] channels)
+                => AddAsync(ctx, reason, channels);
 
             [GroupCommand, Priority(0)]
-            public async Task ExecuteGroupAsync(CommandContext ctx,
-                                               [Description("Users to block.")] DiscordChannel channel,
-                                               [RemainingText, Description("Reason (max 60 chars).")] string reason)
-                => await AddAsync(ctx, reason, channel).ConfigureAwait(false);
+            public Task ExecuteGroupAsync(CommandContext ctx,
+                                         [Description("Users to block.")] DiscordChannel channel,
+                                         [RemainingText, Description("Reason (max 60 chars).")] string reason)
+                => AddAsync(ctx, reason, channel);
 
 
             #region COMMAND_BLOCKEDCHANNELS_ADD
@@ -64,9 +64,9 @@ namespace TheGodfather.Modules.Owner
             [UsageExample("!owner blockedchannels add 123123123123123")]
             [UsageExample("!owner blockedchannels add #channel 123123123123123")]
             [UsageExample("!owner blockedchannels add \"This is some reason\" #channel 123123123123123")]
-            public async Task AddAsync(CommandContext ctx,
+            public Task AddAsync(CommandContext ctx,
                                       [Description("Channels to block.")] params DiscordChannel[] channels)
-                => await AddAsync(ctx, null, channels).ConfigureAwait(false);
+                => AddAsync(ctx, null, channels);
 
             [Command("add"), Priority(1)]
             public async Task AddAsync(CommandContext ctx,
@@ -107,10 +107,10 @@ namespace TheGodfather.Modules.Owner
             }
 
             [Command("add"), Priority(0)]
-            public async Task AddAsync(CommandContext ctx,
-                                      [Description("Channel to block.")] DiscordChannel channel,
-                                      [RemainingText, Description("Reason (max 60 chars).")] string reason)
-                => await AddAsync(ctx, reason, channel).ConfigureAwait(false);
+            public Task AddAsync(CommandContext ctx,
+                                [Description("Channel to block.")] DiscordChannel channel,
+                                [RemainingText, Description("Reason (max 60 chars).")] string reason)
+                => AddAsync(ctx, reason, channel);
             #endregion
 
             #region COMMAND_BLOCKEDCHANNELS_DELETE

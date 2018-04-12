@@ -33,22 +33,22 @@ namespace TheGodfather.Modules.Reactions
 
 
         [GroupCommand, Priority(2)]
-        public async Task ExecuteGroupAsync(CommandContext ctx)
-            => await ListAsync(ctx).ConfigureAwait(false);
+        public Task ExecuteGroupAsync(CommandContext ctx)
+            => ListAsync(ctx);
 
         [GroupCommand, Priority(1)]
         [RequirePermissions(Permissions.ManageGuild)]
-        public async Task ExecuteGroupAsync(CommandContext ctx,
-                                           [Description("Emoji to send.")] DiscordEmoji emoji,
-                                           [RemainingText, Description("Trigger word list.")] params string[] triggers)
-            => await AddEmojiReactionAsync(ctx, emoji, false, triggers).ConfigureAwait(false);
+        public Task ExecuteGroupAsync(CommandContext ctx,
+                                     [Description("Emoji to send.")] DiscordEmoji emoji,
+                                     [RemainingText, Description("Trigger word list.")] params string[] triggers)
+            => AddEmojiReactionAsync(ctx, emoji, false, triggers);
 
         [GroupCommand, Priority(0)]
         [RequirePermissions(Permissions.ManageGuild)]
-        public async Task ExecuteGroupAsync(CommandContext ctx,
-                                           [Description("Trigger word (case-insensitive).")] string trigger,
-                                           [Description("Emoji to send.")] DiscordEmoji emoji)
-            => await AddEmojiReactionAsync(ctx, emoji, false, trigger).ConfigureAwait(false);
+        public Task ExecuteGroupAsync(CommandContext ctx,
+                                     [Description("Trigger word (case-insensitive).")] string trigger,
+                                     [Description("Emoji to send.")] DiscordEmoji emoji)
+            => AddEmojiReactionAsync(ctx, emoji, false, trigger);
 
 
         #region COMMAND_EMOJI_REACTIONS_ADD
@@ -59,16 +59,16 @@ namespace TheGodfather.Modules.Reactions
         [UsageExample("!emojireaction add :smile: haha")]
         [UsageExample("!emojireaction add haha :smile:")]
         [RequireUserPermissions(Permissions.ManageGuild)]
-        public async Task AddAsync(CommandContext ctx,
-                                  [Description("Emoji to send.")] DiscordEmoji emoji,
-                                  [RemainingText, Description("Trigger word list (case-insensitive).")] params string[] triggers)
-            => await AddEmojiReactionAsync(ctx, emoji, false, triggers).ConfigureAwait(false);
+        public Task AddAsync(CommandContext ctx,
+                            [Description("Emoji to send.")] DiscordEmoji emoji,
+                            [RemainingText, Description("Trigger word list (case-insensitive).")] params string[] triggers)
+            => AddEmojiReactionAsync(ctx, emoji, false, triggers);
 
         [Command("add"), Priority(0)]
-        public async Task AddAsync(CommandContext ctx,
-                                  [Description("Trigger word (case-insensitive).")] string trigger,
-                                  [Description("Emoji to send.")] DiscordEmoji emoji)
-            => await AddEmojiReactionAsync(ctx, emoji, false, trigger).ConfigureAwait(false);
+        public Task AddAsync(CommandContext ctx,
+                            [Description("Trigger word (case-insensitive).")] string trigger,
+                            [Description("Emoji to send.")] DiscordEmoji emoji)
+            => AddEmojiReactionAsync(ctx, emoji, false, trigger);
         #endregion
 
         #region COMMAND_EMOJI_REACTIONS_ADDREGEX
@@ -79,16 +79,16 @@ namespace TheGodfather.Modules.Reactions
         [UsageExample("!emojireaction addregex :smile: (ha)+")]
         [UsageExample("!emojireaction addregex (ha)+ :smile:")]
         [RequireUserPermissions(Permissions.ManageGuild)]
-        public async Task AddRegexAsync(CommandContext ctx,
-                                       [Description("Emoji to send.")] DiscordEmoji emoji,
-                                       [RemainingText, Description("Trigger word list (case-insensitive).")] params string[] triggers)
-            => await AddEmojiReactionAsync(ctx, emoji, true, triggers).ConfigureAwait(false);
+        public Task AddRegexAsync(CommandContext ctx,
+                                 [Description("Emoji to send.")] DiscordEmoji emoji,
+                                 [RemainingText, Description("Trigger word list (case-insensitive).")] params string[] triggers)
+            => AddEmojiReactionAsync(ctx, emoji, true, triggers);
 
         [Command("addregex"), Priority(0)]
-        public async Task AddRegexAsync(CommandContext ctx,
-                                       [Description("Trigger word (case-insensitive).")] string trigger,
-                                       [Description("Emoji to send.")] DiscordEmoji emoji)
-            => await AddEmojiReactionAsync(ctx, emoji, true, trigger).ConfigureAwait(false);
+        public Task AddRegexAsync(CommandContext ctx,
+                                 [Description("Trigger word (case-insensitive).")] string trigger,
+                                 [Description("Emoji to send.")] DiscordEmoji emoji)
+            => AddEmojiReactionAsync(ctx, emoji, true, trigger);
         #endregion
 
         #region COMMAND_EMOJI_REACTIONS_CLEAR

@@ -28,13 +28,13 @@ namespace TheGodfather.Modules.Administration
     {
 
         [GroupCommand, Priority(1)]
-        public async Task ExecuteGroupAsync(CommandContext ctx)
-            => await ListAsync(ctx).ConfigureAwait(false);
+        public Task ExecuteGroupAsync(CommandContext ctx)
+            => ListAsync(ctx);
 
         [GroupCommand, Priority(0)]
-        public async Task ExecuteGroupAsync(CommandContext ctx,
-                                           [Description("Emoji to print information about.")] DiscordEmoji emoji)
-            => await InfoAsync(ctx, emoji).ConfigureAwait(false);
+        public Task ExecuteGroupAsync(CommandContext ctx,
+                                     [Description("Emoji to print information about.")] DiscordEmoji emoji)
+            => InfoAsync(ctx, emoji);
 
 
         #region COMMAND_EMOJI_ADD
@@ -169,10 +169,10 @@ namespace TheGodfather.Modules.Administration
         }
 
         [Command("modify"), Priority(0)]
-        public async Task ModifyAsync(CommandContext ctx,
-                                     [Description("Name.")] string newname,
-                                     [Description("Emoji.")] DiscordEmoji emoji)
-            => await ModifyAsync(ctx, emoji, newname).ConfigureAwait(false);
+        public Task ModifyAsync(CommandContext ctx,
+                               [Description("Name.")] string newname,
+                               [Description("Emoji.")] DiscordEmoji emoji)
+            => ModifyAsync(ctx, emoji, newname);
         #endregion
     }
 }

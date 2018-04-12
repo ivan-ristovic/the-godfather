@@ -25,8 +25,8 @@ namespace TheGodfather.Modules.Gambling
 
 
         [GroupCommand]
-        public async Task ExecuteGroupAsync(CommandContext ctx)
-            => await ResetDeckAsync(ctx).ConfigureAwait(false);
+        public Task ExecuteGroupAsync(CommandContext ctx)
+            => ResetDeckAsync(ctx);
 
 
         #region COMMAND_DECK_DRAW

@@ -31,8 +31,8 @@ namespace TheGodfather.Modules.Administration
 
 
         [GroupCommand]
-        public async Task ExecuteGroupAsync(CommandContext ctx)
-            => await GuildInfoAsync(ctx).ConfigureAwait(false);
+        public Task ExecuteGroupAsync(CommandContext ctx)
+            => GuildInfoAsync(ctx);
 
 
         #region COMMAND_GUILD_GETBANS
@@ -172,9 +172,9 @@ namespace TheGodfather.Modules.Administration
         }
 
         [Command("rename")]
-        public async Task RenameGuildAsync(CommandContext ctx,
-                                          [RemainingText, Description("New name.")] string newname)
-            => await RenameGuildAsync(ctx, null, newname);
+        public Task RenameGuildAsync(CommandContext ctx,
+                                    [RemainingText, Description("New name.")] string newname)
+            => RenameGuildAsync(ctx, null, newname);
         #endregion
 
         #region COMMAND_GUILD_SETICON

@@ -359,17 +359,17 @@ namespace TheGodfather.Modules.Misc
         }
 
         [Command("remind"), Priority(1)]
-        public async Task RemindAsync(CommandContext ctx,
-                                     [Description("Channel to send message to.")] DiscordChannel channel,
-                                     [Description("Time span until reminder.")] TimeSpan timespan,
-                                     [RemainingText, Description("What to send?")] string message)
-            => await RemindAsync(ctx, timespan, channel, message).ConfigureAwait(false);
+        public Task RemindAsync(CommandContext ctx,
+                               [Description("Channel to send message to.")] DiscordChannel channel,
+                               [Description("Time span until reminder.")] TimeSpan timespan,
+                               [RemainingText, Description("What to send?")] string message)
+            => RemindAsync(ctx, timespan, channel, message);
 
         [Command("remind"), Priority(0)]
-        public async Task RemindAsync(CommandContext ctx,
-                                     [Description("Time span until reminder.")] TimeSpan timespan,
-                                     [RemainingText, Description("What to send?")] string message)
-            => await RemindAsync(ctx, timespan, null, message).ConfigureAwait(false);
+        public Task RemindAsync(CommandContext ctx,
+                               [Description("Time span until reminder.")] TimeSpan timespan,
+                               [RemainingText, Description("What to send?")] string message)
+            => RemindAsync(ctx, timespan, null, message);
         #endregion
 
         #region COMMAND_REPORT

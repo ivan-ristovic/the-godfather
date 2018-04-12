@@ -58,15 +58,15 @@ namespace TheGodfather.Modules.Polls
         }
 
         [GroupCommand, Priority(1)]
-        public async Task ExecuteGroupAsync(CommandContext ctx,
-                                           [Description("Question.")] string question,
-                                           [Description("Time for poll to run.")] TimeSpan timeout)
-            => await ExecuteGroupAsync(ctx, timeout, question).ConfigureAwait(false);
+        public Task ExecuteGroupAsync(CommandContext ctx,
+                                     [Description("Question.")] string question,
+                                     [Description("Time for poll to run.")] TimeSpan timeout)
+            => ExecuteGroupAsync(ctx, timeout, question);
 
         [GroupCommand, Priority(0)]
-        public async Task ExecuteGroupAsync(CommandContext ctx,
-                                           [RemainingText, Description("Question.")] string question)
-            => await ExecuteGroupAsync(ctx, TimeSpan.FromMinutes(1), question).ConfigureAwait(false);
+        public Task ExecuteGroupAsync(CommandContext ctx,
+                                     [RemainingText, Description("Question.")] string question)
+            => ExecuteGroupAsync(ctx, TimeSpan.FromMinutes(1), question);
 
 
         #region COMMAND_STOP

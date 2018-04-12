@@ -30,22 +30,22 @@ namespace TheGodfather.Modules.Owner
 
 
             [GroupCommand, Priority(2)]
-            public async Task ExecuteGroupAsync(CommandContext ctx)
-                => await ListAsync(ctx).ConfigureAwait(false);
+            public Task ExecuteGroupAsync(CommandContext ctx)
+                => ListAsync(ctx);
 
             [GroupCommand, Priority(1)]
-            public async Task ExecuteGroupAsync(CommandContext ctx,
-                                               [Description("Birthday boy/girl.")] DiscordUser user,
-                                               [Description("Birth date.")] string date_str = null,
-                                               [Description("Channel to send a greeting message to.")] DiscordChannel channel = null)
-                => await AddAsync(ctx, user, date_str, channel).ConfigureAwait(false);
+            public Task ExecuteGroupAsync(CommandContext ctx,
+                                         [Description("Birthday boy/girl.")] DiscordUser user,
+                                         [Description("Birth date.")] string date_str = null,
+                                         [Description("Channel to send a greeting message to.")] DiscordChannel channel = null)
+                => AddAsync(ctx, user, date_str, channel);
 
             [GroupCommand, Priority(0)]
-            public async Task ExecuteGroupAsync(CommandContext ctx,
-                                               [Description("Birthday boy/girl.")] DiscordUser user,
-                                               [Description("Channel to send a greeting message to.")] DiscordChannel channel = null,
-                                               [Description("Birth date.")] string date_str = null)
-                => await AddAsync(ctx, user, date_str, channel).ConfigureAwait(false);
+            public Task ExecuteGroupAsync(CommandContext ctx,
+                                         [Description("Birthday boy/girl.")] DiscordUser user,
+                                         [Description("Channel to send a greeting message to.")] DiscordChannel channel = null,
+                                         [Description("Birth date.")] string date_str = null)
+                => AddAsync(ctx, user, date_str, channel);
 
 
             #region COMMAND_BIRTHDAY_ADD
@@ -77,11 +77,11 @@ namespace TheGodfather.Modules.Owner
             }
 
             [Command("add"), Priority(0)]
-            public async Task AddAsync(CommandContext ctx,
-                                      [Description("Birthday boy/girl.")] DiscordUser user,
-                                      [Description("Channel to send a greeting message to.")] DiscordChannel channel = null,
-                                      [Description("Birth date.")] string date_str = null)
-                => await AddAsync(ctx, user, date_str, channel).ConfigureAwait(false);
+            public Task AddAsync(CommandContext ctx,
+                                [Description("Birthday boy/girl.")] DiscordUser user,
+                                [Description("Channel to send a greeting message to.")] DiscordChannel channel = null,
+                                [Description("Birth date.")] string date_str = null)
+                => AddAsync(ctx, user, date_str, channel);
             #endregion
 
             #region COMMAND_BIRTHDAY_DELETE

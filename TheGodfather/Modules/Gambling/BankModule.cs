@@ -28,11 +28,9 @@ namespace TheGodfather.Modules.Gambling
 
 
         [GroupCommand]
-        public async Task ExecuteGroupAsync(CommandContext ctx,
-                                           [Description("User.")] DiscordUser user = null)
-        {
-            await GetBalanceAsync(ctx, user).ConfigureAwait(false);
-        }
+        public Task ExecuteGroupAsync(CommandContext ctx,
+                                     [Description("User.")] DiscordUser user = null)
+            => GetBalanceAsync(ctx, user);
 
 
         #region COMMAND_BALANCE
@@ -82,10 +80,10 @@ namespace TheGodfather.Modules.Gambling
         }
 
         [Command("grant"), Priority(0)]
-        public async Task GrantAsync(CommandContext ctx,
-                                    [Description("Amount.")] int amount,
-                                    [Description("User.")] DiscordUser user)
-            => await GrantAsync(ctx, user, amount).ConfigureAwait(false);
+        public Task GrantAsync(CommandContext ctx,
+                              [Description("Amount.")] int amount,
+                              [Description("User.")] DiscordUser user)
+            => GrantAsync(ctx, user, amount);
         #endregion
 
         #region COMMAND_REGISTER
@@ -157,10 +155,10 @@ namespace TheGodfather.Modules.Gambling
         }
 
         [Command("transfer"), Priority(0)]
-        public async Task TransferCreditsAsync(CommandContext ctx,
-                                              [Description("Amount.")] int amount,
-                                              [Description("User to send credits to.")] DiscordUser user)
-            => await TransferCreditsAsync(ctx, user, amount).ConfigureAwait(false);
+        public Task TransferCreditsAsync(CommandContext ctx,
+                                        [Description("Amount.")] int amount,
+                                        [Description("User to send credits to.")] DiscordUser user)
+            => TransferCreditsAsync(ctx, user, amount);
         #endregion
     }
 }

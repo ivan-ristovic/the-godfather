@@ -104,11 +104,11 @@ namespace TheGodfather.Modules.Games
                 }
             }
             [GroupCommand, Priority(1)]
-            public async Task ExecuteGroupAsync(CommandContext ctx,
-                                               [Description("ID of the quiz category.")] int id,
-                                               [Description("Difficulty. (easy/medium/hard)")] string diff = "easy",
-                                               [Description("Amount of questions.")] int amount = 10)
-                => await ExecuteGroupAsync(ctx, id, amount, diff).ConfigureAwait(false);
+            public Task ExecuteGroupAsync(CommandContext ctx,
+                                         [Description("ID of the quiz category.")] int id,
+                                         [Description("Difficulty. (easy/medium/hard)")] string diff = "easy",
+                                         [Description("Amount of questions.")] int amount = 10)
+                => ExecuteGroupAsync(ctx, id, amount, diff);
 
             [GroupCommand, Priority(0)]
             public async Task ExecuteGroupAsync(CommandContext ctx)

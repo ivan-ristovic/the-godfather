@@ -57,9 +57,9 @@ namespace TheGodfather.Modules.Polls
         }
 
         [Command("reactionspoll"), Priority(0)]
-        public async Task ReactionsPollAsync(CommandContext ctx,
-                                            [RemainingText, Description("Question.")] string question)
-            => await ReactionsPollAsync(ctx, TimeSpan.FromMinutes(1), question).ConfigureAwait(false);
+        public Task ReactionsPollAsync(CommandContext ctx,
+                                      [RemainingText, Description("Question.")] string question)
+            => ReactionsPollAsync(ctx, TimeSpan.FromMinutes(1), question);
         #endregion
     }
 }

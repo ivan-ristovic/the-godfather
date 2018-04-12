@@ -30,9 +30,9 @@ namespace TheGodfather.Modules.Administration
 
 
         [GroupCommand]
-        public async Task ExecuteGroupAsync(CommandContext ctx,
-                                           [Description("User.")] DiscordUser user = null)
-            => await InfoAsync(ctx, user).ConfigureAwait(false);
+        public Task ExecuteGroupAsync(CommandContext ctx,
+                                     [Description("User.")] DiscordUser user = null)
+            => InfoAsync(ctx, user);
 
 
         #region COMMAND_USER_ADDROLE
@@ -59,10 +59,10 @@ namespace TheGodfather.Modules.Administration
         }
 
         [Command("addrole"), Priority(0)]
-        public async Task AddRoleAsync(CommandContext ctx,
-                                      [Description("Role.")] DiscordRole role,
-                                      [Description("Member.")] DiscordMember member)
-            => await AddRoleAsync(ctx, member, role).ConfigureAwait(false);
+        public Task AddRoleAsync(CommandContext ctx,
+                                [Description("Role.")] DiscordRole role,
+                                [Description("Member.")] DiscordMember member)
+            => AddRoleAsync(ctx, member, role);
         #endregion
 
         #region COMMAND_USER_AVATAR
@@ -179,11 +179,11 @@ namespace TheGodfather.Modules.Administration
         }
 
         [Command("tempban"), Priority(0)]
-        public async Task TempBanAsync(CommandContext ctx,
-                                      [Description("User.")] DiscordMember member,
-                                      [Description("Time span.")] TimeSpan time,
-                                      [RemainingText, Description("Reason.")] string reason = null)
-            => await TempBanAsync(ctx, time, member).ConfigureAwait(false);
+        public Task TempBanAsync(CommandContext ctx,
+                                [Description("User.")] DiscordMember member,
+                                [Description("Time span.")] TimeSpan time,
+                                [RemainingText, Description("Reason.")] string reason = null)
+            => TempBanAsync(ctx, time, member);
         #endregion
 
         #region COMMAND_USER_DEAFEN_ON
@@ -340,11 +340,11 @@ namespace TheGodfather.Modules.Administration
         }
 
         [Command("removerole"), Priority(0)]
-        public async Task RevokeRoleAsync(CommandContext ctx,
-                                         [Description("Role.")] DiscordRole role,
-                                         [Description("Member.")] DiscordMember member,
-                                         [RemainingText, Description("Reason.")] string reason = null)
-            => await RevokeRoleAsync(ctx, member, role, reason).ConfigureAwait(false);
+        public Task RevokeRoleAsync(CommandContext ctx,
+                                   [Description("Role.")] DiscordRole role,
+                                   [Description("Member.")] DiscordMember member,
+                                   [RemainingText, Description("Reason.")] string reason = null)
+            => RevokeRoleAsync(ctx, member, role, reason);
 
         [Command("removerole"), Priority(2)]
         public async Task RevokeRoleAsync(CommandContext ctx,

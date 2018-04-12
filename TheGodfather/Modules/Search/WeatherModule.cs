@@ -69,9 +69,9 @@ namespace TheGodfather.Modules.Search
         }
 
         [Command("forecast"), Priority(0)]
-        public async Task ForecastAsync(CommandContext ctx,
-                                       [RemainingText, Description("Query.")] string query)
-            => await ForecastAsync(ctx, 7, query).ConfigureAwait(false);
+        public Task ForecastAsync(CommandContext ctx,
+                                 [RemainingText, Description("Query.")] string query)
+            => ForecastAsync(ctx, 7, query);
         #endregion
     }
 }

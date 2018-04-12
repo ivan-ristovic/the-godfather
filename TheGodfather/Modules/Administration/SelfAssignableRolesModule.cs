@@ -29,14 +29,14 @@ namespace TheGodfather.Modules.Administration
 
 
         [GroupCommand, Priority(1)]
-        public async Task ExecuteGroupAsync(CommandContext ctx)
-            => await ListAsync(ctx).ConfigureAwait(false);
+        public Task ExecuteGroupAsync(CommandContext ctx)
+            => ListAsync(ctx);
 
         [GroupCommand, Priority(0)]
         [RequireUserPermissions(Permissions.Administrator)]
-        public async Task ExecuteGroupAsync(CommandContext ctx,
-                                           [Description("Roles to add.")] params DiscordRole[] roles)
-            => await AddAsync(ctx, roles).ConfigureAwait(false);
+        public Task ExecuteGroupAsync(CommandContext ctx,
+                                     [Description("Roles to add.")] params DiscordRole[] roles)
+            => AddAsync(ctx, roles);
 
 
         #region COMMAND_SAR_ADD

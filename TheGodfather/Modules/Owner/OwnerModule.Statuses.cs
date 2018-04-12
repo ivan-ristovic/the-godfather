@@ -27,14 +27,14 @@ namespace TheGodfather.Modules.Owner
 
 
             [GroupCommand, Priority(1)]
-            public async Task ExecuteGroupAsync(CommandContext ctx)
-                => await ListAsync(ctx).ConfigureAwait(false);
+            public Task ExecuteGroupAsync(CommandContext ctx)
+                => ListAsync(ctx);
 
             [GroupCommand, Priority(0)]
-            public async Task ExecuteGroupAsync(CommandContext ctx,
-                                               [Description("Activity type (Playing/Watching/Streaming/ListeningTo).")] ActivityType activity,
-                                               [RemainingText, Description("Status.")] string status)
-                => await AddAsync(ctx, activity, status).ConfigureAwait(false);
+            public Task ExecuteGroupAsync(CommandContext ctx,
+                                         [Description("Activity type (Playing/Watching/Streaming/ListeningTo).")] ActivityType activity,
+                                         [RemainingText, Description("Status.")] string status)
+                => AddAsync(ctx, activity, status);
 
 
             #region COMMAND_STATUS_ADD

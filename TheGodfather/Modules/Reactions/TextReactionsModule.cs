@@ -34,15 +34,15 @@ namespace TheGodfather.Modules.Reactions
 
 
         [GroupCommand, Priority(1)]
-        public async Task ExecuteGroupAsync(CommandContext ctx)
-            => await ListAsync(ctx).ConfigureAwait(false);
+        public Task ExecuteGroupAsync(CommandContext ctx)
+            => ListAsync(ctx);
 
         [GroupCommand, Priority(0)]
         [RequirePermissions(Permissions.ManageGuild)]
-        public async Task ExecuteGroupAsync(CommandContext ctx, 
-                                           [Description("Trigger string (case insensitive).")] string trigger,
-                                           [RemainingText, Description("Response.")] string response)
-            => await AddAsync(ctx, trigger, response).ConfigureAwait(false);
+        public Task ExecuteGroupAsync(CommandContext ctx, 
+                                     [Description("Trigger string (case insensitive).")] string trigger,
+                                     [RemainingText, Description("Response.")] string response)
+            => AddAsync(ctx, trigger, response);
 
 
         #region COMMAND_TEXT_REACTION_ADD
@@ -51,10 +51,10 @@ namespace TheGodfather.Modules.Reactions
         [Aliases("+", "new", "a")]
         [UsageExample("!textreaction add \"hi\" \"Hello, %user%!\"")]
         [RequireUserPermissions(Permissions.ManageGuild)]
-        public async Task AddAsync(CommandContext ctx,
-                                  [Description("Trigger string (case insensitive).")] string trigger,
-                                  [RemainingText, Description("Response.")] string response)
-            => await AddTextReactionAsync(ctx, trigger, response, false).ConfigureAwait(false);
+        public Task AddAsync(CommandContext ctx,
+                            [Description("Trigger string (case insensitive).")] string trigger,
+                            [RemainingText, Description("Response.")] string response)
+            => AddTextReactionAsync(ctx, trigger, response, false);
         #endregion
 
         #region COMMAND_TEXT_REACTION_ADDREGEX
@@ -63,10 +63,10 @@ namespace TheGodfather.Modules.Reactions
         [Aliases("+r", "+regex", "+regexp", "+rgx", "newregex", "addrgx")]
         [UsageExample("!textreaction addregex \"h(i|ey|ello|owdy)\" \"Hello, %user%!\"")]
         [RequireUserPermissions(Permissions.ManageGuild)]
-        public async Task AddRegexAsync(CommandContext ctx,
-                                       [Description("Regex (case insensitive).")] string trigger,
-                                       [RemainingText, Description("Response.")] string response)
-            => await AddTextReactionAsync(ctx, trigger, response, true).ConfigureAwait(false);
+        public Task AddRegexAsync(CommandContext ctx,
+                                 [Description("Regex (case insensitive).")] string trigger,
+                                 [RemainingText, Description("Response.")] string response)
+            => AddTextReactionAsync(ctx, trigger, response, true);
         #endregion
 
         #region COMMAND_TEXT_REACTION_CLEAR

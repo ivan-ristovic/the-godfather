@@ -109,11 +109,11 @@ namespace TheGodfather.Modules.Administration
         }
 
         [Command("deletefrom"), Priority(0)]
-        public async Task DeleteMessagesFromUserAsync(CommandContext ctx,
-                                                     [Description("Amount.")] int amount,
-                                                     [Description("User.")] DiscordUser user,
-                                                     [RemainingText, Description("Reason.")] string reason = null)
-            => await DeleteMessagesFromUserAsync(ctx, user, amount, reason).ConfigureAwait(false);
+        public Task DeleteMessagesFromUserAsync(CommandContext ctx,
+                                               [Description("Amount.")] int amount,
+                                               [Description("User.")] DiscordUser user,
+                                               [RemainingText, Description("Reason.")] string reason = null)
+            => DeleteMessagesFromUserAsync(ctx, user, amount, reason);
         #endregion
 
         #region COMMAND_MESSAGES_DELETE_REACTIONS
@@ -181,11 +181,11 @@ namespace TheGodfather.Modules.Administration
         }
 
         [Command("deleteregex"), Priority(0)]
-        public async Task DeleteMessagesFromRegexAsync(CommandContext ctx,
-                                                      [Description("Amount.")] int amount,
-                                                      [Description("Pattern (Regex).")] string pattern,
-                                                      [RemainingText, Description("Reason.")] string reason = null)
-            => await DeleteMessagesFromRegexAsync(ctx, pattern, amount, reason).ConfigureAwait(false);
+        public Task DeleteMessagesFromRegexAsync(CommandContext ctx,
+                                                [Description("Amount.")] int amount,
+                                                [Description("Pattern (Regex).")] string pattern,
+                                                [RemainingText, Description("Reason.")] string reason = null)
+            => DeleteMessagesFromRegexAsync(ctx, pattern, amount, reason);
         #endregion
 
         #region COMMAND_MESSAGES_LISTPINNED

@@ -126,17 +126,17 @@ namespace TheGodfather.Services
             return true;
         }
 
-        public async Task RemoveLeaveChannelAsync(ulong gid)
-            => await SetLeaveChannelAsync(gid, 0).ConfigureAwait(false);
+        public Task RemoveLeaveChannelAsync(ulong gid)
+            => SetLeaveChannelAsync(gid, 0);
 
-        public async Task RemoveWelcomeChannelAsync(ulong gid)
-            => await SetWelcomeChannelAsync(gid, 0).ConfigureAwait(false);
+        public Task RemoveWelcomeChannelAsync(ulong gid)
+            => SetWelcomeChannelAsync(gid, 0);
 
-        public async Task RemoveLeaveMessageAsync(ulong gid)
-            => await SetLeaveMessageAsync(gid, null).ConfigureAwait(false);
+        public Task RemoveLeaveMessageAsync(ulong gid)
+            => SetLeaveMessageAsync(gid, null);
 
-        public async Task RemoveWelcomeMessageAsync(ulong gid)
-            => await SetWelcomeMessageAsync(gid, null).ConfigureAwait(false);
+        public Task RemoveWelcomeMessageAsync(ulong gid)
+            => SetWelcomeMessageAsync(gid, null);
 
         public async Task SetLeaveChannelAsync(ulong gid, ulong cid)
         {

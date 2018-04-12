@@ -23,6 +23,7 @@ namespace TheGodfather.Modules.Gambling
     [ListeningCheck]
     public partial class GambleModule : TheGodfatherBaseModule
     {
+
         public GambleModule(DBService db) : base(db: db) { }
 
 
@@ -75,10 +76,10 @@ namespace TheGodfather.Modules.Gambling
         }
 
         [Command("coinflip"), Priority(0)]
-        public async Task CoinflipAsync(CommandContext ctx,
-                                       [Description("Heads/Tails (h/t).")] string bet,
-                                       [Description("Bid.")] int bid)
-            => await CoinflipAsync(ctx, bid, bet).ConfigureAwait(false);
+        public Task CoinflipAsync(CommandContext ctx,
+                                 [Description("Heads/Tails (h/t).")] string bet,
+                                 [Description("Bid.")] int bid)
+            => CoinflipAsync(ctx, bid, bet);
         #endregion
 
         #region COMMAND_GAMBLE_DICE
@@ -133,10 +134,10 @@ namespace TheGodfather.Modules.Gambling
         }
 
         [Command("dice"), Priority(0)]
-        public async Task RollDiceAsync(CommandContext ctx,
-                                       [Description("Number guess (has to be a word one-six).")] string guess,
-                                       [Description("Bid.")] int bid)
-            => await RollDiceAsync(ctx, bid, guess).ConfigureAwait(false);
+        public Task RollDiceAsync(CommandContext ctx,
+                                 [Description("Number guess (has to be a word one-six).")] string guess,
+                                 [Description("Bid.")] int bid)
+            => RollDiceAsync(ctx, bid, guess);
         #endregion
 
         #region COMMAND_SLOT

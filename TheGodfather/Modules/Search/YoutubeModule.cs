@@ -27,9 +27,9 @@ namespace TheGodfather.Modules.Search
 
 
         [GroupCommand]
-        public async Task ExecuteGroupAsync(CommandContext ctx,
-                                           [RemainingText, Description("Search query.")] string query)
-            => await SearchAndSendResultsAsync(ctx, 5, query).ConfigureAwait(false);
+        public Task ExecuteGroupAsync(CommandContext ctx,
+                                     [RemainingText, Description("Search query.")] string query)
+            => SearchAndSendResultsAsync(ctx, 5, query);
 
 
         #region COMMAND_YOUTUBE_SEARCH
@@ -37,10 +37,10 @@ namespace TheGodfather.Modules.Search
         [Description("Advanced youtube search.")]
         [Aliases("s")]
         [UsageExample("!youtube search 5 rick astley")]
-        public async Task AdvancedSearchAsync(CommandContext ctx,
-                                             [Description("Amount of results. [1-10]")] int amount,
-                                             [RemainingText, Description("Search query.")] string query)
-            => await SearchAndSendResultsAsync(ctx, amount, query).ConfigureAwait(false);
+        public Task AdvancedSearchAsync(CommandContext ctx,
+                                       [Description("Amount of results. [1-10]")] int amount,
+                                       [RemainingText, Description("Search query.")] string query)
+            => SearchAndSendResultsAsync(ctx, amount, query);
         #endregion
 
         #region COMMAND_YOUTUBE_SEARCHVIDEO
@@ -48,9 +48,9 @@ namespace TheGodfather.Modules.Search
         [Description("Advanced youtube search for videos only.")]
         [Aliases("sv", "searchv")]
         [UsageExample("!youtube searchvideo 5 rick astley")]
-        public async Task SearchVideoAsync(CommandContext ctx,
-                                          [RemainingText, Description("Search query.")] string query)
-            => await SearchAndSendResultsAsync(ctx, 5, query, "video").ConfigureAwait(false);
+        public Task SearchVideoAsync(CommandContext ctx,
+                                    [RemainingText, Description("Search query.")] string query)
+            => SearchAndSendResultsAsync(ctx, 5, query, "video");
         #endregion
 
         #region COMMAND_YOUTUBE_SEARCHCHANNEL
@@ -58,9 +58,9 @@ namespace TheGodfather.Modules.Search
         [Description("Advanced youtube search for channels only.")]
         [Aliases("sc", "searchc")]
         [UsageExample("!youtube searchchannel 5 rick astley")]
-        public async Task SearchChannelAsync(CommandContext ctx,
-                                            [RemainingText, Description("Search query.")] string query)
-            => await SearchAndSendResultsAsync(ctx, 5, query, "channel").ConfigureAwait(false);
+        public Task SearchChannelAsync(CommandContext ctx,
+                                      [RemainingText, Description("Search query.")] string query)
+            => SearchAndSendResultsAsync(ctx, 5, query, "channel");
         #endregion
 
         #region COMMAND_YOUTUBE_SEARCHPLAYLIST
@@ -68,9 +68,9 @@ namespace TheGodfather.Modules.Search
         [Description("Advanced youtube search for playlists only.")]
         [Aliases("sp", "searchplaylist")]
         [UsageExample("!youtube searchplaylist 5 rick astley")]
-        public async Task SearchPlaylistAsync(CommandContext ctx,
-                                             [RemainingText, Description("Search query.")] string query)
-            => await SearchAndSendResultsAsync(ctx, 5, query, "playlist").ConfigureAwait(false);
+        public Task SearchPlaylistAsync(CommandContext ctx,
+                                       [RemainingText, Description("Search query.")] string query)
+            => SearchAndSendResultsAsync(ctx, 5, query, "playlist");
         #endregion
 
         #region COMMAND_YOUTUBE_SUBSCRIBE
