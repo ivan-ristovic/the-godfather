@@ -45,6 +45,30 @@ namespace TheGodfather.Common
             DiscordEmoji.FromUnicode("\U0001f42f")      // :tiger:
         };
 
+        public static IReadOnlyList<DiscordEmoji> CardValues = new List<DiscordEmoji>() {
+            DiscordEmoji.FromUnicode("\U0001f1e6"),     // :regional_indicator_a:
+            Numbers[1],
+            Numbers[2],
+            Numbers[3],
+            Numbers[4],
+            Numbers[5],
+            Numbers[6],
+            Numbers[7],
+            Numbers[8],
+            DiscordEmoji.FromUnicode("\U0001f1f9"),     // :regional_indicator_t:
+            DiscordEmoji.FromUnicode("\U0001f1ef"),     // :regional_indicator_j:
+            DiscordEmoji.FromUnicode("\U0001f1f6"),     // :regional_indicator_q:
+            DiscordEmoji.FromUnicode("\U0001f1f0"),     // :regional_indicator_k:
+        };
+
+        public static IReadOnlyList<DiscordEmoji> CardSuits = new List<DiscordEmoji>() {
+            DiscordEmoji.FromUnicode("\u2660"),         // :spades:
+            DiscordEmoji.FromUnicode("\u2663"),         // :clubs:
+            DiscordEmoji.FromUnicode("\u2665"),         // :hearts:
+            DiscordEmoji.FromUnicode("\u2666"),         // :diamonds:
+        };
+
+
         public static DiscordEmoji CheckMarkSuccess => DiscordEmoji.FromUnicode("\u2705");
         public static DiscordEmoji DuelSwords => DiscordEmoji.FromUnicode("\u2694");
         public static DiscordEmoji BoardSquare => DiscordEmoji.FromUnicode("\u25fb");
@@ -71,7 +95,7 @@ namespace TheGodfather.Common
         public static DiscordEmoji Drops => DiscordEmoji.FromUnicode("\U0001f4a6");
         public static DiscordEmoji Thermometer => DiscordEmoji.FromUnicode("\U0001f321");
         public static DiscordEmoji Wind => DiscordEmoji.FromUnicode("\U0001f4a8");
-        
+
 
         public static DiscordEmoji GetRandomDuelWeapon()
             => DuelWeapons[GFRandom.Generator.Next(DuelWeapons.Count)];

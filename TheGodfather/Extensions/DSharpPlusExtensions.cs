@@ -24,7 +24,7 @@ namespace TheGodfather.Extensions
                 Color = DiscordColor.Yellow
             }).ConfigureAwait(false);
 
-            if (!await ctx.WaitForConfirmationAsync().ConfigureAwait(false)) {
+            if (!await ctx.Client.GetInteractivity().WaitForYesNoAnswerAsync(ctx.Channel.Id, ctx.User.Id).ConfigureAwait(false)) {
                 await RespondWithFailedEmbedAsync(ctx, "Alright, aborting...")
                     .ConfigureAwait(false);
                 return false;
@@ -33,12 +33,12 @@ namespace TheGodfather.Extensions
             return true;
         }
 
-        public static async Task<bool> WaitForConfirmationAsync(this CommandContext ctx, ulong uid = 0)
+        public static async Task<bool> WaitForYesNoAnswerAsync(this InteractivityExtension interactivity, ulong cid, ulong uid)
         {
             bool response = false;
-            var mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(
+            var mctx = await interactivity.WaitForMessageAsync(
                 m => {
-                    if (m.ChannelId != ctx.Channel.Id || m.Author.Id != (uid != 0 ? uid : ctx.User.Id))
+                    if (m.ChannelId != cid || m.Author.Id != uid)
                         return false;
                     bool? b = CustomBoolConverter.TryConvert(m.Content);
                     response = b ?? false;
