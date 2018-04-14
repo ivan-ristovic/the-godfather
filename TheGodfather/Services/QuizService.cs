@@ -15,6 +15,14 @@ namespace TheGodfather.Services
 {
     public class QuizService : HttpService
     {
+        public static async Task<int?> GetCategoryIdAsync(string category)
+        {
+            var categories = await GetQuizCategoriesAsync()
+                .ConfigureAwait(false);
+
+            return categories.First(c => string.Compare(c.Name, category, true) == 0)?.Id;
+        }
+
         public static async Task<IReadOnlyList<QuizCategory>> GetQuizCategoriesAsync()
         {
             try {
