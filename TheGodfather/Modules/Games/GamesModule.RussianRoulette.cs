@@ -89,7 +89,7 @@ namespace TheGodfather.Modules.Games
                 if (!game.AddParticipant(ctx.User))
                     throw new CommandFailedException("You are already participating in the Russian roulette!");
 
-                await ctx.RespondWithIconEmbedAsync($"{ctx.User.Mention} joined the Russian roulette pool.", ":bicyclist:")
+                await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Gun, $"{ctx.User.Mention} joined the Russian roulette pool.")
                     .ConfigureAwait(false);
             }
             #endregion

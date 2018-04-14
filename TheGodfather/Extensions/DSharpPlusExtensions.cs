@@ -87,11 +87,11 @@ namespace TheGodfather.Extensions
         public static Task<DiscordMessage> SendFailedEmbedAsync(this DiscordChannel chn, string msg)
             => SendIconEmbedAsync(chn, msg, StaticDiscordEmoji.BoardPieceX);
 
-        public static async Task<DiscordDmChannel> CreateDmChannelAsync(this DiscordClient client, ulong uid)
+        public static Task<DiscordDmChannel> CreateDmChannelAsync(this DiscordClient client, ulong uid)
         {
             var firstResult = client.Guilds.Values.SelectMany(e => e.Members).FirstOrDefault(e => e.Id == uid);
             if (firstResult != null)
-                return await firstResult.CreateDmChannelAsync().ConfigureAwait(false);
+                return firstResult.CreateDmChannelAsync();
             else
                 return null;
         }
@@ -110,13 +110,13 @@ namespace TheGodfather.Extensions
             return mctx?.User;
         }
 
-        public static async Task SendPaginatedCollectionAsync<T>(this CommandContext ctx,
-                                                                 string title,
-                                                                 IEnumerable<T> collection,
-                                                                 Func<T, string> formatter,
-                                                                 DiscordColor? color = null,
-                                                                 int amount = 10,
-                                                                 TimeSpan? timeout = null)
+        public static Task SendPaginatedCollectionAsync<T>(this CommandContext ctx,
+                                                           string title,
+                                                           IEnumerable<T> collection,
+                                                           Func<T, string> formatter,
+                                                           DiscordColor? color = null,
+                                                           int amount = 10,
+                                                           TimeSpan? timeout = null)
         {
             var list = collection.ToList();
             var pages = new List<Page>();
@@ -132,8 +132,8 @@ namespace TheGodfather.Extensions
                     }.Build()
                 });
             }
-            await ctx.Client.GetInteractivity().SendPaginatedMessage(ctx.Channel, ctx.User, pages, timeout)
-                .ConfigureAwait(false);
+
+            return ctx.Client.GetInteractivity().SendPaginatedMessage(ctx.Channel, ctx.User, pages, timeout);
         }
 
         public static async Task<List<string>> WaitAndParsePollOptionsAsync(this CommandContext ctx)

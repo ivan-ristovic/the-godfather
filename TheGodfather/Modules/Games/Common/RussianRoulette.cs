@@ -36,24 +36,28 @@ namespace TheGodfather.Modules.Games.Common
             Started = true;
 
             for (int chance = 1; chance < 5 && ParticipantCount > 1; chance++) {
-                var msg = await _channel.SendIconEmbedAsync($"ROUND #{chance}", StaticDiscordEmoji.Gun)
+                var msg = await _channel.SendMessageAsync($"Round #{chance} starts in 5s!")
                     .ConfigureAwait(false);
 
                 await Task.Delay(TimeSpan.FromSeconds(5))
                     .ConfigureAwait(false);
 
                 var participants = _participants.ToList();
-                var sb = new StringBuilder();
+                var events = new StringBuilder();
                 foreach (var participant in participants) {
                     if (GFRandom.Generator.Next(6) < chance) {
-                        sb.AppendLine($"{participant.Mention} {StaticDiscordEmoji.Dead} {StaticDiscordEmoji.Blast} {StaticDiscordEmoji.Gun}");
+                        events.AppendLine($"{participant.Mention} {StaticDiscordEmoji.Dead} {StaticDiscordEmoji.Blast} {StaticDiscordEmoji.Gun}");
                         _participants.TryRemove(participant);
                     } else {
-                        sb.AppendLine($"{participant.Mention} {StaticDiscordEmoji.Relieved} {StaticDiscordEmoji.Gun}");
+                        events.AppendLine($"{participant.Mention} {StaticDiscordEmoji.Relieved} {StaticDiscordEmoji.Gun}");
                     }
+                    
+                    msg = await msg.ModifyAsync(embed: new DiscordEmbedBuilder() {
+                        Title = $"ROUND #{chance}",
+                        Description = events.ToString(),
+                        Color = DiscordColor.DarkRed
+                    }.Build()).ConfigureAwait(false);
 
-                    await _channel.SendIconEmbedAsync($"ROUND #{chance}\n\n{sb.ToString()}", StaticDiscordEmoji.Gun)
-                            .ConfigureAwait(false);
                     await Task.Delay(TimeSpan.FromSeconds(2))
                         .ConfigureAwait(false);
                 }
