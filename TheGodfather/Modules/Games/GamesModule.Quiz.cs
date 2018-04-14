@@ -41,7 +41,7 @@ namespace TheGodfather.Modules.Games
             public QuizModule(DBService db) : base(db: db) { }
 
 
-            [GroupCommand, Priority(3)]
+            [GroupCommand, Priority(4)]
             public async Task ExecuteGroupAsync(CommandContext ctx,
                                                [Description("ID of the quiz category.")] int id,
                                                [Description("Amount of questions.")] int amount = 10,
@@ -87,14 +87,14 @@ namespace TheGodfather.Modules.Games
                     Game.UnregisterGameInChannel(ctx.Channel.Id);
                 }
             }
-            [GroupCommand, Priority(2)]
+            [GroupCommand, Priority(3)]
             public Task ExecuteGroupAsync(CommandContext ctx,
                                          [Description("ID of the quiz category.")] int id,
                                          [Description("Difficulty. (easy/medium/hard)")] string diff = "easy",
                                          [Description("Amount of questions.")] int amount = 10)
                 => ExecuteGroupAsync(ctx, id, amount, diff);
 
-            [GroupCommand, Priority(1)]
+            [GroupCommand, Priority(2)]
             public async Task ExecuteGroupAsync(CommandContext ctx,
                                                [Description("Quiz category.")] string category,
                                                [Description("Difficulty. (easy/medium/hard)")] string diff = "easy",
@@ -106,6 +106,19 @@ namespace TheGodfather.Modules.Games
 
                 await ExecuteGroupAsync(ctx, id.Value, amount, diff).ConfigureAwait(false);
             }
+
+            [GroupCommand, Priority(1)]
+            public async Task ExecuteGroupAsync(CommandContext ctx,
+                                               [RemainingText, Description("Quiz category.")] string category)
+            {
+                int? id = await QuizService.GetCategoryIdAsync(category).ConfigureAwait(false);
+                if (!id.HasValue)
+                    throw new CommandFailedException("Category with that name doesn't exist!!");
+
+                await ExecuteGroupAsync(ctx, id.Value, 10)
+                    .ConfigureAwait(false);
+            }
+
 
             [GroupCommand, Priority(0)]
             public async Task ExecuteGroupAsync(CommandContext ctx)
