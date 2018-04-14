@@ -1,12 +1,11 @@
 ﻿#region USING_DIRECTIVES
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 using TheGodfather.Common.Collections;
-using TheGodfather.Common.Converters;
 using TheGodfather.Extensions;
 using TheGodfather.Services.Common;
 
@@ -20,7 +19,7 @@ namespace TheGodfather.Modules.Games.Common
     public class Quiz : Game
     {
         private static IReadOnlyList<QuizQuestion> _questions = null;
-        public IEnumerable<(ulong, int)> Results;
+        public ConcurrentDictionary<DiscordUser, int> Results = new ConcurrentDictionary<DiscordUser, int>();
 
 
         public Quiz(InteractivityExtension interactivity, DiscordChannel channel, IReadOnlyList<QuizQuestion> questions)
@@ -32,8 +31,6 @@ namespace TheGodfather.Modules.Games.Common
 
         public override async Task RunAsync()
         {
-            var participants = new Dictionary<ulong, int>();
-
             int timeouts = 0;
             int i = 0;
             foreach (var question in _questions) {
@@ -74,7 +71,7 @@ namespace TheGodfather.Modules.Games.Common
                                 failed.Add(xm.Author.Id);
                         }
                         return false;
-                    }
+                    }, TimeSpan.FromSeconds(10)
                 ).ConfigureAwait(false);
                 if (mctx == null) {
                     if (noresponse)
@@ -90,17 +87,12 @@ namespace TheGodfather.Modules.Games.Common
                 } else {
                     await _channel.SendMessageAsync($"GG {mctx.User.Mention}, you got it right!")
                         .ConfigureAwait(false);
-                    if (participants.ContainsKey(mctx.User.Id))
-                        participants[mctx.User.Id]++;
-                    else
-                        participants.Add(mctx.User.Id, 1);
+                    Results.AddOrUpdate(mctx.User, u => 1, (u, v) => v + 1);
                 }
 
                 await Task.Delay(TimeSpan.FromSeconds(2))
                     .ConfigureAwait(false);
             }
-
-            Results = participants.OrderByDescending(kvp => kvp.Value).Select(kvp => (kvp.Key, kvp.Value));
         }
     }
 }

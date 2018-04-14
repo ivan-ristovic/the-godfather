@@ -28,7 +28,6 @@ namespace TheGodfather.Common.Attributes
                         $"Full message: {ctx.Message.Content}",
                         DateTime.Now
                     );
-                    ctx.TriggerTypingAsync();
                 }
                 return Task.FromResult(true);
             } else {

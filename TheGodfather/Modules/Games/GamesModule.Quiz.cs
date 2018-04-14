@@ -1,6 +1,6 @@
 ﻿#region USING_DIRECTIVES
 using System;
-using System.Collections.Generic;
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -32,7 +32,7 @@ namespace TheGodfather.Modules.Games
         [UsageExample("!game quiz 9 hard")]
         [UsageExample("!game quiz 9 hard 15")]
         [ListeningCheck]
-        public partial class QuizModule : TheGodfatherBaseModule
+        public class QuizModule : TheGodfatherBaseModule
         {
 
             public QuizModule(DBService db) : base(db: db) { }
@@ -78,27 +78,8 @@ namespace TheGodfather.Modules.Games
                         return;
                     }
 
-                    int n = quiz.Results.Count();
-                    if (n == 0)
-                        return;
-                    if (n > 1) {
-                        List<(DiscordUser, int)> results = new List<(DiscordUser, int)>();
-                        foreach (var res in quiz.Results) {
-                            var user = await ctx.Client.GetUserAsync(res.Item1)
-                                .ConfigureAwait(false);
-                            results.Add((user, res.Item2));
-                        }
-                        await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
-                            Title = "Results",
-                            Description = string.Join("\n", results.Select(t => $"{t.Item1.Mention} : {t.Item2}")),
-                            Color = DiscordColor.Azure
-                        }.Build()).ConfigureAwait(false);
-                        await Database.UpdateUserStatsAsync(results.First().Item1.Id, GameStatsType.QuizesWon)
-                            .ConfigureAwait(false);
-                    } else {
-                        await ctx.RespondWithIconEmbedAsync("Trying to improve stats by playing alone? Won't work...", ":joy:")
-                            .ConfigureAwait(false);
-                    }
+                    await HandleQuizResultsAsync(ctx, quiz.Results)
+                        .ConfigureAwait(false);
                 } finally {
                     Game.UnregisterGameInChannel(ctx.Channel.Id);
                 }
@@ -126,6 +107,97 @@ namespace TheGodfather.Modules.Games
             }
 
 
+            #region COMMAND_QUIZ_CAPITALS
+
+            [Command("capitals"), Module(ModuleType.Games)]
+            [Description("Country capitals guessing quiz. You can also specify how many questions there will be in the quiz.")]
+            [Aliases("capitaltowns")]
+            [UsageExample("!game quiz capitals")]
+            [UsageExample("!game quiz capitals 15")]
+            public async Task CapitalsQuizAsync(CommandContext ctx,
+                                               [Description("Number of questions.")] int qnum = 10)
+            {
+                if (qnum < 5 || qnum > 50)
+                    throw new InvalidCommandUsageException("Number of questions must be in range [5-50]");
+
+                if (Game.RunningInChannel(ctx.Channel.Id))
+                    throw new CommandFailedException("Another game is already running in the current channel.");
+
+                try {
+                    QuizCapitals.LoadCapitals();
+                } catch {
+                    throw new CommandFailedException("Failed to load country capitals!");
+                }
+
+                var quiz = new QuizCapitals(ctx.Client.GetInteractivity(), ctx.Channel, qnum);
+                Game.RegisterGameInChannel(quiz, ctx.Channel.Id);
+                try {
+                    await ctx.RespondWithIconEmbedAsync("Quiz will start in 10s! Get ready!", ":clock1:")
+                        .ConfigureAwait(false);
+                    await Task.Delay(TimeSpan.FromSeconds(10))
+                        .ConfigureAwait(false);
+                    await quiz.RunAsync()
+                        .ConfigureAwait(false);
+
+                    if (quiz.NoReply) {
+                        await ctx.RespondWithIconEmbedAsync("Aborting quiz due to no replies...", ":alarm_clock:")
+                            .ConfigureAwait(false);
+                        return;
+                    }
+
+                    await HandleQuizResultsAsync(ctx, quiz.Results)
+                        .ConfigureAwait(false);
+                } finally {
+                    Game.UnregisterGameInChannel(ctx.Channel.Id);
+                }
+            }
+            #endregion
+
+            #region COMMAND_QUIZ_COUNTRIES
+            [Command("countries"), Module(ModuleType.Games)]
+            [Description("Country flags guessing quiz. You can also specify how many questions there will be in the quiz.")]
+            [Aliases("flags")]
+            [UsageExample("!game quiz countries")]
+            [UsageExample("!game quiz countries 15")]
+            public async Task CountriesQuizAsync(CommandContext ctx,
+                                                [Description("Number of questions.")] int qnum = 10)
+            {
+                if (qnum < 5 || qnum > 50)
+                    throw new InvalidCommandUsageException("Number of questions must be in range [5-50]");
+
+                if (Game.RunningInChannel(ctx.Channel.Id))
+                    throw new CommandFailedException("Another game is already running in the current channel.");
+
+                try {
+                    QuizCountries.LoadCountries();
+                } catch {
+                    throw new CommandFailedException("Failed to load country flags!");
+                }
+
+                var quiz = new QuizCountries(ctx.Client.GetInteractivity(), ctx.Channel, qnum);
+                Game.RegisterGameInChannel(quiz, ctx.Channel.Id);
+                try {
+                    await ctx.RespondWithIconEmbedAsync("Quiz will start in 10s! Get ready!", ":clock1:")
+                        .ConfigureAwait(false);
+                    await Task.Delay(TimeSpan.FromSeconds(10))
+                        .ConfigureAwait(false);
+                    await quiz.RunAsync()
+                        .ConfigureAwait(false);
+
+                    if (quiz.NoReply) {
+                        await ctx.RespondWithIconEmbedAsync("Aborting quiz due to no replies...", ":alarm_clock:")
+                            .ConfigureAwait(false);
+                        return;
+                    }
+
+                    await HandleQuizResultsAsync(ctx, quiz.Results)
+                        .ConfigureAwait(false);
+                } finally {
+                    Game.UnregisterGameInChannel(ctx.Channel.Id);
+                }
+            }
+            #endregion
+
             #region COMMAND_QUIZ_STATS
             [Command("stats"), Module(ModuleType.Games)]
             [Description("Print the leaderboard for this game.")]
@@ -138,6 +210,25 @@ namespace TheGodfather.Modules.Games
 
                 await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Trophy, $"Top players in Quiz:\n\n{top}")
                     .ConfigureAwait(false);
+            }
+            #endregion
+
+
+            #region HELPER_FUNCTIONS
+            private async Task HandleQuizResultsAsync(CommandContext ctx, ConcurrentDictionary<DiscordUser, int> results)
+            {
+                if (results.Any()) {
+                    var ordered = results.OrderByDescending(kvp => kvp.Value);
+                    await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
+                        Title = "Results",
+                        Description = string.Join("\n", ordered.Select(kvp => $"{kvp.Key.Mention} : {kvp.Value}")),
+                        Color = DiscordColor.Azure
+                    }.Build()).ConfigureAwait(false);
+
+                    if (results.Count > 1)
+                        await Database.UpdateUserStatsAsync(ordered.First().Key.Id, GameStatsType.QuizesWon)
+                            .ConfigureAwait(false);
+                }
             }
             #endregion
         }
