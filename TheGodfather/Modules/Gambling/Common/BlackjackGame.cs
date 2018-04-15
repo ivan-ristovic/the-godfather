@@ -21,6 +21,12 @@ namespace TheGodfather.Modules.Gambling.Common
     {
         public bool Started { get; private set; }
         public int ParticipantCount => _participants.Count;
+        public IReadOnlyList<BlackjackParticipant> Winners => _participants.Where(p => {
+            var value = HandValue(p.Hand);
+            if (value > 21)
+                return false;
+            return value > HandValue(_hand);
+        }).ToList().AsReadOnly();
 
         private ConcurrentQueue<BlackjackParticipant> _participants = new ConcurrentQueue<BlackjackParticipant>();
         private Deck _deck = new Deck();
@@ -44,8 +50,21 @@ namespace TheGodfather.Modules.Gambling.Common
 
             _deck.Shuffle();
 
-            foreach (var participant in _participants)
+            foreach (var participant in _participants) {
                 participant.Hand.AddRange(_deck.Draw(2));
+                if (HandValue(participant.Hand) == 21) {
+                    GameOver = true;
+                    break;
+                }
+            }
+
+            if (GameOver) {
+                await PrintGameAsync(msg)
+                    .ConfigureAwait(false);
+                await _channel.SendIconEmbedAsync("BLACKJACK!")
+                    .ConfigureAwait(false);
+                return;
+            }
             
             while (_participants.Any(p => !p.Standing)) {
                 foreach (var participant in _participants) {
@@ -74,6 +93,11 @@ namespace TheGodfather.Modules.Gambling.Common
             while (HandValue(_hand) <= 17)
                 _hand.Add(_deck.Draw());
 
+            if (_hand.Count == 2 && HandValue(_hand) == 21) {
+                await _channel.SendIconEmbedAsync("BLACKJACK!")
+                    .ConfigureAwait(false);
+            }
+
             await PrintGameAsync(msg)
                 .ConfigureAwait(false);
 
@@ -96,14 +120,21 @@ namespace TheGodfather.Modules.Gambling.Common
         private int HandValue(List<Card> hand)
         {
             int value = 0;
+            bool one = false;
             foreach (var card in hand) {
-                if (card.Value >= 10)
+                if (card.Value >= 10) {
                     value += 10;
-                else if (card.Value == 1)
-                    value += 11;
-                else 
+                } else if (card.Value == 1) {
+                    value += 1;
+                    one = true;
+                } else {
                     value += card.Value;
+                }
             }
+
+            if (one && value <= 11)
+                value += 10;
+
             return value;
         }
 
@@ -139,7 +170,7 @@ namespace TheGodfather.Modules.Gambling.Common
         }
 
 
-        private sealed class BlackjackParticipant
+        public sealed class BlackjackParticipant
         {
             public DiscordUser User { get; internal set; }
             public List<Card> Hand { get; internal set; } = new List<Card>();
