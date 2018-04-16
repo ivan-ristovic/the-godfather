@@ -86,8 +86,8 @@ namespace TheGodfather.Modules.Gambling
         [Module(ModuleType.Gambling)]
         [Description("Roll a dice and bet on the outcome.")]
         [Aliases("roll", "die")]
-        [UsageExample("!dice 50 six")]
-        [UsageExample("!dice three 10")]
+        [UsageExample("!bet dice 50 six")]
+        [UsageExample("!bet dice three 10")]
         public async Task RollDiceAsync(CommandContext ctx,
                                        [Description("Bid.")] int bid,
                                        [Description("Number guess (has to be a word one-six).")] string guess)

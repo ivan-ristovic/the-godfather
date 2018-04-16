@@ -45,6 +45,9 @@ namespace TheGodfather.Modules.Gambling
                     return;
                 }
 
+                if (bid <= 0 || !await Database.TakeCreditsFromUserAsync(ctx.User.Id, bid))
+                    throw new CommandFailedException("You do not have that many credits on your account! Specify a smaller bid amount.");
+
                 var game = new BlackjackGame(ctx.Client.GetInteractivity(), ctx.Channel);
                 Game.RegisterGameInChannel(game, ctx.Channel.Id);
                 try {
@@ -59,12 +62,19 @@ namespace TheGodfather.Modules.Gambling
                         .ConfigureAwait(false);
 
                     if (game.Winners.Any()) {
-                        await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.CardSuits[0], $"Winners:\n\n{string.Join(", ", game.Winners.Select(w => w.User.Mention))}")
-                            .ConfigureAwait(false);
-
-                        foreach (var winner in game.Winners)
-                            await Database.GiveCreditsToUserAsync(winner.Id, winner.Bid * 2)
+                        if (game.Winner != null) {
+                            await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.CardSuits[0], $"{game.Winner.Mention} got the BlackJack!")
                                 .ConfigureAwait(false);
+                            await Database.GiveCreditsToUserAsync(game.Winner.Id, game.Winners.First(p => p.Id == game.Winner.Id).Bid)
+                                    .ConfigureAwait(false);
+                        } else {
+                            await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.CardSuits[0], $"Winners:\n\n{string.Join(", ", game.Winners.Select(w => w.User.Mention))}")
+                                .ConfigureAwait(false);
+
+                            foreach (var winner in game.Winners)
+                                await Database.GiveCreditsToUserAsync(winner.Id, winner.Bid * 2)
+                                    .ConfigureAwait(false);
+                        }
                     } else {
                         await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.CardSuits[0], "The House always wins!")
                             .ConfigureAwait(false);
@@ -97,7 +107,7 @@ namespace TheGodfather.Modules.Gambling
                     throw new CommandFailedException("Blackjack slots are full (max 5 participants), kthxbye.");
 
                 if (!game.AddParticipant(ctx.User, 0))
-                    throw new CommandFailedException("You are already participating in the race!");
+                    throw new CommandFailedException("You are already participating in the Blackjack game!");
 
                 await ctx.RespondWithIconEmbedAsync($"{ctx.User.Mention} joined the Blackjack game.", ":spades:")
                     .ConfigureAwait(false);

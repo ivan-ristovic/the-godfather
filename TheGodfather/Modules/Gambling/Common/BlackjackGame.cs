@@ -21,12 +21,20 @@ namespace TheGodfather.Modules.Gambling.Common
     {
         public bool Started { get; private set; }
         public int ParticipantCount => _participants.Count;
-        public IReadOnlyList<BlackjackParticipant> Winners => _participants.Where(p => {
-            var value = HandValue(p.Hand);
-            if (value > 21)
-                return false;
-            return value > HandValue(_hand);
-        }).ToList().AsReadOnly();
+        public IReadOnlyList<BlackjackParticipant> Winners
+        {
+            get {
+                int hvalue = HandValue(_hand);
+                if (hvalue > 21)
+                    return _participants.Where(p => HandValue(p.Hand) <= 21).ToList().AsReadOnly();
+                return _participants.Where(p => {
+                    var value = HandValue(p.Hand);
+                    if (value > 21)
+                        return false;
+                    return value > hvalue;
+                }).ToList().AsReadOnly();
+            }
+        }
 
         private ConcurrentQueue<BlackjackParticipant> _participants = new ConcurrentQueue<BlackjackParticipant>();
         private Deck _deck = new Deck();
@@ -54,14 +62,13 @@ namespace TheGodfather.Modules.Gambling.Common
                 participant.Hand.AddRange(_deck.Draw(2));
                 if (HandValue(participant.Hand) == 21) {
                     GameOver = true;
+                    Winner = participant.User;
                     break;
                 }
             }
 
             if (GameOver) {
                 await PrintGameAsync(msg)
-                    .ConfigureAwait(false);
-                await _channel.SendIconEmbedAsync("BLACKJACK!")
                     .ConfigureAwait(false);
                 return;
             }
@@ -98,10 +105,9 @@ namespace TheGodfather.Modules.Gambling.Common
                     .ConfigureAwait(false);
             }
 
+            GameOver = true;
             await PrintGameAsync(msg)
                 .ConfigureAwait(false);
-
-            GameOver = true;
         }
 
         public bool AddParticipant(DiscordUser user, int bid)
