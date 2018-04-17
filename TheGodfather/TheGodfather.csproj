@@ -289,6 +289,7 @@
     <Compile Include="Modules\Search\MoviesModule.cs" />
     <Compile Include="Services\Common\Birthday.cs" />
     <Compile Include="Services\Common\GameStatsType.cs" />
+    <Compile Include="Services\Common\OMDbData.cs" />
     <Compile Include="Services\Common\QuizData.cs" />
     <Compile Include="Services\Common\SavedTask.cs" />
     <Compile Include="Extensions\DSharpPlusExtensions.cs" />

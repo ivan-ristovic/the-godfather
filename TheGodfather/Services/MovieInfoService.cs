@@ -1,10 +1,10 @@
 ﻿#region USING_DIRECTIVES
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+
+using TheGodfather.Services.Common;
 
 using DSharpPlus;
 #endregion
@@ -37,35 +37,5 @@ namespace TheGodfather.Services
                 return null;
             }
         }
-    }
-
-    public class OMDbResponse
-    {
-        [JsonProperty("Search")]
-        public List<MovieInfo> Results { get; set; }
-        
-        [JsonProperty("totalResults")]
-        public int NumberOfResults { get; set; }
-
-        [JsonProperty("Response")]
-        public bool Success { get; set; }
-    }
-
-    public class MovieInfo
-    {
-        [JsonProperty("Title")]
-        public string Title { get; set; }
-
-        [JsonProperty("Year")]
-        public string Year { get; set; }
-
-        [JsonProperty("imdbID")]
-        public string IMDbId { get; set; }
-
-        [JsonProperty("Type")]
-        public string Type { get; set; }
-
-        [JsonProperty("Poster")]
-        public string Poster { get; set; }
     }
 }
