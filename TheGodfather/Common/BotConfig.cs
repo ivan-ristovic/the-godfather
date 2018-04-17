@@ -43,6 +43,9 @@ namespace TheGodfather.Common
         [JsonProperty("key-youtube")]
         public string YouTubeKey { get; private set; }
 
+        [JsonProperty("key-omdb")]
+        public string OMDbKey { get; private set; }
+        
         [JsonProperty("db-config")]
         public DatabaseConfig DatabaseConfig { get; private set; }
 
@@ -80,6 +83,7 @@ namespace TheGodfather.Common
                     ImgurKey = "<insert Imgur API key>",
                     WeatherKey = "<insert OpenWeatherMaps API key>",
                     YouTubeKey = "<insert YouTube API key>",
+                    OMDbKey = "<insert OMDb API key>",
                     DatabaseConfig = DatabaseConfig.Default
                 };
             }

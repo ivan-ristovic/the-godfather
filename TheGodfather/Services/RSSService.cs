@@ -89,14 +89,14 @@ namespace TheGodfather.Services
                                     .ConfigureAwait(false);
                                 continue;
                             }
+
                             var em = new DiscordEmbedBuilder() {
                                 Title = $"{newest.Title.Text}",
                                 Url = url,
                                 Timestamp = newest.LastUpdatedTime,
                                 Color = DiscordColor.White,
                             };
-
-                            // FIXME reddit hack
+                            
                             if (newest.Content is TextSyndicationContent content) {
                                 var matches = _urlRegex.Match(content.Text);
                                 if (matches.Success)
@@ -105,8 +105,10 @@ namespace TheGodfather.Services
                             if (!string.IsNullOrWhiteSpace(sub.QualifiedName))
                                 em.AddField("From", sub.QualifiedName);
                             em.AddField("Link to content", url);
+
                             await chn.SendMessageAsync(embed: em.Build())
                                 .ConfigureAwait(false);
+
                             await Task.Delay(100)
                                 .ConfigureAwait(false);
                         }

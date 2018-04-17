@@ -286,6 +286,7 @@
     <Compile Include="Modules\Reactions\Common\TextReaction.cs" />
     <Compile Include="Modules\Music\Common\SongInfo.cs" />
     <Compile Include="Modules\Music\MusicModule.Play.cs" />
+    <Compile Include="Modules\Search\MoviesModule.cs" />
     <Compile Include="Services\Common\Birthday.cs" />
     <Compile Include="Services\Common\GameStatsType.cs" />
     <Compile Include="Services\Common\QuizData.cs" />
@@ -384,6 +385,7 @@
     <Compile Include="Modules\SWAT\Common\SwatServer.cs" />
     <Compile Include="Modules\SWAT\Common\SwatServerInfo.cs" />
     <Compile Include="Services\MemeGenService.cs" />
+    <Compile Include="Services\MovieInfoService.cs" />
     <Compile Include="Services\PetImagesService.cs" />
     <Compile Include="Services\HttpService.cs" />
     <Compile Include="Services\QuizService.cs" />

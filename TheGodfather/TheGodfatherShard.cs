@@ -111,6 +111,7 @@ namespace TheGodfather
                     .AddSingleton(new YoutubeService(_shared.BotConfiguration.YouTubeKey))
                     .AddSingleton(new GiphyService(_shared.BotConfiguration.GiphyKey))
                     .AddSingleton(new ImgurService(_shared.BotConfiguration.ImgurKey))
+                    .AddSingleton(new MovieInfoService(_shared.BotConfiguration.OMDbKey))
                     .AddSingleton(new SteamService(_shared.BotConfiguration.SteamKey))
                     .AddSingleton(new WeatherService(_shared.BotConfiguration.WeatherKey))
                     .AddSingleton(this)
