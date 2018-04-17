@@ -12,10 +12,10 @@ using DSharpPlus.Interactivity;
 
 namespace TheGodfather.Modules.Search
 {
-    [Group("movies"), Module(ModuleType.Searches)]
+    [Group("imdb"), Module(ModuleType.Searches)]
     [Description("Search Open Movie Database.")]
-    [Aliases("movie", "film", "cinema", "imdb", "omdb")]
-    [UsageExample("!movie Kill Bill")]
+    [Aliases("movies", "series", "serie", "movie", "film", "cinema", "omdb")]
+    [UsageExample("!imdb Kill Bill")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     [ListeningCheck]
     public class MoviesModule : TheGodfatherServiceModule<MovieInfoService>
@@ -26,7 +26,7 @@ namespace TheGodfather.Modules.Search
 
         [GroupCommand, Priority(0)]
         public async Task ExecuteGroupAsync(CommandContext ctx,
-                                           [Description("Search uery.")] string query)
+                                           [Description("Search query.")] string query)
         {
             var pages = await _Service.GetPaginatedResultsAsync(query)
                 .ConfigureAwait(false);
