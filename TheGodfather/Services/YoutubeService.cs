@@ -176,7 +176,7 @@ namespace TheGodfather.Services
             string[] data = null;
             try {
                 var ytdlinfo = new ProcessStartInfo() {
-                    FileName = "youtube-dl",
+                    FileName = "Resources/youtube-dl",
                     Arguments = $"-4 --geo-bypass -f bestaudio -e --get-url --get-id --get-thumbnail --get-duration --no-check-certificate --default-search \"ytsearch:\" \"{url}\"",
                     UseShellExecute = false,
                     RedirectStandardError = true,

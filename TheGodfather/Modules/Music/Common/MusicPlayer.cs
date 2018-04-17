@@ -92,7 +92,7 @@ namespace TheGodfather.Modules.Music.Common
                     await _current.CreateReactionAsync(DiscordEmoji.FromUnicode("▶"));
 
                     var ffmpeg_inf = new ProcessStartInfo {
-                        FileName = "ffmpeg",
+                        FileName = "Resources/ffmpeg",
                         Arguments = $"-i \"{si.Uri}\" -ac 2 -f s16le -ar 48000 pipe:1",
                         UseShellExecute = false,
                         RedirectStandardOutput = true,
