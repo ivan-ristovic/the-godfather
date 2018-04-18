@@ -43,7 +43,7 @@ namespace TheGodfather.Services.Common
         public string Title { get; set; }
 
         [JsonProperty("Year")]
-        public string Year { get; set; }
+        public string AirYears { get; set; }
 
         [JsonProperty("Rated")]
         public string Rated { get; set; }

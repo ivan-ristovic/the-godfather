@@ -58,8 +58,8 @@ namespace TheGodfather.Services
 
             if (!string.IsNullOrWhiteSpace(info.Type))
                 emb.AddField("Type", info.Type, inline: true);
-            if (!string.IsNullOrWhiteSpace(info.Year))
-                emb.AddField("Type", info.Year, inline: true);
+            if (!string.IsNullOrWhiteSpace(info.AirYears))
+                emb.AddField("Air time", info.AirYears, inline: true);
             if (!string.IsNullOrWhiteSpace(info.IMDbId))
                 emb.AddField("IMDb ID", info.IMDbId, inline: true);
             if (!string.IsNullOrWhiteSpace(info.Genre))
@@ -80,6 +80,8 @@ namespace TheGodfather.Services
                 emb.AddField("Director", info.Director, inline: true);
             if (!string.IsNullOrWhiteSpace(info.Poster) && info.Poster != "N/A")
                 emb.WithThumbnailUrl(info.Poster);
+
+            emb.WithFooter("Powered by OMDb.");
 
             return emb.Build();
         }
