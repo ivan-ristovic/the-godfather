@@ -14,74 +14,97 @@ using DSharpPlus.Interactivity;
 
 namespace TheGodfather.Services
 {
-    public class MovieInfoService : HttpService, IGodfatherService
+    public class OMDbService : HttpService, IGodfatherService
     {
         private string _requestUrl;
 
 
-        public MovieInfoService(string key)
+        public OMDbService(string key)
         {
             _requestUrl = $"http://www.omdbapi.com/?apikey={ key }";
         }
 
 
-        public async Task<IReadOnlyList<Page>> GetPaginatedResultsAsync(string query)
+        public async Task<IReadOnlyList<Page>> GetPaginatedResultsAsync(string q)
         {
-            var ids = await SearchAndRetrieveResultIdsAsync(query)
+            var results = await SearchQueryAsync(q)
                 .ConfigureAwait(false);
 
-            if (ids == null || !ids.Any())
+            if (results == null || !results.Any())
                 return null;
 
-            List<MovieInfo> detailedResults = new List<MovieInfo>();
-            foreach (var id in ids) {
-                var detailed = await GetMovieInfoAsync(id)
-                    .ConfigureAwait(false);
-                if (detailed == null || !detailed.Success)
-                    continue;
-                detailedResults.Add(detailed);
-            }
-
-            return detailedResults.Select(info => {
-                var emb = new DiscordEmbedBuilder() {
-                    Title = info.Title,
-                    Description = info.Plot,
-                    Url = $"http://www.imdb.com/title/{ info.IMDbId }",
-                    Color = DiscordColor.Yellow
-                };
-                emb.AddField("Type", info.Type, inline: true)
-                   .AddField("Genre", info.Genre, inline: true)
-                   .AddField("Release date", info.ReleaseDate, inline: true)
-                   .AddField("Rated", info.Rated, inline: true)
-                   .AddField("Duration", info.Duration, inline: true)
-                   .AddField("Actors", info.Actors, inline: true)
-                   .AddField("IMDb rating", $"{info.IMDbRating} out of {info.IMDbVotes} votes", inline: true)
-                   .AddField("Writer", info.Writer, inline: true)
-                   .AddField("Director", info.Director, inline: true);
-
-                if (info.Poster != "N/A")
-                    emb.WithThumbnailUrl(info.Poster);
-
-                return new Page() { Embed = emb.Build() };
-            }).ToList().AsReadOnly();
+            return results.Select(info => EmbedInfoInPage(info)).ToList().AsReadOnly();
         }
 
-        public async Task<IReadOnlyList<Page>> GetPaginatedResultsByIdAsync(string id)
+        public async Task<Page> GetSingleResultAsync(OMDbQueryType type, string q)
         {
-            return null;
+            var result = await SearchAsync(type, q)
+                .ConfigureAwait(false);
+
+            if (result == null)
+                return null;
+
+            return EmbedInfoInPage(result);
+        }
+
+        public DiscordEmbed EmbedInfo(MovieInfo info)
+        {
+            var emb = new DiscordEmbedBuilder() {
+                Title = info.Title,
+                Description = info.Plot,
+                Url = $"http://www.imdb.com/title/{ info.IMDbId }",
+                Color = DiscordColor.Yellow
+            };
+
+            if (!string.IsNullOrWhiteSpace(info.Type))
+                emb.AddField("Type", info.Type, inline: true);
+            if (!string.IsNullOrWhiteSpace(info.Year))
+                emb.AddField("Type", info.Year, inline: true);
+            if (!string.IsNullOrWhiteSpace(info.IMDbId))
+                emb.AddField("IMDb ID", info.IMDbId, inline: true);
+            if (!string.IsNullOrWhiteSpace(info.Genre))
+                emb.AddField("Genre", info.Genre, inline: true);
+            if (!string.IsNullOrWhiteSpace(info.ReleaseDate))
+                emb.AddField("Release date", info.ReleaseDate, inline: true);
+            if (!string.IsNullOrWhiteSpace(info.Rated))
+                emb.AddField("Rated", info.Rated, inline: true);
+            if (!string.IsNullOrWhiteSpace(info.Duration))
+                emb.AddField("Duration", info.Duration, inline: true);
+            if (!string.IsNullOrWhiteSpace(info.Actors))
+                emb.AddField("Actors", info.Actors, inline: true);
+            if (!string.IsNullOrWhiteSpace(info.IMDbRating) && !string.IsNullOrWhiteSpace(info.IMDbVotes))
+                emb.AddField("IMDb rating", $"{info.IMDbRating} out of {info.IMDbVotes} votes", inline: true);
+            if (!string.IsNullOrWhiteSpace(info.Writer))
+                emb.AddField("Writer", info.Writer, inline: true);
+            if (!string.IsNullOrWhiteSpace(info.Director))
+                emb.AddField("Director", info.Director, inline: true);
+            if (!string.IsNullOrWhiteSpace(info.Poster) && info.Poster != "N/A")
+                emb.WithThumbnailUrl(info.Poster);
+
+            return emb.Build();
         }
 
 
-        private async Task<IReadOnlyList<string>> SearchAndRetrieveResultIdsAsync(string query)
+        private async Task<IReadOnlyList<MovieInfo>> SearchQueryAsync(string query)
         {
             try {
                 var response = await _http.GetStringAsync($"{_requestUrl}&s={query}")
                     .ConfigureAwait(false);
                 var data = JsonConvert.DeserializeObject<OMDbResponse>(response);
-                if (data.Success)
-                    return data.Results.Select(r => r.IMDbId).ToList().AsReadOnly();
-                else
-                    return null;
+                return data.Success ? data.Results?.AsReadOnly() : null;
+            } catch (Exception e) {
+                TheGodfather.LogHandle.LogException(LogLevel.Debug, e);
+                return null;
+            }
+        }
+
+        private async Task<MovieInfo> SearchAsync(OMDbQueryType type, string q)
+        {
+            try {
+                var response = await _http.GetStringAsync($"{_requestUrl}&{type.ToApiString()}={q}")
+                    .ConfigureAwait(false);
+                var data = JsonConvert.DeserializeObject<MovieInfo>(response);
+                return data.Success ? data : null;
             } catch (Exception e) {
                 TheGodfather.LogHandle.LogException(LogLevel.Debug, e);
                 return null;
@@ -94,14 +117,14 @@ namespace TheGodfather.Services
                 var response = await _http.GetStringAsync($"{_requestUrl}&i={ id }")
                     .ConfigureAwait(false);
                 var data = JsonConvert.DeserializeObject<MovieInfo>(response);
-                if (data.Success)
-                    return data;
-                else
-                    return null;
+                return data.Success ? data : null;
             } catch (Exception e) {
                 TheGodfather.LogHandle.LogException(LogLevel.Debug, e);
                 return null;
             }
         }
+
+        private Page EmbedInfoInPage(MovieInfo info)
+            => new Page() { Embed = EmbedInfo(info) };
     }
 }

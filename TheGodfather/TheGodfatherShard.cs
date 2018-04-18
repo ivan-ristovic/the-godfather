@@ -111,7 +111,7 @@ namespace TheGodfather
                     .AddSingleton(new YoutubeService(_shared.BotConfiguration.YouTubeKey))
                     .AddSingleton(new GiphyService(_shared.BotConfiguration.GiphyKey))
                     .AddSingleton(new ImgurService(_shared.BotConfiguration.ImgurKey))
-                    .AddSingleton(new MovieInfoService(_shared.BotConfiguration.OMDbKey))
+                    .AddSingleton(new OMDbService(_shared.BotConfiguration.OMDbKey))
                     .AddSingleton(new SteamService(_shared.BotConfiguration.SteamKey))
                     .AddSingleton(new WeatherService(_shared.BotConfiguration.WeatherKey))
                     .AddSingleton(this)
@@ -300,8 +300,7 @@ namespace TheGodfather
                     await e.Channel.DeleteMessageAsync(e.Message)
                         .ConfigureAwait(false);
                     Log(LogLevel.Info,
-                        $"Filter triggered:<br>" +
-                        $"Message: {e.Message.Content.Replace('\n', ' ')}<br>" +
+                        $"Filter triggered in message: {e.Message.Content.Replace('\n', ' ')}<br>" +
                         $"{e.Message.Author.ToString()}<br>" +
                         $"{e.Guild.ToString()} | {e.Channel.ToString()}"
                     );
@@ -394,7 +393,7 @@ namespace TheGodfather
                     await e.Channel.DeleteMessageAsync(e.Message)
                         .ConfigureAwait(false);
                     Log(LogLevel.Info,
-                        $"Filter triggered in edit of a message:<br>" +
+                        $"Filter triggered after message edit:<br>" +
                         $"Message: {e.Message.Content.Replace('\n', ' ')}<br>" +
                         $"{e.Message.Author.ToString()}<br>" +
                         $"{e.Guild.ToString()} | {e.Channel.ToString()}"

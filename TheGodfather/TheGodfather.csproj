@@ -286,7 +286,7 @@
     <Compile Include="Modules\Reactions\Common\TextReaction.cs" />
     <Compile Include="Modules\Music\Common\SongInfo.cs" />
     <Compile Include="Modules\Music\MusicModule.Play.cs" />
-    <Compile Include="Modules\Search\MoviesModule.cs" />
+    <Compile Include="Modules\Search\OMDbModule.cs" />
     <Compile Include="Services\Common\Birthday.cs" />
     <Compile Include="Services\Common\GameStatsType.cs" />
     <Compile Include="Services\Common\OMDbData.cs" />

@@ -5,6 +5,26 @@ using Newtonsoft.Json;
 
 namespace TheGodfather.Services.Common
 {
+    public enum OMDbQueryType
+    {
+        Id,
+        Title
+    }
+
+    public static class SearchTypeExtensions
+    {
+        public static string ToApiString(this OMDbQueryType type)
+        {
+            switch (type) {
+                case OMDbQueryType.Id: return "i";
+                case OMDbQueryType.Title: return "t";
+                default: return "";
+            }
+        }
+    }
+
+
+
     public class OMDbResponse
     {
         [JsonProperty("Search")]
