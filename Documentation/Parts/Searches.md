@@ -48,6 +48,71 @@
 ```
 ---
 
+## Group: imdb
+*Search Open Movie Database.*
+
+**Aliases:**
+`movies, series, serie, movie, film, cinema, omdb`
+
+**Arguments:**
+
+`[string...]` : *Title.*
+
+**Examples:**
+
+```
+!imdb Airplane
+```
+---
+
+### imdb id
+*Search by IMDb ID.*
+
+**Arguments:**
+
+`[string]` : *ID.*
+
+**Examples:**
+
+```
+!imdb id tt4158110
+```
+---
+
+### imdb search
+*Searches IMDb for given query and returns paginated results.*
+
+**Aliases:**
+`s, find`
+
+**Arguments:**
+
+`[string...]` : *Search query.*
+
+**Examples:**
+
+```
+!imdb search Kill Bill
+```
+---
+
+### imdb title
+*Search by title.*
+
+**Aliases:**
+`t, name, n`
+
+**Arguments:**
+
+`[string...]` : *Title.*
+
+**Examples:**
+
+```
+!imdb title Airplane
+```
+---
+
 ## Group: imgur
 *Search imgur. Invoking without subcommand retrieves top ranked images from given subreddit.*
 

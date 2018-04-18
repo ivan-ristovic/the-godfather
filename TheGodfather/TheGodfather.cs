@@ -205,7 +205,9 @@ namespace TheGodfather
                 await shard.DisconnectAndDisposeAsync();
             CTS.Dispose();
             SharedData.Dispose();
-            Console.WriteLine("Done! Bye!");
+            Console.WriteLine("All done! Bye!");
+            Console.WriteLine("Press any key to continue...");
+            Console.ReadKey();
         }
 
 

@@ -166,6 +166,40 @@
 ```
 ---
 
+## Group: casino blackjack
+*Play a blackjack game.*
+
+**Aliases:**
+`bj`
+
+**Arguments:**
+
+(optional) `[int]` : *Bid amount.* (def: `5`)
+
+**Examples:**
+
+```
+!casino blackjack
+```
+---
+
+### casino slot
+*Roll a slot machine. You need to specify a bid amount. Default bid amount is 5.*
+
+**Aliases:**
+`slotmachine`
+
+**Arguments:**
+
+(optional) `[int]` : *Bid.* (def: `5`)
+
+**Examples:**
+
+```
+!casino slot 20
+```
+---
+
 ### gamble coinflip
 *Flip a coin and bet on the outcome.*
 
@@ -213,25 +247,8 @@
 **Examples:**
 
 ```
-!dice 50 six
-!dice three 10
-```
----
-
-### gamble slot
-*Roll a slot machine.*
-
-**Aliases:**
-`slotmachine`
-
-**Arguments:**
-
-(optional) `[int]` : *Bid.* (def: `5`)
-
-**Examples:**
-
-```
-!gamble slot 20
+!bet dice 50 six
+!bet dice three 10
 ```
 ---
 

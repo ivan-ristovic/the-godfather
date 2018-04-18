@@ -1,5 +1,35 @@
 # Module: Games
 
+### casino blackjack join
+*Join a pending Blackjack game.*
+
+**Aliases:**
+`+, compete, enter, j`
+
+**Arguments:**
+
+(optional) `[int]` : *Bid amount.* (def: `5`)
+
+**Examples:**
+
+```
+!casino blackjack join
+```
+---
+
+### casino blackjack rules
+*Explain the Blackjack rules.*
+
+**Aliases:**
+`help, h, ruling, rule`
+
+**Examples:**
+
+```
+!casino blackjack rules
+```
+---
+
 ## Group: game animalrace
 *Start a new animal race!*
 
@@ -324,23 +354,81 @@
 **Aliases:**
 `trivia, q`
 
+**Overload 4:**
+
+`[int]` : *ID of the quiz category.*
+
+(optional) `[int]` : *Amount of questions.* (def: `10`)
+
+(optional) `[string]` : *Difficulty. (easy/medium/hard)* (def: `easy`)
+
+**Overload 3:**
+
+`[int]` : *ID of the quiz category.*
+
+(optional) `[string]` : *Difficulty. (easy/medium/hard)* (def: `easy`)
+
+(optional) `[int]` : *Amount of questions.* (def: `10`)
+
+**Overload 2:**
+
+`[string]` : *Quiz category.*
+
+(optional) `[string]` : *Difficulty. (easy/medium/hard)* (def: `easy`)
+
+(optional) `[int]` : *Amount of questions.* (def: `10`)
+
+**Overload 1:**
+
+`[string...]` : *Quiz category.*
+
 **Examples:**
 
 ```
-!game quiz 
+!game quiz
+!game quiz countries
+!game quiz 9
+!game quiz history
+!game quiz history hard
+!game quiz history hard 15
+!game quiz 9 hard
+!game quiz 9 hard 15
+```
+---
+
+### game quiz capitals
+*Country capitals guessing quiz. You can also specify how many questions there will be in the quiz.*
+
+**Aliases:**
+`capitaltowns`
+
+**Arguments:**
+
+(optional) `[int]` : *Number of questions.* (def: `10`)
+
+**Examples:**
+
+```
+!game quiz capitals
+!game quiz capitals 15
 ```
 ---
 
 ### game quiz countries
-*Country flags guessing quiz.*
+*Country flags guessing quiz. You can also specify how many questions there will be in the quiz.*
 
 **Aliases:**
 `flags`
+
+**Arguments:**
+
+(optional) `[int]` : *Number of questions.* (def: `10`)
 
 **Examples:**
 
 ```
 !game quiz countries
+!game quiz countries 15
 ```
 ---
 
@@ -371,6 +459,45 @@
 
 ```
 !game rps scissors
+```
+---
+
+## Group: game russianroulette
+*Starts a russian roulette game which I will commentate.*
+
+**Aliases:**
+`rr, roulette, russianr`
+
+**Examples:**
+
+```
+!game russianroulette
+```
+---
+
+### game russianroulette join
+*Join an existing Russian roulette game pool.*
+
+**Aliases:**
+`+, compete, j, enter`
+
+**Examples:**
+
+```
+!game russianroulette join
+```
+---
+
+### game russianroulette rules
+*Explain the Russian roulette rules.*
+
+**Aliases:**
+`help, h, ruling, rule`
+
+**Examples:**
+
+```
+!game numberrace rules
 ```
 ---
 
