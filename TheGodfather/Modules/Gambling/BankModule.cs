@@ -67,10 +67,10 @@ namespace TheGodfather.Modules.Gambling
                                     [Description("User.")] DiscordUser user,
                                     [Description("Amount.")] int amount)
         {
-            if (amount <= 0 || amount > 100000)
+            if (amount <= 0 || amount > 1000000)
                 throw new InvalidCommandUsageException("Invalid amount. Must be in range [1-100000].");
 
-            if (!await Database.BankContainsUserAsync(ctx.User.Id).ConfigureAwait(false))
+            if (!await Database.BankContainsUserAsync(user.Id).ConfigureAwait(false))
                 throw new CommandFailedException("Given user does not have a WM bank account!");
 
             await Database.GiveCreditsToUserAsync(user.Id, amount)

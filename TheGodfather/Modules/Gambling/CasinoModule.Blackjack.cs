@@ -45,13 +45,15 @@ namespace TheGodfather.Modules.Gambling
                     return;
                 }
 
-                if (bid <= 0 || !await Database.TakeCreditsFromUserAsync(ctx.User.Id, bid))
+                int? balance = await Database.GetUserCreditAmountAsync(ctx.User.Id)
+                    .ConfigureAwait(false);
+                if (!balance.HasValue || balance < bid)
                     throw new CommandFailedException("You do not have that many credits on your account! Specify a smaller bid amount.");
 
                 var game = new BlackjackGame(ctx.Client.GetInteractivity(), ctx.Channel);
                 Game.RegisterGameInChannel(game, ctx.Channel.Id);
                 try {
-                    await ctx.RespondWithIconEmbedAsync($"The Blackjack game will start in 30s or when there are 5 participants. Use command {Formatter.InlineCode("casino blackjack")} to join the pool.", ":clock1:")
+                    await ctx.RespondWithIconEmbedAsync($"The Blackjack game will start in 30s or when there are 5 participants. Use command {Formatter.InlineCode("casino blackjack <bid>")} to join the pool. Default bid is 5 credits.", ":clock1:")
                         .ConfigureAwait(false);
                     await JoinAsync(ctx, bid)
                         .ConfigureAwait(false);
@@ -86,7 +88,7 @@ namespace TheGodfather.Modules.Gambling
 
 
             #region COMMAND_BLACKJACK_JOIN
-            [Command("join"), Module(ModuleType.Games)]
+            [Command("join"), Module(ModuleType.Gambling)]
             [Description("Join a pending Blackjack game.")]
             [Aliases("+", "compete", "enter", "j")]
             [UsageExample("!casino blackjack join")]
@@ -98,7 +100,7 @@ namespace TheGodfather.Modules.Gambling
 
                 var game = Game.GetGameInChannel(ctx.Channel.Id) as BlackjackGame;
                 if (game == null)
-                    throw new CommandFailedException("There is no Blackjack game running in this channel.");
+                    throw new CommandFailedException("There are no Blackjack games running in this channel.");
 
                 if (game.Started)
                     throw new CommandFailedException("Blackjack game has already started, you can't join it.");
@@ -115,7 +117,7 @@ namespace TheGodfather.Modules.Gambling
             #endregion
 
             #region COMMAND_BLACKJACK_RULES
-            [Command("rules"), Module(ModuleType.Games)]
+            [Command("rules"), Module(ModuleType.Gambling)]
             [Description("Explain the Blackjack rules.")]
             [Aliases("help", "h", "ruling", "rule")]
             [UsageExample("!casino blackjack rules")]
