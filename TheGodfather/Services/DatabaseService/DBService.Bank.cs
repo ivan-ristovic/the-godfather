@@ -184,5 +184,22 @@ namespace TheGodfather.Services
                 _sem.Release();
             }
         }
+
+        public async Task UpdateBankAccountsAsync()
+        {
+            await _sem.WaitAsync();
+            try {
+                using (var con = new NpgsqlConnection(_connectionString))
+                using (var cmd = con.CreateCommand()) {
+                    await con.OpenAsync().ConfigureAwait(false);
+
+                    cmd.CommandText = "UPDATE gf.accounts SET balance = balance + 5;";
+
+                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                }
+            } finally {
+                _sem.Release();
+            }
+        }
     }
 }

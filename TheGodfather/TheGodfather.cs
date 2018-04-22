@@ -169,7 +169,7 @@ namespace TheGodfather
             DatabaseSyncTimer = new Timer(DatabaseSyncTimerCallback, Shards[0].Client, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(3));
             BotStatusTimer = new Timer(BotActivityTimerCallback, Shards[0].Client, TimeSpan.FromSeconds(10), TimeSpan.FromMinutes(10));
             FeedCheckTimer = new Timer(FeedCheckTimerCallback, Shards[0].Client, TimeSpan.FromSeconds(30), TimeSpan.FromMinutes(1));
-            BirthdayCheckTimer = new Timer(BirthdayCheckTimerCallback, Shards[0].Client, TimeSpan.FromSeconds(5), TimeSpan.FromHours(1));
+            BirthdayCheckTimer = new Timer(MiscellaneousPeriodicActionsCallback, Shards[0].Client, TimeSpan.FromSeconds(5), TimeSpan.FromHours(1));
             Console.WriteLine(" Done!");
             Console.WriteLine();
 
@@ -243,7 +243,7 @@ namespace TheGodfather
             }
         }
 
-        private static void BirthdayCheckTimerCallback(object _)
+        private static void MiscellaneousPeriodicActionsCallback(object _)
         {
             var client = _ as DiscordClient;
             try {
@@ -259,6 +259,9 @@ namespace TheGodfather
                     DatabaseService.UpdateBirthdayLastNotifiedDateAsync(birthday.UserId, channel.Id)
                         .ConfigureAwait(false).GetAwaiter().GetResult();
                 }
+
+                DatabaseService.UpdateBankAccountsAsync()
+                    .ConfigureAwait(false).GetAwaiter().GetResult();
             } catch (Exception e) {
                 LogHandle.LogException(LogLevel.Error, e);
             }
