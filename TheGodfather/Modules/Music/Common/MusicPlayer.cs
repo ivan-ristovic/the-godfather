@@ -126,6 +126,9 @@ namespace TheGodfather.Modules.Music.Common
                     _playing = false;
                     _stopped = true;
                 }
+
+                // remove reaction handler
+
             }
         }
 

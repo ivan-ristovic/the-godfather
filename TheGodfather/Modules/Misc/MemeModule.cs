@@ -102,9 +102,18 @@ namespace TheGodfather.Modules.Misc
         [RequireUserPermissions(Permissions.Administrator)]
         public async Task ClearMemesAsync(CommandContext ctx)
         {
-            await Database.RemoveAllGuildMemesAsync(ctx.Guild.Id)
-                .ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync()
+            if (!await ctx.AskYesNoQuestionAsync("Are you sure you want to delete all memes for this guild?").ConfigureAwait(false))
+                return;
+
+            try {
+                await Database.RemoveAllGuildMemesAsync(ctx.Guild.Id)
+                    .ConfigureAwait(false);
+            } catch (Exception e) {
+                TheGodfather.LogHandle.LogException(LogLevel.Warning, e);
+                throw new CommandFailedException("Failed to delete memes from the database.");
+            }
+
+            await ctx.RespondWithIconEmbedAsync("Removed all memes!")
                 .ConfigureAwait(false);
         }
         #endregion

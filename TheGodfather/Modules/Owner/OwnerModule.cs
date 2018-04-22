@@ -141,7 +141,7 @@ namespace TheGodfather.Modules.Owner
 
         #region COMMAND_DBQUERY
         [Command("dbquery"), Module(ModuleType.Owner)]
-        [Description("Clear application logs.")]
+        [Description("Execute SQL query on the bot database.")]
         [Aliases("sql", "dbq", "q")]
         [UsageExample("!owner dbquery SELECT * FROM gf.msgcount;")]
         [ListeningCheck]
