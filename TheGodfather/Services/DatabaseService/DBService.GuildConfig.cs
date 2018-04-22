@@ -106,7 +106,7 @@ namespace TheGodfather.Services
             return msg;
         }
 
-        public async Task<bool> RegisterGuildAsync(ulong gid)
+        public async Task RegisterGuildAsync(ulong gid)
         {
             await _sem.WaitAsync();
             try {
@@ -122,8 +122,24 @@ namespace TheGodfather.Services
             } finally {
                 _sem.Release();
             }
+        }
 
-            return true;
+        public async Task UnregisterGuildAsync(ulong gid)
+        {
+            await _sem.WaitAsync();
+            try {
+                using (var con = new NpgsqlConnection(_connectionString))
+                using (var cmd = con.CreateCommand()) {
+                    await con.OpenAsync().ConfigureAwait(false);
+
+                    cmd.CommandText = "DELETE FROM gf.guild_cfg WHERE gid = @gid;";
+                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
+
+                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                }
+            } finally {
+                _sem.Release();
+            }
         }
 
         public Task RemoveLeaveChannelAsync(ulong gid)

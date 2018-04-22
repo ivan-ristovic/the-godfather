@@ -94,6 +94,7 @@ namespace TheGodfather
             Client.ClientErrored += Client_Error;
             Client.DebugLogger.LogMessageReceived += (s, e) => TheGodfather.LogHandle.LogMessage(ShardId, e);
             Client.GuildAvailable += Client_GuildAvailable;
+            Client.GuildUnavailable += Client_GuildUnavailable;
             Client.GuildMemberAdded += Client_GuildMemberAdd;
             Client.GuildMemberRemoved += Client_GuildMemberRemove;
             Client.MessageCreated += Client_MessageCreated;
@@ -161,6 +162,13 @@ namespace TheGodfather
         {
             Log(LogLevel.Info, $"Guild available: {e.Guild.ToString()}");
             await _db.RegisterGuildAsync(e.Guild.Id)
+                .ConfigureAwait(false);
+        }
+
+        private async Task Client_GuildUnavailable(GuildDeleteEventArgs e)
+        {
+            Log(LogLevel.Info, $"Guild unavailable: {e.Guild.ToString()}");
+            await _db.UnregisterGuildAsync(e.Guild.Id)
                 .ConfigureAwait(false);
         }
 
