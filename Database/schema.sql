@@ -15,23 +15,21 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- Name: gf; Type: SCHEMA; Schema: -; Owner: postgres
+-- Name: gf; Type: SCHEMA; Schema: -; Owner: -
 --
 
 CREATE SCHEMA gf;
 
 
-ALTER SCHEMA gf OWNER TO postgres;
-
 --
--- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: -
 --
 
 CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 
 
 --
--- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: -
 --
 
 COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
@@ -44,7 +42,7 @@ SET default_tablespace = '';
 SET default_with_oids = false;
 
 --
--- Name: accounts; Type: TABLE; Schema: gf; Owner: postgres
+-- Name: accounts; Type: TABLE; Schema: gf; Owner: -
 --
 
 CREATE TABLE accounts (
@@ -53,10 +51,8 @@ CREATE TABLE accounts (
 );
 
 
-ALTER TABLE accounts OWNER TO postgres;
-
 --
--- Name: assignable_roles; Type: TABLE; Schema: gf; Owner: postgres
+-- Name: assignable_roles; Type: TABLE; Schema: gf; Owner: -
 --
 
 CREATE TABLE assignable_roles (
@@ -65,10 +61,8 @@ CREATE TABLE assignable_roles (
 );
 
 
-ALTER TABLE assignable_roles OWNER TO postgres;
-
 --
--- Name: automatic_roles; Type: TABLE; Schema: gf; Owner: postgres
+-- Name: automatic_roles; Type: TABLE; Schema: gf; Owner: -
 --
 
 CREATE TABLE automatic_roles (
@@ -77,10 +71,8 @@ CREATE TABLE automatic_roles (
 );
 
 
-ALTER TABLE automatic_roles OWNER TO postgres;
-
 --
--- Name: birthdays; Type: TABLE; Schema: gf; Owner: postgres
+-- Name: birthdays; Type: TABLE; Schema: gf; Owner: -
 --
 
 CREATE TABLE birthdays (
@@ -91,10 +83,8 @@ CREATE TABLE birthdays (
 );
 
 
-ALTER TABLE birthdays OWNER TO postgres;
-
 --
--- Name: blocked_channels; Type: TABLE; Schema: gf; Owner: postgres
+-- Name: blocked_channels; Type: TABLE; Schema: gf; Owner: -
 --
 
 CREATE TABLE blocked_channels (
@@ -103,10 +93,8 @@ CREATE TABLE blocked_channels (
 );
 
 
-ALTER TABLE blocked_channels OWNER TO postgres;
-
 --
--- Name: blocked_users; Type: TABLE; Schema: gf; Owner: postgres
+-- Name: blocked_users; Type: TABLE; Schema: gf; Owner: -
 --
 
 CREATE TABLE blocked_users (
@@ -115,10 +103,8 @@ CREATE TABLE blocked_users (
 );
 
 
-ALTER TABLE blocked_users OWNER TO postgres;
-
 --
--- Name: emoji_reactions; Type: TABLE; Schema: gf; Owner: postgres
+-- Name: emoji_reactions; Type: TABLE; Schema: gf; Owner: -
 --
 
 CREATE TABLE emoji_reactions (
@@ -129,10 +115,8 @@ CREATE TABLE emoji_reactions (
 );
 
 
-ALTER TABLE emoji_reactions OWNER TO postgres;
-
 --
--- Name: emoji_reactions_id_seq; Type: SEQUENCE; Schema: gf; Owner: postgres
+-- Name: emoji_reactions_id_seq; Type: SEQUENCE; Schema: gf; Owner: -
 --
 
 CREATE SEQUENCE emoji_reactions_id_seq
@@ -143,17 +127,15 @@ CREATE SEQUENCE emoji_reactions_id_seq
     CACHE 1;
 
 
-ALTER TABLE emoji_reactions_id_seq OWNER TO postgres;
-
 --
--- Name: emoji_reactions_id_seq; Type: SEQUENCE OWNED BY; Schema: gf; Owner: postgres
+-- Name: emoji_reactions_id_seq; Type: SEQUENCE OWNED BY; Schema: gf; Owner: -
 --
 
 ALTER SEQUENCE emoji_reactions_id_seq OWNED BY emoji_reactions.id;
 
 
 --
--- Name: feeds; Type: TABLE; Schema: gf; Owner: postgres
+-- Name: feeds; Type: TABLE; Schema: gf; Owner: -
 --
 
 CREATE TABLE feeds (
@@ -163,10 +145,8 @@ CREATE TABLE feeds (
 );
 
 
-ALTER TABLE feeds OWNER TO postgres;
-
 --
--- Name: feeds_id_seq; Type: SEQUENCE; Schema: gf; Owner: postgres
+-- Name: feeds_id_seq; Type: SEQUENCE; Schema: gf; Owner: -
 --
 
 CREATE SEQUENCE feeds_id_seq
@@ -177,17 +157,15 @@ CREATE SEQUENCE feeds_id_seq
     CACHE 1;
 
 
-ALTER TABLE feeds_id_seq OWNER TO postgres;
-
 --
--- Name: feeds_id_seq; Type: SEQUENCE OWNED BY; Schema: gf; Owner: postgres
+-- Name: feeds_id_seq; Type: SEQUENCE OWNED BY; Schema: gf; Owner: -
 --
 
 ALTER SEQUENCE feeds_id_seq OWNED BY feeds.id;
 
 
 --
--- Name: filters; Type: TABLE; Schema: gf; Owner: postgres
+-- Name: filters; Type: TABLE; Schema: gf; Owner: -
 --
 
 CREATE TABLE filters (
@@ -196,10 +174,8 @@ CREATE TABLE filters (
 );
 
 
-ALTER TABLE filters OWNER TO postgres;
-
 --
--- Name: guild_cfg; Type: TABLE; Schema: gf; Owner: postgres
+-- Name: guild_cfg; Type: TABLE; Schema: gf; Owner: -
 --
 
 CREATE TABLE guild_cfg (
@@ -211,10 +187,8 @@ CREATE TABLE guild_cfg (
 );
 
 
-ALTER TABLE guild_cfg OWNER TO postgres;
-
 --
--- Name: insults; Type: TABLE; Schema: gf; Owner: postgres
+-- Name: insults; Type: TABLE; Schema: gf; Owner: -
 --
 
 CREATE TABLE insults (
@@ -223,10 +197,8 @@ CREATE TABLE insults (
 );
 
 
-ALTER TABLE insults OWNER TO postgres;
-
 --
--- Name: insults_id_seq; Type: SEQUENCE; Schema: gf; Owner: postgres
+-- Name: insults_id_seq; Type: SEQUENCE; Schema: gf; Owner: -
 --
 
 CREATE SEQUENCE insults_id_seq
@@ -237,17 +209,15 @@ CREATE SEQUENCE insults_id_seq
     CACHE 1;
 
 
-ALTER TABLE insults_id_seq OWNER TO postgres;
-
 --
--- Name: insults_id_seq; Type: SEQUENCE OWNED BY; Schema: gf; Owner: postgres
+-- Name: insults_id_seq; Type: SEQUENCE OWNED BY; Schema: gf; Owner: -
 --
 
 ALTER SEQUENCE insults_id_seq OWNED BY insults.id;
 
 
 --
--- Name: memes; Type: TABLE; Schema: gf; Owner: postgres
+-- Name: memes; Type: TABLE; Schema: gf; Owner: -
 --
 
 CREATE TABLE memes (
@@ -257,10 +227,8 @@ CREATE TABLE memes (
 );
 
 
-ALTER TABLE memes OWNER TO postgres;
-
 --
--- Name: msgcount; Type: TABLE; Schema: gf; Owner: postgres
+-- Name: msgcount; Type: TABLE; Schema: gf; Owner: -
 --
 
 CREATE TABLE msgcount (
@@ -269,10 +237,8 @@ CREATE TABLE msgcount (
 );
 
 
-ALTER TABLE msgcount OWNER TO postgres;
-
 --
--- Name: prefixes; Type: TABLE; Schema: gf; Owner: postgres
+-- Name: prefixes; Type: TABLE; Schema: gf; Owner: -
 --
 
 CREATE TABLE prefixes (
@@ -281,10 +247,8 @@ CREATE TABLE prefixes (
 );
 
 
-ALTER TABLE prefixes OWNER TO postgres;
-
 --
--- Name: saved_tasks; Type: TABLE; Schema: gf; Owner: postgres
+-- Name: saved_tasks; Type: TABLE; Schema: gf; Owner: -
 --
 
 CREATE TABLE saved_tasks (
@@ -298,10 +262,8 @@ CREATE TABLE saved_tasks (
 );
 
 
-ALTER TABLE saved_tasks OWNER TO postgres;
-
 --
--- Name: saved_tasks_id_seq; Type: SEQUENCE; Schema: gf; Owner: postgres
+-- Name: saved_tasks_id_seq; Type: SEQUENCE; Schema: gf; Owner: -
 --
 
 CREATE SEQUENCE saved_tasks_id_seq
@@ -312,17 +274,15 @@ CREATE SEQUENCE saved_tasks_id_seq
     CACHE 1;
 
 
-ALTER TABLE saved_tasks_id_seq OWNER TO postgres;
-
 --
--- Name: saved_tasks_id_seq; Type: SEQUENCE OWNED BY; Schema: gf; Owner: postgres
+-- Name: saved_tasks_id_seq; Type: SEQUENCE OWNED BY; Schema: gf; Owner: -
 --
 
 ALTER SEQUENCE saved_tasks_id_seq OWNED BY saved_tasks.id;
 
 
 --
--- Name: stats; Type: TABLE; Schema: gf; Owner: postgres
+-- Name: stats; Type: TABLE; Schema: gf; Owner: -
 --
 
 CREATE TABLE stats (
@@ -344,10 +304,8 @@ CREATE TABLE stats (
 );
 
 
-ALTER TABLE stats OWNER TO postgres;
-
 --
--- Name: statuses; Type: TABLE; Schema: gf; Owner: postgres
+-- Name: statuses; Type: TABLE; Schema: gf; Owner: -
 --
 
 CREATE TABLE statuses (
@@ -357,10 +315,8 @@ CREATE TABLE statuses (
 );
 
 
-ALTER TABLE statuses OWNER TO postgres;
-
 --
--- Name: statuses_id_seq; Type: SEQUENCE; Schema: gf; Owner: postgres
+-- Name: statuses_id_seq; Type: SEQUENCE; Schema: gf; Owner: -
 --
 
 CREATE SEQUENCE statuses_id_seq
@@ -371,17 +327,15 @@ CREATE SEQUENCE statuses_id_seq
     CACHE 1;
 
 
-ALTER TABLE statuses_id_seq OWNER TO postgres;
-
 --
--- Name: statuses_id_seq; Type: SEQUENCE OWNED BY; Schema: gf; Owner: postgres
+-- Name: statuses_id_seq; Type: SEQUENCE OWNED BY; Schema: gf; Owner: -
 --
 
 ALTER SEQUENCE statuses_id_seq OWNED BY statuses.id;
 
 
 --
--- Name: subscriptions; Type: TABLE; Schema: gf; Owner: postgres
+-- Name: subscriptions; Type: TABLE; Schema: gf; Owner: -
 --
 
 CREATE TABLE subscriptions (
@@ -391,10 +345,8 @@ CREATE TABLE subscriptions (
 );
 
 
-ALTER TABLE subscriptions OWNER TO postgres;
-
 --
--- Name: subscriptions_id_seq; Type: SEQUENCE; Schema: gf; Owner: postgres
+-- Name: subscriptions_id_seq; Type: SEQUENCE; Schema: gf; Owner: -
 --
 
 CREATE SEQUENCE subscriptions_id_seq
@@ -405,17 +357,15 @@ CREATE SEQUENCE subscriptions_id_seq
     CACHE 1;
 
 
-ALTER TABLE subscriptions_id_seq OWNER TO postgres;
-
 --
--- Name: subscriptions_id_seq; Type: SEQUENCE OWNED BY; Schema: gf; Owner: postgres
+-- Name: subscriptions_id_seq; Type: SEQUENCE OWNED BY; Schema: gf; Owner: -
 --
 
 ALTER SEQUENCE subscriptions_id_seq OWNED BY subscriptions.id;
 
 
 --
--- Name: swat_servers; Type: TABLE; Schema: gf; Owner: postgres
+-- Name: swat_servers; Type: TABLE; Schema: gf; Owner: -
 --
 
 CREATE TABLE swat_servers (
@@ -426,10 +376,8 @@ CREATE TABLE swat_servers (
 );
 
 
-ALTER TABLE swat_servers OWNER TO postgres;
-
 --
--- Name: text_reactions; Type: TABLE; Schema: gf; Owner: postgres
+-- Name: text_reactions; Type: TABLE; Schema: gf; Owner: -
 --
 
 CREATE TABLE text_reactions (
@@ -440,10 +388,8 @@ CREATE TABLE text_reactions (
 );
 
 
-ALTER TABLE text_reactions OWNER TO postgres;
-
 --
--- Name: text_reactions_id_seq; Type: SEQUENCE; Schema: gf; Owner: postgres
+-- Name: text_reactions_id_seq; Type: SEQUENCE; Schema: gf; Owner: -
 --
 
 CREATE SEQUENCE text_reactions_id_seq
@@ -454,66 +400,64 @@ CREATE SEQUENCE text_reactions_id_seq
     CACHE 1;
 
 
-ALTER TABLE text_reactions_id_seq OWNER TO postgres;
-
 --
--- Name: text_reactions_id_seq; Type: SEQUENCE OWNED BY; Schema: gf; Owner: postgres
+-- Name: text_reactions_id_seq; Type: SEQUENCE OWNED BY; Schema: gf; Owner: -
 --
 
 ALTER SEQUENCE text_reactions_id_seq OWNED BY text_reactions.id;
 
 
 --
--- Name: emoji_reactions id; Type: DEFAULT; Schema: gf; Owner: postgres
+-- Name: emoji_reactions id; Type: DEFAULT; Schema: gf; Owner: -
 --
 
 ALTER TABLE ONLY emoji_reactions ALTER COLUMN id SET DEFAULT nextval('emoji_reactions_id_seq'::regclass);
 
 
 --
--- Name: feeds id; Type: DEFAULT; Schema: gf; Owner: postgres
+-- Name: feeds id; Type: DEFAULT; Schema: gf; Owner: -
 --
 
 ALTER TABLE ONLY feeds ALTER COLUMN id SET DEFAULT nextval('feeds_id_seq'::regclass);
 
 
 --
--- Name: insults id; Type: DEFAULT; Schema: gf; Owner: postgres
+-- Name: insults id; Type: DEFAULT; Schema: gf; Owner: -
 --
 
 ALTER TABLE ONLY insults ALTER COLUMN id SET DEFAULT nextval('insults_id_seq'::regclass);
 
 
 --
--- Name: saved_tasks id; Type: DEFAULT; Schema: gf; Owner: postgres
+-- Name: saved_tasks id; Type: DEFAULT; Schema: gf; Owner: -
 --
 
 ALTER TABLE ONLY saved_tasks ALTER COLUMN id SET DEFAULT nextval('saved_tasks_id_seq'::regclass);
 
 
 --
--- Name: statuses id; Type: DEFAULT; Schema: gf; Owner: postgres
+-- Name: statuses id; Type: DEFAULT; Schema: gf; Owner: -
 --
 
 ALTER TABLE ONLY statuses ALTER COLUMN id SET DEFAULT nextval('statuses_id_seq'::regclass);
 
 
 --
--- Name: subscriptions id; Type: DEFAULT; Schema: gf; Owner: postgres
+-- Name: subscriptions id; Type: DEFAULT; Schema: gf; Owner: -
 --
 
 ALTER TABLE ONLY subscriptions ALTER COLUMN id SET DEFAULT nextval('subscriptions_id_seq'::regclass);
 
 
 --
--- Name: text_reactions id; Type: DEFAULT; Schema: gf; Owner: postgres
+-- Name: text_reactions id; Type: DEFAULT; Schema: gf; Owner: -
 --
 
 ALTER TABLE ONLY text_reactions ALTER COLUMN id SET DEFAULT nextval('text_reactions_id_seq'::regclass);
 
 
 --
--- Name: accounts accounts_pkey; Type: CONSTRAINT; Schema: gf; Owner: postgres
+-- Name: accounts accounts_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
 --
 
 ALTER TABLE ONLY accounts
@@ -521,7 +465,7 @@ ALTER TABLE ONLY accounts
 
 
 --
--- Name: assignable_roles assignable_roles_pkey; Type: CONSTRAINT; Schema: gf; Owner: postgres
+-- Name: assignable_roles assignable_roles_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
 --
 
 ALTER TABLE ONLY assignable_roles
@@ -529,7 +473,7 @@ ALTER TABLE ONLY assignable_roles
 
 
 --
--- Name: automatic_roles automatic_roles_pkey; Type: CONSTRAINT; Schema: gf; Owner: postgres
+-- Name: automatic_roles automatic_roles_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
 --
 
 ALTER TABLE ONLY automatic_roles
@@ -537,7 +481,7 @@ ALTER TABLE ONLY automatic_roles
 
 
 --
--- Name: birthdays birthdays_pkey; Type: CONSTRAINT; Schema: gf; Owner: postgres
+-- Name: birthdays birthdays_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
 --
 
 ALTER TABLE ONLY birthdays
@@ -545,7 +489,7 @@ ALTER TABLE ONLY birthdays
 
 
 --
--- Name: blocked_channels blocked_channels_pkey; Type: CONSTRAINT; Schema: gf; Owner: postgres
+-- Name: blocked_channels blocked_channels_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
 --
 
 ALTER TABLE ONLY blocked_channels
@@ -553,7 +497,7 @@ ALTER TABLE ONLY blocked_channels
 
 
 --
--- Name: blocked_users blocked_users_pkey; Type: CONSTRAINT; Schema: gf; Owner: postgres
+-- Name: blocked_users blocked_users_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
 --
 
 ALTER TABLE ONLY blocked_users
@@ -561,7 +505,7 @@ ALTER TABLE ONLY blocked_users
 
 
 --
--- Name: emoji_reactions emoji_reactions_pkey; Type: CONSTRAINT; Schema: gf; Owner: postgres
+-- Name: emoji_reactions emoji_reactions_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
 --
 
 ALTER TABLE ONLY emoji_reactions
@@ -569,7 +513,7 @@ ALTER TABLE ONLY emoji_reactions
 
 
 --
--- Name: feeds feeds_pkey; Type: CONSTRAINT; Schema: gf; Owner: postgres
+-- Name: feeds feeds_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
 --
 
 ALTER TABLE ONLY feeds
@@ -577,7 +521,7 @@ ALTER TABLE ONLY feeds
 
 
 --
--- Name: feeds feeds_url_key; Type: CONSTRAINT; Schema: gf; Owner: postgres
+-- Name: feeds feeds_url_key; Type: CONSTRAINT; Schema: gf; Owner: -
 --
 
 ALTER TABLE ONLY feeds
@@ -585,7 +529,7 @@ ALTER TABLE ONLY feeds
 
 
 --
--- Name: filters filters_pkey; Type: CONSTRAINT; Schema: gf; Owner: postgres
+-- Name: filters filters_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
 --
 
 ALTER TABLE ONLY filters
@@ -593,7 +537,7 @@ ALTER TABLE ONLY filters
 
 
 --
--- Name: guild_cfg guild_cfg_pkey; Type: CONSTRAINT; Schema: gf; Owner: postgres
+-- Name: guild_cfg guild_cfg_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
 --
 
 ALTER TABLE ONLY guild_cfg
@@ -601,7 +545,7 @@ ALTER TABLE ONLY guild_cfg
 
 
 --
--- Name: insults insults_pkey; Type: CONSTRAINT; Schema: gf; Owner: postgres
+-- Name: insults insults_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
 --
 
 ALTER TABLE ONLY insults
@@ -609,7 +553,7 @@ ALTER TABLE ONLY insults
 
 
 --
--- Name: memes memes_pkey; Type: CONSTRAINT; Schema: gf; Owner: postgres
+-- Name: memes memes_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
 --
 
 ALTER TABLE ONLY memes
@@ -617,7 +561,7 @@ ALTER TABLE ONLY memes
 
 
 --
--- Name: msgcount msgcount_pkey; Type: CONSTRAINT; Schema: gf; Owner: postgres
+-- Name: msgcount msgcount_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
 --
 
 ALTER TABLE ONLY msgcount
@@ -625,7 +569,7 @@ ALTER TABLE ONLY msgcount
 
 
 --
--- Name: prefixes prefixes_pkey; Type: CONSTRAINT; Schema: gf; Owner: postgres
+-- Name: prefixes prefixes_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
 --
 
 ALTER TABLE ONLY prefixes
@@ -633,7 +577,7 @@ ALTER TABLE ONLY prefixes
 
 
 --
--- Name: saved_tasks saved_tasks_pkey; Type: CONSTRAINT; Schema: gf; Owner: postgres
+-- Name: saved_tasks saved_tasks_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
 --
 
 ALTER TABLE ONLY saved_tasks
@@ -641,7 +585,7 @@ ALTER TABLE ONLY saved_tasks
 
 
 --
--- Name: stats stats_pkey; Type: CONSTRAINT; Schema: gf; Owner: postgres
+-- Name: stats stats_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
 --
 
 ALTER TABLE ONLY stats
@@ -649,7 +593,7 @@ ALTER TABLE ONLY stats
 
 
 --
--- Name: statuses statuses_pkey; Type: CONSTRAINT; Schema: gf; Owner: postgres
+-- Name: statuses statuses_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
 --
 
 ALTER TABLE ONLY statuses
@@ -657,7 +601,7 @@ ALTER TABLE ONLY statuses
 
 
 --
--- Name: subscriptions subscriptions_pkey; Type: CONSTRAINT; Schema: gf; Owner: postgres
+-- Name: subscriptions subscriptions_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
 --
 
 ALTER TABLE ONLY subscriptions
@@ -665,7 +609,7 @@ ALTER TABLE ONLY subscriptions
 
 
 --
--- Name: swat_servers swat_servers_name_key; Type: CONSTRAINT; Schema: gf; Owner: postgres
+-- Name: swat_servers swat_servers_name_key; Type: CONSTRAINT; Schema: gf; Owner: -
 --
 
 ALTER TABLE ONLY swat_servers
@@ -673,7 +617,7 @@ ALTER TABLE ONLY swat_servers
 
 
 --
--- Name: swat_servers swat_servers_pkey; Type: CONSTRAINT; Schema: gf; Owner: postgres
+-- Name: swat_servers swat_servers_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
 --
 
 ALTER TABLE ONLY swat_servers
@@ -681,7 +625,7 @@ ALTER TABLE ONLY swat_servers
 
 
 --
--- Name: text_reactions text_reactions_gid_trigger_key; Type: CONSTRAINT; Schema: gf; Owner: postgres
+-- Name: text_reactions text_reactions_gid_trigger_key; Type: CONSTRAINT; Schema: gf; Owner: -
 --
 
 ALTER TABLE ONLY text_reactions
@@ -689,7 +633,7 @@ ALTER TABLE ONLY text_reactions
 
 
 --
--- Name: text_reactions text_reactions_pkey; Type: CONSTRAINT; Schema: gf; Owner: postgres
+-- Name: text_reactions text_reactions_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
 --
 
 ALTER TABLE ONLY text_reactions
@@ -697,21 +641,28 @@ ALTER TABLE ONLY text_reactions
 
 
 --
--- Name: emoji_reactions_trigger_idx; Type: INDEX; Schema: gf; Owner: postgres
+-- Name: emoji_reactions_trigger_idx; Type: INDEX; Schema: gf; Owner: -
 --
 
 CREATE INDEX emoji_reactions_trigger_idx ON emoji_reactions USING btree (trigger);
 
 
 --
--- Name: gid_index; Type: INDEX; Schema: gf; Owner: postgres
+-- Name: fki_savedtasks_fkey; Type: INDEX; Schema: gf; Owner: -
+--
+
+CREATE INDEX fki_savedtasks_fkey ON saved_tasks USING btree (gid);
+
+
+--
+-- Name: gid_index; Type: INDEX; Schema: gf; Owner: -
 --
 
 CREATE INDEX gid_index ON filters USING btree (gid);
 
 
 --
--- Name: index_bday; Type: INDEX; Schema: gf; Owner: postgres
+-- Name: index_bday; Type: INDEX; Schema: gf; Owner: -
 --
 
 CREATE INDEX index_bday ON birthdays USING btree (bday);
@@ -720,7 +671,7 @@ ALTER TABLE birthdays CLUSTER ON index_bday;
 
 
 --
--- Name: index_er_gid; Type: INDEX; Schema: gf; Owner: postgres
+-- Name: index_er_gid; Type: INDEX; Schema: gf; Owner: -
 --
 
 CREATE INDEX index_er_gid ON emoji_reactions USING btree (gid);
@@ -729,7 +680,7 @@ ALTER TABLE emoji_reactions CLUSTER ON index_er_gid;
 
 
 --
--- Name: index_filters_gid; Type: INDEX; Schema: gf; Owner: postgres
+-- Name: index_filters_gid; Type: INDEX; Schema: gf; Owner: -
 --
 
 CREATE INDEX index_filters_gid ON filters USING btree (gid);
@@ -738,7 +689,7 @@ ALTER TABLE filters CLUSTER ON index_filters_gid;
 
 
 --
--- Name: index_memes_cluster; Type: INDEX; Schema: gf; Owner: postgres
+-- Name: index_memes_cluster; Type: INDEX; Schema: gf; Owner: -
 --
 
 CREATE UNIQUE INDEX index_memes_cluster ON memes USING btree (gid, name);
@@ -747,7 +698,7 @@ ALTER TABLE memes CLUSTER ON index_memes_cluster;
 
 
 --
--- Name: index_tr_gid; Type: INDEX; Schema: gf; Owner: postgres
+-- Name: index_tr_gid; Type: INDEX; Schema: gf; Owner: -
 --
 
 CREATE INDEX index_tr_gid ON text_reactions USING btree (gid);
@@ -756,18 +707,82 @@ ALTER TABLE text_reactions CLUSTER ON index_tr_gid;
 
 
 --
--- Name: trigger_index; Type: INDEX; Schema: gf; Owner: postgres
+-- Name: trigger_index; Type: INDEX; Schema: gf; Owner: -
 --
 
 CREATE INDEX trigger_index ON text_reactions USING btree (trigger);
 
 
 --
--- Name: subscriptions subscriptions_id_fkey; Type: FK CONSTRAINT; Schema: gf; Owner: postgres
+-- Name: automatic_roles ar_fkey; Type: FK CONSTRAINT; Schema: gf; Owner: -
+--
+
+ALTER TABLE ONLY automatic_roles
+    ADD CONSTRAINT ar_fkey FOREIGN KEY (gid) REFERENCES guild_cfg(gid) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: emoji_reactions er_fkey; Type: FK CONSTRAINT; Schema: gf; Owner: -
+--
+
+ALTER TABLE ONLY emoji_reactions
+    ADD CONSTRAINT er_fkey FOREIGN KEY (gid) REFERENCES guild_cfg(gid) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: filters f_fkey; Type: FK CONSTRAINT; Schema: gf; Owner: -
+--
+
+ALTER TABLE ONLY filters
+    ADD CONSTRAINT f_fkey FOREIGN KEY (gid) REFERENCES guild_cfg(gid) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: memes memes_fkey; Type: FK CONSTRAINT; Schema: gf; Owner: -
+--
+
+ALTER TABLE ONLY memes
+    ADD CONSTRAINT memes_fkey FOREIGN KEY (gid) REFERENCES guild_cfg(gid) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: prefixes p_fkey; Type: FK CONSTRAINT; Schema: gf; Owner: -
+--
+
+ALTER TABLE ONLY prefixes
+    ADD CONSTRAINT p_fkey FOREIGN KEY (gid) REFERENCES guild_cfg(gid) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: assignable_roles sar_fkey; Type: FK CONSTRAINT; Schema: gf; Owner: -
+--
+
+ALTER TABLE ONLY assignable_roles
+    ADD CONSTRAINT sar_fkey FOREIGN KEY (gid) REFERENCES guild_cfg(gid) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: saved_tasks st_fkey; Type: FK CONSTRAINT; Schema: gf; Owner: -
+--
+
+ALTER TABLE ONLY saved_tasks
+    ADD CONSTRAINT st_fkey FOREIGN KEY (gid) REFERENCES guild_cfg(gid) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: subscriptions subscriptions_id_fkey; Type: FK CONSTRAINT; Schema: gf; Owner: -
 --
 
 ALTER TABLE ONLY subscriptions
     ADD CONSTRAINT subscriptions_id_fkey FOREIGN KEY (id) REFERENCES feeds(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: text_reactions tr_fkey; Type: FK CONSTRAINT; Schema: gf; Owner: -
+--
+
+ALTER TABLE ONLY text_reactions
+    ADD CONSTRAINT tr_fkey FOREIGN KEY (gid) REFERENCES guild_cfg(gid) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
