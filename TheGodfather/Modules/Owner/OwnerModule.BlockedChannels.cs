@@ -65,7 +65,7 @@ namespace TheGodfather.Modules.Owner
             [UsageExample("!owner blockedchannels add #channel 123123123123123")]
             [UsageExample("!owner blockedchannels add \"This is some reason\" #channel 123123123123123")]
             public Task AddAsync(CommandContext ctx,
-                                      [Description("Channels to block.")] params DiscordChannel[] channels)
+                                [Description("Channels to block.")] params DiscordChannel[] channels)
                 => AddAsync(ctx, null, channels);
 
             [Command("add"), Priority(1)]
