@@ -162,6 +162,27 @@
 ```
 ---
 
+## items
+*View user's purchased items (see ``bank`` and ``shop``).*
+
+**Requires permissions:**
+`Create instant invites`
+
+**Aliases:**
+`myitems, purchases`
+
+**Arguments:**
+
+(optional) `[user]` : *User.* (def: `None`)
+
+**Examples:**
+
+```
+!items
+!items @Someone
+```
+---
+
 ## leave
 *Makes Godfather leave the guild.*
 
@@ -578,6 +599,104 @@
 
 ```
 !say I am gay.
+```
+---
+
+## Group: shop
+*Shop for items using WM credits from your bank account. If invoked without subcommand, lists all available items for purchase.*
+
+**Aliases:**
+`store`
+
+**Examples:**
+
+```
+!shop
+```
+---
+
+### shop add
+*Add a new item to guild purchasable items list.*
+
+**Requires user permissions:**
+`Manage guild`
+
+**Aliases:**
+`+, a`
+
+**Overload 1:**
+
+`[int]` : *Item price.*
+
+`[string...]` : *Item name.*
+
+**Overload 0:**
+
+`[string]` : *Item name.*
+
+`[int]` : *Item price.*
+
+**Examples:**
+
+```
+!shop add Barbie 500
+!shop add "New Barbie" 500
+!shop add 500 Newest Barbie
+```
+---
+
+### shop buy
+*Purchase an item from this guild's shop.*
+
+**Requires permissions:**
+`Manage guild`
+
+**Aliases:**
+`purchase, shutupandtakemymoney, b, p`
+
+**Arguments:**
+
+`[int]` : *Item ID.*
+
+**Examples:**
+
+```
+!shop buy 3
+```
+---
+
+### shop delete
+*Remove purchasable item from this guild item list. You can remove by ID or by name.*
+
+**Requires user permissions:**
+`Manage guild`
+
+**Aliases:**
+`-, remove, rm, del`
+
+**Arguments:**
+
+`[int...]` : *ID list of items to remove.*
+
+**Examples:**
+
+```
+!shop delete Barbie
+!shop delete 5
+!shop delete 1 2 3 4 5
+```
+---
+
+### shop list
+*List all purchasable items for this guild.*
+
+**Aliases:**
+`ls`
+
+**Examples:**
+
+```
+!shop list
 ```
 ---
 

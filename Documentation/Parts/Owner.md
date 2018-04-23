@@ -344,7 +344,7 @@
 ---
 
 ### owner dbquery
-*Clear application logs.*
+*Execute SQL query on the bot database.*
 
 **Owner-only.**
 

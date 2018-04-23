@@ -1,7 +1,7 @@
 # Module: Gambling
 
 ## Group: bank
-*Bank manipulation. If invoked alone, prints out your bank balance.*
+*Bank account manipulation. If invoked alone, prints out your bank balance. Accounts periodically get a bonus.*
 
 **Aliases:**
 `$, $$, $$$`
@@ -180,6 +180,36 @@
 
 ```
 !casino blackjack
+```
+---
+
+### casino blackjack join
+*Join a pending Blackjack game.*
+
+**Aliases:**
+`+, compete, enter, j`
+
+**Arguments:**
+
+(optional) `[int]` : *Bid amount.* (def: `5`)
+
+**Examples:**
+
+```
+!casino blackjack join
+```
+---
+
+### casino blackjack rules
+*Explain the Blackjack rules.*
+
+**Aliases:**
+`help, h, ruling, rule`
+
+**Examples:**
+
+```
+!casino blackjack rules
 ```
 ---
 
