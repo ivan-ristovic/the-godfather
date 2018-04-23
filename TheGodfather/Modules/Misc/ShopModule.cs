@@ -45,7 +45,7 @@ namespace TheGodfather.Modules.Misc
         [UsageExample("!shop add Barbie 500")]
         [UsageExample("!shop add \"New Barbie\" 500")]
         [UsageExample("!shop add 500 Newest Barbie")]
-        [RequirePermissions(Permissions.ManageGuild)]
+        [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task AddAsync(CommandContext ctx,
                                   [Description("Item price.")] int price,
                                   [RemainingText, Description("Item name.")] string name)
@@ -101,7 +101,7 @@ namespace TheGodfather.Modules.Misc
         [UsageExample("!shop delete Barbie")]
         [UsageExample("!shop delete 5")]
         [UsageExample("!shop delete 1 2 3 4 5")]
-        [RequirePermissions(Permissions.ManageGuild)]
+        [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task DeleteAsync(CommandContext ctx,
                                      [Description("ID list of items to remove.")] params int[] ids)
         {
