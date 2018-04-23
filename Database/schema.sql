@@ -217,6 +217,37 @@ ALTER SEQUENCE insults_id_seq OWNED BY insults.id;
 
 
 --
+-- Name: items; Type: TABLE; Schema: gf; Owner: -
+--
+
+CREATE TABLE items (
+    id integer NOT NULL,
+    gid bigint NOT NULL,
+    name character varying(64) NOT NULL,
+    price integer NOT NULL
+);
+
+
+--
+-- Name: items_id_seq; Type: SEQUENCE; Schema: gf; Owner: -
+--
+
+CREATE SEQUENCE items_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: items_id_seq; Type: SEQUENCE OWNED BY; Schema: gf; Owner: -
+--
+
+ALTER SEQUENCE items_id_seq OWNED BY items.id;
+
+
+--
 -- Name: memes; Type: TABLE; Schema: gf; Owner: -
 --
 
@@ -245,6 +276,35 @@ CREATE TABLE prefixes (
     gid bigint NOT NULL,
     prefix character varying(16)
 );
+
+
+--
+-- Name: purchases; Type: TABLE; Schema: gf; Owner: -
+--
+
+CREATE TABLE purchases (
+    id integer NOT NULL,
+    uid bigint NOT NULL
+);
+
+
+--
+-- Name: purchases_id_seq; Type: SEQUENCE; Schema: gf; Owner: -
+--
+
+CREATE SEQUENCE purchases_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: purchases_id_seq; Type: SEQUENCE OWNED BY; Schema: gf; Owner: -
+--
+
+ALTER SEQUENCE purchases_id_seq OWNED BY purchases.id;
 
 
 --
@@ -341,7 +401,7 @@ ALTER SEQUENCE statuses_id_seq OWNED BY statuses.id;
 CREATE TABLE subscriptions (
     id integer NOT NULL,
     cid bigint NOT NULL,
-    qname character varying(64)
+    qname character varying(64) DEFAULT ''::character varying NOT NULL
 );
 
 
@@ -426,6 +486,20 @@ ALTER TABLE ONLY feeds ALTER COLUMN id SET DEFAULT nextval('feeds_id_seq'::regcl
 --
 
 ALTER TABLE ONLY insults ALTER COLUMN id SET DEFAULT nextval('insults_id_seq'::regclass);
+
+
+--
+-- Name: items id; Type: DEFAULT; Schema: gf; Owner: -
+--
+
+ALTER TABLE ONLY items ALTER COLUMN id SET DEFAULT nextval('items_id_seq'::regclass);
+
+
+--
+-- Name: purchases id; Type: DEFAULT; Schema: gf; Owner: -
+--
+
+ALTER TABLE ONLY purchases ALTER COLUMN id SET DEFAULT nextval('purchases_id_seq'::regclass);
 
 
 --
@@ -553,6 +627,22 @@ ALTER TABLE ONLY insults
 
 
 --
+-- Name: items items_name_unique; Type: CONSTRAINT; Schema: gf; Owner: -
+--
+
+ALTER TABLE ONLY items
+    ADD CONSTRAINT items_name_unique UNIQUE (name);
+
+
+--
+-- Name: items items_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
+--
+
+ALTER TABLE ONLY items
+    ADD CONSTRAINT items_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: memes memes_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
 --
 
@@ -648,6 +738,13 @@ CREATE INDEX emoji_reactions_trigger_idx ON emoji_reactions USING btree (trigger
 
 
 --
+-- Name: fki_items_fkey; Type: INDEX; Schema: gf; Owner: -
+--
+
+CREATE INDEX fki_items_fkey ON items USING btree (gid);
+
+
+--
 -- Name: fki_savedtasks_fkey; Type: INDEX; Schema: gf; Owner: -
 --
 
@@ -707,6 +804,31 @@ ALTER TABLE text_reactions CLUSTER ON index_tr_gid;
 
 
 --
+-- Name: items_gid_index; Type: INDEX; Schema: gf; Owner: -
+--
+
+CREATE INDEX items_gid_index ON items USING btree (gid);
+
+ALTER TABLE items CLUSTER ON items_gid_index;
+
+
+--
+-- Name: purchases_id_index; Type: INDEX; Schema: gf; Owner: -
+--
+
+CREATE INDEX purchases_id_index ON purchases USING hash (id);
+
+
+--
+-- Name: purchases_uid_index; Type: INDEX; Schema: gf; Owner: -
+--
+
+CREATE INDEX purchases_uid_index ON purchases USING btree (uid);
+
+ALTER TABLE purchases CLUSTER ON purchases_uid_index;
+
+
+--
 -- Name: trigger_index; Type: INDEX; Schema: gf; Owner: -
 --
 
@@ -722,27 +844,11 @@ ALTER TABLE ONLY automatic_roles
 
 
 --
--- Name: emoji_reactions er_fkey; Type: FK CONSTRAINT; Schema: gf; Owner: -
+-- Name: items items_fkey; Type: FK CONSTRAINT; Schema: gf; Owner: -
 --
 
-ALTER TABLE ONLY emoji_reactions
-    ADD CONSTRAINT er_fkey FOREIGN KEY (gid) REFERENCES guild_cfg(gid) ON UPDATE CASCADE ON DELETE CASCADE;
-
-
---
--- Name: filters f_fkey; Type: FK CONSTRAINT; Schema: gf; Owner: -
---
-
-ALTER TABLE ONLY filters
-    ADD CONSTRAINT f_fkey FOREIGN KEY (gid) REFERENCES guild_cfg(gid) ON UPDATE CASCADE ON DELETE CASCADE;
-
-
---
--- Name: memes memes_fkey; Type: FK CONSTRAINT; Schema: gf; Owner: -
---
-
-ALTER TABLE ONLY memes
-    ADD CONSTRAINT memes_fkey FOREIGN KEY (gid) REFERENCES guild_cfg(gid) ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE ONLY items
+    ADD CONSTRAINT items_fkey FOREIGN KEY (gid) REFERENCES guild_cfg(gid) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
@@ -751,6 +857,14 @@ ALTER TABLE ONLY memes
 
 ALTER TABLE ONLY prefixes
     ADD CONSTRAINT p_fkey FOREIGN KEY (gid) REFERENCES guild_cfg(gid) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: purchases purchases_id_fkey; Type: FK CONSTRAINT; Schema: gf; Owner: -
+--
+
+ALTER TABLE ONLY purchases
+    ADD CONSTRAINT purchases_id_fkey FOREIGN KEY (id) REFERENCES items(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
