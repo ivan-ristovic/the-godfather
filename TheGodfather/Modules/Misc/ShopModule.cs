@@ -1,11 +1,7 @@
 ﻿#region USING_DIRECTIVES
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
-using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
@@ -15,7 +11,6 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-using DSharpPlus.Exceptions;
 #endregion
 
 namespace TheGodfather.Modules.Misc
@@ -82,6 +77,9 @@ namespace TheGodfather.Modules.Misc
                 .ConfigureAwait(false);
             if (item == null)
                 throw new CommandFailedException("Item with such ID does not exist in this guild's shop!");
+
+            if (!await ctx.AskYesNoQuestionAsync($"Are you sure you want to buy a {Formatter.Bold(item.Name)} for {Formatter.Bold(item.Price.ToString())} credits?").ConfigureAwait(false))
+                return;
 
             if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, item.Price))
                 throw new CommandFailedException("You do not have enough money to purchase that item!");
