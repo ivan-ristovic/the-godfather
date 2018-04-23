@@ -69,6 +69,30 @@ namespace TheGodfather.Modules.Misc
             => AddAsync(ctx, price, name);
         #endregion
 
+        #region COMMAND_SHOP_BUY
+        [Command("buy"), Module(ModuleType.Miscellaneous)]
+        [Description("Purchase an item from this guild's shop.")]
+        [Aliases("purchase", "shutupandtakemymoney", "b", "p")]
+        [UsageExample("!shop buy 3")]
+        [RequirePermissions(Permissions.ManageGuild)]
+        public async Task BuyAsync(CommandContext ctx,
+                                  [Description("Item ID.")] int id)
+        {
+            var item = await Database.GetPurchasableItemAsync(ctx.Guild.Id, id)
+                .ConfigureAwait(false);
+            if (item == null)
+                throw new CommandFailedException("Item with such ID does not exist in this guild's shop!");
+
+            if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, item.Price))
+                throw new CommandFailedException("You do not have enough money to purchase that item!");
+
+            await Database.RegisterPurchaseForItemAsync(ctx.User.Id, item.Id)
+                .ConfigureAwait(false);
+            await ctx.RespondWithIconEmbedAsync($"{ctx.User.Mention} bought a {Formatter.Bold(item.Name)} for {Formatter.Bold(item.Price.ToString())} credits!", ":moneybag:")
+                .ConfigureAwait(false);
+        }
+        #endregion
+
         #region COMMAND_SHOP_DELETE
         [Command("delete"), Priority(1)]
         [Module(ModuleType.Miscellaneous)]
@@ -106,7 +130,7 @@ namespace TheGodfather.Modules.Misc
 
             await ctx.SendPaginatedCollectionAsync(
                 $"{ctx.Guild.Name}'s shop:",
-                items.OrderByDescending(item => item.Price),
+                items,
                 item => $"{item.Id} | {Formatter.Bold(item.Name)} : {Formatter.Bold(item.Price.ToString())} credits",
                 DiscordColor.Azure,
                 5

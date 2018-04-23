@@ -33,7 +33,7 @@ namespace TheGodfather.Modules.Gambling
             => GetBalanceAsync(ctx, user);
 
 
-        #region COMMAND_BALANCE
+        #region COMMAND_BANK_BALANCE
         [Command("balance"), Module(ModuleType.Gambling)]
         [Description("View account balance for given user. If the user is not given, checks sender's balance.")]
         [Aliases("s", "status", "bal", "money", "credits")]
@@ -55,7 +55,7 @@ namespace TheGodfather.Modules.Gambling
         }
         #endregion
 
-        #region COMMAND_GRANT
+        #region COMMAND_BANK_GRANT
         [Command("grant"), Priority(1)]
         [Module(ModuleType.Gambling)]
         [Description("Magically give funds to some user.")]
@@ -86,7 +86,7 @@ namespace TheGodfather.Modules.Gambling
             => GrantAsync(ctx, user, amount);
         #endregion
 
-        #region COMMAND_REGISTER
+        #region COMMAND_BANK_REGISTER
         [Command("register"), Module(ModuleType.Gambling)]
         [Description("Create an account for you in WM bank.")]
         [Aliases("r", "signup", "activate")]
@@ -103,7 +103,7 @@ namespace TheGodfather.Modules.Gambling
         }
         #endregion
 
-        #region COMMAND_TOP
+        #region COMMAND_BANK_TOP
         [Command("top"), Module(ModuleType.Gambling)]
         [Description("Print the richest users.")]
         [Aliases("leaderboard", "elite")]
@@ -130,7 +130,7 @@ namespace TheGodfather.Modules.Gambling
         }
         #endregion
 
-        #region COMMAND_TRANSFER
+        #region COMMAND_BANK_TRANSFER
         [Command("transfer"), Priority(1)]
         [Module(ModuleType.Gambling)]
         [Description("Transfer funds from your account to another one.")]

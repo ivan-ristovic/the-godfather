@@ -117,6 +117,35 @@ namespace TheGodfather.Modules.Misc
         }
         #endregion
 
+        #region COMMAND_ITEMS
+        [Command("items"), Module(ModuleType.Miscellaneous)]
+        [Description("View user's purchased items (see ``bank`` and ``shop``).")]
+        [Aliases("myitems", "purchases")]
+        [UsageExample("!items")]
+        [UsageExample("!items @Someone")]
+        [RequirePermissions(Permissions.CreateInstantInvite)]
+        public async Task GetPurchasedItemsAsync(CommandContext ctx,
+                                                [Description("User.")] DiscordUser user = null)
+        {
+            if (user == null)
+                user = ctx.User;
+
+            var items = await Database.GetPurchasedItemsForUserAsync(user.Id)
+                .ConfigureAwait(false);
+
+            if (!items.Any())
+                throw new CommandFailedException("No items purchased!");
+
+            await ctx.SendPaginatedCollectionAsync(
+                $"{user.Username}'s purchased items:",
+                items,
+                item => $"{Formatter.Bold(item.Name)} | {item.Price}",
+                DiscordColor.Azure,
+                5
+            ).ConfigureAwait(false);
+        }
+        #endregion
+
         #region COMMAND_LEAVE
         [Command("leave"), Module(ModuleType.Miscellaneous)]
         [Description("Makes Godfather leave the guild.")]
