@@ -69,7 +69,6 @@ namespace TheGodfather.Modules.Misc
         [Description("Purchase an item from this guild's shop.")]
         [Aliases("purchase", "shutupandtakemymoney", "b", "p")]
         [UsageExample("!shop buy 3")]
-        [RequirePermissions(Permissions.ManageGuild)]
         public async Task BuyAsync(CommandContext ctx,
                                   [Description("Item ID.")] int id)
         {
@@ -88,6 +87,18 @@ namespace TheGodfather.Modules.Misc
                 .ConfigureAwait(false);
             await ctx.RespondWithIconEmbedAsync($"{ctx.User.Mention} bought a {Formatter.Bold(item.Name)} for {Formatter.Bold(item.Price.ToString())} credits!", ":moneybag:")
                 .ConfigureAwait(false);
+        }
+        #endregion
+
+        #region COMMAND_SHOP_SELL
+        [Command("sell"), Module(ModuleType.Miscellaneous)]
+        [Description("Sell a purchased item for half the buy price.")]
+        [Aliases("return")]
+        [UsageExample("!shop sell 3")]
+        public async Task SellAsync(CommandContext ctx,
+                                   [Description("Item ID.")] int id)
+        {
+
         }
         #endregion
 
