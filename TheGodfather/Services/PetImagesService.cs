@@ -16,7 +16,7 @@ namespace TheGodfather.Services
         public static async Task<string> GetRandomCatImageAsync()
         {
             try {
-                var data = await _http.GetStringAsync("http://random.cat/meow")
+                var data = await _http.GetStringAsync("http://aws.random.cat/meow")
                     .ConfigureAwait(false);
                 var jsondata = JsonConvert.DeserializeObject<DeserializedData>(data);
                 return jsondata.URL;

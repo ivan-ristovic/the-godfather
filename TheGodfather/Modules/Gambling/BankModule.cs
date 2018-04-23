@@ -16,7 +16,7 @@ using DSharpPlus.Entities;
 namespace TheGodfather.Modules.Gambling
 {
     [Group("bank"), Module(ModuleType.Gambling)]
-    [Description("Bank manipulation. If invoked alone, prints out your bank balance.")]
+    [Description("Bank account manipulation. If invoked alone, prints out your bank balance. Accounts periodically get a bonus.")]
     [Aliases("$", "$$", "$$$")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     [UsageExample("!bank")]
