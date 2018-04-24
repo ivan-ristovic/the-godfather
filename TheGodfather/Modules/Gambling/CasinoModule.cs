@@ -48,7 +48,7 @@ namespace TheGodfather.Modules.Gambling
                 Description = MakeStringFromResult(res),
                 Color = DiscordColor.Yellow
             };
-            em.AddField("Result", $"You won {Formatter.Bold(won.ToString())} credits!");
+            em.AddField("Result", $"{ctx.User.Mention} won {Formatter.Bold(won.ToString())} credits!");
 
             await ctx.RespondAsync(embed: em.Build())
                 .ConfigureAwait(false);
