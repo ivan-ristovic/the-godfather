@@ -37,8 +37,8 @@ namespace TheGodfather.Modules.Gambling
                                        [Description("Bid.")] int bid,
                                        [Description("Heads/Tails (h/t).")] string bet)
         {
-            if (bid <= 0 || bid > 10000)
-                throw new InvalidCommandUsageException("Invalid bid amount! Needs to be in range [0, 10000]");
+            if (bid <= 0 || bid > 100000)
+                throw new InvalidCommandUsageException("Invalid bid amount! Needs to be in range [0, 100000]");
 
             if (string.IsNullOrWhiteSpace(bet))
                 throw new InvalidCommandUsageException("Missing heads or tails call.");
@@ -92,8 +92,8 @@ namespace TheGodfather.Modules.Gambling
                                        [Description("Bid.")] int bid,
                                        [Description("Number guess (has to be a word one-six).")] string guess)
         {
-            if (bid <= 0 || bid > 10000)
-                throw new InvalidCommandUsageException("Invalid bid amount! Needs to be in range [0, 10000]");
+            if (bid <= 0 || bid > 100000)
+                throw new InvalidCommandUsageException("Invalid bid amount! Needs to be in range [0, 100000]");
 
             if (string.IsNullOrWhiteSpace(guess))
                 throw new InvalidCommandUsageException("Missing guess number.");

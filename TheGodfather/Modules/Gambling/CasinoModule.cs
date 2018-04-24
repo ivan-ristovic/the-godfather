@@ -34,8 +34,8 @@ namespace TheGodfather.Modules.Gambling
         public async Task SlotAsync(CommandContext ctx,
                                    [Description("Bid.")] int bid = 5)
         {
-            if (bid <= 0 || bid > 10000)
-                throw new InvalidCommandUsageException("Invalid bid amount! Needs to be in range [0, 10000]");
+            if (bid <= 0 || bid > 100000)
+                throw new InvalidCommandUsageException("Invalid bid amount! Needs to be in range [0, 100000]");
 
             if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, bid).ConfigureAwait(false))
                 throw new CommandFailedException("You do not have enough credits in WM bank!");
@@ -98,26 +98,26 @@ namespace TheGodfather.Modules.Gambling
             for (int i = 0; i < 3; i++) {
                 if (res[i, 0] == res[i, 1] && res[i, 1] == res[i, 2]) {
                     if (res[i, 0].GetDiscordName() == ":large_blue_diamond:")
-                        pts *= 20;
-                    else if (res[i, 0].GetDiscordName() == ":moneybag:")
-                        pts *= 15;
-                    else if (res[i, 0].GetDiscordName() == ":seven:")
-                        pts *= 10;
-                    else
                         pts *= 5;
+                    else if (res[i, 0].GetDiscordName() == ":moneybag:")
+                        pts *= 4;
+                    else if (res[i, 0].GetDiscordName() == ":seven:")
+                        pts *= 3;
+                    else
+                        pts *= 2;
                 }
             }
 
             for (int i = 0; i < 3; i++) {
                 if (res[0, i] == res[1, i] && res[1, i] == res[2, i]) {
                     if (res[0, i].GetDiscordName() == ":large_blue_diamond:")
-                        pts *= 20;
-                    else if (res[0, i].GetDiscordName() == ":moneybag:")
-                        pts *= 15;
-                    else if (res[0, i].GetDiscordName() == ":seven:")
-                        pts *= 10;
-                    else
                         pts *= 5;
+                    else if (res[0, i].GetDiscordName() == ":moneybag:")
+                        pts *= 4;
+                    else if (res[0, i].GetDiscordName() == ":seven:")
+                        pts *= 3;
+                    else
+                        pts *= 2;
                 }
             }
 

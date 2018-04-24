@@ -53,7 +53,7 @@ namespace TheGodfather.Modules.Misc
 
             await Database.AddPurchasableItemAsync(ctx.Guild.Id, name, price)
                 .ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync($"Item {Formatter.Bold(name)} ({Formatter.Bold(price.ToString())} credits) successfully added")
+            await ctx.RespondWithIconEmbedAsync($"Item {Formatter.Bold(name)} ({Formatter.Bold(price.ToString())} credits) successfully added to this guild's shop.")
                 .ConfigureAwait(false);
         }
 
@@ -90,6 +90,7 @@ namespace TheGodfather.Modules.Misc
         }
         #endregion
 
+        /*
         #region COMMAND_SHOP_SELL
         [Command("sell"), Module(ModuleType.Miscellaneous)]
         [Description("Sell a purchased item for half the buy price.")]
@@ -101,11 +102,12 @@ namespace TheGodfather.Modules.Misc
 
         }
         #endregion
+        */
 
         #region COMMAND_SHOP_DELETE
         [Command("delete"), Priority(1)]
         [Module(ModuleType.Miscellaneous)]
-        [Description("Remove purchasable item from this guild item list. You can remove by ID or by name.")]
+        [Description("Remove purchasable item from this guild item list. You can remove an item by ID or by name.")]
         [Aliases("-", "remove", "rm", "del")]
         [UsageExample("!shop delete Barbie")]
         [UsageExample("!shop delete 5")]
