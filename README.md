@@ -5,38 +5,49 @@ Written in C# using [DSharpPlus](https://github.com/DSharpPlus/DSharpPlus).
 
 ---
 
-TheGodfather only listens for commands inside the guilds, and nowhere else.
+TheGodfather only listens for commands inside the guilds, and **nowhere** else.
+
 The commands are invoked by sending a message starting with a "prefix" or by mentioning the bot at the start of the message.
+
 The default prefix for the bot is ``!``, however you can change it using ``prefix`` command (affects just the guild in which it is invoked). 
-Also you can trigger commands by mentioning the bot. 
+You can also trigger commands by mentioning the bot. 
 
 For example, valid command calls are: 
-```!ping```
-```@TheGodfather ping```
+```
+!ping
+@TheGodfather ping
+```
 
 
 ## :page_facing_up: Command list
 
 Command list is available at the [Documentation](Documentation/README.md) directory.
-It is advised to read the explanation below in order to use TheGodfather in his full potential.
+
+:exclamation: **Note:** It is advised to read the explanation below in order to use TheGodfather in his full potential.
 
 
 ## :page_facing_up: Command groups:
 
 Commands are divided into command groups due to large number of commands. 
-For example, command group ``user`` contains commands which are used for administrative commands on Discord users. Some subcommands of thise group are ``kick`` , ``ban`` etc. 
-In order to call the ``kick`` command for example, one should always provide the command group name and then the actual command name, in this case: ``!user kick @Someone``.
+
+For example, command group ``user`` contains commands which are used for administrative tasks on Discord users. Some subcommands of thise group are ``kick`` , ``ban`` etc. 
+In order to call the ``kick`` command for example, one should always provide the command group name and then the actual command name, in this case: 
+```
+!user kick @Someone
+```
 
 
 ## :page_facing_up: Command arguments:
 
 Some commands require additional information, from now on called **command arguments**.
+
 For example, the ``kick`` command requires a user to be passed to it, so the bot can know who to kick from the guild.
 
-Commands that require arguments also specify the type of the argument. 
+Commands that require arguments also specify the type of the arguments that they accept. 
+
 For example, you need to pass a user to ``kick`` command and not some random text.
 
-Argument types can be one of the following: 
+Argument type can be one of the following: 
 * ``int`` : Integer (a single whole number). Valid examples: ``25`` , ``-64``.
 * ``double`` : Floating point number, can also be an integer. Valid examples: ``5.64`` , ``-3.2`` , ``5``.
 * ``string`` : A string of of Unicode characters WITHOUT spaces. If you want to include spaces, then surround the string with quotes. Valid examples: ``testtest``, ``T3S7``, ``"I need quotes for spaces!"``
@@ -53,8 +64,10 @@ Argument types can be one of the following:
 Arguments can be marked as ``(optional)`` in the documentation. When this is the case, you can omit that argument.
 
 For example, the aforementioned ``kick`` command also accepts a ``string`` corresponding to a reason for the kick. However, since it is marked as optional, both of the following invocations will succeed:
-```!user kick @Someone```
-```!user kick @Someone I have kicked him because I can!```
+```
+!user kick @Someone
+!user kick @Someone I have kicked him because I can!
+```
 
 
 ## :page_facing_up: Command aliases
@@ -73,7 +86,7 @@ For example, let's consider the ``bank transfer`` command. The logic of this com
 One way to use it is to provide a ``user`` to pass the currency to and an ``int`` which corresponds to the amount of credits to transfer. 
 The ordering of these arguments can sometimes be hard to remember. This is where overloads come in. The purpose of an overload is to give alternate ways of invoking the same command.
 In this example, another way to use the ``bank transfer`` command is to pass the amount first and the user second.
-This way, the ordering of the arguments does not matter.
+This way, the ordering of the arguments does not matter and therefore does not need to be remembered.
 
 :exclamation: **Note:** ``string...`` argument always comes last because it captures raw text until the end of the message.
 
