@@ -46,7 +46,7 @@ namespace TheGodfather.Modules.Search
                 $"Urban Dictionary definitions for \"{query}\"",
                 data.List,
                 res => $"Definition by {Formatter.Bold(res.Author)}:\n\n" +
-                       $"{Formatter.Italic((res.Definition.Length < 1000 ? res.Definition : res.Definition.Substring(0, 1000) + "..."))}\n\n" +
+                       $"{Formatter.Italic((res.Definition.Length < 1000 ? res.Definition : res.Definition.Substring(0, 1000) + "...").Trim())}\n\n" +
                        $"{res.Permalink}",
                 DiscordColor.CornflowerBlue,
                 1

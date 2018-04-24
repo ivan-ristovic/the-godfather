@@ -289,7 +289,7 @@ namespace TheGodfather.Modules.Administration
         [UsageExample("!user mute @Someone Trashtalk")]
         [RequirePermissions(Permissions.MuteMembers)]
         public async Task MuteAsync(CommandContext ctx,
-                                   [Description("member.")] DiscordMember member,
+                                   [Description("Member to mute.")] DiscordMember member,
                                    [RemainingText, Description("Reason.")] string reason = null)
         {
             await member.SetMuteAsync(true, reason: ctx.BuildReasonString(reason))
@@ -307,7 +307,7 @@ namespace TheGodfather.Modules.Administration
         [UsageExample("!user unmute @Someone Some reason")]
         [RequirePermissions(Permissions.MuteMembers)]
         public async Task UnmuteAsync(CommandContext ctx,
-                                     [Description("member.")] DiscordMember member,
+                                     [Description("Member to unmute.")] DiscordMember member,
                                      [RemainingText, Description("Reason.")] string reason = null)
         {
             await member.SetMuteAsync(false, reason: ctx.BuildReasonString(reason))

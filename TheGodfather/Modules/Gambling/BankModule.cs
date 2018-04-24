@@ -49,7 +49,7 @@ namespace TheGodfather.Modules.Gambling
 
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
                 Title = $"Account balance for {user.Username}",
-                Description = $"{Formatter.Bold(balance.HasValue ? balance.ToString() : "No existing account!")} credits",
+                Description = Formatter.Bold(balance.HasValue ? $"{balance} credits." : "No existing account!"),
                 Color = DiscordColor.Yellow
             }.WithFooter("Your money is safe with us - WM Bank", user.AvatarUrl).Build()).ConfigureAwait(false);
         }
