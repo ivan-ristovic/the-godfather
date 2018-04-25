@@ -37,7 +37,7 @@ namespace TheGodfather.Common
                 _emb.WithTitle("Help");
             }
             _emb.WithDescription(desc);
-            _emb.WithFooter("Detailed info @ https://ivan-ristovic.github.io/the-godfather/");
+            _emb.WithFooter("Detailed documentation @ https://github.com/ivan-ristovic/the-godfather");
 
             return new CommandHelpMessage(embed: _emb);
         }
