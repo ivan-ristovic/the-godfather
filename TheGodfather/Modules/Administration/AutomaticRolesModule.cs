@@ -17,9 +17,10 @@ using DSharpPlus.Entities;
 namespace TheGodfather.Modules.Administration
 {
     [Group("automaticroles"), Module(ModuleType.Administration)]
-    [Description("Commands to manipulate automatically assigned roles (roles which get automatically granted to a user who enters the guild). If invoked without command, either lists or adds automatic role depending if argument is given.")]
+    [Description("Commands to manipulate automatically assigned roles (roles which get automatically granted to a user who enters the guild). If invoked without subcommand, either lists or adds automatic role depending if argument is given.")]
     [Aliases("ar")]
     [UsageExample("!ar")]
+    [UsageExample("!ar @Guests")]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
     [ListeningCheck]
     public class AutomaticRolesModule : TheGodfatherBaseModule

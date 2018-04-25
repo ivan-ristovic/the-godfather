@@ -26,7 +26,7 @@ Command list is available at the [Documentation](Documentation/README.md) direct
 **Note:** It is advised to read the explanation below in order to use TheGodfather in his full potential.
 
 
-## Command groups:
+## Command groups
 
 Commands are divided into command groups for easier navigation and partially due to large amount of commands. 
 
@@ -37,7 +37,7 @@ In order to call the ``kick`` command for example, one should always provide the
 ```
 
 
-## Command arguments:
+## Command arguments
 
 Some commands require additional information, from now on called **command arguments**.
 
@@ -52,7 +52,7 @@ Argument type can be one of the following:
 * ``double`` : Floating point number, can also be an integer. Valid examples: ``5.64`` , ``-3.2`` , ``5``.
 * ``string`` : A string of of Unicode characters WITHOUT spaces. If you want to include spaces, then surround the string with quotes. Valid examples: ``testtest``, ``T3S7``, ``"I need quotes for spaces!"``
 * ``string...`` : Unicode text, can include spaces. Valid examples: ``This is a text so I do not need quotes``.
-* ``boolean`` : ``true`` or ``false`` (can be converted from ``yes`` or ``no`` in various forms, see: [CustomBoolConverter](TheGodfather/Extensions/Converters/CustomBoolConverter.cs)). Valid examples: ``true`` , ``yes`` , ``no``.
+* ``boolean`` : ``true`` or ``false`` (can be converted from ``yes`` or ``no`` in various forms, see: [CustomBoolConverter](TheGodfather/Common/Converters/CustomBoolConverter.cs)). Valid examples: ``true`` , ``yes`` , ``no``.
 * ``user`` : Discord user, given by mention, username or UID (User ID). Valid examples: ``@Someone`` , ``Someone`` , ``123456789123456``.
 * ``channel`` : Discord channel, given by mention, channel name or CID (Channel ID). Valid examples: ``#channel`` , ``MyChannel`` , ``123456789123456``.
 * ``role`` : An existing role, given by mention, role name or RID (Role ID). Valid examples: ``@Admins`` , ``Admins`` , ``123456789123456``.
@@ -78,7 +78,7 @@ Aliases are usually shorter than regular names and are meant for faster invocati
 For example, the ``user`` command group has an alias ``u``. This means that if you wish to call a subcommand from that group, for example ``kick``, you can also call it using an alias for the group: ``u kick``.
 
 
-## Command overloads:
+## Command overloads
 
 Each command can be invoked in various ways, each of those ways being called an **overload** in the documentation. 
 

@@ -20,6 +20,7 @@ namespace TheGodfather.Modules.Administration
     [Description("Commands to manipulate self-assignable roles. If invoked without subcommands, lists all self-assignable roles for this guild or adds a new self-assignable role depending of argument given.")]
     [Aliases("sar")]
     [UsageExample("!sar")]
+    [UsageExample("!sar @Announcements")]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
     [ListeningCheck]
     public class SelfAssignableRolesModule : TheGodfatherBaseModule
