@@ -343,7 +343,12 @@ namespace TheGodfather.Modules.Owner
                     else
                         sb.Append("### ").AppendLine(cmd.QualifiedName);
 
-                    sb.AppendLine("<details><summary>Expand for additional information</summary><p>").AppendLine();
+                    sb.AppendLine("<details>")
+                      .AppendLine("<summary markdown=\"span\">")
+                      .AppendLine("Expand for additional information")
+                      .AppendLine("</summary>")
+                      .AppendLine("<p>")
+                      .AppendLine();
 
                     if (cmd.IsHidden)
                         sb.AppendLine(Formatter.Italic("Hidden.")).AppendLine();
@@ -415,7 +420,11 @@ namespace TheGodfather.Modules.Owner
                         sb.AppendLine("```");
                     }
 
-                    sb.AppendLine("</p></details>").AppendLine().AppendLine("---").AppendLine();
+                    sb.AppendLine("</p>")
+                      .AppendLine("</details>")
+                      .AppendLine()
+                      .AppendLine("---")
+                      .AppendLine();
                 }
 
                 string filename = Path.Combine(parts.FullName, $"{module.Key.Module.ToString()}.md");

@@ -1,7 +1,11 @@
 # Module: Searches
 
 ## Group: gif
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *GIPHY commands. If invoked without a subcommand, searches GIPHY with given query.*
 
@@ -17,12 +21,17 @@
 ```
 !gif wat
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### gif random
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Return a random GIF.*
 
@@ -34,12 +43,17 @@
 ```
 !gif random
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### gif trending
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Return an amount of trending GIFs.*
 
@@ -56,12 +70,17 @@
 !gif trending 3
 !gif trending
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ## Group: imdb
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Search Open Movie Database.*
 
@@ -77,12 +96,17 @@
 ```
 !imdb Airplane
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### imdb id
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Search by IMDb ID.*
 
@@ -95,12 +119,17 @@
 ```
 !imdb id tt4158110
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### imdb search
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Searches IMDb for given query and returns paginated results.*
 
@@ -116,12 +145,17 @@
 ```
 !imdb search Kill Bill
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### imdb title
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Search by title.*
 
@@ -137,12 +171,17 @@
 ```
 !imdb title Airplane
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ## Group: imgur
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Search imgur. Invoking without subcommand retrieves top ranked images from given subreddit.*
 
@@ -168,12 +207,17 @@
 !imgur 10 aww
 !imgur aww 10
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### imgur latest
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Return latest images from given subreddit.*
 
@@ -198,12 +242,17 @@
 !imgur latest 5 aww
 !imgur latest aww 5
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### imgur top
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Return amount of top rated images in the given subreddit for given timespan.*
 
@@ -248,12 +297,17 @@
 !imgur top 5 aww
 !imgur top day aww
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ## Group: joke
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Group for searching jokes. If invoked without a subcommand, returns a random joke.*
 
@@ -265,12 +319,17 @@
 ```
 !joke
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### joke search
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Search for the joke containing the given query.*
 
@@ -286,12 +345,17 @@
 ```
 !joke search blonde
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### joke yourmom
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Yo mama so...*
 
@@ -303,12 +367,17 @@
 ```
 !joke yourmom
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ## Group: reddit
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Reddit commands.*
 
@@ -324,12 +393,17 @@
 ```
 !reddit aww
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### reddit subscribe
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Add new feed for a subreddit.*
 
@@ -348,12 +422,17 @@
 ```
 !reddit sub aww
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### reddit unsubscribe
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Remove a subreddit feed using subreddit name or subscription ID (use command ``feed list`` to see IDs).*
 
@@ -377,12 +456,17 @@
 !reddit unsub aww
 !reddit unsub 12
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ## Group: rss
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Commands for RSS feed querying or subscribing. If invoked without subcommand, gives the latest topic from the given RSS URL.*
 
@@ -398,12 +482,17 @@
 ```
 !rss https://news.google.com/news/rss/
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### rss list
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Get feed list for the current channel.*
 
@@ -415,12 +504,17 @@
 ```
 !feed list
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### rss subscribe
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Subscribe to given RSS feed URL. The bot will send a message when the latest topic is changed.*
 
@@ -442,12 +536,17 @@
 !rss subscribe https://news.google.com/news/rss/
 !rss subscribe https://news.google.com/news/rss/ news
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### rss unsubscribe
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Remove an existing feed subscription.*
 
@@ -470,12 +569,17 @@
 ```
 !rss unsubscribe 1
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### rss wm
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Get newest topics from WM forum.*
 
@@ -484,12 +588,17 @@
 ```
 !rss wm
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### steam profile
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Get Steam user information for user based on his ID.*
 
@@ -500,12 +609,17 @@
 
 `[unsigned long]` : *ID.*
 
-</p></details>
+</p>
+</details>
 
 ---
 
 ## Group: urbandict
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Urban Dictionary commands. If invoked without subcommand, searches Urban Dictionary for a given query.*
 
@@ -521,12 +635,17 @@
 ```
 !urbandict blonde
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ## Group: weather
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Weather search commands. If invoked without subcommands, returns weather information for given query.*
 
@@ -542,12 +661,17 @@
 ```
 !weather london
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### weather forecast
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Get weather forecast for the following days (def: 7).*
 
@@ -570,12 +694,17 @@
 !weather forecast london
 !weather forecast 5 london
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ## Group: youtube
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Youtube search commands. If invoked without subcommands, searches YouTube for given query.*
 
@@ -591,12 +720,17 @@
 ```
 !youtube never gonna give you up
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### youtube search
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Advanced youtube search.*
 
@@ -614,12 +748,17 @@
 ```
 !youtube search 5 rick astley
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### youtube searchchannel
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Advanced youtube search for channels only.*
 
@@ -635,12 +774,17 @@
 ```
 !youtube searchchannel 5 rick astley
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### youtube searchp
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Advanced youtube search for playlists only.*
 
@@ -656,12 +800,17 @@
 ```
 !youtube searchplaylist 5 rick astley
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### youtube searchvideo
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Advanced youtube search for videos only.*
 
@@ -677,12 +826,17 @@
 ```
 !youtube searchvideo 5 rick astley
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### youtube subscribe
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Add a new subscription for a YouTube channel.*
 
@@ -704,12 +858,17 @@
 !youtube subscribe https://www.youtube.com/user/RickAstleyVEVO
 !youtube subscribe https://www.youtube.com/user/RickAstleyVEVO rick
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### youtube unsubscribe
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Remove a YouTube channel subscription.*
 
@@ -729,7 +888,8 @@
 !youtube unsubscribe https://www.youtube.com/user/RickAstleyVEVO
 !youtube unsubscribe rick
 ```
-</p></details>
+</p>
+</details>
 
 ---
 

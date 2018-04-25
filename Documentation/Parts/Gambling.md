@@ -1,7 +1,11 @@
 # Module: Gambling
 
 ## Group: bank
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Bank account manipulation. If invoked alone, prints out your bank balance. Accounts periodically get a bonus.*
 
@@ -17,12 +21,17 @@
 ```
 !bank
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### bank balance
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *View account balance for given user. If the user is not given, checks sender's balance.*
 
@@ -38,12 +47,17 @@
 ```
 !bank balance @Someone
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### bank grant
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Magically give funds to some user.*
 
@@ -70,12 +84,17 @@
 !bank grant @Someone 1000
 !bank grant 1000 @Someone
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### bank register
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Create an account for you in WM bank.*
 
@@ -87,12 +106,17 @@
 ```
 !bank register
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### bank top
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Print the richest users.*
 
@@ -104,12 +128,17 @@
 ```
 !bank top
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### bank transfer
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Transfer funds from your account to another one.*
 
@@ -134,24 +163,34 @@
 !bank transfer @Someone 40
 !bank transfer 40 @Someone
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ## Group: cards
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Manipulate a deck of cards.*
 
 **Aliases:**
 `deck`
 
-</p></details>
+</p>
+</details>
 
 ---
 
 ### cards draw
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Draw cards from the top of the deck. If amount of cards is not specified, draws one card.*
 
@@ -167,12 +206,17 @@
 ```
 !deck draw 5
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### cards reset
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Opens a brand new card deck.*
 
@@ -184,12 +228,17 @@
 ```
 !deck reset
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### cards shuffle
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Shuffles current deck.*
 
@@ -201,12 +250,17 @@
 ```
 !deck shuffle
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ## Group: casino blackjack
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Play a blackjack game.*
 
@@ -222,12 +276,17 @@
 ```
 !casino blackjack
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### casino blackjack join
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Join a pending Blackjack game.*
 
@@ -243,12 +302,17 @@
 ```
 !casino blackjack join
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### casino blackjack rules
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Explain the Blackjack rules.*
 
@@ -260,12 +324,17 @@
 ```
 !casino blackjack rules
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### casino slot
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Roll a slot machine. You need to specify a bid amount. Default bid amount is 5.*
 
@@ -281,12 +350,17 @@
 ```
 !casino slot 20
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### gamble coinflip
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Flip a coin and bet on the outcome.*
 
@@ -311,12 +385,17 @@
 !bet coinflip 10 heads
 !bet coinflip tails 20
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### gamble dice
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Roll a dice and bet on the outcome.*
 
@@ -341,7 +420,8 @@
 !bet dice 50 six
 !bet dice three 10
 ```
-</p></details>
+</p>
+</details>
 
 ---
 

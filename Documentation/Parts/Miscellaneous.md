@@ -1,7 +1,11 @@
 # Module: Miscellaneous
 
 ## 8ball
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *An almighty ball which knows the answer to any question you ask. Alright, it's random answer, so what?*
 
@@ -17,12 +21,17 @@
 ```
 !8ball Am I gay?
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ## coinflip
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Flip a coin.*
 
@@ -34,12 +43,17 @@
 ```
 !coinflip
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ## dice
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Roll a dice.*
 
@@ -51,12 +65,17 @@
 ```
 !dice
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ## giveme
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Grants you a role from this guild's self-assignable roles list.*
 
@@ -75,12 +94,17 @@
 ```
 !giveme @Announcements
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ## Group: insult
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Insults manipulation. If invoked without subcommands, insults a given user.*
 
@@ -96,12 +120,17 @@
 ```
 !insult @Someone
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### insult add
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Add insult to list (use %user% instead of user mention).*
 
@@ -119,12 +148,17 @@
 ```
 !insult add You are so dumb, %user%!
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### insult clear
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Delete all insults.*
 
@@ -138,12 +172,17 @@
 ```
 !insults clear
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### insult delete
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Remove insult with a given index from list. (use command ``insults list`` to view insult indexes).*
 
@@ -161,12 +200,17 @@
 ```
 !insult delete 2
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### insult list
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Show all insults.*
 
@@ -178,12 +222,17 @@
 ```
 !insult list
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ## invite
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Get an instant invite link for the current guild.*
 
@@ -198,12 +247,17 @@
 ```
 !invite
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ## items
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *View user's purchased items (see ``bank`` and ``shop``).*
 
@@ -223,12 +277,17 @@
 !items
 !items @Someone
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ## leave
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Makes Godfather leave the guild.*
 
@@ -240,12 +299,17 @@
 ```
 !leave
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ## leet
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Wr1t3s m3ss@g3 1n 1337sp34k.*
 
@@ -261,12 +325,17 @@
 ```
 !leet Some sentence
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ## Group: meme
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Manipulate guild memes. When invoked without subcommands, returns a meme from this guild's meme list given by name, otherwise returns random one.*
 
@@ -283,12 +352,17 @@
 !meme
 !meme SomeMemeNameWhichYouAdded
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### meme add
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Add a new meme to the list.*
 
@@ -309,12 +383,17 @@
 ```
 !meme add pepe http://i0.kym-cdn.com/photos/images/facebook/000/862/065/0e9.jpg
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### meme clear
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Deletes all guild memes.*
 
@@ -329,12 +408,17 @@
 ```
 !memes clear
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### meme create
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Creates a new meme from blank template.*
 
@@ -357,12 +441,17 @@
 ```
 !meme create 1stworld "Top text" "Bottom text"
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### meme delete
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Deletes a meme from this guild's meme list.*
 
@@ -381,12 +470,17 @@
 ```
 !meme delete pepe
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### meme list
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *List all registered memes for this guild.*
 
@@ -398,12 +492,17 @@
 ```
 !meme list
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### meme templates
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Lists all available meme templates.*
 
@@ -415,12 +514,17 @@
 ```
 !meme templates
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ## news
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Get newest world news.*
 
@@ -432,12 +536,17 @@
 ```
 !news
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ## penis
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *An accurate measurement.*
 
@@ -453,12 +562,17 @@
 ```
 !penis @Someone
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ## peniscompare
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Comparison of the results given by ``penis`` command.*
 
@@ -477,12 +591,17 @@
 !peniscompare @Someone
 !peniscompare @Someone @SomeoneElse
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ## ping
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Ping the bot.*
 
@@ -491,12 +610,17 @@
 ```
 !ping
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ## prefix
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Get current guild prefix, or change it.*
 
@@ -516,12 +640,17 @@
 !prefix
 !prefix ;
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### random cat
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Get a random cat image.*
 
@@ -530,12 +659,17 @@
 ```
 !random cat
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### random choose
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Choose one of the provided options separated by comma.*
 
@@ -551,12 +685,17 @@
 ```
 !random choose option 1, option 2, option 3...
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### random dog
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Get a random dog image.*
 
@@ -565,12 +704,17 @@
 ```
 !random dog
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### random raffle
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Choose a user from the online members list belonging to a given role.*
 
@@ -587,12 +731,17 @@
 !random raffle
 !random raffle Admins
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ## Group: rank
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *User ranking commands. If invoked without subcommands, prints sender's rank.*
 
@@ -609,12 +758,17 @@
 !rank
 !rank @Someone
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### rank list
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Print all available ranks.*
 
@@ -626,12 +780,17 @@
 ```
 !rank list
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### rank top
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Get rank leaderboard.*
 
@@ -640,12 +799,17 @@
 ```
 !rank top
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ## rate
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Gives a rating chart for the user. If the user is not provided, rates sender.*
 
@@ -664,12 +828,17 @@
 ```
 !rate @Someone
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ## remind
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Resend a message after some time.*
 
@@ -703,12 +872,17 @@
 ```
 !remind 1h Drink water!
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ## report
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Send a report message to owner about a bug (please don't abuse... please).*
 
@@ -721,12 +895,17 @@
 ```
 !report Your bot sucks!
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ## say
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Echo echo echo.*
 
@@ -742,12 +921,17 @@
 ```
 !say I am gay.
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ## Group: shop
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Shop for items using WM credits from your bank account. If invoked without subcommand, lists all available items for purchase.*
 
@@ -759,12 +943,17 @@
 ```
 !shop
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### shop add
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Add a new item to guild purchasable items list.*
 
@@ -793,12 +982,17 @@
 !shop add "New Barbie" 500
 !shop add 500 Newest Barbie
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### shop buy
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Purchase an item from this guild's shop.*
 
@@ -814,12 +1008,17 @@
 ```
 !shop buy 3
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### shop delete
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Remove purchasable item from this guild item list. You can remove an item by ID or by name.*
 
@@ -840,12 +1039,17 @@
 !shop delete 5
 !shop delete 1 2 3 4 5
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### shop list
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *List all purchasable items for this guild.*
 
@@ -857,12 +1061,17 @@
 ```
 !shop list
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### shop sell
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Sell a purchased item for half the buy price.*
 
@@ -878,12 +1087,17 @@
 ```
 !shop sell 3
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ## tts
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Sends a tts message.*
 
@@ -896,12 +1110,17 @@
 ```
 !tts I am gay.
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ## zugify
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *I don't even...*
 
@@ -917,7 +1136,8 @@
 ```
 !zugify Some random text
 ```
-</p></details>
+</p>
+</details>
 
 ---
 

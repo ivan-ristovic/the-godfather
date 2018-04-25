@@ -1,7 +1,11 @@
 # Module: Music
 
 ## connect
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Connect the bot to a voice channel. If the channel is not given, connects the bot to the same channel you are in.*
 
@@ -23,12 +27,17 @@
 !connect
 !connect Music
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ## disconnect
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Disconnects the bot from the voice channel.*
 
@@ -45,12 +54,17 @@
 ```
 !disconnect
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ## Group: play
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Commands for playing music. If invoked without subcommand, plays given URL or searches YouTube for given query and plays the first result.*
 
@@ -70,12 +84,17 @@
 !play https://www.youtube.com/watch?v=dQw4w9WgXcQ
 !play what is love?
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### play file
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Plays an audio file from the server filesystem.*
 
@@ -96,12 +115,17 @@
 ```
 !play file test.mp3
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ## skip
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Skip current voice playback.*
 
@@ -115,12 +139,17 @@
 ```
 !skip
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ## stop
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Stops current voice playback.*
 
@@ -134,7 +163,8 @@
 ```
 !stop
 ```
-</p></details>
+</p>
+</details>
 
 ---
 

@@ -1,7 +1,11 @@
 # Module: Administration
 
 ## Group: automaticroles
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Commands to manipulate automatically assigned roles (roles which get automatically granted to a user who enters the guild). If invoked without command, either lists or adds automatic role depending if argument is given.*
 
@@ -17,12 +21,17 @@
 ```
 !ar
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### automaticroles add
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Add an automatic role (or roles) for this guild.*
 
@@ -42,12 +51,17 @@
 !ar add @Notifications
 !ar add @Notifications @Role1 @Role2
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### automaticroles clear
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Delete all automatic roles for the current guild.*
 
@@ -62,12 +76,17 @@
 ```
 !ar clear
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### automaticroles delete
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Remove automatic role (or roles).*
 
@@ -87,12 +106,17 @@
 !ar delete @Notifications
 !ar delete @Notifications @Role1 @Role2
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### automaticroles list
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *View all automatic roles in the current guild.*
 
@@ -104,12 +128,17 @@
 ```
 !ar list
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ## Group: channel
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Miscellaneous channel control commands. If invoked without subcommands, prints out channel information.*
 
@@ -120,12 +149,17 @@
 
 (optional) `[channel]` : *Channel.* (def: `None`)
 
-</p></details>
+</p>
+</details>
 
 ---
 
 ### channel createcategory
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Create new channel category.*
 
@@ -144,12 +178,17 @@
 ```
 !channel createcategory My New Category
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### channel createtext
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Create new text channel.*
 
@@ -190,12 +229,17 @@
 !channel createtext newtextchannel no
 !channel createtext ParentCategory newtextchannel
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### channel createvoice
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Create new voice channel.*
 
@@ -242,12 +286,17 @@
 !channel createtext "My voice channel" 10 96000
 !channel createtext ParentCategory "My voice channel" 10 96000
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### channel delete
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Delete a given channel or category. If the channel isn't given, deletes the current one.*
 
@@ -274,12 +323,17 @@
 !channel delete "My voice channel"
 !channel delete "My voice channel" Because I can!
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### channel info
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Get information about a given channel. If the channel isn't given, uses the current one.*
 
@@ -299,12 +353,17 @@
 !channel info
 !channel info "My voice channel"
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### channel modify
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Modify a given voice channel. Set 0 if you wish to keep the value as it is.*
 
@@ -337,12 +396,17 @@
 ```
 !channel modify "My voice channel" 20 96000 Some reason
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### channel rename
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Rename channel. If the channel isn't given, uses the current one.*
 
@@ -377,12 +441,17 @@
 !channel rename "My voice channel" "My old voice channel"
 !channel rename "My reason" "My voice channel" "My old voice channel"
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### channel setparent
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Change the parent of the given channel. If the channel isn't given, uses the current one.*
 
@@ -412,12 +481,17 @@
 !channel setparent "My channel" ParentCategory
 !channel setparent ParentCategory I set a new parent for this channel!
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### channel setposition
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Change the position of the given channel in the guild channel list. If the channel isn't given, uses the current one.*
 
@@ -456,12 +530,17 @@
 !channel setposition "My channel" 1
 !channel setposition "My channel" 4 I changed position :)
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### channel settopic
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Set channel topic. If the channel isn't given, uses the current one.*
 
@@ -495,12 +574,17 @@
 !channel settopic New channel topic
 !channel settopic "My channel" New channel topic
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### channel viewperms
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *View permissions for a member or role in the given channel. If the member is not given, lists the sender's permissions. If the channel is not given, uses current one.*
 
@@ -539,12 +623,17 @@
 !channel viewperms #private everyone
 !channel viewperms everyone #private
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ## Group: emoji
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Manipulate guild emoji. Standalone call lists all guild emoji or gives information about given emoji.*
 
@@ -560,12 +649,17 @@
 ```
 !emoji
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### emoji add
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Add emoji.*
 
@@ -586,12 +680,17 @@
 ```
 !emoji add pepe http://i0.kym-cdn.com/photos/images/facebook/000/862/065/0e9.jpg
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### emoji delete
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Remove guild emoji. Note: bots can only delete emojis they created.*
 
@@ -610,12 +709,17 @@
 ```
 !emoji delete pepe
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### emoji info
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Get information for given guild emoji.*
 
@@ -631,12 +735,17 @@
 ```
 !emoji info pepe
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### emoji list
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *View guild emojis.*
 
@@ -648,12 +757,17 @@
 ```
 !emoji list
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### emoji modify
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Edit name of an existing guild emoji.*
 
@@ -681,12 +795,17 @@
 !emoji modify :pepe: newname
 !emoji modify newname :pepe:
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ## Group: filter
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Message filtering commands. If invoked without subcommand, either lists all filters or adds a new filter for the given word list. Words can be regular expressions.*
 
@@ -702,12 +821,17 @@
 ```
 !filter fuck fk f+u+c+k+
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### filter add
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Add filter to guild filter list.*
 
@@ -726,12 +850,17 @@
 ```
 !filter add fuck f+u+c+k+
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### filter clear
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Delete all filters for the current guild.*
 
@@ -746,12 +875,17 @@
 ```
 !filter clear
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### filter delete
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Remove filters from guild filter list.*
 
@@ -770,12 +904,17 @@
 ```
 !filter delete fuck f+u+c+k+
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### filter list
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Show all filters for this guild.*
 
@@ -787,24 +926,34 @@
 ```
 !filter list
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ## Group: guild
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Miscellaneous guild control commands. If invoked without subcommands, prints guild information.*
 
 **Aliases:**
 `server, g`
 
-</p></details>
+</p>
+</details>
 
 ---
 
 ### guild bans
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Get guild ban list.*
 
@@ -819,12 +968,17 @@
 ```
 !guild banlist
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### guild deleteleavechannel
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Remove leave message channel for this guild.*
 
@@ -839,12 +993,17 @@
 ```
 !guild deletewelcomechannel
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### guild deleteleavemessage
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Remove leave message for this guild.*
 
@@ -859,12 +1018,17 @@
 ```
 !guild deleteleavemessage
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### guild deletewelcomechannel
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Remove welcome message channel for this guild.*
 
@@ -879,12 +1043,17 @@
 ```
 !guild deletewelcomechannel
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### guild deletewelcomemessage
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Remove welcome message for this guild.*
 
@@ -899,12 +1068,17 @@
 ```
 !guild deletewelcomemessage
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### guild getleavechannel
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Get current leave message channel for this guild.*
 
@@ -916,12 +1090,17 @@
 ```
 !guild getleavechannel
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### guild getleavemessage
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Get current leave message for this guild.*
 
@@ -933,12 +1112,17 @@
 ```
 !guild getwelcomemessage
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### guild getwelcomechannel
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Get current welcome message channel for this guild.*
 
@@ -950,12 +1134,17 @@
 ```
 !guild getwelcomechannel
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### guild getwelcomemessage
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Get current welcome message for this guild.*
 
@@ -967,12 +1156,17 @@
 ```
 !guild getwelcomemessage
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### guild info
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Get guild information.*
 
@@ -984,12 +1178,17 @@
 ```
 !guild info
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### guild listmembers
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Get guild member list.*
 
@@ -1001,12 +1200,17 @@
 ```
 !guild memberlist
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### guild log
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Get audit logs.*
 
@@ -1021,12 +1225,17 @@
 ```
 !guild logs
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### guild prune
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Kick guild members who weren't active in given amount of days (1-7).*
 
@@ -1050,12 +1259,17 @@
 ```
 !guild prune 5 Kicking inactives..
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### guild rename
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Rename guild.*
 
@@ -1081,12 +1295,17 @@
 !guild rename New guild name
 !guild rename "Reason for renaming" New guild name
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### guild seticon
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Change icon of the guild.*
 
@@ -1105,12 +1324,17 @@
 ```
 !guild seticon http://imgur.com/someimage.png
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### guild setleavechannel
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Set leave message channel for this guild. If the channel isn't given, uses the current one.*
 
@@ -1130,12 +1354,17 @@
 !guild setleavechannel
 !guild setleavechannel #bb
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### guild setleavemessage
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Set leave message for this guild. Any occurances of ``%user%`` inside the string will be replaced with newly joined user mention. Invoking command without a message will reset the current leave message to a default one.*
 
@@ -1155,12 +1384,17 @@
 !guild setleavemessage
 !guild setleavemessage Bye, %user%!
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### guild setwelcomechannel
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Set welcome message channel for this guild. If the channel isn't given, uses the current one.*
 
@@ -1180,12 +1414,17 @@
 !guild setwelcomechannel
 !guild setwelcomechannel #welcome
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### guild setwelcomemessage
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Set welcome message for this guild. Any occurances of ``%user%`` inside the string will be replaced with newly joined user mention. Invoking command without a message will reset the current welcome message to a default one.*
 
@@ -1205,12 +1444,17 @@
 !guild setwelcomemessage
 !guild setwelcomemessage Welcome, %user%!
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### message attachments
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *View all message attachments. If the message is not provided, uses the last sent message before command invocation.*
 
@@ -1227,12 +1471,17 @@
 !message attachments
 !message attachments 408226948855234561
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### message delete
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Deletes the specified amount of most-recent messages from the channel.*
 
@@ -1257,12 +1506,17 @@
 !messages delete 10
 !messages delete 10 Cleaning spam
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### message deletefrom
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Deletes given amount of most-recent messages from given user.*
 
@@ -1297,12 +1551,17 @@
 !messages deletefrom @Someone 10 Cleaning spam
 !messages deletefrom 10 @Someone Cleaning spam
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### message deletereactions
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Deletes all reactions from the given message.*
 
@@ -1326,12 +1585,17 @@
 ```
 !messages deletereactions 408226948855234561
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### message deleteregex
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Deletes given amount of most-recent messages that match a given regular expression.*
 
@@ -1366,12 +1630,17 @@
 !messages deletefrom s+p+a+m+ 10 Cleaning spam
 !messages deletefrom 10 s+p+a+m+ Cleaning spam
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### message listpinned
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *List pinned messages in this channel.*
 
@@ -1383,12 +1652,17 @@
 ```
 !messages listpinned
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### message modify
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Modify the given message.*
 
@@ -1409,12 +1683,17 @@
 ```
 !messages modify 408226948855234561 modified text
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### message pin
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Pins the message given by ID. If the message is not provided, pins the last sent message before command invocation.*
 
@@ -1434,12 +1713,17 @@
 !messages pin
 !messages pin 408226948855234561
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### message unpin
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Unpins the message at given index (starting from 1). If the index is not given, unpins the most recent one.*
 
@@ -1459,12 +1743,17 @@
 !messages unpin
 !messages unpin 10
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### message unpinall
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Unpins all pinned messages in this channel.*
 
@@ -1479,12 +1768,17 @@
 ```
 !messages unpinall
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ## Group: roles
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Miscellaneous role control commands.*
 
@@ -1495,12 +1789,17 @@
 
 `[role]` : *Role.*
 
-</p></details>
+</p>
+</details>
 
 ---
 
 ### roles create
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Create a new role.*
 
@@ -1537,12 +1836,17 @@
 !roles create 
 !roles create #C77B0F My new role
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### roles delete
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Create a new role.*
 
@@ -1564,12 +1868,17 @@
 !role delete My role
 !role delete @admins
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### roles info
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Get information about a given role.*
 
@@ -1588,12 +1897,17 @@
 ```
 !role info Admins
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### roles mentionall
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Mention all users from given role.*
 
@@ -1615,12 +1929,17 @@
 ```
 !role mentionall Admins
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### roles setcolor
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Set a color for the role.*
 
@@ -1648,12 +1967,17 @@
 !role setcolor #FF0000 Admins
 !role setcolor Admins #FF0000
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### roles setmentionable
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Set role mentionable var.*
 
@@ -1682,12 +2006,17 @@
 !role setmentionable Admins false
 !role setmentionable false Admins
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### roles setname
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Set a name for the role.*
 
@@ -1715,12 +2044,17 @@
 !role setname @Admins Administrators
 !role setname Administrators @Admins
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### roles setvisible
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Set role hoisted var (visibility in online list).*
 
@@ -1749,12 +2083,17 @@
 !role setvisible Admins false
 !role setvisible false Admins
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ## Group: selfassignableroles
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Commands to manipulate self-assignable roles. If invoked without subcommands, lists all self-assignable roles for this guild or adds a new self-assignable role depending of argument given.*
 
@@ -1770,12 +2109,17 @@
 ```
 !sar
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### selfassignableroles add
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Add a self-assignable role (or roles) for this guild.*
 
@@ -1795,12 +2139,17 @@
 !sar add @Notifications
 !sar add @Notifications @Role1 @Role2
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### selfassignableroles clear
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Delete all self-assignable roles for the current guild.*
 
@@ -1815,12 +2164,17 @@
 ```
 !sar clear
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### selfassignableroles delete
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Remove self-assignable role (or roles).*
 
@@ -1840,12 +2194,17 @@
 !sar delete @Notifications
 !sar delete @Notifications @Role1 @Role2
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### selfassignableroles list
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *View all self-assignable roles in the current guild.*
 
@@ -1857,12 +2216,17 @@
 ```
 !sar list
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ## Group: user
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Miscellaneous user control commands. If invoked without subcommands, prints out user information.*
 
@@ -1873,12 +2237,17 @@
 
 (optional) `[user]` : *User.* (def: `None`)
 
-</p></details>
+</p>
+</details>
 
 ---
 
 ### user addrole
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Assign a role to a member.*
 
@@ -1906,12 +2275,17 @@
 !user addrole @User Admins
 !user addrole Admins @User
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### user avatar
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Get avatar from user.*
 
@@ -1927,12 +2301,17 @@
 ```
 !user avatar @Someone
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### user ban
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Bans the user from the guild.*
 
@@ -1954,12 +2333,17 @@
 !user ban @Someone
 !user ban @Someone Troublemaker
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### user banid
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Bans the ID from the server.*
 
@@ -1981,12 +2365,17 @@
 !user banid 154956794490845232
 !user banid 154558794490846232 Troublemaker
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### user deafen
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Deafen a member.*
 
@@ -2007,12 +2396,17 @@
 ```
 !user deafen @Someone
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### user info
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Print the information about the given user. If the user is not given, uses the sender.*
 
@@ -2028,12 +2422,17 @@
 ```
 !user info @Someone
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### user kick
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Kicks the member from the guild.*
 
@@ -2055,12 +2454,17 @@
 !user kick @Someone
 !user kick @Someone Troublemaker
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### user mute
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Mute a member.*
 
@@ -2082,12 +2486,17 @@
 !user mute @Someone
 !user mute @Someone Trashtalk
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### user removeallroles
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Revoke all roles from user.*
 
@@ -2108,12 +2517,17 @@
 ```
 !user removeallroles @Someone
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### user removerole
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Revoke a role from member.*
 
@@ -2151,12 +2565,17 @@
 !user removerole @Someone Admins
 !user removerole Admins @Someone
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### user setname
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Gives someone a new nickname.*
 
@@ -2177,12 +2596,17 @@
 ```
 !user setname @Someone Newname
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### user softban
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Bans the member from the guild and then unbans him immediately.*
 
@@ -2204,12 +2628,17 @@
 !user sban @Someone
 !user sban @Someone Troublemaker
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### user tempban
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Temporarily ans the user from the server and then unbans him after given timespan.*
 
@@ -2242,12 +2671,17 @@
 !user tempban 5d @Someone Troublemaker
 !user tempban @Someone 5h30m30s Troublemaker
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### user unban
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Unbans the user ID from the server.*
 
@@ -2268,12 +2702,17 @@
 ```
 !user unban 154956794490845232
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### user undeafen
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Undeafen a member.*
 
@@ -2294,12 +2733,17 @@
 ```
 !user undeafen @Someone
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### user unmute
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Unmute a member.*
 
@@ -2321,12 +2765,17 @@
 !user unmute @Someone
 !user unmute @Someone Some reason
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
 ### user warn
-<details><summary>Expand for additional information</summary><p>
+<details>
+<summary markdown="span">
+Expand for additional information
+</summary>
+<p>
 
 *Warn a member in private message by sending a given warning text.*
 
@@ -2347,7 +2796,8 @@
 ```
 !user warn @Someone Stop spamming or kick!
 ```
-</p></details>
+</p>
+</details>
 
 ---
 
