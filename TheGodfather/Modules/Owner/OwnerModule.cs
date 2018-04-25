@@ -343,7 +343,7 @@ namespace TheGodfather.Modules.Owner
                     else
                         sb.Append("### ").AppendLine(cmd.QualifiedName);
 
-                    sb.AppendLine("<details><summary markdown='span'>Expand for additional information</summary><code>").AppendLine();
+                    sb.AppendLine("<details><summary markdown='span'>Expand for additional information</summary>").AppendLine();
 
                     if (cmd.IsHidden)
                         sb.AppendLine(Formatter.Italic("Hidden.")).AppendLine();
@@ -415,7 +415,7 @@ namespace TheGodfather.Modules.Owner
                         sb.AppendLine("```");
                     }
 
-                    sb.AppendLine("</code></details>").AppendLine().AppendLine("---").AppendLine();
+                    sb.AppendLine("</details>").AppendLine().AppendLine("---").AppendLine();
                 }
 
                 string filename = Path.Combine(parts.FullName, $"{module.Key.Module.ToString()}.md");
