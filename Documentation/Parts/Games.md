@@ -1,7 +1,7 @@
 # Module: Games
 
 ## Group: game animalrace
-<details><summary markdown='span'>Expand for additional information</summary><code>
+<details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Start a new animal race!*
 
@@ -13,12 +13,12 @@
 ```
 !game animalrace
 ```
-</code></details>
+</p></details>
 
 ---
 
 ### game animalrace join
-<details><summary markdown='span'>Expand for additional information</summary><code>
+<details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Join an existing animal race game.*
 
@@ -30,12 +30,12 @@
 ```
 !game animalrace join
 ```
-</code></details>
+</p></details>
 
 ---
 
 ### game animalrace stats
-<details><summary markdown='span'>Expand for additional information</summary><code>
+<details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Print the leaderboard for this game.*
 
@@ -47,12 +47,12 @@
 ```
 !game animalrace stats
 ```
-</code></details>
+</p></details>
 
 ---
 
 ## Group: game caro
-<details><summary markdown='span'>Expand for additional information</summary><code>
+<details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Starts a "Caro" game. Play a move by writing a pair of numbers from 1 to 10 corresponding to the row and column where you wish to play. You can also specify a time window in which player must submit their move.*
 
@@ -69,12 +69,12 @@
 !game caro
 !game caro 10s
 ```
-</code></details>
+</p></details>
 
 ---
 
 ### game caro rules
-<details><summary markdown='span'>Expand for additional information</summary><code>
+<details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Explain the Caro game rules.*
 
@@ -86,12 +86,12 @@
 ```
 !game caro rules
 ```
-</code></details>
+</p></details>
 
 ---
 
 ### game caro stats
-<details><summary markdown='span'>Expand for additional information</summary><code>
+<details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Print the leaderboard for this game.*
 
@@ -103,12 +103,12 @@
 ```
 !game caro stats
 ```
-</code></details>
+</p></details>
 
 ---
 
 ## Group: game connect4
-<details><summary markdown='span'>Expand for additional information</summary><code>
+<details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Starts a "Connect 4" game. Play a move by writing a number from 1 to 9 corresponding to the column where you wish to insert your piece. You can also specify a time window in which player must submit their move.*
 
@@ -125,12 +125,12 @@
 !game connect4
 !game connect4 10s
 ```
-</code></details>
+</p></details>
 
 ---
 
 ### game connect4 rules
-<details><summary markdown='span'>Expand for additional information</summary><code>
+<details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Explain the Connect4 game rules.*
 
@@ -142,12 +142,12 @@
 ```
 !game connect4 rules
 ```
-</code></details>
+</p></details>
 
 ---
 
 ### game connect4 stats
-<details><summary markdown='span'>Expand for additional information</summary><code>
+<details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Print the leaderboard for this game.*
 
@@ -159,12 +159,12 @@
 ```
 !game connect4 stats
 ```
-</code></details>
+</p></details>
 
 ---
 
 ## Group: game duel
-<details><summary markdown='span'>Expand for additional information</summary><code>
+<details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Starts a duel which I will commentate.*
 
@@ -180,12 +180,12 @@
 ```
 !game duel @Someone
 ```
-</code></details>
+</p></details>
 
 ---
 
 ### game duel rules
-<details><summary markdown='span'>Expand for additional information</summary><code>
+<details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Explain the Duel game rules.*
 
@@ -197,12 +197,12 @@
 ```
 !game duel rules
 ```
-</code></details>
+</p></details>
 
 ---
 
 ### game duel stats
-<details><summary markdown='span'>Expand for additional information</summary><code>
+<details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Print the leaderboard for this game.*
 
@@ -214,12 +214,12 @@
 ```
 !game duel stats
 ```
-</code></details>
+</p></details>
 
 ---
 
 ## Group: game hangman
-<details><summary markdown='span'>Expand for additional information</summary><code>
+<details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Starts a hangman game.*
 
@@ -231,12 +231,12 @@
 ```
 !game hangman
 ```
-</code></details>
+</p></details>
 
 ---
 
 ### game hangman rules
-<details><summary markdown='span'>Expand for additional information</summary><code>
+<details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Explain the Hangman game rules.*
 
@@ -248,12 +248,12 @@
 ```
 !game hangman rules
 ```
-</code></details>
+</p></details>
 
 ---
 
 ### game hangman stats
-<details><summary markdown='span'>Expand for additional information</summary><code>
+<details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Print the leaderboard for this game.*
 
@@ -265,12 +265,12 @@
 ```
 !game hangman stats
 ```
-</code></details>
+</p></details>
 
 ---
 
 ### game leaderboard
-<details><summary markdown='span'>Expand for additional information</summary><code>
+<details><summary markdown='span'>Expand for additional information</summary><p>
 
 *View the global game leaderboard.*
 
@@ -282,12 +282,12 @@
 ```
 !game leaderboard
 ```
-</code></details>
+</p></details>
 
 ---
 
 ## Group: game numberrace
-<details><summary markdown='span'>Expand for additional information</summary><code>
+<details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Number racing game commands.*
 
@@ -299,12 +299,12 @@
 ```
 !game numberrace
 ```
-</code></details>
+</p></details>
 
 ---
 
 ### game numberrace join
-<details><summary markdown='span'>Expand for additional information</summary><code>
+<details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Join an existing number race game.*
 
@@ -316,12 +316,12 @@
 ```
 !game numberrace join
 ```
-</code></details>
+</p></details>
 
 ---
 
 ### game numberrace rules
-<details><summary markdown='span'>Expand for additional information</summary><code>
+<details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Explain the number race rules.*
 
@@ -333,12 +333,12 @@
 ```
 !game numberrace rules
 ```
-</code></details>
+</p></details>
 
 ---
 
 ### game numberrace stats
-<details><summary markdown='span'>Expand for additional information</summary><code>
+<details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Print the leaderboard for this game.*
 
@@ -350,12 +350,12 @@
 ```
 !game numberrace stats
 ```
-</code></details>
+</p></details>
 
 ---
 
 ## Group: game othello
-<details><summary markdown='span'>Expand for additional information</summary><code>
+<details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Starts an "Othello" game. Play a move by writing a pair of numbers from 1 to 10 corresponding to the row and column where you wish to play. You can also specify a time window in which player must submit their move.*
 
@@ -372,12 +372,12 @@
 !game othello
 !game othello 10s
 ```
-</code></details>
+</p></details>
 
 ---
 
 ### game othello rules
-<details><summary markdown='span'>Expand for additional information</summary><code>
+<details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Explain the Othello game rules.*
 
@@ -389,12 +389,12 @@
 ```
 !game othello rules
 ```
-</code></details>
+</p></details>
 
 ---
 
 ### game othello stats
-<details><summary markdown='span'>Expand for additional information</summary><code>
+<details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Print the leaderboard for this game.*
 
@@ -406,12 +406,12 @@
 ```
 !game othello stats
 ```
-</code></details>
+</p></details>
 
 ---
 
 ## Group: game quiz
-<details><summary markdown='span'>Expand for additional information</summary><code>
+<details><summary markdown='span'>Expand for additional information</summary><p>
 
 *List all available quiz categories.*
 
@@ -458,12 +458,12 @@
 !game quiz 9 hard
 !game quiz 9 hard 15
 ```
-</code></details>
+</p></details>
 
 ---
 
 ### game quiz capitals
-<details><summary markdown='span'>Expand for additional information</summary><code>
+<details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Country capitals guessing quiz. You can also specify how many questions there will be in the quiz.*
 
@@ -480,12 +480,12 @@
 !game quiz capitals
 !game quiz capitals 15
 ```
-</code></details>
+</p></details>
 
 ---
 
 ### game quiz countries
-<details><summary markdown='span'>Expand for additional information</summary><code>
+<details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Country flags guessing quiz. You can also specify how many questions there will be in the quiz.*
 
@@ -502,12 +502,12 @@
 !game quiz countries
 !game quiz countries 15
 ```
-</code></details>
+</p></details>
 
 ---
 
 ### game quiz stats
-<details><summary markdown='span'>Expand for additional information</summary><code>
+<details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Print the leaderboard for this game.*
 
@@ -519,12 +519,12 @@
 ```
 !game quiz stats
 ```
-</code></details>
+</p></details>
 
 ---
 
 ### game rps
-<details><summary markdown='span'>Expand for additional information</summary><code>
+<details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Rock, paper, scissors game against TheGodfather*
 
@@ -540,12 +540,12 @@
 ```
 !game rps scissors
 ```
-</code></details>
+</p></details>
 
 ---
 
 ## Group: game russianroulette
-<details><summary markdown='span'>Expand for additional information</summary><code>
+<details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Starts a russian roulette game which I will commentate.*
 
@@ -557,12 +557,12 @@
 ```
 !game russianroulette
 ```
-</code></details>
+</p></details>
 
 ---
 
 ### game russianroulette join
-<details><summary markdown='span'>Expand for additional information</summary><code>
+<details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Join an existing Russian roulette game pool.*
 
@@ -574,12 +574,12 @@
 ```
 !game russianroulette join
 ```
-</code></details>
+</p></details>
 
 ---
 
 ### game russianroulette rules
-<details><summary markdown='span'>Expand for additional information</summary><code>
+<details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Explain the Russian roulette rules.*
 
@@ -591,12 +591,12 @@
 ```
 !game numberrace rules
 ```
-</code></details>
+</p></details>
 
 ---
 
 ### game stats
-<details><summary markdown='span'>Expand for additional information</summary><code>
+<details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Print game stats for given user.*
 
@@ -613,12 +613,12 @@
 !game stats
 !game stats @Someone
 ```
-</code></details>
+</p></details>
 
 ---
 
 ## Group: game tictactoe
-<details><summary markdown='span'>Expand for additional information</summary><code>
+<details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Starts a "Tic-Tac-Toe" game. Play a move by writing a number from 1 to 9 corresponding to the field where you wish to play. You can also specify a time window in which player must submit their move.*
 
@@ -635,12 +635,12 @@
 !game tictactoe
 !game tictactoe 10s
 ```
-</code></details>
+</p></details>
 
 ---
 
 ### game tictactoe rules
-<details><summary markdown='span'>Expand for additional information</summary><code>
+<details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Explain the Tic-Tac-Toe game rules.*
 
@@ -652,12 +652,12 @@
 ```
 !game tictactoe rules
 ```
-</code></details>
+</p></details>
 
 ---
 
 ### game tictactoe stats
-<details><summary markdown='span'>Expand for additional information</summary><code>
+<details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Print the leaderboard for this game.*
 
@@ -669,12 +669,12 @@
 ```
 !game tictactoe stats
 ```
-</code></details>
+</p></details>
 
 ---
 
 ### game typingrace
-<details><summary markdown='span'>Expand for additional information</summary><code>
+<details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Typing race.*
 
@@ -686,7 +686,7 @@
 ```
 !game typingrace
 ```
-</code></details>
+</p></details>
 
 ---
 

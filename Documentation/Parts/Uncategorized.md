@@ -3,7 +3,7 @@
 # Module: Uncategorized
 
 ## help
-<details><summary markdown='span'>Expand for additional information</summary><code>
+<details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Displays command help.*
 
@@ -11,7 +11,7 @@
 
 `[string...]` : *Command to provide help for.*
 
-</code></details>
+</p></details>
 
 ---
 

@@ -1,7 +1,7 @@
 # Module: Polls
 
 ## Group: poll
-<details><summary markdown='span'>Expand for additional information</summary><code>
+<details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Starts a new poll in the current channel. You can provide also the time for the poll to run.*
 
@@ -27,12 +27,12 @@
 !poll Do you vote for User1 or User2?
 !poll 5m Do you vote for User1 or User2?
 ```
-</code></details>
+</p></details>
 
 ---
 
 ### poll stop
-<details><summary markdown='span'>Expand for additional information</summary><code>
+<details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Stops a running poll.*
 
@@ -44,12 +44,12 @@
 ```
 !poll stop
 ```
-</code></details>
+</p></details>
 
 ---
 
 ## reactionspoll
-<details><summary markdown='span'>Expand for additional information</summary><code>
+<details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Starts a poll with reactions in the channel.*
 
@@ -71,12 +71,12 @@
 ```
 !rpoll :smile: :joy:
 ```
-</code></details>
+</p></details>
 
 ---
 
 ## Group: vote
-<details><summary markdown='span'>Expand for additional information</summary><code>
+<details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Commands for voting in running polls. If invoked without subcommands, registers a vote in the current poll to the option you entered.*
 
@@ -92,12 +92,12 @@
 ```
 !vote 1
 ```
-</code></details>
+</p></details>
 
 ---
 
 ### vote cancel
-<details><summary markdown='span'>Expand for additional information</summary><code>
+<details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Vote for an option in the current running poll.*
 
@@ -109,7 +109,7 @@
 ```
 !vote cancel
 ```
-</code></details>
+</p></details>
 
 ---
 

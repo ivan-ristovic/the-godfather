@@ -1,7 +1,7 @@
 # Module: SWAT
 
 ### swat ip
-<details><summary markdown='span'>Expand for additional information</summary><code>
+<details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Return IP of the registered server by name.*
 
@@ -17,12 +17,12 @@
 ```
 !s4 ip wm
 ```
-</code></details>
+</p></details>
 
 ---
 
 ### swat query
-<details><summary markdown='span'>Expand for additional information</summary><code>
+<details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Return server information.*
 
@@ -42,12 +42,12 @@
 !s4 q 109.70.149.158:10480
 !s4 q wm
 ```
-</code></details>
+</p></details>
 
 ---
 
 ### swat serverlist
-<details><summary markdown='span'>Expand for additional information</summary><code>
+<details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Print the serverlist with current player numbers.*
 
@@ -56,12 +56,12 @@
 ```
 !swat serverlist
 ```
-</code></details>
+</p></details>
 
 ---
 
 ### swat servers add
-<details><summary markdown='span'>Expand for additional information</summary><code>
+<details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Add a server to serverlist.*
 
@@ -84,12 +84,12 @@
 !swat servers add 4u 109.70.149.158:10480
 !swat servers add 4u 109.70.149.158:10480 10481
 ```
-</code></details>
+</p></details>
 
 ---
 
 ### swat servers delete
-<details><summary markdown='span'>Expand for additional information</summary><code>
+<details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Remove a server from serverlist.*
 
@@ -107,12 +107,12 @@
 ```
 !swat servers delete 4u
 ```
-</code></details>
+</p></details>
 
 ---
 
 ### swat servers list
-<details><summary markdown='span'>Expand for additional information</summary><code>
+<details><summary markdown='span'>Expand for additional information</summary><p>
 
 *List all registered servers.*
 
@@ -126,12 +126,12 @@
 ```
 !swat servers list
 ```
-</code></details>
+</p></details>
 
 ---
 
 ### swat settimeout
-<details><summary markdown='span'>Expand for additional information</summary><code>
+<details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Set checking timeout.*
 
@@ -146,12 +146,12 @@
 ```
 !swat settimeout 500
 ```
-</code></details>
+</p></details>
 
 ---
 
 ### swat startcheck
-<details><summary markdown='span'>Expand for additional information</summary><code>
+<details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Start listening for space on a given server and notifies you when there is space.*
 
@@ -171,12 +171,12 @@
 !s4 startcheck 109.70.149.158:10480
 !swat startcheck wm
 ```
-</code></details>
+</p></details>
 
 ---
 
 ### swat stopcheck
-<details><summary markdown='span'>Expand for additional information</summary><code>
+<details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Stops space checking.*
 
@@ -188,7 +188,7 @@
 ```
 !swat stopcheck
 ```
-</code></details>
+</p></details>
 
 ---
 
