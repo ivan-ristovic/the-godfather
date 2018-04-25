@@ -28,9 +28,9 @@ Command list is available at the [Documentation](Documentation/README.md) direct
 
 ## :page_facing_up: Command groups:
 
-Commands are divided into command groups due to large number of commands. 
+Commands are divided into command groups for easier navigation and partially due to large amount of commands. 
 
-For example, command group ``user`` contains commands which are used for administrative tasks on Discord users. Some subcommands of thise group are ``kick`` , ``ban`` etc. 
+For example, command group ``user`` contains commands which are used for administrative tasks on Discord users. Some subcommands of this group are ``kick`` , ``ban`` etc. 
 In order to call the ``kick`` command for example, one should always provide the command group name and then the actual command name, in this case: 
 ```
 !user kick @Someone

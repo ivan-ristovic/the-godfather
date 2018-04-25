@@ -193,7 +193,7 @@ namespace TheGodfather.Services
                 using (var cmd = con.CreateCommand()) {
                     await con.OpenAsync().ConfigureAwait(false);
 
-                    cmd.CommandText = "UPDATE gf.accounts SET balance = balance + 5;";
+                    cmd.CommandText = "UPDATE gf.accounts SET balance = GREATEST(CEILING(1.025 * balance), 10);";
 
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }

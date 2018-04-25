@@ -98,26 +98,26 @@ namespace TheGodfather.Modules.Gambling
             for (int i = 0; i < 3; i++) {
                 if (res[i, 0] == res[i, 1] && res[i, 1] == res[i, 2]) {
                     if (res[i, 0].GetDiscordName() == ":large_blue_diamond:")
-                        pts *= 5;
+                        pts *= 7;
                     else if (res[i, 0].GetDiscordName() == ":moneybag:")
-                        pts *= 4;
+                        pts *= 5;
                     else if (res[i, 0].GetDiscordName() == ":seven:")
-                        pts *= 3;
+                        pts *= 4;
                     else
-                        pts *= 2;
+                        pts *= 3;
                 }
             }
 
             for (int i = 0; i < 3; i++) {
                 if (res[0, i] == res[1, i] && res[1, i] == res[2, i]) {
                     if (res[0, i].GetDiscordName() == ":large_blue_diamond:")
-                        pts *= 5;
+                        pts *= 7;
                     else if (res[0, i].GetDiscordName() == ":moneybag:")
-                        pts *= 4;
+                        pts *= 5;
                     else if (res[0, i].GetDiscordName() == ":seven:")
-                        pts *= 3;
+                        pts *= 4;
                     else
-                        pts *= 2;
+                        pts *= 3;
                 }
             }
 

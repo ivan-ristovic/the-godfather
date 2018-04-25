@@ -13,7 +13,7 @@ namespace TheGodfather.Services
 {
     public partial class DBService
     {
-        public async Task AddPurchasableItemAsync(ulong gid, string name, int price)
+        public async Task AddItemToGuildShopAsync(ulong gid, string name, int price)
         {
             await _sem.WaitAsync();
             try {
@@ -63,7 +63,7 @@ namespace TheGodfather.Services
             return blocked.AsReadOnly();
         }
 
-        public async Task<PurchasableItem> GetPurchasableItemAsync(ulong gid, int id)
+        public async Task<PurchasableItem> GetItemFromGuildShopAsync(ulong gid, int id)
         {
             PurchasableItem item = null;
 
@@ -95,7 +95,7 @@ namespace TheGodfather.Services
             return item;
         }
 
-        public async Task<IReadOnlyList<PurchasableItem>> GetPurchasableItemsForGuildAsync(ulong gid)
+        public async Task<IReadOnlyList<PurchasableItem>> GetItemsFromGuildShopAsync(ulong gid)
         {
             var items = new List<PurchasableItem>();
 
@@ -157,6 +157,29 @@ namespace TheGodfather.Services
             return items.AsReadOnly();
         }
 
+        public async Task<bool> IsItemPurchasedByUserAsync(ulong uid, int id)
+        {
+            await _sem.WaitAsync();
+            try {
+                using (var con = new NpgsqlConnection(_connectionString))
+                using (var cmd = con.CreateCommand()) {
+                    await con.OpenAsync().ConfigureAwait(false);
+
+                    cmd.CommandText = "SELECT * FROM gf.purchases WHERE id = @id AND uid = @uid LIMIT 1;";
+                    cmd.Parameters.AddWithValue("id", NpgsqlDbType.Integer, id);
+                    cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, uid);
+
+                    var res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
+                    if (res != null && !(res is DBNull))
+                        return true;
+                }
+            } finally {
+                _sem.Release();
+            }
+
+            return false;
+        }
+
         public async Task RegisterPurchaseForItemAsync(ulong uid, int id)
         {
             await _sem.WaitAsync();
@@ -168,7 +191,7 @@ namespace TheGodfather.Services
                     cmd.CommandText = "INSERT INTO gf.purchases VALUES (@id, @uid) ON CONFLICT DO NOTHING;";
                     cmd.Parameters.AddWithValue("id", NpgsqlDbType.Integer, id);
                     cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, uid);
-
+                    
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
             } finally {
@@ -176,7 +199,7 @@ namespace TheGodfather.Services
             }
         }
 
-        public async Task RemovePurchasableItemAsync(ulong gid, string name)
+        public async Task RemoveItemFromGuildShopAsync(ulong gid, string name)
         {
             await _sem.WaitAsync();
             try {
@@ -195,7 +218,7 @@ namespace TheGodfather.Services
             }
         }
 
-        public async Task RemovePurchasableItemsAsync(ulong gid, params int[] ids)
+        public async Task RemoveItemsFromGuildShopAsync(ulong gid, params int[] ids)
         {
             await _sem.WaitAsync();
             try {
@@ -206,6 +229,25 @@ namespace TheGodfather.Services
                     cmd.CommandText = "DELETE FROM gf.items WHERE gid = @gid AND id = ANY(:ids);";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
                     cmd.Parameters.Add("ids", NpgsqlDbType.Array | NpgsqlDbType.Integer).Value = ids;
+
+                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                }
+            } finally {
+                _sem.Release();
+            }
+        }
+
+        public async Task UnregisterPurchaseForItemAsync(ulong uid, int id)
+        {
+            await _sem.WaitAsync();
+            try {
+                using (var con = new NpgsqlConnection(_connectionString))
+                using (var cmd = con.CreateCommand()) {
+                    await con.OpenAsync().ConfigureAwait(false);
+
+                    cmd.CommandText = "DELETE FROM gf.purchases WHERE id = @id AND uid = @uid;";
+                    cmd.Parameters.AddWithValue("id", NpgsqlDbType.Integer, id);
+                    cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, uid);
 
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
