@@ -1,6 +1,8 @@
 # Module: Reactions
 
 ## Group: emojireaction
+<details><summary>Expand for additional information</summary><p>
+
 *Orders a bot to react with given emoji to a message containing a trigger word inside (guild specific). If invoked without subcommands, adds a new emoji reaction to a given trigger word list. Note: Trigger words can be regular expressions (use ``emojireaction addregex`` command).*
 
 **Aliases:**
@@ -23,9 +25,13 @@
 ```
 !emojireaction :smile: haha laughing
 ```
+</p></details>
+
 ---
 
 ### emojireaction add
+<details><summary>Expand for additional information</summary><p>
+
 *Add emoji reaction to guild reaction list.*
 
 **Requires user permissions:**
@@ -52,9 +58,13 @@
 !emojireaction add :smile: haha
 !emojireaction add haha :smile:
 ```
+</p></details>
+
 ---
 
 ### emojireaction addregex
+<details><summary>Expand for additional information</summary><p>
+
 *Add emoji reaction triggered by a regex to guild reaction list.*
 
 **Requires user permissions:**
@@ -81,9 +91,13 @@
 !emojireaction addregex :smile: (ha)+
 !emojireaction addregex (ha)+ :smile:
 ```
+</p></details>
+
 ---
 
 ### emojireaction clear
+<details><summary>Expand for additional information</summary><p>
+
 *Delete all reactions for the current guild.*
 
 **Requires user permissions:**
@@ -97,9 +111,13 @@
 ```
 !emojireactions clear
 ```
+</p></details>
+
 ---
 
 ### emojireaction delete
+<details><summary>Expand for additional information</summary><p>
+
 *Remove emoji reactions for given trigger words.*
 
 **Requires user permissions:**
@@ -128,9 +146,13 @@
 !emojireaction delete 5 4
 !emojireaction delete :joy:
 ```
+</p></details>
+
 ---
 
 ### emojireaction list
+<details><summary>Expand for additional information</summary><p>
+
 *Show all emoji reactions for this guild.*
 
 **Aliases:**
@@ -141,9 +163,13 @@
 ```
 !emojireaction list
 ```
+</p></details>
+
 ---
 
 ## Group: textreaction
+<details><summary>Expand for additional information</summary><p>
+
 *Orders a bot to react with given text to a message containing a trigger word inside (guild specific). If invoked without subcommands, adds a new text reaction to a given trigger word. Note: Trigger words can be regular expressions (use ``textreaction addregex`` command). You can also use "%user%" inside response and the bot will replace it with mention for the user who triggers the reaction.*
 
 **Aliases:**
@@ -161,9 +187,13 @@
 !textreaction hi hello
 !textreaction "hi" "Hello, %user%!"
 ```
+</p></details>
+
 ---
 
 ### textreaction add
+<details><summary>Expand for additional information</summary><p>
+
 *Add a new text reaction to guild text reaction list.*
 
 **Requires user permissions:**
@@ -183,9 +213,13 @@
 ```
 !textreaction add "hi" "Hello, %user%!"
 ```
+</p></details>
+
 ---
 
 ### textreaction addregex
+<details><summary>Expand for additional information</summary><p>
+
 *Add a new text reaction triggered by a regex to guild text reaction list.*
 
 **Requires user permissions:**
@@ -205,9 +239,13 @@
 ```
 !textreaction addregex "h(i|ey|ello|owdy)" "Hello, %user%!"
 ```
+</p></details>
+
 ---
 
 ### textreaction clear
+<details><summary>Expand for additional information</summary><p>
+
 *Delete all text reactions for the current guild.*
 
 **Requires user permissions:**
@@ -221,9 +259,13 @@
 ```
 !textreactions clear
 ```
+</p></details>
+
 ---
 
 ### textreaction delete
+<details><summary>Expand for additional information</summary><p>
+
 *Remove text reaction from guild text reaction list.*
 
 **Requires user permissions:**
@@ -247,9 +289,13 @@
 !textreaction delete 5 8
 !textreaction delete hi
 ```
+</p></details>
+
 ---
 
 ### textreaction list
+<details><summary>Expand for additional information</summary><p>
+
 *Show all text reactions for the guild.*
 
 **Aliases:**
@@ -260,5 +306,7 @@
 ```
 !textreactions list
 ```
+</p></details>
+
 ---
 

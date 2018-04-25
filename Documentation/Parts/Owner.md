@@ -1,6 +1,8 @@
 # Module: Owner
 
 ### owner announce
+<details><summary>Expand for additional information</summary><p>
+
 *Send a message to all guilds the bot is in.*
 
 **Owner-only.**
@@ -17,9 +19,13 @@
 ```
 !owner announce SPAM SPAM
 ```
+</p></details>
+
 ---
 
 ## Group: owner birthdays
+<details><summary>Expand for additional information</summary><p>
+
 *Birthday notifications management. If invoked without command, either lists or adds birthdays depending if argument is given.*
 
 **Owner-only.**
@@ -43,9 +49,13 @@
 
 (optional) `[string]` : *Birth date.* (def: `None`)
 
+</p></details>
+
 ---
 
 ### owner birthdays add
+<details><summary>Expand for additional information</summary><p>
+
 *Add a birthday to the database. If date is not specified, uses the current date as a birthday date. If the channel is not specified, uses the current channel.*
 
 **Aliases:**
@@ -76,9 +86,13 @@
 !owner birthday add @Someone #channel_to_send_message_to 15.2.1990
 !owner birthday add @Someone 15.2.1990 #channel_to_send_message_to
 ```
+</p></details>
+
 ---
 
 ### owner birthdays delete
+<details><summary>Expand for additional information</summary><p>
+
 *Remove status from running queue.*
 
 **Aliases:**
@@ -93,9 +107,13 @@
 ```
 !owner birthday delete @Someone
 ```
+</p></details>
+
 ---
 
 ### owner birthdays list
+<details><summary>Expand for additional information</summary><p>
+
 *List all registered birthdays.*
 
 **Aliases:**
@@ -106,9 +124,13 @@
 ```
 !owner birthday list
 ```
+</p></details>
+
 ---
 
 ## Group: owner blockedchannels
+<details><summary>Expand for additional information</summary><p>
+
 *Manipulate blocked channels. Bot will not listen for commands in blocked channels or react (either with text or emoji) to messages inside.*
 
 **Owner-only.**
@@ -132,9 +154,13 @@
 
 `[string...]` : *Reason (max 60 chars).*
 
+</p></details>
+
 ---
 
 ### owner blockedchannels add
+<details><summary>Expand for additional information</summary><p>
+
 *Add channel to blocked channels list.*
 
 **Aliases:**
@@ -165,9 +191,13 @@
 !owner blockedchannels add #channel 123123123123123
 !owner blockedchannels add "This is some reason" #channel 123123123123123
 ```
+</p></details>
+
 ---
 
 ### owner blockedchannels delete
+<details><summary>Expand for additional information</summary><p>
+
 *Remove channel from blocked channels list..*
 
 **Aliases:**
@@ -184,9 +214,13 @@
 !owner blockedchannels remove 123123123123123
 !owner blockedchannels remove @Someone 123123123123123
 ```
+</p></details>
+
 ---
 
 ### owner blockedchannels list
+<details><summary>Expand for additional information</summary><p>
+
 *List all blocked channels.*
 
 **Aliases:**
@@ -197,9 +231,13 @@
 ```
 !owner blockedchannels list
 ```
+</p></details>
+
 ---
 
 ## Group: owner blockedusers
+<details><summary>Expand for additional information</summary><p>
+
 *Manipulate blocked users. Bot will not allow blocked users to invoke commands and will not react (either with text or emoji) to their messages.*
 
 **Owner-only.**
@@ -223,9 +261,13 @@
 
 `[string...]` : *Reason (max 60 chars).*
 
+</p></details>
+
 ---
 
 ### owner blockedusers add
+<details><summary>Expand for additional information</summary><p>
+
 *Add users to blocked users list.*
 
 **Aliases:**
@@ -256,9 +298,13 @@
 !owner blockedusers add @Someone 123123123123123
 !owner blockedusers add "This is some reason" @Someone 123123123123123
 ```
+</p></details>
+
 ---
 
 ### owner blockedusers delete
+<details><summary>Expand for additional information</summary><p>
+
 *Remove users from blocked users list..*
 
 **Aliases:**
@@ -275,9 +321,13 @@
 !owner blockedusers remove 123123123123123
 !owner blockedusers remove @Someone 123123123123123
 ```
+</p></details>
+
 ---
 
 ### owner blockedusers list
+<details><summary>Expand for additional information</summary><p>
+
 *List all blocked users.*
 
 **Aliases:**
@@ -288,9 +338,13 @@
 ```
 !owner blockedusers list
 ```
+</p></details>
+
 ---
 
 ### owner botavatar
+<details><summary>Expand for additional information</summary><p>
+
 *Set bot avatar.*
 
 **Owner-only.**
@@ -307,9 +361,13 @@
 ```
 !owner botavatar http://someimage.png
 ```
+</p></details>
+
 ---
 
 ### owner botname
+<details><summary>Expand for additional information</summary><p>
+
 *Set bot name.*
 
 **Owner-only.**
@@ -326,9 +384,13 @@
 ```
 !owner setname TheBotfather
 ```
+</p></details>
+
 ---
 
 ### owner clearlog
+<details><summary>Expand for additional information</summary><p>
+
 *Clear application logs.*
 
 **Owner-only.**
@@ -341,9 +403,13 @@
 ```
 !owner clearlog
 ```
+</p></details>
+
 ---
 
 ### owner dbquery
+<details><summary>Expand for additional information</summary><p>
+
 *Execute SQL query on the bot database.*
 
 **Owner-only.**
@@ -360,9 +426,13 @@
 ```
 !owner dbquery SELECT * FROM gf.msgcount;
 ```
+</p></details>
+
 ---
 
 ### owner eval
+<details><summary>Expand for additional information</summary><p>
+
 *Evaluates a snippet of C# code, in context. Surround the code in the code block.*
 
 **Owner-only.**
@@ -379,9 +449,13 @@
 ```
 !owner eval ```await Context.RespondAsync("Hello!");```
 ```
+</p></details>
+
 ---
 
 ### owner filelog
+<details><summary>Expand for additional information</summary><p>
+
 *Toggle writing to log file.*
 
 **Owner-only.**
@@ -399,9 +473,13 @@
 !owner filelog yes
 !owner filelog false
 ```
+</p></details>
+
 ---
 
 ### owner generatecommandlist
+<details><summary>Expand for additional information</summary><p>
+
 *Generates a markdown command-list. You can also provide a folder for the output.*
 
 **Owner-only.**
@@ -419,9 +497,13 @@
 !owner generatecommandlist
 !owner generatecommandlist Temp/blabla.md
 ```
+</p></details>
+
 ---
 
 ### owner leaveguilds
+<details><summary>Expand for additional information</summary><p>
+
 *Leaves the given guilds.*
 
 **Owner-only.**
@@ -439,9 +521,13 @@
 !owner leave 337570344149975050
 !owner leave 337570344149975050 201315884709576708
 ```
+</p></details>
+
 ---
 
 ### owner sendmessage
+<details><summary>Expand for additional information</summary><p>
+
 *Sends a message to a user or channel.*
 
 **Owner-only.**
@@ -463,9 +549,13 @@
 !owner send u 303463460233150464 Hi to user!
 !owner send c 120233460278590414 Hi to channel!
 ```
+</p></details>
+
 ---
 
 ### owner shutdown
+<details><summary>Expand for additional information</summary><p>
+
 *Triggers the dying in the vineyard scene (power off the bot).*
 
 **Owner-only.**
@@ -482,9 +572,13 @@
 ```
 !owner shutdown
 ```
+</p></details>
+
 ---
 
 ## Group: owner statuses
+<details><summary>Expand for additional information</summary><p>
+
 *Bot status manipulation. If invoked without command, either lists or adds status depending if argument is given.*
 
 **Owner-only.**
@@ -498,9 +592,13 @@
 
 `[string...]` : *Status.*
 
+</p></details>
+
 ---
 
 ### owner statuses add
+<details><summary>Expand for additional information</summary><p>
+
 *Add a status to running status queue.*
 
 **Aliases:**
@@ -518,9 +616,13 @@
 !owner status add Playing CS:GO
 !owner status add Streaming on Twitch
 ```
+</p></details>
+
 ---
 
 ### owner statuses delete
+<details><summary>Expand for additional information</summary><p>
+
 *Remove status from running queue.*
 
 **Aliases:**
@@ -535,9 +637,13 @@
 ```
 !owner status delete 1
 ```
+</p></details>
+
 ---
 
 ### owner statuses list
+<details><summary>Expand for additional information</summary><p>
+
 *List all bot statuses.*
 
 **Aliases:**
@@ -548,9 +654,13 @@
 ```
 !owner status list
 ```
+</p></details>
+
 ---
 
 ### owner statuses set
+<details><summary>Expand for additional information</summary><p>
+
 *Set status to given string or status with given index in database. This sets rotation to false.*
 
 **Aliases:**
@@ -572,9 +682,13 @@
 !owner status set Playing with fire
 !owner status set 5
 ```
+</p></details>
+
 ---
 
 ### owner statuses setrotation
+<details><summary>Expand for additional information</summary><p>
+
 *Set automatic rotation of bot statuses.*
 
 **Aliases:**
@@ -590,9 +704,13 @@
 !owner status setrotation
 !owner status setrotation false
 ```
+</p></details>
+
 ---
 
 ### owner sudo
+<details><summary>Expand for additional information</summary><p>
+
 *Executes a command as another user.*
 
 **Owner-only.**
@@ -611,9 +729,13 @@
 ```
 !owner sudo @Someone !rate
 ```
+</p></details>
+
 ---
 
 ### owner toggleignore
+<details><summary>Expand for additional information</summary><p>
+
 *Toggle bot's reaction to commands.*
 
 **Owner-only.**
@@ -626,5 +748,7 @@
 ```
 !owner toggleignore
 ```
+</p></details>
+
 ---
 

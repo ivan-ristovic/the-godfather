@@ -1,6 +1,8 @@
 # Module: Miscellaneous
 
 ## 8ball
+<details><summary>Expand for additional information</summary><p>
+
 *An almighty ball which knows the answer to any question you ask. Alright, it's random answer, so what?*
 
 **Aliases:**
@@ -15,9 +17,13 @@
 ```
 !8ball Am I gay?
 ```
+</p></details>
+
 ---
 
 ## coinflip
+<details><summary>Expand for additional information</summary><p>
+
 *Flip a coin.*
 
 **Aliases:**
@@ -28,9 +34,13 @@
 ```
 !coinflip
 ```
+</p></details>
+
 ---
 
 ## dice
+<details><summary>Expand for additional information</summary><p>
+
 *Roll a dice.*
 
 **Aliases:**
@@ -41,9 +51,13 @@
 ```
 !dice
 ```
+</p></details>
+
 ---
 
 ## giveme
+<details><summary>Expand for additional information</summary><p>
+
 *Grants you a role from this guild's self-assignable roles list.*
 
 **Requires bot permissions:**
@@ -61,9 +75,13 @@
 ```
 !giveme @Announcements
 ```
+</p></details>
+
 ---
 
 ## Group: insult
+<details><summary>Expand for additional information</summary><p>
+
 *Insults manipulation. If invoked without subcommands, insults a given user.*
 
 **Aliases:**
@@ -78,9 +96,13 @@
 ```
 !insult @Someone
 ```
+</p></details>
+
 ---
 
 ### insult add
+<details><summary>Expand for additional information</summary><p>
+
 *Add insult to list (use %user% instead of user mention).*
 
 **Owner-only.**
@@ -97,9 +119,13 @@
 ```
 !insult add You are so dumb, %user%!
 ```
+</p></details>
+
 ---
 
 ### insult clear
+<details><summary>Expand for additional information</summary><p>
+
 *Delete all insults.*
 
 **Owner-only.**
@@ -112,9 +138,13 @@
 ```
 !insults clear
 ```
+</p></details>
+
 ---
 
 ### insult delete
+<details><summary>Expand for additional information</summary><p>
+
 *Remove insult with a given index from list. (use command ``insults list`` to view insult indexes).*
 
 **Owner-only.**
@@ -131,9 +161,13 @@
 ```
 !insult delete 2
 ```
+</p></details>
+
 ---
 
 ### insult list
+<details><summary>Expand for additional information</summary><p>
+
 *Show all insults.*
 
 **Aliases:**
@@ -144,9 +178,13 @@
 ```
 !insult list
 ```
+</p></details>
+
 ---
 
 ## invite
+<details><summary>Expand for additional information</summary><p>
+
 *Get an instant invite link for the current guild.*
 
 **Requires permissions:**
@@ -160,9 +198,13 @@
 ```
 !invite
 ```
+</p></details>
+
 ---
 
 ## items
+<details><summary>Expand for additional information</summary><p>
+
 *View user's purchased items (see ``bank`` and ``shop``).*
 
 **Requires permissions:**
@@ -181,9 +223,13 @@
 !items
 !items @Someone
 ```
+</p></details>
+
 ---
 
 ## leave
+<details><summary>Expand for additional information</summary><p>
+
 *Makes Godfather leave the guild.*
 
 **Requires user permissions:**
@@ -194,9 +240,13 @@
 ```
 !leave
 ```
+</p></details>
+
 ---
 
 ## leet
+<details><summary>Expand for additional information</summary><p>
+
 *Wr1t3s m3ss@g3 1n 1337sp34k.*
 
 **Aliases:**
@@ -211,9 +261,13 @@
 ```
 !leet Some sentence
 ```
+</p></details>
+
 ---
 
 ## Group: meme
+<details><summary>Expand for additional information</summary><p>
+
 *Manipulate guild memes. When invoked without subcommands, returns a meme from this guild's meme list given by name, otherwise returns random one.*
 
 **Aliases:**
@@ -229,9 +283,13 @@
 !meme
 !meme SomeMemeNameWhichYouAdded
 ```
+</p></details>
+
 ---
 
 ### meme add
+<details><summary>Expand for additional information</summary><p>
+
 *Add a new meme to the list.*
 
 **Requires user permissions:**
@@ -251,9 +309,13 @@
 ```
 !meme add pepe http://i0.kym-cdn.com/photos/images/facebook/000/862/065/0e9.jpg
 ```
+</p></details>
+
 ---
 
 ### meme clear
+<details><summary>Expand for additional information</summary><p>
+
 *Deletes all guild memes.*
 
 **Requires user permissions:**
@@ -267,9 +329,13 @@
 ```
 !memes clear
 ```
+</p></details>
+
 ---
 
 ### meme create
+<details><summary>Expand for additional information</summary><p>
+
 *Creates a new meme from blank template.*
 
 **Requires permissions:**
@@ -291,9 +357,13 @@
 ```
 !meme create 1stworld "Top text" "Bottom text"
 ```
+</p></details>
+
 ---
 
 ### meme delete
+<details><summary>Expand for additional information</summary><p>
+
 *Deletes a meme from this guild's meme list.*
 
 **Requires user permissions:**
@@ -311,9 +381,13 @@
 ```
 !meme delete pepe
 ```
+</p></details>
+
 ---
 
 ### meme list
+<details><summary>Expand for additional information</summary><p>
+
 *List all registered memes for this guild.*
 
 **Aliases:**
@@ -324,9 +398,13 @@
 ```
 !meme list
 ```
+</p></details>
+
 ---
 
 ### meme templates
+<details><summary>Expand for additional information</summary><p>
+
 *Lists all available meme templates.*
 
 **Aliases:**
@@ -337,9 +415,13 @@
 ```
 !meme templates
 ```
+</p></details>
+
 ---
 
 ## news
+<details><summary>Expand for additional information</summary><p>
+
 *Get newest world news.*
 
 **Aliases:**
@@ -350,9 +432,13 @@
 ```
 !news
 ```
+</p></details>
+
 ---
 
 ## penis
+<details><summary>Expand for additional information</summary><p>
+
 *An accurate measurement.*
 
 **Aliases:**
@@ -367,9 +453,13 @@
 ```
 !penis @Someone
 ```
+</p></details>
+
 ---
 
 ## peniscompare
+<details><summary>Expand for additional information</summary><p>
+
 *Comparison of the results given by ``penis`` command.*
 
 **Aliases:**
@@ -387,9 +477,13 @@
 !peniscompare @Someone
 !peniscompare @Someone @SomeoneElse
 ```
+</p></details>
+
 ---
 
 ## ping
+<details><summary>Expand for additional information</summary><p>
+
 *Ping the bot.*
 
 **Examples:**
@@ -397,9 +491,13 @@
 ```
 !ping
 ```
+</p></details>
+
 ---
 
 ## prefix
+<details><summary>Expand for additional information</summary><p>
+
 *Get current guild prefix, or change it.*
 
 **Requires user permissions:**
@@ -418,9 +516,13 @@
 !prefix
 !prefix ;
 ```
+</p></details>
+
 ---
 
 ### random cat
+<details><summary>Expand for additional information</summary><p>
+
 *Get a random cat image.*
 
 **Examples:**
@@ -428,9 +530,13 @@
 ```
 !random cat
 ```
+</p></details>
+
 ---
 
 ### random choose
+<details><summary>Expand for additional information</summary><p>
+
 *Choose one of the provided options separated by comma.*
 
 **Aliases:**
@@ -445,9 +551,13 @@
 ```
 !random choose option 1, option 2, option 3...
 ```
+</p></details>
+
 ---
 
 ### random dog
+<details><summary>Expand for additional information</summary><p>
+
 *Get a random dog image.*
 
 **Examples:**
@@ -455,9 +565,13 @@
 ```
 !random dog
 ```
+</p></details>
+
 ---
 
 ### random raffle
+<details><summary>Expand for additional information</summary><p>
+
 *Choose a user from the online members list belonging to a given role.*
 
 **Aliases:**
@@ -473,9 +587,13 @@
 !random raffle
 !random raffle Admins
 ```
+</p></details>
+
 ---
 
 ## Group: rank
+<details><summary>Expand for additional information</summary><p>
+
 *User ranking commands. If invoked without subcommands, prints sender's rank.*
 
 **Aliases:**
@@ -491,9 +609,13 @@
 !rank
 !rank @Someone
 ```
+</p></details>
+
 ---
 
 ### rank list
+<details><summary>Expand for additional information</summary><p>
+
 *Print all available ranks.*
 
 **Aliases:**
@@ -504,9 +626,13 @@
 ```
 !rank list
 ```
+</p></details>
+
 ---
 
 ### rank top
+<details><summary>Expand for additional information</summary><p>
+
 *Get rank leaderboard.*
 
 **Examples:**
@@ -514,9 +640,13 @@
 ```
 !rank top
 ```
+</p></details>
+
 ---
 
 ## rate
+<details><summary>Expand for additional information</summary><p>
+
 *Gives a rating chart for the user. If the user is not provided, rates sender.*
 
 **Requires bot permissions:**
@@ -534,9 +664,13 @@
 ```
 !rate @Someone
 ```
+</p></details>
+
 ---
 
 ## remind
+<details><summary>Expand for additional information</summary><p>
+
 *Resend a message after some time.*
 
 **Requires user permissions:**
@@ -569,9 +703,13 @@
 ```
 !remind 1h Drink water!
 ```
+</p></details>
+
 ---
 
 ## report
+<details><summary>Expand for additional information</summary><p>
+
 *Send a report message to owner about a bug (please don't abuse... please).*
 
 **Arguments:**
@@ -583,9 +721,13 @@
 ```
 !report Your bot sucks!
 ```
+</p></details>
+
 ---
 
 ## say
+<details><summary>Expand for additional information</summary><p>
+
 *Echo echo echo.*
 
 **Aliases:**
@@ -600,9 +742,13 @@
 ```
 !say I am gay.
 ```
+</p></details>
+
 ---
 
 ## Group: shop
+<details><summary>Expand for additional information</summary><p>
+
 *Shop for items using WM credits from your bank account. If invoked without subcommand, lists all available items for purchase.*
 
 **Aliases:**
@@ -613,9 +759,13 @@
 ```
 !shop
 ```
+</p></details>
+
 ---
 
 ### shop add
+<details><summary>Expand for additional information</summary><p>
+
 *Add a new item to guild purchasable items list.*
 
 **Requires user permissions:**
@@ -643,13 +793,14 @@
 !shop add "New Barbie" 500
 !shop add 500 Newest Barbie
 ```
+</p></details>
+
 ---
 
 ### shop buy
-*Purchase an item from this guild's shop.*
+<details><summary>Expand for additional information</summary><p>
 
-**Requires permissions:**
-`Manage guild`
+*Purchase an item from this guild's shop.*
 
 **Aliases:**
 `purchase, shutupandtakemymoney, b, p`
@@ -663,10 +814,14 @@
 ```
 !shop buy 3
 ```
+</p></details>
+
 ---
 
 ### shop delete
-*Remove purchasable item from this guild item list. You can remove by ID or by name.*
+<details><summary>Expand for additional information</summary><p>
+
+*Remove purchasable item from this guild item list. You can remove an item by ID or by name.*
 
 **Requires user permissions:**
 `Manage guild`
@@ -685,9 +840,13 @@
 !shop delete 5
 !shop delete 1 2 3 4 5
 ```
+</p></details>
+
 ---
 
 ### shop list
+<details><summary>Expand for additional information</summary><p>
+
 *List all purchasable items for this guild.*
 
 **Aliases:**
@@ -698,9 +857,34 @@
 ```
 !shop list
 ```
+</p></details>
+
+---
+
+### shop sell
+<details><summary>Expand for additional information</summary><p>
+
+*Sell a purchased item for half the buy price.*
+
+**Aliases:**
+`return`
+
+**Arguments:**
+
+`[int]` : *Item ID.*
+
+**Examples:**
+
+```
+!shop sell 3
+```
+</p></details>
+
 ---
 
 ## tts
+<details><summary>Expand for additional information</summary><p>
+
 *Sends a tts message.*
 
 **Arguments:**
@@ -712,9 +896,13 @@
 ```
 !tts I am gay.
 ```
+</p></details>
+
 ---
 
 ## zugify
+<details><summary>Expand for additional information</summary><p>
+
 *I don't even...*
 
 **Aliases:**
@@ -729,5 +917,7 @@
 ```
 !zugify Some random text
 ```
+</p></details>
+
 ---
 

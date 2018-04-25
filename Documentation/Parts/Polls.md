@@ -1,6 +1,8 @@
 # Module: Polls
 
 ## Group: poll
+<details><summary>Expand for additional information</summary><p>
+
 *Starts a new poll in the current channel. You can provide also the time for the poll to run.*
 
 **Overload 2:**
@@ -25,9 +27,13 @@
 !poll Do you vote for User1 or User2?
 !poll 5m Do you vote for User1 or User2?
 ```
+</p></details>
+
 ---
 
 ### poll stop
+<details><summary>Expand for additional information</summary><p>
+
 *Stops a running poll.*
 
 **Requires user permissions:**
@@ -38,9 +44,13 @@
 ```
 !poll stop
 ```
+</p></details>
+
 ---
 
 ## reactionspoll
+<details><summary>Expand for additional information</summary><p>
+
 *Starts a poll with reactions in the channel.*
 
 **Aliases:**
@@ -61,9 +71,13 @@
 ```
 !rpoll :smile: :joy:
 ```
+</p></details>
+
 ---
 
 ## Group: vote
+<details><summary>Expand for additional information</summary><p>
+
 *Commands for voting in running polls. If invoked without subcommands, registers a vote in the current poll to the option you entered.*
 
 **Aliases:**
@@ -78,9 +92,13 @@
 ```
 !vote 1
 ```
+</p></details>
+
 ---
 
 ### vote cancel
+<details><summary>Expand for additional information</summary><p>
+
 *Vote for an option in the current running poll.*
 
 **Aliases:**
@@ -91,5 +109,7 @@
 ```
 !vote cancel
 ```
+</p></details>
+
 ---
 

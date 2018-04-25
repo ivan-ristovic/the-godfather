@@ -1,6 +1,8 @@
 # Module: Games
 
 ## Group: game animalrace
+<details><summary>Expand for additional information</summary><p>
+
 *Start a new animal race!*
 
 **Aliases:**
@@ -11,9 +13,13 @@
 ```
 !game animalrace
 ```
+</p></details>
+
 ---
 
 ### game animalrace join
+<details><summary>Expand for additional information</summary><p>
+
 *Join an existing animal race game.*
 
 **Aliases:**
@@ -24,9 +30,13 @@
 ```
 !game animalrace join
 ```
+</p></details>
+
 ---
 
 ### game animalrace stats
+<details><summary>Expand for additional information</summary><p>
+
 *Print the leaderboard for this game.*
 
 **Aliases:**
@@ -37,9 +47,13 @@
 ```
 !game animalrace stats
 ```
+</p></details>
+
 ---
 
 ## Group: game caro
+<details><summary>Expand for additional information</summary><p>
+
 *Starts a "Caro" game. Play a move by writing a pair of numbers from 1 to 10 corresponding to the row and column where you wish to play. You can also specify a time window in which player must submit their move.*
 
 **Aliases:**
@@ -55,9 +69,13 @@
 !game caro
 !game caro 10s
 ```
+</p></details>
+
 ---
 
 ### game caro rules
+<details><summary>Expand for additional information</summary><p>
+
 *Explain the Caro game rules.*
 
 **Aliases:**
@@ -68,9 +86,13 @@
 ```
 !game caro rules
 ```
+</p></details>
+
 ---
 
 ### game caro stats
+<details><summary>Expand for additional information</summary><p>
+
 *Print the leaderboard for this game.*
 
 **Aliases:**
@@ -81,9 +103,13 @@
 ```
 !game caro stats
 ```
+</p></details>
+
 ---
 
 ## Group: game connect4
+<details><summary>Expand for additional information</summary><p>
+
 *Starts a "Connect 4" game. Play a move by writing a number from 1 to 9 corresponding to the column where you wish to insert your piece. You can also specify a time window in which player must submit their move.*
 
 **Aliases:**
@@ -99,9 +125,13 @@
 !game connect4
 !game connect4 10s
 ```
+</p></details>
+
 ---
 
 ### game connect4 rules
+<details><summary>Expand for additional information</summary><p>
+
 *Explain the Connect4 game rules.*
 
 **Aliases:**
@@ -112,9 +142,13 @@
 ```
 !game connect4 rules
 ```
+</p></details>
+
 ---
 
 ### game connect4 stats
+<details><summary>Expand for additional information</summary><p>
+
 *Print the leaderboard for this game.*
 
 **Aliases:**
@@ -125,9 +159,13 @@
 ```
 !game connect4 stats
 ```
+</p></details>
+
 ---
 
 ## Group: game duel
+<details><summary>Expand for additional information</summary><p>
+
 *Starts a duel which I will commentate.*
 
 **Aliases:**
@@ -142,9 +180,13 @@
 ```
 !game duel @Someone
 ```
+</p></details>
+
 ---
 
 ### game duel rules
+<details><summary>Expand for additional information</summary><p>
+
 *Explain the Duel game rules.*
 
 **Aliases:**
@@ -155,9 +197,13 @@
 ```
 !game duel rules
 ```
+</p></details>
+
 ---
 
 ### game duel stats
+<details><summary>Expand for additional information</summary><p>
+
 *Print the leaderboard for this game.*
 
 **Aliases:**
@@ -168,9 +214,13 @@
 ```
 !game duel stats
 ```
+</p></details>
+
 ---
 
 ## Group: game hangman
+<details><summary>Expand for additional information</summary><p>
+
 *Starts a hangman game.*
 
 **Aliases:**
@@ -181,9 +231,13 @@
 ```
 !game hangman
 ```
+</p></details>
+
 ---
 
 ### game hangman rules
+<details><summary>Expand for additional information</summary><p>
+
 *Explain the Hangman game rules.*
 
 **Aliases:**
@@ -194,9 +248,13 @@
 ```
 !game hangman rules
 ```
+</p></details>
+
 ---
 
 ### game hangman stats
+<details><summary>Expand for additional information</summary><p>
+
 *Print the leaderboard for this game.*
 
 **Aliases:**
@@ -207,9 +265,13 @@
 ```
 !game hangman stats
 ```
+</p></details>
+
 ---
 
 ### game leaderboard
+<details><summary>Expand for additional information</summary><p>
+
 *View the global game leaderboard.*
 
 **Aliases:**
@@ -220,9 +282,13 @@
 ```
 !game leaderboard
 ```
+</p></details>
+
 ---
 
 ## Group: game numberrace
+<details><summary>Expand for additional information</summary><p>
+
 *Number racing game commands.*
 
 **Aliases:**
@@ -233,9 +299,13 @@
 ```
 !game numberrace
 ```
+</p></details>
+
 ---
 
 ### game numberrace join
+<details><summary>Expand for additional information</summary><p>
+
 *Join an existing number race game.*
 
 **Aliases:**
@@ -246,9 +316,13 @@
 ```
 !game numberrace join
 ```
+</p></details>
+
 ---
 
 ### game numberrace rules
+<details><summary>Expand for additional information</summary><p>
+
 *Explain the number race rules.*
 
 **Aliases:**
@@ -259,9 +333,13 @@
 ```
 !game numberrace rules
 ```
+</p></details>
+
 ---
 
 ### game numberrace stats
+<details><summary>Expand for additional information</summary><p>
+
 *Print the leaderboard for this game.*
 
 **Aliases:**
@@ -272,9 +350,13 @@
 ```
 !game numberrace stats
 ```
+</p></details>
+
 ---
 
 ## Group: game othello
+<details><summary>Expand for additional information</summary><p>
+
 *Starts an "Othello" game. Play a move by writing a pair of numbers from 1 to 10 corresponding to the row and column where you wish to play. You can also specify a time window in which player must submit their move.*
 
 **Aliases:**
@@ -290,9 +372,13 @@
 !game othello
 !game othello 10s
 ```
+</p></details>
+
 ---
 
 ### game othello rules
+<details><summary>Expand for additional information</summary><p>
+
 *Explain the Othello game rules.*
 
 **Aliases:**
@@ -303,9 +389,13 @@
 ```
 !game othello rules
 ```
+</p></details>
+
 ---
 
 ### game othello stats
+<details><summary>Expand for additional information</summary><p>
+
 *Print the leaderboard for this game.*
 
 **Aliases:**
@@ -316,9 +406,13 @@
 ```
 !game othello stats
 ```
+</p></details>
+
 ---
 
 ## Group: game quiz
+<details><summary>Expand for additional information</summary><p>
+
 *List all available quiz categories.*
 
 **Aliases:**
@@ -364,9 +458,13 @@
 !game quiz 9 hard
 !game quiz 9 hard 15
 ```
+</p></details>
+
 ---
 
 ### game quiz capitals
+<details><summary>Expand for additional information</summary><p>
+
 *Country capitals guessing quiz. You can also specify how many questions there will be in the quiz.*
 
 **Aliases:**
@@ -382,9 +480,13 @@
 !game quiz capitals
 !game quiz capitals 15
 ```
+</p></details>
+
 ---
 
 ### game quiz countries
+<details><summary>Expand for additional information</summary><p>
+
 *Country flags guessing quiz. You can also specify how many questions there will be in the quiz.*
 
 **Aliases:**
@@ -400,9 +502,13 @@
 !game quiz countries
 !game quiz countries 15
 ```
+</p></details>
+
 ---
 
 ### game quiz stats
+<details><summary>Expand for additional information</summary><p>
+
 *Print the leaderboard for this game.*
 
 **Aliases:**
@@ -413,9 +519,13 @@
 ```
 !game quiz stats
 ```
+</p></details>
+
 ---
 
 ### game rps
+<details><summary>Expand for additional information</summary><p>
+
 *Rock, paper, scissors game against TheGodfather*
 
 **Aliases:**
@@ -430,9 +540,13 @@
 ```
 !game rps scissors
 ```
+</p></details>
+
 ---
 
 ## Group: game russianroulette
+<details><summary>Expand for additional information</summary><p>
+
 *Starts a russian roulette game which I will commentate.*
 
 **Aliases:**
@@ -443,9 +557,13 @@
 ```
 !game russianroulette
 ```
+</p></details>
+
 ---
 
 ### game russianroulette join
+<details><summary>Expand for additional information</summary><p>
+
 *Join an existing Russian roulette game pool.*
 
 **Aliases:**
@@ -456,9 +574,13 @@
 ```
 !game russianroulette join
 ```
+</p></details>
+
 ---
 
 ### game russianroulette rules
+<details><summary>Expand for additional information</summary><p>
+
 *Explain the Russian roulette rules.*
 
 **Aliases:**
@@ -469,9 +591,13 @@
 ```
 !game numberrace rules
 ```
+</p></details>
+
 ---
 
 ### game stats
+<details><summary>Expand for additional information</summary><p>
+
 *Print game stats for given user.*
 
 **Aliases:**
@@ -487,9 +613,13 @@
 !game stats
 !game stats @Someone
 ```
+</p></details>
+
 ---
 
 ## Group: game tictactoe
+<details><summary>Expand for additional information</summary><p>
+
 *Starts a "Tic-Tac-Toe" game. Play a move by writing a number from 1 to 9 corresponding to the field where you wish to play. You can also specify a time window in which player must submit their move.*
 
 **Aliases:**
@@ -505,9 +635,13 @@
 !game tictactoe
 !game tictactoe 10s
 ```
+</p></details>
+
 ---
 
 ### game tictactoe rules
+<details><summary>Expand for additional information</summary><p>
+
 *Explain the Tic-Tac-Toe game rules.*
 
 **Aliases:**
@@ -518,9 +652,13 @@
 ```
 !game tictactoe rules
 ```
+</p></details>
+
 ---
 
 ### game tictactoe stats
+<details><summary>Expand for additional information</summary><p>
+
 *Print the leaderboard for this game.*
 
 **Aliases:**
@@ -531,9 +669,13 @@
 ```
 !game tictactoe stats
 ```
+</p></details>
+
 ---
 
 ### game typingrace
+<details><summary>Expand for additional information</summary><p>
+
 *Typing race.*
 
 **Aliases:**
@@ -544,5 +686,7 @@
 ```
 !game typingrace
 ```
+</p></details>
+
 ---
 

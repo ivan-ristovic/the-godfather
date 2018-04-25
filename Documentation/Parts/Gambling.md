@@ -1,6 +1,8 @@
 # Module: Gambling
 
 ## Group: bank
+<details><summary>Expand for additional information</summary><p>
+
 *Bank account manipulation. If invoked alone, prints out your bank balance. Accounts periodically get a bonus.*
 
 **Aliases:**
@@ -15,9 +17,13 @@
 ```
 !bank
 ```
+</p></details>
+
 ---
 
 ### bank balance
+<details><summary>Expand for additional information</summary><p>
+
 *View account balance for given user. If the user is not given, checks sender's balance.*
 
 **Aliases:**
@@ -32,13 +38,16 @@
 ```
 !bank balance @Someone
 ```
+</p></details>
+
 ---
 
 ### bank grant
+<details><summary>Expand for additional information</summary><p>
+
 *Magically give funds to some user.*
 
-**Requires user permissions:**
-`Administrator`
+**Owner-only.**
 
 **Aliases:**
 `give`
@@ -61,9 +70,13 @@
 !bank grant @Someone 1000
 !bank grant 1000 @Someone
 ```
+</p></details>
+
 ---
 
 ### bank register
+<details><summary>Expand for additional information</summary><p>
+
 *Create an account for you in WM bank.*
 
 **Aliases:**
@@ -74,9 +87,13 @@
 ```
 !bank register
 ```
+</p></details>
+
 ---
 
 ### bank top
+<details><summary>Expand for additional information</summary><p>
+
 *Print the richest users.*
 
 **Aliases:**
@@ -87,9 +104,13 @@
 ```
 !bank top
 ```
+</p></details>
+
 ---
 
 ### bank transfer
+<details><summary>Expand for additional information</summary><p>
+
 *Transfer funds from your account to another one.*
 
 **Aliases:**
@@ -113,17 +134,25 @@
 !bank transfer @Someone 40
 !bank transfer 40 @Someone
 ```
+</p></details>
+
 ---
 
 ## Group: cards
+<details><summary>Expand for additional information</summary><p>
+
 *Manipulate a deck of cards.*
 
 **Aliases:**
 `deck`
 
+</p></details>
+
 ---
 
 ### cards draw
+<details><summary>Expand for additional information</summary><p>
+
 *Draw cards from the top of the deck. If amount of cards is not specified, draws one card.*
 
 **Aliases:**
@@ -138,9 +167,13 @@
 ```
 !deck draw 5
 ```
+</p></details>
+
 ---
 
 ### cards reset
+<details><summary>Expand for additional information</summary><p>
+
 *Opens a brand new card deck.*
 
 **Aliases:**
@@ -151,9 +184,13 @@
 ```
 !deck reset
 ```
+</p></details>
+
 ---
 
 ### cards shuffle
+<details><summary>Expand for additional information</summary><p>
+
 *Shuffles current deck.*
 
 **Aliases:**
@@ -164,9 +201,13 @@
 ```
 !deck shuffle
 ```
+</p></details>
+
 ---
 
 ## Group: casino blackjack
+<details><summary>Expand for additional information</summary><p>
+
 *Play a blackjack game.*
 
 **Aliases:**
@@ -181,9 +222,13 @@
 ```
 !casino blackjack
 ```
+</p></details>
+
 ---
 
 ### casino blackjack join
+<details><summary>Expand for additional information</summary><p>
+
 *Join a pending Blackjack game.*
 
 **Aliases:**
@@ -198,9 +243,13 @@
 ```
 !casino blackjack join
 ```
+</p></details>
+
 ---
 
 ### casino blackjack rules
+<details><summary>Expand for additional information</summary><p>
+
 *Explain the Blackjack rules.*
 
 **Aliases:**
@@ -211,9 +260,13 @@
 ```
 !casino blackjack rules
 ```
+</p></details>
+
 ---
 
 ### casino slot
+<details><summary>Expand for additional information</summary><p>
+
 *Roll a slot machine. You need to specify a bid amount. Default bid amount is 5.*
 
 **Aliases:**
@@ -228,9 +281,13 @@
 ```
 !casino slot 20
 ```
+</p></details>
+
 ---
 
 ### gamble coinflip
+<details><summary>Expand for additional information</summary><p>
+
 *Flip a coin and bet on the outcome.*
 
 **Aliases:**
@@ -254,9 +311,13 @@
 !bet coinflip 10 heads
 !bet coinflip tails 20
 ```
+</p></details>
+
 ---
 
 ### gamble dice
+<details><summary>Expand for additional information</summary><p>
+
 *Roll a dice and bet on the outcome.*
 
 **Aliases:**
@@ -280,5 +341,7 @@
 !bet dice 50 six
 !bet dice three 10
 ```
+</p></details>
+
 ---
 

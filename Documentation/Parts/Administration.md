@@ -1,6 +1,8 @@
 # Module: Administration
 
 ## Group: automaticroles
+<details><summary>Expand for additional information</summary><p>
+
 *Commands to manipulate automatically assigned roles (roles which get automatically granted to a user who enters the guild). If invoked without command, either lists or adds automatic role depending if argument is given.*
 
 **Aliases:**
@@ -15,9 +17,13 @@
 ```
 !ar
 ```
+</p></details>
+
 ---
 
 ### automaticroles add
+<details><summary>Expand for additional information</summary><p>
+
 *Add an automatic role (or roles) for this guild.*
 
 **Requires user permissions:**
@@ -36,9 +42,13 @@
 !ar add @Notifications
 !ar add @Notifications @Role1 @Role2
 ```
+</p></details>
+
 ---
 
 ### automaticroles clear
+<details><summary>Expand for additional information</summary><p>
+
 *Delete all automatic roles for the current guild.*
 
 **Requires user permissions:**
@@ -52,9 +62,13 @@
 ```
 !ar clear
 ```
+</p></details>
+
 ---
 
 ### automaticroles delete
+<details><summary>Expand for additional information</summary><p>
+
 *Remove automatic role (or roles).*
 
 **Requires user permissions:**
@@ -73,9 +87,13 @@
 !ar delete @Notifications
 !ar delete @Notifications @Role1 @Role2
 ```
+</p></details>
+
 ---
 
 ### automaticroles list
+<details><summary>Expand for additional information</summary><p>
+
 *View all automatic roles in the current guild.*
 
 **Aliases:**
@@ -86,9 +104,13 @@
 ```
 !ar list
 ```
+</p></details>
+
 ---
 
 ## Group: channel
+<details><summary>Expand for additional information</summary><p>
+
 *Miscellaneous channel control commands. If invoked without subcommands, prints out channel information.*
 
 **Aliases:**
@@ -98,9 +120,13 @@
 
 (optional) `[channel]` : *Channel.* (def: `None`)
 
+</p></details>
+
 ---
 
 ### channel createcategory
+<details><summary>Expand for additional information</summary><p>
+
 *Create new channel category.*
 
 **Requires permissions:**
@@ -118,9 +144,13 @@
 ```
 !channel createcategory My New Category
 ```
+</p></details>
+
 ---
 
 ### channel createtext
+<details><summary>Expand for additional information</summary><p>
+
 *Create new text channel.*
 
 **Requires permissions:**
@@ -160,9 +190,13 @@
 !channel createtext newtextchannel no
 !channel createtext ParentCategory newtextchannel
 ```
+</p></details>
+
 ---
 
 ### channel createvoice
+<details><summary>Expand for additional information</summary><p>
+
 *Create new voice channel.*
 
 **Requires permissions:**
@@ -208,9 +242,13 @@
 !channel createtext "My voice channel" 10 96000
 !channel createtext ParentCategory "My voice channel" 10 96000
 ```
+</p></details>
+
 ---
 
 ### channel delete
+<details><summary>Expand for additional information</summary><p>
+
 *Delete a given channel or category. If the channel isn't given, deletes the current one.*
 
 **Requires permissions:**
@@ -236,9 +274,13 @@
 !channel delete "My voice channel"
 !channel delete "My voice channel" Because I can!
 ```
+</p></details>
+
 ---
 
 ### channel info
+<details><summary>Expand for additional information</summary><p>
+
 *Get information about a given channel. If the channel isn't given, uses the current one.*
 
 **Requires permissions:**
@@ -257,9 +299,13 @@
 !channel info
 !channel info "My voice channel"
 ```
+</p></details>
+
 ---
 
 ### channel modify
+<details><summary>Expand for additional information</summary><p>
+
 *Modify a given voice channel. Set 0 if you wish to keep the value as it is.*
 
 **Requires permissions:**
@@ -291,9 +337,13 @@
 ```
 !channel modify "My voice channel" 20 96000 Some reason
 ```
+</p></details>
+
 ---
 
 ### channel rename
+<details><summary>Expand for additional information</summary><p>
+
 *Rename channel. If the channel isn't given, uses the current one.*
 
 **Requires permissions:**
@@ -327,9 +377,13 @@
 !channel rename "My voice channel" "My old voice channel"
 !channel rename "My reason" "My voice channel" "My old voice channel"
 ```
+</p></details>
+
 ---
 
 ### channel setparent
+<details><summary>Expand for additional information</summary><p>
+
 *Change the parent of the given channel. If the channel isn't given, uses the current one.*
 
 **Requires permissions:**
@@ -358,9 +412,13 @@
 !channel setparent "My channel" ParentCategory
 !channel setparent ParentCategory I set a new parent for this channel!
 ```
+</p></details>
+
 ---
 
 ### channel setposition
+<details><summary>Expand for additional information</summary><p>
+
 *Change the position of the given channel in the guild channel list. If the channel isn't given, uses the current one.*
 
 **Requires permissions:**
@@ -398,9 +456,13 @@
 !channel setposition "My channel" 1
 !channel setposition "My channel" 4 I changed position :)
 ```
+</p></details>
+
 ---
 
 ### channel settopic
+<details><summary>Expand for additional information</summary><p>
+
 *Set channel topic. If the channel isn't given, uses the current one.*
 
 **Requires permissions:**
@@ -433,9 +495,13 @@
 !channel settopic New channel topic
 !channel settopic "My channel" New channel topic
 ```
+</p></details>
+
 ---
 
 ### channel viewperms
+<details><summary>Expand for additional information</summary><p>
+
 *View permissions for a member or role in the given channel. If the member is not given, lists the sender's permissions. If the channel is not given, uses current one.*
 
 **Aliases:**
@@ -473,9 +539,13 @@
 !channel viewperms #private everyone
 !channel viewperms everyone #private
 ```
+</p></details>
+
 ---
 
 ## Group: emoji
+<details><summary>Expand for additional information</summary><p>
+
 *Manipulate guild emoji. Standalone call lists all guild emoji or gives information about given emoji.*
 
 **Aliases:**
@@ -490,9 +560,13 @@
 ```
 !emoji
 ```
+</p></details>
+
 ---
 
 ### emoji add
+<details><summary>Expand for additional information</summary><p>
+
 *Add emoji.*
 
 **Requires permissions:**
@@ -512,9 +586,13 @@
 ```
 !emoji add pepe http://i0.kym-cdn.com/photos/images/facebook/000/862/065/0e9.jpg
 ```
+</p></details>
+
 ---
 
 ### emoji delete
+<details><summary>Expand for additional information</summary><p>
+
 *Remove guild emoji. Note: bots can only delete emojis they created.*
 
 **Requires permissions:**
@@ -532,9 +610,13 @@
 ```
 !emoji delete pepe
 ```
+</p></details>
+
 ---
 
 ### emoji info
+<details><summary>Expand for additional information</summary><p>
+
 *Get information for given guild emoji.*
 
 **Aliases:**
@@ -549,9 +631,13 @@
 ```
 !emoji info pepe
 ```
+</p></details>
+
 ---
 
 ### emoji list
+<details><summary>Expand for additional information</summary><p>
+
 *View guild emojis.*
 
 **Aliases:**
@@ -562,9 +648,13 @@
 ```
 !emoji list
 ```
+</p></details>
+
 ---
 
 ### emoji modify
+<details><summary>Expand for additional information</summary><p>
+
 *Edit name of an existing guild emoji.*
 
 **Requires permissions:**
@@ -591,9 +681,13 @@
 !emoji modify :pepe: newname
 !emoji modify newname :pepe:
 ```
+</p></details>
+
 ---
 
 ## Group: filter
+<details><summary>Expand for additional information</summary><p>
+
 *Message filtering commands. If invoked without subcommand, either lists all filters or adds a new filter for the given word list. Words can be regular expressions.*
 
 **Aliases:**
@@ -608,9 +702,13 @@
 ```
 !filter fuck fk f+u+c+k+
 ```
+</p></details>
+
 ---
 
 ### filter add
+<details><summary>Expand for additional information</summary><p>
+
 *Add filter to guild filter list.*
 
 **Requires user permissions:**
@@ -628,9 +726,13 @@
 ```
 !filter add fuck f+u+c+k+
 ```
+</p></details>
+
 ---
 
 ### filter clear
+<details><summary>Expand for additional information</summary><p>
+
 *Delete all filters for the current guild.*
 
 **Requires user permissions:**
@@ -644,9 +746,13 @@
 ```
 !filter clear
 ```
+</p></details>
+
 ---
 
 ### filter delete
+<details><summary>Expand for additional information</summary><p>
+
 *Remove filters from guild filter list.*
 
 **Requires user permissions:**
@@ -664,9 +770,13 @@
 ```
 !filter delete fuck f+u+c+k+
 ```
+</p></details>
+
 ---
 
 ### filter list
+<details><summary>Expand for additional information</summary><p>
+
 *Show all filters for this guild.*
 
 **Aliases:**
@@ -677,17 +787,25 @@
 ```
 !filter list
 ```
+</p></details>
+
 ---
 
 ## Group: guild
+<details><summary>Expand for additional information</summary><p>
+
 *Miscellaneous guild control commands. If invoked without subcommands, prints guild information.*
 
 **Aliases:**
 `server, g`
 
+</p></details>
+
 ---
 
 ### guild bans
+<details><summary>Expand for additional information</summary><p>
+
 *Get guild ban list.*
 
 **Requires permissions:**
@@ -701,9 +819,13 @@
 ```
 !guild banlist
 ```
+</p></details>
+
 ---
 
 ### guild deleteleavechannel
+<details><summary>Expand for additional information</summary><p>
+
 *Remove leave message channel for this guild.*
 
 **Requires user permissions:**
@@ -717,9 +839,13 @@
 ```
 !guild deletewelcomechannel
 ```
+</p></details>
+
 ---
 
 ### guild deleteleavemessage
+<details><summary>Expand for additional information</summary><p>
+
 *Remove leave message for this guild.*
 
 **Requires user permissions:**
@@ -733,9 +859,13 @@
 ```
 !guild deleteleavemessage
 ```
+</p></details>
+
 ---
 
 ### guild deletewelcomechannel
+<details><summary>Expand for additional information</summary><p>
+
 *Remove welcome message channel for this guild.*
 
 **Requires user permissions:**
@@ -749,9 +879,13 @@
 ```
 !guild deletewelcomechannel
 ```
+</p></details>
+
 ---
 
 ### guild deletewelcomemessage
+<details><summary>Expand for additional information</summary><p>
+
 *Remove welcome message for this guild.*
 
 **Requires user permissions:**
@@ -765,9 +899,13 @@
 ```
 !guild deletewelcomemessage
 ```
+</p></details>
+
 ---
 
 ### guild getleavechannel
+<details><summary>Expand for additional information</summary><p>
+
 *Get current leave message channel for this guild.*
 
 **Aliases:**
@@ -778,9 +916,13 @@
 ```
 !guild getleavechannel
 ```
+</p></details>
+
 ---
 
 ### guild getleavemessage
+<details><summary>Expand for additional information</summary><p>
+
 *Get current leave message for this guild.*
 
 **Aliases:**
@@ -791,9 +933,13 @@
 ```
 !guild getwelcomemessage
 ```
+</p></details>
+
 ---
 
 ### guild getwelcomechannel
+<details><summary>Expand for additional information</summary><p>
+
 *Get current welcome message channel for this guild.*
 
 **Aliases:**
@@ -804,9 +950,13 @@
 ```
 !guild getwelcomechannel
 ```
+</p></details>
+
 ---
 
 ### guild getwelcomemessage
+<details><summary>Expand for additional information</summary><p>
+
 *Get current welcome message for this guild.*
 
 **Aliases:**
@@ -817,9 +967,13 @@
 ```
 !guild getwelcomemessage
 ```
+</p></details>
+
 ---
 
 ### guild info
+<details><summary>Expand for additional information</summary><p>
+
 *Get guild information.*
 
 **Aliases:**
@@ -830,9 +984,13 @@
 ```
 !guild info
 ```
+</p></details>
+
 ---
 
 ### guild listmembers
+<details><summary>Expand for additional information</summary><p>
+
 *Get guild member list.*
 
 **Aliases:**
@@ -843,9 +1001,13 @@
 ```
 !guild memberlist
 ```
+</p></details>
+
 ---
 
 ### guild log
+<details><summary>Expand for additional information</summary><p>
+
 *Get audit logs.*
 
 **Requires permissions:**
@@ -859,9 +1021,13 @@
 ```
 !guild logs
 ```
+</p></details>
+
 ---
 
 ### guild prune
+<details><summary>Expand for additional information</summary><p>
+
 *Kick guild members who weren't active in given amount of days (1-7).*
 
 **Requires permissions:**
@@ -884,9 +1050,13 @@
 ```
 !guild prune 5 Kicking inactives..
 ```
+</p></details>
+
 ---
 
 ### guild rename
+<details><summary>Expand for additional information</summary><p>
+
 *Rename guild.*
 
 **Requires permissions:**
@@ -911,9 +1081,13 @@
 !guild rename New guild name
 !guild rename "Reason for renaming" New guild name
 ```
+</p></details>
+
 ---
 
 ### guild seticon
+<details><summary>Expand for additional information</summary><p>
+
 *Change icon of the guild.*
 
 **Requires permissions:**
@@ -931,9 +1105,13 @@
 ```
 !guild seticon http://imgur.com/someimage.png
 ```
+</p></details>
+
 ---
 
 ### guild setleavechannel
+<details><summary>Expand for additional information</summary><p>
+
 *Set leave message channel for this guild. If the channel isn't given, uses the current one.*
 
 **Requires user permissions:**
@@ -952,9 +1130,13 @@
 !guild setleavechannel
 !guild setleavechannel #bb
 ```
+</p></details>
+
 ---
 
 ### guild setleavemessage
+<details><summary>Expand for additional information</summary><p>
+
 *Set leave message for this guild. Any occurances of ``%user%`` inside the string will be replaced with newly joined user mention. Invoking command without a message will reset the current leave message to a default one.*
 
 **Requires user permissions:**
@@ -973,9 +1155,13 @@
 !guild setleavemessage
 !guild setleavemessage Bye, %user%!
 ```
+</p></details>
+
 ---
 
 ### guild setwelcomechannel
+<details><summary>Expand for additional information</summary><p>
+
 *Set welcome message channel for this guild. If the channel isn't given, uses the current one.*
 
 **Requires user permissions:**
@@ -994,9 +1180,13 @@
 !guild setwelcomechannel
 !guild setwelcomechannel #welcome
 ```
+</p></details>
+
 ---
 
 ### guild setwelcomemessage
+<details><summary>Expand for additional information</summary><p>
+
 *Set welcome message for this guild. Any occurances of ``%user%`` inside the string will be replaced with newly joined user mention. Invoking command without a message will reset the current welcome message to a default one.*
 
 **Requires user permissions:**
@@ -1015,9 +1205,13 @@
 !guild setwelcomemessage
 !guild setwelcomemessage Welcome, %user%!
 ```
+</p></details>
+
 ---
 
 ### message attachments
+<details><summary>Expand for additional information</summary><p>
+
 *View all message attachments. If the message is not provided, uses the last sent message before command invocation.*
 
 **Aliases:**
@@ -1033,9 +1227,13 @@
 !message attachments
 !message attachments 408226948855234561
 ```
+</p></details>
+
 ---
 
 ### message delete
+<details><summary>Expand for additional information</summary><p>
+
 *Deletes the specified amount of most-recent messages from the channel.*
 
 **Requires permissions:**
@@ -1059,9 +1257,13 @@
 !messages delete 10
 !messages delete 10 Cleaning spam
 ```
+</p></details>
+
 ---
 
 ### message deletefrom
+<details><summary>Expand for additional information</summary><p>
+
 *Deletes given amount of most-recent messages from given user.*
 
 **Requires permissions:**
@@ -1095,9 +1297,13 @@
 !messages deletefrom @Someone 10 Cleaning spam
 !messages deletefrom 10 @Someone Cleaning spam
 ```
+</p></details>
+
 ---
 
 ### message deletereactions
+<details><summary>Expand for additional information</summary><p>
+
 *Deletes all reactions from the given message.*
 
 **Requires permissions:**
@@ -1120,9 +1326,13 @@
 ```
 !messages deletereactions 408226948855234561
 ```
+</p></details>
+
 ---
 
 ### message deleteregex
+<details><summary>Expand for additional information</summary><p>
+
 *Deletes given amount of most-recent messages that match a given regular expression.*
 
 **Requires permissions:**
@@ -1156,9 +1366,13 @@
 !messages deletefrom s+p+a+m+ 10 Cleaning spam
 !messages deletefrom 10 s+p+a+m+ Cleaning spam
 ```
+</p></details>
+
 ---
 
 ### message listpinned
+<details><summary>Expand for additional information</summary><p>
+
 *List pinned messages in this channel.*
 
 **Aliases:**
@@ -1169,9 +1383,13 @@
 ```
 !messages listpinned
 ```
+</p></details>
+
 ---
 
 ### message modify
+<details><summary>Expand for additional information</summary><p>
+
 *Modify the given message.*
 
 **Requires permissions:**
@@ -1191,9 +1409,13 @@
 ```
 !messages modify 408226948855234561 modified text
 ```
+</p></details>
+
 ---
 
 ### message pin
+<details><summary>Expand for additional information</summary><p>
+
 *Pins the message given by ID. If the message is not provided, pins the last sent message before command invocation.*
 
 **Requires permissions:**
@@ -1212,9 +1434,13 @@
 !messages pin
 !messages pin 408226948855234561
 ```
+</p></details>
+
 ---
 
 ### message unpin
+<details><summary>Expand for additional information</summary><p>
+
 *Unpins the message at given index (starting from 1). If the index is not given, unpins the most recent one.*
 
 **Requires permissions:**
@@ -1233,9 +1459,13 @@
 !messages unpin
 !messages unpin 10
 ```
+</p></details>
+
 ---
 
 ### message unpinall
+<details><summary>Expand for additional information</summary><p>
+
 *Unpins all pinned messages in this channel.*
 
 **Requires permissions:**
@@ -1249,9 +1479,13 @@
 ```
 !messages unpinall
 ```
+</p></details>
+
 ---
 
 ## Group: roles
+<details><summary>Expand for additional information</summary><p>
+
 *Miscellaneous role control commands.*
 
 **Aliases:**
@@ -1261,9 +1495,13 @@
 
 `[role]` : *Role.*
 
+</p></details>
+
 ---
 
 ### roles create
+<details><summary>Expand for additional information</summary><p>
+
 *Create a new role.*
 
 **Requires permissions:**
@@ -1299,9 +1537,13 @@
 !roles create 
 !roles create #C77B0F My new role
 ```
+</p></details>
+
 ---
 
 ### roles delete
+<details><summary>Expand for additional information</summary><p>
+
 *Create a new role.*
 
 **Requires permissions:**
@@ -1322,9 +1564,13 @@
 !role delete My role
 !role delete @admins
 ```
+</p></details>
+
 ---
 
 ### roles info
+<details><summary>Expand for additional information</summary><p>
+
 *Get information about a given role.*
 
 **Requires permissions:**
@@ -1342,9 +1588,13 @@
 ```
 !role info Admins
 ```
+</p></details>
+
 ---
 
 ### roles mentionall
+<details><summary>Expand for additional information</summary><p>
+
 *Mention all users from given role.*
 
 **Requires permissions:**
@@ -1365,9 +1615,13 @@
 ```
 !role mentionall Admins
 ```
+</p></details>
+
 ---
 
 ### roles setcolor
+<details><summary>Expand for additional information</summary><p>
+
 *Set a color for the role.*
 
 **Requires permissions:**
@@ -1394,9 +1648,13 @@
 !role setcolor #FF0000 Admins
 !role setcolor Admins #FF0000
 ```
+</p></details>
+
 ---
 
 ### roles setmentionable
+<details><summary>Expand for additional information</summary><p>
+
 *Set role mentionable var.*
 
 **Requires permissions:**
@@ -1424,9 +1682,13 @@
 !role setmentionable Admins false
 !role setmentionable false Admins
 ```
+</p></details>
+
 ---
 
 ### roles setname
+<details><summary>Expand for additional information</summary><p>
+
 *Set a name for the role.*
 
 **Requires permissions:**
@@ -1453,9 +1715,13 @@
 !role setname @Admins Administrators
 !role setname Administrators @Admins
 ```
+</p></details>
+
 ---
 
 ### roles setvisible
+<details><summary>Expand for additional information</summary><p>
+
 *Set role hoisted var (visibility in online list).*
 
 **Requires permissions:**
@@ -1483,9 +1749,13 @@
 !role setvisible Admins false
 !role setvisible false Admins
 ```
+</p></details>
+
 ---
 
 ## Group: selfassignableroles
+<details><summary>Expand for additional information</summary><p>
+
 *Commands to manipulate self-assignable roles. If invoked without subcommands, lists all self-assignable roles for this guild or adds a new self-assignable role depending of argument given.*
 
 **Aliases:**
@@ -1500,9 +1770,13 @@
 ```
 !sar
 ```
+</p></details>
+
 ---
 
 ### selfassignableroles add
+<details><summary>Expand for additional information</summary><p>
+
 *Add a self-assignable role (or roles) for this guild.*
 
 **Requires user permissions:**
@@ -1521,9 +1795,13 @@
 !sar add @Notifications
 !sar add @Notifications @Role1 @Role2
 ```
+</p></details>
+
 ---
 
 ### selfassignableroles clear
+<details><summary>Expand for additional information</summary><p>
+
 *Delete all self-assignable roles for the current guild.*
 
 **Requires user permissions:**
@@ -1537,9 +1815,13 @@
 ```
 !sar clear
 ```
+</p></details>
+
 ---
 
 ### selfassignableroles delete
+<details><summary>Expand for additional information</summary><p>
+
 *Remove self-assignable role (or roles).*
 
 **Requires user permissions:**
@@ -1558,9 +1840,13 @@
 !sar delete @Notifications
 !sar delete @Notifications @Role1 @Role2
 ```
+</p></details>
+
 ---
 
 ### selfassignableroles list
+<details><summary>Expand for additional information</summary><p>
+
 *View all self-assignable roles in the current guild.*
 
 **Aliases:**
@@ -1571,9 +1857,13 @@
 ```
 !sar list
 ```
+</p></details>
+
 ---
 
 ## Group: user
+<details><summary>Expand for additional information</summary><p>
+
 *Miscellaneous user control commands. If invoked without subcommands, prints out user information.*
 
 **Aliases:**
@@ -1583,9 +1873,13 @@
 
 (optional) `[user]` : *User.* (def: `None`)
 
+</p></details>
+
 ---
 
 ### user addrole
+<details><summary>Expand for additional information</summary><p>
+
 *Assign a role to a member.*
 
 **Requires permissions:**
@@ -1612,9 +1906,13 @@
 !user addrole @User Admins
 !user addrole Admins @User
 ```
+</p></details>
+
 ---
 
 ### user avatar
+<details><summary>Expand for additional information</summary><p>
+
 *Get avatar from user.*
 
 **Aliases:**
@@ -1629,9 +1927,13 @@
 ```
 !user avatar @Someone
 ```
+</p></details>
+
 ---
 
 ### user ban
+<details><summary>Expand for additional information</summary><p>
+
 *Bans the user from the guild.*
 
 **Requires permissions:**
@@ -1652,9 +1954,13 @@
 !user ban @Someone
 !user ban @Someone Troublemaker
 ```
+</p></details>
+
 ---
 
 ### user banid
+<details><summary>Expand for additional information</summary><p>
+
 *Bans the ID from the server.*
 
 **Requires permissions:**
@@ -1675,9 +1981,13 @@
 !user banid 154956794490845232
 !user banid 154558794490846232 Troublemaker
 ```
+</p></details>
+
 ---
 
 ### user deafen
+<details><summary>Expand for additional information</summary><p>
+
 *Deafen a member.*
 
 **Requires permissions:**
@@ -1697,9 +2007,13 @@
 ```
 !user deafen @Someone
 ```
+</p></details>
+
 ---
 
 ### user info
+<details><summary>Expand for additional information</summary><p>
+
 *Print the information about the given user. If the user is not given, uses the sender.*
 
 **Aliases:**
@@ -1714,9 +2028,13 @@
 ```
 !user info @Someone
 ```
+</p></details>
+
 ---
 
 ### user kick
+<details><summary>Expand for additional information</summary><p>
+
 *Kicks the member from the guild.*
 
 **Requires permissions:**
@@ -1737,9 +2055,13 @@
 !user kick @Someone
 !user kick @Someone Troublemaker
 ```
+</p></details>
+
 ---
 
 ### user mute
+<details><summary>Expand for additional information</summary><p>
+
 *Mute a member.*
 
 **Requires permissions:**
@@ -1750,7 +2072,7 @@
 
 **Arguments:**
 
-`[member]` : *member.*
+`[member]` : *Member to mute.*
 
 (optional) `[string...]` : *Reason.* (def: `None`)
 
@@ -1760,9 +2082,13 @@
 !user mute @Someone
 !user mute @Someone Trashtalk
 ```
+</p></details>
+
 ---
 
 ### user removeallroles
+<details><summary>Expand for additional information</summary><p>
+
 *Revoke all roles from user.*
 
 **Requires permissions:**
@@ -1782,9 +2108,13 @@
 ```
 !user removeallroles @Someone
 ```
+</p></details>
+
 ---
 
 ### user removerole
+<details><summary>Expand for additional information</summary><p>
+
 *Revoke a role from member.*
 
 **Requires permissions:**
@@ -1821,9 +2151,13 @@
 !user removerole @Someone Admins
 !user removerole Admins @Someone
 ```
+</p></details>
+
 ---
 
 ### user setname
+<details><summary>Expand for additional information</summary><p>
+
 *Gives someone a new nickname.*
 
 **Requires permissions:**
@@ -1843,9 +2177,13 @@
 ```
 !user setname @Someone Newname
 ```
+</p></details>
+
 ---
 
 ### user softban
+<details><summary>Expand for additional information</summary><p>
+
 *Bans the member from the guild and then unbans him immediately.*
 
 **Requires permissions:**
@@ -1866,9 +2204,13 @@
 !user sban @Someone
 !user sban @Someone Troublemaker
 ```
+</p></details>
+
 ---
 
 ### user tempban
+<details><summary>Expand for additional information</summary><p>
+
 *Temporarily ans the user from the server and then unbans him after given timespan.*
 
 **Requires permissions:**
@@ -1900,9 +2242,13 @@
 !user tempban 5d @Someone Troublemaker
 !user tempban @Someone 5h30m30s Troublemaker
 ```
+</p></details>
+
 ---
 
 ### user unban
+<details><summary>Expand for additional information</summary><p>
+
 *Unbans the user ID from the server.*
 
 **Requires permissions:**
@@ -1922,9 +2268,13 @@
 ```
 !user unban 154956794490845232
 ```
+</p></details>
+
 ---
 
 ### user undeafen
+<details><summary>Expand for additional information</summary><p>
+
 *Undeafen a member.*
 
 **Requires permissions:**
@@ -1944,9 +2294,13 @@
 ```
 !user undeafen @Someone
 ```
+</p></details>
+
 ---
 
 ### user unmute
+<details><summary>Expand for additional information</summary><p>
+
 *Unmute a member.*
 
 **Requires permissions:**
@@ -1957,7 +2311,7 @@
 
 **Arguments:**
 
-`[member]` : *member.*
+`[member]` : *Member to unmute.*
 
 (optional) `[string...]` : *Reason.* (def: `None`)
 
@@ -1967,9 +2321,13 @@
 !user unmute @Someone
 !user unmute @Someone Some reason
 ```
+</p></details>
+
 ---
 
 ### user warn
+<details><summary>Expand for additional information</summary><p>
+
 *Warn a member in private message by sending a given warning text.*
 
 **Requires user permissions:**
@@ -1989,5 +2347,7 @@
 ```
 !user warn @Someone Stop spamming or kick!
 ```
+</p></details>
+
 ---
 

@@ -1,6 +1,8 @@
 # Module: SWAT
 
 ### swat ip
+<details><summary>Expand for additional information</summary><p>
+
 *Return IP of the registered server by name.*
 
 **Aliases:**
@@ -15,9 +17,13 @@
 ```
 !s4 ip wm
 ```
+</p></details>
+
 ---
 
 ### swat query
+<details><summary>Expand for additional information</summary><p>
+
 *Return server information.*
 
 **Aliases:**
@@ -36,9 +42,13 @@
 !s4 q 109.70.149.158:10480
 !s4 q wm
 ```
+</p></details>
+
 ---
 
 ### swat serverlist
+<details><summary>Expand for additional information</summary><p>
+
 *Print the serverlist with current player numbers.*
 
 **Examples:**
@@ -46,9 +56,13 @@
 ```
 !swat serverlist
 ```
+</p></details>
+
 ---
 
 ### swat servers add
+<details><summary>Expand for additional information</summary><p>
+
 *Add a server to serverlist.*
 
 **Owner-only.**
@@ -70,9 +84,13 @@
 !swat servers add 4u 109.70.149.158:10480
 !swat servers add 4u 109.70.149.158:10480 10481
 ```
+</p></details>
+
 ---
 
 ### swat servers delete
+<details><summary>Expand for additional information</summary><p>
+
 *Remove a server from serverlist.*
 
 **Owner-only.**
@@ -89,9 +107,13 @@
 ```
 !swat servers delete 4u
 ```
+</p></details>
+
 ---
 
 ### swat servers list
+<details><summary>Expand for additional information</summary><p>
+
 *List all registered servers.*
 
 **Owner-only.**
@@ -104,9 +126,13 @@
 ```
 !swat servers list
 ```
+</p></details>
+
 ---
 
 ### swat settimeout
+<details><summary>Expand for additional information</summary><p>
+
 *Set checking timeout.*
 
 **Owner-only.**
@@ -120,9 +146,13 @@
 ```
 !swat settimeout 500
 ```
+</p></details>
+
 ---
 
 ### swat startcheck
+<details><summary>Expand for additional information</summary><p>
+
 *Start listening for space on a given server and notifies you when there is space.*
 
 **Aliases:**
@@ -141,9 +171,13 @@
 !s4 startcheck 109.70.149.158:10480
 !swat startcheck wm
 ```
+</p></details>
+
 ---
 
 ### swat stopcheck
+<details><summary>Expand for additional information</summary><p>
+
 *Stops space checking.*
 
 **Aliases:**
@@ -154,5 +188,7 @@
 ```
 !swat stopcheck
 ```
+</p></details>
+
 ---
 

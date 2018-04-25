@@ -1,6 +1,8 @@
 # Module: Music
 
 ## connect
+<details><summary>Expand for additional information</summary><p>
+
 *Connect the bot to a voice channel. If the channel is not given, connects the bot to the same channel you are in.*
 
 **Owner-only.**
@@ -21,9 +23,13 @@
 !connect
 !connect Music
 ```
+</p></details>
+
 ---
 
 ## disconnect
+<details><summary>Expand for additional information</summary><p>
+
 *Disconnects the bot from the voice channel.*
 
 **Owner-only.**
@@ -39,9 +45,13 @@
 ```
 !disconnect
 ```
+</p></details>
+
 ---
 
 ## Group: play
+<details><summary>Expand for additional information</summary><p>
+
 *Commands for playing music. If invoked without subcommand, plays given URL or searches YouTube for given query and plays the first result.*
 
 **Requires bot permissions:**
@@ -60,9 +70,13 @@
 !play https://www.youtube.com/watch?v=dQw4w9WgXcQ
 !play what is love?
 ```
+</p></details>
+
 ---
 
 ### play file
+<details><summary>Expand for additional information</summary><p>
+
 *Plays an audio file from the server filesystem.*
 
 **Owner-only.**
@@ -82,9 +96,13 @@
 ```
 !play file test.mp3
 ```
+</p></details>
+
 ---
 
 ## skip
+<details><summary>Expand for additional information</summary><p>
+
 *Skip current voice playback.*
 
 **Owner-only.**
@@ -97,9 +115,13 @@
 ```
 !skip
 ```
+</p></details>
+
 ---
 
 ## stop
+<details><summary>Expand for additional information</summary><p>
+
 *Stops current voice playback.*
 
 **Owner-only.**
@@ -112,5 +134,7 @@
 ```
 !stop
 ```
+</p></details>
+
 ---
 

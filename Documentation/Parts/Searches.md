@@ -1,6 +1,8 @@
 # Module: Searches
 
 ## Group: gif
+<details><summary>Expand for additional information</summary><p>
+
 *GIPHY commands. If invoked without a subcommand, searches GIPHY with given query.*
 
 **Aliases:**
@@ -15,9 +17,13 @@
 ```
 !gif wat
 ```
+</p></details>
+
 ---
 
 ### gif random
+<details><summary>Expand for additional information</summary><p>
+
 *Return a random GIF.*
 
 **Aliases:**
@@ -28,9 +34,13 @@
 ```
 !gif random
 ```
+</p></details>
+
 ---
 
 ### gif trending
+<details><summary>Expand for additional information</summary><p>
+
 *Return an amount of trending GIFs.*
 
 **Aliases:**
@@ -46,9 +56,13 @@
 !gif trending 3
 !gif trending
 ```
+</p></details>
+
 ---
 
 ## Group: imdb
+<details><summary>Expand for additional information</summary><p>
+
 *Search Open Movie Database.*
 
 **Aliases:**
@@ -63,9 +77,13 @@
 ```
 !imdb Airplane
 ```
+</p></details>
+
 ---
 
 ### imdb id
+<details><summary>Expand for additional information</summary><p>
+
 *Search by IMDb ID.*
 
 **Arguments:**
@@ -77,9 +95,13 @@
 ```
 !imdb id tt4158110
 ```
+</p></details>
+
 ---
 
 ### imdb search
+<details><summary>Expand for additional information</summary><p>
+
 *Searches IMDb for given query and returns paginated results.*
 
 **Aliases:**
@@ -94,9 +116,13 @@
 ```
 !imdb search Kill Bill
 ```
+</p></details>
+
 ---
 
 ### imdb title
+<details><summary>Expand for additional information</summary><p>
+
 *Search by title.*
 
 **Aliases:**
@@ -111,9 +137,13 @@
 ```
 !imdb title Airplane
 ```
+</p></details>
+
 ---
 
 ## Group: imgur
+<details><summary>Expand for additional information</summary><p>
+
 *Search imgur. Invoking without subcommand retrieves top ranked images from given subreddit.*
 
 **Aliases:**
@@ -138,9 +168,13 @@
 !imgur 10 aww
 !imgur aww 10
 ```
+</p></details>
+
 ---
 
 ### imgur latest
+<details><summary>Expand for additional information</summary><p>
+
 *Return latest images from given subreddit.*
 
 **Aliases:**
@@ -164,9 +198,13 @@
 !imgur latest 5 aww
 !imgur latest aww 5
 ```
+</p></details>
+
 ---
 
 ### imgur top
+<details><summary>Expand for additional information</summary><p>
+
 *Return amount of top rated images in the given subreddit for given timespan.*
 
 **Aliases:**
@@ -210,9 +248,13 @@
 !imgur top 5 aww
 !imgur top day aww
 ```
+</p></details>
+
 ---
 
 ## Group: joke
+<details><summary>Expand for additional information</summary><p>
+
 *Group for searching jokes. If invoked without a subcommand, returns a random joke.*
 
 **Aliases:**
@@ -223,9 +265,13 @@
 ```
 !joke
 ```
+</p></details>
+
 ---
 
 ### joke search
+<details><summary>Expand for additional information</summary><p>
+
 *Search for the joke containing the given query.*
 
 **Aliases:**
@@ -240,9 +286,13 @@
 ```
 !joke search blonde
 ```
+</p></details>
+
 ---
 
 ### joke yourmom
+<details><summary>Expand for additional information</summary><p>
+
 *Yo mama so...*
 
 **Aliases:**
@@ -253,9 +303,13 @@
 ```
 !joke yourmom
 ```
+</p></details>
+
 ---
 
 ## Group: reddit
+<details><summary>Expand for additional information</summary><p>
+
 *Reddit commands.*
 
 **Aliases:**
@@ -270,9 +324,13 @@
 ```
 !reddit aww
 ```
+</p></details>
+
 ---
 
 ### reddit subscribe
+<details><summary>Expand for additional information</summary><p>
+
 *Add new feed for a subreddit.*
 
 **Requires permissions:**
@@ -290,9 +348,13 @@
 ```
 !reddit sub aww
 ```
+</p></details>
+
 ---
 
 ### reddit unsubscribe
+<details><summary>Expand for additional information</summary><p>
+
 *Remove a subreddit feed using subreddit name or subscription ID (use command ``feed list`` to see IDs).*
 
 **Requires permissions:**
@@ -315,9 +377,13 @@
 !reddit unsub aww
 !reddit unsub 12
 ```
+</p></details>
+
 ---
 
 ## Group: rss
+<details><summary>Expand for additional information</summary><p>
+
 *Commands for RSS feed querying or subscribing. If invoked without subcommand, gives the latest topic from the given RSS URL.*
 
 **Aliases:**
@@ -332,9 +398,13 @@
 ```
 !rss https://news.google.com/news/rss/
 ```
+</p></details>
+
 ---
 
 ### rss list
+<details><summary>Expand for additional information</summary><p>
+
 *Get feed list for the current channel.*
 
 **Aliases:**
@@ -345,9 +415,13 @@
 ```
 !feed list
 ```
+</p></details>
+
 ---
 
 ### rss subscribe
+<details><summary>Expand for additional information</summary><p>
+
 *Subscribe to given RSS feed URL. The bot will send a message when the latest topic is changed.*
 
 **Requires permissions:**
@@ -368,9 +442,13 @@
 !rss subscribe https://news.google.com/news/rss/
 !rss subscribe https://news.google.com/news/rss/ news
 ```
+</p></details>
+
 ---
 
 ### rss unsubscribe
+<details><summary>Expand for additional information</summary><p>
+
 *Remove an existing feed subscription.*
 
 **Requires permissions:**
@@ -392,9 +470,13 @@
 ```
 !rss unsubscribe 1
 ```
+</p></details>
+
 ---
 
 ### rss wm
+<details><summary>Expand for additional information</summary><p>
+
 *Get newest topics from WM forum.*
 
 **Examples:**
@@ -402,9 +484,13 @@
 ```
 !rss wm
 ```
+</p></details>
+
 ---
 
 ### steam profile
+<details><summary>Expand for additional information</summary><p>
+
 *Get Steam user information for user based on his ID.*
 
 **Aliases:**
@@ -414,9 +500,13 @@
 
 `[unsigned long]` : *ID.*
 
+</p></details>
+
 ---
 
 ## Group: urbandict
+<details><summary>Expand for additional information</summary><p>
+
 *Urban Dictionary commands. If invoked without subcommand, searches Urban Dictionary for a given query.*
 
 **Aliases:**
@@ -431,9 +521,13 @@
 ```
 !urbandict blonde
 ```
+</p></details>
+
 ---
 
 ## Group: weather
+<details><summary>Expand for additional information</summary><p>
+
 *Weather search commands. If invoked without subcommands, returns weather information for given query.*
 
 **Aliases:**
@@ -448,9 +542,13 @@
 ```
 !weather london
 ```
+</p></details>
+
 ---
 
 ### weather forecast
+<details><summary>Expand for additional information</summary><p>
+
 *Get weather forecast for the following days (def: 7).*
 
 **Aliases:**
@@ -472,9 +570,13 @@
 !weather forecast london
 !weather forecast 5 london
 ```
+</p></details>
+
 ---
 
 ## Group: youtube
+<details><summary>Expand for additional information</summary><p>
+
 *Youtube search commands. If invoked without subcommands, searches YouTube for given query.*
 
 **Aliases:**
@@ -489,9 +591,13 @@
 ```
 !youtube never gonna give you up
 ```
+</p></details>
+
 ---
 
 ### youtube search
+<details><summary>Expand for additional information</summary><p>
+
 *Advanced youtube search.*
 
 **Aliases:**
@@ -508,9 +614,13 @@
 ```
 !youtube search 5 rick astley
 ```
+</p></details>
+
 ---
 
 ### youtube searchchannel
+<details><summary>Expand for additional information</summary><p>
+
 *Advanced youtube search for channels only.*
 
 **Aliases:**
@@ -525,9 +635,13 @@
 ```
 !youtube searchchannel 5 rick astley
 ```
+</p></details>
+
 ---
 
 ### youtube searchp
+<details><summary>Expand for additional information</summary><p>
+
 *Advanced youtube search for playlists only.*
 
 **Aliases:**
@@ -542,9 +656,13 @@
 ```
 !youtube searchplaylist 5 rick astley
 ```
+</p></details>
+
 ---
 
 ### youtube searchvideo
+<details><summary>Expand for additional information</summary><p>
+
 *Advanced youtube search for videos only.*
 
 **Aliases:**
@@ -559,9 +677,13 @@
 ```
 !youtube searchvideo 5 rick astley
 ```
+</p></details>
+
 ---
 
 ### youtube subscribe
+<details><summary>Expand for additional information</summary><p>
+
 *Add a new subscription for a YouTube channel.*
 
 **Requires permissions:**
@@ -582,9 +704,13 @@
 !youtube subscribe https://www.youtube.com/user/RickAstleyVEVO
 !youtube subscribe https://www.youtube.com/user/RickAstleyVEVO rick
 ```
+</p></details>
+
 ---
 
 ### youtube unsubscribe
+<details><summary>Expand for additional information</summary><p>
+
 *Remove a YouTube channel subscription.*
 
 **Requires permissions:**
@@ -603,5 +729,7 @@
 !youtube unsubscribe https://www.youtube.com/user/RickAstleyVEVO
 !youtube unsubscribe rick
 ```
+</p></details>
+
 ---
 
