@@ -1,11 +1,7 @@
 # Module: Reactions
 
 ## Group: emojireaction
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Orders a bot to react with given emoji to a message containing a trigger word inside (guild specific). If invoked without subcommands, adds a new emoji reaction to a given trigger word list. Note: Trigger words can be regular expressions (use ``emojireaction addregex`` command).*
 
@@ -29,17 +25,12 @@ Expand for additional information
 ```
 !emojireaction :smile: haha laughing
 ```
-</p>
-</details>
+</code></details>
 
 ---
 
 ### emojireaction add
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Add emoji reaction to guild reaction list.*
 
@@ -67,17 +58,12 @@ Expand for additional information
 !emojireaction add :smile: haha
 !emojireaction add haha :smile:
 ```
-</p>
-</details>
+</code></details>
 
 ---
 
 ### emojireaction addregex
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Add emoji reaction triggered by a regex to guild reaction list.*
 
@@ -105,17 +91,12 @@ Expand for additional information
 !emojireaction addregex :smile: (ha)+
 !emojireaction addregex (ha)+ :smile:
 ```
-</p>
-</details>
+</code></details>
 
 ---
 
 ### emojireaction clear
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Delete all reactions for the current guild.*
 
@@ -130,17 +111,12 @@ Expand for additional information
 ```
 !emojireactions clear
 ```
-</p>
-</details>
+</code></details>
 
 ---
 
 ### emojireaction delete
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Remove emoji reactions for given trigger words.*
 
@@ -170,17 +146,12 @@ Expand for additional information
 !emojireaction delete 5 4
 !emojireaction delete :joy:
 ```
-</p>
-</details>
+</code></details>
 
 ---
 
 ### emojireaction list
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Show all emoji reactions for this guild.*
 
@@ -192,17 +163,12 @@ Expand for additional information
 ```
 !emojireaction list
 ```
-</p>
-</details>
+</code></details>
 
 ---
 
 ## Group: textreaction
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Orders a bot to react with given text to a message containing a trigger word inside (guild specific). If invoked without subcommands, adds a new text reaction to a given trigger word. Note: Trigger words can be regular expressions (use ``textreaction addregex`` command). You can also use "%user%" inside response and the bot will replace it with mention for the user who triggers the reaction.*
 
@@ -221,17 +187,12 @@ Expand for additional information
 !textreaction hi hello
 !textreaction "hi" "Hello, %user%!"
 ```
-</p>
-</details>
+</code></details>
 
 ---
 
 ### textreaction add
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Add a new text reaction to guild text reaction list.*
 
@@ -252,17 +213,12 @@ Expand for additional information
 ```
 !textreaction add "hi" "Hello, %user%!"
 ```
-</p>
-</details>
+</code></details>
 
 ---
 
 ### textreaction addregex
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Add a new text reaction triggered by a regex to guild text reaction list.*
 
@@ -283,17 +239,12 @@ Expand for additional information
 ```
 !textreaction addregex "h(i|ey|ello|owdy)" "Hello, %user%!"
 ```
-</p>
-</details>
+</code></details>
 
 ---
 
 ### textreaction clear
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Delete all text reactions for the current guild.*
 
@@ -308,17 +259,12 @@ Expand for additional information
 ```
 !textreactions clear
 ```
-</p>
-</details>
+</code></details>
 
 ---
 
 ### textreaction delete
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Remove text reaction from guild text reaction list.*
 
@@ -343,17 +289,12 @@ Expand for additional information
 !textreaction delete 5 8
 !textreaction delete hi
 ```
-</p>
-</details>
+</code></details>
 
 ---
 
 ### textreaction list
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Show all text reactions for the guild.*
 
@@ -365,8 +306,7 @@ Expand for additional information
 ```
 !textreactions list
 ```
-</p>
-</details>
+</code></details>
 
 ---
 

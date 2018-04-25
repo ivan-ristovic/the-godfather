@@ -1,11 +1,7 @@
 # Module: Polls
 
 ## Group: poll
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Starts a new poll in the current channel. You can provide also the time for the poll to run.*
 
@@ -31,17 +27,12 @@ Expand for additional information
 !poll Do you vote for User1 or User2?
 !poll 5m Do you vote for User1 or User2?
 ```
-</p>
-</details>
+</code></details>
 
 ---
 
 ### poll stop
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Stops a running poll.*
 
@@ -53,17 +44,12 @@ Expand for additional information
 ```
 !poll stop
 ```
-</p>
-</details>
+</code></details>
 
 ---
 
 ## reactionspoll
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Starts a poll with reactions in the channel.*
 
@@ -85,17 +71,12 @@ Expand for additional information
 ```
 !rpoll :smile: :joy:
 ```
-</p>
-</details>
+</code></details>
 
 ---
 
 ## Group: vote
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Commands for voting in running polls. If invoked without subcommands, registers a vote in the current poll to the option you entered.*
 
@@ -111,17 +92,12 @@ Expand for additional information
 ```
 !vote 1
 ```
-</p>
-</details>
+</code></details>
 
 ---
 
 ### vote cancel
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Vote for an option in the current running poll.*
 
@@ -133,8 +109,7 @@ Expand for additional information
 ```
 !vote cancel
 ```
-</p>
-</details>
+</code></details>
 
 ---
 

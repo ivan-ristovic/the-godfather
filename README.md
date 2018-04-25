@@ -19,7 +19,7 @@ For example, valid command calls are:
 ```
 
 
-## :page_facing_up: Command list
+## Command list
 
 Command list is available at the [Documentation](Documentation/README.md) directory.
 

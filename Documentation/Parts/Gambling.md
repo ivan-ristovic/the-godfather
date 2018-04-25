@@ -1,11 +1,7 @@
 # Module: Gambling
 
 ## Group: bank
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Bank account manipulation. If invoked alone, prints out your bank balance. Accounts periodically get a bonus.*
 
@@ -21,17 +17,12 @@ Expand for additional information
 ```
 !bank
 ```
-</p>
-</details>
+</code></details>
 
 ---
 
 ### bank balance
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *View account balance for given user. If the user is not given, checks sender's balance.*
 
@@ -47,17 +38,12 @@ Expand for additional information
 ```
 !bank balance @Someone
 ```
-</p>
-</details>
+</code></details>
 
 ---
 
 ### bank grant
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Magically give funds to some user.*
 
@@ -84,17 +70,12 @@ Expand for additional information
 !bank grant @Someone 1000
 !bank grant 1000 @Someone
 ```
-</p>
-</details>
+</code></details>
 
 ---
 
 ### bank register
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Create an account for you in WM bank.*
 
@@ -106,17 +87,12 @@ Expand for additional information
 ```
 !bank register
 ```
-</p>
-</details>
+</code></details>
 
 ---
 
 ### bank top
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Print the richest users.*
 
@@ -128,17 +104,12 @@ Expand for additional information
 ```
 !bank top
 ```
-</p>
-</details>
+</code></details>
 
 ---
 
 ### bank transfer
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Transfer funds from your account to another one.*
 
@@ -163,34 +134,24 @@ Expand for additional information
 !bank transfer @Someone 40
 !bank transfer 40 @Someone
 ```
-</p>
-</details>
+</code></details>
 
 ---
 
 ## Group: cards
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Manipulate a deck of cards.*
 
 **Aliases:**
 `deck`
 
-</p>
-</details>
+</code></details>
 
 ---
 
 ### cards draw
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Draw cards from the top of the deck. If amount of cards is not specified, draws one card.*
 
@@ -206,17 +167,12 @@ Expand for additional information
 ```
 !deck draw 5
 ```
-</p>
-</details>
+</code></details>
 
 ---
 
 ### cards reset
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Opens a brand new card deck.*
 
@@ -228,17 +184,12 @@ Expand for additional information
 ```
 !deck reset
 ```
-</p>
-</details>
+</code></details>
 
 ---
 
 ### cards shuffle
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Shuffles current deck.*
 
@@ -250,17 +201,12 @@ Expand for additional information
 ```
 !deck shuffle
 ```
-</p>
-</details>
+</code></details>
 
 ---
 
 ## Group: casino blackjack
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Play a blackjack game.*
 
@@ -276,17 +222,12 @@ Expand for additional information
 ```
 !casino blackjack
 ```
-</p>
-</details>
+</code></details>
 
 ---
 
 ### casino blackjack join
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Join a pending Blackjack game.*
 
@@ -302,17 +243,12 @@ Expand for additional information
 ```
 !casino blackjack join
 ```
-</p>
-</details>
+</code></details>
 
 ---
 
 ### casino blackjack rules
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Explain the Blackjack rules.*
 
@@ -324,17 +260,12 @@ Expand for additional information
 ```
 !casino blackjack rules
 ```
-</p>
-</details>
+</code></details>
 
 ---
 
 ### casino slot
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Roll a slot machine. You need to specify a bid amount. Default bid amount is 5.*
 
@@ -350,17 +281,12 @@ Expand for additional information
 ```
 !casino slot 20
 ```
-</p>
-</details>
+</code></details>
 
 ---
 
 ### gamble coinflip
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Flip a coin and bet on the outcome.*
 
@@ -385,17 +311,12 @@ Expand for additional information
 !bet coinflip 10 heads
 !bet coinflip tails 20
 ```
-</p>
-</details>
+</code></details>
 
 ---
 
 ### gamble dice
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Roll a dice and bet on the outcome.*
 
@@ -420,8 +341,7 @@ Expand for additional information
 !bet dice 50 six
 !bet dice three 10
 ```
-</p>
-</details>
+</code></details>
 
 ---
 

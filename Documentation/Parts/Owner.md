@@ -1,11 +1,7 @@
 # Module: Owner
 
 ### owner announce
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Send a message to all guilds the bot is in.*
 
@@ -23,17 +19,12 @@ Expand for additional information
 ```
 !owner announce SPAM SPAM
 ```
-</p>
-</details>
+</code></details>
 
 ---
 
 ## Group: owner birthdays
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Birthday notifications management. If invoked without command, either lists or adds birthdays depending if argument is given.*
 
@@ -58,17 +49,12 @@ Expand for additional information
 
 (optional) `[string]` : *Birth date.* (def: `None`)
 
-</p>
-</details>
+</code></details>
 
 ---
 
 ### owner birthdays add
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Add a birthday to the database. If date is not specified, uses the current date as a birthday date. If the channel is not specified, uses the current channel.*
 
@@ -100,17 +86,12 @@ Expand for additional information
 !owner birthday add @Someone #channel_to_send_message_to 15.2.1990
 !owner birthday add @Someone 15.2.1990 #channel_to_send_message_to
 ```
-</p>
-</details>
+</code></details>
 
 ---
 
 ### owner birthdays delete
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Remove status from running queue.*
 
@@ -126,17 +107,12 @@ Expand for additional information
 ```
 !owner birthday delete @Someone
 ```
-</p>
-</details>
+</code></details>
 
 ---
 
 ### owner birthdays list
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *List all registered birthdays.*
 
@@ -148,17 +124,12 @@ Expand for additional information
 ```
 !owner birthday list
 ```
-</p>
-</details>
+</code></details>
 
 ---
 
 ## Group: owner blockedchannels
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Manipulate blocked channels. Bot will not listen for commands in blocked channels or react (either with text or emoji) to messages inside.*
 
@@ -183,17 +154,12 @@ Expand for additional information
 
 `[string...]` : *Reason (max 60 chars).*
 
-</p>
-</details>
+</code></details>
 
 ---
 
 ### owner blockedchannels add
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Add channel to blocked channels list.*
 
@@ -225,17 +191,12 @@ Expand for additional information
 !owner blockedchannels add #channel 123123123123123
 !owner blockedchannels add "This is some reason" #channel 123123123123123
 ```
-</p>
-</details>
+</code></details>
 
 ---
 
 ### owner blockedchannels delete
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Remove channel from blocked channels list..*
 
@@ -253,17 +214,12 @@ Expand for additional information
 !owner blockedchannels remove 123123123123123
 !owner blockedchannels remove @Someone 123123123123123
 ```
-</p>
-</details>
+</code></details>
 
 ---
 
 ### owner blockedchannels list
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *List all blocked channels.*
 
@@ -275,17 +231,12 @@ Expand for additional information
 ```
 !owner blockedchannels list
 ```
-</p>
-</details>
+</code></details>
 
 ---
 
 ## Group: owner blockedusers
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Manipulate blocked users. Bot will not allow blocked users to invoke commands and will not react (either with text or emoji) to their messages.*
 
@@ -310,17 +261,12 @@ Expand for additional information
 
 `[string...]` : *Reason (max 60 chars).*
 
-</p>
-</details>
+</code></details>
 
 ---
 
 ### owner blockedusers add
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Add users to blocked users list.*
 
@@ -352,17 +298,12 @@ Expand for additional information
 !owner blockedusers add @Someone 123123123123123
 !owner blockedusers add "This is some reason" @Someone 123123123123123
 ```
-</p>
-</details>
+</code></details>
 
 ---
 
 ### owner blockedusers delete
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Remove users from blocked users list..*
 
@@ -380,17 +321,12 @@ Expand for additional information
 !owner blockedusers remove 123123123123123
 !owner blockedusers remove @Someone 123123123123123
 ```
-</p>
-</details>
+</code></details>
 
 ---
 
 ### owner blockedusers list
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *List all blocked users.*
 
@@ -402,17 +338,12 @@ Expand for additional information
 ```
 !owner blockedusers list
 ```
-</p>
-</details>
+</code></details>
 
 ---
 
 ### owner botavatar
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Set bot avatar.*
 
@@ -430,17 +361,12 @@ Expand for additional information
 ```
 !owner botavatar http://someimage.png
 ```
-</p>
-</details>
+</code></details>
 
 ---
 
 ### owner botname
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Set bot name.*
 
@@ -458,17 +384,12 @@ Expand for additional information
 ```
 !owner setname TheBotfather
 ```
-</p>
-</details>
+</code></details>
 
 ---
 
 ### owner clearlog
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Clear application logs.*
 
@@ -482,17 +403,12 @@ Expand for additional information
 ```
 !owner clearlog
 ```
-</p>
-</details>
+</code></details>
 
 ---
 
 ### owner dbquery
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Execute SQL query on the bot database.*
 
@@ -510,17 +426,12 @@ Expand for additional information
 ```
 !owner dbquery SELECT * FROM gf.msgcount;
 ```
-</p>
-</details>
+</code></details>
 
 ---
 
 ### owner eval
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Evaluates a snippet of C# code, in context. Surround the code in the code block.*
 
@@ -538,17 +449,12 @@ Expand for additional information
 ```
 !owner eval ```await Context.RespondAsync("Hello!");```
 ```
-</p>
-</details>
+</code></details>
 
 ---
 
 ### owner filelog
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Toggle writing to log file.*
 
@@ -567,17 +473,12 @@ Expand for additional information
 !owner filelog yes
 !owner filelog false
 ```
-</p>
-</details>
+</code></details>
 
 ---
 
 ### owner generatecommandlist
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Generates a markdown command-list. You can also provide a folder for the output.*
 
@@ -596,17 +497,12 @@ Expand for additional information
 !owner generatecommandlist
 !owner generatecommandlist Temp/blabla.md
 ```
-</p>
-</details>
+</code></details>
 
 ---
 
 ### owner leaveguilds
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Leaves the given guilds.*
 
@@ -625,17 +521,12 @@ Expand for additional information
 !owner leave 337570344149975050
 !owner leave 337570344149975050 201315884709576708
 ```
-</p>
-</details>
+</code></details>
 
 ---
 
 ### owner sendmessage
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Sends a message to a user or channel.*
 
@@ -658,17 +549,12 @@ Expand for additional information
 !owner send u 303463460233150464 Hi to user!
 !owner send c 120233460278590414 Hi to channel!
 ```
-</p>
-</details>
+</code></details>
 
 ---
 
 ### owner shutdown
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Triggers the dying in the vineyard scene (power off the bot).*
 
@@ -686,17 +572,12 @@ Expand for additional information
 ```
 !owner shutdown
 ```
-</p>
-</details>
+</code></details>
 
 ---
 
 ## Group: owner statuses
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Bot status manipulation. If invoked without command, either lists or adds status depending if argument is given.*
 
@@ -711,17 +592,12 @@ Expand for additional information
 
 `[string...]` : *Status.*
 
-</p>
-</details>
+</code></details>
 
 ---
 
 ### owner statuses add
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Add a status to running status queue.*
 
@@ -740,17 +616,12 @@ Expand for additional information
 !owner status add Playing CS:GO
 !owner status add Streaming on Twitch
 ```
-</p>
-</details>
+</code></details>
 
 ---
 
 ### owner statuses delete
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Remove status from running queue.*
 
@@ -766,17 +637,12 @@ Expand for additional information
 ```
 !owner status delete 1
 ```
-</p>
-</details>
+</code></details>
 
 ---
 
 ### owner statuses list
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *List all bot statuses.*
 
@@ -788,17 +654,12 @@ Expand for additional information
 ```
 !owner status list
 ```
-</p>
-</details>
+</code></details>
 
 ---
 
 ### owner statuses set
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Set status to given string or status with given index in database. This sets rotation to false.*
 
@@ -821,17 +682,12 @@ Expand for additional information
 !owner status set Playing with fire
 !owner status set 5
 ```
-</p>
-</details>
+</code></details>
 
 ---
 
 ### owner statuses setrotation
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Set automatic rotation of bot statuses.*
 
@@ -848,17 +704,12 @@ Expand for additional information
 !owner status setrotation
 !owner status setrotation false
 ```
-</p>
-</details>
+</code></details>
 
 ---
 
 ### owner sudo
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Executes a command as another user.*
 
@@ -878,17 +729,12 @@ Expand for additional information
 ```
 !owner sudo @Someone !rate
 ```
-</p>
-</details>
+</code></details>
 
 ---
 
 ### owner toggleignore
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Toggle bot's reaction to commands.*
 
@@ -902,8 +748,7 @@ Expand for additional information
 ```
 !owner toggleignore
 ```
-</p>
-</details>
+</code></details>
 
 ---
 

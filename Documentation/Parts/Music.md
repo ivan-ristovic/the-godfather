@@ -1,11 +1,7 @@
 # Module: Music
 
 ## connect
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Connect the bot to a voice channel. If the channel is not given, connects the bot to the same channel you are in.*
 
@@ -27,17 +23,12 @@ Expand for additional information
 !connect
 !connect Music
 ```
-</p>
-</details>
+</code></details>
 
 ---
 
 ## disconnect
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Disconnects the bot from the voice channel.*
 
@@ -54,17 +45,12 @@ Expand for additional information
 ```
 !disconnect
 ```
-</p>
-</details>
+</code></details>
 
 ---
 
 ## Group: play
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Commands for playing music. If invoked without subcommand, plays given URL or searches YouTube for given query and plays the first result.*
 
@@ -84,17 +70,12 @@ Expand for additional information
 !play https://www.youtube.com/watch?v=dQw4w9WgXcQ
 !play what is love?
 ```
-</p>
-</details>
+</code></details>
 
 ---
 
 ### play file
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Plays an audio file from the server filesystem.*
 
@@ -115,17 +96,12 @@ Expand for additional information
 ```
 !play file test.mp3
 ```
-</p>
-</details>
+</code></details>
 
 ---
 
 ## skip
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Skip current voice playback.*
 
@@ -139,17 +115,12 @@ Expand for additional information
 ```
 !skip
 ```
-</p>
-</details>
+</code></details>
 
 ---
 
 ## stop
-<details>
-<summary markdown="span">
-Expand for additional information
-</summary>
-<p>
+<details><summary markdown='span'>Expand for additional information</summary><code>
 
 *Stops current voice playback.*
 
@@ -163,8 +134,7 @@ Expand for additional information
 ```
 !stop
 ```
-</p>
-</details>
+</code></details>
 
 ---
 
