@@ -23,10 +23,10 @@ For example, valid command calls are:
 
 Command list is available at the [Documentation](Documentation/README.md) directory.
 
-:exclamation: **Note:** It is advised to read the explanation below in order to use TheGodfather in his full potential.
+**Note:** It is advised to read the explanation below in order to use TheGodfather in his full potential.
 
 
-## :page_facing_up: Command groups:
+## Command groups:
 
 Commands are divided into command groups for easier navigation and partially due to large amount of commands. 
 
@@ -37,7 +37,7 @@ In order to call the ``kick`` command for example, one should always provide the
 ```
 
 
-## :page_facing_up: Command arguments:
+## Command arguments:
 
 Some commands require additional information, from now on called **command arguments**.
 
@@ -70,7 +70,7 @@ For example, the aforementioned ``kick`` command also accepts a ``string`` corre
 ```
 
 
-## :page_facing_up: Command aliases
+## Command aliases
 
 Aliases are the synonyms for a command.
 Aliases are usually shorter than regular names and are meant for faster invocation of the commands. Some people like it short and some people like it descriptive.
@@ -78,7 +78,7 @@ Aliases are usually shorter than regular names and are meant for faster invocati
 For example, the ``user`` command group has an alias ``u``. This means that if you wish to call a subcommand from that group, for example ``kick``, you can also call it using an alias for the group: ``u kick``.
 
 
-## :page_facing_up: Command overloads:
+## Command overloads:
 
 Each command can be invoked in various ways, each of those ways being called an **overload** in the documentation. 
 
@@ -88,7 +88,7 @@ The ordering of these arguments can sometimes be hard to remember. This is where
 In this example, another way to use the ``bank transfer`` command is to pass the amount first and the user second.
 This way, the ordering of the arguments does not matter and therefore does not need to be remembered.
 
-:exclamation: **Note:** ``string...`` argument always comes last because it captures raw text until the end of the message.
+**Note:** ``string...`` argument always comes last because it captures raw text until the end of the message.
 
-:exclamation: **Note:** It is always preferred to surround arguments of type ``string`` with quotes. 
+**Note:** It is always preferred to surround arguments of type ``string`` with quotes. 
 This eliminates the misinterpretation in case two strings are required as arguments (if quotes are not used, the space will be seen as a separator and the passed text will be interpreted as multiple strings, which is not usually a behaviour that the user expects).
