@@ -292,6 +292,7 @@
     <Compile Include="Modules\Music\Common\SongInfo.cs" />
     <Compile Include="Modules\Music\MusicModule.Play.cs" />
     <Compile Include="Modules\Search\OMDbModule.cs" />
+    <Compile Include="Modules\Search\XkcdModule.cs" />
     <Compile Include="Services\Common\Birthday.cs" />
     <Compile Include="Services\Common\GameStatsType.cs" />
     <Compile Include="Services\Common\OMDbData.cs" />
@@ -343,6 +344,7 @@
     <Compile Include="Modules\Polls\VotingModule.cs" />
     <Compile Include="Modules\Search\WeatherModule.cs" />
     <Compile Include="Modules\SWAT\SwatModule.Servers.cs" />
+    <Compile Include="Services\Common\XkcdComic.cs" />
     <Compile Include="Services\Common\YouTubeResponse.cs" />
     <Compile Include="Services\DatabaseService\DBService.Birthdays.cs" />
     <Compile Include="Services\DatabaseService\DBService.SavedTasks.cs" />
@@ -398,6 +400,7 @@
     <Compile Include="Services\HttpService.cs" />
     <Compile Include="Services\QuizService.cs" />
     <Compile Include="Services\WeatherService.cs" />
+    <Compile Include="Services\XkcdService.cs" />
     <Compile Include="TheGodfather.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\DatabaseService\DBService.Bank.cs" />

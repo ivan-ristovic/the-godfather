@@ -15,7 +15,7 @@ using System.Collections.Generic;
 
 namespace TheGodfather.Services
 {
-    public class WeatherService : HttpService
+    public class WeatherService : TheGodfatherHttpService
     {
         private string _key;
 

@@ -15,7 +15,7 @@ using DSharpPlus;
 
 namespace TheGodfather.Services
 {
-    public class MemeGenService : HttpService
+    public class MemeGenService : TheGodfatherHttpService
     {
         private static readonly ImmutableDictionary<char, string> _map = new Dictionary<char, string>() {
             {'?', "~q"},

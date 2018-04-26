@@ -23,7 +23,7 @@ using YoutubeExplode;
 
 namespace TheGodfather.Services
 {
-    public class YoutubeService : HttpService
+    public class YoutubeService : TheGodfatherHttpService
     {
         private YouTubeService _yt { get; set; }
         private string _key { get; set; }

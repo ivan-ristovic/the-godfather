@@ -15,7 +15,7 @@ using DSharpPlus;
 
 namespace TheGodfather.Services
 {
-    public class JokesService : HttpService
+    public class JokesService : TheGodfatherHttpService
     {
         public static async Task<string> GetRandomJokeAsync()
         {

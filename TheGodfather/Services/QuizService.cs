@@ -13,7 +13,7 @@ using System.Net;
 
 namespace TheGodfather.Services
 {
-    public class QuizService : HttpService
+    public class QuizService : TheGodfatherHttpService
     {
         public static async Task<int?> GetCategoryIdAsync(string category)
         {

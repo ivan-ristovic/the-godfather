@@ -12,7 +12,7 @@ using DSharpPlus;
 
 namespace TheGodfather.Services
 {
-    public class UrbanDictService : HttpService
+    public class UrbanDictService : TheGodfatherHttpService
     {
         public static async Task<UrbanDictData> GetDefinitionForTermAsync(string query)
         {

@@ -11,7 +11,7 @@ using DSharpPlus;
 
 namespace TheGodfather.Services
 {
-    public class PetImagesService : HttpService
+    public class PetImagesService : TheGodfatherHttpService
     {
         public static async Task<string> GetRandomCatImageAsync()
         {

@@ -14,7 +14,7 @@ using DSharpPlus.Interactivity;
 
 namespace TheGodfather.Services
 {
-    public class OMDbService : HttpService, IGodfatherService
+    public class OMDbService : TheGodfatherHttpService, IGodfatherService
     {
         private string _requestUrl;
 
