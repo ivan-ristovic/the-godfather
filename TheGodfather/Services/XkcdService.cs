@@ -1,13 +1,11 @@
 ﻿#region USING_DIRECTIVES
 using System;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
 using TheGodfather.Services.Common;
 
 using DSharpPlus;
-using DSharpPlus.Entities;
 #endregion;
 
 namespace TheGodfather.Services
@@ -15,7 +13,7 @@ namespace TheGodfather.Services
     public class XkcdService : TheGodfatherHttpService
     {
         public static string XkcdUrl { get; } = "https://xkcd.com";
-        public static int ComicNum { get; } = 1700;
+        public static int ComicNum { get; } = 1900;
 
 
         public static async Task<XkcdComic> GetComicAsync(int? id = null)

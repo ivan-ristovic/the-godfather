@@ -36,8 +36,7 @@ namespace TheGodfather.Services.Common
                 Url = $"{XkcdService.XkcdUrl}/{Num}"
             };
 
-            if (DateTime.TryParse(Month + Year, out var date))
-                emb.WithTimestamp(date);
+            emb.WithFooter($"Publish date: {Month}/{Year}");
 
             return emb.Build();
         }
