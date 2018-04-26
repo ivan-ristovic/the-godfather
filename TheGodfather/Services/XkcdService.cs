@@ -14,21 +14,27 @@ namespace TheGodfather.Services
 {
     public class XkcdService : TheGodfatherHttpService
     {
-        public static string XkcdUrl = "https://xkcd.com";
+        public static string XkcdUrl { get; } = "https://xkcd.com";
+        public static int ComicNum { get; } = 1700;
 
 
-        public static async Task<XkcdComic> GetLatestComicAsync()
+        public static async Task<XkcdComic> GetComicAsync(int? id = null)
         {
+            if (id <= 0 || id > ComicNum)
+                return null;
+
             try {
-                var res = await _http.GetStringAsync($"{XkcdUrl}/info.0.json")
-                    .ConfigureAwait(false);
-                var comic = JsonConvert.DeserializeObject<XkcdComic>(res);
+                string response;
+                if (id.HasValue)
+                    response = await _http.GetStringAsync($"{XkcdUrl}/{id}/info.0.json").ConfigureAwait(false);
+                else
+                    response = await _http.GetStringAsync($"{XkcdUrl}/info.0.json").ConfigureAwait(false);
+                var comic = JsonConvert.DeserializeObject<XkcdComic>(response);
                 return comic;
             } catch (Exception e) {
                 TheGodfather.LogHandle.LogException(LogLevel.Debug, e);
                 return null;
             }
         }
-
     }
 }
