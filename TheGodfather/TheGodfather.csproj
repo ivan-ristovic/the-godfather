@@ -269,6 +269,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\Attributes\ModuleAttribute.cs" />
+    <Compile Include="Common\Attributes\RequirePriviledgedUserAttribute.cs" />
     <Compile Include="Common\Attributes\UsageExampleAttribute.cs" />
     <Compile Include="Common\GFRandom.cs" />
     <Compile Include="Common\SavedTaskExecuter.cs" />
@@ -347,6 +348,7 @@
     <Compile Include="Services\Common\XkcdComic.cs" />
     <Compile Include="Services\Common\YouTubeResponse.cs" />
     <Compile Include="Services\DatabaseService\DBService.Birthdays.cs" />
+    <Compile Include="Services\DatabaseService\DBService.PriviledgedUsers.cs" />
     <Compile Include="Services\DatabaseService\DBService.SavedTasks.cs" />
     <Compile Include="Services\DatabaseService\DBService.Blocked.cs" />
     <Compile Include="Services\DatabaseService\DBService.Shop.cs" />

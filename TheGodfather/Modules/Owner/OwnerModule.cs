@@ -29,7 +29,7 @@ namespace TheGodfather.Modules.Owner
     [Group("owner"), Module(ModuleType.Owner)]
     [Description("Owner-only bot administration commands.")]
     [Aliases("admin", "o")]
-    [RequireOwner, Hidden]
+    [RequirePriviledgedUser, Hidden]
     [Cooldown(3, 5, CooldownBucketType.Global)]
     public partial class OwnerModule : TheGodfatherBaseModule
     {

@@ -14,6 +14,7 @@ namespace TheGodfather.Modules.Search
 {
     [Group("xkcd"), Module(ModuleType.Searches)]
     [Description("Search xkcd. If invoked without subcommands returns random comic or, if an ID is provided, a comic with given ID.")]
+    [Aliases("x")]
     [UsageExample("!xkcd")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     [ListeningCheck]
