@@ -25,6 +25,7 @@ namespace TheGodfather.Modules.Owner
         [Group("blockedusers"), Module(ModuleType.Owner)]
         [Description("Manipulate blocked users. Bot will not allow blocked users to invoke commands and will not react (either with text or emoji) to their messages.")]
         [Aliases("bu", "blockedu", "blockuser", "busers", "buser", "busr")]
+        [RequirePriviledgedUser]
         [ListeningCheck]
         public class BlockedUsersModule : TheGodfatherBaseModule
         {

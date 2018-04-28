@@ -25,6 +25,7 @@ namespace TheGodfather.Modules.Owner
         [Group("blockedchannels"), Module(ModuleType.Owner)]
         [Description("Manipulate blocked channels. Bot will not listen for commands in blocked channels or react (either with text or emoji) to messages inside.")]
         [Aliases("bc", "blockedc", "blockchannel", "bchannels", "bchannel", "bchn")]
+        [RequirePriviledgedUser]
         [ListeningCheck]
         public class BlockedChannelsModule : TheGodfatherBaseModule
         {

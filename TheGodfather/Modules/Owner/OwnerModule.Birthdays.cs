@@ -22,6 +22,7 @@ namespace TheGodfather.Modules.Owner
         [Group("birthdays"), Module(ModuleType.Owner)]
         [Description("Birthday notifications management. If invoked without command, either lists or adds birthdays depending if argument is given.")]
         [Aliases("birthday", "bday", "bd", "bdays")]
+        [RequirePriviledgedUser]
         [ListeningCheck]
         public class BirthdayModule : TheGodfatherBaseModule
         {

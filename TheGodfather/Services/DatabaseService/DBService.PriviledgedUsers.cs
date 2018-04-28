@@ -19,7 +19,7 @@ namespace TheGodfather.Services
                 using (var cmd = con.CreateCommand()) {
                     await con.OpenAsync().ConfigureAwait(false);
 
-                    cmd.CommandText = "INSERT INTO gf.priviledged VALUES (@uid, NULL);";
+                    cmd.CommandText = "INSERT INTO gf.priviledged (uid) VALUES (@uid);";
                     cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, uid);
 
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
@@ -31,7 +31,7 @@ namespace TheGodfather.Services
 
         public async Task<IReadOnlyList<ulong>> GetAllPriviledgedUsersAsync()
         {
-            var blocked = new List<ulong>();
+            var priviledged = new List<ulong>();
 
             await _sem.WaitAsync();
             try {
@@ -43,14 +43,14 @@ namespace TheGodfather.Services
 
                     using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
                         while (await reader.ReadAsync().ConfigureAwait(false))
-                            blocked.Add((ulong)(long)reader["uid"]);
+                            priviledged.Add((ulong)(long)reader["uid"]);
                     }
                 }
             } finally {
                 _sem.Release();
             }
 
-            return blocked.AsReadOnly();
+            return priviledged.AsReadOnly();
         }
 
         public async Task<bool> IsPriviledgedUserAsync(ulong uid)
