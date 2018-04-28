@@ -461,7 +461,7 @@ namespace TheGodfather
             else if (ex is InvalidCommandUsageException)
                 emb.Description = $"{emoji} Invalid usage! {ex.Message}";
             else if (ex is ArgumentException)
-                emb.Description = $"{emoji} Argument specified is invalid (please see {Formatter.Bold("!help <command>")} and make sure the arguments are valid).";
+                emb.Description = $"{emoji} Invalid command call (please see {Formatter.Bold("!help <command>")} and make sure the argument types are correct).";
             else if (ex is CommandFailedException)
                 emb.Description = $"{emoji} {ex.Message} {(ex.InnerException != null ? "Details: " + ex.InnerException.Message : "")}";
             else if (ex is DatabaseServiceException)
@@ -486,10 +486,10 @@ namespace TheGodfather
                     emb.Description = $"{emoji} You do not have the required permissions ({uperms.Permissions.ToPermissionString()}) to run this command!";
                 else if (attr is RequireBotPermissionsAttribute bperms)
                     emb.Description = $"{emoji} I do not have the required permissions ({bperms.Permissions.ToPermissionString()}) to run this command!";
+                else if (attr is RequirePriviledgedUserAttribute)
+                    emb.Description = $"{emoji} That command is reserved for the bot owner and priviledged users!";
                 else if (attr is RequireOwnerAttribute)
                     emb.Description = $"{emoji} That command is reserved for the bot owner only!";
-                else
-                    emb.Description = $"{emoji} Command execution checks failed!";
             } else if (ex is UnauthorizedException)
                 emb.Description = $"{emoji} I am not authorized to do that.";
             else

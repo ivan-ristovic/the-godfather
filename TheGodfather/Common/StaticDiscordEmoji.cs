@@ -43,7 +43,7 @@ namespace TheGodfather.Common
             DiscordEmoji.FromUnicode("\U0001f42e"),     // :cow:
             DiscordEmoji.FromUnicode("\U0001f428"),     // :koala:
             DiscordEmoji.FromUnicode("\U0001f42f")      // :tiger:
-        };
+        }.AsReadOnly();
 
         public static IReadOnlyList<DiscordEmoji> CardValues = new List<DiscordEmoji>() {
             DiscordEmoji.FromUnicode("\U0001f1e6"),     // :regional_indicator_a:
@@ -59,45 +59,55 @@ namespace TheGodfather.Common
             DiscordEmoji.FromUnicode("\U0001f1ef"),     // :regional_indicator_j:
             DiscordEmoji.FromUnicode("\U0001f1f6"),     // :regional_indicator_q:
             DiscordEmoji.FromUnicode("\U0001f1f0"),     // :regional_indicator_k:
-        };
+        }.AsReadOnly();
 
         public static IReadOnlyList<DiscordEmoji> CardSuits = new List<DiscordEmoji>() {
             DiscordEmoji.FromUnicode("\u2660"),         // :spades:
             DiscordEmoji.FromUnicode("\u2663"),         // :clubs:
             DiscordEmoji.FromUnicode("\u2665"),         // :hearts:
             DiscordEmoji.FromUnicode("\u2666"),         // :diamonds:
-        };
+        }.AsReadOnly();
 
-
+        // Misc
         public static DiscordEmoji CheckMarkSuccess => DiscordEmoji.FromUnicode("\u2705");
-        public static DiscordEmoji DuelSwords => DiscordEmoji.FromUnicode("\u2694");
-        public static DiscordEmoji BoardSquare => DiscordEmoji.FromUnicode("\u25fb");
-        public static DiscordEmoji BoardPieceX => DiscordEmoji.FromUnicode("\u274c");
-        public static DiscordEmoji BoardPieceO => DiscordEmoji.FromUnicode("\u2b55");
-        public static DiscordEmoji BoardPieceBlueCircle => DiscordEmoji.FromUnicode("\U0001f535");
-        public static DiscordEmoji BoardPieceRedCircle => DiscordEmoji.FromUnicode("\U0001f534");
-        public static DiscordEmoji BlackSquare => DiscordEmoji.FromUnicode("\u2b1b");
-        public static DiscordEmoji WhiteSquare => DiscordEmoji.FromUnicode("\u2b1c");
-        public static DiscordEmoji Syringe => DiscordEmoji.FromUnicode("\U0001f489");
-        public static DiscordEmoji Trophy => DiscordEmoji.FromUnicode("\U0001f3c6");
-        public static DiscordEmoji Joystick => DiscordEmoji.FromUnicode("\U0001f579");
-        public static DiscordEmoji Wave => DiscordEmoji.FromUnicode("\U0001f44b");
-        public static DiscordEmoji Headphones => DiscordEmoji.FromUnicode("\U0001f3a7");
         public static DiscordEmoji Question => DiscordEmoji.FromUnicode("\u2753");
-        public static DiscordEmoji Gun => DiscordEmoji.FromUnicode("\U0001f52b");
-        public static DiscordEmoji Relieved => DiscordEmoji.FromUnicode("\U0001f616");
-        public static DiscordEmoji Dead => DiscordEmoji.FromUnicode("\U0001f635");
-        public static DiscordEmoji Blast => DiscordEmoji.FromUnicode("\U0001f4a2");
-
-        public static DiscordEmoji Globe => DiscordEmoji.FromUnicode("\U0001f30d");
-        public static DiscordEmoji Ruler => DiscordEmoji.FromUnicode("\U0001f4cf");
-        public static DiscordEmoji Cloud => DiscordEmoji.FromUnicode("\u2601");
-        public static DiscordEmoji Drops => DiscordEmoji.FromUnicode("\U0001f4a6");
-        public static DiscordEmoji Thermometer => DiscordEmoji.FromUnicode("\U0001f321");
-        public static DiscordEmoji Wind => DiscordEmoji.FromUnicode("\U0001f4a8");
-
-
+        
         public static DiscordEmoji GetRandomDuelWeapon()
             => DuelWeapons[GFRandom.Generator.Next(DuelWeapons.Count)];
+
+        // Games emoji
+        public static DiscordEmoji Blast => DiscordEmoji.FromUnicode("\U0001f4a2");
+        public static DiscordEmoji BoardPieceBlueCircle => DiscordEmoji.FromUnicode("\U0001f535");
+        public static DiscordEmoji BoardPieceRedCircle => DiscordEmoji.FromUnicode("\U0001f534");
+        public static DiscordEmoji BoardPieceO => DiscordEmoji.FromUnicode("\u2b55");
+        public static DiscordEmoji BoardPieceX => DiscordEmoji.FromUnicode("\u274c");
+        public static DiscordEmoji BoardSquare => DiscordEmoji.FromUnicode("\u25fb");
+        public static DiscordEmoji BlackSquare => DiscordEmoji.FromUnicode("\u2b1b");
+        public static DiscordEmoji Dead => DiscordEmoji.FromUnicode("\U0001f635");
+        public static DiscordEmoji DuelSwords => DiscordEmoji.FromUnicode("\u2694");
+        public static DiscordEmoji Gun => DiscordEmoji.FromUnicode("\U0001f52b");
+        public static DiscordEmoji Headphones => DiscordEmoji.FromUnicode("\U0001f3a7");
+        public static DiscordEmoji Joystick => DiscordEmoji.FromUnicode("\U0001f579");
+        public static DiscordEmoji Syringe => DiscordEmoji.FromUnicode("\U0001f489");
+        public static DiscordEmoji Trophy => DiscordEmoji.FromUnicode("\U0001f3c6");
+        public static DiscordEmoji Relieved => DiscordEmoji.FromUnicode("\U0001f616");
+        public static DiscordEmoji Wave => DiscordEmoji.FromUnicode("\U0001f44b");
+        public static DiscordEmoji WhiteSquare => DiscordEmoji.FromUnicode("\u2b1c");
+
+        // Slot machine
+        public static DiscordEmoji Peach => DiscordEmoji.FromUnicode("\U0001f351");
+        public static DiscordEmoji MoneyBag => DiscordEmoji.FromUnicode("\U0001f4b0");
+        public static DiscordEmoji Gift => DiscordEmoji.FromUnicode("\U0001f381");
+        public static DiscordEmoji LargeBlueDiamond => DiscordEmoji.FromUnicode("\U0001f537");
+        public static DiscordEmoji Seven => DiscordEmoji.FromUnicode("7\u20e3");
+        public static DiscordEmoji Cherries => DiscordEmoji.FromUnicode("\U0001f352");
+
+        // Weather emoji
+        public static DiscordEmoji Cloud => DiscordEmoji.FromUnicode("\u2601");
+        public static DiscordEmoji Drops => DiscordEmoji.FromUnicode("\U0001f4a6");
+        public static DiscordEmoji Globe => DiscordEmoji.FromUnicode("\U0001f30d");
+        public static DiscordEmoji Ruler => DiscordEmoji.FromUnicode("\U0001f4cf");
+        public static DiscordEmoji Thermometer => DiscordEmoji.FromUnicode("\U0001f321");
+        public static DiscordEmoji Wind => DiscordEmoji.FromUnicode("\U0001f4a8");
     }
 }

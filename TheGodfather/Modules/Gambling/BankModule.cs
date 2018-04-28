@@ -62,7 +62,7 @@ namespace TheGodfather.Modules.Gambling
         [Aliases("give")]
         [UsageExample("!bank grant @Someone 1000")]
         [UsageExample("!bank grant 1000 @Someone")]
-        [RequireOwner]
+        [RequirePriviledgedUser]
         public async Task GrantAsync(CommandContext ctx,
                                     [Description("User.")] DiscordUser user,
                                     [Description("Amount.")] int amount)
