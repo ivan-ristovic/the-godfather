@@ -11,7 +11,6 @@ namespace TheGodfather.Services
 {
     public partial class DBService
     {
-        /*
         public async Task AddPriviledgedUserAsync(ulong uid)
         {
             await _sem.WaitAsync();
@@ -30,9 +29,9 @@ namespace TheGodfather.Services
             }
         }
 
-        public async Task<IReadOnlyList<(ulong, string)>> GetAllPriviledgedUsersAsync()
+        public async Task<IReadOnlyList<ulong>> GetAllPriviledgedUsersAsync()
         {
-            var blocked = new List<(ulong, string)>();
+            var blocked = new List<ulong>();
 
             await _sem.WaitAsync();
             try {
@@ -40,11 +39,11 @@ namespace TheGodfather.Services
                 using (var cmd = con.CreateCommand()) {
                     await con.OpenAsync().ConfigureAwait(false);
 
-                    cmd.CommandText = "SELECT * FROM gf.priviledged;";
+                    cmd.CommandText = "SELECT uid FROM gf.priviledged;";
 
                     using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
                         while (await reader.ReadAsync().ConfigureAwait(false))
-                            blocked.Add(((ulong)(long)reader["uid"], reader["reason"] is DBNull ? null : (string)reader["reason"]));
+                            blocked.Add((ulong)(long)reader["uid"]);
                     }
                 }
             } finally {
@@ -53,16 +52,29 @@ namespace TheGodfather.Services
 
             return blocked.AsReadOnly();
         }
-        */
 
         public async Task<bool> IsPriviledgedUserAsync(ulong uid)
         {
-            // TODO
+            await _sem.WaitAsync();
+            try {
+                using (var con = new NpgsqlConnection(_connectionString))
+                using (var cmd = con.CreateCommand()) {
+                    await con.OpenAsync().ConfigureAwait(false);
 
-            return true;
+                    cmd.CommandText = "SELECT uid FROM gf.priviledged WHERE uid = @uid LIMIT 1;";
+                    cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, uid);
+
+                    var res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
+                    if (res != null && !(res is DBNull))
+                        return true;
+                }
+            } finally {
+                _sem.Release();
+            }
+
+            return false;
         }
 
-        /*
         public async Task RemovePrivilegedUserAsync(ulong uid)
         {
             await _sem.WaitAsync();
@@ -80,6 +92,5 @@ namespace TheGodfather.Services
                 _sem.Release();
             }
         }
-        */
     }
 }
