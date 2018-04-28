@@ -2,14 +2,15 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 9.6.6
--- Dumped by pg_dump version 9.6.6
+-- Dumped from database version 10.3
+-- Dumped by pg_dump version 10.3
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
 SET idle_in_transaction_session_timeout = 0;
 SET client_encoding = 'UTF8';
 SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
 SET check_function_bodies = false;
 SET client_min_messages = warning;
 SET row_security = off;
@@ -21,22 +22,6 @@ SET row_security = off;
 CREATE SCHEMA gf;
 
 
---
--- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: -
---
-
-CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
-
-
---
--- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: -
---
-
-COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
-
-
-SET search_path = gf, pg_catalog;
-
 SET default_tablespace = '';
 
 SET default_with_oids = false;
@@ -45,7 +30,7 @@ SET default_with_oids = false;
 -- Name: accounts; Type: TABLE; Schema: gf; Owner: -
 --
 
-CREATE TABLE accounts (
+CREATE TABLE gf.accounts (
     uid bigint NOT NULL,
     balance integer DEFAULT 0 NOT NULL
 );
@@ -55,7 +40,7 @@ CREATE TABLE accounts (
 -- Name: assignable_roles; Type: TABLE; Schema: gf; Owner: -
 --
 
-CREATE TABLE assignable_roles (
+CREATE TABLE gf.assignable_roles (
     gid bigint NOT NULL,
     rid bigint NOT NULL
 );
@@ -65,7 +50,7 @@ CREATE TABLE assignable_roles (
 -- Name: automatic_roles; Type: TABLE; Schema: gf; Owner: -
 --
 
-CREATE TABLE automatic_roles (
+CREATE TABLE gf.automatic_roles (
     gid bigint NOT NULL,
     rid bigint NOT NULL
 );
@@ -75,7 +60,7 @@ CREATE TABLE automatic_roles (
 -- Name: birthdays; Type: TABLE; Schema: gf; Owner: -
 --
 
-CREATE TABLE birthdays (
+CREATE TABLE gf.birthdays (
     uid bigint NOT NULL,
     cid bigint NOT NULL,
     bday date NOT NULL,
@@ -87,7 +72,7 @@ CREATE TABLE birthdays (
 -- Name: blocked_channels; Type: TABLE; Schema: gf; Owner: -
 --
 
-CREATE TABLE blocked_channels (
+CREATE TABLE gf.blocked_channels (
     cid bigint NOT NULL,
     reason character varying(64)
 );
@@ -97,7 +82,7 @@ CREATE TABLE blocked_channels (
 -- Name: blocked_users; Type: TABLE; Schema: gf; Owner: -
 --
 
-CREATE TABLE blocked_users (
+CREATE TABLE gf.blocked_users (
     uid bigint NOT NULL,
     reason character varying(64)
 );
@@ -107,7 +92,7 @@ CREATE TABLE blocked_users (
 -- Name: emoji_reactions; Type: TABLE; Schema: gf; Owner: -
 --
 
-CREATE TABLE emoji_reactions (
+CREATE TABLE gf.emoji_reactions (
     gid bigint NOT NULL,
     trigger character varying(128) NOT NULL,
     reaction character varying(64),
@@ -119,7 +104,7 @@ CREATE TABLE emoji_reactions (
 -- Name: emoji_reactions_id_seq; Type: SEQUENCE; Schema: gf; Owner: -
 --
 
-CREATE SEQUENCE emoji_reactions_id_seq
+CREATE SEQUENCE gf.emoji_reactions_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -131,14 +116,14 @@ CREATE SEQUENCE emoji_reactions_id_seq
 -- Name: emoji_reactions_id_seq; Type: SEQUENCE OWNED BY; Schema: gf; Owner: -
 --
 
-ALTER SEQUENCE emoji_reactions_id_seq OWNED BY emoji_reactions.id;
+ALTER SEQUENCE gf.emoji_reactions_id_seq OWNED BY gf.emoji_reactions.id;
 
 
 --
 -- Name: feeds; Type: TABLE; Schema: gf; Owner: -
 --
 
-CREATE TABLE feeds (
+CREATE TABLE gf.feeds (
     id integer NOT NULL,
     url text NOT NULL,
     savedurl text DEFAULT ''::text NOT NULL
@@ -149,7 +134,7 @@ CREATE TABLE feeds (
 -- Name: feeds_id_seq; Type: SEQUENCE; Schema: gf; Owner: -
 --
 
-CREATE SEQUENCE feeds_id_seq
+CREATE SEQUENCE gf.feeds_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -161,14 +146,14 @@ CREATE SEQUENCE feeds_id_seq
 -- Name: feeds_id_seq; Type: SEQUENCE OWNED BY; Schema: gf; Owner: -
 --
 
-ALTER SEQUENCE feeds_id_seq OWNED BY feeds.id;
+ALTER SEQUENCE gf.feeds_id_seq OWNED BY gf.feeds.id;
 
 
 --
 -- Name: filters; Type: TABLE; Schema: gf; Owner: -
 --
 
-CREATE TABLE filters (
+CREATE TABLE gf.filters (
     gid bigint NOT NULL,
     filter character varying(64) NOT NULL
 );
@@ -178,7 +163,7 @@ CREATE TABLE filters (
 -- Name: guild_cfg; Type: TABLE; Schema: gf; Owner: -
 --
 
-CREATE TABLE guild_cfg (
+CREATE TABLE gf.guild_cfg (
     gid bigint NOT NULL,
     welcome_cid bigint,
     leave_cid bigint,
@@ -191,7 +176,7 @@ CREATE TABLE guild_cfg (
 -- Name: insults; Type: TABLE; Schema: gf; Owner: -
 --
 
-CREATE TABLE insults (
+CREATE TABLE gf.insults (
     id integer NOT NULL,
     insult character varying(128)
 );
@@ -201,7 +186,7 @@ CREATE TABLE insults (
 -- Name: insults_id_seq; Type: SEQUENCE; Schema: gf; Owner: -
 --
 
-CREATE SEQUENCE insults_id_seq
+CREATE SEQUENCE gf.insults_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -213,14 +198,14 @@ CREATE SEQUENCE insults_id_seq
 -- Name: insults_id_seq; Type: SEQUENCE OWNED BY; Schema: gf; Owner: -
 --
 
-ALTER SEQUENCE insults_id_seq OWNED BY insults.id;
+ALTER SEQUENCE gf.insults_id_seq OWNED BY gf.insults.id;
 
 
 --
 -- Name: items; Type: TABLE; Schema: gf; Owner: -
 --
 
-CREATE TABLE items (
+CREATE TABLE gf.items (
     id integer NOT NULL,
     gid bigint NOT NULL,
     name character varying(64) NOT NULL,
@@ -232,7 +217,7 @@ CREATE TABLE items (
 -- Name: items_id_seq; Type: SEQUENCE; Schema: gf; Owner: -
 --
 
-CREATE SEQUENCE items_id_seq
+CREATE SEQUENCE gf.items_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -244,14 +229,14 @@ CREATE SEQUENCE items_id_seq
 -- Name: items_id_seq; Type: SEQUENCE OWNED BY; Schema: gf; Owner: -
 --
 
-ALTER SEQUENCE items_id_seq OWNED BY items.id;
+ALTER SEQUENCE gf.items_id_seq OWNED BY gf.items.id;
 
 
 --
 -- Name: memes; Type: TABLE; Schema: gf; Owner: -
 --
 
-CREATE TABLE memes (
+CREATE TABLE gf.memes (
     gid bigint NOT NULL,
     name character varying(32) NOT NULL,
     url character varying(128) NOT NULL
@@ -262,7 +247,7 @@ CREATE TABLE memes (
 -- Name: msgcount; Type: TABLE; Schema: gf; Owner: -
 --
 
-CREATE TABLE msgcount (
+CREATE TABLE gf.msgcount (
     uid bigint NOT NULL,
     count bigint DEFAULT 1 NOT NULL
 );
@@ -272,9 +257,18 @@ CREATE TABLE msgcount (
 -- Name: prefixes; Type: TABLE; Schema: gf; Owner: -
 --
 
-CREATE TABLE prefixes (
+CREATE TABLE gf.prefixes (
     gid bigint NOT NULL,
     prefix character varying(16)
+);
+
+
+--
+-- Name: priviledged; Type: TABLE; Schema: gf; Owner: -
+--
+
+CREATE TABLE gf.priviledged (
+    uid bigint NOT NULL
 );
 
 
@@ -282,7 +276,7 @@ CREATE TABLE prefixes (
 -- Name: purchases; Type: TABLE; Schema: gf; Owner: -
 --
 
-CREATE TABLE purchases (
+CREATE TABLE gf.purchases (
     id integer NOT NULL,
     uid bigint NOT NULL
 );
@@ -292,7 +286,7 @@ CREATE TABLE purchases (
 -- Name: purchases_id_seq; Type: SEQUENCE; Schema: gf; Owner: -
 --
 
-CREATE SEQUENCE purchases_id_seq
+CREATE SEQUENCE gf.purchases_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -304,14 +298,14 @@ CREATE SEQUENCE purchases_id_seq
 -- Name: purchases_id_seq; Type: SEQUENCE OWNED BY; Schema: gf; Owner: -
 --
 
-ALTER SEQUENCE purchases_id_seq OWNED BY purchases.id;
+ALTER SEQUENCE gf.purchases_id_seq OWNED BY gf.purchases.id;
 
 
 --
 -- Name: saved_tasks; Type: TABLE; Schema: gf; Owner: -
 --
 
-CREATE TABLE saved_tasks (
+CREATE TABLE gf.saved_tasks (
     id integer NOT NULL,
     type smallint NOT NULL,
     uid bigint NOT NULL,
@@ -326,7 +320,7 @@ CREATE TABLE saved_tasks (
 -- Name: saved_tasks_id_seq; Type: SEQUENCE; Schema: gf; Owner: -
 --
 
-CREATE SEQUENCE saved_tasks_id_seq
+CREATE SEQUENCE gf.saved_tasks_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -338,14 +332,14 @@ CREATE SEQUENCE saved_tasks_id_seq
 -- Name: saved_tasks_id_seq; Type: SEQUENCE OWNED BY; Schema: gf; Owner: -
 --
 
-ALTER SEQUENCE saved_tasks_id_seq OWNED BY saved_tasks.id;
+ALTER SEQUENCE gf.saved_tasks_id_seq OWNED BY gf.saved_tasks.id;
 
 
 --
 -- Name: stats; Type: TABLE; Schema: gf; Owner: -
 --
 
-CREATE TABLE stats (
+CREATE TABLE gf.stats (
     uid bigint NOT NULL,
     duels_won integer DEFAULT 0 NOT NULL,
     duels_lost integer DEFAULT 0 NOT NULL,
@@ -368,7 +362,7 @@ CREATE TABLE stats (
 -- Name: statuses; Type: TABLE; Schema: gf; Owner: -
 --
 
-CREATE TABLE statuses (
+CREATE TABLE gf.statuses (
     status character varying(64),
     type smallint DEFAULT 0 NOT NULL,
     id integer NOT NULL
@@ -379,7 +373,7 @@ CREATE TABLE statuses (
 -- Name: statuses_id_seq; Type: SEQUENCE; Schema: gf; Owner: -
 --
 
-CREATE SEQUENCE statuses_id_seq
+CREATE SEQUENCE gf.statuses_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -391,14 +385,14 @@ CREATE SEQUENCE statuses_id_seq
 -- Name: statuses_id_seq; Type: SEQUENCE OWNED BY; Schema: gf; Owner: -
 --
 
-ALTER SEQUENCE statuses_id_seq OWNED BY statuses.id;
+ALTER SEQUENCE gf.statuses_id_seq OWNED BY gf.statuses.id;
 
 
 --
 -- Name: subscriptions; Type: TABLE; Schema: gf; Owner: -
 --
 
-CREATE TABLE subscriptions (
+CREATE TABLE gf.subscriptions (
     id integer NOT NULL,
     cid bigint NOT NULL,
     qname character varying(64) DEFAULT ''::character varying NOT NULL
@@ -409,7 +403,7 @@ CREATE TABLE subscriptions (
 -- Name: subscriptions_id_seq; Type: SEQUENCE; Schema: gf; Owner: -
 --
 
-CREATE SEQUENCE subscriptions_id_seq
+CREATE SEQUENCE gf.subscriptions_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -421,14 +415,14 @@ CREATE SEQUENCE subscriptions_id_seq
 -- Name: subscriptions_id_seq; Type: SEQUENCE OWNED BY; Schema: gf; Owner: -
 --
 
-ALTER SEQUENCE subscriptions_id_seq OWNED BY subscriptions.id;
+ALTER SEQUENCE gf.subscriptions_id_seq OWNED BY gf.subscriptions.id;
 
 
 --
 -- Name: swat_servers; Type: TABLE; Schema: gf; Owner: -
 --
 
-CREATE TABLE swat_servers (
+CREATE TABLE gf.swat_servers (
     ip character varying(32) NOT NULL,
     joinport integer NOT NULL,
     queryport integer NOT NULL,
@@ -440,7 +434,7 @@ CREATE TABLE swat_servers (
 -- Name: text_reactions; Type: TABLE; Schema: gf; Owner: -
 --
 
-CREATE TABLE text_reactions (
+CREATE TABLE gf.text_reactions (
     gid bigint NOT NULL,
     trigger character varying(128) NOT NULL,
     response character varying(128) NOT NULL,
@@ -452,7 +446,7 @@ CREATE TABLE text_reactions (
 -- Name: text_reactions_id_seq; Type: SEQUENCE; Schema: gf; Owner: -
 --
 
-CREATE SEQUENCE text_reactions_id_seq
+CREATE SEQUENCE gf.text_reactions_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -464,77 +458,77 @@ CREATE SEQUENCE text_reactions_id_seq
 -- Name: text_reactions_id_seq; Type: SEQUENCE OWNED BY; Schema: gf; Owner: -
 --
 
-ALTER SEQUENCE text_reactions_id_seq OWNED BY text_reactions.id;
+ALTER SEQUENCE gf.text_reactions_id_seq OWNED BY gf.text_reactions.id;
 
 
 --
 -- Name: emoji_reactions id; Type: DEFAULT; Schema: gf; Owner: -
 --
 
-ALTER TABLE ONLY emoji_reactions ALTER COLUMN id SET DEFAULT nextval('emoji_reactions_id_seq'::regclass);
+ALTER TABLE ONLY gf.emoji_reactions ALTER COLUMN id SET DEFAULT nextval('gf.emoji_reactions_id_seq'::regclass);
 
 
 --
 -- Name: feeds id; Type: DEFAULT; Schema: gf; Owner: -
 --
 
-ALTER TABLE ONLY feeds ALTER COLUMN id SET DEFAULT nextval('feeds_id_seq'::regclass);
+ALTER TABLE ONLY gf.feeds ALTER COLUMN id SET DEFAULT nextval('gf.feeds_id_seq'::regclass);
 
 
 --
 -- Name: insults id; Type: DEFAULT; Schema: gf; Owner: -
 --
 
-ALTER TABLE ONLY insults ALTER COLUMN id SET DEFAULT nextval('insults_id_seq'::regclass);
+ALTER TABLE ONLY gf.insults ALTER COLUMN id SET DEFAULT nextval('gf.insults_id_seq'::regclass);
 
 
 --
 -- Name: items id; Type: DEFAULT; Schema: gf; Owner: -
 --
 
-ALTER TABLE ONLY items ALTER COLUMN id SET DEFAULT nextval('items_id_seq'::regclass);
+ALTER TABLE ONLY gf.items ALTER COLUMN id SET DEFAULT nextval('gf.items_id_seq'::regclass);
 
 
 --
 -- Name: purchases id; Type: DEFAULT; Schema: gf; Owner: -
 --
 
-ALTER TABLE ONLY purchases ALTER COLUMN id SET DEFAULT nextval('purchases_id_seq'::regclass);
+ALTER TABLE ONLY gf.purchases ALTER COLUMN id SET DEFAULT nextval('gf.purchases_id_seq'::regclass);
 
 
 --
 -- Name: saved_tasks id; Type: DEFAULT; Schema: gf; Owner: -
 --
 
-ALTER TABLE ONLY saved_tasks ALTER COLUMN id SET DEFAULT nextval('saved_tasks_id_seq'::regclass);
+ALTER TABLE ONLY gf.saved_tasks ALTER COLUMN id SET DEFAULT nextval('gf.saved_tasks_id_seq'::regclass);
 
 
 --
 -- Name: statuses id; Type: DEFAULT; Schema: gf; Owner: -
 --
 
-ALTER TABLE ONLY statuses ALTER COLUMN id SET DEFAULT nextval('statuses_id_seq'::regclass);
+ALTER TABLE ONLY gf.statuses ALTER COLUMN id SET DEFAULT nextval('gf.statuses_id_seq'::regclass);
 
 
 --
 -- Name: subscriptions id; Type: DEFAULT; Schema: gf; Owner: -
 --
 
-ALTER TABLE ONLY subscriptions ALTER COLUMN id SET DEFAULT nextval('subscriptions_id_seq'::regclass);
+ALTER TABLE ONLY gf.subscriptions ALTER COLUMN id SET DEFAULT nextval('gf.subscriptions_id_seq'::regclass);
 
 
 --
 -- Name: text_reactions id; Type: DEFAULT; Schema: gf; Owner: -
 --
 
-ALTER TABLE ONLY text_reactions ALTER COLUMN id SET DEFAULT nextval('text_reactions_id_seq'::regclass);
+ALTER TABLE ONLY gf.text_reactions ALTER COLUMN id SET DEFAULT nextval('gf.text_reactions_id_seq'::regclass);
 
 
 --
 -- Name: accounts accounts_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
 --
 
-ALTER TABLE ONLY accounts
+ALTER TABLE ONLY gf.accounts
     ADD CONSTRAINT accounts_pkey PRIMARY KEY (uid);
 
 
@@ -542,7 +536,7 @@ ALTER TABLE ONLY accounts
 -- Name: assignable_roles assignable_roles_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
 --
 
-ALTER TABLE ONLY assignable_roles
+ALTER TABLE ONLY gf.assignable_roles
     ADD CONSTRAINT assignable_roles_pkey PRIMARY KEY (gid, rid);
 
 
@@ -550,7 +544,7 @@ ALTER TABLE ONLY assignable_roles
 -- Name: automatic_roles automatic_roles_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
 --
 
-ALTER TABLE ONLY automatic_roles
+ALTER TABLE ONLY gf.automatic_roles
     ADD CONSTRAINT automatic_roles_pkey PRIMARY KEY (gid, rid);
 
 
@@ -558,7 +552,7 @@ ALTER TABLE ONLY automatic_roles
 -- Name: birthdays birthdays_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
 --
 
-ALTER TABLE ONLY birthdays
+ALTER TABLE ONLY gf.birthdays
     ADD CONSTRAINT birthdays_pkey PRIMARY KEY (uid, cid);
 
 
@@ -566,7 +560,7 @@ ALTER TABLE ONLY birthdays
 -- Name: blocked_channels blocked_channels_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
 --
 
-ALTER TABLE ONLY blocked_channels
+ALTER TABLE ONLY gf.blocked_channels
     ADD CONSTRAINT blocked_channels_pkey PRIMARY KEY (cid);
 
 
@@ -574,7 +568,7 @@ ALTER TABLE ONLY blocked_channels
 -- Name: blocked_users blocked_users_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
 --
 
-ALTER TABLE ONLY blocked_users
+ALTER TABLE ONLY gf.blocked_users
     ADD CONSTRAINT blocked_users_pkey PRIMARY KEY (uid);
 
 
@@ -582,7 +576,7 @@ ALTER TABLE ONLY blocked_users
 -- Name: emoji_reactions emoji_reactions_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
 --
 
-ALTER TABLE ONLY emoji_reactions
+ALTER TABLE ONLY gf.emoji_reactions
     ADD CONSTRAINT emoji_reactions_pkey PRIMARY KEY (id);
 
 
@@ -590,7 +584,7 @@ ALTER TABLE ONLY emoji_reactions
 -- Name: feeds feeds_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
 --
 
-ALTER TABLE ONLY feeds
+ALTER TABLE ONLY gf.feeds
     ADD CONSTRAINT feeds_pkey PRIMARY KEY (id);
 
 
@@ -598,7 +592,7 @@ ALTER TABLE ONLY feeds
 -- Name: feeds feeds_url_key; Type: CONSTRAINT; Schema: gf; Owner: -
 --
 
-ALTER TABLE ONLY feeds
+ALTER TABLE ONLY gf.feeds
     ADD CONSTRAINT feeds_url_key UNIQUE (url);
 
 
@@ -606,7 +600,7 @@ ALTER TABLE ONLY feeds
 -- Name: filters filters_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
 --
 
-ALTER TABLE ONLY filters
+ALTER TABLE ONLY gf.filters
     ADD CONSTRAINT filters_pkey PRIMARY KEY (gid, filter);
 
 
@@ -614,7 +608,7 @@ ALTER TABLE ONLY filters
 -- Name: guild_cfg guild_cfg_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
 --
 
-ALTER TABLE ONLY guild_cfg
+ALTER TABLE ONLY gf.guild_cfg
     ADD CONSTRAINT guild_cfg_pkey PRIMARY KEY (gid);
 
 
@@ -622,7 +616,7 @@ ALTER TABLE ONLY guild_cfg
 -- Name: insults insults_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
 --
 
-ALTER TABLE ONLY insults
+ALTER TABLE ONLY gf.insults
     ADD CONSTRAINT insults_pkey PRIMARY KEY (id);
 
 
@@ -630,7 +624,7 @@ ALTER TABLE ONLY insults
 -- Name: items items_name_unique; Type: CONSTRAINT; Schema: gf; Owner: -
 --
 
-ALTER TABLE ONLY items
+ALTER TABLE ONLY gf.items
     ADD CONSTRAINT items_name_unique UNIQUE (name);
 
 
@@ -638,7 +632,7 @@ ALTER TABLE ONLY items
 -- Name: items items_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
 --
 
-ALTER TABLE ONLY items
+ALTER TABLE ONLY gf.items
     ADD CONSTRAINT items_pkey PRIMARY KEY (id);
 
 
@@ -646,7 +640,7 @@ ALTER TABLE ONLY items
 -- Name: memes memes_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
 --
 
-ALTER TABLE ONLY memes
+ALTER TABLE ONLY gf.memes
     ADD CONSTRAINT memes_pkey PRIMARY KEY (gid, name);
 
 
@@ -654,7 +648,7 @@ ALTER TABLE ONLY memes
 -- Name: msgcount msgcount_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
 --
 
-ALTER TABLE ONLY msgcount
+ALTER TABLE ONLY gf.msgcount
     ADD CONSTRAINT msgcount_pkey PRIMARY KEY (uid);
 
 
@@ -662,15 +656,31 @@ ALTER TABLE ONLY msgcount
 -- Name: prefixes prefixes_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
 --
 
-ALTER TABLE ONLY prefixes
+ALTER TABLE ONLY gf.prefixes
     ADD CONSTRAINT prefixes_pkey PRIMARY KEY (gid);
+
+
+--
+-- Name: priviledged priviledged_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
+--
+
+ALTER TABLE ONLY gf.priviledged
+    ADD CONSTRAINT priviledged_pkey PRIMARY KEY (uid);
+
+
+--
+-- Name: purchases purchases_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
+--
+
+ALTER TABLE ONLY gf.purchases
+    ADD CONSTRAINT purchases_pkey PRIMARY KEY (id, uid);
 
 
 --
 -- Name: saved_tasks saved_tasks_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
 --
 
-ALTER TABLE ONLY saved_tasks
+ALTER TABLE ONLY gf.saved_tasks
     ADD CONSTRAINT saved_tasks_pkey PRIMARY KEY (id);
 
 
@@ -678,7 +688,7 @@ ALTER TABLE ONLY saved_tasks
 -- Name: stats stats_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
 --
 
-ALTER TABLE ONLY stats
+ALTER TABLE ONLY gf.stats
     ADD CONSTRAINT stats_pkey PRIMARY KEY (uid);
 
 
@@ -686,7 +696,7 @@ ALTER TABLE ONLY stats
 -- Name: statuses statuses_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
 --
 
-ALTER TABLE ONLY statuses
+ALTER TABLE ONLY gf.statuses
     ADD CONSTRAINT statuses_pkey PRIMARY KEY (id);
 
 
@@ -694,7 +704,7 @@ ALTER TABLE ONLY statuses
 -- Name: subscriptions subscriptions_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
 --
 
-ALTER TABLE ONLY subscriptions
+ALTER TABLE ONLY gf.subscriptions
     ADD CONSTRAINT subscriptions_pkey PRIMARY KEY (id, cid);
 
 
@@ -702,7 +712,7 @@ ALTER TABLE ONLY subscriptions
 -- Name: swat_servers swat_servers_name_key; Type: CONSTRAINT; Schema: gf; Owner: -
 --
 
-ALTER TABLE ONLY swat_servers
+ALTER TABLE ONLY gf.swat_servers
     ADD CONSTRAINT swat_servers_name_key UNIQUE (name);
 
 
@@ -710,7 +720,7 @@ ALTER TABLE ONLY swat_servers
 -- Name: swat_servers swat_servers_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
 --
 
-ALTER TABLE ONLY swat_servers
+ALTER TABLE ONLY gf.swat_servers
     ADD CONSTRAINT swat_servers_pkey PRIMARY KEY (ip);
 
 
@@ -718,7 +728,7 @@ ALTER TABLE ONLY swat_servers
 -- Name: text_reactions text_reactions_gid_trigger_key; Type: CONSTRAINT; Schema: gf; Owner: -
 --
 
-ALTER TABLE ONLY text_reactions
+ALTER TABLE ONLY gf.text_reactions
     ADD CONSTRAINT text_reactions_gid_trigger_key UNIQUE (gid, trigger);
 
 
@@ -726,7 +736,7 @@ ALTER TABLE ONLY text_reactions
 -- Name: text_reactions text_reactions_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
 --
 
-ALTER TABLE ONLY text_reactions
+ALTER TABLE ONLY gf.text_reactions
     ADD CONSTRAINT text_reactions_pkey PRIMARY KEY (id);
 
 
@@ -734,169 +744,169 @@ ALTER TABLE ONLY text_reactions
 -- Name: emoji_reactions_trigger_idx; Type: INDEX; Schema: gf; Owner: -
 --
 
-CREATE INDEX emoji_reactions_trigger_idx ON emoji_reactions USING btree (trigger);
+CREATE INDEX emoji_reactions_trigger_idx ON gf.emoji_reactions USING btree (trigger);
 
 
 --
 -- Name: fki_items_fkey; Type: INDEX; Schema: gf; Owner: -
 --
 
-CREATE INDEX fki_items_fkey ON items USING btree (gid);
+CREATE INDEX fki_items_fkey ON gf.items USING btree (gid);
 
 
 --
 -- Name: fki_savedtasks_fkey; Type: INDEX; Schema: gf; Owner: -
 --
 
-CREATE INDEX fki_savedtasks_fkey ON saved_tasks USING btree (gid);
+CREATE INDEX fki_savedtasks_fkey ON gf.saved_tasks USING btree (gid);
 
 
 --
 -- Name: gid_index; Type: INDEX; Schema: gf; Owner: -
 --
 
-CREATE INDEX gid_index ON filters USING btree (gid);
+CREATE INDEX gid_index ON gf.filters USING btree (gid);
 
 
 --
 -- Name: index_bday; Type: INDEX; Schema: gf; Owner: -
 --
 
-CREATE INDEX index_bday ON birthdays USING btree (bday);
+CREATE INDEX index_bday ON gf.birthdays USING btree (bday);
 
-ALTER TABLE birthdays CLUSTER ON index_bday;
+ALTER TABLE gf.birthdays CLUSTER ON index_bday;
 
 
 --
 -- Name: index_er_gid; Type: INDEX; Schema: gf; Owner: -
 --
 
-CREATE INDEX index_er_gid ON emoji_reactions USING btree (gid);
+CREATE INDEX index_er_gid ON gf.emoji_reactions USING btree (gid);
 
-ALTER TABLE emoji_reactions CLUSTER ON index_er_gid;
+ALTER TABLE gf.emoji_reactions CLUSTER ON index_er_gid;
 
 
 --
 -- Name: index_filters_gid; Type: INDEX; Schema: gf; Owner: -
 --
 
-CREATE INDEX index_filters_gid ON filters USING btree (gid);
+CREATE INDEX index_filters_gid ON gf.filters USING btree (gid);
 
-ALTER TABLE filters CLUSTER ON index_filters_gid;
+ALTER TABLE gf.filters CLUSTER ON index_filters_gid;
 
 
 --
 -- Name: index_memes_cluster; Type: INDEX; Schema: gf; Owner: -
 --
 
-CREATE UNIQUE INDEX index_memes_cluster ON memes USING btree (gid, name);
+CREATE UNIQUE INDEX index_memes_cluster ON gf.memes USING btree (gid, name);
 
-ALTER TABLE memes CLUSTER ON index_memes_cluster;
+ALTER TABLE gf.memes CLUSTER ON index_memes_cluster;
 
 
 --
 -- Name: index_tr_gid; Type: INDEX; Schema: gf; Owner: -
 --
 
-CREATE INDEX index_tr_gid ON text_reactions USING btree (gid);
+CREATE INDEX index_tr_gid ON gf.text_reactions USING btree (gid);
 
-ALTER TABLE text_reactions CLUSTER ON index_tr_gid;
+ALTER TABLE gf.text_reactions CLUSTER ON index_tr_gid;
 
 
 --
 -- Name: items_gid_index; Type: INDEX; Schema: gf; Owner: -
 --
 
-CREATE INDEX items_gid_index ON items USING btree (gid);
+CREATE INDEX items_gid_index ON gf.items USING btree (gid);
 
-ALTER TABLE items CLUSTER ON items_gid_index;
+ALTER TABLE gf.items CLUSTER ON items_gid_index;
 
 
 --
 -- Name: purchases_id_index; Type: INDEX; Schema: gf; Owner: -
 --
 
-CREATE INDEX purchases_id_index ON purchases USING hash (id);
+CREATE INDEX purchases_id_index ON gf.purchases USING hash (id);
 
 
 --
 -- Name: purchases_uid_index; Type: INDEX; Schema: gf; Owner: -
 --
 
-CREATE INDEX purchases_uid_index ON purchases USING btree (uid);
+CREATE INDEX purchases_uid_index ON gf.purchases USING btree (uid);
 
-ALTER TABLE purchases CLUSTER ON purchases_uid_index;
+ALTER TABLE gf.purchases CLUSTER ON purchases_uid_index;
 
 
 --
 -- Name: trigger_index; Type: INDEX; Schema: gf; Owner: -
 --
 
-CREATE INDEX trigger_index ON text_reactions USING btree (trigger);
+CREATE INDEX trigger_index ON gf.text_reactions USING btree (trigger);
 
 
 --
 -- Name: automatic_roles ar_fkey; Type: FK CONSTRAINT; Schema: gf; Owner: -
 --
 
-ALTER TABLE ONLY automatic_roles
-    ADD CONSTRAINT ar_fkey FOREIGN KEY (gid) REFERENCES guild_cfg(gid) ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE ONLY gf.automatic_roles
+    ADD CONSTRAINT ar_fkey FOREIGN KEY (gid) REFERENCES gf.guild_cfg(gid) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
 -- Name: items items_fkey; Type: FK CONSTRAINT; Schema: gf; Owner: -
 --
 
-ALTER TABLE ONLY items
-    ADD CONSTRAINT items_fkey FOREIGN KEY (gid) REFERENCES guild_cfg(gid) ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE ONLY gf.items
+    ADD CONSTRAINT items_fkey FOREIGN KEY (gid) REFERENCES gf.guild_cfg(gid) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
 -- Name: prefixes p_fkey; Type: FK CONSTRAINT; Schema: gf; Owner: -
 --
 
-ALTER TABLE ONLY prefixes
-    ADD CONSTRAINT p_fkey FOREIGN KEY (gid) REFERENCES guild_cfg(gid) ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE ONLY gf.prefixes
+    ADD CONSTRAINT p_fkey FOREIGN KEY (gid) REFERENCES gf.guild_cfg(gid) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
 -- Name: purchases purchases_id_fkey; Type: FK CONSTRAINT; Schema: gf; Owner: -
 --
 
-ALTER TABLE ONLY purchases
-    ADD CONSTRAINT purchases_id_fkey FOREIGN KEY (id) REFERENCES items(id) ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE ONLY gf.purchases
+    ADD CONSTRAINT purchases_id_fkey FOREIGN KEY (id) REFERENCES gf.items(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
 -- Name: assignable_roles sar_fkey; Type: FK CONSTRAINT; Schema: gf; Owner: -
 --
 
-ALTER TABLE ONLY assignable_roles
-    ADD CONSTRAINT sar_fkey FOREIGN KEY (gid) REFERENCES guild_cfg(gid) ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE ONLY gf.assignable_roles
+    ADD CONSTRAINT sar_fkey FOREIGN KEY (gid) REFERENCES gf.guild_cfg(gid) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
 -- Name: saved_tasks st_fkey; Type: FK CONSTRAINT; Schema: gf; Owner: -
 --
 
-ALTER TABLE ONLY saved_tasks
-    ADD CONSTRAINT st_fkey FOREIGN KEY (gid) REFERENCES guild_cfg(gid) ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE ONLY gf.saved_tasks
+    ADD CONSTRAINT st_fkey FOREIGN KEY (gid) REFERENCES gf.guild_cfg(gid) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
 -- Name: subscriptions subscriptions_id_fkey; Type: FK CONSTRAINT; Schema: gf; Owner: -
 --
 
-ALTER TABLE ONLY subscriptions
-    ADD CONSTRAINT subscriptions_id_fkey FOREIGN KEY (id) REFERENCES feeds(id) ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE ONLY gf.subscriptions
+    ADD CONSTRAINT subscriptions_id_fkey FOREIGN KEY (id) REFERENCES gf.feeds(id) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
 -- Name: text_reactions tr_fkey; Type: FK CONSTRAINT; Schema: gf; Owner: -
 --
 
-ALTER TABLE ONLY text_reactions
-    ADD CONSTRAINT tr_fkey FOREIGN KEY (gid) REFERENCES guild_cfg(gid) ON UPDATE CASCADE ON DELETE CASCADE;
+ALTER TABLE ONLY gf.text_reactions
+    ADD CONSTRAINT tr_fkey FOREIGN KEY (gid) REFERENCES gf.guild_cfg(gid) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
