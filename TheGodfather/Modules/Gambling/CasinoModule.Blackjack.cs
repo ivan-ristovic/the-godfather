@@ -95,9 +95,6 @@ namespace TheGodfather.Modules.Gambling
             public async Task JoinAsync(CommandContext ctx,
                                        [Description("Bid amount.")] int bid = 5)
             {
-                if (bid <= 0 || !await Database.TakeCreditsFromUserAsync(ctx.User.Id, bid))
-                    throw new CommandFailedException("You do not have that many credits on your account! Specify a smaller bid amount.");
-
                 var game = Game.GetGameInChannel(ctx.Channel.Id) as BlackjackGame;
                 if (game == null)
                     throw new CommandFailedException("There are no Blackjack games running in this channel.");
@@ -107,11 +104,15 @@ namespace TheGodfather.Modules.Gambling
 
                 if (game.ParticipantCount >= 5)
                     throw new CommandFailedException("Blackjack slots are full (max 5 participants), kthxbye.");
-
-                if (!game.AddParticipant(ctx.User, 0))
+                
+                if (game.IsParticipating(ctx.User))
                     throw new CommandFailedException("You are already participating in the Blackjack game!");
 
-                await ctx.RespondWithIconEmbedAsync($"{ctx.User.Mention} joined the Blackjack game.", ":spades:")
+                if (bid <= 0 || !await Database.TakeCreditsFromUserAsync(ctx.User.Id, bid))
+                    throw new CommandFailedException("You do not have that many credits on your account! Specify a smaller bid amount.");
+
+                game.AddParticipant(ctx.User, bid);
+                await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.CardSuits[0], $"{ctx.User.Mention} joined the Blackjack game.")
                     .ConfigureAwait(false);
             }
             #endregion

@@ -33,7 +33,7 @@ namespace TheGodfather
         private static Timer BotStatusTimer { get; set; }
         private static Timer DatabaseSyncTimer { get; set; }
         private static Timer FeedCheckTimer { get; set; }
-        private static Timer BirthdayCheckTimer { get; set; }
+        private static Timer MiscActionsTimer { get; set; }
 
 
         internal static void Main(string[] args)
@@ -169,7 +169,7 @@ namespace TheGodfather
             DatabaseSyncTimer = new Timer(DatabaseSyncTimerCallback, Shards[0].Client, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(3));
             BotStatusTimer = new Timer(BotActivityTimerCallback, Shards[0].Client, TimeSpan.FromSeconds(10), TimeSpan.FromMinutes(10));
             FeedCheckTimer = new Timer(FeedCheckTimerCallback, Shards[0].Client, TimeSpan.FromSeconds(30), TimeSpan.FromMinutes(1));
-            BirthdayCheckTimer = new Timer(MiscellaneousPeriodicActionsCallback, Shards[0].Client, TimeSpan.FromSeconds(5), TimeSpan.FromHours(12));
+            MiscActionsTimer = new Timer(MiscellaneousPeriodicActionsCallback, Shards[0].Client, TimeSpan.FromSeconds(5), TimeSpan.FromHours(12));
             Console.WriteLine(" Done!");
             Console.WriteLine();
 

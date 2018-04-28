@@ -110,18 +110,18 @@ namespace TheGodfather.Modules.Gambling.Common
                 .ConfigureAwait(false);
         }
 
-        public bool AddParticipant(DiscordUser user, int bid)
+        public void AddParticipant(DiscordUser user, int bid)
         {
-            if (_participants.Any(p => p.Id == user.Id))
-                return false;
+            if (IsParticipating(user))
+                return;
 
             _participants.Enqueue(new BlackjackParticipant {
                 User = user,
                 Bid = bid
             });
-
-            return true;
         }
+
+        public bool IsParticipating(DiscordUser user) => _participants.Any(p => p.Id == user.Id);
 
         private int HandValue(List<Card> hand)
         {
