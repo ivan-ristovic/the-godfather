@@ -12,13 +12,13 @@ namespace TheGodfather.Modules.Gambling.Common
 {
     public class SlotMachine
     {
-        private static ImmutableArray<DiscordEmoji> _emoji = new ImmutableArray<DiscordEmoji>() {
+        private static ImmutableArray<DiscordEmoji> _emoji = new DiscordEmoji[] {
             StaticDiscordEmoji.LargeBlueDiamond,
             StaticDiscordEmoji.MoneyBag,
             StaticDiscordEmoji.Seven,
             StaticDiscordEmoji.Gift,
             StaticDiscordEmoji.Cherries
-        };
+        }.ToImmutableArray();
 
 
         public static DiscordEmbed EmbedSlotRoll(DiscordUser user, int bid, out int won)

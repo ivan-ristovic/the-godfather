@@ -48,8 +48,8 @@ namespace TheGodfather.Modules.Gambling
 
                 int? balance = await Database.GetUserCreditAmountAsync(ctx.User.Id)
                     .ConfigureAwait(false);
-                if (!balance.HasValue || balance < 100)
-                    throw new CommandFailedException("You do not have enough credits to buy a lottery ticket! (100 needed)");
+                if (!balance.HasValue || balance < 250)
+                    throw new CommandFailedException("You do not have enough credits to buy a lottery ticket! (250 needed)");
 
                 var game = new LotteryGame(ctx.Client.GetInteractivity(), ctx.Channel);
                 Game.RegisterGameInChannel(game, ctx.Channel.Id);
@@ -65,7 +65,7 @@ namespace TheGodfather.Modules.Gambling
                         .ConfigureAwait(false);
 
                     if (game.Winners.Any()) {
-                        await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.MoneyBag, $"Winners:\n\n{string.Join(", ", game.Winners.Select(w => w.User.Mention))}")
+                        await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.MoneyBag, $"Winnings:\n\n{string.Join(", ", game.Winners.Select(w => $"{w.User.Mention} : {w.WinAmount}"))}")
                             .ConfigureAwait(false);
                         foreach (var winner in game.Winners)
                             await Database.GiveCreditsToUserAsync(winner.Id, winner.WinAmount)
@@ -105,8 +105,8 @@ namespace TheGodfather.Modules.Gambling
                 if (game.IsParticipating(ctx.User))
                     throw new CommandFailedException("You are already participating in the Lottery game!");
 
-                if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, 100))
-                    throw new CommandFailedException("You do not have 100 on your account! The lottery ticket costs 100 credits!");
+                if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, 250))
+                    throw new CommandFailedException("You do not have 100 on your account! The lottery ticket costs 250 credits!");
 
                 game.AddParticipant(ctx.User, num1, num2);
                 await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.MoneyBag, $"{ctx.User.Mention} joined the Lottery game.")
