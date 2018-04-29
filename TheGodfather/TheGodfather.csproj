@@ -280,6 +280,7 @@
     <Compile Include="Modules\Gambling\Common\LotteryGame.cs" />
     <Compile Include="Modules\Gambling\Common\BlackjackGame.cs" />
     <Compile Include="Modules\Gambling\Common\SlotMachine.cs" />
+    <Compile Include="Modules\Gambling\Common\WheelOfFortune.cs" />
     <Compile Include="Modules\Games\Common\RussianRoulette.cs" />
     <Compile Include="Modules\Games\Common\Quiz.cs" />
     <Compile Include="Modules\Games\Common\QuizCapitals.cs" />

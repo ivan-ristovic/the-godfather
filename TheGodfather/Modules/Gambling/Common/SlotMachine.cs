@@ -1,6 +1,6 @@
 ﻿#region USING_DIRECTIVES
 using System.Text;
-using System.Collections.Generic;
+using System.Collections.Immutable;
 
 using TheGodfather.Common;
 
@@ -12,12 +12,12 @@ namespace TheGodfather.Modules.Gambling.Common
 {
     public class SlotMachine
     {
-        private static Dictionary<int, DiscordEmoji> IdToEmoji = new Dictionary<int, DiscordEmoji>() {
-            {0, StaticDiscordEmoji.LargeBlueDiamond },
-            {1, StaticDiscordEmoji.MoneyBag },
-            {2, StaticDiscordEmoji.Seven },
-            {3, StaticDiscordEmoji.Gift },
-            {4, StaticDiscordEmoji.Cherries },
+        private static ImmutableArray<DiscordEmoji> _emoji = new ImmutableArray<DiscordEmoji>() {
+            StaticDiscordEmoji.LargeBlueDiamond,
+            StaticDiscordEmoji.MoneyBag,
+            StaticDiscordEmoji.Seven,
+            StaticDiscordEmoji.Gift,
+            StaticDiscordEmoji.Cherries
         };
 
 
@@ -43,7 +43,7 @@ namespace TheGodfather.Modules.Gambling.Common
             int[,] result = new int[3, 3];
             for (int i = 0; i < 3; i++)
                 for (int j = 0; j < 3; j++)
-                    result[i, j] = GFRandom.Generator.Next(IdToEmoji.Count);
+                    result[i, j] = GFRandom.Generator.Next(_emoji.Length);
 
             return result;
         }
@@ -53,7 +53,7 @@ namespace TheGodfather.Modules.Gambling.Common
             var sb = new StringBuilder();
             for (int i = 0; i < 3; i++) {
                 for (int j = 0; j < 3; j++)
-                    sb.Append(IdToEmoji[res[i, j]]);
+                    sb.Append(_emoji[res[i, j]]);
                 sb.AppendLine();
             }
             return sb.ToString();
