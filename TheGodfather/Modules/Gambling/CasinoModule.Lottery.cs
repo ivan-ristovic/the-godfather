@@ -24,9 +24,9 @@ namespace TheGodfather.Modules.Gambling
     public partial class CasinoModule
     {
         [Group("lottery"), Module(ModuleType.Gambling)]
-        [Description("Play a lottery game.")]
+        [Description("Play a lottery game. The three numbers are drawn from 1 to 15 and they can't repeat.")]
         [Aliases("lotto")]
-        [UsageExample("!casino lottery")]
+        [UsageExample("!casino lottery 2 10 8")]
         public class LotteryModule : TheGodfatherBaseModule
         {
 
@@ -35,12 +35,11 @@ namespace TheGodfather.Modules.Gambling
 
             [GroupCommand]
             public async Task ExecuteGroupAsync(CommandContext ctx,
-                                               [Description("Number 1.")] int num1,
-                                               [Description("Number 2.")] int num2)
+                                               [RemainingText, Description("Three numbers.")] params int[] numbers)
             {
                 if (Game.RunningInChannel(ctx.Channel.Id)) {
                     if (Game.GetGameInChannel(ctx.Channel.Id) is LotteryGame)
-                        await JoinAsync(ctx, num1, num2).ConfigureAwait(false);
+                        await JoinAsync(ctx, numbers).ConfigureAwait(false);
                     else
                         throw new CommandFailedException("Another game is already running in the current channel.");
                     return;
@@ -48,15 +47,15 @@ namespace TheGodfather.Modules.Gambling
 
                 int? balance = await Database.GetUserCreditAmountAsync(ctx.User.Id)
                     .ConfigureAwait(false);
-                if (!balance.HasValue || balance < 250)
-                    throw new CommandFailedException("You do not have enough credits to buy a lottery ticket! (250 needed)");
+                if (!balance.HasValue || balance < LotteryGame.TicketPrice)
+                    throw new CommandFailedException($"You do not have enough credits on your account to buy a lottery ticket! The lottery ticket costs {LotteryGame.TicketPrice} credits!");
 
                 var game = new LotteryGame(ctx.Client.GetInteractivity(), ctx.Channel);
                 Game.RegisterGameInChannel(game, ctx.Channel.Id);
                 try {
                     await ctx.RespondWithIconEmbedAsync($"The Lottery game will start in 30s or when there are 10 participants. Use command {Formatter.InlineCode("casino lottery")} to join the pool.", ":clock1:")
                         .ConfigureAwait(false);
-                    await JoinAsync(ctx, num1, num2)
+                    await JoinAsync(ctx, numbers)
                         .ConfigureAwait(false);
                     await Task.Delay(TimeSpan.FromSeconds(30))
                         .ConfigureAwait(false);
@@ -82,15 +81,18 @@ namespace TheGodfather.Modules.Gambling
 
             #region COMMAND_LOTTERY_JOIN
             [Command("join"), Module(ModuleType.Gambling)]
-            [Description("Join a pending Blackjack game.")]
+            [Description("Join a pending Lottery game.")]
             [Aliases("+", "compete", "enter", "j")]
-            [UsageExample("!casino blackjack join")]
+            [UsageExample("!casino lottery join 2 10 8")]
             public async Task JoinAsync(CommandContext ctx,
-                                       [Description("Number 1.")] int num1,
-                                       [Description("Number 2.")] int num2)
+                                       [RemainingText, Description("Three numbers.")] params int[] numbers)
             {
-                if (num1 < 1 || num1 > LotteryGame.MaxNumber || num2 < 1 || num2 > LotteryGame.MaxNumber)
-                    throw new CommandFailedException("Invalid numbers!");
+                if (numbers.Length != 3)
+                    throw new CommandFailedException("You need to specify three numbers!");
+
+                if (numbers.Any(n => n < 1 || n > LotteryGame.MaxNumber))
+                    throw new CommandFailedException($"Invalid number given! Numbers must be in range [1, {LotteryGame.MaxNumber}]!");
+                numbers = numbers.Select(n => n - 1).ToArray();
 
                 var game = Game.GetGameInChannel(ctx.Channel.Id) as LotteryGame;
                 if (game == null)
@@ -105,10 +107,10 @@ namespace TheGodfather.Modules.Gambling
                 if (game.IsParticipating(ctx.User))
                     throw new CommandFailedException("You are already participating in the Lottery game!");
 
-                if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, 250))
-                    throw new CommandFailedException("You do not have 100 on your account! The lottery ticket costs 250 credits!");
+                if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, LotteryGame.TicketPrice))
+                    throw new CommandFailedException($"You do not have enough credits on your account to buy a lottery ticket! The lottery ticket costs {LotteryGame.TicketPrice} credits!");
 
-                game.AddParticipant(ctx.User, num1, num2);
+                game.AddParticipant(ctx.User, numbers);
                 await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.MoneyBag, $"{ctx.User.Mention} joined the Lottery game.")
                     .ConfigureAwait(false);
             }
@@ -122,7 +124,7 @@ namespace TheGodfather.Modules.Gambling
             public async Task RulesAsync(CommandContext ctx)
             {
                 await ctx.RespondWithIconEmbedAsync(
-                    "One correct number gives you 10% of your current bank balance, whereas both numbers give you 50% increase.",
+                    "TODO",
                     ":information_source:"
                 ).ConfigureAwait(false);
             }

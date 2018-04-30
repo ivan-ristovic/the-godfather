@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,7 +21,11 @@ namespace TheGodfather.Modules.Gambling.Common
     public class LotteryGame : Game
     {
         public static readonly int MaxNumber = 10;
-        public static readonly int Jackpot = 1000000;
+        public static readonly int DrawCount = 3;
+        public static readonly int TicketPrice = 250;
+        public static readonly ImmutableArray<int> Prizes = new int[] {
+            0, 2500, 50000, 1000000
+        }.ToImmutableArray();
 
         public bool Started { get; private set; }
         public int ParticipantCount => _participants.Count;
@@ -41,62 +46,48 @@ namespace TheGodfather.Modules.Gambling.Common
         {
             Started = true;
 
-            var msg = await _channel.SendIconEmbedAsync("Drawing numbers in 5s...", StaticDiscordEmoji.MoneyBag)
+            var msg = await _channel.SendIconEmbedAsync("Drawing lottery numbers in 5s...", StaticDiscordEmoji.MoneyBag)
                 .ConfigureAwait(false);
 
-            var drawn = new List<int>();
+            var drawn = Enumerable.Range(1, 15).Shuffle().Take(3);
 
-            await Task.Delay(TimeSpan.FromSeconds(5))
-                .ConfigureAwait(false);
-
-            drawn.Add(GFRandom.Generator.Next(10));
-            await PrintGameAsync(msg, drawn)
-                .ConfigureAwait(false);
-
-            await Task.Delay(TimeSpan.FromSeconds(5))
-                .ConfigureAwait(false);
-
-            drawn.Add(GFRandom.Generator.Next(10));
-            await PrintGameAsync(msg, drawn)
-                .ConfigureAwait(false);
+            for (int i = 0; i < DrawCount; i++) {
+                await Task.Delay(TimeSpan.FromSeconds(5))
+                    .ConfigureAwait(false);
+                await PrintGameAsync(msg, drawn, i + 1)
+                    .ConfigureAwait(false);
+            }
 
             foreach (var participant in _participants) {
-                int won = 1;
-                if (drawn.Contains(participant.Number1))
-                    won *= 1000;
-                if (drawn.Contains(participant.Number2))
-                    won *= 1000;
-                participant.WinAmount = won != 1 ? won : 0;
+                int guessed = participant.Numbers.Intersect(drawn).Count();
+                participant.WinAmount = Prizes[guessed];
             }
         }
 
-        public void AddParticipant(DiscordUser user, int num1, int num2)
+        public void AddParticipant(DiscordUser user, int[] numbers)
         {
             if (IsParticipating(user))
                 return;
 
             _participants.Enqueue(new LotteryParticipant {
                 User = user,
-                Number1 = num1 - 1,
-                Number2 = num2 - 1
+                Numbers = numbers
             });
         }
 
         public bool IsParticipating(DiscordUser user) => _participants.Any(p => p.Id == user.Id);
 
-        private async Task PrintGameAsync(DiscordMessage msg, List<int> numbers)
+        private async Task PrintGameAsync(DiscordMessage msg, IEnumerable<int> numbers, int step)
         {
             var sb = new StringBuilder();
 
             sb.AppendLine(Formatter.Bold($"Drawn numbers:"));
-            sb.AppendLine(string.Join(" ", numbers.Select(n => StaticDiscordEmoji.Numbers[n]))).AppendLine();
+            sb.AppendLine(Formatter.Bold(string.Join(" ", numbers.Take(step)))).AppendLine();
 
             foreach (var participant in _participants) {
-                sb.AppendLine(participant.User.Mention);
-                sb.Append(StaticDiscordEmoji.Numbers[participant.Number1]);
-                sb.Append(" ");
-                sb.Append(StaticDiscordEmoji.Numbers[participant.Number2]);
-                sb.AppendLine().AppendLine();
+                sb.Append(participant.User.Mention).Append(" | ");
+                sb.AppendLine(Formatter.Bold(string.Join(" ", participant.Numbers)));
+                sb.AppendLine();
             }
 
             var emb = new DiscordEmbedBuilder() {
@@ -115,8 +106,7 @@ namespace TheGodfather.Modules.Gambling.Common
             public DiscordUser User { get; internal set; }
             public int Bid { get; set; }
             public ulong Id => User.Id;
-            public int Number1 { get; set; }
-            public int Number2 { get; set; }
+            public int[] Numbers { get; set; }
             public int WinAmount { get; set; } = 0;
         }
     }

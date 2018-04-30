@@ -36,7 +36,7 @@ namespace TheGodfather.Modules.Gambling
                                    [Description("Bid.")] int bid = 5)
         {
             if (bid <= 0 || bid > 100000)
-                throw new InvalidCommandUsageException("Invalid bid amount! Needs to be in range [0, 100000]");
+                throw new InvalidCommandUsageException("Invalid bid amount! Needs to be in range [1, 100000]");
 
             if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, bid).ConfigureAwait(false))
                 throw new CommandFailedException("You do not have enough credits in WM bank!");
@@ -59,7 +59,7 @@ namespace TheGodfather.Modules.Gambling
                                              [Description("Bid.")] int bid = 5)
         {
             if (bid <= 0 || bid > 100000)
-                throw new InvalidCommandUsageException("Invalid bid amount! Needs to be in range [0, 100000]");
+                throw new InvalidCommandUsageException("Invalid bid amount! Needs to be in range [1, 100000]");
 
             if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, bid).ConfigureAwait(false))
                 throw new CommandFailedException("You do not have enough credits in WM bank!");
