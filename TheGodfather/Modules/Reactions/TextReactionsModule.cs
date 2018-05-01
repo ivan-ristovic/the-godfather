@@ -38,7 +38,7 @@ namespace TheGodfather.Modules.Reactions
             => ListAsync(ctx);
 
         [GroupCommand, Priority(0)]
-        [RequirePermissions(Permissions.ManageGuild)]
+        [RequireUserPermissions(Permissions.ManageGuild)]
         public Task ExecuteGroupAsync(CommandContext ctx, 
                                      [Description("Trigger string (case insensitive).")] string trigger,
                                      [RemainingText, Description("Response.")] string response)

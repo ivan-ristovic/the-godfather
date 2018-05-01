@@ -49,7 +49,7 @@ namespace TheGodfather.Modules.Search
         [Description("Add new feed for a subreddit.")]
         [Aliases("add", "a", "+", "sub")]
         [UsageExample("!reddit sub aww")]
-        [RequirePermissions(Permissions.ManageGuild)]
+        [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task SubscribeAsync(CommandContext ctx,
                                         [Description("Subreddit.")] string sub)
         {
@@ -72,7 +72,7 @@ namespace TheGodfather.Modules.Search
         [Aliases("del", "d", "rm", "-", "unsub")]
         [UsageExample("!reddit unsub aww")]
         [UsageExample("!reddit unsub 12")]
-        [RequirePermissions(Permissions.ManageGuild)]
+        [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task UnsubscribeAsync(CommandContext ctx,
                                           [Description("Subreddit.")] string sub)
         {

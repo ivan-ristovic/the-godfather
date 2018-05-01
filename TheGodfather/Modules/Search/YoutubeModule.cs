@@ -79,7 +79,7 @@ namespace TheGodfather.Modules.Search
         [Aliases("add", "a", "+", "sub")]
         [UsageExample("!youtube subscribe https://www.youtube.com/user/RickAstleyVEVO")]
         [UsageExample("!youtube subscribe https://www.youtube.com/user/RickAstleyVEVO rick")]
-        [RequirePermissions(Permissions.ManageGuild)]
+        [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task SubscribeAsync(CommandContext ctx,
                                         [Description("Channel URL.")] string url,
                                         [Description("Friendly name.")] string name = null)
@@ -107,7 +107,7 @@ namespace TheGodfather.Modules.Search
         [Aliases("del", "d", "rm", "-", "unsub")]
         [UsageExample("!youtube unsubscribe https://www.youtube.com/user/RickAstleyVEVO")]
         [UsageExample("!youtube unsubscribe rick")]
-        [RequirePermissions(Permissions.ManageGuild)]
+        [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task UnsubscribeAsync(CommandContext ctx,
                                           [Description("Channel URL or subscription name.")] string name_url)
         {

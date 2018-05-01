@@ -92,7 +92,6 @@ namespace TheGodfather.Modules.Gambling
 
                 if (numbers.Any(n => n < 1 || n > LotteryGame.MaxNumber))
                     throw new CommandFailedException($"Invalid number given! Numbers must be in range [1, {LotteryGame.MaxNumber}]!");
-                numbers = numbers.Select(n => n - 1).ToArray();
 
                 var game = Game.GetGameInChannel(ctx.Channel.Id) as LotteryGame;
                 if (game == null)

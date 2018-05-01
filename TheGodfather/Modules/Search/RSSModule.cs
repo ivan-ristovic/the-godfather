@@ -73,7 +73,7 @@ namespace TheGodfather.Modules.Search
         [Aliases("sub", "add", "+")]
         [UsageExample("!rss subscribe https://news.google.com/news/rss/")]
         [UsageExample("!rss subscribe https://news.google.com/news/rss/ news")]
-        [RequirePermissions(Permissions.ManageGuild)]
+        [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task AddUrlFeedAsync(CommandContext ctx,
                                          [Description("URL.")] string url,
                                          [Description("Friendly name.")] string name = null)
@@ -98,7 +98,7 @@ namespace TheGodfather.Modules.Search
         [Description("Remove an existing feed subscription.")]
         [Aliases("del", "d", "rm", "-", "unsub")]
         [UsageExample("!rss unsubscribe 1")]
-        [RequirePermissions(Permissions.ManageGuild)]
+        [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task UnsubscribeAsync(CommandContext ctx,
                                           [Description("ID of the subscription.")] int id)
         {
