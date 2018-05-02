@@ -57,7 +57,7 @@ namespace TheGodfather.Modules.Search
             if (url == null)
                 throw new CommandFailedException("That subreddit doesn't exist.");
 
-            if (!await Database.AddSubscriptionAsync(ctx.Channel.Id, url, sub).ConfigureAwait(false))
+            if (!await Database.AddSubscriptionAsync(ctx.Channel.Id, url, rsub).ConfigureAwait(false))
                 throw new CommandFailedException("You are already subscribed to this subreddit!");
 
             await ctx.RespondWithIconEmbedAsync($"Subscribed to {Formatter.Bold(rsub)} !")
