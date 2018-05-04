@@ -314,6 +314,23 @@ namespace TheGodfather.Modules.Misc
         }
         #endregion
 
+        #region COMMAND_QUOTEOFTHEDAY
+        [Command("quoteoftheday"), Module(ModuleType.Miscellaneous)]
+        [Description("Get quote of the day.")]
+        [Aliases("qotd", "qod")]
+        [UsageExample("!quoteoftheday")]
+        public async Task QotdAsync(CommandContext ctx)
+        {
+            var quote = await QuoteService.GetQuoteOfTheDayAsync()
+                .ConfigureAwait(false);
+            if (quote == null)
+                throw new CommandFailedException("Failed to retrieve quote!");
+            
+            await ctx.RespondAsync(embed: quote.Embed())
+                .ConfigureAwait(false);
+        }
+        #endregion
+
         #region COMMAND_RATE
         [Command("rate"), Module(ModuleType.Miscellaneous)]
         [Description("Gives a rating chart for the user. If the user is not provided, rates sender.")]
