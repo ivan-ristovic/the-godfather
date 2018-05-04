@@ -18,8 +18,9 @@ namespace TheGodfather.Services
         public static async Task<Quote> GetQuoteOfTheDayAsync()
         {
             try {
-                var request = new HttpRequestMessage();
-                request.RequestUri = new Uri("https://quotes.rest/qod");
+                var request = new HttpRequestMessage {
+                    RequestUri = new Uri("https://quotes.rest/qod")
+                };
                 request.Headers.Accept.Clear();
                 request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 

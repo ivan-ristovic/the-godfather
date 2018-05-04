@@ -326,7 +326,7 @@ namespace TheGodfather.Modules.Misc
             if (quote == null)
                 throw new CommandFailedException("Failed to retrieve quote!");
             
-            await ctx.RespondAsync(embed: quote.Embed())
+            await ctx.RespondAsync(embed: quote.Embed("Quote of the day"))
                 .ConfigureAwait(false);
         }
         #endregion
