@@ -28,8 +28,6 @@
 
 *Birthday notifications management. If invoked without command, either lists or adds birthdays depending if argument is given.*
 
-**Owner-only.**
-
 **Aliases:**
 `birthday, bday, bd, bdays`
 
@@ -132,8 +130,6 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Manipulate blocked channels. Bot will not listen for commands in blocked channels or react (either with text or emoji) to messages inside.*
-
-**Owner-only.**
 
 **Aliases:**
 `bc, blockedc, blockchannel, bchannels, bchannel, bchn`
@@ -239,8 +235,6 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Manipulate blocked users. Bot will not allow blocked users to invoke commands and will not react (either with text or emoji) to their messages.*
-
-**Owner-only.**
 
 **Aliases:**
 `bu, blockedu, blockuser, busers, buser, busr`
@@ -525,12 +519,96 @@
 
 ---
 
+## Group: owner priviledgedusers
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Manipulate priviledged users. Priviledged users can invoke commands marked with RequirePriviledgedUsers permission.*
+
+**Owner-only.**
+
+**Aliases:**
+`pu, privu, privuser, pusers, puser, pusr`
+
+**Overload 0:**
+
+`[user...]` : *Users to grant priviledge to.*
+
+</p></details>
+
+---
+
+### owner priviledgedusers add
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Add users to priviledged users list.*
+
+**Owner-only.**
+
+**Aliases:**
+`+, a`
+
+**Arguments:**
+
+`[user...]` : *Users to grant priviledge to.*
+
+**Examples:**
+
+```
+!owner priviledgedusers add @Someone
+!owner priviledgedusers add @Someone @SomeoneElse
+```
+</p></details>
+
+---
+
+### owner priviledgedusers delete
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Remove users from priviledged users list..*
+
+**Owner-only.**
+
+**Aliases:**
+`-, remove, rm, del`
+
+**Arguments:**
+
+`[user...]` : *Users to revoke priviledges from.*
+
+**Examples:**
+
+```
+!owner priviledgedusers remove @Someone
+!owner priviledgedusers remove 123123123123123
+!owner priviledgedusers remove @Someone 123123123123123
+```
+</p></details>
+
+---
+
+### owner priviledgedusers list
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*List all priviledged users.*
+
+**Owner-only.**
+
+**Aliases:**
+`ls`
+
+**Examples:**
+
+```
+!owner priviledgedusers list
+```
+</p></details>
+
+---
+
 ### owner sendmessage
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Sends a message to a user or channel.*
-
-**Owner-only.**
 
 **Aliases:**
 `send, s`
@@ -557,8 +635,6 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Triggers the dying in the vineyard scene (power off the bot).*
-
-**Owner-only.**
 
 **Aliases:**
 `disable, poweroff, exit, quit`
@@ -601,6 +677,8 @@
 
 *Add a status to running status queue.*
 
+**Owner-only.**
+
 **Aliases:**
 `+, a`
 
@@ -625,6 +703,8 @@
 
 *Remove status from running queue.*
 
+**Owner-only.**
+
 **Aliases:**
 `-, remove, rm, del`
 
@@ -646,6 +726,8 @@
 
 *List all bot statuses.*
 
+**Owner-only.**
+
 **Aliases:**
 `ls`
 
@@ -662,6 +744,8 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Set status to given string or status with given index in database. This sets rotation to false.*
+
+**Owner-only.**
 
 **Aliases:**
 `s`
@@ -691,6 +775,8 @@
 
 *Set automatic rotation of bot statuses.*
 
+**Owner-only.**
+
 **Aliases:**
 `sr, setr`
 
@@ -712,8 +798,6 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Executes a command as another user.*
-
-**Owner-only.**
 
 **Aliases:**
 `execas, as`
@@ -737,8 +821,6 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Toggle bot's reaction to commands.*
-
-**Owner-only.**
 
 **Aliases:**
 `ti`

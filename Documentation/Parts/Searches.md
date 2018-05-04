@@ -333,7 +333,7 @@
 
 *Add new feed for a subreddit.*
 
-**Requires permissions:**
+**Requires user permissions:**
 `Manage guild`
 
 **Aliases:**
@@ -357,7 +357,7 @@
 
 *Remove a subreddit feed using subreddit name or subscription ID (use command ``feed list`` to see IDs).*
 
-**Requires permissions:**
+**Requires user permissions:**
 `Manage guild`
 
 **Aliases:**
@@ -424,7 +424,7 @@
 
 *Subscribe to given RSS feed URL. The bot will send a message when the latest topic is changed.*
 
-**Requires permissions:**
+**Requires user permissions:**
 `Manage guild`
 
 **Aliases:**
@@ -451,7 +451,7 @@
 
 *Remove an existing feed subscription.*
 
-**Requires permissions:**
+**Requires user permissions:**
 `Manage guild`
 
 **Aliases:**
@@ -574,6 +574,62 @@
 
 ---
 
+## Group: xkcd
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Search xkcd. If invoked without subcommands returns random comic or, if an ID is provided, a comic with given ID.*
+
+**Aliases:**
+`x`
+
+**Overload 1:**
+
+`[int]` : *Comic ID.*
+
+**Examples:**
+
+```
+!xkcd
+```
+</p></details>
+
+---
+
+### xkcd id
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Retrieves comic with given ID from xkcd.*
+
+**Arguments:**
+
+(optional) `[int]` : *Comic ID.* (def: `None`)
+
+**Examples:**
+
+```
+!xkcd id 650
+```
+</p></details>
+
+---
+
+### xkcd latest
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Retrieves latest comic from xkcd.*
+
+**Aliases:**
+`fresh, newest, l`
+
+**Examples:**
+
+```
+!xkcd latest
+```
+</p></details>
+
+---
+
 ## Group: youtube
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
@@ -686,7 +742,7 @@
 
 *Add a new subscription for a YouTube channel.*
 
-**Requires permissions:**
+**Requires user permissions:**
 `Manage guild`
 
 **Aliases:**
@@ -713,7 +769,7 @@
 
 *Remove a YouTube channel subscription.*
 
-**Requires permissions:**
+**Requires user permissions:**
 `Manage guild`
 
 **Aliases:**

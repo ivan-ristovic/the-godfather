@@ -54,6 +54,8 @@
 
 *Commands for playing music. If invoked without subcommand, plays given URL or searches YouTube for given query and plays the first result.*
 
+**Owner-only.**
+
 **Requires bot permissions:**
 `Speak`
 

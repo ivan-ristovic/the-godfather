@@ -3,7 +3,7 @@
 ## Group: automaticroles
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Commands to manipulate automatically assigned roles (roles which get automatically granted to a user who enters the guild). If invoked without command, either lists or adds automatic role depending if argument is given.*
+*Commands to manipulate automatically assigned roles (roles which get automatically granted to a user who enters the guild). If invoked without subcommand, either lists or adds automatic role depending if argument is given.*
 
 **Aliases:**
 `ar`
@@ -16,6 +16,7 @@
 
 ```
 !ar
+!ar @Guests
 ```
 </p></details>
 
@@ -1769,6 +1770,7 @@
 
 ```
 !sar
+!sar @Announcements
 ```
 </p></details>
 

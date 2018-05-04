@@ -47,8 +47,6 @@
 
 *Magically give funds to some user.*
 
-**Owner-only.**
-
 **Aliases:**
 `give`
 
@@ -133,6 +131,27 @@
 ```
 !bank transfer @Someone 40
 !bank transfer 40 @Someone
+```
+</p></details>
+
+---
+
+### bank unregister
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Delete an account from WM bank.*
+
+**Aliases:**
+`ur, signout, deleteaccount, delacc, disable, deactivate`
+
+**Arguments:**
+
+`[user]` : *User whose account to delete.*
+
+**Examples:**
+
+```
+!bank unregister @Someone
 ```
 </p></details>
 
@@ -264,6 +283,65 @@
 
 ---
 
+## Group: casino lottery
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Play a lottery game. The three numbers are drawn from 1 to 15 and they can't repeat.*
+
+**Aliases:**
+`lotto`
+
+**Arguments:**
+
+`[int...]` : *Three numbers.*
+
+**Examples:**
+
+```
+!casino lottery 2 10 8
+```
+</p></details>
+
+---
+
+### casino lottery join
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Join a pending Lottery game.*
+
+**Aliases:**
+`+, compete, enter, j`
+
+**Arguments:**
+
+`[int...]` : *Three numbers.*
+
+**Examples:**
+
+```
+!casino lottery join 2 10 8
+```
+</p></details>
+
+---
+
+### casino lottery rules
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Explain the Lottery rules.*
+
+**Aliases:**
+`help, h, ruling, rule`
+
+**Examples:**
+
+```
+!casino lottery rules
+```
+</p></details>
+
+---
+
 ### casino slot
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
@@ -280,6 +358,27 @@
 
 ```
 !casino slot 20
+```
+</p></details>
+
+---
+
+### casino wheeloffortune
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Roll a Wheel Of Fortune. You need to specify a bid amount. Default bid amount is 5.*
+
+**Aliases:**
+`wof`
+
+**Arguments:**
+
+(optional) `[int]` : *Bid.* (def: `5`)
+
+**Examples:**
+
+```
+!casino wof 20
 ```
 </p></details>
 

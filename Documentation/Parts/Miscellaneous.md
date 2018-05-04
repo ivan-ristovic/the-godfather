@@ -520,6 +520,23 @@
 
 ---
 
+## quoteoftheday
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Get quote of the day.*
+
+**Aliases:**
+`qotd, qod`
+
+**Examples:**
+
+```
+!quoteoftheday
+```
+</p></details>
+
+---
+
 ### random cat
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
