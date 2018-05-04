@@ -304,6 +304,7 @@
     <Compile Include="Services\Common\OMDbData.cs" />
     <Compile Include="Services\Common\PurchasableItem.cs" />
     <Compile Include="Services\Common\QuizData.cs" />
+    <Compile Include="Services\Common\Quotes.cs" />
     <Compile Include="Services\Common\SavedTask.cs" />
     <Compile Include="Extensions\DSharpPlusExtensions.cs" />
     <Compile Include="Modules\Owner\OwnerModule.BlockedUsers.cs" />
@@ -406,6 +407,7 @@
     <Compile Include="Services\PetImagesService.cs" />
     <Compile Include="Services\HttpService.cs" />
     <Compile Include="Services\QuizService.cs" />
+    <Compile Include="Services\QuoteService.cs" />
     <Compile Include="Services\WeatherService.cs" />
     <Compile Include="Services\XkcdService.cs" />
     <Compile Include="TheGodfather.cs" />
