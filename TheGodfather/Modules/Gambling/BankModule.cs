@@ -160,5 +160,24 @@ namespace TheGodfather.Modules.Gambling
                                         [Description("User to send credits to.")] DiscordUser user)
             => TransferCreditsAsync(ctx, user, amount);
         #endregion
+
+        #region COMMAND_BANK_UNREGISTER
+        [Command("unregister"), Module(ModuleType.Gambling)]
+        [Description("Delete an account from WM bank.")]
+        [Aliases("ur", "signout", "deleteaccount", "delacc", "disable", "deactivate")]
+        [UsageExample("!bank unregister @Someone")]
+        [RequirePriviledgedUser]
+        public async Task UnregisterAsync(CommandContext ctx,
+                                         [Description("User whose account to delete.")] DiscordUser user)
+        {
+            if (!await Database.BankContainsUserAsync(user.Id).ConfigureAwait(false))
+                throw new CommandFailedException("There is no account registered for that user in WM bank!");
+
+            await Database.CloseBankAccountForUserAsync(user.Id)
+                .ConfigureAwait(false);
+            await ctx.RespondWithIconEmbedAsync()
+                .ConfigureAwait(false);
+        }
+        #endregion
     }
 }

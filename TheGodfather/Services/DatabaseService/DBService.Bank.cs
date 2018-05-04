@@ -20,6 +20,24 @@ namespace TheGodfather.Services
             return balance.HasValue;
         }
 
+        public async Task CloseBankAccountForUserAsync(ulong uid)
+        {
+            await _sem.WaitAsync();
+            try {
+                using (var con = new NpgsqlConnection(_connectionString))
+                using (var cmd = con.CreateCommand()) {
+                    await con.OpenAsync().ConfigureAwait(false);
+
+                    cmd.CommandText = "DELETE FROM gf.accounts WHERE uid = @uid;";
+                    cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
+
+                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                }
+            } finally {
+                _sem.Release();
+            }
+        }
+
         public async Task<IReadOnlyList<IReadOnlyDictionary<string, string>>> GetTenRichestUsersAsync()
         {
             var res = await ExecuteRawQueryAsync("SELECT * FROM gf.accounts ORDER BY balance DESC LIMIT 10")
