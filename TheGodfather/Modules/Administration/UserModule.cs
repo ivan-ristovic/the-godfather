@@ -450,12 +450,15 @@ namespace TheGodfather.Modules.Administration
             if (!string.IsNullOrWhiteSpace(msg))
                 emb.AddField("Warning message", msg);
 
-            var dm = await member.CreateDmChannelAsync()
-                .ConfigureAwait(false);
-            if (dm == null)
+            try {
+                var dm = await member.CreateDmChannelAsync()
+                    .ConfigureAwait(false);
+                await dm.SendMessageAsync(embed: emb.Build())
+                    .ConfigureAwait(false);
+            } catch {
                 throw new CommandFailedException("I can't talk to that user...");
-            await dm.SendMessageAsync(embed: emb.Build())
-                .ConfigureAwait(false);
+            }
+
             await ctx.RespondWithIconEmbedAsync($"Successfully warned {Formatter.Bold(member.Username)}.")
                 .ConfigureAwait(false);
         }

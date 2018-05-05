@@ -13,6 +13,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 using TheGodfather.Common;
+using TheGodfather.Extensions;
 using TheGodfather.Services;
 
 using DSharpPlus;
@@ -70,7 +71,7 @@ namespace TheGodfather.Modules.Games.Common
                     g.CompositingQuality = CompositingQuality.HighQuality;
                     Rectangle layout = new Rectangle(0, 0, image.Width, image.Height);
                     g.FillRectangle(Brushes.White, layout);
-                    using (var font = new Font("Lucida Caligraphy", 30)) {
+                    using (var font = new Font(FontFamily.GenericSansSerif, 30)) {
                         g.DrawString(msg, font, Brushes.Black, layout);
                     }
                     g.Flush();
@@ -98,8 +99,10 @@ namespace TheGodfather.Modules.Games.Common
             ).ConfigureAwait(false);
             
             var ordered = _results.Where(kvp => kvp.Value < 100).OrderBy(kvp => kvp.Value);
-            await _channel.SendMessageAsync(embed: EmbedResults(ordered))
-                .ConfigureAwait(false);
+            if (ordered.Any())
+                await _channel.SendMessageAsync(embed: EmbedResults(ordered)).ConfigureAwait(false);
+            else
+                await _channel.SendFailedEmbedAsync("No results to be shown for the typing race.");
 
             Winner = ordered.FirstOrDefault(kvp => kvp.Value == 0).Key;
         }
