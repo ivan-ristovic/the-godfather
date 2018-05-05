@@ -120,10 +120,7 @@ namespace TheGodfather.Modules.Games
                 await game.RunAsync()
                     .ConfigureAwait(false);
 
-                if (game.NoReply == true) {
-                    await ctx.RespondWithIconEmbedAsync("ROFL what a nabs...", ":alarm_clock:")
-                        .ConfigureAwait(false);
-                } else {
+                if (game.Winner != null) {
                     await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Trophy, $"The winner is {game.Winner?.Mention ?? "<unknown>"}!")
                         .ConfigureAwait(false);
                 }

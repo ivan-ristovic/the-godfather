@@ -183,14 +183,18 @@ namespace TheGodfather
 
             Console.WriteLine("Registering saved tasks...");
             var tasks_db = await DatabaseService.GetAllSavedTasksAsync();
+            int registered = 0, missed = 0;
             foreach (var kvp in tasks_db) {
                 var texec = new SavedTaskExecuter(kvp.Key, Shards[0].Client, kvp.Value, SharedData, DatabaseService);
-                if (texec.SavedTask.IsExecutionTimeReached)
+                if (texec.SavedTask.IsExecutionTimeReached) {
                     await texec.HandleMissedTaskExecutionAsync();
-                else
+                    missed++;
+                } else {
                     texec.ScheduleExecutionAsync();
+                    registered++;
+                }
             }
-            Console.WriteLine("Done!");
+            Console.WriteLine($"Successfully registered {registered} saved tasks; Missed {missed} tasks.");
             Console.WriteLine();
 
 
