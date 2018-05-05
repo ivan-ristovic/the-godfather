@@ -18,6 +18,8 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+
+using Humanizer;
 #endregion
 
 namespace TheGodfather.Modules.Misc
@@ -402,7 +404,7 @@ namespace TheGodfather.Modules.Misc
             if (!await SavedTaskExecuter.ScheduleAsync(ctx.Client, Shared, Database, ctx.User.Id, channel.Id, ctx.Guild.Id, SavedTaskType.SendMessage, message, when).ConfigureAwait(false))
                 throw new DatabaseServiceException("Failed to set a reminder in the database!");
 
-            await ctx.RespondWithIconEmbedAsync($"I will remind {channel.Mention} at {Formatter.Bold(when.ToUniversalTime().ToString())} UTC to:\n\n{Formatter.Italic(message)}", ":alarm_clock:")
+            await ctx.RespondWithIconEmbedAsync($"I will remind {channel.Mention} in {Formatter.Bold(timespan.Humanize(5))} (at {when.ToUniversalTime().ToString()} UTC) to:\n\n{Formatter.Italic(message)}", ":alarm_clock:")
                 .ConfigureAwait(false);
         }
 

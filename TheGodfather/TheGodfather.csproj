@@ -94,20 +94,20 @@
     <Reference Include="AutoMapper, Version=7.0.0.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
       <HintPath>..\packages\AutoMapper.7.0.0-alpha-0001\lib\net45\AutoMapper.dll</HintPath>
     </Reference>
-    <Reference Include="DSharpPlus, Version=4.0.0.448, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\DSharpPlus.4.0.0-beta-00448\lib\net47\DSharpPlus.dll</HintPath>
+    <Reference Include="DSharpPlus, Version=4.0.0.449, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\DSharpPlus.4.0.0-beta-00449\lib\net47\DSharpPlus.dll</HintPath>
     </Reference>
-    <Reference Include="DSharpPlus.CommandsNext, Version=4.0.0.448, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\DSharpPlus.CommandsNext.4.0.0-beta-00448\lib\net47\DSharpPlus.CommandsNext.dll</HintPath>
+    <Reference Include="DSharpPlus.CommandsNext, Version=4.0.0.449, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\DSharpPlus.CommandsNext.4.0.0-beta-00449\lib\net47\DSharpPlus.CommandsNext.dll</HintPath>
     </Reference>
-    <Reference Include="DSharpPlus.Interactivity, Version=4.0.0.448, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\DSharpPlus.Interactivity.4.0.0-beta-00448\lib\net47\DSharpPlus.Interactivity.dll</HintPath>
+    <Reference Include="DSharpPlus.Interactivity, Version=4.0.0.449, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\DSharpPlus.Interactivity.4.0.0-beta-00449\lib\net47\DSharpPlus.Interactivity.dll</HintPath>
     </Reference>
-    <Reference Include="DSharpPlus.VoiceNext, Version=4.0.0.448, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\DSharpPlus.VoiceNext.4.0.0-beta-00448\lib\net47\DSharpPlus.VoiceNext.dll</HintPath>
+    <Reference Include="DSharpPlus.VoiceNext, Version=4.0.0.449, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\DSharpPlus.VoiceNext.4.0.0-beta-00449\lib\net47\DSharpPlus.VoiceNext.dll</HintPath>
     </Reference>
-    <Reference Include="DSharpPlus.WebSocket.WebSocket4Net, Version=4.0.0.448, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\DSharpPlus.WebSocket.WebSocket4Net.4.0.0-beta-00448\lib\net47\DSharpPlus.WebSocket.WebSocket4Net.dll</HintPath>
+    <Reference Include="DSharpPlus.WebSocket.WebSocket4Net, Version=4.0.0.449, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\DSharpPlus.WebSocket.WebSocket4Net.4.0.0-beta-00449\lib\net47\DSharpPlus.WebSocket.WebSocket4Net.dll</HintPath>
     </Reference>
     <Reference Include="GiphyDotNet, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\GiphyDotNet.1.0.0.0\lib\GiphyDotNet.dll</HintPath>
@@ -129,6 +129,9 @@
     </Reference>
     <Reference Include="Google.Apis.YouTube.v3, Version=1.33.0.1215, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
       <HintPath>..\packages\Google.Apis.YouTube.v3.1.33.0.1215\lib\net45\Google.Apis.YouTube.v3.dll</HintPath>
+    </Reference>
+    <Reference Include="Humanizer, Version=2.2.0.0, Culture=neutral, PublicKeyToken=979442b78dfc278e, processorArchitecture=MSIL">
+      <HintPath>..\packages\Humanizer.Core.2.2.0\lib\netstandard1.0\Humanizer.dll</HintPath>
     </Reference>
     <Reference Include="Imgur.API, Version=5.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Imgur.API.5.0.0-beta1\lib\net45\Imgur.API.dll</HintPath>
@@ -263,8 +266,8 @@
     <Reference Include="WebSocket4Net, Version=0.14.1.0, Culture=neutral, PublicKeyToken=eb4e154b696bf72a, processorArchitecture=MSIL">
       <HintPath>..\packages\WebSocket4Net.0.14.1\lib\net45\WebSocket4Net.dll</HintPath>
     </Reference>
-    <Reference Include="YoutubeExplode, Version=4.2.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\YoutubeExplode.4.2.3\lib\net45\YoutubeExplode.dll</HintPath>
+    <Reference Include="YoutubeExplode, Version=4.2.4.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\YoutubeExplode.4.2.4\lib\net45\YoutubeExplode.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
