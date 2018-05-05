@@ -99,10 +99,10 @@ namespace TheGodfather.Modules.Games
         }
         #endregion
 
-        #region COMMAND_GAME_TYPING
+        #region COMMAND_GAME_TYPINGRACE
         [Command("typingrace"), Module(ModuleType.Games)]
         [Description("Typing race.")]
-        [Aliases("type", "typerace", "typing")]
+        [Aliases("type", "typerace", "typing", "tr")]
         [UsageExample("!game typingrace")]
         public async Task TypingRaceAsync(CommandContext ctx)
         {
@@ -116,7 +116,7 @@ namespace TheGodfather.Modules.Games
                     .ConfigureAwait(false);
                 await Task.Delay(TimeSpan.FromSeconds(5))
                     .ConfigureAwait(false);
-
+                
                 await game.RunAsync()
                     .ConfigureAwait(false);
 
