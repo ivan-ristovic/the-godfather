@@ -2,6 +2,7 @@
 using System;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 
 using TheGodfather.Common.Attributes;
@@ -143,37 +144,41 @@ namespace TheGodfather.Modules.SWAT
             if (queryport <= 0 || queryport > 65535)
                 throw new InvalidCommandUsageException("Port range invalid (must be in range [1-65535])!");
 
-            if (Shared.UserIDsCheckingForSpace.Contains(ctx.User.Id))
+            if (Shared.SpaceCheckingCTS.ContainsKey(ctx.User.Id))
                 throw new CommandFailedException("Already checking space for you!");
 
-            if (Shared.UserIDsCheckingForSpace.Count > 10)
-                throw new CommandFailedException("Maximum number of checks reached, please try later!");
+            if (Shared.SpaceCheckingCTS.Count > 10)
+                throw new CommandFailedException("Maximum number of simultanous checks reached (10), please try later!");
 
             var server = await Database.GetSwatServerAsync(ip, queryport, name: ip.ToLowerInvariant())
                 .ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync($"Starting check on {server.IP}:{server.JoinPort}...")
+            await ctx.RespondWithIconEmbedAsync($"Starting space listening on {server.IP}:{server.JoinPort}...")
                 .ConfigureAwait(false);
 
-            Shared.UserIDsCheckingForSpace.Add(ctx.User.Id);
+            if (!Shared.SpaceCheckingCTS.TryAdd(ctx.User.Id, new CancellationTokenSource()))
+                throw new CommandFailedException("Failed to register space check task! Please try again.");
+
             try {
-                while (Shared.UserIDsCheckingForSpace.Contains(ctx.User.Id)) {
-                    var info = await SwatServerInfo.QueryIPAsync(server.IP, server.QueryPort)
-                        .ConfigureAwait(false);
-                    if (info == null) {
-                        if (!await ctx.AskYesNoQuestionAsync("No reply from server. Should I try again?").ConfigureAwait(false)) {
-                            await StopCheckAsync(ctx)
+                var t = Task.Run(async () => {
+                    while (Shared.SpaceCheckingCTS.ContainsKey(ctx.User.Id) && !Shared.SpaceCheckingCTS[ctx.User.Id].IsCancellationRequested) {
+                        var info = await SwatServerInfo.QueryIPAsync(server.IP, server.QueryPort)
+                            .ConfigureAwait(false);
+                        if (info == null) {
+                            if (!await ctx.AskYesNoQuestionAsync("No reply from server. Should I try again?").ConfigureAwait(false)) {
+                                await StopCheckAsync(ctx)
+                                    .ConfigureAwait(false);
+                                throw new OperationCanceledException();
+                            }
+                        } else if (info.HasSpace()) {
+                            await ctx.RespondWithIconEmbedAsync($"{ctx.User.Mention}, there is space on {Formatter.Bold(info.HostName)}!", ":alarm_clock:")
                                 .ConfigureAwait(false);
-                            return;
                         }
-                    } else if (info.HasSpace()) {
-                        await ctx.RespondWithIconEmbedAsync($"{ctx.User.Mention}, there is space on {info.HostName}!", ":alarm_clock:")
+                        await Task.Delay(TimeSpan.FromSeconds(2))
                             .ConfigureAwait(false);
                     }
-                    await Task.Delay(TimeSpan.FromSeconds(2))
-                        .ConfigureAwait(false);
-                }
-            } finally {
-                Shared.UserIDsCheckingForSpace.TryRemove(ctx.User.Id);
+                }, Shared.SpaceCheckingCTS[ctx.User.Id].Token);
+            } catch {
+                Shared.SpaceCheckingCTS.TryRemove(ctx.User.Id, out _);
             }
         }
         #endregion
@@ -185,9 +190,11 @@ namespace TheGodfather.Modules.SWAT
         [UsageExample("!swat stopcheck")]
         public async Task StopCheckAsync(CommandContext ctx)
         {
-            if (!Shared.UserIDsCheckingForSpace.Contains(ctx.User.Id))
-                throw new CommandFailedException("No checks started from you.");
-            Shared.UserIDsCheckingForSpace.TryRemove(ctx.User.Id);
+            if (!Shared.SpaceCheckingCTS.ContainsKey(ctx.User.Id))
+                throw new CommandFailedException("You haven't started any space listeners.");
+            Shared.SpaceCheckingCTS[ctx.User.Id].Cancel();
+            Shared.SpaceCheckingCTS[ctx.User.Id].Dispose();
+            Shared.SpaceCheckingCTS.TryRemove(ctx.User.Id, out _);
             await ctx.RespondWithIconEmbedAsync("Checking stopped.")
                 .ConfigureAwait(false);
         }
