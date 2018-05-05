@@ -17,7 +17,7 @@ namespace TheGodfather.Services
 {
     public class MemeGenService : TheGodfatherHttpService
     {
-        private static readonly ImmutableDictionary<char, string> _map = new Dictionary<char, string>() {
+        private static readonly ImmutableDictionary<char, string> _replacements = new Dictionary<char, string>() {
             {'?', "~q"},
             {'%', "~p"},
             {'#', "~h"},
@@ -53,7 +53,7 @@ namespace TheGodfather.Services
 
             var sb = new StringBuilder();
             foreach (var c in input) {
-                if (_map.TryGetValue(c, out var tmp))
+                if (_replacements.TryGetValue(c, out var tmp))
                     sb.Append(tmp);
                 else
                     sb.Append(c);

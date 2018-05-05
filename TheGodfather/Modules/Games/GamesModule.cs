@@ -98,36 +98,5 @@ namespace TheGodfather.Modules.Games
                 .ConfigureAwait(false);
         }
         #endregion
-
-        #region COMMAND_GAME_TYPINGRACE
-        [Command("typingrace"), Module(ModuleType.Games)]
-        [Description("Typing race.")]
-        [Aliases("type", "typerace", "typing", "tr")]
-        [UsageExample("!game typingrace")]
-        public async Task TypingRaceAsync(CommandContext ctx)
-        {
-            if (Game.RunningInChannel(ctx.Channel.Id))
-                throw new CommandFailedException("Another game is already running in the current channel!");
-
-            var game = new TypingRace(ctx.Client.GetInteractivity(), ctx.Channel);
-            Game.RegisterGameInChannel(game, ctx.Channel.Id);
-            try {
-                await ctx.RespondWithIconEmbedAsync("I will send a text in 5s. First one to types it wins. FOCUS!", ":clock1:")
-                    .ConfigureAwait(false);
-                await Task.Delay(TimeSpan.FromSeconds(5))
-                    .ConfigureAwait(false);
-                
-                await game.RunAsync()
-                    .ConfigureAwait(false);
-
-                if (game.Winner != null) {
-                    await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Trophy, $"The winner is {game.Winner?.Mention ?? "<unknown>"}!")
-                        .ConfigureAwait(false);
-                }
-            } finally {
-                Game.UnregisterGameInChannel(ctx.Channel.Id);
-            }
-        }
-        #endregion
     }
 }

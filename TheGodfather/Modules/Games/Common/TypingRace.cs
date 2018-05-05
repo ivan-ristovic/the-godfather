@@ -2,12 +2,14 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Text;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 using TheGodfather.Common;
@@ -22,7 +24,29 @@ namespace TheGodfather.Modules.Games.Common
 {
     public class TypingRace : Game
     {
+        #region STATIC_FIELDS
+        private static readonly Regex _whitespaceMatcher = new Regex(@"\s+", RegexOptions.Compiled);
+        private static readonly ImmutableDictionary<char, char> _replacements = new Dictionary<char, char>() {
+            {'`', '\''},
+            {'’', '\''},
+            {'“', '\"'},
+            {'”', '\"'},
+            {'‒', '-'},
+            {'–', '-'},
+            {'—', '-'},
+            {'―', '-'}
+        }.ToImmutableDictionary();
+        #endregion
+
+        #region PUBLIC_FIELDS
+        public bool Started { get; private set; }
+        public int ParticipantCount => _results.Count;
+        public IEnumerable<ulong> WinnerIds { get; private set; }
+        #endregion
+
+        #region PRIVATE_FIELDS
         private ConcurrentDictionary<DiscordUser, int> _results = new ConcurrentDictionary<DiscordUser, int>();
+        #endregion
 
 
         public TypingRace(InteractivityExtension interactivity, DiscordChannel channel)
@@ -46,7 +70,7 @@ namespace TheGodfather.Modules.Games.Common
                     g.CompositingQuality = CompositingQuality.HighQuality;
                     Rectangle layout = new Rectangle(0, 0, image.Width, image.Height);
                     g.FillRectangle(Brushes.White, layout);
-                    using (var font = new Font("Arial", 30)) {
+                    using (var font = new Font("Lucida Caligraphy", 30)) {
                         g.DrawString(msg, font, Brushes.Black, layout);
                     }
                     g.Flush();
@@ -73,15 +97,18 @@ namespace TheGodfather.Modules.Games.Common
                 }, TimeSpan.FromSeconds(60)
             ).ConfigureAwait(false);
             
-            msg = PrepareText(msg);
-            var ordered = _results.OrderBy(kvp => kvp.Value);
+            var ordered = _results.Where(kvp => kvp.Value < 100).OrderBy(kvp => kvp.Value);
             await _channel.SendMessageAsync(embed: EmbedResults(ordered))
                 .ConfigureAwait(false);
 
-            // TODO remove
-            await _channel.SendMessageAsync("DEBUG: Answer text: " + Formatter.BlockCode(msg));
+            Winner = ordered.FirstOrDefault(kvp => kvp.Value == 0).Key;
+        }
 
-            Winner = ordered.FirstOrDefault().Key;
+        public bool AddParticipant(DiscordUser user)
+        {
+            if (_results.Any(kvp => kvp.Key.Id == user.Id))
+                return false;
+            return _results.TryAdd(user, 100);
         }
 
         public DiscordEmbed EmbedResults(IOrderedEnumerable<KeyValuePair<DiscordUser, int>> results)
@@ -140,7 +167,18 @@ namespace TheGodfather.Modules.Games.Common
 
         private string PrepareText(string text)
         {
-            return text.Replace('`', '\'').ToLowerInvariant();
+            text = _whitespaceMatcher.Replace(text, " ");
+
+            var sb = new StringBuilder();
+            foreach (var c in text) {
+                if (_replacements.TryGetValue(c, out var tmp))
+                    sb.Append(tmp);
+                else
+                    sb.Append(c);
+            }
+            text = sb.ToString();
+
+            return text.ToLowerInvariant();
         }
     }
 }
