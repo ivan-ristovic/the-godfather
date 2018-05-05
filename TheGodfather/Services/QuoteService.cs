@@ -1,38 +1,33 @@
 ﻿#region USING_DIRECTIVES
 using System;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
 using TheGodfather.Services.Common;
 
 using DSharpPlus;
-using System.Net.Http;
-using System.Net.Http.Headers;
 #endregion;
 
 namespace TheGodfather.Services
 {
     public class QuoteService : TheGodfatherHttpService
     {
-        public static async Task<Quote> GetQuoteOfTheDayAsync()
+        private static readonly string _apiUrl = "https://quotes.rest/qod.json";
+
+
+        public static async Task<Quote> GetQuoteOfTheDayAsync(string category = null)
         {
             try {
-                var request = new HttpRequestMessage {
-                    RequestUri = new Uri("https://quotes.rest/qod")
-                };
-                request.Headers.Accept.Clear();
-                request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                string response = null;
+                if (string.IsNullOrWhiteSpace(category))
+                    response = await _http.GetStringAsync(_apiUrl).ConfigureAwait(false);
+                else
+                    response = await _http.GetStringAsync($"{_apiUrl}?category={WebUtility.UrlEncode(category)}").ConfigureAwait(false);
 
-                var response = await _http.SendAsync(request)
-                    .ConfigureAwait(false);
-                if (!response.IsSuccessStatusCode)
-                    return null;
-                var json = await response.Content.ReadAsStringAsync()
-                    .ConfigureAwait(false);
-
-                var quoteResponse = JsonConvert.DeserializeObject<QuoteApiResponse>(json);
-                return quoteResponse.Contents.Quotes.FirstOrDefault();
+                var data = JsonConvert.DeserializeObject<QuoteApiResponse>(response);
+                return data?.Contents?.Quotes?.FirstOrDefault();
             } catch (Exception e) {
                 TheGodfather.LogHandle.LogException(LogLevel.Debug, e);
                 return null;

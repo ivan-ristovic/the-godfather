@@ -316,17 +316,19 @@ namespace TheGodfather.Modules.Misc
 
         #region COMMAND_QUOTEOFTHEDAY
         [Command("quoteoftheday"), Module(ModuleType.Miscellaneous)]
-        [Description("Get quote of the day.")]
-        [Aliases("qotd", "qod")]
+        [Description("Get quote of the day. You can also specify a category from the list: inspire, management, sports, life, funny, love, art, students.")]
+        [Aliases("qotd", "qod", "quote", "q")]
         [UsageExample("!quoteoftheday")]
-        public async Task QotdAsync(CommandContext ctx)
+        [UsageExample("!quoteoftheday life")]
+        public async Task QotdAsync(CommandContext ctx,
+                                   [Description("Category.")] string category = null)
         {
-            var quote = await QuoteService.GetQuoteOfTheDayAsync()
+            var quote = await QuoteService.GetQuoteOfTheDayAsync(category)
                 .ConfigureAwait(false);
             if (quote == null)
-                throw new CommandFailedException("Failed to retrieve quote!");
+                throw new CommandFailedException("Failed to retrieve quote! Possibly the given quote category does not exist.");
             
-            await ctx.RespondAsync(embed: quote.Embed("Quote of the day"))
+            await ctx.RespondAsync(embed: quote.Embed($"Quote of the day{(string.IsNullOrWhiteSpace(category) ? "" : $" in category {category}")}:"))
                 .ConfigureAwait(false);
         }
         #endregion

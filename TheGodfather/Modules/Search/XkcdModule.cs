@@ -23,7 +23,7 @@ namespace TheGodfather.Modules.Search
 
         [GroupCommand, Priority(1)]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                           [Description("Comic ID.")] int id)
+                                     [Description("Comic ID.")] int id)
             => ByIdAsync(ctx, id);
 
         [GroupCommand, Priority(0)]
