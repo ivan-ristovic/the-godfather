@@ -52,22 +52,25 @@ namespace TheGodfather.Modules.SWAT.Common
         public static async Task<SwatServerInfo> QueryIPAsync(string ip, int port)
         {
             byte[] receivedData = null;
-            try {
-                using (var client = new UdpClient()) {
-                    IPEndPoint ep = new IPEndPoint(IPAddress.Parse(ip), port);
-                    client.Connect(ep);
-                    client.Client.SendTimeout = CheckTimeout;
-                    client.Client.ReceiveTimeout = CheckTimeout;
-                    string query = "\\status\\";
-                    await client.SendAsync(Encoding.ASCII.GetBytes(query), query.Length)
-                        .ConfigureAwait(false);
-                    receivedData = client.Receive(ref ep);
+
+            for (int i = 0; i < 3 && receivedData == null; i++) {
+                try {
+                    using (var client = new UdpClient()) {
+                        IPEndPoint ep = new IPEndPoint(IPAddress.Parse(ip), port);
+                        client.Connect(ep);
+                        client.Client.SendTimeout = CheckTimeout;
+                        client.Client.ReceiveTimeout = CheckTimeout;
+                        string query = "\\status\\";
+                        await client.SendAsync(Encoding.ASCII.GetBytes(query), query.Length)
+                            .ConfigureAwait(false);
+                        receivedData = client.Receive(ref ep);
+                    }
+                } catch (FormatException) {
+                    throw new CommandFailedException("Invalid IP format.");
+                } catch (Exception e) {
+                    TheGodfather.LogHandle.LogException(LogLevel.Debug, e);
+                    return null;
                 }
-            } catch (FormatException) {
-                throw new CommandFailedException("Invalid IP format.");
-            } catch (Exception e) {
-                TheGodfather.LogHandle.LogException(LogLevel.Debug, e);
-                return null;
             }
 
             if (receivedData == null)
