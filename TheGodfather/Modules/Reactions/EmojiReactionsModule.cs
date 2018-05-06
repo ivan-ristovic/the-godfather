@@ -155,7 +155,7 @@ namespace TheGodfather.Modules.Reactions
         public async Task DeleteAsync(CommandContext ctx,
                                      [Description("IDs of the reactions to remove.")] params int[] ids)
         {
-            if (!Shared.TextReactions.ContainsKey(ctx.Guild.Id))
+            if (!Shared.EmojiReactions.ContainsKey(ctx.Guild.Id))
                 throw new CommandFailedException("This guild has no emoji reactions registered.");
 
             var sb = new StringBuilder();

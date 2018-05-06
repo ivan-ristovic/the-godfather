@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Threading;
 using Newtonsoft.Json;
@@ -13,6 +12,7 @@ using Newtonsoft.Json;
 using TheGodfather.Common;
 using TheGodfather.Common.Collections;
 using TheGodfather.Extensions;
+using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Reactions.Common;
 using TheGodfather.Services;
 
@@ -110,11 +110,11 @@ namespace TheGodfather
                 gprefixes.TryAdd(gprefix.Key, gprefix.Value);
 
             var gfilters_db = await DatabaseService.GetFiltersForAllGuildsAsync();
-            var gfilters = new ConcurrentDictionary<ulong, ConcurrentHashSet<Regex>>();
+            var gfilters = new ConcurrentDictionary<ulong, ConcurrentHashSet<Filter>>();
             foreach (var gfilter in gfilters_db) {
                 if (!gfilters.ContainsKey(gfilter.Item1))
-                    gfilters.TryAdd(gfilter.Item1, new ConcurrentHashSet<Regex>());
-                gfilters[gfilter.Item1].Add(new Regex($@"\b{gfilter.Item2}\b"));
+                    gfilters.TryAdd(gfilter.Item1, new ConcurrentHashSet<Filter>());
+                gfilters[gfilter.Item1].Add(gfilter.Item2);
             }
 
             var gtextreactions_db = await DatabaseService.GetTextReactionsForAllGuildsAsync();
@@ -137,7 +137,7 @@ namespace TheGodfather
                 BlockedUsers = blockedusr,
                 BotConfiguration = cfg,
                 CTS = CTS,
-                GuildPrefixes = gprefixes,
+                Prefixes = gprefixes,
                 Filters = gfilters,
                 TextReactions = gtextreactions,
                 EmojiReactions = gemojireactions,

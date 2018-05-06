@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Collections;
+using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Gambling.Common;
 using TheGodfather.Modules.Music.Common;
 using TheGodfather.Modules.Reactions.Common;
@@ -26,8 +27,8 @@ namespace TheGodfather
         public BotConfig BotConfiguration { get; internal set; }
         public ConcurrentDictionary<ulong, Deck> CardDecks { get; internal set; } = new ConcurrentDictionary<ulong, Deck>();
         public CancellationTokenSource CTS { get; internal set; }
-        public ConcurrentDictionary<ulong, string> GuildPrefixes { get; internal set; }
-        public ConcurrentDictionary<ulong, ConcurrentHashSet<Regex>> Filters { get; internal set; }
+        public ConcurrentDictionary<ulong, string> Prefixes { get; internal set; }
+        public ConcurrentDictionary<ulong, ConcurrentHashSet<Filter>> Filters { get; internal set; }
         public ConcurrentDictionary<ulong, ConcurrentHashSet<TextReaction>> TextReactions { get; internal set; }
         public ConcurrentDictionary<ulong, ConcurrentHashSet<EmojiReaction>> EmojiReactions { get; internal set; }
         public ConcurrentDictionary<ulong, ulong> MessageCount { get; internal set; }
@@ -65,8 +66,8 @@ namespace TheGodfather
 
         public string GetGuildPrefix(ulong gid)
         {
-            if (GuildPrefixes.ContainsKey(gid) && !string.IsNullOrWhiteSpace(GuildPrefixes[gid]))
-                return GuildPrefixes[gid];
+            if (Prefixes.ContainsKey(gid) && !string.IsNullOrWhiteSpace(Prefixes[gid]))
+                return Prefixes[gid];
             else
                 return BotConfiguration.DefaultPrefix;
         }
@@ -86,7 +87,7 @@ namespace TheGodfather
                 return false;
 
             message = message.ToLowerInvariant();
-            return Filters[gid].Any(f => f.IsMatch(message));
+            return Filters[gid].Any(f => f.Trigger.IsMatch(message));
         }
 
         public bool TextTriggerExists(ulong gid, string trigger)

@@ -10,6 +10,7 @@ using TheGodfather.Common.Attributes;
 using TheGodfather.Common.Collections;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
+using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Services;
 
 using DSharpPlus;
@@ -83,22 +84,28 @@ namespace TheGodfather.Modules.Administration
                 }
 
                 if (Shared.Filters.ContainsKey(ctx.Guild.Id)) {
-                    if (Shared.Filters[ctx.Guild.Id].Any(r => r.ToString() == regex.ToString())) {
+                    if (Shared.Filters[ctx.Guild.Id].Any(f => f.Trigger.ToString() == regex.ToString())) {
                         errors.AppendLine($"Error: Filter {Formatter.Bold(filter)} already exists.");
                         continue;
                     }
-                    Shared.Filters[ctx.Guild.Id].Add(regex);
                 } else {
-                    Shared.Filters.TryAdd(ctx.Guild.Id, new ConcurrentHashSet<Regex>() { regex });
+                    if (!Shared.Filters.TryAdd(ctx.Guild.Id, new ConcurrentHashSet<Filter>())) {
+                        errors.AppendLine($"Error: Failed to create a filter data structure for this guild.");
+                        continue;
+                    }
                 }
 
+                int id = 0;
                 try {
-                    await Database.AddFilterAsync(ctx.Guild.Id, filter)
+                    id = await Database.AddFilterAsync(ctx.Guild.Id, filter)
                         .ConfigureAwait(false);
                 } catch (Exception e) {
                     TheGodfather.LogHandle.LogException(LogLevel.Warning, e);
                     errors.AppendLine($"Warning: Failed to add filter {Formatter.Bold(filter)} to the database.");
                 }
+
+                if (id == 0 || !Shared.Filters[ctx.Guild.Id].Add(new Filter(id, regex)))
+                    errors.AppendLine($"Error: Failed to add filter {Formatter.Bold(filter)}.");
             }
 
             await ctx.RespondWithIconEmbedAsync($"Done!\n\n{errors.ToString()}")
@@ -148,7 +155,7 @@ namespace TheGodfather.Modules.Administration
             var errors = new StringBuilder();
             foreach (var filter in filters) {
                 var rstr = $@"\b{filter}\b";
-                if (Shared.Filters[ctx.Guild.Id].RemoveWhere(r => r.ToString() == rstr) == 0) {
+                if (Shared.Filters[ctx.Guild.Id].RemoveWhere(f => f.Trigger.ToString() == rstr) == 0) {
                     errors.AppendLine($"Error: Filter {Formatter.Bold(filter)} does not exist.");
                     continue;
                 }
@@ -178,9 +185,9 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException("No filters registered for this guild.");
 
             await ctx.SendPaginatedCollectionAsync(
-                "Filters in this guild",
+                "Filters registered for this guild",
                 Shared.Filters[ctx.Guild.Id],
-                r => r.ToString().Replace(@"\b", ""),
+                f => $"{f.Id} | {f.Trigger.ToString().Replace(@"\b", "")}",
                 DiscordColor.DarkGreen
             ).ConfigureAwait(false);
         }

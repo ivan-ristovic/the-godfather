@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
+using TheGodfather.Modules.Administration.Common;
+
 using Npgsql;
 using NpgsqlTypes;
 #endregion
@@ -11,9 +13,9 @@ namespace TheGodfather.Services
 {
     public partial class DBService
     {
-        public async Task<IReadOnlyList<Tuple<ulong, string>>> GetFiltersForAllGuildsAsync()
+        public async Task<IReadOnlyList<(ulong, Filter)>> GetFiltersForAllGuildsAsync()
         {
-            var filters = new List<Tuple<ulong, string>>();
+            var filters = new List<(ulong, Filter)>();
 
             await _sem.WaitAsync();
             try {
@@ -25,7 +27,7 @@ namespace TheGodfather.Services
 
                     using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
                         while (await reader.ReadAsync().ConfigureAwait(false))
-                            filters.Add(new Tuple<ulong, string>((ulong)(long)reader["gid"], (string)reader["filter"]));
+                            filters.Add(((ulong)(long)reader["gid"], new Filter((int)reader["id"], (string)reader["filter"])));
                     }
                 }
             } finally {
@@ -35,9 +37,9 @@ namespace TheGodfather.Services
             return filters.AsReadOnly();
         }
 
-        public async Task<IReadOnlyList<string>> GetFiltersForGuildAsync(ulong gid)
+        public async Task<IReadOnlyList<Filter>> GetFiltersForGuildAsync(ulong gid)
         {
-            var filters = new List<string>();
+            var filters = new List<Filter>();
 
             await _sem.WaitAsync();
             try {
@@ -50,7 +52,7 @@ namespace TheGodfather.Services
 
                     using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
                         while (await reader.ReadAsync().ConfigureAwait(false))
-                            filters.Add((string)reader["filter"]);
+                            filters.Add(new Filter((int)reader["id"], (string)reader["filter"]));
                     }
                 }
             } finally {
@@ -60,23 +62,29 @@ namespace TheGodfather.Services
             return filters.AsReadOnly();
         }
 
-        public async Task AddFilterAsync(ulong gid, string filter)
+        public async Task<int> AddFilterAsync(ulong gid, string filter)
         {
+            int id = 0;
+
             await _sem.WaitAsync();
             try {
                 using (var con = new NpgsqlConnection(_connectionString))
                 using (var cmd = con.CreateCommand()) {
                     await con.OpenAsync().ConfigureAwait(false);
 
-                    cmd.CommandText = "INSERT INTO gf.filters(gid, filter) VALUES (@gid, @filter);";
+                    cmd.CommandText = "INSERT INTO gf.filters(gid, filter) VALUES (@gid, @filter) RETURNING id;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
                     cmd.Parameters.AddWithValue("filter", NpgsqlDbType.Varchar, filter);
 
-                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                    var res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
+                    if (res != null && !(res is DBNull))
+                        id = (int)res;
                 }
             } finally {
                 _sem.Release();
             }
+
+            return id;
         }
 
         public async Task RemoveFilterAsync(ulong gid, string filter)
