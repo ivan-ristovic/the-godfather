@@ -22,6 +22,20 @@ SET row_security = off;
 CREATE SCHEMA gf;
 
 
+--
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+
+
+--
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: -
+--
+
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
+
 SET default_tablespace = '';
 
 SET default_with_oids = false;
@@ -155,8 +169,29 @@ ALTER SEQUENCE gf.feeds_id_seq OWNED BY gf.feeds.id;
 
 CREATE TABLE gf.filters (
     gid bigint NOT NULL,
-    filter character varying(64) NOT NULL
+    filter character varying(64) NOT NULL,
+    id integer NOT NULL
 );
+
+
+--
+-- Name: filters_id_seq; Type: SEQUENCE; Schema: gf; Owner: -
+--
+
+CREATE SEQUENCE gf.filters_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: filters_id_seq; Type: SEQUENCE OWNED BY; Schema: gf; Owner: -
+--
+
+ALTER SEQUENCE gf.filters_id_seq OWNED BY gf.filters.id;
 
 
 --
@@ -476,6 +511,13 @@ ALTER TABLE ONLY gf.feeds ALTER COLUMN id SET DEFAULT nextval('gf.feeds_id_seq':
 
 
 --
+-- Name: filters id; Type: DEFAULT; Schema: gf; Owner: -
+--
+
+ALTER TABLE ONLY gf.filters ALTER COLUMN id SET DEFAULT nextval('gf.filters_id_seq'::regclass);
+
+
+--
 -- Name: insults id; Type: DEFAULT; Schema: gf; Owner: -
 --
 
@@ -601,7 +643,15 @@ ALTER TABLE ONLY gf.feeds
 --
 
 ALTER TABLE ONLY gf.filters
-    ADD CONSTRAINT filters_pkey PRIMARY KEY (gid, filter);
+    ADD CONSTRAINT filters_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: filters filters_unique; Type: CONSTRAINT; Schema: gf; Owner: -
+--
+
+ALTER TABLE ONLY gf.filters
+    ADD CONSTRAINT filters_unique UNIQUE (filter, gid);
 
 
 --
@@ -851,6 +901,14 @@ CREATE INDEX trigger_index ON gf.text_reactions USING btree (trigger);
 
 ALTER TABLE ONLY gf.automatic_roles
     ADD CONSTRAINT ar_fkey FOREIGN KEY (gid) REFERENCES gf.guild_cfg(gid) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: filters filters_fkey; Type: FK CONSTRAINT; Schema: gf; Owner: -
+--
+
+ALTER TABLE ONLY gf.filters
+    ADD CONSTRAINT filters_fkey FOREIGN KEY (gid) REFERENCES gf.guild_cfg(gid) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
