@@ -141,11 +141,39 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_FILTER_DELETE
-        [Command("delete"), Module(ModuleType.Administration)]
+        [Command("delete"), Priority(1)]
+        [Module(ModuleType.Administration)]
         [Description("Remove filters from guild filter list.")]
         [Aliases("-", "remove", "del", "rm", "rem", "d")]
         [UsageExample("!filter delete fuck f+u+c+k+")]
         [RequireUserPermissions(Permissions.ManageGuild)]
+        public async Task DeleteAsync(CommandContext ctx,
+                                     [RemainingText, Description("Filters IDs to remove.")] params int[] ids)
+        {
+            if (!Shared.Filters.ContainsKey(ctx.Guild.Id))
+                throw new CommandFailedException("This guild has no filters registered.");
+
+            var errors = new StringBuilder();
+            foreach (var id in ids) {
+                if (Shared.Filters[ctx.Guild.Id].RemoveWhere(f => f.Id == id) == 0) {
+                    errors.AppendLine($"Error: Filter with ID {Formatter.Bold(id.ToString())} does not exist.");
+                    continue;
+                }
+
+                try {
+                    await Database.RemoveFilterAsync(ctx.Guild.Id, id)
+                        .ConfigureAwait(false);
+                } catch (Exception e) {
+                    TheGodfather.LogHandle.LogException(LogLevel.Warning, e);
+                    errors.AppendLine($"Warning: Failed to remove filter with ID {Formatter.Bold(id.ToString())} from the database.");
+                }
+            }
+
+            await ctx.RespondWithIconEmbedAsync($"Done!\n\n{errors.ToString()}")
+                .ConfigureAwait(false);
+        }
+
+        [Command("delete"), Priority(0)]
         public async Task DeleteAsync(CommandContext ctx,
                                      [RemainingText, Description("Filters to remove.")] params string[] filters)
         {
@@ -172,6 +200,7 @@ namespace TheGodfather.Modules.Administration
             await ctx.RespondWithIconEmbedAsync($"Done!\n\n{errors.ToString()}")
                 .ConfigureAwait(false);
         }
+
         #endregion
 
         #region COMMAND_FILTER_LIST

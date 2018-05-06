@@ -106,6 +106,25 @@ namespace TheGodfather.Services
             }
         }
 
+        public async Task RemoveFilterAsync(ulong gid, int id)
+        {
+            await _sem.WaitAsync();
+            try {
+                using (var con = new NpgsqlConnection(_connectionString))
+                using (var cmd = con.CreateCommand()) {
+                    await con.OpenAsync().ConfigureAwait(false);
+
+                    cmd.CommandText = "DELETE FROM gf.filters WHERE gid = @gid AND id = @id;";
+                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
+                    cmd.Parameters.AddWithValue("id", NpgsqlDbType.Integer, id);
+
+                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                }
+            } finally {
+                _sem.Release();
+            }
+        }
+
         public async Task RemoveAllGuildFiltersAsync(ulong gid)
         {
             await _sem.WaitAsync();
