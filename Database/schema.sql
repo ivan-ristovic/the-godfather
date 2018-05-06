@@ -22,20 +22,6 @@ SET row_security = off;
 CREATE SCHEMA gf;
 
 
---
--- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: -
---
-
-CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
-
-
---
--- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: -
---
-
-COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
-
-
 SET default_tablespace = '';
 
 SET default_with_oids = false;
@@ -809,13 +795,6 @@ CREATE INDEX fki_items_fkey ON gf.items USING btree (gid);
 --
 
 CREATE INDEX fki_savedtasks_fkey ON gf.saved_tasks USING btree (gid);
-
-
---
--- Name: gid_index; Type: INDEX; Schema: gf; Owner: -
---
-
-CREATE INDEX gid_index ON gf.filters USING btree (gid);
 
 
 --
