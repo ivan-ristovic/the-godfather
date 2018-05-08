@@ -20,7 +20,7 @@ namespace TheGodfather.Modules.Gambling.Common
 {
     public class LotteryGame : Game
     {
-        public static readonly int MaxNumber = 10;
+        public static readonly int MaxNumber = 15;
         public static readonly int DrawCount = 3;
         public static readonly int TicketPrice = 250;
         public static readonly ImmutableArray<int> Prizes = new int[] {
@@ -49,7 +49,7 @@ namespace TheGodfather.Modules.Gambling.Common
             var msg = await _channel.SendIconEmbedAsync("Drawing lottery numbers in 5s...", StaticDiscordEmoji.MoneyBag)
                 .ConfigureAwait(false);
 
-            var drawn = Enumerable.Range(1, 15).Shuffle().Take(3);
+            var drawn = Enumerable.Range(1, MaxNumber + 1).Shuffle().Take(3);
 
             for (int i = 0; i < DrawCount; i++) {
                 await Task.Delay(TimeSpan.FromSeconds(5))

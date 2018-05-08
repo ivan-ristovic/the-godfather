@@ -54,7 +54,7 @@ namespace TheGodfather.Modules.Owner
                 if (!users.Any())
                     throw new InvalidCommandUsageException("Missing users to grant priviledge to.");
 
-                var sb = new StringBuilder("Action results:\n\n");
+                var sb = new StringBuilder("Add priviledged users action results:\n\n");
                 foreach (var user in users) {
                     try {
                         await Database.AddPriviledgedUserAsync(user.Id)
@@ -84,7 +84,7 @@ namespace TheGodfather.Modules.Owner
                 if (!users.Any())
                     throw new InvalidCommandUsageException("Missing users.");
 
-                var sb = new StringBuilder("Action results:\n\n");
+                var sb = new StringBuilder("Delete priviledged users action results:\n\n");
                 foreach (var user in users) {
                     try {
                         await Database.RemovePrivilegedUserAsync(user.Id)
@@ -94,7 +94,7 @@ namespace TheGodfather.Modules.Owner
                         TheGodfather.LogHandle.LogException(LogLevel.Warning, e);
                         continue;
                     }
-                    sb.AppendLine($"Revoked priviledges for: {user.ToString()}!");
+                    sb.AppendLine($"Removed: {user.ToString()}!");
                 }
 
                 await ctx.RespondWithIconEmbedAsync(sb.ToString())
