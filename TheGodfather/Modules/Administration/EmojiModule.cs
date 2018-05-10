@@ -39,35 +39,38 @@ namespace TheGodfather.Modules.Administration
 
         #region COMMAND_EMOJI_ADD
         [Command("add"), Module(ModuleType.Administration)]
-        [Description("Add emoji.")]
-        [Aliases("create", "a", "+")]
+        [Description("Add emoji specified via URL or message attachment.")]
+        [Aliases("create", "a", "+", "install")]
         [UsageExample("!emoji add pepe http://i0.kym-cdn.com/photos/images/facebook/000/862/065/0e9.jpg")]
         [RequirePermissions(Permissions.ManageEmojis)]
         public async Task AddAsync(CommandContext ctx,
                                   [Description("Name.")] string name,
-                                  [Description("URL.")] string url)
+                                  [RemainingText, Description("URL.")] string url)
         {
-            if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(url))
-                throw new InvalidCommandUsageException("Name or URL missing or invalid.");
+            if (string.IsNullOrWhiteSpace(name))
+                throw new InvalidCommandUsageException("Emoji name missing or invalid.");
+
+            if (string.IsNullOrWhiteSpace(url)) {
+                if (!ctx.Message.Attachments.Any())
+                    throw new InvalidCommandUsageException("Please specify either an URL pointing to an emoji image or attach an emoji image.");
+                var attachment = ctx.Message.Attachments.First();
+                url = attachment.Url;
+            }
 
             if (!IsValidImageURL(url, out Uri uri))
-                throw new CommandFailedException("URL must point to an image and use http or https protocols.");
+                throw new CommandFailedException("URL must point to an image and use HTTP or HTTPS protocols.");
 
             try {
-                var stream = await HTTPClient.GetStreamAsync(uri)
-                   .ConfigureAwait(false);
-                using (var ms = new MemoryStream()) {
-                    await stream.CopyToAsync(ms)
+                using (var response = await HTTPClient.GetAsync(url).ConfigureAwait(false))
+                using (var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
+                    await ctx.Guild.CreateEmojiAsync(name, stream, reason: ctx.BuildReasonString())
                         .ConfigureAwait(false);
-                    await ctx.Guild.CreateEmojiAsync(name, ms, reason: ctx.BuildReasonString())
-                        .ConfigureAwait(false);
-                }
             } catch (WebException e) {
                 throw new CommandFailedException("Error getting the image.", e);
             } catch (BadRequestException e) {
-                throw new CommandFailedException("Possibly emoji slots are full for this guild?", e);
+                throw new CommandFailedException("Possibly emoji slots are full for this guild or the image format is not supported?", e);
             } catch (Exception e) {
-                throw new CommandFailedException("An error occured.", e);
+                throw new CommandFailedException("An unknown error occured.", e);
             }
 
             await ctx.RespondWithIconEmbedAsync($"Emoji {Formatter.Bold(name)} successfully added!")

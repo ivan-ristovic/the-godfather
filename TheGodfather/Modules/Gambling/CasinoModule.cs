@@ -18,7 +18,7 @@ namespace TheGodfather.Modules.Gambling
 {
     [Group("casino"), Module(ModuleType.Gambling)]
     [Description("Betting and gambling games.")]
-    [Aliases("vegas")]
+    [Aliases("vegas", "cs", "cas")]
     [Cooldown(3, 7, CooldownBucketType.Channel)]
     [ListeningCheck]
     public partial class CasinoModule : TheGodfatherBaseModule
