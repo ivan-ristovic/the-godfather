@@ -38,10 +38,13 @@ namespace TheGodfather.Modules.Administration
 
 
         #region COMMAND_EMOJI_ADD
-        [Command("add"), Module(ModuleType.Administration)]
-        [Description("Add emoji specified via URL or message attachment.")]
+        [Command("add"), Priority(0)]
+        [Module(ModuleType.Administration)]
+        [Description("Add emoji specified via URL or message attachment. If you have Discord Nitro, you can also pass emojis from another guild as arguments instead of their URLs.")]
         [Aliases("create", "a", "+", "install")]
         [UsageExample("!emoji add pepe http://i0.kym-cdn.com/photos/images/facebook/000/862/065/0e9.jpg")]
+        [UsageExample("!emoji add pepe [ATTACH IMAGE]")]
+        [UsageExample("!emoji add pepe :pepe_from_other_server:")]
         [RequirePermissions(Permissions.ManageEmojis)]
         public async Task AddAsync(CommandContext ctx,
                                   [Description("Name.")] string name,
@@ -58,7 +61,7 @@ namespace TheGodfather.Modules.Administration
             }
 
             if (!IsValidImageURL(url, out Uri uri))
-                throw new CommandFailedException("URL must point to an image and use HTTP or HTTPS protocols.");
+                throw new InvalidCommandUsageException("URL must point to an image and use HTTP or HTTPS protocols.");
 
             try {
                 using (var response = await HTTPClient.GetAsync(url).ConfigureAwait(false))
@@ -76,6 +79,23 @@ namespace TheGodfather.Modules.Administration
             await ctx.RespondWithIconEmbedAsync($"Emoji {Formatter.Bold(name)} successfully added!")
                 .ConfigureAwait(false);
         }
+
+        [Command("add"), Priority(2)]
+        public Task AddAsync(CommandContext ctx,
+                            [Description("Name.")] string name,
+                            [Description("Emoji from another server to steal.")] DiscordEmoji emoji)
+        {
+            if (emoji.Id == 0)
+                throw new InvalidCommandUsageException("Cannot add a unicode emoji.");
+
+            return AddAsync(ctx, name, emoji.Url);
+        }
+
+        [Command("add"), Priority(1)]
+        public Task AddAsync(CommandContext ctx,
+                            [Description("Emoji from another server to steal.")] DiscordEmoji emoji,
+                            [Description("Name.")] string name)
+            => AddAsync(ctx, name, emoji);
         #endregion
 
         #region COMMAND_EMOJI_DELETE
