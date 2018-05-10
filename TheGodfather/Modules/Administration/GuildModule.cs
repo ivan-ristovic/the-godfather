@@ -184,26 +184,22 @@ namespace TheGodfather.Modules.Administration
         [UsageExample("!guild seticon http://imgur.com/someimage.png")]
         [RequirePermissions(Permissions.ManageGuild)]
         public async Task SetIconAsync(CommandContext ctx,
-                                      [Description("New icon URL.")] string url)
+                                      [Description("New icon URL.")] Uri url = null)
         {
-            if (string.IsNullOrWhiteSpace(url))
+            if (url == null)
                 throw new InvalidCommandUsageException("URL missing.");
 
-            if (!IsValidImageURL(url, out Uri uri))
+            if (!await IsValidImageUriAsync(url).ConfigureAwait(false))
                 throw new CommandFailedException("URL must point to an image and use http or https protocols.");
 
             try {
-                var stream = await HTTPClient.GetStreamAsync(uri)
-                    .ConfigureAwait(false);
-                using (var ms = new MemoryStream()) {
-                    await stream.CopyToAsync(ms)
+                using (var response = await HTTPClient.GetAsync(url).ConfigureAwait(false))
+                using (var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
+                    await ctx.Guild.ModifyAsync(new Action<GuildEditModel>(e => e.Icon = stream))
                         .ConfigureAwait(false);
-                    await ctx.Guild.ModifyAsync(new Action<GuildEditModel>(e => e.Icon = ms))
-                        .ConfigureAwait(false);
-                }
             } catch (Exception e) {
                 TheGodfather.LogHandle.LogException(LogLevel.Debug, e);
-                throw new CommandFailedException("Unknown error occured.", e);
+                throw new CommandFailedException("An error occured.", e);
             }
 
             await ctx.RespondWithIconEmbedAsync()

@@ -125,6 +125,7 @@ namespace TheGodfather
             Commands.RegisterConverter(new CustomActivityTypeConverter());
             Commands.RegisterConverter(new CustomBoolConverter());
             Commands.RegisterConverter(new CustomTimeWindowConverter());
+            Commands.RegisterConverter(new CustomUriConverter());
 
             Commands.CommandExecuted += Commands_CommandExecuted;
             Commands.CommandErrored += Commands_CommandErrored;

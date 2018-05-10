@@ -3,6 +3,7 @@ using System;
 using System.Net;
 using System.Net.Http;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Services;
@@ -27,33 +28,15 @@ namespace TheGodfather.Modules
             Shared = shared;
             Database = db;
         }
+        
 
-
-        protected bool IsValidURL(string url, out Uri uri)
+        protected async Task<bool> IsValidImageUriAsync(Uri uri)
         {
-            uri = null;
-            if (!Uri.TryCreate(url, UriKind.Absolute, out uri))
-                return false;
-            if (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps)
-                return false;
-            return true;
-        }
-
-        protected bool IsValidImageURL(string url, out Uri uri)
-        {
-            if (!IsValidURL(url, out uri))
-                return false;
-
             try {
-                if (WebRequest.Create(uri) is HttpWebRequest request) {
-                    string contentType = "";
-                    if (request.GetResponse() is HttpWebResponse response)
-                        contentType = response.ContentType;
-                    if (!contentType.StartsWith("image/"))
-                        return false;
-                } else {
+                var response = await HTTPClient.GetAsync(uri)
+                    .ConfigureAwait(false);
+                if (!response.Content.Headers.ContentType.MediaType.StartsWith("image/"))
                     return false;
-                }
             } catch (Exception e) {
                 TheGodfather.LogHandle.LogException(LogLevel.Debug, e);
                 return false;

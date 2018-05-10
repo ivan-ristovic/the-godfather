@@ -38,7 +38,7 @@ namespace TheGodfather.Modules.Administration
 
 
         #region COMMAND_EMOJI_ADD
-        [Command("add"), Priority(0)]
+        [Command("add"), Priority(3)]
         [Module(ModuleType.Administration)]
         [Description("Add emoji specified via URL or message attachment. If you have Discord Nitro, you can also pass emojis from another guild as arguments instead of their URLs.")]
         [Aliases("create", "a", "+", "install")]
@@ -48,19 +48,17 @@ namespace TheGodfather.Modules.Administration
         [RequirePermissions(Permissions.ManageEmojis)]
         public async Task AddAsync(CommandContext ctx,
                                   [Description("Name.")] string name,
-                                  [RemainingText, Description("URL.")] string url)
+                                  [Description("URL.")] Uri url = null)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new InvalidCommandUsageException("Emoji name missing or invalid.");
 
-            if (string.IsNullOrWhiteSpace(url)) {
-                if (!ctx.Message.Attachments.Any())
-                    throw new InvalidCommandUsageException("Please specify either an URL pointing to an emoji image or attach an emoji image.");
-                var attachment = ctx.Message.Attachments.First();
-                url = attachment.Url;
+            if (url == null) {
+                if (!ctx.Message.Attachments.Any() || !Uri.TryCreate(ctx.Message.Attachments.First().Url, UriKind.Absolute, out url))
+                    throw new InvalidCommandUsageException("Please specify a name and a URL pointing to an emoji image or attach an emoji image.");
             }
 
-            if (!IsValidImageURL(url, out Uri uri))
+            if (!await IsValidImageUriAsync(url).ConfigureAwait(false))
                 throw new InvalidCommandUsageException("URL must point to an image and use HTTP or HTTPS protocols.");
 
             try {
@@ -82,16 +80,23 @@ namespace TheGodfather.Modules.Administration
 
         [Command("add"), Priority(2)]
         public Task AddAsync(CommandContext ctx,
-                            [Description("Name.")] string name,
-                            [Description("Emoji from another server to steal.")] DiscordEmoji emoji)
+                            [Description("URL.")] Uri url,
+                            [Description("Name.")] string name)
+            => AddAsync(ctx, name, url);
+
+        [Command("add"), Priority(1)]
+        public async Task AddAsync(CommandContext ctx,
+                                  [Description("Name.")] string name,
+                                  [Description("Emoji from another server to steal.")] DiscordEmoji emoji)
         {
             if (emoji.Id == 0)
                 throw new InvalidCommandUsageException("Cannot add a unicode emoji.");
 
-            return AddAsync(ctx, name, emoji.Url);
+            await AddAsync(ctx, name, new Uri(emoji.Url))
+                .ConfigureAwait(false);
         }
 
-        [Command("add"), Priority(1)]
+        [Command("add"), Priority(0)]
         public Task AddAsync(CommandContext ctx,
                             [Description("Emoji from another server to steal.")] DiscordEmoji emoji,
                             [Description("Name.")] string name)

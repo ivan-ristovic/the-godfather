@@ -32,43 +32,39 @@ namespace TheGodfather.Modules.Music
             public PlayModule(YoutubeService yt, SharedData shared) : base(yt, shared) { }
 
 
-            [GroupCommand]
+            [GroupCommand, Priority(1)]
             public async Task ExecuteGroupAsync(CommandContext ctx,
-                                               [RemainingText, Description("URL or YouTube search query.")] string data_or_url)
+                                               [Description("URL.")] Uri url)
             {
-                if (!IsValidURL(data_or_url, out Uri uri))
-                    data_or_url = await _Service.GetFirstVideoResultAsync(data_or_url)
-                        .ConfigureAwait(false);
-
-                if (string.IsNullOrWhiteSpace(data_or_url))
-                    throw new CommandFailedException("No results found!");
-
-                var si = await _Service.GetSongInfoAsync(data_or_url)
+                var si = await _Service.GetSongInfoAsync(url.AbsoluteUri)
                     .ConfigureAwait(false);
+
                 if (si == null)
                     throw new CommandFailedException("Failed to retrieve song information for that URL.");
                 si.Queuer = ctx.User.Mention;
 
-                var vnext = ctx.Client.GetVoiceNext();
-                if (vnext == null)
-                    throw new CommandFailedException("VNext is not enabled or configured.");
+                await ConnectAndAddToQueueAsync(ctx, si)
+                    .ConfigureAwait(false);
+            }
 
-                var vnc = vnext.GetConnection(ctx.Guild);
-                if (vnc == null) {
-                    await ConnectAsync(ctx);
-                    vnc = vnext.GetConnection(ctx.Guild);
-                }
+            [GroupCommand, Priority(0)]
+            public async Task ExecuteGroupAsync(CommandContext ctx,
+                                               [RemainingText, Description("YouTube search query.")] string query)
+            {
+                var result = await _Service.GetFirstVideoResultAsync(query)
+                    .ConfigureAwait(false);
 
-                if (Shared.MusicPlayers.ContainsKey(ctx.Guild.Id)) {
-                    Shared.MusicPlayers[ctx.Guild.Id].Enqueue(si);
-                    await ctx.RespondAsync("Added to queue:", embed: si.Embed())
-                        .ConfigureAwait(false);
-                } else {
-                    if (!Shared.MusicPlayers.TryAdd(ctx.Guild.Id, new MusicPlayer(ctx.Client, ctx.Channel, vnc)))
-                        throw new CommandFailedException("Failed to initialize music player!");
-                    Shared.MusicPlayers[ctx.Guild.Id].Enqueue(si);
-                    var t = Task.Run(() => Shared.MusicPlayers[ctx.Guild.Id].StartAsync());
-                }
+                if (string.IsNullOrWhiteSpace(result))
+                    throw new CommandFailedException("No results found!");
+
+                var si = await _Service.GetSongInfoAsync(result)
+                    .ConfigureAwait(false);
+                if (si == null)
+                    throw new CommandFailedException("Failed to retrieve song information for that query.");
+                si.Queuer = ctx.User.Mention;
+
+                await ConnectAndAddToQueueAsync(ctx, si)
+                    .ConfigureAwait(false);
             }
 
 
@@ -111,6 +107,33 @@ namespace TheGodfather.Modules.Music
                         throw new CommandFailedException("Failed to initialize music player!");
                     Shared.MusicPlayers[ctx.Guild.Id].Enqueue(si);
                     await Shared.MusicPlayers[ctx.Guild.Id].StartAsync();
+                }
+            }
+            #endregion
+
+
+            #region HELPER_FUNCTIONS
+            private async Task ConnectAndAddToQueueAsync(CommandContext ctx, SongInfo si)
+            {
+                var vnext = ctx.Client.GetVoiceNext();
+                if (vnext == null)
+                    throw new CommandFailedException("VNext is not enabled or configured.");
+
+                var vnc = vnext.GetConnection(ctx.Guild);
+                if (vnc == null) {
+                    await ConnectAsync(ctx);
+                    vnc = vnext.GetConnection(ctx.Guild);
+                }
+
+                if (Shared.MusicPlayers.ContainsKey(ctx.Guild.Id)) {
+                    Shared.MusicPlayers[ctx.Guild.Id].Enqueue(si);
+                    await ctx.RespondAsync("Added to queue:", embed: si.Embed())
+                        .ConfigureAwait(false);
+                } else {
+                    if (!Shared.MusicPlayers.TryAdd(ctx.Guild.Id, new MusicPlayer(ctx.Client, ctx.Channel, vnc)))
+                        throw new CommandFailedException("Failed to initialize music player!");
+                    Shared.MusicPlayers[ctx.Guild.Id].Enqueue(si);
+                    var t = Task.Run(() => Shared.MusicPlayers[ctx.Guild.Id].StartAsync());
                 }
             }
             #endregion

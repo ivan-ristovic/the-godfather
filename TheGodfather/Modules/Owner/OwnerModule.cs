@@ -75,16 +75,13 @@ namespace TheGodfather.Modules.Owner
         [RequireOwner]
         [ListeningCheck]
         public async Task SetBotAvatarAsync(CommandContext ctx,
-                                           [Description("URL.")] string url)
+                                           [Description("URL.")] Uri url)
         {
-            if (string.IsNullOrWhiteSpace(url))
-                throw new InvalidCommandUsageException("URL missing.");
-
-            if (!IsValidImageURL(url, out Uri uri))
+            if (!await IsValidImageUriAsync(url).ConfigureAwait(false))
                 throw new CommandFailedException("URL must point to an image and use http or https protocols.");
 
             try {
-                var stream = await HTTPClient.GetStreamAsync(uri)
+                var stream = await HTTPClient.GetStreamAsync(url)
                    .ConfigureAwait(false);
                 using (var ms = new MemoryStream()) {
                     await stream.CopyToAsync(ms)

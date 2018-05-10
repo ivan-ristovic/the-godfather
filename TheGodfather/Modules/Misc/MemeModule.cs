@@ -76,18 +76,18 @@ namespace TheGodfather.Modules.Misc
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task AddMemeAsync(CommandContext ctx,
                                       [Description("Short name (case insensitive).")] string name,
-                                      [Description("URL.")] string url)
+                                      [Description("URL.")] Uri url)
         {
-            if (string.IsNullOrWhiteSpace(url))
+            if (url == null)
                 throw new InvalidCommandUsageException("URL missing.");
 
-            if (!IsValidImageURL(url, out Uri uri))
+            if (!await IsValidImageUriAsync(url))
                 throw new InvalidCommandUsageException("URL must point to an image.");
 
-            if (name.Length > 30 || url.Length > 120)
+            if (name.Length > 30 || url.OriginalString.Length > 120)
                 throw new CommandFailedException("Name/URL is too long. Name must be shorter than 30 characters, and URL must be shorter than 120 characters.");
 
-            await Database.AddMemeAsync(ctx.Guild.Id, name, uri.AbsoluteUri)
+            await Database.AddMemeAsync(ctx.Guild.Id, name, url.AbsoluteUri)
                 .ConfigureAwait(false);
             await ctx.RespondWithIconEmbedAsync($"Meme {Formatter.Bold(name)} successfully added!")
                 .ConfigureAwait(false);
