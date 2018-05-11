@@ -69,17 +69,20 @@ namespace TheGodfather.Modules.Misc
 
 
         #region COMMAND_MEME_ADD
-        [Command("add"), Module(ModuleType.Miscellaneous)]
+        [Command("add"), Priority(1)]
+        [Module(ModuleType.Miscellaneous)]
         [Description("Add a new meme to the list.")]
         [Aliases("+", "new", "a")]
         [UsageExample("!meme add pepe http://i0.kym-cdn.com/photos/images/facebook/000/862/065/0e9.jpg")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task AddMemeAsync(CommandContext ctx,
                                       [Description("Short name (case insensitive).")] string name,
-                                      [Description("URL.")] Uri url)
+                                      [Description("URL.")] Uri url = null)
         {
-            if (url == null)
-                throw new InvalidCommandUsageException("URL missing.");
+            if (url == null) {
+                if (!ctx.Message.Attachments.Any() || !Uri.TryCreate(ctx.Message.Attachments.First().Url, UriKind.Absolute, out url))
+                    throw new InvalidCommandUsageException("Please specify a name and a URL pointing to a meme image or attach it manually.");
+            }
 
             if (!await IsValidImageUriAsync(url))
                 throw new InvalidCommandUsageException("URL must point to an image.");
@@ -92,6 +95,12 @@ namespace TheGodfather.Modules.Misc
             await ctx.RespondWithIconEmbedAsync($"Meme {Formatter.Bold(name)} successfully added!")
                 .ConfigureAwait(false);
         }
+
+        [Command("add"), Priority(0)]
+        public Task AddMemeAsync(CommandContext ctx,
+                                [Description("URL.")] Uri url,
+                                [Description("Short name (case insensitive).")] string name)
+            => AddMemeAsync(ctx, name, url);
         #endregion
 
         #region COMMAND_MEME_CLEAR

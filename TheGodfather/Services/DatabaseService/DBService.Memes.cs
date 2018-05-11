@@ -20,7 +20,7 @@ namespace TheGodfather.Services
                 using (var cmd = con.CreateCommand()) {
                     await con.OpenAsync().ConfigureAwait(false);
 
-                    cmd.CommandText = "INSERT INTO gf.memes VALUES (@gid, @name, @url);";
+                    cmd.CommandText = "INSERT INTO gf.memes VALUES (@gid, @name, @url) ON CONFLICT (gid, name) DO UPDATE SET url = @url;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
                     cmd.Parameters.AddWithValue("name", NpgsqlDbType.Varchar, name);
                     cmd.Parameters.AddWithValue("url", NpgsqlDbType.Varchar, url);
