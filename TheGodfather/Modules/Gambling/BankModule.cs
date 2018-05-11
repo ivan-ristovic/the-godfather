@@ -44,7 +44,7 @@ namespace TheGodfather.Modules.Gambling
             if (user == null)
                 user = ctx.User;
 
-            int? balance = await Database.GetUserCreditAmountAsync(user.Id)
+            long? balance = await Database.GetUserCreditAmountAsync(user.Id)
                 .ConfigureAwait(false);
 
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
@@ -65,10 +65,10 @@ namespace TheGodfather.Modules.Gambling
         [RequirePriviledgedUser]
         public async Task GrantAsync(CommandContext ctx,
                                     [Description("User.")] DiscordUser user,
-                                    [Description("Amount.")] int amount)
+                                    [Description("Amount.")] long amount)
         {
-            if (amount <= 0 || amount > 1000000)
-                throw new InvalidCommandUsageException("Invalid amount. Must be in range [1-100000].");
+            if (amount <= 0 || amount > 10000000000)
+                throw new InvalidCommandUsageException("Invalid amount. Must be in range [1-1000000000].");
 
             if (!await Database.BankContainsUserAsync(user.Id).ConfigureAwait(false))
                 throw new CommandFailedException("Given user does not have a WM bank account!");
@@ -81,7 +81,7 @@ namespace TheGodfather.Modules.Gambling
 
         [Command("grant"), Priority(0)]
         public Task GrantAsync(CommandContext ctx,
-                              [Description("Amount.")] int amount,
+                              [Description("Amount.")] long amount,
                               [Description("User.")] DiscordUser user)
             => GrantAsync(ctx, user, amount);
         #endregion
@@ -139,7 +139,7 @@ namespace TheGodfather.Modules.Gambling
         [UsageExample("!bank transfer 40 @Someone")]
         public async Task TransferCreditsAsync(CommandContext ctx,
                                               [Description("User to send credits to.")] DiscordUser user,
-                                              [Description("Amount.")] int amount)
+                                              [Description("Amount.")] long amount)
         {
             if (amount <= 0)
                 throw new CommandFailedException("The amount must be positive integer.");
@@ -156,7 +156,7 @@ namespace TheGodfather.Modules.Gambling
 
         [Command("transfer"), Priority(0)]
         public Task TransferCreditsAsync(CommandContext ctx,
-                                        [Description("Amount.")] int amount,
+                                        [Description("Amount.")] long amount,
                                         [Description("User to send credits to.")] DiscordUser user)
             => TransferCreditsAsync(ctx, user, amount);
         #endregion

@@ -15,7 +15,7 @@ namespace TheGodfather.Services
     {
         public async Task<bool> BankContainsUserAsync(ulong uid)
         {
-            int? balance = await GetUserCreditAmountAsync(uid)
+            long? balance = await GetUserCreditAmountAsync(uid)
                 .ConfigureAwait(false);
             return balance.HasValue;
         }
@@ -45,9 +45,9 @@ namespace TheGodfather.Services
             return res;
         }
 
-        public async Task<int?> GetUserCreditAmountAsync(ulong uid)
+        public async Task<long?> GetUserCreditAmountAsync(ulong uid)
         {
-            int? balance = null;
+            long? balance = null;
 
             await _sem.WaitAsync();
             try {
@@ -60,7 +60,7 @@ namespace TheGodfather.Services
 
                     var res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
                     if (res != null && !(res is DBNull))
-                        balance = (int)res;
+                        balance = (long)res;
                 }
             } finally {
                 _sem.Release();
@@ -69,7 +69,7 @@ namespace TheGodfather.Services
             return balance;
         }
 
-        public async Task GiveCreditsToUserAsync(ulong uid, int amount)
+        public async Task GiveCreditsToUserAsync(ulong uid, long amount)
         {
             await _sem.WaitAsync();
             try {
@@ -78,7 +78,7 @@ namespace TheGodfather.Services
                     await con.OpenAsync().ConfigureAwait(false);
 
                     cmd.CommandText = "UPDATE gf.accounts SET balance = balance + @amount WHERE uid = @uid;";
-                    cmd.Parameters.AddWithValue("amount", NpgsqlDbType.Integer, amount);
+                    cmd.Parameters.AddWithValue("amount", NpgsqlDbType.Bigint, amount);
                     cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
 
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
@@ -106,9 +106,9 @@ namespace TheGodfather.Services
             }
         }
 
-        public async Task<bool> TakeCreditsFromUserAsync(ulong uid, int amount)
+        public async Task<bool> TakeCreditsFromUserAsync(ulong uid, long amount)
         {
-            int? balance = await GetUserCreditAmountAsync(uid)
+            long? balance = await GetUserCreditAmountAsync(uid)
                 .ConfigureAwait(false);
             if (!balance.HasValue || balance.Value < amount)
                 return false;
@@ -120,7 +120,7 @@ namespace TheGodfather.Services
                     await con.OpenAsync().ConfigureAwait(false);
 
                     cmd.CommandText = "UPDATE gf.accounts SET balance = balance - @amount WHERE uid = @uid;";
-                    cmd.Parameters.AddWithValue("amount", NpgsqlDbType.Integer, amount);
+                    cmd.Parameters.AddWithValue("amount", NpgsqlDbType.Bigint, amount);
                     cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
 
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
@@ -166,15 +166,15 @@ namespace TheGodfather.Services
                             cmd2.Parameters.AddWithValue("source", NpgsqlDbType.Bigint, (long)source);
 
                             var res = await cmd2.ExecuteScalarAsync().ConfigureAwait(false);
-                            if (res == null || res is DBNull || (int)res < amount) {
+                            if (res == null || res is DBNull || (long)res < amount) {
                                 await transaction.RollbackAsync().ConfigureAwait(false);
-                                throw new CommandFailedException("Source user's currency amount is insufficient for the transfer.");
+                                throw new DatabaseServiceException("Source user's currency amount is insufficient for the transfer.");
                             }
 
                             var cmd3 = con.CreateCommand();
                             cmd3.Transaction = transaction;
                             cmd3.CommandText = "UPDATE gf.accounts SET balance = balance - @amount WHERE uid = @source;";
-                            cmd3.Parameters.AddWithValue("amount", NpgsqlDbType.Integer, amount);
+                            cmd3.Parameters.AddWithValue("amount", NpgsqlDbType.Bigint, amount);
                             cmd3.Parameters.AddWithValue("source", NpgsqlDbType.Bigint, (long)source);
 
                             await cmd3.ExecuteNonQueryAsync().ConfigureAwait(false);
@@ -182,7 +182,7 @@ namespace TheGodfather.Services
                             var cmd4 = con.CreateCommand();
                             cmd4.Transaction = transaction;
                             cmd4.CommandText = "UPDATE gf.accounts SET balance = balance + @amount WHERE uid = @target;";
-                            cmd4.Parameters.AddWithValue("amount", NpgsqlDbType.Integer, amount);
+                            cmd4.Parameters.AddWithValue("amount", NpgsqlDbType.Bigint, amount);
                             cmd4.Parameters.AddWithValue("target", NpgsqlDbType.Bigint, (long)target);
 
                             await cmd4.ExecuteNonQueryAsync().ConfigureAwait(false);
@@ -211,7 +211,7 @@ namespace TheGodfather.Services
                 using (var cmd = con.CreateCommand()) {
                     await con.OpenAsync().ConfigureAwait(false);
 
-                    cmd.CommandText = "UPDATE gf.accounts SET balance = GREATEST(CEILING(1.025 * balance), 10);";
+                    cmd.CommandText = "UPDATE gf.accounts SET balance = GREATEST(CEILING(1.0015 * balance), 10);";
 
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }

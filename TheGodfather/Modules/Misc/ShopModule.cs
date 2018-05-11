@@ -42,14 +42,14 @@ namespace TheGodfather.Modules.Misc
         [UsageExample("!shop add 500 Newest Barbie")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task AddAsync(CommandContext ctx,
-                                  [Description("Item price.")] int price,
+                                  [Description("Item price.")] long price,
                                   [RemainingText, Description("Item name.")] string name)
         {
             if (name?.Length >= 60)
                 throw new InvalidCommandUsageException("Item name cannot exceed 60 characters");
 
-            if (price <= 0 || price > 2000000000)
-                throw new InvalidCommandUsageException("Item price must be positive and cannot exceed 2 billion credits.");
+            if (price <= 0 || price > 100000000000)
+                throw new InvalidCommandUsageException("Item price must be positive and cannot exceed 100 billion credits.");
 
             await Database.AddItemToGuildShopAsync(ctx.Guild.Id, name, price)
                 .ConfigureAwait(false);
@@ -60,7 +60,7 @@ namespace TheGodfather.Modules.Misc
         [Command("add"), Priority(0)]
         public Task AddAsync(CommandContext ctx,
                             [Description("Item name.")] string name,
-                            [Description("Item price.")] int price)
+                            [Description("Item price.")] long price)
             => AddAsync(ctx, price, name);
         #endregion
 
@@ -109,7 +109,7 @@ namespace TheGodfather.Modules.Misc
             if (!await Database.IsItemPurchasedByUserAsync(ctx.User.Id, item.Id))
                 throw new CommandFailedException("You did not purchase this item!");
 
-            int retval = item.Price / 2;
+            long retval = item.Price / 2;
             if (!await ctx.AskYesNoQuestionAsync($"Are you sure you want to sell a {Formatter.Bold(item.Name)} for {Formatter.Bold(retval.ToString())} credits?").ConfigureAwait(false))
                 return;
 
@@ -161,6 +161,30 @@ namespace TheGodfather.Modules.Misc
                 $"{ctx.Guild.Name}'s shop:",
                 items,
                 item => $"{item.Id} | {Formatter.Bold(item.Name)} : {Formatter.Bold(item.Price.ToString())} credits",
+                DiscordColor.Azure,
+                5
+            ).ConfigureAwait(false);
+        }
+        #endregion
+
+        #region COMMAND_SHOP_LISTALL
+        [Command("listall"), Module(ModuleType.Miscellaneous)]
+        [Description("List all purchasable items for all guilds.")]
+        [Aliases("la")]
+        [UsageExample("!shop listall")]
+        [RequireOwner]
+        public async Task ListAllAsync(CommandContext ctx)
+        {
+            var items = await Database.GetAllPurchasableItemsAsync()
+                .ConfigureAwait(false);
+
+            if (!items.Any())
+                throw new CommandFailedException("No items in shop!");
+
+            await ctx.SendPaginatedCollectionAsync(
+                $"Registered purchasable items:",
+                items,
+                item => $"{item.Id} | {item.GuildId} | {Formatter.Bold(item.Name)} : {Formatter.Bold(item.Price.ToString())} credits",
                 DiscordColor.Azure,
                 5
             ).ConfigureAwait(false);

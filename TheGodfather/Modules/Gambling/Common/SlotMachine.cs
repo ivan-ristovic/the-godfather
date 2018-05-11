@@ -21,7 +21,7 @@ namespace TheGodfather.Modules.Gambling.Common
         }.ToImmutableArray();
 
 
-        public static DiscordEmbed EmbedSlotRoll(DiscordUser user, int bid, out int won)
+        public static DiscordEmbed EmbedSlotRoll(DiscordUser user, long bid, out long won)
         {
             var res = RollSlot();
             won = EvaluateSlotResult(res, bid);
@@ -59,9 +59,9 @@ namespace TheGodfather.Modules.Gambling.Common
             return sb.ToString();
         }
 
-        private static int EvaluateSlotResult(int[,] res, int bid)
+        private static long EvaluateSlotResult(int[,] res, long bid)
         {
-            int pts = bid;
+            long pts = bid;
 
             for (int i = 0; i < 3; i++) {
                 if (res[i, 0] == res[i, 1] && res[i, 1] == res[i, 2]) {
@@ -89,7 +89,7 @@ namespace TheGodfather.Modules.Gambling.Common
                 }
             }
 
-            return pts == bid ? 0 : pts;
+            return pts == bid ? 0l : pts;
         }
     }
 }

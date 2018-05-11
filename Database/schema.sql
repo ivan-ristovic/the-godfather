@@ -22,6 +22,20 @@ SET row_security = off;
 CREATE SCHEMA gf;
 
 
+--
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+
+
+--
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: -
+--
+
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
+
 SET default_tablespace = '';
 
 SET default_with_oids = false;
@@ -32,7 +46,7 @@ SET default_with_oids = false;
 
 CREATE TABLE gf.accounts (
     uid bigint NOT NULL,
-    balance integer DEFAULT 0 NOT NULL
+    balance bigint DEFAULT 0 NOT NULL
 );
 
 
@@ -230,7 +244,7 @@ CREATE TABLE gf.items (
     id integer NOT NULL,
     gid bigint NOT NULL,
     name character varying(64) NOT NULL,
-    price integer NOT NULL
+    price bigint NOT NULL
 );
 
 

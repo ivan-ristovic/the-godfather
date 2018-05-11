@@ -33,15 +33,15 @@ namespace TheGodfather.Modules.Gambling
         [Aliases("slotmachine")]
         [UsageExample("!casino slot 20")]
         public async Task SlotAsync(CommandContext ctx,
-                                   [Description("Bid.")] int bid = 5)
+                                   [Description("Bid.")] long bid = 5)
         {
-            if (bid <= 0 || bid > 100000)
-                throw new InvalidCommandUsageException("Invalid bid amount! Needs to be in range [1, 100000]");
+            if (bid <= 0 || bid > 1000000000)
+                throw new InvalidCommandUsageException("Invalid bid amount! Needs to be in range [1, 1000000000]");
 
             if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, bid).ConfigureAwait(false))
                 throw new CommandFailedException("You do not have enough credits in WM bank!");
 
-            await ctx.RespondAsync(embed: SlotMachine.EmbedSlotRoll(ctx.User, bid, out int won))
+            await ctx.RespondAsync(embed: SlotMachine.EmbedSlotRoll(ctx.User, bid, out long won))
                 .ConfigureAwait(false);
 
             if (won > 0)
@@ -56,10 +56,10 @@ namespace TheGodfather.Modules.Gambling
         [Aliases("wof")]
         [UsageExample("!casino wof 20")]
         public async Task WheelOfFortuneAsync(CommandContext ctx,
-                                             [Description("Bid.")] int bid = 5)
+                                             [Description("Bid.")] long bid = 5)
         {
-            if (bid <= 0 || bid > 100000)
-                throw new InvalidCommandUsageException("Invalid bid amount! Needs to be in range [1, 100000]");
+            if (bid <= 0 || bid > 1000000000)
+                throw new InvalidCommandUsageException("Invalid bid amount! Needs to be in range [1, 1000000000]");
 
             if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, bid).ConfigureAwait(false))
                 throw new CommandFailedException("You do not have enough credits in WM bank!");

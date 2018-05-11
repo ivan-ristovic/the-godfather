@@ -22,14 +22,14 @@ namespace TheGodfather.Modules.Gambling.Common
             2.4f, 0.3f, 1.7f, 0.5f, 1.2f, 0.1f, 0.2f, 1.5f
         }.ToImmutableArray();
 
-        public int WonAmount => (int)(_bid * Multipliers[_index]);
+        public long WonAmount => (long)(_bid * Multipliers[_index]);
 
         private DiscordUser _user;
-        private readonly int _bid = 0;
+        private readonly long _bid = 0;
         private readonly int _index = 0;
 
 
-        public WheelOfFortune(InteractivityExtension interactivity, DiscordChannel channel, DiscordUser user, int bid)
+        public WheelOfFortune(InteractivityExtension interactivity, DiscordChannel channel, DiscordUser user, long bid)
             : base(interactivity, channel)
         {
             _user = user;

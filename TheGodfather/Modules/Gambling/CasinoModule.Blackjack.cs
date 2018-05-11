@@ -45,7 +45,7 @@ namespace TheGodfather.Modules.Gambling
                     return;
                 }
 
-                int? balance = await Database.GetUserCreditAmountAsync(ctx.User.Id)
+                long? balance = await Database.GetUserCreditAmountAsync(ctx.User.Id)
                     .ConfigureAwait(false);
                 if (!balance.HasValue || balance < bid)
                     throw new CommandFailedException("You do not have that many credits on your account! Specify a smaller bid amount.");

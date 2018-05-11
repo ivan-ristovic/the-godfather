@@ -45,7 +45,7 @@ namespace TheGodfather.Modules.Gambling
                     return;
                 }
 
-                int? balance = await Database.GetUserCreditAmountAsync(ctx.User.Id)
+                long? balance = await Database.GetUserCreditAmountAsync(ctx.User.Id)
                     .ConfigureAwait(false);
                 if (!balance.HasValue || balance < LotteryGame.TicketPrice)
                     throw new CommandFailedException($"You do not have enough credits on your account to buy a lottery ticket! The lottery ticket costs {LotteryGame.TicketPrice} credits!");

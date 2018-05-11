@@ -34,11 +34,11 @@ namespace TheGodfather.Modules.Gambling
         [UsageExample("!bet coinflip 10 heads")]
         [UsageExample("!bet coinflip tails 20")]
         public async Task CoinflipAsync(CommandContext ctx,
-                                       [Description("Bid.")] int bid,
+                                       [Description("Bid.")] long bid,
                                        [Description("Heads/Tails (h/t).")] string bet)
         {
-            if (bid <= 0 || bid > 100000)
-                throw new InvalidCommandUsageException("Invalid bid amount! Needs to be in range [0, 100000]");
+            if (bid <= 0 || bid > 1000000000)
+                throw new InvalidCommandUsageException("Invalid bid amount! Needs to be in range [0, 1000000000]");
 
             if (string.IsNullOrWhiteSpace(bet))
                 throw new InvalidCommandUsageException("Missing heads or tails call.");
@@ -77,7 +77,7 @@ namespace TheGodfather.Modules.Gambling
         [Command("coinflip"), Priority(0)]
         public Task CoinflipAsync(CommandContext ctx,
                                  [Description("Heads/Tails (h/t).")] string bet,
-                                 [Description("Bid.")] int bid)
+                                 [Description("Bid.")] long bid)
             => CoinflipAsync(ctx, bid, bet);
         #endregion
 
@@ -89,11 +89,11 @@ namespace TheGodfather.Modules.Gambling
         [UsageExample("!bet dice 50 six")]
         [UsageExample("!bet dice three 10")]
         public async Task RollDiceAsync(CommandContext ctx,
-                                       [Description("Bid.")] int bid,
+                                       [Description("Bid.")] long bid,
                                        [Description("Number guess (has to be a word one-six).")] string guess)
         {
-            if (bid <= 0 || bid > 100000)
-                throw new InvalidCommandUsageException("Invalid bid amount! Needs to be in range [0, 100000]");
+            if (bid <= 0 || bid > 1000000000)
+                throw new InvalidCommandUsageException("Invalid bid amount! Needs to be in range [0, 1000000000]");
 
             if (string.IsNullOrWhiteSpace(guess))
                 throw new InvalidCommandUsageException("Missing guess number.");
@@ -135,7 +135,7 @@ namespace TheGodfather.Modules.Gambling
         [Command("dice"), Priority(0)]
         public Task RollDiceAsync(CommandContext ctx,
                                  [Description("Number guess (has to be a word one-six).")] string guess,
-                                 [Description("Bid.")] int bid)
+                                 [Description("Bid.")] long bid)
             => RollDiceAsync(ctx, bid, guess);
         #endregion
     }

@@ -5,6 +5,6 @@
         public int Id { get; set; }
         public string Name { get; set; }
         public ulong GuildId { get; set; }
-        public int Price { get; set; }
+        public long Price { get; set; }
     }
 }

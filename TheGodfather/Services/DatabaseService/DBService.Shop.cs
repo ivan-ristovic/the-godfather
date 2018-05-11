@@ -13,7 +13,7 @@ namespace TheGodfather.Services
 {
     public partial class DBService
     {
-        public async Task AddItemToGuildShopAsync(ulong gid, string name, int price)
+        public async Task AddItemToGuildShopAsync(ulong gid, string name, long price)
         {
             await _sem.WaitAsync();
             try {
@@ -24,7 +24,7 @@ namespace TheGodfather.Services
                     cmd.CommandText = "INSERT INTO gf.items (gid, name, price) VALUES (@gid, @name, @price) ON CONFLICT DO NOTHING;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
                     cmd.Parameters.AddWithValue("name", NpgsqlDbType.Varchar, name);
-                    cmd.Parameters.AddWithValue("price", NpgsqlDbType.Integer, price);
+                    cmd.Parameters.AddWithValue("price", NpgsqlDbType.Bigint, price);
 
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
@@ -50,8 +50,8 @@ namespace TheGodfather.Services
                             blocked.Add(new PurchasableItem() {
                                 GuildId = (ulong)(long)reader["gid"],
                                 Id = (int)reader["id"],
-                                Name = (string)reader["gid"],
-                                Price = (int)reader["gid"]
+                                Name = (string)reader["name"],
+                                Price = (long)reader["price"]
                             });
                         }
                     }
@@ -83,7 +83,7 @@ namespace TheGodfather.Services
                                 GuildId = (ulong)(long)reader["gid"],
                                 Id = (int)reader["id"],
                                 Name = (string)reader["name"],
-                                Price = (int)reader["price"]
+                                Price = (long)reader["price"]
                             };
                         }
                     }
@@ -114,7 +114,7 @@ namespace TheGodfather.Services
                                 GuildId = (ulong)(long)reader["gid"],
                                 Id = (int)reader["id"],
                                 Name = (string)reader["name"],
-                                Price = (int)reader["price"]
+                                Price = (long)reader["price"]
                             });
                         }
                     }
@@ -145,7 +145,7 @@ namespace TheGodfather.Services
                                 GuildId = (ulong)(long)reader["gid"],
                                 Id = (int)reader["id"],
                                 Name = (string)reader["name"],
-                                Price = (int)reader["price"]
+                                Price = (long)reader["price"]
                             });
                         }
                     }

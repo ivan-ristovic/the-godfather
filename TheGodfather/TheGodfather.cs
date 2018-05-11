@@ -137,11 +137,11 @@ namespace TheGodfather
                 BlockedUsers = blockedusr,
                 BotConfiguration = cfg,
                 CTS = CTS,
-                Prefixes = gprefixes,
-                Filters = gfilters,
-                TextReactions = gtextreactions,
                 EmojiReactions = gemojireactions,
-                MessageCount = msgcount
+                Filters = gfilters,
+                MessageCount = msgcount,
+                Prefixes = gprefixes,
+                TextReactions = gtextreactions
             };
 
 
