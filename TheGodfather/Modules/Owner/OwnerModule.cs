@@ -11,7 +11,6 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Scripting;
 using Microsoft.CodeAnalysis.Scripting;
 
-using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
@@ -327,15 +326,9 @@ namespace TheGodfather.Modules.Owner
             sb.AppendLine("# Command list");
             sb.AppendLine();
 
-            List<Command> commands = new List<Command>();
-            foreach (var cmd in ctx.CommandsNext.RegisteredCommands.Values.Distinct()) {
-                if (cmd is CommandGroup grp)
-                    AddCommandsFromGroupRecursive(grp, commands);
-                else
-                    commands.Add(cmd);
-            }
-
-            var modules = commands.GroupBy(c => c.CustomAttributes.FirstOrDefault(a => a is ModuleAttribute))
+            var commands = ctx.CommandsNext.RegisteredCommands.SelectMany(CommandSelector);
+            var modules = commands.Select(kvp => kvp.Item2).Distinct()
+                                  .GroupBy(c => c.CustomAttributes.FirstOrDefault(a => a is ModuleAttribute))
                                   .OrderBy(g => (g.Key as ModuleAttribute)?.Module)
                                   .ToDictionary(g => g.Key as ModuleAttribute ?? new ModuleAttribute(ModuleType.Uncategorized), g => g.OrderBy(c => c.QualifiedName).ToList());
 
@@ -447,18 +440,6 @@ namespace TheGodfather.Modules.Owner
 
             await ctx.RespondWithIconEmbedAsync($"Command list created at path: {Formatter.InlineCode(current.FullName)}!")
                 .ConfigureAwait(false);
-        }
-
-        private void AddCommandsFromGroupRecursive(CommandGroup group, List<Command> commands)
-        {
-            if (group.IsExecutableWithoutSubcommands)
-                commands.Add(group as Command);
-            foreach (var child in group.Children) {
-                if (child is CommandGroup grp)
-                    AddCommandsFromGroupRecursive(grp, commands);
-                else
-                    commands.Add(child);
-            }
         }
         #endregion
 

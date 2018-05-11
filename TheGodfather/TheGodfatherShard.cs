@@ -457,9 +457,21 @@ namespace TheGodfather
                 Color = DiscordColor.Red
             };
 
-            if (ex is CommandNotFoundException)
+            if (ex is CommandNotFoundException cne) {
                 return;
-            else if (ex is InvalidCommandUsageException)
+                /*
+                emb.WithTitle($"Command {cne.CommandName} not found. Did you mean...");
+                emb.WithDescription("Did you mean...");
+                var commands = Commands.RegisteredCommands.SelectMany();
+                var ordered = commands
+                       .Where(c => !(c.cmd is CommandGroup group) || group.IsExecutableWithoutSubcommands)
+                       .Select(c => (qualifiedName: c.cmd.QualifiedName, description: c.cmd.Description))
+                       .OrderBy(c => leveshtein.Distance(cne.CommandName, c.qualifiedName))
+                       .DistinctBy(c => c.qualifiedName).Take(3);
+                foreach (var cmd in ordered)
+                    emb.AddField(cmd.);
+                */
+            } else if (ex is InvalidCommandUsageException)
                 emb.Description = $"{emoji} Invalid usage! {ex.Message}";
             else if (ex is ArgumentException)
                 emb.Description = $"{emoji} Invalid command call (please see {Formatter.Bold("!help <command>")} and make sure the argument types are correct).";

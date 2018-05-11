@@ -1,11 +1,11 @@
 ﻿#region USING_DIRECTIVES
 using System;
-using System.Net;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-using TheGodfather.Common;
 using TheGodfather.Services;
 
 using DSharpPlus;
@@ -67,6 +67,22 @@ namespace TheGodfather.Modules
 
             result = new Regex($@"\b{pattern}\b", RegexOptions.IgnoreCase);
             return true;
+        }
+
+
+        public static IEnumerable<(string, Command)> CommandSelector(KeyValuePair<string, Command> c)
+        {
+            return CommandSelector(c.Value);
+        }
+
+        public static IEnumerable<(string, Command)> CommandSelector(Command c)
+        {
+            var arr = new[] { (c.QualifiedName, c) };
+
+            if (c is CommandGroup group)
+                return arr.Concat(group.Children.SelectMany(CommandSelector));
+
+            return arr;
         }
     }
 }

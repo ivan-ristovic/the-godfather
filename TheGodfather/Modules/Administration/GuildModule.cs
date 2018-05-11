@@ -55,6 +55,18 @@ namespace TheGodfather.Modules.Administration
         }
         #endregion
 
+        #region COMMAND_GUILD_CONFIG
+        [Command("config"), Module(ModuleType.Administration)]
+        [Description("Interactively set the options for this guild.")]
+        [Aliases("cfg", "updateconfig", "updatecfg", "setconfig", "setcfg")]
+        [UsageExample("!guild banlist")]
+        [RequirePermissions(Permissions.ManageGuild)]
+        public async Task ConfigureAsync(CommandContext ctx)
+        {
+
+        }
+        #endregion
+
         #region COMMAND_GUILD_GETLOGS
         [Command("log"), Module(ModuleType.Administration)]
         [Description("Get audit logs.")]
