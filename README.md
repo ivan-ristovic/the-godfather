@@ -48,7 +48,8 @@ Commands that require arguments also specify the type of the arguments that they
 For example, you need to pass a user to ``kick`` command and not some random text.
 
 Argument type can be one of the following: 
-* ``int`` : Integer (a single whole number). Valid examples: ``25`` , ``-64``.
+* ``int`` : Integer (a single whole number) in range [-2147483648, 2147483647]. Valid examples: ``25`` , ``-64``.
+* ``long`` : Integer (a single whole number) with greater range (approx. 18 digits). Valid examples: ``25`` , ``-64``.
 * ``double`` : Floating point number, can also be an integer. Valid examples: ``5.64`` , ``-3.2`` , ``5``.
 * ``string`` : A string of of Unicode characters WITHOUT spaces. If you want to include spaces, then surround the string with quotes. Valid examples: ``testtest``, ``T3S7``, ``"I need quotes for spaces!"``
 * ``string...`` : Unicode text, can include spaces. Valid examples: ``This is a text so I do not need quotes``.
@@ -57,6 +58,7 @@ Argument type can be one of the following:
 * ``channel`` : Discord channel, given by mention, channel name or CID (Channel ID). Valid examples: ``#channel`` , ``MyChannel`` , ``123456789123456``.
 * ``role`` : An existing role, given by mention, role name or RID (Role ID). Valid examples: ``@Admins`` , ``Admins`` , ``123456789123456``.
 * ``emoji`` : Emoji, either in Unicode or Discord representation (using ``:``). Valid examples: ``😂`` , ``:joy:``.
+* ``Uri`` : A string representing a URL. The protocol must be either ``HTTP`` or ``HTTPS``. Valid examples: ``http://google.com``.
 * ``id`` : ID of a Discord entity (could be a message, user, channel, role etc.). Can only be seen by enabling the ``Developer appearance`` option Discord appearance settings.
 * ``color`` : A hexadecimal or RGB color representation. Valid examples: ``FF0000`` , ``(255, 0, 0)``.
 * ``time span`` : A time span in form **DDd HHh MMm SSs** Valid examples: ``3d 5m 30s`` etc. 
