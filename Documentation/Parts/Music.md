@@ -62,9 +62,13 @@
 **Aliases:**
 `music, p`
 
-**Arguments:**
+**Overload 1:**
 
-`[string...]` : *URL or YouTube search query.*
+`[Uri]` : *URL.*
+
+**Overload 0:**
+
+`[string...]` : *YouTube search query.*
 
 **Examples:**
 

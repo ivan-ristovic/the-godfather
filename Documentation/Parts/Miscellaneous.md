@@ -298,11 +298,17 @@
 **Aliases:**
 `+, new, a`
 
-**Arguments:**
+**Overload 1:**
 
 `[string]` : *Short name (case insensitive).*
 
-`[string]` : *URL.*
+(optional) `[Uri]` : *URL.* (def: `None`)
+
+**Overload 0:**
+
+`[Uri]` : *URL.*
+
+`[string]` : *Short name (case insensitive).*
 
 **Examples:**
 
@@ -523,16 +529,33 @@
 ## quoteoftheday
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Get quote of the day.*
+*Get quote of the day. You can also specify a category from the list: inspire, management, sports, life, funny, love, art, students.*
 
 **Aliases:**
-`qotd, qod`
+`qotd, qod, quote, q`
+
+**Arguments:**
+
+(optional) `[string]` : *Category.* (def: `None`)
 
 **Examples:**
 
 ```
 !quoteoftheday
+!quoteoftheday life
 ```
+</p></details>
+
+---
+
+## Group: random
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Random gibberish.*
+
+**Aliases:**
+`rnd, rand`
+
 </p></details>
 
 ---
@@ -793,7 +816,7 @@
 
 **Overload 1:**
 
-`[int]` : *Item price.*
+`[long]` : *Item price.*
 
 `[string...]` : *Item name.*
 
@@ -801,7 +824,7 @@
 
 `[string]` : *Item name.*
 
-`[int]` : *Item price.*
+`[long]` : *Item price.*
 
 **Examples:**
 
@@ -873,6 +896,25 @@
 
 ```
 !shop list
+```
+</p></details>
+
+---
+
+### shop listall
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*List all purchasable items for all guilds.*
+
+**Owner-only.**
+
+**Aliases:**
+`la`
+
+**Examples:**
+
+```
+!shop listall
 ```
 </p></details>
 

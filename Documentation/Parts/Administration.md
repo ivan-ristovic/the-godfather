@@ -568,24 +568,44 @@
 ### emoji add
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Add emoji.*
+*Add emoji specified via URL or message attachment. If you have Discord Nitro, you can also pass emojis from another guild as arguments instead of their URLs.*
 
 **Requires permissions:**
 `Manage emoji`
 
 **Aliases:**
-`create, a, +`
+`create, a, +, install`
 
-**Arguments:**
+**Overload 3:**
 
 `[string]` : *Name.*
 
-`[string]` : *URL.*
+(optional) `[Uri]` : *URL.* (def: `None`)
+
+**Overload 2:**
+
+`[Uri]` : *URL.*
+
+`[string]` : *Name.*
+
+**Overload 1:**
+
+`[string]` : *Name.*
+
+`[emoji]` : *Emoji from another server to steal.*
+
+**Overload 0:**
+
+`[emoji]` : *Emoji from another server to steal.*
+
+`[string]` : *Name.*
 
 **Examples:**
 
 ```
 !emoji add pepe http://i0.kym-cdn.com/photos/images/facebook/000/862/065/0e9.jpg
+!emoji add pepe [ATTACH IMAGE]
+!emoji add pepe :pepe_from_other_server:
 ```
 </p></details>
 
@@ -762,7 +782,11 @@
 **Aliases:**
 `-, remove, del, rm, rem, d`
 
-**Arguments:**
+**Overload 1:**
+
+`[int...]` : *Filters IDs to remove.*
+
+**Overload 0:**
 
 `[string...]` : *Filters to remove.*
 
@@ -814,6 +838,26 @@
 
 **Aliases:**
 `banlist, viewbanlist, getbanlist, getbans, viewbans`
+
+**Examples:**
+
+```
+!guild banlist
+```
+</p></details>
+
+---
+
+### guild config
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Interactively set the options for this guild.*
+
+**Requires permissions:**
+`Manage guild`
+
+**Aliases:**
+`cfg, updateconfig, updatecfg, setconfig, setcfg`
 
 **Examples:**
 
@@ -1099,7 +1143,7 @@
 
 **Arguments:**
 
-`[string]` : *New icon URL.*
+(optional) `[Uri]` : *New icon URL.* (def: `None`)
 
 **Examples:**
 
@@ -1206,6 +1250,18 @@
 !guild setwelcomemessage
 !guild setwelcomemessage Welcome, %user%!
 ```
+</p></details>
+
+---
+
+## Group: message
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Commands for manipulating messages.*
+
+**Aliases:**
+`m, msg, msgs, messages`
+
 </p></details>
 
 ---

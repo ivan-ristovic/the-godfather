@@ -54,11 +54,11 @@
 
 `[user]` : *User.*
 
-`[int]` : *Amount.*
+`[long]` : *Amount.*
 
 **Overload 0:**
 
-`[int]` : *Amount.*
+`[long]` : *Amount.*
 
 `[user]` : *User.*
 
@@ -118,11 +118,11 @@
 
 `[user]` : *User to send credits to.*
 
-`[int]` : *Amount.*
+`[long]` : *Amount.*
 
 **Overload 0:**
 
-`[int]` : *Amount.*
+`[long]` : *Amount.*
 
 `[user]` : *User to send credits to.*
 
@@ -220,6 +220,18 @@
 ```
 !deck shuffle
 ```
+</p></details>
+
+---
+
+## Group: casino
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Betting and gambling games.*
+
+**Aliases:**
+`vegas, cs, cas`
+
 </p></details>
 
 ---
@@ -352,7 +364,7 @@
 
 **Arguments:**
 
-(optional) `[int]` : *Bid.* (def: `5`)
+(optional) `[long]` : *Bid.* (def: `5`)
 
 **Examples:**
 
@@ -373,13 +385,25 @@
 
 **Arguments:**
 
-(optional) `[int]` : *Bid.* (def: `5`)
+(optional) `[long]` : *Bid.* (def: `5`)
 
 **Examples:**
 
 ```
 !casino wof 20
 ```
+</p></details>
+
+---
+
+## Group: gamble
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Betting and gambling commands.*
+
+**Aliases:**
+`bet`
+
 </p></details>
 
 ---
@@ -394,7 +418,7 @@
 
 **Overload 1:**
 
-`[int]` : *Bid.*
+`[long]` : *Bid.*
 
 `[string]` : *Heads/Tails (h/t).*
 
@@ -402,7 +426,7 @@
 
 `[string]` : *Heads/Tails (h/t).*
 
-`[int]` : *Bid.*
+`[long]` : *Bid.*
 
 **Examples:**
 
@@ -424,7 +448,7 @@
 
 **Overload 1:**
 
-`[int]` : *Bid.*
+`[long]` : *Bid.*
 
 `[string]` : *Number guess (has to be a word one-six).*
 
@@ -432,7 +456,7 @@
 
 `[string]` : *Number guess (has to be a word one-six).*
 
-`[int]` : *Bid.*
+`[long]` : *Bid.*
 
 **Examples:**
 

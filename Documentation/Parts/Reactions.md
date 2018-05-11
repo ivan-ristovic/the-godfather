@@ -170,7 +170,7 @@
 ## Group: textreaction
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Orders a bot to react with given text to a message containing a trigger word inside (guild specific). If invoked without subcommands, adds a new text reaction to a given trigger word. Note: Trigger words can be regular expressions (use ``textreaction addregex`` command). You can also use "%user%" inside response and the bot will replace it with mention for the user who triggers the reaction.*
+*Orders a bot to react with given text to a message containing a trigger word inside (guild specific). If invoked without subcommands, adds a new text reaction to a given trigger word. Note: Trigger words can be regular expressions (use ``textreaction addregex`` command). You can also use "%user%" inside response and the bot will replace it with mention for the user who triggers the reaction. Text reactions have a one minute cooldown.*
 
 **Aliases:**
 `treact, tr, txtr, textreactions`

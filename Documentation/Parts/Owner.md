@@ -1,5 +1,19 @@
 # Module: Owner
 
+## Group: owner
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Hidden.*
+
+*Owner-only bot administration commands.*
+
+**Aliases:**
+`admin, o`
+
+</p></details>
+
+---
+
 ### owner announce
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
@@ -348,7 +362,7 @@
 
 **Arguments:**
 
-`[string]` : *URL.*
+`[Uri]` : *URL.*
 
 **Examples:**
 

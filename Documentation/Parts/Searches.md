@@ -488,6 +488,23 @@
 
 ---
 
+## Group: steam
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Steam commands.*
+
+**Aliases:**
+`s, st`
+
+**Examples:**
+
+```
+!steam profile 123456123
+```
+</p></details>
+
+---
+
 ### steam profile
 <details><summary markdown='span'>Expand for additional information</summary><p>
 

@@ -1,5 +1,17 @@
 # Module: SWAT
 
+## Group: swat
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*SWAT4 related commands.*
+
+**Aliases:**
+`s4, swat4`
+
+</p></details>
+
+---
+
 ### swat ip
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
@@ -56,6 +68,22 @@
 ```
 !swat serverlist
 ```
+</p></details>
+
+---
+
+## Group: swat servers
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Hidden.*
+
+*SWAT4 serverlist manipulation commands.*
+
+**Owner-only.**
+
+**Aliases:**
+`s, srv`
+
 </p></details>
 
 ---

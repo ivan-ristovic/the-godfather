@@ -1,12 +1,24 @@
 # Module: Games
 
+## Group: game
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Starts a game for you to play!*
+
+**Aliases:**
+`games, gm`
+
+</p></details>
+
+---
+
 ## Group: game animalrace
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Start a new animal race!*
 
 **Aliases:**
-`r, race, ar`
+`animr, arace, ar, animalr`
 
 **Examples:**
 
@@ -673,18 +685,35 @@
 
 ---
 
-### game typingrace
+## Group: game typingrace
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Typing race.*
+*Start a new typing race!*
 
 **Aliases:**
-`type, typerace, typing`
+`tr, trace, typerace, typing, typingr`
 
 **Examples:**
 
 ```
 !game typingrace
+```
+</p></details>
+
+---
+
+### game typingrace join
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Join an existing typing race game.*
+
+**Aliases:**
+`+, compete, enter, j`
+
+**Examples:**
+
+```
+!game typingrace join
 ```
 </p></details>
 
