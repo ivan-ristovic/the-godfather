@@ -70,14 +70,14 @@ namespace TheGodfather.Modules
         }
 
 
-        public static IEnumerable<(string, Command)> CommandSelector(KeyValuePair<string, Command> c)
+        public static IEnumerable<Command> CommandSelector(KeyValuePair<string, Command> c)
         {
             return CommandSelector(c.Value);
         }
 
-        public static IEnumerable<(string, Command)> CommandSelector(Command c)
+        public static IEnumerable<Command> CommandSelector(Command c)
         {
-            var arr = new[] { (c.QualifiedName, c) };
+            var arr = new[] { c };
 
             if (c is CommandGroup group)
                 return arr.Concat(group.Children.SelectMany(CommandSelector));

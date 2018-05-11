@@ -327,7 +327,7 @@ namespace TheGodfather.Modules.Owner
             sb.AppendLine();
 
             var commands = ctx.CommandsNext.RegisteredCommands.SelectMany(CommandSelector);
-            var modules = commands.Select(kvp => kvp.Item2).Distinct()
+            var modules = commands.Distinct()
                                   .GroupBy(c => c.CustomAttributes.FirstOrDefault(a => a is ModuleAttribute))
                                   .OrderBy(g => (g.Key as ModuleAttribute)?.Module)
                                   .ToDictionary(g => g.Key as ModuleAttribute ?? new ModuleAttribute(ModuleType.Uncategorized), g => g.OrderBy(c => c.QualifiedName).ToList());

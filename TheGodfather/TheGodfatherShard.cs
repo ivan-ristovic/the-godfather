@@ -1,5 +1,6 @@
 ﻿#region USING_DIRECTIVES
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
@@ -11,6 +12,7 @@ using TheGodfather.Common.Attributes;
 using TheGodfather.Common.Converters;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
+using TheGodfather.Modules;
 using TheGodfather.Services;
 
 using DSharpPlus;
@@ -35,6 +37,7 @@ namespace TheGodfather
         public CommandsNextExtension Commands { get; private set; }
         public InteractivityExtension Interactivity { get; private set; }
         public VoiceNextExtension Voice { get; private set; }
+        public List<(string, Command)> CommandNames { get; private set; }
         #endregion
 
         #region PRIVATE_FIELDS
@@ -129,6 +132,13 @@ namespace TheGodfather
 
             Commands.CommandExecuted += Commands_CommandExecuted;
             Commands.CommandErrored += Commands_CommandErrored;
+
+            CommandNames = Commands.RegisteredCommands
+                .SelectMany(TheGodfatherBaseModule.CommandSelector)
+                .Distinct()
+                .Where(cmd => cmd.Parent == null)
+                .SelectMany(cmd => cmd.Aliases.Select(alias => (alias, cmd)).Concat(new[] { (cmd.Name, cmd) }))
+                .ToList();
         }
 
         private void SetupInteractivity()
@@ -458,19 +468,12 @@ namespace TheGodfather
             };
 
             if (ex is CommandNotFoundException cne) {
-                return;
-                /*
                 emb.WithTitle($"Command {cne.CommandName} not found. Did you mean...");
-                emb.WithDescription("Did you mean...");
-                var commands = Commands.RegisteredCommands.SelectMany();
-                var ordered = commands
-                       .Where(c => !(c.cmd is CommandGroup group) || group.IsExecutableWithoutSubcommands)
-                       .Select(c => (qualifiedName: c.cmd.QualifiedName, description: c.cmd.Description))
-                       .OrderBy(c => leveshtein.Distance(cne.CommandName, c.qualifiedName))
-                       .DistinctBy(c => c.qualifiedName).Take(3);
-                foreach (var cmd in ordered)
-                    emb.AddField(cmd.);
-                */
+                var ordered = CommandNames
+                    .OrderBy(tup => cne.CommandName.LevenshteinDistance(tup.Item1))
+                    .Take(3);
+                foreach (var (alias, cmd) in ordered)
+                    emb.AddField($"{alias} ({cmd.QualifiedName})", cmd.Description);
             } else if (ex is InvalidCommandUsageException)
                 emb.Description = $"{emoji} Invalid usage! {ex.Message}";
             else if (ex is ArgumentException)

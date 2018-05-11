@@ -386,6 +386,7 @@
     <Compile Include="Common\Converters\CustomUriConverter.cs" />
     <Compile Include="Common\GFRandom.cs" />
     <Compile Include="Common\SavedTaskExecuter.cs" />
+    <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Modules\Administration\AutomaticRolesModule.cs" />
     <Compile Include="Modules\Administration\Common\Filter.cs" />
     <Compile Include="Modules\Gambling\CasinoModule.Lottery.cs" />
