@@ -61,6 +61,7 @@ namespace TheGodfather.Modules.Administration
                 }
 
 
+                #region COMMAND_SUGGESTIONS_ENABLE
                 [Command("enable"), Module(ModuleType.Administration)]
                 [Description("Enables command suggestions for this guild.")]
                 [Aliases("on")]
@@ -74,7 +75,9 @@ namespace TheGodfather.Modules.Administration
                     await ctx.RespondWithIconEmbedAsync("Enabled command suggestions!")
                         .ConfigureAwait(false);
                 }
+                #endregion
 
+                #region COMMAND_SUGGESTIONS_DISABLE
                 [Command("disable"), Module(ModuleType.Administration)]
                 [Description("Disables command suggestions for this guild.")]
                 [Aliases("off")]
@@ -88,241 +91,274 @@ namespace TheGodfather.Modules.Administration
                     await ctx.RespondWithIconEmbedAsync("Disabled command suggestions!")
                         .ConfigureAwait(false);
                 }
+                #endregion
             }
             #endregion
 
 
-            #region COMMAND_GUILD_GETWELCOMECHANNEL
-            [Command("getwelcomechannel"), Module(ModuleType.Administration)]
-            [Description("Get current welcome message channel for this guild.")]
-            [Aliases("getwelcomec", "getwc", "welcomechannel", "wc")]
-            [UsageExample("!guild getwelcomechannel")]
-            public async Task GetWelcomeChannelAsync(CommandContext ctx)
+            #region GROUP_CONFIG_WELCOME
+            [Group("welcome"), Module(ModuleType.Administration)]
+            [Description("Allows user welcoming configuration.")]
+            [Aliases("enter", "join", "wlc", "w")]
+            [UsageExample("!guild cfg welcome")]
+            public class Enter : TheGodfatherBaseModule
             {
-                ulong cid = await Database.GetWelcomeChannelIdAsync(ctx.Guild.Id)
-                    .ConfigureAwait(false);
-                if (cid != 0) {
-                    var c = ctx.Guild.GetChannel(cid);
-                    if (c == null)
-                        throw new CommandFailedException($"Welcome channel was set but does not exist anymore (id: {cid}).");
-                    await ctx.RespondWithIconEmbedAsync($"Welcome message channel: {Formatter.Bold(ctx.Guild.GetChannel(cid).Name)}.")
-                        .ConfigureAwait(false);
-                } else {
-                    await ctx.RespondWithIconEmbedAsync("Welcome message channel isn't set for this guild.")
-                        .ConfigureAwait(false);
-                }
-            }
-            #endregion
 
-            #region COMMAND_GUILD_GETLEAVECHANNEL
-            [Command("getleavechannel"), Module(ModuleType.Administration)]
-            [Description("Get current leave message channel for this guild.")]
-            [Aliases("getleavec", "getlc", "leavechannel", "lc")]
-            [UsageExample("!guild getleavechannel")]
-            public async Task GetLeaveChannelAsync(CommandContext ctx)
-            {
-                ulong cid = await Database.GetLeaveChannelIdAsync(ctx.Guild.Id)
-                    .ConfigureAwait(false);
-                if (cid != 0) {
-                    var c = ctx.Guild.GetChannel(cid);
-                    if (c == null)
-                        throw new CommandFailedException($"Leave channel was set but does not exist anymore (id: {cid}).");
-                    await ctx.RespondWithIconEmbedAsync($"Leave message channel: {Formatter.Bold(c.Name)}.")
+                public Enter(SharedData shared, DBService db) : base(shared, db) { }
+
+
+                [GroupCommand]
+                public async Task ExecuteGroupAsync(CommandContext ctx)
+                {
+                    ulong cid = await Database.GetWelcomeChannelIdAsync(ctx.Guild.Id)
                         .ConfigureAwait(false);
-                } else {
-                    await ctx.RespondWithIconEmbedAsync("Leave message channel isn't set for this guild.")
+                    await ctx.RespondWithIconEmbedAsync($"Member welcome messages for this guild are: {Formatter.Bold(cid != 0 ? "enabled" : "disabled")}!")
                         .ConfigureAwait(false);
                 }
-            }
-            #endregion
 
-            #region COMMAND_GUILD_GETWELCOMEMESSAGE
-            [Command("getwelcomemessage"), Module(ModuleType.Administration)]
-            [Description("Get current welcome message for this guild.")]
-            [Aliases("getwelcomem", "getwm", "welcomemessage", "wm", "welcomemsg", "wmsg")]
-            [UsageExample("!guild getwelcomemessage")]
-            public async Task GetWelcomeMessageAsync(CommandContext ctx)
-            {
-                var msg = await Database.GetWelcomeMessageAsync(ctx.Guild.Id)
-                    .ConfigureAwait(false);
-                await ctx.RespondWithIconEmbedAsync($"Welcome message:\n\n{Formatter.Italic(msg ?? "Not set.")}")
-                    .ConfigureAwait(false);
-            }
-            #endregion
 
-            #region COMMAND_GUILD_GETLEAVEMESSAGE
-            [Command("getleavemessage"), Module(ModuleType.Administration)]
-            [Description("Get current leave message for this guild.")]
-            [Aliases("getleavem", "getlm", "leavemessage", "lm", "leavemsg", "lmsg")]
-            [UsageExample("!guild getwelcomemessage")]
-            public async Task GetLeaveMessageAsync(CommandContext ctx)
-            {
-                var msg = await Database.GetLeaveMessageAsync(ctx.Guild.Id)
-                    .ConfigureAwait(false);
-                await ctx.RespondWithIconEmbedAsync($"Leave message:\n\n{Formatter.Italic(msg ?? "Not set.")}")
-                    .ConfigureAwait(false);
-            }
-            #endregion
+                #region COMMAND_WELCOME_CHANNEL
+                [Command("channel"), Module(ModuleType.Administration)]
+                [Description("Gets or sets current welcome message channel.")]
+                [Aliases("chn", "c")]
+                [UsageExample("!guild cfg welcome channel")]
+                [UsageExample("!guild cfg welcome channel #lobby")]
+                public async Task ChannelAsync(CommandContext ctx,
+                                              [Description("Channel.")] DiscordChannel channel = null)
+                {
+                    if (channel == null) {
+                        ulong cid = await Database.GetWelcomeChannelIdAsync(ctx.Guild.Id)
+                            .ConfigureAwait(false);
+                        if (cid != 0) {
+                            var c = ctx.Guild.GetChannel(cid);
+                            if (c == null)
+                                throw new CommandFailedException($"Welcome channel was set but does not exist anymore (id: {cid}).");
+                            await ctx.RespondWithIconEmbedAsync($"Welcome message channel: {Formatter.Bold(ctx.Guild.GetChannel(cid).Name)}.")
+                                .ConfigureAwait(false);
+                        } else {
+                            await ctx.RespondWithIconEmbedAsync("Welcome message channel isn't set for this guild.")
+                                .ConfigureAwait(false);
+                        }
+                    } else {
+                        if (channel == null)
+                            channel = ctx.Channel;
 
-            #region COMMAND_GUILD_SETWELCOMECHANNEL
-            [Command("setwelcomechannel"), Module(ModuleType.Administration)]
-            [Description("Set welcome message channel for this guild. If the channel isn't given, uses the current one.")]
-            [Aliases("setwc", "setwelcomec", "setwelcome")]
-            [UsageExample("!guild setwelcomechannel")]
-            [UsageExample("!guild setwelcomechannel #welcome")]
-            [RequireUserPermissions(Permissions.ManageGuild)]
-            public async Task SetWelcomeChannelAsync(CommandContext ctx,
-                                                    [Description("Channel.")] DiscordChannel channel = null)
-            {
-                if (channel == null)
-                    channel = ctx.Channel;
+                        if (channel.Type != ChannelType.Text)
+                            throw new CommandFailedException("Welcome channel must be a text channel.");
 
-                if (channel.Type != ChannelType.Text)
-                    throw new CommandFailedException("Welcome channel must be a text channel.");
+                        await Database.SetWelcomeChannelAsync(ctx.Guild.Id, channel.Id)
+                            .ConfigureAwait(false);
+                        await ctx.RespondWithIconEmbedAsync($"Welcome message channel set to {Formatter.Bold(channel.Name)}.")
+                            .ConfigureAwait(false);
+                    }
+                }
+                #endregion
 
-                await Database.SetWelcomeChannelAsync(ctx.Guild.Id, channel.Id)
-                    .ConfigureAwait(false);
-                await ctx.RespondWithIconEmbedAsync($"Welcome message channel set to {Formatter.Bold(channel.Name)}.")
-                    .ConfigureAwait(false);
-            }
-            #endregion
+                #region COMMAND_WELCOME_MESSAGE
+                [Command("message"), Module(ModuleType.Administration)]
+                [Description("Gets or sets current welcome message.")]
+                [Aliases("msg", "m")]
+                [UsageExample("!guild cfg welcome message")]
+                [UsageExample("!guild cfg welcome message Welcome, %user%!")]
+                public async Task MessageAsync(CommandContext ctx,
+                                              [RemainingText, Description("Welcome message.")] string message = null)
+                {
+                    if (string.IsNullOrWhiteSpace(message)) {
+                        var msg = await Database.GetWelcomeMessageAsync(ctx.Guild.Id)
+                            .ConfigureAwait(false);
 
-            #region COMMAND_GUILD_SETLEAVECHANNEL
-            [Command("setleavechannel"), Module(ModuleType.Administration)]
-            [Description("Set leave message channel for this guild. If the channel isn't given, uses the current one.")]
-            [Aliases("leavec", "setlc", "setleave")]
-            [UsageExample("!guild setleavechannel")]
-            [UsageExample("!guild setleavechannel #bb")]
-            [RequireUserPermissions(Permissions.ManageGuild)]
-            public async Task SetLeaveChannelAsync(CommandContext ctx,
-                                                  [Description("Channel.")] DiscordChannel channel = null)
-            {
-                if (channel == null)
-                    channel = ctx.Channel;
+                        await ctx.RespondWithIconEmbedAsync($"Welcome message:\n\n{Formatter.Italic(msg ?? "Not set.")}")
+                            .ConfigureAwait(false);
+                    } else {
+                        if (message.Length < 3 || message.Length > 120)
+                            throw new CommandFailedException("Message cannot be shorter than 3 or longer than 120 characters!");
 
-                if (channel.Type != ChannelType.Text)
-                    throw new CommandFailedException("Leave channel must be a text channel.");
+                        await Database.SetWelcomeMessageAsync(ctx.Guild.Id, message)
+                            .ConfigureAwait(false);
 
-                await Database.SetLeaveChannelAsync(ctx.Guild.Id, channel.Id)
-                    .ConfigureAwait(false);
-                await ctx.RespondWithIconEmbedAsync($"Leave message channel set to {Formatter.Bold(channel.Name)}.")
-                    .ConfigureAwait(false);
-            }
-            #endregion
+                        await ctx.RespondWithIconEmbedAsync($"Welcome message set to: {Formatter.Bold(message ?? "Default message")}.")
+                            .ConfigureAwait(false);
+                    }
+                }
+                #endregion
 
-            #region COMMAND_GUILD_SETWELCOMEMESSAGE
-            [Command("setwelcomemessage"), Module(ModuleType.Administration)]
-            [Description("Set welcome message for this guild. Any occurances of ``%user%`` inside the string will be replaced with newly joined user mention. Invoking command without a message will reset the current welcome message to a default one.")]
-            [Aliases("setwm", "setwelcomem", "setwelcomemsg", "setwmsg")]
-            [UsageExample("!guild setwelcomemessage")]
-            [UsageExample("!guild setwelcomemessage Welcome, %user%!")]
-            [RequireUserPermissions(Permissions.ManageGuild)]
-            public async Task SetWelcomeMessageAsync(CommandContext ctx,
-                                                    [RemainingText, Description("Message.")] string message = null)
-            {
-                if (string.IsNullOrWhiteSpace(message)) {
+                #region COMMAND_WELCOME_ENABLE
+                [Command("enable"), Module(ModuleType.Administration)]
+                [Description("Enables member welcoming for this guild. Provide a channel to send the messages to and optional custom welcome message. Any occurances of ``%user%`` inside the message will be replaced with appropriate mention.")]
+                [Aliases("on")]
+                [UsageExample("!guild cfg welcome on")]
+                [UsageExample("!guild cfg welcome on #lobby Welcome, %user%!")]
+                public async Task EnableAsync(CommandContext ctx,
+                                             [Description("Channel.")] DiscordChannel channel = null,
+                                             [RemainingText, Description("Welcome message.")] string message = null)
+                {
+                    if (channel == null)
+                        channel = ctx.Channel;
+
+                    if (channel.Type != ChannelType.Text)
+                        throw new CommandFailedException("Welcome channel must be a text channel.");
+
+                    await Database.SetWelcomeChannelAsync(ctx.Guild.Id, channel.Id)
+                        .ConfigureAwait(false);
+
+                    if (!string.IsNullOrWhiteSpace(message)) {
+                        if (message.Length < 3 || message.Length > 120)
+                            throw new CommandFailedException("Message cannot be shorter than 3 or longer than 120 characters!");
+                        await Database.SetWelcomeMessageAsync(ctx.Guild.Id, message)
+                            .ConfigureAwait(false);
+                    }
+
+                    await ctx.RespondWithIconEmbedAsync($"Welcome message channel set to {Formatter.Bold(channel.Name)} with message: {Formatter.Bold(string.IsNullOrWhiteSpace(message) ? "<previously set>" : message)}.")
+                        .ConfigureAwait(false);
+                }
+                #endregion
+
+                #region COMMAND_WELCOME_DISABLE
+                [Command("disable"), Module(ModuleType.Administration)]
+                [Description("Disables member welcome messages for this guild.")]
+                [Aliases("off")]
+                [UsageExample("!guild cfg welcome off")]
+                public async Task DisableAsync(CommandContext ctx)
+                {
+                    await Database.RemoveWelcomeChannelAsync(ctx.Guild.Id)
+                        .ConfigureAwait(false);
                     await Database.RemoveWelcomeMessageAsync(ctx.Guild.Id)
                         .ConfigureAwait(false);
-                    await ctx.RespondWithIconEmbedAsync("Welcome message set to default message.")
-                        .ConfigureAwait(false);
-                } else {
-                    if (message.Length < 3 || message.Length > 120)
-                        throw new CommandFailedException("Message cannot be shorter than 3 or longer than 120 characters!");
-
-                    await Database.SetWelcomeMessageAsync(ctx.Guild.Id, message)
-                        .ConfigureAwait(false);
-
-                    await ctx.RespondWithIconEmbedAsync($"Welcome message set to: {Formatter.Bold(message ?? "Default message")}.")
-                        .ConfigureAwait(false);
                 }
+                #endregion
             }
             #endregion
 
-            #region COMMAND_GUILD_SETLEAVEMESSAGE
-            [Command("setleavemessage"), Module(ModuleType.Administration)]
-            [Description("Set leave message for this guild. Any occurances of ``%user%`` inside the string will be replaced with newly joined user mention. Invoking command without a message will reset the current leave message to a default one.")]
-            [Aliases("setlm", "setleavem", "setleavemsg", "setlmsg")]
-            [UsageExample("!guild setleavemessage")]
-            [UsageExample("!guild setleavemessage Bye, %user%!")]
-            [RequireUserPermissions(Permissions.ManageGuild)]
-            public async Task SetLeaveMessageAsync(CommandContext ctx,
-                                                  [RemainingText, Description("Message.")] string message = null)
+            #region GROUP_CONFIG_LEAVE
+            [Group("leave"), Module(ModuleType.Administration)]
+            [Description("Allows user leaving message configuration.")]
+            [Aliases("exit", "drop", "lv", "l")]
+            [UsageExample("!guild cfg leave")]
+            public class Leave : TheGodfatherBaseModule
             {
-                if (string.IsNullOrWhiteSpace(message)) {
+
+                public Leave(SharedData shared, DBService db) : base(shared, db) { }
+
+
+                [GroupCommand]
+                public async Task ExecuteGroupAsync(CommandContext ctx)
+                {
+                    ulong cid = await Database.GetLeaveChannelIdAsync(ctx.Guild.Id)
+                        .ConfigureAwait(false);
+                    await ctx.RespondWithIconEmbedAsync($"Member leave messages for this guild are: {Formatter.Bold(cid != 0 ? "enabled" : "disabled")}!")
+                        .ConfigureAwait(false);
+                }
+
+
+                #region COMMAND_LEAVE_CHANNEL
+                [Command("channel"), Module(ModuleType.Administration)]
+                [Description("Gets or sets current leave message channel.")]
+                [Aliases("chn", "c")]
+                [UsageExample("!guild cfg leave channel")]
+                [UsageExample("!guild cfg leave channel #lobby")]
+                public async Task ChannelAsync(CommandContext ctx,
+                                              [Description("Channel.")] DiscordChannel channel = null)
+                {
+                    if (channel == null) {
+                        ulong cid = await Database.GetLeaveChannelIdAsync(ctx.Guild.Id)
+                            .ConfigureAwait(false);
+                        if (cid != 0) {
+                            var c = ctx.Guild.GetChannel(cid);
+                            if (c == null)
+                                throw new CommandFailedException($"Leave channel was set but does not exist anymore (id: {cid}).");
+                            await ctx.RespondWithIconEmbedAsync($"Leave message channel: {Formatter.Bold(ctx.Guild.GetChannel(cid).Name)}.")
+                                .ConfigureAwait(false);
+                        } else {
+                            await ctx.RespondWithIconEmbedAsync("Leave message channel isn't set for this guild.")
+                                .ConfigureAwait(false);
+                        }
+                    } else {
+                        if (channel == null)
+                            channel = ctx.Channel;
+
+                        if (channel.Type != ChannelType.Text)
+                            throw new CommandFailedException("Leave channel must be a text channel.");
+
+                        await Database.SetLeaveChannelAsync(ctx.Guild.Id, channel.Id)
+                            .ConfigureAwait(false);
+                        await ctx.RespondWithIconEmbedAsync($"Leave message channel set to {Formatter.Bold(channel.Name)}.")
+                            .ConfigureAwait(false);
+                    }
+                }
+                #endregion
+
+                #region COMMAND_LEAVE_MESSAGE
+                [Command("message"), Module(ModuleType.Administration)]
+                [Description("Gets or sets current leave message.")]
+                [Aliases("msg", "m")]
+                [UsageExample("!guild cfg leave message")]
+                [UsageExample("!guild cfg leave message Bye, %user%!")]
+                public async Task MessageAsync(CommandContext ctx,
+                                              [RemainingText, Description("Leave message.")] string message = null)
+                {
+                    if (string.IsNullOrWhiteSpace(message)) {
+                        var msg = await Database.GetLeaveMessageAsync(ctx.Guild.Id)
+                            .ConfigureAwait(false);
+
+                        await ctx.RespondWithIconEmbedAsync($"Leave message:\n\n{Formatter.Italic(msg ?? "Not set.")}")
+                            .ConfigureAwait(false);
+                    } else {
+                        if (message.Length < 3 || message.Length > 120)
+                            throw new CommandFailedException("Message cannot be shorter than 3 or longer than 120 characters!");
+
+                        await Database.SetLeaveMessageAsync(ctx.Guild.Id, message)
+                            .ConfigureAwait(false);
+
+                        await ctx.RespondWithIconEmbedAsync($"Leave message set to: {Formatter.Bold(message ?? "Default message")}.")
+                            .ConfigureAwait(false);
+                    }
+                }
+                #endregion
+
+                #region COMMAND_LEAVE_ENABLE
+                [Command("enable"), Module(ModuleType.Administration)]
+                [Description("Enables member leave messages for this guild. Provide a channel to send the messages to and optional custom leave message. Any occurances of ``%user%`` inside the message will be replaced with appropriate mention.")]
+                [Aliases("on")]
+                [UsageExample("!guild cfg leave on")]
+                [UsageExample("!guild cfg leave on #lobby Welcome, %user%!")]
+                public async Task EnableAsync(CommandContext ctx,
+                                             [Description("Channel.")] DiscordChannel channel = null,
+                                             [RemainingText, Description("Leave message.")] string message = null)
+                {
+                    if (channel == null)
+                        channel = ctx.Channel;
+
+                    if (channel.Type != ChannelType.Text)
+                        throw new CommandFailedException("Leave channel must be a text channel.");
+
+                    await Database.SetLeaveChannelAsync(ctx.Guild.Id, channel.Id)
+                        .ConfigureAwait(false);
+
+                    if (!string.IsNullOrWhiteSpace(message)) {
+                        if (message.Length < 3 || message.Length > 120)
+                            throw new CommandFailedException("Message cannot be shorter than 3 or longer than 120 characters!");
+                        await Database.SetLeaveMessageAsync(ctx.Guild.Id, message)
+                            .ConfigureAwait(false);
+                    }
+
+                    await ctx.RespondWithIconEmbedAsync($"Leave message channel set to {Formatter.Bold(channel.Name)} with message: {Formatter.Bold(string.IsNullOrWhiteSpace(message) ? "<previously set>" : message)}.")
+                        .ConfigureAwait(false);
+                }
+                #endregion
+
+                #region COMMAND_LEAVE_DISABLE
+                [Command("disable"), Module(ModuleType.Administration)]
+                [Description("Disables member leave messages for this guild.")]
+                [Aliases("off")]
+                [UsageExample("!guild cfg leave off")]
+                public async Task DisableAsync(CommandContext ctx)
+                {
+                    await Database.RemoveLeaveChannelAsync(ctx.Guild.Id)
+                        .ConfigureAwait(false);
                     await Database.RemoveLeaveMessageAsync(ctx.Guild.Id)
                         .ConfigureAwait(false);
-                    await ctx.RespondWithIconEmbedAsync("Leave message set to default message.")
-                        .ConfigureAwait(false);
-                } else {
-                    if (message.Length < 3 || message.Length > 120)
-                        throw new CommandFailedException("Message cannot be shorter than 3 or longer than 120 characters!");
-
-                    await Database.SetLeaveMessageAsync(ctx.Guild.Id, message)
-                        .ConfigureAwait(false);
-
-                    await ctx.RespondWithIconEmbedAsync($"Leave message set to: {Formatter.Bold(message ?? "Default message")}.")
-                        .ConfigureAwait(false);
                 }
-            }
-            #endregion
-
-            #region COMMAND_GUILD_DELETEWELCOMECHANNEL
-            [Command("deletewelcomechannel"), Module(ModuleType.Administration)]
-            [Description("Remove welcome message channel for this guild.")]
-            [Aliases("delwelcomec", "delwc", "delwelcome", "dwc", "deletewc")]
-            [UsageExample("!guild deletewelcomechannel")]
-            [RequireUserPermissions(Permissions.ManageGuild)]
-            public async Task RemoveWelcomeChannelAsync(CommandContext ctx)
-            {
-                await Database.RemoveWelcomeChannelAsync(ctx.Guild.Id)
-                    .ConfigureAwait(false);
-                await ctx.RespondWithIconEmbedAsync("Default welcome message channel removed.")
-                    .ConfigureAwait(false);
-            }
-            #endregion
-
-            #region COMMAND_GUILD_DELETELEAVECHANNEL
-            [Command("deleteleavechannel"), Module(ModuleType.Administration)]
-            [Description("Remove leave message channel for this guild.")]
-            [Aliases("delleavec", "dellc", "delleave", "dlc")]
-            [UsageExample("!guild deletewelcomechannel")]
-            [RequireUserPermissions(Permissions.ManageGuild)]
-            public async Task DeleteLeaveChannelAsync(CommandContext ctx)
-            {
-                await Database.RemoveLeaveChannelAsync(ctx.Guild.Id)
-                    .ConfigureAwait(false);
-                await ctx.RespondWithIconEmbedAsync("Default leave message channel removed.")
-                    .ConfigureAwait(false);
-            }
-            #endregion
-
-            #region COMMAND_GUILD_DELETEWELCOMEMESSAGE
-            [Command("deletewelcomemessage"), Module(ModuleType.Administration)]
-            [Description("Remove welcome message for this guild.")]
-            [Aliases("delwelcomem", "delwm", "delwelcomemsg", "dwm", "deletewm", "dwmsg")]
-            [UsageExample("!guild deletewelcomemessage")]
-            [RequireUserPermissions(Permissions.ManageGuild)]
-            public async Task RemoveWelcomeMessageAsync(CommandContext ctx)
-            {
-                await Database.RemoveWelcomeMessageAsync(ctx.Guild.Id)
-                    .ConfigureAwait(false);
-                await ctx.RespondWithIconEmbedAsync("Default welcome message removed.")
-                    .ConfigureAwait(false);
-            }
-            #endregion
-
-            #region COMMAND_GUILD_DELETEWELCOMEMESSAGE
-            [Command("deleteleavemessage"), Module(ModuleType.Administration)]
-            [Description("Remove leave message for this guild.")]
-            [Aliases("delleavem", "dellm", "delleavemsg", "dlm", "deletelm", "dwlsg")]
-            [UsageExample("!guild deleteleavemessage")]
-            [RequireUserPermissions(Permissions.ManageGuild)]
-            public async Task RemoveLeaveChannelAsync(CommandContext ctx)
-            {
-                await Database.RemoveLeaveMessageAsync(ctx.Guild.Id)
-                    .ConfigureAwait(false);
-                await ctx.RespondWithIconEmbedAsync("Default leave message removed.")
-                    .ConfigureAwait(false);
+                #endregion
             }
             #endregion
         }
