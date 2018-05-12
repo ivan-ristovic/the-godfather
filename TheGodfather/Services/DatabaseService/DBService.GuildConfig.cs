@@ -118,6 +118,30 @@ namespace TheGodfather.Services
         }
 
 
+        public async Task UpdateGuildSettingsAsync(ulong gid, PartialGuildConfig cfg)
+        {
+            await _sem.WaitAsync();
+            try {
+                using (var con = new NpgsqlConnection(_connectionString))
+                using (var cmd = con.CreateCommand()) {
+                    await con.OpenAsync().ConfigureAwait(false);
+
+                    cmd.CommandText = "UPDATE gf.guild_cfg SET (prefix, suggestions_enabled) = (@prefix, @suggestions_enabled) WHERE gid = @gid;";
+                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
+                    if (string.IsNullOrWhiteSpace(cfg.Prefix))
+                        cmd.Parameters.AddWithValue("prefix", NpgsqlDbType.Varchar, DBNull.Value);
+                    else
+                        cmd.Parameters.AddWithValue("prefix", NpgsqlDbType.Varchar, cfg.Prefix);
+                    cmd.Parameters.AddWithValue("suggestions_enabled", NpgsqlDbType.Boolean, cfg.SuggestionsEnabled);
+
+                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                }
+            } finally {
+                _sem.Release();
+            }
+        }
+
+
         public async Task<ulong> GetWelcomeChannelIdAsync(ulong gid)
         {
             ulong cid = 0;

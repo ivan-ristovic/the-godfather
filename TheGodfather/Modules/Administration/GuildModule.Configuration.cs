@@ -41,6 +41,57 @@ namespace TheGodfather.Modules.Administration
             }
 
 
+            #region GROUP_CONFIG_SUGGESTIONS
+            [Group("suggestions"), Module(ModuleType.Administration)]
+            [Description("Suggestions configuration commands.")]
+            [Aliases("suggestion", "sugg", "sug", "s")]
+            [UsageExample("!guild cfg suggestions")]
+            public class Suggestions : TheGodfatherBaseModule
+            {
+
+                public Suggestions(SharedData shared, DBService db) : base(shared, db) { }
+
+
+                [GroupCommand]
+                public async Task ExecuteGroupAsync(CommandContext ctx)
+                {
+                    var gcfg = Shared.GetGuildConfig(ctx.Guild.Id);
+                    await ctx.RespondWithIconEmbedAsync($"Command suggestions for this guild are {Formatter.Bold(gcfg.SuggestionsEnabled ? "enabled" : "disabled")}!")
+                        .ConfigureAwait(false);
+                }
+
+
+                [Command("enable"), Module(ModuleType.Administration)]
+                [Description("Enables command suggestions for this guild.")]
+                [Aliases("on")]
+                [UsageExample("!guild cfg suggestions on")]
+                public async Task EnableAsync(CommandContext ctx)
+                {
+                    var gcfg = Shared.GetGuildConfig(ctx.Guild.Id);
+                    gcfg.SuggestionsEnabled = true;
+                    await Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg)
+                        .ConfigureAwait(false);
+                    await ctx.RespondWithIconEmbedAsync("Enabled command suggestions!")
+                        .ConfigureAwait(false);
+                }
+
+                [Command("disable"), Module(ModuleType.Administration)]
+                [Description("Disables command suggestions for this guild.")]
+                [Aliases("off")]
+                [UsageExample("!guild cfg suggestions off")]
+                public async Task DisableAsync(CommandContext ctx)
+                {
+                    var gcfg = Shared.GetGuildConfig(ctx.Guild.Id);
+                    gcfg.SuggestionsEnabled = false;
+                    await Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg)
+                        .ConfigureAwait(false);
+                    await ctx.RespondWithIconEmbedAsync("Disabled command suggestions!")
+                        .ConfigureAwait(false);
+                }
+            }
+            #endregion
+
+
             #region COMMAND_GUILD_GETWELCOMECHANNEL
             [Command("getwelcomechannel"), Module(ModuleType.Administration)]
             [Description("Get current welcome message channel for this guild.")]

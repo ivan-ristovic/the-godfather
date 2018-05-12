@@ -64,9 +64,12 @@ namespace TheGodfather
         public ConcurrentDictionary<ulong, MusicPlayer> MusicPlayers = new ConcurrentDictionary<ulong, MusicPlayer>();
 
 
+        public PartialGuildConfig GetGuildConfig(ulong gid)
+            => GuildConfigurations.ContainsKey(gid) ? GuildConfigurations[gid] : PartialGuildConfig.Default;
+
         public string GetGuildPrefix(ulong gid)
         {
-            if (!string.IsNullOrWhiteSpace(GuildConfigurations[gid].Prefix))
+            if (GuildConfigurations.ContainsKey(gid) && !string.IsNullOrWhiteSpace(GuildConfigurations[gid].Prefix))
                 return GuildConfigurations[gid].Prefix;
             else
                 return BotConfiguration.DefaultPrefix;
