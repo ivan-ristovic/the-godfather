@@ -384,7 +384,9 @@
     <Compile Include="Common\Attributes\RequirePriviledgedUserAttribute.cs" />
     <Compile Include="Common\Attributes\UsageExampleAttribute.cs" />
     <Compile Include="Common\Converters\CustomUriConverter.cs" />
+    <Compile Include="Common\DatabaseConfig.cs" />
     <Compile Include="Common\GFRandom.cs" />
+    <Compile Include="Common\PartialGuildConfig.cs" />
     <Compile Include="Common\SavedTaskExecuter.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Modules\Administration\AutomaticRolesModule.cs" />
@@ -535,7 +537,6 @@
     <Compile Include="Services\DatabaseService\DBService.GuildConfig.cs" />
     <Compile Include="Services\DatabaseService\DBService.Insults.cs" />
     <Compile Include="Services\DatabaseService\DBService.Memes.cs" />
-    <Compile Include="Services\DatabaseService\DBService.Prefixes.cs" />
     <Compile Include="Services\DatabaseService\DBService.Reactions.cs" />
     <Compile Include="Services\DatabaseService\DBService.Stats.cs" />
     <Compile Include="Services\DatabaseService\DBService.Statuses.cs" />

@@ -89,7 +89,7 @@ namespace TheGodfather.Modules.Gambling.Common
                 }
             }
 
-            return pts == bid ? 0l : pts;
+            return pts == bid ? 0L : pts;
         }
     }
 }

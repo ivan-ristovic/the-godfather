@@ -25,9 +25,9 @@ namespace TheGodfather
         public ConcurrentHashSet<ulong> BlockedUsers { get; internal set; } = new ConcurrentHashSet<ulong>();
         public ConcurrentHashSet<ulong> BlockedChannels { get; internal set; } = new ConcurrentHashSet<ulong>();
         public BotConfig BotConfiguration { get; internal set; }
+        public ConcurrentDictionary<ulong, PartialGuildConfig> GuildConfigurations { get; internal set; }
         public ConcurrentDictionary<ulong, Deck> CardDecks { get; internal set; } = new ConcurrentDictionary<ulong, Deck>();
         public CancellationTokenSource CTS { get; internal set; }
-        public ConcurrentDictionary<ulong, string> Prefixes { get; internal set; }
         public ConcurrentDictionary<ulong, ConcurrentHashSet<Filter>> Filters { get; internal set; }
         public ConcurrentDictionary<ulong, ConcurrentHashSet<TextReaction>> TextReactions { get; internal set; }
         public ConcurrentDictionary<ulong, ConcurrentHashSet<EmojiReaction>> EmojiReactions { get; internal set; }
@@ -66,8 +66,8 @@ namespace TheGodfather
 
         public string GetGuildPrefix(ulong gid)
         {
-            if (Prefixes.ContainsKey(gid) && !string.IsNullOrWhiteSpace(Prefixes[gid]))
-                return Prefixes[gid];
+            if (!string.IsNullOrWhiteSpace(GuildConfigurations[gid].Prefix))
+                return GuildConfigurations[gid].Prefix;
             else
                 return BotConfiguration.DefaultPrefix;
         }

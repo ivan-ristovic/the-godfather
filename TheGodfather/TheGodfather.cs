@@ -104,10 +104,10 @@ namespace TheGodfather
             foreach (var tup in blockedchn_db)
                 blockedchn.Add(tup.Item1);
 
-            var gprefixes_db = await DatabaseService.GetAllGuildPrefixesAsync();
-            var gprefixes = new ConcurrentDictionary<ulong, string>();
-            foreach (var gprefix in gprefixes_db)
-                gprefixes.TryAdd(gprefix.Key, gprefix.Value);
+            var gcfg_db = await DatabaseService.GetPartialGuildConfigurations();
+            var gcfg = new ConcurrentDictionary<ulong, PartialGuildConfig>();
+            foreach (var gprefix in gcfg_db)
+                gcfg.TryAdd(gprefix.Key, gprefix.Value);
 
             var gfilters_db = await DatabaseService.GetFiltersForAllGuildsAsync();
             var gfilters = new ConcurrentDictionary<ulong, ConcurrentHashSet<Filter>>();
@@ -139,8 +139,8 @@ namespace TheGodfather
                 CTS = CTS,
                 EmojiReactions = gemojireactions,
                 Filters = gfilters,
+                GuildConfigurations = gcfg,
                 MessageCount = msgcount,
-                Prefixes = gprefixes,
                 TextReactions = gtextreactions
             };
 

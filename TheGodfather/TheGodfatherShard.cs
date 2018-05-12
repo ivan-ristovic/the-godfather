@@ -46,11 +46,11 @@ namespace TheGodfather
         #endregion
 
 
-        public TheGodfatherShard(int sid, DBService db, SharedData sd)
+        public TheGodfatherShard(int sid, DBService db, SharedData shared)
         {
             ShardId = sid;
             _db = db;
-            _shared = sd;
+            _shared = shared;
         }
 
 
@@ -174,6 +174,7 @@ namespace TheGodfather
             Log(LogLevel.Info, $"Guild available: {e.Guild.ToString()}");
             await _db.RegisterGuildAsync(e.Guild.Id)
                 .ConfigureAwait(false);
+            _shared.GuildConfigurations.TryAdd(e.Guild.Id, PartialGuildConfig.Default);
         }
 
         private async Task Client_GuildUnavailable(GuildDeleteEventArgs e)
@@ -467,7 +468,7 @@ namespace TheGodfather
                 Color = DiscordColor.Red
             };
 
-            if (ex is CommandNotFoundException cne) {
+            if (_shared.GuildConfigurations[e.Context.Guild.Id].SuggestionsEnabled && ex is CommandNotFoundException cne) {
                 emb.WithTitle($"Command {cne.CommandName} not found. Did you mean...");
                 var ordered = CommandNames
                     .OrderBy(tup => cne.CommandName.LevenshteinDistance(tup.Item1))
@@ -506,6 +507,10 @@ namespace TheGodfather
                     emb.Description = $"{emoji} That command is reserved for the bot owner and priviledged users!";
                 else if (attr is RequireOwnerAttribute)
                     emb.Description = $"{emoji} That command is reserved for the bot owner only!";
+                else if (attr is RequireNsfwAttribute)
+                    emb.Description = $"{emoji} That command is allowed in NSFW channels only!";
+                else if (attr is RequirePrefixesAttribute pattr)
+                    emb.Description = $"{emoji} That command is allowedto be invoked with the following prefixes: {string.Join(", ", pattr.Prefixes)}!";
             } else if (ex is UnauthorizedException)
                 emb.Description = $"{emoji} I am not authorized to do that.";
             else

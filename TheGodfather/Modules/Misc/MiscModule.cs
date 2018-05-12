@@ -297,11 +297,8 @@ namespace TheGodfather.Modules.Misc
             if (prefix.Length > 12)
                 throw new CommandFailedException("Prefix length cannot be longer than 12 characters.");
 
-            Shared.Prefixes.AddOrUpdate(ctx.Guild.Id, prefix, (id, oldp) => prefix);
-            await ctx.RespondWithIconEmbedAsync($"Successfully changed the prefix for this guild to: {Formatter.Bold(prefix)}")
-                .ConfigureAwait(false);
-
             try {
+                Shared.GuildConfigurations[ctx.Guild.Id].Prefix = prefix;
                 if (prefix == Shared.BotConfiguration.DefaultPrefix) {
                     await Database.ResetPrefixAsync(ctx.Guild.Id)
                         .ConfigureAwait(false);
@@ -311,8 +308,11 @@ namespace TheGodfather.Modules.Misc
                 }
             } catch (Exception e) {
                 TheGodfather.LogHandle.LogException(LogLevel.Warning, e);
-                throw new CommandFailedException("Warning: Failed to add prefix to the database.");
+                throw new CommandFailedException("Failed to add prefix. Please try again.");
             }
+
+            await ctx.RespondWithIconEmbedAsync($"Successfully changed the prefix for this guild to: {Formatter.Bold(prefix)}")
+                .ConfigureAwait(false);
         }
         #endregion
 

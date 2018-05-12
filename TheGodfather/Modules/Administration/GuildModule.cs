@@ -59,7 +59,7 @@ namespace TheGodfather.Modules.Administration
         [Command("config"), Module(ModuleType.Administration)]
         [Description("Interactively set the options for this guild.")]
         [Aliases("cfg", "updateconfig", "updatecfg", "setconfig", "setcfg")]
-        [UsageExample("!guild banlist")]
+        [UsageExample("!guild config")]
         [RequirePermissions(Permissions.ManageGuild)]
         public async Task ConfigureAsync(CommandContext ctx)
         {
