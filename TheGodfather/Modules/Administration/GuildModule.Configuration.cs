@@ -50,7 +50,13 @@ namespace TheGodfather.Modules.Administration
                 emb.AddField("Command suggestions", gcfg.SuggestionsEnabled ? "on" : "off", inline: true);
                 emb.AddField("Action logging", gcfg.LoggingEnabled ? "on" : "off", inline: true);
 
-                // TODO w/l
+                ulong wcid = await Database.GetWelcomeChannelIdAsync(ctx.Guild.Id)
+                    .ConfigureAwait(false);
+                emb.AddField("Welcome messages", wcid != 0 ? "on" : "off", inline: true);
+
+                ulong lcid = await Database.GetLeaveChannelIdAsync(ctx.Guild.Id)
+                    .ConfigureAwait(false);
+                emb.AddField("Leave messages", lcid != 0 ? "on" : "off", inline: true);
 
                 await ctx.RespondAsync(embed: emb.Build())
                     .ConfigureAwait(false);
