@@ -233,9 +233,6 @@ namespace TheGodfather
         private Task Client_GuildAvailable(GuildCreateEventArgs e)
         {
             Log(LogLevel.Info, $"Guild available: {e.Guild.ToString()}");
-
-            await _db.RegisterGuildAsync(e.Guild.Id)
-                .ConfigureAwait(false);
             return Task.CompletedTask;
         }
 
