@@ -22,20 +22,6 @@ SET row_security = off;
 CREATE SCHEMA gf;
 
 
---
--- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: -
---
-
-CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
-
-
---
--- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: -
---
-
-COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
-
-
 SET default_tablespace = '';
 
 SET default_with_oids = false;
@@ -203,7 +189,10 @@ CREATE TABLE gf.guild_cfg (
     welcome_cid bigint,
     leave_cid bigint,
     welcome_msg character varying(128),
-    leave_msg character varying(128)
+    leave_msg character varying(128),
+    prefix character varying(16) DEFAULT NULL::character varying,
+    suggestions_enabled boolean DEFAULT false,
+    log_cid bigint DEFAULT 0
 );
 
 
@@ -285,16 +274,6 @@ CREATE TABLE gf.memes (
 CREATE TABLE gf.msgcount (
     uid bigint NOT NULL,
     count bigint DEFAULT 1 NOT NULL
-);
-
-
---
--- Name: prefixes; Type: TABLE; Schema: gf; Owner: -
---
-
-CREATE TABLE gf.prefixes (
-    gid bigint NOT NULL,
-    prefix character varying(16)
 );
 
 
@@ -703,14 +682,6 @@ ALTER TABLE ONLY gf.msgcount
 
 
 --
--- Name: prefixes prefixes_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
---
-
-ALTER TABLE ONLY gf.prefixes
-    ADD CONSTRAINT prefixes_pkey PRIMARY KEY (gid);
-
-
---
 -- Name: priviledged priviledged_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
 --
 
@@ -910,14 +881,6 @@ ALTER TABLE ONLY gf.filters
 
 ALTER TABLE ONLY gf.items
     ADD CONSTRAINT items_fkey FOREIGN KEY (gid) REFERENCES gf.guild_cfg(gid) ON UPDATE CASCADE ON DELETE CASCADE;
-
-
---
--- Name: prefixes p_fkey; Type: FK CONSTRAINT; Schema: gf; Owner: -
---
-
-ALTER TABLE ONLY gf.prefixes
-    ADD CONSTRAINT p_fkey FOREIGN KEY (gid) REFERENCES gf.guild_cfg(gid) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
