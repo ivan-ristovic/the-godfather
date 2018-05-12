@@ -33,6 +33,22 @@ namespace TheGodfather.Extensions
             return true;
         }
 
+        public static async Task<bool> AskYesNoQuestionAsync(this DiscordChannel channel, DiscordClient client, DiscordUser user, string question)
+        {
+            await channel.SendMessageAsync(embed: new DiscordEmbedBuilder {
+                Description = $"{StaticDiscordEmoji.Question} {question}",
+                Color = DiscordColor.Yellow
+            }).ConfigureAwait(false);
+
+            if (!await client.GetInteractivity().WaitForYesNoAnswerAsync(channel.Id, user.Id).ConfigureAwait(false)) {
+                await channel.SendFailedEmbedAsync("Alright, aborting...")
+                    .ConfigureAwait(false);
+                return false;
+            }
+
+            return true;
+        }
+
         public static async Task<bool> WaitForYesNoAnswerAsync(this InteractivityExtension interactivity, ulong cid, ulong uid)
         {
             bool response = false;

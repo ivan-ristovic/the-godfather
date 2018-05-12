@@ -1,7 +1,7 @@
 ﻿#region USING_DIRECTIVES
 using System;
-using System.IO;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 using TheGodfather.Common;
@@ -14,6 +14,7 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using DSharpPlus.Interactivity;
 #endregion
 
 namespace TheGodfather.Modules.Administration
@@ -63,7 +64,137 @@ namespace TheGodfather.Modules.Administration
             [UsageExample("!guild cfg setup")]
             public async Task SetupAsync(CommandContext ctx)
             {
-                // TODO
+                var channel = ctx.Guild.Channels.FirstOrDefault(c => c.Name == "gf_setup");
+                if (channel == null) {
+                    if (await ctx.AskYesNoQuestionAsync($"Before we start, if you want to move this somewhere else, would you like me to create a temporary public blank channel for the setup? Alternatively, if you do not want that channel to be public, you can create the channel yourself with name {Formatter.Bold("gf_setup")} and whatever permissions you like, just let me access it. Please reply with yes if you wish for me to create the channel or with no if you plan to do it yourself.").ConfigureAwait(false)) {
+                        try {
+                            channel = await ctx.Guild.CreateChannelAsync("gf_setup", ChannelType.Text, reason: "TheGodfather setup channel creation.")
+                                .ConfigureAwait(false);
+                            await ctx.RespondWithIconEmbedAsync($"Alright, let's move the setup to {channel.Mention}")
+                                .ConfigureAwait(false);
+                        } catch {
+                            await ctx.RespondWithFailedEmbedAsync($"I have failed to create a setup channel. Could you kindly create the channel called {Formatter.Bold("gf_setup")} and then re-run the command or give me the permission to create channels? The wizard will now exit...")
+                                .ConfigureAwait(false);
+                            return;
+                        }
+                    } else {
+                        channel = ctx.Channel;
+                    }
+                }
+
+                var gcfg = PartialGuildConfig.Default;
+                await channel.SendIconEmbedAsync("Welcome to the guild configuration wizard!\n\nI will guide you through the configuration. You can always re-run this setup or manually change the settings so do not worry if you don't do everything like you wanted.\n\nThat being said, let's start the fun! Note that the changes will apply after the wizard finishes.")
+                    .ConfigureAwait(false);
+                await Task.Delay(TimeSpan.FromSeconds(10))
+                    .ConfigureAwait(false);
+
+                if (await channel.AskYesNoQuestionAsync(ctx.Client, ctx.User, "Do you wish to change the prefix for the bot? (y/n)")) {
+                    await channel.SendIconEmbedAsync("What will the new prefix be?")
+                        .ConfigureAwait(false);
+                    var mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id)
+                        .ConfigureAwait(false);
+                    gcfg.Prefix = mctx?.Message.Content;
+                }
+
+                if (await channel.AskYesNoQuestionAsync(ctx.Client, ctx.User, "Do you wish to enable command suggestions for those nasty times when you just can't remember the command name? (y/n)"))
+                    gcfg.SuggestionsEnabled = true;
+
+                if (await channel.AskYesNoQuestionAsync(ctx.Client, ctx.User, "I can log the actions that happen in the guild (such as message deletion, channel updates etc.), so you always know what is going on in the guild. Do you wish to enable the action log? (y/n)")) {
+                    await channel.SendIconEmbedAsync($"Alright, cool. In order for action logs to work you will need to tell me where to dump the log. Please reply with a channel mention, for example {Formatter.Bold("#logs")} .")
+                        .ConfigureAwait(false);
+                    var mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id && m.MentionedChannels.Count == 1)
+                        .ConfigureAwait(false);
+                    gcfg.LogChannelId = mctx.MentionedChannels.FirstOrDefault()?.Id ?? 0;
+                }
+
+                ulong wcid = 0;
+                string wmessage = null;
+                if (await channel.AskYesNoQuestionAsync(ctx.Client, ctx.User, "I can also send a welcome message when someone joins the guild. Do you wish to enable this feature? (y/n)")) {
+                    await channel.SendIconEmbedAsync($"I will need a channel where to send the welcome messages. Please reply with a channel mention, for example {Formatter.Bold("#logs")} .")
+                        .ConfigureAwait(false);
+                    var mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id && m.MentionedChannels.Count == 1)
+                        .ConfigureAwait(false);
+
+                    wcid = mctx?.MentionedChannels.FirstOrDefault()?.Id ?? 0;
+                    if (wcid != 0 && ctx.Guild.GetChannel(wcid).Type != ChannelType.Text) {
+                        await channel.SendFailedEmbedAsync("You need to provide a text channel!")
+                            .ConfigureAwait(false);
+                        wcid = 0;
+                    }
+
+                    if (await channel.AskYesNoQuestionAsync(ctx.Client, ctx.User, "You can also customize the welcome message. Do you want to do that now? (y/n)")) {
+                        await channel.SendIconEmbedAsync($"Tell me what message you want me to send when someone joins the guild. Note that you can use the wildcard {Formatter.Bold("%user%")} and I will replace it with the mention for the member who joined.")
+                            .ConfigureAwait(false);
+                        mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id)
+                            .ConfigureAwait(false);
+                        wmessage = mctx?.Message?.Content;
+                    }
+                }
+
+                ulong lcid = 0;
+                string lmessage = null;
+                if (await channel.AskYesNoQuestionAsync(ctx.Client, ctx.User, "The same applies for member leave messages. Do you wish to enable this feature? (y/n)")) {
+                    await channel.SendIconEmbedAsync($"I will need a channel where to send the leave messages. Please reply with a channel mention, for example {Formatter.Bold("#logs")} .")
+                        .ConfigureAwait(false);
+                    var mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id && m.MentionedChannels.Count == 1)
+                        .ConfigureAwait(false);
+
+                    lcid = mctx?.MentionedChannels.FirstOrDefault()?.Id ?? 0;
+                    if (lcid != 0 && ctx.Guild.GetChannel(lcid).Type != ChannelType.Text) {
+                        await channel.SendFailedEmbedAsync("You need to provide a text channel!")
+                            .ConfigureAwait(false);
+                        lcid = 0;
+                    }
+
+                    if (await channel.AskYesNoQuestionAsync(ctx.Client, ctx.User, "You can also customize the leave message. Do you want to do that now? (y/n)")) {
+                        await channel.SendIconEmbedAsync($"Tell me what message you want me to send when someone leaves the guild. Note that you can use the wildcard {Formatter.Bold("%user%")} and I will replace it with the mention for the member who left.")
+                            .ConfigureAwait(false);
+                        mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id)
+                            .ConfigureAwait(false);
+                        lmessage = mctx?.Message?.Content;
+                    }
+                }
+
+                var sb = new StringBuilder();
+                sb.Append("Prefix: ").AppendLine(Formatter.Bold(gcfg.Prefix ?? Shared.BotConfiguration.DefaultPrefix));
+                sb.Append("Command suggestions: ").AppendLine(Formatter.Bold((gcfg.SuggestionsEnabled ? "on" : "off")));
+                sb.Append("Action logging: ");
+                if (gcfg.LoggingEnabled) {
+                    sb.Append(Formatter.Bold("on")).Append(" in channel ").AppendLine(ctx.Guild.GetChannel(gcfg.LogChannelId).Mention);
+                } else {
+                    sb.AppendLine(Formatter.Bold("off"));
+                }
+                if (wcid != 0) {
+                    sb.AppendLine($"Welcome messages {Formatter.Bold("enabled")} in {ctx.Guild.GetChannel(wcid).Mention}");
+                    sb.AppendLine($"Welcome message: {Formatter.BlockCode(wmessage ?? "default")}");
+                } else {
+                    sb.AppendLine($"Welcome messages: {Formatter.Bold("disabled")}");
+                }
+                if (lcid != 0) {
+                    sb.AppendLine($"Leave messages {Formatter.Bold("enabled")} in {ctx.Guild.GetChannel(lcid).Mention}");
+                    sb.AppendLine($"Leave message: {Formatter.BlockCode(lmessage ?? "default")}");
+                } else {
+                    sb.AppendLine($"Leave messages: {Formatter.Bold("disabled")}");
+                }
+
+                await channel.SendIconEmbedAsync($"Selected settings:\n\n{sb.ToString()}")
+                    .ConfigureAwait(false);
+
+                if (await channel.AskYesNoQuestionAsync(ctx.Client, ctx.User, "We are almost done! Please review the settings above and say whether you want me to apply them. (y/n)")) {
+                    await Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg)
+                        .ConfigureAwait(false);
+                    await Database.SetWelcomeChannelAsync(ctx.Guild.Id, wcid)
+                        .ConfigureAwait(false);
+                    await Database.SetWelcomeMessageAsync(ctx.Guild.Id, wmessage)
+                        .ConfigureAwait(false);
+                    await Database.SetLeaveChannelAsync(ctx.Guild.Id, lcid)
+                        .ConfigureAwait(false);
+                    await Database.SetLeaveMessageAsync(ctx.Guild.Id, lmessage)
+                        .ConfigureAwait(false);
+                }
+
+                await channel.SendIconEmbedAsync($"All done! Have a nice day!", StaticDiscordEmoji.CheckMarkSuccess)
+                    .ConfigureAwait(false);
             }
             #endregion
 
@@ -177,7 +308,7 @@ namespace TheGodfather.Modules.Administration
                         .ConfigureAwait(false);
                 }
                 #endregion
-                
+
                 #region COMMAND_LOGGING_CHANNEL
                 [Command("channel"), Module(ModuleType.Administration)]
                 [Description("Gets or sets current action log channel.")]

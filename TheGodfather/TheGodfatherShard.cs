@@ -167,7 +167,7 @@ namespace TheGodfather
             Interactivity = Client.UseInteractivity(new InteractivityConfiguration() {
                 PaginationBehavior = TimeoutBehaviour.DeleteReactions,
                 PaginationTimeout = TimeSpan.FromSeconds(30),
-                Timeout = TimeSpan.FromSeconds(30)
+                Timeout = TimeSpan.FromMinutes(1)
             });
         }
 
@@ -234,6 +234,8 @@ namespace TheGodfather
         {
             Log(LogLevel.Info, $"Guild available: {e.Guild.ToString()}");
 
+            await _db.RegisterGuildAsync(e.Guild.Id)
+                .ConfigureAwait(false);
             return Task.CompletedTask;
         }
 
@@ -269,7 +271,7 @@ namespace TheGodfather
             await e.Guild.GetDefaultChannel().SendIconEmbedAsync(
                 $"{Formatter.Bold("Thank you for adding me!")}\n\n" +
                 $"{emoji} The default prefix for commands is {Formatter.Bold(_shared.BotConfiguration.DefaultPrefix)}, but it can be changed using {Formatter.Bold("prefix")} command.\n" +
-                $"{emoji} I advise you to run the configuration wizard for this guild in order to quickly configure functions like logging, notifications etc. The wizard can be invoked using {Formatter.Bold("guild config wizard")} command.\n" +
+                $"{emoji} I advise you to run the configuration wizard for this guild in order to quickly configure functions like logging, notifications etc. The wizard can be invoked using {Formatter.Bold("guild config setup")} command.\n" +
                 $"{emoji} You can use the {Formatter.Bold("help")} command as a guide, though it is recommended to read the documentation @ https://github.com/ivan-ristovic/the-godfather\n" +
                 $"{emoji} If you have any questions or problems, feel free to use the {Formatter.Bold("report")} command in order send a message to the bot owner ({e.Client.CurrentApplication.Owner.Username}#{e.Client.CurrentApplication.Owner.Discriminator}). Alternatively, you can create an issue on GitHub or join WorldMafia discord server for quick support (https://discord.me/worldmafia).\n"
                 , StaticDiscordEmoji.Wave
