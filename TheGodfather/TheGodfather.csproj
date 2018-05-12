@@ -391,6 +391,7 @@
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Modules\Administration\AutomaticRolesModule.cs" />
     <Compile Include="Modules\Administration\Common\Filter.cs" />
+    <Compile Include="Modules\Administration\GuildModule.Configuration.cs" />
     <Compile Include="Modules\Gambling\CasinoModule.Lottery.cs" />
     <Compile Include="Modules\Gambling\CasinoModule.cs" />
     <Compile Include="Modules\Gambling\CasinoModule.Blackjack.cs" />
@@ -436,7 +437,6 @@
     <Compile Include="Extensions\EnumerableExtensions.cs" />
     <Compile Include="Common\Logger.cs" />
     <Compile Include="Modules\Administration\EmojiModule.cs" />
-    <Compile Include="Modules\Administration\GuildModule.NotificationChannels.cs" />
     <Compile Include="Modules\Administration\SelfAssignableRolesModule.cs" />
     <Compile Include="Modules\Gambling\Common\CardSuit.cs" />
     <Compile Include="Modules\Gambling\Common\Card.cs" />
