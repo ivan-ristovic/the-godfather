@@ -14,7 +14,6 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-using DSharpPlus.Net.Models;
 #endregion
 
 namespace TheGodfather.Modules.Administration
@@ -22,8 +21,8 @@ namespace TheGodfather.Modules.Administration
     public partial class GuildModule
     {
         [Group("configure"), Module(ModuleType.Administration)]
-        [Description("Allows manipulation of guild settings for this bot. If invoked without subcommands, starts an interactive settings setup for this guild.")]
-        [Aliases("config", "cfg", "setup")]
+        [Description("Allows manipulation of guild settings for this bot. If invoked without subcommands, lists the current guild configuration.")]
+        [Aliases("config", "cfg")]
         [UsageExample("!guild configure")]
         [Cooldown(3, 5, CooldownBucketType.Guild)]
         [RequireUserPermissions(Permissions.ManageGuild)]
@@ -37,13 +36,41 @@ namespace TheGodfather.Modules.Administration
             [GroupCommand]
             public async Task ExecuteGroupAsync(CommandContext ctx)
             {
+                var emb = new DiscordEmbedBuilder() {
+                    Title = "Configuration for this guild:",
+                    Description = ctx.Guild.ToString(),
+                    Color = DiscordColor.Aquamarine,
+                    ThumbnailUrl = ctx.Guild.IconUrl
+                };
+
+                var gcfg = Shared.GetGuildConfig(ctx.Guild.Id);
+
+                emb.AddField("Prefix", Shared.GetGuildPrefix(ctx.Guild.Id), inline: true);
+                emb.AddField("Command suggestions", gcfg.SuggestionsEnabled ? "on" : "off", inline: true);
+                emb.AddField("Action logging", gcfg.LoggingEnabled ? "on" : "off", inline: true);
+
+                // TODO w/l
+
+                await ctx.RespondAsync(embed: emb.Build())
+                    .ConfigureAwait(false);
+            }
+
+
+            #region COMMAND_CONFIG_WIZARD
+            [Command("setup"), Module(ModuleType.Administration)]
+            [Description("Starts an interactive wizard for configuring the guild settings.")]
+            [Aliases("wizard")]
+            [UsageExample("!guild cfg setup")]
+            public async Task SetupAsync(CommandContext ctx)
+            {
                 // TODO
             }
+            #endregion
 
 
             #region GROUP_CONFIG_SUGGESTIONS
             [Group("suggestions"), Module(ModuleType.Administration)]
-            [Description("Suggestions configuration commands.")]
+            [Description("Command suggestions configuration.")]
             [Aliases("suggestion", "sugg", "sug", "s")]
             [UsageExample("!guild cfg suggestions")]
             public class Suggestions : TheGodfatherBaseModule
@@ -95,6 +122,97 @@ namespace TheGodfather.Modules.Administration
             }
             #endregion
 
+            #region GROUP_CONFIG_LOGGING
+            [Group("logging"), Module(ModuleType.Administration)]
+            [Description("Command action logging configuration.")]
+            [Aliases("log", "modlog")]
+            [UsageExample("!guild cfg logging")]
+            public class Logging : TheGodfatherBaseModule
+            {
+
+                public Logging(SharedData shared, DBService db) : base(shared, db) { }
+
+
+                [GroupCommand]
+                public async Task ExecuteGroupAsync(CommandContext ctx)
+                {
+                    var gcfg = Shared.GetGuildConfig(ctx.Guild.Id);
+                    await ctx.RespondWithIconEmbedAsync($"Action logging for this guild is {Formatter.Bold(gcfg.LoggingEnabled ? "enabled" : "disabled")}!")
+                        .ConfigureAwait(false);
+                }
+
+
+                #region COMMAND_LOGGING_ENABLE
+                [Command("enable"), Module(ModuleType.Administration)]
+                [Description("Enables action logging for this guild in the given channel.")]
+                [Aliases("on")]
+                [UsageExample("!guild cfg logging on")]
+                public async Task EnableAsync(CommandContext ctx,
+                                             [Description("Channel.")] DiscordChannel channel = null)
+                {
+                    if (channel == null)
+                        channel = ctx.Channel;
+
+                    var gcfg = Shared.GetGuildConfig(ctx.Guild.Id);
+                    gcfg.LogChannelId = channel.Id;
+                    await Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg)
+                        .ConfigureAwait(false);
+                    await ctx.RespondWithIconEmbedAsync($"Enabled action log in channel {channel.Mention}!")
+                        .ConfigureAwait(false);
+                }
+                #endregion
+
+                #region COMMAND_LOGGING_DISABLE
+                [Command("disable"), Module(ModuleType.Administration)]
+                [Description("Disables action logging for this guild.")]
+                [Aliases("off")]
+                [UsageExample("!guild cfg logging off")]
+                public async Task DisableAsync(CommandContext ctx)
+                {
+                    var gcfg = Shared.GetGuildConfig(ctx.Guild.Id);
+                    gcfg.LogChannelId = 0;
+                    await Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg)
+                        .ConfigureAwait(false);
+                    await ctx.RespondWithIconEmbedAsync("Disabled action logging!")
+                        .ConfigureAwait(false);
+                }
+                #endregion
+                
+                #region COMMAND_LOGGING_CHANNEL
+                [Command("channel"), Module(ModuleType.Administration)]
+                [Description("Gets or sets current action log channel.")]
+                [Aliases("chn", "c")]
+                [UsageExample("!guild cfg logging channel")]
+                [UsageExample("!guild cfg logging channel #modlog")]
+                public async Task ChannelAsync(CommandContext ctx,
+                                              [Description("Channel.")] DiscordChannel channel = null)
+                {
+                    var gcfg = Shared.GetGuildConfig(ctx.Guild.Id);
+                    if (channel == null) {
+                        if (gcfg.LoggingEnabled) {
+                            var c = ctx.Guild.GetChannel(gcfg.LogChannelId);
+                            if (c == null)
+                                throw new CommandFailedException($"Action logging channel was set but does not exist anymore (id: {gcfg.LogChannelId}).");
+                            await ctx.RespondWithIconEmbedAsync($"Action logging channel: {c.Mention}.")
+                                .ConfigureAwait(false);
+                        } else {
+                            await ctx.RespondWithIconEmbedAsync("Action logging channel isn't set for this guild.")
+                                .ConfigureAwait(false);
+                        }
+                    } else {
+                        if (channel.Type != ChannelType.Text)
+                            throw new CommandFailedException("Action logging channel must be a text channel.");
+
+                        gcfg.LogChannelId = channel.Id;
+                        await Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg)
+                            .ConfigureAwait(false);
+                        await ctx.RespondWithIconEmbedAsync($"Action logging channel set to {channel.Mention}.")
+                            .ConfigureAwait(false);
+                    }
+                }
+                #endregion
+            }
+            #endregion
 
             #region GROUP_CONFIG_WELCOME
             [Group("welcome"), Module(ModuleType.Administration)]
@@ -119,7 +237,7 @@ namespace TheGodfather.Modules.Administration
 
                 #region COMMAND_WELCOME_CHANNEL
                 [Command("channel"), Module(ModuleType.Administration)]
-                [Description("Gets or sets current welcome message channel.")]
+                [Description("Gets or sets welcome message channel.")]
                 [Aliases("chn", "c")]
                 [UsageExample("!guild cfg welcome channel")]
                 [UsageExample("!guild cfg welcome channel #lobby")]
@@ -133,22 +251,19 @@ namespace TheGodfather.Modules.Administration
                             var c = ctx.Guild.GetChannel(cid);
                             if (c == null)
                                 throw new CommandFailedException($"Welcome channel was set but does not exist anymore (id: {cid}).");
-                            await ctx.RespondWithIconEmbedAsync($"Welcome message channel: {Formatter.Bold(ctx.Guild.GetChannel(cid).Name)}.")
+                            await ctx.RespondWithIconEmbedAsync($"Welcome message channel: {c.Mention}.")
                                 .ConfigureAwait(false);
                         } else {
                             await ctx.RespondWithIconEmbedAsync("Welcome message channel isn't set for this guild.")
                                 .ConfigureAwait(false);
                         }
                     } else {
-                        if (channel == null)
-                            channel = ctx.Channel;
-
                         if (channel.Type != ChannelType.Text)
                             throw new CommandFailedException("Welcome channel must be a text channel.");
 
                         await Database.SetWelcomeChannelAsync(ctx.Guild.Id, channel.Id)
                             .ConfigureAwait(false);
-                        await ctx.RespondWithIconEmbedAsync($"Welcome message channel set to {Formatter.Bold(channel.Name)}.")
+                        await ctx.RespondWithIconEmbedAsync($"Welcome message channel set to {channel.Mention}.")
                             .ConfigureAwait(false);
                     }
                 }
@@ -252,7 +367,7 @@ namespace TheGodfather.Modules.Administration
 
                 #region COMMAND_LEAVE_CHANNEL
                 [Command("channel"), Module(ModuleType.Administration)]
-                [Description("Gets or sets current leave message channel.")]
+                [Description("Gets or sets leave message channel.")]
                 [Aliases("chn", "c")]
                 [UsageExample("!guild cfg leave channel")]
                 [UsageExample("!guild cfg leave channel #lobby")]
@@ -266,22 +381,19 @@ namespace TheGodfather.Modules.Administration
                             var c = ctx.Guild.GetChannel(cid);
                             if (c == null)
                                 throw new CommandFailedException($"Leave channel was set but does not exist anymore (id: {cid}).");
-                            await ctx.RespondWithIconEmbedAsync($"Leave message channel: {Formatter.Bold(ctx.Guild.GetChannel(cid).Name)}.")
+                            await ctx.RespondWithIconEmbedAsync($"Leave message channel: {c.Mention}.")
                                 .ConfigureAwait(false);
                         } else {
                             await ctx.RespondWithIconEmbedAsync("Leave message channel isn't set for this guild.")
                                 .ConfigureAwait(false);
                         }
                     } else {
-                        if (channel == null)
-                            channel = ctx.Channel;
-
                         if (channel.Type != ChannelType.Text)
                             throw new CommandFailedException("Leave channel must be a text channel.");
 
                         await Database.SetLeaveChannelAsync(ctx.Guild.Id, channel.Id)
                             .ConfigureAwait(false);
-                        await ctx.RespondWithIconEmbedAsync($"Leave message channel set to {Formatter.Bold(channel.Name)}.")
+                        await ctx.RespondWithIconEmbedAsync($"Leave message channel set to {channel.Mention}.")
                             .ConfigureAwait(false);
                     }
                 }

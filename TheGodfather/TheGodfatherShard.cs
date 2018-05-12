@@ -94,14 +94,33 @@ namespace TheGodfather
 
             Client = new DiscordClient(cfg);
 
-            Client.ClientErrored += Client_Error;
             Client.DebugLogger.LogMessageReceived += (s, e) => TheGodfather.LogHandle.LogMessage(ShardId, e);
+
+            Client.ChannelCreated += Client_ChannelCreated;
+            Client.ChannelDeleted += Client_ChannelDeleted;
+            Client.ChannelPinsUpdated += Client_ChannelPinsUpdated;
+            Client.ChannelUpdated += Client_ChannelUpdated;
+            Client.ClientErrored += Client_Errored;
             Client.GuildAvailable += Client_GuildAvailable;
+            Client.GuildBanAdded += Client_GuildBanAdded;
+            Client.GuildBanRemoved += Client_GuildBanRemoved;
+            Client.GuildCreated += Client_GuildCreated;
+            Client.GuildDeleted += Client_GuildDeleted;
+            Client.GuildEmojisUpdated += Client_GuildEmojisUpdated;
+            Client.GuildIntegrationsUpdated += Client_GuildIntegrationsUpdated;
+            Client.GuildMemberAdded += Client_GuildMemberAdded;
+            Client.GuildMemberRemoved += Client_GuildMemberRemoved;
+            Client.GuildMemberUpdated += Client_GuildMemberUpdated;
+            Client.GuildRoleCreated += Client_GuildRoleCreated;
+            Client.GuildRoleDeleted += Client_GuildRoleDeleted;
+            Client.GuildRoleUpdated += Client_GuildRoleUpdated;
             Client.GuildUnavailable += Client_GuildUnavailable;
-            Client.GuildMemberAdded += Client_GuildMemberAdd;
-            Client.GuildMemberRemoved += Client_GuildMemberRemove;
-            Client.MessageCreated += Client_MessageCreated;
+            Client.GuildUpdated += Client_GuildUpdated;
+            Client.GuildUnavailable += Client_GuildUnavailable;
+            Client.MessageDeleted += Client_MessageDeleted;
             Client.MessageUpdated += Client_MessageUpdated;
+            Client.VoiceServerUpdated += Client_VoiceServerUpdated;
+            Client.WebhooksUpdated += Client_WebhooksUpdated;
         }
 
         private void SetupCommands()
@@ -163,28 +182,128 @@ namespace TheGodfather
         #endregion
 
         #region CLIENT_EVENTS
-        private Task Client_Error(ClientErrorEventArgs e)
+        private async Task Client_ChannelCreated(ChannelCreateEventArgs e)
+        {
+            var logchn = await GetLogChannelForGuild(e.Guild.Id)
+                .ConfigureAwait(false);
+            if (logchn != null) {
+                await logchn.SendIconEmbedAsync($"Channel created: {e.Channel.ToString()}")
+                    .ConfigureAwait(false);
+            }
+        }
+
+        private async Task Client_ChannelDeleted(ChannelDeleteEventArgs e)
+        {
+            var logchn = await GetLogChannelForGuild(e.Guild.Id)
+                .ConfigureAwait(false);
+            if (logchn != null) {
+                await logchn.SendIconEmbedAsync($"Channel deleted: {e.Channel.ToString()}")
+                    .ConfigureAwait(false);
+            }
+        }
+
+        private async Task Client_ChannelPinsUpdated(ChannelPinsUpdateEventArgs e)
+        {
+            var logchn = await GetLogChannelForGuild(e.Channel.Guild.Id)
+                .ConfigureAwait(false);
+            if (logchn != null) {
+                await logchn.SendIconEmbedAsync($"Pins updated in channel: {e.Channel.ToString()} ({Formatter.InlineCode(e.LastPinTimestamp.ToUniversalTime().ToString())})")
+                    .ConfigureAwait(false);
+            }
+        }
+
+        private async Task Client_ChannelUpdated(ChannelUpdateEventArgs e)
+        {
+            var logchn = await GetLogChannelForGuild(e.Guild.Id)
+                .ConfigureAwait(false);
+            if (logchn != null) {
+                await logchn.SendIconEmbedAsync($"Channel updated: {e.ChannelAfter.ToString()}")
+                    .ConfigureAwait(false);
+            }
+        }
+
+        private Task Client_Errored(ClientErrorEventArgs e)
         {
             Log(LogLevel.Critical, $"Client errored: {e.Exception.GetType()}: {e.Exception.Message}");
             return Task.CompletedTask;
         }
 
-        private async Task Client_GuildAvailable(GuildCreateEventArgs e)
+        private Task Client_GuildAvailable(GuildCreateEventArgs e)
         {
             Log(LogLevel.Info, $"Guild available: {e.Guild.ToString()}");
+
+            return Task.CompletedTask;
+        }
+
+        private async Task Client_GuildBanAdded(GuildBanAddEventArgs e)
+        {
+            var logchn = await GetLogChannelForGuild(e.Guild.Id)
+                .ConfigureAwait(false);
+            if (logchn != null) {
+                await logchn.SendIconEmbedAsync($"Ban added: {e.Member.ToString()}")
+                    .ConfigureAwait(false);
+            }
+        }
+
+        private async Task Client_GuildBanRemoved(GuildBanRemoveEventArgs e)
+        {
+            var logchn = await GetLogChannelForGuild(e.Guild.Id)
+                .ConfigureAwait(false);
+            if (logchn != null) {
+                await logchn.SendIconEmbedAsync($"Ban removed: {e.Member.ToString()}")
+                    .ConfigureAwait(false);
+            }
+        }
+
+        private async Task Client_GuildCreated(GuildCreateEventArgs e)
+        {
+            Log(LogLevel.Info, $"Joined guild: {e.Guild.ToString()}");
+
             await _db.RegisterGuildAsync(e.Guild.Id)
                 .ConfigureAwait(false);
             _shared.GuildConfigurations.TryAdd(e.Guild.Id, PartialGuildConfig.Default);
+
+            var emoji = DiscordEmoji.FromName(e.Client, ":small_blue_diamond:");
+            await e.Guild.GetDefaultChannel().SendIconEmbedAsync(
+                $"{Formatter.Bold("Thank you for adding me!")}\n\n" +
+                $"{emoji} The default prefix for commands is {Formatter.Bold(_shared.BotConfiguration.DefaultPrefix)}, but it can be changed using {Formatter.Bold("prefix")} command.\n" +
+                $"{emoji} I advise you to run the configuration wizard for this guild in order to quickly configure functions like logging, notifications etc. The wizard can be invoked using {Formatter.Bold("guild config wizard")} command.\n" +
+                $"{emoji} You can use the {Formatter.Bold("help")} command as a guide, though it is recommended to read the documentation @ https://github.com/ivan-ristovic/the-godfather\n" +
+                $"{emoji} If you have any questions or problems, feel free to use the {Formatter.Bold("report")} command in order send a message to the bot owner ({e.Client.CurrentApplication.Owner.Username}#{e.Client.CurrentApplication.Owner.Discriminator}). Alternatively, you can create an issue on GitHub or join WorldMafia discord server for quick support (https://discord.me/worldmafia).\n"
+                , StaticDiscordEmoji.Wave
+            ).ConfigureAwait(false);
         }
 
-        private async Task Client_GuildUnavailable(GuildDeleteEventArgs e)
+        private async Task Client_GuildDeleted(GuildDeleteEventArgs e)
         {
-            Log(LogLevel.Info, $"Guild unavailable: {e.Guild.ToString()}");
+            Log(LogLevel.Info, $"Left guild: {e.Guild.ToString()}");
+
             await _db.UnregisterGuildAsync(e.Guild.Id)
                 .ConfigureAwait(false);
+            _shared.GuildConfigurations.TryRemove(e.Guild.Id, out _);
         }
 
-        private async Task Client_GuildMemberAdd(GuildMemberAddEventArgs e)
+        private async Task Client_GuildEmojisUpdated(GuildEmojisUpdateEventArgs e)
+        {
+            var logchn = await GetLogChannelForGuild(e.Guild.Id)
+                .ConfigureAwait(false);
+            if (logchn != null) {
+                await logchn.SendIconEmbedAsync($"Guild emojis updated.")
+                    .ConfigureAwait(false);
+            }
+        }
+
+        private async Task Client_GuildIntegrationsUpdated(GuildIntegrationsUpdateEventArgs e)
+        {
+            var logchn = await GetLogChannelForGuild(e.Guild.Id)
+                .ConfigureAwait(false);
+            if (logchn != null) {
+                await logchn.SendIconEmbedAsync($"Guild integrations updated.")
+                    .ConfigureAwait(false);
+            }
+        }
+
+        private async Task Client_GuildMemberAdded(GuildMemberAddEventArgs e)
         {
             if (!TheGodfather.Listening)
                 return;
@@ -252,11 +371,18 @@ namespace TheGodfather
             } catch (Exception exc) {
                 TheGodfather.LogHandle.LogException(LogLevel.Debug, exc);
             }
+
+            var logchn = await GetLogChannelForGuild(e.Guild.Id)
+                .ConfigureAwait(false);
+            if (logchn != null) {
+                await logchn.SendIconEmbedAsync($"Member joined: {e.Member.ToString()}")
+                    .ConfigureAwait(false);
+            }
         }
 
-        private async Task Client_GuildMemberRemove(GuildMemberRemoveEventArgs e)
+        private async Task Client_GuildMemberRemoved(GuildMemberRemoveEventArgs e)
         {
-            if (!TheGodfather.Listening)
+            if (!TheGodfather.Listening || e.Member.Id == e.Client.CurrentUser.Id)
                 return;
 
             Log(LogLevel.Info,
@@ -299,6 +425,69 @@ namespace TheGodfather
                     await _db.RemoveLeaveChannelAsync(e.Guild.Id)
                         .ConfigureAwait(false);
             }
+
+            var logchn = await GetLogChannelForGuild(e.Guild.Id)
+                .ConfigureAwait(false);
+            if (logchn != null) {
+                await logchn.SendIconEmbedAsync($"Member left: {e.Member.ToString()}")
+                    .ConfigureAwait(false);
+            }
+        }
+
+        private async Task Client_GuildMemberUpdated(GuildMemberUpdateEventArgs e)
+        {
+            var logchn = await GetLogChannelForGuild(e.Guild.Id)
+                .ConfigureAwait(false);
+            if (logchn != null) {
+                await logchn.SendIconEmbedAsync($"Member updated: {e.Member.ToString()}")
+                    .ConfigureAwait(false);
+            }
+        }
+
+        private async Task Client_GuildRoleCreated(GuildRoleCreateEventArgs e)
+        {
+            var logchn = await GetLogChannelForGuild(e.Guild.Id)
+                .ConfigureAwait(false);
+            if (logchn != null) {
+                await logchn.SendIconEmbedAsync($"Role created: {e.Role.ToString()}")
+                    .ConfigureAwait(false);
+            }
+        }
+
+        private async Task Client_GuildRoleDeleted(GuildRoleDeleteEventArgs e)
+        {
+            var logchn = await GetLogChannelForGuild(e.Guild.Id)
+                .ConfigureAwait(false);
+            if (logchn != null) {
+                await logchn.SendIconEmbedAsync($"Role deleted: {e.Role.ToString()}")
+                    .ConfigureAwait(false);
+            }
+        }
+
+        private async Task Client_GuildRoleUpdated(GuildRoleUpdateEventArgs e)
+        {
+            var logchn = await GetLogChannelForGuild(e.Guild.Id)
+                .ConfigureAwait(false);
+            if (logchn != null) {
+                await logchn.SendIconEmbedAsync($"Role updated: {e.RoleBefore.ToString()}")
+                    .ConfigureAwait(false);
+            }
+        }
+
+        private Task Client_GuildUnavailable(GuildDeleteEventArgs e)
+        {
+            Log(LogLevel.Info, $"Guild unavailable: {e.Guild.ToString()}");
+            return Task.CompletedTask;
+        }
+
+        private async Task Client_GuildUpdated(GuildUpdateEventArgs e)
+        {
+            var logchn = await GetLogChannelForGuild(e.Guild.Id)
+                .ConfigureAwait(false);
+            if (logchn != null) {
+                await logchn.SendIconEmbedAsync($"Guild updated.")
+                    .ConfigureAwait(false);
+            }
         }
 
         private async Task Client_MessageCreated(MessageCreateEventArgs e)
@@ -319,6 +508,14 @@ namespace TheGodfather
                 try {
                     await e.Channel.DeleteMessageAsync(e.Message)
                         .ConfigureAwait(false);
+
+                    var logchn = await GetLogChannelForGuild(e.Guild.Id)
+                        .ConfigureAwait(false);
+                    if (logchn != null) {
+                        await logchn.SendIconEmbedAsync($"Message by {e.Author.ToString()} in channel {e.Channel.Mention} was deleted because it contained a filter: {Formatter.BlockCode(string.IsNullOrWhiteSpace(e.Message?.Content) ? "<unknown>" : e.Message.Content)}")
+                            .ConfigureAwait(false);
+                    }
+
                     Log(LogLevel.Info,
                         $"Filter triggered in message: {e.Message.Content.Replace('\n', ' ')}<br>" +
                         $"{e.Message.Author.ToString()}<br>" +
@@ -399,6 +596,16 @@ namespace TheGodfather
             }
         }
 
+        private async Task Client_MessageDeleted(MessageDeleteEventArgs e)
+        {
+            var logchn = await GetLogChannelForGuild(e.Guild.Id)
+                .ConfigureAwait(false);
+            if (logchn != null) {
+                await logchn.SendIconEmbedAsync($"Message deleted in channel {e.Channel.Mention}: {Formatter.BlockCode(string.IsNullOrWhiteSpace(e.Message?.Content) ? "<unknown>" : e.Message.Content)}")
+                    .ConfigureAwait(false);
+            }
+        }
+
         private async Task Client_MessageUpdated(MessageUpdateEventArgs e)
         {
             if (e.Author == null || e.Message == null || !TheGodfather.Listening)
@@ -407,11 +614,20 @@ namespace TheGodfather
             if (_shared.BlockedChannels.Contains(e.Channel.Id))
                 return;
 
+            var logchn = await GetLogChannelForGuild(e.Guild.Id)
+                .ConfigureAwait(false);
+
             // Check if message contains filter
             if (!e.Author.IsBot && e.Message.Content != null && _shared.MessageContainsFilter(e.Guild.Id, e.Message.Content)) {
                 try {
                     await e.Channel.DeleteMessageAsync(e.Message)
                         .ConfigureAwait(false);
+
+                    if (logchn != null && !e.Author.IsBot) {
+                        await logchn.SendIconEmbedAsync($"Message by {e.Author.ToString()} in channel {e.Channel.Mention} was deleted because it contained a filter: {Formatter.BlockCode(string.IsNullOrWhiteSpace(e.Message?.Content) ? "<unknown>" : e.Message.Content)}")
+                            .ConfigureAwait(false);
+                    }
+
                     Log(LogLevel.Info,
                         $"Filter triggered after message edit:<br>" +
                         $"Message: {e.Message.Content.Replace('\n', ' ')}<br>" +
@@ -426,6 +642,31 @@ namespace TheGodfather
                         $"{e.Guild.ToString()} | {e.Channel.ToString()}"
                     );
                 }
+            }
+
+            if (logchn != null && !e.Author.IsBot) {
+                await logchn.SendIconEmbedAsync($"Message by {e.Author.ToString()} in channel {e.Channel.Mention} was updated:\n\nBefore update: {Formatter.BlockCode(string.IsNullOrWhiteSpace(e.MessageBefore?.Content) ? "<unknown>" : e.MessageBefore.Content)}\nAfter update: {Formatter.BlockCode(string.IsNullOrWhiteSpace(e.Message?.Content) ? "<unknown>" : e.Message.Content)}")
+                    .ConfigureAwait(false);
+            }
+        }
+
+        private async Task Client_VoiceServerUpdated(VoiceServerUpdateEventArgs e)
+        {
+            var logchn = await GetLogChannelForGuild(e.Guild.Id)
+                .ConfigureAwait(false);
+            if (logchn != null) {
+                await logchn.SendIconEmbedAsync($"Voice server updated to endpoint: {Formatter.Bold(e.Endpoint)}!")
+                    .ConfigureAwait(false);
+            }
+        }
+
+        private async Task Client_WebhooksUpdated(WebhooksUpdateEventArgs e)
+        {
+            var logchn = await GetLogChannelForGuild(e.Guild.Id)
+                .ConfigureAwait(false);
+            if (logchn != null) {
+                await logchn.SendIconEmbedAsync($"Webhooks updated for {e.Channel.ToString()}!")
+                    .ConfigureAwait(false);
             }
         }
         #endregion
@@ -518,6 +759,25 @@ namespace TheGodfather
 
             await e.Context.RespondAsync(embed: emb.Build())
                 .ConfigureAwait(false);
+        }
+        #endregion
+
+        #region HELPER_FUNCTIONS
+        private async Task<DiscordChannel> GetLogChannelForGuild(ulong gid)
+        {
+            var gcfg = _shared.GetGuildConfig(gid);
+            if (gcfg.LoggingEnabled) {
+                try {
+                    var channel = await Client.GetChannelAsync(gcfg.LogChannelId)
+                        .ConfigureAwait(false);
+                    return channel;
+                } catch (Exception e) {
+                    TheGodfather.LogHandle.LogException(LogLevel.Warning, e);
+                    return null;
+                }
+            } else {
+                return null;
+            }
         }
         #endregion
     }

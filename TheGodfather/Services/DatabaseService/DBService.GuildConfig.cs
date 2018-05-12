@@ -29,6 +29,7 @@ namespace TheGodfather.Services
                     using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
                         while (await reader.ReadAsync().ConfigureAwait(false)) {
                             dict.Add((ulong)(long)reader["gid"], new PartialGuildConfig() {
+                                LogChannelId = (ulong)(long)reader["log_cid"],
                                 Prefix = reader["prefix"] is DBNull ? null : (string)reader["prefix"],
                                 SuggestionsEnabled = (bool)reader["suggestions_enabled"],
                             });
@@ -126,13 +127,14 @@ namespace TheGodfather.Services
                 using (var cmd = con.CreateCommand()) {
                     await con.OpenAsync().ConfigureAwait(false);
 
-                    cmd.CommandText = "UPDATE gf.guild_cfg SET (prefix, suggestions_enabled) = (@prefix, @suggestions_enabled) WHERE gid = @gid;";
+                    cmd.CommandText = "UPDATE gf.guild_cfg SET (prefix, suggestions_enabled, log_cid) = (@prefix, @suggestions_enabled, @log_cid) WHERE gid = @gid;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
                     if (string.IsNullOrWhiteSpace(cfg.Prefix))
                         cmd.Parameters.AddWithValue("prefix", NpgsqlDbType.Varchar, DBNull.Value);
                     else
                         cmd.Parameters.AddWithValue("prefix", NpgsqlDbType.Varchar, cfg.Prefix);
                     cmd.Parameters.AddWithValue("suggestions_enabled", NpgsqlDbType.Boolean, cfg.SuggestionsEnabled);
+                    cmd.Parameters.AddWithValue("log_cid", NpgsqlDbType.Bigint, cfg.LogChannelId);
 
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
