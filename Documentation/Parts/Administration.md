@@ -848,169 +848,305 @@
 
 ---
 
-### guild config
+## Group: guild configure
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Interactively set the options for this guild.*
-
-**Requires permissions:**
-`Manage guild`
-
-**Aliases:**
-`cfg, updateconfig, updatecfg, setconfig, setcfg`
-
-**Examples:**
-
-```
-!guild banlist
-```
-</p></details>
-
----
-
-### guild deleteleavechannel
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Remove leave message channel for this guild.*
+*Allows manipulation of guild settings for this bot. If invoked without subcommands, lists the current guild configuration.*
 
 **Requires user permissions:**
 `Manage guild`
 
 **Aliases:**
-`delleavec, dellc, delleave, dlc`
+`config, cfg`
 
 **Examples:**
 
 ```
-!guild deletewelcomechannel
+!guild configure
 ```
 </p></details>
 
 ---
 
-### guild deleteleavemessage
+## Group: guild configure leave
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Remove leave message for this guild.*
+*Allows user leaving message configuration.*
 
 **Requires user permissions:**
 `Manage guild`
 
 **Aliases:**
-`delleavem, dellm, delleavemsg, dlm, deletelm, dwlsg`
+`exit, drop, lv, l`
 
 **Examples:**
 
 ```
-!guild deleteleavemessage
+!guild cfg leave
 ```
 </p></details>
 
 ---
 
-### guild deletewelcomechannel
+### guild configure leave channel
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Remove welcome message channel for this guild.*
+*Gets or sets current leave message channel.*
+
+**Aliases:**
+`chn, c`
+
+**Arguments:**
+
+(optional) `[channel]` : *Channel.* (def: `None`)
+
+**Examples:**
+
+```
+!guild cfg leave channel
+!guild cfg leave channel #lobby
+```
+</p></details>
+
+---
+
+### guild configure leave disable
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Disables member leave messages for this guild.*
+
+**Aliases:**
+`off`
+
+**Examples:**
+
+```
+!guild cfg leave off
+```
+</p></details>
+
+---
+
+### guild configure leave enable
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Enables member leave messages for this guild. Provide a channel to send the messages to and optional custom leave message. Any occurances of ``%user%`` inside the message will be replaced with appropriate mention.*
+
+**Aliases:**
+`on`
+
+**Arguments:**
+
+(optional) `[channel]` : *Channel.* (def: `None`)
+
+(optional) `[string...]` : *Leave message.* (def: `None`)
+
+**Examples:**
+
+```
+!guild cfg leave on
+!guild cfg leave on #lobby Welcome, %user%!
+```
+</p></details>
+
+---
+
+### guild configure leave message
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Gets or sets current leave message.*
+
+**Aliases:**
+`msg, m`
+
+**Arguments:**
+
+(optional) `[string...]` : *Leave message.* (def: `None`)
+
+**Examples:**
+
+```
+!guild cfg leave message
+!guild cfg leave message Bye, %user%!
+```
+</p></details>
+
+---
+
+### guild configure setup
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Starts an interactive wizard for configuring the guild settings.*
 
 **Requires user permissions:**
 `Manage guild`
 
 **Aliases:**
-`delwelcomec, delwc, delwelcome, dwc, deletewc`
+`wizard`
 
 **Examples:**
 
 ```
-!guild deletewelcomechannel
+!guild cfg setup
 ```
 </p></details>
 
 ---
 
-### guild deletewelcomemessage
+## Group: guild configure suggestions
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Remove welcome message for this guild.*
+*Suggestions configuration commands.*
 
 **Requires user permissions:**
 `Manage guild`
 
 **Aliases:**
-`delwelcomem, delwm, delwelcomemsg, dwm, deletewm, dwmsg`
+`suggestion, sugg, sug, s`
 
 **Examples:**
 
 ```
-!guild deletewelcomemessage
+!guild cfg suggestions
 ```
 </p></details>
 
 ---
 
-### guild getleavechannel
+### guild configure suggestions disable
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Get current leave message channel for this guild.*
+*Disables command suggestions for this guild.*
 
 **Aliases:**
-`getleavec, getlc, leavechannel, lc`
+`off`
 
 **Examples:**
 
 ```
-!guild getleavechannel
+!guild cfg suggestions off
 ```
 </p></details>
 
 ---
 
-### guild getleavemessage
+### guild configure suggestions enable
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Get current leave message for this guild.*
+*Enables command suggestions for this guild.*
 
 **Aliases:**
-`getleavem, getlm, leavemessage, lm, leavemsg, lmsg`
+`on`
 
 **Examples:**
 
 ```
-!guild getwelcomemessage
+!guild cfg suggestions on
 ```
 </p></details>
 
 ---
 
-### guild getwelcomechannel
+## Group: guild configure welcome
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Get current welcome message channel for this guild.*
+*Allows user welcoming configuration.*
+
+**Requires user permissions:**
+`Manage guild`
 
 **Aliases:**
-`getwelcomec, getwc, welcomechannel, wc`
+`enter, join, wlc, w`
 
 **Examples:**
 
 ```
-!guild getwelcomechannel
+!guild cfg welcome
 ```
 </p></details>
 
 ---
 
-### guild getwelcomemessage
+### guild configure welcome channel
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Get current welcome message for this guild.*
+*Gets or sets current welcome message channel.*
 
 **Aliases:**
-`getwelcomem, getwm, welcomemessage, wm, welcomemsg, wmsg`
+`chn, c`
+
+**Arguments:**
+
+(optional) `[channel]` : *Channel.* (def: `None`)
 
 **Examples:**
 
 ```
-!guild getwelcomemessage
+!guild cfg welcome channel
+!guild cfg welcome channel #lobby
+```
+</p></details>
+
+---
+
+### guild configure welcome disable
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Disables member welcome messages for this guild.*
+
+**Aliases:**
+`off`
+
+**Examples:**
+
+```
+!guild cfg welcome off
+```
+</p></details>
+
+---
+
+### guild configure welcome enable
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Enables member welcoming for this guild. Provide a channel to send the messages to and optional custom welcome message. Any occurances of ``%user%`` inside the message will be replaced with appropriate mention.*
+
+**Aliases:**
+`on`
+
+**Arguments:**
+
+(optional) `[channel]` : *Channel.* (def: `None`)
+
+(optional) `[string...]` : *Welcome message.* (def: `None`)
+
+**Examples:**
+
+```
+!guild cfg welcome on
+!guild cfg welcome on #lobby Welcome, %user%!
+```
+</p></details>
+
+---
+
+### guild configure welcome message
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Gets or sets current welcome message.*
+
+**Aliases:**
+`msg, m`
+
+**Arguments:**
+
+(optional) `[string...]` : *Welcome message.* (def: `None`)
+
+**Examples:**
+
+```
+!guild cfg welcome message
+!guild cfg welcome message Welcome, %user%!
 ```
 </p></details>
 
@@ -1149,106 +1285,6 @@
 
 ```
 !guild seticon http://imgur.com/someimage.png
-```
-</p></details>
-
----
-
-### guild setleavechannel
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Set leave message channel for this guild. If the channel isn't given, uses the current one.*
-
-**Requires user permissions:**
-`Manage guild`
-
-**Aliases:**
-`leavec, setlc, setleave`
-
-**Arguments:**
-
-(optional) `[channel]` : *Channel.* (def: `None`)
-
-**Examples:**
-
-```
-!guild setleavechannel
-!guild setleavechannel #bb
-```
-</p></details>
-
----
-
-### guild setleavemessage
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Set leave message for this guild. Any occurances of ``%user%`` inside the string will be replaced with newly joined user mention. Invoking command without a message will reset the current leave message to a default one.*
-
-**Requires user permissions:**
-`Manage guild`
-
-**Aliases:**
-`setlm, setleavem, setleavemsg, setlmsg`
-
-**Arguments:**
-
-(optional) `[string...]` : *Message.* (def: `None`)
-
-**Examples:**
-
-```
-!guild setleavemessage
-!guild setleavemessage Bye, %user%!
-```
-</p></details>
-
----
-
-### guild setwelcomechannel
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Set welcome message channel for this guild. If the channel isn't given, uses the current one.*
-
-**Requires user permissions:**
-`Manage guild`
-
-**Aliases:**
-`setwc, setwelcomec, setwelcome`
-
-**Arguments:**
-
-(optional) `[channel]` : *Channel.* (def: `None`)
-
-**Examples:**
-
-```
-!guild setwelcomechannel
-!guild setwelcomechannel #welcome
-```
-</p></details>
-
----
-
-### guild setwelcomemessage
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Set welcome message for this guild. Any occurances of ``%user%`` inside the string will be replaced with newly joined user mention. Invoking command without a message will reset the current welcome message to a default one.*
-
-**Requires user permissions:**
-`Manage guild`
-
-**Aliases:**
-`setwm, setwelcomem, setwelcomemsg, setwmsg`
-
-**Arguments:**
-
-(optional) `[string...]` : *Message.* (def: `None`)
-
-**Examples:**
-
-```
-!guild setwelcomemessage
-!guild setwelcomemessage Welcome, %user%!
 ```
 </p></details>
 
