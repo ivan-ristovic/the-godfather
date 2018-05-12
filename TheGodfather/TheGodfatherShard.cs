@@ -117,6 +117,8 @@ namespace TheGodfather
             Client.GuildUnavailable += Client_GuildUnavailable;
             Client.GuildUpdated += Client_GuildUpdated;
             Client.GuildUnavailable += Client_GuildUnavailable;
+            Client.MessagesBulkDeleted += Client_MessagesBulkDeleted;
+            Client.MessageCreated += Client_MessageCreated;
             Client.MessageDeleted += Client_MessageDeleted;
             Client.MessageUpdated += Client_MessageUpdated;
             Client.VoiceServerUpdated += Client_VoiceServerUpdated;
@@ -490,6 +492,16 @@ namespace TheGodfather
             }
         }
 
+        private async Task Client_MessagesBulkDeleted(MessageBulkDeleteEventArgs e)
+        {
+            var logchn = await GetLogChannelForGuild(e.Channel.Guild.Id)
+                   .ConfigureAwait(false);
+            if (logchn != null) {
+                await logchn.SendIconEmbedAsync($"Bulk message deletion occured in channel {e.Channel.Mention} (a total of {e.Messages.Count} messages were deleted).")
+                    .ConfigureAwait(false);
+            }
+        }
+
         private async Task Client_MessageCreated(MessageCreateEventArgs e)
         {
             if (e.Author.IsBot || !TheGodfather.Listening)
@@ -508,14 +520,6 @@ namespace TheGodfather
                 try {
                     await e.Channel.DeleteMessageAsync(e.Message)
                         .ConfigureAwait(false);
-
-                    var logchn = await GetLogChannelForGuild(e.Guild.Id)
-                        .ConfigureAwait(false);
-                    if (logchn != null) {
-                        await logchn.SendIconEmbedAsync($"Message by {e.Author.ToString()} in channel {e.Channel.Mention} was deleted because it contained a filter: {Formatter.BlockCode(string.IsNullOrWhiteSpace(e.Message?.Content) ? "<unknown>" : e.Message.Content)}")
-                            .ConfigureAwait(false);
-                    }
-
                     Log(LogLevel.Info,
                         $"Filter triggered in message: {e.Message.Content.Replace('\n', ' ')}<br>" +
                         $"{e.Message.Author.ToString()}<br>" +
@@ -601,8 +605,10 @@ namespace TheGodfather
             var logchn = await GetLogChannelForGuild(e.Guild.Id)
                 .ConfigureAwait(false);
             if (logchn != null) {
-                await logchn.SendIconEmbedAsync($"Message deleted in channel {e.Channel.Mention}: {Formatter.BlockCode(string.IsNullOrWhiteSpace(e.Message?.Content) ? "<unknown>" : e.Message.Content)}")
-                    .ConfigureAwait(false);
+                if (e.Message.Content != null && _shared.MessageContainsFilter(e.Guild.Id, e.Message.Content))
+                    await logchn.SendIconEmbedAsync($"Filter triggered in channel {e.Channel.Mention}: {Formatter.BlockCode(string.IsNullOrWhiteSpace(e.Message?.Content) ? "<unknown>" : e.Message.Content)}").ConfigureAwait(false);
+                else
+                    await logchn.SendIconEmbedAsync($"Message deleted in channel {e.Channel.Mention}: {Formatter.BlockCode(string.IsNullOrWhiteSpace(e.Message?.Content) ? "<unknown>" : e.Message.Content)}").ConfigureAwait(false);
             }
         }
 
@@ -622,11 +628,6 @@ namespace TheGodfather
                 try {
                     await e.Channel.DeleteMessageAsync(e.Message)
                         .ConfigureAwait(false);
-
-                    if (logchn != null && !e.Author.IsBot) {
-                        await logchn.SendIconEmbedAsync($"Message by {e.Author.ToString()} in channel {e.Channel.Mention} was deleted because it contained a filter: {Formatter.BlockCode(string.IsNullOrWhiteSpace(e.Message?.Content) ? "<unknown>" : e.Message.Content)}")
-                            .ConfigureAwait(false);
-                    }
 
                     Log(LogLevel.Info,
                         $"Filter triggered after message edit:<br>" +
