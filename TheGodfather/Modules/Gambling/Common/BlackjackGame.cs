@@ -37,8 +37,8 @@ namespace TheGodfather.Modules.Gambling.Common
         }
 
         private ConcurrentQueue<BlackjackParticipant> _participants = new ConcurrentQueue<BlackjackParticipant>();
-        private Deck _deck = new Deck();
-        private List<Card> _hand = new List<Card>();
+        private PlayingCardDeck _deck = new PlayingCardDeck();
+        private List<PlayingCard> _hand = new List<PlayingCard>();
         private bool GameOver = false;
 
 
@@ -123,7 +123,7 @@ namespace TheGodfather.Modules.Gambling.Common
 
         public bool IsParticipating(DiscordUser user) => _participants.Any(p => p.Id == user.Id);
 
-        private int HandValue(List<Card> hand)
+        private int HandValue(List<PlayingCard> hand)
         {
             int value = 0;
             bool one = false;
@@ -169,7 +169,7 @@ namespace TheGodfather.Modules.Gambling.Common
             };
 
             if (!GameOver)
-                emb.AddField("Deciding whether to hit a card (type yes/no):", tomove == null ? "House" : tomove.User.Mention);
+                emb.AddField("Deciding whether to hit a card (type yes/no):", tomove?.User.Mention ?? "House");
 
             await msg.ModifyAsync(embed: emb.Build())
                 .ConfigureAwait(false);
@@ -179,7 +179,7 @@ namespace TheGodfather.Modules.Gambling.Common
         public sealed class BlackjackParticipant
         {
             public DiscordUser User { get; internal set; }
-            public List<Card> Hand { get; internal set; } = new List<Card>();
+            public List<PlayingCard> Hand { get; internal set; } = new List<PlayingCard>();
             public int Bid { get; set; }
             public bool Standing { get; set; } = false;
             public ulong Id => User.Id;

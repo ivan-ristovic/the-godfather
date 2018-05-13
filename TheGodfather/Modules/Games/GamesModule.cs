@@ -6,13 +6,12 @@ using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-using TheGodfather.Modules.Games.Common;
 using TheGodfather.Services;
 
+using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-using DSharpPlus.Interactivity;
 #endregion
 
 namespace TheGodfather.Modules.Games
@@ -27,6 +26,16 @@ namespace TheGodfather.Modules.Games
 
         public GamesModule(DBService db) : base(db: db) { }
         
+
+        [GroupCommand]
+        public Task ExecuteGroupAsync(CommandContext ctx)
+        {
+            return ctx.RespondWithIconEmbedAsync(
+                Formatter.Bold("Games:\n\n") +
+                "animalrace, caro, connect4, duel, hangman, leaderboard, numberrace, othello, quiz, rps, russianroulette, stats, tictactoe, typingrace"
+            );
+        }
+
 
         #region COMMAND_GAME_LEADERBOARD
         [Command("leaderboard"), Module(ModuleType.Games)]

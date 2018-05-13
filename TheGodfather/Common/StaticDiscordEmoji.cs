@@ -59,6 +59,7 @@ namespace TheGodfather.Common
             DiscordEmoji.FromUnicode("\U0001f1ef"),     // :regional_indicator_j:
             DiscordEmoji.FromUnicode("\U0001f1f6"),     // :regional_indicator_q:
             DiscordEmoji.FromUnicode("\U0001f1f0"),     // :regional_indicator_k:
+            DiscordEmoji.FromUnicode("\U0001f1e6"),     // :regional_indicator_a:
         }.AsReadOnly();
 
         public static IReadOnlyList<DiscordEmoji> CardSuits = new List<DiscordEmoji>() {

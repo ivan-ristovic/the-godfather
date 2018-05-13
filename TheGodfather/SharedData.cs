@@ -26,7 +26,7 @@ namespace TheGodfather
         public ConcurrentHashSet<ulong> BlockedChannels { get; internal set; } = new ConcurrentHashSet<ulong>();
         public BotConfig BotConfiguration { get; internal set; }
         public ConcurrentDictionary<ulong, PartialGuildConfig> GuildConfigurations { get; internal set; }
-        public ConcurrentDictionary<ulong, Deck> CardDecks { get; internal set; } = new ConcurrentDictionary<ulong, Deck>();
+        public ConcurrentDictionary<ulong, PlayingCardDeck> CardDecks { get; internal set; } = new ConcurrentDictionary<ulong, PlayingCardDeck>();
         public CancellationTokenSource CTS { get; internal set; }
         public ConcurrentDictionary<ulong, ConcurrentHashSet<Filter>> Filters { get; internal set; }
         public ConcurrentDictionary<ulong, ConcurrentHashSet<TextReaction>> TextReactions { get; internal set; }

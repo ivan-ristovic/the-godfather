@@ -372,6 +372,9 @@
       <HintPath>..\packages\System.Xml.XPath.XDocument.4.3.0\lib\net46\System.Xml.XPath.XDocument.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="TexasHoldem.Logic, Version=1.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\TexasHoldemGameEngine.1.1.0\lib\TexasHoldem.Logic.dll</HintPath>
+    </Reference>
     <Reference Include="WebSocket4Net, Version=0.14.1.0, Culture=neutral, PublicKeyToken=eb4e154b696bf72a, processorArchitecture=MSIL">
       <HintPath>..\packages\WebSocket4Net.0.14.1\lib\net45\WebSocket4Net.dll</HintPath>
     </Reference>
@@ -388,13 +391,16 @@
     <Compile Include="Common\GFRandom.cs" />
     <Compile Include="Common\PartialGuildConfig.cs" />
     <Compile Include="Common\SavedTaskExecuter.cs" />
+    <Compile Include="Extensions\HoldemExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Modules\Administration\AutomaticRolesModule.cs" />
     <Compile Include="Modules\Administration\Common\Filter.cs" />
     <Compile Include="Modules\Administration\GuildModule.Configuration.cs" />
+    <Compile Include="Modules\Gambling\CasinoModule.Holdem.cs" />
     <Compile Include="Modules\Gambling\CasinoModule.Lottery.cs" />
     <Compile Include="Modules\Gambling\CasinoModule.cs" />
     <Compile Include="Modules\Gambling\CasinoModule.Blackjack.cs" />
+    <Compile Include="Modules\Gambling\Common\HoldemGame.cs" />
     <Compile Include="Modules\Gambling\Common\LotteryGame.cs" />
     <Compile Include="Modules\Gambling\Common\BlackjackGame.cs" />
     <Compile Include="Modules\Gambling\Common\SlotMachine.cs" />
@@ -438,9 +444,9 @@
     <Compile Include="Common\Logger.cs" />
     <Compile Include="Modules\Administration\EmojiModule.cs" />
     <Compile Include="Modules\Administration\SelfAssignableRolesModule.cs" />
-    <Compile Include="Modules\Gambling\Common\CardSuit.cs" />
-    <Compile Include="Modules\Gambling\Common\Card.cs" />
-    <Compile Include="Modules\Gambling\Common\Deck.cs" />
+    <Compile Include="Modules\Gambling\Common\PlayingCardSuit.cs" />
+    <Compile Include="Modules\Gambling\Common\PlayingCard.cs" />
+    <Compile Include="Modules\Gambling\Common\PlayingCardDeck.cs" />
     <Compile Include="Modules\Games\Common\BoardGame.cs" />
     <Compile Include="Modules\Games\Common\Othello.cs" />
     <Compile Include="Modules\Games\Common\Caro.cs" />

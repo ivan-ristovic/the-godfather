@@ -66,7 +66,7 @@ namespace TheGodfather.Modules.Gambling
             if (Shared.CardDecks.ContainsKey(ctx.Channel.Id))
                 throw new CommandFailedException($"A deck is already opened in this channel! If you want to reset it, use {Formatter.InlineCode("!deck new")}");
 
-            Shared.CardDecks[ctx.Channel.Id] = new Deck();
+            Shared.CardDecks[ctx.Channel.Id] = new PlayingCardDeck();
             Shared.CardDecks[ctx.Channel.Id].Shuffle();
 
             await ctx.RespondWithIconEmbedAsync("A new shuffled deck is opened in this channel!", ":spades:")

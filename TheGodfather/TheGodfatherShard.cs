@@ -601,6 +601,9 @@ namespace TheGodfather
 
         private async Task Client_MessageDeleted(MessageDeleteEventArgs e)
         {
+            if (e.Channel.IsPrivate)
+                return;
+
             var logchn = await GetLogChannelForGuild(e.Guild.Id)
                 .ConfigureAwait(false);
             if (logchn != null && e.Message != null) {
@@ -615,7 +618,7 @@ namespace TheGodfather
 
         private async Task Client_MessageUpdated(MessageUpdateEventArgs e)
         {
-            if (e.Author == null || e.Message == null || !TheGodfather.Listening)
+            if (e.Author == null || e.Message == null || !TheGodfather.Listening || e.Channel.IsPrivate)
                 return;
 
             if (_shared.BlockedChannels.Contains(e.Channel.Id))
@@ -649,7 +652,7 @@ namespace TheGodfather
                 if (logchn != null && !e.Author.IsBot && e.Message.EditedTimestamp != null) {
                     var detailspre = $"{Formatter.BlockCode(string.IsNullOrWhiteSpace(e.MessageBefore?.Content) ? "<empty content>" : e.MessageBefore.Content)}\nCreated at: {(e.Message.CreationTimestamp != null ? e.Message.CreationTimestamp.ToUniversalTime().ToString() : "<unknown>")}, embeds: {e.MessageBefore.Embeds.Count}, reactions: {e.MessageBefore.Reactions.Count}, attachments: {e.MessageBefore.Attachments.Count}";
                     var detailsafter = $"{Formatter.BlockCode(string.IsNullOrWhiteSpace(e.Message?.Content) ? "<empty content>" : e.Message.Content)}\nEdited at: {(e.Message.EditedTimestamp != null ? e.Message.EditedTimestamp.ToUniversalTime().ToString() : "<unknown>")}, embeds: {e.Message.Embeds.Count}, reactions: {e.Message.Reactions.Count}, attachments: {e.Message.Attachments.Count}";
-                    await logchn.SendIconEmbedAsync($"Message by {e.Author.ToString()} in channel {e.Channel.Mention} was updated:\n\nBefore update: {detailspre}\n\nAfter update: {detailsafter})")
+                    await logchn.SendIconEmbedAsync($"Message by {e.Author.ToString()} in channel {e.Channel.Mention} was updated:\n\nBefore update: {detailspre}\n\nAfter update: {detailsafter}")
                         .ConfigureAwait(false);
                 }
             } catch {

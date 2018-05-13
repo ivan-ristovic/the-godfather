@@ -22,6 +22,7 @@ namespace TheGodfather.Common.Converters
                 case "yup":
                 case "yee":
                 case "yes":
+                case "yea":
                 case "yeah":
                 case "1":
                     result = true;

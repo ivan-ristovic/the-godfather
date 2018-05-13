@@ -6,7 +6,7 @@ using DSharpPlus.Entities;
 
 namespace TheGodfather.Modules.Gambling.Common
 {
-    public enum CardSuit
+    public enum PlayingCardSuit
     {
         Spades = 1,
         Hearts = 2,
@@ -14,18 +14,18 @@ namespace TheGodfather.Modules.Gambling.Common
         Clubs = 4
     }
 
-    public static class CardSuitExtensions
+    public static class PlayingCardSuitExtensions
     {
-        public static DiscordEmoji ToDiscordEmoji(this CardSuit suit)
+        public static DiscordEmoji ToDiscordEmoji(this PlayingCardSuit suit)
         {
             switch (suit) {
-                case CardSuit.Spades:
+                case PlayingCardSuit.Spades:
                     return StaticDiscordEmoji.CardSuits[0];
-                case CardSuit.Clubs:
+                case PlayingCardSuit.Clubs:
                     return StaticDiscordEmoji.CardSuits[1];
-                case CardSuit.Hearts:
+                case PlayingCardSuit.Hearts:
                     return StaticDiscordEmoji.CardSuits[2];
-                case CardSuit.Diamonds:
+                case PlayingCardSuit.Diamonds:
                     return StaticDiscordEmoji.CardSuits[3];
             }
             return StaticDiscordEmoji.Question;

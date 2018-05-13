@@ -6,13 +6,14 @@ using TheGodfather.Common;
 
 namespace TheGodfather.Modules.Gambling.Common
 {
-    public class Card : IComparable
+
+    public class PlayingCard : IComparable
     {
-        public CardSuit Suit { get; }
+        public PlayingCardSuit Suit { get; }
         public int Value { get; }
 
 
-        public Card(CardSuit suit, int value)
+        public PlayingCard(PlayingCardSuit suit, int value)
         {
             Suit = suit;
             Value = value;
@@ -21,7 +22,7 @@ namespace TheGodfather.Modules.Gambling.Common
 
         public int CompareTo(object obj)
         {
-            Card c = obj as Card;
+            PlayingCard c = obj as PlayingCard;
             return c != null ? Value - c.Value : 0;
         }
 
