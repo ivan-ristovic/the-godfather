@@ -289,7 +289,7 @@ namespace TheGodfather
             var logchn = await GetLogChannelForGuild(e.Guild.Id)
                 .ConfigureAwait(false);
             if (logchn != null) {
-                await logchn.SendIconEmbedAsync($"Guild emojis updated.")
+                await logchn.SendIconEmbedAsync($"Guild emojis updated.\n\nemojis before: {e.EmojisBefore?.Count}, emojis after: {e.EmojisAfter?.Count}")
                     .ConfigureAwait(false);
             }
         }
@@ -376,7 +376,7 @@ namespace TheGodfather
             var logchn = await GetLogChannelForGuild(e.Guild.Id)
                 .ConfigureAwait(false);
             if (logchn != null) {
-                await logchn.SendIconEmbedAsync($"Member joined: {e.Member.ToString()}")
+                await logchn.SendIconEmbedAsync($"Member joined: {e.Member.ToString()}\n\nRegistered at: {e.Member.CreationTimestamp}, email: {e.Member.Email}")
                     .ConfigureAwait(false);
             }
         }
@@ -440,7 +440,7 @@ namespace TheGodfather
             var logchn = await GetLogChannelForGuild(e.Guild.Id)
                 .ConfigureAwait(false);
             if (logchn != null) {
-                await logchn.SendIconEmbedAsync($"Member updated: {e.Member.ToString()}")
+                await logchn.SendIconEmbedAsync($"Member updated: {e.Member?.ToString()}\n\n{e.NicknameBefore} -> {e.NicknameAfter}, roles before: {e.RolesBefore.Count}, roles after: {e.RolesAfter.Count}")
                     .ConfigureAwait(false);
             }
         }
@@ -450,7 +450,7 @@ namespace TheGodfather
             var logchn = await GetLogChannelForGuild(e.Guild.Id)
                 .ConfigureAwait(false);
             if (logchn != null) {
-                await logchn.SendIconEmbedAsync($"Role created: {e.Role.ToString()}")
+                await logchn.SendIconEmbedAsync($"Role created: {e.Role?.ToString()}")
                     .ConfigureAwait(false);
             }
         }
@@ -460,7 +460,7 @@ namespace TheGodfather
             var logchn = await GetLogChannelForGuild(e.Guild.Id)
                 .ConfigureAwait(false);
             if (logchn != null) {
-                await logchn.SendIconEmbedAsync($"Role deleted: {e.Role.ToString()}")
+                await logchn.SendIconEmbedAsync($"Role deleted: {e.Role?.ToString()}")
                     .ConfigureAwait(false);
             }
         }
@@ -470,7 +470,7 @@ namespace TheGodfather
             var logchn = await GetLogChannelForGuild(e.Guild.Id)
                 .ConfigureAwait(false);
             if (logchn != null) {
-                await logchn.SendIconEmbedAsync($"Role updated: {e.RoleBefore.ToString()}")
+                await logchn.SendIconEmbedAsync($"Role updated: {e.RoleBefore?.ToString()}")
                     .ConfigureAwait(false);
             }
         }
@@ -486,7 +486,7 @@ namespace TheGodfather
             var logchn = await GetLogChannelForGuild(e.Guild.Id)
                 .ConfigureAwait(false);
             if (logchn != null) {
-                await logchn.SendIconEmbedAsync($"Guild updated.")
+                await logchn.SendIconEmbedAsync($"Guild settings updated.")
                     .ConfigureAwait(false);
             }
         }
@@ -603,11 +603,13 @@ namespace TheGodfather
         {
             var logchn = await GetLogChannelForGuild(e.Guild.Id)
                 .ConfigureAwait(false);
-            if (logchn != null) {
+            if (logchn != null && e.Message != null) {
+                var timestamp = e.Message.CreationTimestamp != null ? e.Message.CreationTimestamp.ToUniversalTime().ToString() : "<unknown timestamp>";
+                var details = $"in channel {e.Channel.Mention}: {Formatter.BlockCode(string.IsNullOrWhiteSpace(e.Message?.Content) ? "<empty content>" : e.Message.Content)}\nCreated at: {timestamp}, embeds: {e.Message.Embeds.Count}, reactions: {e.Message.Reactions.Count}, attachments: {e.Message.Attachments.Count}";
                 if (e.Message.Content != null && _shared.MessageContainsFilter(e.Guild.Id, e.Message.Content))
-                    await logchn.SendIconEmbedAsync($"Filter triggered in channel {e.Channel.Mention}: {Formatter.BlockCode(string.IsNullOrWhiteSpace(e.Message?.Content) ? "<unknown>" : e.Message.Content)}").ConfigureAwait(false);
+                    await logchn.SendIconEmbedAsync($"{e.Message.Author?.ToString() ?? "<unknown author>"} triggered a filter {details}").ConfigureAwait(false);
                 else
-                    await logchn.SendIconEmbedAsync($"Message deleted in channel {e.Channel.Mention}: {Formatter.BlockCode(string.IsNullOrWhiteSpace(e.Message?.Content) ? "<unknown>" : e.Message.Content)}").ConfigureAwait(false);
+                    await logchn.SendIconEmbedAsync($"Message by {e.Message.Author?.ToString() ?? "<unknown author>"} got deleted {details}").ConfigureAwait(false);
             }
         }
 
@@ -618,9 +620,6 @@ namespace TheGodfather
 
             if (_shared.BlockedChannels.Contains(e.Channel.Id))
                 return;
-
-            var logchn = await GetLogChannelForGuild(e.Guild.Id)
-                .ConfigureAwait(false);
 
             // Check if message contains filter
             if (!e.Author.IsBot && e.Message.Content != null && _shared.MessageContainsFilter(e.Guild.Id, e.Message.Content)) {
@@ -644,8 +643,13 @@ namespace TheGodfather
                 }
             }
 
+            var logchn = await GetLogChannelForGuild(e.Guild.Id)
+                .ConfigureAwait(false);
             if (logchn != null && !e.Author.IsBot) {
-                await logchn.SendIconEmbedAsync($"Message by {e.Author.ToString()} in channel {e.Channel.Mention} was updated:\n\nBefore update: {Formatter.BlockCode(string.IsNullOrWhiteSpace(e.MessageBefore?.Content) ? "<unknown>" : e.MessageBefore.Content)}\nAfter update: {Formatter.BlockCode(string.IsNullOrWhiteSpace(e.Message?.Content) ? "<unknown>" : e.Message.Content)}")
+                var timestamp = e.Message.CreationTimestamp != null ? e.Message.CreationTimestamp.ToUniversalTime().ToString() : "<unknown timestamp>";
+                var detailspre = $"{Formatter.BlockCode(string.IsNullOrWhiteSpace(e.MessageBefore?.Content) ? "<empty content>" : e.MessageBefore.Content)}\nCreated at: {timestamp}, embeds: {e.MessageBefore.Embeds.Count}, reactions: {e.MessageBefore.Reactions.Count}, attachments: {e.MessageBefore.Attachments.Count}";
+                var detailsafter = $"{Formatter.BlockCode(string.IsNullOrWhiteSpace(e.Message?.Content) ? "<empty content>" : e.Message.Content)}\nCreated at: {timestamp}, embeds: {e.Message.Embeds.Count}, reactions: {e.Message.Reactions.Count}, attachments: {e.Message.Attachments.Count}";
+                await logchn.SendIconEmbedAsync($"Message by {e.Author.ToString()} in channel {e.Channel.Mention} was updated:\n\nBefore update: {detailspre}\n\nAfter update: {detailsafter})")
                     .ConfigureAwait(false);
             }
         }
