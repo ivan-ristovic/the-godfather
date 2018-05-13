@@ -133,7 +133,7 @@ namespace TheGodfather.Modules.Gambling.Common
         public bool IsParticipating(DiscordUser user)
             => Participants.Any(p => p.Id == user.Id);
 
-        private int HandValue(List<PlayingCard> hand)
+        private int HandValue(List<Card> hand)
         {
             return 0;
         }

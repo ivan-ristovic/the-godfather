@@ -444,9 +444,6 @@
     <Compile Include="Common\Logger.cs" />
     <Compile Include="Modules\Administration\EmojiModule.cs" />
     <Compile Include="Modules\Administration\SelfAssignableRolesModule.cs" />
-    <Compile Include="Modules\Gambling\Common\PlayingCardSuit.cs" />
-    <Compile Include="Modules\Gambling\Common\PlayingCard.cs" />
-    <Compile Include="Modules\Gambling\Common\PlayingCardDeck.cs" />
     <Compile Include="Modules\Games\Common\BoardGame.cs" />
     <Compile Include="Modules\Games\Common\Othello.cs" />
     <Compile Include="Modules\Games\Common\Caro.cs" />

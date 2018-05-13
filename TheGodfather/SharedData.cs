@@ -3,19 +3,19 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Collections;
 using TheGodfather.Modules.Administration.Common;
-using TheGodfather.Modules.Gambling.Common;
 using TheGodfather.Modules.Music.Common;
 using TheGodfather.Modules.Reactions.Common;
 using TheGodfather.Services;
 
 using DSharpPlus;
+
+using TexasHoldem.Logic.Cards;
 #endregion
 
 namespace TheGodfather
@@ -26,7 +26,7 @@ namespace TheGodfather
         public ConcurrentHashSet<ulong> BlockedChannels { get; internal set; } = new ConcurrentHashSet<ulong>();
         public BotConfig BotConfiguration { get; internal set; }
         public ConcurrentDictionary<ulong, PartialGuildConfig> GuildConfigurations { get; internal set; }
-        public ConcurrentDictionary<ulong, PlayingCardDeck> CardDecks { get; internal set; } = new ConcurrentDictionary<ulong, PlayingCardDeck>();
+        public ConcurrentDictionary<ulong, Deck> CardDecks { get; internal set; } = new ConcurrentDictionary<ulong, Deck>();
         public CancellationTokenSource CTS { get; internal set; }
         public ConcurrentDictionary<ulong, ConcurrentHashSet<Filter>> Filters { get; internal set; }
         public ConcurrentDictionary<ulong, ConcurrentHashSet<TextReaction>> TextReactions { get; internal set; }

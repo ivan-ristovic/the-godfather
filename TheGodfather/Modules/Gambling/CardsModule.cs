@@ -1,14 +1,16 @@
 ﻿#region USING_DIRECTIVES
+using System.Linq;
 using System.Threading.Tasks;
 
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-using TheGodfather.Modules.Gambling.Common;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
+
+using TexasHoldem.Logic.Cards;
 #endregion
 
 namespace TheGodfather.Modules.Gambling
@@ -41,17 +43,15 @@ namespace TheGodfather.Modules.Gambling
                 throw new CommandFailedException($"No deck to deal from. Use command {Formatter.InlineCode("deck")} to open a deck.");
 
             var deck = Shared.CardDecks[ctx.Channel.Id];
-
-            if (deck.CardCount == 0)
-                throw new CommandFailedException($"Current deck has no more cards. Use command {Formatter.InlineCode("deck reset")} to reset the deck.");
-
+            
             if (amount <= 0 || amount >= 10)
                 throw new InvalidCommandUsageException("Cannot draw less than 1 or more than 10 cards...");
 
-            if (deck.CardCount < amount)
-                throw new InvalidCommandUsageException($"The deck has only {deck.CardCount} cards...");
-            
-            await ctx.RespondWithIconEmbedAsync($"{ctx.User.Mention} drew {string.Join(" ", deck.Draw(amount))}", ":ticket:")
+            var drawn = deck.DrawCards(amount);
+            if (!drawn.Any())
+                throw new CommandFailedException($"Current deck doesn't have enough cards. Use command {Formatter.InlineCode("deck reset")} to reset the deck.");
+
+            await ctx.RespondWithIconEmbedAsync($"{ctx.User.Mention} drew {string.Join(" ", drawn)}", ":ticket:")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -66,26 +66,9 @@ namespace TheGodfather.Modules.Gambling
             if (Shared.CardDecks.ContainsKey(ctx.Channel.Id))
                 throw new CommandFailedException($"A deck is already opened in this channel! If you want to reset it, use {Formatter.InlineCode("!deck new")}");
 
-            Shared.CardDecks[ctx.Channel.Id] = new PlayingCardDeck();
-            Shared.CardDecks[ctx.Channel.Id].Shuffle();
+            Shared.CardDecks[ctx.Channel.Id] = new Deck();
 
             await ctx.RespondWithIconEmbedAsync("A new shuffled deck is opened in this channel!", ":spades:")
-                .ConfigureAwait(false);
-        }
-        #endregion
-
-        #region COMMAND_DECK_SHUFFLE
-        [Command("shuffle"), Module(ModuleType.Gambling)]
-        [Description("Shuffles current deck.")]
-        [Aliases("s", "sh", "mix")]
-        [UsageExample("!deck shuffle")]
-        public async Task ShuffleDeckAsync(CommandContext ctx)
-        {
-            if (!Shared.CardDecks.ContainsKey(ctx.Channel.Id) || Shared.CardDecks[ctx.Channel.Id] == null)
-                throw new CommandFailedException($"No decks to shuffle. Use command {Formatter.InlineCode("deck")} to open a new shuffled deck.");
-
-            Shared.CardDecks[ctx.Channel.Id].Shuffle();
-            await ctx.RespondWithIconEmbedAsync(icon_emoji: ":ticket:")
                 .ConfigureAwait(false);
         }
         #endregion

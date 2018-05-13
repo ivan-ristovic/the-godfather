@@ -13,6 +13,8 @@ using TheGodfather.Modules.Games.Common;
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
+
+using TexasHoldem.Logic.Cards;
 #endregion
 
 namespace TheGodfather.Modules.Gambling.Common
@@ -37,8 +39,8 @@ namespace TheGodfather.Modules.Gambling.Common
         }
 
         private ConcurrentQueue<BlackjackParticipant> _participants = new ConcurrentQueue<BlackjackParticipant>();
-        private PlayingCardDeck _deck = new PlayingCardDeck();
-        private List<PlayingCard> _hand = new List<PlayingCard>();
+        private Deck _deck = new Deck();
+        private List<Card> _hand = new List<Card>();
         private bool GameOver = false;
 
 
@@ -56,10 +58,9 @@ namespace TheGodfather.Modules.Gambling.Common
             var msg = await _channel.SendIconEmbedAsync("Starting blackjack game...")
                 .ConfigureAwait(false);
 
-            _deck.Shuffle();
-
             foreach (var participant in _participants) {
-                participant.Hand.AddRange(_deck.Draw(2));
+                participant.Hand.Add(_deck.GetNextCard());
+                participant.Hand.Add(_deck.GetNextCard());
                 if (HandValue(participant.Hand) == 21) {
                     GameOver = true;
                     Winner = participant.User;
@@ -82,7 +83,7 @@ namespace TheGodfather.Modules.Gambling.Common
                         .ConfigureAwait(false);
 
                     if (await _interactivity.WaitForYesNoAnswerAsync(_channel.Id, participant.Id).ConfigureAwait(false)) 
-                        participant.Hand.Add(_deck.Draw());
+                        participant.Hand.Add(_deck.GetNextCard());
                     else 
                         participant.Standing = true;
 
@@ -98,7 +99,7 @@ namespace TheGodfather.Modules.Gambling.Common
                 .ConfigureAwait(false);
 
             while (HandValue(_hand) <= 17)
-                _hand.Add(_deck.Draw());
+                _hand.Add(_deck.GetNextCard());
 
             if (_hand.Count == 2 && HandValue(_hand) == 21) {
                 await _channel.SendIconEmbedAsync("BLACKJACK!")
@@ -123,18 +124,18 @@ namespace TheGodfather.Modules.Gambling.Common
 
         public bool IsParticipating(DiscordUser user) => _participants.Any(p => p.Id == user.Id);
 
-        private int HandValue(List<PlayingCard> hand)
+        private int HandValue(List<Card> hand)
         {
             int value = 0;
             bool one = false;
             foreach (var card in hand) {
-                if (card.Value >= 10) {
+                if (card.Type >= CardType.Ten) {
                     value += 10;
-                } else if (card.Value == 1) {
+                } else if (card.Type == CardType.Ace) {
                     value += 1;
                     one = true;
                 } else {
-                    value += card.Value;
+                    value += (int)card.Type;
                 }
             }
 
@@ -179,7 +180,7 @@ namespace TheGodfather.Modules.Gambling.Common
         public sealed class BlackjackParticipant
         {
             public DiscordUser User { get; internal set; }
-            public List<PlayingCard> Hand { get; internal set; } = new List<PlayingCard>();
+            public List<Card> Hand { get; internal set; } = new List<Card>();
             public int Bid { get; set; }
             public bool Standing { get; set; } = false;
             public ulong Id => User.Id;
