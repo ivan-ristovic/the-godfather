@@ -400,6 +400,7 @@
     <Compile Include="Modules\Gambling\CasinoModule.Lottery.cs" />
     <Compile Include="Modules\Gambling\CasinoModule.cs" />
     <Compile Include="Modules\Gambling\CasinoModule.Blackjack.cs" />
+    <Compile Include="Modules\Gambling\ChickenModule.cs" />
     <Compile Include="Modules\Gambling\Common\HoldemGame.cs" />
     <Compile Include="Modules\Gambling\Common\LotteryGame.cs" />
     <Compile Include="Modules\Gambling\Common\BlackjackGame.cs" />
@@ -425,6 +426,7 @@
     <Compile Include="Modules\Search\OMDbModule.cs" />
     <Compile Include="Modules\Search\XkcdModule.cs" />
     <Compile Include="Services\Common\Birthday.cs" />
+    <Compile Include="Services\Common\Chicken.cs" />
     <Compile Include="Services\Common\GameStatsType.cs" />
     <Compile Include="Services\Common\OMDbData.cs" />
     <Compile Include="Services\Common\PurchasableItem.cs" />
@@ -478,6 +480,7 @@
     <Compile Include="Services\DatabaseService\DBService.PriviledgedUsers.cs" />
     <Compile Include="Services\DatabaseService\DBService.SavedTasks.cs" />
     <Compile Include="Services\DatabaseService\DBService.Blocked.cs" />
+    <Compile Include="Services\DatabaseService\DBService.Chickens.cs" />
     <Compile Include="Services\DatabaseService\DBService.Shop.cs" />
     <Compile Include="Services\DatabaseService\DBService.SpecialRoles.cs" />
     <Compile Include="Services\IGodfatherService.cs" />

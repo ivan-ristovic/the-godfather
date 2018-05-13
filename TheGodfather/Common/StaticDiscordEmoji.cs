@@ -72,7 +72,8 @@ namespace TheGodfather.Common
         // Misc
         public static DiscordEmoji CheckMarkSuccess => DiscordEmoji.FromUnicode("\u2705");
         public static DiscordEmoji Question => DiscordEmoji.FromUnicode("\u2753");
-        
+        public static DiscordEmoji Chicken => DiscordEmoji.FromUnicode("\U0001f414");
+
         public static DiscordEmoji GetRandomDuelWeapon()
             => DuelWeapons[GFRandom.Generator.Next(DuelWeapons.Count)];
 
