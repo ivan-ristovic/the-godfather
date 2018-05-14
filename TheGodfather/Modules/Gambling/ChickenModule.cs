@@ -1,4 +1,6 @@
 ﻿#region USING_DIRECTIVES
+using System;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -142,6 +144,35 @@ namespace TheGodfather.Modules.Gambling
 
             await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} renamed his chicken to {Formatter.Italic(name)}")
                 .ConfigureAwait(false);
+        }
+        #endregion
+
+        #region COMMAND_CHICKEN_TOP
+        [Command("top"), Module(ModuleType.Gambling)]
+        [Description("View the list of strongest chickens.")]
+        [Aliases("best", "strongest")]
+        [UsageExample("!chicken top")]
+        public async Task InfoAsync(CommandContext ctx)
+        {
+            var chickens = await Database.GetStrongestChickensAsync()
+                .ConfigureAwait(false);
+            if (chickens == null || !chickens.Any())
+                throw new CommandFailedException("No chickens bought.");
+
+            foreach (var chicken in chickens) {
+                try {
+                    chicken.Owner = await ctx.Client.GetUserAsync(chicken.OwnerId)
+                        .ConfigureAwait(false);
+                } catch (Exception e) {
+                    TheGodfather.LogHandle.LogException(LogLevel.Warning, e);
+                }
+            }
+
+            await ctx.SendPaginatedCollectionAsync(
+                "Top chickens:",
+                chickens,
+                c => $"{Formatter.Bold(c.Name)} | {c.Owner.Mention} | {c.Strength} STR"
+            ).ConfigureAwait(false);
         }
         #endregion
 

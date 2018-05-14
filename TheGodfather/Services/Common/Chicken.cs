@@ -16,6 +16,7 @@ namespace TheGodfather.Services.Common
     {
         public static readonly int Price = 1000;
 
+        public DiscordUser Owner { get; set; }
         public ulong OwnerId { get; set; }
         public string Name { get; set; }
         public short Strength { get; set; }

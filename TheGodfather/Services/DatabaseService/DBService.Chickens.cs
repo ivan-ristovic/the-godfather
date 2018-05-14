@@ -23,7 +23,7 @@ namespace TheGodfather.Services
                 using (var cmd = con.CreateCommand()) {
                     await con.OpenAsync().ConfigureAwait(false);
 
-                    cmd.CommandText = "SELECT * FROM gf.chickens ORDER BY strength;";
+                    cmd.CommandText = "SELECT * FROM gf.chickens ORDER BY strength DESC;";
 
                     using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
                         while (await reader.ReadAsync().ConfigureAwait(false)) {
