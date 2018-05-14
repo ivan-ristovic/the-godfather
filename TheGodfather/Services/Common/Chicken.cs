@@ -22,16 +22,15 @@ namespace TheGodfather.Services.Common
         public short Strength { get; set; }
 
 
-        public void IncreaseStrength()
+        public bool Train()
         {
-            if (Strength < 80)
+            if (GFRandom.Generator.GetBool()) {
                 Strength++;
-        }
-
-        public void DecreaseStrength()
-        {
-            if (Strength > 20)
+                return true;
+            } else {
                 Strength--;
+                return false;
+            }
         }
 
         public Chicken Fight(Chicken other)

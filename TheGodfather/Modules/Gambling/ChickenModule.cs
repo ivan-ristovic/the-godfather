@@ -86,7 +86,7 @@ namespace TheGodfather.Modules.Gambling
 
             var winner = chicken1.Fight(chicken2);
             var loser = winner == chicken1 ? chicken2 : chicken1;
-            winner.IncreaseStrength();
+            winner.Strength += 5;
 
             await Database.ModifyChickenAsync(winner)
                 .ConfigureAwait(false);
@@ -189,13 +189,10 @@ namespace TheGodfather.Modules.Gambling
                 throw new CommandFailedException("You do not own a chicken!");
 
             string result;
-            if (GFRandom.Generator.GetBool()) {
-                chicken.IncreaseStrength();
+            if (chicken.Train()) 
                 result = $"Your chicken learned alot from the training. New strength: {chicken.Strength}";
-            } else {
-                chicken.DecreaseStrength();
+            else 
                 result = $"Your chicken got tired and didn't learn anything. New strength: {chicken.Strength}";
-            }
 
             await Database.ModifyChickenAsync(chicken)
                 .ConfigureAwait(false);
