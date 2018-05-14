@@ -93,6 +93,26 @@ namespace TheGodfather.Services
             return chicken;
         }
 
+        public async Task ModifyChickenAsync(Chicken chicken)
+        {
+            await _sem.WaitAsync();
+            try {
+                using (var con = new NpgsqlConnection(_connectionString))
+                using (var cmd = con.CreateCommand()) {
+                    await con.OpenAsync().ConfigureAwait(false);
+
+                    cmd.CommandText = "UPDATE gf.chickens SET (name, strength) = (@name, @strength) WHERE uid = @uid;";
+                    cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, chicken.OwnerId);
+                    cmd.Parameters.AddWithValue("name", NpgsqlDbType.Varchar, chicken.Name);
+                    cmd.Parameters.AddWithValue("strength", NpgsqlDbType.Smallint, chicken.Strength);
+
+                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                }
+            } finally {
+                _sem.Release();
+            }
+        }
+
         public async Task RemoveChickenAsync(ulong uid)
         {
             await _sem.WaitAsync();

@@ -47,8 +47,8 @@ namespace TheGodfather.Modules.Gambling
             if (string.IsNullOrWhiteSpace(name))
                 throw new InvalidCommandUsageException("Name for your chicken is missing.");
 
-            if (name.Length < 3 || name.Length > 30)
-                throw new InvalidCommandUsageException("Name cannot be shorter than 3 and longer than 30 characters.");
+            if (name.Length < 2 || name.Length > 30)
+                throw new InvalidCommandUsageException("Name cannot be shorter than 2 and longer than 30 characters.");
 
             if (await Database.GetChickenInfoAsync(ctx.User.Id).ConfigureAwait(false) != null)
                 throw new CommandFailedException("You already own a chicken!");
@@ -62,7 +62,7 @@ namespace TheGodfather.Modules.Gambling
             await Database.BuyChickenAsync(ctx.User.Id, name)
                 .ConfigureAwait(false);
 
-            await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} bought a chicken named {Formatter.Italic(name)}!")
+            await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} bought a chicken named {Formatter.Italic(name)}")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -82,18 +82,36 @@ namespace TheGodfather.Modules.Gambling
                 .ConfigureAwait(false);
             if (chicken == null)
                 throw new CommandFailedException($"User {user.Mention} does not own a chicken! Use command {Formatter.InlineCode("chicken buy")} to buy a chicken (1000 credits).");
+            
+            await ctx.RespondAsync(embed: chicken.Embed(user))
+                .ConfigureAwait(false);
+        }
+        #endregion
 
-            DiscordUser owner = null;
-            try {
-                owner = await ctx.Client.GetUserAsync(chicken.OwnerId)
-                    .ConfigureAwait(false);
-            } catch {
-                await Database.RemoveChickenAsync(chicken.OwnerId)
-                    .ConfigureAwait(false);
-                throw new CommandFailedException($"User {user.Mention} does not own a chicken! Use command {Formatter.InlineCode("chicken buy")} to buy a chicken (1000 credits).");
-            }
+        #region COMMAND_CHICKEN_RENAME
+        [Command("rename"), Module(ModuleType.Gambling)]
+        [Description("Rename your chicken.")]
+        [Aliases("rn", "name")]
+        [UsageExample("!chicken name New Name")]
+        public async Task RenameAsync(CommandContext ctx,
+                                  [RemainingText, Description("Chicken name.")] string name = null)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new InvalidCommandUsageException("New name for your chicken is missing.");
 
-            await ctx.RespondAsync(embed: chicken.Embed(owner))
+            if (name.Length < 2 || name.Length > 30)
+                throw new InvalidCommandUsageException("Name cannot be shorter than 2 and longer than 30 characters.");
+
+            var chicken = await Database.GetChickenInfoAsync(ctx.User.Id)
+                .ConfigureAwait(false);
+            if (chicken == null)
+                throw new CommandFailedException("You do not own a chicken!");
+
+            chicken.Name = name;
+            await Database.ModifyChickenAsync(chicken)
+                    .ConfigureAwait(false);
+
+            await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} renamed his chicken to {Formatter.Italic(name)}")
                 .ConfigureAwait(false);
         }
         #endregion
