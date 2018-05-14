@@ -21,6 +21,18 @@ namespace TheGodfather.Services.Common
         public short Strength { get; set; }
 
 
+        public void IncreaseStrength()
+        {
+            if (Strength < 80)
+                Strength++;
+        }
+
+        public void DecreaseStrength()
+        {
+            if (Strength > 20)
+                Strength--;
+        }
+
         public DiscordEmbed Embed(DiscordUser owner)
         {
             var emb = new DiscordEmbedBuilder() {

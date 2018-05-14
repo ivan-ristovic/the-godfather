@@ -94,7 +94,7 @@ namespace TheGodfather.Modules.Gambling
         [Aliases("rn", "name")]
         [UsageExample("!chicken name New Name")]
         public async Task RenameAsync(CommandContext ctx,
-                                  [RemainingText, Description("Chicken name.")] string name = null)
+                                     [RemainingText, Description("Chicken name.")] string name = null)
         {
             if (string.IsNullOrWhiteSpace(name))
                 throw new InvalidCommandUsageException("New name for your chicken is missing.");
@@ -109,9 +109,38 @@ namespace TheGodfather.Modules.Gambling
 
             chicken.Name = name;
             await Database.ModifyChickenAsync(chicken)
-                    .ConfigureAwait(false);
+                .ConfigureAwait(false);
 
             await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} renamed his chicken to {Formatter.Italic(name)}")
+                .ConfigureAwait(false);
+        }
+        #endregion
+
+        #region COMMAND_CHICKEN_TRAIN
+        [Command("train"), Module(ModuleType.Gambling)]
+        [Description("Train your chicken.")]
+        [Aliases("tr", "t", "exercise")]
+        [UsageExample("!chicken train")]
+        public async Task TrainAsync(CommandContext ctx)
+        {
+            var chicken = await Database.GetChickenInfoAsync(ctx.User.Id)
+                .ConfigureAwait(false);
+            if (chicken == null)
+                throw new CommandFailedException("You do not own a chicken!");
+
+            string result;
+            if (GFRandom.Generator.GetBool()) {
+                chicken.IncreaseStrength();
+                result = $"Your chicken learned alot from the training. New strength: {chicken.Strength}";
+            } else {
+                chicken.DecreaseStrength();
+                result = $"Your chicken got tired and didn't learn anything. New strength: {chicken.Strength}";
+            }
+
+            await Database.ModifyChickenAsync(chicken)
+                .ConfigureAwait(false);
+
+            await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, result)
                 .ConfigureAwait(false);
         }
         #endregion
