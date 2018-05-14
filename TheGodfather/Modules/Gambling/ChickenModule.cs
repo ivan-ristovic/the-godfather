@@ -67,6 +67,35 @@ namespace TheGodfather.Modules.Gambling
         }
         #endregion
 
+        #region COMMAND_CHICKEN_FIGHT
+        [Command("fight"), Module(ModuleType.Gambling)]
+        [Description("Make your chicken and another user's chicken fight until death!")]
+        [Aliases("f", "duel")]
+        [UsageExample("!chicken duel @Someone")]
+        public async Task TrainAsync(CommandContext ctx,
+                                    [Description("User.")] DiscordUser user)
+        {
+            var chicken1 = await Database.GetChickenInfoAsync(ctx.User.Id)
+                .ConfigureAwait(false);
+            var chicken2 = await Database.GetChickenInfoAsync(user.Id)
+                .ConfigureAwait(false);
+            if (chicken1 == null || chicken2 == null)
+                throw new CommandFailedException("One of you does not own a chicken!");
+
+            var winner = chicken1.Fight(chicken2);
+            var loser = winner == chicken1 ? chicken2 : chicken1;
+            winner.IncreaseStrength();
+
+            await Database.ModifyChickenAsync(winner)
+                .ConfigureAwait(false);
+            await Database.RemoveChickenAsync(loser.OwnerId)
+                .ConfigureAwait(false);
+
+            await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, $"{Formatter.Bold("Fight results:")}\n\n{StaticDiscordEmoji.Trophy} Winner: {Formatter.Bold(winner.Name)}\n\n{winner.Name} gained strength!\n\n{loser.Name} died in the battle!")
+                .ConfigureAwait(false);
+        }
+        #endregion
+
         #region COMMAND_CHICKEN_INFO
         [Command("info"), Module(ModuleType.Gambling)]
         [Description("View user's chicken info. If the user is not given, views sender's chicken info.")]
@@ -148,8 +177,6 @@ namespace TheGodfather.Modules.Gambling
 
         // SO MANY IDEAS WTF IS THIS BRAINSTORM???
         // chicken sell - estimate price
-        // chicken fight
-        // chicken train
         // chicken stats - strength, agility, hitpoints
         // chicken upgrades - weapons, armor etc
     }

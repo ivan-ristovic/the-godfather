@@ -75,6 +75,7 @@ namespace TheGodfather.Services
                     await con.OpenAsync().ConfigureAwait(false);
 
                     cmd.CommandText = "SELECT * FROM gf.chickens WHERE uid = @uid LIMIT 1;";
+                    cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, uid);
 
                     using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
                         if (await reader.ReadAsync().ConfigureAwait(false)) {
@@ -122,6 +123,7 @@ namespace TheGodfather.Services
                     await con.OpenAsync().ConfigureAwait(false);
 
                     cmd.CommandText = "DELETE FROM gf.chickens WHERE uid = @uid;";
+                    cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, uid);
 
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }

@@ -33,6 +33,21 @@ namespace TheGodfather.Services.Common
                 Strength--;
         }
 
+        public Chicken Fight(Chicken other)
+        {
+            int chance = 50 + Strength - other.Strength;
+
+            if (Strength > other.Strength) {
+                if (chance > 95)
+                    chance = 95;
+            } else {
+                if (chance < 5)
+                    chance = 5;
+            }
+
+            return GFRandom.Generator.Next(100) < chance ? this : other;
+        }
+
         public DiscordEmbed Embed(DiscordUser owner)
         {
             var emb = new DiscordEmbedBuilder() {
