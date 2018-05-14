@@ -14,6 +14,8 @@ namespace TheGodfather.Services.Common
 {
     public class Chicken
     {
+        public static readonly int Price = 1000;
+
         public ulong OwnerId { get; set; }
         public string Name { get; set; }
         public short Strength { get; set; }
