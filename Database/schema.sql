@@ -89,6 +89,17 @@ CREATE TABLE gf.blocked_users (
 
 
 --
+-- Name: chickens; Type: TABLE; Schema: gf; Owner: -
+--
+
+CREATE TABLE gf.chickens (
+    uid bigint NOT NULL,
+    name character varying(32) DEFAULT NULL::character varying,
+    strength smallint DEFAULT 50
+);
+
+
+--
 -- Name: emoji_reactions; Type: TABLE; Schema: gf; Owner: -
 --
 
@@ -591,6 +602,14 @@ ALTER TABLE ONLY gf.blocked_channels
 
 ALTER TABLE ONLY gf.blocked_users
     ADD CONSTRAINT blocked_users_pkey PRIMARY KEY (uid);
+
+
+--
+-- Name: chickens chickens_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
+--
+
+ALTER TABLE ONLY gf.chickens
+    ADD CONSTRAINT chickens_pkey PRIMARY KEY (uid);
 
 
 --

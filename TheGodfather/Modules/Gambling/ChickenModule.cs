@@ -91,7 +91,7 @@ namespace TheGodfather.Modules.Gambling
             await Database.RemoveChickenAsync(loser.OwnerId)
                 .ConfigureAwait(false);
 
-            await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, $"{Formatter.Bold("Fight results:")}\n\n{StaticDiscordEmoji.Trophy} Winner: {Formatter.Bold(winner.Name)}\n\n{winner.Name} gained strength!\n\n{loser.Name} died in the battle!")
+            await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, $"{Formatter.Bold("Fight results:")}\n\n{StaticDiscordEmoji.Trophy} Winner: {Formatter.Bold(winner.Name)}\n\n{Formatter.Bold(winner.Name)} gained strength!\n\n{Formatter.Bold(loser.Name)} died in the battle!")
                 .ConfigureAwait(false);
         }
         #endregion
