@@ -38,11 +38,11 @@ namespace TheGodfather.Modules.Currency
                 if (balance < 5)
                     throw new InvalidCommandUsageException("Entering balance cannot be lower than 5 credits.");
 
-                if (Game.RunningInChannel(ctx.Channel.Id)) {
-                    if (Game.GetGameInChannel(ctx.Channel.Id) is HoldemGame)
+                if (ChannelEvent.IsEventRunningInChannel(ctx.Channel.Id)) {
+                    if (ChannelEvent.GetEventInChannel(ctx.Channel.Id) is HoldemGame)
                         await JoinAsync(ctx).ConfigureAwait(false);
                     else
-                        throw new CommandFailedException("Another game is already running in the current channel.");
+                        throw new CommandFailedException("Another event is already running in the current channel.");
                     return;
                 }
 
@@ -52,7 +52,7 @@ namespace TheGodfather.Modules.Currency
                     throw new CommandFailedException("You do not have that many credits on your account! Specify a smaller entering amount.");
 
                 var game = new HoldemGame(ctx.Client.GetInteractivity(), ctx.Channel, balance);
-                Game.RegisterGameInChannel(game, ctx.Channel.Id);
+                ChannelEvent.RegisterEventInChannel(game, ctx.Channel.Id);
                 try {
                     await ctx.RespondWithIconEmbedAsync($"The Hold'Em game will start in 30s or when there are 7 participants. Use command {Formatter.InlineCode("casino holdem <entering sum>")} to join the pool. Entering sum is set to {game.MoneyNeeded} credits.", ":clock1:")
                         .ConfigureAwait(false);
@@ -81,7 +81,7 @@ namespace TheGodfather.Modules.Currency
                             .ConfigureAwait(false);
                     }
                 } finally {
-                    Game.UnregisterGameInChannel(ctx.Channel.Id);
+                    ChannelEvent.UnregisterEventInChannel(ctx.Channel.Id);
                 }
             }
 
@@ -93,8 +93,7 @@ namespace TheGodfather.Modules.Currency
             [UsageExample("!casino holdem join")]
             public async Task JoinAsync(CommandContext ctx)
             {
-                var game = Game.GetGameInChannel(ctx.Channel.Id) as HoldemGame;
-                if (game == null)
+                if (!(ChannelEvent.GetEventInChannel(ctx.Channel.Id) is HoldemGame game))
                     throw new CommandFailedException("There are no Texas Hold'Em games running in this channel.");
 
                 if (game.Started)

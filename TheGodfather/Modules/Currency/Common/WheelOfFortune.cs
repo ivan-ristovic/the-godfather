@@ -15,7 +15,7 @@ using DSharpPlus.Interactivity;
 
 namespace TheGodfather.Modules.Currency.Common
 {
-    public class WheelOfFortune : Game
+    public class WheelOfFortune : ChannelEvent
     {
         private static Bitmap _image = null;
         private static readonly ImmutableArray<float> Multipliers = new float[] {

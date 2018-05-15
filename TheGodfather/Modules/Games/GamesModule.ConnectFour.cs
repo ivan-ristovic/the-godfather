@@ -34,8 +34,8 @@ namespace TheGodfather.Modules.Games
             public async Task ExecuteGroupAsync(CommandContext ctx,
                                                [Description("Move time (def. 30s).")] TimeSpan? movetime = null)
             {
-                if (Game.RunningInChannel(ctx.Channel.Id))
-                    throw new CommandFailedException("Another game is already running in the current channel!");
+                if (ChannelEvent.IsEventRunningInChannel(ctx.Channel.Id))
+                    throw new CommandFailedException("Another event is already running in the current channel!");
 
                 await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Question, $"Who wants to play Connect4 with {ctx.User.Username}?")
                     .ConfigureAwait(false);
@@ -48,13 +48,13 @@ namespace TheGodfather.Modules.Games
                     throw new InvalidCommandUsageException("Move time must be in range of [2-120] seconds.");
 
                 var connect4 = new Connect4(ctx.Client.GetInteractivity(), ctx.Channel, ctx.User, opponent, movetime);
-                Game.RegisterGameInChannel(connect4, ctx.Channel.Id);
+                ChannelEvent.RegisterEventInChannel(connect4, ctx.Channel.Id);
                 try {
                     await connect4.RunAsync()
                         .ConfigureAwait(false);
 
                     if (connect4.Winner != null) {
-                        if (connect4.NoReply == false)
+                        if (connect4.TimedOut == false)
                             await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Trophy, $"The winner is: {connect4.Winner.Mention}!").ConfigureAwait(false);
                         else
                             await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Trophy, $"{connect4.Winner.Mention} won due to no replies from opponent!").ConfigureAwait(false);
@@ -70,7 +70,7 @@ namespace TheGodfather.Modules.Games
                             .ConfigureAwait(false);
                     }
                 } finally {
-                    Game.UnregisterGameInChannel(ctx.Channel.Id);
+                    ChannelEvent.UnregisterEventInChannel(ctx.Channel.Id);
                 }
             }
 

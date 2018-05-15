@@ -32,7 +32,7 @@ namespace TheGodfather.Modules.Games.Common
                 _movetime
             ).ConfigureAwait(false);
             if (mctx == null) {
-                NoReply = true;
+                TimedOut = true;
                 Winner = player1plays ? _p2 : _p1;
                 return;
             }

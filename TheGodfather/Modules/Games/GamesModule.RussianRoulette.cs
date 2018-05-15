@@ -33,16 +33,16 @@ namespace TheGodfather.Modules.Games
             [GroupCommand]
             public async Task ExecuteGroupAsync(CommandContext ctx)
             {
-                if (Game.RunningInChannel(ctx.Channel.Id)) {
-                    if (Game.GetGameInChannel(ctx.Channel.Id) is RussianRoulette)
+                if (ChannelEvent.IsEventRunningInChannel(ctx.Channel.Id)) {
+                    if (ChannelEvent.GetEventInChannel(ctx.Channel.Id) is RussianRoulette)
                         await JoinAsync(ctx).ConfigureAwait(false);
                     else
-                        throw new CommandFailedException("Another game is already running in the current channel.");
+                        throw new CommandFailedException("Another event is already running in the current channel.");
                     return;
                 }
 
                 var game = new RussianRoulette(ctx.Client.GetInteractivity(), ctx.Channel);
-                Game.RegisterGameInChannel(game, ctx.Channel.Id);
+                ChannelEvent.RegisterEventInChannel(game, ctx.Channel.Id);
                 try {
                     await ctx.RespondWithIconEmbedAsync($"The russian roulette game will start in 30s or when there are 10 participants. Use command {Formatter.InlineCode("game russianroulette")} to join the pool.", ":clock1:")
                         .ConfigureAwait(false);
@@ -64,7 +64,7 @@ namespace TheGodfather.Modules.Games
                             .ConfigureAwait(false);
                     }
                 } finally {
-                    Game.UnregisterGameInChannel(ctx.Channel.Id);
+                    ChannelEvent.UnregisterEventInChannel(ctx.Channel.Id);
                 }
             }
 
@@ -76,8 +76,7 @@ namespace TheGodfather.Modules.Games
             [UsageExample("!game russianroulette join")]
             public async Task JoinAsync(CommandContext ctx)
             {
-                var game = Game.GetGameInChannel(ctx.Channel.Id) as RussianRoulette;
-                if (game == null)
+                if (!(ChannelEvent.GetEventInChannel(ctx.Channel.Id) is RussianRoulette game))
                     throw new CommandFailedException("There is no Russian roulette game running in this channel.");
 
                 if (game.Started)

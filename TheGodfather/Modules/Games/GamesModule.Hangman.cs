@@ -33,8 +33,8 @@ namespace TheGodfather.Modules.Games
             [GroupCommand]
             public async Task ExecuteGroupAsync(CommandContext ctx)
             {
-                if (Game.RunningInChannel(ctx.Channel.Id))
-                    throw new CommandFailedException("Another game is already running in the current channel!");
+                if (ChannelEvent.IsEventRunningInChannel(ctx.Channel.Id))
+                    throw new CommandFailedException("Another event is already running in the current channel!");
 
                 var dm = await ctx.Client.CreateDmChannelAsync(ctx.User.Id)
                     .ConfigureAwait(false);
@@ -58,7 +58,7 @@ namespace TheGodfather.Modules.Games
                 }
 
                 var hangman = new Hangman(ctx.Client.GetInteractivity(), ctx.Channel, mctx.Message.Content, mctx.User);
-                Game.RegisterGameInChannel(hangman, ctx.Channel.Id);
+                ChannelEvent.RegisterEventInChannel(hangman, ctx.Channel.Id);
                 try {
                     await hangman.RunAsync()
                         .ConfigureAwait(false);
@@ -66,7 +66,7 @@ namespace TheGodfather.Modules.Games
                         await Database.UpdateUserStatsAsync(hangman.Winner.Id, GameStatsType.HangmansWon)
                             .ConfigureAwait(false);
                 } finally {
-                    Game.UnregisterGameInChannel(ctx.Channel.Id);
+                    ChannelEvent.UnregisterEventInChannel(ctx.Channel.Id);
                 }
             }
 

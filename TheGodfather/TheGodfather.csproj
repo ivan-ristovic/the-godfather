@@ -396,11 +396,13 @@
     <Compile Include="Modules\Administration\AutomaticRolesModule.cs" />
     <Compile Include="Modules\Administration\Common\Filter.cs" />
     <Compile Include="Modules\Administration\GuildModule.Configuration.cs" />
+    <Compile Include="Modules\Currency\CasinoModule.Blackjack.cs" />
     <Compile Include="Modules\Currency\CasinoModule.Holdem.cs" />
     <Compile Include="Modules\Currency\CasinoModule.Lottery.cs" />
     <Compile Include="Modules\Currency\CasinoModule.cs" />
-    <Compile Include="Modules\Currency\CasinoModule.Blackjack.cs" />
+    <Compile Include="Modules\Currency\ChickenModule.Ambush.cs" />
     <Compile Include="Modules\Currency\ChickenModule.cs" />
+    <Compile Include="Modules\Currency\Common\ChickenAmbush.cs" />
     <Compile Include="Modules\Currency\Common\HoldemGame.cs" />
     <Compile Include="Modules\Currency\Common\LotteryGame.cs" />
     <Compile Include="Modules\Currency\Common\BlackjackGame.cs" />
@@ -450,7 +452,7 @@
     <Compile Include="Modules\Games\Common\Othello.cs" />
     <Compile Include="Modules\Games\Common\Caro.cs" />
     <Compile Include="Modules\Games\Common\Connect4.cs" />
-    <Compile Include="Modules\Games\Common\Game.cs" />
+    <Compile Include="Common\ChannelEvent.cs" />
     <Compile Include="Modules\Games\Common\QuizCountries.cs" />
     <Compile Include="Modules\Games\Common\Hangman.cs" />
     <Compile Include="Modules\Games\Common\Duel.cs" />

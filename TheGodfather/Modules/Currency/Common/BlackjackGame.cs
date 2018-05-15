@@ -19,7 +19,7 @@ using TexasHoldem.Logic.Cards;
 
 namespace TheGodfather.Modules.Currency.Common
 {
-    public class BlackjackGame : Game
+    public class BlackjackGame : ChannelEvent
     {
         public bool Started { get; private set; }
         public int ParticipantCount => _participants.Count;

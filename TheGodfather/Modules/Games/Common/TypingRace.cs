@@ -23,7 +23,7 @@ using DSharpPlus.Interactivity;
 
 namespace TheGodfather.Modules.Games.Common
 {
-    public class TypingRace : Game
+    public class TypingRace : ChannelEvent
     {
         #region STATIC_FIELDS
         private static readonly Regex _whitespaceMatcher = new Regex(@"\s+", RegexOptions.Compiled);

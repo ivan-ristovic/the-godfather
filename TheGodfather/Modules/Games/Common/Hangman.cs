@@ -14,7 +14,7 @@ using DSharpPlus.Interactivity;
 
 namespace TheGodfather.Modules.Games
 {
-    public class Hangman : Game
+    public class Hangman : ChannelEvent
     {
         #region PRIVATE_FIELDS
         private DiscordMessage _msg;
@@ -48,7 +48,7 @@ namespace TheGodfather.Modules.Games
                     .ConfigureAwait(false);
             }
 
-            if (NoReply) {
+            if (TimedOut) {
                 Winner = null;
                 await _channel.SendIconEmbedAsync($"Nobody replies so I am stopping the game... The word was: {Formatter.Bold(_word)}", StaticDiscordEmoji.Joystick)
                     .ConfigureAwait(false);
@@ -77,7 +77,7 @@ namespace TheGodfather.Modules.Games
                 ).ConfigureAwait(false);
             if (mctx == null) {
                 _gameOver = true;
-                NoReply = true;
+                TimedOut = true;
                 return;
             }
 

@@ -47,8 +47,8 @@ namespace TheGodfather.Modules.Games
                                                [Description("Amount of questions.")] int amount = 10,
                                                [Description("Difficulty. (easy/medium/hard)")] string diff = "easy")
             {
-                if (Game.RunningInChannel(ctx.Channel.Id))
-                    throw new CommandFailedException("Another game is already running in the current channel.");
+                if (ChannelEvent.IsEventRunningInChannel(ctx.Channel.Id))
+                    throw new CommandFailedException("Another event is already running in the current channel.");
 
                 if (amount < 5 || amount > 50)
                     throw new CommandFailedException("Invalid amount of questions specified. Amount has to be in range [5-50]!");
@@ -66,7 +66,7 @@ namespace TheGodfather.Modules.Games
                     throw new CommandFailedException("Either the ID is not correct or the category does not yet have enough questions for the quiz :(");
 
                 var quiz = new Quiz(ctx.Client.GetInteractivity(), ctx.Channel, questions);
-                Game.RegisterGameInChannel(quiz, ctx.Channel.Id);
+                ChannelEvent.RegisterEventInChannel(quiz, ctx.Channel.Id);
                 try {
                     await ctx.RespondWithIconEmbedAsync("Quiz will start in 10s! Get ready!", ":clock1:")
                         .ConfigureAwait(false);
@@ -75,7 +75,7 @@ namespace TheGodfather.Modules.Games
                     await quiz.RunAsync()
                         .ConfigureAwait(false);
 
-                    if (quiz.NoReply) {
+                    if (quiz.TimedOut) {
                         await ctx.RespondWithIconEmbedAsync("Aborting quiz due to no replies...", ":alarm_clock:")
                             .ConfigureAwait(false);
                         return;
@@ -84,7 +84,7 @@ namespace TheGodfather.Modules.Games
                     await HandleQuizResultsAsync(ctx, quiz.Results)
                         .ConfigureAwait(false);
                 } finally {
-                    Game.UnregisterGameInChannel(ctx.Channel.Id);
+                    ChannelEvent.UnregisterEventInChannel(ctx.Channel.Id);
                 }
             }
             [GroupCommand, Priority(3)]
@@ -149,8 +149,8 @@ namespace TheGodfather.Modules.Games
                 if (qnum < 5 || qnum > 50)
                     throw new InvalidCommandUsageException("Number of questions must be in range [5-50]");
 
-                if (Game.RunningInChannel(ctx.Channel.Id))
-                    throw new CommandFailedException("Another game is already running in the current channel.");
+                if (ChannelEvent.IsEventRunningInChannel(ctx.Channel.Id))
+                    throw new CommandFailedException("Another event is already running in the current channel.");
 
                 try {
                     QuizCapitals.LoadCapitals();
@@ -159,7 +159,7 @@ namespace TheGodfather.Modules.Games
                 }
 
                 var quiz = new QuizCapitals(ctx.Client.GetInteractivity(), ctx.Channel, qnum);
-                Game.RegisterGameInChannel(quiz, ctx.Channel.Id);
+                ChannelEvent.RegisterEventInChannel(quiz, ctx.Channel.Id);
                 try {
                     await ctx.RespondWithIconEmbedAsync("Quiz will start in 10s! Get ready!", ":clock1:")
                         .ConfigureAwait(false);
@@ -168,7 +168,7 @@ namespace TheGodfather.Modules.Games
                     await quiz.RunAsync()
                         .ConfigureAwait(false);
 
-                    if (quiz.NoReply) {
+                    if (quiz.TimedOut) {
                         await ctx.RespondWithIconEmbedAsync("Aborting quiz due to no replies...", ":alarm_clock:")
                             .ConfigureAwait(false);
                         return;
@@ -177,7 +177,7 @@ namespace TheGodfather.Modules.Games
                     await HandleQuizResultsAsync(ctx, quiz.Results)
                         .ConfigureAwait(false);
                 } finally {
-                    Game.UnregisterGameInChannel(ctx.Channel.Id);
+                    ChannelEvent.UnregisterEventInChannel(ctx.Channel.Id);
                 }
             }
             #endregion
@@ -194,8 +194,8 @@ namespace TheGodfather.Modules.Games
                 if (qnum < 5 || qnum > 50)
                     throw new InvalidCommandUsageException("Number of questions must be in range [5-50]");
 
-                if (Game.RunningInChannel(ctx.Channel.Id))
-                    throw new CommandFailedException("Another game is already running in the current channel.");
+                if (ChannelEvent.IsEventRunningInChannel(ctx.Channel.Id))
+                    throw new CommandFailedException("Another event is already running in the current channel.");
 
                 try {
                     QuizCountries.LoadCountries();
@@ -204,7 +204,7 @@ namespace TheGodfather.Modules.Games
                 }
 
                 var quiz = new QuizCountries(ctx.Client.GetInteractivity(), ctx.Channel, qnum);
-                Game.RegisterGameInChannel(quiz, ctx.Channel.Id);
+                ChannelEvent.RegisterEventInChannel(quiz, ctx.Channel.Id);
                 try {
                     await ctx.RespondWithIconEmbedAsync("Quiz will start in 10s! Get ready!", ":clock1:")
                         .ConfigureAwait(false);
@@ -213,7 +213,7 @@ namespace TheGodfather.Modules.Games
                     await quiz.RunAsync()
                         .ConfigureAwait(false);
 
-                    if (quiz.NoReply) {
+                    if (quiz.TimedOut) {
                         await ctx.RespondWithIconEmbedAsync("Aborting quiz due to no replies...", ":alarm_clock:")
                             .ConfigureAwait(false);
                         return;
@@ -222,7 +222,7 @@ namespace TheGodfather.Modules.Games
                     await HandleQuizResultsAsync(ctx, quiz.Results)
                         .ConfigureAwait(false);
                 } finally {
-                    Game.UnregisterGameInChannel(ctx.Channel.Id);
+                    ChannelEvent.UnregisterEventInChannel(ctx.Channel.Id);
                 }
             }
             #endregion

@@ -26,7 +26,7 @@ namespace TheGodfather.Modules.Currency
     [UsageExample("!chicken")]
     [UsageExample("!chicken @Someone")]
     [ListeningCheck]
-    public class ChickenModule : TheGodfatherBaseModule
+    public partial class ChickenModule : TheGodfatherBaseModule
     {
 
         public ChickenModule(DBService db) : base(db: db) { }

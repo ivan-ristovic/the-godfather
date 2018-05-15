@@ -14,7 +14,7 @@ using DSharpPlus.Interactivity;
 
 namespace TheGodfather.Modules.Games.Common
 {
-    public class Duel : Game
+    public class Duel : ChannelEvent
     {
         #region PUBLIC_FIELDS
         public string FinishingMove { get; private set; }

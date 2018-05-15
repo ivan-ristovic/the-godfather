@@ -37,11 +37,11 @@ namespace TheGodfather.Modules.Currency
             public async Task ExecuteGroupAsync(CommandContext ctx,
                                                [RemainingText, Description("Three numbers.")] params int[] numbers)
             {
-                if (Game.RunningInChannel(ctx.Channel.Id)) {
-                    if (Game.GetGameInChannel(ctx.Channel.Id) is LotteryGame)
+                if (ChannelEvent.IsEventRunningInChannel(ctx.Channel.Id)) {
+                    if (ChannelEvent.GetEventInChannel(ctx.Channel.Id) is LotteryGame)
                         await JoinAsync(ctx, numbers).ConfigureAwait(false);
                     else
-                        throw new CommandFailedException("Another game is already running in the current channel.");
+                        throw new CommandFailedException("Another event is already running in the current channel.");
                     return;
                 }
 
@@ -51,7 +51,7 @@ namespace TheGodfather.Modules.Currency
                     throw new CommandFailedException($"You do not have enough credits on your account to buy a lottery ticket! The lottery ticket costs {LotteryGame.TicketPrice} credits!");
 
                 var game = new LotteryGame(ctx.Client.GetInteractivity(), ctx.Channel);
-                Game.RegisterGameInChannel(game, ctx.Channel.Id);
+                ChannelEvent.RegisterEventInChannel(game, ctx.Channel.Id);
                 try {
                     await ctx.RespondWithIconEmbedAsync($"The Lottery game will start in 30s or when there are 10 participants. Use command {Formatter.InlineCode("casino lottery")} to join the pool.", ":clock1:")
                         .ConfigureAwait(false);
@@ -74,7 +74,7 @@ namespace TheGodfather.Modules.Currency
                             .ConfigureAwait(false);
                     }
                 } finally {
-                    Game.UnregisterGameInChannel(ctx.Channel.Id);
+                    ChannelEvent.UnregisterEventInChannel(ctx.Channel.Id);
                 }
             }
 
@@ -93,8 +93,7 @@ namespace TheGodfather.Modules.Currency
                 if (numbers.Any(n => n < 1 || n > LotteryGame.MaxNumber))
                     throw new CommandFailedException($"Invalid number given! Numbers must be in range [1, {LotteryGame.MaxNumber}]!");
 
-                var game = Game.GetGameInChannel(ctx.Channel.Id) as LotteryGame;
-                if (game == null)
+                if (!(ChannelEvent.GetEventInChannel(ctx.Channel.Id) is LotteryGame game))
                     throw new CommandFailedException("There are no Lottery games running in this channel.");
 
                 if (game.Started)

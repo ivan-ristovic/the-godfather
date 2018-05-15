@@ -16,7 +16,7 @@ using DSharpPlus.Interactivity;
 
 namespace TheGodfather.Modules.Games.Common
 {
-    public class RussianRoulette : Game
+    public class RussianRoulette : ChannelEvent
     {
         private ConcurrentHashSet<DiscordUser> _participants = new ConcurrentHashSet<DiscordUser>();
         public int ParticipantCount => _participants.Count();

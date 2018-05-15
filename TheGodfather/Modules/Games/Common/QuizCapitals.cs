@@ -18,7 +18,7 @@ using DSharpPlus.Interactivity;
 
 namespace TheGodfather.Modules.Games.Common
 {
-    public class QuizCapitals : Game
+    public class QuizCapitals : ChannelEvent
     {
         private static Dictionary<string, string> _capitals = null;
         public ConcurrentDictionary<DiscordUser, int> Results = new ConcurrentDictionary<DiscordUser, int>();
@@ -72,7 +72,7 @@ namespace TheGodfather.Modules.Games.Common
                     else
                         timeouts = 0;
                     if (timeouts == 3) {
-                        NoReply = true;
+                        TimedOut = true;
                         return;
                     }
                     await _channel.SendMessageAsync($"Time is out! The correct answer was: {Formatter.Bold(_capitals[question])}")

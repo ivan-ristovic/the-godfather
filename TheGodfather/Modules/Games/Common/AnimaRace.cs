@@ -16,7 +16,7 @@ using DSharpPlus.Interactivity;
 
 namespace TheGodfather.Modules.Games.Common
 {
-    public class AnimalRace : Game
+    public class AnimalRace : ChannelEvent
     {
         private static readonly int TRACK_SIZE = 50;
 

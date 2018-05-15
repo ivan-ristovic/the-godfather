@@ -16,7 +16,7 @@ using DSharpPlus.Interactivity;
 
 namespace TheGodfather.Modules.Games.Common
 {
-    public class QuizCountries : Game
+    public class QuizCountries : ChannelEvent
     {
         private static Dictionary<string, string> _countries = null;
         public ConcurrentDictionary<DiscordUser, int> Results = new ConcurrentDictionary<DiscordUser, int>();
@@ -70,7 +70,7 @@ namespace TheGodfather.Modules.Games.Common
                     else
                         timeouts = 0;
                     if (timeouts == 3) {
-                        NoReply = true;
+                        TimedOut = true;
                         return;
                     }
                     await _channel.SendMessageAsync($"Time is out! The correct answer was: {Formatter.Bold(_countries[question])}")

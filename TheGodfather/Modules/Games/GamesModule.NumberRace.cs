@@ -34,16 +34,16 @@ namespace TheGodfather.Modules.Games
             [GroupCommand]
             public async Task ExecuteGroupAsync(CommandContext ctx)
             {
-                if (Game.RunningInChannel(ctx.Channel.Id)) {
-                    if (Game.GetGameInChannel(ctx.Channel.Id) is NumberRace)
+                if (ChannelEvent.IsEventRunningInChannel(ctx.Channel.Id)) {
+                    if (ChannelEvent.GetEventInChannel(ctx.Channel.Id) is NumberRace)
                         await JoinRaceAsync(ctx).ConfigureAwait(false);
                     else
-                        throw new CommandFailedException("Another game is already running in the current channel.");
+                        throw new CommandFailedException("Another event is already running in the current channel.");
                     return;
                 }
 
                 var game = new NumberRace(ctx.Client.GetInteractivity(), ctx.Channel);
-                Game.RegisterGameInChannel(game, ctx.Channel.Id);
+                ChannelEvent.RegisterEventInChannel(game, ctx.Channel.Id);
                 try {
                     await ctx.RespondWithIconEmbedAsync($"The race will start in 30s or when there are 10 participants. Use command {Formatter.InlineCode("game numberrace")} to join the race.", ":clock1:")
                         .ConfigureAwait(false);
@@ -56,7 +56,7 @@ namespace TheGodfather.Modules.Games
                         await game.RunAsync()
                             .ConfigureAwait(false);
 
-                        if (game.NoReply) {
+                        if (game.TimedOut) {
                             if (game.Winner != null) {
                                 await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Trophy, $"{game.Winner.Mention} won due to no replies from other users!")
                                     .ConfigureAwait(false);
@@ -77,7 +77,7 @@ namespace TheGodfather.Modules.Games
                             .ConfigureAwait(false);
                     }
                 } finally {
-                    Game.UnregisterGameInChannel(ctx.Channel.Id);
+                    ChannelEvent.UnregisterEventInChannel(ctx.Channel.Id);
                 }
             }
 
@@ -89,8 +89,7 @@ namespace TheGodfather.Modules.Games
             [UsageExample("!game numberrace join")]
             public async Task JoinRaceAsync(CommandContext ctx)
             {
-                var game = Game.GetGameInChannel(ctx.Channel.Id) as NumberRace;
-                if (game == null)
+                if (!(ChannelEvent.GetEventInChannel(ctx.Channel.Id) is NumberRace game))
                     throw new CommandFailedException("There is no number race game running in this channel.");
 
                 if (game.Started)

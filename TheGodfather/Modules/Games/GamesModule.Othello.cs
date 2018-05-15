@@ -34,8 +34,8 @@ namespace TheGodfather.Modules.Games
             public async Task ExecuteGroupAsync(CommandContext ctx,
                                                [Description("Move time (def. 30s).")] TimeSpan? movetime = null)
             {
-                if (Game.RunningInChannel(ctx.Channel.Id))
-                    throw new CommandFailedException("Another game is already running in the current channel!");
+                if (ChannelEvent.IsEventRunningInChannel(ctx.Channel.Id))
+                    throw new CommandFailedException("Another event is already running in the current channel!");
 
                 await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Question, $"Who wants to play Othello with {ctx.User.Username}?")
                     .ConfigureAwait(false);
@@ -48,13 +48,13 @@ namespace TheGodfather.Modules.Games
                     throw new InvalidCommandUsageException("Move time must be in range of [2-120] seconds.");
 
                 var othello = new Othello(ctx.Client.GetInteractivity(), ctx.Channel, ctx.User, opponent, movetime);
-                Game.RegisterGameInChannel(othello, ctx.Channel.Id);
+                ChannelEvent.RegisterEventInChannel(othello, ctx.Channel.Id);
                 try {
                     await othello.RunAsync()
                         .ConfigureAwait(false);
                     
                     if (othello.Winner != null) {
-                        if (othello.NoReply == false)
+                        if (othello.TimedOut == false)
                             await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Trophy, $"The winner is: {othello.Winner.Mention}!").ConfigureAwait(false);
                         else
                             await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Trophy, $"{othello.Winner.Mention} won due to no replies from opponent!").ConfigureAwait(false);
@@ -70,7 +70,7 @@ namespace TheGodfather.Modules.Games
                             .ConfigureAwait(false);
                     }
                 } finally {
-                    Game.UnregisterGameInChannel(ctx.Channel.Id);
+                    ChannelEvent.UnregisterEventInChannel(ctx.Channel.Id);
                 }
             }
 

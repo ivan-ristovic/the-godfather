@@ -13,7 +13,7 @@ using DSharpPlus.Interactivity;
 
 namespace TheGodfather.Modules.Games.Common
 {
-    public class NumberRace : Game
+    public class NumberRace : ChannelEvent
     {
         private ConcurrentHashSet<DiscordUser> _participants = new ConcurrentHashSet<DiscordUser>();
         public int ParticipantCount => _participants.Count();
@@ -47,7 +47,7 @@ namespace TheGodfather.Modules.Games.Common
                 ).ConfigureAwait(false);
 
                 if (mctx == null) {
-                    NoReply = true;
+                    TimedOut = true;
                     return;
                 } else if (guess == num + 1) {
                     num++;

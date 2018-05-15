@@ -18,7 +18,7 @@ using DSharpPlus.Interactivity;
 
 namespace TheGodfather.Modules.Currency.Common
 {
-    public class LotteryGame : Game
+    public class LotteryGame : ChannelEvent
     {
         public static readonly int MaxNumber = 15;
         public static readonly int DrawCount = 3;

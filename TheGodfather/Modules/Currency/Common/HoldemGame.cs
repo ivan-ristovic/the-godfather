@@ -21,7 +21,7 @@ using TexasHoldem.Logic.Helpers;
 
 namespace TheGodfather.Modules.Currency.Common
 {
-    public class HoldemGame : Game
+    public class HoldemGame : ChannelEvent
     {
         public bool Started { get; private set; }
         public ConcurrentQueue<HoldemParticipant> Participants { get; } = new ConcurrentQueue<HoldemParticipant>();

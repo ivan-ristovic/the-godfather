@@ -34,8 +34,8 @@ namespace TheGodfather.Modules.Games
             public async Task ExecuteGroupAsync(CommandContext ctx,
                                                [Description("Who to fight with?")] DiscordUser opponent)
             {
-                if (Game.RunningInChannel(ctx.Channel.Id))
-                    throw new CommandFailedException("Another game is already running in the current channel!");
+                if (ChannelEvent.IsEventRunningInChannel(ctx.Channel.Id))
+                    throw new CommandFailedException("Another event is already running in the current channel!");
 
                 if (opponent.Id == ctx.User.Id)
                     throw new CommandFailedException("You can't duel yourself...");
@@ -52,7 +52,7 @@ namespace TheGodfather.Modules.Games
                 }
 
                 var duel = new Duel(ctx.Client.GetInteractivity(), ctx.Channel, ctx.User, opponent);
-                Game.RegisterGameInChannel(duel, ctx.Channel.Id);
+                ChannelEvent.RegisterEventInChannel(duel, ctx.Channel.Id);
 
                 try {
                     await duel.RunAsync()
@@ -66,7 +66,7 @@ namespace TheGodfather.Modules.Games
                     await Database.UpdateUserStatsAsync(duel.Winner.Id == ctx.User.Id ? opponent.Id : ctx.User.Id, GameStatsType.DuelsLost)
                         .ConfigureAwait(false);
                 } finally {
-                    Game.UnregisterGameInChannel(ctx.Channel.Id);
+                    ChannelEvent.UnregisterEventInChannel(ctx.Channel.Id);
                 }
             }
 

@@ -10,7 +10,7 @@ using DSharpPlus.Interactivity;
 
 namespace TheGodfather.Modules.Games.Common
 {
-    public abstract class BoardGame : Game
+    public abstract class BoardGame : ChannelEvent
     {
         protected DiscordUser _p1 { get; }
         protected DiscordUser _p2 { get; }
@@ -49,7 +49,7 @@ namespace TheGodfather.Modules.Games.Common
             _msg = await _channel.SendMessageAsync($"{_p1.Mention} vs {_p2.Mention}")
                 .ConfigureAwait(false);
 
-            while (NoReply == false && _move < BOARD_SIZE_X * BOARD_SIZE_Y && !GameOver()) {
+            while (TimedOut == false && _move < BOARD_SIZE_X * BOARD_SIZE_Y && !GameOver()) {
                 await UpdateBoardAsync()
                     .ConfigureAwait(false);
                 await AdvanceAsync()
@@ -89,7 +89,7 @@ namespace TheGodfather.Modules.Games.Common
                 _movetime
             ).ConfigureAwait(false);
             if (mctx == null) {
-                NoReply = true;
+                TimedOut = true;
                 Winner = player1plays ? _p2 : _p1;
                 return;
             }
