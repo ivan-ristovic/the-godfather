@@ -7,7 +7,7 @@ using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-using TheGodfather.Modules.Gambling.Common;
+using TheGodfather.Modules.Currency.Common;
 using TheGodfather.Modules.Games.Common;
 using TheGodfather.Services;
 using TheGodfather.Services.Common;
@@ -19,7 +19,7 @@ using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 #endregion
 
-namespace TheGodfather.Modules.Gambling
+namespace TheGodfather.Modules.Currency
 {
     public partial class CasinoModule
     {

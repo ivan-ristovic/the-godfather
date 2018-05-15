@@ -5,7 +5,7 @@ using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-using TheGodfather.Modules.Gambling.Common;
+using TheGodfather.Modules.Currency.Common;
 using TheGodfather.Services;
 
 using DSharpPlus;
@@ -14,7 +14,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Interactivity;
 #endregion
 
-namespace TheGodfather.Modules.Gambling
+namespace TheGodfather.Modules.Currency
 {
     [Group("casino"), Module(ModuleType.Gambling)]
     [Description("Betting and gambling games.")]

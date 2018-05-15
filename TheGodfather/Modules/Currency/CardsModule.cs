@@ -13,7 +13,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using TexasHoldem.Logic.Cards;
 #endregion
 
-namespace TheGodfather.Modules.Gambling
+namespace TheGodfather.Modules.Currency
 {
     [Group("cards"), Module(ModuleType.Gambling)]
     [Description("Manipulate a deck of cards.")]

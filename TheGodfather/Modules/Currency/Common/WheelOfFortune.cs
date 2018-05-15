@@ -13,7 +13,7 @@ using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 #endregion
 
-namespace TheGodfather.Modules.Gambling.Common
+namespace TheGodfather.Modules.Currency.Common
 {
     public class WheelOfFortune : Game
     {

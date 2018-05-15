@@ -13,7 +13,7 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 #endregion
 
-namespace TheGodfather.Modules.Gambling
+namespace TheGodfather.Modules.Currency
 {
     [Group("gamble"), Module(ModuleType.Gambling)]
     [Description("Betting and gambling commands.")]

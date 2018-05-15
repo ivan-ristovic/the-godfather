@@ -19,7 +19,7 @@ using TexasHoldem.Logic.Cards;
 using TexasHoldem.Logic.Helpers;
 #endregion
 
-namespace TheGodfather.Modules.Gambling.Common
+namespace TheGodfather.Modules.Currency.Common
 {
     public class HoldemGame : Game
     {

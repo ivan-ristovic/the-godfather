@@ -8,7 +8,7 @@ using DSharpPlus;
 using DSharpPlus.Entities;
 #endregion
 
-namespace TheGodfather.Modules.Gambling.Common
+namespace TheGodfather.Modules.Currency.Common
 {
     public class SlotMachine
     {

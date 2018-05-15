@@ -17,7 +17,7 @@ using DSharpPlus.Interactivity;
 using TexasHoldem.Logic.Cards;
 #endregion
 
-namespace TheGodfather.Modules.Gambling.Common
+namespace TheGodfather.Modules.Currency.Common
 {
     public class BlackjackGame : Game
     {

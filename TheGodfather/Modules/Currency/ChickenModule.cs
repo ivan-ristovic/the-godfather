@@ -17,7 +17,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 #endregion
 
-namespace TheGodfather.Modules.Gambling
+namespace TheGodfather.Modules.Currency
 {
     [Group("chicken"), Module(ModuleType.Gambling)]
     [Description("Manage your chicken. If invoked without subcommands, prints out your chicken information.")]
@@ -36,6 +36,8 @@ namespace TheGodfather.Modules.Gambling
         public Task ExecuteGroupAsync(CommandContext ctx,
                                      [Description("User.")] DiscordUser user = null)
             => InfoAsync(ctx, user);
+
+
 
 
         #region COMMAND_CHICKEN_BUY

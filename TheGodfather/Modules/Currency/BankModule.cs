@@ -13,7 +13,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 #endregion
 
-namespace TheGodfather.Modules.Gambling
+namespace TheGodfather.Modules.Currency
 {
     [Group("bank"), Module(ModuleType.Gambling)]
     [Description("Bank account manipulation. If invoked alone, prints out your bank balance. Accounts periodically get a bonus.")]
