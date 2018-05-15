@@ -22,6 +22,17 @@ namespace TheGodfather.Services.Common
         public short Strength { get; set; }
 
 
+        public static short DetermineGain(short str1, short str2)
+        {
+            if (str1 > str2)
+                return (short)Math.Max(5 - (str1 - str2) / 5, 0);
+            else if (str2 > str1)
+                return (short)((str2 - str1) / 5);
+            else
+                return 3;
+        }
+
+
         public bool Train()
         {
             if (GFRandom.Generator.GetBool()) {
@@ -62,5 +73,6 @@ namespace TheGodfather.Services.Common
 
             return emb.Build();
         }
+
     }
 }

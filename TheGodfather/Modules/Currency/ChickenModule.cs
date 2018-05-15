@@ -81,7 +81,7 @@ namespace TheGodfather.Modules.Currency
                                     [Description("User.")] DiscordUser user)
         {
             if (ChannelEvent.GetEventInChannel(ctx.Channel.Id) is ChickenAmbush ambush)
-                throw new CommandFailedException("There is an ambush running in this channel. No fights are allowe before the ambush finishes.");
+                throw new CommandFailedException("There is an ambush running in this channel. No fights are allowed before the ambush finishes.");
 
             if (user.Id == ctx.User.Id)
                 throw new CommandFailedException("You can't fight against your own chicken!");
@@ -92,14 +92,18 @@ namespace TheGodfather.Modules.Currency
                 .ConfigureAwait(false);
             if (chicken1 == null || chicken2 == null)
                 throw new CommandFailedException("One of you does not own a chicken!");
-            
+
+            if (chicken1.Strength - chicken2.Strength > 50)
+                throw new CommandFailedException("The strength difference is too big (50 max)! Please find a stronger opponent.");
+
             if (!ctx.Guild.Members.Any(m => m.Id == chicken2.OwnerId))
                 throw new CommandFailedException("The owner of that chicken is not a member of this guild so you cannot fight his chicken.");
 
             var winner = chicken1.Fight(chicken2);
             winner.Owner = winner.OwnerId == ctx.User.Id ? ctx.User : user;
             var loser = winner == chicken1 ? chicken2 : chicken1;
-            winner.Strength += 3;
+            short gain = Chicken.DetermineGain(winner.Strength, loser.Strength);
+            winner.Strength += gain;
 
             await Database.ModifyChickenAsync(winner)
                 .ConfigureAwait(false);
@@ -108,7 +112,7 @@ namespace TheGodfather.Modules.Currency
             await Database.GiveCreditsToUserAsync(winner.OwnerId, 1000)
                 .ConfigureAwait(false);
 
-            await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, $"{Formatter.Bold(chicken1.Name)} ({chicken1.Strength}) {StaticDiscordEmoji.DuelSwords} {Formatter.Bold(chicken2.Name)} ({chicken2.Strength})}\n\n{StaticDiscordEmoji.Trophy} Winner: {Formatter.Bold(winner.Name)}\n\n{Formatter.Bold(winner.Name)} gained strength!\n\n{Formatter.Bold(loser.Name)} died in the battle!\n\n{winner.Owner.Mention} won 1000 credits.")
+            await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, $"{Formatter.Bold(chicken1.Name)} ({chicken1.Strength}) {StaticDiscordEmoji.DuelSwords} {Formatter.Bold(chicken2.Name)} ({chicken2.Strength})\n\n{StaticDiscordEmoji.Trophy} Winner: {Formatter.Bold(winner.Name)}\n\n{Formatter.Bold(winner.Name)} gained {Formatter.Bold(gain.ToString())} strength!\n\n{Formatter.Bold(loser.Name)} died in the battle!\n\n{winner.Owner.Mention} won 1000 credits.")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -151,6 +155,9 @@ namespace TheGodfather.Modules.Currency
             if (!name.All(c => Char.IsLetterOrDigit(c) || Char.IsWhiteSpace(c)))
                 throw new InvalidCommandUsageException("Name cannot contain characters that are not letters or digits.");
 
+            if (ChannelEvent.GetEventInChannel(ctx.Channel.Id) is ChickenAmbush ambush)
+                throw new CommandFailedException("There is an ambush running in this channel. No chicken modifications are allowed before the ambush finishes.");
+
             var chicken = await Database.GetChickenInfoAsync(ctx.User.Id)
                 .ConfigureAwait(false);
             if (chicken == null)
@@ -176,6 +183,9 @@ namespace TheGodfather.Modules.Currency
                 .ConfigureAwait(false);
             if (chicken == null)
                 throw new CommandFailedException("You do not own a chicken!");
+
+            if (ChannelEvent.GetEventInChannel(ctx.Channel.Id) is ChickenAmbush ambush)
+                throw new CommandFailedException("There is an ambush running in this channel. No sells are allowed before the ambush finishes.");
 
             int price = 500 + chicken.Strength * 10;
             if (!await ctx.AskYesNoQuestionAsync($"Are you sure you want to sell your chicken for {price} credits?"))
@@ -231,6 +241,9 @@ namespace TheGodfather.Modules.Currency
                 .ConfigureAwait(false);
             if (chicken == null)
                 throw new CommandFailedException("You do not own a chicken!");
+
+            if (ChannelEvent.GetEventInChannel(ctx.Channel.Id) is ChickenAmbush ambush)
+                throw new CommandFailedException("There is an ambush running in this channel. No trainings are allowed before the ambush finishes.");
 
             string result;
             if (chicken.Train()) 
