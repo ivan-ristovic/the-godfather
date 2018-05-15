@@ -85,6 +85,7 @@ namespace TheGodfather.Modules.Gambling
                 throw new CommandFailedException("One of you does not own a chicken!");
 
             var winner = chicken1.Fight(chicken2);
+            winner.Owner = winner.OwnerId == ctx.User.Id ? ctx.User : user;
             var loser = winner == chicken1 ? chicken2 : chicken1;
             winner.Strength += 5;
 
@@ -92,8 +93,10 @@ namespace TheGodfather.Modules.Gambling
                 .ConfigureAwait(false);
             await Database.RemoveChickenAsync(loser.OwnerId)
                 .ConfigureAwait(false);
+            await Database.GiveCreditsToUserAsync(winner.OwnerId, 1000)
+                .ConfigureAwait(false);
 
-            await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, $"{Formatter.Bold("Fight results:")}\n\n{StaticDiscordEmoji.Trophy} Winner: {Formatter.Bold(winner.Name)}\n\n{Formatter.Bold(winner.Name)} gained strength!\n\n{Formatter.Bold(loser.Name)} died in the battle!")
+            await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, $"{Formatter.Bold("Fight results:")}\n\n{StaticDiscordEmoji.Trophy} Winner: {Formatter.Bold(winner.Name)}\n\n{Formatter.Bold(winner.Name)} gained strength!\n\n{Formatter.Bold(loser.Name)} died in the battle!\n\n{winner.Owner.Mention} won 1000 credits.")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -143,6 +146,32 @@ namespace TheGodfather.Modules.Gambling
                 .ConfigureAwait(false);
 
             await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} renamed his chicken to {Formatter.Italic(name)}")
+                .ConfigureAwait(false);
+        }
+        #endregion
+
+        #region COMMAND_CHICKEN_SELL
+        [Command("sell"), Module(ModuleType.Gambling)]
+        [Description("Sell your chicken.")]
+        [Aliases("s")]
+        [UsageExample("!chicken sell")]
+        public async Task SellAsync(CommandContext ctx)
+        {
+            var chicken = await Database.GetChickenInfoAsync(ctx.User.Id)
+                .ConfigureAwait(false);
+            if (chicken == null)
+                throw new CommandFailedException("You do not own a chicken!");
+
+            int price = 500 + chicken.Strength * 10;
+            if (!await ctx.AskYesNoQuestionAsync($"Are you sure you want to sell your chicken for {price} credits?"))
+                return;
+
+            await Database.RemoveChickenAsync(ctx.User.Id)
+                .ConfigureAwait(false);
+            await Database.GiveCreditsToUserAsync(ctx.User.Id, Chicken.Price)
+                .ConfigureAwait(false);
+
+            await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} sold {Formatter.Italic(chicken.Name)} for {Formatter.Bold(price.ToString())} credits!")
                 .ConfigureAwait(false);
         }
         #endregion
