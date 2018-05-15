@@ -38,8 +38,6 @@ namespace TheGodfather.Modules.Currency
             => InfoAsync(ctx, user);
 
 
-
-
         #region COMMAND_CHICKEN_BUY
         [Command("buy"), Module(ModuleType.Gambling)]
         [Description("Buy a new chicken.")]
@@ -92,7 +90,7 @@ namespace TheGodfather.Modules.Currency
             var winner = chicken1.Fight(chicken2);
             winner.Owner = winner.OwnerId == ctx.User.Id ? ctx.User : user;
             var loser = winner == chicken1 ? chicken2 : chicken1;
-            winner.Strength += 5;
+            winner.Strength += 3;
 
             await Database.ModifyChickenAsync(winner)
                 .ConfigureAwait(false);
