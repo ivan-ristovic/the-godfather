@@ -75,7 +75,7 @@ namespace TheGodfather.Modules.Currency
         #region COMMAND_CHICKEN_FIGHT
         [Command("fight"), Module(ModuleType.Gambling)]
         [Description("Make your chicken and another user's chicken fight until death!")]
-        [Aliases("f", "duel")]
+        [Aliases("f", "duel", "attack")]
         [UsageExample("!chicken duel @Someone")]
         public async Task TrainAsync(CommandContext ctx,
                                     [Description("User.")] DiscordUser user)
@@ -94,7 +94,7 @@ namespace TheGodfather.Modules.Currency
                 throw new CommandFailedException("One of you does not own a chicken!");
 
             if (Math.Abs(chicken1.Strength - chicken2.Strength) > 50)
-                throw new CommandFailedException("The strength difference is too big (50 max)! Please find a stronger opponent.");
+                throw new CommandFailedException("The strength difference is too big (50 max)! Please find a more suitable opponent.");
 
             if (!ctx.Guild.Members.Any(m => m.Id == chicken2.OwnerId))
                 throw new CommandFailedException("The owner of that chicken is not a member of this guild so you cannot fight his chicken.");
@@ -112,8 +112,13 @@ namespace TheGodfather.Modules.Currency
             await Database.GiveCreditsToUserAsync(winner.OwnerId, 1000)
                 .ConfigureAwait(false);
 
-            await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, $"{Formatter.Bold(chicken1.Name)} ({chicken1.Strength}) {StaticDiscordEmoji.DuelSwords} {Formatter.Bold(chicken2.Name)} ({chicken2.Strength})\n\n{StaticDiscordEmoji.Trophy} Winner: {Formatter.Bold(winner.Name)}\n\n{Formatter.Bold(winner.Name)} gained {Formatter.Bold(gain.ToString())} strength!\n\n{Formatter.Bold(loser.Name)} died in the battle!\n\n{winner.Owner.Mention} won 1000 credits.")
-                .ConfigureAwait(false);
+            await ctx.RespondWithIconEmbedAsync(
+                $"{StaticDiscordEmoji.Chicken} {Formatter.Bold(chicken1.Name)} ({chicken1.Strength}) {StaticDiscordEmoji.DuelSwords} {Formatter.Bold(chicken2.Name)} ({chicken2.Strength}) {StaticDiscordEmoji.Chicken}\n\n" +
+                $"{StaticDiscordEmoji.Trophy} Winner: {Formatter.Bold(winner.Name)}\n\n" +
+                $"{Formatter.Bold(winner.Name)} gained {Formatter.Bold(gain.ToString())} strength!\n\n" +
+                $"{Formatter.Bold(loser.Name)} died in the battle!\n\n" +
+                $"{winner.Owner.Mention} won 1000 credits."
+            ).ConfigureAwait(false);
         }
         #endregion
 

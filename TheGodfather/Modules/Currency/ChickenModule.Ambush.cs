@@ -117,7 +117,7 @@ namespace TheGodfather.Modules.Currency
                     throw new CommandFailedException("Your chicken is already participating in the ambush!");
 
                 ambush.AddParticipant(chicken, ctx.User);
-                await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, $"{Formatter.Bold(chicken.Name)} joined the ambush.")
+                await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, $"{Formatter.Bold(chicken.Name)} joined the ambush against {Formatter.Bold(ambush.Ambushed.Name)}.")
                     .ConfigureAwait(false);
             }
             #endregion

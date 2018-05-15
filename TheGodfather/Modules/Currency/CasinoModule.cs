@@ -26,6 +26,15 @@ namespace TheGodfather.Modules.Currency
 
         public CasinoModule(DBService db) : base(db: db) { }
 
+        [GroupCommand]
+        public Task ExecuteGroupAsync(CommandContext ctx)
+        {
+            return ctx.RespondWithIconEmbedAsync(
+                Formatter.Bold("Casino games:\n\n") +
+                "holdem, lottery, slot, wheeloffortune"
+            );
+        }
+
 
         #region COMMAND_CASINO_SLOT
         [Command("slot"), Module(ModuleType.Gambling)]
