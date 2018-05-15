@@ -37,6 +37,14 @@ namespace TheGodfather.Modules.Currency
             public async Task ExecuteGroupAsync(CommandContext ctx,
                                                [Description("Whose chicken to ambush.")] DiscordUser user = null)
             {
+                if (ChannelEvent.IsEventRunningInChannel(ctx.Channel.Id)) {
+                    if (ChannelEvent.GetEventInChannel(ctx.Channel.Id) is ChickenAmbush)
+                        await JoinAsync(ctx).ConfigureAwait(false);
+                    else
+                        throw new CommandFailedException("Another event is already running in the current channel.");
+                    return;
+                }
+
                 if (user == null)
                     throw new InvalidCommandUsageException("You need to specify a user whose chicken you want to ambush!");
 
@@ -45,14 +53,6 @@ namespace TheGodfather.Modules.Currency
                 if (ambushed == null)
                     throw new CommandFailedException("Given user does not have a chicken!");
 
-                if (ChannelEvent.IsEventRunningInChannel(ctx.Channel.Id)) {
-                    if (ChannelEvent.GetEventInChannel(ctx.Channel.Id) is ChickenAmbush)
-                        await JoinAsync(ctx).ConfigureAwait(false);
-                    else
-                        throw new CommandFailedException("Another event is already running in the current channel.");
-                    return;
-                }
-                
                 var ambush = new ChickenAmbush(ctx.Client.GetInteractivity(), ctx.Channel, ambushed);
                 ChannelEvent.RegisterEventInChannel(ambush, ctx.Channel.Id);
                 try {
@@ -68,17 +68,19 @@ namespace TheGodfather.Modules.Currency
 
                     if (ambush.AmbushedChickenSurvived) {
                         ambushed.Strength += 20;
-                        await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, $"{Formatter.Bold(ambushed.Name)} survived the ambush and slaughtered all the other chickens! (+20 STR)\n\n{user.Mention} won 100000 credits!")
-                            .ConfigureAwait(false);
                         await Database.GiveCreditsToUserAsync(ambushed.OwnerId, 100000)
                             .ConfigureAwait(false);
-
+                        await Database.ModifyChickenAsync(ambushed)
+                            .ConfigureAwait(false);
                         foreach (var chicken in ambush.Ambushers)
                             await Database.RemoveChickenAsync(chicken.OwnerId).ConfigureAwait(false);
-                    } else {
-                        await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, $"{Formatter.Bold(ambushed.Name)} is no more...")
+
+                        await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, $"{Formatter.Bold(ambushed.Name)} survived the ambush and slaughtered all the other chickens! (+20 STR)\n\n{user.Mention} won 100000 credits!")
                             .ConfigureAwait(false);
+                    } else {
                         await Database.RemoveChickenAsync(user.Id)
+                            .ConfigureAwait(false);
+                        await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, $"{Formatter.Bold(ambushed.Name)} is no more...")
                             .ConfigureAwait(false);
                     }
                 } finally {

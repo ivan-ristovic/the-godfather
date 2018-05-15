@@ -1,13 +1,13 @@
 ﻿#region USING_DIRECTIVES
 using System;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
+using TheGodfather.Modules.Currency.Common;
 using TheGodfather.Services;
 using TheGodfather.Services.Common;
 
@@ -52,6 +52,9 @@ namespace TheGodfather.Modules.Currency
             if (name.Length < 2 || name.Length > 30)
                 throw new InvalidCommandUsageException("Name cannot be shorter than 2 and longer than 30 characters.");
 
+            if (name.Any(c => !Char.IsLetterOrDigit(c)))
+                throw new InvalidCommandUsageException("Name cannot contain characters that are not letters or digits.");
+
             if (await Database.GetChickenInfoAsync(ctx.User.Id).ConfigureAwait(false) != null)
                 throw new CommandFailedException("You already own a chicken!");
 
@@ -77,6 +80,9 @@ namespace TheGodfather.Modules.Currency
         public async Task TrainAsync(CommandContext ctx,
                                     [Description("User.")] DiscordUser user)
         {
+            if (ChannelEvent.GetEventInChannel(ctx.Channel.Id) is ChickenAmbush ambush)
+                throw new CommandFailedException("There is an ambush running in this channel. No fights are allowe before the ambush finishes.");
+
             if (user.Id == ctx.User.Id)
                 throw new CommandFailedException("You can't fight against your own chicken!");
 
@@ -86,6 +92,9 @@ namespace TheGodfather.Modules.Currency
                 .ConfigureAwait(false);
             if (chicken1 == null || chicken2 == null)
                 throw new CommandFailedException("One of you does not own a chicken!");
+            
+            if (!ctx.Guild.Members.Any(m => m.Id == chicken2.OwnerId))
+                throw new CommandFailedException("The owner of that chicken is not a member of this guild so you cannot fight his chicken.");
 
             var winner = chicken1.Fight(chicken2);
             winner.Owner = winner.OwnerId == ctx.User.Id ? ctx.User : user;

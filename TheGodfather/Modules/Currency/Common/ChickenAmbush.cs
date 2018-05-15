@@ -39,13 +39,15 @@ namespace TheGodfather.Modules.Currency.Common
         {
             Started = true;
 
+            short combinedstr = (short)(Ambushers.Sum(c => c.Strength) - Ambushers.Count * 15);
+
             var emb = new DiscordEmbedBuilder() {
                 Title = $"{StaticDiscordEmoji.Chicken} CHICKEN AMBUSH STARTING {StaticDiscordEmoji.Chicken}",
-                Description = $"{Formatter.Bold(Ambushed.Name)} fell into an ambush! The outcome will be known after the dust settles..."
+                Description = $"{Formatter.Bold(Ambushed.Name)} ({Ambushed.Strength} STR) fell into an ambush! The outcome will be known after the dust settles...",
+                Color = DiscordColor.Aquamarine
             };
-
-            foreach (var chicken in Ambushers)
-                emb.AddField("Ambusher", chicken.Name);
+            emb.AddField("Ambushers", string.Join(", ", Ambushers.Select(c => c.Name)));
+            emb.AddField("Combined ambusher strength", combinedstr.ToString());
 
             await _channel.SendMessageAsync(embed: emb.Build())
                 .ConfigureAwait(false);
@@ -54,7 +56,7 @@ namespace TheGodfather.Modules.Currency.Common
                 .ConfigureAwait(false);
 
             Chicken combined = new Chicken() {
-                Strength = (short)(Ambushers.Sum(c => c.Strength) - Ambushers.Count * 15)
+                Strength = combinedstr
             };
             AmbushedChickenSurvived = (Ambushed.Fight(combined).OwnerId == Ambushed.OwnerId);
         }

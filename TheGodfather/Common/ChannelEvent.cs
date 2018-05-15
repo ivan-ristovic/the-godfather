@@ -6,7 +6,7 @@ using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 #endregion
 
-namespace TheGodfather.Modules.Games.Common
+namespace TheGodfather.Common
 {
     public abstract class ChannelEvent
     {
