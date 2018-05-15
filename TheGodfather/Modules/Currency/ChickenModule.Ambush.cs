@@ -102,6 +102,9 @@ namespace TheGodfather.Modules.Currency
                 if (chicken == null)
                     throw new CommandFailedException("You do not own a chicken!");
 
+                if (ambush.Ambushed.OwnerId == ctx.User.Id)
+                    throw new CommandFailedException("You cannot join an ambush against your own chicken. Sit tight and enjoy the skirmish.");
+
                 if (ambush.Started)
                     throw new CommandFailedException("Ambush has already started, you can't join it.");
 

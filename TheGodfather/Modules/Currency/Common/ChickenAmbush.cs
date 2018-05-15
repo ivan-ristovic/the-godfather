@@ -21,17 +21,16 @@ namespace TheGodfather.Modules.Currency.Common
     public class ChickenAmbush : ChannelEvent
     {
         public bool Started { get; private set; }
+        public readonly Chicken Ambushed;
         public bool AmbushedChickenSurvived { get; private set; }
         public ConcurrentQueue<Chicken> Ambushers { get; } = new ConcurrentQueue<Chicken>();
         public int AmbusherCount => Ambushers.Count;
-
-        private readonly Chicken _ambushed;
 
 
         public ChickenAmbush(InteractivityExtension interactivity, DiscordChannel channel, Chicken ambushed)
             : base(interactivity, channel)
         {
-            _ambushed = ambushed;
+            Ambushed = ambushed;
             Started = false;
         }
 
@@ -42,7 +41,7 @@ namespace TheGodfather.Modules.Currency.Common
 
             var emb = new DiscordEmbedBuilder() {
                 Title = $"{StaticDiscordEmoji.Chicken} CHICKEN AMBUSH STARTING {StaticDiscordEmoji.Chicken}",
-                Description = $"{Formatter.Bold(_ambushed.Name)} fell into an ambush! The outcome will be known after the dust settles..."
+                Description = $"{Formatter.Bold(Ambushed.Name)} fell into an ambush! The outcome will be known after the dust settles..."
             };
 
             foreach (var chicken in Ambushers)
@@ -57,7 +56,7 @@ namespace TheGodfather.Modules.Currency.Common
             Chicken combined = new Chicken() {
                 Strength = (short)(Ambushers.Sum(c => c.Strength) - Ambushers.Count * 15)
             };
-            AmbushedChickenSurvived = (_ambushed.Fight(combined).OwnerId == _ambushed.OwnerId);
+            AmbushedChickenSurvived = (Ambushed.Fight(combined).OwnerId == Ambushed.OwnerId);
         }
 
         public void AddParticipant(Chicken chicken, DiscordUser owner)
