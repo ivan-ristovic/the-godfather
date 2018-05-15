@@ -93,7 +93,7 @@ namespace TheGodfather.Modules.Currency
             if (chicken1 == null || chicken2 == null)
                 throw new CommandFailedException("One of you does not own a chicken!");
 
-            if (chicken1.Strength - chicken2.Strength > 50)
+            if (Math.Abs(chicken1.Strength - chicken2.Strength) > 50)
                 throw new CommandFailedException("The strength difference is too big (50 max)! Please find a stronger opponent.");
 
             if (!ctx.Guild.Members.Any(m => m.Id == chicken2.OwnerId))
