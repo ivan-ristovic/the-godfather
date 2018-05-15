@@ -77,6 +77,9 @@ namespace TheGodfather.Modules.Gambling
         public async Task TrainAsync(CommandContext ctx,
                                     [Description("User.")] DiscordUser user)
         {
+            if (user.Id == ctx.User.Id)
+                throw new CommandFailedException("You can't fight against your own chicken!");
+
             var chicken1 = await Database.GetChickenInfoAsync(ctx.User.Id)
                 .ConfigureAwait(false);
             var chicken2 = await Database.GetChickenInfoAsync(user.Id)
@@ -233,7 +236,6 @@ namespace TheGodfather.Modules.Gambling
 
 
         // SO MANY IDEAS WTF IS THIS BRAINSTORM???
-        // chicken sell - estimate price
         // chicken stats - strength, agility, hitpoints
         // chicken upgrades - weapons, armor etc
     }
