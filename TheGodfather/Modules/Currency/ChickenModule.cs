@@ -109,7 +109,7 @@ namespace TheGodfather.Modules.Currency
                 .ConfigureAwait(false);
             await Database.RemoveChickenAsync(loser.OwnerId)
                 .ConfigureAwait(false);
-            await Database.GiveCreditsToUserAsync(winner.OwnerId, 1000)
+            await Database.GiveCreditsToUserAsync(winner.OwnerId, gain * 200)
                 .ConfigureAwait(false);
 
             await ctx.RespondWithIconEmbedAsync(
@@ -117,7 +117,7 @@ namespace TheGodfather.Modules.Currency
                 $"{StaticDiscordEmoji.Trophy} Winner: {Formatter.Bold(winner.Name)}\n\n" +
                 $"{Formatter.Bold(winner.Name)} gained {Formatter.Bold(gain.ToString())} strength!\n\n" +
                 $"{Formatter.Bold(loser.Name)} died in the battle!\n\n" +
-                $"{winner.Owner.Mention} won 1000 credits."
+                $"{winner.Owner.Mention} won {gain * 200} credits."
             ).ConfigureAwait(false);
         }
         #endregion
