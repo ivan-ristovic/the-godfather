@@ -891,7 +891,7 @@
 ### guild configure leave channel
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Gets or sets current leave message channel.*
+*Gets or sets leave message channel.*
 
 **Aliases:**
 `chn, c`
@@ -973,6 +973,86 @@
 
 ---
 
+## Group: guild configure logging
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Command action logging configuration.*
+
+**Requires user permissions:**
+`Manage guild`
+
+**Aliases:**
+`log, modlog`
+
+**Examples:**
+
+```
+!guild cfg logging
+```
+</p></details>
+
+---
+
+### guild configure logging channel
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Gets or sets current action log channel.*
+
+**Aliases:**
+`chn, c`
+
+**Arguments:**
+
+(optional) `[channel]` : *Channel.* (def: `None`)
+
+**Examples:**
+
+```
+!guild cfg logging channel
+!guild cfg logging channel #modlog
+```
+</p></details>
+
+---
+
+### guild configure logging disable
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Disables action logging for this guild.*
+
+**Aliases:**
+`off`
+
+**Examples:**
+
+```
+!guild cfg logging off
+```
+</p></details>
+
+---
+
+### guild configure logging enable
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Enables action logging for this guild in the given channel.*
+
+**Aliases:**
+`on`
+
+**Arguments:**
+
+(optional) `[channel]` : *Channel.* (def: `None`)
+
+**Examples:**
+
+```
+!guild cfg logging on
+```
+</p></details>
+
+---
+
 ### guild configure setup
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
@@ -996,7 +1076,7 @@
 ## Group: guild configure suggestions
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Suggestions configuration commands.*
+*Command suggestions configuration.*
 
 **Requires user permissions:**
 `Manage guild`
@@ -1070,7 +1150,7 @@
 ### guild configure welcome channel
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Gets or sets current welcome message channel.*
+*Gets or sets welcome message channel.*
 
 **Aliases:**
 `chn, c`

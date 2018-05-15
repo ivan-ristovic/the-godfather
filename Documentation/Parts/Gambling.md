@@ -207,23 +207,6 @@
 
 ---
 
-### cards shuffle
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Shuffles current deck.*
-
-**Aliases:**
-`s, sh, mix`
-
-**Examples:**
-
-```
-!deck shuffle
-```
-</p></details>
-
----
-
 ## Group: casino
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
@@ -290,6 +273,61 @@
 
 ```
 !casino blackjack rules
+```
+</p></details>
+
+---
+
+## Group: casino holdem
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Play a Texas Hold'Em game.*
+
+**Aliases:**
+`poker, texasholdem, texas`
+
+**Arguments:**
+
+(optional) `[int]` : *Amount of money required to enter.* (def: `1000`)
+
+**Examples:**
+
+```
+!casino holdem 10000
+```
+</p></details>
+
+---
+
+### casino holdem join
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Join a pending Texas Hold'Em game.*
+
+**Aliases:**
+`+, compete, enter, j`
+
+**Examples:**
+
+```
+!casino holdem join
+```
+</p></details>
+
+---
+
+### casino holdem rules
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Explain the Texas Hold'Em rules.*
+
+**Aliases:**
+`help, h, ruling, rule`
+
+**Examples:**
+
+```
+!casino holdem rules
 ```
 </p></details>
 
@@ -391,6 +429,201 @@
 
 ```
 !casino wof 20
+```
+</p></details>
+
+---
+
+## Group: chicken
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Manage your chicken. If invoked without subcommands, prints out your chicken information.*
+
+**Aliases:**
+`cock, hen, chick`
+
+**Arguments:**
+
+(optional) `[user]` : *User.* (def: `None`)
+
+**Examples:**
+
+```
+!chicken
+!chicken @Someone
+```
+</p></details>
+
+---
+
+## Group: chicken ambush
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Start an ambush for another user's chicken. Other users can put their chickens into your ambush and collectively attack the target chicken combining their strength.*
+
+**Aliases:**
+`gangattack`
+
+**Arguments:**
+
+(optional) `[user]` : *Whose chicken to ambush.* (def: `None`)
+
+**Examples:**
+
+```
+!chicken ambush @Someone
+```
+</p></details>
+
+---
+
+### chicken ambush join
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Join a pending chicken ambush.*
+
+**Aliases:**
+`+, compete, enter, j`
+
+**Examples:**
+
+```
+!chicken ambush join
+```
+</p></details>
+
+---
+
+### chicken buy
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Buy a new chicken.*
+
+**Aliases:**
+`b`
+
+**Arguments:**
+
+(optional) `[string...]` : *Chicken name.* (def: `None`)
+
+**Examples:**
+
+```
+!chicken buy My Chicken Name
+```
+</p></details>
+
+---
+
+### chicken fight
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Make your chicken and another user's chicken fight until death!*
+
+**Aliases:**
+`f, duel, attack`
+
+**Arguments:**
+
+`[user]` : *User.*
+
+**Examples:**
+
+```
+!chicken duel @Someone
+```
+</p></details>
+
+---
+
+### chicken info
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*View user's chicken info. If the user is not given, views sender's chicken info.*
+
+**Aliases:**
+`information, stats`
+
+**Arguments:**
+
+(optional) `[user]` : *User.* (def: `None`)
+
+**Examples:**
+
+```
+!chicken info @Someone
+```
+</p></details>
+
+---
+
+### chicken rename
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Rename your chicken.*
+
+**Aliases:**
+`rn, name`
+
+**Arguments:**
+
+(optional) `[string...]` : *Chicken name.* (def: `None`)
+
+**Examples:**
+
+```
+!chicken name New Name
+```
+</p></details>
+
+---
+
+### chicken sell
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Sell your chicken.*
+
+**Aliases:**
+`s`
+
+**Examples:**
+
+```
+!chicken sell
+```
+</p></details>
+
+---
+
+### chicken top
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*View the list of strongest chickens.*
+
+**Aliases:**
+`best, strongest`
+
+**Examples:**
+
+```
+!chicken top
+```
+</p></details>
+
+---
+
+### chicken train
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Train your chicken.*
+
+**Aliases:**
+`tr, t, exercise`
+
+**Examples:**
+
+```
+!chicken train
 ```
 </p></details>
 
