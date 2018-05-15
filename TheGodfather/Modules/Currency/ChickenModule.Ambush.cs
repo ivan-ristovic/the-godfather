@@ -23,7 +23,7 @@ namespace TheGodfather.Modules.Currency
 {
     public partial class ChickenModule
     {
-        [Group("ambush"), Module(ModuleType.Gambling)]
+        [Group("ambush"), Module(ModuleType.Currency)]
         [Description("Start an ambush for another user's chicken. Other users can put their chickens into your ambush and collectively attack the target chicken combining their strength.")]
         [Aliases("gangattack")]
         [UsageExample("!chicken ambush @Someone")]
@@ -90,7 +90,7 @@ namespace TheGodfather.Modules.Currency
 
 
             #region COMMAND_CHICKEN_AMBUSH_JOIN
-            [Command("join"), Module(ModuleType.Gambling)]
+            [Command("join"), Module(ModuleType.Currency)]
             [Description("Join a pending chicken ambush.")]
             [Aliases("+", "compete", "enter", "j")]
             [UsageExample("!chicken ambush join")]

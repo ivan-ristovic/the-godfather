@@ -15,7 +15,7 @@ using DSharpPlus.Entities;
 
 namespace TheGodfather.Modules.Currency
 {
-    [Group("bank"), Module(ModuleType.Gambling)]
+    [Group("bank"), Module(ModuleType.Currency)]
     [Description("Bank account manipulation. If invoked alone, prints out your bank balance. Accounts periodically get a bonus.")]
     [Aliases("$", "$$", "$$$")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
@@ -34,7 +34,7 @@ namespace TheGodfather.Modules.Currency
 
 
         #region COMMAND_BANK_BALANCE
-        [Command("balance"), Module(ModuleType.Gambling)]
+        [Command("balance"), Module(ModuleType.Currency)]
         [Description("View account balance for given user. If the user is not given, checks sender's balance.")]
         [Aliases("s", "status", "bal", "money", "credits")]
         [UsageExample("!bank balance @Someone")]
@@ -57,7 +57,7 @@ namespace TheGodfather.Modules.Currency
 
         #region COMMAND_BANK_GRANT
         [Command("grant"), Priority(1)]
-        [Module(ModuleType.Gambling)]
+        [Module(ModuleType.Currency)]
         [Description("Magically give funds to some user.")]
         [Aliases("give")]
         [UsageExample("!bank grant @Someone 1000")]
@@ -87,7 +87,7 @@ namespace TheGodfather.Modules.Currency
         #endregion
 
         #region COMMAND_BANK_REGISTER
-        [Command("register"), Module(ModuleType.Gambling)]
+        [Command("register"), Module(ModuleType.Currency)]
         [Description("Create an account for you in WM bank.")]
         [Aliases("r", "signup", "activate")]
         [UsageExample("!bank register")]
@@ -104,7 +104,7 @@ namespace TheGodfather.Modules.Currency
         #endregion
 
         #region COMMAND_BANK_TOP
-        [Command("top"), Module(ModuleType.Gambling)]
+        [Command("top"), Module(ModuleType.Currency)]
         [Description("Print the richest users.")]
         [Aliases("leaderboard", "elite")]
         [UsageExample("!bank top")]
@@ -132,7 +132,7 @@ namespace TheGodfather.Modules.Currency
 
         #region COMMAND_BANK_TRANSFER
         [Command("transfer"), Priority(1)]
-        [Module(ModuleType.Gambling)]
+        [Module(ModuleType.Currency)]
         [Description("Transfer funds from your account to another one.")]
         [Aliases("lend")]
         [UsageExample("!bank transfer @Someone 40")]
@@ -162,7 +162,7 @@ namespace TheGodfather.Modules.Currency
         #endregion
 
         #region COMMAND_BANK_UNREGISTER
-        [Command("unregister"), Module(ModuleType.Gambling)]
+        [Command("unregister"), Module(ModuleType.Currency)]
         [Description("Delete an account from WM bank.")]
         [Aliases("ur", "signout", "deleteaccount", "delacc", "disable", "deactivate")]
         [UsageExample("!bank unregister @Someone")]

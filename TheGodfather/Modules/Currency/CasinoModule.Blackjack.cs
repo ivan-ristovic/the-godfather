@@ -23,7 +23,7 @@ namespace TheGodfather.Modules.Currency
 {
     public partial class CasinoModule
     {
-        [Group("blackjack"), Module(ModuleType.Gambling)]
+        [Group("blackjack"), Module(ModuleType.Currency)]
         [Description("Play a blackjack game.")]
         [Aliases("bj")]
         [UsageExample("!casino blackjack")]
@@ -88,7 +88,7 @@ namespace TheGodfather.Modules.Currency
 
 
             #region COMMAND_BLACKJACK_JOIN
-            [Command("join"), Module(ModuleType.Gambling)]
+            [Command("join"), Module(ModuleType.Currency)]
             [Description("Join a pending Blackjack game.")]
             [Aliases("+", "compete", "enter", "j")]
             [UsageExample("!casino blackjack join")]
@@ -117,7 +117,7 @@ namespace TheGodfather.Modules.Currency
             #endregion
 
             #region COMMAND_BLACKJACK_RULES
-            [Command("rules"), Module(ModuleType.Gambling)]
+            [Command("rules"), Module(ModuleType.Currency)]
             [Description("Explain the Blackjack rules.")]
             [Aliases("help", "h", "ruling", "rule")]
             [UsageExample("!casino blackjack rules")]

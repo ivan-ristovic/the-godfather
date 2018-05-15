@@ -16,7 +16,7 @@ using DSharpPlus.Interactivity;
 
 namespace TheGodfather.Modules.Currency
 {
-    [Group("casino"), Module(ModuleType.Gambling)]
+    [Group("casino"), Module(ModuleType.Currency)]
     [Description("Betting and gambling games.")]
     [Aliases("vegas", "cs", "cas")]
     [Cooldown(3, 7, CooldownBucketType.Channel)]
@@ -37,7 +37,7 @@ namespace TheGodfather.Modules.Currency
 
 
         #region COMMAND_CASINO_SLOT
-        [Command("slot"), Module(ModuleType.Gambling)]
+        [Command("slot"), Module(ModuleType.Currency)]
         [Description("Roll a slot machine. You need to specify a bid amount. Default bid amount is 5.")]
         [Aliases("slotmachine")]
         [UsageExample("!casino slot 20")]
@@ -60,7 +60,7 @@ namespace TheGodfather.Modules.Currency
         #endregion
 
         #region COMMAND_CASINO_WHEELOFFORTUNE
-        [Command("wheeloffortune"), Module(ModuleType.Gambling)]
+        [Command("wheeloffortune"), Module(ModuleType.Currency)]
         [Description("Roll a Wheel Of Fortune. You need to specify a bid amount. Default bid amount is 5.")]
         [Aliases("wof")]
         [UsageExample("!casino wof 20")]

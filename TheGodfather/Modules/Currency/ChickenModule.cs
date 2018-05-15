@@ -19,7 +19,7 @@ using DSharpPlus.Entities;
 
 namespace TheGodfather.Modules.Currency
 {
-    [Group("chicken"), Module(ModuleType.Gambling)]
+    [Group("chicken"), Module(ModuleType.Currency)]
     [Description("Manage your chicken. If invoked without subcommands, prints out your chicken information.")]
     [Aliases("cock", "hen", "chick")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
@@ -39,7 +39,7 @@ namespace TheGodfather.Modules.Currency
 
 
         #region COMMAND_CHICKEN_BUY
-        [Command("buy"), Module(ModuleType.Gambling)]
+        [Command("buy"), Module(ModuleType.Currency)]
         [Description("Buy a new chicken.")]
         [Aliases("b")]
         [UsageExample("!chicken buy My Chicken Name")]
@@ -73,7 +73,7 @@ namespace TheGodfather.Modules.Currency
         #endregion
 
         #region COMMAND_CHICKEN_FIGHT
-        [Command("fight"), Module(ModuleType.Gambling)]
+        [Command("fight"), Module(ModuleType.Currency)]
         [Description("Make your chicken and another user's chicken fight until death!")]
         [Aliases("f", "duel", "attack")]
         [UsageExample("!chicken duel @Someone")]
@@ -123,7 +123,7 @@ namespace TheGodfather.Modules.Currency
         #endregion
 
         #region COMMAND_CHICKEN_INFO
-        [Command("info"), Module(ModuleType.Gambling)]
+        [Command("info"), Module(ModuleType.Currency)]
         [Description("View user's chicken info. If the user is not given, views sender's chicken info.")]
         [Aliases("information", "stats")]
         [UsageExample("!chicken info @Someone")]
@@ -144,7 +144,7 @@ namespace TheGodfather.Modules.Currency
         #endregion
 
         #region COMMAND_CHICKEN_RENAME
-        [Command("rename"), Module(ModuleType.Gambling)]
+        [Command("rename"), Module(ModuleType.Currency)]
         [Description("Rename your chicken.")]
         [Aliases("rn", "name")]
         [UsageExample("!chicken name New Name")]
@@ -178,7 +178,7 @@ namespace TheGodfather.Modules.Currency
         #endregion
 
         #region COMMAND_CHICKEN_SELL
-        [Command("sell"), Module(ModuleType.Gambling)]
+        [Command("sell"), Module(ModuleType.Currency)]
         [Description("Sell your chicken.")]
         [Aliases("s")]
         [UsageExample("!chicken sell")]
@@ -207,7 +207,7 @@ namespace TheGodfather.Modules.Currency
         #endregion
 
         #region COMMAND_CHICKEN_TOP
-        [Command("top"), Module(ModuleType.Gambling)]
+        [Command("top"), Module(ModuleType.Currency)]
         [Description("View the list of strongest chickens.")]
         [Aliases("best", "strongest")]
         [UsageExample("!chicken top")]
@@ -236,7 +236,7 @@ namespace TheGodfather.Modules.Currency
         #endregion
 
         #region COMMAND_CHICKEN_TRAIN
-        [Command("train"), Module(ModuleType.Gambling)]
+        [Command("train"), Module(ModuleType.Currency)]
         [Description("Train your chicken.")]
         [Aliases("tr", "t", "exercise")]
         [UsageExample("!chicken train")]

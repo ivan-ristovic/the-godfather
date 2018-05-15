@@ -23,7 +23,7 @@ namespace TheGodfather.Modules.Currency
 {
     public partial class CasinoModule
     {
-        [Group("lottery"), Module(ModuleType.Gambling)]
+        [Group("lottery"), Module(ModuleType.Currency)]
         [Description("Play a lottery game. The three numbers are drawn from 1 to 15 and they can't repeat.")]
         [Aliases("lotto")]
         [UsageExample("!casino lottery 2 10 8")]
@@ -80,7 +80,7 @@ namespace TheGodfather.Modules.Currency
 
 
             #region COMMAND_LOTTERY_JOIN
-            [Command("join"), Module(ModuleType.Gambling)]
+            [Command("join"), Module(ModuleType.Currency)]
             [Description("Join a pending Lottery game.")]
             [Aliases("+", "compete", "enter", "j")]
             [UsageExample("!casino lottery join 2 10 8")]
@@ -115,7 +115,7 @@ namespace TheGodfather.Modules.Currency
             #endregion
 
             #region COMMAND_LOTTERY_RULES
-            [Command("rules"), Module(ModuleType.Gambling)]
+            [Command("rules"), Module(ModuleType.Currency)]
             [Description("Explain the Lottery rules.")]
             [Aliases("help", "h", "ruling", "rule")]
             [UsageExample("!casino lottery rules")]

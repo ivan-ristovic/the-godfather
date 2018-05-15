@@ -21,7 +21,7 @@ namespace TheGodfather.Modules.Currency
 {
     public partial class CasinoModule
     {
-        [Group("holdem"), Module(ModuleType.Gambling)]
+        [Group("holdem"), Module(ModuleType.Currency)]
         [Description("Play a Texas Hold'Em game.")]
         [Aliases("poker", "texasholdem", "texas")]
         [UsageExample("!casino holdem 10000")]
@@ -87,7 +87,7 @@ namespace TheGodfather.Modules.Currency
 
 
             #region COMMAND_HOLDEM_JOIN
-            [Command("join"), Module(ModuleType.Gambling)]
+            [Command("join"), Module(ModuleType.Currency)]
             [Description("Join a pending Texas Hold'Em game.")]
             [Aliases("+", "compete", "enter", "j")]
             [UsageExample("!casino holdem join")]
@@ -125,7 +125,7 @@ namespace TheGodfather.Modules.Currency
             #endregion
 
             #region COMMAND_HOLDEM_RULES
-            [Command("rules"), Module(ModuleType.Gambling)]
+            [Command("rules"), Module(ModuleType.Currency)]
             [Description("Explain the Texas Hold'Em rules.")]
             [Aliases("help", "h", "ruling", "rule")]
             [UsageExample("!casino holdem rules")]

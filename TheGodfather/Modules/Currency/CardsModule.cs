@@ -15,7 +15,7 @@ using TexasHoldem.Logic.Cards;
 
 namespace TheGodfather.Modules.Currency
 {
-    [Group("cards"), Module(ModuleType.Gambling)]
+    [Group("cards"), Module(ModuleType.Currency)]
     [Description("Manipulate a deck of cards.")]
     [Aliases("deck")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
@@ -32,7 +32,7 @@ namespace TheGodfather.Modules.Currency
 
 
         #region COMMAND_DECK_DRAW
-        [Command("draw"), Module(ModuleType.Gambling)]
+        [Command("draw"), Module(ModuleType.Currency)]
         [Description("Draw cards from the top of the deck. If amount of cards is not specified, draws one card.")]
         [Aliases("take")]
         [UsageExample("!deck draw 5")]
@@ -57,7 +57,7 @@ namespace TheGodfather.Modules.Currency
         #endregion
 
         #region COMMAND_DECK_RESET
-        [Command("reset"), Module(ModuleType.Gambling)]
+        [Command("reset"), Module(ModuleType.Currency)]
         [Description("Opens a brand new card deck.")]
         [Aliases("new", "opennew", "open")]
         [UsageExample("!deck reset")]

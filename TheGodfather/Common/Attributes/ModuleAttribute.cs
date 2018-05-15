@@ -7,7 +7,7 @@ namespace TheGodfather.Common.Attributes
     public enum ModuleType : byte
     {
         Administration,
-        Gambling,
+        Currency,
         Games,
         Miscellaneous,
         Music,
