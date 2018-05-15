@@ -52,7 +52,7 @@ namespace TheGodfather.Modules.Currency
             if (name.Length < 2 || name.Length > 30)
                 throw new InvalidCommandUsageException("Name cannot be shorter than 2 and longer than 30 characters.");
 
-            if (name.Any(c => !Char.IsLetterOrDigit(c)))
+            if (!name.All(c => Char.IsLetterOrDigit(c) || Char.IsWhiteSpace(c)))
                 throw new InvalidCommandUsageException("Name cannot contain characters that are not letters or digits.");
 
             if (await Database.GetChickenInfoAsync(ctx.User.Id).ConfigureAwait(false) != null)
@@ -67,7 +67,7 @@ namespace TheGodfather.Modules.Currency
             await Database.BuyChickenAsync(ctx.User.Id, name)
                 .ConfigureAwait(false);
 
-            await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} bought a chicken named {Formatter.Italic(name)}")
+            await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} bought a chicken named {Formatter.Bold(name)}")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -108,7 +108,7 @@ namespace TheGodfather.Modules.Currency
             await Database.GiveCreditsToUserAsync(winner.OwnerId, 1000)
                 .ConfigureAwait(false);
 
-            await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, $"{Formatter.Bold("Fight results:")}\n\n{StaticDiscordEmoji.Trophy} Winner: {Formatter.Bold(winner.Name)}\n\n{Formatter.Bold(winner.Name)} gained strength!\n\n{Formatter.Bold(loser.Name)} died in the battle!\n\n{winner.Owner.Mention} won 1000 credits.")
+            await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, $"{Formatter.Bold(chicken1.Name)} ({chicken1.Strength}) {StaticDiscordEmoji.DuelSwords} {Formatter.Bold(chicken2.Name)} ({chicken2.Strength})}\n\n{StaticDiscordEmoji.Trophy} Winner: {Formatter.Bold(winner.Name)}\n\n{Formatter.Bold(winner.Name)} gained strength!\n\n{Formatter.Bold(loser.Name)} died in the battle!\n\n{winner.Owner.Mention} won 1000 credits.")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -148,6 +148,9 @@ namespace TheGodfather.Modules.Currency
             if (name.Length < 2 || name.Length > 30)
                 throw new InvalidCommandUsageException("Name cannot be shorter than 2 and longer than 30 characters.");
 
+            if (!name.All(c => Char.IsLetterOrDigit(c) || Char.IsWhiteSpace(c)))
+                throw new InvalidCommandUsageException("Name cannot contain characters that are not letters or digits.");
+
             var chicken = await Database.GetChickenInfoAsync(ctx.User.Id)
                 .ConfigureAwait(false);
             if (chicken == null)
@@ -157,7 +160,7 @@ namespace TheGodfather.Modules.Currency
             await Database.ModifyChickenAsync(chicken)
                 .ConfigureAwait(false);
 
-            await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} renamed his chicken to {Formatter.Italic(name)}")
+            await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} renamed his chicken to {Formatter.Bold(name)}")
                 .ConfigureAwait(false);
         }
         #endregion
