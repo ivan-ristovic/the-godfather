@@ -21,7 +21,7 @@ namespace TheGodfather.Modules.Currency
 {
     [Group("chicken"), Module(ModuleType.Currency)]
     [Description("Manage your chicken. If invoked without subcommands, prints out your chicken information.")]
-    [Aliases("cock", "hen", "chick")]
+    [Aliases("cock", "hen", "chick", "coc")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     [UsageExample("!chicken")]
     [UsageExample("!chicken @Someone")]
@@ -99,6 +99,8 @@ namespace TheGodfather.Modules.Currency
             if (!ctx.Guild.Members.Any(m => m.Id == chicken2.OwnerId))
                 throw new CommandFailedException("The owner of that chicken is not a member of this guild so you cannot fight his chicken.");
 
+            string header = $"{StaticDiscordEmoji.Chicken} {Formatter.Bold(chicken1.Name)} ({chicken1.Strength}) {StaticDiscordEmoji.DuelSwords} {Formatter.Bold(chicken2.Name)} ({chicken2.Strength}) {StaticDiscordEmoji.Chicken}\n\n";
+
             var winner = chicken1.Fight(chicken2);
             winner.Owner = winner.OwnerId == ctx.User.Id ? ctx.User : user;
             var loser = winner == chicken1 ? chicken2 : chicken1;
@@ -113,7 +115,7 @@ namespace TheGodfather.Modules.Currency
                 .ConfigureAwait(false);
 
             await ctx.RespondWithIconEmbedAsync(
-                $"{StaticDiscordEmoji.Chicken} {Formatter.Bold(chicken1.Name)} ({chicken1.Strength}) {StaticDiscordEmoji.DuelSwords} {Formatter.Bold(chicken2.Name)} ({chicken2.Strength}) {StaticDiscordEmoji.Chicken}\n\n" +
+                header +
                 $"{StaticDiscordEmoji.Trophy} Winner: {Formatter.Bold(winner.Name)}\n\n" +
                 $"{Formatter.Bold(winner.Name)} gained {Formatter.Bold(gain.ToString())} strength!\n\n" +
                 $"{Formatter.Bold(loser.Name)} died in the battle!\n\n" +

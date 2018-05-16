@@ -40,6 +40,8 @@ namespace TheGodfather.Services.Common
                 return true;
             } else {
                 Strength -= 3;
+                if (Strength < 0)
+                    Strength = 0;
                 return false;
             }
         }
@@ -68,6 +70,7 @@ namespace TheGodfather.Services.Common
 
             emb.AddField("Owner", owner.Mention, inline: true);
             emb.AddField("Strength", Strength.ToString(), inline: true);
+            emb.AddField("Credit value", (500 + Strength * 10).ToString(), inline: true);
 
             emb.WithFooter("Chickens will rule the world someday");
 

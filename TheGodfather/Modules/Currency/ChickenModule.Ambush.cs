@@ -56,7 +56,7 @@ namespace TheGodfather.Modules.Currency
                 var ambush = new ChickenAmbush(ctx.Client.GetInteractivity(), ctx.Channel, ambushed);
                 ChannelEvent.RegisterEventInChannel(ambush, ctx.Channel.Id);
                 try {
-                    await ctx.RespondWithIconEmbedAsync($"The ambush will start in 30s or when there are 10 participants. Use command {Formatter.InlineCode("chicken ambussh")} to make your chicken join the ambush.", ":clock1:")
+                    await ctx.RespondWithIconEmbedAsync($"The ambush will start in 30s or when there are 10 participants. Use command {Formatter.InlineCode("chicken ambush")} to make your chicken join the ambush.", ":clock1:")
                         .ConfigureAwait(false);
                     await JoinAsync(ctx)
                         .ConfigureAwait(false);
