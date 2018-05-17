@@ -260,9 +260,6 @@ namespace TheGodfather.Modules.Administration
             } catch (BadRequestException e) {
                 throw new CommandFailedException("That message cannot be pinned!", e);
             }
-
-            await ctx.RespondWithIconEmbedAsync()
-                .ConfigureAwait(false);
         }
         #endregion
 

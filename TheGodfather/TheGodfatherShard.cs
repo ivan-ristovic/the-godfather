@@ -216,6 +216,9 @@ namespace TheGodfather
 
         private async Task Client_ChannelUpdated(ChannelUpdateEventArgs e)
         {
+            if (e.ChannelBefore.Position != e.ChannelAfter.Position)
+                return;
+
             var logchn = await GetLogChannelForGuild(e.Guild.Id)
                 .ConfigureAwait(false);
             if (logchn != null) {
@@ -440,7 +443,7 @@ namespace TheGodfather
             var logchn = await GetLogChannelForGuild(e.Guild.Id)
                 .ConfigureAwait(false);
             if (logchn != null) {
-                await logchn.SendIconEmbedAsync($"Member updated: {e.Member?.ToString()}\n\n{e.NicknameBefore} -> {e.NicknameAfter}, roles before: {e.RolesBefore.Count}, roles after: {e.RolesAfter.Count}")
+                await logchn.SendIconEmbedAsync($"Member updated: {e.Member?.ToString()}\n\n{e.NicknameBefore ?? "<unknown name>"} -> {e.NicknameAfter ?? "<unknown name>"}\nRoles before: {string.Join(", ", e.RolesBefore)}\nRoles after: {string.Join(", ", e.RolesAfter)}")
                     .ConfigureAwait(false);
             }
         }
@@ -467,6 +470,9 @@ namespace TheGodfather
 
         private async Task Client_GuildRoleUpdated(GuildRoleUpdateEventArgs e)
         {
+            if (e.RoleBefore.Position != e.RoleAfter.Position)
+                return;
+
             var logchn = await GetLogChannelForGuild(e.Guild.Id)
                 .ConfigureAwait(false);
             if (logchn != null) {

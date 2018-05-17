@@ -99,7 +99,7 @@ namespace TheGodfather.Modules.Currency
             if (!ctx.Guild.Members.Any(m => m.Id == chicken2.OwnerId))
                 throw new CommandFailedException("The owner of that chicken is not a member of this guild so you cannot fight his chicken.");
 
-            string header = $"{StaticDiscordEmoji.Chicken} {Formatter.Bold(chicken1.Name)} ({chicken1.Strength}) {StaticDiscordEmoji.DuelSwords} {Formatter.Bold(chicken2.Name)} ({chicken2.Strength}) {StaticDiscordEmoji.Chicken}\n\n";
+            string header = $"{Formatter.Bold(chicken1.Name)} ({chicken1.Strength}) {StaticDiscordEmoji.DuelSwords} {Formatter.Bold(chicken2.Name)} ({chicken2.Strength}) {StaticDiscordEmoji.Chicken}\n\n";
 
             var winner = chicken1.Fight(chicken2);
             winner.Owner = winner.OwnerId == ctx.User.Id ? ctx.User : user;
@@ -114,7 +114,7 @@ namespace TheGodfather.Modules.Currency
             await Database.GiveCreditsToUserAsync(winner.OwnerId, gain * 200)
                 .ConfigureAwait(false);
 
-            await ctx.RespondWithIconEmbedAsync(
+            await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken,
                 header +
                 $"{StaticDiscordEmoji.Trophy} Winner: {Formatter.Bold(winner.Name)}\n\n" +
                 $"{Formatter.Bold(winner.Name)} gained {Formatter.Bold(gain.ToString())} strength!\n\n" +
