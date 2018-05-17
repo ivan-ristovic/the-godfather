@@ -160,13 +160,13 @@ namespace TheGodfather.Modules.Search
                 foreach (var im in results) {
                     if (im.GetType().Name == "GalleryImage") {
                         var img = ((GalleryImage)im);
-                        if (!channel.IsNSFW && img.Nsfw != null && img.Nsfw == true)
+                        if (img.Nsfw != null && img.Nsfw == true && !channel.IsNSFW && !channel.Name.StartsWith("nsfw", System.StringComparison.InvariantCultureIgnoreCase))
                             throw new CommandFailedException("This is not a NSFW channel!");
                         await channel.SendMessageAsync(img.Link)
                             .ConfigureAwait(false);
                     } else if (im.GetType().Name == "GalleryAlbum") {
                         var img = ((GalleryAlbum)im);
-                        if (!channel.IsNSFW && img.Nsfw != null && img.Nsfw == true)
+                        if (img.Nsfw != null && img.Nsfw == true && !channel.IsNSFW && !channel.Name.StartsWith("nsfw", System.StringComparison.InvariantCultureIgnoreCase))
                             throw new CommandFailedException("This is not a NSFW channel!");
                         await channel.SendMessageAsync(img.Link)
                             .ConfigureAwait(false);

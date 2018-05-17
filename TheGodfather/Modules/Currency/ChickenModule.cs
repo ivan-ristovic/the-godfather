@@ -200,7 +200,7 @@ namespace TheGodfather.Modules.Currency
             await Database.GiveCreditsToUserAsync(ctx.User.Id, Chicken.Price)
                 .ConfigureAwait(false);
 
-            await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} sold {Formatter.Italic(chicken.Name)} for {Formatter.Bold(price.ToString())} credits!")
+            await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} sold {Formatter.Bold(chicken.Name)} for {Formatter.Bold(price.ToString())} credits!")
                 .ConfigureAwait(false);
         }
         #endregion
