@@ -58,9 +58,6 @@ namespace TheGodfather.Modules.Currency
             if (await Database.GetChickenInfoAsync(ctx.User.Id).ConfigureAwait(false) != null)
                 throw new CommandFailedException("You already own a chicken!");
 
-            if (!await ctx.AskYesNoQuestionAsync($"Are you sure you want to buy a chicken for {Chicken.Price} credits?"))
-                return;
-
             if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, Chicken.Price).ConfigureAwait(false))
                 throw new CommandFailedException($"You do not have enought credits to buy a chicken ({Chicken.Price} needed)!");
 
