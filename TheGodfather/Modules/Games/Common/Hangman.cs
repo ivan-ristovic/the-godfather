@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Extensions;
-using TheGodfather.Modules.Games.Common;
 
 using DSharpPlus;
 using DSharpPlus.Entities;

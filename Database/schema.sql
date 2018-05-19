@@ -94,8 +94,9 @@ CREATE TABLE gf.blocked_users (
 
 CREATE TABLE gf.chickens (
     uid bigint NOT NULL,
-    name character varying(32) DEFAULT NULL::character varying,
-    strength smallint DEFAULT 50
+    gid bigint NOT NULL,
+    name character varying(32) NOT NULL,
+    strength smallint DEFAULT 50 NOT NULL
 );
 
 
@@ -609,7 +610,7 @@ ALTER TABLE ONLY gf.blocked_users
 --
 
 ALTER TABLE ONLY gf.chickens
-    ADD CONSTRAINT chickens_pkey PRIMARY KEY (uid);
+    ADD CONSTRAINT chickens_pkey PRIMARY KEY (uid, gid);
 
 
 --

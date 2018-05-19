@@ -40,7 +40,7 @@ namespace TheGodfather.Modules.Currency
 
         #region COMMAND_CHICKEN_BUY
         [Command("buy"), Module(ModuleType.Currency)]
-        [Description("Buy a new chicken.")]
+        [Description("Buy a new chicken in this guild.")]
         [Aliases("b")]
         [UsageExample("!chicken buy My Chicken Name")]
         public async Task BuyAsync(CommandContext ctx,
@@ -55,13 +55,13 @@ namespace TheGodfather.Modules.Currency
             if (!name.All(c => Char.IsLetterOrDigit(c) || Char.IsWhiteSpace(c)))
                 throw new InvalidCommandUsageException("Name cannot contain characters that are not letters or digits.");
 
-            if (await Database.GetChickenInfoAsync(ctx.User.Id).ConfigureAwait(false) != null)
+            if (await Database.GetChickenInfoAsync(ctx.User.Id, ctx.Guild.Id).ConfigureAwait(false) != null)
                 throw new CommandFailedException("You already own a chicken!");
 
             if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, Chicken.Price).ConfigureAwait(false))
                 throw new CommandFailedException($"You do not have enought credits to buy a chicken ({Chicken.Price} needed)!");
 
-            await Database.BuyChickenAsync(ctx.User.Id, name)
+            await Database.BuyChickenAsync(ctx.User.Id, ctx.Guild.Id, name)
                 .ConfigureAwait(false);
 
             await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} bought a chicken named {Formatter.Bold(name)}")
@@ -83,9 +83,9 @@ namespace TheGodfather.Modules.Currency
             if (user.Id == ctx.User.Id)
                 throw new CommandFailedException("You can't fight against your own chicken!");
 
-            var chicken1 = await Database.GetChickenInfoAsync(ctx.User.Id)
+            var chicken1 = await Database.GetChickenInfoAsync(ctx.User.Id, ctx.Guild.Id)
                 .ConfigureAwait(false);
-            var chicken2 = await Database.GetChickenInfoAsync(user.Id)
+            var chicken2 = await Database.GetChickenInfoAsync(user.Id, ctx.Guild.Id)
                 .ConfigureAwait(false);
             if (chicken1 == null || chicken2 == null)
                 throw new CommandFailedException("One of you does not own a chicken!");
@@ -104,9 +104,9 @@ namespace TheGodfather.Modules.Currency
             short gain = Chicken.DetermineGain(winner.Strength, loser.Strength);
             winner.Strength += gain;
 
-            await Database.ModifyChickenAsync(winner)
+            await Database.ModifyChickenAsync(winner, ctx.Guild.Id)
                 .ConfigureAwait(false);
-            await Database.RemoveChickenAsync(loser.OwnerId)
+            await Database.RemoveChickenAsync(loser.OwnerId, ctx.Guild.Id)
                 .ConfigureAwait(false);
             await Database.GiveCreditsToUserAsync(winner.OwnerId, gain * 200)
                 .ConfigureAwait(false);
@@ -132,10 +132,10 @@ namespace TheGodfather.Modules.Currency
             if (user == null)
                 user = ctx.User;
 
-            var chicken = await Database.GetChickenInfoAsync(user.Id)
+            var chicken = await Database.GetChickenInfoAsync(user.Id, ctx.Guild.Id)
                 .ConfigureAwait(false);
             if (chicken == null)
-                throw new CommandFailedException($"User {user.Mention} does not own a chicken! Use command {Formatter.InlineCode("chicken buy")} to buy a chicken (1000 credits).");
+                throw new CommandFailedException($"User {user.Mention} does not own a chicken in this guild! Use command {Formatter.InlineCode("chicken buy")} to buy a chicken (1000 credits).");
             
             await ctx.RespondAsync(embed: chicken.Embed(user))
                 .ConfigureAwait(false);
@@ -162,13 +162,13 @@ namespace TheGodfather.Modules.Currency
             if (ChannelEvent.GetEventInChannel(ctx.Channel.Id) is ChickenAmbush ambush)
                 throw new CommandFailedException("There is an ambush running in this channel. No chicken modifications are allowed before the ambush finishes.");
 
-            var chicken = await Database.GetChickenInfoAsync(ctx.User.Id)
+            var chicken = await Database.GetChickenInfoAsync(ctx.User.Id, ctx.Guild.Id)
                 .ConfigureAwait(false);
             if (chicken == null)
                 throw new CommandFailedException("You do not own a chicken!");
 
             chicken.Name = name;
-            await Database.ModifyChickenAsync(chicken)
+            await Database.ModifyChickenAsync(chicken, ctx.Guild.Id)
                 .ConfigureAwait(false);
 
             await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} renamed his chicken to {Formatter.Bold(name)}")
@@ -183,7 +183,7 @@ namespace TheGodfather.Modules.Currency
         [UsageExample("!chicken sell")]
         public async Task SellAsync(CommandContext ctx)
         {
-            var chicken = await Database.GetChickenInfoAsync(ctx.User.Id)
+            var chicken = await Database.GetChickenInfoAsync(ctx.User.Id, ctx.Guild.Id)
                 .ConfigureAwait(false);
             if (chicken == null)
                 throw new CommandFailedException("You do not own a chicken!");
@@ -195,7 +195,7 @@ namespace TheGodfather.Modules.Currency
             if (!await ctx.AskYesNoQuestionAsync($"Are you sure you want to sell your chicken for {price} credits?"))
                 return;
 
-            await Database.RemoveChickenAsync(ctx.User.Id)
+            await Database.RemoveChickenAsync(ctx.User.Id, ctx.Guild.Id)
                 .ConfigureAwait(false);
             await Database.GiveCreditsToUserAsync(ctx.User.Id, Chicken.Price)
                 .ConfigureAwait(false);
@@ -207,12 +207,12 @@ namespace TheGodfather.Modules.Currency
 
         #region COMMAND_CHICKEN_TOP
         [Command("top"), Module(ModuleType.Currency)]
-        [Description("View the list of strongest chickens.")]
+        [Description("View the list of strongest chickens in the current guild.")]
         [Aliases("best", "strongest")]
         [UsageExample("!chicken top")]
         public async Task InfoAsync(CommandContext ctx)
         {
-            var chickens = await Database.GetStrongestChickensAsync()
+            var chickens = await Database.GetStrongestChickensForGuildAsync(ctx.Guild.Id)
                 .ConfigureAwait(false);
             if (chickens == null || !chickens.Any())
                 throw new CommandFailedException("No chickens bought.");
@@ -241,7 +241,7 @@ namespace TheGodfather.Modules.Currency
         [UsageExample("!chicken train")]
         public async Task TrainAsync(CommandContext ctx)
         {
-            var chicken = await Database.GetChickenInfoAsync(ctx.User.Id)
+            var chicken = await Database.GetChickenInfoAsync(ctx.User.Id, ctx.Guild.Id)
                 .ConfigureAwait(false);
             if (chicken == null)
                 throw new CommandFailedException("You do not own a chicken!");
@@ -255,7 +255,7 @@ namespace TheGodfather.Modules.Currency
             else 
                 result = $"Your chicken got tired and didn't learn anything. New strength: {chicken.Strength}";
 
-            await Database.ModifyChickenAsync(chicken)
+            await Database.ModifyChickenAsync(chicken, ctx.Guild.Id)
                 .ConfigureAwait(false);
 
             await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, result)

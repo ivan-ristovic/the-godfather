@@ -48,10 +48,10 @@ namespace TheGodfather.Modules.Currency
                 if (user == null)
                     throw new InvalidCommandUsageException("You need to specify a user whose chicken you want to ambush!");
 
-                var ambushed = await Database.GetChickenInfoAsync(user.Id)
+                var ambushed = await Database.GetChickenInfoAsync(user.Id, ctx.Guild.Id)
                     .ConfigureAwait(false);
                 if (ambushed == null)
-                    throw new CommandFailedException("Given user does not have a chicken!");
+                    throw new CommandFailedException("Given user does not have a chicken in this guild!");
 
                 var ambush = new ChickenAmbush(ctx.Client.GetInteractivity(), ctx.Channel, ambushed);
                 ChannelEvent.RegisterEventInChannel(ambush, ctx.Channel.Id);
@@ -70,15 +70,15 @@ namespace TheGodfather.Modules.Currency
                         ambushed.Strength += 20;
                         await Database.GiveCreditsToUserAsync(ambushed.OwnerId, 100000)
                             .ConfigureAwait(false);
-                        await Database.ModifyChickenAsync(ambushed)
+                        await Database.ModifyChickenAsync(ambushed, ctx.Guild.Id)
                             .ConfigureAwait(false);
                         foreach (var chicken in ambush.Ambushers)
-                            await Database.RemoveChickenAsync(chicken.OwnerId).ConfigureAwait(false);
+                            await Database.RemoveChickenAsync(chicken.OwnerId, ctx.Guild.Id).ConfigureAwait(false);
 
                         await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, $"{Formatter.Bold(ambushed.Name)} survived the ambush and slaughtered all the other chickens! (+20 STR)\n\n{user.Mention} won 100000 credits!")
                             .ConfigureAwait(false);
                     } else {
-                        await Database.RemoveChickenAsync(user.Id)
+                        await Database.RemoveChickenAsync(user.Id, ctx.Guild.Id)
                             .ConfigureAwait(false);
                         await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, $"{Formatter.Bold(ambushed.Name)} is no more...")
                             .ConfigureAwait(false);
@@ -99,7 +99,7 @@ namespace TheGodfather.Modules.Currency
                 if (!(ChannelEvent.GetEventInChannel(ctx.Channel.Id) is ChickenAmbush ambush))
                     throw new CommandFailedException("There are no ambushes running in this channel.");
 
-                var chicken = await Database.GetChickenInfoAsync(ctx.User.Id)
+                var chicken = await Database.GetChickenInfoAsync(ctx.User.Id, ctx.Guild.Id)
                     .ConfigureAwait(false);
                 if (chicken == null)
                     throw new CommandFailedException("You do not own a chicken!");

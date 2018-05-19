@@ -13,7 +13,7 @@ namespace TheGodfather.Services
 {
     public partial class DBService
     {
-        public async Task<IReadOnlyList<Chicken>> GetStrongestChickensAsync()
+        public async Task<IReadOnlyList<Chicken>> GetStrongestChickensForGuildAsync(ulong gid)
         {
             var chickens = new List<Chicken>();
 
@@ -23,7 +23,8 @@ namespace TheGodfather.Services
                 using (var cmd = con.CreateCommand()) {
                     await con.OpenAsync().ConfigureAwait(false);
 
-                    cmd.CommandText = "SELECT * FROM gf.chickens ORDER BY strength DESC;";
+                    cmd.CommandText = "SELECT * FROM gf.chickens WHERE gid = @gid ORDER BY strength DESC;";
+                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
 
                     using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
                         while (await reader.ReadAsync().ConfigureAwait(false)) {
@@ -42,7 +43,7 @@ namespace TheGodfather.Services
             return chickens.AsReadOnly();
         }
 
-        public async Task BuyChickenAsync(ulong uid, string name = null)
+        public async Task BuyChickenAsync(ulong uid, ulong gid, string name = null)
         {
             await _sem.WaitAsync();
             try {
@@ -50,8 +51,9 @@ namespace TheGodfather.Services
                 using (var cmd = con.CreateCommand()) {
                     await con.OpenAsync().ConfigureAwait(false);
 
-                    cmd.CommandText = "INSERT INTO gf.chickens (uid, name) VALUES (@uid, @name) ON CONFLICT DO NOTHING;";
+                    cmd.CommandText = "INSERT INTO gf.chickens (uid, name, gid) VALUES (@uid, @name, @gid) ON CONFLICT DO NOTHING;";
                     cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, uid);
+                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
                     if (string.IsNullOrWhiteSpace(name))
                         cmd.Parameters.AddWithValue("name", NpgsqlDbType.Varchar, DBNull.Value);
                     else
@@ -64,7 +66,7 @@ namespace TheGodfather.Services
             }
         }
 
-        public async Task<Chicken> GetChickenInfoAsync(ulong uid)
+        public async Task<Chicken> GetChickenInfoAsync(ulong uid, ulong gid)
         {
             Chicken chicken = null;
 
@@ -74,8 +76,9 @@ namespace TheGodfather.Services
                 using (var cmd = con.CreateCommand()) {
                     await con.OpenAsync().ConfigureAwait(false);
 
-                    cmd.CommandText = "SELECT * FROM gf.chickens WHERE uid = @uid LIMIT 1;";
+                    cmd.CommandText = "SELECT * FROM gf.chickens WHERE uid = @uid AND gid = @gid LIMIT 1;";
                     cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, uid);
+                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
 
                     using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
                         if (await reader.ReadAsync().ConfigureAwait(false)) {
@@ -94,7 +97,7 @@ namespace TheGodfather.Services
             return chicken;
         }
 
-        public async Task ModifyChickenAsync(Chicken chicken)
+        public async Task ModifyChickenAsync(Chicken chicken, ulong gid)
         {
             await _sem.WaitAsync();
             try {
@@ -102,8 +105,9 @@ namespace TheGodfather.Services
                 using (var cmd = con.CreateCommand()) {
                     await con.OpenAsync().ConfigureAwait(false);
 
-                    cmd.CommandText = "UPDATE gf.chickens SET (name, strength) = (@name, @strength) WHERE uid = @uid;";
+                    cmd.CommandText = "UPDATE gf.chickens SET (name, strength) = (@name, @strength) WHERE uid = @uid AND gid = @gid;";
                     cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, chicken.OwnerId);
+                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
                     cmd.Parameters.AddWithValue("name", NpgsqlDbType.Varchar, chicken.Name);
                     cmd.Parameters.AddWithValue("strength", NpgsqlDbType.Smallint, chicken.Strength);
 
@@ -114,7 +118,7 @@ namespace TheGodfather.Services
             }
         }
 
-        public async Task RemoveChickenAsync(ulong uid)
+        public async Task RemoveChickenAsync(ulong uid, ulong gid)
         {
             await _sem.WaitAsync();
             try {
@@ -122,8 +126,9 @@ namespace TheGodfather.Services
                 using (var cmd = con.CreateCommand()) {
                     await con.OpenAsync().ConfigureAwait(false);
 
-                    cmd.CommandText = "DELETE FROM gf.chickens WHERE uid = @uid;";
+                    cmd.CommandText = "DELETE FROM gf.chickens WHERE uid = @uid AND gid = @gid;";
                     cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, uid);
+                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
 
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
