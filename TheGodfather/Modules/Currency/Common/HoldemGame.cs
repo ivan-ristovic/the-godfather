@@ -61,6 +61,9 @@ namespace TheGodfather.Modules.Currency.Common
 
                 }
             }
+
+            await Task.Delay(TimeSpan.FromSeconds(10))
+                .ConfigureAwait(false);
             
             _drawn.Add(_deck.GetNextCard());
             _drawn.Add(_deck.GetNextCard());
@@ -79,7 +82,7 @@ namespace TheGodfather.Modules.Currency.Common
                             .ConfigureAwait(false);
 
                         if (await _interactivity.WaitForYesNoAnswerAsync(_channel.Id, participant.Id).ConfigureAwait(false)) {
-                            await _channel.SendMessageAsync($"Do you wish to raise the current bet? If yes, reply yes and then reply raise ammount in new message, otherwise say no. Max: {participant.Balance - bet}")
+                            await _channel.SendMessageAsync($"Do you wish to raise the current bet? If yes, reply yes and then reply raise amount in new message, otherwise say no. Max: {participant.Balance - bet}")
                                 .ConfigureAwait(false);
                             if (await _interactivity.WaitForYesNoAnswerAsync(_channel.Id, participant.Id).ConfigureAwait(false)) {
                                 int raise = 0;
@@ -133,15 +136,11 @@ namespace TheGodfather.Modules.Currency.Common
         public bool IsParticipating(DiscordUser user)
             => Participants.Any(p => p.Id == user.Id);
 
-        private int HandValue(List<Card> hand)
-        {
-            return 0;
-        }
-
         private async Task PrintGameAsync(DiscordMessage msg, int bet, HoldemParticipant tomove = null, bool showhands = false)
         {
             var sb = new StringBuilder();
 
+            sb.AppendLine(string.Join(" ", _drawn)).AppendLine();
             sb.Append("Current pot: ").AppendLine(Formatter.Bold(Pot.ToString())).AppendLine();
             sb.Append("Call value: ").AppendLine(Formatter.Bold(bet.ToString())).AppendLine();
 
