@@ -224,7 +224,7 @@ namespace TheGodfather
             try {
                 var activity = DatabaseService.GetRandomBotActivityAsync()
                     .ConfigureAwait(false).GetAwaiter().GetResult();
-                client.UpdateStatusAsync(activity)
+                client.UpdateStatusAsync(activity, UserStatus.DoNotDisturb)
                     .ConfigureAwait(false).GetAwaiter().GetResult();
             } catch (Exception e) {
                 LogHandle.LogException(LogLevel.Error, e);
