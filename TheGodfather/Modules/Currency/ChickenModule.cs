@@ -58,8 +58,8 @@ namespace TheGodfather.Modules.Currency
             if (await Database.GetChickenInfoAsync(ctx.User.Id, ctx.Guild.Id).ConfigureAwait(false) != null)
                 throw new CommandFailedException("You already own a chicken!");
 
-            if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, Chicken.Price).ConfigureAwait(false))
-                throw new CommandFailedException($"You do not have enought credits to buy a chicken ({Chicken.Price} needed)!");
+            if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, Chicken.DefaultPrice).ConfigureAwait(false))
+                throw new CommandFailedException($"You do not have enought credits to buy a chicken ({Chicken.DefaultPrice} needed)!");
 
             await Database.BuyChickenAsync(ctx.User.Id, ctx.Guild.Id, name)
                 .ConfigureAwait(false);
@@ -197,7 +197,7 @@ namespace TheGodfather.Modules.Currency
 
             await Database.RemoveChickenAsync(ctx.User.Id, ctx.Guild.Id)
                 .ConfigureAwait(false);
-            await Database.GiveCreditsToUserAsync(ctx.User.Id, Chicken.Price)
+            await Database.GiveCreditsToUserAsync(ctx.User.Id, Chicken.DefaultPrice)
                 .ConfigureAwait(false);
 
             await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} sold {Formatter.Bold(chicken.Name)} for {Formatter.Bold(price.ToString())} credits!")

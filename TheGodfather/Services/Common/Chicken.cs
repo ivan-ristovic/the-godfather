@@ -14,13 +14,24 @@ namespace TheGodfather.Services.Common
 {
     public class Chicken
     {
-        public static readonly int Price = 1000;
+        public static readonly int DefaultPrice = 1000;
         public static readonly int TrainPrice = 500;
 
         public DiscordUser Owner { get; set; }
         public ulong OwnerId { get; set; }
         public string Name { get; set; }
-        public short Strength { get; set; }
+        public short Strength
+        {
+            get => _strength;
+            set {
+                if (value > 999)
+                    value = 999;
+                else if(value < 0)
+                    value = 0;
+            }
+        }
+
+        private short _strength;
 
 
         public static short DetermineGain(short str1, short str2)
@@ -37,26 +48,26 @@ namespace TheGodfather.Services.Common
         public bool Train()
         {
             if (GFRandom.Generator.GetBool()) {
-                Strength += 4;
+                _strength += 4;
                 return true;
             } else {
-                Strength -= 3;
-                if (Strength < 0)
-                    Strength = 0;
+                _strength -= 3;
+                if (_strength < 0)
+                    _strength = 0;
                 return false;
             }
         }
 
         public Chicken Fight(Chicken other)
         {
-            int chance = 50 + Strength - other.Strength;
+            int chance = 50 + _strength - other._strength;
 
-            if (Strength > other.Strength) {
-                if (chance > 95)
-                    chance = 95;
+            if (_strength > other._strength) {
+                if (chance > 99)
+                    chance = 99;
             } else {
-                if (chance < 5)
-                    chance = 5;
+                if (chance < 1)
+                    chance = 1;
             }
 
             return GFRandom.Generator.Next(100) < chance ? this : other;
@@ -70,8 +81,8 @@ namespace TheGodfather.Services.Common
             };
 
             emb.AddField("Owner", owner.Mention, inline: true);
-            emb.AddField("Strength", Strength.ToString(), inline: true);
-            emb.AddField("Credit value", (500 + Strength * 10).ToString(), inline: true);
+            emb.AddField("Strength", _strength.ToString(), inline: true);
+            emb.AddField("Credit value", (500 + _strength * 10).ToString(), inline: true);
 
             emb.WithFooter("Chickens will rule the world someday");
 
