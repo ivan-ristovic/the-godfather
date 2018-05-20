@@ -40,7 +40,7 @@ namespace TheGodfather.Modules.Currency
 
         #region COMMAND_CHICKEN_BUY
         [Command("buy"), Module(ModuleType.Currency)]
-        [Description("Buy a new chicken in this guild.")]
+        [Description("Buy a new chicken in this guild using your credits from WM bank.")]
         [Aliases("b")]
         [UsageExample("!chicken buy My Chicken Name")]
         public async Task BuyAsync(CommandContext ctx,
@@ -236,7 +236,7 @@ namespace TheGodfather.Modules.Currency
 
         #region COMMAND_CHICKEN_TRAIN
         [Command("train"), Module(ModuleType.Currency)]
-        [Description("Train your chicken.")]
+        [Description("Train your chicken using your credits from WM bank.")]
         [Aliases("tr", "t", "exercise")]
         [UsageExample("!chicken train")]
         public async Task TrainAsync(CommandContext ctx)
@@ -248,6 +248,9 @@ namespace TheGodfather.Modules.Currency
 
             if (ChannelEvent.GetEventInChannel(ctx.Channel.Id) is ChickenAmbush ambush)
                 throw new CommandFailedException("There is an ambush running in this channel. No trainings are allowed before the ambush finishes.");
+
+            if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, Chicken.TrainPrice).ConfigureAwait(false))
+                throw new CommandFailedException($"You do not have enought credits to train a chicken ({Chicken.TrainPrice} needed)!");
 
             string result;
             if (chicken.Train()) 
@@ -262,10 +265,5 @@ namespace TheGodfather.Modules.Currency
                 .ConfigureAwait(false);
         }
         #endregion
-
-
-        // SO MANY IDEAS WTF IS THIS BRAINSTORM???
-        // chicken stats - strength, agility, hitpoints
-        // chicken upgrades - weapons, armor etc
     }
 }

@@ -15,6 +15,7 @@ namespace TheGodfather.Services.Common
     public class Chicken
     {
         public static readonly int Price = 1000;
+        public static readonly int TrainPrice = 500;
 
         public DiscordUser Owner { get; set; }
         public ulong OwnerId { get; set; }
