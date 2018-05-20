@@ -55,6 +55,81 @@ namespace TheGodfather.Modules.Currency
                 => HandleBuyAsync(ctx, ChickenType.Default, name);
 
 
+            #region COMMAND_CHICKEN_BUY_DEFAULT
+            [Command("default"), Module(ModuleType.Currency)]
+            [Description("Buy a chicken of default strength (cheapest).")]
+            [Aliases("d", "def")]
+            [UsageExample("!chicken buy default My Chicken Name")]
+            public Task DefaultAsync(CommandContext ctx,
+                                    [RemainingText, Description("Chicken name.")] string name = null)
+                => HandleBuyAsync(ctx, ChickenType.Default, name);
+            #endregion
+
+            #region COMMAND_CHICKEN_BUY_WELLFED
+            [Command("wellfed"), Module(ModuleType.Currency)]
+            [Description("Buy a well-fed chicken.")]
+            [Aliases("wf", "fed")]
+            [UsageExample("!chicken buy wellfed My Chicken Name")]
+            public Task WellFedAsync(CommandContext ctx,
+                                    [RemainingText, Description("Chicken name.")] string name = null)
+                => HandleBuyAsync(ctx, ChickenType.WellFed, name);
+            #endregion
+
+            #region COMMAND_CHICKEN_BUY_TRAINED
+            [Command("trained"), Module(ModuleType.Currency)]
+            [Description("Buy a trained chicken.")]
+            [Aliases("wf", "fed")]
+            [UsageExample("!chicken buy trained My Chicken Name")]
+            public Task TrainedAsync(CommandContext ctx,
+                                    [RemainingText, Description("Chicken name.")] string name = null)
+                => HandleBuyAsync(ctx, ChickenType.Trained, name);
+            #endregion
+
+            #region COMMAND_CHICKEN_BUY_EMPOWERED
+            [Command("steroidempowered"), Module(ModuleType.Currency)]
+            [Description("Buy a steroid-empowered chicken.")]
+            [Aliases("steroid", "empowered")]
+            [UsageExample("!chicken buy steroidempowered My Chicken Name")]
+            public Task EmpoweredAsync(CommandContext ctx,
+                                      [RemainingText, Description("Chicken name.")] string name = null)
+                => HandleBuyAsync(ctx, ChickenType.SteroidEmpowered, name);
+            #endregion
+
+            #region COMMAND_CHICKEN_BUY_ALIEN
+            [Command("alien"), Module(ModuleType.Currency)]
+            [Description("Buy an alien chicken.")]
+            [Aliases("a", "extraterrestrial")]
+            [UsageExample("!chicken buy alien My Chicken Name")]
+            public Task AlienAsync(CommandContext ctx,
+                                  [RemainingText, Description("Chicken name.")] string name = null)
+                => HandleBuyAsync(ctx, ChickenType.Alien, name);
+            #endregion
+
+            #region COMMAND_CHICKEN_BUY_LIST
+            [Command("list"), Module(ModuleType.Currency)]
+            [Description("List all available chicken types.")]
+            [Aliases("ls", "view")]
+            [UsageExample("!chicken buy list")]
+            public async Task ListAsync(CommandContext ctx)
+            {
+                var emb = new DiscordEmbedBuilder() {
+                    Title = "Available chicken types",
+                    Color = DiscordColor.Orange
+                };
+
+                emb.AddField("Default", $"STR: {Formatter.Bold(Chicken.StartingStrength[ChickenType.Default].ToString())}\nPrice: {Formatter.Bold(Chicken.Price[ChickenType.Default].ToString())}", inline: true);
+                emb.AddField("Well-Fed", $"STR: {Formatter.Bold(Chicken.StartingStrength[ChickenType.WellFed].ToString())}\nPrice: {Formatter.Bold(Chicken.Price[ChickenType.WellFed].ToString())}", inline: true);
+                emb.AddField("Trained", $"STR: {Formatter.Bold(Chicken.StartingStrength[ChickenType.Trained].ToString())}\nPrice: {Formatter.Bold(Chicken.Price[ChickenType.Trained].ToString())}", inline: true);
+                emb.AddField("Steroid Empowered", $"STR: {Formatter.Bold(Chicken.StartingStrength[ChickenType.SteroidEmpowered].ToString())}\nPrice: {Formatter.Bold(Chicken.Price[ChickenType.SteroidEmpowered].ToString())}", inline: true);
+                emb.AddField("Alien", $"STR: {Formatter.Bold(Chicken.StartingStrength[ChickenType.Alien].ToString())}\nPrice: {Formatter.Bold(Chicken.Price[ChickenType.Alien].ToString())}", inline: true);
+
+                await ctx.RespondAsync(embed: emb.Build())
+                    .ConfigureAwait(false);
+            }
+            #endregion
+
+
+            #region HELPER_FUNCTIONS
             private async Task HandleBuyAsync(CommandContext ctx, ChickenType type, string name = null)
             {
                 if (string.IsNullOrWhiteSpace(name))
@@ -78,8 +153,10 @@ namespace TheGodfather.Modules.Currency
                 await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} bought a chicken named {Formatter.Bold(name)}")
                     .ConfigureAwait(false);
             }
+            #endregion
         }
         #endregion
+
 
         #region COMMAND_CHICKEN_FIGHT
         [Command("fight"), Module(ModuleType.Currency)]
@@ -203,7 +280,7 @@ namespace TheGodfather.Modules.Currency
             if (ChannelEvent.GetEventInChannel(ctx.Channel.Id) is ChickenAmbush ambush)
                 throw new CommandFailedException("There is an ambush running in this channel. No sells are allowed before the ambush finishes.");
 
-            int price = 500 + chicken.Strength * 10;
+            var price = chicken.SellPrice;
             if (!await ctx.AskYesNoQuestionAsync($"Are you sure you want to sell your chicken for {price} credits?"))
                 return;
 

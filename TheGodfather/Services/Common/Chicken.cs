@@ -45,11 +45,14 @@ namespace TheGodfather.Services.Common
             get => _strength;
             set {
                 if (value > 999)
-                    value = 999;
-                else if(value < 0)
-                    value = 0;
+                    _strength = 999;
+                else if (value < 0)
+                    _strength = 0;
+                else
+                    _strength = value;
             }
         }
+        public long SellPrice => (long)Math.Pow(10, 1 + _strength / (double)25);
 
         private short _strength;
 
@@ -102,7 +105,7 @@ namespace TheGodfather.Services.Common
 
             emb.AddField("Owner", owner.Mention, inline: true);
             emb.AddField("Strength", _strength.ToString(), inline: true);
-            emb.AddField("Credit value", (500 + _strength * 10).ToString(), inline: true);
+            emb.AddField("Credit value", SellPrice.ToString(), inline: true);
 
             emb.WithFooter("Chickens will rule the world someday");
 
