@@ -606,7 +606,7 @@ namespace TheGodfather
                     Color = DiscordColor.Magenta,
                 };
 
-                var entry = await GetFirstLogEntryAsync(e.Guild, AuditLogActionType.RoleUpdate)
+                var entry = await GetFirstLogEntryAsync(e.Guild, AuditLogActionType.GuildUpdate)
                     .ConfigureAwait(false);
                 if (entry == null || !(entry is DiscordAuditLogGuildEntry gentry)) {
                     emb.AddField("Error", "Failed to read audit log information. Please check my permissions");
