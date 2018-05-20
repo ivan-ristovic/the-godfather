@@ -41,7 +41,7 @@ namespace TheGodfather.Modules.Currency
         #region GROUP_CHICKEN_BUY
         [Group("buy"), Module(ModuleType.Currency)]
         [Description("Buy a new chicken in this guild using your credits from WM bank.")]
-        [Aliases("b")]
+        [Aliases("b", "shop")]
         [UsageExample("!chicken buy My Chicken Name")]
         public class BuyChicken : TheGodfatherBaseModule
         {

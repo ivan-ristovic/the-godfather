@@ -1,4 +1,4 @@
-# Module: Gambling
+# Module: Currency
 
 ## Group: bank
 <details><summary markdown='span'>Expand for additional information</summary><p>
@@ -440,7 +440,7 @@
 *Manage your chicken. If invoked without subcommands, prints out your chicken information.*
 
 **Aliases:**
-`cock, hen, chick`
+`cock, hen, chick, coc`
 
 **Arguments:**
 
@@ -494,13 +494,13 @@
 
 ---
 
-### chicken buy
+## Group: chicken buy
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Buy a new chicken.*
+*Buy a new chicken in this guild using your credits from WM bank.*
 
 **Aliases:**
-`b`
+`b, shop`
 
 **Arguments:**
 
@@ -510,6 +510,128 @@
 
 ```
 !chicken buy My Chicken Name
+```
+</p></details>
+
+---
+
+### chicken buy alien
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Buy an alien chicken.*
+
+**Aliases:**
+`a, extraterrestrial`
+
+**Arguments:**
+
+(optional) `[string...]` : *Chicken name.* (def: `None`)
+
+**Examples:**
+
+```
+!chicken buy alien My Chicken Name
+```
+</p></details>
+
+---
+
+### chicken buy default
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Buy a chicken of default strength (cheapest).*
+
+**Aliases:**
+`d, def`
+
+**Arguments:**
+
+(optional) `[string...]` : *Chicken name.* (def: `None`)
+
+**Examples:**
+
+```
+!chicken buy default My Chicken Name
+```
+</p></details>
+
+---
+
+### chicken buy list
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*List all available chicken types.*
+
+**Aliases:**
+`ls, view`
+
+**Examples:**
+
+```
+!chicken buy list
+```
+</p></details>
+
+---
+
+### chicken buy steroidempowered
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Buy a steroid-empowered chicken.*
+
+**Aliases:**
+`steroid, empowered`
+
+**Arguments:**
+
+(optional) `[string...]` : *Chicken name.* (def: `None`)
+
+**Examples:**
+
+```
+!chicken buy steroidempowered My Chicken Name
+```
+</p></details>
+
+---
+
+### chicken buy trained
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Buy a trained chicken.*
+
+**Aliases:**
+`wf, fed`
+
+**Arguments:**
+
+(optional) `[string...]` : *Chicken name.* (def: `None`)
+
+**Examples:**
+
+```
+!chicken buy trained My Chicken Name
+```
+</p></details>
+
+---
+
+### chicken buy wellfed
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Buy a well-fed chicken.*
+
+**Aliases:**
+`wf, fed`
+
+**Arguments:**
+
+(optional) `[string...]` : *Chicken name.* (def: `None`)
+
+**Examples:**
+
+```
+!chicken buy wellfed My Chicken Name
 ```
 </p></details>
 
@@ -598,7 +720,7 @@
 ### chicken top
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*View the list of strongest chickens.*
+*View the list of strongest chickens in the current guild.*
 
 **Aliases:**
 `best, strongest`
@@ -615,7 +737,7 @@
 ### chicken train
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Train your chicken.*
+*Train your chicken using your credits from WM bank.*
 
 **Aliases:**
 `tr, t, exercise`
@@ -624,6 +746,55 @@
 
 ```
 !chicken train
+```
+</p></details>
+
+---
+
+## Group: chicken war
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Declare a chicken war! Other users can put their chickens into teams which names you specify.*
+
+**Aliases:**
+`gangwar, battle`
+
+**Arguments:**
+
+(optional) `[string]` : *Team 1 name.* (def: `None`)
+
+(optional) `[string]` : *Team 2 name.* (def: `None`)
+
+**Examples:**
+
+```
+!chicken war Team1 Team2
+!chicken war "Team 1 name" "Team 2 name
+```
+</p></details>
+
+---
+
+### chicken war join
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Join a pending chicken war. Specify a team which you want to join, or numbers 1 or 2 corresponding to team one and team two, respectively.*
+
+**Aliases:**
+`+, compete, enter, j`
+
+**Overload 1:**
+
+`[int]` : *Number 1 or 2 depending of team you wish to join.*
+
+**Overload 0:**
+
+`[string...]` : *Team name to join.*
+
+**Examples:**
+
+```
+!chicken war join Team Name
 ```
 </p></details>
 
