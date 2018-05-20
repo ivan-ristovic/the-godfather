@@ -1,20 +1,40 @@
 ﻿#region USING_DIRECTIVES
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using Newtonsoft.Json;
+using System.Collections.Immutable;
 
 using TheGodfather.Common;
 
-using DSharpPlus;
 using DSharpPlus.Entities;
 #endregion
 
 namespace TheGodfather.Services.Common
 {
+    public enum ChickenType
+    {
+        Default = 0,
+        WellFed = 1,
+        Trained = 2,
+        SteroidEmpowered = 3,
+        Alien = 4
+    }
+
     public class Chicken
     {
-        public static readonly int DefaultPrice = 1000;
+        public static readonly ImmutableDictionary<ChickenType, short> StartingStrength = new Dictionary<ChickenType, short>() {
+            { ChickenType.Default, 50},
+            { ChickenType.WellFed, 75},
+            { ChickenType.Trained, 100},
+            { ChickenType.SteroidEmpowered, 125},
+            { ChickenType.Alien, 150}
+        }.ToImmutableDictionary();
+        public static readonly ImmutableDictionary<ChickenType, long> Price = new Dictionary<ChickenType, long>() {
+            { ChickenType.Default, 1000},
+            { ChickenType.WellFed, 10000},
+            { ChickenType.Trained, 100000},
+            { ChickenType.SteroidEmpowered, 1000000},
+            { ChickenType.Alien, 10000000}
+        }.ToImmutableDictionary();
         public static readonly int TrainPrice = 500;
 
         public DiscordUser Owner { get; set; }

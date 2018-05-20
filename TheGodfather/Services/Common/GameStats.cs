@@ -9,6 +9,24 @@ using DSharpPlus.Entities;
 
 namespace TheGodfather.Services.Common
 {
+    public enum GameStatsType
+    {
+        AnimalRacesWon,
+        CarosWon,
+        CarosLost,
+        Connect4sWon,
+        Connect4sLost,
+        DuelsWon,
+        DuelsLost,
+        HangmansWon,
+        NumberRacesWon,
+        OthellosWon,
+        OthellosLost,
+        QuizesWon,
+        TicTacToesWon,
+        TicTacToesLost
+    }
+
     public class GameStats
     {
         private IReadOnlyDictionary<string, string> Stats { get; }

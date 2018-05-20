@@ -38,34 +38,46 @@ namespace TheGodfather.Modules.Currency
             => InfoAsync(ctx, user);
 
 
-        #region COMMAND_CHICKEN_BUY
-        [Command("buy"), Module(ModuleType.Currency)]
+        #region GROUP_CHICKEN_BUY
+        [Group("buy"), Module(ModuleType.Currency)]
         [Description("Buy a new chicken in this guild using your credits from WM bank.")]
         [Aliases("b")]
         [UsageExample("!chicken buy My Chicken Name")]
-        public async Task BuyAsync(CommandContext ctx,
-                                  [RemainingText, Description("Chicken name.")] string name = null)
+        public class BuyChicken : TheGodfatherBaseModule
         {
-            if (string.IsNullOrWhiteSpace(name))
-                throw new InvalidCommandUsageException("Name for your chicken is missing.");
 
-            if (name.Length < 2 || name.Length > 30)
-                throw new InvalidCommandUsageException("Name cannot be shorter than 2 and longer than 30 characters.");
+            public BuyChicken(DBService db) : base(db: db) { }
 
-            if (!name.All(c => Char.IsLetterOrDigit(c) || Char.IsWhiteSpace(c)))
-                throw new InvalidCommandUsageException("Name cannot contain characters that are not letters or digits.");
 
-            if (await Database.GetChickenInfoAsync(ctx.User.Id, ctx.Guild.Id).ConfigureAwait(false) != null)
-                throw new CommandFailedException("You already own a chicken!");
+            [GroupCommand]
+            public Task BuyAsync(CommandContext ctx,
+                                [RemainingText, Description("Chicken name.")] string name = null)
+                => HandleBuyAsync(ctx, ChickenType.Default, name);
 
-            if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, Chicken.DefaultPrice).ConfigureAwait(false))
-                throw new CommandFailedException($"You do not have enought credits to buy a chicken ({Chicken.DefaultPrice} needed)!");
 
-            await Database.BuyChickenAsync(ctx.User.Id, ctx.Guild.Id, name)
-                .ConfigureAwait(false);
+            private async Task HandleBuyAsync(CommandContext ctx, ChickenType type, string name = null)
+            {
+                if (string.IsNullOrWhiteSpace(name))
+                    throw new InvalidCommandUsageException("Name for your chicken is missing.");
 
-            await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} bought a chicken named {Formatter.Bold(name)}")
-                .ConfigureAwait(false);
+                if (name.Length < 2 || name.Length > 30)
+                    throw new InvalidCommandUsageException("Name cannot be shorter than 2 and longer than 30 characters.");
+
+                if (!name.All(c => Char.IsLetterOrDigit(c) || Char.IsWhiteSpace(c)))
+                    throw new InvalidCommandUsageException("Name cannot contain characters that are not letters or digits.");
+
+                if (await Database.GetChickenInfoAsync(ctx.User.Id, ctx.Guild.Id).ConfigureAwait(false) != null)
+                    throw new CommandFailedException("You already own a chicken!");
+
+                if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, Chicken.Price[type]).ConfigureAwait(false))
+                    throw new CommandFailedException($"You do not have enought credits to buy a chicken ({Chicken.Price[type]} needed)!");
+
+                await Database.BuyChickenAsync(ctx.User.Id, ctx.Guild.Id, name, Chicken.StartingStrength[type])
+                    .ConfigureAwait(false);
+
+                await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} bought a chicken named {Formatter.Bold(name)}")
+                    .ConfigureAwait(false);
+            }
         }
         #endregion
 
@@ -197,7 +209,7 @@ namespace TheGodfather.Modules.Currency
 
             await Database.RemoveChickenAsync(ctx.User.Id, ctx.Guild.Id)
                 .ConfigureAwait(false);
-            await Database.GiveCreditsToUserAsync(ctx.User.Id, Chicken.DefaultPrice)
+            await Database.GiveCreditsToUserAsync(ctx.User.Id, price)
                 .ConfigureAwait(false);
 
             await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} sold {Formatter.Bold(chicken.Name)} for {Formatter.Bold(price.ToString())} credits!")
@@ -215,7 +227,7 @@ namespace TheGodfather.Modules.Currency
             var chickens = await Database.GetStrongestChickensForGuildAsync(ctx.Guild.Id)
                 .ConfigureAwait(false);
             if (chickens == null || !chickens.Any())
-                throw new CommandFailedException("No chickens bought.");
+                throw new CommandFailedException("No chickens bought in this guild.");
 
             foreach (var chicken in chickens) {
                 try {
@@ -227,7 +239,7 @@ namespace TheGodfather.Modules.Currency
             }
 
             await ctx.SendPaginatedCollectionAsync(
-                "Top chickens:",
+                "Strongest chickens in this guild:",
                 chickens,
                 c => $"{Formatter.Bold(c.Name)} | {c.Owner.Mention} | {c.Strength} STR"
             ).ConfigureAwait(false);

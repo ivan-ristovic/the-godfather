@@ -43,7 +43,7 @@ namespace TheGodfather.Services
             return chickens.AsReadOnly();
         }
 
-        public async Task BuyChickenAsync(ulong uid, ulong gid, string name = null)
+        public async Task BuyChickenAsync(ulong uid, ulong gid, string name = null, short strength = 50)
         {
             await _sem.WaitAsync();
             try {
@@ -51,9 +51,10 @@ namespace TheGodfather.Services
                 using (var cmd = con.CreateCommand()) {
                     await con.OpenAsync().ConfigureAwait(false);
 
-                    cmd.CommandText = "INSERT INTO gf.chickens (uid, name, gid) VALUES (@uid, @name, @gid) ON CONFLICT DO NOTHING;";
+                    cmd.CommandText = "INSERT INTO gf.chickens (uid, name, gid, strength) VALUES (@uid, @name, @gid, @strength) ON CONFLICT DO NOTHING;";
                     cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, uid);
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
+                    cmd.Parameters.AddWithValue("strength", NpgsqlDbType.Smallint, strength);
                     if (string.IsNullOrWhiteSpace(name))
                         cmd.Parameters.AddWithValue("name", NpgsqlDbType.Varchar, DBNull.Value);
                     else

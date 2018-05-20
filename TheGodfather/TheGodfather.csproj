@@ -429,7 +429,6 @@
     <Compile Include="Modules\Search\XkcdModule.cs" />
     <Compile Include="Services\Common\Birthday.cs" />
     <Compile Include="Services\Common\Chicken.cs" />
-    <Compile Include="Services\Common\GameStatsType.cs" />
     <Compile Include="Services\Common\OMDbData.cs" />
     <Compile Include="Services\Common\PurchasableItem.cs" />
     <Compile Include="Services\Common\QuizData.cs" />
