@@ -35,7 +35,6 @@ namespace TheGodfather.Services.Common
             { ChickenType.SteroidEmpowered, 1000000},
             { ChickenType.Alien, 10000000}
         }.ToImmutableDictionary();
-        public static readonly int TrainPrice = 500;
 
         public DiscordUser Owner { get; set; }
         public ulong OwnerId { get; set; }
@@ -52,11 +51,12 @@ namespace TheGodfather.Services.Common
                     _strength = value;
             }
         }
-        public long SellPrice => (long)Math.Pow(10, 1 + _strength / (double)25);
+        public long SellPrice => FindSellPriceForStrength(_strength);
+        public long TrainPrice => FindSellPriceForStrength((short)(_strength + 4)) - FindSellPriceForStrength(_strength);
 
         private short _strength;
 
-
+        
         public static short DetermineGain(short str1, short str2)
         {
             if (str1 > str2)
@@ -66,6 +66,9 @@ namespace TheGodfather.Services.Common
             else
                 return 5;
         }
+
+        private static long FindSellPriceForStrength(short str)
+            => (long)Math.Pow(10, 1 + str / (double)25);
 
 
         public bool Train()

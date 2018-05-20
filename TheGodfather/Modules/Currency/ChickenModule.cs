@@ -143,6 +143,9 @@ namespace TheGodfather.Modules.Currency
 
                 if (await Database.GetChickenInfoAsync(ctx.User.Id, ctx.Guild.Id).ConfigureAwait(false) != null)
                     throw new CommandFailedException("You already own a chicken!");
+                
+                if (!await ctx.AskYesNoQuestionAsync($"Are you sure you want to buy a chicken for {Formatter.Bold(Chicken.Price[type].ToString())} credits?"))
+                    return;
 
                 if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, Chicken.Price[type]).ConfigureAwait(false))
                     throw new CommandFailedException($"You do not have enought credits to buy a chicken ({Chicken.Price[type]} needed)!");
@@ -281,7 +284,7 @@ namespace TheGodfather.Modules.Currency
                 throw new CommandFailedException("There is an ambush running in this channel. No sells are allowed before the ambush finishes.");
 
             var price = chicken.SellPrice;
-            if (!await ctx.AskYesNoQuestionAsync($"Are you sure you want to sell your chicken for {price} credits?"))
+            if (!await ctx.AskYesNoQuestionAsync($"Are you sure you want to sell your chicken for {Formatter.Bold(price.ToString())} credits?"))
                 return;
 
             await Database.RemoveChickenAsync(ctx.User.Id, ctx.Guild.Id)
@@ -338,8 +341,12 @@ namespace TheGodfather.Modules.Currency
             if (ChannelEvent.GetEventInChannel(ctx.Channel.Id) is ChickenAmbush ambush)
                 throw new CommandFailedException("There is an ambush running in this channel. No trainings are allowed before the ambush finishes.");
 
-            if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, Chicken.TrainPrice).ConfigureAwait(false))
-                throw new CommandFailedException($"You do not have enought credits to train a chicken ({Chicken.TrainPrice} needed)!");
+            var price = chicken.TrainPrice;
+            if (!await ctx.AskYesNoQuestionAsync($"Are you sure you want to train your chicken for {Formatter.Bold(price.ToString())} credits?"))
+                return;
+
+            if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, price).ConfigureAwait(false))
+                throw new CommandFailedException($"You do not have enought credits to train a chicken ({chicken.TrainPrice} needed)!");
 
             string result;
             if (chicken.Train()) 
