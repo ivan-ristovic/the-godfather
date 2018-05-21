@@ -169,8 +169,8 @@ namespace TheGodfather.Modules.Currency
         public async Task TrainAsync(CommandContext ctx,
                                     [Description("User.")] DiscordUser user)
         {
-            if (ChannelEvent.GetEventInChannel(ctx.Channel.Id) is ChickenAmbush ambush)
-                throw new CommandFailedException("There is an ambush running in this channel. No fights are allowed before the ambush finishes.");
+            if (ChannelEvent.GetEventInChannel(ctx.Channel.Id) is ChickenWar ambush)
+                throw new CommandFailedException("There is a chicken war running in this channel. No fights are allowed before the war finishes.");
 
             if (user.Id == ctx.User.Id)
                 throw new CommandFailedException("You can't fight against your own chicken!");
@@ -251,8 +251,8 @@ namespace TheGodfather.Modules.Currency
             if (!name.All(c => Char.IsLetterOrDigit(c) || Char.IsWhiteSpace(c)))
                 throw new InvalidCommandUsageException("Name cannot contain characters that are not letters or digits.");
 
-            if (ChannelEvent.GetEventInChannel(ctx.Channel.Id) is ChickenAmbush ambush)
-                throw new CommandFailedException("There is an ambush running in this channel. No chicken modifications are allowed before the ambush finishes.");
+            if (ChannelEvent.GetEventInChannel(ctx.Channel.Id) is ChickenWar ambush)
+                throw new CommandFailedException("There is a chicken war running in this channel. No renames are allowed before the war finishes.");
 
             var chicken = await Database.GetChickenInfoAsync(ctx.User.Id, ctx.Guild.Id)
                 .ConfigureAwait(false);
@@ -280,8 +280,8 @@ namespace TheGodfather.Modules.Currency
             if (chicken == null)
                 throw new CommandFailedException("You do not own a chicken!");
 
-            if (ChannelEvent.GetEventInChannel(ctx.Channel.Id) is ChickenAmbush ambush)
-                throw new CommandFailedException("There is an ambush running in this channel. No sells are allowed before the ambush finishes.");
+            if (ChannelEvent.GetEventInChannel(ctx.Channel.Id) is ChickenWar ambush)
+                throw new CommandFailedException("There is a chicken war running in this channel. No sells are allowed before the war finishes.");
 
             var price = chicken.SellPrice;
             if (!await ctx.AskYesNoQuestionAsync($"Are you sure you want to sell your chicken for {Formatter.Bold(price.ToString())} credits?"))
@@ -338,8 +338,8 @@ namespace TheGodfather.Modules.Currency
             if (chicken == null)
                 throw new CommandFailedException("You do not own a chicken!");
 
-            if (ChannelEvent.GetEventInChannel(ctx.Channel.Id) is ChickenAmbush ambush)
-                throw new CommandFailedException("There is an ambush running in this channel. No trainings are allowed before the ambush finishes.");
+            if (ChannelEvent.GetEventInChannel(ctx.Channel.Id) is ChickenWar ambush)
+                throw new CommandFailedException("There is a chicken war running in this channel. No trainings are allowed before the war finishes.");
 
             var price = chicken.TrainPrice;
             if (!await ctx.AskYesNoQuestionAsync($"Are you sure you want to train your chicken for {Formatter.Bold(price.ToString())} credits?"))

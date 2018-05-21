@@ -404,7 +404,6 @@
     <Compile Include="Modules\Currency\ChickenModule.Ambush.cs" />
     <Compile Include="Modules\Currency\ChickenModule.cs" />
     <Compile Include="Modules\Currency\Common\ChickenWar.cs" />
-    <Compile Include="Modules\Currency\Common\ChickenAmbush.cs" />
     <Compile Include="Modules\Currency\Common\HoldemGame.cs" />
     <Compile Include="Modules\Currency\Common\LotteryGame.cs" />
     <Compile Include="Modules\Currency\Common\BlackjackGame.cs" />
