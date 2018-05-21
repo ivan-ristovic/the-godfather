@@ -138,7 +138,7 @@ namespace TheGodfather.Modules.Currency
         #region COMMAND_BANK_TOPGLOBAL
         [Command("topglobal"), Module(ModuleType.Currency)]
         [Description("Print the globally richest users.")]
-        [Aliases("globalleaderboard", "globalelite", "gtop")]
+        [Aliases("globalleaderboard", "globalelite", "gtop", "topg", "globaltop")]
         [UsageExample("!bank gtop")]
         public async Task GetGlobalLeaderboardAsync(CommandContext ctx)
         {
