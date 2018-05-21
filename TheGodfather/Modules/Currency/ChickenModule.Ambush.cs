@@ -68,7 +68,7 @@ namespace TheGodfather.Modules.Currency
 
                     if (ambush.AmbushedChickenSurvived) {
                         ambushed.Strength += 20;
-                        await Database.GiveCreditsToUserAsync(ambushed.OwnerId, 100000)
+                        await Database.GiveCreditsToUserAsync(ambushed.OwnerId, ctx.Guild.Id, 100000)
                             .ConfigureAwait(false);
                         await Database.ModifyChickenAsync(ambushed, ctx.Guild.Id)
                             .ConfigureAwait(false);

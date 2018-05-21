@@ -46,7 +46,7 @@ namespace TheGodfather.Modules.Currency
                     return;
                 }
 
-                long? total = await Database.GetUserCreditAmountAsync(ctx.User.Id)
+                long? total = await Database.GetUserCreditAmountAsync(ctx.User.Id, ctx.Guild.Id)
                     .ConfigureAwait(false);
                 if (!total.HasValue || total < balance)
                     throw new CommandFailedException("You do not have that many credits on your account! Specify a smaller entering amount.");
@@ -71,11 +71,11 @@ namespace TheGodfather.Modules.Currency
                         }
 
                         foreach (var participant in game.Participants) {
-                            await Database.GiveCreditsToUserAsync(ctx.User.Id, participant.Balance)
+                            await Database.GiveCreditsToUserAsync(ctx.User.Id, ctx.Guild.Id, participant.Balance)
                                 .ConfigureAwait(false);
                         }
                     } else {
-                        await Database.GiveCreditsToUserAsync(ctx.User.Id, game.MoneyNeeded)
+                        await Database.GiveCreditsToUserAsync(ctx.User.Id, ctx.Guild.Id, game.MoneyNeeded)
                             .ConfigureAwait(false);
                         await ctx.RespondWithIconEmbedAsync("Not enough users joined the Hold'Em game.", ":alarm_clock:")
                             .ConfigureAwait(false);
@@ -115,7 +115,7 @@ namespace TheGodfather.Modules.Currency
                     throw new CommandFailedException("I can't send you a message! Please enable DMs from me so I can send you the cards.");
                 }
 
-                if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, game.MoneyNeeded))
+                if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, ctx.Guild.Id, game.MoneyNeeded))
                     throw new CommandFailedException("You do not have that many credits on your account! Specify a smaller bid amount.");
 
                 game.AddParticipant(ctx.User, handle);

@@ -58,7 +58,7 @@ namespace TheGodfather.Modules.Currency
                             chicken.Strength += 20;
                             await Database.ModifyChickenAsync(chicken, ctx.Guild.Id)
                                 .ConfigureAwait(false);
-                            await Database.GiveCreditsToUserAsync(chicken.OwnerId, 100000)
+                            await Database.GiveCreditsToUserAsync(chicken.OwnerId, ctx.Guild.Id, 100000)
                                 .ConfigureAwait(false);
                         }
 

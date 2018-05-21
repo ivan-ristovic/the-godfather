@@ -45,7 +45,7 @@ namespace TheGodfather.Modules.Currency
                     return;
                 }
 
-                long? balance = await Database.GetUserCreditAmountAsync(ctx.User.Id)
+                long? balance = await Database.GetUserCreditAmountAsync(ctx.User.Id, ctx.Guild.Id)
                     .ConfigureAwait(false);
                 if (!balance.HasValue || balance < LotteryGame.TicketPrice)
                     throw new CommandFailedException($"You do not have enough credits on your account to buy a lottery ticket! The lottery ticket costs {LotteryGame.TicketPrice} credits!");
@@ -67,7 +67,7 @@ namespace TheGodfather.Modules.Currency
                         await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.MoneyBag, $"Winnings:\n\n{string.Join(", ", game.Winners.Select(w => $"{w.User.Mention} : {w.WinAmount}"))}")
                             .ConfigureAwait(false);
                         foreach (var winner in game.Winners)
-                            await Database.GiveCreditsToUserAsync(winner.Id, winner.WinAmount)
+                            await Database.GiveCreditsToUserAsync(winner.Id, ctx.Guild.Id, winner.WinAmount)
                                 .ConfigureAwait(false);
                     } else {
                         await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.MoneyBag, "Better luck next time!")
@@ -105,7 +105,7 @@ namespace TheGodfather.Modules.Currency
                 if (game.IsParticipating(ctx.User))
                     throw new CommandFailedException("You are already participating in the Lottery game!");
 
-                if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, LotteryGame.TicketPrice))
+                if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, ctx.Guild.Id, LotteryGame.TicketPrice))
                     throw new CommandFailedException($"You do not have enough credits on your account to buy a lottery ticket! The lottery ticket costs {LotteryGame.TicketPrice} credits!");
 
                 game.AddParticipant(ctx.User, numbers);

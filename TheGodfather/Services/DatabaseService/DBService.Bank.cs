@@ -13,14 +13,14 @@ namespace TheGodfather.Services
 {
     public partial class DBService
     {
-        public async Task<bool> BankContainsUserAsync(ulong uid)
+        public async Task<bool> BankContainsUserAsync(ulong uid, ulong gid)
         {
-            long? balance = await GetUserCreditAmountAsync(uid)
+            long? balance = await GetUserCreditAmountAsync(uid, gid)
                 .ConfigureAwait(false);
             return balance.HasValue;
         }
 
-        public async Task CloseBankAccountForUserAsync(ulong uid)
+        public async Task CloseBankAccountForUserAsync(ulong uid, ulong gid)
         {
             await _sem.WaitAsync();
             try {
@@ -28,8 +28,9 @@ namespace TheGodfather.Services
                 using (var cmd = con.CreateCommand()) {
                     await con.OpenAsync().ConfigureAwait(false);
 
-                    cmd.CommandText = "DELETE FROM gf.accounts WHERE uid = @uid;";
+                    cmd.CommandText = "DELETE FROM gf.accounts WHERE uid = @uid AND gid = @gid;";
                     cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
+                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
 
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
@@ -38,14 +39,14 @@ namespace TheGodfather.Services
             }
         }
 
-        public async Task<IReadOnlyList<IReadOnlyDictionary<string, string>>> GetTenRichestUsersAsync()
+        public async Task<IReadOnlyList<IReadOnlyDictionary<string, string>>> GetTenRichestUsersAsync(ulong gid)
         {
             var res = await ExecuteRawQueryAsync("SELECT * FROM gf.accounts ORDER BY balance DESC LIMIT 10")
                 .ConfigureAwait(false);
             return res;
         }
 
-        public async Task<long?> GetUserCreditAmountAsync(ulong uid)
+        public async Task<long?> GetUserCreditAmountAsync(ulong uid, ulong gid)
         {
             long? balance = null;
 
@@ -55,8 +56,9 @@ namespace TheGodfather.Services
                 using (var cmd = con.CreateCommand()) {
                     await con.OpenAsync().ConfigureAwait(false);
 
-                    cmd.CommandText = "SELECT balance FROM gf.accounts WHERE uid = @uid LIMIT 1;";
+                    cmd.CommandText = "SELECT balance FROM gf.accounts WHERE uid = @uid AND gid = @gid LIMIT 1;";
                     cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
+                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
 
                     var res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
                     if (res != null && !(res is DBNull))
@@ -69,7 +71,7 @@ namespace TheGodfather.Services
             return balance;
         }
 
-        public async Task GiveCreditsToUserAsync(ulong uid, long amount)
+        public async Task GiveCreditsToUserAsync(ulong uid, ulong gid, long amount)
         {
             await _sem.WaitAsync();
             try {
@@ -77,9 +79,10 @@ namespace TheGodfather.Services
                 using (var cmd = con.CreateCommand()) {
                     await con.OpenAsync().ConfigureAwait(false);
 
-                    cmd.CommandText = "UPDATE gf.accounts SET balance = balance + @amount WHERE uid = @uid;";
+                    cmd.CommandText = "UPDATE gf.accounts SET balance = balance + @amount WHERE uid = @uid AND gid = @gid;";
                     cmd.Parameters.AddWithValue("amount", NpgsqlDbType.Bigint, amount);
                     cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
+                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
 
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
@@ -88,7 +91,7 @@ namespace TheGodfather.Services
             }
         }
 
-        public async Task OpenBankAccountForUserAsync(ulong uid)
+        public async Task OpenBankAccountForUserAsync(ulong uid, ulong gid)
         {
             await _sem.WaitAsync();
             try {
@@ -96,8 +99,9 @@ namespace TheGodfather.Services
                 using (var cmd = con.CreateCommand()) {
                     await con.OpenAsync().ConfigureAwait(false);
 
-                    cmd.CommandText = "INSERT INTO gf.accounts VALUES(@uid, 25);";
+                    cmd.CommandText = "INSERT INTO gf.accounts(uid, gid, balance) VALUES(@uid, @gid, 25);";
                     cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
+                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
 
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
@@ -106,9 +110,9 @@ namespace TheGodfather.Services
             }
         }
 
-        public async Task<bool> TakeCreditsFromUserAsync(ulong uid, long amount)
+        public async Task<bool> TakeCreditsFromUserAsync(ulong uid, ulong gid, long amount)
         {
-            long? balance = await GetUserCreditAmountAsync(uid)
+            long? balance = await GetUserCreditAmountAsync(uid, gid)
                 .ConfigureAwait(false);
             if (!balance.HasValue || balance.Value < amount)
                 return false;
@@ -119,9 +123,10 @@ namespace TheGodfather.Services
                 using (var cmd = con.CreateCommand()) {
                     await con.OpenAsync().ConfigureAwait(false);
 
-                    cmd.CommandText = "UPDATE gf.accounts SET balance = balance - @amount WHERE uid = @uid;";
+                    cmd.CommandText = "UPDATE gf.accounts SET balance = balance - @amount WHERE uid = @uid AND gid = @gid;";
                     cmd.Parameters.AddWithValue("amount", NpgsqlDbType.Bigint, amount);
                     cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
+                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
 
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
@@ -132,7 +137,7 @@ namespace TheGodfather.Services
             return true;
         }
 
-        public async Task TransferCreditsAsync(ulong source, ulong target, long amount)
+        public async Task TransferCreditsAsync(ulong source, ulong target, ulong gid, long amount)
         {
             await _sem.WaitAsync();
             try {
@@ -140,13 +145,14 @@ namespace TheGodfather.Services
                     await con.OpenAsync().ConfigureAwait(false);
 
                     using (var cmd = con.CreateCommand()) {
-                        cmd.CommandText = "SELECT balance FROM gf.accounts WHERE uid = @target;";
+                        cmd.CommandText = "SELECT balance FROM gf.accounts WHERE uid = @target AND gid = @gid;";
                         cmd.Parameters.AddWithValue("target", NpgsqlDbType.Bigint, (long)target);
+                        cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
 
                         var res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
 
                         if (res == null || res is DBNull)
-                            await OpenBankAccountForUserAsync(target);
+                            await OpenBankAccountForUserAsync(target, gid);
                     }
 
                     await _tsem.WaitAsync().ConfigureAwait(false);
@@ -154,16 +160,18 @@ namespace TheGodfather.Services
                         using (var transaction = con.BeginTransaction()) {
                             var cmd1 = con.CreateCommand();
                             cmd1.Transaction = transaction;
-                            cmd1.CommandText = "SELECT balance FROM gf.accounts WHERE uid = @source OR uid = @target FOR UPDATE;";
+                            cmd1.CommandText = "SELECT balance FROM gf.accounts WHERE (uid = @source OR uid = @target) AND gid = @gid FOR UPDATE;";
                             cmd1.Parameters.AddWithValue("source", NpgsqlDbType.Bigint, (long)source);
                             cmd1.Parameters.AddWithValue("target", NpgsqlDbType.Bigint, (long)target);
+                            cmd1.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
 
                             await cmd1.ExecuteNonQueryAsync().ConfigureAwait(false);
 
                             var cmd2 = con.CreateCommand();
                             cmd2.Transaction = transaction;
-                            cmd2.CommandText = "SELECT balance FROM gf.accounts WHERE uid = @source;";
+                            cmd2.CommandText = "SELECT balance FROM gf.accounts WHERE uid = @source AND gid = @gid;";
                             cmd2.Parameters.AddWithValue("source", NpgsqlDbType.Bigint, (long)source);
+                            cmd2.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
 
                             var res = await cmd2.ExecuteScalarAsync().ConfigureAwait(false);
                             if (res == null || res is DBNull || (long)res < amount) {
@@ -173,17 +181,19 @@ namespace TheGodfather.Services
 
                             var cmd3 = con.CreateCommand();
                             cmd3.Transaction = transaction;
-                            cmd3.CommandText = "UPDATE gf.accounts SET balance = balance - @amount WHERE uid = @source;";
+                            cmd3.CommandText = "UPDATE gf.accounts SET balance = balance - @amount WHERE uid = @source AND gid = @gid;";
                             cmd3.Parameters.AddWithValue("amount", NpgsqlDbType.Bigint, amount);
                             cmd3.Parameters.AddWithValue("source", NpgsqlDbType.Bigint, (long)source);
+                            cmd3.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
 
                             await cmd3.ExecuteNonQueryAsync().ConfigureAwait(false);
 
                             var cmd4 = con.CreateCommand();
                             cmd4.Transaction = transaction;
-                            cmd4.CommandText = "UPDATE gf.accounts SET balance = balance + @amount WHERE uid = @target;";
+                            cmd4.CommandText = "UPDATE gf.accounts SET balance = balance + @amount WHERE uid = @target AND gid = @gid;";
                             cmd4.Parameters.AddWithValue("amount", NpgsqlDbType.Bigint, amount);
                             cmd4.Parameters.AddWithValue("target", NpgsqlDbType.Bigint, (long)target);
+                            cmd4.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
 
                             await cmd4.ExecuteNonQueryAsync().ConfigureAwait(false);
 

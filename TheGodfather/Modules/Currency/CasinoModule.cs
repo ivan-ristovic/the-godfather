@@ -47,14 +47,14 @@ namespace TheGodfather.Modules.Currency
             if (bid <= 0 || bid > 1000000000)
                 throw new InvalidCommandUsageException("Invalid bid amount! Needs to be in range [1, 1000000000]");
 
-            if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, bid).ConfigureAwait(false))
+            if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, ctx.Guild.Id, bid).ConfigureAwait(false))
                 throw new CommandFailedException("You do not have enough credits in WM bank!");
 
             await ctx.RespondAsync(embed: SlotMachine.EmbedSlotRoll(ctx.User, bid, out long won))
                 .ConfigureAwait(false);
 
             if (won > 0)
-                await Database.GiveCreditsToUserAsync(ctx.User.Id, won)
+                await Database.GiveCreditsToUserAsync(ctx.User.Id, ctx.Guild.Id, won)
                     .ConfigureAwait(false);
         }
         #endregion
@@ -70,7 +70,7 @@ namespace TheGodfather.Modules.Currency
             if (bid <= 0 || bid > 1000000000)
                 throw new InvalidCommandUsageException("Invalid bid amount! Needs to be in range [1, 1000000000]");
 
-            if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, bid).ConfigureAwait(false))
+            if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, ctx.Guild.Id, bid).ConfigureAwait(false))
                 throw new CommandFailedException("You do not have enough credits in WM bank!");
 
             var wof = new WheelOfFortune(ctx.Client.GetInteractivity(), ctx.Channel, ctx.User, bid);
@@ -78,7 +78,7 @@ namespace TheGodfather.Modules.Currency
                 .ConfigureAwait(false);
             
             if (wof.WonAmount > 0)
-                await Database.GiveCreditsToUserAsync(ctx.User.Id, wof.WonAmount)
+                await Database.GiveCreditsToUserAsync(ctx.User.Id, ctx.Guild.Id, wof.WonAmount)
                     .ConfigureAwait(false);
         }
         #endregion

@@ -22,6 +22,20 @@ SET row_security = off;
 CREATE SCHEMA gf;
 
 
+--
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+
+
+--
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: -
+--
+
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
+
 SET default_tablespace = '';
 
 SET default_with_oids = false;
@@ -31,8 +45,9 @@ SET default_with_oids = false;
 --
 
 CREATE TABLE gf.accounts (
-    uid bigint NOT NULL,
-    balance bigint DEFAULT 0 NOT NULL
+    uid bigint DEFAULT 0 NOT NULL,
+    balance bigint DEFAULT 0 NOT NULL,
+    gid bigint DEFAULT 0 NOT NULL
 );
 
 
@@ -193,18 +208,38 @@ ALTER SEQUENCE gf.filters_id_seq OWNED BY gf.filters.id;
 
 
 --
+-- Name: filters_id_seq1; Type: SEQUENCE; Schema: gf; Owner: -
+--
+
+CREATE SEQUENCE gf.filters_id_seq1
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: filters_id_seq1; Type: SEQUENCE OWNED BY; Schema: gf; Owner: -
+--
+
+ALTER SEQUENCE gf.filters_id_seq1 OWNED BY gf.filters.id;
+
+
+--
 -- Name: guild_cfg; Type: TABLE; Schema: gf; Owner: -
 --
 
 CREATE TABLE gf.guild_cfg (
     gid bigint NOT NULL,
-    welcome_cid bigint,
-    leave_cid bigint,
+    welcome_cid bigint DEFAULT 0 NOT NULL,
+    leave_cid bigint DEFAULT 0 NOT NULL,
     welcome_msg character varying(128),
     leave_msg character varying(128),
     prefix character varying(16) DEFAULT NULL::character varying,
-    suggestions_enabled boolean DEFAULT false,
-    log_cid bigint DEFAULT 0
+    suggestions_enabled boolean DEFAULT false NOT NULL,
+    log_cid bigint DEFAULT 0 NOT NULL
 );
 
 
@@ -421,7 +456,7 @@ ALTER SEQUENCE gf.statuses_id_seq OWNED BY gf.statuses.id;
 CREATE TABLE gf.subscriptions (
     id integer NOT NULL,
     cid bigint NOT NULL,
-    qname character varying(64) DEFAULT ''::character varying NOT NULL
+    qname character varying(64)
 );
 
 
@@ -562,7 +597,7 @@ ALTER TABLE ONLY gf.text_reactions ALTER COLUMN id SET DEFAULT nextval('gf.text_
 --
 
 ALTER TABLE ONLY gf.accounts
-    ADD CONSTRAINT accounts_pkey PRIMARY KEY (uid);
+    ADD CONSTRAINT accounts_pkey PRIMARY KEY (uid, gid);
 
 
 --
@@ -622,6 +657,14 @@ ALTER TABLE ONLY gf.emoji_reactions
 
 
 --
+-- Name: filters f_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
+--
+
+ALTER TABLE ONLY gf.filters
+    ADD CONSTRAINT f_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: feeds feeds_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
 --
 
@@ -635,14 +678,6 @@ ALTER TABLE ONLY gf.feeds
 
 ALTER TABLE ONLY gf.feeds
     ADD CONSTRAINT feeds_url_key UNIQUE (url);
-
-
---
--- Name: filters filters_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
---
-
-ALTER TABLE ONLY gf.filters
-    ADD CONSTRAINT filters_pkey PRIMARY KEY (id);
 
 
 --
@@ -888,6 +923,22 @@ ALTER TABLE ONLY gf.automatic_roles
 
 
 --
+-- Name: emoji_reactions er_fkey; Type: FK CONSTRAINT; Schema: gf; Owner: -
+--
+
+ALTER TABLE ONLY gf.emoji_reactions
+    ADD CONSTRAINT er_fkey FOREIGN KEY (gid) REFERENCES gf.guild_cfg(gid) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: filters f_fkey; Type: FK CONSTRAINT; Schema: gf; Owner: -
+--
+
+ALTER TABLE ONLY gf.filters
+    ADD CONSTRAINT f_fkey FOREIGN KEY (gid) REFERENCES gf.guild_cfg(gid) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
 -- Name: filters filters_fkey; Type: FK CONSTRAINT; Schema: gf; Owner: -
 --
 
@@ -901,6 +952,14 @@ ALTER TABLE ONLY gf.filters
 
 ALTER TABLE ONLY gf.items
     ADD CONSTRAINT items_fkey FOREIGN KEY (gid) REFERENCES gf.guild_cfg(gid) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: memes memes_fkey; Type: FK CONSTRAINT; Schema: gf; Owner: -
+--
+
+ALTER TABLE ONLY gf.memes
+    ADD CONSTRAINT memes_fkey FOREIGN KEY (gid) REFERENCES gf.guild_cfg(gid) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
