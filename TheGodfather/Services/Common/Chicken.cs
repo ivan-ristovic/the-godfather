@@ -68,7 +68,7 @@ namespace TheGodfather.Services.Common
         }
 
         private static long FindSellPriceForStrength(short str)
-            => (long)Math.Pow(10, 1 + str / (double)25);
+            => (long)Math.Pow(10, 1 + str / (double)50);
 
 
         public bool Train()
