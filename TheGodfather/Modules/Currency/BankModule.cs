@@ -1,4 +1,5 @@
 ﻿#region USING_DIRECTIVES
+using System;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -115,15 +116,54 @@ namespace TheGodfather.Modules.Currency
 
             StringBuilder sb = new StringBuilder();
             foreach (var row in top) {
-                if (!ulong.TryParse(row["uid"], out ulong uid))
-                    continue;
-                var u = await ctx.Client.GetUserAsync(uid)
-                    .ConfigureAwait(false);
-                sb.AppendLine($"{Formatter.Bold(u.Username)} : {row["balance"]}");
+                try {
+                    if (!ulong.TryParse(row["uid"], out ulong uid))
+                        continue;
+                    var u = await ctx.Client.GetUserAsync(uid)
+                        .ConfigureAwait(false);
+                    sb.AppendLine($"{Formatter.Bold(u.Username)} : {row["balance"]}");
+                } catch (Exception e) {
+                    TheGodfather.LogHandle.LogException(LogLevel.Warning, e);
+                }
             }
 
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
-                Title = "WEALTHIEST PEOPLE IN WM BANK:",
+                Title = $"Wealthiest users for guild {ctx.Guild.Name}",
+                Description = sb.ToString(),
+                Color = DiscordColor.Gold
+            }.Build()).ConfigureAwait(false);
+        }
+        #endregion
+
+        #region COMMAND_BANK_TOPGLOBAL
+        [Command("topglobal"), Module(ModuleType.Currency)]
+        [Description("Print the globally richest users.")]
+        [Aliases("globalleaderboard", "globalelite", "gtop")]
+        [UsageExample("!bank gtop")]
+        public async Task GetGlobalLeaderboardAsync(CommandContext ctx)
+        {
+            var top = await Database.GetTenRichestUsersAsync()
+                .ConfigureAwait(false);
+
+            StringBuilder sb = new StringBuilder();
+            foreach (var row in top) {
+                try {
+                    if (!ulong.TryParse(row["uid"], out ulong uid))
+                        continue;
+                    if (!ulong.TryParse(row["gid"], out ulong gid))
+                        continue;
+                    var u = await ctx.Client.GetUserAsync(uid)
+                        .ConfigureAwait(false);
+                    var g = await ctx.Client.GetGuildAsync(gid)
+                        .ConfigureAwait(false);
+                    sb.AppendLine($"{g.Name} | {Formatter.Bold(u.Username)} : {row["balance"]}");
+                } catch (Exception e) {
+                    TheGodfather.LogHandle.LogException(LogLevel.Warning, e);
+                }
+            }
+
+            await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
+                Title = "Globally wealthiest users:",
                 Description = sb.ToString(),
                 Color = DiscordColor.Gold
             }.Build()).ConfigureAwait(false);

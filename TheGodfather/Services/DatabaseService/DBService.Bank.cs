@@ -39,10 +39,13 @@ namespace TheGodfather.Services
             }
         }
 
-        public async Task<IReadOnlyList<IReadOnlyDictionary<string, string>>> GetTenRichestUsersAsync(ulong gid)
+        public async Task<IReadOnlyList<IReadOnlyDictionary<string, string>>> GetTenRichestUsersAsync(ulong gid = 0)
         {
-            var res = await ExecuteRawQueryAsync("SELECT * FROM gf.accounts ORDER BY balance DESC LIMIT 10")
-                .ConfigureAwait(false);
+            IReadOnlyList<IReadOnlyDictionary<string, string>> res;
+            if (gid != 0)
+                res = await ExecuteRawQueryAsync("SELECT * FROM gf.accounts ORDER BY balance DESC LIMIT 10").ConfigureAwait(false);
+            else
+                res = await ExecuteRawQueryAsync("SELECT * FROM gf.accounts WHERE gid = @gid ORDER BY balance DESC LIMIT 10").ConfigureAwait(false);
             return res;
         }
 
