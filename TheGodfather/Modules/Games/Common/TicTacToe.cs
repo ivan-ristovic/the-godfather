@@ -83,6 +83,8 @@ namespace TheGodfather.Modules.Games.Common
                 sb.AppendLine();
             }
 
+            sb.AppendLine().Append("User to move: ").AppendLine(_move % 2 == 0 ? _p1.Mention : _p2.Mention);
+
             await _msg.ModifyAsync(embed: new DiscordEmbedBuilder() {
                 Description = sb.ToString()
             }.Build()).ConfigureAwait(false);

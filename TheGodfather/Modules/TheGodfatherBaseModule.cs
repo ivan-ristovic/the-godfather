@@ -16,7 +16,7 @@ namespace TheGodfather.Modules
 {
     public abstract class TheGodfatherBaseModule : BaseCommandModule
     {
-        private static HttpClientHandler _handler = new HttpClientHandler { AllowAutoRedirect = false };
+        private static readonly HttpClientHandler _handler = new HttpClientHandler { AllowAutoRedirect = false };
         protected static HttpClient HTTPClient { get; } = new HttpClient(_handler, true);
 
         protected SharedData Shared { get; }

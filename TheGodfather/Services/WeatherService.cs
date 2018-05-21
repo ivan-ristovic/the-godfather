@@ -17,7 +17,7 @@ namespace TheGodfather.Services
 {
     public class WeatherService : TheGodfatherHttpService
     {
-        private string _key;
+        private readonly string _key;
 
 
         public WeatherService(string key)

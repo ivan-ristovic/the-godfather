@@ -7,7 +7,7 @@ namespace TheGodfather.Modules.Reactions.Common
         private static readonly int RESET_TIME_S = 60;
         private bool _cooldown = false;
         private DateTimeOffset _resetTime;
-        private object _lock = new object();
+        private readonly object _lock = new object();
 
 
         public TextReaction(int id, string trigger, string response, bool is_regex_trigger = false)

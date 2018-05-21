@@ -19,7 +19,7 @@ namespace TheGodfather.Modules.Games
         private DiscordMessage _msg;
         private DiscordUser _initiator;
         private string _word;
-        private char[] _hidden;
+        private readonly char[] _hidden;
         private int _lives = 6;
         private bool _gameOver = false;
         private SortedSet<char> _badguesses = new SortedSet<char>();

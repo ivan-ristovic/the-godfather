@@ -29,7 +29,7 @@ namespace TheGodfather.Common
         }
         public int BufferSize { get; set; } = 512;
         
-        private object _lock = new object();
+        private readonly object _lock = new object();
         private bool _filelog = true;
         private string _path = "gf_log.txt";
 

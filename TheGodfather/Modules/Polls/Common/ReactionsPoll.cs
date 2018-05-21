@@ -14,7 +14,7 @@ namespace TheGodfather.Modules.Polls.Common
 {
     public class ReactionsPoll : Poll
     {
-        private static Dictionary<string, int> _emojiid = new Dictionary<string, int>() {
+        private static readonly Dictionary<string, int> _emojiid = new Dictionary<string, int>() {
             { "1\u20e3" , 0 }, { ":one:" , 0 },
             { "2\u20e3" , 1 }, { ":two:" , 1 },
             { "3\u20e3" , 2 }, { ":three:" , 2 },

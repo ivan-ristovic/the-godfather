@@ -35,7 +35,7 @@ namespace TheGodfather.Modules.Music.Common
         }
         private bool _playing = false;
         private bool _stopped = false;
-        private object _lock = new object();
+        private readonly object _lock = new object();
         private ConcurrentQueue<SongInfo> _songs = new ConcurrentQueue<SongInfo>();
         private VoiceNextConnection _vnc;
         private DiscordChannel _channel;

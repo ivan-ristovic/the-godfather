@@ -17,7 +17,7 @@ namespace TheGodfather.Modules.Games.Common
 {
     public sealed class Connect4 : BoardGame
     {
-        private static string _header = string.Join("", StaticDiscordEmoji.Numbers.Take(9));
+        private static readonly string _header = string.Join("", StaticDiscordEmoji.Numbers.Take(9));
 
 
         public Connect4(InteractivityExtension interactivity, DiscordChannel channel, DiscordUser player1, DiscordUser player2, TimeSpan? movetime = null)
@@ -130,6 +130,8 @@ namespace TheGodfather.Modules.Games.Common
                     }
                 sb.AppendLine();
             }
+
+            sb.AppendLine().Append("User to move: ").AppendLine(_move % 2 == 0 ? _p1.Mention : _p2.Mention);
 
             await _msg.ModifyAsync(embed: new DiscordEmbedBuilder() {
                 Description = sb.ToString()

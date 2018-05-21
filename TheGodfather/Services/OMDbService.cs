@@ -16,7 +16,7 @@ namespace TheGodfather.Services
 {
     public class OMDbService : TheGodfatherHttpService, IGodfatherService
     {
-        private string _requestUrl;
+        private readonly string _requestUrl;
 
 
         public OMDbService(string key)
