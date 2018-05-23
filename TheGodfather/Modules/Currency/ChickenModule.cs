@@ -284,7 +284,7 @@ namespace TheGodfather.Modules.Currency
                 throw new CommandFailedException("There is a chicken war running in this channel. No sells are allowed before the war finishes.");
 
             var price = chicken.SellPrice;
-            if (!await ctx.AskYesNoQuestionAsync($"Are you sure you want to sell your chicken for {Formatter.Bold(price.ToString())} credits?"))
+            if (!await ctx.AskYesNoQuestionAsync($"{ctx.User.Mention}, are you sure you want to sell your chicken for {Formatter.Bold(price.ToString())} credits?"))
                 return;
 
             await Database.RemoveChickenAsync(ctx.User.Id, ctx.Guild.Id)
@@ -342,7 +342,7 @@ namespace TheGodfather.Modules.Currency
                 throw new CommandFailedException("There is a chicken war running in this channel. No trainings are allowed before the war finishes.");
 
             var price = chicken.TrainPrice;
-            if (!await ctx.AskYesNoQuestionAsync($"Are you sure you want to train your chicken for {Formatter.Bold(price.ToString())} credits?"))
+            if (!await ctx.AskYesNoQuestionAsync($"{ctx.User.Mention}, are you sure you want to train your chicken for {Formatter.Bold(price.ToString())} credits?"))
                 return;
 
             if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, ctx.Guild.Id, price).ConfigureAwait(false))
@@ -350,9 +350,9 @@ namespace TheGodfather.Modules.Currency
 
             string result;
             if (chicken.Train()) 
-                result = $"Your chicken learned alot from the training. New strength: {chicken.Strength}";
+                result = $"{ctx.User.Mention}'s chicken learned alot from the training. New strength: {chicken.Strength}";
             else 
-                result = $"Your chicken got tired and didn't learn anything. New strength: {chicken.Strength}";
+                result = $"{ctx.User.Mention}'s chicken got tired and didn't learn anything. New strength: {chicken.Strength}";
 
             await Database.ModifyChickenAsync(chicken, ctx.Guild.Id)
                 .ConfigureAwait(false);

@@ -101,7 +101,7 @@ namespace TheGodfather
                     Color = DiscordColor.Aquamarine
                 };
 
-                var entry = await GetFirstLogEntryAsync(e.Guild, AuditLogActionType.ChannelCreate)
+                var entry = await GetFirstLogEntryAsync(e.Guild, AuditLogActionType.ChannelUpdate)
                     .ConfigureAwait(false);
                 if (entry == null || !(entry is DiscordAuditLogChannelEntry centry)) {
                     emb.AddField("Error", "Failed to read audit log information. Please check my permissions");
@@ -119,7 +119,7 @@ namespace TheGodfather
                         emb.AddField("Permissions overwrites changed", $"{centry.OverwriteChange.After.Count} overwrites after changes");
                     if (centry.TopicChange != null)
                         emb.AddField("Topic changed to", centry.TopicChange.After);
-                    if (centry.TypeChange.After.HasValue)
+                    if (centry.TypeChange != null)
                         emb.AddField("Type changed to", centry.TypeChange.After.Value.ToString());
                     if (!string.IsNullOrWhiteSpace(centry.Reason))
                         emb.AddField("Reason", centry.Reason);
@@ -862,6 +862,7 @@ namespace TheGodfather
                 }.Build()).ConfigureAwait(false);
             }
         }
+
 
         private async Task<DiscordAuditLogEntry> GetFirstLogEntryAsync(DiscordGuild guild, AuditLogActionType type)
         {
