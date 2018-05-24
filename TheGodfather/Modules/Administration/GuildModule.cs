@@ -1,6 +1,5 @@
 ﻿#region USING_DIRECTIVES
 using System;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -14,6 +13,7 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using DSharpPlus.Interactivity;
 using DSharpPlus.Net.Models;
 #endregion
 
@@ -63,16 +63,23 @@ namespace TheGodfather.Modules.Administration
         [RequirePermissions(Permissions.ViewAuditLog)]
         public async Task GetAuditLogsAsync(CommandContext ctx)
         {
-            var bans = await ctx.Guild.GetAuditLogsAsync()
+            var logs = await ctx.Guild.GetAuditLogsAsync(20)
                 .ConfigureAwait(false);
 
-            await ctx.SendPaginatedCollectionAsync(
-                "Audit log",
-                bans,
-                le => $"- {le.CreationTimestamp} {Formatter.Bold(le.UserResponsible.Username)} | {Formatter.Bold(le.ActionType.ToString())} | Reason: {le.Reason}",
-                DiscordColor.Brown,
-                5
-            ).ConfigureAwait(false);
+            var pages = logs.Select(entry => new Page() {
+                Embed = new DiscordEmbedBuilder() {
+                    Title = $"Audit log entry #{entry.Id}",
+                    Color = DiscordColor.Brown,
+                    Timestamp = entry.CreationTimestamp
+                }.AddField("User responsible", entry.UserResponsible.ToString())
+                 .AddField("Action category", entry.ActionCategory.ToString(), inline: true)
+                 .AddField("Action type", entry.ActionType.ToString(), inline: true)
+                 .AddField("Reason", entry.Reason ?? "No reason provided")
+                 .Build()
+            });
+
+            await ctx.Client.GetInteractivity().SendPaginatedMessage(ctx.Channel, ctx.User, pages)
+                .ConfigureAwait(false);
         }
         #endregion
 
