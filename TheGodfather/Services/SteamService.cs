@@ -3,8 +3,6 @@ using System;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 
-using TheGodfather.Common;
-
 using DSharpPlus;
 using DSharpPlus.Entities;
 
@@ -24,6 +22,10 @@ namespace TheGodfather.Services
         {
             _steam = new SteamUser(key);
         }
+
+
+        public static string ProfileUrlForId(ulong id)
+            => $"http://steamcommunity.com/id/{ id }/";
 
 
         public async Task<DiscordEmbed> GetEmbeddedResultAsync(ulong id)
@@ -52,7 +54,7 @@ namespace TheGodfather.Services
                 Description = Regex.Replace(model.Summary, "<[^>]*>", ""),
                 ThumbnailUrl = model.AvatarFull.ToString(),
                 Color = DiscordColor.Black,
-                Url = $"http://steamcommunity.com/id/{model.SteamID}/"
+                Url = ProfileUrlForId(model.SteamID)
             };
 
             if (summary.ProfileVisibility != ProfileVisibility.Public) {
@@ -67,10 +69,13 @@ namespace TheGodfather.Services
             else
                 em.AddField("Last seen:", summary.LastLoggedOffDate.ToUniversalTime().ToString(), inline: true);
 
-            if (summary.PlayingGameName != null)
-                em.AddField("Playing: ", $"{summary.PlayingGameName}");
+            if (!string.IsNullOrWhiteSpace(summary.PlayingGameName))
+                em.AddField("Playing: ", summary.PlayingGameName);
 
-            //em.AddField("Game activity", $"{model.HoursPlayedLastTwoWeeks.ToString()} hours past 2 weeks.", inline: true);
+            if (!string.IsNullOrWhiteSpace(model.Location))
+                em.AddField("Location: ", model.Location);
+
+            //em.AddField("Game activity", $"{model.HoursPlayedLastTwoWeeks} hours past 2 weeks.", inline: true);
 
             if (model.IsVacBanned) {
                 var bans = _steam.GetPlayerBansAsync(model.SteamID).Result.Data;
@@ -79,7 +84,9 @@ namespace TheGodfather.Services
                 foreach (var b in bans)
                     bancount += b.NumberOfVACBans;
 
-                em.AddField("VAC Status:", $"**{bancount}** ban(s) on record.", inline: true);
+                em.AddField("VAC Status:", $"{Formatter.Bold(bancount.ToString())} ban(s) on record.", inline: true);
+            } else {
+                em.AddField("VAC Status:", "No bans registered");
             }
 
             return em.Build();

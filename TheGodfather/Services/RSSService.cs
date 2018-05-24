@@ -89,12 +89,12 @@ namespace TheGodfather.Services
                             }
 
                             var em = new DiscordEmbedBuilder() {
-                                Title = $"{newest.Title.Text}",
+                                Title = newest.Title.Text,
                                 Url = url,
                                 Timestamp = newest.LastUpdatedTime,
                                 Color = DiscordColor.White,
                             };
-                            
+
                             if (newest.Content is TextSyndicationContent content) {
                                 var matches = _urlRegex.Match(content.Text);
                                 if (matches.Success)

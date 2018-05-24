@@ -200,7 +200,7 @@ namespace TheGodfather.Modules.Currency
                 .ConfigureAwait(false);
             await Database.RemoveChickenAsync(loser.OwnerId, ctx.Guild.Id)
                 .ConfigureAwait(false);
-            await Database.GiveCreditsToUserAsync(winner.OwnerId, ctx.Guild.Id, gain * 200)
+            await Database.GiveCreditsToUserAsync(winner.OwnerId, ctx.Guild.Id, gain * 2000)
                 .ConfigureAwait(false);
 
             await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken,
