@@ -144,7 +144,7 @@ namespace TheGodfather.Modules.Currency
                 if (await Database.GetChickenInfoAsync(ctx.User.Id, ctx.Guild.Id).ConfigureAwait(false) != null)
                     throw new CommandFailedException("You already own a chicken!");
                 
-                if (!await ctx.AskYesNoQuestionAsync($"Are you sure you want to buy a chicken for {Formatter.Bold(Chicken.Price[type].ToString())} credits?"))
+                if (!await ctx.AskYesNoQuestionAsync($"{ctx.User.Mention}, are you sure you want to buy a chicken for {Formatter.Bold(Chicken.Price[type].ToString())} credits?"))
                     return;
 
                 if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, ctx.Guild.Id, Chicken.Price[type]).ConfigureAwait(false))

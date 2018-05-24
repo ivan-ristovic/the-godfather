@@ -18,7 +18,7 @@ namespace TheGodfather
     {
         private async Task Client_ChannelCreated(ChannelCreateEventArgs e)
         {
-            var logchn = await GetLogChannelForGuild(e.Guild.Id)
+            var logchn = await _shared.GetLogChannelForGuild(Client, e.Guild.Id)
                 .ConfigureAwait(false);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
@@ -46,7 +46,7 @@ namespace TheGodfather
 
         private async Task Client_ChannelDeleted(ChannelDeleteEventArgs e)
         {
-            var logchn = await GetLogChannelForGuild(e.Guild.Id)
+            var logchn = await _shared.GetLogChannelForGuild(Client, e.Guild.Id)
                 .ConfigureAwait(false);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
@@ -74,7 +74,7 @@ namespace TheGodfather
 
         private async Task Client_ChannelPinsUpdated(ChannelPinsUpdateEventArgs e)
         {
-            var logchn = await GetLogChannelForGuild(e.Channel.Guild.Id)
+            var logchn = await _shared.GetLogChannelForGuild(Client, e.Channel.Guild.Id)
                 .ConfigureAwait(false);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
@@ -93,7 +93,7 @@ namespace TheGodfather
             if (e.ChannelBefore.Position != e.ChannelAfter.Position)
                 return;
 
-            var logchn = await GetLogChannelForGuild(e.Guild.Id)
+            var logchn = await _shared.GetLogChannelForGuild(Client, e.Guild.Id)
                 .ConfigureAwait(false);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
@@ -145,7 +145,7 @@ namespace TheGodfather
 
         private async Task Client_GuildBanAdded(GuildBanAddEventArgs e)
         {
-            var logchn = await GetLogChannelForGuild(e.Guild.Id)
+            var logchn = await _shared.GetLogChannelForGuild(Client, e.Guild.Id)
                 .ConfigureAwait(false);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
@@ -173,7 +173,7 @@ namespace TheGodfather
 
         private async Task Client_GuildBanRemoved(GuildBanRemoveEventArgs e)
         {
-            var logchn = await GetLogChannelForGuild(e.Guild.Id)
+            var logchn = await _shared.GetLogChannelForGuild(Client, e.Guild.Id)
                 .ConfigureAwait(false);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
@@ -228,7 +228,7 @@ namespace TheGodfather
 
         private async Task Client_GuildEmojisUpdated(GuildEmojisUpdateEventArgs e)
         {
-            var logchn = await GetLogChannelForGuild(e.Guild.Id)
+            var logchn = await _shared.GetLogChannelForGuild(Client, e.Guild.Id)
                 .ConfigureAwait(false);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
@@ -265,7 +265,7 @@ namespace TheGodfather
 
         private async Task Client_GuildIntegrationsUpdated(GuildIntegrationsUpdateEventArgs e)
         {
-            var logchn = await GetLogChannelForGuild(e.Guild.Id)
+            var logchn = await _shared.GetLogChannelForGuild(Client, e.Guild.Id)
                 .ConfigureAwait(false);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
@@ -346,7 +346,7 @@ namespace TheGodfather
                 TheGodfather.LogHandle.LogException(LogLevel.Debug, exc);
             }
 
-            var logchn = await GetLogChannelForGuild(e.Guild.Id)
+            var logchn = await _shared.GetLogChannelForGuild(Client, e.Guild.Id)
                 .ConfigureAwait(false);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
@@ -410,7 +410,7 @@ namespace TheGodfather
                         .ConfigureAwait(false);
             }
 
-            var logchn = await GetLogChannelForGuild(e.Guild.Id)
+            var logchn = await _shared.GetLogChannelForGuild(Client, e.Guild.Id)
                 .ConfigureAwait(false);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
@@ -430,7 +430,7 @@ namespace TheGodfather
 
         private async Task Client_GuildMemberUpdated(GuildMemberUpdateEventArgs e)
         {
-            var logchn = await GetLogChannelForGuild(e.Guild.Id)
+            var logchn = await _shared.GetLogChannelForGuild(Client, e.Guild.Id)
                 .ConfigureAwait(false);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
@@ -471,7 +471,7 @@ namespace TheGodfather
 
         private async Task Client_GuildRoleCreated(GuildRoleCreateEventArgs e)
         {
-            var logchn = await GetLogChannelForGuild(e.Guild.Id)
+            var logchn = await _shared.GetLogChannelForGuild(Client, e.Guild.Id)
                 .ConfigureAwait(false);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
@@ -510,7 +510,7 @@ namespace TheGodfather
 
         private async Task Client_GuildRoleDeleted(GuildRoleDeleteEventArgs e)
         {
-            var logchn = await GetLogChannelForGuild(e.Guild.Id)
+            var logchn = await _shared.GetLogChannelForGuild(Client, e.Guild.Id)
                 .ConfigureAwait(false);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
@@ -552,7 +552,7 @@ namespace TheGodfather
             if (e.RoleBefore.Position != e.RoleAfter.Position)
                 return;
 
-            var logchn = await GetLogChannelForGuild(e.Guild.Id)
+            var logchn = await _shared.GetLogChannelForGuild(Client, e.Guild.Id)
                 .ConfigureAwait(false);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
@@ -598,7 +598,7 @@ namespace TheGodfather
 
         private async Task Client_GuildUpdated(GuildUpdateEventArgs e)
         {
-            var logchn = await GetLogChannelForGuild(e.Guild.Id)
+            var logchn = await _shared.GetLogChannelForGuild(Client, e.Guild.Id)
                 .ConfigureAwait(false);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
@@ -636,7 +636,7 @@ namespace TheGodfather
 
         private async Task Client_MessagesBulkDeleted(MessageBulkDeleteEventArgs e)
         {
-            var logchn = await GetLogChannelForGuild(e.Channel.Guild.Id)
+            var logchn = await _shared.GetLogChannelForGuild(Client, e.Channel.Guild.Id)
                    .ConfigureAwait(false);
             if (logchn != null) {
                 await logchn.SendMessageAsync(embed: new DiscordEmbedBuilder() {
@@ -750,7 +750,7 @@ namespace TheGodfather
             if (e.Channel.IsPrivate)
                 return;
 
-            var logchn = await GetLogChannelForGuild(e.Guild.Id)
+            var logchn = await _shared.GetLogChannelForGuild(Client, e.Guild.Id)
                 .ConfigureAwait(false);
             if (logchn != null && e.Message != null) {
                 var emb = new DiscordEmbedBuilder() {
@@ -818,7 +818,7 @@ namespace TheGodfather
             }
 
             try {
-                var logchn = await GetLogChannelForGuild(e.Guild.Id)
+                var logchn = await _shared.GetLogChannelForGuild(Client, e.Guild.Id)
                     .ConfigureAwait(false);
                 if (logchn != null && !e.Author.IsBot && e.Message.EditedTimestamp != null) {
                     var detailspre = $"{Formatter.BlockCode(string.IsNullOrWhiteSpace(e.MessageBefore?.Content) ? "<empty content>" : e.MessageBefore.Content)}\nCreated at: {(e.Message.CreationTimestamp != null ? e.Message.CreationTimestamp.ToUniversalTime().ToString() : "<unknown>")}, embeds: {e.MessageBefore.Embeds.Count}, reactions: {e.MessageBefore.Reactions.Count}, attachments: {e.MessageBefore.Attachments.Count}";
@@ -836,7 +836,7 @@ namespace TheGodfather
 
         private async Task Client_VoiceServerUpdated(VoiceServerUpdateEventArgs e)
         {
-            var logchn = await GetLogChannelForGuild(e.Guild.Id)
+            var logchn = await _shared.GetLogChannelForGuild(Client, e.Guild.Id)
                 .ConfigureAwait(false);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
@@ -852,7 +852,7 @@ namespace TheGodfather
 
         private async Task Client_WebhooksUpdated(WebhooksUpdateEventArgs e)
         {
-            var logchn = await GetLogChannelForGuild(e.Guild.Id)
+            var logchn = await _shared.GetLogChannelForGuild(Client, e.Guild.Id)
                 .ConfigureAwait(false);
             if (logchn != null) {
                 await logchn.SendMessageAsync(embed: new DiscordEmbedBuilder() {

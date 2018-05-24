@@ -14,6 +14,7 @@ using TheGodfather.Modules.Reactions.Common;
 using TheGodfather.Services;
 
 using DSharpPlus;
+using DSharpPlus.Entities;
 
 using TexasHoldem.Logic.Cards;
 #endregion
@@ -66,6 +67,23 @@ namespace TheGodfather
 
         public PartialGuildConfig GetGuildConfig(ulong gid)
             => GuildConfigurations.ContainsKey(gid) ? GuildConfigurations[gid] : PartialGuildConfig.Default;
+
+        public async Task<DiscordChannel> GetLogChannelForGuild(DiscordClient client, ulong gid)
+        {
+            var gcfg = GetGuildConfig(gid);
+            if (gcfg.LoggingEnabled) {
+                try {
+                    var channel = await client.GetChannelAsync(gcfg.LogChannelId)
+                        .ConfigureAwait(false);
+                    return channel;
+                } catch (Exception e) {
+                    TheGodfather.LogHandle.LogException(LogLevel.Warning, e);
+                    return null;
+                }
+            } else {
+                return null;
+            }
+        }
 
         public string GetGuildPrefix(ulong gid)
         {

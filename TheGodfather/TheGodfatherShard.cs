@@ -272,24 +272,5 @@ namespace TheGodfather
                 .ConfigureAwait(false);
         }
         #endregion
-
-        #region HELPER_FUNCTIONS
-        private async Task<DiscordChannel> GetLogChannelForGuild(ulong gid)
-        {
-            var gcfg = _shared.GetGuildConfig(gid);
-            if (gcfg.LoggingEnabled) {
-                try {
-                    var channel = await Client.GetChannelAsync(gcfg.LogChannelId)
-                        .ConfigureAwait(false);
-                    return channel;
-                } catch (Exception e) {
-                    TheGodfather.LogHandle.LogException(LogLevel.Warning, e);
-                    return null;
-                }
-            } else {
-                return null;
-            }
-        }
-        #endregion
     }
 }
