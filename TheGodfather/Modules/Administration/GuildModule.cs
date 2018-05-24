@@ -61,9 +61,13 @@ namespace TheGodfather.Modules.Administration
         [Aliases("auditlog", "viewlog", "getlog", "getlogs", "logs")]
         [UsageExample("!guild logs")]
         [RequirePermissions(Permissions.ViewAuditLog)]
-        public async Task GetAuditLogsAsync(CommandContext ctx)
+        public async Task GetAuditLogsAsync(CommandContext ctx,
+                                           [Description("Amount of entries to fetch")] int amount = 10)
         {
-            var logs = await ctx.Guild.GetAuditLogsAsync(20)
+            if (amount < 1 || amount > 50)
+                throw new InvalidCommandUsageException("Amount of entries must be in range [1,50].");
+
+            var logs = await ctx.Guild.GetAuditLogsAsync(amount)
                 .ConfigureAwait(false);
 
             var pages = logs.Select(entry => new Page() {
