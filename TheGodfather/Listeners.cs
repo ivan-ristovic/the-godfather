@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using TheGodfather.Common;
+using TheGodfather.Common.Attributes;
 using TheGodfather.Extensions;
 
 using DSharpPlus;
@@ -14,11 +15,12 @@ using DSharpPlus.Exceptions;
 
 namespace TheGodfather
 {
-    internal sealed partial class TheGodfatherShard
+    internal static class Listeners
     {
-        private async Task Client_ChannelCreated(ChannelCreateEventArgs e)
+        [AsyncEventListener(EventTypes.ChannelCreated)]
+        public static async Task Client_ChannelCreated(TheGodfatherShard shard, ChannelCreateEventArgs e)
         {
-            var logchn = await _shared.GetLogChannelForGuild(Client, e.Guild.Id)
+            var logchn = await shard.Shared.GetLogChannelForGuild(shard.Client, e.Guild.Id)
                 .ConfigureAwait(false);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
@@ -44,9 +46,10 @@ namespace TheGodfather
             }
         }
 
-        private async Task Client_ChannelDeleted(ChannelDeleteEventArgs e)
+        [AsyncEventListener(EventTypes.ChannelDeleted)]
+        public static async Task Client_ChannelDeleted(TheGodfatherShard shard, ChannelDeleteEventArgs e)
         {
-            var logchn = await _shared.GetLogChannelForGuild(Client, e.Guild.Id)
+            var logchn = await shard.Shared.GetLogChannelForGuild(shard.Client, e.Guild.Id)
                 .ConfigureAwait(false);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
@@ -72,9 +75,10 @@ namespace TheGodfather
             }
         }
 
-        private async Task Client_ChannelPinsUpdated(ChannelPinsUpdateEventArgs e)
+        [AsyncEventListener(EventTypes.ChannelPinsUpdated)]
+        public static async Task Client_ChannelPinsUpdated(TheGodfatherShard shard, ChannelPinsUpdateEventArgs e)
         {
-            var logchn = await _shared.GetLogChannelForGuild(Client, e.Channel.Guild.Id)
+            var logchn = await shard.Shared.GetLogChannelForGuild(shard.Client, e.Channel.Guild.Id)
                 .ConfigureAwait(false);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
@@ -88,12 +92,13 @@ namespace TheGodfather
             }
         }
 
-        private async Task Client_ChannelUpdated(ChannelUpdateEventArgs e)
+        [AsyncEventListener(EventTypes.ChannelUpdated)]
+        public static async Task Client_ChannelUpdated(TheGodfatherShard shard, ChannelUpdateEventArgs e)
         {
             if (e.ChannelBefore.Position != e.ChannelAfter.Position)
                 return;
 
-            var logchn = await _shared.GetLogChannelForGuild(Client, e.Guild.Id)
+            var logchn = await shard.Shared.GetLogChannelForGuild(shard.Client, e.Guild.Id)
                 .ConfigureAwait(false);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
@@ -131,21 +136,24 @@ namespace TheGodfather
             }
         }
 
-        private Task Client_Errored(ClientErrorEventArgs e)
+        [AsyncEventListener(EventTypes.ClientErrored)]
+        public static Task Client_Errored(TheGodfatherShard shard, ClientErrorEventArgs e)
         {
-            Log(LogLevel.Critical, $"Client errored: {e.Exception.GetType()}: {e.Exception.Message}");
+            shard.Log(LogLevel.Critical, $"Client errored: {e.Exception.GetType()}: {e.Exception.Message}");
             return Task.CompletedTask;
         }
 
-        private Task Client_GuildAvailable(GuildCreateEventArgs e)
+        [AsyncEventListener(EventTypes.GuildAvailable)]
+        public static Task Client_GuildAvailable(TheGodfatherShard shard, GuildCreateEventArgs e)
         {
-            Log(LogLevel.Info, $"Guild available: {e.Guild.ToString()}");
+            shard.Log(LogLevel.Info, $"Guild available: {e.Guild.ToString()}");
             return Task.CompletedTask;
         }
 
-        private async Task Client_GuildBanAdded(GuildBanAddEventArgs e)
+        [AsyncEventListener(EventTypes.GuildBanAdded)]
+        public static async Task Client_GuildBanAdded(TheGodfatherShard shard, GuildBanAddEventArgs e)
         {
-            var logchn = await _shared.GetLogChannelForGuild(Client, e.Guild.Id)
+            var logchn = await shard.Shared.GetLogChannelForGuild(shard.Client, e.Guild.Id)
                 .ConfigureAwait(false);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
@@ -171,9 +179,10 @@ namespace TheGodfather
             }
         }
 
-        private async Task Client_GuildBanRemoved(GuildBanRemoveEventArgs e)
+        [AsyncEventListener(EventTypes.GuildBanRemoved)]
+        public static async Task Client_GuildBanRemoved(TheGodfatherShard shard, GuildBanRemoveEventArgs e)
         {
-            var logchn = await _shared.GetLogChannelForGuild(Client, e.Guild.Id)
+            var logchn = await shard.Shared.GetLogChannelForGuild(shard.Client, e.Guild.Id)
                 .ConfigureAwait(false);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
@@ -198,18 +207,19 @@ namespace TheGodfather
             }
         }
 
-        private async Task Client_GuildCreated(GuildCreateEventArgs e)
+        [AsyncEventListener(EventTypes.GuildCreated)]
+        public static async Task Client_GuildCreated(TheGodfatherShard shard, GuildCreateEventArgs e)
         {
-            Log(LogLevel.Info, $"Joined guild: {e.Guild.ToString()}");
+            shard.Log(LogLevel.Info, $"Joined guild: {e.Guild.ToString()}");
 
-            await _db.RegisterGuildAsync(e.Guild.Id)
+            await shard.Database.RegisterGuildAsync(e.Guild.Id)
                 .ConfigureAwait(false);
-            _shared.GuildConfigurations.TryAdd(e.Guild.Id, PartialGuildConfig.Default);
+            shard.Shared.GuildConfigurations.TryAdd(e.Guild.Id, PartialGuildConfig.Default);
 
             var emoji = DiscordEmoji.FromName(e.Client, ":small_blue_diamond:");
             await e.Guild.GetDefaultChannel().SendIconEmbedAsync(
                 $"{Formatter.Bold("Thank you for adding me!")}\n\n" +
-                $"{emoji} The default prefix for commands is {Formatter.Bold(_shared.BotConfiguration.DefaultPrefix)}, but it can be changed using {Formatter.Bold("prefix")} command.\n" +
+                $"{emoji} The default prefix for commands is {Formatter.Bold(shard.Shared.BotConfiguration.DefaultPrefix)}, but it can be changed using {Formatter.Bold("prefix")} command.\n" +
                 $"{emoji} I advise you to run the configuration wizard for this guild in order to quickly configure functions like logging, notifications etc. The wizard can be invoked using {Formatter.Bold("guild config setup")} command.\n" +
                 $"{emoji} You can use the {Formatter.Bold("help")} command as a guide, though it is recommended to read the documentation @ https://github.com/ivan-ristovic/the-godfather\n" +
                 $"{emoji} If you have any questions or problems, feel free to use the {Formatter.Bold("report")} command in order send a message to the bot owner ({e.Client.CurrentApplication.Owner.Username}#{e.Client.CurrentApplication.Owner.Discriminator}). Alternatively, you can create an issue on GitHub or join WorldMafia discord server for quick support (https://discord.me/worldmafia).\n"
@@ -217,18 +227,20 @@ namespace TheGodfather
             ).ConfigureAwait(false);
         }
 
-        private async Task Client_GuildDeleted(GuildDeleteEventArgs e)
+        [AsyncEventListener(EventTypes.GuildDeleted)]
+        public static async Task Client_GuildDeleted(TheGodfatherShard shard, GuildDeleteEventArgs e)
         {
-            Log(LogLevel.Info, $"Left guild: {e.Guild.ToString()}");
+            shard.Log(LogLevel.Info, $"Left guild: {e.Guild.ToString()}");
 
-            await _db.UnregisterGuildAsync(e.Guild.Id)
+            await shard.Database.UnregisterGuildAsync(e.Guild.Id)
                 .ConfigureAwait(false);
-            _shared.GuildConfigurations.TryRemove(e.Guild.Id, out _);
+            shard.Shared.GuildConfigurations.TryRemove(e.Guild.Id, out _);
         }
 
-        private async Task Client_GuildEmojisUpdated(GuildEmojisUpdateEventArgs e)
+        [AsyncEventListener(EventTypes.GuildEmojisUpdated)]
+        public static async Task Client_GuildEmojisUpdated(TheGodfatherShard shard, GuildEmojisUpdateEventArgs e)
         {
-            var logchn = await _shared.GetLogChannelForGuild(Client, e.Guild.Id)
+            var logchn = await shard.Shared.GetLogChannelForGuild(shard.Client, e.Guild.Id)
                 .ConfigureAwait(false);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
@@ -263,9 +275,10 @@ namespace TheGodfather
             }
         }
 
-        private async Task Client_GuildIntegrationsUpdated(GuildIntegrationsUpdateEventArgs e)
+        [AsyncEventListener(EventTypes.GuildIntegrationsUpdated)]
+        public static async Task Client_GuildIntegrationsUpdated(TheGodfatherShard shard, GuildIntegrationsUpdateEventArgs e)
         {
-            var logchn = await _shared.GetLogChannelForGuild(Client, e.Guild.Id)
+            var logchn = await shard.Shared.GetLogChannelForGuild(shard.Client, e.Guild.Id)
                 .ConfigureAwait(false);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
@@ -277,34 +290,32 @@ namespace TheGodfather
             }
         }
 
-        private async Task Client_GuildMemberAdded(GuildMemberAddEventArgs e)
+        [AsyncEventListener(EventTypes.GuildMemberAdded)]
+        public static async Task Client_GuildMemberAdded(TheGodfatherShard shard, GuildMemberAddEventArgs e)
         {
             if (!TheGodfather.Listening)
                 return;
 
-            Log(LogLevel.Info,
-                $"Member joined: {e.Member.ToString()}<br>" +
-                $"{e.Guild.ToString()}"
-            );
+            shard.Log(LogLevel.Info, $"Member joined: {e.Member.ToString()}<br>{e.Guild.ToString()}");
 
             try {
-                var cid = await _db.GetWelcomeChannelIdAsync(e.Guild.Id)
+                var cid = await shard.Database.GetWelcomeChannelIdAsync(e.Guild.Id)
                     .ConfigureAwait(false);
                 if (cid != 0) {
                     try {
                         var chn = e.Guild.GetChannel(cid);
                         if (chn != null) {
-                            var msg = await _db.GetWelcomeMessageAsync(e.Guild.Id)
+                            var msg = await shard.Database.GetWelcomeMessageAsync(e.Guild.Id)
                                 .ConfigureAwait(false);
                             if (string.IsNullOrWhiteSpace(msg))
-                                await chn.SendIconEmbedAsync($"Welcome to {Formatter.Bold(e.Guild.Name)}, {e.Member.Mention}!", DiscordEmoji.FromName(Client, ":wave:")).ConfigureAwait(false);
+                                await chn.SendIconEmbedAsync($"Welcome to {Formatter.Bold(e.Guild.Name)}, {e.Member.Mention}!", DiscordEmoji.FromName(shard.Client, ":wave:")).ConfigureAwait(false);
                             else
-                                await chn.SendIconEmbedAsync(msg.Replace("%user%", e.Member.Mention), DiscordEmoji.FromName(Client, ":wave:")).ConfigureAwait(false);
+                                await chn.SendIconEmbedAsync(msg.Replace("%user%", e.Member.Mention), DiscordEmoji.FromName(shard.Client, ":wave:")).ConfigureAwait(false);
                         }
                     } catch (Exception exc) {
                         while (exc is AggregateException)
                             exc = exc.InnerException;
-                        Log(LogLevel.Debug,
+                        shard.Log(LogLevel.Debug,
                             $"Failed to send a welcome message!<br>" +
                             $"Channel ID: {cid}<br>" +
                             $"{e.Guild.ToString()}<br>" +
@@ -312,7 +323,7 @@ namespace TheGodfather
                             $"Message: {exc.Message}"
                         );
                         if (exc is NotFoundException)
-                            await _db.RemoveWelcomeChannelAsync(e.Guild.Id)
+                            await shard.Database.RemoveWelcomeChannelAsync(e.Guild.Id)
                                 .ConfigureAwait(false);
                     }
                 }
@@ -321,20 +332,20 @@ namespace TheGodfather
             }
 
             try {
-                var rids = await _db.GetAutomaticRolesForGuildAsync(e.Guild.Id)
+                var rids = await shard.Database.GetAutomaticRolesForGuildAsync(e.Guild.Id)
                     .ConfigureAwait(false);
                 foreach (var rid in rids) {
                     try {
                         var role = e.Guild.GetRole(rid);
                         if (role == null) {
-                            await _db.RemoveAutomaticRoleAsync(e.Guild.Id, rid)
+                            await shard.Database.RemoveAutomaticRoleAsync(e.Guild.Id, rid)
                                 .ConfigureAwait(false);
                         } else {
                             await e.Member.GrantRoleAsync(role)
                                 .ConfigureAwait(false);
                         }
                     } catch (Exception exc) {
-                        Log(LogLevel.Debug,
+                        shard.Log(LogLevel.Debug,
                             $"Failed to assign an automatic role to a new member!<br>" +
                             $"{e.Guild.ToString()}<br>" +
                             $"Exception: {exc.GetType()}<br>" +
@@ -346,7 +357,7 @@ namespace TheGodfather
                 TheGodfather.LogHandle.LogException(LogLevel.Debug, exc);
             }
 
-            var logchn = await _shared.GetLogChannelForGuild(Client, e.Guild.Id)
+            var logchn = await shard.Shared.GetLogChannelForGuild(shard.Client, e.Guild.Id)
                 .ConfigureAwait(false);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
@@ -364,19 +375,17 @@ namespace TheGodfather
             }
         }
 
-        private async Task Client_GuildMemberRemoved(GuildMemberRemoveEventArgs e)
+        [AsyncEventListener(EventTypes.GuildMemberRemoved)]
+        public static async Task Client_GuildMemberRemoved(TheGodfatherShard shard, GuildMemberRemoveEventArgs e)
         {
             if (!TheGodfather.Listening || e.Member.Id == e.Client.CurrentUser.Id)
                 return;
 
-            Log(LogLevel.Info,
-                $"Member left: {e.Member.ToString()}<br>" +
-                e.Guild.ToString()
-            );
+            shard.Log(LogLevel.Info, $"Member left: {e.Member.ToString()}<br>{e.Guild.ToString()}");
 
             ulong cid = 0;
             try {
-                cid = await _db.GetLeaveChannelIdAsync(e.Guild.Id)
+                cid = await shard.Database.GetLeaveChannelIdAsync(e.Guild.Id)
                     .ConfigureAwait(false);
             } catch (Exception exc) {
                 TheGodfather.LogHandle.LogException(LogLevel.Debug, exc);
@@ -388,17 +397,17 @@ namespace TheGodfather
             try {
                 var chn = e.Guild.GetChannel(cid);
                 if (chn != null) {
-                    var msg = await _db.GetLeaveMessageAsync(e.Guild.Id)
+                    var msg = await shard.Database.GetLeaveMessageAsync(e.Guild.Id)
                         .ConfigureAwait(false);
                     if (string.IsNullOrWhiteSpace(msg))
                         await chn.SendIconEmbedAsync($"{Formatter.Bold(e.Member?.Username ?? "<unknown user>")} left the server! Bye!", StaticDiscordEmoji.Wave).ConfigureAwait(false);
                     else
-                        await chn.SendIconEmbedAsync(msg.Replace("%user%", e.Member?.Username ?? "<unknown user>"), DiscordEmoji.FromName(Client, ":wave:")).ConfigureAwait(false);
+                        await chn.SendIconEmbedAsync(msg.Replace("%user%", e.Member?.Username ?? "<unknown user>"), DiscordEmoji.FromName(shard.Client, ":wave:")).ConfigureAwait(false);
                 }
             } catch (Exception exc) {
                 while (exc is AggregateException)
                     exc = exc.InnerException;
-                Log(LogLevel.Debug,
+                shard.Log(LogLevel.Debug,
                     $"Failed to send a leaving message!<br>" +
                     $"Channel ID: {cid}<br>" +
                     $"{e.Guild.ToString()}<br>" +
@@ -406,11 +415,11 @@ namespace TheGodfather
                     $"Message: {exc.Message}"
                 );
                 if (exc is NotFoundException)
-                    await _db.RemoveLeaveChannelAsync(e.Guild.Id)
+                    await shard.Database.RemoveLeaveChannelAsync(e.Guild.Id)
                         .ConfigureAwait(false);
             }
 
-            var logchn = await _shared.GetLogChannelForGuild(Client, e.Guild.Id)
+            var logchn = await shard.Shared.GetLogChannelForGuild(shard.Client, e.Guild.Id)
                 .ConfigureAwait(false);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
@@ -428,9 +437,10 @@ namespace TheGodfather
             }
         }
 
-        private async Task Client_GuildMemberUpdated(GuildMemberUpdateEventArgs e)
+        [AsyncEventListener(EventTypes.GuildMemberUpdated)]
+        public static async Task Client_GuildMemberUpdated(TheGodfatherShard shard, GuildMemberUpdateEventArgs e)
         {
-            var logchn = await _shared.GetLogChannelForGuild(Client, e.Guild.Id)
+            var logchn = await shard.Shared.GetLogChannelForGuild(shard.Client, e.Guild.Id)
                 .ConfigureAwait(false);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
@@ -469,9 +479,10 @@ namespace TheGodfather
             }
         }
 
-        private async Task Client_GuildRoleCreated(GuildRoleCreateEventArgs e)
+        [AsyncEventListener(EventTypes.GuildRoleCreated)]
+        public static async Task Client_GuildRoleCreated(TheGodfatherShard shard, GuildRoleCreateEventArgs e)
         {
-            var logchn = await _shared.GetLogChannelForGuild(Client, e.Guild.Id)
+            var logchn = await shard.Shared.GetLogChannelForGuild(shard.Client, e.Guild.Id)
                 .ConfigureAwait(false);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
@@ -508,9 +519,10 @@ namespace TheGodfather
             }
         }
 
-        private async Task Client_GuildRoleDeleted(GuildRoleDeleteEventArgs e)
+        [AsyncEventListener(EventTypes.GuildRoleDeleted)]
+        public static async Task Client_GuildRoleDeleted(TheGodfatherShard shard, GuildRoleDeleteEventArgs e)
         {
-            var logchn = await _shared.GetLogChannelForGuild(Client, e.Guild.Id)
+            var logchn = await shard.Shared.GetLogChannelForGuild(shard.Client, e.Guild.Id)
                 .ConfigureAwait(false);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
@@ -547,12 +559,13 @@ namespace TheGodfather
             }
         }
 
-        private async Task Client_GuildRoleUpdated(GuildRoleUpdateEventArgs e)
+        [AsyncEventListener(EventTypes.GuildRoleUpdated)]
+        public static async Task Client_GuildRoleUpdated(TheGodfatherShard shard, GuildRoleUpdateEventArgs e)
         {
             if (e.RoleBefore.Position != e.RoleAfter.Position)
                 return;
 
-            var logchn = await _shared.GetLogChannelForGuild(Client, e.Guild.Id)
+            var logchn = await shard.Shared.GetLogChannelForGuild(shard.Client, e.Guild.Id)
                 .ConfigureAwait(false);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
@@ -590,15 +603,17 @@ namespace TheGodfather
             }
         }
 
-        private Task Client_GuildUnavailable(GuildDeleteEventArgs e)
+        [AsyncEventListener(EventTypes.GuildAvailable)]
+        public static Task Client_GuildUnavailable(TheGodfatherShard shard, GuildDeleteEventArgs e)
         {
-            Log(LogLevel.Info, $"Guild unavailable: {e.Guild.ToString()}");
+            shard.Log(LogLevel.Info, $"Guild unavailable: {e.Guild.ToString()}");
             return Task.CompletedTask;
         }
 
-        private async Task Client_GuildUpdated(GuildUpdateEventArgs e)
+        [AsyncEventListener(EventTypes.GuildUpdated)]
+        public static async Task Client_GuildUpdated(TheGodfatherShard shard, GuildUpdateEventArgs e)
         {
-            var logchn = await _shared.GetLogChannelForGuild(Client, e.Guild.Id)
+            var logchn = await shard.Shared.GetLogChannelForGuild(shard.Client, e.Guild.Id)
                 .ConfigureAwait(false);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
@@ -634,9 +649,10 @@ namespace TheGodfather
             }
         }
 
-        private async Task Client_MessagesBulkDeleted(MessageBulkDeleteEventArgs e)
+        [AsyncEventListener(EventTypes.MessagesBulkDeleted)]
+        public static async Task Client_MessagesBulkDeleted(TheGodfatherShard shard, MessageBulkDeleteEventArgs e)
         {
-            var logchn = await _shared.GetLogChannelForGuild(Client, e.Channel.Guild.Id)
+            var logchn = await shard.Shared.GetLogChannelForGuild(shard.Client, e.Channel.Guild.Id)
                    .ConfigureAwait(false);
             if (logchn != null) {
                 await logchn.SendMessageAsync(embed: new DiscordEmbedBuilder() {
@@ -647,31 +663,32 @@ namespace TheGodfather
             }
         }
 
-        private async Task Client_MessageCreated(MessageCreateEventArgs e)
+        [AsyncEventListener(EventTypes.MessageCreated)]
+        public static async Task Client_MessageCreated(TheGodfatherShard shard, MessageCreateEventArgs e)
         {
             if (e.Author.IsBot || !TheGodfather.Listening)
                 return;
 
             if (e.Channel.IsPrivate) {
-                Log(LogLevel.Info, $"Ignored DM from {e.Author.ToString()}:<br>{e.Message}");
+                TheGodfather.LogHandle.LogMessage(LogLevel.Info, $"Ignored DM from {e.Author.ToString()}:<br>{e.Message}");
                 return;
             }
 
-            if (_shared.BlockedChannels.Contains(e.Channel.Id))
+            if (shard.Shared.BlockedChannels.Contains(e.Channel.Id))
                 return;
 
             // Check if message contains filter
-            if (e.Message.Content != null && _shared.MessageContainsFilter(e.Guild.Id, e.Message.Content)) {
+            if (e.Message.Content != null && shard.Shared.MessageContainsFilter(e.Guild.Id, e.Message.Content)) {
                 try {
                     await e.Channel.DeleteMessageAsync(e.Message, "_gf: Filter hit")
                         .ConfigureAwait(false);
-                    Log(LogLevel.Debug,
+                    shard.Log(LogLevel.Debug,
                         $"Filter triggered in message: {e.Message.Content.Replace('\n', ' ')}<br>" +
                         $"{e.Message.Author.ToString()}<br>" +
                         $"{e.Guild.ToString()} | {e.Channel.ToString()}"
                     );
                 } catch (UnauthorizedException) {
-                    Log(LogLevel.Debug,
+                    shard.Log(LogLevel.Debug,
                         $"Filter triggered in message but missing permissions to delete!<br>" +
                         $"Message: {e.Message.Content.Replace('\n', ' ')}<br>" +
                         $"{e.Message.Author.ToString()}<br>" +
@@ -682,7 +699,7 @@ namespace TheGodfather
             }
 
             // If the user is blocked, ignore
-            if (_shared.BlockedUsers.Contains(e.Author.Id))
+            if (shard.Shared.BlockedUsers.Contains(e.Author.Id))
                 return;
 
             // Since below actions require SendMessages permission, checking it now
@@ -690,18 +707,18 @@ namespace TheGodfather
                 return;
 
             // Update message count for the user that sent the message
-            int rank = _shared.UpdateMessageCount(e.Author.Id);
+            int rank = shard.Shared.UpdateMessageCount(e.Author.Id);
             if (rank != -1) {
-                var ranks = _shared.Ranks;
-                await e.Channel.SendIconEmbedAsync($"GG {e.Author.Mention}! You have advanced to level {rank} ({(rank < ranks.Count ? ranks[rank] : "Low")})!", DiscordEmoji.FromName(Client, ":military_medal:"))
+                var ranks = shard.Shared.Ranks;
+                await e.Channel.SendIconEmbedAsync($"GG {e.Author.Mention}! You have advanced to level {rank} ({(rank < ranks.Count ? ranks[rank] : "Low")})!", DiscordEmoji.FromName(shard.Client, ":military_medal:"))
                     .ConfigureAwait(false);
             }
 
             // Check if message has a text reaction
-            if (_shared.TextReactions.ContainsKey(e.Guild.Id)) {
-                var tr = _shared.TextReactions[e.Guild.Id]?.FirstOrDefault(r => r.Matches(e.Message.Content));
+            if (shard.Shared.TextReactions.ContainsKey(e.Guild.Id)) {
+                var tr = shard.Shared.TextReactions[e.Guild.Id]?.FirstOrDefault(r => r.Matches(e.Message.Content));
                 if (tr != null && tr.CanSend()) {
-                    Log(LogLevel.Debug,
+                    shard.Log(LogLevel.Debug,
                         $"Text reaction detected: {tr.Response}<br>" +
                         $"Message: {e.Message.Content.Replace('\n', ' ')}<br>" +
                         $"{e.Message.Author.ToString()}<br>" +
@@ -716,24 +733,24 @@ namespace TheGodfather
                 return;
 
             // Check if message has an emoji reaction
-            if (_shared.EmojiReactions.ContainsKey(e.Guild.Id)) {
-                var ereactions = _shared.EmojiReactions[e.Guild.Id].Where(er => er.Matches(e.Message.Content));
+            if (shard.Shared.EmojiReactions.ContainsKey(e.Guild.Id)) {
+                var ereactions = shard.Shared.EmojiReactions[e.Guild.Id].Where(er => er.Matches(e.Message.Content));
                 foreach (var er in ereactions) {
-                    Log(LogLevel.Debug,
+                    shard.Log(LogLevel.Debug,
                         $"Emoji reaction detected: {er.Response}<br>" +
                         $"Message: {e.Message.Content.Replace('\n', ' ')}<br>" +
                         $"{e.Message.Author.ToString()}<br>" +
                         $"{e.Guild.ToString()} | {e.Channel.ToString()}"
                     );
                     try {
-                        var emoji = DiscordEmoji.FromName(Client, er.Response);
+                        var emoji = DiscordEmoji.FromName(shard.Client, er.Response);
                         await e.Message.CreateReactionAsync(emoji)
                             .ConfigureAwait(false);
                     } catch (ArgumentException) {
-                        await _db.RemoveAllEmojiReactionTriggersForReactionAsync(e.Guild.Id, er.Response)
+                        await shard.Database.RemoveAllEmojiReactionTriggersForReactionAsync(e.Guild.Id, er.Response)
                             .ConfigureAwait(false);
                     } catch (UnauthorizedException) {
-                        Log(LogLevel.Debug,
+                        shard.Log(LogLevel.Debug,
                             $"Emoji reaction trigger found but missing permissions to add reactions!<br>" +
                             $"Message: '{e.Message.Content.Replace('\n', ' ')}<br>" +
                             $"{e.Message.Author.ToString()}<br>" +
@@ -745,12 +762,13 @@ namespace TheGodfather
             }
         }
 
-        private async Task Client_MessageDeleted(MessageDeleteEventArgs e)
+        [AsyncEventListener(EventTypes.MessageDeleted)]
+        public static async Task Client_MessageDeleted(TheGodfatherShard shard, MessageDeleteEventArgs e)
         {
             if (e.Channel.IsPrivate)
                 return;
 
-            var logchn = await _shared.GetLogChannelForGuild(Client, e.Guild.Id)
+            var logchn = await shard.Shared.GetLogChannelForGuild(shard.Client, e.Guild.Id)
                 .ConfigureAwait(false);
             if (logchn != null && e.Message != null) {
                 var emb = new DiscordEmbedBuilder() {
@@ -768,7 +786,7 @@ namespace TheGodfather
                     emb.AddField("User responsible", mentry.UserResponsible.Mention, inline: true);
                     if (!string.IsNullOrWhiteSpace(mentry.Reason))
                         emb.AddField("Reason", mentry.Reason);
-                    else if (_shared.MessageContainsFilter(e.Guild.Id, e.Message.Content))
+                    else if (shard.Shared.MessageContainsFilter(e.Guild.Id, e.Message.Content))
                         emb.AddField("Reason", "Filter triggered");
                     emb.WithFooter($"At {mentry.CreationTimestamp.ToUniversalTime().ToString()} UTC", mentry.UserResponsible.AvatarUrl);
                 }
@@ -787,28 +805,29 @@ namespace TheGodfather
             }
         }
 
-        private async Task Client_MessageUpdated(MessageUpdateEventArgs e)
+        [AsyncEventListener(EventTypes.MessageUpdated)]
+        public static async Task Client_MessageUpdated(TheGodfatherShard shard, MessageUpdateEventArgs e)
         {
             if (e.Author == null || e.Message == null || !TheGodfather.Listening || e.Channel.IsPrivate)
                 return;
 
-            if (_shared.BlockedChannels.Contains(e.Channel.Id))
+            if (shard.Shared.BlockedChannels.Contains(e.Channel.Id))
                 return;
 
             // Check if message contains filter
-            if (!e.Author.IsBot && e.Message.Content != null && _shared.MessageContainsFilter(e.Guild.Id, e.Message.Content)) {
+            if (!e.Author.IsBot && e.Message.Content != null && shard.Shared.MessageContainsFilter(e.Guild.Id, e.Message.Content)) {
                 try {
                     await e.Channel.DeleteMessageAsync(e.Message, "_gf: Filter hit after update")
                         .ConfigureAwait(false);
 
-                    Log(LogLevel.Debug,
+                    shard.Log(LogLevel.Debug,
                         $"Filter triggered after message edit:<br>" +
                         $"Message: {e.Message.Content.Replace('\n', ' ')}<br>" +
                         $"{e.Message.Author.ToString()}<br>" +
                         $"{e.Guild.ToString()} | {e.Channel.ToString()}"
                     );
                 } catch (UnauthorizedException) {
-                    Log(LogLevel.Debug,
+                    shard.Log(LogLevel.Debug,
                         $"Filter triggered in edited message but missing permissions to delete!<br>" +
                         $"Message: '{e.Message.Content.Replace('\n', ' ')}<br>" +
                         $"{e.Message.Author.ToString()}<br>" +
@@ -818,7 +837,7 @@ namespace TheGodfather
             }
 
             try {
-                var logchn = await _shared.GetLogChannelForGuild(Client, e.Guild.Id)
+                var logchn = await shard.Shared.GetLogChannelForGuild(shard.Client, e.Guild.Id)
                     .ConfigureAwait(false);
                 if (logchn != null && !e.Author.IsBot && e.Message.EditedTimestamp != null) {
                     var detailspre = $"{Formatter.BlockCode(string.IsNullOrWhiteSpace(e.MessageBefore?.Content) ? "<empty content>" : e.MessageBefore.Content)}\nCreated at: {(e.Message.CreationTimestamp != null ? e.Message.CreationTimestamp.ToUniversalTime().ToString() : "<unknown>")}, embeds: {e.MessageBefore.Embeds.Count}, reactions: {e.MessageBefore.Reactions.Count}, attachments: {e.MessageBefore.Attachments.Count}";
@@ -834,9 +853,10 @@ namespace TheGodfather
             }
         }
 
-        private async Task Client_VoiceServerUpdated(VoiceServerUpdateEventArgs e)
+        [AsyncEventListener(EventTypes.VoiceServerUpdated)]
+        public static async Task Client_VoiceServerUpdated(TheGodfatherShard shard, VoiceServerUpdateEventArgs e)
         {
-            var logchn = await _shared.GetLogChannelForGuild(Client, e.Guild.Id)
+            var logchn = await shard.Shared.GetLogChannelForGuild(shard.Client, e.Guild.Id)
                 .ConfigureAwait(false);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
@@ -850,9 +870,10 @@ namespace TheGodfather
             }
         }
 
-        private async Task Client_WebhooksUpdated(WebhooksUpdateEventArgs e)
+        [AsyncEventListener(EventTypes.WebhooksUpdated)]
+        public static async Task Client_WebhooksUpdated(TheGodfatherShard shard, WebhooksUpdateEventArgs e)
         {
-            var logchn = await _shared.GetLogChannelForGuild(Client, e.Guild.Id)
+            var logchn = await shard.Shared.GetLogChannelForGuild(shard.Client, e.Guild.Id)
                 .ConfigureAwait(false);
             if (logchn != null) {
                 await logchn.SendMessageAsync(embed: new DiscordEmbedBuilder() {
@@ -864,7 +885,7 @@ namespace TheGodfather
         }
 
 
-        private async Task<DiscordAuditLogEntry> GetFirstLogEntryAsync(DiscordGuild guild, AuditLogActionType type)
+        public static async Task<DiscordAuditLogEntry> GetFirstLogEntryAsync(DiscordGuild guild, AuditLogActionType type)
         {
             try {
                 var entries = await guild.GetAuditLogsAsync(1, action_type: type)

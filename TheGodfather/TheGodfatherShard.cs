@@ -28,7 +28,7 @@ using DSharpPlus.VoiceNext;
 
 namespace TheGodfather
 {
-    internal sealed partial class TheGodfatherShard
+    internal sealed class TheGodfatherShard
     {
         #region PUBLIC_FIELDS
         public int ShardId { get; }
@@ -40,16 +40,16 @@ namespace TheGodfather
         #endregion
 
         #region PRIVATE_FIELDS
-        private SharedData _shared { get; }
-        private DBService _db { get; }
+        internal SharedData Shared { get; }
+        internal DBService Database { get; }
         #endregion
 
 
         public TheGodfatherShard(int sid, DBService db, SharedData shared)
         {
             ShardId = sid;
-            _db = db;
-            _shared = shared;
+            Database = db;
+            Shared = shared;
         }
 
 
@@ -78,11 +78,11 @@ namespace TheGodfather
         private void SetupClient()
         {
             var cfg = new DiscordConfiguration {
-                Token = _shared.BotConfiguration.Token,
+                Token = Shared.BotConfiguration.Token,
                 TokenType = TokenType.Bot,
                 AutoReconnect = true,
                 LargeThreshold = 250,
-                ShardCount = _shared.BotConfiguration.ShardCount,
+                ShardCount = Shared.BotConfiguration.ShardCount,
                 ShardId = ShardId,
                 UseInternalLogHandler = false,
                 LogLevel = TheGodfather.LogHandle.LogLevel
@@ -95,6 +95,8 @@ namespace TheGodfather
 
             Client.DebugLogger.LogMessageReceived += (s, e) => TheGodfather.LogHandle.LogMessage(ShardId, e);
 
+            AsyncEventListenerHandler.InstallListeners(Client, this);
+            /*
             Client.ChannelCreated += Client_ChannelCreated;
             Client.ChannelDeleted += Client_ChannelDeleted;
             Client.ChannelPinsUpdated += Client_ChannelPinsUpdated;
@@ -122,6 +124,7 @@ namespace TheGodfather
             Client.MessageUpdated += Client_MessageUpdated;
             Client.VoiceServerUpdated += Client_VoiceServerUpdated;
             Client.WebhooksUpdated += Client_WebhooksUpdated;
+            */
         }
 
         private void SetupCommands()
@@ -132,15 +135,15 @@ namespace TheGodfather
                 EnableMentionPrefix = true,
                 PrefixResolver = PrefixResolverAsync,
                 Services = new ServiceCollection()
-                    .AddSingleton(new YoutubeService(_shared.BotConfiguration.YouTubeKey))
-                    .AddSingleton(new GiphyService(_shared.BotConfiguration.GiphyKey))
-                    .AddSingleton(new ImgurService(_shared.BotConfiguration.ImgurKey))
-                    .AddSingleton(new OMDbService(_shared.BotConfiguration.OMDbKey))
-                    .AddSingleton(new SteamService(_shared.BotConfiguration.SteamKey))
-                    .AddSingleton(new WeatherService(_shared.BotConfiguration.WeatherKey))
+                    .AddSingleton(new YoutubeService(Shared.BotConfiguration.YouTubeKey))
+                    .AddSingleton(new GiphyService(Shared.BotConfiguration.GiphyKey))
+                    .AddSingleton(new ImgurService(Shared.BotConfiguration.ImgurKey))
+                    .AddSingleton(new OMDbService(Shared.BotConfiguration.OMDbKey))
+                    .AddSingleton(new SteamService(Shared.BotConfiguration.SteamKey))
+                    .AddSingleton(new WeatherService(Shared.BotConfiguration.WeatherKey))
                     .AddSingleton(this)
-                    .AddSingleton(_db)
-                    .AddSingleton(_shared)
+                    .AddSingleton(Database)
+                    .AddSingleton(Shared)
                     .BuildServiceProvider(),
             });
             Commands.SetHelpFormatter<CustomHelpFormatter>();
@@ -177,7 +180,7 @@ namespace TheGodfather
 
         private Task<int> PrefixResolverAsync(DiscordMessage m)
         {
-            string p = _shared.GetGuildPrefix(m.Channel.Guild.Id) ?? _shared.BotConfiguration.DefaultPrefix;
+            string p = Shared.GetGuildPrefix(m.Channel.Guild.Id) ?? Shared.BotConfiguration.DefaultPrefix;
             return Task.FromResult(m.GetStringPrefixLength(p));
         }
         #endregion
@@ -220,7 +223,7 @@ namespace TheGodfather
                 Color = DiscordColor.Red
             };
 
-            if (_shared.GuildConfigurations[e.Context.Guild.Id].SuggestionsEnabled && ex is CommandNotFoundException cne) {
+            if (Shared.GuildConfigurations[e.Context.Guild.Id].SuggestionsEnabled && ex is CommandNotFoundException cne) {
                 emb.WithTitle($"Command {cne.CommandName} not found. Did you mean...");
                 var ordered = CommandNames
                     .OrderBy(tup => cne.CommandName.LevenshteinDistance(tup.Item1))
