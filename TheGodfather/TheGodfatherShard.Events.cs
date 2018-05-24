@@ -391,9 +391,9 @@ namespace TheGodfather
                     var msg = await _db.GetLeaveMessageAsync(e.Guild.Id)
                         .ConfigureAwait(false);
                     if (string.IsNullOrWhiteSpace(msg))
-                        await chn.SendIconEmbedAsync($"{Formatter.Bold(e.Member?.Username ?? "<unknown>")} left the server! Bye!", StaticDiscordEmoji.Wave).ConfigureAwait(false);
+                        await chn.SendIconEmbedAsync($"{Formatter.Bold(e.Member?.Username ?? "<unknown user>")} left the server! Bye!", StaticDiscordEmoji.Wave).ConfigureAwait(false);
                     else
-                        await chn.SendIconEmbedAsync(msg.Replace("%user%", e.Member.Mention), DiscordEmoji.FromName(Client, ":wave:")).ConfigureAwait(false);
+                        await chn.SendIconEmbedAsync(msg.Replace("%user%", e.Member?.Username ?? "<unknown user>"), DiscordEmoji.FromName(Client, ":wave:")).ConfigureAwait(false);
                 }
             } catch (Exception exc) {
                 while (exc is AggregateException)

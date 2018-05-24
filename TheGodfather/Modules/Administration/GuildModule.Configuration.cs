@@ -171,13 +171,13 @@ namespace TheGodfather.Modules.Administration
                     sb.AppendLine(Formatter.Bold("off"));
                 }
                 if (wcid != 0) {
-                    sb.AppendLine($"Welcome messages {Formatter.Bold("enabled")} in {ctx.Guild.GetChannel(wcid).Mention}");
+                    sb.AppendLine($"Welcome messages {Formatter.Bold("Enabled")} in {ctx.Guild.GetChannel(wcid).Mention}");
                     sb.AppendLine($"Welcome message: {Formatter.BlockCode(wmessage ?? "default")}");
                 } else {
                     sb.AppendLine($"Welcome messages: {Formatter.Bold("disabled")}");
                 }
                 if (lcid != 0) {
-                    sb.AppendLine($"Leave messages {Formatter.Bold("enabled")} in {ctx.Guild.GetChannel(lcid).Mention}");
+                    sb.AppendLine($"Leave messages {Formatter.Bold("Enabled")} in {ctx.Guild.GetChannel(lcid).Mention}");
                     sb.AppendLine($"Leave message: {Formatter.BlockCode(lmessage ?? "default")}");
                 } else {
                     sb.AppendLine($"Leave messages: {Formatter.Bold("disabled")}");
@@ -196,6 +196,24 @@ namespace TheGodfather.Modules.Administration
                     await Database.SetLeaveChannelAsync(ctx.Guild.Id, lcid)
                         .ConfigureAwait(false);
                     await Database.SetLeaveMessageAsync(ctx.Guild.Id, lmessage)
+                        .ConfigureAwait(false);
+                }
+
+                var logchn = await Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild.Id)
+                .ConfigureAwait(false);
+                if (logchn != null) {
+                    var emb = new DiscordEmbedBuilder() {
+                        Title = "Guild config changed",
+                        Color = DiscordColor.Brown
+                    };
+                    emb.AddField("User responsible", ctx.User.Mention, inline: true);
+                    emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
+                    emb.AddField("Prefix", Shared.GetGuildPrefix(ctx.Guild.Id), inline: true);
+                    emb.AddField("Command suggestions", gcfg.SuggestionsEnabled ? "on" : "off", inline: true);
+                    emb.AddField("Action logging", gcfg.LoggingEnabled ? "on" : "off", inline: true);
+                    emb.AddField("Welcome messages", wcid != 0 ? "on" : "off", inline: true);
+                    emb.AddField("Leave messages", lcid != 0 ? "on" : "off", inline: true);
+                    await logchn.SendMessageAsync(embed: emb.Build())
                         .ConfigureAwait(false);
                 }
 
@@ -220,7 +238,7 @@ namespace TheGodfather.Modules.Administration
                 public async Task ExecuteGroupAsync(CommandContext ctx)
                 {
                     var gcfg = Shared.GetGuildConfig(ctx.Guild.Id);
-                    await ctx.RespondWithIconEmbedAsync($"Command suggestions for this guild are {Formatter.Bold(gcfg.SuggestionsEnabled ? "enabled" : "disabled")}!")
+                    await ctx.RespondWithIconEmbedAsync($"Command suggestions for this guild are {Formatter.Bold(gcfg.SuggestionsEnabled ? "Enabled" : "disabled")}!")
                         .ConfigureAwait(false);
                 }
 
@@ -236,6 +254,21 @@ namespace TheGodfather.Modules.Administration
                     gcfg.SuggestionsEnabled = true;
                     await Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg)
                         .ConfigureAwait(false);
+
+                    var logchn = await Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild.Id)
+                    .ConfigureAwait(false);
+                    if (logchn != null) {
+                        var emb = new DiscordEmbedBuilder() {
+                            Title = "Guild config changed",
+                            Color = DiscordColor.Brown
+                        };
+                        emb.AddField("User responsible", ctx.User.Mention, inline: true);
+                        emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
+                        emb.AddField("Command suggestions", gcfg.SuggestionsEnabled ? "on" : "off", inline: true);
+                        await logchn.SendMessageAsync(embed: emb.Build())
+                            .ConfigureAwait(false);
+                    }
+
                     await ctx.RespondWithIconEmbedAsync("Enabled command suggestions!")
                         .ConfigureAwait(false);
                 }
@@ -252,6 +285,21 @@ namespace TheGodfather.Modules.Administration
                     gcfg.SuggestionsEnabled = false;
                     await Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg)
                         .ConfigureAwait(false);
+
+                    var logchn = await Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild.Id)
+                    .ConfigureAwait(false);
+                    if (logchn != null) {
+                        var emb = new DiscordEmbedBuilder() {
+                            Title = "Guild config changed",
+                            Color = DiscordColor.Brown
+                        };
+                        emb.AddField("User responsible", ctx.User.Mention, inline: true);
+                        emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
+                        emb.AddField("Command suggestions", gcfg.SuggestionsEnabled ? "on" : "off", inline: true);
+                        await logchn.SendMessageAsync(embed: emb.Build())
+                            .ConfigureAwait(false);
+                    }
+
                     await ctx.RespondWithIconEmbedAsync("Disabled command suggestions!")
                         .ConfigureAwait(false);
                 }
@@ -274,7 +322,7 @@ namespace TheGodfather.Modules.Administration
                 public async Task ExecuteGroupAsync(CommandContext ctx)
                 {
                     var gcfg = Shared.GetGuildConfig(ctx.Guild.Id);
-                    await ctx.RespondWithIconEmbedAsync($"Action logging for this guild is {Formatter.Bold(gcfg.LoggingEnabled ? "enabled" : "disabled")}!")
+                    await ctx.RespondWithIconEmbedAsync($"Action logging for this guild is {Formatter.Bold(gcfg.LoggingEnabled ? "Enabled" : "disabled")}!")
                         .ConfigureAwait(false);
                 }
 
@@ -294,6 +342,22 @@ namespace TheGodfather.Modules.Administration
                     gcfg.LogChannelId = channel.Id;
                     await Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg)
                         .ConfigureAwait(false);
+
+                    var logchn = await Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild.Id)
+                     .ConfigureAwait(false);
+                    if (logchn != null) {
+                        var emb = new DiscordEmbedBuilder() {
+                            Title = "Guild config changed",
+                            Color = DiscordColor.Brown
+                        };
+                        emb.AddField("User responsible", ctx.User.Mention, inline: true);
+                        emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
+                        emb.AddField("Logging", "Enabled", inline: true);
+                        emb.AddField("Logging channel", gcfg.LogChannelId.ToString(), inline: true);
+                        await logchn.SendMessageAsync(embed: emb.Build())
+                            .ConfigureAwait(false);
+                    }
+
                     await ctx.RespondWithIconEmbedAsync($"Enabled action log in channel {channel.Mention}!")
                         .ConfigureAwait(false);
                 }
@@ -310,6 +374,22 @@ namespace TheGodfather.Modules.Administration
                     gcfg.LogChannelId = 0;
                     await Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg)
                         .ConfigureAwait(false);
+
+                    var logchn = await Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild.Id)
+                     .ConfigureAwait(false);
+                    if (logchn != null) {
+                        var emb = new DiscordEmbedBuilder() {
+                            Title = "Guild config changed",
+                            Color = DiscordColor.Brown
+                        };
+                        emb.AddField("User responsible", ctx.User.Mention, inline: true);
+                        emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
+                        emb.AddField("Logging", "disabled", inline: true);
+                        emb.AddField("Logging channel", gcfg.LogChannelId.ToString(), inline: true);
+                        await logchn.SendMessageAsync(embed: emb.Build())
+                            .ConfigureAwait(false);
+                    }
+
                     await ctx.RespondWithIconEmbedAsync("Disabled action logging!")
                         .ConfigureAwait(false);
                 }
@@ -343,6 +423,21 @@ namespace TheGodfather.Modules.Administration
                         gcfg.LogChannelId = channel.Id;
                         await Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg)
                             .ConfigureAwait(false);
+
+                        var logchn = await Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild.Id)
+                         .ConfigureAwait(false);
+                        if (logchn != null) {
+                            var emb = new DiscordEmbedBuilder() {
+                                Title = "Guild config changed",
+                                Color = DiscordColor.Brown
+                            };
+                            emb.AddField("User responsible", ctx.User.Mention, inline: true);
+                            emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
+                            emb.AddField("Logging channel", gcfg.LogChannelId.ToString(), inline: true);
+                            await logchn.SendMessageAsync(embed: emb.Build())
+                                .ConfigureAwait(false);
+                        }
+
                         await ctx.RespondWithIconEmbedAsync($"Action logging channel set to {channel.Mention}.")
                             .ConfigureAwait(false);
                     }
@@ -367,7 +462,7 @@ namespace TheGodfather.Modules.Administration
                 {
                     ulong cid = await Database.GetWelcomeChannelIdAsync(ctx.Guild.Id)
                         .ConfigureAwait(false);
-                    await ctx.RespondWithIconEmbedAsync($"Member welcome messages for this guild are: {Formatter.Bold(cid != 0 ? "enabled" : "disabled")}!")
+                    await ctx.RespondWithIconEmbedAsync($"Member welcome messages for this guild are: {Formatter.Bold(cid != 0 ? "Enabled" : "disabled")}!")
                         .ConfigureAwait(false);
                 }
 
@@ -400,6 +495,21 @@ namespace TheGodfather.Modules.Administration
 
                         await Database.SetWelcomeChannelAsync(ctx.Guild.Id, channel.Id)
                             .ConfigureAwait(false);
+
+                        var logchn = await Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild.Id)
+                         .ConfigureAwait(false);
+                        if (logchn != null) {
+                            var emb = new DiscordEmbedBuilder() {
+                                Title = "Guild config changed",
+                                Color = DiscordColor.Brown
+                            };
+                            emb.AddField("User responsible", ctx.User.Mention, inline: true);
+                            emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
+                            emb.AddField("Welcome message channel", channel.Mention, inline: true);
+                            await logchn.SendMessageAsync(embed: emb.Build())
+                                .ConfigureAwait(false);
+                        }
+
                         await ctx.RespondWithIconEmbedAsync($"Welcome message channel set to {channel.Mention}.")
                             .ConfigureAwait(false);
                     }
@@ -428,7 +538,21 @@ namespace TheGodfather.Modules.Administration
                         await Database.SetWelcomeMessageAsync(ctx.Guild.Id, message)
                             .ConfigureAwait(false);
 
-                        await ctx.RespondWithIconEmbedAsync($"Welcome message set to: {Formatter.Bold(message ?? "Default message")}.")
+                        var logchn = await Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild.Id)
+                         .ConfigureAwait(false);
+                        if (logchn != null) {
+                            var emb = new DiscordEmbedBuilder() {
+                                Title = "Guild config changed",
+                                Color = DiscordColor.Brown
+                            };
+                            emb.AddField("User responsible", ctx.User.Mention, inline: true);
+                            emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
+                            emb.AddField("Welcome message", message);
+                            await logchn.SendMessageAsync(embed: emb.Build())
+                                .ConfigureAwait(false);
+                        }
+
+                        await ctx.RespondWithIconEmbedAsync($"Welcome message set to:\n{Formatter.Bold(message ?? "Default message")}.")
                             .ConfigureAwait(false);
                     }
                 }
@@ -460,6 +584,22 @@ namespace TheGodfather.Modules.Administration
                             .ConfigureAwait(false);
                     }
 
+                    var logchn = await Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild.Id)
+                     .ConfigureAwait(false);
+                    if (logchn != null) {
+                        var emb = new DiscordEmbedBuilder() {
+                            Title = "Guild config changed",
+                            Color = DiscordColor.Brown
+                        };
+                        emb.AddField("User responsible", ctx.User.Mention, inline: true);
+                        emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
+                        emb.AddField("Welcome messages", "Enabled", inline: true);
+                        emb.AddField("Welcome message channel", channel.Mention, inline: true);
+                        emb.AddField("Welcome message", message ?? Formatter.Italic("default"));
+                        await logchn.SendMessageAsync(embed: emb.Build())
+                            .ConfigureAwait(false);
+                    }
+
                     await ctx.RespondWithIconEmbedAsync($"Welcome message channel set to {Formatter.Bold(channel.Name)} with message: {Formatter.Bold(string.IsNullOrWhiteSpace(message) ? "<previously set>" : message)}.")
                         .ConfigureAwait(false);
                 }
@@ -474,8 +614,20 @@ namespace TheGodfather.Modules.Administration
                 {
                     await Database.RemoveWelcomeChannelAsync(ctx.Guild.Id)
                         .ConfigureAwait(false);
-                    await Database.RemoveWelcomeMessageAsync(ctx.Guild.Id)
-                        .ConfigureAwait(false);
+
+                    var logchn = await Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild.Id)
+                     .ConfigureAwait(false);
+                    if (logchn != null) {
+                        var emb = new DiscordEmbedBuilder() {
+                            Title = "Guild config changed",
+                            Color = DiscordColor.Brown
+                        };
+                        emb.AddField("User responsible", ctx.User.Mention, inline: true);
+                        emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
+                        emb.AddField("Welcome messages", "disabled", inline: true);
+                        await logchn.SendMessageAsync(embed: emb.Build())
+                            .ConfigureAwait(false);
+                    }
                 }
                 #endregion
             }
@@ -497,7 +649,7 @@ namespace TheGodfather.Modules.Administration
                 {
                     ulong cid = await Database.GetLeaveChannelIdAsync(ctx.Guild.Id)
                         .ConfigureAwait(false);
-                    await ctx.RespondWithIconEmbedAsync($"Member leave messages for this guild are: {Formatter.Bold(cid != 0 ? "enabled" : "disabled")}!")
+                    await ctx.RespondWithIconEmbedAsync($"Member leave messages for this guild are: {Formatter.Bold(cid != 0 ? "Enabled" : "disabled")}!")
                         .ConfigureAwait(false);
                 }
 
@@ -530,6 +682,20 @@ namespace TheGodfather.Modules.Administration
 
                         await Database.SetLeaveChannelAsync(ctx.Guild.Id, channel.Id)
                             .ConfigureAwait(false);
+                        var logchn = await Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild.Id)
+                         .ConfigureAwait(false);
+                        if (logchn != null) {
+                            var emb = new DiscordEmbedBuilder() {
+                                Title = "Guild config changed",
+                                Color = DiscordColor.Brown
+                            };
+                            emb.AddField("User responsible", ctx.User.Mention, inline: true);
+                            emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
+                            emb.AddField("Leave message channel", channel.Mention, inline: true);
+                            await logchn.SendMessageAsync(embed: emb.Build())
+                                .ConfigureAwait(false);
+                        }
+
                         await ctx.RespondWithIconEmbedAsync($"Leave message channel set to {channel.Mention}.")
                             .ConfigureAwait(false);
                     }
@@ -558,7 +724,21 @@ namespace TheGodfather.Modules.Administration
                         await Database.SetLeaveMessageAsync(ctx.Guild.Id, message)
                             .ConfigureAwait(false);
 
-                        await ctx.RespondWithIconEmbedAsync($"Leave message set to: {Formatter.Bold(message ?? "Default message")}.")
+                        var logchn = await Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild.Id)
+                         .ConfigureAwait(false);
+                        if (logchn != null) {
+                            var emb = new DiscordEmbedBuilder() {
+                                Title = "Guild config changed",
+                                Color = DiscordColor.Brown
+                            };
+                            emb.AddField("User responsible", ctx.User.Mention, inline: true);
+                            emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
+                            emb.AddField("Leave message", message);
+                            await logchn.SendMessageAsync(embed: emb.Build())
+                                .ConfigureAwait(false);
+                        }
+
+                        await ctx.RespondWithIconEmbedAsync($"Leave message set to:\n{Formatter.Bold(message ?? "Default message")}.")
                             .ConfigureAwait(false);
                     }
                 }
@@ -590,6 +770,22 @@ namespace TheGodfather.Modules.Administration
                             .ConfigureAwait(false);
                     }
 
+                    var logchn = await Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild.Id)
+                     .ConfigureAwait(false);
+                    if (logchn != null) {
+                        var emb = new DiscordEmbedBuilder() {
+                            Title = "Guild config changed",
+                            Color = DiscordColor.Brown
+                        };
+                        emb.AddField("User responsible", ctx.User.Mention, inline: true);
+                        emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
+                        emb.AddField("Leave messages", "Enabled", inline: true);
+                        emb.AddField("Leave message channel", channel.Mention, inline: true);
+                        emb.AddField("Leave message", message ?? Formatter.Italic("default"));
+                        await logchn.SendMessageAsync(embed: emb.Build())
+                            .ConfigureAwait(false);
+                    }
+
                     await ctx.RespondWithIconEmbedAsync($"Leave message channel set to {Formatter.Bold(channel.Name)} with message: {Formatter.Bold(string.IsNullOrWhiteSpace(message) ? "<previously set>" : message)}.")
                         .ConfigureAwait(false);
                 }
@@ -604,8 +800,20 @@ namespace TheGodfather.Modules.Administration
                 {
                     await Database.RemoveLeaveChannelAsync(ctx.Guild.Id)
                         .ConfigureAwait(false);
-                    await Database.RemoveLeaveMessageAsync(ctx.Guild.Id)
-                        .ConfigureAwait(false);
+
+                    var logchn = await Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild.Id)
+                     .ConfigureAwait(false);
+                    if (logchn != null) {
+                        var emb = new DiscordEmbedBuilder() {
+                            Title = "Guild config changed",
+                            Color = DiscordColor.Brown
+                        };
+                        emb.AddField("User responsible", ctx.User.Mention, inline: true);
+                        emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
+                        emb.AddField("Leave messages", "disabled", inline: true);
+                        await logchn.SendMessageAsync(embed: emb.Build())
+                            .ConfigureAwait(false);
+                    }
                 }
                 #endregion
             }

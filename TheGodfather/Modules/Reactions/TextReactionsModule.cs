@@ -91,6 +91,19 @@ namespace TheGodfather.Modules.Reactions
                 throw new CommandFailedException("Failed to delete text reactions from the database.");
             }
 
+            var logchn = await Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild.Id)
+                .ConfigureAwait(false);
+            if (logchn != null) {
+                var emb = new DiscordEmbedBuilder() {
+                    Title = "All text reactions have been deleted",
+                    Color = DiscordColor.Blue
+                };
+                emb.AddField("User responsible", ctx.User.Mention, inline: true);
+                emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
+                await logchn.SendMessageAsync(embed: emb.Build())
+                    .ConfigureAwait(false);
+            }
+
             await ctx.RespondWithIconEmbedAsync("Removed all text reactions!")
                 .ConfigureAwait(false);
         }
@@ -111,10 +124,10 @@ namespace TheGodfather.Modules.Reactions
             if (!Shared.TextReactions.ContainsKey(ctx.Guild.Id))
                 throw new CommandFailedException("This guild has no text reactions registered.");
 
-            var sb = new StringBuilder();
+            var errors = new StringBuilder();
             foreach (var id in ids) {
                 if (!Shared.TextReactions[ctx.Guild.Id].Any(tr => tr.Id == id)) {
-                    sb.AppendLine($"Note: Reaction with ID {id} does not exist in this guild.");
+                    errors.AppendLine($"Note: Reaction with ID {id} does not exist in this guild.");
                     continue;
                 }
             }
@@ -124,12 +137,32 @@ namespace TheGodfather.Modules.Reactions
                     .ConfigureAwait(false);
             } catch (Exception e) {
                 TheGodfather.LogHandle.LogException(LogLevel.Warning, e);
-                sb.AppendLine($"Warning: Failed to remove some reactions from the database.");
+                errors.AppendLine($"Warning: Failed to remove some reactions from the database.");
             }
 
             int removed = Shared.TextReactions[ctx.Guild.Id].RemoveWhere(tr => ids.Contains(tr.Id));
 
-            await ctx.RespondWithIconEmbedAsync($"Removed {removed} reactions!\n\n{sb.ToString()}")
+            string errlist = errors.ToString();
+            if (removed > 0) {
+                var logchn = await Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild.Id)
+                    .ConfigureAwait(false);
+                if (logchn != null) {
+                    var emb = new DiscordEmbedBuilder() {
+                        Title = "Several text reactions have been deleted",
+                        Color = DiscordColor.Blue
+                    };
+                    emb.AddField("User responsible", ctx.User.Mention, inline: true);
+                    emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
+                    emb.AddField("Removed successfully", $"{removed} reactions", inline: true);
+                    emb.AddField("IDs attempted to be removed", string.Join(", ", ids));
+                    if (!string.IsNullOrWhiteSpace(errlist))
+                        emb.AddField("With errors", errlist);
+                    await logchn.SendMessageAsync(embed: emb.Build())
+                        .ConfigureAwait(false);
+                }
+            }
+
+            await ctx.RespondWithIconEmbedAsync($"Successfully removed {removed} text reactions!\n\n{errlist}")
                 .ConfigureAwait(false);
         }
 
@@ -178,7 +211,27 @@ namespace TheGodfather.Modules.Reactions
 
             int removed = Shared.TextReactions[ctx.Guild.Id].RemoveWhere(tr => tr.TriggerRegexes.Count == 0);
 
-            await ctx.RespondWithIconEmbedAsync($"Removed {removed} reactions!\n\n{errors.ToString()}")
+            string errlist = errors.ToString();
+            if (removed > 0) {
+                var logchn = await Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild.Id)
+                    .ConfigureAwait(false);
+                if (logchn != null) {
+                    var emb = new DiscordEmbedBuilder() {
+                        Title = "Several text reactions have been deleted",
+                        Color = DiscordColor.Blue
+                    };
+                    emb.AddField("User responsible", ctx.User.Mention, inline: true);
+                    emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
+                    emb.AddField("Removed successfully", $"{removed} reactions", inline: true);
+                    emb.AddField("Triggers attempted to be removed", string.Join("\n", triggers));
+                    if (!string.IsNullOrWhiteSpace(errlist))
+                        emb.AddField("With errors", errlist);
+                    await logchn.SendMessageAsync(embed: emb.Build())
+                        .ConfigureAwait(false);
+                }
+            }
+
+            await ctx.RespondWithIconEmbedAsync($"Successfully removed {removed} text reactions!\n\n{errlist}")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -241,6 +294,23 @@ namespace TheGodfather.Modules.Reactions
             } else {
                 if (!Shared.TextReactions[ctx.Guild.Id].Add(new TextReaction(id, trigger, response, is_regex_trigger)))
                     throw new CommandFailedException($"Failed to add trigger {Formatter.Bold(trigger)}.");
+            }
+
+            var logchn = await Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild.Id)
+                .ConfigureAwait(false);
+            if (logchn != null) {
+                var emb = new DiscordEmbedBuilder() {
+                    Title = "New text reaction added",
+                    Color = DiscordColor.Blue
+                };
+                emb.AddField("User responsible", ctx.User.Mention, inline: true);
+                emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
+                emb.AddField("Response", response, inline: true);
+                emb.AddField("Trigger", trigger);
+                if (!string.IsNullOrWhiteSpace(errors))
+                    emb.AddField("With errors", errors);
+                await logchn.SendMessageAsync(embed: emb.Build())
+                    .ConfigureAwait(false);
             }
 
             await ctx.RespondWithIconEmbedAsync($"Done!\n\n{errors}")

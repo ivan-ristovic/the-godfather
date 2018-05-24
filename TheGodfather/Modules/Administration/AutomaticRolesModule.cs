@@ -26,7 +26,7 @@ namespace TheGodfather.Modules.Administration
     public class AutomaticRolesModule : TheGodfatherBaseModule
     {
 
-        public AutomaticRolesModule(DBService db) : base(db: db) { }
+        public AutomaticRolesModule(SharedData shared, DBService db) : base(shared, db) { }
 
 
         [GroupCommand, Priority(1)]
@@ -50,11 +50,28 @@ namespace TheGodfather.Modules.Administration
         public async Task AddAsync(CommandContext ctx,
                                        [Description("Roles to add.")] params DiscordRole[] roles)
         {
+            if (roles == null || !roles.Any())
+                throw new InvalidCommandUsageException("You need to specify roles to add.");
+
             foreach (var role in roles)
                 await Database.AddAutomaticRoleAsync(ctx.Guild.Id, role.Id)
                     .ConfigureAwait(false);
+            
+            var logchn = await Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild.Id)
+                .ConfigureAwait(false);
+            if (logchn != null) {
+                var emb = new DiscordEmbedBuilder() {
+                    Title = "New automatic roles added",
+                    Color = DiscordColor.Lilac
+                };
+                emb.AddField("User responsible", ctx.User.Mention, inline: true);
+                emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
+                emb.AddField("Roles added", string.Join("\n", roles.Select(r => r.ToString())));
+                await logchn.SendMessageAsync(embed: emb.Build())
+                    .ConfigureAwait(false);
+            }
 
-            await ctx.RespondWithIconEmbedAsync()
+            await ctx.RespondWithIconEmbedAsync($"Specified automatic roles have been added.")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -73,6 +90,19 @@ namespace TheGodfather.Modules.Administration
             await Database.RemoveAllAutomaticRolesForGuildAsync(ctx.Guild.Id)
                 .ConfigureAwait(false);
 
+            var logchn = await Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild.Id)
+                .ConfigureAwait(false);
+            if (logchn != null) {
+                var emb = new DiscordEmbedBuilder() {
+                    Title = "All automatic roles have been deleted",
+                    Color = DiscordColor.Lilac
+                };
+                emb.AddField("User responsible", ctx.User.Mention, inline: true);
+                emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
+                await logchn.SendMessageAsync(embed: emb.Build())
+                    .ConfigureAwait(false);
+            }
+
             await ctx.RespondWithIconEmbedAsync()
                 .ConfigureAwait(false);
         }
@@ -88,9 +118,26 @@ namespace TheGodfather.Modules.Administration
         public async Task DeleteAsync(CommandContext ctx,
                                      [Description("Roles to delete.")] params DiscordRole[] roles)
         {
+            if (roles == null || !roles.Any())
+                throw new InvalidCommandUsageException("You need to specify roles to delete.");
+
             foreach (var role in roles)
                 await Database.RemoveAutomaticRoleAsync(ctx.Guild.Id, role.Id)
                     .ConfigureAwait(false);
+
+            var logchn = await Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild.Id)
+                .ConfigureAwait(false);
+            if (logchn != null) {
+                var emb = new DiscordEmbedBuilder() {
+                    Title = "Several automatic roles have been deleted",
+                    Color = DiscordColor.Lilac
+                };
+                emb.AddField("User responsible", ctx.User.Mention, inline: true);
+                emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
+                emb.AddField("Roles deleted", string.Join("\n", roles.Select(r => r.ToString())));
+                await logchn.SendMessageAsync(embed: emb.Build())
+                    .ConfigureAwait(false);
+            }
 
             await ctx.RespondWithIconEmbedAsync()
                 .ConfigureAwait(false);

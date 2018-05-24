@@ -50,11 +50,28 @@ namespace TheGodfather.Modules.Administration
         public async Task AddAsync(CommandContext ctx,
                                   [Description("Roles to add.")] params DiscordRole[] roles)
         {
+            if (roles == null || !roles.Any())
+                throw new InvalidCommandUsageException("You need to specify roles to add.");
+
             foreach (var role in roles)
                 await Database.AddSelfAssignableRoleAsync(ctx.Guild.Id, role.Id)
                     .ConfigureAwait(false);
 
-            await ctx.RespondWithIconEmbedAsync()
+            var logchn = await Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild.Id)
+                .ConfigureAwait(false);
+            if (logchn != null) {
+                var emb = new DiscordEmbedBuilder() {
+                    Title = "New self-assignable roles added",
+                    Color = DiscordColor.Lilac
+                };
+                emb.AddField("User responsible", ctx.User.Mention, inline: true);
+                emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
+                emb.AddField("Roles added", string.Join("\n", roles.Select(r => r.ToString())));
+                await logchn.SendMessageAsync(embed: emb.Build())
+                    .ConfigureAwait(false);
+            }
+
+            await ctx.RespondWithIconEmbedAsync($"Specified self-assignable roles have been added.")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -73,6 +90,19 @@ namespace TheGodfather.Modules.Administration
             await Database.RemoveAllSelfAssignableRolesForGuildAsync(ctx.Guild.Id)
                 .ConfigureAwait(false);
 
+            var logchn = await Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild.Id)
+                .ConfigureAwait(false);
+            if (logchn != null) {
+                var emb = new DiscordEmbedBuilder() {
+                    Title = "All self-assignable roles have been deleted",
+                    Color = DiscordColor.Lilac
+                };
+                emb.AddField("User responsible", ctx.User.Mention, inline: true);
+                emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
+                await logchn.SendMessageAsync(embed: emb.Build())
+                    .ConfigureAwait(false);
+            }
+
             await ctx.RespondWithIconEmbedAsync()
                 .ConfigureAwait(false);
         }
@@ -88,9 +118,26 @@ namespace TheGodfather.Modules.Administration
         public async Task DeleteAsync(CommandContext ctx,
                                      [Description("Roles to delete.")] params DiscordRole[] roles)
         {
+            if (roles == null || !roles.Any())
+                throw new InvalidCommandUsageException("You need to specify roles to add.");
+
             foreach (var role in roles)
                 await Database.RemoveSelfAssignableRoleAsync(ctx.Guild.Id, role.Id)
                     .ConfigureAwait(false);
+
+            var logchn = await Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild.Id)
+                .ConfigureAwait(false);
+            if (logchn != null) {
+                var emb = new DiscordEmbedBuilder() {
+                    Title = "Several self-assignable roles have been deleted",
+                    Color = DiscordColor.Lilac
+                };
+                emb.AddField("User responsible", ctx.User.Mention, inline: true);
+                emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
+                emb.AddField("Roles deleted", string.Join("\n", roles.Select(r => r.ToString())));
+                await logchn.SendMessageAsync(embed: emb.Build())
+                    .ConfigureAwait(false);
+            }
 
             await ctx.RespondWithIconEmbedAsync()
                 .ConfigureAwait(false);

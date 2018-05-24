@@ -113,6 +113,19 @@ namespace TheGodfather.Modules.Reactions
                 throw new CommandFailedException("Failed to delete emoji reactions from the database.");
             }
 
+            var logchn = await Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild.Id)
+                .ConfigureAwait(false);
+            if (logchn != null) {
+                var emb = new DiscordEmbedBuilder() {
+                    Title = "All emoji reactions have been deleted",
+                    Color = DiscordColor.Blue
+                };
+                emb.AddField("User responsible", ctx.User.Mention, inline: true);
+                emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
+                await logchn.SendMessageAsync(embed: emb.Build())
+                    .ConfigureAwait(false);
+            }
+
             await ctx.RespondWithIconEmbedAsync("Removed all emoji reactions!")
                 .ConfigureAwait(false);
         }
@@ -147,7 +160,24 @@ namespace TheGodfather.Modules.Reactions
                 errors.AppendLine($"Warning: Failed to remove reaction from the database.");
             }
 
-            await ctx.RespondWithIconEmbedAsync($"Done!\n\n{errors.ToString()}")
+            string errlist = errors.ToString();
+            var logchn = await Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild.Id)
+                .ConfigureAwait(false);
+            if (logchn != null) {
+                var emb = new DiscordEmbedBuilder() {
+                    Title = "Several emoji reactions have been deleted",
+                    Color = DiscordColor.Blue
+                };
+                emb.AddField("User responsible", ctx.User.Mention, inline: true);
+                emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
+                emb.AddField("Removed reaction for emoji", emoji, inline: true);
+                if (!string.IsNullOrWhiteSpace(errlist))
+                    emb.AddField("With errors", errlist);
+                await logchn.SendMessageAsync(embed: emb.Build())
+                    .ConfigureAwait(false);
+            }
+
+            await ctx.RespondWithIconEmbedAsync($"Done!\n\n{errlist}")
                 .ConfigureAwait(false);
         }
 
@@ -158,10 +188,10 @@ namespace TheGodfather.Modules.Reactions
             if (!Shared.EmojiReactions.ContainsKey(ctx.Guild.Id))
                 throw new CommandFailedException("This guild has no emoji reactions registered.");
 
-            var sb = new StringBuilder();
+            var errors = new StringBuilder();
             foreach (var id in ids) {
                 if (!Shared.EmojiReactions[ctx.Guild.Id].Any(tr => tr.Id == id)) {
-                    sb.AppendLine($"Note: Reaction with ID {id} does not exist in this guild.");
+                    errors.AppendLine($"Note: Reaction with ID {id} does not exist in this guild.");
                     continue;
                 }
             }
@@ -171,12 +201,32 @@ namespace TheGodfather.Modules.Reactions
                     .ConfigureAwait(false);
             } catch (Exception e) {
                 TheGodfather.LogHandle.LogException(LogLevel.Warning, e);
-                sb.AppendLine($"Warning: Failed to remove some reactions from the database.");
+                errors.AppendLine($"Warning: Failed to remove some reactions from the database.");
             }
 
             int removed = Shared.EmojiReactions[ctx.Guild.Id].RemoveWhere(tr => ids.Contains(tr.Id));
 
-            await ctx.RespondWithIconEmbedAsync($"Removed {removed} reactions!\n\n{sb.ToString()}")
+            string errlist = errors.ToString();
+            if (removed > 0) {
+                var logchn = await Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild.Id)
+                    .ConfigureAwait(false);
+                if (logchn != null) {
+                    var emb = new DiscordEmbedBuilder() {
+                        Title = "Several emoji reactions have been deleted",
+                        Color = DiscordColor.Blue
+                    };
+                    emb.AddField("User responsible", ctx.User.Mention, inline: true);
+                    emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
+                    emb.AddField("Removed successfully", $"{removed} reactions", inline: true);
+                    emb.AddField("IDs attempted to be removed", string.Join(", ", ids));
+                    if (!string.IsNullOrWhiteSpace(errlist))
+                        emb.AddField("With errors", errlist);
+                    await logchn.SendMessageAsync(embed: emb.Build())
+                        .ConfigureAwait(false);
+                }
+            }
+
+            await ctx.RespondWithIconEmbedAsync($"Successfully removed {removed} emoji reactions!\n\n{errlist}")
                 .ConfigureAwait(false);
         }
 
@@ -220,10 +270,30 @@ namespace TheGodfather.Modules.Reactions
                 errors.AppendLine($"Warning: Failed to remove some triggers from the database.");
             }
 
-            await ctx.RespondWithIconEmbedAsync($"Done!\n\n{errors.ToString()}")
-                .ConfigureAwait(false);
+            int removed = Shared.EmojiReactions[ctx.Guild.Id].RemoveWhere(er => er.TriggerRegexes.Count == 0);
 
-            Shared.EmojiReactions[ctx.Guild.Id].RemoveWhere(er => er.TriggerRegexes.Count == 0);
+            string errlist = errors.ToString();
+            if (removed > 0) {
+                var logchn = await Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild.Id)
+                    .ConfigureAwait(false);
+                if (logchn != null) {
+                    var emb = new DiscordEmbedBuilder() {
+                        Title = "Several emoji reactions have been deleted",
+                        Color = DiscordColor.Blue
+                    };
+                    emb.AddField("User responsible", ctx.User.Mention, inline: true);
+                    emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
+                    emb.AddField("Removed successfully", $"{removed} reactions", inline: true);
+                    emb.AddField("Triggers attempted to be removed", string.Join("\n", triggers));
+                    if (!string.IsNullOrWhiteSpace(errlist))
+                        emb.AddField("With errors", errlist);
+                    await logchn.SendMessageAsync(embed: emb.Build())
+                        .ConfigureAwait(false);
+                }
+            }
+
+            await ctx.RespondWithIconEmbedAsync($"Successfully removed {removed} emoji reactions!\n\n{errlist}")
+                .ConfigureAwait(false);
         }
         #endregion
 
@@ -294,7 +364,25 @@ namespace TheGodfather.Modules.Reactions
                 }
             }
 
-            await ctx.RespondWithIconEmbedAsync($"Done!\n\n{errors.ToString()}")
+            string errlist = errors.ToString();
+            var logchn = await Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild.Id)
+                .ConfigureAwait(false);
+            if (logchn != null) {
+                var emb = new DiscordEmbedBuilder() {
+                    Title = "New emoji reactions added",
+                    Color = DiscordColor.Blue
+                };
+                emb.AddField("User responsible", ctx.User.Mention, inline: true);
+                emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
+                emb.AddField("Reaction", emoji, inline: true);
+                emb.AddField("Triggers", string.Join("\n", triggers));
+                if (!string.IsNullOrWhiteSpace(errlist))
+                    emb.AddField("With errors", errlist);
+                await logchn.SendMessageAsync(embed: emb.Build())
+                    .ConfigureAwait(false);
+            }
+
+            await ctx.RespondWithIconEmbedAsync($"Done!\n\n{errlist}")
                 .ConfigureAwait(false);
         }
         #endregion

@@ -108,7 +108,24 @@ namespace TheGodfather.Modules.Administration
                     errors.AppendLine($"Error: Failed to add filter {Formatter.Bold(filter)}.");
             }
 
-            await ctx.RespondWithIconEmbedAsync($"Done!\n\n{errors.ToString()}")
+            string errlist = errors.ToString();
+            var logchn = await Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild.Id)
+                .ConfigureAwait(false);
+            if (logchn != null) {
+                var emb = new DiscordEmbedBuilder() {
+                    Title = "New filters added",
+                    Color = DiscordColor.DarkGreen
+                };
+                emb.AddField("User responsible", ctx.User.Mention, inline: true);
+                emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
+                emb.AddField("Tried adding filters", string.Join("\n", filters));
+                if (!string.IsNullOrWhiteSpace(errlist))
+                    emb.AddField("With errors", errlist);
+                await logchn.SendMessageAsync(embed: emb.Build())
+                    .ConfigureAwait(false);
+            }
+
+            await ctx.RespondWithIconEmbedAsync($"Done!\n\n{errlist}")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -133,6 +150,19 @@ namespace TheGodfather.Modules.Administration
             } catch (Exception e) {
                 TheGodfather.LogHandle.LogException(LogLevel.Warning, e);
                 throw new CommandFailedException("Failed to delete filters from the database.");
+            }
+
+            var logchn = await Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild.Id)
+                .ConfigureAwait(false);
+            if (logchn != null) {
+                var emb = new DiscordEmbedBuilder() {
+                    Title = "All filters have been deleted",
+                    Color = DiscordColor.DarkGreen
+                };
+                emb.AddField("User responsible", ctx.User.Mention, inline: true);
+                emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
+                await logchn.SendMessageAsync(embed: emb.Build())
+                    .ConfigureAwait(false);
             }
 
             await ctx.RespondWithIconEmbedAsync("Removed all filters!")
@@ -169,7 +199,24 @@ namespace TheGodfather.Modules.Administration
                 }
             }
 
-            await ctx.RespondWithIconEmbedAsync($"Done!\n\n{errors.ToString()}")
+            string errlist = errors.ToString();
+            var logchn = await Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild.Id)
+                .ConfigureAwait(false);
+            if (logchn != null) {
+                var emb = new DiscordEmbedBuilder() {
+                    Title = "Several filters have been deleted",
+                    Color = DiscordColor.DarkGreen
+                };
+                emb.AddField("User responsible", ctx.User.Mention, inline: true);
+                emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
+                emb.AddField("Tried deleting filters with IDs", string.Join("\n", ids.Select(id => id.ToString())));
+                if (!string.IsNullOrWhiteSpace(errlist))
+                    emb.AddField("With errors", errlist);
+                await logchn.SendMessageAsync(embed: emb.Build())
+                    .ConfigureAwait(false);
+            }
+
+            await ctx.RespondWithIconEmbedAsync($"Done!\n\n{errlist}")
                 .ConfigureAwait(false);
         }
 
@@ -197,7 +244,24 @@ namespace TheGodfather.Modules.Administration
                 }
             }
 
-            await ctx.RespondWithIconEmbedAsync($"Done!\n\n{errors.ToString()}")
+            string errlist = errors.ToString();
+            var logchn = await Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild.Id)
+                .ConfigureAwait(false);
+            if (logchn != null) {
+                var emb = new DiscordEmbedBuilder() {
+                    Title = "Several filters have been deleted",
+                    Color = DiscordColor.DarkGreen
+                };
+                emb.AddField("User responsible", ctx.User.Mention, inline: true);
+                emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
+                emb.AddField("Tried deleting filters", string.Join("\n", filters));
+                if (!string.IsNullOrWhiteSpace(errlist))
+                    emb.AddField("With errors", errlist);
+                await logchn.SendMessageAsync(embed: emb.Build())
+                    .ConfigureAwait(false);
+            }
+
+            await ctx.RespondWithIconEmbedAsync($"Done!\n\n{errlist}")
                 .ConfigureAwait(false);
         }
 
