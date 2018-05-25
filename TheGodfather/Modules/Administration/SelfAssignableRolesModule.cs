@@ -26,7 +26,7 @@ namespace TheGodfather.Modules.Administration
     public class SelfAssignableRolesModule : TheGodfatherBaseModule
     {
 
-        public SelfAssignableRolesModule(DBService db) : base(db: db) { }
+        public SelfAssignableRolesModule(SharedData shared, DBService db) : base(shared, db) { }
 
 
         [GroupCommand, Priority(1)]
