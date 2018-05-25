@@ -96,6 +96,31 @@ namespace TheGodfather.Modules.Chickens
         }
         #endregion
 
+        #region COMMAND_CHICKEN_FLU
+        [Command("flu"), Module(ModuleType.Chickens)]
+        [Description("Pay a well-known scientist to create a disease that disintegrates weak chickens.")]
+        [Aliases("cancer", "disease", "blackdeath")]
+        [UsageExample("!chicken flu")]
+        public async Task FluAsync(CommandContext ctx)
+        {
+            if (ChannelEvent.GetEventInChannel(ctx.Channel.Id) is ChickenWar ambush)
+                throw new CommandFailedException("There is a chicken war running in this channel. No actions are allowed before the war finishes.");
+
+            if (!await ctx.AskYesNoQuestionAsync($"{ctx.User.Mention}, are you sure you want to pay {Formatter.Bold("1000000")} credits to create a disease?"))
+                return;
+
+            if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, ctx.Guild.Id, 1000000).ConfigureAwait(false))
+                throw new CommandFailedException($"You do not have enought credits to pay for the disease creation!");
+
+            short threshold = (short)GFRandom.Generator.Next(10, 50);
+            await Database.FilterChickensByVitalityAsync(ctx.Guild.Id, threshold)
+                .ConfigureAwait(false);
+
+            await ctx.RespondWithIconEmbedAsync($"The deadly chicken flu killed all chickens with vitality less or equal {Formatter.Bold(threshold.ToString())}!")
+                .ConfigureAwait(false);
+        }
+        #endregion
+
         #region COMMAND_CHICKEN_HEAL
         [Command("heal"), Module(ModuleType.Chickens)]
         [Description("Heal your chicken (+100 HP). You can heal your chicken once per hour.")]

@@ -70,7 +70,7 @@ namespace TheGodfather.Modules.Chickens
             #endregion
 
             #region COMMAND_CHICKEN_TRAIN_VITALITY
-            [Command("vitelity"), Module(ModuleType.Chickens)]
+            [Command("vitality"), Module(ModuleType.Chickens)]
             [Description("Train your chicken's vitality using your credits from WM bank.")]
             [Aliases("vit", "vi", "v")]
             [UsageExample("!chicken train vitality")]
