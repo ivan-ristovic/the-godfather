@@ -13,7 +13,7 @@ namespace TheGodfather.Services
 {
     public partial class DBService
     {
-        public async Task<IReadOnlyList<Chicken>> GetStrongestChickensForGuildAsync(ulong gid)
+        public async Task<IReadOnlyList<Chicken>> GetStrongestChickensForGuildAsync(ulong gid = 0)
         {
             var chickens = new List<Chicken>();
 
@@ -23,8 +23,12 @@ namespace TheGodfather.Services
                 using (var cmd = con.CreateCommand()) {
                     await con.OpenAsync().ConfigureAwait(false);
 
-                    cmd.CommandText = "SELECT * FROM gf.chickens WHERE gid = @gid ORDER BY strength DESC;";
-                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
+                    if (gid != 0) {
+                        cmd.CommandText = "SELECT * FROM gf.chickens WHERE gid = @gid ORDER BY strength DESC;";
+                        cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
+                    } else {
+                        cmd.CommandText = "SELECT * FROM gf.chickens ORDER BY strength DESC;";
+                    }
 
                     using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
                         while (await reader.ReadAsync().ConfigureAwait(false)) {

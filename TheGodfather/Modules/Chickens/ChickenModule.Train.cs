@@ -36,7 +36,7 @@ namespace TheGodfather.Modules.Chickens
             #region COMMAND_CHICKEN_TRAIN_STRENGTH
             [Command("strength"), Module(ModuleType.Chickens)]
             [Description("Train your chicken's strength using your credits from WM bank.")]
-            [Aliases("st", "s", "str")]
+            [Aliases("str", "st", "s")]
             [UsageExample("!chicken train strength")]
             public async Task StrengthAsync(CommandContext ctx)
             {
@@ -104,9 +104,6 @@ namespace TheGodfather.Modules.Chickens
                     .ConfigureAwait(false);
             }
             #endregion
-
-
-            // TODO extract preparations before training to a separate function
         }
     }
 }

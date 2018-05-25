@@ -39,7 +39,7 @@ namespace TheGodfather.Modules.Chickens
 
         #region COMMAND_CHICKEN_FIGHT
         [Command("fight"), Module(ModuleType.Chickens)]
-        [Description("Make your chicken and another user's chicken fight until death!")]
+        [Description("Make your chicken and another user's chicken fight eachother!")]
         [Aliases("f", "duel", "attack")]
         [UsageExample("!chicken duel @Someone")]
         public async Task FightAsync(CommandContext ctx,
@@ -98,7 +98,7 @@ namespace TheGodfather.Modules.Chickens
 
         #region COMMAND_CHICKEN_HEAL
         [Command("heal"), Module(ModuleType.Chickens)]
-        [Description("Heal your chicken (+100 to current HP). You can heal your chicken once per hour.")]
+        [Description("Heal your chicken (+100 HP). You can heal your chicken once per hour.")]
         [Aliases("+hp", "hp")]
         [Cooldown(1, 3600, CooldownBucketType.User)]
         [UsageExample("!chicken heal")]
@@ -228,6 +228,35 @@ namespace TheGodfather.Modules.Chickens
 
             await ctx.SendPaginatedCollectionAsync(
                 "Strongest chickens in this guild:",
+                chickens,
+                c => $"{Formatter.Bold(c.Name)} | {c.Owner.Mention} | {c.Stats.Strength} STR"
+            ).ConfigureAwait(false);
+        }
+        #endregion
+
+        #region COMMAND_CHICKEN_TOPGLOBAL
+        [Command("topglobal"), Module(ModuleType.Chickens)]
+        [Description("View the list of strongest chickens globally.")]
+        [Aliases("bestglobally", "globallystrongest", "globaltop", "topg", "gtop")]
+        [UsageExample("!chicken topglobal")]
+        public async Task GlobalTopAsync(CommandContext ctx)
+        {
+            var chickens = await Database.GetStrongestChickensForGuildAsync()
+                .ConfigureAwait(false);
+            if (chickens == null || !chickens.Any())
+                throw new CommandFailedException("No chickens bought.");
+
+            foreach (var chicken in chickens) {
+                try {
+                    chicken.Owner = await ctx.Client.GetUserAsync(chicken.OwnerId)
+                        .ConfigureAwait(false);
+                } catch (Exception e) {
+                    TheGodfather.LogHandle.LogException(LogLevel.Warning, e);
+                }
+            }
+
+            await ctx.SendPaginatedCollectionAsync(
+                "Strongest chickens (globally):",
                 chickens,
                 c => $"{Formatter.Bold(c.Name)} | {c.Owner.Mention} | {c.Stats.Strength} STR"
             ).ConfigureAwait(false);
