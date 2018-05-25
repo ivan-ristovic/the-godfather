@@ -426,6 +426,11 @@
     <Compile Include="Common\SavedTaskExecuter.cs" />
     <Compile Include="Extensions\HoldemExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
+    <Compile Include="Listeners\MessageListeners.cs" />
+    <Compile Include="Listeners\MemberListeners.cs" />
+    <Compile Include="Listeners\GuildListeners.cs" />
+    <Compile Include="Listeners\ChannelListeners.cs" />
+    <Compile Include="Listeners\ClientListeners.cs" />
     <Compile Include="Modules\Administration\AutomaticRolesModule.cs" />
     <Compile Include="Modules\Administration\Common\Filter.cs" />
     <Compile Include="Modules\Administration\GuildModule.Configuration.cs" />
@@ -592,7 +597,6 @@
     <Compile Include="Services\YoutubeService.cs" />
     <Compile Include="SharedData.cs" />
     <Compile Include="TheGodfatherShard.cs" />
-    <Compile Include="Listeners.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -1204,6 +1208,7 @@
     <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.2.6.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />
     <Analyzer Include="..\packages\Microsoft.CodeAnalysis.Analyzers.2.6.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\NETStandard.Library.2.0.3\build\netstandard2.0\NETStandard.Library.targets" Condition="Exists('..\packages\NETStandard.Library.2.0.3\build\netstandard2.0\NETStandard.Library.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

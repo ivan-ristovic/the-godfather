@@ -164,5 +164,16 @@ namespace TheGodfather.Extensions
 
             return mctx.Message.Content.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries).Distinct().ToList();
         }
+
+        public static async Task<DiscordAuditLogEntry> GetFirstAuditLogEntryAsync(this DiscordGuild guild, AuditLogActionType type)
+        {
+            try {
+                var entries = await guild.GetAuditLogsAsync(1, action_type: type)
+                    .ConfigureAwait(false);
+                return entries.Any() ? entries.FirstOrDefault() : null;
+            } catch {
+                return null;
+            }
+        }
     }
 }
