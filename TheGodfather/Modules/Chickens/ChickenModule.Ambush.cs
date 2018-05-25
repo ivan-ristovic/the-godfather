@@ -7,7 +7,7 @@ using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-using TheGodfather.Modules.Currency.Common;
+using TheGodfather.Modules.Chickens.Common;
 using TheGodfather.Services;
 
 using DSharpPlus;
@@ -17,11 +17,11 @@ using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 #endregion
 
-namespace TheGodfather.Modules.Currency
+namespace TheGodfather.Modules.Chickens
 {
     public partial class ChickenModule
     {
-        [Group("ambush"), Module(ModuleType.Currency)]
+        [Group("ambush"), Module(ModuleType.Chickens)]
         [Description("Start an ambush for another user's chicken. Other users can put their chickens into your ambush and collectively attack the target chicken combining their strength.")]
         [Aliases("gangattack")]
         [UsageExample("!chicken ambush @Someone")]
@@ -99,7 +99,7 @@ namespace TheGodfather.Modules.Currency
 
 
             #region COMMAND_CHICKEN_AMBUSH_JOIN
-            [Command("join"), Module(ModuleType.Currency)]
+            [Command("join"), Module(ModuleType.Chickens)]
             [Description("Join a pending chicken ambush as one of the ambushers.")]
             [Aliases("+", "compete", "enter", "j")]
             [UsageExample("!chicken ambush join")]
@@ -125,7 +125,7 @@ namespace TheGodfather.Modules.Currency
             #endregion
 
             #region COMMAND_CHICKEN_AMBUSH_HELP
-            [Command("help"), Module(ModuleType.Currency)]
+            [Command("help"), Module(ModuleType.Chickens)]
             [Description("Join a pending chicken ambush and help the ambushed chicken.")]
             [Aliases("h", "halp", "hlp", "ha")]
             [UsageExample("!chicken ambush help")]

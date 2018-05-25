@@ -438,10 +438,10 @@
     <Compile Include="Modules\Currency\CasinoModule.Holdem.cs" />
     <Compile Include="Modules\Currency\CasinoModule.Lottery.cs" />
     <Compile Include="Modules\Currency\CasinoModule.cs" />
-    <Compile Include="Modules\Currency\ChickenModule.War.cs" />
-    <Compile Include="Modules\Currency\ChickenModule.Ambush.cs" />
-    <Compile Include="Modules\Currency\ChickenModule.cs" />
-    <Compile Include="Modules\Currency\Common\ChickenWar.cs" />
+    <Compile Include="Modules\Chickens\ChickenModule.War.cs" />
+    <Compile Include="Modules\Chickens\ChickenModule.Ambush.cs" />
+    <Compile Include="Modules\Chickens\ChickenModule.cs" />
+    <Compile Include="Modules\Chickens\Common\ChickenWar.cs" />
     <Compile Include="Modules\Currency\Common\HoldemGame.cs" />
     <Compile Include="Modules\Currency\Common\LotteryGame.cs" />
     <Compile Include="Modules\Currency\Common\BlackjackGame.cs" />

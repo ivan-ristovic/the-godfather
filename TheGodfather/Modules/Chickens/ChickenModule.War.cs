@@ -7,23 +7,20 @@ using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-using TheGodfather.Modules.Currency.Common;
-using TheGodfather.Modules.Games.Common;
+using TheGodfather.Modules.Chickens.Common;
 using TheGodfather.Services;
-using TheGodfather.Services.Common;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 #endregion
 
-namespace TheGodfather.Modules.Currency
+namespace TheGodfather.Modules.Chickens
 {
     public partial class ChickenModule
     {
-        [Group("war"), Module(ModuleType.Currency)]
+        [Group("war"), Module(ModuleType.Chickens)]
         [Description("Declare a chicken war! Other users can put their chickens into teams which names you specify.")]
         [Aliases("gangwar", "battle")]
         [UsageExample("!chicken war Team1 Team2")]
@@ -77,7 +74,7 @@ namespace TheGodfather.Modules.Currency
 
             #region COMMAND_CHICKEN_WAR_JOIN
             [Command("join"), Priority(1)]
-            [Module(ModuleType.Currency)]
+            [Module(ModuleType.Chickens)]
             [Description("Join a pending chicken war. Specify a team which you want to join, or numbers 1 or 2 corresponding to team one and team two, respectively.")]
             [Aliases("+", "compete", "enter", "j")]
             [UsageExample("!chicken war join Team Name")]

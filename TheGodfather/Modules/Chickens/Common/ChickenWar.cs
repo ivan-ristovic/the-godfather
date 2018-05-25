@@ -16,7 +16,7 @@ using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 #endregion
 
-namespace TheGodfather.Modules.Currency.Common
+namespace TheGodfather.Modules.Chickens.Common
 {
     public class ChickenWar : ChannelEvent
     {
