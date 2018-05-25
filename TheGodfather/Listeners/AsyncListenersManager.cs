@@ -8,9 +8,9 @@ using TheGodfather.Common.Attributes;
 using DSharpPlus;
 #endregion
 
-namespace TheGodfather.Common
+namespace TheGodfather.Listeners
 {
-    internal static class AsyncEventListenerHandler
+    internal static class AsyncListenersManager
     {
         public static IEnumerable<ListenerMethod> ListenerMethods { get; private set; }
 

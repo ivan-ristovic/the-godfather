@@ -12,6 +12,7 @@ using TheGodfather.Common.Attributes;
 using TheGodfather.Common.Converters;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
+using TheGodfather.Listeners;
 using TheGodfather.Modules;
 using TheGodfather.Services;
 
@@ -95,36 +96,7 @@ namespace TheGodfather
 
             Client.DebugLogger.LogMessageReceived += (s, e) => TheGodfather.LogHandle.LogMessage(ShardId, e);
 
-            AsyncEventListenerHandler.InstallListeners(Client, this);
-            /*
-            Client.ChannelCreated += Client_ChannelCreated;
-            Client.ChannelDeleted += Client_ChannelDeleted;
-            Client.ChannelPinsUpdated += Client_ChannelPinsUpdated;
-            Client.ChannelUpdated += Client_ChannelUpdated;
-            Client.ClientErrored += Client_Errored;
-            Client.GuildAvailable += Client_GuildAvailable;
-            Client.GuildBanAdded += Client_GuildBanAdded;
-            Client.GuildBanRemoved += Client_GuildBanRemoved;
-            Client.GuildCreated += Client_GuildCreated;
-            Client.GuildDeleted += Client_GuildDeleted;
-            Client.GuildEmojisUpdated += Client_GuildEmojisUpdated;
-            Client.GuildIntegrationsUpdated += Client_GuildIntegrationsUpdated;
-            Client.GuildMemberAdded += Client_GuildMemberAdded;
-            Client.GuildMemberRemoved += Client_GuildMemberRemoved;
-            Client.GuildMemberUpdated += Client_GuildMemberUpdated;
-            Client.GuildRoleCreated += Client_GuildRoleCreated;
-            Client.GuildRoleDeleted += Client_GuildRoleDeleted;
-            Client.GuildRoleUpdated += Client_GuildRoleUpdated;
-            Client.GuildUnavailable += Client_GuildUnavailable;
-            Client.GuildUpdated += Client_GuildUpdated;
-            Client.GuildUnavailable += Client_GuildUnavailable;
-            Client.MessagesBulkDeleted += Client_MessagesBulkDeleted;
-            Client.MessageCreated += Client_MessageCreated;
-            Client.MessageDeleted += Client_MessageDeleted;
-            Client.MessageUpdated += Client_MessageUpdated;
-            Client.VoiceServerUpdated += Client_VoiceServerUpdated;
-            Client.WebhooksUpdated += Client_WebhooksUpdated;
-            */
+            AsyncListenersManager.InstallListeners(Client, this);
         }
 
         private void SetupCommands()

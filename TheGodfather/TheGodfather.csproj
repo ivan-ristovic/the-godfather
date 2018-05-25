@@ -413,7 +413,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Common\AsyncEventListenerHandler.cs" />
+    <Compile Include="Listeners\AsyncListenersManager.cs" />
     <Compile Include="Common\Attributes\AsyncEventListenerAttribute.cs" />
     <Compile Include="Common\Attributes\ModuleAttribute.cs" />
     <Compile Include="Common\Attributes\RequirePriviledgedUserAttribute.cs" />
