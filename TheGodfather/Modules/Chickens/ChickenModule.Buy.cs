@@ -31,8 +31,8 @@ namespace TheGodfather.Modules.Chickens
 
 
             [GroupCommand]
-            public Task BuyAsync(CommandContext ctx,
-                                [RemainingText, Description("Chicken name.")] string name = null)
+            public Task ExecuteGroupAsync(CommandContext ctx,
+                                         [RemainingText, Description("Chicken name.")] string name = null)
                 => HandleBuyAsync(ctx, ChickenType.Default, name);
 
 
