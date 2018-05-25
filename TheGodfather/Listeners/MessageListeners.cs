@@ -34,18 +34,26 @@ namespace TheGodfather.Listeners
         [AsyncEventListener(EventTypes.MessageCreated)]
         public static async Task Client_MessageCreated(TheGodfatherShard shard, MessageCreateEventArgs e)
         {
-            if (e.Author.IsBot || !TheGodfather.Listening)
+            if (e.Author.IsBot || !TheGodfather.Listening || e.Channel.IsPrivate || shard.Shared.BlockedChannels.Contains(e.Channel.Id) || shard.Shared.BlockedUsers.Contains(e.Author.Id))
                 return;
 
-            if (e.Channel.IsPrivate) {
-                TheGodfather.LogHandle.LogMessage(LogLevel.Info, $"Ignored DM from {e.Author.ToString()}:<br>{e.Message}");
+            if (!e.Channel.PermissionsFor(e.Guild.CurrentMember).HasFlag(Permissions.SendMessages))
                 return;
+
+            int rank = shard.Shared.UpdateMessageCount(e.Author.Id);
+            if (rank != -1) {
+                var ranks = shard.Shared.Ranks;
+                await e.Channel.SendIconEmbedAsync($"GG {e.Author.Mention}! You have advanced to level {rank} ({(rank < ranks.Count ? ranks[rank] : "Low")})!", DiscordEmoji.FromName(shard.Client, ":military_medal:"))
+                    .ConfigureAwait(false);
             }
+        }
 
-            if (shard.Shared.BlockedChannels.Contains(e.Channel.Id))
+        [AsyncEventListener(EventTypes.MessageCreated)]
+        public static async Task Client_MessageCreatedFiltering(TheGodfatherShard shard, MessageCreateEventArgs e)
+        {
+            if (e.Author.IsBot || !TheGodfather.Listening || e.Channel.IsPrivate || shard.Shared.BlockedChannels.Contains(e.Channel.Id))
                 return;
 
-            // Check if message contains filter
             if (e.Message.Content != null && shard.Shared.MessageContainsFilter(e.Guild.Id, e.Message.Content)) {
                 try {
                     await e.Channel.DeleteMessageAsync(e.Message, "_gf: Filter hit")
@@ -65,42 +73,17 @@ namespace TheGodfather.Listeners
                 }
                 return;
             }
+        }
 
-            // If the user is blocked, ignore
-            if (shard.Shared.BlockedUsers.Contains(e.Author.Id))
+        [AsyncEventListener(EventTypes.MessageCreated)]
+        public static async Task Client_MessageCreatedEmojiReactions(TheGodfatherShard shard, MessageCreateEventArgs e)
+        {
+            if (e.Author.IsBot || !TheGodfather.Listening || e.Channel.IsPrivate || shard.Shared.BlockedChannels.Contains(e.Channel.Id) || shard.Shared.BlockedUsers.Contains(e.Author.Id) || !e.Channel.PermissionsFor(e.Guild.CurrentMember).HasFlag(Permissions.SendMessages))
                 return;
-
-            // Since below actions require SendMessages permission, checking it now
-            if (!e.Channel.PermissionsFor(e.Guild.CurrentMember).HasFlag(Permissions.SendMessages))
-                return;
-
-            // Update message count for the user that sent the message
-            int rank = shard.Shared.UpdateMessageCount(e.Author.Id);
-            if (rank != -1) {
-                var ranks = shard.Shared.Ranks;
-                await e.Channel.SendIconEmbedAsync($"GG {e.Author.Mention}! You have advanced to level {rank} ({(rank < ranks.Count ? ranks[rank] : "Low")})!", DiscordEmoji.FromName(shard.Client, ":military_medal:"))
-                    .ConfigureAwait(false);
-            }
-
-            // Check if message has a text reaction
-            if (shard.Shared.TextReactions.ContainsKey(e.Guild.Id)) {
-                var tr = shard.Shared.TextReactions[e.Guild.Id]?.FirstOrDefault(r => r.Matches(e.Message.Content));
-                if (tr != null && tr.CanSend()) {
-                    shard.Log(LogLevel.Debug,
-                        $"Text reaction detected: {tr.Response}<br>" +
-                        $"Message: {e.Message.Content.Replace('\n', ' ')}<br>" +
-                        $"{e.Message.Author.ToString()}<br>" +
-                        $"{e.Guild.ToString()} | {e.Channel.ToString()}"
-                    );
-                    await e.Channel.SendMessageAsync(tr.Response.Replace("%user%", e.Author.Mention))
-                        .ConfigureAwait(false);
-                }
-            }
 
             if (!e.Channel.PermissionsFor(e.Guild.CurrentMember).HasFlag(Permissions.AddReactions))
                 return;
 
-            // Check if message has an emoji reaction
             if (shard.Shared.EmojiReactions.ContainsKey(e.Guild.Id)) {
                 var ereactions = shard.Shared.EmojiReactions[e.Guild.Id].Where(er => er.Matches(e.Message.Content));
                 foreach (var er in ereactions) {
@@ -126,6 +109,30 @@ namespace TheGodfather.Listeners
                         );
                         break;
                     }
+                }
+            }
+        }
+
+        [AsyncEventListener(EventTypes.MessageCreated)]
+        public static async Task Client_MessageCreatedTextReactions(TheGodfatherShard shard, MessageCreateEventArgs e)
+        {
+            if (e.Author.IsBot || !TheGodfather.Listening || e.Channel.IsPrivate || shard.Shared.BlockedChannels.Contains(e.Channel.Id) || shard.Shared.BlockedUsers.Contains(e.Author.Id))
+                return;
+
+            if (!e.Channel.PermissionsFor(e.Guild.CurrentMember).HasFlag(Permissions.SendMessages))
+                return;
+
+            if (shard.Shared.TextReactions.ContainsKey(e.Guild.Id)) {
+                var tr = shard.Shared.TextReactions[e.Guild.Id]?.FirstOrDefault(r => r.Matches(e.Message.Content));
+                if (tr != null && tr.CanSend()) {
+                    shard.Log(LogLevel.Debug,
+                        $"Text reaction detected: {tr.Response}<br>" +
+                        $"Message: {e.Message.Content.Replace('\n', ' ')}<br>" +
+                        $"{e.Message.Author.ToString()}<br>" +
+                        $"{e.Guild.ToString()} | {e.Channel.ToString()}"
+                    );
+                    await e.Channel.SendMessageAsync(tr.Response.Replace("%user%", e.Author.Mention))
+                        .ConfigureAwait(false);
                 }
             }
         }
