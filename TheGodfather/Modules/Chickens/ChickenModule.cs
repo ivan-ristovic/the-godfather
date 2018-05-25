@@ -42,7 +42,7 @@ namespace TheGodfather.Modules.Chickens
         [Description("Make your chicken and another user's chicken fight until death!")]
         [Aliases("f", "duel", "attack")]
         [UsageExample("!chicken duel @Someone")]
-        public async Task TrainAsync(CommandContext ctx,
+        public async Task FightAsync(CommandContext ctx,
                                     [Description("User.")] DiscordUser user)
         {
             if (ChannelEvent.GetEventInChannel(ctx.Channel.Id) is ChickenWar ambush)
@@ -93,6 +93,31 @@ namespace TheGodfather.Modules.Chickens
                 (loser.Stats.Vitality == 0 ? $"{Formatter.Bold(loser.Name)} died in the battle!\n\n" : "") +
                 $"{winner.Owner.Mention} won {gain * 200} credits."
             ).ConfigureAwait(false);
+        }
+        #endregion
+
+        #region COMMAND_CHICKEN_HEAL
+        [Command("heal"), Module(ModuleType.Chickens)]
+        [Description("Heal your chicken (+100 to current HP). You can heal your chicken once per hour.")]
+        [Aliases("+hp", "hp")]
+        [Cooldown(1, 3600, CooldownBucketType.User)]
+        [UsageExample("!chicken heal")]
+        public async Task HealAsync(CommandContext ctx)
+        {
+            if (ChannelEvent.GetEventInChannel(ctx.Channel.Id) is ChickenWar ambush)
+                throw new CommandFailedException("There is a chicken war running in this channel. You are not allowed to heal your chicken before the war finishes.");
+
+            var chicken = await Database.GetChickenInfoAsync(ctx.User.Id, ctx.Guild.Id)
+                .ConfigureAwait(false);
+            if (chicken == null)
+                throw new CommandFailedException("You do not own a chicken!");
+
+            chicken.Stats.Vitality += 100;
+            await Database.ModifyChickenAsync(chicken, ctx.Guild.Id)
+                .ConfigureAwait(false);
+
+            await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} healed his chicken (+100 to current HP)!")
+                .ConfigureAwait(false);
         }
         #endregion
 
@@ -185,7 +210,7 @@ namespace TheGodfather.Modules.Chickens
         [Description("View the list of strongest chickens in the current guild.")]
         [Aliases("best", "strongest")]
         [UsageExample("!chicken top")]
-        public async Task InfoAsync(CommandContext ctx)
+        public async Task TopAsync(CommandContext ctx)
         {
             var chickens = await Database.GetStrongestChickensForGuildAsync(ctx.Guild.Id)
                 .ConfigureAwait(false);
