@@ -413,7 +413,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Listeners\AsyncListenersManager.cs" />
+    <Compile Include="EventListeners\AsyncExecutionManager.cs" />
     <Compile Include="Common\Attributes\AsyncEventListenerAttribute.cs" />
     <Compile Include="Common\Attributes\ModuleAttribute.cs" />
     <Compile Include="Common\Attributes\RequirePriviledgedUserAttribute.cs" />
@@ -426,11 +426,11 @@
     <Compile Include="Common\SavedTaskExecuter.cs" />
     <Compile Include="Extensions\HoldemExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
-    <Compile Include="Listeners\MessageListeners.cs" />
-    <Compile Include="Listeners\MemberListeners.cs" />
-    <Compile Include="Listeners\GuildListeners.cs" />
-    <Compile Include="Listeners\ChannelListeners.cs" />
-    <Compile Include="Listeners\ClientListeners.cs" />
+    <Compile Include="EventListeners\MessageListeners.cs" />
+    <Compile Include="EventListeners\MemberListeners.cs" />
+    <Compile Include="EventListeners\GuildListeners.cs" />
+    <Compile Include="EventListeners\ChannelListeners.cs" />
+    <Compile Include="EventListeners\ClientListeners.cs" />
     <Compile Include="Modules\Administration\AutomaticRolesModule.cs" />
     <Compile Include="Modules\Administration\Common\Filter.cs" />
     <Compile Include="Modules\Administration\GuildModule.Configuration.cs" />

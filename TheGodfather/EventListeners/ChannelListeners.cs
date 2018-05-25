@@ -13,11 +13,11 @@ using DSharpPlus.EventArgs;
 using DSharpPlus.Exceptions;
 #endregion
 
-namespace TheGodfather.Listeners
+namespace TheGodfather.EventListeners
 {
     internal static class ChannelListeners
     {
-        [AsyncEventListener(EventTypes.ChannelCreated)]
+        [AsyncExecuter(EventTypes.ChannelCreated)]
         public static async Task Client_ChannelCreated(TheGodfatherShard shard, ChannelCreateEventArgs e)
         {
             var logchn = await shard.Shared.GetLogChannelForGuild(shard.Client, e.Guild.Id)
@@ -46,7 +46,7 @@ namespace TheGodfather.Listeners
             }
         }
 
-        [AsyncEventListener(EventTypes.ChannelDeleted)]
+        [AsyncExecuter(EventTypes.ChannelDeleted)]
         public static async Task Client_ChannelDeleted(TheGodfatherShard shard, ChannelDeleteEventArgs e)
         {
             var logchn = await shard.Shared.GetLogChannelForGuild(shard.Client, e.Guild.Id)
@@ -75,7 +75,7 @@ namespace TheGodfather.Listeners
             }
         }
 
-        [AsyncEventListener(EventTypes.ChannelPinsUpdated)]
+        [AsyncExecuter(EventTypes.ChannelPinsUpdated)]
         public static async Task Client_ChannelPinsUpdated(TheGodfatherShard shard, ChannelPinsUpdateEventArgs e)
         {
             var logchn = await shard.Shared.GetLogChannelForGuild(shard.Client, e.Channel.Guild.Id)
@@ -92,7 +92,7 @@ namespace TheGodfather.Listeners
             }
         }
 
-        [AsyncEventListener(EventTypes.ChannelUpdated)]
+        [AsyncExecuter(EventTypes.ChannelUpdated)]
         public static async Task Client_ChannelUpdated(TheGodfatherShard shard, ChannelUpdateEventArgs e)
         {
             if (e.ChannelBefore.Position != e.ChannelAfter.Position)

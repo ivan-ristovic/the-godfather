@@ -10,9 +10,9 @@ using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Common.Converters;
+using TheGodfather.EventListeners;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-using TheGodfather.Listeners;
 using TheGodfather.Modules;
 using TheGodfather.Services;
 
@@ -96,7 +96,7 @@ namespace TheGodfather
 
             Client.DebugLogger.LogMessageReceived += (s, e) => TheGodfather.LogHandle.LogMessage(ShardId, e);
 
-            AsyncListenersManager.InstallListeners(Client, this);
+            AsyncExecutionManager.InstallListeners(Client, this);
         }
 
         private void SetupCommands()

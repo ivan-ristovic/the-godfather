@@ -13,11 +13,11 @@ using DSharpPlus.EventArgs;
 using DSharpPlus.Exceptions;
 #endregion
 
-namespace TheGodfather.Listeners
+namespace TheGodfather.EventListeners
 {
     internal static class MessageListeners
     {
-        [AsyncEventListener(EventTypes.MessagesBulkDeleted)]
+        [AsyncExecuter(EventTypes.MessagesBulkDeleted)]
         public static async Task Client_MessagesBulkDeleted(TheGodfatherShard shard, MessageBulkDeleteEventArgs e)
         {
             var logchn = await shard.Shared.GetLogChannelForGuild(shard.Client, e.Channel.Guild.Id)
@@ -31,7 +31,7 @@ namespace TheGodfather.Listeners
             }
         }
 
-        [AsyncEventListener(EventTypes.MessageCreated)]
+        [AsyncExecuter(EventTypes.MessageCreated)]
         public static async Task Client_MessageCreated(TheGodfatherShard shard, MessageCreateEventArgs e)
         {
             if (e.Author.IsBot || !TheGodfather.Listening || e.Channel.IsPrivate || shard.Shared.BlockedChannels.Contains(e.Channel.Id) || shard.Shared.BlockedUsers.Contains(e.Author.Id))
@@ -48,7 +48,7 @@ namespace TheGodfather.Listeners
             }
         }
 
-        [AsyncEventListener(EventTypes.MessageCreated)]
+        [AsyncExecuter(EventTypes.MessageCreated)]
         public static async Task Client_MessageCreatedFiltering(TheGodfatherShard shard, MessageCreateEventArgs e)
         {
             if (e.Author.IsBot || !TheGodfather.Listening || e.Channel.IsPrivate || shard.Shared.BlockedChannels.Contains(e.Channel.Id))
@@ -75,7 +75,7 @@ namespace TheGodfather.Listeners
             }
         }
 
-        [AsyncEventListener(EventTypes.MessageCreated)]
+        [AsyncExecuter(EventTypes.MessageCreated)]
         public static async Task Client_MessageCreatedEmojiReactions(TheGodfatherShard shard, MessageCreateEventArgs e)
         {
             if (e.Author.IsBot || !TheGodfather.Listening || e.Channel.IsPrivate || shard.Shared.BlockedChannels.Contains(e.Channel.Id) || shard.Shared.BlockedUsers.Contains(e.Author.Id) || !e.Channel.PermissionsFor(e.Guild.CurrentMember).HasFlag(Permissions.SendMessages))
@@ -113,7 +113,7 @@ namespace TheGodfather.Listeners
             }
         }
 
-        [AsyncEventListener(EventTypes.MessageCreated)]
+        [AsyncExecuter(EventTypes.MessageCreated)]
         public static async Task Client_MessageCreatedTextReactions(TheGodfatherShard shard, MessageCreateEventArgs e)
         {
             if (e.Author.IsBot || !TheGodfather.Listening || e.Channel.IsPrivate || shard.Shared.BlockedChannels.Contains(e.Channel.Id) || shard.Shared.BlockedUsers.Contains(e.Author.Id))
@@ -137,7 +137,7 @@ namespace TheGodfather.Listeners
             }
         }
 
-        [AsyncEventListener(EventTypes.MessageDeleted)]
+        [AsyncExecuter(EventTypes.MessageDeleted)]
         public static async Task Client_MessageDeleted(TheGodfatherShard shard, MessageDeleteEventArgs e)
         {
             if (e.Channel.IsPrivate)
@@ -180,7 +180,7 @@ namespace TheGodfather.Listeners
             }
         }
 
-        [AsyncEventListener(EventTypes.MessageUpdated)]
+        [AsyncExecuter(EventTypes.MessageUpdated)]
         public static async Task Client_MessageUpdated(TheGodfatherShard shard, MessageUpdateEventArgs e)
         {
             if (e.Author == null || e.Message == null || !TheGodfather.Listening || e.Channel.IsPrivate)

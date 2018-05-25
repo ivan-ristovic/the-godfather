@@ -8,9 +8,9 @@ using TheGodfather.Common.Attributes;
 using DSharpPlus;
 #endregion
 
-namespace TheGodfather.Listeners
+namespace TheGodfather.EventListeners
 {
-    internal static class AsyncListenersManager
+    internal static class AsyncExecutionManager
     {
         public static IEnumerable<ListenerMethod> ListenerMethods { get; private set; }
 
@@ -21,9 +21,9 @@ namespace TheGodfather.Listeners
             ListenerMethods =
                 from types in assembly.GetTypes()
                 from methods in types.GetMethods()
-                let attribute = methods.GetCustomAttribute(typeof(AsyncEventListenerAttribute), true)
+                let attribute = methods.GetCustomAttribute(typeof(AsyncExecuterAttribute), true)
                 where attribute != null
-                select new ListenerMethod { Method = methods, Attribute = attribute as AsyncEventListenerAttribute };
+                select new ListenerMethod { Method = methods, Attribute = attribute as AsyncExecuterAttribute };
 
             foreach (var listener in ListenerMethods)
                 listener.Attribute.Register(bot, client, listener.Method);
@@ -34,6 +34,6 @@ namespace TheGodfather.Listeners
     internal class ListenerMethod
     {
         public MethodInfo Method { get; internal set; }
-        public AsyncEventListenerAttribute Attribute { get; internal set; }
+        public AsyncExecuterAttribute Attribute { get; internal set; }
     }
 }

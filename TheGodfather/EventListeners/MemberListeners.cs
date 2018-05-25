@@ -13,11 +13,11 @@ using DSharpPlus.EventArgs;
 using DSharpPlus.Exceptions;
 #endregion
 
-namespace TheGodfather.Listeners
+namespace TheGodfather.EventListeners
 {
     internal static class MemberListeners
     {
-        [AsyncEventListener(EventTypes.GuildMemberAdded)]
+        [AsyncExecuter(EventTypes.GuildMemberAdded)]
         public static async Task Client_GuildMemberAdded(TheGodfatherShard shard, GuildMemberAddEventArgs e)
         {
             if (!TheGodfather.Listening)
@@ -102,7 +102,7 @@ namespace TheGodfather.Listeners
             }
         }
 
-        [AsyncEventListener(EventTypes.GuildMemberRemoved)]
+        [AsyncExecuter(EventTypes.GuildMemberRemoved)]
         public static async Task Client_GuildMemberRemoved(TheGodfatherShard shard, GuildMemberRemoveEventArgs e)
         {
             if (!TheGodfather.Listening || e.Member.Id == e.Client.CurrentUser.Id)
@@ -164,7 +164,7 @@ namespace TheGodfather.Listeners
             }
         }
 
-        [AsyncEventListener(EventTypes.GuildMemberUpdated)]
+        [AsyncExecuter(EventTypes.GuildMemberUpdated)]
         public static async Task Client_GuildMemberUpdated(TheGodfatherShard shard, GuildMemberUpdateEventArgs e)
         {
             var logchn = await shard.Shared.GetLogChannelForGuild(shard.Client, e.Guild.Id)

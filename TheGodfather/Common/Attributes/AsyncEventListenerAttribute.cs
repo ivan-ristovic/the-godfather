@@ -9,12 +9,12 @@ using DSharpPlus;
 namespace TheGodfather.Common.Attributes
 {
     [AttributeUsage(AttributeTargets.Method)]
-    internal class AsyncEventListenerAttribute : Attribute
+    internal class AsyncExecuterAttribute : Attribute
     {
         public EventTypes Target { get; }
 
 
-        public AsyncEventListenerAttribute(EventTypes targetType)
+        public AsyncExecuterAttribute(EventTypes targetType)
         {
             Target = targetType;
         }
