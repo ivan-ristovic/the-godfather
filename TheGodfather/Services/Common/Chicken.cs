@@ -86,15 +86,24 @@ namespace TheGodfather.Services.Common
             => (long)Math.Pow(10, 1 + str / (double)50);
 
 
-        public bool Train()
+        public bool TrainStrength()
         {
             if (GFRandom.Generator.GetBool()) {
                 Stats.Strength += 4;
                 return true;
             } else {
                 Stats.Strength -= 3;
-                if (Stats.Strength < 0)
-                    Stats.Strength = 0;
+                return false;
+            }
+        }
+
+        public bool TrainVitality()
+        {
+            if (GFRandom.Generator.GetBool()) {
+                Stats.MaxVitality += 3;
+                return true;
+            } else {
+                Stats.MaxVitality -= 2;
                 return false;
             }
         }
