@@ -20,7 +20,7 @@ namespace TheGodfather.Modules.Chickens
 {
     [Group("chicken"), Module(ModuleType.Chickens)]
     [Description("Manage your chicken. If invoked without subcommands, prints out your chicken information.")]
-    [Aliases("cock", "hen", "chick", "coc")]
+    [Aliases("cock", "hen", "chick", "coc", "cc")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     [UsageExample("!chicken")]
     [UsageExample("!chicken @Someone")]

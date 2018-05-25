@@ -1,6 +1,7 @@
 ﻿#region USING_DIRECTIVES
 using System;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 using TheGodfather.Common;
@@ -51,13 +52,13 @@ namespace TheGodfather.Modules.Chickens
                 if (ambushed == null)
                     throw new CommandFailedException("Given user does not have a chicken in this guild!");
 
-                var ambush = new ChickenWar(ctx.Client.GetInteractivity(), ctx.Channel, "Ambushed", "Ambushers");
+                var ambush = new ChickenWar(ctx.Client.GetInteractivity(), ctx.Channel, "Ambushed chickens", "Evil ambushers");
                 ChannelEvent.RegisterEventInChannel(ambush, ctx.Channel.Id);
                 try {
                     ambush.AddParticipant(ambushed, user, team1: true);
                     await JoinAsync(ctx)
                         .ConfigureAwait(false);
-                    await ctx.RespondWithIconEmbedAsync($"The ambush will start in 1m. Use command {Formatter.InlineCode("chicken ambush")} to make your chicken join the ambush, or {Formatter.InlineCode("chicken ambush help")} to help the ambushed chicken.", ":clock1:")
+                    await ctx.RespondWithIconEmbedAsync($"The ambush will start in 1 minute. Use command {Formatter.InlineCode("chicken ambush")} to make your chicken join the ambush, or {Formatter.InlineCode("chicken ambush help")} to help the ambushed chicken.", ":clock1:")
                         .ConfigureAwait(false);
                     await Task.Delay(TimeSpan.FromMinutes(1))
                         .ConfigureAwait(false);
@@ -66,31 +67,32 @@ namespace TheGodfather.Modules.Chickens
                         await ambush.RunAsync()
                             .ConfigureAwait(false);
 
-                        if (ambush.Team1Won) {
-                            foreach (var chicken in ambush.Team1) {
-                                ambushed.Stats.Strength += 20;
-                                await Database.GiveCreditsToUserAsync(ambushed.OwnerId, ctx.Guild.Id, 100000)
-                                    .ConfigureAwait(false);
-                                await Database.ModifyChickenAsync(ambushed, ctx.Guild.Id)
-                                    .ConfigureAwait(false);
-                                foreach (var ambusher in ambush.Team2) {
-                                    ambusher.Stats.Vitality -= 50;
-                                    if (ambusher.Stats.Vitality > 0)
-                                        await Database.ModifyChickenAsync(ambusher, ctx.Guild.Id).ConfigureAwait(false);
-                                    else
-                                        await Database.RemoveChickenAsync(ambusher.OwnerId, ctx.Guild.Id).ConfigureAwait(false);
-                                }
-                            }
+                        var sb = new StringBuilder();
 
-                            await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, $"Ambushers have survived the ambush and defeated all the other chickens! (+20 STR)\n\nOwners of the ambushed chickens won 100000 credits!")
+                        foreach (var chicken in ambush.Team1Won ? ambush.Team1 : ambush.Team2) {
+                            chicken.Stats.Strength += 10;
+                            await Database.ModifyChickenAsync(chicken, ctx.Guild.Id)
                                 .ConfigureAwait(false);
-                        } else {
-                            ambushed.Stats.Vitality = 1;
-                            await Database.ModifyChickenAsync(ambushed, ctx.Guild.Id)
+                            await Database.GiveCreditsToUserAsync(chicken.OwnerId, ctx.Guild.Id, 10000)
                                 .ConfigureAwait(false);
-                            await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, $"Ambushers have won! {Formatter.Bold(ambushed.Name)} barely survived with 1HP...")
-                                .ConfigureAwait(false);
+                            sb.AppendLine($"{Formatter.Bold(chicken.Name)} gained 10 STR!");
                         }
+
+                        foreach (var chicken in ambush.Team1Won ? ambush.Team2 : ambush.Team1) {
+                            chicken.Stats.Vitality -= 50;
+                            if (chicken.Stats.Vitality > 0) {
+                                await Database.ModifyChickenAsync(chicken, ctx.Guild.Id)
+                                    .ConfigureAwait(false);
+                                sb.AppendLine($"{Formatter.Bold(chicken.Name)} lost 50 HP!");
+                            } else {
+                                await Database.RemoveChickenAsync(chicken.OwnerId, ctx.Guild.Id)
+                                    .ConfigureAwait(false);
+                                sb.AppendLine($"{Formatter.Bold(chicken.Name)} died!");
+                            }
+                        }
+
+                        await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, $"{Formatter.Bold(ambush.Team1Won ? ambush.Team1Name : ambush.Team2Name)} won the war!\n\nEach chicken owner in the won party gains 10000 credits.\n\n{sb.ToString()}")
+                            .ConfigureAwait(false);
                     }
                 } finally {
                     ChannelEvent.UnregisterEventInChannel(ctx.Channel.Id);

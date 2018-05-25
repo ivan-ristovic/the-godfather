@@ -1,6 +1,7 @@
 ﻿#region USING_DIRECTIVES
 using System;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 using TheGodfather.Common;
@@ -51,15 +52,31 @@ namespace TheGodfather.Modules.Chickens
                         await war.RunAsync()
                             .ConfigureAwait(false);
 
+                        var sb = new StringBuilder();
+
                         foreach (var chicken in war.Team1Won ? war.Team1 : war.Team2) {
                             chicken.Stats.Strength += 20;
                             await Database.ModifyChickenAsync(chicken, ctx.Guild.Id)
                                 .ConfigureAwait(false);
                             await Database.GiveCreditsToUserAsync(chicken.OwnerId, ctx.Guild.Id, 100000)
                                 .ConfigureAwait(false);
+                            sb.AppendLine($"{Formatter.Bold(chicken.Name)} gained 20 STR!");
                         }
 
-                        await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, $"{Formatter.Bold(war.Team1Won ? war.Team1Name : war.Team2Name)} won the war!\n\n Each chicken in team gains +20 STR, and each chicken owner gains 100000 credits.")
+                        foreach (var chicken in war.Team1Won ? war.Team2 : war.Team1) {
+                            chicken.Stats.Vitality -= 25;
+                            if (chicken.Stats.Vitality > 0) {
+                                await Database.ModifyChickenAsync(chicken, ctx.Guild.Id)
+                                    .ConfigureAwait(false);
+                                sb.AppendLine($"{Formatter.Bold(chicken.Name)} lost 25 HP!");
+                            } else {
+                                await Database.RemoveChickenAsync(chicken.OwnerId, ctx.Guild.Id)
+                                    .ConfigureAwait(false);
+                                sb.AppendLine($"{Formatter.Bold(chicken.Name)} died!");
+                            }
+                        }
+
+                        await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, $"{Formatter.Bold(war.Team1Won ? war.Team1Name : war.Team2Name)} won the war!\n\nEach chicken owner in the won party gains 100000 credits.\n\n{sb.ToString()}")
                             .ConfigureAwait(false);
                     } else {
                         await ctx.RespondWithIconEmbedAsync("Not enough chickens joined the war (need atleast one in each team).", ":alarm_clock:")
