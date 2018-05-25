@@ -5,6 +5,7 @@ using System.Collections.Immutable;
 
 using TheGodfather.Common;
 
+using DSharpPlus;
 using DSharpPlus.Entities;
 #endregion
 
@@ -19,26 +20,8 @@ namespace TheGodfather.Services.Common
         Alien = 4
     }
 
-    public class Chicken
+    public class ChickenStats
     {
-        public static readonly ImmutableDictionary<ChickenType, short> StartingStrength = new Dictionary<ChickenType, short>() {
-            { ChickenType.Default, 50},
-            { ChickenType.WellFed, 75},
-            { ChickenType.Trained, 100},
-            { ChickenType.SteroidEmpowered, 125},
-            { ChickenType.Alien, 150}
-        }.ToImmutableDictionary();
-        public static readonly ImmutableDictionary<ChickenType, long> Price = new Dictionary<ChickenType, long>() {
-            { ChickenType.Default, 1000},
-            { ChickenType.WellFed, 10000},
-            { ChickenType.Trained, 100000},
-            { ChickenType.SteroidEmpowered, 1000000},
-            { ChickenType.Alien, 10000000}
-        }.ToImmutableDictionary();
-
-        public DiscordUser Owner { get; set; }
-        public ulong OwnerId { get; set; }
-        public string Name { get; set; }
         public short Strength
         {
             get => _strength;
@@ -51,21 +34,53 @@ namespace TheGodfather.Services.Common
                     _strength = value;
             }
         }
-        public long SellPrice => FindSellPriceForStrength(_strength);
-        public long TrainPrice => FindSellPriceForStrength((short)(_strength + 4)) - FindSellPriceForStrength(_strength);
+        public short Vitality
+        {
+            get => _vitality;
+            set {
+                if (value > MaxVitality)
+                    _vitality = MaxVitality;
+                else if (value < 0)
+                    _vitality = 0;
+                else
+                    _vitality = value;
+            }
+        }
+        public short MaxVitality { get; set; }
 
         private short _strength;
+        private short _vitality;
 
-        
-        public static short DetermineGain(short str1, short str2)
-        {
-            if (str1 > str2)
-                return (short)Math.Max(7 - (str1 - str2) / 5, 1);
-            else if (str2 > str1)
-                return (short)((str2 - str1) / 5 + 5);
-            else
-                return 5;
-        }
+
+        public override string ToString()
+            => $"STR: {Formatter.Bold(Strength.ToString())} | VIT: {Formatter.Bold(Vitality.ToString())} / {Formatter.Bold(MaxVitality.ToString())}";
+    }
+
+    public class Chicken
+    {
+        public static readonly ImmutableDictionary<ChickenType, ChickenStats> StartingStats = new Dictionary<ChickenType, ChickenStats>() {
+            { ChickenType.Default, new ChickenStats() { Strength = 50, Vitality = 100, MaxVitality = 100 } },
+            { ChickenType.WellFed, new ChickenStats() { Strength = 75, Vitality = 150, MaxVitality = 150 } },
+            { ChickenType.Trained, new ChickenStats() { Strength = 100, Vitality = 200, MaxVitality = 200 } },
+            { ChickenType.SteroidEmpowered, new ChickenStats() { Strength = 125, Vitality = 250, MaxVitality = 250 } },
+            { ChickenType.Alien, new ChickenStats() { Strength = 150, Vitality = 300, MaxVitality = 300 } },
+        }.ToImmutableDictionary();
+        public static readonly ImmutableDictionary<ChickenType, long> Price = new Dictionary<ChickenType, long>() {
+            { ChickenType.Default, 1000},
+            { ChickenType.WellFed, 10000},
+            { ChickenType.Trained, 100000},
+            { ChickenType.SteroidEmpowered, 1000000},
+            { ChickenType.Alien, 10000000}
+        }.ToImmutableDictionary();
+
+        public DiscordUser Owner { get; set; }
+        public ulong OwnerId { get; set; }
+        public string Name { get; set; }
+        public ChickenStats Stats { get; set; }
+        public long SellPrice => FindSellPriceForStrength(Stats.Strength);
+        public long TrainPrice => FindSellPriceForStrength((short)(Stats.Strength + 4)) - FindSellPriceForStrength(Stats.Strength);
+
+
 
         private static long FindSellPriceForStrength(short str)
             => (long)Math.Pow(10, 1 + str / (double)50);
@@ -74,21 +89,21 @@ namespace TheGodfather.Services.Common
         public bool Train()
         {
             if (GFRandom.Generator.GetBool()) {
-                _strength += 4;
+                Stats.Strength += 4;
                 return true;
             } else {
-                _strength -= 3;
-                if (_strength < 0)
-                    _strength = 0;
+                Stats.Strength -= 3;
+                if (Stats.Strength < 0)
+                    Stats.Strength = 0;
                 return false;
             }
         }
 
         public Chicken Fight(Chicken other)
         {
-            int chance = 50 + _strength - other._strength;
+            int chance = 50 + Stats.Strength - other.Stats.Strength;
 
-            if (_strength > other._strength) {
+            if (Stats.Strength > other.Stats.Strength) {
                 if (chance > 99)
                     chance = 99;
             } else {
@@ -99,6 +114,19 @@ namespace TheGodfather.Services.Common
             return GFRandom.Generator.Next(100) < chance ? this : other;
         }
 
+        public short DetermineStrengthGain(Chicken loser)
+        {
+            short str1 = Stats.Strength;
+            short str2 = loser.Stats.Strength;
+
+            if (str1 > str2)
+                return (short)Math.Max(7 - (str1 - str2) / 5, 1);
+            else if (str2 > str1)
+                return (short)((str2 - str1) / 5 + 5);
+            else
+                return 5;
+        }
+
         public DiscordEmbed Embed(DiscordUser owner)
         {
             var emb = new DiscordEmbedBuilder() {
@@ -107,8 +135,8 @@ namespace TheGodfather.Services.Common
             };
 
             emb.AddField("Owner", owner.Mention, inline: true);
-            emb.AddField("Strength", _strength.ToString(), inline: true);
             emb.AddField("Credit value", SellPrice.ToString(), inline: true);
+            emb.AddField("Stats", Stats.ToString());
 
             emb.WithFooter("Chickens will rule the world someday");
 

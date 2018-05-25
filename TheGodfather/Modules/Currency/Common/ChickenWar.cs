@@ -44,8 +44,8 @@ namespace TheGodfather.Modules.Currency.Common
         {
             Started = true;
 
-            short str1 = (short)(Team1.Sum(c => c.Strength));
-            short str2 = (short)(Team1.Sum(c => c.Strength));
+            short str1 = (short)(Team1.Sum(c => c.Stats.Strength));
+            short str2 = (short)(Team2.Sum(c => c.Stats.Strength));
 
             var emb = new DiscordEmbedBuilder() {
                 Title = $"{StaticDiscordEmoji.Chicken} CHICKEN WAR STARTING {StaticDiscordEmoji.Chicken}",
@@ -61,8 +61,8 @@ namespace TheGodfather.Modules.Currency.Common
             await Task.Delay(TimeSpan.FromSeconds(10))
                 .ConfigureAwait(false);
 
-            var c1 = new Chicken() { Strength = str1 };
-            var c2 = new Chicken() { Strength = str2 };
+            var c1 = new Chicken() { Stats = new ChickenStats { Strength = str1 } };
+            var c2 = new Chicken() { Stats = new ChickenStats { Strength = str2 } };
             if (c1.Fight(c2) == c1)
                 Team1Won = true;
             else

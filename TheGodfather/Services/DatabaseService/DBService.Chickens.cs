@@ -31,7 +31,11 @@ namespace TheGodfather.Services
                             chickens.Add(new Chicken() {
                                 Name = (string)reader["name"],
                                 OwnerId = (ulong)(long)reader["uid"],
-                                Strength = (short)reader["strength"]
+                                Stats = new ChickenStats() {
+                                    Strength = (short)reader["strength"],
+                                    MaxVitality = (short)reader["max_vitality"],
+                                    Vitality = (short)reader["vitality"]
+                                }
                             });
                         }
                     }
@@ -43,7 +47,7 @@ namespace TheGodfather.Services
             return chickens.AsReadOnly();
         }
 
-        public async Task BuyChickenAsync(ulong uid, ulong gid, string name = null, short strength = 50)
+        public async Task BuyChickenAsync(ulong uid, ulong gid, string name, ChickenStats stats)
         {
             await _sem.WaitAsync();
             try {
@@ -51,10 +55,12 @@ namespace TheGodfather.Services
                 using (var cmd = con.CreateCommand()) {
                     await con.OpenAsync().ConfigureAwait(false);
 
-                    cmd.CommandText = "INSERT INTO gf.chickens (uid, name, gid, strength) VALUES (@uid, @name, @gid, @strength) ON CONFLICT DO NOTHING;";
+                    cmd.CommandText = "INSERT INTO gf.chickens VALUES (@uid, @gid, @name, @strength, @vitality, @max_vitality) ON CONFLICT DO NOTHING;";
                     cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, uid);
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
-                    cmd.Parameters.AddWithValue("strength", NpgsqlDbType.Smallint, strength);
+                    cmd.Parameters.AddWithValue("strength", NpgsqlDbType.Smallint, stats.Strength);
+                    cmd.Parameters.AddWithValue("vitality", NpgsqlDbType.Smallint, stats.Vitality);
+                    cmd.Parameters.AddWithValue("max_vitality", NpgsqlDbType.Smallint, stats.MaxVitality);
                     if (string.IsNullOrWhiteSpace(name))
                         cmd.Parameters.AddWithValue("name", NpgsqlDbType.Varchar, DBNull.Value);
                     else
@@ -86,7 +92,11 @@ namespace TheGodfather.Services
                             chicken = new Chicken() {
                                 Name = (string)reader["name"],
                                 OwnerId = (ulong)(long)reader["uid"],
-                                Strength = (short)reader["strength"]
+                                Stats = new ChickenStats() {
+                                    Strength = (short)reader["strength"],
+                                    MaxVitality = (short)reader["max_vitality"],
+                                    Vitality = (short)reader["vitality"],
+                                }
                             };
                         }
                     }
@@ -106,11 +116,13 @@ namespace TheGodfather.Services
                 using (var cmd = con.CreateCommand()) {
                     await con.OpenAsync().ConfigureAwait(false);
 
-                    cmd.CommandText = "UPDATE gf.chickens SET (name, strength) = (@name, @strength) WHERE uid = @uid AND gid = @gid;";
+                    cmd.CommandText = "UPDATE gf.chickens SET (name, strength, vitality, max_vitality) = (@name, @strength, @vitality, @max_vitality) WHERE uid = @uid AND gid = @gid;";
                     cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, chicken.OwnerId);
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
                     cmd.Parameters.AddWithValue("name", NpgsqlDbType.Varchar, chicken.Name);
-                    cmd.Parameters.AddWithValue("strength", NpgsqlDbType.Smallint, chicken.Strength);
+                    cmd.Parameters.AddWithValue("strength", NpgsqlDbType.Smallint, chicken.Stats.Strength);
+                    cmd.Parameters.AddWithValue("vitality", NpgsqlDbType.Smallint, chicken.Stats.Vitality);
+                    cmd.Parameters.AddWithValue("max_vitality", NpgsqlDbType.Smallint, chicken.Stats.MaxVitality);
 
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }

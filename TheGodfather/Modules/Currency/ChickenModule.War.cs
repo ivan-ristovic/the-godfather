@@ -55,7 +55,7 @@ namespace TheGodfather.Modules.Currency
                             .ConfigureAwait(false);
 
                         foreach (var chicken in war.Team1Won ? war.Team1 : war.Team2) {
-                            chicken.Strength += 20;
+                            chicken.Stats.Strength += 20;
                             await Database.ModifyChickenAsync(chicken, ctx.Guild.Id)
                                 .ConfigureAwait(false);
                             await Database.GiveCreditsToUserAsync(chicken.OwnerId, ctx.Guild.Id, 100000)

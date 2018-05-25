@@ -68,22 +68,27 @@ namespace TheGodfather.Modules.Currency
 
                         if (ambush.Team1Won) {
                             foreach (var chicken in ambush.Team1) {
-                                ambushed.Strength += 20;
+                                ambushed.Stats.Strength += 20;
                                 await Database.GiveCreditsToUserAsync(ambushed.OwnerId, ctx.Guild.Id, 100000)
                                     .ConfigureAwait(false);
                                 await Database.ModifyChickenAsync(ambushed, ctx.Guild.Id)
                                     .ConfigureAwait(false);
-                                foreach (var ambusher in ambush.Team2)
-                                    await Database.RemoveChickenAsync(ambusher.OwnerId, ctx.Guild.Id).ConfigureAwait(false);
+                                foreach (var ambusher in ambush.Team2) {
+                                    ambusher.Stats.Vitality -= 50;
+                                    if (ambusher.Stats.Vitality > 0)
+                                        await Database.ModifyChickenAsync(ambusher, ctx.Guild.Id).ConfigureAwait(false);
+                                    else
+                                        await Database.RemoveChickenAsync(ambusher.OwnerId, ctx.Guild.Id).ConfigureAwait(false);
+                                }
                             }
 
-                            await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, $"Ambushers have survived the ambush and slaughtered all the other chickens! (+20 STR)\n\nOwners of the ambushed chickens won 100000 credits!")
+                            await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, $"Ambushers have survived the ambush and defeated all the other chickens! (+20 STR)\n\nOwners of the ambushed chickens won 100000 credits!")
                                 .ConfigureAwait(false);
-
                         } else {
-                            await Database.RemoveChickenAsync(user.Id, ctx.Guild.Id)
+                            ambushed.Stats.Vitality = 1;
+                            await Database.ModifyChickenAsync(ambushed, ctx.Guild.Id)
                                 .ConfigureAwait(false);
-                            await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, $"Ambushers have won! {Formatter.Bold(ambushed.Name)} is no more...")
+                            await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, $"Ambushers have won! {Formatter.Bold(ambushed.Name)} barely survived with 1HP...")
                                 .ConfigureAwait(false);
                         }
                     }

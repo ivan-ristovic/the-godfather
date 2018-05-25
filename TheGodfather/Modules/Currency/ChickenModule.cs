@@ -117,11 +117,11 @@ namespace TheGodfather.Modules.Currency
                     Color = DiscordColor.Orange
                 };
 
-                emb.AddField("Default", $"STR: {Formatter.Bold(Chicken.StartingStrength[ChickenType.Default].ToString())}\nPrice: {Formatter.Bold(Chicken.Price[ChickenType.Default].ToString())}", inline: true);
-                emb.AddField("Well-Fed", $"STR: {Formatter.Bold(Chicken.StartingStrength[ChickenType.WellFed].ToString())}\nPrice: {Formatter.Bold(Chicken.Price[ChickenType.WellFed].ToString())}", inline: true);
-                emb.AddField("Trained", $"STR: {Formatter.Bold(Chicken.StartingStrength[ChickenType.Trained].ToString())}\nPrice: {Formatter.Bold(Chicken.Price[ChickenType.Trained].ToString())}", inline: true);
-                emb.AddField("Steroid Empowered", $"STR: {Formatter.Bold(Chicken.StartingStrength[ChickenType.SteroidEmpowered].ToString())}\nPrice: {Formatter.Bold(Chicken.Price[ChickenType.SteroidEmpowered].ToString())}", inline: true);
-                emb.AddField("Alien", $"STR: {Formatter.Bold(Chicken.StartingStrength[ChickenType.Alien].ToString())}\nPrice: {Formatter.Bold(Chicken.Price[ChickenType.Alien].ToString())}", inline: true);
+                emb.AddField($"Default ({Chicken.Price[ChickenType.Default]} credits)", Chicken.StartingStats[ChickenType.Default].ToString());
+                emb.AddField($"Well-Fed ({Chicken.Price[ChickenType.WellFed]} credits)", Chicken.StartingStats[ChickenType.WellFed].ToString());
+                emb.AddField($"Trained ({Chicken.Price[ChickenType.Trained]} credits)", Chicken.StartingStats[ChickenType.Trained].ToString());
+                emb.AddField($"Steroid Empowered ({Chicken.Price[ChickenType.SteroidEmpowered]} credits)", Chicken.StartingStats[ChickenType.SteroidEmpowered].ToString());
+                emb.AddField($"Alien ({Chicken.Price[ChickenType.Alien]} credits)", Chicken.StartingStats[ChickenType.Alien].ToString());
 
                 await ctx.RespondAsync(embed: emb.Build())
                     .ConfigureAwait(false);
@@ -143,14 +143,14 @@ namespace TheGodfather.Modules.Currency
 
                 if (await Database.GetChickenInfoAsync(ctx.User.Id, ctx.Guild.Id).ConfigureAwait(false) != null)
                     throw new CommandFailedException("You already own a chicken!");
-                
+
                 if (!await ctx.AskYesNoQuestionAsync($"{ctx.User.Mention}, are you sure you want to buy a chicken for {Formatter.Bold(Chicken.Price[type].ToString())} credits?"))
                     return;
 
                 if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, ctx.Guild.Id, Chicken.Price[type]).ConfigureAwait(false))
                     throw new CommandFailedException($"You do not have enought credits to buy a chicken ({Chicken.Price[type]} needed)!");
 
-                await Database.BuyChickenAsync(ctx.User.Id, ctx.Guild.Id, name, Chicken.StartingStrength[type])
+                await Database.BuyChickenAsync(ctx.User.Id, ctx.Guild.Id, name, Chicken.StartingStats[type])
                     .ConfigureAwait(false);
 
                 await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} bought a chicken named {Formatter.Bold(name)}")
@@ -182,24 +182,31 @@ namespace TheGodfather.Modules.Currency
             if (chicken1 == null || chicken2 == null)
                 throw new CommandFailedException("One of you does not own a chicken!");
 
-            if (Math.Abs(chicken1.Strength - chicken2.Strength) > 50)
+            if (Math.Abs(chicken1.Stats.Strength - chicken2.Stats.Strength) > 50)
                 throw new CommandFailedException("The strength difference is too big (50 max)! Please find a more suitable opponent.");
 
             if (!ctx.Guild.Members.Any(m => m.Id == chicken2.OwnerId))
                 throw new CommandFailedException("The owner of that chicken is not a member of this guild so you cannot fight his chicken.");
 
-            string header = $"{Formatter.Bold(chicken1.Name)} ({chicken1.Strength}) {StaticDiscordEmoji.DuelSwords} {Formatter.Bold(chicken2.Name)} ({chicken2.Strength}) {StaticDiscordEmoji.Chicken}\n\n";
+            string header = $"{Formatter.Bold(chicken1.Name)} ({chicken1.Stats.ToString()}) {StaticDiscordEmoji.DuelSwords} {Formatter.Bold(chicken2.Name)} ({chicken2.Stats.ToString()}) {StaticDiscordEmoji.Chicken}\n\n";
 
             var winner = chicken1.Fight(chicken2);
             winner.Owner = winner.OwnerId == ctx.User.Id ? ctx.User : user;
             var loser = winner == chicken1 ? chicken2 : chicken1;
-            short gain = Chicken.DetermineGain(winner.Strength, loser.Strength);
-            winner.Strength += gain;
+            short gain = winner.DetermineStrengthGain(loser);
+            winner.Stats.Strength += gain;
+            winner.Stats.Vitality -= gain;
+            if (winner.Stats.Vitality == 0)
+                winner.Stats.Vitality = 1;
+            loser.Stats.Vitality -= 50;
 
             await Database.ModifyChickenAsync(winner, ctx.Guild.Id)
                 .ConfigureAwait(false);
-            await Database.RemoveChickenAsync(loser.OwnerId, ctx.Guild.Id)
-                .ConfigureAwait(false);
+            if (loser.Stats.Vitality > 0)
+                await Database.ModifyChickenAsync(loser, ctx.Guild.Id).ConfigureAwait(false);
+            else
+                await Database.RemoveChickenAsync(loser.OwnerId, ctx.Guild.Id).ConfigureAwait(false);
+
             await Database.GiveCreditsToUserAsync(winner.OwnerId, ctx.Guild.Id, gain * 2000)
                 .ConfigureAwait(false);
 
@@ -207,7 +214,7 @@ namespace TheGodfather.Modules.Currency
                 header +
                 $"{StaticDiscordEmoji.Trophy} Winner: {Formatter.Bold(winner.Name)}\n\n" +
                 $"{Formatter.Bold(winner.Name)} gained {Formatter.Bold(gain.ToString())} strength!\n\n" +
-                $"{Formatter.Bold(loser.Name)} died in the battle!\n\n" +
+                (loser.Stats.Vitality == 0 ? $"{Formatter.Bold(loser.Name)} died in the battle!\n\n" : "") +
                 $"{winner.Owner.Mention} won {gain * 200} credits."
             ).ConfigureAwait(false);
         }
@@ -228,7 +235,7 @@ namespace TheGodfather.Modules.Currency
                 .ConfigureAwait(false);
             if (chicken == null)
                 throw new CommandFailedException($"User {user.Mention} does not own a chicken in this guild! Use command {Formatter.InlineCode("chicken buy")} to buy a chicken (1000 credits).");
-            
+
             await ctx.RespondAsync(embed: chicken.Embed(user))
                 .ConfigureAwait(false);
         }
@@ -321,7 +328,7 @@ namespace TheGodfather.Modules.Currency
             await ctx.SendPaginatedCollectionAsync(
                 "Strongest chickens in this guild:",
                 chickens,
-                c => $"{Formatter.Bold(c.Name)} | {c.Owner.Mention} | {c.Strength} STR"
+                c => $"{Formatter.Bold(c.Name)} | {c.Owner.Mention} | {c.Stats.Strength} STR"
             ).ConfigureAwait(false);
         }
         #endregion
@@ -349,10 +356,10 @@ namespace TheGodfather.Modules.Currency
                 throw new CommandFailedException($"You do not have enought credits to train a chicken ({chicken.TrainPrice} needed)!");
 
             string result;
-            if (chicken.Train()) 
-                result = $"{ctx.User.Mention}'s chicken learned alot from the training. New strength: {chicken.Strength}";
-            else 
-                result = $"{ctx.User.Mention}'s chicken got tired and didn't learn anything. New strength: {chicken.Strength}";
+            if (chicken.Train())
+                result = $"{ctx.User.Mention}'s chicken learned alot from the training. New strength: {chicken.Stats.Strength}";
+            else
+                result = $"{ctx.User.Mention}'s chicken got tired and didn't learn anything. New strength: {chicken.Stats.Strength}";
 
             await Database.ModifyChickenAsync(chicken, ctx.Guild.Id)
                 .ConfigureAwait(false);
