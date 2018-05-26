@@ -1,6 +1,7 @@
 # Command modules:
 * [Uncategorized](Parts/Uncategorized.md)
 * [Administration](Parts/Administration.md)
+* [Chickens](Parts/Chickens.md)
 * [Currency](Parts/Currency.md)
 * [Games](Parts/Games.md)
 * [Miscellaneous](Parts/Miscellaneous.md)

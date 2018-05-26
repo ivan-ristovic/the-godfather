@@ -1277,6 +1277,10 @@
 **Aliases:**
 `auditlog, viewlog, getlog, getlogs, logs`
 
+**Arguments:**
+
+(optional) `[int]` : *Amount of entries to fetch* (def: `10`)
+
 **Examples:**
 
 ```

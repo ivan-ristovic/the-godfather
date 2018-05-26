@@ -77,13 +77,14 @@ namespace TheGodfather.Services.Common
         public ulong OwnerId { get; set; }
         public string Name { get; set; }
         public ChickenStats Stats { get; set; }
-        public long SellPrice => FindSellPriceForStrength(Stats.Strength);
-        public long TrainPrice => FindSellPriceForStrength((short)(Stats.Strength + 4)) - FindSellPriceForStrength(Stats.Strength);
+        public long SellPrice => PriceForAttribute(Stats.Strength);
+        public long TrainStrengthPrice => PriceForAttribute((short)(Stats.Strength + 4)) - PriceForAttribute(Stats.Strength);
+        public long TrainVitalityPrice => PriceForAttribute((short)(Stats.MaxVitality + 4)) - PriceForAttribute(Stats.MaxVitality);
 
 
 
-        private static long FindSellPriceForStrength(short str)
-            => (long)Math.Pow(10, 1 + str / (double)50);
+        private static long PriceForAttribute(short attr)
+            => (long)Math.Pow(10, 1 + attr / (double)50);
 
 
         public bool TrainStrength()
@@ -100,10 +101,12 @@ namespace TheGodfather.Services.Common
         public bool TrainVitality()
         {
             if (GFRandom.Generator.GetBool()) {
-                Stats.MaxVitality += 3;
+                Stats.MaxVitality += 4;
                 return true;
             } else {
-                Stats.MaxVitality -= 2;
+                Stats.MaxVitality -= 3;
+                if (Stats.Vitality > Stats.MaxVitality)
+                    Stats.Vitality = Stats.MaxVitality;
                 return false;
             }
         }

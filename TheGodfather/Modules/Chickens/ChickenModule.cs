@@ -123,9 +123,9 @@ namespace TheGodfather.Modules.Chickens
 
         #region COMMAND_CHICKEN_HEAL
         [Command("heal"), Module(ModuleType.Chickens)]
-        [Description("Heal your chicken (+100 HP). You can heal your chicken once per hour.")]
+        [Description("Heal your chicken (+100 HP). There is one medicine made each 10 minutes, so you need to grab it before the others do!")]
         [Aliases("+hp", "hp")]
-        [Cooldown(1, 3600, CooldownBucketType.User)]
+        [Cooldown(1, 600, CooldownBucketType.User)]
         [UsageExample("!chicken heal")]
         public async Task HealAsync(CommandContext ctx)
         {

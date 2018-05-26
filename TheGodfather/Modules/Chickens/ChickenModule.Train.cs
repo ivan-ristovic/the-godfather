@@ -48,12 +48,12 @@ namespace TheGodfather.Modules.Chickens
                 if (ChannelEvent.GetEventInChannel(ctx.Channel.Id) is ChickenWar)
                     throw new CommandFailedException("There is a chicken war running in this channel. No trainings are allowed before the war finishes.");
 
-                var price = chicken.TrainPrice;
+                var price = chicken.TrainStrengthPrice;
                 if (!await ctx.AskYesNoQuestionAsync($"{ctx.User.Mention}, are you sure you want to train your chicken for {Formatter.Bold(price.ToString())} credits?"))
                     return;
 
                 if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, ctx.Guild.Id, price).ConfigureAwait(false))
-                    throw new CommandFailedException($"You do not have enought credits to train a chicken ({chicken.TrainPrice} needed)!");
+                    throw new CommandFailedException($"You do not have enought credits to train a chicken ({price} needed)!");
 
                 string result;
                 if (chicken.TrainStrength())
@@ -84,12 +84,12 @@ namespace TheGodfather.Modules.Chickens
                 if (ChannelEvent.GetEventInChannel(ctx.Channel.Id) is ChickenWar)
                     throw new CommandFailedException("There is a chicken war running in this channel. No trainings are allowed before the war finishes.");
 
-                var price = chicken.TrainPrice;
+                var price = chicken.TrainVitalityPrice;
                 if (!await ctx.AskYesNoQuestionAsync($"{ctx.User.Mention}, are you sure you want to train your chicken for {Formatter.Bold(price.ToString())} credits?"))
                     return;
 
                 if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, ctx.Guild.Id, price).ConfigureAwait(false))
-                    throw new CommandFailedException($"You do not have enought credits to train a chicken ({chicken.TrainPrice} needed)!");
+                    throw new CommandFailedException($"You do not have enought credits to train a chicken ({price} needed)!");
 
                 string result;
                 if (chicken.TrainVitality())
