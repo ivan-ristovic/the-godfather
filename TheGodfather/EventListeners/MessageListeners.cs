@@ -49,12 +49,12 @@ namespace TheGodfather.EventListeners
         }
 
         [AsyncExecuter(EventTypes.MessageCreated)]
-        public static async Task Client_MessageCreatedFiltering(TheGodfatherShard shard, MessageCreateEventArgs e)
+        public static async Task Client_MessageCreatedFilters(TheGodfatherShard shard, MessageCreateEventArgs e)
         {
             if (e.Author.IsBot || !TheGodfather.Listening || e.Channel.IsPrivate || shard.Shared.BlockedChannels.Contains(e.Channel.Id))
                 return;
 
-            if (e.Message.Content != null && shard.Shared.MessageContainsFilter(e.Guild.Id, e.Message.Content)) {
+            if (e.Message?.Content != null && shard.Shared.MessageContainsFilter(e.Guild.Id, e.Message.Content)) {
                 try {
                     await e.Channel.DeleteMessageAsync(e.Message, "_gf: Filter hit")
                         .ConfigureAwait(false);
@@ -183,14 +183,14 @@ namespace TheGodfather.EventListeners
         [AsyncExecuter(EventTypes.MessageUpdated)]
         public static async Task Client_MessageUpdated(TheGodfatherShard shard, MessageUpdateEventArgs e)
         {
-            if (e.Author == null || e.Message == null || !TheGodfather.Listening || e.Channel.IsPrivate)
+            if (e.Author.IsBot || e.Author == null || e.Message == null || !TheGodfather.Listening || e.Channel.IsPrivate)
                 return;
 
             if (shard.Shared.BlockedChannels.Contains(e.Channel.Id))
                 return;
 
             // Check if message contains filter
-            if (!e.Author.IsBot && e.Message.Content != null && shard.Shared.MessageContainsFilter(e.Guild.Id, e.Message.Content)) {
+            if (e.Message.Content != null && shard.Shared.MessageContainsFilter(e.Guild.Id, e.Message.Content)) {
                 try {
                     await e.Channel.DeleteMessageAsync(e.Message, "_gf: Filter hit after update")
                         .ConfigureAwait(false);
