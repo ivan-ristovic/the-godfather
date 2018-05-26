@@ -56,15 +56,16 @@ namespace TheGodfather.Modules.Chickens
 
                         foreach (var chicken in war.Team1Won ? war.Team1 : war.Team2) {
                             chicken.Stats.Strength += 20;
+                            chicken.Stats.Vitality -= 10;
                             await Database.ModifyChickenAsync(chicken, ctx.Guild.Id)
                                 .ConfigureAwait(false);
                             await Database.GiveCreditsToUserAsync(chicken.OwnerId, ctx.Guild.Id, 100000)
                                 .ConfigureAwait(false);
-                            sb.AppendLine($"{Formatter.Bold(chicken.Name)} gained 20 STR!");
+                            sb.AppendLine($"{Formatter.Bold(chicken.Name)} gained 20 STR and lost 10 HP!");
                         }
 
                         foreach (var chicken in war.Team1Won ? war.Team2 : war.Team1) {
-                            chicken.Stats.Vitality -= 25;
+                            chicken.Stats.Vitality -= 50;
                             if (chicken.Stats.Vitality > 0) {
                                 await Database.ModifyChickenAsync(chicken, ctx.Guild.Id)
                                     .ConfigureAwait(false);
@@ -112,6 +113,9 @@ namespace TheGodfather.Modules.Chickens
                 if (chicken == null)
                     throw new CommandFailedException("You do not own a chicken!");
 
+                if (chicken.Stats.Vitality < 25)
+                    throw new CommandFailedException($"{ctx.User.Mention}, your chicken is too weak to join the war! Heal it using {Formatter.BlockCode("chicken heal")} command.");
+
                 switch (team) {
                     case 1: war.AddParticipant(chicken, ctx.User, team1: true); break;
                     case 2: war.AddParticipant(chicken, ctx.User, team2: true); break;
@@ -140,6 +144,9 @@ namespace TheGodfather.Modules.Chickens
                     .ConfigureAwait(false);
                 if (chicken == null)
                     throw new CommandFailedException("You do not own a chicken!");
+
+                if (chicken.Stats.Vitality < 25)
+                    throw new CommandFailedException($"{ctx.User.Mention}, your chicken is too weak to join the war! Heal it using {Formatter.BlockCode("chicken heal")} command.");
 
                 if (string.Compare(team, war.Team1Name, StringComparison.InvariantCultureIgnoreCase) == 0)
                     war.AddParticipant(chicken, ctx.User, team1: true);

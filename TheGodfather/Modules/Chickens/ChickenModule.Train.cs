@@ -48,8 +48,11 @@ namespace TheGodfather.Modules.Chickens
                 if (ChannelEvent.GetEventInChannel(ctx.Channel.Id) is ChickenWar)
                     throw new CommandFailedException("There is a chicken war running in this channel. No trainings are allowed before the war finishes.");
 
+                if (chicken.Stats.Vitality < 25)
+                    throw new CommandFailedException($"{ctx.User.Mention}, your chicken is too weak for that action! Heal it using {Formatter.BlockCode("chicken heal")} command.");
+
                 var price = chicken.TrainStrengthPrice;
-                if (!await ctx.AskYesNoQuestionAsync($"{ctx.User.Mention}, are you sure you want to train your chicken for {Formatter.Bold(price.ToString())} credits?"))
+                if (!await ctx.AskYesNoQuestionAsync($"{ctx.User.Mention}, are you sure you want to train your chicken for {Formatter.Bold(price.ToString())} credits?\n\nNote: This action will also weaken the vitality of your chicken by 1."))
                     return;
 
                 if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, ctx.Guild.Id, price).ConfigureAwait(false))
@@ -60,6 +63,7 @@ namespace TheGodfather.Modules.Chickens
                     result = $"{ctx.User.Mention}'s chicken learned alot from the training. New strength: {chicken.Stats.Strength}";
                 else
                     result = $"{ctx.User.Mention}'s chicken got tired and didn't learn anything. New strength: {chicken.Stats.Strength}";
+                chicken.Stats.Vitality--;
 
                 await Database.ModifyChickenAsync(chicken, ctx.Guild.Id)
                     .ConfigureAwait(false);
@@ -84,8 +88,11 @@ namespace TheGodfather.Modules.Chickens
                 if (ChannelEvent.GetEventInChannel(ctx.Channel.Id) is ChickenWar)
                     throw new CommandFailedException("There is a chicken war running in this channel. No trainings are allowed before the war finishes.");
 
+                if (chicken.Stats.Vitality < 25)
+                    throw new CommandFailedException($"{ctx.User.Mention}, your chicken is too weak for that action! Heal it using {Formatter.BlockCode("chicken heal")} command.");
+
                 var price = chicken.TrainVitalityPrice;
-                if (!await ctx.AskYesNoQuestionAsync($"{ctx.User.Mention}, are you sure you want to train your chicken for {Formatter.Bold(price.ToString())} credits?"))
+                if (!await ctx.AskYesNoQuestionAsync($"{ctx.User.Mention}, are you sure you want to train your chicken for {Formatter.Bold(price.ToString())} credits?\n\nNote: This action will also weaken the vitality of your chicken by 1."))
                     return;
 
                 if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, ctx.Guild.Id, price).ConfigureAwait(false))
@@ -96,6 +103,7 @@ namespace TheGodfather.Modules.Chickens
                     result = $"{ctx.User.Mention}'s chicken learned alot from the training. New max vitality: {chicken.Stats.MaxVitality}";
                 else
                     result = $"{ctx.User.Mention}'s chicken got tired and didn't learn anything. New max vitality: {chicken.Stats.MaxVitality}";
+                chicken.Stats.Vitality--;
 
                 await Database.ModifyChickenAsync(chicken, ctx.Guild.Id)
                     .ConfigureAwait(false);

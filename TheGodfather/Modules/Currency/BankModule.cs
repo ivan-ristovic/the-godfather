@@ -150,13 +150,9 @@ namespace TheGodfather.Modules.Currency
                 try {
                     if (!ulong.TryParse(row["uid"], out ulong uid))
                         continue;
-                    if (!ulong.TryParse(row["gid"], out ulong gid))
-                        continue;
                     var u = await ctx.Client.GetUserAsync(uid)
                         .ConfigureAwait(false);
-                    var g = await ctx.Client.GetGuildAsync(gid)
-                        .ConfigureAwait(false);
-                    sb.AppendLine($"{g.Name} | {Formatter.Bold(u.Username)} : {row["balance"]}");
+                    sb.AppendLine($"{Formatter.Bold(u.Username)} : {row["total_balance"]}");
                 } catch (Exception e) {
                     TheGodfather.LogHandle.LogException(LogLevel.Warning, e);
                 }

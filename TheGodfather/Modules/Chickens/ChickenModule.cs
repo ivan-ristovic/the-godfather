@@ -51,18 +51,25 @@ namespace TheGodfather.Modules.Chickens
             if (user.Id == ctx.User.Id)
                 throw new CommandFailedException("You can't fight against your own chicken!");
 
+            if (!ctx.Guild.Members.Any(m => m.Id == user.Id))
+                throw new CommandFailedException("That user is not a member of this guild so you cannot fight his chicken.");
+
             var chicken1 = await Database.GetChickenInfoAsync(ctx.User.Id, ctx.Guild.Id)
                 .ConfigureAwait(false);
+            if (chicken1 != null) {
+                if (chicken1.Stats.Vitality < 25)
+                    throw new CommandFailedException($"{ctx.User.Mention}, your chicken is too weak to start a fight with another chicken! Heal it using {Formatter.BlockCode("chicken heal")} command.");
+            } else {
+                throw new CommandFailedException("You do not own a chicken!");
+            }
+
             var chicken2 = await Database.GetChickenInfoAsync(user.Id, ctx.Guild.Id)
                 .ConfigureAwait(false);
-            if (chicken1 == null || chicken2 == null)
-                throw new CommandFailedException("One of you does not own a chicken!");
+            if (chicken2 == null)
+                throw new CommandFailedException("The specified user does not own a chicken!");
 
             if (Math.Abs(chicken1.Stats.Strength - chicken2.Stats.Strength) > 50)
                 throw new CommandFailedException("The strength difference is too big (50 max)! Please find a more suitable opponent.");
-
-            if (!ctx.Guild.Members.Any(m => m.Id == chicken2.OwnerId))
-                throw new CommandFailedException("The owner of that chicken is not a member of this guild so you cannot fight his chicken.");
 
             string header = $"{Formatter.Bold(chicken1.Name)} ({chicken1.Stats.ToString()}) {StaticDiscordEmoji.DuelSwords} {Formatter.Bold(chicken2.Name)} ({chicken2.Stats.ToString()}) {StaticDiscordEmoji.Chicken}\n\n";
 
@@ -125,7 +132,7 @@ namespace TheGodfather.Modules.Chickens
         [Command("heal"), Module(ModuleType.Chickens)]
         [Description("Heal your chicken (+100 HP). There is one medicine made each 10 minutes, so you need to grab it before the others do!")]
         [Aliases("+hp", "hp")]
-        [Cooldown(1, 600, CooldownBucketType.User)]
+        [Cooldown(1, 600, CooldownBucketType.Guild)]
         [UsageExample("!chicken heal")]
         public async Task HealAsync(CommandContext ctx)
         {

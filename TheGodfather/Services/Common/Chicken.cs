@@ -60,10 +60,10 @@ namespace TheGodfather.Services.Common
     {
         public static readonly ImmutableDictionary<ChickenType, ChickenStats> StartingStats = new Dictionary<ChickenType, ChickenStats>() {
             { ChickenType.Default, new ChickenStats() { Strength = 50, MaxVitality = 100, Vitality = 100 } },
-            { ChickenType.WellFed, new ChickenStats() { Strength = 75, MaxVitality = 100, Vitality = 150 } },
-            { ChickenType.Trained, new ChickenStats() { Strength = 100, MaxVitality = 100, Vitality = 200 } },
-            { ChickenType.SteroidEmpowered, new ChickenStats() { Strength = 125, MaxVitality = 100, Vitality = 250 } },
-            { ChickenType.Alien, new ChickenStats() { Strength = 150, MaxVitality = 100, Vitality = 300 } },
+            { ChickenType.WellFed, new ChickenStats() { Strength = 75, MaxVitality = 150, Vitality = 150 } },
+            { ChickenType.Trained, new ChickenStats() { Strength = 100, MaxVitality = 200, Vitality = 200 } },
+            { ChickenType.SteroidEmpowered, new ChickenStats() { Strength = 125, MaxVitality = 250, Vitality = 250 } },
+            { ChickenType.Alien, new ChickenStats() { Strength = 150, MaxVitality = 300, Vitality = 300 } },
         }.ToImmutableDictionary();
         public static readonly ImmutableDictionary<ChickenType, long> Price = new Dictionary<ChickenType, long>() {
             { ChickenType.Default, 1000},
@@ -90,7 +90,7 @@ namespace TheGodfather.Services.Common
         public bool TrainStrength()
         {
             if (GFRandom.Generator.GetBool()) {
-                Stats.Strength += 4;
+                Stats.Strength += 5;
                 return true;
             } else {
                 Stats.Strength -= 3;
