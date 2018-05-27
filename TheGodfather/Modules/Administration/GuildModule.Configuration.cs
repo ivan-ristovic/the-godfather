@@ -61,9 +61,16 @@ namespace TheGodfather.Modules.Administration
                 emb.AddField("Linkfilter", gcfg.LinkfilterEnabled ? "on" : "off", inline: true);
 
                 var sb = new StringBuilder();
-                if (gcfg.BlockInvites)
+                if (gcfg.BlockDiscordInvites)
                     sb.AppendLine("Invite blocker");
-                // TODO add more
+                if (gcfg.BlockBooterWebsites)
+                    sb.AppendLine("DDoS/Booter website blocker");
+                if (gcfg.BlockDisturbingWebsites)
+                    sb.AppendLine("Disturbing website blocker");
+                if (gcfg.BlockIpLoggingWebsites)
+                    sb.AppendLine("IP logging website blocker");
+                if (gcfg.BlockUrlShorteners)
+                    sb.AppendLine("URL shortening website blocker");
                 emb.AddField("Linkfilter modules active", sb.Length > 0 ? sb.ToString() : "None", inline: true);
 
                 await ctx.RespondAsync(embed: emb.Build())
@@ -96,7 +103,7 @@ namespace TheGodfather.Modules.Administration
                     }
                 }
 
-                var gcfg = PartialGuildConfig.Default;
+                var gcfg = CachedGuildConfig.Default;
                 await channel.SendIconEmbedAsync("Welcome to the guild configuration wizard!\n\nI will guide you through the configuration. You can always re-run this setup or manually change the settings so do not worry if you don't do everything like you wanted.\n\nThat being said, let's start the fun! Note that the changes will apply after the wizard finishes.")
                     .ConfigureAwait(false);
                 await Task.Delay(TimeSpan.FromSeconds(10))
@@ -172,7 +179,7 @@ namespace TheGodfather.Modules.Administration
                 if (await channel.AskYesNoQuestionAsync(ctx.Client, ctx.User, "Do you wish to enable link filtering? (y/n)")) {
                     gcfg.LinkfilterEnabled = true;
                     if (await channel.AskYesNoQuestionAsync(ctx.Client, ctx.User, "Do you wish to enable Discord invite links filtering? (y/n)")) {
-                        gcfg.BlockInvites = true;
+                        gcfg.BlockDiscordInvites = true;
                     }
                 }
 
@@ -199,7 +206,7 @@ namespace TheGodfather.Modules.Administration
                 }
                 if (gcfg.LinkfilterEnabled) {
                     sb.AppendLine(Formatter.Bold("enabled"));
-                    sb.Append(" - Invite blocker: ").AppendLine(gcfg.BlockInvites ? "on" : "off");
+                    sb.Append(" - Invite blocker: ").AppendLine(gcfg.BlockDiscordInvites ? "on" : "off");
                     sb.AppendLine();
                 } else {
                     sb.AppendLine(Formatter.Bold("disabled"));
@@ -236,7 +243,7 @@ namespace TheGodfather.Modules.Administration
                     emb.AddField("Welcome messages", wcid != 0 ? "on" : "off", inline: true);
                     emb.AddField("Leave messages", lcid != 0 ? "on" : "off", inline: true);
                     emb.AddField("Linkfilter", gcfg.LinkfilterEnabled ? "on" : "off", inline: true);
-                    emb.AddField("Linkfilter - Block invites", gcfg.BlockInvites ? "on" : "off", inline: true);
+                    emb.AddField("Linkfilter - Block invites", gcfg.BlockDiscordInvites ? "on" : "off", inline: true);
                     await logchn.SendMessageAsync(embed: emb.Build())
                         .ConfigureAwait(false);
                 }
@@ -267,7 +274,7 @@ namespace TheGodfather.Modules.Administration
                             Title = "Linkfilter modules for this guild",
                             Color = DiscordColor.Green
                         };
-                        emb.AddField("Invite filter", gcfg.BlockInvites ? "enabled" : "disabled", inline: true);
+                        emb.AddField("Invite filter", gcfg.BlockDiscordInvites ? "enabled" : "disabled", inline: true);
 
                         // TODO add more
 
@@ -357,7 +364,7 @@ namespace TheGodfather.Modules.Administration
                     public async Task ExecuteGroupAsync(CommandContext ctx)
                     {
                         var gcfg = Shared.GetGuildConfig(ctx.Guild.Id);
-                        await ctx.RespondWithIconEmbedAsync($"Invite link filtering for this guild is: {Formatter.Bold(gcfg.BlockInvites ? "enabled" : "disabled")}!")
+                        await ctx.RespondWithIconEmbedAsync($"Invite link filtering for this guild is: {Formatter.Bold(gcfg.BlockDiscordInvites ? "enabled" : "disabled")}!")
                             .ConfigureAwait(false);
                     }
 
@@ -370,7 +377,7 @@ namespace TheGodfather.Modules.Administration
                     public async Task EnableAsync(CommandContext ctx)
                     {
                         var gcfg = Shared.GetGuildConfig(ctx.Guild.Id);
-                        gcfg.BlockInvites = true;
+                        gcfg.BlockDiscordInvites = true;
                         await Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg)
                             .ConfigureAwait(false);
 
@@ -383,7 +390,7 @@ namespace TheGodfather.Modules.Administration
                             };
                             emb.AddField("User responsible", ctx.User.Mention, inline: true);
                             emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
-                            emb.AddField("Invite filtering", gcfg.BlockInvites ? "on" : "off", inline: true);
+                            emb.AddField("Invite filtering", gcfg.BlockDiscordInvites ? "on" : "off", inline: true);
                             await logchn.SendMessageAsync(embed: emb.Build())
                                 .ConfigureAwait(false);
                         }
@@ -401,7 +408,7 @@ namespace TheGodfather.Modules.Administration
                     public async Task DisableAsync(CommandContext ctx)
                     {
                         var gcfg = Shared.GetGuildConfig(ctx.Guild.Id);
-                        gcfg.BlockInvites = false;
+                        gcfg.BlockDiscordInvites = false;
                         await Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg)
                             .ConfigureAwait(false);
 
@@ -414,7 +421,7 @@ namespace TheGodfather.Modules.Administration
                             };
                             emb.AddField("User responsible", ctx.User.Mention, inline: true);
                             emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
-                            emb.AddField("Invite filtering", gcfg.BlockInvites ? "on" : "off", inline: true);
+                            emb.AddField("Invite filtering", gcfg.BlockDiscordInvites ? "on" : "off", inline: true);
                             await logchn.SendMessageAsync(embed: emb.Build())
                                 .ConfigureAwait(false);
                         }

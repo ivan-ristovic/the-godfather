@@ -105,7 +105,7 @@ namespace TheGodfather
                 blockedchn.Add(tup.Item1);
 
             var gcfg_db = await DatabaseService.GetPartialGuildConfigurations();
-            var gcfg = new ConcurrentDictionary<ulong, PartialGuildConfig>();
+            var gcfg = new ConcurrentDictionary<ulong, CachedGuildConfig>();
             foreach (var gprefix in gcfg_db)
                 gcfg.TryAdd(gprefix.Key, gprefix.Value);
 

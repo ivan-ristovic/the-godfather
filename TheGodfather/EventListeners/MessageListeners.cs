@@ -56,7 +56,7 @@ namespace TheGodfather.EventListeners
 
             if (e.Message?.Content != null && shard.Shared.MessageContainsFilter(e.Guild.Id, e.Message.Content)) {
                 try {
-                    await e.Channel.DeleteMessageAsync(e.Message, "_gf: Filter hit")
+                    await e.Message.DeleteAsync("_gf: Filter hit")
                         .ConfigureAwait(false);
                     shard.Log(LogLevel.Debug,
                         $"Filter triggered in message: {e.Message.Content.Replace('\n', ' ')}<br>" +
@@ -183,7 +183,7 @@ namespace TheGodfather.EventListeners
         [AsyncExecuter(EventTypes.MessageUpdated)]
         public static async Task Client_MessageUpdated(TheGodfatherShard shard, MessageUpdateEventArgs e)
         {
-            if (e.Author.IsBot || e.Author == null || e.Message == null || !TheGodfather.Listening || e.Channel.IsPrivate)
+            if (e.Author == null || e.Author.IsBot || e.Message == null || !TheGodfather.Listening || e.Channel.IsPrivate)
                 return;
 
             if (shard.Shared.BlockedChannels.Contains(e.Channel.Id))
@@ -192,7 +192,7 @@ namespace TheGodfather.EventListeners
             // Check if message contains filter
             if (e.Message.Content != null && shard.Shared.MessageContainsFilter(e.Guild.Id, e.Message.Content)) {
                 try {
-                    await e.Channel.DeleteMessageAsync(e.Message, "_gf: Filter hit after update")
+                    await e.Message.DeleteAsync("_gf: Filter hit after update")
                         .ConfigureAwait(false);
 
                     shard.Log(LogLevel.Debug,

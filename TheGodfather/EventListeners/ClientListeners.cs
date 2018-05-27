@@ -35,7 +35,7 @@ namespace TheGodfather.EventListeners
 
             await shard.Database.RegisterGuildAsync(e.Guild.Id)
                 .ConfigureAwait(false);
-            shard.Shared.GuildConfigurations.TryAdd(e.Guild.Id, PartialGuildConfig.Default);
+            shard.Shared.GuildConfigurations.TryAdd(e.Guild.Id, CachedGuildConfig.Default);
 
             var emoji = DiscordEmoji.FromName(e.Client, ":small_blue_diamond:");
             await e.Guild.GetDefaultChannel().SendIconEmbedAsync(

@@ -26,7 +26,7 @@ namespace TheGodfather
         public ConcurrentHashSet<ulong> BlockedUsers { get; internal set; } = new ConcurrentHashSet<ulong>();
         public ConcurrentHashSet<ulong> BlockedChannels { get; internal set; } = new ConcurrentHashSet<ulong>();
         public BotConfig BotConfiguration { get; internal set; }
-        public ConcurrentDictionary<ulong, PartialGuildConfig> GuildConfigurations { get; internal set; }
+        public ConcurrentDictionary<ulong, CachedGuildConfig> GuildConfigurations { get; internal set; }
         public ConcurrentDictionary<ulong, Deck> CardDecks { get; internal set; } = new ConcurrentDictionary<ulong, Deck>();
         public CancellationTokenSource CTS { get; internal set; }
         public ConcurrentDictionary<ulong, ConcurrentHashSet<Filter>> Filters { get; internal set; }
@@ -65,8 +65,8 @@ namespace TheGodfather
         public ConcurrentDictionary<ulong, MusicPlayer> MusicPlayers = new ConcurrentDictionary<ulong, MusicPlayer>();
 
 
-        public PartialGuildConfig GetGuildConfig(ulong gid)
-            => GuildConfigurations.ContainsKey(gid) ? GuildConfigurations[gid] : PartialGuildConfig.Default;
+        public CachedGuildConfig GetGuildConfig(ulong gid)
+            => GuildConfigurations.ContainsKey(gid) ? GuildConfigurations[gid] : CachedGuildConfig.Default;
 
         public async Task<DiscordChannel> GetLogChannelForGuild(DiscordClient client, ulong gid)
         {

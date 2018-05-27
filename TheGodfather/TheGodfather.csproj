@@ -424,6 +424,8 @@
     <Compile Include="Common\GFRandom.cs" />
     <Compile Include="Common\PartialGuildConfig.cs" />
     <Compile Include="Common\SavedTaskExecuter.cs" />
+    <Compile Include="EventListeners\Common\LinkfilterMatch.cs" />
+    <Compile Include="EventListeners\Common\SuspiciousSites.cs" />
     <Compile Include="EventListeners\LinkfilterListeners.cs" />
     <Compile Include="Extensions\HoldemExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />

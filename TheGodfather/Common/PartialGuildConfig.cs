@@ -1,23 +1,29 @@
-﻿using System;
-
-namespace TheGodfather.Common
+﻿namespace TheGodfather.Common
 {
-    public sealed class PartialGuildConfig
+    public sealed class CachedGuildConfig
     {
+        public bool BlockBooterWebsites { get; set; }
+        public bool BlockDiscordInvites { get; set; }
+        public bool BlockDisturbingWebsites { get; set; }
+        public bool BlockIpLoggingWebsites { get; set; }
+        public bool BlockUrlShorteners { get; set; }
         public bool LinkfilterEnabled { get; set; }
-        public bool BlockInvites { get; set; }
         public ulong LogChannelId { get; set; }
         public bool LoggingEnabled => LogChannelId != 0;
         public string Prefix { get; set; }
         public bool SuggestionsEnabled { get; set; }
 
 
-        public static PartialGuildConfig Default
+        public static CachedGuildConfig Default
         {
             get {
-                return new PartialGuildConfig {
+                return new CachedGuildConfig {
+                    BlockBooterWebsites = true,
+                    BlockDiscordInvites = false,
+                    BlockDisturbingWebsites = true,
+                    BlockIpLoggingWebsites = true,
+                    BlockUrlShorteners = true,
                     LinkfilterEnabled = false,
-                    BlockInvites = false,
                     LogChannelId = 0,
                     Prefix = null,
                     SuggestionsEnabled = false

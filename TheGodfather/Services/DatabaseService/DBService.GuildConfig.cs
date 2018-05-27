@@ -14,9 +14,9 @@ namespace TheGodfather.Services
 {
     public partial class DBService
     {
-        public async Task<IReadOnlyDictionary<ulong, PartialGuildConfig>> GetPartialGuildConfigurations()
+        public async Task<IReadOnlyDictionary<ulong, CachedGuildConfig>> GetPartialGuildConfigurations()
         {
-            var dict = new Dictionary<ulong, PartialGuildConfig>();
+            var dict = new Dictionary<ulong, CachedGuildConfig>();
 
             await _sem.WaitAsync();
             try {
@@ -28,8 +28,12 @@ namespace TheGodfather.Services
 
                     using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
                         while (await reader.ReadAsync().ConfigureAwait(false)) {
-                            dict.Add((ulong)(long)reader["gid"], new PartialGuildConfig() {
-                                BlockInvites = (bool)reader["linkfilter_invites"],
+                            dict.Add((ulong)(long)reader["gid"], new CachedGuildConfig() {
+                                BlockBooterWebsites = (bool)reader["linkfilter_booters"],
+                                BlockDiscordInvites = (bool)reader["linkfilter_invites"],
+                                BlockDisturbingWebsites = (bool)reader["linkfilter_disturbing"],
+                                BlockIpLoggingWebsites = (bool)reader["linkfilter_iploggers"],
+                                BlockUrlShorteners = (bool)reader["linkfilter_shorteners"],
                                 LinkfilterEnabled = (bool)reader["linkfilter_enabled"],
                                 LogChannelId = (ulong)(long)reader["log_cid"],
                                 Prefix = reader["prefix"] is DBNull ? null : (string)reader["prefix"],
@@ -42,7 +46,7 @@ namespace TheGodfather.Services
                 _sem.Release();
             }
 
-            return new ReadOnlyDictionary<ulong, PartialGuildConfig>(dict);
+            return new ReadOnlyDictionary<ulong, CachedGuildConfig>(dict);
         }
 
 
@@ -54,7 +58,7 @@ namespace TheGodfather.Services
                 using (var cmd = con.CreateCommand()) {
                     await con.OpenAsync().ConfigureAwait(false);
 
-                    cmd.CommandText = "INSERT INTO gf.guild_cfg VALUES (@gid, NULL, NULL) ON CONFLICT DO NOTHING;";
+                    cmd.CommandText = "INSERT INTO gf.guild_cfg VALUES (@gid) ON CONFLICT DO NOTHING;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
 
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
@@ -121,7 +125,7 @@ namespace TheGodfather.Services
         }
 
 
-        public async Task UpdateGuildSettingsAsync(ulong gid, PartialGuildConfig cfg)
+        public async Task UpdateGuildSettingsAsync(ulong gid, CachedGuildConfig cfg)
         {
             await _sem.WaitAsync();
             try {
@@ -129,7 +133,7 @@ namespace TheGodfather.Services
                 using (var cmd = con.CreateCommand()) {
                     await con.OpenAsync().ConfigureAwait(false);
 
-                    cmd.CommandText = "UPDATE gf.guild_cfg SET (prefix, suggestions_enabled, log_cid, linkfilter_enabled, linkfilter_invites) = (@prefix, @suggestions_enabled, @log_cid, @linkfilter_enabled, @linkfilter_invites) WHERE gid = @gid;";
+                    cmd.CommandText = "UPDATE gf.guild_cfg SET (prefix, suggestions_enabled, log_cid, linkfilter_enabled, linkfilter_invites, linkfilter_booters, linkfilter_disturbing, linkfilter_iploggers, linkfilter_shorteners) = (@prefix, @suggestions_enabled, @log_cid, @linkfilter_enabled, @linkfilter_invites, @linkfilter_booters, @linkfilter_disturbing, @linkfilter_iploggers, @linkfilter_shorteners) WHERE gid = @gid;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
                     if (string.IsNullOrWhiteSpace(cfg.Prefix))
                         cmd.Parameters.AddWithValue("prefix", NpgsqlDbType.Varchar, DBNull.Value);
@@ -138,7 +142,11 @@ namespace TheGodfather.Services
                     cmd.Parameters.AddWithValue("suggestions_enabled", NpgsqlDbType.Boolean, cfg.SuggestionsEnabled);
                     cmd.Parameters.AddWithValue("log_cid", NpgsqlDbType.Bigint, cfg.LogChannelId);
                     cmd.Parameters.AddWithValue("linkfilter_enabled", NpgsqlDbType.Boolean, cfg.LinkfilterEnabled);
-                    cmd.Parameters.AddWithValue("linkfilter_invites", NpgsqlDbType.Boolean, cfg.BlockInvites);
+                    cmd.Parameters.AddWithValue("linkfilter_invites", NpgsqlDbType.Boolean, cfg.BlockDiscordInvites);
+                    cmd.Parameters.AddWithValue("linkfilter_booters", NpgsqlDbType.Boolean, cfg.BlockBooterWebsites);
+                    cmd.Parameters.AddWithValue("linkfilter_disturbing", NpgsqlDbType.Boolean, cfg.BlockDisturbingWebsites);
+                    cmd.Parameters.AddWithValue("linkfilter_iploggers", NpgsqlDbType.Boolean, cfg.BlockIpLoggingWebsites);
+                    cmd.Parameters.AddWithValue("linkfilter_shorteners", NpgsqlDbType.Boolean, cfg.BlockUrlShorteners);
                     
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
