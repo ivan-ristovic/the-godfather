@@ -52,6 +52,13 @@ namespace TheGodfather.Modules.Chickens
                 if (ambushed == null)
                     throw new CommandFailedException("Given user does not have a chicken in this guild!");
 
+                var ambusher = await Database.GetChickenInfoAsync(ctx.User.Id, ctx.Guild.Id)
+                    .ConfigureAwait(false);
+                if (ambusher == null)
+                    throw new CommandFailedException("You do not own a chicken!");
+                if (ambusher.Stats.Strength > ambushed.Stats.Strength)
+                    throw new CommandFailedException("You cannot start an ambush against a weaker chicken!");
+
                 var ambush = new ChickenWar(ctx.Client.GetInteractivity(), ctx.Channel, "Ambushed chickens", "Evil ambushers");
                 ChannelEvent.RegisterEventInChannel(ambush, ctx.Channel.Id);
                 try {

@@ -84,7 +84,7 @@ namespace TheGodfather.Services.Common
 
 
         private static long PriceForAttribute(short attr)
-            => (long)Math.Pow(10, 1 + attr / (double)50);
+            => (long)Math.Pow(10, 1 + attr / (double)75);
 
 
         public bool TrainStrength()
