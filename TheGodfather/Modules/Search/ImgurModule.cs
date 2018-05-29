@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
+using TheGodfather.Extensions;
 using TheGodfather.Services;
 
 using DSharpPlus.CommandsNext;
@@ -151,7 +152,7 @@ namespace TheGodfather.Modules.Search
         private async Task PrintImagesAsync(DiscordChannel channel, IEnumerable<IGalleryItem> results, int num)
         {
             if (!results.Any()) {
-                await channel.SendMessageAsync("No results...")
+                await channel.SendFailedEmbedAsync("No results...")
                     .ConfigureAwait(false);
                 return;
             }
@@ -181,7 +182,7 @@ namespace TheGodfather.Modules.Search
             }
 
             if (results.Count() != num) {
-                await channel.SendMessageAsync("These are all of the results returned.")
+                await channel.SendFailedEmbedAsync("These are all of the results returned.")
                     .ConfigureAwait(false);
             }
         }
