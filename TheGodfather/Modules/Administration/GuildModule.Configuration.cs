@@ -180,9 +180,26 @@ namespace TheGodfather.Modules.Administration
 
                 if (await channel.AskYesNoQuestionAsync(ctx.Client, ctx.User, "Do you wish to enable link filtering? (y/n)")) {
                     gcfg.LinkfilterEnabled = true;
-                    if (await channel.AskYesNoQuestionAsync(ctx.Client, ctx.User, "Do you wish to enable Discord invite links filtering? (y/n)")) {
+                    if (await channel.AskYesNoQuestionAsync(ctx.Client, ctx.User, "Do you wish to enable Discord invite links filtering? (y/n)"))
                         gcfg.BlockDiscordInvites = true;
-                    }
+                    else
+                        gcfg.BlockDiscordInvites = false;
+                    if (await channel.AskYesNoQuestionAsync(ctx.Client, ctx.User, "Do you wish to enable DDoS/Booter websites filtering? (y/n)"))
+                        gcfg.BlockBooterWebsites = true;
+                    else
+                        gcfg.BlockBooterWebsites = false;
+                    if (await channel.AskYesNoQuestionAsync(ctx.Client, ctx.User, "Do you wish to enable IP logging websites filtering? (y/n)"))
+                        gcfg.BlockIpLoggingWebsites = true;
+                    else
+                        gcfg.BlockIpLoggingWebsites = false;
+                    if (await channel.AskYesNoQuestionAsync(ctx.Client, ctx.User, "Do you wish to enable disturbing/shock/gore websites filtering? (y/n)"))
+                        gcfg.BlockDisturbingWebsites = true;
+                    else
+                        gcfg.BlockDisturbingWebsites = false;
+                    if (await channel.AskYesNoQuestionAsync(ctx.Client, ctx.User, "Do you wish to enable URL shorteners filtering? (y/n)"))
+                        gcfg.BlockUrlShorteners = true;
+                    else
+                        gcfg.BlockUrlShorteners = false;
                 }
 
                 var sb = new StringBuilder();
@@ -208,7 +225,11 @@ namespace TheGodfather.Modules.Administration
                 }
                 if (gcfg.LinkfilterEnabled) {
                     sb.AppendLine(Formatter.Bold("enabled"));
-                    sb.Append(" - Invite blocker: ").AppendLine(gcfg.BlockDiscordInvites ? "on" : "off");
+                    sb.Append(" - Discord invites blocker: ").AppendLine(gcfg.BlockDiscordInvites ? "on" : "off");
+                    sb.Append(" - DDoS/Booter websites blocker: ").AppendLine(gcfg.BlockBooterWebsites ? "on" : "off");
+                    sb.Append(" - IP logging websites blocker: ").AppendLine(gcfg.BlockIpLoggingWebsites ? "on" : "off");
+                    sb.Append(" - Disturbing websites blocker: ").AppendLine(gcfg.BlockDisturbingWebsites ? "on" : "off");
+                    sb.Append(" - URL shorteners blocker: ").AppendLine(gcfg.BlockUrlShorteners ? "on" : "off");
                     sb.AppendLine();
                 } else {
                     sb.AppendLine(Formatter.Bold("disabled"));
