@@ -111,7 +111,9 @@ CREATE TABLE gf.chickens (
     uid bigint NOT NULL,
     gid bigint NOT NULL,
     name character varying(32) NOT NULL,
-    strength smallint DEFAULT 50 NOT NULL
+    strength smallint DEFAULT 50 NOT NULL,
+    vitality smallint DEFAULT 100 NOT NULL,
+    max_vitality smallint DEFAULT 100 NOT NULL
 );
 
 
@@ -239,7 +241,13 @@ CREATE TABLE gf.guild_cfg (
     leave_msg character varying(128),
     prefix character varying(16) DEFAULT NULL::character varying,
     suggestions_enabled boolean DEFAULT false NOT NULL,
-    log_cid bigint DEFAULT 0 NOT NULL
+    log_cid bigint DEFAULT 0 NOT NULL,
+    linkfilter_enabled boolean DEFAULT false NOT NULL,
+    linkfilter_invites boolean DEFAULT false NOT NULL,
+    linkfilter_booters boolean DEFAULT true NOT NULL,
+    linkfilter_disturbing boolean DEFAULT true NOT NULL,
+    linkfilter_iploggers boolean DEFAULT true NOT NULL,
+    linkfilter_shorteners boolean DEFAULT true NOT NULL
 );
 
 
