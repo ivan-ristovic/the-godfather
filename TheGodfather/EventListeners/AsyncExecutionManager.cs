@@ -14,7 +14,7 @@ namespace TheGodfather.EventListeners
     {
         public static IEnumerable<ListenerMethod> ListenerMethods { get; private set; }
 
-        public static void InstallListeners(DiscordClient client, TheGodfatherShard bot)
+        public static void RegisterEventListeners(DiscordClient client, TheGodfatherShard shard)
         {
             var assembly = Assembly.GetExecutingAssembly();
 
@@ -26,7 +26,7 @@ namespace TheGodfather.EventListeners
                 select new ListenerMethod { Method = methods, Attribute = attribute as AsyncExecuterAttribute };
 
             foreach (var listener in ListenerMethods)
-                listener.Attribute.Register(bot, client, listener.Method);
+                listener.Attribute.Register(shard, client, listener.Method);
         }
     }
 

@@ -96,7 +96,7 @@ namespace TheGodfather
 
             Client.DebugLogger.LogMessageReceived += (s, e) => TheGodfather.LogHandle.LogMessage(ShardId, e);
 
-            AsyncExecutionManager.InstallListeners(Client, this);
+            AsyncExecutionManager.RegisterEventListeners(Client, this);
         }
 
         private void SetupCommands()

@@ -153,6 +153,8 @@ namespace TheGodfather.EventListeners
 
                 var entry = await e.Guild.GetFirstAuditLogEntryAsync(AuditLogActionType.MessageDelete)
                     .ConfigureAwait(false);
+                if (DateTime.UtcNow - entry.CreationTimestamp.ToUniversalTime() > TimeSpan.FromSeconds(5))
+                    entry = null;
                 if (entry == null || !(entry is DiscordAuditLogMessageEntry mentry)) {
                     emb.WithTitle("Message deleted");
                 } else {
