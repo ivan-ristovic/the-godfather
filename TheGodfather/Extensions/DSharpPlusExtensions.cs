@@ -170,7 +170,15 @@ namespace TheGodfather.Extensions
             try {
                 var entries = await guild.GetAuditLogsAsync(1, action_type: type)
                     .ConfigureAwait(false);
-                return entries.Any() ? entries.FirstOrDefault() : null;
+                if (!entries.Any())
+                    return null;
+                var entry = entries.FirstOrDefault();
+                if (entry == null)
+                    return null;
+                var diff = DateTime.UtcNow - entry.CreationTimestamp.ToUniversalTime();
+                if (diff > TimeSpan.FromSeconds(2))
+                    return null;
+                return entry;
             } catch {
                 return null;
             }

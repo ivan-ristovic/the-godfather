@@ -34,8 +34,8 @@ namespace TheGodfather.EventListeners
                 if (entry == null || !(entry is DiscordAuditLogChannelEntry centry)) {
                     emb.AddField("Error", "Failed to read audit log information. Please check my permissions");
                 } else {
-                    emb.AddField("User responsible", centry.UserResponsible.Mention, inline: true);
-                    emb.AddField("Channel type", centry.Target.Type.ToString(), inline: true);
+                    emb.AddField("User responsible", centry.UserResponsible?.Mention ?? "<unknown>", inline: true);
+                    emb.AddField("Channel type", centry.Target?.Type.ToString() ?? "<unknown>", inline: true);
                     if (!string.IsNullOrWhiteSpace(centry.Reason))
                         emb.AddField("Reason", centry.Reason);
                     emb.WithFooter($"At {centry.CreationTimestamp.ToUniversalTime().ToString()} UTC", centry.UserResponsible.AvatarUrl);
@@ -58,13 +58,14 @@ namespace TheGodfather.EventListeners
                     Color = DiscordColor.Aquamarine
                 };
 
-                var entry = await e.Guild.GetFirstAuditLogEntryAsync(AuditLogActionType.ChannelCreate)
+                emb.AddField("Channel type", e.Channel.Type.ToString() ?? "<unknown>", inline: true);
+
+                var entry = await e.Guild.GetFirstAuditLogEntryAsync(AuditLogActionType.ChannelDelete)
                     .ConfigureAwait(false);
                 if (entry == null || !(entry is DiscordAuditLogChannelEntry centry)) {
                     emb.AddField("Error", "Failed to read audit log information. Please check my permissions");
                 } else {
-                    emb.AddField("User responsible", centry.UserResponsible.Mention, inline: true);
-                    emb.AddField("Channel type", centry.Target.Type.ToString(), inline: true);
+                    emb.AddField("User responsible", centry.UserResponsible?.Mention ?? "<unknown>", inline: true);
                     if (!string.IsNullOrWhiteSpace(centry.Reason))
                         emb.AddField("Reason", centry.Reason);
                     emb.WithFooter($"At {centry.CreationTimestamp.ToUniversalTime().ToString()} UTC", centry.UserResponsible.AvatarUrl);
@@ -113,9 +114,9 @@ namespace TheGodfather.EventListeners
                     emb.AddField("Channel", e.ChannelBefore?.ToString() ?? "<unknown>");
                 } else {
                     emb.WithDescription(centry.Target.ToString());
-                    emb.AddField("User responsible", centry.UserResponsible.Mention, inline: true);
+                    emb.AddField("User responsible", centry.UserResponsible?.Mention ?? "<unknown>", inline: true);
                     if (centry.BitrateChange != null)
-                        emb.AddField("Bitrate changed to", centry.BitrateChange.After.Value.ToString(), inline: true);
+                        emb.AddField("Bitrate changed to", centry.BitrateChange.After.ToString(), inline: true);
                     if (centry.NameChange != null)
                         emb.AddField("Name changed to", centry.NameChange.After, inline: true);
                     if (centry.NsfwChange != null)

@@ -78,7 +78,7 @@ namespace TheGodfather.EventListeners
         [AsyncExecuter(EventTypes.MessageCreated)]
         public static async Task Client_MessageCreatedEmojiReactions(TheGodfatherShard shard, MessageCreateEventArgs e)
         {
-            if (e.Author.IsBot || !TheGodfather.Listening || e.Channel.IsPrivate || shard.Shared.BlockedChannels.Contains(e.Channel.Id) || shard.Shared.BlockedUsers.Contains(e.Author.Id) || !e.Channel.PermissionsFor(e.Guild.CurrentMember).HasFlag(Permissions.SendMessages))
+            if (!TheGodfather.Listening || e.Author.IsBot || e.Message?.Content != null || e.Channel.IsPrivate || shard.Shared.BlockedChannels.Contains(e.Channel.Id) || shard.Shared.BlockedUsers.Contains(e.Author.Id) || !e.Channel.PermissionsFor(e.Guild.CurrentMember).HasFlag(Permissions.SendMessages))
                 return;
 
             if (!e.Channel.PermissionsFor(e.Guild.CurrentMember).HasFlag(Permissions.AddReactions))
@@ -147,25 +147,24 @@ namespace TheGodfather.EventListeners
                 .ConfigureAwait(false);
             if (logchn != null && e.Message != null) {
                 var emb = new DiscordEmbedBuilder() {
-                    Description = $"From {e.Message.Author.ToString()}",
+                    Description = $"From {e.Message.Author?.ToString() ?? "<unknown>"}",
                     Color = DiscordColor.SpringGreen
                 };
 
                 var entry = await e.Guild.GetFirstAuditLogEntryAsync(AuditLogActionType.MessageDelete)
                     .ConfigureAwait(false);
                 if (entry == null || !(entry is DiscordAuditLogMessageEntry mentry)) {
-                    emb.AddField("Error", "Failed to read audit log information. Please check my permissions");
-                    emb.WithTitle($"Messages deleted");
+                    emb.WithTitle("Message deleted");
                 } else {
                     emb.WithTitle($"Messages deleted ({mentry.MessageCount ?? 1} total)");
                     emb.AddField("User responsible", mentry.UserResponsible.Mention, inline: true);
                     if (!string.IsNullOrWhiteSpace(mentry.Reason))
                         emb.AddField("Reason", mentry.Reason);
-                    else if (shard.Shared.MessageContainsFilter(e.Guild.Id, e.Message.Content))
-                        emb.AddField("Reason", "Filter triggered");
                     emb.WithFooter($"At {mentry.CreationTimestamp.ToUniversalTime().ToString()} UTC", mentry.UserResponsible.AvatarUrl);
                 }
-
+                
+                if (!string.IsNullOrWhiteSpace(e.Message.Content) && shard.Shared.MessageContainsFilter(e.Guild.Id, e.Message.Content))
+                    emb.AddField("Reason", "Filter triggered");
                 if (e.Message.Embeds.Count > 0)
                     emb.AddField("Embeds", e.Message.Embeds.Count.ToString(), inline: true);
                 if (e.Message.Reactions.Count > 0)
@@ -188,8 +187,7 @@ namespace TheGodfather.EventListeners
 
             if (shard.Shared.BlockedChannels.Contains(e.Channel.Id))
                 return;
-
-            // Check if message contains filter
+            
             if (e.Message.Content != null && shard.Shared.MessageContainsFilter(e.Guild.Id, e.Message.Content)) {
                 try {
                     await e.Message.DeleteAsync("_gf: Filter hit after update")
