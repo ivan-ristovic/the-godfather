@@ -58,20 +58,22 @@ namespace TheGodfather.Modules.Administration
                     .ConfigureAwait(false);
                 emb.AddField("Leave messages", lcid != 0 ? "on" : "off", inline: true);
 
-                emb.AddField("Linkfilter", gcfg.LinkfilterEnabled ? "on" : "off", inline: true);
-
-                var sb = new StringBuilder();
-                if (gcfg.BlockDiscordInvites)
-                    sb.AppendLine("Invite blocker");
-                if (gcfg.BlockBooterWebsites)
-                    sb.AppendLine("DDoS/Booter website blocker");
-                if (gcfg.BlockDisturbingWebsites)
-                    sb.AppendLine("Disturbing website blocker");
-                if (gcfg.BlockIpLoggingWebsites)
-                    sb.AppendLine("IP logging website blocker");
-                if (gcfg.BlockUrlShorteners)
-                    sb.AppendLine("URL shortening website blocker");
-                emb.AddField("Linkfilter modules active", sb.Length > 0 ? sb.ToString() : "None", inline: true);
+                if (gcfg.LinkfilterEnabled) {
+                    var sb = new StringBuilder();
+                    if (gcfg.BlockDiscordInvites)
+                        sb.AppendLine("Invite blocker");
+                    if (gcfg.BlockBooterWebsites)
+                        sb.AppendLine("DDoS/Booter website blocker");
+                    if (gcfg.BlockDisturbingWebsites)
+                        sb.AppendLine("Disturbing website blocker");
+                    if (gcfg.BlockIpLoggingWebsites)
+                        sb.AppendLine("IP logging website blocker");
+                    if (gcfg.BlockUrlShorteners)
+                        sb.AppendLine("URL shortening website blocker");
+                    emb.AddField("Linkfilter modules active", sb.Length > 0 ? sb.ToString() : "None", inline: true);
+                } else {
+                    emb.AddField("Linkfilter", "off", inline: true);
+                }
 
                 await ctx.RespondAsync(embed: emb.Build())
                     .ConfigureAwait(false);
@@ -253,187 +255,6 @@ namespace TheGodfather.Modules.Administration
             }
             #endregion
 
-
-            #region GROUP_CONFIG_LINKFILTER
-            [Group("linkfilter"), Module(ModuleType.Administration)]
-            [Description("Linkfilter configuration.")]
-            [Aliases("lf", "linkf", "linkremove", "filterlinks")]
-            [UsageExample("!guild cfg linkfilter")]
-            public class LinkFilter : TheGodfatherBaseModule
-            {
-
-                public LinkFilter(SharedData shared, DBService db) : base(shared, db) { }
-
-
-                [GroupCommand]
-                public async Task ExecuteGroupAsync(CommandContext ctx)
-                {
-                    var gcfg = Shared.GetGuildConfig(ctx.Guild.Id);
-                    if (gcfg.LinkfilterEnabled) {
-                        var emb = new DiscordEmbedBuilder() {
-                            Title = "Linkfilter modules for this guild",
-                            Color = DiscordColor.Green
-                        };
-                        emb.AddField("Invite filter", gcfg.BlockDiscordInvites ? "enabled" : "disabled", inline: true);
-
-                        // TODO add more
-
-                        await ctx.RespondAsync(embed: emb.Build())
-                            .ConfigureAwait(false);
-                    } else {
-                        await ctx.RespondWithIconEmbedAsync($"Link filtering for this guild is: {Formatter.Bold("disabled")}!")
-                            .ConfigureAwait(false);
-                    }
-                }
-
-
-                #region COMMAND_LINKFILTER_ENABLE
-                [Command("enable"), Module(ModuleType.Administration)]
-                [Description("Enables link filtering for this guild.")]
-                [Aliases("on")]
-                [UsageExample("!guild cfg linkfilter on")]
-                public async Task EnableAsync(CommandContext ctx)
-                {
-                    var gcfg = Shared.GetGuildConfig(ctx.Guild.Id);
-                    gcfg.LinkfilterEnabled = true;
-                    await Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg)
-                        .ConfigureAwait(false);
-
-                    var logchn = await Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild.Id)
-                    .ConfigureAwait(false);
-                    if (logchn != null) {
-                        var emb = new DiscordEmbedBuilder() {
-                            Title = "Guild config changed",
-                            Color = DiscordColor.Brown
-                        };
-                        emb.AddField("User responsible", ctx.User.Mention, inline: true);
-                        emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
-                        emb.AddField("Linkfilter", gcfg.LinkfilterEnabled ? "on" : "off", inline: true);
-                        await logchn.SendMessageAsync(embed: emb.Build())
-                            .ConfigureAwait(false);
-                    }
-
-                    await ctx.RespondWithIconEmbedAsync("Enabled link filtering!")
-                        .ConfigureAwait(false);
-                }
-                #endregion
-
-                #region COMMAND_LINKFILTER_DISABLE
-                [Command("disable"), Module(ModuleType.Administration)]
-                [Description("Disables link filtering for this guild.")]
-                [Aliases("off")]
-                [UsageExample("!guild cfg linkfilter off")]
-                public async Task DisableAsync(CommandContext ctx)
-                {
-                    var gcfg = Shared.GetGuildConfig(ctx.Guild.Id);
-                    gcfg.LinkfilterEnabled = false;
-                    await Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg)
-                        .ConfigureAwait(false);
-
-                    var logchn = await Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild.Id)
-                    .ConfigureAwait(false);
-                    if (logchn != null) {
-                        var emb = new DiscordEmbedBuilder() {
-                            Title = "Guild config changed",
-                            Color = DiscordColor.Brown
-                        };
-                        emb.AddField("User responsible", ctx.User.Mention, inline: true);
-                        emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
-                        emb.AddField("Link filtering", gcfg.SuggestionsEnabled ? "on" : "off", inline: true);
-                        await logchn.SendMessageAsync(embed: emb.Build())
-                            .ConfigureAwait(false);
-                    }
-
-                    await ctx.RespondWithIconEmbedAsync("Disabled link filtering!")
-                        .ConfigureAwait(false);
-                }
-                #endregion
-
-
-                #region GROUP_CONFIG_LINKFILTER_INVITES
-                [Group("invites"), Module(ModuleType.Administration)]
-                [Description("Enable or disable invite filters.")]
-                [Aliases("invite", "inv", "i")]
-                public class Invites : TheGodfatherBaseModule
-                {
-
-                    public Invites(SharedData shared, DBService db) : base(shared, db) { }
-
-
-                    [GroupCommand]
-                    public async Task ExecuteGroupAsync(CommandContext ctx)
-                    {
-                        var gcfg = Shared.GetGuildConfig(ctx.Guild.Id);
-                        await ctx.RespondWithIconEmbedAsync($"Invite link filtering for this guild is: {Formatter.Bold(gcfg.BlockDiscordInvites ? "enabled" : "disabled")}!")
-                            .ConfigureAwait(false);
-                    }
-
-
-                    #region COMMAND_LINKFILTER_INVITES_ENABLE
-                    [Command("enable"), Module(ModuleType.Administration)]
-                    [Description("Enables link filtering for this guild.")]
-                    [Aliases("on")]
-                    [UsageExample("!guild cfg linkfilter on")]
-                    public async Task EnableAsync(CommandContext ctx)
-                    {
-                        var gcfg = Shared.GetGuildConfig(ctx.Guild.Id);
-                        gcfg.BlockDiscordInvites = true;
-                        await Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg)
-                            .ConfigureAwait(false);
-
-                        var logchn = await Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild.Id)
-                        .ConfigureAwait(false);
-                        if (logchn != null) {
-                            var emb = new DiscordEmbedBuilder() {
-                                Title = "Guild config changed",
-                                Color = DiscordColor.Brown
-                            };
-                            emb.AddField("User responsible", ctx.User.Mention, inline: true);
-                            emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
-                            emb.AddField("Invite filtering", gcfg.BlockDiscordInvites ? "on" : "off", inline: true);
-                            await logchn.SendMessageAsync(embed: emb.Build())
-                                .ConfigureAwait(false);
-                        }
-
-                        await ctx.RespondWithIconEmbedAsync("Enabled link filtering!")
-                            .ConfigureAwait(false);
-                    }
-                    #endregion
-
-                    #region COMMAND_LINKFILTER_INVITES_DISABLE
-                    [Command("disable"), Module(ModuleType.Administration)]
-                    [Description("Disables link filtering for this guild.")]
-                    [Aliases("off")]
-                    [UsageExample("!guild cfg linkfilter off")]
-                    public async Task DisableAsync(CommandContext ctx)
-                    {
-                        var gcfg = Shared.GetGuildConfig(ctx.Guild.Id);
-                        gcfg.BlockDiscordInvites = false;
-                        await Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg)
-                            .ConfigureAwait(false);
-
-                        var logchn = await Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild.Id)
-                        .ConfigureAwait(false);
-                        if (logchn != null) {
-                            var emb = new DiscordEmbedBuilder() {
-                                Title = "Guild config changed",
-                                Color = DiscordColor.Brown
-                            };
-                            emb.AddField("User responsible", ctx.User.Mention, inline: true);
-                            emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
-                            emb.AddField("Invite filtering", gcfg.BlockDiscordInvites ? "on" : "off", inline: true);
-                            await logchn.SendMessageAsync(embed: emb.Build())
-                                .ConfigureAwait(false);
-                        }
-
-                        await ctx.RespondWithIconEmbedAsync("Disabled link filtering!")
-                            .ConfigureAwait(false);
-                    }
-                    #endregion
-                }
-                #endregion
-            }
-            #endregion
 
             #region GROUP_CONFIG_SUGGESTIONS
             [Group("suggestions"), Module(ModuleType.Administration)]
