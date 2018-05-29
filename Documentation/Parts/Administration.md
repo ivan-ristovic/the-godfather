@@ -893,6 +893,9 @@
 
 *Gets or sets leave message channel.*
 
+**Requires user permissions:**
+`Manage guild`
+
 **Aliases:**
 `chn, c`
 
@@ -915,6 +918,9 @@
 
 *Disables member leave messages for this guild.*
 
+**Requires user permissions:**
+`Manage guild`
+
 **Aliases:**
 `off`
 
@@ -931,6 +937,9 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Enables member leave messages for this guild. Provide a channel to send the messages to and optional custom leave message. Any occurances of ``%user%`` inside the message will be replaced with appropriate mention.*
+
+**Requires user permissions:**
+`Manage guild`
 
 **Aliases:**
 `on`
@@ -956,6 +965,9 @@
 
 *Gets or sets current leave message.*
 
+**Requires user permissions:**
+`Manage guild`
+
 **Aliases:**
 `msg, m`
 
@@ -968,6 +980,371 @@
 ```
 !guild cfg leave message
 !guild cfg leave message Bye, %user%!
+```
+</p></details>
+
+---
+
+## Group: guild configure linkfilter
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Linkfilter configuration.*
+
+**Requires user permissions:**
+`Manage guild`
+
+**Aliases:**
+`lf, linkf, linkremove, filterlinks`
+
+**Examples:**
+
+```
+!guild cfg linkfilter
+```
+</p></details>
+
+---
+
+## Group: guild configure linkfilter booters
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Enable or disable DDoS/Booter website filtering.*
+
+**Requires user permissions:**
+`Manage guild`
+
+**Aliases:**
+`ddos, boot, dos`
+
+**Examples:**
+
+```
+!guild cfg linkfilter booters
+!guild cfg linkfilter
+```
+</p></details>
+
+---
+
+### guild configure linkfilter booters disable
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Disables DDoS/Booter website filtering for this guild.*
+
+**Requires user permissions:**
+`Manage guild`
+
+**Aliases:**
+`off`
+
+**Examples:**
+
+```
+!guild cfg linkfilter booters off
+```
+</p></details>
+
+---
+
+### guild configure linkfilter booters enable
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Enables DDoS/Booter website filtering for this guild.*
+
+**Requires user permissions:**
+`Manage guild`
+
+**Aliases:**
+`on`
+
+**Examples:**
+
+```
+!guild cfg linkfilter booters on
+```
+</p></details>
+
+---
+
+### guild configure linkfilter disable
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Disables link filtering for this guild.*
+
+**Requires user permissions:**
+`Manage guild`
+
+**Aliases:**
+`off`
+
+**Examples:**
+
+```
+!guild cfg linkfilter off
+```
+</p></details>
+
+---
+
+## Group: guild configure linkfilter disturbingsites
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Enable or disable shock website filtering.*
+
+**Requires user permissions:**
+`Manage guild`
+
+**Aliases:**
+`disturbing, shock, shocksites`
+
+**Examples:**
+
+```
+!guild cfg linkfilter disturbing
+!guild cfg linkfilter
+```
+</p></details>
+
+---
+
+### guild configure linkfilter disturbingsites disable
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Disables shock website filtering for this guild.*
+
+**Requires user permissions:**
+`Manage guild`
+
+**Aliases:**
+`off`
+
+**Examples:**
+
+```
+!guild cfg linkfilter disturbing off
+```
+</p></details>
+
+---
+
+### guild configure linkfilter disturbingsites enable
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Enables shock website filtering for this guild.*
+
+**Requires user permissions:**
+`Manage guild`
+
+**Aliases:**
+`on`
+
+**Examples:**
+
+```
+!guild cfg linkfilter disturbing on
+```
+</p></details>
+
+---
+
+### guild configure linkfilter enable
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Enables link filtering for this guild.*
+
+**Requires user permissions:**
+`Manage guild`
+
+**Aliases:**
+`on`
+
+**Examples:**
+
+```
+!guild cfg linkfilter on
+```
+</p></details>
+
+---
+
+## Group: guild configure linkfilter invites
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Enable or disable Discord invite filters.*
+
+**Requires user permissions:**
+`Manage guild`
+
+**Aliases:**
+`invite, inv, i`
+
+**Examples:**
+
+```
+!guild cfg linkfilter invites
+!guild cfg linkfilter
+```
+</p></details>
+
+---
+
+### guild configure linkfilter invites disable
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Disables Discord invite filtering for this guild.*
+
+**Requires user permissions:**
+`Manage guild`
+
+**Aliases:**
+`off`
+
+**Examples:**
+
+```
+!guild cfg linkfilter invites off
+```
+</p></details>
+
+---
+
+### guild configure linkfilter invites enable
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Enables Discord invite filtering for this guild.*
+
+**Requires user permissions:**
+`Manage guild`
+
+**Aliases:**
+`on`
+
+**Examples:**
+
+```
+!guild cfg linkfilter invites on
+```
+</p></details>
+
+---
+
+## Group: guild configure linkfilter iploggers
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Enable or disable filtering of IP logger websites.*
+
+**Requires user permissions:**
+`Manage guild`
+
+**Aliases:**
+`ip, loggers, ipleech`
+
+**Examples:**
+
+```
+!guild cfg linkfilter iploggers
+!guild cfg linkfilter
+```
+</p></details>
+
+---
+
+### guild configure linkfilter iploggers disable
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Disables IP logging website filtering for this guild.*
+
+**Requires user permissions:**
+`Manage guild`
+
+**Aliases:**
+`off`
+
+**Examples:**
+
+```
+!guild cfg linkfilter iploggers off
+```
+</p></details>
+
+---
+
+### guild configure linkfilter iploggers enable
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Enables IP logger websites filtering for this guild.*
+
+**Requires user permissions:**
+`Manage guild`
+
+**Aliases:**
+`on`
+
+**Examples:**
+
+```
+!guild cfg linkfilter iploggers on
+```
+</p></details>
+
+---
+
+## Group: guild configure linkfilter shorteners
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Enable or disable filtering of URL shortener websites.*
+
+**Requires user permissions:**
+`Manage guild`
+
+**Aliases:**
+`urlshort, shortenurl, urlshorteners`
+
+**Examples:**
+
+```
+!guild cfg linkfilter shorteners
+!guild cfg linkfilter
+```
+</p></details>
+
+---
+
+### guild configure linkfilter shorteners disable
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Disables URL shortener website filtering for this guild.*
+
+**Requires user permissions:**
+`Manage guild`
+
+**Aliases:**
+`off`
+
+**Examples:**
+
+```
+!guild cfg linkfilter shorteners off
+```
+</p></details>
+
+---
+
+### guild configure linkfilter shorteners enable
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Enables URL shortener websites filtering for this guild.*
+
+**Requires user permissions:**
+`Manage guild`
+
+**Aliases:**
+`on`
+
+**Examples:**
+
+```
+!guild cfg linkfilter shorteners on
 ```
 </p></details>
 
@@ -998,6 +1375,9 @@
 
 *Gets or sets current action log channel.*
 
+**Requires user permissions:**
+`Manage guild`
+
 **Aliases:**
 `chn, c`
 
@@ -1020,6 +1400,9 @@
 
 *Disables action logging for this guild.*
 
+**Requires user permissions:**
+`Manage guild`
+
 **Aliases:**
 `off`
 
@@ -1036,6 +1419,9 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Enables action logging for this guild in the given channel.*
+
+**Requires user permissions:**
+`Manage guild`
 
 **Aliases:**
 `on`
@@ -1098,6 +1484,9 @@
 
 *Disables command suggestions for this guild.*
 
+**Requires user permissions:**
+`Manage guild`
+
 **Aliases:**
 `off`
 
@@ -1114,6 +1503,9 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Enables command suggestions for this guild.*
+
+**Requires user permissions:**
+`Manage guild`
 
 **Aliases:**
 `on`
@@ -1152,6 +1544,9 @@
 
 *Gets or sets welcome message channel.*
 
+**Requires user permissions:**
+`Manage guild`
+
 **Aliases:**
 `chn, c`
 
@@ -1174,6 +1569,9 @@
 
 *Disables member welcome messages for this guild.*
 
+**Requires user permissions:**
+`Manage guild`
+
 **Aliases:**
 `off`
 
@@ -1190,6 +1588,9 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Enables member welcoming for this guild. Provide a channel to send the messages to and optional custom welcome message. Any occurances of ``%user%`` inside the message will be replaced with appropriate mention.*
+
+**Requires user permissions:**
+`Manage guild`
 
 **Aliases:**
 `on`
@@ -1214,6 +1615,9 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Gets or sets current welcome message.*
+
+**Requires user permissions:**
+`Manage guild`
 
 **Aliases:**
 `msg, m`

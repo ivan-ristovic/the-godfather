@@ -348,7 +348,12 @@ namespace TheGodfather.Modules.Owner
 
                     sb.AppendLine(Formatter.Italic(cmd.Description ?? "No description provided.")).AppendLine();
 
-                    var allchecks = cmd.ExecutionChecks.Union(cmd.Parent?.ExecutionChecks ?? Enumerable.Empty<CheckBaseAttribute>());
+                    var allchecks = cmd.ExecutionChecks.AsEnumerable();
+                    var parent = cmd.Parent;
+                    while (parent != null) {
+                        allchecks = allchecks.Union(parent.ExecutionChecks);
+                        parent = parent.Parent;
+                    }
                     var permissions = allchecks.Where(chk => chk is RequirePermissionsAttribute)
                                                .Select(chk => chk as RequirePermissionsAttribute)
                                                .Select(chk => chk.Permissions.ToPermissionString());
