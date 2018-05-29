@@ -277,6 +277,9 @@ namespace TheGodfather.Modules.Reactions
             if (Shared.TextTriggerExists(ctx.Guild.Id, trigger))
                 throw new CommandFailedException($"Trigger {Formatter.Bold(trigger)} already exists.");
 
+            if (Shared.Filters.ContainsKey(ctx.Guild.Id) && Shared.Filters[ctx.Guild.Id].Any(f => f.Trigger.IsMatch(trigger)))
+                throw new CommandFailedException($"Trigger {Formatter.Bold(trigger)} collides with an existing filter in this guild.");
+
             string errors = "";
             int id = 0;
             try {
