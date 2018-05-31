@@ -153,18 +153,16 @@ namespace TheGodfather.EventListeners
 
                 var entry = await e.Guild.GetFirstAuditLogEntryAsync(AuditLogActionType.MessageDelete)
                     .ConfigureAwait(false);
-                if (DateTime.UtcNow - entry.CreationTimestamp.ToUniversalTime() > TimeSpan.FromSeconds(5))
-                    entry = null;
-                if (entry == null || !(entry is DiscordAuditLogMessageEntry mentry)) {
-                    emb.WithTitle("Message deleted");
-                } else {
+                if (entry != null && DateTime.UtcNow - entry.CreationTimestamp.ToUniversalTime() < TimeSpan.FromSeconds(5) && entry is DiscordAuditLogMessageEntry mentry) {
                     emb.WithTitle($"Messages deleted ({mentry.MessageCount ?? 1} total)");
                     emb.AddField("User responsible", mentry.UserResponsible.Mention, inline: true);
                     if (!string.IsNullOrWhiteSpace(mentry.Reason))
                         emb.AddField("Reason", mentry.Reason);
                     emb.WithFooter($"At {mentry.CreationTimestamp.ToUniversalTime().ToString()} UTC", mentry.UserResponsible.AvatarUrl);
+                } else {
+                    emb.WithTitle("Message deleted");
                 }
-                
+
                 if (!string.IsNullOrWhiteSpace(e.Message.Content) && shard.Shared.MessageContainsFilter(e.Guild.Id, e.Message.Content))
                     emb.AddField("Reason", "Filter triggered");
                 if (e.Message.Embeds.Count > 0)
