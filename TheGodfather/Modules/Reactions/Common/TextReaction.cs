@@ -4,7 +4,7 @@ namespace TheGodfather.Modules.Reactions.Common
 {
     public class TextReaction : Reaction
     {
-        private static readonly int RESET_TIME_S = 60;
+        private static readonly TimeSpan CooldownTimeout = TimeSpan.FromMinutes(5);
         private bool _cooldown = false;
         private DateTimeOffset _resetTime;
         private readonly object _lock = new object();
@@ -13,7 +13,7 @@ namespace TheGodfather.Modules.Reactions.Common
         public TextReaction(int id, string trigger, string response, bool is_regex_trigger = false)
             : base(id, trigger, response, is_regex_trigger)
         {
-            _resetTime = DateTimeOffset.UtcNow + TimeSpan.FromSeconds(RESET_TIME_S);
+            _resetTime = DateTimeOffset.UtcNow + CooldownTimeout;
         }
 
 
@@ -25,7 +25,7 @@ namespace TheGodfather.Modules.Reactions.Common
                 var now = DateTimeOffset.UtcNow;
                 if (now >= _resetTime) {
                     _cooldown = false;
-                    _resetTime = now + TimeSpan.FromSeconds(RESET_TIME_S);
+                    _resetTime = now + CooldownTimeout;
                 }
                 
                 if (!_cooldown) {
