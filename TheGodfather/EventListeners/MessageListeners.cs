@@ -147,7 +147,7 @@ namespace TheGodfather.EventListeners
                 .ConfigureAwait(false);
             if (logchn != null && e.Message != null) {
                 var emb = new DiscordEmbedBuilder() {
-                    Description = $"From {e.Message.Author?.ToString() ?? "<unknown>"}",
+                    Description = $"In channel {e.Channel.Mention}\nFrom {e.Message.Author?.ToString() ?? "<unknown>"}",
                     Color = DiscordColor.SpringGreen
                 };
 
@@ -215,13 +215,19 @@ namespace TheGodfather.EventListeners
                 var logchn = await shard.Shared.GetLogChannelForGuild(shard.Client, e.Guild.Id)
                     .ConfigureAwait(false);
                 if (logchn != null && !e.Author.IsBot && e.Message.EditedTimestamp != null) {
-                    var detailspre = $"{Formatter.BlockCode(string.IsNullOrWhiteSpace(e.MessageBefore?.Content) ? "<empty content>" : e.MessageBefore.Content)}\nCreated at: {(e.Message.CreationTimestamp != null ? e.Message.CreationTimestamp.ToUniversalTime().ToString() : "<unknown>")}, embeds: {e.MessageBefore.Embeds.Count}, reactions: {e.MessageBefore.Reactions.Count}, attachments: {e.MessageBefore.Attachments.Count}";
+                    var detailspre = $"{Formatter.BlockCode(string.IsNullOrWhiteSpace(e.MessageBefore?.Content) ? "<empty content>" : e.MessageBefore.Content)}\nCreated at: {(e.Message.CreationTimestamp != null ? e.Message.CreationTimestamp.ToUniversalTime().ToString() : "<unknown>")}, embeds: {e.MessageBefore?.Embeds?.Count ?? 0}, reactions: {e.MessageBefore?.Reactions?.Count ?? 0}, attachments: {e.MessageBefore?.Attachments?.Count ?? 0}";
                     var detailsafter = $"{Formatter.BlockCode(string.IsNullOrWhiteSpace(e.Message?.Content) ? "<empty content>" : e.Message.Content)}\nEdited at: {(e.Message.EditedTimestamp != null ? e.Message.EditedTimestamp.ToUniversalTime().ToString() : "<unknown>")}, embeds: {e.Message.Embeds.Count}, reactions: {e.Message.Reactions.Count}, attachments: {e.Message.Attachments.Count}";
-                    await logchn.SendMessageAsync(embed: new DiscordEmbedBuilder() {
+
+                    var emb = new DiscordEmbedBuilder() {
                         Title = "Message updated",
-                        Description = $"In channel {e.Channel.Mention}\n\nBefore update: {detailspre}\n\nAfter update: {detailsafter}",
+                        Description = $"In channel {e.Channel.Mention}",
                         Color = DiscordColor.SpringGreen
-                    }).ConfigureAwait(false);
+                    };
+                    emb.AddField("Before update", detailspre);
+                    emb.AddField("After update", detailsafter);
+
+                    await logchn.SendMessageAsync(embed: emb.Build())
+                        .ConfigureAwait(false);
                 }
             } catch {
 
