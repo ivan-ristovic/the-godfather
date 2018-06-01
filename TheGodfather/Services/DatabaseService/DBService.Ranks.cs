@@ -44,25 +44,11 @@ namespace TheGodfather.Services
                 using (var cmd = con.CreateCommand()) {
                     await con.OpenAsync().ConfigureAwait(false);
 
-                    cmd.CommandText = "SELECT count FROM gf.msgcount WHERE uid = @uid LIMIT 1;";
+                    cmd.CommandText = "INSERT INTO gf.msgcount VALUES (@uid, @count) ON CONFLICT (uid) DO UPDATE SET count = EXCLUDED.count;";
                     cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
+                    cmd.Parameters.AddWithValue("count", NpgsqlDbType.Bigint, (long)count);
 
-                    var res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
-                    if (res == null || res is DBNull) {
-                        using (var cmd1 = con.CreateCommand()) {
-                            cmd.CommandText = "INSERT INTO gf.msgcount VALUES(@uid, @count);";
-                            cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
-                            cmd.Parameters.AddWithValue("count", NpgsqlDbType.Bigint, (long)count);
-                            await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
-                        }
-                    } else if ((ulong)(long)res != count) {
-                        using (var cmd1 = con.CreateCommand()) {
-                            cmd.CommandText = "UPDATE gf.msgcount SET count = @count WHERE uid = @uid;";
-                            cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
-                            cmd.Parameters.AddWithValue("count", NpgsqlDbType.Bigint, (long)count);
-                            await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
-                        }
-                    }
+                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
             } finally {
                 _sem.Release();

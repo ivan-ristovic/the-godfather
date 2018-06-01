@@ -148,7 +148,7 @@ namespace TheGodfather
             }
         }
 
-        public async Task SaveRanksToDatabaseAsync(DBService db)
+        private async Task SaveRanksToDatabaseAsync(DBService db)
         {
             foreach (var entry in MessageCount)
                 await db.UpdateExperienceForUserAsync(entry.Key, entry.Value).ConfigureAwait(false);

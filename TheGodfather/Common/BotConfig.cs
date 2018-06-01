@@ -19,6 +19,15 @@ namespace TheGodfather.Common
         [JsonProperty("prefix")]
         public string DefaultPrefix { get; private set; }
 
+        [JsonProperty("db_sync_interval")]
+        public int DbSyncInterval { get; private set; }
+
+        [JsonProperty("feed_check_start_delay")]
+        public int FeedCheckStartDelay { get; private set; }
+
+        [JsonProperty("feed_check_interval")]
+        public int FeedCheckInterval { get; private set; }
+
         [JsonProperty("log-level")]
         public LogLevel LogLevel { get; private set; }
 
@@ -45,48 +54,42 @@ namespace TheGodfather.Common
 
         [JsonProperty("key-omdb")]
         public string OMDbKey { get; private set; }
-        
+
         [JsonProperty("db-config")]
         public DatabaseConfig DatabaseConfig { get; private set; }
 
 
         public static BotConfig Load()
         {
-            BotConfig cfg = null;
-            if (File.Exists("Resources/config.json")) {
-                try {
-                    cfg = JsonConvert.DeserializeObject<BotConfig>(File.ReadAllText("Resources/config.json"));
-                } catch (Exception e) {
-                    Console.WriteLine("EXCEPTION OCCURED WHILE LOADING CONFIG FILE: " + Environment.NewLine + e.ToString());
-                    return null;
-                }
-            } else {
+            if (!File.Exists("Resources/config.json"))
+                return null;
+            try {
+                var cfg = JsonConvert.DeserializeObject<BotConfig>(File.ReadAllText("Resources/config.json"));
+                return cfg;
+            } catch (Exception e) {
+                Console.WriteLine("EXCEPTION OCCURED WHILE LOADING CONFIG FILE: " + Environment.NewLine + e.ToString());
                 return null;
             }
-
-            return cfg;
         }
 
         [JsonIgnore]
-        public static BotConfig Default
-        {
-            get {
-                return new BotConfig {
-                    Token = "<insert bot token here>",
-                    ShardCount = 1,
-                    DefaultPrefix = "!",
-                    LogLevel = LogLevel.Info,
-                    LogPath = "log.txt",
-                    LogToFile = true,
-                    GiphyKey = "<insert GIPHY API key>",
-                    SteamKey = "<insert Steam API key>",
-                    ImgurKey = "<insert Imgur API key>",
-                    WeatherKey = "<insert OpenWeatherMaps API key>",
-                    YouTubeKey = "<insert YouTube API key>",
-                    OMDbKey = "<insert OMDb API key>",
-                    DatabaseConfig = DatabaseConfig.Default
-                };
-            }
-        }
+        public static BotConfig Default => new BotConfig {
+            Token = "<insert bot token here>",
+            ShardCount = 1,
+            DefaultPrefix = "!",
+            DbSyncInterval = 600,
+            FeedCheckStartDelay = 30,
+            FeedCheckInterval = 300,
+            LogLevel = LogLevel.Info,
+            LogPath = "log.txt",
+            LogToFile = false,
+            GiphyKey = "<insert GIPHY API key>",
+            SteamKey = "<insert Steam API key>",
+            ImgurKey = "<insert Imgur API key>",
+            WeatherKey = "<insert OpenWeatherMaps API key>",
+            YouTubeKey = "<insert YouTube API key>",
+            OMDbKey = "<insert OMDb API key>",
+            DatabaseConfig = DatabaseConfig.Default
+        };
     }
 }
