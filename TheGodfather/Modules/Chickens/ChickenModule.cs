@@ -58,7 +58,7 @@ namespace TheGodfather.Modules.Chickens
                 .ConfigureAwait(false);
             if (chicken1 != null) {
                 if (chicken1.Stats.Vitality < 25)
-                    throw new CommandFailedException($"{ctx.User.Mention}, your chicken is too weak to start a fight with another chicken! Heal it using {Formatter.BlockCode("chicken heal")} command.");
+                    throw new CommandFailedException($"{ctx.User.Mention}, your chicken is too weak to start a fight with another chicken! Heal it using {Formatter.InlineCode("chicken heal")} command.");
             } else {
                 throw new CommandFailedException("You do not own a chicken!");
             }

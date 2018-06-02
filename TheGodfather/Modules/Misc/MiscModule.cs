@@ -43,7 +43,7 @@ namespace TheGodfather.Modules.Misc
             if (string.IsNullOrWhiteSpace(question))
                 throw new InvalidCommandUsageException("The almighty ball requires a question.");
 
-            await ctx.RespondWithIconEmbedAsync(EightBall.Answer, ":8ball:")
+            await ctx.RespondWithIconEmbedAsync($"{ctx.User.Mention}: {EightBall.GenerateRandomAnswer}", ":8ball:")
                 .ConfigureAwait(false);
         }
         #endregion

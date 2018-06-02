@@ -16,6 +16,6 @@ namespace TheGodfather.Modules.Misc.Common
             "More than you can imagine."
         };
 
-        public static string Answer => _answers[GFRandom.Generator.Next(_answers.Length)];
+        public static string GenerateRandomAnswer => _answers[GFRandom.Generator.Next(_answers.Length)];
     }
 }
