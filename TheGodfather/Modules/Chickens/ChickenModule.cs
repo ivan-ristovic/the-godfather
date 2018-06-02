@@ -132,7 +132,7 @@ namespace TheGodfather.Modules.Chickens
         [Command("heal"), Module(ModuleType.Chickens)]
         [Description("Heal your chicken (+100 HP). There is one medicine made each 10 minutes, so you need to grab it before the others do!")]
         [Aliases("+hp", "hp")]
-        [Cooldown(1, 600, CooldownBucketType.Guild)]
+        [Cooldown(1, 300, CooldownBucketType.Guild)]
         [UsageExample("!chicken heal")]
         public async Task HealAsync(CommandContext ctx)
         {
