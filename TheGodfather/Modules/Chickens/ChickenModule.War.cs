@@ -55,13 +55,13 @@ namespace TheGodfather.Modules.Chickens
                         var sb = new StringBuilder();
 
                         foreach (var chicken in war.Team1Won ? war.Team1 : war.Team2) {
-                            chicken.Stats.Strength += 20;
+                            chicken.Stats.Strength += war.Gain;
                             chicken.Stats.Vitality -= 10;
                             await Database.ModifyChickenAsync(chicken, ctx.Guild.Id)
                                 .ConfigureAwait(false);
                             await Database.GiveCreditsToUserAsync(chicken.OwnerId, ctx.Guild.Id, 100000)
                                 .ConfigureAwait(false);
-                            sb.AppendLine($"{Formatter.Bold(chicken.Name)} gained 20 STR and lost 10 HP!");
+                            sb.AppendLine($"{Formatter.Bold(chicken.Name)} gained {war.Gain} STR and lost 10 HP!");
                         }
 
                         foreach (var chicken in war.Team1Won ? war.Team2 : war.Team1) {

@@ -98,11 +98,11 @@ namespace TheGodfather.Modules.Chickens
                     Color = DiscordColor.Orange
                 };
 
-                emb.AddField($"Default ({Chicken.Price[ChickenType.Default]} credits)", Chicken.StartingStats[ChickenType.Default].ToString());
-                emb.AddField($"Well-Fed ({Chicken.Price[ChickenType.WellFed]} credits)", Chicken.StartingStats[ChickenType.WellFed].ToString());
-                emb.AddField($"Trained ({Chicken.Price[ChickenType.Trained]} credits)", Chicken.StartingStats[ChickenType.Trained].ToString());
-                emb.AddField($"Steroid Empowered ({Chicken.Price[ChickenType.SteroidEmpowered]} credits)", Chicken.StartingStats[ChickenType.SteroidEmpowered].ToString());
-                emb.AddField($"Alien ({Chicken.Price[ChickenType.Alien]} credits)", Chicken.StartingStats[ChickenType.Alien].ToString());
+                emb.AddField($"Default ({Chicken.Price(ChickenType.Default)} credits)", Chicken.StartingStats[ChickenType.Default].ToString());
+                emb.AddField($"Well-Fed ({Chicken.Price(ChickenType.WellFed)} credits)", Chicken.StartingStats[ChickenType.WellFed].ToString());
+                emb.AddField($"Trained ({Chicken.Price(ChickenType.Trained)} credits)", Chicken.StartingStats[ChickenType.Trained].ToString());
+                emb.AddField($"Steroid Empowered ({Chicken.Price(ChickenType.SteroidEmpowered)} credits)", Chicken.StartingStats[ChickenType.SteroidEmpowered].ToString());
+                emb.AddField($"Alien ({Chicken.Price(ChickenType.Alien)} credits)", Chicken.StartingStats[ChickenType.Alien].ToString());
 
                 await ctx.RespondAsync(embed: emb.Build())
                     .ConfigureAwait(false);
@@ -125,11 +125,11 @@ namespace TheGodfather.Modules.Chickens
                 if (await Database.GetChickenInfoAsync(ctx.User.Id, ctx.Guild.Id).ConfigureAwait(false) != null)
                     throw new CommandFailedException("You already own a chicken!");
 
-                if (!await ctx.AskYesNoQuestionAsync($"{ctx.User.Mention}, are you sure you want to buy a chicken for {Formatter.Bold(Chicken.Price[type].ToString())} credits?"))
+                if (!await ctx.AskYesNoQuestionAsync($"{ctx.User.Mention}, are you sure you want to buy a chicken for {Formatter.Bold(Chicken.Price(type).ToString())} credits?"))
                     return;
 
-                if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, ctx.Guild.Id, Chicken.Price[type]).ConfigureAwait(false))
-                    throw new CommandFailedException($"You do not have enought credits to buy a chicken ({Chicken.Price[type]} needed)!");
+                if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, ctx.Guild.Id, Chicken.Price(type)).ConfigureAwait(false))
+                    throw new CommandFailedException($"You do not have enought credits to buy a chicken ({Chicken.Price(type)} needed)!");
 
                 await Database.BuyChickenAsync(ctx.User.Id, ctx.Guild.Id, name, Chicken.StartingStats[type])
                     .ConfigureAwait(false);

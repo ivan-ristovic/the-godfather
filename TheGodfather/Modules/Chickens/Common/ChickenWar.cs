@@ -27,6 +27,7 @@ namespace TheGodfather.Modules.Chickens.Common
         public string Team2Name { get; } = "Team2";
         public ConcurrentQueue<Chicken> Team1 { get; } = new ConcurrentQueue<Chicken>();
         public ConcurrentQueue<Chicken> Team2 { get; } = new ConcurrentQueue<Chicken>();
+        public short Gain { get; private set; }
 
 
         public ChickenWar(InteractivityExtension interactivity, DiscordChannel channel, string team1, string team2)
@@ -63,10 +64,14 @@ namespace TheGodfather.Modules.Chickens.Common
 
             var c1 = new Chicken() { Stats = new ChickenStats { Strength = str1 } };
             var c2 = new Chicken() { Stats = new ChickenStats { Strength = str2 } };
-            if (c1.Fight(c2) == c1)
+            if (c1.Fight(c2) == c1) {
                 Team1Won = true;
-            else
+                Gain = c1.DetermineStrengthGain(c2);
+            } else {
                 Team2Won = true;
+                Gain = c2.DetermineStrengthGain(c1);
+            }
+
         }
 
         public bool AddParticipant(Chicken chicken, DiscordUser owner, bool team1 = false, bool team2 = false)

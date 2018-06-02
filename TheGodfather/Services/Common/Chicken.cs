@@ -60,31 +60,25 @@ namespace TheGodfather.Services.Common
     {
         public static readonly ImmutableDictionary<ChickenType, ChickenStats> StartingStats = new Dictionary<ChickenType, ChickenStats>() {
             { ChickenType.Default, new ChickenStats() { Strength = 50, MaxVitality = 100, Vitality = 100 } },
-            { ChickenType.WellFed, new ChickenStats() { Strength = 90, MaxVitality = 150, Vitality = 150 } },
-            { ChickenType.Trained, new ChickenStats() { Strength = 125, MaxVitality = 200, Vitality = 200 } },
-            { ChickenType.SteroidEmpowered, new ChickenStats() { Strength = 150, MaxVitality = 250, Vitality = 250 } },
-            { ChickenType.Alien, new ChickenStats() { Strength = 200, MaxVitality = 300, Vitality = 300 } },
+            { ChickenType.WellFed, new ChickenStats() { Strength = 100, MaxVitality = 150, Vitality = 150 } },
+            { ChickenType.Trained, new ChickenStats() { Strength = 150, MaxVitality = 200, Vitality = 200 } },
+            { ChickenType.SteroidEmpowered, new ChickenStats() { Strength = 200, MaxVitality = 250, Vitality = 250 } },
+            { ChickenType.Alien, new ChickenStats() { Strength = 250, MaxVitality = 300, Vitality = 300 } },
         }.ToImmutableDictionary();
-        public static readonly ImmutableDictionary<ChickenType, long> Price = new Dictionary<ChickenType, long>() {
-            { ChickenType.Default, 1000},
-            { ChickenType.WellFed, 10000},
-            { ChickenType.Trained, 100000},
-            { ChickenType.SteroidEmpowered, 1000000},
-            { ChickenType.Alien, 10000000}
-        }.ToImmutableDictionary();
+        public static long Price(ChickenType type)
+            => PriceForAttribute(StartingStats[type].Strength);
 
         public DiscordUser Owner { get; set; }
         public ulong OwnerId { get; set; }
         public string Name { get; set; }
         public ChickenStats Stats { get; set; }
         public long SellPrice => PriceForAttribute(Stats.Strength);
-        public long TrainStrengthPrice => PriceForAttribute((short)(Stats.Strength + 4)) - PriceForAttribute(Stats.Strength);
-        public long TrainVitalityPrice => PriceForAttribute((short)(Stats.MaxVitality + 4)) - PriceForAttribute(Stats.MaxVitality);
-
+        public long TrainStrengthPrice => PriceForAttribute((short)(Stats.Strength + 3)) - PriceForAttribute(Stats.Strength);
+        public long TrainVitalityPrice => PriceForAttribute((short)(Stats.MaxVitality + 3)) - PriceForAttribute(Stats.MaxVitality);
 
 
         private static long PriceForAttribute(short attr)
-            => (long)Math.Pow(10, 1 + attr / (double)50);
+            => (long)Math.Pow(10, 2 + attr / (double)50);
 
 
         public bool TrainStrength()

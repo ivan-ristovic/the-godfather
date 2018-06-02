@@ -77,11 +77,11 @@ namespace TheGodfather.Modules.Chickens
                         var sb = new StringBuilder();
 
                         foreach (var chicken in ambush.Team1Won ? ambush.Team1 : ambush.Team2) {
-                            chicken.Stats.Strength += 10;
+                            chicken.Stats.Strength += 5;
                             chicken.Stats.Vitality -= 10;
                             await Database.ModifyChickenAsync(chicken, ctx.Guild.Id)
                                 .ConfigureAwait(false);
-                            sb.AppendLine($"{Formatter.Bold(chicken.Name)} gained 10 STR and lost 10 HP!");
+                            sb.AppendLine($"{Formatter.Bold(chicken.Name)} gained 5 STR and lost 10 HP!");
                         }
 
                         foreach (var chicken in ambush.Team1Won ? ambush.Team2 : ambush.Team1) {
