@@ -174,6 +174,12 @@ namespace TheGodfather.Modules.Owner
                         lines.Add($"{channel.ToString()} ({Formatter.Italic(string.IsNullOrWhiteSpace(tup.Item2) ? "No reason provided." : tup.Item2)})");
                     } catch (NotFoundException) {
                         TheGodfather.LogHandle.LogMessage(LogLevel.Warning, $"Removed 404 blocked channel with ID {tup.Item1}");
+                        Shared.BlockedChannels.TryRemove(tup.Item1);
+                        await Database.RemoveBlockedChannelAsync(tup.Item1)
+                            .ConfigureAwait(false);
+                    } catch (UnauthorizedException) {
+                        TheGodfather.LogHandle.LogMessage(LogLevel.Warning, $"Removed 403 blocked channel with ID {tup.Item1}");
+                        Shared.BlockedChannels.TryRemove(tup.Item1);
                         await Database.RemoveBlockedChannelAsync(tup.Item1)
                             .ConfigureAwait(false);
                     }
