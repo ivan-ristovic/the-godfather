@@ -438,6 +438,7 @@
     <Compile Include="Modules\Administration\Common\Filter.cs" />
     <Compile Include="Modules\Administration\GuildModule.Configuration.Linkfilter.cs" />
     <Compile Include="Modules\Administration\GuildModule.Configuration.cs" />
+    <Compile Include="Modules\Chickens\ChickenModule.Upgrades.cs" />
     <Compile Include="Modules\Chickens\ChickenModule.Train.cs" />
     <Compile Include="Modules\Chickens\ChickenModule.Buy.cs" />
     <Compile Include="Modules\Currency\CasinoModule.Blackjack.cs" />
@@ -474,6 +475,7 @@
     <Compile Include="Modules\Search\XkcdModule.cs" />
     <Compile Include="Services\Common\Birthday.cs" />
     <Compile Include="Services\Common\Chicken.cs" />
+    <Compile Include="Services\Common\ChickenUpgrade.cs" />
     <Compile Include="Services\Common\OMDbData.cs" />
     <Compile Include="Services\Common\PurchasableItem.cs" />
     <Compile Include="Services\Common\QuizData.cs" />

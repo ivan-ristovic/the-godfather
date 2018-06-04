@@ -119,11 +119,11 @@ namespace TheGodfather.Modules.Chickens
             if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, ctx.Guild.Id, 1000000).ConfigureAwait(false))
                 throw new CommandFailedException($"You do not have enought credits to pay for the disease creation!");
 
-            short threshold = (short)GFRandom.Generator.Next(10, 50);
+            short threshold = (short)GFRandom.Generator.Next(50, 100);
             await Database.FilterChickensByVitalityAsync(ctx.Guild.Id, threshold)
                 .ConfigureAwait(false);
 
-            await ctx.RespondWithIconEmbedAsync($"The deadly chicken flu killed all chickens with vitality less or equal {Formatter.Bold(threshold.ToString())}!")
+            await ctx.RespondWithIconEmbedAsync($"The deadly chicken flu killed all chickens with vitality less than or equal to {Formatter.Bold(threshold.ToString())}!")
                 .ConfigureAwait(false);
         }
         #endregion
