@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Linq;
 
 using TheGodfather.Common;
 
@@ -75,6 +76,7 @@ namespace TheGodfather.Services.Common
         public long SellPrice => PriceForAttribute(Stats.Strength);
         public long TrainStrengthPrice => PriceForAttribute((short)(Stats.Strength + 3)) - PriceForAttribute(Stats.Strength);
         public long TrainVitalityPrice => PriceForAttribute((short)(Stats.MaxVitality + 3)) - PriceForAttribute(Stats.MaxVitality);
+        public IReadOnlyList<ChickenUpgrade> Upgrades { get; internal set; }
 
 
         private static long PriceForAttribute(short attr)
@@ -143,6 +145,7 @@ namespace TheGodfather.Services.Common
             emb.AddField("Owner", owner.Mention, inline: true);
             emb.AddField("Credit value", SellPrice.ToString(), inline: true);
             emb.AddField("Stats", Stats.ToString());
+            emb.AddField("Upgrades", string.Join("\n", Upgrades.Select(u => u.Name)));
 
             emb.WithFooter("Chickens will rule the world someday");
 

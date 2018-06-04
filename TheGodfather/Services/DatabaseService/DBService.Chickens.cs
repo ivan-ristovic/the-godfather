@@ -44,6 +44,39 @@ namespace TheGodfather.Services
             return upgrades.AsReadOnly();
         }
 
+        public async Task<IReadOnlyList<ChickenUpgrade>> GetChickenUpgradesAsync(ulong uid, ulong gid)
+        {
+            var upgrades = new List<ChickenUpgrade>();
+
+            await _sem.WaitAsync();
+            try {
+                using (var con = new NpgsqlConnection(_connectionString))
+                using (var cmd = con.CreateCommand()) {
+                    await con.OpenAsync().ConfigureAwait(false);
+
+                    cmd.CommandText = "SELECT * FROM gf.chicken_active_upgrades JOIN gf.chicken_upgrades ON gid = @gid AND uid = @uid AND gf.chicken_active_upgrades.wid = gf.chicken_upgrades.wid;";
+                    cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, uid);
+                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
+
+                    using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
+                        while (await reader.ReadAsync().ConfigureAwait(false)) {
+                            upgrades.Add(new ChickenUpgrade() {
+                                Id = (int)reader["wid"],
+                                Name = (string)reader["name"],
+                                Price = (long)reader["price"],
+                                UpgradesStat = (ChickenStat)(short)reader["upgrades_stat"],
+                                Modifier = (short)reader["modifier"]
+                            });
+                        }
+                    }
+                }
+            } finally {
+                _sem.Release();
+            }
+
+            return upgrades.AsReadOnly();
+        }
+
         public async Task<IReadOnlyList<Chicken>> GetStrongestChickensForGuildAsync(ulong gid = 0)
         {
             var chickens = new List<Chicken>();
@@ -138,6 +171,12 @@ namespace TheGodfather.Services
                 }
             } finally {
                 _sem.Release();
+            }
+
+            if (chicken != null) {
+                var upgrades = await GetChickenUpgradesAsync(uid, gid)
+                    .ConfigureAwait(false);
+                chicken.Upgrades = upgrades;
             }
 
             return chicken;
