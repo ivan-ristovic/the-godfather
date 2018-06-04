@@ -31,8 +31,8 @@ namespace TheGodfather.Services
                                 Id = (int)reader["wid"],
                                 Name = (string)reader["name"],
                                 Price = (long)reader["price"],
-                                UpgradesStat = (ChickenStat)(short)reader["upgrades_stat"],
-                                Modifier = (short)reader["modifier"]
+                                UpgradesStat = (UpgradedStat)(short)reader["upgrades_stat"],
+                                Modifier = (int)reader["modifier"]
                             });
                         }
                     }
@@ -42,6 +42,38 @@ namespace TheGodfather.Services
             }
 
             return upgrades.AsReadOnly();
+        }
+
+        public async Task<ChickenUpgrade> GetChickenUpgradeAsync(int wid)
+        {
+            ChickenUpgrade upgrade = null;
+
+            await _sem.WaitAsync();
+            try {
+                using (var con = new NpgsqlConnection(_connectionString))
+                using (var cmd = con.CreateCommand()) {
+                    await con.OpenAsync().ConfigureAwait(false);
+
+                    cmd.CommandText = "SELECT * FROM gf.chicken_upgrades WHERE wid = @wid LIMIT 1;";
+                    cmd.Parameters.AddWithValue("wid", NpgsqlDbType.Integer, wid);
+
+                    using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
+                        if (await reader.ReadAsync().ConfigureAwait(false)) {
+                            upgrade = new ChickenUpgrade() {
+                                Id = (int)reader["wid"],
+                                Name = (string)reader["name"],
+                                Price = (long)reader["price"],
+                                UpgradesStat = (UpgradedStat)(short)reader["upgrades_stat"],
+                                Modifier = (int)reader["modifier"]
+                            };
+                        }
+                    }
+                }
+            } finally {
+                _sem.Release();
+            }
+
+            return upgrade;
         }
 
         public async Task<IReadOnlyList<ChickenUpgrade>> GetChickenUpgradesAsync(ulong uid, ulong gid)
@@ -64,8 +96,8 @@ namespace TheGodfather.Services
                                 Id = (int)reader["wid"],
                                 Name = (string)reader["name"],
                                 Price = (long)reader["price"],
-                                UpgradesStat = (ChickenStat)(short)reader["upgrades_stat"],
-                                Modifier = (short)reader["modifier"]
+                                UpgradesStat = (UpgradedStat)(short)reader["upgrades_stat"],
+                                Modifier = (int)reader["modifier"]
                             });
                         }
                     }
@@ -100,9 +132,9 @@ namespace TheGodfather.Services
                                 Name = (string)reader["name"],
                                 OwnerId = (ulong)(long)reader["uid"],
                                 Stats = new ChickenStats() {
-                                    Strength = (short)reader["strength"],
-                                    MaxVitality = (short)reader["max_vitality"],
-                                    Vitality = (short)reader["vitality"]
+                                    Strength = (int)reader["strength"],
+                                    MaxVitality = (int)reader["max_vitality"],
+                                    Vitality = (int)reader["vitality"]
                                 }
                             });
                         }
@@ -141,6 +173,26 @@ namespace TheGodfather.Services
             }
         }
 
+        public async Task BuyChickenUpgradeAsync(ulong uid, ulong gid, ChickenUpgrade upgrade)
+        {
+            await _sem.WaitAsync();
+            try {
+                using (var con = new NpgsqlConnection(_connectionString))
+                using (var cmd = con.CreateCommand()) {
+                    await con.OpenAsync().ConfigureAwait(false);
+
+                    cmd.CommandText = "INSERT INTO gf.chicken_active_upgrades VALUES (@uid, @gid, @wid) ON CONFLICT DO NOTHING;";
+                    cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, uid);
+                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
+                    cmd.Parameters.AddWithValue("wid", NpgsqlDbType.Integer, upgrade.Id);
+
+                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                }
+            } finally {
+                _sem.Release();
+            }
+        }
+
         public async Task<Chicken> GetChickenInfoAsync(ulong uid, ulong gid)
         {
             Chicken chicken = null;
@@ -161,9 +213,9 @@ namespace TheGodfather.Services
                                 Name = (string)reader["name"],
                                 OwnerId = (ulong)(long)reader["uid"],
                                 Stats = new ChickenStats() {
-                                    Strength = (short)reader["strength"],
-                                    MaxVitality = (short)reader["max_vitality"],
-                                    Vitality = (short)reader["vitality"],
+                                    Strength = (int)reader["strength"],
+                                    MaxVitality = (int)reader["max_vitality"],
+                                    Vitality = (int)reader["vitality"],
                                 }
                             };
                         }
@@ -224,7 +276,7 @@ namespace TheGodfather.Services
             }
         }
 
-        public async Task FilterChickensByVitalityAsync(ulong gid, short threshold)
+        public async Task FilterChickensByVitalityAsync(ulong gid, int threshold)
         {
             await _sem.WaitAsync();
             try {
@@ -234,7 +286,7 @@ namespace TheGodfather.Services
 
                     cmd.CommandText = "DELETE FROM gf.chickens WHERE gid = @gid AND vitality <= @threshold;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
-                    cmd.Parameters.AddWithValue("threshold", NpgsqlDbType.Smallint, threshold);
+                    cmd.Parameters.AddWithValue("threshold", NpgsqlDbType.Integer, threshold);
 
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }

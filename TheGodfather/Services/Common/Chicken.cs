@@ -25,7 +25,7 @@ namespace TheGodfather.Services.Common
     {
         public int Strength
         {
-            get => _strength + (Upgrades?.Where(u => u.UpgradesStat == ChickenStat.Strength).Sum(u => u.Modifier) ?? 0);
+            get => _strength + (Upgrades?.Where(u => u.UpgradesStat == UpgradedStat.Strength).Sum(u => u.Modifier) ?? 0);
             set {
                 if (value > 999)
                     _strength = 999;
@@ -38,7 +38,7 @@ namespace TheGodfather.Services.Common
         public int Vitality
         {
             get {
-                var total = _vitality + (Upgrades?.Where(u => u.UpgradesStat == ChickenStat.Vitality).Sum(u => u.Modifier) ?? 0);
+                var total = _vitality + (Upgrades?.Where(u => u.UpgradesStat == UpgradedStat.Vitality).Sum(u => u.Modifier) ?? 0);
                 return (total > MaxVitality) ? MaxVitality : total;
             }
             set {
@@ -52,7 +52,7 @@ namespace TheGodfather.Services.Common
         }
         public int MaxVitality
         {
-            get => _maxvitality + (Upgrades?.Where(u => u.UpgradesStat == ChickenStat.MaxVitality).Sum(u => u.Modifier) ?? 0);
+            get => _maxvitality + (Upgrades?.Where(u => u.UpgradesStat == UpgradedStat.MaxVitality).Sum(u => u.Modifier) ?? 0);
             set => _maxvitality = value;
         }
         public IReadOnlyList<ChickenUpgrade> Upgrades { get; internal set; }

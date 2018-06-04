@@ -22,7 +22,7 @@ namespace TheGodfather.Modules.Chickens
     {
         [Group("upgrades"), Module(ModuleType.Chickens)]
         [Description("Upgrade your chicken with items you can buy using your credits from WM bank. Invoking the group lists all upgrades available.")]
-        [Aliases("perks", "upgrade")]
+        [Aliases("perks", "upgrade", "u")]
         [UsageExample("!chicken upgrade")]
         public class UpgradeModule : TheGodfatherBaseModule
         {
@@ -31,19 +31,38 @@ namespace TheGodfather.Modules.Chickens
 
 
             [GroupCommand, Priority(1)]
-            public Task ExecuteGroupAsync(CommandContext ctx,
-                                         [Description("ID of the upgrade to buy.")] int id)
-                => BuyAsync(ctx, id);
+            public async Task ExecuteGroupAsync(CommandContext ctx,
+                                               [Description("ID of the upgrade to buy.")] int id)
+            {
+                var chicken = await Database.GetChickenInfoAsync(ctx.User.Id, ctx.Guild.Id)
+                    .ConfigureAwait(false);
+                if (chicken == null)
+                    throw new CommandFailedException($"You do not own a chicken in this guild! Use command {Formatter.InlineCode("chicken buy")} to buy a chicken (1000 credits).");
+
+                if (chicken.Stats.Upgrades.Any(u => u.Id == id))
+                    throw new CommandFailedException("Your chicken already has that upgrade!");
+
+                var upgrade = await Database.GetChickenUpgradeAsync(id)
+                    .ConfigureAwait(false);
+                if (upgrade == null)
+                    throw new CommandFailedException($"An upgrade with ID {Formatter.InlineCode(id.ToString())} does not exist! Use command {Formatter.InlineCode("chicken upgrades")} to view all available upgrades.");
+
+                if (!await ctx.AskYesNoQuestionAsync($"{ctx.User.Mention}, are you sure you want to buy an upgrade for {Formatter.Bold(upgrade.Price.ToString())} credits?"))
+                    return;
+
+                if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, ctx.Guild.Id, upgrade.Price).ConfigureAwait(false))
+                    throw new CommandFailedException($"You do not have enought credits to buy that upgrade!");
+
+                await Database.BuyChickenUpgradeAsync(ctx.User.Id, ctx.Guild.Id, upgrade)
+                    .ConfigureAwait(false);
+
+                await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} bought upgraded his chicken with {Formatter.Bold(upgrade.Name)} (+{upgrade.Modifier}) {upgrade.UpgradesStat.ToStatString()}!")
+                    .ConfigureAwait(false);
+            }
 
             [GroupCommand, Priority(0)]
-            public Task ExecuteGroupAsync(CommandContext ctx,
-                                         [RemainingText, Description("Upgrade to buy.")] string name = null)
-            {
-                if (string.IsNullOrWhiteSpace(name))
-                    return ListAsync(ctx);
-                else
-                    return BuyAsync(ctx, name);
-            }
+            public Task ExecuteGroupAsync(CommandContext ctx)
+                => ListAsync(ctx);
 
 
             #region COMMAND_CHICKEN_UPGRADE_LIST
@@ -64,19 +83,6 @@ namespace TheGodfather.Modules.Chickens
                 ).ConfigureAwait(false);
             }
             #endregion
-
-
-            private Task BuyAsync(CommandContext ctx,
-                                 [RemainingText, Description("Upgrade to buy.")] string name = null)
-            {
-                return Task.CompletedTask;
-            }
-
-            private Task BuyAsync(CommandContext ctx,
-                                 [Description("ID of the upgrade to buy.")] int id)
-            {
-                return Task.CompletedTask;
-            }
         }
     }
 }

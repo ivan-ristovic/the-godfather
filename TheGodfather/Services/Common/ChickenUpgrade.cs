@@ -1,20 +1,20 @@
 ﻿namespace TheGodfather.Services.Common
 {
-    public enum ChickenStat
+    public enum UpgradedStat
     {
         Strength = 0,
         Vitality = 1,
         MaxVitality = 2
     }
 
-    public static class ChickenStatExtensions
+    public static class UpgradedStatExtensions
     {
-        public static string ToStatString(this ChickenStat stat)
+        public static string ToStatString(this UpgradedStat stat)
         {
             switch (stat) {
-                case ChickenStat.Strength: return "STR";
-                case ChickenStat.Vitality: return "HP";
-                case ChickenStat.MaxVitality: return "MAXHP";
+                case UpgradedStat.Strength: return "STR";
+                case UpgradedStat.Vitality: return "HP";
+                case UpgradedStat.MaxVitality: return "MAXHP";
             }
 
             return "?";
@@ -27,7 +27,7 @@
         public int Id { get; set; }
         public string Name { get; set; }
         public long Price { get; set; }
-        public ChickenStat UpgradesStat { get; set; }
-        public short Modifier { get; set; }
+        public UpgradedStat UpgradesStat { get; set; }
+        public int Modifier { get; set; }
     }
 }
