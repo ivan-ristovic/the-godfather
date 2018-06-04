@@ -23,9 +23,9 @@ namespace TheGodfather.Services.Common
 
     public class ChickenStats
     {
-        public short Strength
+        public int Strength
         {
-            get => _strength;
+            get => _strength + (Upgrades?.Where(u => u.UpgradesStat == ChickenStat.Strength).Sum(u => u.Modifier) ?? 0);
             set {
                 if (value > 999)
                     _strength = 999;
@@ -35,9 +35,12 @@ namespace TheGodfather.Services.Common
                     _strength = value;
             }
         }
-        public short Vitality
+        public int Vitality
         {
-            get => _vitality;
+            get {
+                var total = _vitality + (Upgrades?.Where(u => u.UpgradesStat == ChickenStat.Vitality).Sum(u => u.Modifier) ?? 0);
+                return (total > MaxVitality) ? MaxVitality : total;
+            }
             set {
                 if (value > MaxVitality)
                     _vitality = MaxVitality;
@@ -47,10 +50,16 @@ namespace TheGodfather.Services.Common
                     _vitality = value;
             }
         }
-        public short MaxVitality { get; set; }
+        public int MaxVitality
+        {
+            get => _maxvitality + (Upgrades?.Where(u => u.UpgradesStat == ChickenStat.MaxVitality).Sum(u => u.Modifier) ?? 0);
+            set => _maxvitality = value;
+        }
+        public IReadOnlyList<ChickenUpgrade> Upgrades { get; internal set; }
 
-        private short _strength;
-        private short _vitality;
+        private int _strength;
+        private int _vitality;
+        private int _maxvitality;
 
 
         public override string ToString()
@@ -74,12 +83,11 @@ namespace TheGodfather.Services.Common
         public string Name { get; set; }
         public ChickenStats Stats { get; set; }
         public long SellPrice => PriceForAttribute(Stats.Strength);
-        public long TrainStrengthPrice => PriceForAttribute((short)(Stats.Strength + 3)) - PriceForAttribute(Stats.Strength);
-        public long TrainVitalityPrice => PriceForAttribute((short)(Stats.MaxVitality + 3)) - PriceForAttribute(Stats.MaxVitality);
-        public IReadOnlyList<ChickenUpgrade> Upgrades { get; internal set; }
+        public long TrainStrengthPrice => PriceForAttribute(Stats.Strength + 3) - PriceForAttribute(Stats.Strength);
+        public long TrainVitalityPrice => PriceForAttribute(Stats.MaxVitality + 3) - PriceForAttribute(Stats.MaxVitality);
 
 
-        private static long PriceForAttribute(short attr)
+        private static long PriceForAttribute(int attr)
             => (long)Math.Pow(10, 2 + attr / (double)50);
 
 
@@ -122,15 +130,15 @@ namespace TheGodfather.Services.Common
             return GFRandom.Generator.Next(100) < chance ? this : other;
         }
 
-        public short DetermineStrengthGain(Chicken loser)
+        public int DetermineStrengthGain(Chicken loser)
         {
-            short str1 = Stats.Strength;
-            short str2 = loser.Stats.Strength;
+            int str1 = Stats.Strength;
+            int str2 = loser.Stats.Strength;
 
             if (str1 > str2)
-                return (short)Math.Max(7 - (str1 - str2) / 5, 1);
+                return Math.Max(7 - (str1 - str2) / 5, 1);
             else if (str2 > str1)
-                return (short)((str2 - str1) / 5 + 5);
+                return (str2 - str1) / 5 + 5;
             else
                 return 5;
         }
@@ -145,7 +153,7 @@ namespace TheGodfather.Services.Common
             emb.AddField("Owner", owner.Mention, inline: true);
             emb.AddField("Credit value", SellPrice.ToString(), inline: true);
             emb.AddField("Stats", Stats.ToString());
-            emb.AddField("Upgrades", string.Join("\n", Upgrades.Select(u => u.Name)));
+            emb.AddField("Upgrades", string.Join("\n", Stats.Upgrades.Select(u => u.Name)));
 
             emb.WithFooter("Chickens will rule the world someday");
 

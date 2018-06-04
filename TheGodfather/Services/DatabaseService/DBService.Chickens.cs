@@ -172,11 +172,11 @@ namespace TheGodfather.Services
             } finally {
                 _sem.Release();
             }
-
+            
             if (chicken != null) {
                 var upgrades = await GetChickenUpgradesAsync(uid, gid)
                     .ConfigureAwait(false);
-                chicken.Upgrades = upgrades;
+                chicken.Stats.Upgrades = upgrades;
             }
 
             return chicken;

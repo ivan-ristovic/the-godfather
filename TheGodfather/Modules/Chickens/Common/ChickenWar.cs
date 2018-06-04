@@ -27,7 +27,7 @@ namespace TheGodfather.Modules.Chickens.Common
         public string Team2Name { get; } = "Team2";
         public ConcurrentQueue<Chicken> Team1 { get; } = new ConcurrentQueue<Chicken>();
         public ConcurrentQueue<Chicken> Team2 { get; } = new ConcurrentQueue<Chicken>();
-        public short Gain { get; private set; }
+        public int Gain { get; private set; }
 
 
         public ChickenWar(InteractivityExtension interactivity, DiscordChannel channel, string team1, string team2)
@@ -45,8 +45,8 @@ namespace TheGodfather.Modules.Chickens.Common
         {
             Started = true;
 
-            short str1 = (short)(Team1.Sum(c => c.Stats.Strength));
-            short str2 = (short)(Team2.Sum(c => c.Stats.Strength));
+            int str1 = Team1.Sum(c => c.Stats.Strength);
+            int str2 = Team2.Sum(c => c.Stats.Strength);
 
             var emb = new DiscordEmbedBuilder() {
                 Title = $"{StaticDiscordEmoji.Chicken} CHICKEN WAR STARTING {StaticDiscordEmoji.Chicken}",

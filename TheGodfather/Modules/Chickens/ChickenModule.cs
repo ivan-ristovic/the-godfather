@@ -76,7 +76,7 @@ namespace TheGodfather.Modules.Chickens
             var winner = chicken1.Fight(chicken2);
             winner.Owner = winner.OwnerId == ctx.User.Id ? ctx.User : user;
             var loser = winner == chicken1 ? chicken2 : chicken1;
-            short gain = winner.DetermineStrengthGain(loser);
+            int gain = winner.DetermineStrengthGain(loser);
             winner.Stats.Strength += gain;
             winner.Stats.Vitality -= gain;
             if (winner.Stats.Vitality == 0)
