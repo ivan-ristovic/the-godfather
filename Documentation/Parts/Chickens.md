@@ -419,6 +419,44 @@
 
 ---
 
+## Group: chicken upgrades
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Upgrade your chicken with items you can buy using your credits from WM bank. Invoking the group lists all upgrades available.*
+
+**Aliases:**
+`perks, upgrade, u`
+
+**Overload 1:**
+
+`[int]` : *ID of the upgrade to buy.*
+
+**Examples:**
+
+```
+!chicken upgrade
+```
+</p></details>
+
+---
+
+### chicken upgrades list
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*List all available upgrades.*
+
+**Aliases:**
+`ls, view`
+
+**Examples:**
+
+```
+!chicken upgrade list
+```
+</p></details>
+
+---
+
 ## Group: chicken war
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
