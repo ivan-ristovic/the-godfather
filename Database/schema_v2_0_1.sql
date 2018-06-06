@@ -2,8 +2,8 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 10.3
--- Dumped by pg_dump version 10.3
+-- Dumped from database version 10.4
+-- Dumped by pg_dump version 10.4
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -104,6 +104,50 @@ CREATE TABLE gf.blocked_users (
 
 
 --
+-- Name: chicken_active_upgrades; Type: TABLE; Schema: gf; Owner: -
+--
+
+CREATE TABLE gf.chicken_active_upgrades (
+    uid bigint NOT NULL,
+    gid bigint NOT NULL,
+    wid integer NOT NULL
+);
+
+
+--
+-- Name: chicken_upgrades; Type: TABLE; Schema: gf; Owner: -
+--
+
+CREATE TABLE gf.chicken_upgrades (
+    wid integer NOT NULL,
+    name character varying(32) NOT NULL,
+    price bigint DEFAULT 0 NOT NULL,
+    upgrades_stat smallint DEFAULT 0 NOT NULL,
+    modifier integer DEFAULT 0 NOT NULL
+);
+
+
+--
+-- Name: chicken_weapons_wid_seq; Type: SEQUENCE; Schema: gf; Owner: -
+--
+
+CREATE SEQUENCE gf.chicken_weapons_wid_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: chicken_weapons_wid_seq; Type: SEQUENCE OWNED BY; Schema: gf; Owner: -
+--
+
+ALTER SEQUENCE gf.chicken_weapons_wid_seq OWNED BY gf.chicken_upgrades.wid;
+
+
+--
 -- Name: chickens; Type: TABLE; Schema: gf; Owner: -
 --
 
@@ -111,10 +155,18 @@ CREATE TABLE gf.chickens (
     uid bigint NOT NULL,
     gid bigint NOT NULL,
     name character varying(32) NOT NULL,
-    strength smallint DEFAULT 50 NOT NULL,
-    vitality smallint DEFAULT 100 NOT NULL,
-    max_vitality smallint DEFAULT 100 NOT NULL
+    strength integer DEFAULT 50 NOT NULL,
+    vitality integer DEFAULT 100 NOT NULL,
+    max_vitality integer DEFAULT 100 NOT NULL
 );
+
+
+--
+-- Name: COLUMN chickens.max_vitality; Type: COMMENT; Schema: gf; Owner: -
+--
+
+COMMENT ON COLUMN gf.chickens.max_vitality IS '
+';
 
 
 --
@@ -531,6 +583,13 @@ ALTER SEQUENCE gf.text_reactions_id_seq OWNED BY gf.text_reactions.id;
 
 
 --
+-- Name: chicken_upgrades wid; Type: DEFAULT; Schema: gf; Owner: -
+--
+
+ALTER TABLE ONLY gf.chicken_upgrades ALTER COLUMN wid SET DEFAULT nextval('gf.chicken_weapons_wid_seq'::regclass);
+
+
+--
 -- Name: emoji_reactions id; Type: DEFAULT; Schema: gf; Owner: -
 --
 
@@ -646,6 +705,22 @@ ALTER TABLE ONLY gf.blocked_channels
 
 ALTER TABLE ONLY gf.blocked_users
     ADD CONSTRAINT blocked_users_pkey PRIMARY KEY (uid);
+
+
+--
+-- Name: chicken_active_upgrades chicken_active_upgrades_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
+--
+
+ALTER TABLE ONLY gf.chicken_active_upgrades
+    ADD CONSTRAINT chicken_active_upgrades_pkey PRIMARY KEY (uid, gid, wid);
+
+
+--
+-- Name: chicken_upgrades chicken_weapons_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
+--
+
+ALTER TABLE ONLY gf.chicken_upgrades
+    ADD CONSTRAINT chicken_weapons_pkey PRIMARY KEY (wid);
 
 
 --
@@ -928,6 +1003,22 @@ CREATE INDEX trigger_index ON gf.text_reactions USING btree (trigger);
 
 ALTER TABLE ONLY gf.automatic_roles
     ADD CONSTRAINT ar_fkey FOREIGN KEY (gid) REFERENCES gf.guild_cfg(gid) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: chicken_active_upgrades chicken_upgrades_uid_fkey; Type: FK CONSTRAINT; Schema: gf; Owner: -
+--
+
+ALTER TABLE ONLY gf.chicken_active_upgrades
+    ADD CONSTRAINT chicken_upgrades_uid_fkey FOREIGN KEY (uid, gid) REFERENCES gf.chickens(uid, gid) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: chicken_active_upgrades chicken_upgrades_wid_fkey; Type: FK CONSTRAINT; Schema: gf; Owner: -
+--
+
+ALTER TABLE ONLY gf.chicken_active_upgrades
+    ADD CONSTRAINT chicken_upgrades_wid_fkey FOREIGN KEY (wid) REFERENCES gf.chicken_upgrades(wid) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
