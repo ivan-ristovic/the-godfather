@@ -23,9 +23,22 @@ namespace TheGodfather.Services.Common
 
     public class ChickenStats
     {
-        public int Strength
+        public int TotalStrength
+            => BareStrength + (Upgrades?.Where(u => u.UpgradesStat == UpgradedStat.Strength).Sum(u => u.Modifier) ?? 0);
+        public int TotalVitality
         {
-            get => _strength + (Upgrades?.Where(u => u.UpgradesStat == UpgradedStat.Strength).Sum(u => u.Modifier) ?? 0);
+            get {
+                var total = BareVitality + (Upgrades?.Where(u => u.UpgradesStat == UpgradedStat.Vitality).Sum(u => u.Modifier) ?? 0);
+                return (total > TotalMaxVitality) ? TotalMaxVitality : total;
+            }
+        }
+        public int TotalMaxVitality
+        {
+            get => BareMaxVitality + (Upgrades?.Where(u => u.UpgradesStat == UpgradedStat.MaxVitality).Sum(u => u.Modifier) ?? 0);
+        }
+        public int BareStrength
+        {
+            get => _strength;
             set {
                 if (value > 999)
                     _strength = 999;
@@ -35,25 +48,25 @@ namespace TheGodfather.Services.Common
                     _strength = value;
             }
         }
-        public int Vitality
-        {
-            get {
-                var total = _vitality + (Upgrades?.Where(u => u.UpgradesStat == UpgradedStat.Vitality).Sum(u => u.Modifier) ?? 0);
-                return (total > MaxVitality) ? MaxVitality : total;
-            }
+        public int BareVitality {
+            get => _vitality;
             set {
-                if (value > MaxVitality)
-                    _vitality = MaxVitality;
+                if (value > BareMaxVitality)
+                    _vitality = BareMaxVitality;
                 else if (value < 0)
                     _vitality = 0;
                 else
                     _vitality = value;
             }
         }
-        public int MaxVitality
+        public int BareMaxVitality
         {
-            get => _maxvitality + (Upgrades?.Where(u => u.UpgradesStat == UpgradedStat.MaxVitality).Sum(u => u.Modifier) ?? 0);
-            set => _maxvitality = value;
+            get => _maxvitality;
+            set {
+                _maxvitality = value;
+                if (_maxvitality < _vitality)
+                    _vitality = _maxvitality;
+            }
         }
         public IReadOnlyList<ChickenUpgrade> Upgrades { get; internal set; }
 
@@ -63,28 +76,32 @@ namespace TheGodfather.Services.Common
 
 
         public override string ToString()
-            => $"STR: {Formatter.Bold(Strength.ToString())} | VIT: {Formatter.Bold(Vitality.ToString())} / {Formatter.Bold(MaxVitality.ToString())}";
+            => $"STR: {Formatter.Bold(TotalStrength.ToString())} (bare: {Formatter.Bold(BareStrength.ToString())})\n" +
+               $"VIT: {Formatter.Bold(TotalVitality.ToString())} / {Formatter.Bold(TotalMaxVitality.ToString())}";
+
+        public string ToShortString()
+            => $"STR: {Formatter.Bold(TotalStrength.ToString())} VIT: {Formatter.Bold(TotalVitality.ToString())}";
     }
 
     public class Chicken
     {
         public static readonly ImmutableDictionary<ChickenType, ChickenStats> StartingStats = new Dictionary<ChickenType, ChickenStats>() {
-            { ChickenType.Default, new ChickenStats() { Strength = 50, MaxVitality = 100, Vitality = 100 } },
-            { ChickenType.WellFed, new ChickenStats() { Strength = 100, MaxVitality = 150, Vitality = 150 } },
-            { ChickenType.Trained, new ChickenStats() { Strength = 150, MaxVitality = 200, Vitality = 200 } },
-            { ChickenType.SteroidEmpowered, new ChickenStats() { Strength = 200, MaxVitality = 250, Vitality = 250 } },
-            { ChickenType.Alien, new ChickenStats() { Strength = 250, MaxVitality = 300, Vitality = 300 } },
+            { ChickenType.Default, new ChickenStats() { BareStrength = 50, BareMaxVitality = 100, BareVitality = 100 } },
+            { ChickenType.WellFed, new ChickenStats() { BareStrength = 100, BareMaxVitality = 150, BareVitality = 150 } },
+            { ChickenType.Trained, new ChickenStats() { BareStrength = 150, BareMaxVitality = 200, BareVitality = 200 } },
+            { ChickenType.SteroidEmpowered, new ChickenStats() { BareStrength = 200, BareMaxVitality = 250, BareVitality = 250 } },
+            { ChickenType.Alien, new ChickenStats() { BareStrength = 250, BareMaxVitality = 300, BareVitality = 300 } },
         }.ToImmutableDictionary();
         public static long Price(ChickenType type)
-            => PriceForAttribute(StartingStats[type].Strength);
+            => PriceForAttribute(StartingStats[type].BareStrength);
 
         public DiscordUser Owner { get; set; }
         public ulong OwnerId { get; set; }
         public string Name { get; set; }
         public ChickenStats Stats { get; set; }
-        public long SellPrice => PriceForAttribute(Stats.Strength);
-        public long TrainStrengthPrice => PriceForAttribute(Stats.Strength + 3) - PriceForAttribute(Stats.Strength);
-        public long TrainVitalityPrice => PriceForAttribute(Stats.MaxVitality + 3) - PriceForAttribute(Stats.MaxVitality);
+        public long SellPrice => PriceForAttribute(Stats.BareStrength);
+        public long TrainStrengthPrice => PriceForAttribute(Stats.BareStrength + 3) - PriceForAttribute(Stats.BareStrength);
+        public long TrainVitalityPrice => PriceForAttribute(Stats.BareMaxVitality + 3) - PriceForAttribute(Stats.BareMaxVitality);
 
 
         private static long PriceForAttribute(int attr)
@@ -94,10 +111,10 @@ namespace TheGodfather.Services.Common
         public bool TrainStrength()
         {
             if (GFRandom.Generator.GetBool()) {
-                Stats.Strength += 5;
+                Stats.BareStrength += 5;
                 return true;
             } else {
-                Stats.Strength -= 3;
+                Stats.BareStrength -= 3;
                 return false;
             }
         }
@@ -105,21 +122,19 @@ namespace TheGodfather.Services.Common
         public bool TrainVitality()
         {
             if (GFRandom.Generator.GetBool()) {
-                Stats.MaxVitality += 4;
+                Stats.BareMaxVitality += 4;
                 return true;
             } else {
-                Stats.MaxVitality -= 3;
-                if (Stats.Vitality > Stats.MaxVitality)
-                    Stats.Vitality = Stats.MaxVitality;
+                Stats.BareMaxVitality -= 3;
                 return false;
             }
         }
 
         public Chicken Fight(Chicken other)
         {
-            int chance = 50 + Stats.Strength - other.Stats.Strength;
+            int chance = 50 + Stats.TotalStrength - other.Stats.TotalStrength;
 
-            if (Stats.Strength > other.Stats.Strength) {
+            if (Stats.TotalStrength > other.Stats.TotalStrength) {
                 if (chance > 99)
                     chance = 99;
             } else {
@@ -132,8 +147,8 @@ namespace TheGodfather.Services.Common
 
         public int DetermineStrengthGain(Chicken loser)
         {
-            int str1 = Stats.Strength;
-            int str2 = loser.Stats.Strength;
+            int str1 = Stats.TotalStrength;
+            int str2 = loser.Stats.TotalStrength;
 
             if (str1 > str2)
                 return Math.Max(7 - (str1 - str2) / 5, 1);
@@ -152,10 +167,11 @@ namespace TheGodfather.Services.Common
 
             emb.AddField("Owner", owner.Mention, inline: true);
             emb.AddField("Credit value", SellPrice.ToString(), inline: true);
-            emb.AddField("Stats", Stats.ToString());
-            emb.AddField("Upgrades", string.Join("\n", Stats.Upgrades.Select(u => u.Name)));
+            emb.AddField("Stats", Stats.ToString(), inline: true);
+            if (Stats.Upgrades.Any())
+                emb.AddField("Upgrades", string.Join(", ", Stats.Upgrades.Select(u => u.Name)), inline: true);
 
-            emb.WithFooter("Chickens will rule the world someday");
+            emb.WithFooter("Chickens will rule the world someday", owner.AvatarUrl);
 
             return emb.Build();
         }

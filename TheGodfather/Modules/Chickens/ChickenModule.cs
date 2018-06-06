@@ -57,7 +57,7 @@ namespace TheGodfather.Modules.Chickens
             var chicken1 = await Database.GetChickenInfoAsync(ctx.User.Id, ctx.Guild.Id)
                 .ConfigureAwait(false);
             if (chicken1 != null) {
-                if (chicken1.Stats.Vitality < 25)
+                if (chicken1.Stats.TotalVitality < 25)
                     throw new CommandFailedException($"{ctx.User.Mention}, your chicken is too weak to start a fight with another chicken! Heal it using {Formatter.InlineCode("chicken heal")} command.");
             } else {
                 throw new CommandFailedException("You do not own a chicken!");
@@ -68,24 +68,24 @@ namespace TheGodfather.Modules.Chickens
             if (chicken2 == null)
                 throw new CommandFailedException("The specified user does not own a chicken!");
 
-            if (Math.Abs(chicken1.Stats.Strength - chicken2.Stats.Strength) > 50)
-                throw new CommandFailedException("The strength difference is too big (50 max)! Please find a more suitable opponent.");
+            if (Math.Abs(chicken1.Stats.BareStrength - chicken2.Stats.BareStrength) > 50)
+                throw new CommandFailedException("The bare strength difference is too big (50 max)! Please find a more suitable opponent.");
 
-            string header = $"{Formatter.Bold(chicken1.Name)} ({chicken1.Stats.ToString()}) {StaticDiscordEmoji.DuelSwords} {Formatter.Bold(chicken2.Name)} ({chicken2.Stats.ToString()}) {StaticDiscordEmoji.Chicken}\n\n";
+            string header = $"{Formatter.Bold(chicken1.Name)} ({chicken1.Stats.ToShortString()}) {StaticDiscordEmoji.DuelSwords} {Formatter.Bold(chicken2.Name)} ({chicken2.Stats.ToShortString()}) {StaticDiscordEmoji.Chicken}\n\n";
 
             var winner = chicken1.Fight(chicken2);
             winner.Owner = winner.OwnerId == ctx.User.Id ? ctx.User : user;
             var loser = winner == chicken1 ? chicken2 : chicken1;
             int gain = winner.DetermineStrengthGain(loser);
-            winner.Stats.Strength += gain;
-            winner.Stats.Vitality -= gain;
-            if (winner.Stats.Vitality == 0)
-                winner.Stats.Vitality = 1;
-            loser.Stats.Vitality -= 50;
+            winner.Stats.BareStrength += gain;
+            winner.Stats.BareMaxVitality -= gain;
+            if (winner.Stats.TotalVitality == 0)
+                winner.Stats.BareVitality = 1;
+            loser.Stats.BareVitality -= 50;
 
             await Database.ModifyChickenAsync(winner, ctx.Guild.Id)
                 .ConfigureAwait(false);
-            if (loser.Stats.Vitality > 0)
+            if (loser.Stats.TotalVitality > 0)
                 await Database.ModifyChickenAsync(loser, ctx.Guild.Id).ConfigureAwait(false);
             else
                 await Database.RemoveChickenAsync(loser.OwnerId, ctx.Guild.Id).ConfigureAwait(false);
@@ -96,9 +96,9 @@ namespace TheGodfather.Modules.Chickens
             await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken,
                 header +
                 $"{StaticDiscordEmoji.Trophy} Winner: {Formatter.Bold(winner.Name)}\n\n" +
-                $"{Formatter.Bold(winner.Name)} gained {Formatter.Bold(gain.ToString())} strength!\n\n" +
-                (loser.Stats.Vitality == 0 ? $"{Formatter.Bold(loser.Name)} died in the battle!\n\n" : "") +
-                $"{winner.Owner.Mention} won {gain * 200} credits."
+                $"{Formatter.Bold(winner.Name)} gained {Formatter.Bold(gain.ToString())} strength!\n" +
+                (loser.Stats.TotalVitality > 0 ? $"{Formatter.Bold(loser.Name)} lost {Formatter.Bold("50")} HP!" : $"{Formatter.Bold(loser.Name)} died in the battle!") +
+                $"\n\n{winner.Owner.Mention} won {gain * 200} credits."
             ).ConfigureAwait(false);
         }
         #endregion
@@ -144,7 +144,7 @@ namespace TheGodfather.Modules.Chickens
             if (chicken == null)
                 throw new CommandFailedException("You do not own a chicken!");
 
-            chicken.Stats.Vitality += 100;
+            chicken.Stats.BareVitality += 100;
             await Database.ModifyChickenAsync(chicken, ctx.Guild.Id)
                 .ConfigureAwait(false);
 
@@ -261,7 +261,7 @@ namespace TheGodfather.Modules.Chickens
             await ctx.SendPaginatedCollectionAsync(
                 "Strongest chickens in this guild:",
                 chickens,
-                c => $"{Formatter.Bold(c.Name)} | {c.Owner.Mention} | {c.Stats.Strength} STR"
+                c => $"{Formatter.Bold(c.Name)} | {c.Owner.Mention} | {c.Stats.TotalStrength} STR"
             ).ConfigureAwait(false);
         }
         #endregion
@@ -290,7 +290,7 @@ namespace TheGodfather.Modules.Chickens
             await ctx.SendPaginatedCollectionAsync(
                 "Strongest chickens (globally):",
                 chickens,
-                c => $"{Formatter.Bold(c.Name)} | {c.Owner.Mention} | {c.Stats.Strength} STR"
+                c => $"{Formatter.Bold(c.Name)} | {c.Owner.Mention} | {c.Stats.TotalStrength} STR"
             ).ConfigureAwait(false);
         }
         #endregion

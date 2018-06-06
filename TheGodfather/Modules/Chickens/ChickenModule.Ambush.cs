@@ -56,7 +56,7 @@ namespace TheGodfather.Modules.Chickens
                     .ConfigureAwait(false);
                 if (ambusher == null)
                     throw new CommandFailedException("You do not own a chicken!");
-                if (ambusher.Stats.Strength > ambushed.Stats.Strength)
+                if (ambusher.Stats.BareStrength > ambushed.Stats.BareStrength)
                     throw new CommandFailedException("You cannot start an ambush against a weaker chicken!");
 
                 var ambush = new ChickenWar(ctx.Client.GetInteractivity(), ctx.Channel, "Ambushed chickens", "Evil ambushers");
@@ -77,16 +77,16 @@ namespace TheGodfather.Modules.Chickens
                         var sb = new StringBuilder();
 
                         foreach (var chicken in ambush.Team1Won ? ambush.Team1 : ambush.Team2) {
-                            chicken.Stats.Strength += 5;
-                            chicken.Stats.Vitality -= 10;
+                            chicken.Stats.BareStrength += 5;
+                            chicken.Stats.BareVitality -= 10;
                             await Database.ModifyChickenAsync(chicken, ctx.Guild.Id)
                                 .ConfigureAwait(false);
                             sb.AppendLine($"{Formatter.Bold(chicken.Name)} gained 5 STR and lost 10 HP!");
                         }
 
                         foreach (var chicken in ambush.Team1Won ? ambush.Team2 : ambush.Team1) {
-                            chicken.Stats.Vitality -= 50;
-                            if (chicken.Stats.Vitality > 0) {
+                            chicken.Stats.BareVitality -= 50;
+                            if (chicken.Stats.TotalVitality > 0) {
                                 await Database.ModifyChickenAsync(chicken, ctx.Guild.Id)
                                     .ConfigureAwait(false);
                                 sb.AppendLine($"{Formatter.Bold(chicken.Name)} lost 50 HP!");
@@ -121,7 +121,7 @@ namespace TheGodfather.Modules.Chickens
                 if (chicken == null)
                     throw new CommandFailedException("You do not own a chicken!");
                 
-                if (chicken.Stats.Vitality < 25)
+                if (chicken.Stats.TotalVitality < 25)
                     throw new CommandFailedException($"{ctx.User.Mention}, your chicken is too weak for that action! Heal it using {Formatter.BlockCode("chicken heal")} command.");
 
                 if (ambush.Started)
@@ -150,7 +150,7 @@ namespace TheGodfather.Modules.Chickens
                 if (chicken == null)
                     throw new CommandFailedException("You do not own a chicken!");
 
-                if (chicken.Stats.Vitality < 25)
+                if (chicken.Stats.TotalVitality < 25)
                     throw new CommandFailedException($"{ctx.User.Mention}, your chicken is too weak for that action! Heal it using {Formatter.BlockCode("chicken heal")} command.");
 
                 if (ambush.Started)

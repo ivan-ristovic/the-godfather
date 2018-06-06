@@ -47,7 +47,7 @@ namespace TheGodfather.Modules.Chickens
                 if (upgrade == null)
                     throw new CommandFailedException($"An upgrade with ID {Formatter.InlineCode(id.ToString())} does not exist! Use command {Formatter.InlineCode("chicken upgrades")} to view all available upgrades.");
 
-                if (!await ctx.AskYesNoQuestionAsync($"{ctx.User.Mention}, are you sure you want to buy an upgrade for {Formatter.Bold(upgrade.Price.ToString())} credits?"))
+                if (!await ctx.AskYesNoQuestionAsync($"{ctx.User.Mention}, are you sure you want to buy {Formatter.Bold(upgrade.Name)} for {Formatter.Bold(upgrade.Price.ToString())} credits?"))
                     return;
 
                 if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, ctx.Guild.Id, upgrade.Price).ConfigureAwait(false))
