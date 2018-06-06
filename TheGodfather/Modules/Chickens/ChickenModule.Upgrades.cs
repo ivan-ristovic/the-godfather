@@ -7,6 +7,7 @@ using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
+using TheGodfather.Modules.Chickens.Common;
 using TheGodfather.Services;
 using TheGodfather.Services.Common;
 
@@ -34,6 +35,9 @@ namespace TheGodfather.Modules.Chickens
             public async Task ExecuteGroupAsync(CommandContext ctx,
                                                [Description("ID of the upgrade to buy.")] int id)
             {
+                if (ChannelEvent.GetEventInChannel(ctx.Channel.Id) is ChickenWar)
+                    throw new CommandFailedException("There is a chicken war running in this channel. No sells are allowed before the war finishes.");
+
                 var chicken = await Database.GetChickenInfoAsync(ctx.User.Id, ctx.Guild.Id)
                     .ConfigureAwait(false);
                 if (chicken == null)
