@@ -99,7 +99,7 @@ namespace TheGodfather.Modules.Currency
 
             await Database.OpenBankAccountForUserAsync(ctx.User.Id, ctx.Guild.Id)
                 .ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync($"Account opened for you, {ctx.User.Mention}! Since WM bank is so generous, you get 25 credits for free.", ":moneybag:")
+            await ctx.RespondWithIconEmbedAsync($"Account opened for you, {ctx.User.Mention}! Since WM bank is so generous, you get 10000 credits for free.", ":moneybag:")
                 .ConfigureAwait(false);
         }
         #endregion

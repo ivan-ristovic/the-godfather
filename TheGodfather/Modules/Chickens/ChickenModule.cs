@@ -136,7 +136,7 @@ namespace TheGodfather.Modules.Chickens
         [UsageExample("!chicken heal")]
         public async Task HealAsync(CommandContext ctx)
         {
-            if (ChannelEvent.GetEventInChannel(ctx.Channel.Id) is ChickenWar ambush)
+            if (ChannelEvent.GetEventInChannel(ctx.Channel.Id) is ChickenWar)
                 throw new CommandFailedException("There is a chicken war running in this channel. You are not allowed to heal your chicken before the war finishes.");
 
             var chicken = await Database.GetChickenInfoAsync(ctx.User.Id, ctx.Guild.Id)
