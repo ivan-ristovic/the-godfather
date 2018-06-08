@@ -466,7 +466,7 @@
     <Compile Include="Modules\Games\GamesModule.TypingRace.cs" />
     <Compile Include="Modules\Misc\ShopModule.cs" />
     <Compile Include="Modules\Music\Common\MusicPlayer.cs" />
-    <Compile Include="Modules\Owner\OwnerModule.Birthdays.cs" />
+    <Compile Include="Modules\Misc\Birthdays.cs" />
     <Compile Include="Modules\Owner\OwnerModule.PriviledgedUsers.cs" />
     <Compile Include="Modules\Polls\ReactionsPollModule.cs" />
     <Compile Include="Modules\Reactions\Common\EmojiReaction.cs" />
