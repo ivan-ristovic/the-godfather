@@ -18,7 +18,8 @@ namespace TheGodfather.Services
 
             await _sem.WaitAsync();
             try {
-                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
+                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "SELECT * FROM gf.msgcount;";
 
                     using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
@@ -37,7 +38,8 @@ namespace TheGodfather.Services
         {
             await _sem.WaitAsync();
             try {
-                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
+                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "INSERT INTO gf.msgcount VALUES (@uid, @count) ON CONFLICT (uid) DO UPDATE SET count = EXCLUDED.count;";
                     cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
                     cmd.Parameters.AddWithValue("count", NpgsqlDbType.Bigint, (long)count);

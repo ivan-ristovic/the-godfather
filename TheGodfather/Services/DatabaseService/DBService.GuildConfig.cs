@@ -20,7 +20,8 @@ namespace TheGodfather.Services
 
             await _sem.WaitAsync();
             try {
-                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
+                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "SELECT * FROM gf.guild_cfg;";
 
                     using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
@@ -51,7 +52,8 @@ namespace TheGodfather.Services
         {
             await _sem.WaitAsync();
             try {
-                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
+                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "INSERT INTO gf.guild_cfg VALUES (@gid) ON CONFLICT DO NOTHING;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
 
@@ -66,7 +68,8 @@ namespace TheGodfather.Services
         {
             await _sem.WaitAsync();
             try {
-                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
+                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "DELETE FROM gf.guild_cfg WHERE gid = @gid;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
 
@@ -82,7 +85,8 @@ namespace TheGodfather.Services
         {
             await _sem.WaitAsync();
             try {
-                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
+                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "UPDATE gf.guild_cfg SET prefix = @prefix WHERE gid = @gid;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
                     cmd.Parameters.AddWithValue("prefix", NpgsqlDbType.Varchar, prefix);
@@ -98,7 +102,8 @@ namespace TheGodfather.Services
         {
             await _sem.WaitAsync();
             try {
-                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
+                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "UPDATE gf.guild_cfg SET prefix = NULL WHERE gid = @gid;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
 
@@ -114,7 +119,8 @@ namespace TheGodfather.Services
         {
             await _sem.WaitAsync();
             try {
-                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
+                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "UPDATE gf.guild_cfg SET (prefix, suggestions_enabled, log_cid, linkfilter_enabled, linkfilter_invites, linkfilter_booters, linkfilter_disturbing, linkfilter_iploggers, linkfilter_shorteners) = (@prefix, @suggestions_enabled, @log_cid, @linkfilter_enabled, @linkfilter_invites, @linkfilter_booters, @linkfilter_disturbing, @linkfilter_iploggers, @linkfilter_shorteners) WHERE gid = @gid;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
                     if (string.IsNullOrWhiteSpace(cfg.Prefix))
@@ -144,7 +150,8 @@ namespace TheGodfather.Services
 
             await _sem.WaitAsync();
             try {
-                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
+                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "SELECT welcome_cid FROM gf.guild_cfg WHERE gid = @gid LIMIT 1;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
 
@@ -165,7 +172,8 @@ namespace TheGodfather.Services
 
             await _sem.WaitAsync();
             try {
-                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
+                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "SELECT leave_cid FROM gf.guild_cfg WHERE gid = @gid LIMIT 1;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
 
@@ -186,7 +194,8 @@ namespace TheGodfather.Services
 
             await _sem.WaitAsync();
             try {
-                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
+                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "SELECT leave_msg FROM gf.guild_cfg WHERE gid = @gid LIMIT 1;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
 
@@ -207,7 +216,8 @@ namespace TheGodfather.Services
 
             await _sem.WaitAsync();
             try {
-                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
+                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "SELECT welcome_msg FROM gf.guild_cfg WHERE gid = @gid LIMIT 1;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
 
@@ -238,7 +248,8 @@ namespace TheGodfather.Services
         {
             await _sem.WaitAsync();
             try {
-                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
+                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "UPDATE gf.guild_cfg SET welcome_cid = @cid WHERE gid = @gid;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
                     cmd.Parameters.AddWithValue("cid", NpgsqlDbType.Bigint, cid);
@@ -254,7 +265,8 @@ namespace TheGodfather.Services
         {
             await _sem.WaitAsync();
             try {
-                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
+                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "UPDATE gf.guild_cfg SET welcome_msg = @message WHERE gid = @gid;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
                     if (string.IsNullOrWhiteSpace(message))
@@ -273,7 +285,8 @@ namespace TheGodfather.Services
         {
             await _sem.WaitAsync();
             try {
-                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
+                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "UPDATE gf.guild_cfg SET leave_cid = @cid WHERE gid = @gid;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
                     cmd.Parameters.AddWithValue("cid", NpgsqlDbType.Bigint, cid);
@@ -289,7 +302,8 @@ namespace TheGodfather.Services
         {
             await _sem.WaitAsync();
             try {
-                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
+                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "UPDATE gf.guild_cfg SET leave_msg = @message WHERE gid = @gid;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
                     if (string.IsNullOrWhiteSpace(message))

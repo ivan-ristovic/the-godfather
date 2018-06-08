@@ -17,7 +17,8 @@ namespace TheGodfather.Services
         {
             await _sem.WaitAsync();
             try {
-                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
+                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "INSERT INTO gf.items (gid, name, price) VALUES (@gid, @name, @price) ON CONFLICT DO NOTHING;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
                     cmd.Parameters.AddWithValue("name", NpgsqlDbType.Varchar, name);
@@ -36,7 +37,8 @@ namespace TheGodfather.Services
 
             await _sem.WaitAsync();
             try {
-                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
+                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "SELECT * FROM gf.items ORDER BY gid;";
 
                     using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
@@ -63,7 +65,8 @@ namespace TheGodfather.Services
 
             await _sem.WaitAsync();
             try {
-                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
+                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "SELECT * FROM gf.items WHERE id = @id AND gid = @gid LIMIT 1;";
                     cmd.Parameters.AddWithValue("id", NpgsqlDbType.Integer, id);
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
@@ -92,7 +95,8 @@ namespace TheGodfather.Services
 
             await _sem.WaitAsync();
             try {
-                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
+                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "SELECT * FROM gf.items WHERE gid = @gid ORDER BY price DESC;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
 
@@ -120,7 +124,8 @@ namespace TheGodfather.Services
 
             await _sem.WaitAsync();
             try {
-                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
+                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "SELECT items.id, gid, name, price FROM gf.purchases JOIN gf.items ON purchases.id = items.id WHERE uid = @uid ORDER BY price DESC;";
                     cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, uid);
 
@@ -146,7 +151,8 @@ namespace TheGodfather.Services
         {
             await _sem.WaitAsync();
             try {
-                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
+                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "SELECT * FROM gf.purchases WHERE id = @id AND uid = @uid LIMIT 1;";
                     cmd.Parameters.AddWithValue("id", NpgsqlDbType.Integer, id);
                     cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, uid);
@@ -166,7 +172,8 @@ namespace TheGodfather.Services
         {
             await _sem.WaitAsync();
             try {
-                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
+                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "INSERT INTO gf.purchases VALUES (@id, @uid) ON CONFLICT DO NOTHING;";
                     cmd.Parameters.AddWithValue("id", NpgsqlDbType.Integer, id);
                     cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, uid);
@@ -182,7 +189,8 @@ namespace TheGodfather.Services
         {
             await _sem.WaitAsync();
             try {
-                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
+                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "DELETE FROM gf.items WHERE gid = @gid AND name = @name;";
                     cmd.Parameters.AddWithValue("name", NpgsqlDbType.Varchar, name);
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
@@ -198,7 +206,8 @@ namespace TheGodfather.Services
         {
             await _sem.WaitAsync();
             try {
-                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
+                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "DELETE FROM gf.items WHERE gid = @gid AND id = ANY(:ids);";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
                     cmd.Parameters.Add("ids", NpgsqlDbType.Array | NpgsqlDbType.Integer).Value = ids;
@@ -214,7 +223,8 @@ namespace TheGodfather.Services
         {
             await _sem.WaitAsync();
             try {
-                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
+                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "DELETE FROM gf.purchases WHERE id = @id AND uid = @uid;";
                     cmd.Parameters.AddWithValue("id", NpgsqlDbType.Integer, id);
                     cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, uid);

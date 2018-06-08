@@ -20,7 +20,8 @@ namespace TheGodfather.Services
 
             await _sem.WaitAsync();
             try {
-                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
+                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "INSERT INTO gf.saved_tasks(type, cid, uid, gid, execution_time, comment) VALUES (@type, @cid, @uid, @gid, @execution_time, @comment) RETURNING id;";
                     cmd.Parameters.AddWithValue("type", NpgsqlDbType.Smallint, task.Type);
                     cmd.Parameters.AddWithValue("cid", NpgsqlDbType.Bigint, task.ChannelId);
@@ -49,7 +50,8 @@ namespace TheGodfather.Services
 
             await _sem.WaitAsync();
             try {
-                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
+                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "SELECT * FROM gf.saved_tasks;";
 
                     using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
@@ -79,7 +81,8 @@ namespace TheGodfather.Services
         {
             await _sem.WaitAsync();
             try {
-                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
+                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "DELETE FROM gf.saved_tasks WHERE id = @id;";
                     cmd.Parameters.AddWithValue("id", NpgsqlDbType.Integer, id);
 

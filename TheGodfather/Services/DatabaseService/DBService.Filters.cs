@@ -19,7 +19,8 @@ namespace TheGodfather.Services
 
             await _sem.WaitAsync();
             try {
-                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
+                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "SELECT * FROM gf.filters;";
 
                     using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
@@ -40,7 +41,8 @@ namespace TheGodfather.Services
 
             await _sem.WaitAsync();
             try {
-                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
+                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "SELECT * FROM gf.filters WHERE gid = @gid;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
 
@@ -62,7 +64,8 @@ namespace TheGodfather.Services
 
             await _sem.WaitAsync();
             try {
-                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
+                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "INSERT INTO gf.filters(gid, filter) VALUES (@gid, @filter) RETURNING id;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
                     cmd.Parameters.AddWithValue("filter", NpgsqlDbType.Varchar, filter);
@@ -82,7 +85,8 @@ namespace TheGodfather.Services
         {
             await _sem.WaitAsync();
             try {
-                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
+                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "DELETE FROM gf.filters WHERE gid = @gid AND filter = @filter;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
                     cmd.Parameters.AddWithValue("filter", NpgsqlDbType.Varchar, filter);
@@ -98,7 +102,8 @@ namespace TheGodfather.Services
         {
             await _sem.WaitAsync();
             try {
-                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
+                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "DELETE FROM gf.filters WHERE gid = @gid AND id = @id;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
                     cmd.Parameters.AddWithValue("id", NpgsqlDbType.Integer, id);
@@ -114,7 +119,8 @@ namespace TheGodfather.Services
         {
             await _sem.WaitAsync();
             try {
-                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
+                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "DELETE FROM gf.filters WHERE gid = @gid;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
 

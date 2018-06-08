@@ -20,7 +20,8 @@ namespace TheGodfather.Services
 
             await _sem.WaitAsync();
             try {
-                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
+                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "SELECT * FROM gf.feeds JOIN gf.subscriptions ON feeds.id = subscriptions.id;";
 
                     using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
@@ -56,7 +57,8 @@ namespace TheGodfather.Services
 
             await _sem.WaitAsync();
             try {
-                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
+                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "SELECT feeds.id, qname, url FROM gf.feeds JOIN gf.subscriptions ON feeds.id = subscriptions.id WHERE cid = @cid;";
                     cmd.Parameters.AddWithValue("cid", NpgsqlDbType.Bigint, cid);
 
@@ -125,7 +127,8 @@ namespace TheGodfather.Services
         {
             await _sem.WaitAsync();
             try {
-                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
+                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "DELETE FROM gf.feeds WHERE id = @fid;";
                     cmd.Parameters.AddWithValue("fid", NpgsqlDbType.Integer, id);
 
@@ -140,7 +143,8 @@ namespace TheGodfather.Services
         {
             await _sem.WaitAsync();
             try {
-                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
+                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "DELETE FROM gf.subscriptions WHERE cid = @cid AND id = @id;";
                     cmd.Parameters.AddWithValue("cid", NpgsqlDbType.Bigint, cid);
                     cmd.Parameters.AddWithValue("id", NpgsqlDbType.Integer, id);
@@ -156,7 +160,8 @@ namespace TheGodfather.Services
         {
             await _sem.WaitAsync();
             try {
-                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
+                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "DELETE FROM gf.subscriptions WHERE cid = @cid AND qname = @qname;";
                     cmd.Parameters.AddWithValue("cid", NpgsqlDbType.Bigint, cid);
                     cmd.Parameters.AddWithValue("qname", NpgsqlDbType.Varchar, qname);
@@ -172,7 +177,8 @@ namespace TheGodfather.Services
         {
             await _sem.WaitAsync();
             try {
-                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
+                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "DELETE FROM gf.subscriptions WHERE cid = @cid AND id = (SELECT id FROM gf.feeds WHERE url = @url LIMIT 1);";
                     cmd.Parameters.AddWithValue("url", NpgsqlDbType.Text, url);
                     cmd.Parameters.AddWithValue("cid", NpgsqlDbType.Bigint, cid);
@@ -188,7 +194,8 @@ namespace TheGodfather.Services
         {
             await _sem.WaitAsync();
             try {
-                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
+                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "UPDATE gf.feeds SET savedurl = @newurl WHERE id = @id;";
                     cmd.Parameters.AddWithValue("id", NpgsqlDbType.Integer, id);
                     cmd.Parameters.AddWithValue("newurl", NpgsqlDbType.Text, newurl);

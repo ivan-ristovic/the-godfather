@@ -47,12 +47,11 @@ namespace TheGodfather.Services
         }
 
 
-        private async Task<NpgsqlCommand> OpenConnectionAndCreateCommandAsync()
+        private async Task<NpgsqlConnection> OpenConnectionAndCreateCommandAsync()
         {
             var con = new NpgsqlConnection(_connectionString);
             await con.OpenAsync();
-            var cmd = con.CreateCommand();
-            return cmd;
+            return con;
         }
 
 
@@ -75,8 +74,8 @@ namespace TheGodfather.Services
 
             await _sem.WaitAsync();
             try {
-                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
-
+                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = query;
 
                     using (var reader = await cmd.ExecuteReaderAsync()) {

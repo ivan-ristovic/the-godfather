@@ -26,7 +26,8 @@ namespace TheGodfather.Services
 
             await _sem.WaitAsync();
             try {
-                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
+                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "SELECT * FROM gf.stats WHERE uid = @uid LIMIT 1;";
                     cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, uid);
 
@@ -48,7 +49,8 @@ namespace TheGodfather.Services
         {
             await _sem.WaitAsync();
             try {
-                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
+                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var cmd = con.CreateCommand()) {
                     switch (type) {
                         case GameStatsType.AnimalRacesWon:
                             cmd.CommandText = $"INSERT INTO gf.stats (uid, races_won) VALUES (@uid, @add) ON CONFLICT (uid) DO UPDATE SET races_won = stats.races_won + @add;";

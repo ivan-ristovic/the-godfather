@@ -24,7 +24,8 @@ namespace TheGodfather.Services
         {
             await _sem.WaitAsync();
             try {
-                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
+                using (var con = await OpenConnectionAndCreateCommandAsync()) 
+                using (var cmd = con.CreateCommand()) { 
                     cmd.CommandText = "DELETE FROM gf.accounts WHERE uid = @uid AND gid = @gid;";
                     cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
@@ -52,7 +53,8 @@ namespace TheGodfather.Services
 
             await _sem.WaitAsync();
             try {
-                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
+                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "SELECT balance FROM gf.accounts WHERE uid = @uid AND gid = @gid LIMIT 1;";
                     cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
@@ -72,7 +74,8 @@ namespace TheGodfather.Services
         {
             await _sem.WaitAsync();
             try {
-                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
+                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "UPDATE gf.accounts SET balance = balance + @amount WHERE uid = @uid AND gid = @gid;";
                     cmd.Parameters.AddWithValue("amount", NpgsqlDbType.Bigint, amount);
                     cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
@@ -89,7 +92,8 @@ namespace TheGodfather.Services
         {
             await _sem.WaitAsync();
             try {
-                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
+                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "INSERT INTO gf.accounts(uid, gid, balance) VALUES(@uid, @gid, 10000);";
                     cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
@@ -110,7 +114,8 @@ namespace TheGodfather.Services
 
             await _sem.WaitAsync();
             try {
-                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
+                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "UPDATE gf.accounts SET balance = balance - @amount WHERE uid = @uid AND gid = @gid;";
                     cmd.Parameters.AddWithValue("amount", NpgsqlDbType.Bigint, amount);
                     cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
@@ -205,7 +210,8 @@ namespace TheGodfather.Services
         {
             await _sem.WaitAsync();
             try {
-                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
+                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "UPDATE gf.accounts SET balance = GREATEST(CEILING(1.0015 * balance), 10);";
 
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
