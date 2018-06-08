@@ -24,9 +24,9 @@ namespace TheGodfather.Services
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "INSERT INTO gf.saved_tasks(type, cid, uid, gid, execution_time, comment) VALUES (@type, @cid, @uid, @gid, @execution_time, @comment) RETURNING id;";
                     cmd.Parameters.AddWithValue("type", NpgsqlDbType.Smallint, task.Type);
-                    cmd.Parameters.AddWithValue("cid", NpgsqlDbType.Bigint, task.ChannelId);
-                    cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, task.UserId);
-                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, task.GuildId);
+                    cmd.Parameters.AddWithValue("cid", NpgsqlDbType.Bigint, (long)task.ChannelId);
+                    cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)task.UserId);
+                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)task.GuildId);
                     cmd.Parameters.AddWithValue("execution_time", NpgsqlDbType.Timestamp, task.ExecutionTime);
                     if (string.IsNullOrWhiteSpace(task.Comment))
                         cmd.Parameters.AddWithValue("comment", NpgsqlDbType.Varchar, DBNull.Value);

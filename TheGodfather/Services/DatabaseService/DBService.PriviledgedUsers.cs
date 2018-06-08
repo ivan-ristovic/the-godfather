@@ -18,7 +18,7 @@ namespace TheGodfather.Services
                 using (var con = await OpenConnectionAndCreateCommandAsync())
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "INSERT INTO gf.priviledged (uid) VALUES (@uid);";
-                    cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, uid);
+                    cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
 
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
@@ -56,7 +56,7 @@ namespace TheGodfather.Services
                 using (var con = await OpenConnectionAndCreateCommandAsync())
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "SELECT uid FROM gf.priviledged WHERE uid = @uid LIMIT 1;";
-                    cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, uid);
+                    cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
 
                     var res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
                     if (res != null && !(res is DBNull))
@@ -76,7 +76,7 @@ namespace TheGodfather.Services
                 using (var con = await OpenConnectionAndCreateCommandAsync())
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "DELETE FROM gf.priviledged WHERE uid = @uid;";
-                    cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, uid);
+                    cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
 
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }

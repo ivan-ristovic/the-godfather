@@ -77,7 +77,7 @@ namespace TheGodfather.Services
                 using (var con = await OpenConnectionAndCreateCommandAsync())
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "UPDATE gf.accounts SET balance = balance + @amount WHERE uid = @uid AND gid = @gid;";
-                    cmd.Parameters.AddWithValue("amount", NpgsqlDbType.Bigint, amount);
+                    cmd.Parameters.AddWithValue("amount", NpgsqlDbType.Bigint, (long)amount);
                     cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
 

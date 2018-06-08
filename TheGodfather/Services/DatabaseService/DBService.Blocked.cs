@@ -20,10 +20,10 @@ namespace TheGodfather.Services
                 using (var cmd = con.CreateCommand()) {
                     if (string.IsNullOrWhiteSpace(reason)) {
                         cmd.CommandText = "INSERT INTO gf.blocked_users VALUES (@uid, NULL);";
-                        cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, uid);
+                        cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
                     } else {
                         cmd.CommandText = "INSERT INTO gf.blocked_users VALUES (@uid, @reason);";
-                        cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, uid);
+                        cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
                         cmd.Parameters.AddWithValue("reason", NpgsqlDbType.Varchar, reason);
                     }
 
@@ -63,7 +63,7 @@ namespace TheGodfather.Services
                 using (var con = await OpenConnectionAndCreateCommandAsync())
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "DELETE FROM gf.blocked_users WHERE uid = @uid;";
-                    cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, uid);
+                    cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
 
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
@@ -82,10 +82,10 @@ namespace TheGodfather.Services
                 using (var cmd = con.CreateCommand()) {
                     if (string.IsNullOrWhiteSpace(reason)) {
                         cmd.CommandText = "INSERT INTO gf.blocked_channels VALUES (@cid, NULL);";
-                        cmd.Parameters.AddWithValue("cid", NpgsqlDbType.Bigint, cid);
+                        cmd.Parameters.AddWithValue("cid", NpgsqlDbType.Bigint, (long)cid);
                     } else {
                         cmd.CommandText = "INSERT INTO gf.blocked_channels VALUES (@cid, @reason);";
-                        cmd.Parameters.AddWithValue("cid", NpgsqlDbType.Bigint, cid);
+                        cmd.Parameters.AddWithValue("cid", NpgsqlDbType.Bigint, (long)cid);
                         cmd.Parameters.AddWithValue("reason", NpgsqlDbType.Varchar, reason);
                     }
 
@@ -125,7 +125,7 @@ namespace TheGodfather.Services
                 using (var con = await OpenConnectionAndCreateCommandAsync())
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "DELETE FROM gf.blocked_channels WHERE cid = @cid;";
-                    cmd.Parameters.AddWithValue("cid", NpgsqlDbType.Bigint, cid);
+                    cmd.Parameters.AddWithValue("cid", NpgsqlDbType.Bigint, (long)cid);
 
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }

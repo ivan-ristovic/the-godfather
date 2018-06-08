@@ -20,7 +20,7 @@ namespace TheGodfather.Services
                 using (var con = await OpenConnectionAndCreateCommandAsync())
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "INSERT INTO gf.items (gid, name, price) VALUES (@gid, @name, @price) ON CONFLICT DO NOTHING;";
-                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
+                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
                     cmd.Parameters.AddWithValue("name", NpgsqlDbType.Varchar, name);
                     cmd.Parameters.AddWithValue("price", NpgsqlDbType.Bigint, price);
 
@@ -69,7 +69,7 @@ namespace TheGodfather.Services
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "SELECT * FROM gf.items WHERE id = @id AND gid = @gid LIMIT 1;";
                     cmd.Parameters.AddWithValue("id", NpgsqlDbType.Integer, id);
-                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
+                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
 
                     using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
                         if (await reader.ReadAsync().ConfigureAwait(false)) {
@@ -98,7 +98,7 @@ namespace TheGodfather.Services
                 using (var con = await OpenConnectionAndCreateCommandAsync())
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "SELECT * FROM gf.items WHERE gid = @gid ORDER BY price DESC;";
-                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
+                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
 
                     using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
                         while (await reader.ReadAsync().ConfigureAwait(false)) {
@@ -127,7 +127,7 @@ namespace TheGodfather.Services
                 using (var con = await OpenConnectionAndCreateCommandAsync())
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "SELECT items.id, gid, name, price FROM gf.purchases JOIN gf.items ON purchases.id = items.id WHERE uid = @uid ORDER BY price DESC;";
-                    cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, uid);
+                    cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
 
                     using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
                         while (await reader.ReadAsync().ConfigureAwait(false)) {
@@ -155,7 +155,7 @@ namespace TheGodfather.Services
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "SELECT * FROM gf.purchases WHERE id = @id AND uid = @uid LIMIT 1;";
                     cmd.Parameters.AddWithValue("id", NpgsqlDbType.Integer, id);
-                    cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, uid);
+                    cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
 
                     var res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
                     if (res != null && !(res is DBNull))
@@ -176,7 +176,7 @@ namespace TheGodfather.Services
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "INSERT INTO gf.purchases VALUES (@id, @uid) ON CONFLICT DO NOTHING;";
                     cmd.Parameters.AddWithValue("id", NpgsqlDbType.Integer, id);
-                    cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, uid);
+                    cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
                     
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
@@ -193,7 +193,7 @@ namespace TheGodfather.Services
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "DELETE FROM gf.items WHERE gid = @gid AND name = @name;";
                     cmd.Parameters.AddWithValue("name", NpgsqlDbType.Varchar, name);
-                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
+                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
 
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
@@ -209,7 +209,7 @@ namespace TheGodfather.Services
                 using (var con = await OpenConnectionAndCreateCommandAsync())
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "DELETE FROM gf.items WHERE gid = @gid AND id = ANY(:ids);";
-                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
+                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
                     cmd.Parameters.Add("ids", NpgsqlDbType.Array | NpgsqlDbType.Integer).Value = ids;
 
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
@@ -227,7 +227,7 @@ namespace TheGodfather.Services
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "DELETE FROM gf.purchases WHERE id = @id AND uid = @uid;";
                     cmd.Parameters.AddWithValue("id", NpgsqlDbType.Integer, id);
-                    cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, uid);
+                    cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
 
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }

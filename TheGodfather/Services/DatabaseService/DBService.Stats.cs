@@ -29,7 +29,7 @@ namespace TheGodfather.Services
                 using (var con = await OpenConnectionAndCreateCommandAsync())
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "SELECT * FROM gf.stats WHERE uid = @uid LIMIT 1;";
-                    cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, uid);
+                    cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
 
                     using (var rdr = await cmd.ExecuteReaderAsync()) {
                         if (await rdr.ReadAsync()) {
@@ -96,7 +96,7 @@ namespace TheGodfather.Services
                             break;
                     }
 
-                    cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, uid);
+                    cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
                     cmd.Parameters.AddWithValue("add", NpgsqlDbType.Integer, add);
 
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);

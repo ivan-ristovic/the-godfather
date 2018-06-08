@@ -78,7 +78,7 @@ namespace TheGodfather.Services
                 using (var con = await OpenConnectionAndCreateCommandAsync())
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "DELETE FROM gf.insults WHERE id = @id;";
-                    cmd.Parameters.AddWithValue("id", NpgsqlDbType.Bigint, id);
+                    cmd.Parameters.AddWithValue("id", NpgsqlDbType.Integer, id);
 
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
