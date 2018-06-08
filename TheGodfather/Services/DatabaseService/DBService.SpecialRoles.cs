@@ -15,10 +15,7 @@ namespace TheGodfather.Services
         {
             await _sem.WaitAsync();
             try {
-                using (var con = new NpgsqlConnection(_connectionString))
-                using (var cmd = con.CreateCommand()) {
-                    await con.OpenAsync().ConfigureAwait(false);
-
+                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
                     cmd.CommandText = "INSERT INTO gf.automatic_roles VALUES (@gid, @rid) ON CONFLICT DO NOTHING;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
                     cmd.Parameters.AddWithValue("rid", NpgsqlDbType.Bigint, rid);
@@ -34,10 +31,7 @@ namespace TheGodfather.Services
         {
             await _sem.WaitAsync();
             try {
-                using (var con = new NpgsqlConnection(_connectionString))
-                using (var cmd = con.CreateCommand()) {
-                    await con.OpenAsync().ConfigureAwait(false);
-
+                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
                     cmd.CommandText = "INSERT INTO gf.assignable_roles VALUES (@gid, @rid) ON CONFLICT DO NOTHING;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
                     cmd.Parameters.AddWithValue("rid", NpgsqlDbType.Bigint, rid);
@@ -55,10 +49,7 @@ namespace TheGodfather.Services
 
             await _sem.WaitAsync();
             try {
-                using (var con = new NpgsqlConnection(_connectionString))
-                using (var cmd = con.CreateCommand()) {
-                    await con.OpenAsync().ConfigureAwait(false);
-
+                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
                     cmd.CommandText = "SELECT * FROM gf.automatic_roles WHERE gid = @gid;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
 
@@ -80,10 +71,7 @@ namespace TheGodfather.Services
 
             await _sem.WaitAsync();
             try {
-                using (var con = new NpgsqlConnection(_connectionString))
-                using (var cmd = con.CreateCommand()) {
-                    await con.OpenAsync().ConfigureAwait(false);
-
+                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
                     cmd.CommandText = "SELECT * FROM gf.assignable_roles WHERE gid = @gid;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
 
@@ -103,10 +91,7 @@ namespace TheGodfather.Services
         {
             await _sem.WaitAsync();
             try {
-                using (var con = new NpgsqlConnection(_connectionString))
-                using (var cmd = con.CreateCommand()) {
-                    await con.OpenAsync().ConfigureAwait(false);
-
+                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
                     cmd.CommandText = "DELETE FROM gf.automatic_roles WHERE gid = @gid;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
 
@@ -121,10 +106,7 @@ namespace TheGodfather.Services
         {
             await _sem.WaitAsync();
             try {
-                using (var con = new NpgsqlConnection(_connectionString))
-                using (var cmd = con.CreateCommand()) {
-                    await con.OpenAsync().ConfigureAwait(false);
-
+                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
                     cmd.CommandText = "DELETE FROM gf.assignable_roles WHERE gid = @gid;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
 
@@ -139,10 +121,7 @@ namespace TheGodfather.Services
         {
             await _sem.WaitAsync();
             try {
-                using (var con = new NpgsqlConnection(_connectionString))
-                using (var cmd = con.CreateCommand()) {
-                    await con.OpenAsync().ConfigureAwait(false);
-
+                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
                     cmd.CommandText = "DELETE FROM gf.automatic_roles WHERE gid = @gid AND rid = @rid;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
                     cmd.Parameters.AddWithValue("rid", NpgsqlDbType.Bigint, rid);
@@ -158,10 +137,7 @@ namespace TheGodfather.Services
         {
             await _sem.WaitAsync();
             try {
-                using (var con = new NpgsqlConnection(_connectionString))
-                using (var cmd = con.CreateCommand()) {
-                    await con.OpenAsync().ConfigureAwait(false);
-
+                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
                     cmd.CommandText = "DELETE FROM gf.assignable_roles WHERE gid = @gid AND rid = @rid;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
                     cmd.Parameters.AddWithValue("rid", NpgsqlDbType.Bigint, rid);
@@ -177,10 +153,7 @@ namespace TheGodfather.Services
         {
             await _sem.WaitAsync();
             try {
-                using (var con = new NpgsqlConnection(_connectionString))
-                using (var cmd = con.CreateCommand()) {
-                    await con.OpenAsync().ConfigureAwait(false);
-
+                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
                     cmd.CommandText = "SELECT rid FROM gf.assignable_roles WHERE gid = @gid AND rid = @rid LIMIT 1;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
                     cmd.Parameters.AddWithValue("rid", NpgsqlDbType.Bigint, rid);

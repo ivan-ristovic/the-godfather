@@ -19,10 +19,7 @@ namespace TheGodfather.Services
 
             await _sem.WaitAsync();
             try {
-                using (var con = new NpgsqlConnection(_connectionString))
-                using (var cmd = con.CreateCommand()) {
-                    await con.OpenAsync().ConfigureAwait(false);
-
+                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
                     cmd.CommandText = "SELECT * FROM gf.chicken_upgrades;";
 
                     using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
@@ -50,10 +47,7 @@ namespace TheGodfather.Services
 
             await _sem.WaitAsync();
             try {
-                using (var con = new NpgsqlConnection(_connectionString))
-                using (var cmd = con.CreateCommand()) {
-                    await con.OpenAsync().ConfigureAwait(false);
-
+                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
                     cmd.CommandText = "SELECT * FROM gf.chicken_upgrades WHERE wid = @wid LIMIT 1;";
                     cmd.Parameters.AddWithValue("wid", NpgsqlDbType.Integer, wid);
 
@@ -82,10 +76,7 @@ namespace TheGodfather.Services
 
             await _sem.WaitAsync();
             try {
-                using (var con = new NpgsqlConnection(_connectionString))
-                using (var cmd = con.CreateCommand()) {
-                    await con.OpenAsync().ConfigureAwait(false);
-
+                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
                     cmd.CommandText = "SELECT * FROM gf.chicken_active_upgrades JOIN gf.chicken_upgrades ON gid = @gid AND uid = @uid AND gf.chicken_active_upgrades.wid = gf.chicken_upgrades.wid;";
                     cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, uid);
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
@@ -115,10 +106,7 @@ namespace TheGodfather.Services
 
             await _sem.WaitAsync();
             try {
-                using (var con = new NpgsqlConnection(_connectionString))
-                using (var cmd = con.CreateCommand()) {
-                    await con.OpenAsync().ConfigureAwait(false);
-
+                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
                     if (gid != 0) {
                         cmd.CommandText = "SELECT * FROM gf.chickens WHERE gid = @gid ORDER BY strength DESC;";
                         cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
@@ -151,10 +139,7 @@ namespace TheGodfather.Services
         {
             await _sem.WaitAsync();
             try {
-                using (var con = new NpgsqlConnection(_connectionString))
-                using (var cmd = con.CreateCommand()) {
-                    await con.OpenAsync().ConfigureAwait(false);
-
+                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
                     cmd.CommandText = "INSERT INTO gf.chickens VALUES (@uid, @gid, @name, @strength, @vitality, @max_vitality) ON CONFLICT DO NOTHING;";
                     cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, uid);
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
@@ -177,10 +162,7 @@ namespace TheGodfather.Services
         {
             await _sem.WaitAsync();
             try {
-                using (var con = new NpgsqlConnection(_connectionString))
-                using (var cmd = con.CreateCommand()) {
-                    await con.OpenAsync().ConfigureAwait(false);
-
+                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
                     cmd.CommandText = "INSERT INTO gf.chicken_active_upgrades VALUES (@uid, @gid, @wid) ON CONFLICT DO NOTHING;";
                     cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, uid);
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
@@ -199,10 +181,7 @@ namespace TheGodfather.Services
 
             await _sem.WaitAsync();
             try {
-                using (var con = new NpgsqlConnection(_connectionString))
-                using (var cmd = con.CreateCommand()) {
-                    await con.OpenAsync().ConfigureAwait(false);
-
+                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
                     cmd.CommandText = "SELECT * FROM gf.chickens WHERE uid = @uid AND gid = @gid LIMIT 1;";
                     cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, uid);
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
@@ -238,10 +217,7 @@ namespace TheGodfather.Services
         {
             await _sem.WaitAsync();
             try {
-                using (var con = new NpgsqlConnection(_connectionString))
-                using (var cmd = con.CreateCommand()) {
-                    await con.OpenAsync().ConfigureAwait(false);
-
+                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
                     cmd.CommandText = "UPDATE gf.chickens SET (name, strength, vitality, max_vitality) = (@name, @strength, @vitality, @max_vitality) WHERE uid = @uid AND gid = @gid;";
                     cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, chicken.OwnerId);
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
@@ -261,10 +237,7 @@ namespace TheGodfather.Services
         {
             await _sem.WaitAsync();
             try {
-                using (var con = new NpgsqlConnection(_connectionString))
-                using (var cmd = con.CreateCommand()) {
-                    await con.OpenAsync().ConfigureAwait(false);
-
+                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
                     cmd.CommandText = "DELETE FROM gf.chickens WHERE uid = @uid AND gid = @gid;";
                     cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, uid);
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
@@ -280,10 +253,7 @@ namespace TheGodfather.Services
         {
             await _sem.WaitAsync();
             try {
-                using (var con = new NpgsqlConnection(_connectionString))
-                using (var cmd = con.CreateCommand()) {
-                    await con.OpenAsync().ConfigureAwait(false);
-
+                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
                     cmd.CommandText = "DELETE FROM gf.chickens WHERE gid = @gid AND vitality <= @threshold;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
                     cmd.Parameters.AddWithValue("threshold", NpgsqlDbType.Integer, threshold);

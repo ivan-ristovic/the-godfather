@@ -25,10 +25,7 @@ namespace TheGodfather.Services
 
             await _sem.WaitAsync();
             try {
-                using (var con = new NpgsqlConnection(_connectionString))
-                using (var cmd = con.CreateCommand()) {
-                    await con.OpenAsync().ConfigureAwait(false);
-
+                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
                     cmd.CommandText = "INSERT INTO gf.text_reactions VALUES (@gid, @trigger, @response) RETURNING id;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
                     cmd.Parameters.AddWithValue("trigger", NpgsqlDbType.Varchar, trigger);
@@ -51,10 +48,7 @@ namespace TheGodfather.Services
 
             await _sem.WaitAsync();
             try {
-                using (var con = new NpgsqlConnection(_connectionString))
-                using (var cmd = con.CreateCommand()) {
-                    await con.OpenAsync().ConfigureAwait(false);
-
+                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
                     cmd.CommandText = "SELECT * FROM gf.text_reactions;";
 
                     using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
@@ -88,10 +82,7 @@ namespace TheGodfather.Services
         {
             await _sem.WaitAsync();
             try {
-                using (var con = new NpgsqlConnection(_connectionString))
-                using (var cmd = con.CreateCommand()) {
-                    await con.OpenAsync().ConfigureAwait(false);
-
+                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
                     cmd.CommandText = "DELETE FROM gf.text_reactions WHERE gid = @gid;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
 
@@ -106,10 +97,7 @@ namespace TheGodfather.Services
         {
             await _sem.WaitAsync();
             try {
-                using (var con = new NpgsqlConnection(_connectionString))
-                using (var cmd = con.CreateCommand()) {
-                    await con.OpenAsync().ConfigureAwait(false);
-
+                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
                     cmd.CommandText = "DELETE FROM gf.text_reactions WHERE gid = @gid AND id = ANY(:ids);";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
                     cmd.Parameters.Add("ids", NpgsqlDbType.Array | NpgsqlDbType.Integer).Value = ids;
@@ -125,10 +113,7 @@ namespace TheGodfather.Services
         {
             await _sem.WaitAsync();
             try {
-                using (var con = new NpgsqlConnection(_connectionString))
-                using (var cmd = con.CreateCommand()) {
-                    await con.OpenAsync().ConfigureAwait(false);
-                    
+                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
                     cmd.CommandText = "DELETE FROM gf.text_reactions WHERE gid = @gid AND trigger = ANY(:triggers);";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
                     cmd.Parameters.Add("triggers", NpgsqlDbType.Array | NpgsqlDbType.Varchar).Value = triggers;
@@ -151,10 +136,7 @@ namespace TheGodfather.Services
 
             await _sem.WaitAsync();
             try {
-                using (var con = new NpgsqlConnection(_connectionString))
-                using (var cmd = con.CreateCommand()) {
-                    await con.OpenAsync().ConfigureAwait(false);
-
+                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
                     cmd.CommandText = "INSERT INTO gf.emoji_reactions VALUES (@gid, @trigger, @reaction) RETURNING id;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
                     cmd.Parameters.AddWithValue("trigger", NpgsqlDbType.Varchar, trigger);
@@ -177,10 +159,7 @@ namespace TheGodfather.Services
 
             await _sem.WaitAsync();
             try {
-                using (var con = new NpgsqlConnection(_connectionString))
-                using (var cmd = con.CreateCommand()) {
-                    await con.OpenAsync().ConfigureAwait(false);
-
+                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
                     cmd.CommandText = "SELECT * FROM gf.emoji_reactions;";
 
                     using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
@@ -214,10 +193,7 @@ namespace TheGodfather.Services
         {
             await _sem.WaitAsync();
             try {
-                using (var con = new NpgsqlConnection(_connectionString))
-                using (var cmd = con.CreateCommand()) {
-                    await con.OpenAsync().ConfigureAwait(false);
-
+                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
                     cmd.CommandText = "DELETE FROM gf.emoji_reactions WHERE gid = @gid AND reaction = @reaction;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
                     cmd.Parameters.AddWithValue("reaction", NpgsqlDbType.Varchar, reaction);
@@ -233,10 +209,7 @@ namespace TheGodfather.Services
         {
             await _sem.WaitAsync();
             try {
-                using (var con = new NpgsqlConnection(_connectionString))
-                using (var cmd = con.CreateCommand()) {
-                    await con.OpenAsync().ConfigureAwait(false);
-
+                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
                     cmd.CommandText = "DELETE FROM gf.emoji_reactions WHERE gid = @gid;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
 
@@ -251,10 +224,7 @@ namespace TheGodfather.Services
         {
             await _sem.WaitAsync();
             try {
-                using (var con = new NpgsqlConnection(_connectionString))
-                using (var cmd = con.CreateCommand()) {
-                    await con.OpenAsync().ConfigureAwait(false);
-
+                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
                     cmd.CommandText = "DELETE FROM gf.emoji_reactions WHERE gid = @gid AND id = ANY(:ids);";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
                     cmd.Parameters.Add("ids", NpgsqlDbType.Array | NpgsqlDbType.Integer).Value = ids;
@@ -270,10 +240,7 @@ namespace TheGodfather.Services
         {
             await _sem.WaitAsync();
             try {
-                using (var con = new NpgsqlConnection(_connectionString))
-                using (var cmd = con.CreateCommand()) {
-                    await con.OpenAsync().ConfigureAwait(false);
-
+                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
                     cmd.CommandText = "DELETE FROM gf.emoji_reactions WHERE gid = @gid AND trigger = ANY(:triggers);";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, gid);
                     cmd.Parameters.Add("triggers", NpgsqlDbType.Array | NpgsqlDbType.Varchar).Value = triggers;

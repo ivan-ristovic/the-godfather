@@ -20,10 +20,7 @@ namespace TheGodfather.Services
 
             await _sem.WaitAsync();
             try {
-                using (var con = new NpgsqlConnection(_connectionString))
-                using (var cmd = con.CreateCommand()) {
-                    await con.OpenAsync().ConfigureAwait(false);
-
+                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
                     cmd.CommandText = "SELECT * FROM gf.birthdays;";
 
                     using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
@@ -49,10 +46,7 @@ namespace TheGodfather.Services
 
             await _sem.WaitAsync();
             try {
-                using (var con = new NpgsqlConnection(_connectionString))
-                using (var cmd = con.CreateCommand()) {
-                    await con.OpenAsync().ConfigureAwait(false);
-
+                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
                     cmd.CommandText = "SELECT * FROM gf.birthdays WHERE date_part('day', bday) = @today_day AND date_part('month', bday) = @today_month AND last_updated != date_part('year', CURRENT_DATE);";
                     cmd.Parameters.AddWithValue("today_day", NpgsqlDbType.Integer, DateTime.UtcNow.Day);
                     cmd.Parameters.AddWithValue("today_month", NpgsqlDbType.Integer, DateTime.UtcNow.Month);
@@ -73,10 +67,7 @@ namespace TheGodfather.Services
         {
             await _sem.WaitAsync();
             try {
-                using (var con = new NpgsqlConnection(_connectionString))
-                using (var cmd = con.CreateCommand()) {
-                    await con.OpenAsync().ConfigureAwait(false);
-
+                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
                     cmd.CommandText = "INSERT INTO gf.birthdays VALUES (@uid, @cid, @date, date_part('year', CURRENT_DATE)) ON CONFLICT DO NOTHING;";
                     cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, uid);
                     cmd.Parameters.AddWithValue("cid", NpgsqlDbType.Bigint, cid);
@@ -93,10 +84,7 @@ namespace TheGodfather.Services
         {
             await _sem.WaitAsync();
             try {
-                using (var con = new NpgsqlConnection(_connectionString))
-                using (var cmd = con.CreateCommand()) {
-                    await con.OpenAsync().ConfigureAwait(false);
-
+                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
                     cmd.CommandText = "DELETE FROM gf.birthdays WHERE uid = @uid;";
                     cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, uid);
 
@@ -111,10 +99,7 @@ namespace TheGodfather.Services
         {
             await _sem.WaitAsync();
             try {
-                using (var con = new NpgsqlConnection(_connectionString))
-                using (var cmd = con.CreateCommand()) {
-                    await con.OpenAsync().ConfigureAwait(false);
-
+                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
                     cmd.CommandText = "UPDATE gf.birthdays SET last_updated = date_part('year', CURRENT_DATE) WHERE uid = @uid AND cid = @cid;";
                     cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, uid);
                     cmd.Parameters.AddWithValue("cid", NpgsqlDbType.Bigint, cid);

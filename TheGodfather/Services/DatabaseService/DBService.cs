@@ -8,6 +8,8 @@ using System.Threading.Tasks;
 using TheGodfather.Common;
 using TheGodfather.Exceptions;
 
+using DSharpPlus;
+
 using Npgsql;
 #endregion
 
@@ -45,14 +47,21 @@ namespace TheGodfather.Services
         }
 
 
+        private async Task<NpgsqlCommand> OpenConnectionAndCreateCommandAsync()
+        {
+            var con = new NpgsqlConnection(_connectionString);
+            await con.OpenAsync();
+            var cmd = con.CreateCommand();
+            return cmd;
+        }
+
+
         public async Task InitializeAsync()
         {
             await _sem.WaitAsync();
             try {
-                using (var con = new NpgsqlConnection(_connectionString))
-                using (var cmd = con.CreateCommand()) {
-                    await con.OpenAsync().ConfigureAwait(false);
-                }
+                var cmd = await OpenConnectionAndCreateCommandAsync();
+                cmd.Dispose();
             } catch (NpgsqlException e) {
                 throw new DatabaseServiceException("Database connection failed. Check your login details in the config.json file.", e);
             } finally {
@@ -66,18 +75,16 @@ namespace TheGodfather.Services
 
             await _sem.WaitAsync();
             try {
-                using (var con = new NpgsqlConnection(_connectionString))
-                using (var cmd = con.CreateCommand()) {
-                    await con.OpenAsync().ConfigureAwait(false);
+                using (var cmd = await OpenConnectionAndCreateCommandAsync()) {
 
                     cmd.CommandText = query;
 
-                    using (var rdr = await cmd.ExecuteReaderAsync()) {
-                        while (await rdr.ReadAsync()) {
+                    using (var reader = await cmd.ExecuteReaderAsync()) {
+                        while (await reader.ReadAsync()) {
                             var dict = new Dictionary<string, string>();
 
-                            for (var i = 0; i < rdr.FieldCount; i++)
-                                dict[rdr.GetName(i)] = rdr[i] is DBNull ? "<null>" : rdr[i].ToString();
+                            for (var i = 0; i < reader.FieldCount; i++)
+                                dict[reader.GetName(i)] = reader[i] is DBNull ? "<null>" : reader[i].ToString();
 
                             dicts.Add(new ReadOnlyDictionary<string, string>(dict));
                         }
@@ -87,7 +94,7 @@ namespace TheGodfather.Services
                 _sem.Release();
             }
 
-            return new ReadOnlyCollection<IReadOnlyDictionary<string, string>>(dicts);
+            return dicts.AsReadOnly();
         }
     }
 }
