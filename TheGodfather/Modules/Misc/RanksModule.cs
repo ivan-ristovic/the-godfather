@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
+using TheGodfather.Extensions;
 using TheGodfather.Services;
 
 using DSharpPlus;
@@ -65,20 +66,15 @@ namespace TheGodfather.Modules.Misc
         {
             var ranks = await Database.GetAllCustomRankNamesForGuildAsync(ctx.Guild.Id)
                 .ConfigureAwait(false);
-
             if (!ranks.Any())
                 throw new CommandFailedException("No custom rank names registered for this guild!");
 
-            var emb = new DiscordEmbedBuilder() {
-                Title = "Custom ranks in this guild",
-                Color = DiscordColor.IndianRed
-            };
-
-            foreach (var kvp in ranks)
-                emb.AddField($"(#{kvp.Key}) {kvp.Value}", $"XP needed: {Shared.XpNeededForRankWithIndex(kvp.Key)}", inline: true);
-
-            await ctx.RespondAsync(embed: emb.Build())
-                .ConfigureAwait(false);
+            await ctx.SendPaginatedCollectionAsync(
+                "Custom ranks in this guild",
+                ranks,
+                kvp => $"(#{kvp.Key}) {kvp.Value} | XP needed: {Shared.XpNeededForRankWithIndex(kvp.Key)}",
+                DiscordColor.IndianRed
+            ).ConfigureAwait(false);
         }
         #endregion
 
