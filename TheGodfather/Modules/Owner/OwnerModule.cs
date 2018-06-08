@@ -169,8 +169,8 @@ namespace TheGodfather.Modules.Owner
             var maxlen = res.First().Select(r => r.Key).OrderByDescending(r => r.Length).First().Length + 1;
 
             await ctx.SendPaginatedCollectionAsync(
-                $"Results ({res.Count}):",
-                res,
+                $"Results:",
+                res.Take(25),
                 row => {
                     var sb = new StringBuilder();
                     foreach (var col in row)
@@ -178,7 +178,7 @@ namespace TheGodfather.Modules.Owner
                     return Formatter.BlockCode(sb.ToString());
                 },
                 DiscordColor.Azure,
-                5
+                1
             ).ConfigureAwait(false);
         }
         #endregion
