@@ -14,11 +14,11 @@ namespace TheGodfather.Services.Tests
     [TestClass()]
     public class GiphyServiceTests
     {
-        private GiphyService _service { get; set; }
+        private static GiphyService _service { get; set; }
 
 
         [ClassInitialize]
-        public async Task Init()
+        public static async Task Init(TestContext ctx)
         {
             string json;
             try {
