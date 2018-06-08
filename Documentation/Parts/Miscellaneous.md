@@ -21,6 +21,37 @@
 
 ---
 
+## Group: birthdays
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Birthday notifications management. If invoked without command, either lists or adds birthdays depending if argument is given.*
+
+**Requires user permissions:**
+`Manage guild`
+
+**Aliases:**
+`birthday, bday, bd, bdays`
+
+**Overload 1:**
+
+`[user]` : *Birthday boy/girl.*
+
+(optional) `[string]` : *Birth date.* (def: `None`)
+
+(optional) `[channel]` : *Channel to send a greeting message to.* (def: `None`)
+
+**Overload 0:**
+
+`[user]` : *Birthday boy/girl.*
+
+(optional) `[channel]` : *Channel to send a greeting message to.* (def: `None`)
+
+(optional) `[string]` : *Birth date.* (def: `None`)
+
+</p></details>
+
+---
+
 ## coinflip
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
