@@ -40,10 +40,11 @@ namespace TheGodfather.EventListeners
             if (!e.Channel.PermissionsFor(e.Guild.CurrentMember).HasFlag(Permissions.SendMessages))
                 return;
 
-            int rank = shard.Shared.UpdateMessageCount(e.Author.Id);
+            var rank = shard.Shared.UpdateMessageCount(e.Author.Id);
             if (rank != -1) {
-                var ranks = shard.Shared.Ranks;
-                await e.Channel.SendIconEmbedAsync($"GG {e.Author.Mention}! You have advanced to level {rank} ({(rank < ranks.Count ? ranks[rank] : "Low")})!", DiscordEmoji.FromName(shard.Client, ":military_medal:"))
+                var rankname = await shard.Database.GetCustomRankNameForGuildAsync(e.Guild.Id, rank)
+                    .ConfigureAwait(false);
+                await e.Channel.SendIconEmbedAsync($"GG {e.Author.Mention}! You have advanced to level {rank} ({rankname ?? "No custom name set for this rank in this guild"}))!", DiscordEmoji.FromName(shard.Client, ":military_medal:"))
                     .ConfigureAwait(false);
             }
         }

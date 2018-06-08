@@ -36,32 +36,6 @@ namespace TheGodfather
         public ConcurrentDictionary<int, SavedTaskExecuter> SavedTasks { get; internal set; } = new ConcurrentDictionary<int, SavedTaskExecuter>();
         public bool StatusRotationEnabled { get; internal set; } = true;
         public ConcurrentDictionary<ulong, CancellationTokenSource> SpaceCheckingCTS = new ConcurrentDictionary<ulong, CancellationTokenSource>();
-        public IReadOnlyList<string> Ranks = new List<string>() {
-            #region RANKS
-            // If you make more than 25 ranks, then fix the embed
-            "4U donor",
-            "SoH MNG",
-            "Cheap gypsy",
-            "Romanian wallet stealer",
-            "Romanian car cracker",
-            "Serbian street cleaner",
-            "German closet cleaner",
-            "Swed's beer supplier",
-            "JoJo's harem cleaner",
-            "Torq's nurse",
-            "Expensive gypsy",
-            "Pakistani bomb carrier",
-            "Michal's worker (black)",
-            "Michal's worker (white)",
-            "World Mafia Waste",
-            "KF's goat",
-            "Legendary Seagull Master",
-            "Brazillian flip-flop maker",
-            "The Global Elite Silver",
-            "LDR",
-            "Generalissimo (tribute to Raptor)"
-            #endregion
-        }.AsReadOnly();
         public ConcurrentDictionary<ulong, MusicPlayer> MusicPlayers = new ConcurrentDictionary<ulong, MusicPlayer>();
 
 

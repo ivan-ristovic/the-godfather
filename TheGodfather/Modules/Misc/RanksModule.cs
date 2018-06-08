@@ -2,9 +2,10 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 
 using TheGodfather.Common.Attributes;
+using TheGodfather.Exceptions;
+using TheGodfather.Services;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -25,7 +26,7 @@ namespace TheGodfather.Modules.Misc
     public class RanksModule : TheGodfatherBaseModule
     {
 
-        public RanksModule(SharedData shared) : base(shared) { }
+        public RanksModule(SharedData shared, DBService db) : base(shared, db) { }
 
 
         [GroupCommand]
@@ -34,9 +35,11 @@ namespace TheGodfather.Modules.Misc
         {
             if (user == null)
                 user = ctx.User;
-            
+
             var rank = Shared.GetRankForUser(user.Id);
             var msgcount = Shared.GetMessageCountForId(user.Id);
+            var rankname = await Database.GetCustomRankNameForGuildAsync(ctx.Guild.Id, rank)
+                .ConfigureAwait(false);
 
             var emb = new DiscordEmbedBuilder() {
                 Title = user.Username,
@@ -44,31 +47,35 @@ namespace TheGodfather.Modules.Misc
                 Color = DiscordColor.Aquamarine,
                 ThumbnailUrl = user.AvatarUrl
             };
-            emb.AddField("Rank", $"{Formatter.Italic(rank < Shared.Ranks.Count ? Shared.Ranks[rank] : "Low")} (#{rank})")
+            emb.AddField("Rank", $"{Formatter.Bold($"#{rank}")} : {Formatter.Italic(rankname ?? "No custom rank name set for this rank in this guild")}")
                .AddField("XP", $"{msgcount}", inline: true)
                .AddField("XP needed for next rank", $"{(rank + 1) * (rank + 1) * 10}", inline: true);
 
             await ctx.RespondAsync(embed: emb.Build())
                 .ConfigureAwait(false);
         }
-        
+
 
         #region COMMAND_RANK_LIST
         [Command("list"), Module(ModuleType.Miscellaneous)]
-        [Description("Print all available ranks.")]
+        [Description("Print all customized ranks for this guild.")]
         [Aliases("levels")]
         [UsageExample("!rank list")]
         public async Task RankListAsync(CommandContext ctx)
         {
+            var ranks = await Database.GetAllCustomRankNamesForGuildAsync(ctx.Guild.Id)
+                .ConfigureAwait(false);
+
+            if (!ranks.Any())
+                throw new CommandFailedException("No custom rank names registered for this guild!");
+
             var emb = new DiscordEmbedBuilder() {
-                Title = "Available ranks",
+                Title = "Custom ranks in this guild",
                 Color = DiscordColor.IndianRed
             };
-            
-            for (int i = 1; i < Shared.Ranks.Count; i++) {
-                var xpneeded = Shared.XpNeededForRankWithIndex(i);
-                emb.AddField($"(#{i}) {Shared.Ranks[i]}", $"XP needed: {xpneeded}", inline: true);
-            }
+
+            foreach (var kvp in ranks)
+                emb.AddField($"(#{kvp.Key}) {kvp.Value}", $"XP needed: {Shared.XpNeededForRankWithIndex(kvp.Key)}", inline: true);
 
             await ctx.RespondAsync(embed: emb.Build())
                 .ConfigureAwait(false);
@@ -87,21 +94,24 @@ namespace TheGodfather.Modules.Misc
                 Color = DiscordColor.Purple
             };
 
+            var ranks = await Database.GetAllCustomRankNamesForGuildAsync(ctx.Guild.Id)
+                .ConfigureAwait(false);
+
             foreach (var kvp in top) {
                 DiscordUser u = null;
-                string unknown = "<unknown>";
                 try {
                     u = await ctx.Client.GetUserAsync(kvp.Key)
                         .ConfigureAwait(false);
                 } catch (NotFoundException) {
                     u = null;
-
+                    Shared.MessageCount.TryRemove(kvp.Key, out _);
+                    // TODO remove from db
                 }
                 var rank = Shared.GetRankForMessageCount(kvp.Value);
-                if (rank < Shared.Ranks.Count)
-                    emb.AddField(u.Username ?? unknown, $"{Shared.Ranks[rank]} ({rank}) ({kvp.Value} XP)");
+                if (ranks.ContainsKey(rank))
+                    emb.AddField(u.Username ?? "<unknown>", $"{ranks[rank]} ({rank}) ({kvp.Value} XP)");
                 else
-                    emb.AddField(u.Username ?? unknown, $"Low ({kvp.Value} XP)");
+                    emb.AddField(u.Username ?? "<unknown>", $"Level {rank} ({kvp.Value} XP)");
             }
 
             await ctx.RespondAsync(embed: emb.Build())
