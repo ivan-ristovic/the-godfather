@@ -183,7 +183,7 @@ namespace TheGodfather.Common.Attributes
                     client.Heartbeated += OnEventWithArgs;
                     break;
                 case EventTypes.CommandExecuted:
-                    shard.Commands.CommandErrored += OnEventWithArgs;
+                    shard.Commands.CommandExecuted += OnEventWithArgs;
                     break;
                 case EventTypes.CommandErrored:
                     shard.Commands.CommandErrored += OnEventWithArgs;
