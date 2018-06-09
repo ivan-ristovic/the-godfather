@@ -50,7 +50,7 @@ namespace TheGodfather.Modules.Currency
 
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
                 Title = $"Account balance for {user.Username}",
-                Description = Formatter.Bold(balance.HasValue ? $"{balance} credits." : "No existing account!"),
+                Description = Formatter.Bold(balance.HasValue ? $"{balance} credits." : $"No existing account! Use command {Formatter.InlineCode("bank register")} to open an account."),
                 Color = DiscordColor.Yellow
             }.WithFooter("Your money is safe with us - WM Bank", user.AvatarUrl).Build()).ConfigureAwait(false);
         }
