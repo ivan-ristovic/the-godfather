@@ -423,6 +423,17 @@ ALTER SEQUENCE gf.purchases_id_seq OWNED BY gf.purchases.id;
 
 
 --
+-- Name: ranks; Type: TABLE; Schema: gf; Owner: -
+--
+
+CREATE TABLE gf.ranks (
+    gid bigint NOT NULL,
+    rank integer NOT NULL,
+    name character varying(32) NOT NULL
+);
+
+
+--
 -- Name: saved_tasks; Type: TABLE; Schema: gf; Owner: -
 --
 
@@ -836,6 +847,14 @@ ALTER TABLE ONLY gf.purchases
 
 
 --
+-- Name: ranks ranks_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
+--
+
+ALTER TABLE ONLY gf.ranks
+    ADD CONSTRAINT ranks_pkey PRIMARY KEY (gid, rank);
+
+
+--
 -- Name: saved_tasks saved_tasks_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
 --
 
@@ -1067,6 +1086,14 @@ ALTER TABLE ONLY gf.memes
 
 ALTER TABLE ONLY gf.purchases
     ADD CONSTRAINT purchases_id_fkey FOREIGN KEY (id) REFERENCES gf.items(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: ranks ranks_gid_fkey; Type: FK CONSTRAINT; Schema: gf; Owner: -
+--
+
+ALTER TABLE ONLY gf.ranks
+    ADD CONSTRAINT ranks_gid_fkey FOREIGN KEY (gid) REFERENCES gf.guild_cfg(gid) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
