@@ -62,6 +62,7 @@ namespace TheGodfather.Modules.Misc
         [Module(ModuleType.Miscellaneous)]
         [Description("Add a custom name for given rank in this guild.")]
         [Aliases("+", "a", "rename")]
+        [RequireUserPermissions(Permissions.ManageGuild)]
         [UsageExample("!rank add 1 Private")]
         public async Task AddAsync(CommandContext ctx,
                                   [Description("Rank.")] int rank,
@@ -87,6 +88,7 @@ namespace TheGodfather.Modules.Misc
         [Command("delete"), Module(ModuleType.Miscellaneous)]
         [Description("Remove a custom name for given rank in this guild.")]
         [Aliases("-", "remove", "rm", "del", "revert")]
+        [RequireUserPermissions(Permissions.ManageGuild)]
         [UsageExample("!rank delete 3")]
         public async Task DeleteAsync(CommandContext ctx,
                                      [Description("Rank.")] int rank)
