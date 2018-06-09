@@ -44,7 +44,7 @@ namespace TheGodfather.EventListeners
             if (rank != -1) {
                 var rankname = await shard.Database.GetCustomRankNameForGuildAsync(e.Guild.Id, rank)
                     .ConfigureAwait(false);
-                await e.Channel.SendIconEmbedAsync($"GG {e.Author.Mention}! You have advanced to level {rank} ({rankname ?? "No custom name set for this rank in this guild"}))!", DiscordEmoji.FromName(shard.Client, ":military_medal:"))
+                await e.Channel.SendIconEmbedAsync($"GG {e.Author.Mention}! You have advanced to level {Formatter.Bold(rank.ToString())}: {rankname ?? "No custom name set for this rank in this guild"})!", DiscordEmoji.FromName(shard.Client, ":military_medal:"))
                     .ConfigureAwait(false);
             }
         }

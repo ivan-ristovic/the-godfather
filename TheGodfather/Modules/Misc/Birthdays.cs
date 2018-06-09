@@ -50,7 +50,7 @@ namespace TheGodfather.Modules.Misc
 
         #region COMMAND_BIRTHDAY_ADD
         [Command("add"), Priority(1)]
-        [Module(ModuleType.Owner)]
+        [Module(ModuleType.Miscellaneous)]
         [Description("Add a birthday to the database. If date is not specified, uses the current date as a birthday date. If the channel is not specified, uses the current channel.")]
         [Aliases("+", "a")]
         [UsageExample("!birthday add @Someone")]
@@ -85,7 +85,7 @@ namespace TheGodfather.Modules.Misc
         #endregion
 
         #region COMMAND_BIRTHDAY_DELETE
-        [Command("delete"), Module(ModuleType.Owner)]
+        [Command("delete"), Module(ModuleType.Miscellaneous)]
         [Description("Remove status from running queue.")]
         [Aliases("-", "remove", "rm", "del")]
         [UsageExample("!birthday delete @Someone")]
@@ -100,7 +100,7 @@ namespace TheGodfather.Modules.Misc
         #endregion
 
         #region COMMAND_BIRTHDAY_LIST
-        [Command("list"), Module(ModuleType.Owner)]
+        [Command("list"), Module(ModuleType.Miscellaneous)]
         [Description("List all registered birthdays.")]
         [Aliases("ls")]
         [UsageExample("!birthday list")]

@@ -79,7 +79,42 @@ namespace TheGodfather.Services
 
             return new ReadOnlyDictionary<ulong, ulong>(msgcount);
         }
-        
+
+        public async Task AddCustomRankNameAsync(ulong gid, int rank, string name)
+        {
+            await _sem.WaitAsync();
+            try {
+                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var cmd = con.CreateCommand()) {
+                    cmd.CommandText = "INSERT INTO gf.ranks(gid, rank, name) VALUES (@gid, @rank, @name) ON CONFLICT (gid, rank) DO UPDATE SET name = EXCLUDED.name;";
+                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
+                    cmd.Parameters.AddWithValue("rank", NpgsqlDbType.Integer, rank);
+                    cmd.Parameters.AddWithValue("name", NpgsqlDbType.Varchar, name);
+
+                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                }
+            } finally {
+                _sem.Release();
+            }
+        }
+
+        public async Task RemoveCustomRankNameAsync(ulong gid, int rank)
+        {
+            await _sem.WaitAsync();
+            try {
+                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var cmd = con.CreateCommand()) {
+                    cmd.CommandText = "DELETE FROM gf.ranks WHERE gid = @gid AND rank = @rank;";
+                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
+                    cmd.Parameters.AddWithValue("rank", NpgsqlDbType.Integer, rank);
+
+                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                }
+            } finally {
+                _sem.Release();
+            }
+        }
+
         public async Task UpdateExperienceForUserAsync(ulong uid, ulong count)
         {
             await _sem.WaitAsync();

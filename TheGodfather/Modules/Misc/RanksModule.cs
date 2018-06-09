@@ -57,6 +57,47 @@ namespace TheGodfather.Modules.Misc
         }
 
 
+        #region COMMAND_RANK_ADD
+        [Command("add"), Priority(1)]
+        [Module(ModuleType.Miscellaneous)]
+        [Description("Add a custom name for given rank in this guild.")]
+        [Aliases("+", "a", "rename")]
+        [UsageExample("!rank add 1 Private")]
+        public async Task AddAsync(CommandContext ctx,
+                                  [Description("Rank.")] int rank,
+                                  [RemainingText, Description("Rank name.")] string name)
+        {
+            if (rank < 0 || rank > 100)
+                throw new CommandFailedException("You can only set rank names in range [0, 100]!");
+
+            if (string.IsNullOrWhiteSpace(name))
+                throw new CommandFailedException("Name for the rank is missing!");
+
+            if (name.Length > 30)
+                throw new CommandFailedException("Rank name cannot be longer than 30 characters!");
+
+            await Database.AddCustomRankNameAsync(ctx.Guild.Id, rank, name)
+                .ConfigureAwait(false);
+            await ctx.RespondWithIconEmbedAsync()
+                .ConfigureAwait(false);
+        }
+        #endregion
+
+        #region COMMAND_RANK_DELETE
+        [Command("delete"), Module(ModuleType.Miscellaneous)]
+        [Description("Remove a custom name for given rank in this guild.")]
+        [Aliases("-", "remove", "rm", "del", "revert")]
+        [UsageExample("!rank delete 3")]
+        public async Task DeleteAsync(CommandContext ctx,
+                                     [Description("Rank.")] int rank)
+        {
+            await Database.RemoveCustomRankNameAsync(ctx.Guild.Id, rank)
+                .ConfigureAwait(false);
+            await ctx.RespondWithIconEmbedAsync()
+                .ConfigureAwait(false);
+        }
+        #endregion
+
         #region COMMAND_RANK_LIST
         [Command("list"), Module(ModuleType.Miscellaneous)]
         [Description("Print all customized ranks for this guild.")]
@@ -72,7 +113,7 @@ namespace TheGodfather.Modules.Misc
             await ctx.SendPaginatedCollectionAsync(
                 "Custom ranks in this guild",
                 ranks,
-                kvp => $"(#{kvp.Key}) {kvp.Value} | XP needed: {Shared.XpNeededForRankWithIndex(kvp.Key)}",
+                kvp => $"{kvp.Key} | {Formatter.Bold(kvp.Value)} | XP needed: {Formatter.Bold(Shared.XpNeededForRankWithIndex(kvp.Key).ToString())}",
                 DiscordColor.IndianRed
             ).ConfigureAwait(false);
         }
