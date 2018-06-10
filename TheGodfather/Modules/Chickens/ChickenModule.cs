@@ -68,7 +68,7 @@ namespace TheGodfather.Modules.Chickens
             if (chicken2 == null)
                 throw new CommandFailedException("The specified user does not own a chicken!");
 
-            if (Math.Abs(chicken1.Stats.BareStrength - chicken2.Stats.BareStrength) > 50)
+            if (Math.Abs(chicken1.Stats.TotalStrength - chicken2.Stats.TotalStrength) > 50)
                 throw new CommandFailedException("The bare strength difference is too big (50 max)! Please find a more suitable opponent.");
 
             string header = $"{Formatter.Bold(chicken1.Name)} ({chicken1.Stats.ToShortString()}) {StaticDiscordEmoji.DuelSwords} {Formatter.Bold(chicken2.Name)} ({chicken2.Stats.ToShortString()}) {StaticDiscordEmoji.Chicken}\n\n";
@@ -259,7 +259,7 @@ namespace TheGodfather.Modules.Chickens
             }
 
             await ctx.SendPaginatedCollectionAsync(
-                "Strongest chickens in this guild:",
+                "Strongest bare strength chickens in this guild:",
                 chickens,
                 c => $"{Formatter.Bold(c.Name)} | {c.Owner.Mention} | {c.Stats.TotalStrength} STR"
             ).ConfigureAwait(false);
@@ -288,7 +288,7 @@ namespace TheGodfather.Modules.Chickens
             }
 
             await ctx.SendPaginatedCollectionAsync(
-                "Strongest chickens (globally):",
+                "Strongest bare strength chickens (globally):",
                 chickens,
                 c => $"{Formatter.Bold(c.Name)} | {c.Owner.Mention} | {c.Stats.TotalStrength} STR"
             ).ConfigureAwait(false);
