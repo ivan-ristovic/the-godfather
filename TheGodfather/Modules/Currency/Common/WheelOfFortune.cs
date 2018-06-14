@@ -54,7 +54,7 @@ namespace TheGodfather.Modules.Currency.Common
                     wof.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
                     ms.Position = 0;
                     await _channel.SendFileAsync(ms, "wof.png", embed: new DiscordEmbedBuilder() {
-                        Description = $"{_user.Mention} won {Formatter.Bold(WonAmount.ToWords().ApplyCase(LetterCasing.Sentence))} ({WonAmount}) credits!",
+                        Description = $"{_user.Mention} won {Formatter.Bold(WonAmount.ToWords())} ({WonAmount}) credits!",
                         Color = DiscordColor.Cyan
                     }).ConfigureAwait(false);
                 }

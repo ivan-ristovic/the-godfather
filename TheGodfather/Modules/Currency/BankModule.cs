@@ -51,12 +51,12 @@ namespace TheGodfather.Modules.Currency
                 .ConfigureAwait(false);
 
             var emb = new DiscordEmbedBuilder() {
-                Title = $"Account balance for {user.Username}",
+                Title = $"Account status for {user.Username}",
                 Color = DiscordColor.Yellow
             };
 
             if (balance.HasValue) {
-                emb.WithDescription($"{Formatter.Bold(balance.Value.ToWords().ApplyCase(LetterCasing.Sentence))} credits.");
+                emb.WithDescription($"Credit amount: {Formatter.Bold(balance.Value.ToWords())}");
                 emb.AddField("Numeric value", balance.Value.ToString());
             } else {
                 emb.WithDescription($"No existing account! Use command {Formatter.InlineCode("bank register")} to open an account.");
