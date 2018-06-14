@@ -6,11 +6,12 @@ using System.IO;
 using System.Threading.Tasks;
 
 using TheGodfather.Common;
-using TheGodfather.Modules.Games.Common;
 
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
+
+using Humanizer;
 #endregion
 
 namespace TheGodfather.Modules.Currency.Common
@@ -53,7 +54,7 @@ namespace TheGodfather.Modules.Currency.Common
                     wof.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
                     ms.Position = 0;
                     await _channel.SendFileAsync(ms, "wof.png", embed: new DiscordEmbedBuilder() {
-                        Description = $"{_user.Mention} won {Formatter.Bold(WonAmount.ToString())} credits!",
+                        Description = $"{_user.Mention} won {Formatter.Bold(WonAmount.ToWords().ApplyCase(LetterCasing.Sentence))} ({WonAmount}) credits!",
                         Color = DiscordColor.Cyan
                     }).ConfigureAwait(false);
                 }

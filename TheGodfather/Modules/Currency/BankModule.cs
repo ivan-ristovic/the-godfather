@@ -12,6 +12,8 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+
+using Humanizer;
 #endregion
 
 namespace TheGodfather.Modules.Currency
@@ -48,11 +50,21 @@ namespace TheGodfather.Modules.Currency
             long? balance = await Database.GetUserCreditAmountAsync(user.Id, ctx.Guild.Id)
                 .ConfigureAwait(false);
 
-            await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
+            var emb = new DiscordEmbedBuilder() {
                 Title = $"Account balance for {user.Username}",
-                Description = Formatter.Bold(balance.HasValue ? $"{balance} credits." : $"No existing account! Use command {Formatter.InlineCode("bank register")} to open an account."),
                 Color = DiscordColor.Yellow
-            }.WithFooter("Your money is safe with us - WM Bank", user.AvatarUrl).Build()).ConfigureAwait(false);
+            };
+
+            if (balance.HasValue) {
+                emb.WithDescription($"{Formatter.Bold(balance.Value.ToWords().ApplyCase(LetterCasing.Sentence))} credits.");
+                emb.AddField("Numeric value", balance.Value.ToString());
+            } else {
+                emb.WithDescription($"No existing account! Use command {Formatter.InlineCode("bank register")} to open an account.");
+            }
+            emb.WithFooter("Your money is safe with us - WM Bank", user.AvatarUrl);
+
+            await ctx.RespondAsync(embed: emb.Build())
+                .ConfigureAwait(false);
         }
         #endregion
 
