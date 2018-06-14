@@ -69,7 +69,7 @@ namespace TheGodfather.EventListeners
             } else if (ex is InvalidCommandUsageException)
                 emb.Description = $"{emoji} Invalid usage! {ex.Message}";
             else if (ex is ArgumentException)
-                emb.Description = $"{emoji} Invalid command call (please see {Formatter.Bold("!help <command>")} and make sure the argument types are correct).";
+                emb.Description = $"{emoji} Argument conversion error (please check {Formatter.Bold($"help {e.Command.QualifiedName}")}).\n\nDetails: {Formatter.Italic(ex.Message)}";
             else if (ex is CommandFailedException)
                 emb.Description = $"{emoji} {ex.Message} {(ex.InnerException != null ? "Details: " + ex.InnerException.Message : "")}";
             else if (ex is DatabaseServiceException)
