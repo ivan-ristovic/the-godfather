@@ -22,7 +22,7 @@ namespace TheGodfather.Modules.Administration
     [Description("Miscellaneous channel control commands. If invoked without subcommands, prints out channel information.")]
     [Aliases("channels", "c", "chn")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    [ListeningCheck]
+    [NotBlocked]
     public class ChannelModule : TheGodfatherBaseModule
     {
 

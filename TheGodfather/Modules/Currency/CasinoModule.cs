@@ -20,7 +20,7 @@ namespace TheGodfather.Modules.Currency
     [Description("Betting and gambling games.")]
     [Aliases("vegas", "cs", "cas")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    [ListeningCheck]
+    [NotBlocked]
     public partial class CasinoModule : TheGodfatherBaseModule
     {
 

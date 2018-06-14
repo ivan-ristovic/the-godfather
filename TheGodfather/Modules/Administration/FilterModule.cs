@@ -26,7 +26,7 @@ namespace TheGodfather.Modules.Administration
     [Aliases("f", "filters")]
     [UsageExample("!filter fuck fk f+u+c+k+")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    [ListeningCheck]
+    [NotBlocked]
     public class FilterModule : TheGodfatherBaseModule
     {
 

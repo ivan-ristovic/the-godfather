@@ -20,7 +20,7 @@ namespace TheGodfather.Modules.Games
     [Description("Starts a game for you to play!")]
     [Aliases("games", "gm")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    [ListeningCheck]
+    [NotBlocked]
     public partial class GamesModule : TheGodfatherBaseModule
     {
 

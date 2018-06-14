@@ -37,6 +37,7 @@ namespace TheGodfather
         public bool StatusRotationEnabled { get; internal set; } = true;
         public ConcurrentDictionary<ulong, CancellationTokenSource> SpaceCheckingCTS = new ConcurrentDictionary<ulong, CancellationTokenSource>();
         public ConcurrentDictionary<ulong, MusicPlayer> MusicPlayers = new ConcurrentDictionary<ulong, MusicPlayer>();
+        public ConcurrentDictionary<ulong, ConcurrentHashSet<ulong>> AwaitingUsersInteractively = new ConcurrentDictionary<ulong, ConcurrentHashSet<ulong>>();
 
 
         public CachedGuildConfig GetGuildConfig(ulong gid)
@@ -57,6 +58,22 @@ namespace TheGodfather
             } else {
                 return null;
             }
+        }
+
+        public void AddAwaitingUser(ulong cid, ulong uid)
+        {
+            AwaitingUsersInteractively.AddOrUpdate(
+                cid,
+                new ConcurrentHashSet<ulong> { uid },
+                (k, v) => { v.Add(uid); return v; }
+            );
+        }
+
+        public void RemoveAwaitingUser(ulong cid, ulong uid)
+        {
+            AwaitingUsersInteractively[cid].TryRemove(uid);
+            if (AwaitingUsersInteractively[cid].Count == 0)
+                AwaitingUsersInteractively.TryRemove(cid, out _);
         }
 
         public string GetGuildPrefix(ulong gid)

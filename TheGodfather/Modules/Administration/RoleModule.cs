@@ -19,7 +19,7 @@ namespace TheGodfather.Modules.Administration
     [Description("Miscellaneous role control commands.")]
     [Aliases("role", "rl")]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
-    [ListeningCheck]
+    [NotBlocked]
     public class RoleModule : TheGodfatherBaseModule
     {
 

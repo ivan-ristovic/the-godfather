@@ -3,8 +3,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
 using TheGodfather.Common;
+using TheGodfather.Common.Collections;
 using TheGodfather.Common.Converters;
 
 using DSharpPlus;
@@ -24,7 +26,7 @@ namespace TheGodfather.Extensions
                 Color = DiscordColor.Yellow
             }).ConfigureAwait(false);
 
-            if (!await ctx.Client.GetInteractivity().WaitForYesNoAnswerAsync(ctx.Channel.Id, ctx.User.Id).ConfigureAwait(false)) {
+            if (!await ctx.Client.GetInteractivity().WaitForYesNoAnswerAsync(ctx).ConfigureAwait(false)) {
                 await RespondWithFailedEmbedAsync(ctx, "Alright, aborting...")
                     .ConfigureAwait(false);
                 return false;
@@ -33,14 +35,14 @@ namespace TheGodfather.Extensions
             return true;
         }
 
-        public static async Task<bool> AskYesNoQuestionAsync(this DiscordChannel channel, DiscordClient client, DiscordUser user, string question)
+        public static async Task<bool> AskYesNoQuestionAsync(this DiscordChannel channel, CommandContext ctx, string question)
         {
             await channel.SendMessageAsync(embed: new DiscordEmbedBuilder {
                 Description = $"{StaticDiscordEmoji.Question} {question}",
                 Color = DiscordColor.Yellow
             }).ConfigureAwait(false);
 
-            if (!await client.GetInteractivity().WaitForYesNoAnswerAsync(channel.Id, user.Id).ConfigureAwait(false)) {
+            if (!await ctx.Client.GetInteractivity().WaitForYesNoAnswerAsync(ctx).ConfigureAwait(false)) {
                 await channel.SendFailedEmbedAsync("Alright, aborting...")
                     .ConfigureAwait(false);
                 return false;
@@ -49,8 +51,14 @@ namespace TheGodfather.Extensions
             return true;
         }
 
-        public static async Task<bool> WaitForYesNoAnswerAsync(this InteractivityExtension interactivity, ulong cid, ulong uid)
+        public static Task<bool> WaitForYesNoAnswerAsync(this InteractivityExtension interactivity, CommandContext ctx, ulong uid = 0)
+            => interactivity.WaitForYesNoAnswerAsync(ctx.Channel.Id, uid != 0 ? uid : ctx.User.Id, ctx.Services.GetService<SharedData>());
+
+        public static async Task<bool> WaitForYesNoAnswerAsync(this InteractivityExtension interactivity, ulong cid, ulong uid, SharedData shared = null)
         {
+            if (shared != null)
+                shared.AddAwaitingUser(cid, uid);
+
             bool response = false;
             var mctx = await interactivity.WaitForMessageAsync(
                 m => {
@@ -61,6 +69,9 @@ namespace TheGodfather.Extensions
                     return b.HasValue;
                 }
             ).ConfigureAwait(false);
+
+            if (shared != null)
+                shared.RemoveAwaitingUser(cid, uid);
 
             return response;
         }
@@ -114,6 +125,9 @@ namespace TheGodfather.Extensions
 
         public static async Task<DiscordUser> WaitForGameOpponentAsync(this CommandContext ctx)
         {
+            var shared = ctx.Services.GetService<SharedData>();
+            shared.AddAwaitingUser(ctx.Channel.Id, ctx.User.Id);
+
             var mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(
                 xm => {
                     if (xm.Author.Id == ctx.User.Id || xm.Channel.Id != ctx.Channel.Id)
@@ -122,6 +136,8 @@ namespace TheGodfather.Extensions
                     return split.Length == 1 && (split[0] == "me" || split[0] == "i");
                 }
             ).ConfigureAwait(false);
+
+            shared.RemoveAwaitingUser(ctx.Channel.Id, ctx.User.Id);
 
             return mctx?.User;
         }

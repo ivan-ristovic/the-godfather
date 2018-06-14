@@ -17,7 +17,7 @@ namespace TheGodfather.Modules.Search
     [Aliases("x")]
     [UsageExample("!xkcd")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    [ListeningCheck]
+    [NotBlocked]
     public class XkcdModule : TheGodfatherBaseModule
     {
 

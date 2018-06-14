@@ -23,7 +23,7 @@ namespace TheGodfather.Modules.Misc
     [UsageExample("!rank")]
     [UsageExample("!rank @Someone")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    [ListeningCheck]
+    [NotBlocked]
     public class RanksModule : TheGodfatherBaseModule
     {
 

@@ -18,7 +18,7 @@ namespace TheGodfather.Modules.Search
     [Aliases("w")]
     [UsageExample("!weather london")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    [ListeningCheck]
+    [NotBlocked]
     public class WeatherModule : TheGodfatherServiceModule<WeatherService>
     {
 

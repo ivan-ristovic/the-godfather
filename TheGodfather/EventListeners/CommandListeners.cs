@@ -42,7 +42,7 @@ namespace TheGodfather.EventListeners
             while (ex is AggregateException)
                 ex = ex.InnerException;
 
-            if (ex is ChecksFailedException chke && chke.FailedChecks.Any(c => c is ListeningCheckAttribute))
+            if (ex is ChecksFailedException chke && chke.FailedChecks.Any(c => c is NotBlockedAttribute))
                 return;
 
             shard.Log(LogLevel.Info,
@@ -88,6 +88,8 @@ namespace TheGodfather.EventListeners
                 var attr = exc.FailedChecks.First();
                 if (attr is CooldownAttribute)
                     return;
+                else if (attr is InteractivitySensitiveAttribute)
+                    emb.Description = $"{emoji} Please answer me first!";
                 else if (attr is RequirePermissionsAttribute perms)
                     emb.Description = $"{emoji} Permissions to execute that command ({perms.Permissions.ToPermissionString()}) aren't met!";
                 else if (attr is RequireUserPermissionsAttribute uperms)

@@ -22,7 +22,7 @@ namespace TheGodfather.Modules.Administration
     [UsageExample("!sar")]
     [UsageExample("!sar @Announcements")]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
-    [ListeningCheck]
+    [NotBlocked]
     public class SelfAssignableRolesModule : TheGodfatherBaseModule
     {
 

@@ -22,7 +22,7 @@ namespace TheGodfather.Modules.Misc
     [UsageExample("!meme")]
     [UsageExample("!meme SomeMemeNameWhichYouAdded")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    [ListeningCheck]
+    [NotBlocked]
     public partial class MemeModule : TheGodfatherBaseModule
     {
 

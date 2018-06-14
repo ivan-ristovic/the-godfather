@@ -25,7 +25,7 @@ namespace TheGodfather.Modules.Reactions
     [Aliases("ereact", "er", "emojir", "emojireactions")]
     [UsageExample("!emojireaction :smile: haha laughing")]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
-    [ListeningCheck]
+    [NotBlocked]
     public class EmojiReactionsModule : TheGodfatherBaseModule
     {
 

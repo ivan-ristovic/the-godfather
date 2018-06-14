@@ -23,7 +23,7 @@ namespace TheGodfather.Modules.Administration
     [Description("Miscellaneous guild control commands. If invoked without subcommands, prints guild information.")]
     [Aliases("server", "g")]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
-    [ListeningCheck]
+    [NotBlocked]
     public partial class GuildModule : TheGodfatherBaseModule
     {
 

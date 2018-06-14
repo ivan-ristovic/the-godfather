@@ -19,7 +19,7 @@ namespace TheGodfather.Modules.Search
     [Aliases("y", "yt", "ytube")]
     [UsageExample("!youtube never gonna give you up")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    [ListeningCheck]
+    [NotBlocked]
     public class YoutubeModule : TheGodfatherServiceModule<YoutubeService>
     {
 

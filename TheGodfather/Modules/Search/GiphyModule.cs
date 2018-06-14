@@ -19,7 +19,7 @@ namespace TheGodfather.Modules.Search
     [Aliases("giphy")]
     [UsageExample("!gif wat")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    [ListeningCheck]
+    [NotBlocked]
     public class GiphyModule : TheGodfatherServiceModule<GiphyService>
     {
 

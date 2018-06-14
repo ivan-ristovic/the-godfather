@@ -18,7 +18,7 @@ namespace TheGodfather.Modules.Search
     [Aliases("movies", "series", "serie", "movie", "film", "cinema", "omdb")]
     [UsageExample("!imdb Airplane")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    [ListeningCheck]
+    [NotBlocked]
     public class OMDbModule : TheGodfatherServiceModule<OMDbService>
     {
 

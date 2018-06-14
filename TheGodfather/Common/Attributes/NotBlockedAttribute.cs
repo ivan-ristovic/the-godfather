@@ -11,7 +11,7 @@ using DSharpPlus.CommandsNext.Attributes;
 namespace TheGodfather.Common.Attributes
 {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
-    internal class ListeningCheckAttribute : CheckBaseAttribute
+    internal class NotBlockedAttribute : CheckBaseAttribute
     {
         public override Task<bool> ExecuteCheckAsync(CommandContext ctx, bool help)
         {

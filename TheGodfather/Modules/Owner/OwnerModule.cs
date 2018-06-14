@@ -42,7 +42,7 @@ namespace TheGodfather.Modules.Owner
         [Aliases("a", "ann")]
         [UsageExample("!owner announce SPAM SPAM")]
         [RequireOwner]
-        [ListeningCheck]
+        [NotBlocked]
         public async Task ClearLogAsync(CommandContext ctx,
                                        [RemainingText, Description("Message to send.")] string message)
         {
@@ -72,7 +72,7 @@ namespace TheGodfather.Modules.Owner
         [Aliases("setbotavatar", "setavatar")]
         [UsageExample("!owner botavatar http://someimage.png")]
         [RequireOwner]
-        [ListeningCheck]
+        [NotBlocked]
         public async Task SetBotAvatarAsync(CommandContext ctx,
                                            [Description("URL.")] Uri url)
         {
@@ -105,7 +105,7 @@ namespace TheGodfather.Modules.Owner
         [Aliases("setbotname", "setname")]
         [UsageExample("!owner setname TheBotfather")]
         [RequireOwner]
-        [ListeningCheck]
+        [NotBlocked]
         public async Task SetBotNameAsync(CommandContext ctx,
                                          [RemainingText, Description("New name.")] string name)
         {
@@ -125,7 +125,7 @@ namespace TheGodfather.Modules.Owner
         [Aliases("clearlogs", "deletelogs", "deletelog")]
         [UsageExample("!owner clearlog")]
         [RequireOwner]
-        [ListeningCheck]
+        [NotBlocked]
         public async Task ClearLogAsync(CommandContext ctx)
         {
             if (!await ctx.AskYesNoQuestionAsync("Are you sure you want to clear the logs?").ConfigureAwait(false))
@@ -145,7 +145,7 @@ namespace TheGodfather.Modules.Owner
         [Aliases("sql", "dbq", "q")]
         [UsageExample("!owner dbquery SELECT * FROM gf.msgcount;")]
         [RequireOwner]
-        [ListeningCheck]
+        [NotBlocked]
         public async Task DatabaseQuery(CommandContext ctx,
                                         [RemainingText, Description("SQL Query.")] string query)
         {
@@ -190,7 +190,7 @@ namespace TheGodfather.Modules.Owner
         [Aliases("compile", "run", "e", "c", "r")]
         [UsageExample("!owner eval ```await Context.RespondAsync(\"Hello!\");```")]
         [RequireOwner]
-        [ListeningCheck]
+        [NotBlocked]
         public async Task EvaluateAsync(CommandContext ctx,
                                        [RemainingText, Description("Code to evaluate.")] string code)
         {
@@ -285,7 +285,7 @@ namespace TheGodfather.Modules.Owner
         [UsageExample("!owner filelog yes")]
         [UsageExample("!owner filelog false")]
         [RequireOwner]
-        [ListeningCheck]
+        [NotBlocked]
         public async Task FileLogAsync(CommandContext ctx,
                                       [Description("True/False")] bool b = true)
         {
@@ -303,7 +303,7 @@ namespace TheGodfather.Modules.Owner
         [UsageExample("!owner generatecommandlist")]
         [UsageExample("!owner generatecommandlist Temp/blabla.md")]
         [RequireOwner]
-        [ListeningCheck]
+        [NotBlocked]
         public async Task GenerateCommandListAsync(CommandContext ctx,
                                                   [RemainingText, Description("File path.")] string folder = null)
         {
@@ -455,7 +455,7 @@ namespace TheGodfather.Modules.Owner
         [UsageExample("!owner leave 337570344149975050")]
         [UsageExample("!owner leave 337570344149975050 201315884709576708")]
         [RequireOwner]
-        [ListeningCheck]
+        [NotBlocked]
         public async Task LeaveGuildsAsync(CommandContext ctx,
                                           [Description("Guild ID list.")] params ulong[] gids)
         {
@@ -489,7 +489,7 @@ namespace TheGodfather.Modules.Owner
         [UsageExample("!owner send u 303463460233150464 Hi to user!")]
         [UsageExample("!owner send c 120233460278590414 Hi to channel!")]
         [RequirePriviledgedUser]
-        [ListeningCheck]
+        [NotBlocked]
         public async Task SendAsync(CommandContext ctx,
                                    [Description("u/c (for user or channel.)")] string desc,
                                    [Description("User/Channel ID.")] ulong xid,
@@ -526,7 +526,7 @@ namespace TheGodfather.Modules.Owner
         [Aliases("disable", "poweroff", "exit", "quit")]
         [UsageExample("!owner shutdown")]
         [RequirePriviledgedUser]
-        [ListeningCheck]
+        [NotBlocked]
         public async Task ExitAsync(CommandContext ctx,
                                    [Description("Time until shutdown.")] TimeSpan timespan)
         {
@@ -548,7 +548,7 @@ namespace TheGodfather.Modules.Owner
         [Aliases("execas", "as")]
         [UsageExample("!owner sudo @Someone !rate")]
         [RequirePriviledgedUser]
-        [ListeningCheck]
+        [NotBlocked]
         public async Task SudoAsync(CommandContext ctx,
                                    [Description("Member to execute as.")] DiscordMember member,
                                    [RemainingText, Description("Command text to execute.")] string command)

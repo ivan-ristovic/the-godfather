@@ -18,7 +18,7 @@ namespace TheGodfather.Modules.Music
 {
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     [RequirePermissions(Permissions.UseVoice)]
-    [ListeningCheck]
+    [NotBlocked]
     [RequireOwner]
     public partial class MusicModule : TheGodfatherServiceModule<YoutubeService>
     {

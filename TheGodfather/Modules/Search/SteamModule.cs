@@ -17,7 +17,7 @@ namespace TheGodfather.Modules.Search
     [Aliases("s", "st")]
     [UsageExample("!steam profile 123456123")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    [ListeningCheck]
+    [NotBlocked]
     public class SteamModule : TheGodfatherServiceModule<SteamService>
     {
 

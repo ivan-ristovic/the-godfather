@@ -19,7 +19,7 @@ namespace TheGodfather.Modules.Currency
     [Description("Manipulate a deck of cards.")]
     [Aliases("deck")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    [ListeningCheck]
+    [NotBlocked]
     public class CardsModule : TheGodfatherBaseModule
     {
 

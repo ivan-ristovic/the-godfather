@@ -25,7 +25,7 @@ namespace TheGodfather.Modules.Games
         [Description("Start a new animal race!")]
         [Aliases("animr", "arace", "ar", "animalr")]
         [UsageExample("!game animalrace")]
-        [ListeningCheck]
+        [NotBlocked]
         public class AnimalRaceModule : TheGodfatherBaseModule
         {
 

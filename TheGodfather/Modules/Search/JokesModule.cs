@@ -21,7 +21,7 @@ namespace TheGodfather.Modules.Search
     [Aliases("jokes", "j")]
     [UsageExample("!joke")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    [ListeningCheck]
+    [NotBlocked]
     public class JokesModule : TheGodfatherBaseModule
     {
 

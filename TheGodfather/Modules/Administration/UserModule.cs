@@ -22,7 +22,7 @@ namespace TheGodfather.Modules.Administration
     [Description("Miscellaneous user control commands. If invoked without subcommands, prints out user information.")]
     [Aliases("users", "u", "usr")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    [ListeningCheck]
+    [NotBlocked]
     public class UserModule : TheGodfatherBaseModule
     {
 

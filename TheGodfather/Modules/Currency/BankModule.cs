@@ -23,7 +23,7 @@ namespace TheGodfather.Modules.Currency
     [Aliases("$", "$$", "$$$")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     [UsageExample("!bank")]
-    [ListeningCheck]
+    [NotBlocked]
     public class BankModule : TheGodfatherBaseModule
     {
 

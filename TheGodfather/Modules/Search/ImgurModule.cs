@@ -27,7 +27,7 @@ namespace TheGodfather.Modules.Search
     [UsageExample("!imgur 10 aww")]
     [UsageExample("!imgur aww 10")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    [ListeningCheck]
+    [NotBlocked]
     public class ImgurModule : TheGodfatherServiceModule<ImgurService>
     {
 

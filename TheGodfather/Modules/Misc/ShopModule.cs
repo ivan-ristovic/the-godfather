@@ -20,7 +20,7 @@ namespace TheGodfather.Modules.Misc
     [Aliases("store")]
     [UsageExample("!shop")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    [ListeningCheck]
+    [NotBlocked]
     public class ShopModule : TheGodfatherBaseModule
     {
 

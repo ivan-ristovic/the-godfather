@@ -18,7 +18,7 @@ namespace TheGodfather.Modules.Polls
     [Aliases("votefor", "vf")]
     [UsageExample("!vote 1")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    [ListeningCheck]
+    [NotBlocked]
     public class VotingModule : TheGodfatherBaseModule
     {
 

@@ -24,7 +24,7 @@ namespace TheGodfather.Modules.Chickens
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     [UsageExample("!chicken")]
     [UsageExample("!chicken @Someone")]
-    [ListeningCheck]
+    [NotBlocked]
     public partial class ChickenModule : TheGodfatherBaseModule
     {
 

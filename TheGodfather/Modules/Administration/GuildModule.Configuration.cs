@@ -27,7 +27,7 @@ namespace TheGodfather.Modules.Administration
         [UsageExample("!guild configure")]
         [Cooldown(3, 5, CooldownBucketType.Guild)]
         [RequireUserPermissions(Permissions.ManageGuild)]
-        [ListeningCheck]
+        [NotBlocked]
         public partial class ConfigModule : TheGodfatherBaseModule
         {
 
@@ -111,7 +111,7 @@ namespace TheGodfather.Modules.Administration
                 await Task.Delay(TimeSpan.FromSeconds(10))
                     .ConfigureAwait(false);
 
-                if (await channel.AskYesNoQuestionAsync(ctx.Client, ctx.User, "Do you wish to change the prefix for the bot? (y/n)")) {
+                if (await channel.AskYesNoQuestionAsync(ctx, "Do you wish to change the prefix for the bot? (y/n)")) {
                     await channel.SendIconEmbedAsync("What will the new prefix be?")
                         .ConfigureAwait(false);
                     var mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id)
@@ -119,10 +119,10 @@ namespace TheGodfather.Modules.Administration
                     gcfg.Prefix = mctx?.Message.Content;
                 }
 
-                if (await channel.AskYesNoQuestionAsync(ctx.Client, ctx.User, "Do you wish to enable command suggestions for those nasty times when you just can't remember the command name? (y/n)"))
+                if (await channel.AskYesNoQuestionAsync(ctx, "Do you wish to enable command suggestions for those nasty times when you just can't remember the command name? (y/n)"))
                     gcfg.SuggestionsEnabled = true;
 
-                if (await channel.AskYesNoQuestionAsync(ctx.Client, ctx.User, "I can log the actions that happen in the guild (such as message deletion, channel updates etc.), so you always know what is going on in the guild. Do you wish to enable the action log? (y/n)")) {
+                if (await channel.AskYesNoQuestionAsync(ctx, "I can log the actions that happen in the guild (such as message deletion, channel updates etc.), so you always know what is going on in the guild. Do you wish to enable the action log? (y/n)")) {
                     await channel.SendIconEmbedAsync($"Alright, cool. In order for action logs to work you will need to tell me where to dump the log. Please reply with a channel mention, for example {Formatter.Bold("#logs")} .")
                         .ConfigureAwait(false);
                     var mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id && m.MentionedChannels.Count == 1)
@@ -132,7 +132,7 @@ namespace TheGodfather.Modules.Administration
 
                 ulong wcid = 0;
                 string wmessage = null;
-                if (await channel.AskYesNoQuestionAsync(ctx.Client, ctx.User, "I can also send a welcome message when someone joins the guild. Do you wish to enable this feature? (y/n)")) {
+                if (await channel.AskYesNoQuestionAsync(ctx, "I can also send a welcome message when someone joins the guild. Do you wish to enable this feature? (y/n)")) {
                     await channel.SendIconEmbedAsync($"I will need a channel where to send the welcome messages. Please reply with a channel mention, for example {Formatter.Bold("#logs")} .")
                         .ConfigureAwait(false);
                     var mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id && m.MentionedChannels.Count == 1)
@@ -145,7 +145,7 @@ namespace TheGodfather.Modules.Administration
                         wcid = 0;
                     }
 
-                    if (await channel.AskYesNoQuestionAsync(ctx.Client, ctx.User, "You can also customize the welcome message. Do you want to do that now? (y/n)")) {
+                    if (await channel.AskYesNoQuestionAsync(ctx, "You can also customize the welcome message. Do you want to do that now? (y/n)")) {
                         await channel.SendIconEmbedAsync($"Tell me what message you want me to send when someone joins the guild. Note that you can use the wildcard {Formatter.Bold("%user%")} and I will replace it with the mention for the member who joined.")
                             .ConfigureAwait(false);
                         mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id)
@@ -156,7 +156,7 @@ namespace TheGodfather.Modules.Administration
 
                 ulong lcid = 0;
                 string lmessage = null;
-                if (await channel.AskYesNoQuestionAsync(ctx.Client, ctx.User, "The same applies for member leave messages. Do you wish to enable this feature? (y/n)")) {
+                if (await channel.AskYesNoQuestionAsync(ctx, "The same applies for member leave messages. Do you wish to enable this feature? (y/n)")) {
                     await channel.SendIconEmbedAsync($"I will need a channel where to send the leave messages. Please reply with a channel mention, for example {Formatter.Bold("#logs")} .")
                         .ConfigureAwait(false);
                     var mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id && m.MentionedChannels.Count == 1)
@@ -169,7 +169,7 @@ namespace TheGodfather.Modules.Administration
                         lcid = 0;
                     }
 
-                    if (await channel.AskYesNoQuestionAsync(ctx.Client, ctx.User, "You can also customize the leave message. Do you want to do that now? (y/n)")) {
+                    if (await channel.AskYesNoQuestionAsync(ctx, "You can also customize the leave message. Do you want to do that now? (y/n)")) {
                         await channel.SendIconEmbedAsync($"Tell me what message you want me to send when someone leaves the guild. Note that you can use the wildcard {Formatter.Bold("%user%")} and I will replace it with the mention for the member who left.")
                             .ConfigureAwait(false);
                         mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id)
@@ -178,25 +178,25 @@ namespace TheGodfather.Modules.Administration
                     }
                 }
 
-                if (await channel.AskYesNoQuestionAsync(ctx.Client, ctx.User, "Do you wish to enable link filtering? (y/n)")) {
+                if (await channel.AskYesNoQuestionAsync(ctx, "Do you wish to enable link filtering? (y/n)")) {
                     gcfg.LinkfilterEnabled = true;
-                    if (await channel.AskYesNoQuestionAsync(ctx.Client, ctx.User, "Do you wish to enable Discord invite links filtering? (y/n)"))
+                    if (await channel.AskYesNoQuestionAsync(ctx, "Do you wish to enable Discord invite links filtering? (y/n)"))
                         gcfg.BlockDiscordInvites = true;
                     else
                         gcfg.BlockDiscordInvites = false;
-                    if (await channel.AskYesNoQuestionAsync(ctx.Client, ctx.User, "Do you wish to enable DDoS/Booter websites filtering? (y/n)"))
+                    if (await channel.AskYesNoQuestionAsync(ctx, "Do you wish to enable DDoS/Booter websites filtering? (y/n)"))
                         gcfg.BlockBooterWebsites = true;
                     else
                         gcfg.BlockBooterWebsites = false;
-                    if (await channel.AskYesNoQuestionAsync(ctx.Client, ctx.User, "Do you wish to enable IP logging websites filtering? (y/n)"))
+                    if (await channel.AskYesNoQuestionAsync(ctx, "Do you wish to enable IP logging websites filtering? (y/n)"))
                         gcfg.BlockIpLoggingWebsites = true;
                     else
                         gcfg.BlockIpLoggingWebsites = false;
-                    if (await channel.AskYesNoQuestionAsync(ctx.Client, ctx.User, "Do you wish to enable disturbing/shock/gore websites filtering? (y/n)"))
+                    if (await channel.AskYesNoQuestionAsync(ctx, "Do you wish to enable disturbing/shock/gore websites filtering? (y/n)"))
                         gcfg.BlockDisturbingWebsites = true;
                     else
                         gcfg.BlockDisturbingWebsites = false;
-                    if (await channel.AskYesNoQuestionAsync(ctx.Client, ctx.User, "Do you wish to enable URL shorteners filtering? (y/n)"))
+                    if (await channel.AskYesNoQuestionAsync(ctx, "Do you wish to enable URL shorteners filtering? (y/n)"))
                         gcfg.BlockUrlShorteners = true;
                     else
                         gcfg.BlockUrlShorteners = false;
@@ -238,7 +238,7 @@ namespace TheGodfather.Modules.Administration
                 await channel.SendIconEmbedAsync($"Selected settings:\n\n{sb.ToString()}")
                     .ConfigureAwait(false);
 
-                if (await channel.AskYesNoQuestionAsync(ctx.Client, ctx.User, "We are almost done! Please review the settings above and say whether you want me to apply them. (y/n)")) {
+                if (await channel.AskYesNoQuestionAsync(ctx, "We are almost done! Please review the settings above and say whether you want me to apply them. (y/n)")) {
                     await Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg)
                         .ConfigureAwait(false);
                     await Database.SetWelcomeChannelAsync(ctx.Guild.Id, wcid)

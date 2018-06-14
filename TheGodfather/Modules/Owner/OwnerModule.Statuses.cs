@@ -20,7 +20,7 @@ namespace TheGodfather.Modules.Owner
         [Description("Bot status manipulation. If invoked without command, either lists or adds status depending if argument is given.")]
         [Aliases("status", "botstatus", "activity", "activities")]
         [RequireOwner]
-        [ListeningCheck]
+        [NotBlocked]
         public class StatusModule : TheGodfatherBaseModule
         {
 

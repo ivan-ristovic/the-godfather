@@ -22,7 +22,7 @@ namespace TheGodfather.Modules.Search
     [Aliases("ud", "urban")]
     [UsageExample("!urbandict blonde")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    [ListeningCheck]
+    [NotBlocked]
     public class UrbanDictModule : TheGodfatherBaseModule
     {
 

@@ -25,7 +25,7 @@ namespace TheGodfather.Modules.Games
         [Description("Start a new typing race!")]
         [Aliases("tr", "trace", "typerace", "typing", "typingr")]
         [UsageExample("!game typingrace")]
-        [ListeningCheck]
+        [NotBlocked]
         public class TypingRaceModule : TheGodfatherBaseModule
         {
 

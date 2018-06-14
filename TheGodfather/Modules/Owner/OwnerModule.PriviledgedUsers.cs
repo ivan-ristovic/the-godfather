@@ -25,7 +25,7 @@ namespace TheGodfather.Modules.Owner
         [Description("Manipulate priviledged users. Priviledged users can invoke commands marked with RequirePriviledgedUsers permission.")]
         [Aliases("pu", "privu", "privuser", "pusers", "puser", "pusr")]
         [RequireOwner]
-        [ListeningCheck]
+        [NotBlocked]
         public class PriviledgedUsersModule : TheGodfatherBaseModule
         {
 

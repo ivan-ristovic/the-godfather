@@ -25,7 +25,7 @@ namespace TheGodfather.Modules.Music
         [UsageExample("!play what is love?")]
         [RequireBotPermissions(Permissions.Speak)]
         [RequireOwner]
-        [ListeningCheck]
+        [NotBlocked]
         public class PlayModule : MusicModule
         {
 

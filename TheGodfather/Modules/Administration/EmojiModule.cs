@@ -23,7 +23,7 @@ namespace TheGodfather.Modules.Administration
     [Aliases("emojis", "e")]
     [UsageExample("!emoji")]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
-    [ListeningCheck]
+    [NotBlocked]
     public class EmojiModule : TheGodfatherBaseModule
     {
 

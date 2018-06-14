@@ -25,7 +25,7 @@ using Humanizer;
 namespace TheGodfather.Modules.Misc
 {
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    [ListeningCheck]
+    [NotBlocked]
     public class MiscModule : TheGodfatherBaseModule
     {
 

@@ -20,7 +20,7 @@ namespace TheGodfather.Modules.Search
     [Aliases("feed")]
     [UsageExample("!rss https://news.google.com/news/rss/")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    [ListeningCheck]
+    [NotBlocked]
     public class RSSModule : TheGodfatherBaseModule
     {
 

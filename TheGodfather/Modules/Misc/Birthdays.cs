@@ -22,7 +22,7 @@ namespace TheGodfather.Modules.Misc
     [Aliases("birthday", "bday", "bd", "bdays")]
     [RequireUserPermissions(Permissions.ManageGuild)]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
-    [ListeningCheck]
+    [NotBlocked]
     public class BirthdayModule : TheGodfatherBaseModule
     {
 

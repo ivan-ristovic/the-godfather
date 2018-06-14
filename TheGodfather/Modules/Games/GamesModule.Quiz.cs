@@ -34,7 +34,7 @@ namespace TheGodfather.Modules.Games
         [UsageExample("!game quiz history hard 15")]
         [UsageExample("!game quiz 9 hard")]
         [UsageExample("!game quiz 9 hard 15")]
-        [ListeningCheck]
+        [NotBlocked]
         public class QuizModule : TheGodfatherBaseModule
         {
 

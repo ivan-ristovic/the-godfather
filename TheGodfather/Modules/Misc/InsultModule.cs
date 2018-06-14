@@ -21,7 +21,7 @@ namespace TheGodfather.Modules.Misc
     [Aliases("burn", "insults", "ins", "roast")]
     [UsageExample("!insult @Someone")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    [ListeningCheck]
+    [NotBlocked]
     public class InsultModule : TheGodfatherBaseModule
     {
 

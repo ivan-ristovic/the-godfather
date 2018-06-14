@@ -21,7 +21,7 @@ namespace TheGodfather.Modules.Administration
     [Description("Commands for manipulating messages.")]
     [Aliases("m", "msg", "msgs", "messages")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    [ListeningCheck]
+    [NotBlocked]
     public class MessageModule : TheGodfatherBaseModule
     {
         #region COMMAND_MESSAGES_ATTACHMENTS

@@ -20,7 +20,7 @@ namespace TheGodfather.Modules.Misc
     [Description("Random gibberish.")]
     [Aliases("rnd", "rand")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    [ListeningCheck]
+    [NotBlocked]
     public class CommandsRandomGroup : TheGodfatherBaseModule
     {
         #region COMMAND_CAT
