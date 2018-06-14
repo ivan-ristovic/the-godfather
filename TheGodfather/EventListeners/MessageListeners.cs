@@ -169,9 +169,9 @@ namespace TheGodfather.EventListeners
                 if (e.Message.Embeds.Count > 0)
                     emb.AddField("Embeds", e.Message.Embeds.Count.ToString(), inline: true);
                 if (e.Message.Reactions.Count > 0)
-                    emb.AddField("Reactions", e.Message.Reactions.Count.ToString(), inline: true);
+                    emb.AddField("Reactions", string.Join(" ", e.Message.Reactions.Select(r => r.Emoji.GetDiscordName())), inline: true);
                 if (e.Message.Attachments.Count > 0)
-                    emb.AddField("Attachments", e.Message.Attachments.Count.ToString(), inline: true);
+                    emb.AddField("Attachments", string.Join("\n", e.Message.Attachments.Select(a => a.FileName)), inline: true);
                 emb.AddField("Created at", e.Message.CreationTimestamp != null ? e.Message.CreationTimestamp.ToUniversalTime().ToString() : "<unknown timestamp>", inline: true);
                 emb.AddField("Content", $"{Formatter.BlockCode(string.IsNullOrWhiteSpace(e.Message.Content) ? "<empty content>" : e.Message.Content)}");
 
