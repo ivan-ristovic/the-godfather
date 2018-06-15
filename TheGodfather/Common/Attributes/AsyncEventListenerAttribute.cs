@@ -26,7 +26,7 @@ namespace TheGodfather.Common.Attributes
             {
                 _ = Task.Run(async () => {
                     try {
-                        await (Task)mi.Invoke(null, new[] { shard, e });
+                        await (Task)mi.Invoke(null, new object[] { shard, e });
                     } catch (Exception ex) {
                         TheGodfather.LogHandle.LogException(LogLevel.Error, ex);
                     }
