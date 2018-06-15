@@ -104,7 +104,7 @@ namespace TheGodfather.EventListeners
                     emb.AddField("Emojis before", e.EmojisBefore?.Count.ToString() ?? "<unknown>", inline: true);
                     emb.AddField("Emojis after", e.EmojisAfter?.Count.ToString() ?? "<unknown>", inline: true);
                 } else {
-                    emb.WithTitle($"Guild emoji acton occured: {eentry.ActionCategory.ToString()}");
+                    emb.WithTitle($"Guild emoji action occured: {eentry.ActionCategory.ToString()}");
                     emb.WithDescription(eentry.Target?.ToString() ?? "No description provided");
                     emb.AddField("User responsible", eentry.UserResponsible.Mention, inline: true);
                     if (eentry.NameChange != null)
