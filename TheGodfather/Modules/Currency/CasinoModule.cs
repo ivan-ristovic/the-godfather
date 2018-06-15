@@ -12,6 +12,8 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Interactivity;
+
+using Humanizer;
 #endregion
 
 namespace TheGodfather.Modules.Currency
@@ -37,7 +39,8 @@ namespace TheGodfather.Modules.Currency
 
 
         #region COMMAND_CASINO_SLOT
-        [Command("slot"), Module(ModuleType.Currency)]
+        [Command("slot"), Priority(1)]
+        [Module(ModuleType.Currency)]
         [Description("Roll a slot machine. You need to specify a bid amount. Default bid amount is 5.")]
         [Aliases("slotmachine")]
         [UsageExample("!casino slot 20")]
@@ -57,10 +60,27 @@ namespace TheGodfather.Modules.Currency
                 await Database.GiveCreditsToUserAsync(ctx.User.Id, ctx.Guild.Id, won)
                     .ConfigureAwait(false);
         }
+
+
+        [Command("slot"), Priority(0)]
+        public Task SlotAsync(CommandContext ctx,
+                             [RemainingText, Description("Bid as a metric number.")] string bidstr)
+        {
+            if (string.IsNullOrWhiteSpace(bidstr))
+                throw new InvalidCommandUsageException($"Bid missing.");
+            
+            try {
+                int bid = (int)bidstr.FromMetric();
+                return SlotAsync(ctx, bid);
+            } catch {
+                throw new InvalidCommandUsageException("Given string does not correspond to a valid metric number.");
+            }
+        }
         #endregion
 
         #region COMMAND_CASINO_WHEELOFFORTUNE
-        [Command("wheeloffortune"), Module(ModuleType.Currency)]
+        [Command("wheeloffortune"), Priority(1)]
+        [Module(ModuleType.Currency)]
         [Description("Roll a Wheel Of Fortune. You need to specify a bid amount. Default bid amount is 5.")]
         [Aliases("wof")]
         [UsageExample("!casino wof 20")]
@@ -80,6 +100,21 @@ namespace TheGodfather.Modules.Currency
             if (wof.WonAmount > 0)
                 await Database.GiveCreditsToUserAsync(ctx.User.Id, ctx.Guild.Id, wof.WonAmount)
                     .ConfigureAwait(false);
+        }
+
+        [Command("wheeloffortune"), Priority(0)]
+        public Task WheelOfFortuneAsync(CommandContext ctx,
+                                       [RemainingText, Description("Bid as a metric number.")] string bidstr)
+        {
+            if (string.IsNullOrWhiteSpace(bidstr))
+                throw new InvalidCommandUsageException($"Bid missing.");
+
+            try {
+                int bid = (int)bidstr.FromMetric();
+                return WheelOfFortuneAsync(ctx, bid);
+            } catch {
+                throw new InvalidCommandUsageException("Given string does not correspond to a valid metric number.");
+            }
         }
         #endregion
     }
