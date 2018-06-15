@@ -140,7 +140,8 @@ namespace TheGodfather.Modules.Administration
                 var emb = new DiscordEmbedBuilder() {
                     Title = "Details for emoji:",
                     Description = gemoji,
-                    Color = DiscordColor.CornflowerBlue
+                    Color = DiscordColor.CornflowerBlue,
+                    ThumbnailUrl = gemoji.Url
                 };
                 emb.AddField("Name", Formatter.InlineCode(gemoji.Name), inline: true);
                 emb.AddField("Created by", gemoji.User != null ? gemoji.User.Username : "<unknown>", inline: true);
