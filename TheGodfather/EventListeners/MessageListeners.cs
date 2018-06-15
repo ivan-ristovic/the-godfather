@@ -79,7 +79,7 @@ namespace TheGodfather.EventListeners
         [AsyncExecuter(EventTypes.MessageCreated)]
         public static async Task Client_MessageCreatedEmojiReactions(TheGodfatherShard shard, MessageCreateEventArgs e)
         {
-            if (!TheGodfather.Listening || e.Author.IsBot || e.Message?.Content == null || e.Channel.IsPrivate || shard.Shared.BlockedChannels.Contains(e.Channel.Id) || shard.Shared.BlockedUsers.Contains(e.Author.Id))
+            if (!TheGodfather.Listening || e.Author.IsBot || string.IsNullOrWhiteSpace(e.Message?.Content) || e.Channel.IsPrivate || shard.Shared.BlockedChannels.Contains(e.Channel.Id) || shard.Shared.BlockedUsers.Contains(e.Author.Id))
                 return;
 
             if (!e.Channel.PermissionsFor(e.Guild.CurrentMember).HasFlag(Permissions.AddReactions))

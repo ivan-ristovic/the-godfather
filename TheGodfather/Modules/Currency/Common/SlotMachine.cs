@@ -34,7 +34,7 @@ namespace TheGodfather.Modules.Currency.Common
                 Color = DiscordColor.Yellow
             };
 
-            emb.AddField("Result", $"{user.Mention} won {Formatter.Bold(won.ToWords())} ({won}) credits!");
+            emb.AddField("Result", $"{user.Mention} won {Formatter.Bold(won.ToWords())} ({won:n0}) credits!");
 
             return emb.Build();
         }

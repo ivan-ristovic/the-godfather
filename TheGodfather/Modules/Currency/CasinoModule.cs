@@ -1,7 +1,7 @@
 ﻿#region USING_DIRECTIVES
+using System;
 using System.Threading.Tasks;
 
-using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
@@ -45,7 +45,7 @@ namespace TheGodfather.Modules.Currency
                                    [Description("Bid.")] long bid = 5)
         {
             if (bid <= 0 || bid > 1000000000)
-                throw new InvalidCommandUsageException("Invalid bid amount! Needs to be in range [1, 1000000000]");
+                throw new InvalidCommandUsageException($"Invalid bid amount! Needs to be in range [1 - {1000000000:n0}]");
 
             if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, ctx.Guild.Id, bid).ConfigureAwait(false))
                 throw new CommandFailedException("You do not have enough credits in WM bank!");
@@ -68,7 +68,7 @@ namespace TheGodfather.Modules.Currency
                                              [Description("Bid.")] long bid = 5)
         {
             if (bid <= 0 || bid > 1000000000)
-                throw new InvalidCommandUsageException("Invalid bid amount! Needs to be in range [1, 1000000000]");
+                throw new InvalidCommandUsageException($"Invalid bid amount! Needs to be in range [1 - {1000000000:n0}]");
 
             if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, ctx.Guild.Id, bid).ConfigureAwait(false))
                 throw new CommandFailedException("You do not have enough credits in WM bank!");

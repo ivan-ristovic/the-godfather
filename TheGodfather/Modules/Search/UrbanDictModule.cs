@@ -12,7 +12,8 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-using DSharpPlus.Interactivity;
+
+using Humanizer;
 #endregion
 
 namespace TheGodfather.Modules.Search
@@ -46,7 +47,7 @@ namespace TheGodfather.Modules.Search
                 $"Urban Dictionary definitions for \"{query}\"",
                 data.List,
                 res => $"Definition by {Formatter.Bold(res.Author)}:\n\n" +
-                       $"{Formatter.Italic((res.Definition.Length < 1000 ? res.Definition : res.Definition.Substring(0, 1000) + "...").Trim())}\n\n" +
+                       $"{Formatter.Italic(res.Definition.Trim().Truncate(1000))}\n\n" +
                        $"{res.Permalink}",
                 DiscordColor.CornflowerBlue,
                 1

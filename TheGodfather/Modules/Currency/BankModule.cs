@@ -57,7 +57,7 @@ namespace TheGodfather.Modules.Currency
 
             if (balance.HasValue) {
                 emb.WithDescription($"Credit amount: {Formatter.Bold(balance.Value.ToWords())}");
-                emb.AddField("Numeric value", balance.Value.ToString());
+                emb.AddField("Numeric value", $"{balance.Value:n0}");
             } else {
                 emb.WithDescription($"No existing account! Use command {Formatter.InlineCode("bank register")} to open an account.");
             }
@@ -81,14 +81,14 @@ namespace TheGodfather.Modules.Currency
                                     [Description("Amount.")] long amount)
         {
             if (amount <= 0 || amount > 10000000000)
-                throw new InvalidCommandUsageException("Invalid amount. Must be in range [1-1000000000].");
+                throw new InvalidCommandUsageException($"Invalid amount! Needs to be in range [1 - {1000000000:n0}]");
 
             if (!await Database.BankContainsUserAsync(user.Id, ctx.Guild.Id).ConfigureAwait(false))
                 throw new CommandFailedException("Given user does not have a WM bank account!");
 
             await Database.GiveCreditsToUserAsync(user.Id, ctx.Guild.Id, amount)
                 .ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync($"{Formatter.Bold(user.Mention)} won {Formatter.Bold(amount.ToString())} credits on the Serbian lottery! (seems legit)", ":moneybag:")
+            await ctx.RespondWithIconEmbedAsync($"{Formatter.Bold(user.Mention)} won {Formatter.Bold($"{amount:n0}")} credits on the Serbian lottery! (seems legit)", ":moneybag:")
                 .ConfigureAwait(false);
         }
 
