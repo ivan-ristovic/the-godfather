@@ -85,6 +85,7 @@ namespace TheGodfather.Modules.Administration
             [Description("Starts an interactive wizard for configuring the guild settings.")]
             [Aliases("wizard")]
             [UsageExample("!guild cfg setup")]
+            [InteractivitySensitive]
             public async Task SetupAsync(CommandContext ctx)
             {
                 var channel = ctx.Guild.Channels.FirstOrDefault(c => c.Name == "gf_setup");

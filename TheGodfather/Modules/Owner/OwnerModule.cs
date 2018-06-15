@@ -42,7 +42,7 @@ namespace TheGodfather.Modules.Owner
         [Aliases("a", "ann")]
         [UsageExample("!owner announce SPAM SPAM")]
         [RequireOwner]
-        [NotBlocked]
+        [NotBlocked, InteractivitySensitive]
         public async Task ClearLogAsync(CommandContext ctx,
                                        [RemainingText, Description("Message to send.")] string message)
         {
@@ -125,7 +125,7 @@ namespace TheGodfather.Modules.Owner
         [Aliases("clearlogs", "deletelogs", "deletelog")]
         [UsageExample("!owner clearlog")]
         [RequireOwner]
-        [NotBlocked]
+        [NotBlocked, InteractivitySensitive]
         public async Task ClearLogAsync(CommandContext ctx)
         {
             if (!await ctx.AskYesNoQuestionAsync("Are you sure you want to clear the logs?").ConfigureAwait(false))

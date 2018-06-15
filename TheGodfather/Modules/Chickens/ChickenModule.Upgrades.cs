@@ -32,6 +32,7 @@ namespace TheGodfather.Modules.Chickens
 
 
             [GroupCommand, Priority(1)]
+            [InteractivitySensitive]
             public async Task ExecuteGroupAsync(CommandContext ctx,
                                                [Description("ID of the upgrade to buy.")] int id)
             {

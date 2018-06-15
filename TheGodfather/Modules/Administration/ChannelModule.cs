@@ -41,6 +41,7 @@ namespace TheGodfather.Modules.Administration
         [Aliases("createcat", "createc", "ccat", "cc", "+cat", "+c", "+category")]
         [UsageExample("!channel createcategory My New Category")]
         [RequirePermissions(Permissions.ManageChannels)]
+        [InteractivitySensitive]
         public async Task CreateCategoryAsync(CommandContext ctx,
                                              [RemainingText, Description("Name.")] string name)
         {
@@ -70,6 +71,7 @@ namespace TheGodfather.Modules.Administration
         [UsageExample("!channel createtext newtextchannel no")]
         [UsageExample("!channel createtext ParentCategory newtextchannel")]
         [RequirePermissions(Permissions.ManageChannels)]
+        [InteractivitySensitive]
         public async Task CreateTextChannelAsync(CommandContext ctx,
                                                 [Description("Name.")] string name,
                                                 [Description("Parent category.")] DiscordChannel parent = null,
@@ -123,6 +125,7 @@ namespace TheGodfather.Modules.Administration
         [UsageExample("!channel createtext \"My voice channel\" 10 96000")]
         [UsageExample("!channel createtext ParentCategory \"My voice channel\" 10 96000")]
         [RequirePermissions(Permissions.ManageChannels)]
+        [InteractivitySensitive]
         public async Task CreateVoiceChannelAsync(CommandContext ctx,
                                                  [Description("Name.")] string name,
                                                  [Description("Parent category.")] DiscordChannel parent = null,
@@ -177,6 +180,7 @@ namespace TheGodfather.Modules.Administration
         [UsageExample("!channel delete \"My voice channel\"")]
         [UsageExample("!channel delete \"My voice channel\" Because I can!")]
         [RequirePermissions(Permissions.ManageChannels)]
+        [InteractivitySensitive]
         public async Task DeleteAsync(CommandContext ctx,
                                      [Description("Channel to delete.")] DiscordChannel channel = null,
                                      [RemainingText, Description("Reason.")] string reason = null)

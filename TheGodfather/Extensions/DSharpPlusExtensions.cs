@@ -170,13 +170,17 @@ namespace TheGodfather.Extensions
 
         public static async Task<List<string>> WaitAndParsePollOptionsAsync(this CommandContext ctx)
         {
-            var interactivity = ctx.Client.GetInteractivity();
-            var mctx = await interactivity.WaitForMessageAsync(
+            var shared = ctx.Services.GetService<SharedData>();
+            shared.AddAwaitingUser(ctx.Channel.Id, ctx.User.Id);
+
+            var mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(
                 xm => xm.Author.Id == ctx.User.Id && xm.Channel.Id == ctx.Channel.Id,
                 TimeSpan.FromMinutes(1)
             ).ConfigureAwait(false);
             if (mctx == null)
                 return null;
+
+            shared.RemoveAwaitingUser(ctx.Channel.Id, ctx.User.Id);
 
             return mctx.Message.Content.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries).Distinct().ToList();
         }

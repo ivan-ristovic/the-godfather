@@ -83,6 +83,7 @@ namespace TheGodfather.Modules.Misc
         [Aliases("da", "c", "ca", "cl", "clearall")]
         [UsageExample("!insults clear")]
         [RequireOwner]
+        [InteractivitySensitive]
         public async Task ClearAllInsultsAsync(CommandContext ctx)
         {
             if (!await ctx.AskYesNoQuestionAsync("Are you sure you want to delete all insults?").ConfigureAwait(false))

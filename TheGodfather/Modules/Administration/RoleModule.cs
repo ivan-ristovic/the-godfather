@@ -50,6 +50,7 @@ namespace TheGodfather.Modules.Administration
         [UsageExample("!roles create ")]
         [UsageExample("!roles create #C77B0F My new role")]
         [RequirePermissions(Permissions.ManageRoles)]
+        [InteractivitySensitive]
         public async Task CreateAsync(CommandContext ctx,
                                      [Description("Name.")] string name,
                                      [Description("Color.")] DiscordColor? color = null,
@@ -59,9 +60,10 @@ namespace TheGodfather.Modules.Administration
             if (string.IsNullOrWhiteSpace(name))
                 throw new InvalidCommandUsageException("Missing role name.");
 
-            if (ctx.Guild.Roles.Any(r => string.Compare(r.Name, name, true) == 0)) 
+            if (ctx.Guild.Roles.Any(r => string.Compare(r.Name, name, true) == 0)) {
                 if (!await ctx.AskYesNoQuestionAsync("A role with that name already exists. Continue?").ConfigureAwait(false))
                     return;
+            }
 
             await ctx.Guild.CreateRoleAsync(name, null, color, hoisted, mentionable, ctx.BuildReasonString())
                 .ConfigureAwait(false);

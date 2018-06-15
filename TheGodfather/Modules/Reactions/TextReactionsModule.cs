@@ -75,6 +75,7 @@ namespace TheGodfather.Modules.Reactions
         [Aliases("da", "c", "ca", "cl", "clearall")]
         [UsageExample("!textreactions clear")]
         [RequireUserPermissions(Permissions.Administrator)]
+        [InteractivitySensitive]
         public async Task ClearAsync(CommandContext ctx)
         {
             if (!await ctx.AskYesNoQuestionAsync("Are you sure you want to delete all text reactions for this guild?").ConfigureAwait(false))

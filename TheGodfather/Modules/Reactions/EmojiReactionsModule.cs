@@ -97,6 +97,7 @@ namespace TheGodfather.Modules.Reactions
         [Aliases("da", "c", "ca", "cl", "clearall")]
         [UsageExample("!emojireactions clear")]
         [RequireUserPermissions(Permissions.Administrator)]
+        [InteractivitySensitive]
         public async Task ClearAsync(CommandContext ctx)
         {
             if (!await ctx.AskYesNoQuestionAsync("Are you sure you want to delete all emoji reactions for this guild?").ConfigureAwait(false))

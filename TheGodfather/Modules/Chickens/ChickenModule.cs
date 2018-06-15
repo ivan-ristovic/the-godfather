@@ -108,6 +108,7 @@ namespace TheGodfather.Modules.Chickens
         [Description("Pay a well-known scientist to create a disease that disintegrates weak chickens.")]
         [Aliases("cancer", "disease", "blackdeath")]
         [UsageExample("!chicken flu")]
+        [InteractivitySensitive]
         public async Task FluAsync(CommandContext ctx)
         {
             if (ChannelEvent.GetEventInChannel(ctx.Channel.Id) is ChickenWar ambush)
@@ -213,6 +214,7 @@ namespace TheGodfather.Modules.Chickens
         [Description("Sell your chicken.")]
         [Aliases("s")]
         [UsageExample("!chicken sell")]
+        [InteractivitySensitive]
         public async Task SellAsync(CommandContext ctx)
         {
             var chicken = await Database.GetChickenInfoAsync(ctx.User.Id, ctx.Guild.Id)

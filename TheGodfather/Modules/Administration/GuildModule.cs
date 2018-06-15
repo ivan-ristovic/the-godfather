@@ -135,6 +135,7 @@ namespace TheGodfather.Modules.Administration
         [UsageExample("!guild prune 5 Kicking inactives..")]
         [RequirePermissions(Permissions.KickMembers)]
         [RequireUserPermissions(Permissions.Administrator)]
+        [InteractivitySensitive]
         public async Task PruneMembersAsync(CommandContext ctx,
                                            [Description("Days.")] int days = 7,
                                            [RemainingText, Description("Reason.")] string reason = null)

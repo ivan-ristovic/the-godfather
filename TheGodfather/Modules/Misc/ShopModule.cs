@@ -69,6 +69,7 @@ namespace TheGodfather.Modules.Misc
         [Description("Purchase an item from this guild's shop.")]
         [Aliases("purchase", "shutupandtakemymoney", "b", "p")]
         [UsageExample("!shop buy 3")]
+        [InteractivitySensitive]
         public async Task BuyAsync(CommandContext ctx,
                                   [Description("Item ID.")] int id)
         {
@@ -98,6 +99,7 @@ namespace TheGodfather.Modules.Misc
         [Description("Sell a purchased item for half the buy price.")]
         [Aliases("return")]
         [UsageExample("!shop sell 3")]
+        [InteractivitySensitive]
         public async Task SellAsync(CommandContext ctx,
                                    [Description("Item ID.")] int id)
         {
