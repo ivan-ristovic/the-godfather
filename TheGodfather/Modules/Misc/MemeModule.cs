@@ -109,7 +109,7 @@ namespace TheGodfather.Modules.Misc
         [Aliases("da", "ca", "cl", "clearall")]
         [UsageExample("!memes clear")]
         [RequireUserPermissions(Permissions.Administrator)]
-        [InteractivitySensitive]
+        [UsesInteractivity]
         public async Task ClearMemesAsync(CommandContext ctx)
         {
             if (!await ctx.AskYesNoQuestionAsync("Are you sure you want to delete all memes for this guild?").ConfigureAwait(false))

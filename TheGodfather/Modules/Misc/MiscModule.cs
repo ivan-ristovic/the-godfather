@@ -153,7 +153,7 @@ namespace TheGodfather.Modules.Misc
         [Description("Makes Godfather leave the guild.")]
         [UsageExample("!leave")]
         [RequireUserPermissions(Permissions.Administrator)]
-        [InteractivitySensitive]
+        [UsesInteractivity]
         public async Task LeaveAsync(CommandContext ctx)
         {
             if (await ctx.AskYesNoQuestionAsync("Are you sure you want me to leave this guild?").ConfigureAwait(false)) {
@@ -427,7 +427,7 @@ namespace TheGodfather.Modules.Misc
         [Command("report"), Module(ModuleType.Miscellaneous)]
         [Description("Send a report message to owner about a bug (please don't abuse... please).")]
         [UsageExample("!report Your bot sucks!")]
-        [InteractivitySensitive]
+        [UsesInteractivity]
         public async Task SendErrorReportAsync(CommandContext ctx,
                                               [RemainingText, Description("Issue text.")] string issue)
         {

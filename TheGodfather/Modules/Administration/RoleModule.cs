@@ -50,7 +50,7 @@ namespace TheGodfather.Modules.Administration
         [UsageExample("!roles create ")]
         [UsageExample("!roles create #C77B0F My new role")]
         [RequirePermissions(Permissions.ManageRoles)]
-        [InteractivitySensitive]
+        [UsesInteractivity]
         public async Task CreateAsync(CommandContext ctx,
                                      [Description("Name.")] string name,
                                      [Description("Color.")] DiscordColor? color = null,

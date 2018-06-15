@@ -24,7 +24,7 @@ namespace TheGodfather.Modules.Chickens
         [Description("Buy a new chicken in this guild using your credits from WM bank.")]
         [Aliases("b", "shop")]
         [UsageExample("!chicken buy My Chicken Name")]
-        [InteractivitySensitive]
+        [UsesInteractivity]
         public class BuyModule : TheGodfatherBaseModule
         {
 

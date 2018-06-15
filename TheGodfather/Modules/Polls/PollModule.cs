@@ -21,7 +21,7 @@ namespace TheGodfather.Modules.Polls
     [UsageExample("!poll Do you vote for User1 or User2?")]
     [UsageExample("!poll 5m Do you vote for User1 or User2?")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    [NotBlocked, InteractivitySensitive]
+    [NotBlocked, UsesInteractivity]
     public class PollModule : TheGodfatherBaseModule
     {
 

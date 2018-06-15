@@ -88,7 +88,7 @@ namespace TheGodfather.EventListeners
                 var attr = exc.FailedChecks.First();
                 if (attr is CooldownAttribute)
                     return;
-                else if (attr is InteractivitySensitiveAttribute)
+                else if (attr is UsesInteractivityAttribute)
                     emb.Description = $"{emoji} Please answer me first!";
                 else if (attr is RequirePermissionsAttribute perms)
                     emb.Description = $"{emoji} Permissions to execute that command ({perms.Permissions.ToPermissionString()}) aren't met!";

@@ -134,7 +134,7 @@ namespace TheGodfather.Modules.SWAT
         [UsageExample("!s4 startcheck 109.70.149.158")]
         [UsageExample("!s4 startcheck 109.70.149.158:10480")]
         [UsageExample("!swat startcheck wm")]
-        [InteractivitySensitive]
+        [UsesInteractivity]
         public async Task StartCheckAsync(CommandContext ctx,
                                          [Description("Registered name or IP.")] string ip,
                                          [Description("Query port")] int queryport = 10481)

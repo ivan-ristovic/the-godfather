@@ -16,7 +16,7 @@ using DSharpPlus.Interactivity;
 namespace TheGodfather.Modules.Polls
 {
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    [NotBlocked, InteractivitySensitive]
+    [NotBlocked, UsesInteractivity]
     public class ReactionsPollModule : TheGodfatherBaseModule
     {
         #region COMMAND_REACTIONSPOLL

@@ -10,7 +10,7 @@ using DSharpPlus.CommandsNext.Attributes;
 namespace TheGodfather.Common.Attributes
 {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
-    internal class InteractivitySensitiveAttribute : CheckBaseAttribute
+    internal class UsesInteractivityAttribute : CheckBaseAttribute
     {
         public override Task<bool> ExecuteCheckAsync(CommandContext ctx, bool help)
         {

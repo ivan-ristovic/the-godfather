@@ -82,7 +82,7 @@ namespace TheGodfather.Modules.Administration
         [Aliases("da", "c", "ca", "cl", "clearall")]
         [UsageExample("!sar clear")]
         [RequireUserPermissions(Permissions.Administrator)]
-        [InteractivitySensitive]
+        [UsesInteractivity]
         public async Task ClearAsync(CommandContext ctx)
         {
             if (!await ctx.AskYesNoQuestionAsync("Are you sure you want to delete all self-assignable roles for this guild?").ConfigureAwait(false))

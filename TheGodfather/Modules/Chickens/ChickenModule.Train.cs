@@ -22,7 +22,7 @@ namespace TheGodfather.Modules.Chickens
         [Description("Train your chicken using your credits from WM bank.")]
         [Aliases("tr", "t", "exercise")]
         [UsageExample("!chicken train")]
-        [InteractivitySensitive]
+        [UsesInteractivity]
         public class TrainModule : TheGodfatherBaseModule
         {
 
