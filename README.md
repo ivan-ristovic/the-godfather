@@ -1,6 +1,18 @@
 ﻿# the-godfather
 
-Just another general-purpose Discord bot. 
+Just another general-purpose Discord bot. Developed with the goal to remove all other bots from the guild and create one that will do everything.
+
+Features:
+- Full administration of the guild, channels, users, emoji etc.
+- Offers activity logging and content filtering (custom filters, gorefilter, IP logging websites filter etc.)
+- Customizable textual or emoji reactions for each guild which can be triggered by raw text or by regular expression matching
+- Customizable guild memes, ranks, birthdays, currency items and many more!
+- Searches of online services (YouTube, Imgur, reddit, Steam, IMDb, OpenWeather etc.) and subscribing for automatic updates on the content
+- Many games to pass your time (Quizzes, Tic-Tac-Toe, Connect4, Othello, Caro etc.) as well as casino/card games and betting (Poker, BlackJack, slots etc.)
+- Interactive polls, auto-assigned roles, self-assignable roles
+- Music playback (beta)
+- SWAT4 server queries
+
 Written in C# using [DSharpPlus](https://github.com/DSharpPlus/DSharpPlus).
 
 ---
@@ -60,7 +72,7 @@ Arguments can be exactly one of the following types:
 * ``Uri`` : A sequence of characters representing a URL. The protocol must be either ``HTTP`` or ``HTTPS``. Valid examples: ``http://google.com``.
 * ``id`` : ID of a Discord entity (could be a message, user, channel, role etc.).
 * ``color`` : A hexadecimal or RGB color representation. Valid examples: ``FF0000`` , ``(255, 0, 0)``.
-* ``time span`` : A time span in form **DDd HHh MMm SSs** Valid examples: ``3d 5m 30s`` etc. 
+* ``time span`` : A time span in form ``DDd HHh MMm SSs`` Valid examples: ``3d 5m 30s`` etc. 
 
 **Note:** Discord entity IDs can only be seen in the Discord client by enabling the ``Developer appearance`` option in Discord settings.
 
