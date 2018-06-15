@@ -417,9 +417,13 @@
 **Aliases:**
 `slotmachine`
 
-**Arguments:**
+**Overload 1:**
 
 (optional) `[long]` : *Bid.* (def: `5`)
+
+**Overload 0:**
+
+`[string...]` : *Bid as a metric number.*
 
 **Examples:**
 
@@ -438,9 +442,13 @@
 **Aliases:**
 `wof`
 
-**Arguments:**
+**Overload 1:**
 
 (optional) `[long]` : *Bid.* (def: `5`)
+
+**Overload 0:**
+
+`[string...]` : *Bid as a metric number.*
 
 **Examples:**
 

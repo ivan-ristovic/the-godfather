@@ -52,6 +52,90 @@
 
 ---
 
+### birthdays add
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Add a birthday to the database. If date is not specified, uses the current date as a birthday date. If the channel is not specified, uses the current channel.*
+
+**Requires user permissions:**
+`Manage guild`
+
+**Aliases:**
+`+, a`
+
+**Overload 1:**
+
+`[user]` : *Birthday boy/girl.*
+
+(optional) `[string]` : *Birth date.* (def: `None`)
+
+(optional) `[channel]` : *Channel to send a greeting message to.* (def: `None`)
+
+**Overload 0:**
+
+`[user]` : *Birthday boy/girl.*
+
+(optional) `[channel]` : *Channel to send a greeting message to.* (def: `None`)
+
+(optional) `[string]` : *Birth date.* (def: `None`)
+
+**Examples:**
+
+```
+!birthday add @Someone
+!birthday add @Someone #channel_to_send_message_to
+!birthday add @Someone 15.2.1990
+!birthday add @Someone #channel_to_send_message_to 15.2.1990
+!birthday add @Someone 15.2.1990 #channel_to_send_message_to
+```
+</p></details>
+
+---
+
+### birthdays delete
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Remove status from running queue.*
+
+**Requires user permissions:**
+`Manage guild`
+
+**Aliases:**
+`-, remove, rm, del`
+
+**Arguments:**
+
+`[user]` : *User whose birthday to remove.*
+
+**Examples:**
+
+```
+!birthday delete @Someone
+```
+</p></details>
+
+---
+
+### birthdays list
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*List all registered birthdays.*
+
+**Requires user permissions:**
+`Manage guild`
+
+**Aliases:**
+`ls`
+
+**Examples:**
+
+```
+!birthday list
+```
+</p></details>
+
+---
+
 ## coinflip
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
@@ -684,10 +768,60 @@
 
 ---
 
+### rank add
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Add a custom name for given rank in this guild.*
+
+**Requires user permissions:**
+`Manage guild`
+
+**Aliases:**
+`+, a, rename`
+
+**Arguments:**
+
+`[int]` : *Rank.*
+
+`[string...]` : *Rank name.*
+
+**Examples:**
+
+```
+!rank add 1 Private
+```
+</p></details>
+
+---
+
+### rank delete
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Remove a custom name for given rank in this guild.*
+
+**Requires user permissions:**
+`Manage guild`
+
+**Aliases:**
+`-, remove, rm, del, revert`
+
+**Arguments:**
+
+`[int]` : *Rank.*
+
+**Examples:**
+
+```
+!rank delete 3
+```
+</p></details>
+
+---
+
 ### rank list
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Print all available ranks.*
+*Print all customized ranks for this guild.*
 
 **Aliases:**
 `levels`
