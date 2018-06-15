@@ -1,6 +1,8 @@
 ﻿#region USING_DIRECTIVES
 using System;
 using System.Linq;
+using System.Reflection;
+using System.Text;
 using System.Threading.Tasks;
 
 using TheGodfather.Common;
@@ -54,61 +56,68 @@ namespace TheGodfather.EventListeners
                 $"Message: {ex.Message.Replace("\n", "<br>") ?? "<no message>"}<br>"
             );
 
-            var emoji = DiscordEmoji.FromName(e.Context.Client, ":no_entry:");
             var emb = new DiscordEmbedBuilder {
                 Color = DiscordColor.Red
             };
+            var sb = new StringBuilder($"{DiscordEmoji.FromName(e.Context.Client, ":no_entry:")} ");
 
-            if (shard.Shared.GuildConfigurations[e.Context.Guild.Id].SuggestionsEnabled && ex is CommandNotFoundException cne) {
+            if (ex is CommandNotFoundException cne && shard.Shared.GuildConfigurations[e.Context.Guild.Id].SuggestionsEnabled) {
                 emb.WithTitle($"Command {cne.CommandName} not found. Did you mean...");
                 var ordered = TheGodfatherShard.CommandNames
                     .OrderBy(tup => cne.CommandName.LevenshteinDistance(tup.Item1))
                     .Take(3);
                 foreach (var (alias, cmd) in ordered)
                     emb.AddField($"{alias} ({cmd.QualifiedName})", cmd.Description);
-            } else if (ex is InvalidCommandUsageException)
-                emb.Description = $"{emoji} Invalid usage! {ex.Message}";
-            else if (ex is ArgumentException)
-                emb.Description = $"{emoji} Argument conversion error (please check {Formatter.Bold($"help {e.Command.QualifiedName}")}).\n\nDetails: {Formatter.Italic(ex.Message)}";
-            else if (ex is CommandFailedException)
-                emb.Description = $"{emoji} {ex.Message} {(ex.InnerException != null ? "Details: " + ex.InnerException.Message : "")}";
-            else if (ex is DatabaseServiceException)
-                emb.Description = $"{emoji} {ex.Message} Details: {ex.InnerException?.Message ?? "<none>"}";
-            else if (ex is NotSupportedException)
-                emb.Description = $"{emoji} Not supported. {ex.Message}";
-            else if (ex is InvalidOperationException)
-                emb.Description = $"{emoji} Invalid operation. {ex.Message}";
-            else if (ex is NotFoundException)
-                emb.Description = $"{emoji} 404: Not found.";
-            else if (ex is BadRequestException)
-                emb.Description = $"{emoji} Bad request. Please check if the parameters are valid.";
-            else if (ex is Npgsql.NpgsqlException)
-                emb.Description = $"{emoji} Serbian database failed to respond... Please {Formatter.InlineCode("report")} this.";
-            else if (ex is ChecksFailedException exc) {
+            } else if (ex is InvalidCommandUsageException) {
+                sb.Append($"Invalid usage! {ex.Message}");
+            } else if (ex is ArgumentException) {
+                sb.Append($"Argument conversion error (please check {Formatter.Bold($"help {e.Command.QualifiedName}")}).\n\nDetails: {Formatter.Italic(ex.Message)}");
+            } else if (ex is CommandFailedException) {
+                sb.Append($"{ex.Message} {ex.InnerException?.Message}");
+            } else if (ex is Npgsql.NpgsqlException) {
+                sb.Append($"Database action failed. Please {Formatter.InlineCode("report")} this.");
+            } else if (ex is ChecksFailedException exc) {
                 var attr = exc.FailedChecks.First();
-                if (attr is CooldownAttribute)
+                if (attr is CooldownAttribute) {
+                    await e.Context.Message.CreateReactionAsync(DiscordEmoji.FromName(e.Context.Client, ":no_entry:"))
+                        .ConfigureAwait(false);
                     return;
-                else if (attr is UsesInteractivityAttribute)
-                    emb.Description = $"{emoji} Please answer me first!";
-                else if (attr is RequirePermissionsAttribute perms)
-                    emb.Description = $"{emoji} Permissions to execute that command ({perms.Permissions.ToPermissionString()}) aren't met!";
-                else if (attr is RequireUserPermissionsAttribute uperms)
-                    emb.Description = $"{emoji} You do not have the required permissions ({uperms.Permissions.ToPermissionString()}) to run this command!";
-                else if (attr is RequireBotPermissionsAttribute bperms)
-                    emb.Description = $"{emoji} I do not have the required permissions ({bperms.Permissions.ToPermissionString()}) to run this command!";
-                else if (attr is RequirePriviledgedUserAttribute)
-                    emb.Description = $"{emoji} That command is reserved for the bot owner and priviledged users!";
-                else if (attr is RequireOwnerAttribute)
-                    emb.Description = $"{emoji} That command is reserved for the bot owner only!";
-                else if (attr is RequireNsfwAttribute)
-                    emb.Description = $"{emoji} That command is allowed in NSFW channels only!";
-                else if (attr is RequirePrefixesAttribute pattr)
-                    emb.Description = $"{emoji} That command is allowedto be invoked with the following prefixes: {string.Join(", ", pattr.Prefixes)}!";
-            } else if (ex is UnauthorizedException)
-                emb.Description = $"{emoji} I am not authorized to do that.";
-            else
-                return;
+                }
 
+                if (attr is UsesInteractivityAttribute) {
+                    sb.Append($"I am waiting for your answer and you cannot execute commands until you either answer, or the timeout is reached.");
+                } else {
+                    sb.AppendLine($"Command {e.Command.QualifiedName} cannot be executed because:").AppendLine();
+                    if (attr is RequirePermissionsAttribute perms)
+                        sb.AppendLine($"One of us does not have the required permissions ({perms.Permissions.ToPermissionString()})!");
+                    if (attr is RequireUserPermissionsAttribute uperms)
+                        sb.AppendLine($"You do not have the required permissions ({uperms.Permissions.ToPermissionString()})!");
+                    if (attr is RequireBotPermissionsAttribute bperms)
+                        sb.AppendLine($"I do not have the required permissions ({bperms.Permissions.ToPermissionString()})!");
+                    if (attr is RequirePriviledgedUserAttribute)
+                        sb.AppendLine($"That command is reserved for my owner and priviledged users!");
+                    if (attr is RequireOwnerAttribute)
+                        sb.AppendLine($"That command is reserved for my owner only!");
+                    if (attr is RequireNsfwAttribute)
+                        sb.AppendLine($"That command is allowed in NSFW channels only!");
+                    if (attr is RequirePrefixesAttribute pattr)
+                        sb.AppendLine($"That command can only be invoked only with the following prefixes: {string.Join(" ", pattr.Prefixes)}!");
+                }
+            } else if (ex is UnauthorizedException) {
+                sb.Append($"I am unauthorized to do that.");
+            } else if (ex is TargetInvocationException) {
+                sb.Append($"{ex.InnerException?.Message ?? "An unknown error occured. Please check the arguments provided and try again."}");
+            } else {
+                sb.AppendLine($"Command {Formatter.Bold(e.Command.QualifiedName)} errored!").AppendLine();
+                sb.AppendLine($"Exception: {Formatter.InlineCode(ex.GetType().ToString())}");
+                sb.AppendLine($"Details: {Formatter.Italic(ex.Message)}");
+                if (ex.InnerException != null) {
+                    sb.AppendLine($"Inner exception: {Formatter.InlineCode(ex.InnerException.GetType().ToString())}");
+                    sb.AppendLine($"Details: {Formatter.Italic(ex.InnerException.Message ?? "No details provided")}");
+                }
+            }
+
+            emb.Description = sb.ToString();
             await e.Context.RespondAsync(embed: emb.Build())
                 .ConfigureAwait(false);
         }
