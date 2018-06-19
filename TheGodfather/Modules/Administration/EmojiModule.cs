@@ -43,7 +43,7 @@ namespace TheGodfather.Modules.Administration
         [Description("Add emoji specified via URL or message attachment. If you have Discord Nitro, you can also pass emojis from another guild as arguments instead of their URLs.")]
         [Aliases("create", "a", "+", "install")]
         [UsageExample("!emoji add pepe http://i0.kym-cdn.com/photos/images/facebook/000/862/065/0e9.jpg")]
-        [UsageExample("!emoji add pepe [ATTACH IMAGE]")]
+        [UsageExample("!emoji add pepe [ATTACHED IMAGE]")]
         [UsageExample("!emoji add pepe :pepe_from_other_server:")]
         [RequirePermissions(Permissions.ManageEmojis)]
         public async Task AddAsync(CommandContext ctx,
@@ -63,15 +63,16 @@ namespace TheGodfather.Modules.Administration
 
             try {
                 using (var response = await HTTPClient.GetAsync(url).ConfigureAwait(false))
-                using (var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
+                using (var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false)) {
+                    if (stream.Length >= 256000)
+                        throw new CommandFailedException("The specified emoji is too large. Maximum allowed image size is 256KB.");
                     await ctx.Guild.CreateEmojiAsync(name, stream, reason: ctx.BuildReasonString())
                         .ConfigureAwait(false);
+                }
             } catch (WebException e) {
                 throw new CommandFailedException("Error getting the image.", e);
             } catch (BadRequestException e) {
                 throw new CommandFailedException("Possibly emoji slots are full for this guild or the image format is not supported?", e);
-            } catch (Exception e) {
-                throw new CommandFailedException("An unknown error occured.", e);
             }
 
             await ctx.RespondWithIconEmbedAsync($"Emoji {Formatter.Bold(name)} successfully added!")
@@ -85,15 +86,14 @@ namespace TheGodfather.Modules.Administration
             => AddAsync(ctx, name, url);
 
         [Command("add"), Priority(1)]
-        public async Task AddAsync(CommandContext ctx,
-                                  [Description("Name.")] string name,
-                                  [Description("Emoji from another server to steal.")] DiscordEmoji emoji)
+        public Task AddAsync(CommandContext ctx,
+                            [Description("Name.")] string name,
+                            [Description("Emoji from another server to steal.")] DiscordEmoji emoji)
         {
             if (emoji.Id == 0)
                 throw new InvalidCommandUsageException("Cannot add a unicode emoji.");
 
-            await AddAsync(ctx, name, new Uri(emoji.Url))
-                .ConfigureAwait(false);
+            return AddAsync(ctx, name, new Uri(emoji.Url));
         }
 
         [Command("add"), Priority(0)]
