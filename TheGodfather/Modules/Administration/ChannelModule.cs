@@ -197,6 +197,9 @@ namespace TheGodfather.Modules.Administration
                 }
             }
 
+            if (!await ctx.AskYesNoQuestionAsync($"Are you sure you want to delete channel {channel.Mention}? This cannot be undone! (y/n)"))
+                return;
+
             string name = channel.Name;
             await channel.DeleteAsync(reason: ctx.BuildReasonString(reason))
                 .ConfigureAwait(false);
