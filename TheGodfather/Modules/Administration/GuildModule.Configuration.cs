@@ -120,8 +120,8 @@ namespace TheGodfather.Modules.Administration
                     gcfg.Prefix = mctx?.Message.Content;
                 }
 
-                if (await channel.AskYesNoQuestionAsync(ctx, "Do you wish to enable command suggestions for those nasty times when you just can't remember the command name? (y/n)"))
-                    gcfg.SuggestionsEnabled = true;
+                gcfg.SuggestionsEnabled = await channel.AskYesNoQuestionAsync(ctx, "Do you wish to enable command suggestions for those nasty times when you just can't remember the command name? (y/n)")
+                    .ConfigureAwait(false);
 
                 if (await channel.AskYesNoQuestionAsync(ctx, "I can log the actions that happen in the guild (such as message deletion, channel updates etc.), so you always know what is going on in the guild. Do you wish to enable the action log? (y/n)")) {
                     await channel.SendIconEmbedAsync($"Alright, cool. In order for action logs to work you will need to tell me where to dump the log. Please reply with a channel mention, for example {Formatter.Bold("#logs")} .")
@@ -134,7 +134,7 @@ namespace TheGodfather.Modules.Administration
                 ulong wcid = 0;
                 string wmessage = null;
                 if (await channel.AskYesNoQuestionAsync(ctx, "I can also send a welcome message when someone joins the guild. Do you wish to enable this feature? (y/n)")) {
-                    await channel.SendIconEmbedAsync($"I will need a channel where to send the welcome messages. Please reply with a channel mention, for example {Formatter.Bold("#logs")} .")
+                    await channel.SendIconEmbedAsync($"I will need a channel where to send the welcome messages. Please reply with a channel mention, for example {Formatter.Bold("#general")} .")
                         .ConfigureAwait(false);
                     var mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id && m.MentionedChannels.Count == 1)
                         .ConfigureAwait(false);
@@ -158,7 +158,7 @@ namespace TheGodfather.Modules.Administration
                 ulong lcid = 0;
                 string lmessage = null;
                 if (await channel.AskYesNoQuestionAsync(ctx, "The same applies for member leave messages. Do you wish to enable this feature? (y/n)")) {
-                    await channel.SendIconEmbedAsync($"I will need a channel where to send the leave messages. Please reply with a channel mention, for example {Formatter.Bold("#logs")} .")
+                    await channel.SendIconEmbedAsync($"I will need a channel where to send the leave messages. Please reply with a channel mention, for example {Formatter.Bold("#general")} .")
                         .ConfigureAwait(false);
                     var mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id && m.MentionedChannels.Count == 1)
                         .ConfigureAwait(false);
@@ -224,6 +224,7 @@ namespace TheGodfather.Modules.Administration
                 } else {
                     sb.AppendLine($"Leave messages: {Formatter.Bold("disabled")}");
                 }
+                sb.Append("Linkfilter ");
                 if (gcfg.LinkfilterEnabled) {
                     sb.AppendLine(Formatter.Bold("enabled"));
                     sb.Append(" - Discord invites blocker: ").AppendLine(gcfg.BlockDiscordInvites ? "on" : "off");
@@ -250,26 +251,30 @@ namespace TheGodfather.Modules.Administration
                         .ConfigureAwait(false);
                     await Database.SetLeaveMessageAsync(ctx.Guild.Id, lmessage)
                         .ConfigureAwait(false);
-                }
 
-                var logchn = await Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild.Id)
-                .ConfigureAwait(false);
-                if (logchn != null) {
-                    var emb = new DiscordEmbedBuilder() {
-                        Title = "Guild config changed",
-                        Color = DiscordColor.Brown
-                    };
-                    emb.AddField("User responsible", ctx.User.Mention, inline: true);
-                    emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
-                    emb.AddField("Prefix", Shared.GetGuildPrefix(ctx.Guild.Id), inline: true);
-                    emb.AddField("Command suggestions", gcfg.SuggestionsEnabled ? "on" : "off", inline: true);
-                    emb.AddField("Action logging", gcfg.LoggingEnabled ? "on" : "off", inline: true);
-                    emb.AddField("Welcome messages", wcid != 0 ? "on" : "off", inline: true);
-                    emb.AddField("Leave messages", lcid != 0 ? "on" : "off", inline: true);
-                    emb.AddField("Linkfilter", gcfg.LinkfilterEnabled ? "on" : "off", inline: true);
-                    emb.AddField("Linkfilter - Block invites", gcfg.BlockDiscordInvites ? "on" : "off", inline: true);
-                    await logchn.SendMessageAsync(embed: emb.Build())
+                    var logchn = await Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild.Id)
                         .ConfigureAwait(false);
+                    if (logchn != null) {
+                        var emb = new DiscordEmbedBuilder() {
+                            Title = "Guild config changed",
+                            Color = DiscordColor.Brown
+                        };
+                        emb.AddField("User responsible", ctx.User.Mention, inline: true);
+                        emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
+                        emb.AddField("Prefix", Shared.GetGuildPrefix(ctx.Guild.Id), inline: true);
+                        emb.AddField("Command suggestions", gcfg.SuggestionsEnabled ? "on" : "off", inline: true);
+                        emb.AddField("Action logging", gcfg.LoggingEnabled ? "on" : "off", inline: true);
+                        emb.AddField("Welcome messages", wcid != 0 ? "on" : "off", inline: true);
+                        emb.AddField("Leave messages", lcid != 0 ? "on" : "off", inline: true);
+                        emb.AddField("Linkfilter", gcfg.LinkfilterEnabled ? "on" : "off", inline: true);
+                        emb.AddField("Linkfilter - Block invites", gcfg.BlockDiscordInvites ? "on" : "off", inline: true);
+                        emb.AddField("Linkfilter - Block booter websites", gcfg.BlockBooterWebsites ? "on" : "off", inline: true);
+                        emb.AddField("Linkfilter - Block disturbing websites", gcfg.BlockDisturbingWebsites ? "on" : "off", inline: true);
+                        emb.AddField("Linkfilter - Block IP loggers", gcfg.BlockIpLoggingWebsites ? "on" : "off", inline: true);
+                        emb.AddField("Linkfilter - Block URL shorteners", gcfg.BlockUrlShorteners ? "on" : "off", inline: true);
+                        await logchn.SendMessageAsync(embed: emb.Build())
+                            .ConfigureAwait(false);
+                    }
                 }
 
                 await channel.SendIconEmbedAsync($"All done! Have a nice day!", StaticDiscordEmoji.CheckMarkSuccess)
