@@ -11,6 +11,8 @@ using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using DSharpPlus.Exceptions;
+
+using Humanizer;
 #endregion
 
 namespace TheGodfather.EventListeners
@@ -222,8 +224,8 @@ namespace TheGodfather.EventListeners
                         Description = $"In channel {e.Channel.Mention}",
                         Color = DiscordColor.SpringGreen
                     };
-                    emb.AddField("Before update", detailspre);
-                    emb.AddField("After update", detailsafter);
+                    emb.AddField("Before update", detailspre.Truncate(750));
+                    emb.AddField("After update", detailsafter.Truncate(750));
 
                     await logchn.SendMessageAsync(embed: emb.Build())
                         .ConfigureAwait(false);
