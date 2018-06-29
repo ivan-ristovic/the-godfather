@@ -50,13 +50,13 @@ namespace TheGodfather.Modules.Administration
                 emb.AddField("Command suggestions", gcfg.SuggestionsEnabled ? "on" : "off", inline: true);
                 emb.AddField("Action logging", gcfg.LoggingEnabled ? "on" : "off", inline: true);
 
-                ulong wcid = await Database.GetWelcomeChannelIdAsync(ctx.Guild.Id)
+                var wchn = await Database.GetWelcomeChannelAsync(ctx.Guild)
                     .ConfigureAwait(false);
-                emb.AddField("Welcome messages", wcid != 0 ? "on" : "off", inline: true);
+                emb.AddField("Welcome messages", wchn != null ? $"on @ {wchn.Mention}" : "off", inline: true);
 
-                ulong lcid = await Database.GetLeaveChannelIdAsync(ctx.Guild.Id)
+                var lchn = await Database.GetLeaveChannelAsync(ctx.Guild)
                     .ConfigureAwait(false);
-                emb.AddField("Leave messages", lcid != 0 ? "on" : "off", inline: true);
+                emb.AddField("Leave messages", lchn != null ? $"on @ {wchn.Mention}" : "off", inline: true);
 
                 if (gcfg.LinkfilterEnabled) {
                     var sb = new StringBuilder();
@@ -514,9 +514,9 @@ namespace TheGodfather.Modules.Administration
                 [GroupCommand]
                 public async Task ExecuteGroupAsync(CommandContext ctx)
                 {
-                    ulong cid = await Database.GetWelcomeChannelIdAsync(ctx.Guild.Id)
+                    var channel = await Database.GetWelcomeChannelAsync(ctx.Guild)
                         .ConfigureAwait(false);
-                    await ctx.RespondWithIconEmbedAsync($"Member welcome messages for this guild are: {Formatter.Bold(cid != 0 ? "enabled" : "disabled")}!")
+                    await ctx.RespondWithIconEmbedAsync($"Member welcome messages for this guild are: {Formatter.Bold(channel != null ? $"enabled in channel: {channel.Mention}" : "disabled")}!")
                         .ConfigureAwait(false);
                 }
 
@@ -531,16 +531,13 @@ namespace TheGodfather.Modules.Administration
                                               [Description("Channel.")] DiscordChannel channel = null)
                 {
                     if (channel == null) {
-                        ulong cid = await Database.GetWelcomeChannelIdAsync(ctx.Guild.Id)
+                        var c = await Database.GetWelcomeChannelAsync(ctx.Guild)
                             .ConfigureAwait(false);
-                        if (cid != 0) {
-                            var c = ctx.Guild.GetChannel(cid);
-                            if (c == null)
-                                throw new CommandFailedException($"Welcome channel was set but does not exist anymore (id: {cid}).");
+                        if (c != null) {
                             await ctx.RespondWithIconEmbedAsync($"Welcome message channel: {c.Mention}.")
                                 .ConfigureAwait(false);
                         } else {
-                            await ctx.RespondWithIconEmbedAsync("Welcome message channel isn't set for this guild.")
+                            await ctx.RespondWithIconEmbedAsync("Welcome message channel isn't set for this guild (or it was set but does not exist anymore).")
                                 .ConfigureAwait(false);
                         }
                     } else {
@@ -678,6 +675,9 @@ namespace TheGodfather.Modules.Administration
                         await logchn.SendMessageAsync(embed: emb.Build())
                             .ConfigureAwait(false);
                     }
+
+                    await ctx.RespondWithIconEmbedAsync($"Welcome messages are now disabled.")
+                        .ConfigureAwait(false);
                 }
                 #endregion
             }
@@ -697,9 +697,9 @@ namespace TheGodfather.Modules.Administration
                 [GroupCommand]
                 public async Task ExecuteGroupAsync(CommandContext ctx)
                 {
-                    ulong cid = await Database.GetLeaveChannelIdAsync(ctx.Guild.Id)
+                    var channel = await Database.GetLeaveChannelAsync(ctx.Guild)
                         .ConfigureAwait(false);
-                    await ctx.RespondWithIconEmbedAsync($"Member leave messages for this guild are: {Formatter.Bold(cid != 0 ? "enabled" : "disabled")}!")
+                    await ctx.RespondWithIconEmbedAsync($"Member leave messages for this guild are: {Formatter.Bold(channel != null ? $"enabled in channel: {channel.Mention}" : "disabled")}!")
                         .ConfigureAwait(false);
                 }
 
@@ -714,16 +714,13 @@ namespace TheGodfather.Modules.Administration
                                               [Description("Channel.")] DiscordChannel channel = null)
                 {
                     if (channel == null) {
-                        ulong cid = await Database.GetLeaveChannelIdAsync(ctx.Guild.Id)
+                        var c = await Database.GetLeaveChannelAsync(ctx.Guild)
                             .ConfigureAwait(false);
-                        if (cid != 0) {
-                            var c = ctx.Guild.GetChannel(cid);
-                            if (c == null)
-                                throw new CommandFailedException($"Leave channel was set but does not exist anymore (id: {cid}).");
+                        if (c != null) {
                             await ctx.RespondWithIconEmbedAsync($"Leave message channel: {c.Mention}.")
                                 .ConfigureAwait(false);
                         } else {
-                            await ctx.RespondWithIconEmbedAsync("Leave message channel isn't set for this guild.")
+                            await ctx.RespondWithIconEmbedAsync("Leave message channel isn't set for this guild (or it was set but does not exist anymore).")
                                 .ConfigureAwait(false);
                         }
                     } else {
@@ -860,6 +857,9 @@ namespace TheGodfather.Modules.Administration
                         await logchn.SendMessageAsync(embed: emb.Build())
                             .ConfigureAwait(false);
                     }
+
+                    await ctx.RespondWithIconEmbedAsync($"Leave messages are now disabled.")
+                        .ConfigureAwait(false);
                 }
                 #endregion
             }

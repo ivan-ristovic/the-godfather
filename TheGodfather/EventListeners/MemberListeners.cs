@@ -25,37 +25,18 @@ namespace TheGodfather.EventListeners
 
             shard.Log(LogLevel.Info, $"Member joined: {e.Member.ToString()}<br>{e.Guild.ToString()}");
 
-            try {
-                var cid = await shard.Database.GetWelcomeChannelIdAsync(e.Guild.Id)
+            var wchn = await shard.Database.GetWelcomeChannelAsync(e.Guild)
+                .ConfigureAwait(false);
+            if (wchn != null) {
+                var msg = await shard.Database.GetWelcomeMessageAsync(e.Guild.Id)
                     .ConfigureAwait(false);
-                if (cid != 0) {
-                    try {
-                        var chn = e.Guild.GetChannel(cid);
-                        if (chn != null) {
-                            var msg = await shard.Database.GetWelcomeMessageAsync(e.Guild.Id)
-                                .ConfigureAwait(false);
-                            if (string.IsNullOrWhiteSpace(msg))
-                                await chn.SendIconEmbedAsync($"Welcome to {Formatter.Bold(e.Guild.Name)}, {e.Member.Mention}!", DiscordEmoji.FromName(shard.Client, ":wave:")).ConfigureAwait(false);
-                            else
-                                await chn.SendIconEmbedAsync(msg.Replace("%user%", e.Member.Mention), DiscordEmoji.FromName(shard.Client, ":wave:")).ConfigureAwait(false);
-                        }
-                    } catch (Exception exc) {
-                        while (exc is AggregateException)
-                            exc = exc.InnerException;
-                        shard.Log(LogLevel.Debug,
-                            $"Failed to send a welcome message!<br>" +
-                            $"Channel ID: {cid}<br>" +
-                            $"{e.Guild.ToString()}<br>" +
-                            $"Exception: {exc.GetType()}<br>" +
-                            $"Message: {exc.Message}"
-                        );
-                        if (exc is NotFoundException)
-                            await shard.Database.RemoveWelcomeChannelAsync(e.Guild.Id)
-                                .ConfigureAwait(false);
-                    }
+                if (string.IsNullOrWhiteSpace(msg)) {
+                    await wchn.SendIconEmbedAsync($"Welcome to {Formatter.Bold(e.Guild.Name)}, {e.Member.Mention}!", DiscordEmoji.FromName(shard.Client, ":wave:"))
+                        .ConfigureAwait(false);
+                } else {
+                    await wchn.SendIconEmbedAsync(msg.Replace("%user%", e.Member.Mention), DiscordEmoji.FromName(shard.Client, ":wave:"))
+                        .ConfigureAwait(false);
                 }
-            } catch (Exception exc) {
-                TheGodfather.LogHandle.LogException(LogLevel.Debug, exc);
             }
 
             try {
@@ -109,40 +90,18 @@ namespace TheGodfather.EventListeners
 
             shard.Log(LogLevel.Info, $"Member left: {e.Member.ToString()}<br>{e.Guild.ToString()}");
 
-            ulong cid = 0;
-            try {
-                cid = await shard.Database.GetLeaveChannelIdAsync(e.Guild.Id)
+            var lchn = await shard.Database.GetLeaveChannelAsync(e.Guild)
+                .ConfigureAwait(false);
+            if (lchn != null) {
+                var msg = await shard.Database.GetLeaveMessageAsync(e.Guild.Id)
                     .ConfigureAwait(false);
-            } catch (Exception exc) {
-                TheGodfather.LogHandle.LogException(LogLevel.Debug, exc);
-            }
-
-            if (cid == 0)
-                return;
-
-            try {
-                var chn = e.Guild.GetChannel(cid);
-                if (chn != null) {
-                    var msg = await shard.Database.GetLeaveMessageAsync(e.Guild.Id)
+                if (string.IsNullOrWhiteSpace(msg)) {
+                    await lchn.SendIconEmbedAsync($"{Formatter.Bold(e.Member?.Username ?? "<unknown user>")} left the server! Bye!", StaticDiscordEmoji.Wave)
                         .ConfigureAwait(false);
-                    if (string.IsNullOrWhiteSpace(msg))
-                        await chn.SendIconEmbedAsync($"{Formatter.Bold(e.Member?.Username ?? "<unknown user>")} left the server! Bye!", StaticDiscordEmoji.Wave).ConfigureAwait(false);
-                    else
-                        await chn.SendIconEmbedAsync(msg.Replace("%user%", e.Member?.Username ?? "<unknown user>"), DiscordEmoji.FromName(shard.Client, ":wave:")).ConfigureAwait(false);
+                } else {
+                    await lchn.SendIconEmbedAsync(msg.Replace("%user%", e.Member?.Username ?? "<unknown user>"), DiscordEmoji.FromName(shard.Client, ":wave:"))
+                        .ConfigureAwait(false);
                 }
-            } catch (Exception exc) {
-                while (exc is AggregateException)
-                    exc = exc.InnerException;
-                shard.Log(LogLevel.Debug,
-                    $"Failed to send a leaving message!<br>" +
-                    $"Channel ID: {cid}<br>" +
-                    $"{e.Guild.ToString()}<br>" +
-                    $"Exception: {exc.GetType()}<br>" +
-                    $"Message: {exc.Message}"
-                );
-                if (exc is NotFoundException)
-                    await shard.Database.RemoveLeaveChannelAsync(e.Guild.Id)
-                        .ConfigureAwait(false);
             }
 
             var logchn = shard.Shared.GetLogChannelForGuild(shard.Client, e.Guild);

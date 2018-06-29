@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 
 using TheGodfather.Common;
 
+using DSharpPlus.Entities;
+
 using Npgsql;
 using NpgsqlTypes;
 #endregion
@@ -144,7 +146,7 @@ namespace TheGodfather.Services
         }
 
 
-        public async Task<ulong> GetWelcomeChannelIdAsync(ulong gid)
+        public async Task<DiscordChannel> GetWelcomeChannelAsync(DiscordGuild guild)
         {
             ulong cid = 0;
 
@@ -153,7 +155,7 @@ namespace TheGodfather.Services
                 using (var con = await OpenConnectionAndCreateCommandAsync())
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "SELECT welcome_cid FROM gf.guild_cfg WHERE gid = @gid LIMIT 1;";
-                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
+                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)guild.Id);
 
                     var res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
                     if (res != null && !(res is DBNull))
@@ -163,10 +165,10 @@ namespace TheGodfather.Services
                 _sem.Release();
             }
 
-            return cid;
+            return cid != 0 ? guild.GetChannel(cid) : null;
         }
 
-        public async Task<ulong> GetLeaveChannelIdAsync(ulong gid)
+        public async Task<DiscordChannel> GetLeaveChannelAsync(DiscordGuild guild)
         {
             ulong cid = 0;
 
@@ -175,7 +177,7 @@ namespace TheGodfather.Services
                 using (var con = await OpenConnectionAndCreateCommandAsync())
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "SELECT leave_cid FROM gf.guild_cfg WHERE gid = @gid LIMIT 1;";
-                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
+                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)guild.Id);
 
                     var res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
                     if (res != null && !(res is DBNull))
@@ -185,7 +187,7 @@ namespace TheGodfather.Services
                 _sem.Release();
             }
 
-            return cid;
+            return cid != 0 ? guild.GetChannel(cid) : null;
         }
 
         public async Task<string> GetLeaveMessageAsync(ulong gid)
