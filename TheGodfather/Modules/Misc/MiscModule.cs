@@ -32,56 +32,6 @@ namespace TheGodfather.Modules.Misc
         public MiscModule(SharedData shared, DBService db) : base(shared, db) { }
 
 
-        [Command("issue"), Hidden]
-        [Aliases("serverissue")]
-        public async Task IssueAsync(CommandContext ctx, [RemainingText] string text)
-        {
-            if (string.IsNullOrWhiteSpace(text))
-                throw new InvalidCommandUsageException("Issue text missing.");
-
-            var c = await ctx.Client.GetChannelAsync(457935031596482571).ConfigureAwait(false);
-            var u = await ctx.Client.CreateDmChannelAsync(154556794490847232).ConfigureAwait(false);
-            var emb = new DiscordEmbedBuilder() {
-                Title = "ISSUE RECEIVED!",
-                Description = $"From {ctx.User.Mention}",
-                Color = DiscordColor.Red,
-                Timestamp = DateTime.Now,
-                ThumbnailUrl = ctx.User.AvatarUrl
-            };
-            emb.AddField("Issue", text);
-            await c.SendMessageAsync(embed: emb.Build()).ConfigureAwait(false);
-            await u.SendMessageAsync(embed: emb.Build()).ConfigureAwait(false);
-
-            await ctx.RespondWithIconEmbedAsync()
-                .ConfigureAwait(false);
-        }
-
-        [Command("suggestion"), Hidden]
-        [Aliases("serversuggestion")]
-        public async Task SuggestionAsync(CommandContext ctx, [RemainingText] string text)
-        {
-            if (string.IsNullOrWhiteSpace(text))
-                throw new InvalidCommandUsageException("Suggestion text missing.");
-
-            var c = await ctx.Client.GetChannelAsync(457935031596482571).ConfigureAwait(false);
-            var u = await ctx.Client.CreateDmChannelAsync(154556794490847232).ConfigureAwait(false);
-            var emb = new DiscordEmbedBuilder() {
-                Title = "Suggestion received!",
-                Description = $"From {ctx.User.Mention}",
-                Color = DiscordColor.Yellow,
-                Timestamp = DateTime.Now,
-                ThumbnailUrl = ctx.User.AvatarUrl
-            };
-            emb.AddField("Suggestion", text);
-            await c.SendMessageAsync(embed: emb.Build()).ConfigureAwait(false);
-            await u.SendMessageAsync(embed: emb.Build()).ConfigureAwait(false);
-
-            await ctx.RespondWithIconEmbedAsync()
-                .ConfigureAwait(false);
-        }
-
-
-
         #region COMMAND_8BALL
         [Command("8ball"), Module(ModuleType.Miscellaneous)]
         [Description("An almighty ball which knows the answer to any question you ask. Alright, it's random answer, so what?")]
