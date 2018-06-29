@@ -22,8 +22,7 @@ namespace TheGodfather.EventListeners
         [AsyncExecuter(EventTypes.MessagesBulkDeleted)]
         public static async Task Client_MessagesBulkDeleted(TheGodfatherShard shard, MessageBulkDeleteEventArgs e)
         {
-            var logchn = await shard.Shared.GetLogChannelForGuild(shard.Client, e.Channel.Guild.Id)
-                   .ConfigureAwait(false);
+            var logchn = shard.Shared.GetLogChannelForGuild(shard.Client, e.Channel.Guild);
             if (logchn != null) {
                 await logchn.SendMessageAsync(embed: new DiscordEmbedBuilder() {
                     Title = $"Bulk message deletion occured ({e.Messages.Count} total)",
@@ -146,8 +145,7 @@ namespace TheGodfather.EventListeners
             if (e.Channel.IsPrivate)
                 return;
 
-            var logchn = await shard.Shared.GetLogChannelForGuild(shard.Client, e.Guild.Id)
-                .ConfigureAwait(false);
+            var logchn = shard.Shared.GetLogChannelForGuild(shard.Client, e.Guild);
             if (logchn != null && e.Message != null) {
                 var emb = new DiscordEmbedBuilder() {
                     Description = $"In channel {e.Channel.Mention}\nFrom {e.Message.Author?.ToString() ?? "<unknown>"}",
@@ -213,8 +211,7 @@ namespace TheGodfather.EventListeners
             }
 
             try {
-                var logchn = await shard.Shared.GetLogChannelForGuild(shard.Client, e.Guild.Id)
-                    .ConfigureAwait(false);
+                var logchn = shard.Shared.GetLogChannelForGuild(shard.Client, e.Guild);
                 if (logchn != null && !e.Author.IsBot && e.Message.EditedTimestamp != null) {
                     var detailspre = $"{Formatter.BlockCode(string.IsNullOrWhiteSpace(e.MessageBefore?.Content) ? "<empty or unknown content>" : e.MessageBefore.Content)}Created at: {(e.Message.CreationTimestamp != null ? e.Message.CreationTimestamp.ToUniversalTime().ToString() : "<unknown>")}; Embeds: {e.MessageBefore?.Embeds?.Count ?? 0}; Reactions: {e.MessageBefore?.Reactions?.Count ?? 0}; Attachments: {e.MessageBefore?.Attachments?.Count ?? 0}";
                     var detailsafter = $"{Formatter.BlockCode(string.IsNullOrWhiteSpace(e.Message?.Content) ? "<empty or unknown content>" : e.Message.Content)}Edited at: {(e.Message.EditedTimestamp != null ? e.Message.EditedTimestamp.ToUniversalTime().ToString() : "<unknown>")}; Embeds: {e.Message.Embeds.Count}; Reactions: {e.Message.Reactions.Count}; Attachments: {e.Message.Attachments.Count}";

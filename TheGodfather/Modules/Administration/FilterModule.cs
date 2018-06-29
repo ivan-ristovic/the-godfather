@@ -109,8 +109,7 @@ namespace TheGodfather.Modules.Administration
             }
 
             string errlist = errors.ToString();
-            var logchn = await Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild.Id)
-                .ConfigureAwait(false);
+            var logchn = Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
                     Title = "New filters added",
@@ -153,8 +152,7 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException("Failed to delete filters from the database.");
             }
 
-            var logchn = await Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild.Id)
-                .ConfigureAwait(false);
+            var logchn = Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
                     Title = "All filters have been deleted",
@@ -201,8 +199,7 @@ namespace TheGodfather.Modules.Administration
             }
 
             string errlist = errors.ToString();
-            var logchn = await Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild.Id)
-                .ConfigureAwait(false);
+            var logchn = Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
                     Title = "Several filters have been deleted",
@@ -246,8 +243,7 @@ namespace TheGodfather.Modules.Administration
             }
 
             string errlist = errors.ToString();
-            var logchn = await Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild.Id)
-                .ConfigureAwait(false);
+            var logchn = Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
                     Title = "Several filters have been deleted",

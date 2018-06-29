@@ -43,21 +43,10 @@ namespace TheGodfather
         public CachedGuildConfig GetGuildConfig(ulong gid)
             => GuildConfigurations.ContainsKey(gid) ? GuildConfigurations[gid] : CachedGuildConfig.Default;
 
-        public async Task<DiscordChannel> GetLogChannelForGuild(DiscordClient client, ulong gid)
+        public DiscordChannel GetLogChannelForGuild(DiscordClient client, DiscordGuild guild)
         {
-            var gcfg = GetGuildConfig(gid);
-            if (gcfg.LoggingEnabled) {
-                try {
-                    var channel = await client.GetChannelAsync(gcfg.LogChannelId)
-                        .ConfigureAwait(false);
-                    return channel;
-                } catch (Exception e) {
-                    TheGodfather.LogHandle.LogException(LogLevel.Warning, e);
-                    return null;
-                }
-            } else {
-                return null;
-            }
+            var gcfg = GetGuildConfig(guild.Id);
+            return gcfg.LoggingEnabled ? guild.GetChannel(gcfg.LogChannelId) : null;
         }
 
         public void AddAwaitingUser(ulong cid, ulong uid)

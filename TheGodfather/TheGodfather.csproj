@@ -441,8 +441,8 @@
     <Compile Include="EventListeners\ClientListeners.cs" />
     <Compile Include="Modules\Administration\AutomaticRolesModule.cs" />
     <Compile Include="Modules\Administration\Common\Filter.cs" />
-    <Compile Include="Modules\Administration\GuildModule.Configuration.Linkfilter.cs" />
-    <Compile Include="Modules\Administration\GuildModule.Configuration.cs" />
+    <Compile Include="Modules\Administration\GuildModule.Config.Linkfilter.cs" />
+    <Compile Include="Modules\Administration\GuildModule.Config.cs" />
     <Compile Include="Modules\Chickens\ChickenModule.Upgrades.cs" />
     <Compile Include="Modules\Chickens\ChickenModule.Train.cs" />
     <Compile Include="Modules\Chickens\ChickenModule.Buy.cs" />

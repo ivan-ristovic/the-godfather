@@ -20,8 +20,7 @@ namespace TheGodfather.EventListeners
         [AsyncExecuter(EventTypes.ChannelCreated)]
         public static async Task Client_ChannelCreated(TheGodfatherShard shard, ChannelCreateEventArgs e)
         {
-            var logchn = await shard.Shared.GetLogChannelForGuild(shard.Client, e.Guild.Id)
-                .ConfigureAwait(false);
+            var logchn = shard.Shared.GetLogChannelForGuild(shard.Client, e.Guild);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
                     Title = "Channel created",
@@ -49,8 +48,7 @@ namespace TheGodfather.EventListeners
         [AsyncExecuter(EventTypes.ChannelDeleted)]
         public static async Task Client_ChannelDeleted(TheGodfatherShard shard, ChannelDeleteEventArgs e)
         {
-            var logchn = await shard.Shared.GetLogChannelForGuild(shard.Client, e.Guild.Id)
-                .ConfigureAwait(false);
+            var logchn = shard.Shared.GetLogChannelForGuild(shard.Client, e.Guild);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
                     Title = "Channel deleted",
@@ -79,8 +77,7 @@ namespace TheGodfather.EventListeners
         [AsyncExecuter(EventTypes.ChannelPinsUpdated)]
         public static async Task Client_ChannelPinsUpdated(TheGodfatherShard shard, ChannelPinsUpdateEventArgs e)
         {
-            var logchn = await shard.Shared.GetLogChannelForGuild(shard.Client, e.Channel.Guild.Id)
-                .ConfigureAwait(false);
+            var logchn = shard.Shared.GetLogChannelForGuild(shard.Client, e.Channel.Guild);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
                     Title = "Channel pins updated",
@@ -99,8 +96,7 @@ namespace TheGodfather.EventListeners
             if (e.ChannelBefore.Position != e.ChannelAfter.Position)
                 return;
 
-            var logchn = await shard.Shared.GetLogChannelForGuild(shard.Client, e.Guild.Id)
-                .ConfigureAwait(false);
+            var logchn = shard.Shared.GetLogChannelForGuild(shard.Client, e.Guild);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
                     Title = "Channel updated",

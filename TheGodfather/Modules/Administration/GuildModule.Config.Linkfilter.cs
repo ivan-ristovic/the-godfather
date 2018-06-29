@@ -412,8 +412,7 @@ namespace TheGodfather.Modules.Administration
                 #region HELPER_FUNCTIONS
                 protected async Task LogConfigChangeAsync(CommandContext ctx, string module, bool value)
                 {
-                    var logchn = await Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild.Id)
-                    .ConfigureAwait(false);
+                    var logchn = Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
                     if (logchn != null) {
                         var emb = new DiscordEmbedBuilder() {
                             Title = "Guild config changed",

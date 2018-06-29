@@ -57,8 +57,7 @@ namespace TheGodfather.Modules.Administration
                 await Database.AddSelfAssignableRoleAsync(ctx.Guild.Id, role.Id)
                     .ConfigureAwait(false);
 
-            var logchn = await Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild.Id)
-                .ConfigureAwait(false);
+            var logchn = Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
                     Title = "New self-assignable roles added",
@@ -91,8 +90,7 @@ namespace TheGodfather.Modules.Administration
             await Database.RemoveAllSelfAssignableRolesForGuildAsync(ctx.Guild.Id)
                 .ConfigureAwait(false);
 
-            var logchn = await Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild.Id)
-                .ConfigureAwait(false);
+            var logchn = Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
                     Title = "All self-assignable roles have been deleted",
@@ -126,8 +124,7 @@ namespace TheGodfather.Modules.Administration
                 await Database.RemoveSelfAssignableRoleAsync(ctx.Guild.Id, role.Id)
                     .ConfigureAwait(false);
 
-            var logchn = await Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild.Id)
-                .ConfigureAwait(false);
+            var logchn = Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
                     Title = "Several self-assignable roles have been deleted",

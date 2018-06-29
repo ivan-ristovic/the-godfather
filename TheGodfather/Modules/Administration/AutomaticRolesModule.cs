@@ -56,9 +56,8 @@ namespace TheGodfather.Modules.Administration
             foreach (var role in roles)
                 await Database.AddAutomaticRoleAsync(ctx.Guild.Id, role.Id)
                     .ConfigureAwait(false);
-            
-            var logchn = await Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild.Id)
-                .ConfigureAwait(false);
+
+            var logchn = Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
                     Title = "New automatic roles added",
@@ -91,8 +90,7 @@ namespace TheGodfather.Modules.Administration
             await Database.RemoveAllAutomaticRolesForGuildAsync(ctx.Guild.Id)
                 .ConfigureAwait(false);
 
-            var logchn = await Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild.Id)
-                .ConfigureAwait(false);
+            var logchn = Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
                     Title = "All automatic roles have been deleted",
@@ -126,8 +124,7 @@ namespace TheGodfather.Modules.Administration
                 await Database.RemoveAutomaticRoleAsync(ctx.Guild.Id, role.Id)
                     .ConfigureAwait(false);
 
-            var logchn = await Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild.Id)
-                .ConfigureAwait(false);
+            var logchn = Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
                     Title = "Several automatic roles have been deleted",

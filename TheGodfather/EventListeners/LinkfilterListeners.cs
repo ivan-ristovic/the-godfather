@@ -175,8 +175,7 @@ namespace TheGodfather.EventListeners
        
         private static async Task LogLinkfilterMatchAsync(TheGodfatherShard shard, MessageCreateEventArgs e, string desc)
         {
-            var logchn = await shard.Shared.GetLogChannelForGuild(shard.Client, e.Guild.Id)
-                .ConfigureAwait(false);
+            var logchn = shard.Shared.GetLogChannelForGuild(shard.Client, e.Guild);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
                     Title = "Linkfilter action triggered",

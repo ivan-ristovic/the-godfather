@@ -92,8 +92,7 @@ namespace TheGodfather.Modules.Reactions
                 throw new CommandFailedException("Failed to delete text reactions from the database.");
             }
 
-            var logchn = await Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild.Id)
-                .ConfigureAwait(false);
+            var logchn = Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
                     Title = "All text reactions have been deleted",
@@ -145,8 +144,7 @@ namespace TheGodfather.Modules.Reactions
 
             string errlist = errors.ToString();
             if (removed > 0) {
-                var logchn = await Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild.Id)
-                    .ConfigureAwait(false);
+                var logchn = Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
                 if (logchn != null) {
                     var emb = new DiscordEmbedBuilder() {
                         Title = "Several text reactions have been deleted",
@@ -214,8 +212,7 @@ namespace TheGodfather.Modules.Reactions
 
             string errlist = errors.ToString();
             if (removed > 0) {
-                var logchn = await Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild.Id)
-                    .ConfigureAwait(false);
+                var logchn = Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
                 if (logchn != null) {
                     var emb = new DiscordEmbedBuilder() {
                         Title = "Several text reactions have been deleted",
@@ -300,8 +297,7 @@ namespace TheGodfather.Modules.Reactions
                     throw new CommandFailedException($"Failed to add trigger {Formatter.Bold(trigger)}.");
             }
 
-            var logchn = await Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild.Id)
-                .ConfigureAwait(false);
+            var logchn = Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
                     Title = "New text reaction added",

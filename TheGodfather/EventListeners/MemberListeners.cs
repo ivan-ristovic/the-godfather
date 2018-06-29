@@ -84,8 +84,7 @@ namespace TheGodfather.EventListeners
                 TheGodfather.LogHandle.LogException(LogLevel.Debug, exc);
             }
 
-            var logchn = await shard.Shared.GetLogChannelForGuild(shard.Client, e.Guild.Id)
-                .ConfigureAwait(false);
+            var logchn = shard.Shared.GetLogChannelForGuild(shard.Client, e.Guild);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
                     Title = "Member joined",
@@ -146,8 +145,7 @@ namespace TheGodfather.EventListeners
                         .ConfigureAwait(false);
             }
 
-            var logchn = await shard.Shared.GetLogChannelForGuild(shard.Client, e.Guild.Id)
-                .ConfigureAwait(false);
+            var logchn = shard.Shared.GetLogChannelForGuild(shard.Client, e.Guild);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
                     Title = "Member left",
@@ -167,8 +165,7 @@ namespace TheGodfather.EventListeners
         [AsyncExecuter(EventTypes.GuildMemberUpdated)]
         public static async Task Client_GuildMemberUpdated(TheGodfatherShard shard, GuildMemberUpdateEventArgs e)
         {
-            var logchn = await shard.Shared.GetLogChannelForGuild(shard.Client, e.Guild.Id)
-                .ConfigureAwait(false);
+            var logchn = shard.Shared.GetLogChannelForGuild(shard.Client, e.Guild);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
                     Title = "Member updated",
