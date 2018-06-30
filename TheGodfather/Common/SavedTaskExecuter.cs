@@ -43,7 +43,7 @@ namespace TheGodfather.Common
                 var texec = new SavedTaskExecuter(id, client, task, shared, db);
                 texec.ScheduleExecutionAsync();
             } catch (Exception e) {
-                TheGodfather.LogHandle.LogException(LogLevel.Warning, e);
+                TheGodfather.LogProvider.LogException(LogLevel.Warning, e);
                 return false;
             }
 
@@ -78,9 +78,9 @@ namespace TheGodfather.Common
                         UnbanUserAsync().ConfigureAwait(false).GetAwaiter().GetResult();
                         break;
                 }
-                TheGodfather.LogHandle.LogMessage(LogLevel.Info, $"Saved task executed: {SavedTask.Type.GetType()} ({SavedTask.Comment})<br>User ID: {SavedTask.UserId}<br>Guild ID: {SavedTask.GuildId}");
+                TheGodfather.LogProvider.LogMessage(LogLevel.Info, $"Saved task executed: {SavedTask.Type.GetType()} ({SavedTask.Comment})<br>User ID: {SavedTask.UserId}<br>Guild ID: {SavedTask.GuildId}");
             } catch (Exception e) {
-                TheGodfather.LogHandle.LogException(LogLevel.Warning, e);
+                TheGodfather.LogProvider.LogException(LogLevel.Warning, e);
             } finally {
                 RemoveTaskFromDatabase().ConfigureAwait(false).GetAwaiter().GetResult();
             }
@@ -113,9 +113,9 @@ namespace TheGodfather.Common
                     default:
                         break;
                 }
-                TheGodfather.LogHandle.LogMessage(LogLevel.Warning, $"Executed missed saved task of type {SavedTask.Type.GetType()}!<br>User ID: {SavedTask.UserId}<br>Guild ID: {SavedTask.GuildId}");
+                TheGodfather.LogProvider.LogMessage(LogLevel.Warning, $"Executed missed saved task of type {SavedTask.Type.GetType()}!<br>User ID: {SavedTask.UserId}<br>Guild ID: {SavedTask.GuildId}");
             } catch (Exception e) {
-                TheGodfather.LogHandle.LogException(LogLevel.Warning, e);
+                TheGodfather.LogProvider.LogException(LogLevel.Warning, e);
             } finally {
                 RemoveTaskFromDatabase().ConfigureAwait(false).GetAwaiter().GetResult();
             }

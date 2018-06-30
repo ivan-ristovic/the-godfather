@@ -25,7 +25,7 @@ namespace TheGodfather
     internal static class TheGodfather
     {
         public static bool Listening { get; internal set; } = true;
-        public static Logger LogHandle { get; private set; }
+        public static Logger LogProvider { get; private set; }
         public static List<TheGodfatherShard> Shards { get; private set; }
         private static CancellationTokenSource CTS { get; set; } = new CancellationTokenSource();
         private static DBService DatabaseService { get; set; }
@@ -78,7 +78,7 @@ namespace TheGodfather
                 json = await sr.ReadToEndAsync();
             var cfg = JsonConvert.DeserializeObject<BotConfig>(json);
 
-            LogHandle = new Logger() {
+            LogProvider = new Logger() {
                 LogLevel = cfg.LogLevel,
                 LogToFile = cfg.LogToFile,
                 Path = cfg.LogPath
@@ -162,7 +162,7 @@ namespace TheGodfather
             }
 
             
-            LogHandle.ElevatedLog(LogLevel.Info, "Booting complete! Registering timers and saved tasks...");
+            LogProvider.ElevatedLog(LogLevel.Info, "Booting complete! Registering timers and saved tasks...");
             DatabaseSyncTimer = new Timer(DatabaseSyncTimerCallback, Shards[0].Client, TimeSpan.FromMinutes(1), TimeSpan.FromSeconds(cfg.DbSyncInterval));
             BotStatusTimer = new Timer(BotActivityTimerCallback, Shards[0].Client, TimeSpan.FromSeconds(10), TimeSpan.FromMinutes(10));
             FeedCheckTimer = new Timer(FeedCheckTimerCallback, Shards[0].Client, TimeSpan.FromSeconds(cfg.FeedCheckStartDelay), TimeSpan.FromSeconds(cfg.FeedCheckInterval));
@@ -182,7 +182,7 @@ namespace TheGodfather
                     registered++;
                 }
             }
-            LogHandle.ElevatedLog(LogLevel.Info, $"Successfully registered {registered} saved tasks; Missed {missed} tasks.");
+            LogProvider.ElevatedLog(LogLevel.Info, $"Successfully registered {registered} saved tasks; Missed {missed} tasks.");
 
 
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
@@ -191,7 +191,7 @@ namespace TheGodfather
             await WaitForCancellationAsync();
 
 
-            LogHandle.ElevatedLog(LogLevel.Info, "Cleaning up...");
+            LogProvider.ElevatedLog(LogLevel.Info, "Cleaning up...");
             Console.WriteLine();
             BotStatusTimer.Dispose();
             DatabaseSyncTimer.Dispose();
@@ -200,7 +200,7 @@ namespace TheGodfather
                 await shard.DisconnectAndDisposeAsync();
             CTS.Dispose();
             SharedData.Dispose();
-            LogHandle.ElevatedLog(LogLevel.Info, "Cleanup complete! Powering off...");
+            LogProvider.ElevatedLog(LogLevel.Info, "Cleanup complete! Powering off...");
             Console.WriteLine("Press any key to exit.");
             Console.ReadKey();
         }
@@ -218,7 +218,7 @@ namespace TheGodfather
                 client.UpdateStatusAsync(activity)
                     .ConfigureAwait(false).GetAwaiter().GetResult();
             } catch (Exception e) {
-                LogHandle.LogException(LogLevel.Error, e);
+                LogProvider.LogException(LogLevel.Error, e);
             }
         }
 
@@ -234,7 +234,7 @@ namespace TheGodfather
             try {
                 RSSService.CheckFeedsForChangesAsync(client, DatabaseService).ConfigureAwait(false).GetAwaiter().GetResult();
             } catch (Exception e) {
-                LogHandle.LogException(LogLevel.Error, e);
+                LogProvider.LogException(LogLevel.Error, e);
             }
         }
 
@@ -258,7 +258,7 @@ namespace TheGodfather
                 DatabaseService.UpdateBankAccountsAsync()
                     .ConfigureAwait(false).GetAwaiter().GetResult();
             } catch (Exception e) {
-                LogHandle.LogException(LogLevel.Error, e);
+                LogProvider.LogException(LogLevel.Error, e);
             }
         }
 

@@ -95,7 +95,7 @@ namespace TheGodfather.Services
                 var data = JsonConvert.DeserializeObject<OMDbResponse>(response);
                 return data.Success ? data.Results?.AsReadOnly() : null;
             } catch (Exception e) {
-                TheGodfather.LogHandle.LogException(LogLevel.Debug, e);
+                TheGodfather.LogProvider.LogException(LogLevel.Debug, e);
                 return null;
             }
         }
@@ -108,7 +108,7 @@ namespace TheGodfather.Services
                 var data = JsonConvert.DeserializeObject<MovieInfo>(response);
                 return data.Success ? data : null;
             } catch (Exception e) {
-                TheGodfather.LogHandle.LogException(LogLevel.Debug, e);
+                TheGodfather.LogProvider.LogException(LogLevel.Debug, e);
                 return null;
             }
         }
@@ -121,7 +121,7 @@ namespace TheGodfather.Services
                 var data = JsonConvert.DeserializeObject<MovieInfo>(response);
                 return data.Success ? data : null;
             } catch (Exception e) {
-                TheGodfather.LogHandle.LogException(LogLevel.Debug, e);
+                TheGodfather.LogProvider.LogException(LogLevel.Debug, e);
                 return null;
             }
         }

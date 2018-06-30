@@ -40,7 +40,7 @@ namespace TheGodfather.Modules.Currency.Common
                 try {
                     _image = new Bitmap("Resources/wof.png");
                 } catch (FileNotFoundException e) {
-                    TheGodfather.LogHandle.LogException(LogLevel.Error, e);
+                    TheGodfather.LogProvider.LogException(LogLevel.Error, e);
                 }
             }
         }
@@ -59,7 +59,7 @@ namespace TheGodfather.Modules.Currency.Common
                     }).ConfigureAwait(false);
                 }
             } catch (Exception e) {
-                TheGodfather.LogHandle.LogException(LogLevel.Error, e);
+                TheGodfather.LogProvider.LogException(LogLevel.Error, e);
             }
         }
 

@@ -91,7 +91,7 @@ namespace TheGodfather.Modules.Owner
                             .ConfigureAwait(false);
                     } catch (Exception e) {
                         sb.AppendLine($"Warning: Failed to remove {user.ToString()} from the database!");
-                        TheGodfather.LogHandle.LogException(LogLevel.Warning, e);
+                        TheGodfather.LogProvider.LogException(LogLevel.Warning, e);
                         continue;
                     }
                     sb.AppendLine($"Removed: {user.ToString()}!");
@@ -119,7 +119,7 @@ namespace TheGodfather.Modules.Owner
                             .ConfigureAwait(false);
                         users.Add(user);
                     } catch (NotFoundException) {
-                        TheGodfather.LogHandle.LogMessage(LogLevel.Warning, $"Removed 404 priviledged user with ID {uid}");
+                        TheGodfather.LogProvider.LogMessage(LogLevel.Warning, $"Removed 404 priviledged user with ID {uid}");
                         await Database.RemovePrivilegedUserAsync(uid)
                             .ConfigureAwait(false);
                     }

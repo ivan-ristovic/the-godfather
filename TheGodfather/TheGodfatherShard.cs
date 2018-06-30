@@ -87,7 +87,7 @@ namespace TheGodfather
                 ShardCount = Shared.BotConfiguration.ShardCount,
                 ShardId = ShardId,
                 UseInternalLogHandler = false,
-                LogLevel = TheGodfather.LogHandle.LogLevel
+                LogLevel = TheGodfather.LogProvider.LogLevel
             };
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && Environment.OSVersion.Version <= new Version(6, 1, 7601, 65536))
@@ -95,8 +95,8 @@ namespace TheGodfather
 
             Client = new DiscordClient(cfg);
 
-            Client.DebugLogger.LogMessageReceived += (s, e) => TheGodfather.LogHandle.LogMessage(ShardId, e);
-            Client.Ready += e => { TheGodfather.LogHandle.ElevatedLog(LogLevel.Info, "Ready!", ShardId); return Task.CompletedTask; };
+            Client.DebugLogger.LogMessageReceived += (s, e) => TheGodfather.LogProvider.LogMessage(ShardId, e);
+            Client.Ready += e => { TheGodfather.LogProvider.ElevatedLog(LogLevel.Info, "Ready!", ShardId); return Task.CompletedTask; };
         }
 
         private void SetupCommands()

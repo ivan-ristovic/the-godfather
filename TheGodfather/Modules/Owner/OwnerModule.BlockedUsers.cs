@@ -144,7 +144,7 @@ namespace TheGodfather.Modules.Owner
                             .ConfigureAwait(false);
                     } catch (Exception e) {
                         sb.AppendLine($"Warning: Failed to remove {user.ToString()} from the database!");
-                        TheGodfather.LogHandle.LogException(LogLevel.Warning, e);
+                        TheGodfather.LogProvider.LogException(LogLevel.Warning, e);
                         continue;
                     }
 
@@ -173,7 +173,7 @@ namespace TheGodfather.Modules.Owner
                             .ConfigureAwait(false);
                         lines.Add($"{user.ToString()} ({Formatter.Italic(string.IsNullOrWhiteSpace(tup.Item2) ? "No reason provided." : tup.Item2)})");
                     } catch (NotFoundException) {
-                        TheGodfather.LogHandle.LogMessage(LogLevel.Warning, $"Removed 404 blocked user with ID {tup.Item1}");
+                        TheGodfather.LogProvider.LogMessage(LogLevel.Warning, $"Removed 404 blocked user with ID {tup.Item1}");
                         await Database.RemoveBlockedUserAsync(tup.Item1)
                             .ConfigureAwait(false);
                     }

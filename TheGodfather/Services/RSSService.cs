@@ -82,7 +82,7 @@ namespace TheGodfather.Services
                                 chn = await client.GetChannelAsync(sub.ChannelId)
                                     .ConfigureAwait(false);
                             } catch (Exception e) {
-                                TheGodfather.LogHandle.LogException(LogLevel.Warning, e);
+                                TheGodfather.LogProvider.LogException(LogLevel.Warning, e);
                                 await db.RemoveSubscriptionByIdAsync(sub.ChannelId, feed.Id)
                                     .ConfigureAwait(false);
                                 continue;
@@ -112,7 +112,7 @@ namespace TheGodfather.Services
                         }
                     }
                 } catch (Exception e) {
-                    TheGodfather.LogHandle.LogException(LogLevel.Warning, e);
+                    TheGodfather.LogProvider.LogException(LogLevel.Warning, e);
                 }
             }
         }

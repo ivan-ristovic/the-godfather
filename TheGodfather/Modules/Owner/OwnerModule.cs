@@ -131,7 +131,7 @@ namespace TheGodfather.Modules.Owner
             if (!await ctx.AskYesNoQuestionAsync("Are you sure you want to clear the logs?").ConfigureAwait(false))
                 return;
 
-            if (!TheGodfather.LogHandle.Clear())
+            if (!TheGodfather.LogProvider.Clear())
                 throw new CommandFailedException("Failed to delete log file!");
 
             await ctx.RespondWithIconEmbedAsync()
@@ -289,7 +289,7 @@ namespace TheGodfather.Modules.Owner
         public async Task FileLogAsync(CommandContext ctx,
                                       [Description("True/False")] bool b = true)
         {
-            TheGodfather.LogHandle.LogToFile = b;
+            TheGodfather.LogProvider.LogToFile = b;
 
             await ctx.RespondWithIconEmbedAsync($"File logging set to {b}")
                 .ConfigureAwait(false);
@@ -318,7 +318,7 @@ namespace TheGodfather.Modules.Owner
                 current = Directory.CreateDirectory(folder);
                 parts = Directory.CreateDirectory(Path.Combine(current.FullName, "Parts"));
             } catch (Exception e) {
-                TheGodfather.LogHandle.LogException(LogLevel.Warning, e);
+                TheGodfather.LogProvider.LogException(LogLevel.Warning, e);
                 throw new CommandFailedException("Failed to create directories!", e);
             }
 

@@ -34,7 +34,7 @@ namespace TheGodfather.Services
                     .ConfigureAwait(false);
                 data = JsonConvert.DeserializeObject<WeatherData>(response);
             } catch (Exception e) {
-                TheGodfather.LogHandle.LogException(LogLevel.Debug, e);
+                TheGodfather.LogProvider.LogException(LogLevel.Debug, e);
                 return null;
             }
 
@@ -49,7 +49,7 @@ namespace TheGodfather.Services
                 var forecast = JsonConvert.DeserializeObject<Forecast>(response);
                 return forecast.GetEmbeds(amount);
             } catch (Exception e) {
-                TheGodfather.LogHandle.LogException(LogLevel.Debug, e);
+                TheGodfather.LogProvider.LogException(LogLevel.Debug, e);
                 return null;
             }
         }

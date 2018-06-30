@@ -308,7 +308,7 @@ namespace TheGodfather.Modules.Misc
                         .ConfigureAwait(false);
                 }
             } catch (Exception e) {
-                TheGodfather.LogHandle.LogException(LogLevel.Warning, e);
+                TheGodfather.LogProvider.LogException(LogLevel.Warning, e);
                 throw new CommandFailedException("Failed to add prefix. Please try again.");
             }
 

@@ -30,7 +30,7 @@ namespace TheGodfather.Services
                 var comic = JsonConvert.DeserializeObject<XkcdComic>(response);
                 return comic;
             } catch (Exception e) {
-                TheGodfather.LogHandle.LogException(LogLevel.Debug, e);
+                TheGodfather.LogProvider.LogException(LogLevel.Debug, e);
                 return null;
             }
         }

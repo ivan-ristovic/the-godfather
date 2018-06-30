@@ -124,7 +124,7 @@ namespace TheGodfather
                 await SaveRanksToDatabaseAsync(db)
                     .ConfigureAwait(false);
             } catch (Exception e) {
-                TheGodfather.LogHandle.LogException(LogLevel.Error, e);
+                TheGodfather.LogProvider.LogException(LogLevel.Error, e);
             }
         }
 
