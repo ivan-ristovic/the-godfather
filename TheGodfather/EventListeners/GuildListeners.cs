@@ -105,7 +105,7 @@ namespace TheGodfather.EventListeners
                     emb.WithDescription(eentry.Target?.ToString() ?? "No description provided");
                     emb.AddField("User responsible", eentry.UserResponsible.Mention, inline: true);
                     if (eentry.NameChange != null)
-                        emb.AddField("Name changes", $"{eentry.NameChange.Before ?? "None"} -> {eentry.NameChange.After ?? "None"}", inline: true);
+                        emb.AddField("Name changes", $"{Formatter.InlineCode(eentry.NameChange.Before ?? "None")} -> {Formatter.InlineCode(eentry.NameChange.After ?? "None")}", inline: true);
                     if (!string.IsNullOrWhiteSpace(eentry.Reason))
                         emb.AddField("Reason", eentry.Reason);
                     emb.WithFooter($"At {eentry.CreationTimestamp.ToUniversalTime().ToString()} UTC", eentry.UserResponsible.AvatarUrl);

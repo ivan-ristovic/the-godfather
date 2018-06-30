@@ -213,8 +213,8 @@ namespace TheGodfather.EventListeners
             try {
                 var logchn = shard.Shared.GetLogChannelForGuild(shard.Client, e.Guild);
                 if (logchn != null && !e.Author.IsBot && e.Message.EditedTimestamp != null) {
-                    var detailspre = $"{Formatter.BlockCode(string.IsNullOrWhiteSpace(e.MessageBefore?.Content) ? "<empty or unknown content>" : e.MessageBefore.Content)}Created at: {(e.Message.CreationTimestamp != null ? e.Message.CreationTimestamp.ToUniversalTime().ToString() : "<unknown>")}; Embeds: {e.MessageBefore?.Embeds?.Count ?? 0}; Reactions: {e.MessageBefore?.Reactions?.Count ?? 0}; Attachments: {e.MessageBefore?.Attachments?.Count ?? 0}";
-                    var detailsafter = $"{Formatter.BlockCode(string.IsNullOrWhiteSpace(e.Message?.Content) ? "<empty or unknown content>" : e.Message.Content)}Edited at: {(e.Message.EditedTimestamp != null ? e.Message.EditedTimestamp.ToUniversalTime().ToString() : "<unknown>")}; Embeds: {e.Message.Embeds.Count}; Reactions: {e.Message.Reactions.Count}; Attachments: {e.Message.Attachments.Count}";
+                    var detailspre = $"{Formatter.BlockCode(Formatter.Sanitize(string.IsNullOrWhiteSpace(e.MessageBefore?.Content) ? "<empty or unknown content>" : e.MessageBefore.Content))}Created at: {(e.Message.CreationTimestamp != null ? e.Message.CreationTimestamp.ToUniversalTime().ToString() : "<unknown>")}; Embeds: {e.MessageBefore?.Embeds?.Count ?? 0}; Reactions: {e.MessageBefore?.Reactions?.Count ?? 0}; Attachments: {e.MessageBefore?.Attachments?.Count ?? 0}";
+                    var detailsafter = $"{Formatter.BlockCode(Formatter.Sanitize(string.IsNullOrWhiteSpace(e.Message?.Content) ? "<empty or unknown content>" : e.Message.Content))}Edited at: {(e.Message.EditedTimestamp != null ? e.Message.EditedTimestamp.ToUniversalTime().ToString() : "<unknown>")}; Embeds: {e.Message.Embeds.Count}; Reactions: {e.Message.Reactions.Count}; Attachments: {e.Message.Attachments.Count}";
 
                     var emb = new DiscordEmbedBuilder() {
                         Title = "Message updated",
