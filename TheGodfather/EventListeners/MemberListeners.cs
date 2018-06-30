@@ -23,7 +23,7 @@ namespace TheGodfather.EventListeners
             if (!TheGodfather.Listening)
                 return;
 
-            shard.Log(LogLevel.Info, $"Member joined: {e.Member.ToString()}<br>{e.Guild.ToString()}");
+            shard.Log(LogLevel.Info, $"| Member joined: {e.Member.ToString()}\n{e.Guild.ToString()}");
 
             var wchn = await shard.Database.GetWelcomeChannelAsync(e.Guild)
                 .ConfigureAwait(false);
@@ -54,10 +54,10 @@ namespace TheGodfather.EventListeners
                         }
                     } catch (Exception exc) {
                         shard.Log(LogLevel.Debug,
-                            $"Failed to assign an automatic role to a new member!<br>" +
-                            $"{e.Guild.ToString()}<br>" +
-                            $"Exception: {exc.GetType()}<br>" +
-                            $"Message: {exc.Message}"
+                            $"| Failed to assign an automatic role to a new member!\n" +
+                            $"| {e.Guild.ToString()}\n" +
+                            $"| Exception: {exc.GetType()}\n" +
+                            $"| Message: {exc.Message}"
                         );
                     }
                 }
@@ -88,7 +88,7 @@ namespace TheGodfather.EventListeners
             if (!TheGodfather.Listening || e.Member.Id == e.Client.CurrentUser.Id)
                 return;
 
-            shard.Log(LogLevel.Info, $"Member left: {e.Member.ToString()}<br>{e.Guild.ToString()}");
+            shard.Log(LogLevel.Info, $"| Member left: {e.Member.ToString()}\n{e.Guild.ToString()}");
 
             var lchn = await shard.Database.GetLeaveChannelAsync(e.Guild)
                 .ConfigureAwait(false);

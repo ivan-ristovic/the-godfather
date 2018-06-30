@@ -26,11 +26,10 @@ namespace TheGodfather.EventListeners
         public static async Task CommandExecuted(TheGodfatherShard shard, CommandExecutionEventArgs e)
         {
             await Task.Delay(0).ConfigureAwait(false);
-
             shard.Log(LogLevel.Info,
-                $"Executed: {e.Command?.QualifiedName ?? "<unknown command>"}<br>" +
-                $"{e.Context.User.ToString()}<br>" +
-                $"{e.Context.Guild.ToString()}; {e.Context.Channel.ToString()}"
+                $"| Executed: {e.Command?.QualifiedName ?? "<unknown command>"}\n" +
+                $"| {e.Context.User.ToString()}\n" +
+                $"| {e.Context.Guild.ToString()}; {e.Context.Channel.ToString()}"
             );
         }
 
@@ -48,12 +47,12 @@ namespace TheGodfather.EventListeners
                 return;
 
             shard.Log(LogLevel.Info,
-                $"Tried executing: {e.Command?.QualifiedName ?? "<unknown command>"}<br>" +
-                $"{e.Context.User.ToString()}<br>" +
-                $"{e.Context.Guild.ToString()}; {e.Context.Channel.ToString()}<br>" +
-                $"Exception: {ex.GetType()}<br>" +
-                (ex.InnerException != null ? $"Inner exception: {ex.InnerException.GetType()}<br>" : "") +
-                $"Message: {ex.Message.Replace("\n", "<br>") ?? "<no message>"}<br>"
+                $"| Tried executing: {e.Command?.QualifiedName ?? "<unknown command>"}\n" +
+                $"| {e.Context.User.ToString()}\n" +
+                $"| {e.Context.Guild.ToString()}; {e.Context.Channel.ToString()}\n" +
+                $"| Exception: {ex.GetType()}\n" +
+                (ex.InnerException != null ? $"| Inner exception: {ex.InnerException.GetType()}\n" : "") +
+                $"| Message: {ex.Message ?? "<no message provided>"}\n"
             );
 
             var emb = new DiscordEmbedBuilder {

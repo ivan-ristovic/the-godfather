@@ -48,24 +48,24 @@ namespace TheGodfather.Common
             return true;
         }
 
-        public void LogMessage(LogLevel level, string message, int? shard = null, DateTime? timestamp = null, bool filelog = true)
-        {
-            if (level > LogLevel)
-                return;
-
-            ElevatedLog(level, message, shard, timestamp, filelog);
-        }
-
         public void ElevatedLog(LogLevel level, string message, int? shard = null, DateTime? timestamp = null, bool filelog = true)
         {
             lock (_lock) {
                 PrintTimestamp(timestamp);
                 PrintApplicationInfo(shard, null);
                 PrintLevel(level);
-                PrintLogMessage(message.Replace('\n', ' '));
+                PrintLogMessage(message);
                 if (filelog && _filelog)
                     WriteToLogFile(level, message, timestamp);
             }
+        }
+
+        public void LogMessage(LogLevel level, string message, int? shard = null, DateTime? timestamp = null, bool filelog = true)
+        {
+            if (level > LogLevel)
+                return;
+
+            ElevatedLog(level, message, shard, timestamp, filelog);
         }
 
         public void LogMessage(int shard, DebugLogMessageEventArgs e, bool filelog = true)
@@ -77,7 +77,7 @@ namespace TheGodfather.Common
                 PrintTimestamp(e.Timestamp);
                 PrintApplicationInfo(shard, e.Application);
                 PrintLevel(e.Level);
-                PrintLogMessage(e.Message.Replace('\n', ' '));
+                PrintLogMessage(e.Message);
                 if (filelog && _filelog)
                     WriteToLogFile(shard, e);
             }
@@ -91,10 +91,10 @@ namespace TheGodfather.Common
             lock (_lock) {
                 PrintTimestamp(timestamp);
                 PrintLevel(level);
-                PrintLogMessage($"Exception occured: {e.GetType()}<br>Details: {e.Message.Replace('\n', ' ')}<br>");
+                PrintLogMessage($"| Exception occured: {e.GetType()}\n| Details: {e.Message}\n");
                 if (e.InnerException != null)
-                    PrintLogMessage($"Inner exception: {e.InnerException}<br>");
-                PrintLogMessage($"Stack trace: {e.StackTrace}");
+                    PrintLogMessage($"| Inner exception: {e.InnerException}\n");
+                PrintLogMessage($"| Stack trace:\n{e.StackTrace}");
                 if (filelog && _filelog)
                     WriteToLogFile(level, e);
             }
@@ -106,7 +106,7 @@ namespace TheGodfather.Common
             try {
                 using (StreamWriter sw = new StreamWriter(_path, true, Encoding.UTF8, BufferSize)) {
                     sw.WriteLine($"[{(timestamp ?? DateTime.Now):yyyy-MM-dd HH:mm:ss zzz}] [{level}]");
-                    sw.WriteLine(message.Replace("<br>", Environment.NewLine).Trim());
+                    sw.WriteLine(message.Trim().Replace("\n", Environment.NewLine));
                     sw.WriteLine();
                     sw.Flush();
                 }
@@ -120,7 +120,7 @@ namespace TheGodfather.Common
             try {
                 using (var sw = new StreamWriter(_path, true, Encoding.UTF8, BufferSize)) {
                     sw.WriteLine($"[{e.Timestamp:yyyy-MM-dd HH:mm:ss zzz}] [#{shard}] [{e.Application}] [{e.Level}]");
-                    sw.WriteLine(e.Message.Replace("<br>", Environment.NewLine).Trim());
+                    sw.WriteLine(e.Message.Trim().Replace("\n", Environment.NewLine));
                     sw.WriteLine();
                     sw.Flush();
                 }
@@ -134,11 +134,11 @@ namespace TheGodfather.Common
             try {
                 using (var sw = new StreamWriter(_path, true, Encoding.UTF8, BufferSize)) {
                     sw.WriteLine($"[{(timestamp ?? DateTime.Now):yyyy-MM-dd HH:mm:ss zzz}] [{level}]");
-                    sw.WriteLine($"Exception occured: {e.GetType()}");
-                    sw.WriteLine($"Details: {e.Message}");
+                    sw.WriteLine($"| Exception occured: {e.GetType()}");
+                    sw.WriteLine($"| Details: {e.Message}");
                     if (e.InnerException != null)
-                        sw.WriteLine($"Inner exception: {e.InnerException}");
-                    sw.WriteLine($"Stack trace: {e.StackTrace}");
+                        sw.WriteLine($"| Inner exception: {e.InnerException}");
+                    sw.WriteLine($"| Stack trace: {e.StackTrace}");
                     sw.WriteLine();
                     sw.Flush();
                 }
@@ -197,6 +197,6 @@ namespace TheGodfather.Common
         }
 
         private static void PrintLogMessage(string message)
-            => Console.WriteLine(message.Replace("<br>", Environment.NewLine).Trim() + Environment.NewLine);
+            => Console.WriteLine(message.Trim() + Environment.NewLine);
     }
 }

@@ -17,21 +17,21 @@ namespace TheGodfather.EventListeners
         [AsyncExecuter(EventTypes.ClientErrored)]
         public static Task Client_Errored(TheGodfatherShard shard, ClientErrorEventArgs e)
         {
-            shard.Log(LogLevel.Critical, $"Client errored: {e.Exception.GetType()}: {e.Exception.Message}");
+            shard.Log(LogLevel.Critical, $"| Client errored: {e.Exception.GetType()}: {e.Exception.Message}");
             return Task.CompletedTask;
         }
 
         [AsyncExecuter(EventTypes.GuildAvailable)]
         public static Task Client_GuildAvailable(TheGodfatherShard shard, GuildCreateEventArgs e)
         {
-            shard.Log(LogLevel.Info, $"Guild available: {e.Guild.ToString()}");
+            shard.Log(LogLevel.Info, $"| Guild available: {e.Guild.ToString()}");
             return Task.CompletedTask;
         }
 
         [AsyncExecuter(EventTypes.GuildCreated)]
         public static async Task Client_GuildCreated(TheGodfatherShard shard, GuildCreateEventArgs e)
         {
-            shard.Log(LogLevel.Info, $"Joined guild: {e.Guild.ToString()}");
+            shard.Log(LogLevel.Info, $"| Joined guild: {e.Guild.ToString()}");
 
             await shard.Database.RegisterGuildAsync(e.Guild.Id)
                 .ConfigureAwait(false);

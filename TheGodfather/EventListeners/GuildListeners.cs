@@ -72,7 +72,7 @@ namespace TheGodfather.EventListeners
         [AsyncExecuter(EventTypes.GuildDeleted)]
         public static async Task Client_GuildDeleted(TheGodfatherShard shard, GuildDeleteEventArgs e)
         {
-            shard.Log(LogLevel.Info, $"Left guild: {e.Guild.ToString()}");
+            shard.Log(LogLevel.Info, $"| Left guild: {e.Guild.ToString()}");
 
             await shard.Database.UnregisterGuildAsync(e.Guild.Id)
                 .ConfigureAwait(false);

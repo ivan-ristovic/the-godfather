@@ -78,7 +78,7 @@ namespace TheGodfather.Common
                         UnbanUserAsync().ConfigureAwait(false).GetAwaiter().GetResult();
                         break;
                 }
-                TheGodfather.LogProvider.LogMessage(LogLevel.Info, $"Saved task executed: {SavedTask.Type.GetType()} ({SavedTask.Comment})<br>User ID: {SavedTask.UserId}<br>Guild ID: {SavedTask.GuildId}");
+                TheGodfather.LogProvider.LogMessage(LogLevel.Info, $"Saved task executed: {SavedTask.Type.GetType()} ({SavedTask.Comment})\nUser ID: {SavedTask.UserId}\nGuild ID: {SavedTask.GuildId}");
             } catch (Exception e) {
                 TheGodfather.LogProvider.LogException(LogLevel.Warning, e);
             } finally {
@@ -113,7 +113,7 @@ namespace TheGodfather.Common
                     default:
                         break;
                 }
-                TheGodfather.LogProvider.LogMessage(LogLevel.Warning, $"Executed missed saved task of type {SavedTask.Type.GetType()}!<br>User ID: {SavedTask.UserId}<br>Guild ID: {SavedTask.GuildId}");
+                TheGodfather.LogProvider.LogMessage(LogLevel.Warning, $"Executed missed saved task of type {SavedTask.Type.GetType()}!\nUser ID: {SavedTask.UserId}\nGuild ID: {SavedTask.GuildId}");
             } catch (Exception e) {
                 TheGodfather.LogProvider.LogException(LogLevel.Warning, e);
             } finally {

@@ -74,7 +74,7 @@ namespace TheGodfather
             => await Client.ConnectAsync().ConfigureAwait(false);
 
         public void Log(LogLevel level, string message)
-            => Client.DebugLogger.LogMessage(level, "TheGodfather", message, DateTime.Now);
+            => TheGodfather.LogProvider.LogMessage(level, message, ShardId, DateTime.Now);
 
 
         private void SetupClient()

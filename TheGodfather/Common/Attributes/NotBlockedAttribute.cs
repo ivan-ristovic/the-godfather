@@ -22,10 +22,10 @@ namespace TheGodfather.Common.Attributes
 
                 if (!help) {
                     ctx.Client.DebugLogger.LogMessage(LogLevel.Debug, "TheGodfather",
-                        $"Executing: {ctx.Command?.QualifiedName ?? "<unknown command>"}<br>" + 
-                        $"User: {ctx.User.ToString()}<br>" +
-                        $"{ctx.Guild.ToString()} | {ctx.Channel.ToString()}<br>" +
-                        $"Full message: {ctx.Message.Content}",
+                        $"| Executing: {ctx.Command?.QualifiedName ?? "<unknown command>"}\n" + 
+                        $"| {ctx.User.ToString()}\n" +
+                        $"| {ctx.Guild.ToString()} ; {ctx.Channel.ToString()}\n" +
+                        $"| Full message: {ctx.Message.Content}",
                         DateTime.Now
                     );
                 }

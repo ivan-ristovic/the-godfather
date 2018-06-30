@@ -61,16 +61,16 @@ namespace TheGodfather.EventListeners
                     await e.Message.DeleteAsync("_gf: Filter hit")
                         .ConfigureAwait(false);
                     shard.Log(LogLevel.Debug,
-                        $"Filter triggered in message: {e.Message.Content.Replace('\n', ' ')}<br>" +
-                        $"{e.Message.Author.ToString()}<br>" +
-                        $"{e.Guild.ToString()} | {e.Channel.ToString()}"
+                        $"| Filter triggered in message: {e.Message.Content.Replace('\n', ' ')}\n" +
+                        $"| {e.Message.Author.ToString()}\n" +
+                        $"| {e.Guild.ToString()} ; {e.Channel.ToString()}"
                     );
                 } catch (UnauthorizedException) {
                     shard.Log(LogLevel.Debug,
-                        $"Filter triggered in message but missing permissions to delete!<br>" +
-                        $"Message: {e.Message.Content.Replace('\n', ' ')}<br>" +
-                        $"{e.Message.Author.ToString()}<br>" +
-                        $"{e.Guild.ToString()} | {e.Channel.ToString()}"
+                        $"| Filter triggered in message but missing permissions to delete!\n" +
+                        $"| Message: {e.Message.Content.Replace('\n', ' ')}\n" +
+                        $"| {e.Message.Author.ToString()}\n" +
+                        $"| {e.Guild.ToString()} ; {e.Channel.ToString()}"
                     );
                 }
                 return;
@@ -90,10 +90,10 @@ namespace TheGodfather.EventListeners
                 var ereactions = shard.Shared.EmojiReactions[e.Guild.Id].Where(er => er.Matches(e.Message.Content));
                 foreach (var er in ereactions) {
                     shard.Log(LogLevel.Debug,
-                        $"Emoji reaction detected: {er.Response}<br>" +
-                        $"Message: {e.Message.Content.Replace('\n', ' ')}<br>" +
-                        $"{e.Message.Author.ToString()}<br>" +
-                        $"{e.Guild.ToString()} | {e.Channel.ToString()}"
+                        $"| Emoji reaction detected: {er.Response}\n" +
+                        $"| Message: {e.Message.Content.Replace('\n', ' ')}\n" +
+                        $"| {e.Message.Author.ToString()}\n" +
+                        $"| {e.Guild.ToString()} ; {e.Channel.ToString()}"
                     );
                     try {
                         var emoji = DiscordEmoji.FromName(shard.Client, er.Response);
@@ -104,10 +104,10 @@ namespace TheGodfather.EventListeners
                             .ConfigureAwait(false);
                     } catch (UnauthorizedException) {
                         shard.Log(LogLevel.Debug,
-                            $"Emoji reaction trigger found but missing permissions to add reactions!<br>" +
-                            $"Message: '{e.Message.Content.Replace('\n', ' ')}<br>" +
-                            $"{e.Message.Author.ToString()}<br>" +
-                            $"{e.Guild.ToString()} | {e.Channel.ToString()}"
+                            $"| Emoji reaction trigger found but missing permissions to add reactions!\n" +
+                            $"| Message: '{e.Message.Content.Replace('\n', ' ')}\n" +
+                            $"| {e.Message.Author.ToString()}\n" +
+                            $"| {e.Guild.ToString()} ; {e.Channel.ToString()}"
                         );
                         break;
                     }
@@ -128,10 +128,10 @@ namespace TheGodfather.EventListeners
                 var tr = shard.Shared.TextReactions[e.Guild.Id]?.FirstOrDefault(r => r.Matches(e.Message.Content));
                 if (tr != null && tr.CanSend()) {
                     shard.Log(LogLevel.Debug,
-                        $"Text reaction detected: {tr.Response}<br>" +
-                        $"Message: {e.Message.Content.Replace('\n', ' ')}<br>" +
-                        $"{e.Message.Author.ToString()}<br>" +
-                        $"{e.Guild.ToString()} | {e.Channel.ToString()}"
+                        $"| Text reaction detected: {tr.Response}\n" +
+                        $"| Message: {e.Message.Content.Replace('\n', ' ')}\n" +
+                        $"| {e.Message.Author.ToString()}\n" +
+                        $"| {e.Guild.ToString()} ; {e.Channel.ToString()}"
                     );
                     await e.Channel.SendMessageAsync(tr.Response.Replace("%user%", e.Author.Mention))
                         .ConfigureAwait(false);
@@ -195,17 +195,17 @@ namespace TheGodfather.EventListeners
                         .ConfigureAwait(false);
 
                     shard.Log(LogLevel.Debug,
-                        $"Filter triggered after message edit:<br>" +
-                        $"Message: {e.Message.Content.Replace('\n', ' ')}<br>" +
-                        $"{e.Message.Author.ToString()}<br>" +
-                        $"{e.Guild.ToString()} | {e.Channel.ToString()}"
+                        $"| Filter triggered after message edit:\n" +
+                        $"| Message: {e.Message.Content.Replace('\n', ' ')}\n" +
+                        $"| {e.Message.Author.ToString()}\n" +
+                        $"| {e.Guild.ToString()} ; {e.Channel.ToString()}"
                     );
                 } catch (UnauthorizedException) {
                     shard.Log(LogLevel.Debug,
-                        $"Filter triggered in edited message but missing permissions to delete!<br>" +
-                        $"Message: '{e.Message.Content.Replace('\n', ' ')}<br>" +
-                        $"{e.Message.Author.ToString()}<br>" +
-                        $"{e.Guild.ToString()} | {e.Channel.ToString()}"
+                        $"| Filter triggered in edited message but missing permissions to delete!\n" +
+                        $"| Message: {e.Message.Content.Replace('\n', ' ')}\n" +
+                        $"| {e.Message.Author.ToString()}\n" +
+                        $"| {e.Guild.ToString()} ; {e.Channel.ToString()}"
                     );
                 }
             }
