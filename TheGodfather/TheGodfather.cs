@@ -49,14 +49,13 @@ namespace TheGodfather
 
         private static async Task MainAsync(string[] args)
         {
-            Console.WriteLine("Booting up...");
             Console.Write("\r[1/5] Loading configuration...              ");
 
             var json = "{}";
             var utf8 = new UTF8Encoding(false);
             var fi = new FileInfo("Resources/config.json");
             if (!fi.Exists) {
-                Console.WriteLine("\rLoading configuration failed");
+                Console.WriteLine("\rLoading configuration failed!");
 
                 json = JsonConvert.SerializeObject(BotConfig.Default, Formatting.Indented);
                 using (var fs = fi.Create())
@@ -155,33 +154,22 @@ namespace TheGodfather
 
 
             Console.WriteLine("\r[5/5] Booting the shards...             ");
+            Console.WriteLine();
 
             foreach (var shard in Shards) {
                 shard.Initialize();
                 await shard.StartAsync();
             }
 
-
-            Console.WriteLine("\rBooting complete!                       ");
-
-
-            Console.Write("Starting periodic actions...");
+            
+            LogHandle.ElevatedLog(LogLevel.Info, "Booting complete! Registering timers and saved tasks...");
             DatabaseSyncTimer = new Timer(DatabaseSyncTimerCallback, Shards[0].Client, TimeSpan.FromMinutes(1), TimeSpan.FromSeconds(cfg.DbSyncInterval));
             BotStatusTimer = new Timer(BotActivityTimerCallback, Shards[0].Client, TimeSpan.FromSeconds(10), TimeSpan.FromMinutes(10));
             FeedCheckTimer = new Timer(FeedCheckTimerCallback, Shards[0].Client, TimeSpan.FromSeconds(cfg.FeedCheckStartDelay), TimeSpan.FromSeconds(cfg.FeedCheckInterval));
             MiscActionsTimer = new Timer(MiscellaneousPeriodicActionsCallback, Shards[0].Client, TimeSpan.FromSeconds(5), TimeSpan.FromHours(12));
-            Console.WriteLine(" Done!");
-            Console.WriteLine();
-
 
             GC.Collect();
-            LogHandle.LogMessage(LogLevel.Info, "<br>-------------- NEW INSTANCE STARTED --------------<br>");
 
-
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
-
-
-            Console.WriteLine("Registering saved tasks...");
             var tasks_db = await DatabaseService.GetAllSavedTasksAsync();
             int registered = 0, missed = 0;
             foreach (var kvp in tasks_db) {
@@ -194,14 +182,17 @@ namespace TheGodfather
                     registered++;
                 }
             }
-            Console.WriteLine($"Successfully registered {registered} saved tasks; Missed {missed} tasks.");
-            Console.WriteLine();
+            LogHandle.ElevatedLog(LogLevel.Info, $"Successfully registered {registered} saved tasks; Missed {missed} tasks.");
+
+
+            ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
 
 
             await WaitForCancellationAsync();
 
 
-            Console.WriteLine("Disposing objects...");
+            LogHandle.ElevatedLog(LogLevel.Info, "Cleaning up...");
+            Console.WriteLine();
             BotStatusTimer.Dispose();
             DatabaseSyncTimer.Dispose();
             FeedCheckTimer.Dispose();
@@ -209,8 +200,8 @@ namespace TheGodfather
                 await shard.DisconnectAndDisposeAsync();
             CTS.Dispose();
             SharedData.Dispose();
-            Console.WriteLine("All done! Bye!");
-            Console.WriteLine("Press any key to continue...");
+            LogHandle.ElevatedLog(LogLevel.Info, "Cleanup complete! Powering off...");
+            Console.WriteLine("Press any key to exit.");
             Console.ReadKey();
         }
 

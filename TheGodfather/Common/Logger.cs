@@ -48,13 +48,19 @@ namespace TheGodfather.Common
             return true;
         }
 
-        public void LogMessage(LogLevel level, string message, DateTime? timestamp = null, bool filelog = true)
+        public void LogMessage(LogLevel level, string message, int? shard = null, DateTime? timestamp = null, bool filelog = true)
         {
             if (level > LogLevel)
                 return;
 
+            ElevatedLog(level, message, shard, timestamp, filelog);
+        }
+
+        public void ElevatedLog(LogLevel level, string message, int? shard = null, DateTime? timestamp = null, bool filelog = true)
+        {
             lock (_lock) {
                 PrintTimestamp(timestamp);
+                PrintApplicationInfo(shard, null);
                 PrintLevel(level);
                 PrintLogMessage(message.Replace('\n', ' '));
                 if (filelog && _filelog)
@@ -62,24 +68,18 @@ namespace TheGodfather.Common
             }
         }
 
-        public void LogMessage(int shardid, DebugLogMessageEventArgs e, bool filelog = true)
+        public void LogMessage(int shard, DebugLogMessageEventArgs e, bool filelog = true)
         {
             if (e.Level > LogLevel)
                 return;
 
             lock (_lock) {
                 PrintTimestamp(e.Timestamp);
-
-                Console.ForegroundColor = ConsoleColor.DarkGreen;
-                Console.Write("[#{0}] ", shardid.ToString());
-
-                Console.ForegroundColor = ConsoleColor.White;
-                Console.Write("[{0}] ", e.Application);
-
+                PrintApplicationInfo(shard, e.Application);
                 PrintLevel(e.Level);
                 PrintLogMessage(e.Message.Replace('\n', ' '));
                 if (filelog && _filelog)
-                    WriteToLogFile(shardid, e);
+                    WriteToLogFile(shard, e);
             }
         }
 
@@ -105,8 +105,7 @@ namespace TheGodfather.Common
         {
             try {
                 using (StreamWriter sw = new StreamWriter(_path, true, Encoding.UTF8, BufferSize)) {
-                    sw.Write("[{0:yyyy-MM-dd HH:mm:ss zzz}] ", timestamp ?? DateTime.Now);
-                    sw.WriteLine("[{0}]", level.ToString());
+                    sw.WriteLine($"[{(timestamp ?? DateTime.Now):yyyy-MM-dd HH:mm:ss zzz}] [{level}]");
                     sw.WriteLine(message.Replace("<br>", Environment.NewLine).Trim());
                     sw.WriteLine();
                     sw.Flush();
@@ -116,14 +115,11 @@ namespace TheGodfather.Common
             }
         }
 
-        private void WriteToLogFile(int shardid, DebugLogMessageEventArgs e)
+        private void WriteToLogFile(int shard, DebugLogMessageEventArgs e)
         {
             try {
-                using (StreamWriter sw = new StreamWriter(_path, true, Encoding.UTF8, BufferSize)) {
-                    sw.Write("[{0:yyyy-MM-dd HH:mm:ss zzz}] ", e.Timestamp);
-                    sw.Write("[#{0}] ", shardid.ToString());
-                    sw.Write("[{0}] ", e.Application);
-                    sw.WriteLine("[{0}]", e.Level.ToString());
+                using (var sw = new StreamWriter(_path, true, Encoding.UTF8, BufferSize)) {
+                    sw.WriteLine($"[{e.Timestamp:yyyy-MM-dd HH:mm:ss zzz}] [#{shard}] [{e.Application}] [{e.Level}]");
                     sw.WriteLine(e.Message.Replace("<br>", Environment.NewLine).Trim());
                     sw.WriteLine();
                     sw.Flush();
@@ -136,9 +132,8 @@ namespace TheGodfather.Common
         private void WriteToLogFile(LogLevel level, Exception e, DateTime? timestamp = null)
         {
             try {
-                using (StreamWriter sw = new StreamWriter(_path, true, Encoding.UTF8, BufferSize)) {
-                    sw.Write("[{0:yyyy-MM-dd HH:mm:ss zzz}] ", timestamp ?? DateTime.Now);
-                    sw.WriteLine("[{0}]", level.ToString());
+                using (var sw = new StreamWriter(_path, true, Encoding.UTF8, BufferSize)) {
+                    sw.WriteLine($"[{(timestamp ?? DateTime.Now):yyyy-MM-dd HH:mm:ss zzz}] [{level}]");
                     sw.WriteLine($"Exception occured: {e.GetType()}");
                     sw.WriteLine($"Details: {e.Message}");
                     if (e.InnerException != null)
@@ -177,7 +172,7 @@ namespace TheGodfather.Common
             }
             Console.ForegroundColor = ccfg;
             Console.BackgroundColor = ccbg;
-            Console.WriteLine("[{0}]", level.ToString());
+            Console.WriteLine($"[{level}]");
 
             Console.ForegroundColor = ConsoleColor.Gray;
             Console.BackgroundColor = ConsoleColor.Black;
@@ -187,7 +182,18 @@ namespace TheGodfather.Common
         {
             Console.BackgroundColor = ConsoleColor.Black;
             Console.ForegroundColor = ConsoleColor.White;
-            Console.Write("[{0:yyyy-MM-dd HH:mm:ss zzz}] ", timestamp ?? DateTime.Now);
+            Console.Write($"[{(timestamp ?? DateTime.Now):yyyy-MM-dd HH:mm:ss zzz}] ");
+        }
+
+        private static void PrintApplicationInfo(int? shard, string application)
+        {
+            Console.ForegroundColor = ConsoleColor.DarkGreen;
+            Console.Write(shard.HasValue ? $"[#{shard.Value}] " : "[Main] ");
+            Console.ForegroundColor = ConsoleColor.White;
+            if (string.IsNullOrWhiteSpace(application))
+                Console.Write("[TheGodfather] ");
+            else
+                Console.Write($"[{application}] ");
         }
 
         private static void PrintLogMessage(string message)
