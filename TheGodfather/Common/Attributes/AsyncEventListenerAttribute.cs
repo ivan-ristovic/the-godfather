@@ -24,6 +24,9 @@ namespace TheGodfather.Common.Attributes
         {
             Task OnEventWithArgs(object e)
             {
+                if (!TheGodfather.Listening)
+                    return Task.CompletedTask;
+
                 _ = Task.Run(async () => {
                     try {
                         await (Task)mi.Invoke(null, new object[] { shard, e });
@@ -36,6 +39,9 @@ namespace TheGodfather.Common.Attributes
 
             Task OnEventVoid()
             {
+                if (!TheGodfather.Listening)
+                    return Task.CompletedTask;
+
                 _ = Task.Run(async () => {
                     try {
                         await (Task)mi.Invoke(null, new object[] { shard });
