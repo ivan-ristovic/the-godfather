@@ -39,18 +39,18 @@ namespace TheGodfather.Modules.Owner
 
             [GroupCommand, Priority(2)]
             public Task ExecuteGroupAsync(CommandContext ctx,
-                                         [Description("Users to block.")] params DiscordChannel[] channels)
+                                         [Description("Channels to block.")] params DiscordChannel[] channels)
                 => AddAsync(ctx, null, channels);
 
             [GroupCommand, Priority(1)]
             public Task ExecuteGroupAsync(CommandContext ctx,
                                          [Description("Reason (max 60 chars).")] string reason,
-                                         [Description("Users to block.")] params DiscordChannel[] channels)
+                                         [Description("Channels to block.")] params DiscordChannel[] channels)
                 => AddAsync(ctx, reason, channels);
 
             [GroupCommand, Priority(0)]
             public Task ExecuteGroupAsync(CommandContext ctx,
-                                         [Description("Users to block.")] DiscordChannel channel,
+                                         [Description("Channels to block.")] DiscordChannel channel,
                                          [RemainingText, Description("Reason (max 60 chars).")] string reason)
                 => AddAsync(ctx, reason, channel);
 

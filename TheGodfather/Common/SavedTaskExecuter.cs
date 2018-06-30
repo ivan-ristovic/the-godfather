@@ -78,7 +78,12 @@ namespace TheGodfather.Common
                         UnbanUserAsync().ConfigureAwait(false).GetAwaiter().GetResult();
                         break;
                 }
-                TheGodfather.LogProvider.LogMessage(LogLevel.Info, $"Saved task executed: {SavedTask.Type.GetType()} ({SavedTask.Comment})\nUser ID: {SavedTask.UserId}\nGuild ID: {SavedTask.GuildId}");
+                TheGodfather.LogProvider.LogMessage(LogLevel.Info, 
+                    $"| Saved task executed: {SavedTask.Type.GetType()} ({SavedTask.Comment})\n" +
+                    $"| User ID: {SavedTask.UserId}\n" +
+                    $"| Guild ID: {SavedTask.GuildId}\n" +
+                    $"| Channel ID: {SavedTask.ChannelId}"
+                );
             } catch (Exception e) {
                 TheGodfather.LogProvider.LogException(LogLevel.Warning, e);
             } finally {
@@ -113,7 +118,12 @@ namespace TheGodfather.Common
                     default:
                         break;
                 }
-                TheGodfather.LogProvider.LogMessage(LogLevel.Warning, $"Executed missed saved task of type {SavedTask.Type.GetType()}!\nUser ID: {SavedTask.UserId}\nGuild ID: {SavedTask.GuildId}");
+                TheGodfather.LogProvider.LogMessage(LogLevel.Warning, 
+                    $"| Executed missed saved task of type {SavedTask.Type.GetType()}\n|" +
+                    $"| User ID: {SavedTask.UserId}\n" +
+                    $"| Guild ID: {SavedTask.GuildId}\n" +
+                    $"| Channel ID: {SavedTask.ChannelId}"
+                );
             } catch (Exception e) {
                 TheGodfather.LogProvider.LogException(LogLevel.Warning, e);
             } finally {
@@ -137,7 +147,7 @@ namespace TheGodfather.Common
                 .ConfigureAwait(false);
             var user = await _client.GetUserAsync(SavedTask.UserId)
                 .ConfigureAwait(false);
-            await guild.UnbanMemberAsync(user, $"Remove temporary ban for {user.ToString()} (ban time expired)")
+            await guild.UnbanMemberAsync(user, $"Temporary ban time expired")
                 .ConfigureAwait(false);
         }
 
