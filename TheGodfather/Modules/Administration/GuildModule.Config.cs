@@ -56,7 +56,7 @@ namespace TheGodfather.Modules.Administration
 
                 var lchn = await Database.GetLeaveChannelAsync(ctx.Guild)
                     .ConfigureAwait(false);
-                emb.AddField("Leave messages", lchn != null ? $"on @ {wchn.Mention}" : "off", inline: true);
+                emb.AddField("Leave messages", lchn != null ? $"on @ {lchn.Mention}" : "off", inline: true);
 
                 if (gcfg.LinkfilterEnabled) {
                     var sb = new StringBuilder();
