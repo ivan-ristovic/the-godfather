@@ -22,7 +22,7 @@ namespace TheGodfather.Common
         private string _desc;
 
 
-        public CustomHelpFormatter(CommandsNextExtension cnext) : base(cnext) { }
+        public CustomHelpFormatter(CommandContext ctx) : base(ctx) { }
 
 
         public override CommandHelpMessage Build()

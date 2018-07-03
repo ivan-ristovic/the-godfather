@@ -148,11 +148,11 @@ namespace TheGodfather.Modules.Administration
             if (!ctx.Channel.PermissionsFor(ctx.Member).HasPermission(Permissions.Administrator))
                 throw new CommandFailedException("Only administrator can mention the non-mentionable roles.");
 
-            await role.UpdateAsync(mentionable: true)
+            await role.ModifyAsync(mentionable: true)
                 .ConfigureAwait(false);
             await ctx.RespondAsync(role.Mention)
                 .ConfigureAwait(false);
-            await role.UpdateAsync(mentionable: false)
+            await role.ModifyAsync(mentionable: false)
                 .ConfigureAwait(false);
         }
         #endregion
@@ -169,7 +169,7 @@ namespace TheGodfather.Modules.Administration
                                        [Description("Role.")] DiscordRole role,
                                        [Description("Color.")] DiscordColor color)
         {
-            await role.UpdateAsync(color: color, reason: ctx.BuildReasonString())
+            await role.ModifyAsync(color: color, reason: ctx.BuildReasonString())
                 .ConfigureAwait(false);
             await ctx.RespondWithIconEmbedAsync($"Successfully changed color for {Formatter.Bold(role.Name)}!")
                 .ConfigureAwait(false);
@@ -197,7 +197,7 @@ namespace TheGodfather.Modules.Administration
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentException("I need a new name for the role.");
 
-            await role.UpdateAsync(name: name, reason: ctx.BuildReasonString())
+            await role.ModifyAsync(name: name, reason: ctx.BuildReasonString())
                 .ConfigureAwait(false);
             await ctx.RespondWithIconEmbedAsync($"Successfully changed role name to {Formatter.Bold(name)}.")
                 .ConfigureAwait(false);
@@ -223,7 +223,7 @@ namespace TheGodfather.Modules.Administration
                                              [Description("Role.")] DiscordRole role,
                                              [Description("Mentionable?")] bool mentionable = true)
         {
-            await role.UpdateAsync(mentionable: mentionable, reason: ctx.BuildReasonString())
+            await role.ModifyAsync(mentionable: mentionable, reason: ctx.BuildReasonString())
                 .ConfigureAwait(false);
             await ctx.RespondWithIconEmbedAsync($"Successfully set mentionable var for {Formatter.Bold(role.Name)} to {Formatter.Bold(mentionable.ToString())}.")
                 .ConfigureAwait(false);
@@ -249,7 +249,7 @@ namespace TheGodfather.Modules.Administration
                                          [Description("Role.")] DiscordRole role,
                                          [Description("Hoisted (visible in online list)?")] bool hoisted = false)
         {
-            await role.UpdateAsync(hoist: hoisted, reason: ctx.BuildReasonString())
+            await role.ModifyAsync(hoist: hoisted, reason: ctx.BuildReasonString())
                 .ConfigureAwait(false);
             await ctx.RespondWithIconEmbedAsync($"Successfully set hoisted var for role {Formatter.Bold(role.Name)} to {Formatter.Bold(hoisted.ToString())}.")
                 .ConfigureAwait(false);
