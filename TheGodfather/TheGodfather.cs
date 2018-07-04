@@ -175,10 +175,10 @@ namespace TheGodfather
             foreach (var kvp in tasks_db) {
                 var texec = new SavedTaskExecuter(kvp.Key, Shards[0].Client, kvp.Value, SharedData, DatabaseService);
                 if (texec.SavedTask.IsExecutionTimeReached) {
-                    await texec.HandleMissedTaskExecutionAsync();
+                    await texec.HandleMissedExecutionAsync();
                     missed++;
                 } else {
-                    texec.ScheduleExecutionAsync();
+                    texec.ScheduleExecution();
                     registered++;
                 }
             }

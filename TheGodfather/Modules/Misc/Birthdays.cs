@@ -36,20 +36,20 @@ namespace TheGodfather.Modules.Misc
         [GroupCommand, Priority(1)]
         public Task ExecuteGroupAsync(CommandContext ctx,
                                      [Description("Birthday boy/girl.")] DiscordUser user,
-                                     [Description("Birth date.")] string date_str = null,
-                                     [Description("Channel to send a greeting message to.")] DiscordChannel channel = null)
+                                     [Description("Channel to send a greeting message to.")] DiscordChannel channel = null,
+                                     [Description("Birth date.")] string date_str = null)
             => AddAsync(ctx, user, date_str, channel);
 
         [GroupCommand, Priority(0)]
         public Task ExecuteGroupAsync(CommandContext ctx,
                                      [Description("Birthday boy/girl.")] DiscordUser user,
-                                     [Description("Channel to send a greeting message to.")] DiscordChannel channel = null,
-                                     [Description("Birth date.")] string date_str = null)
+                                     [Description("Birth date.")] string date_str = null,
+                                     [Description("Channel to send a greeting message to.")] DiscordChannel channel = null)
             => AddAsync(ctx, user, date_str, channel);
 
 
         #region COMMAND_BIRTHDAY_ADD
-        [Command("add"), Priority(1)]
+        [Command("add"), Priority(0)]
         [Module(ModuleType.Miscellaneous)]
         [Description("Add a birthday to the database. If date is not specified, uses the current date as a birthday date. If the channel is not specified, uses the current channel.")]
         [Aliases("+", "a")]
@@ -76,7 +76,7 @@ namespace TheGodfather.Modules.Misc
                 .ConfigureAwait(false);
         }
 
-        [Command("add"), Priority(0)]
+        [Command("add"), Priority(1)]
         public Task AddAsync(CommandContext ctx,
                             [Description("Birthday boy/girl.")] DiscordUser user,
                             [Description("Channel to send a greeting message to.")] DiscordChannel channel = null,

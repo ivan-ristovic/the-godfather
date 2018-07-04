@@ -41,7 +41,7 @@ namespace TheGodfather.Common
                 var id = await db.AddSavedTaskAsync(task)
                     .ConfigureAwait(false);
                 var texec = new SavedTaskExecuter(id, client, task, shared, db);
-                texec.ScheduleExecutionAsync();
+                texec.ScheduleExecution();
             } catch (Exception e) {
                 TheGodfather.LogProvider.LogException(LogLevel.Warning, e);
                 return false;
@@ -61,7 +61,7 @@ namespace TheGodfather.Common
         }
 
 
-        public void ScheduleExecutionAsync()
+        public void ScheduleExecution()
         {
             _shared.SavedTasks.TryAdd(Id, this);
             _timer = new Timer(Execute, null, (int)SavedTask.TimeUntilExecution.TotalMilliseconds, Timeout.Infinite);
@@ -99,7 +99,7 @@ namespace TheGodfather.Common
                 .ConfigureAwait(false);
         }
 
-        public async Task HandleMissedTaskExecutionAsync()
+        public async Task HandleMissedExecutionAsync()
         {
             try {
                 switch (SavedTask.Type) {
