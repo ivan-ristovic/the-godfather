@@ -1,64 +1,88 @@
 ﻿#region USING_DIRECTIVES
+using DSharpPlus;
+using DSharpPlus.Entities;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
-using System.Threading.Tasks;
 using System.Threading;
-using Newtonsoft.Json;
-
+using System.Threading.Tasks;
 using TheGodfather.Common;
 using TheGodfather.Common.Collections;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Reactions.Common;
 using TheGodfather.Services;
-
-using DSharpPlus;
-using DSharpPlus.Entities;
+using TheGodfather.Services.Common;
 #endregion
 
 namespace TheGodfather
 {
     internal static class TheGodfather
     {
-        public static bool Listening { get; internal set; } = true;
-        public static Logger LogProvider { get; private set; }
-        public static List<TheGodfatherShard> Shards { get; private set; }
-        private static CancellationTokenSource CTS { get; set; } = new CancellationTokenSource();
+        #region PROPERTIES
+        public static IReadOnlyList<TheGodfatherShard> ActiveShards
+            => Shards.AsReadOnly();
+        private static BotConfig BotConfiguration { get; set; }
         private static DBService DatabaseService { get; set; }
+        private static List<TheGodfatherShard> Shards { get; set; }
         private static SharedData SharedData { get; set; }
-        private static Timer BotStatusTimer { get; set; }
-        private static Timer DatabaseSyncTimer { get; set; }
-        private static Timer FeedCheckTimer { get; set; }
-        private static Timer MiscActionsTimer { get; set; }
+
+        #region PERIODIC_TASKS
+        private static Task BotStatusChangeTask { get; set; }
+        private static Task DbSyncTask { get; set; }
+        private static Task FeedCheckTask { get; set; }
+        private static Task MiscActionsTask { get; set; }
+        #endregion
+
+        #endregion
 
 
-        internal static void Main(string[] args)
+        internal static async Task Main(string[] args)
         {
             try {
-                MainAsync(args).ConfigureAwait(false).GetAwaiter().GetResult();
+
+                // Since some of the services require these protocols to be used, setting them up here
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
+
+                await LoadBotConfigAsync();
+                await InitializeDatabaseServiceAsync();
+                await LoadSharedDataFromDatabaseAsync();
+                await CreateAndBootShardsAsync();
+                SharedData.LogProvider.ElevatedLog(LogLevel.Info, "Booting complete! Registering timers and saved tasks...");
+                await RegisterPeriodicTasksAsync();
+
+                try {
+                    // Waiting indefinitely for shutdown signal
+                    await Task.Delay(-1, SharedData.CTS.Token);
+                } catch (TaskCanceledException) {
+                    SharedData.LogProvider.ElevatedLog(LogLevel.Info, "Shutdown signal received!");
+                }
+                await DisposeAsync();
             } catch (Exception e) {
-                Console.WriteLine($"\nException occured: {e.GetType()} : {e.Message}");
-                Console.ReadKey();
+                Console.WriteLine($"\nException occured: {e.GetType()} :\n{e.Message}");
             }
+            Console.WriteLine("\nPress any key to exit...");
+            Console.ReadKey();
         }
 
 
-        private static async Task MainAsync(string[] args)
+        #region SETUP_FUNCTIONS
+        private static async Task LoadBotConfigAsync()
         {
-            Console.Write("\r[1/5] Loading configuration...              ");
+            Console.Write("\r[1/5] Loading configuration...                    ");
 
-            var json = "{}";
+            string json = "{}";
             var utf8 = new UTF8Encoding(false);
             var fi = new FileInfo("Resources/config.json");
             if (!fi.Exists) {
-                Console.WriteLine("\rLoading configuration failed!");
+                Console.WriteLine("\rLoading configuration failed!             ");
 
                 json = JsonConvert.SerializeObject(BotConfig.Default, Formatting.Indented);
-                using (var fs = fi.Create())
+                using (FileStream fs = fi.Create())
                 using (var sw = new StreamWriter(fs, utf8)) {
                     await sw.WriteAsync(json);
                     await sw.FlushAsync();
@@ -67,205 +91,221 @@ namespace TheGodfather
                 Console.WriteLine("New default configuration file has been created at:");
                 Console.WriteLine(fi.FullName);
                 Console.WriteLine("Please fill it with appropriate values then re-run the bot.");
-                Console.WriteLine("Press any key to continue...");
-                Console.ReadKey();
 
-                return;
+                throw new IOException("Configuration file not found!");
             }
 
-            using (var fs = fi.OpenRead())
+            using (FileStream fs = fi.OpenRead())
             using (var sr = new StreamReader(fs, utf8))
                 json = await sr.ReadToEndAsync();
-            var cfg = JsonConvert.DeserializeObject<BotConfig>(json);
+            BotConfiguration = JsonConvert.DeserializeObject<BotConfig>(json);
+        }
 
-            LogProvider = new Logger() {
-                LogLevel = cfg.LogLevel,
-                LogToFile = cfg.LogToFile,
-                Path = cfg.LogPath
-            };
+        private static async Task InitializeDatabaseServiceAsync()
+        {
+            Console.Write("\r[2/5] Establishing database connection...         ");
 
-
-            Console.Write("\r[2/5] Booting PostgreSQL connection...");
-
-            DatabaseService = new DBService(cfg.DatabaseConfig);
+            DatabaseService = new DBService(BotConfiguration.DatabaseConfig);
             await DatabaseService.InitializeAsync();
 
+            Console.Write("\r[2/5] Checking database integrity...              ");
 
-            Console.Write("\r[3/5] Loading data from database...   ");
+            await DatabaseService.CheckIntegrityAsync();
+        }
 
-            var blockedusr_db = await DatabaseService.GetAllBlockedUsersAsync();
+        private static async Task LoadSharedDataFromDatabaseAsync()
+        {
+            Console.Write("\r[3/5] Loading data from database...               ");
+
+            // Placing performance-sensitive data into memory, instead of it being read from the database
+
+            // Blocked users
+            IReadOnlyList<(ulong, string)> blockedusr_db = await DatabaseService.GetAllBlockedUsersAsync();
             var blockedusr = new ConcurrentHashSet<ulong>();
-            foreach (var tup in blockedusr_db)
-                blockedusr.Add(tup.Item1);
+            foreach ((ulong uid, string reason) in blockedusr_db)
+                blockedusr.Add(uid);
 
-            var blockedchn_db = await DatabaseService.GetAllBlockedChannelsAsync();
+            // Blocked channels
+            IReadOnlyList<(ulong, string)> blockedchn_db = await DatabaseService.GetAllBlockedChannelsAsync();
             var blockedchn = new ConcurrentHashSet<ulong>();
-            foreach (var tup in blockedchn_db)
-                blockedchn.Add(tup.Item1);
+            foreach ((ulong cid, string reason) in blockedchn_db)
+                blockedchn.Add(cid);
 
-            var gcfg_db = await DatabaseService.GetPartialGuildConfigurations();
+            // Guild config
+            IReadOnlyDictionary<ulong, CachedGuildConfig> gcfg_db = await DatabaseService.GetPartialGuildConfigurations();
             var gcfg = new ConcurrentDictionary<ulong, CachedGuildConfig>();
-            foreach (var gprefix in gcfg_db)
-                gcfg.TryAdd(gprefix.Key, gprefix.Value);
+            foreach ((ulong gid, CachedGuildConfig cfg) in gcfg_db)
+                gcfg.TryAdd(gid, cfg);
 
-            var gfilters_db = await DatabaseService.GetFiltersForAllGuildsAsync();
+            // Guild filters
+            IReadOnlyList<(ulong, Filter)> gfilters_db = await DatabaseService.GetFiltersForAllGuildsAsync();
             var gfilters = new ConcurrentDictionary<ulong, ConcurrentHashSet<Filter>>();
-            foreach (var gfilter in gfilters_db) {
-                if (!gfilters.ContainsKey(gfilter.Item1))
-                    gfilters.TryAdd(gfilter.Item1, new ConcurrentHashSet<Filter>());
-                gfilters[gfilter.Item1].Add(gfilter.Item2);
+            foreach ((ulong gid, Filter filter) in gfilters_db) {
+                if (!gfilters.ContainsKey(gid))
+                    gfilters.TryAdd(gid, new ConcurrentHashSet<Filter>());
+                gfilters[gid].Add(filter);
             }
 
-            var gtextreactions_db = await DatabaseService.GetTextReactionsForAllGuildsAsync();
+            // Guild text reactions
+            IReadOnlyDictionary<ulong, List<TextReaction>> gtextreactions_db = await DatabaseService.GetTextReactionsForAllGuildsAsync();
             var gtextreactions = new ConcurrentDictionary<ulong, ConcurrentHashSet<TextReaction>>();
-            foreach (var reaction in gtextreactions_db)
-                gtextreactions.TryAdd(reaction.Key, new ConcurrentHashSet<TextReaction>(reaction.Value));
+            foreach ((ulong gid, List<TextReaction> reactions) in gtextreactions_db)
+                gtextreactions.TryAdd(gid, new ConcurrentHashSet<TextReaction>(reactions));
 
-            var gemojireactions_db = await DatabaseService.GetEmojiReactionsForAllGuildsAsync();
+            // Guild emoji reactions
+            IReadOnlyDictionary<ulong, List<EmojiReaction>> gemojireactions_db = await DatabaseService.GetEmojiReactionsForAllGuildsAsync();
             var gemojireactions = new ConcurrentDictionary<ulong, ConcurrentHashSet<EmojiReaction>>();
-            foreach (var reaction in gemojireactions_db)
+            foreach (KeyValuePair<ulong, List<EmojiReaction>> reaction in gemojireactions_db)
                 gemojireactions.TryAdd(reaction.Key, new ConcurrentHashSet<EmojiReaction>(reaction.Value));
 
-            var msgcount_db = await DatabaseService.GetExperienceForAllUsersAsync();
+            // User message count (XP)
+            IReadOnlyDictionary<ulong, ulong> msgcount_db = await DatabaseService.GetExperienceForAllUsersAsync();
             var msgcount = new ConcurrentDictionary<ulong, ulong>();
-            foreach (var entry in msgcount_db)
+            foreach (KeyValuePair<ulong, ulong> entry in msgcount_db)
                 msgcount.TryAdd(entry.Key, entry.Value);
+
 
             SharedData = new SharedData() {
                 BlockedChannels = blockedchn,
                 BlockedUsers = blockedusr,
-                BotConfiguration = cfg,
-                CTS = CTS,
+                BotConfiguration = BotConfiguration,
+                CTS = new CancellationTokenSource(),
                 EmojiReactions = gemojireactions,
                 Filters = gfilters,
                 GuildConfigurations = gcfg,
+                LogProvider = new Logger(BotConfiguration),
                 MessageCount = msgcount,
                 TextReactions = gtextreactions
             };
+        }
 
-
-            Console.Write("\r[4/5] Creating {0} shards...          ", cfg.ShardCount);
+        private static async Task CreateAndBootShardsAsync()
+        {
+            Console.Write($"\r[4/5] Creating {BotConfiguration.ShardCount} shards...");
 
             Shards = new List<TheGodfatherShard>();
-            for (var i = 0; i < cfg.ShardCount; i++) {
+            for (int i = 0; i < BotConfiguration.ShardCount; i++) {
                 var shard = new TheGodfatherShard(i, DatabaseService, SharedData);
                 Shards.Add(shard);
             }
 
-
-            Console.WriteLine("\r[5/5] Booting the shards...             ");
+            Console.WriteLine("\r[5/5] Booting the shards...                   ");
             Console.WriteLine();
 
-            foreach (var shard in Shards) {
+            foreach (TheGodfatherShard shard in Shards) {
                 shard.Initialize();
                 await shard.StartAsync();
             }
-
-            
-            LogProvider.ElevatedLog(LogLevel.Info, "Booting complete! Registering timers and saved tasks...");
-            DatabaseSyncTimer = new Timer(DatabaseSyncTimerCallback, Shards[0].Client, TimeSpan.FromMinutes(1), TimeSpan.FromSeconds(cfg.DbSyncInterval));
-            BotStatusTimer = new Timer(BotActivityTimerCallback, Shards[0].Client, TimeSpan.FromSeconds(10), TimeSpan.FromMinutes(10));
-            FeedCheckTimer = new Timer(FeedCheckTimerCallback, Shards[0].Client, TimeSpan.FromSeconds(cfg.FeedCheckStartDelay), TimeSpan.FromSeconds(cfg.FeedCheckInterval));
-            MiscActionsTimer = new Timer(MiscellaneousPeriodicActionsCallback, Shards[0].Client, TimeSpan.FromSeconds(5), TimeSpan.FromHours(12));
-
-            GC.Collect();
-
-            var tasks_db = await DatabaseService.GetAllSavedTasksAsync();
-            int registered = 0, missed = 0;
-            foreach (var kvp in tasks_db) {
-                var texec = new SavedTaskExecuter(kvp.Key, Shards[0].Client, kvp.Value, SharedData, DatabaseService);
-                if (texec.SavedTask.IsExecutionTimeReached) {
-                    await texec.HandleMissedExecutionAsync();
-                    missed++;
-                } else {
-                    texec.ScheduleExecution();
-                    registered++;
-                }
-            }
-            LogProvider.ElevatedLog(LogLevel.Info, $"Successfully registered {registered} saved tasks; Missed {missed} tasks.");
-
-
-            ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
-
-
-            await WaitForCancellationAsync();
-
-
-            LogProvider.ElevatedLog(LogLevel.Info, "Cleaning up...");
-            Console.WriteLine();
-            BotStatusTimer.Dispose();
-            DatabaseSyncTimer.Dispose();
-            FeedCheckTimer.Dispose();
-            foreach (var shard in Shards)
-                await shard.DisconnectAndDisposeAsync();
-            CTS.Dispose();
-            SharedData.Dispose();
-            LogProvider.ElevatedLog(LogLevel.Info, "Cleanup complete! Powering off...");
-            Console.WriteLine("Press any key to exit.");
-            Console.ReadKey();
         }
 
+        private static async Task RegisterPeriodicTasksAsync()
+        {
+            BotStatusChangeTask = PeriodicActionExecuterAsync(
+                TimeSpan.FromSeconds(10),
+                TimeSpan.FromMinutes(10),
+                BotActivityCallbackAsync
+            );
 
-        private static void BotActivityTimerCallback(object _)
+            DbSyncTask = PeriodicActionExecuterAsync(
+                TimeSpan.FromMinutes(1),
+                TimeSpan.FromSeconds(BotConfiguration.DbSyncInterval),
+                DatabaseSyncCallbackAsync
+            );
+
+            FeedCheckTask = PeriodicActionExecuterAsync(
+                TimeSpan.FromSeconds(BotConfiguration.FeedCheckStartDelay),
+                TimeSpan.FromSeconds(BotConfiguration.FeedCheckInterval),
+                FeedCheckCallbackAsync
+            );
+
+            MiscActionsTask = PeriodicActionExecuterAsync(
+                TimeSpan.FromSeconds(5),
+                TimeSpan.FromSeconds(15),
+//                TimeSpan.FromHours(12),
+                MiscellaneousActionsCallbackAsync
+            );
+
+
+            IReadOnlyDictionary<int, SavedTask> tasks_db = await DatabaseService.GetAllSavedTasksAsync();
+            int registeredTasks = 0, missedTasks = 0;
+            foreach ((int tid, SavedTask task) in tasks_db) {
+                var texec = new SavedTaskExecuter(tid, Shards[0].Client, task, SharedData, DatabaseService);
+                if (texec.SavedTask.IsExecutionTimeReached) {
+                    await texec.HandleMissedExecutionAsync();
+                    missedTasks++;
+                } else {
+                    texec.ScheduleExecution();
+                    registeredTasks++;
+                }
+            }
+            SharedData.LogProvider.ElevatedLog(LogLevel.Info, $"Successfully registered {registeredTasks} saved tasks; Missed {missedTasks} tasks.");
+        }
+
+        private static async Task DisposeAsync()
+        {
+            SharedData.LogProvider.ElevatedLog(LogLevel.Info, "Cleaning up...");
+
+            await BotStatusChangeTask;
+            await DbSyncTask;
+            await FeedCheckTask;
+            await MiscActionsTask;
+
+            foreach (TheGodfatherShard shard in Shards)
+                await shard.DisconnectAndDisposeAsync();
+            SharedData.Dispose();
+
+            SharedData.LogProvider.ElevatedLog(LogLevel.Info, "Cleanup complete! Powering off...");
+        }
+        #endregion
+
+        #region PERIODIC_CALLBACKS
+        private static async Task PeriodicActionExecuterAsync(TimeSpan delay, TimeSpan repeat, Func<Task> action)
+        {
+            try {
+                await Task.Delay(delay, SharedData.CTS.Token);
+                while (!SharedData.CTS.IsCancellationRequested) {
+                    await action();
+                    await Task.Delay(repeat, SharedData.CTS.Token);
+                }
+            } catch (TaskCanceledException) {
+
+            } catch (Exception e) {
+                SharedData.LogProvider.LogException(LogLevel.Error, e);
+            }
+        }
+
+        private static async Task BotActivityCallbackAsync()
         {
             if (!SharedData.StatusRotationEnabled)
                 return;
 
-            var client = _ as DiscordClient;
-            try {
-                var activity = DatabaseService.GetRandomBotActivityAsync()
-                    .ConfigureAwait(false).GetAwaiter().GetResult();
-                client.UpdateStatusAsync(activity)
-                    .ConfigureAwait(false).GetAwaiter().GetResult();
-            } catch (Exception e) {
-                LogProvider.LogException(LogLevel.Error, e);
+            var activity = await DatabaseService.GetRandomBotActivityAsync();
+            await Shards[0].Client.UpdateStatusAsync(activity);
+        }
+
+        private static async Task DatabaseSyncCallbackAsync()
+        {
+            await SharedData.SyncDataWithDatabaseAsync(DatabaseService);
+        }
+
+        private static async Task FeedCheckCallbackAsync()
+        {
+            await RSSService.CheckFeedsForChangesAsync(Shards[0].Client, DatabaseService);
+        }
+
+        private static async Task MiscellaneousActionsCallbackAsync()
+        {
+            IReadOnlyList<Birthday> birthdays = DatabaseService.GetTodayBirthdaysAsync()
+                .ConfigureAwait(false).GetAwaiter().GetResult();
+            foreach (Birthday birthday in birthdays) {
+                var channel = await Shards[0].Client.GetChannelAsync(birthday.ChannelId);
+                var user = await Shards[0].Client.GetUserAsync(birthday.UserId);
+                await channel.SendIconEmbedAsync($"Happy birthday, {user.Mention}!", DiscordEmoji.FromName(Shards[0].Client, ":tada:"));
+                await DatabaseService.UpdateBirthdayLastNotifiedDateAsync(birthday.UserId, channel.Id);
             }
-        }
 
-        private static void DatabaseSyncTimerCallback(object _)
-        {
-            var client = _ as DiscordClient;
-            SharedData.SyncDataWithDatabaseAsync(DatabaseService).ConfigureAwait(false).GetAwaiter().GetResult();
+            await DatabaseService.UpdateBankAccountsAsync();
         }
-
-        private static void FeedCheckTimerCallback(object _)
-        {
-            var client = _ as DiscordClient;
-            try {
-                RSSService.CheckFeedsForChangesAsync(client, DatabaseService).ConfigureAwait(false).GetAwaiter().GetResult();
-            } catch (Exception e) {
-                LogProvider.LogException(LogLevel.Error, e);
-            }
-        }
-
-        private static void MiscellaneousPeriodicActionsCallback(object _)
-        {
-            var client = _ as DiscordClient;
-            try {
-                var birthdays = DatabaseService.GetTodayBirthdaysAsync()
-                    .ConfigureAwait(false).GetAwaiter().GetResult();
-                foreach (var birthday in birthdays) {
-                    var channel = client.GetChannelAsync(birthday.ChannelId)
-                        .ConfigureAwait(false).GetAwaiter().GetResult();
-                    var user = client.GetUserAsync(birthday.UserId)
-                        .ConfigureAwait(false).GetAwaiter().GetResult();
-                    channel.SendIconEmbedAsync($"Happy birthday, {user.Mention}!", DiscordEmoji.FromName(client, ":tada:"))
-                        .ConfigureAwait(false).GetAwaiter().GetResult();
-                    DatabaseService.UpdateBirthdayLastNotifiedDateAsync(birthday.UserId, channel.Id)
-                        .ConfigureAwait(false).GetAwaiter().GetResult();
-                }
-
-                DatabaseService.UpdateBankAccountsAsync()
-                    .ConfigureAwait(false).GetAwaiter().GetResult();
-            } catch (Exception e) {
-                LogProvider.LogException(LogLevel.Error, e);
-            }
-        }
-
-        private static async Task WaitForCancellationAsync()
-        {
-            while (!CTS.IsCancellationRequested)
-                await Task.Delay(500);
-        }
+        #endregion
     }
 }

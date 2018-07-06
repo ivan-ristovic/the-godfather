@@ -210,7 +210,7 @@ namespace TheGodfather.Modules.Administration
                     await ctx.Guild.ModifyAsync(new Action<GuildEditModel>(e => e.Icon = stream))
                         .ConfigureAwait(false);
             } catch (Exception e) {
-                TheGodfather.LogProvider.LogException(LogLevel.Debug, e);
+                Shared.LogProvider.LogException(LogLevel.Debug, e);
                 throw new CommandFailedException("An error occured.", e);
             }
 

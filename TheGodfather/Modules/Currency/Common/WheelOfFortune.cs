@@ -40,7 +40,7 @@ namespace TheGodfather.Modules.Currency.Common
                 try {
                     _image = new Bitmap("Resources/wof.png");
                 } catch (FileNotFoundException e) {
-                    TheGodfather.LogProvider.LogException(LogLevel.Error, e);
+                    throw new Exception("WOF image is missing from the server!", e);
                 }
             }
         }
@@ -59,7 +59,7 @@ namespace TheGodfather.Modules.Currency.Common
                     }).ConfigureAwait(false);
                 }
             } catch (Exception e) {
-                TheGodfather.LogProvider.LogException(LogLevel.Error, e);
+                throw new Exception("Failed to read WOF image!", e);
             }
         }
 

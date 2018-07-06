@@ -23,7 +23,7 @@ namespace TheGodfather.Services
                 if (data.ResultType != "no_results")
                     return data;
             } catch (Exception e) {
-                TheGodfather.LogProvider.LogException(LogLevel.Debug, e);
+                // LogProvider.LogProvider.LogException(LogLevel.Debug, e);
             }
 
             return null;

@@ -38,7 +38,7 @@ namespace TheGodfather.Modules
                 if (!response.Content.Headers.ContentType.MediaType.StartsWith("image/"))
                     return false;
             } catch (Exception e) {
-                TheGodfather.LogProvider.LogException(LogLevel.Debug, e);
+                Shared.LogProvider.LogException(LogLevel.Debug, e);
                 return false;
             }
 

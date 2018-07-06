@@ -135,7 +135,7 @@ namespace TheGodfather.Modules.Currency
                         .ConfigureAwait(false);
                     sb.AppendLine($"{Formatter.Bold(u.Username)} : {row["balance"]}");
                 } catch (Exception e) {
-                    TheGodfather.LogProvider.LogException(LogLevel.Warning, e);
+                    Shared.LogProvider.LogException(LogLevel.Warning, e);
                 }
             }
 
@@ -166,7 +166,7 @@ namespace TheGodfather.Modules.Currency
                         .ConfigureAwait(false);
                     sb.AppendLine($"{Formatter.Bold(u.Username)} : {row["total_balance"]}");
                 } catch (Exception e) {
-                    TheGodfather.LogProvider.LogException(LogLevel.Warning, e);
+                    Shared.LogProvider.LogException(LogLevel.Warning, e);
                 }
             }
 

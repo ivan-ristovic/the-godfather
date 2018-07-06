@@ -21,7 +21,7 @@ namespace TheGodfather.Services
                 var jsondata = JsonConvert.DeserializeObject<DeserializedData>(data);
                 return jsondata.URL;
             } catch (Exception e) {
-                TheGodfather.LogProvider.LogException(LogLevel.Warning, e);
+                // LogProvider.LogProvider.LogException(LogLevel.Warning, e);
                 return null;
             }
         }
@@ -33,7 +33,7 @@ namespace TheGodfather.Services
                     .ConfigureAwait(false);
                 return "https://random.dog/" + data;
             } catch (Exception e) {
-                TheGodfather.LogProvider.LogException(LogLevel.Warning, e);
+                // LogProvider.LogProvider.LogException(LogLevel.Warning, e);
                 return null;
             }
         }

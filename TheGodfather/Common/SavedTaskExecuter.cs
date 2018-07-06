@@ -43,7 +43,7 @@ namespace TheGodfather.Common
                 var texec = new SavedTaskExecuter(id, client, task, shared, db);
                 texec.ScheduleExecution();
             } catch (Exception e) {
-                TheGodfather.LogProvider.LogException(LogLevel.Warning, e);
+                shared.LogProvider.LogException(LogLevel.Warning, e);
                 return false;
             }
 
@@ -78,14 +78,14 @@ namespace TheGodfather.Common
                         UnbanUserAsync().ConfigureAwait(false).GetAwaiter().GetResult();
                         break;
                 }
-                TheGodfather.LogProvider.LogMessage(LogLevel.Info, 
+                _shared.LogProvider.LogMessage(LogLevel.Info, 
                     $"| Saved task executed: {SavedTask.Type.GetType()} ({SavedTask.Comment})\n" +
                     $"| User ID: {SavedTask.UserId}\n" +
                     $"| Guild ID: {SavedTask.GuildId}\n" +
                     $"| Channel ID: {SavedTask.ChannelId}"
                 );
             } catch (Exception e) {
-                TheGodfather.LogProvider.LogException(LogLevel.Warning, e);
+                _shared.LogProvider.LogException(LogLevel.Warning, e);
             } finally {
                 RemoveTaskFromDatabase().ConfigureAwait(false).GetAwaiter().GetResult();
             }
@@ -118,14 +118,14 @@ namespace TheGodfather.Common
                     default:
                         break;
                 }
-                TheGodfather.LogProvider.LogMessage(LogLevel.Warning, 
+                _shared.LogProvider.LogMessage(LogLevel.Warning, 
                     $"| Executed missed saved task of type {SavedTask.Type.GetType()}\n|" +
                     $"| User ID: {SavedTask.UserId}\n" +
                     $"| Guild ID: {SavedTask.GuildId}\n" +
                     $"| Channel ID: {SavedTask.ChannelId}"
                 );
             } catch (Exception e) {
-                TheGodfather.LogProvider.LogException(LogLevel.Warning, e);
+                _shared.LogProvider.LogException(LogLevel.Warning, e);
             } finally {
                 RemoveTaskFromDatabase().ConfigureAwait(false).GetAwaiter().GetResult();
             }

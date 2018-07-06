@@ -40,6 +40,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -433,6 +434,7 @@
     <Compile Include="EventListeners\Common\SuspiciousSites.cs" />
     <Compile Include="EventListeners\LinkfilterListeners.cs" />
     <Compile Include="Extensions\HoldemExtensions.cs" />
+    <Compile Include="Extensions\KeyValuePairExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="EventListeners\MessageListeners.cs" />
     <Compile Include="EventListeners\MemberListeners.cs" />
@@ -536,7 +538,7 @@
     <Compile Include="Services\DatabaseService\DBService.Chickens.cs" />
     <Compile Include="Services\DatabaseService\DBService.Shop.cs" />
     <Compile Include="Services\DatabaseService\DBService.SpecialRoles.cs" />
-    <Compile Include="Services\IGodfatherService.cs" />
+    <Compile Include="Services\TheGodfatherService.cs" />
     <Compile Include="Modules\TheGodfatherBaseModule.cs" />
     <Compile Include="Modules\Search\JokesModule.cs" />
     <Compile Include="Exceptions\DatabaseServiceException.cs" />
@@ -582,7 +584,7 @@
     <Compile Include="Services\MemeGenService.cs" />
     <Compile Include="Services\OMDbService.cs" />
     <Compile Include="Services\PetImagesService.cs" />
-    <Compile Include="Services\HttpService.cs" />
+    <Compile Include="Services\TheGodfatherHttpService.cs" />
     <Compile Include="Services\QuizService.cs" />
     <Compile Include="Services\QuoteService.cs" />
     <Compile Include="Services\WeatherService.cs" />

@@ -40,7 +40,7 @@ namespace TheGodfather.Services
                 var data = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
                 return data.OrderBy(kvp => kvp.Key).Select(kvp => $"{Formatter.Bold(kvp.Key)} {Path.GetFileName(kvp.Value)}").ToList().AsReadOnly();
             } catch (Exception e) {
-                TheGodfather.LogProvider.LogException(LogLevel.Warning, e);
+                // LogProvider.LogProvider.LogException(LogLevel.Warning, e);
             }
 
             return null;

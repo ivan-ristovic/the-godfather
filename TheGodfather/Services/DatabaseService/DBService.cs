@@ -68,6 +68,12 @@ namespace TheGodfather.Services
             }
         }
 
+        public async Task CheckIntegrityAsync()
+        {
+            await Task.Delay(0);
+            //throw new DatabaseServiceException("Integrity check failed!");
+        }
+
         public async Task<IReadOnlyList<IReadOnlyDictionary<string, string>>> ExecuteRawQueryAsync(string query)
         {
             var dicts = new List<IReadOnlyDictionary<string, string>>();

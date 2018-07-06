@@ -38,6 +38,8 @@ namespace TheGodfather
         public InteractivityExtension Interactivity { get; private set; }
         public VoiceNextExtension Voice { get; private set; }
         public static List<(string, Command)> CommandNames { get; private set; }
+
+        public bool IsListening => Shared.ListeningStatus;
         #endregion
 
         #region PRIVATE_FIELDS
@@ -74,7 +76,7 @@ namespace TheGodfather
             => await Client.ConnectAsync().ConfigureAwait(false);
 
         public void Log(LogLevel level, string message)
-            => TheGodfather.LogProvider.LogMessage(level, message, ShardId, DateTime.Now);
+            => Shared.LogProvider.LogMessage(level, message, ShardId, DateTime.Now);
 
 
         private void SetupClient()
@@ -87,7 +89,7 @@ namespace TheGodfather
                 ShardCount = Shared.BotConfiguration.ShardCount,
                 ShardId = ShardId,
                 UseInternalLogHandler = false,
-                LogLevel = TheGodfather.LogProvider.LogLevel
+                LogLevel = Shared.BotConfiguration.LogLevel
             };
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && Environment.OSVersion.Version <= new Version(6, 1, 7601, 65536))
@@ -95,8 +97,8 @@ namespace TheGodfather
 
             Client = new DiscordClient(cfg);
 
-            Client.DebugLogger.LogMessageReceived += (s, e) => TheGodfather.LogProvider.LogMessage(ShardId, e);
-            Client.Ready += e => { TheGodfather.LogProvider.ElevatedLog(LogLevel.Info, "Ready!", ShardId); return Task.CompletedTask; };
+            Client.DebugLogger.LogMessageReceived += (s, e) => Shared.LogProvider.LogMessage(ShardId, e);
+            Client.Ready += e => { Shared.LogProvider.ElevatedLog(LogLevel.Info, "Ready!", ShardId); return Task.CompletedTask; };
         }
 
         private void SetupCommands()

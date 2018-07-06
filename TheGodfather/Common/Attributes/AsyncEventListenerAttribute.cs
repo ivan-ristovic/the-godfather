@@ -24,14 +24,14 @@ namespace TheGodfather.Common.Attributes
         {
             Task OnEventWithArgs(object e)
             {
-                if (!TheGodfather.Listening)
+                if (!shard.IsListening)
                     return Task.CompletedTask;
 
                 _ = Task.Run(async () => {
                     try {
                         await (Task)mi.Invoke(null, new object[] { shard, e });
                     } catch (Exception ex) {
-                        TheGodfather.LogProvider.LogException(LogLevel.Error, ex);
+                        shard.Shared.LogProvider.LogException(LogLevel.Error, ex);
                     }
                 });
                 return Task.CompletedTask;
@@ -39,14 +39,14 @@ namespace TheGodfather.Common.Attributes
 
             Task OnEventVoid()
             {
-                if (!TheGodfather.Listening)
+                if (!shard.IsListening)
                     return Task.CompletedTask;
 
                 _ = Task.Run(async () => {
                     try {
                         await (Task)mi.Invoke(null, new object[] { shard });
                     } catch (Exception ex) {
-                        TheGodfather.LogProvider.LogException(LogLevel.Error, ex);
+                        shard.Shared.LogProvider.LogException(LogLevel.Error, ex);
                     }
                 });
                 return Task.CompletedTask;

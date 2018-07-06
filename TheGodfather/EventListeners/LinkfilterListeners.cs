@@ -23,7 +23,7 @@ namespace TheGodfather.EventListeners
         [AsyncExecuter(EventTypes.MessageCreated)]
         public static async Task Client_MessageCreatedLinkfilter(TheGodfatherShard shard, MessageCreateEventArgs e)
         {
-            if (e.Author.IsBot || !TheGodfather.Listening || e.Channel.IsPrivate || shard.Shared.BlockedChannels.Contains(e.Channel.Id))
+            if (e.Author.IsBot || e.Channel.IsPrivate || shard.Shared.BlockedChannels.Contains(e.Channel.Id))
                 return;
 
             if (e.Message?.Content == null)

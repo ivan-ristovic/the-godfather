@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
+using TheGodfather.Common;
 using TheGodfather.Modules.Music.Common;
 using TheGodfather.Services.Common;
 
@@ -84,7 +85,7 @@ namespace TheGodfather.Services
                 if (data.Items != null && data.Items.Any())
                     return data.Items.First()["id"];
             } catch (Exception e) {
-                TheGodfather.LogProvider.LogException(LogLevel.Debug, e);
+                // LogProvider.LogException(LogLevel.Debug, e);
             }
 
             return null;
@@ -166,7 +167,7 @@ namespace TheGodfather.Services
                     Title = video.Title,
                 };
             } catch (Exception e) {
-                TheGodfather.LogProvider.LogException(LogLevel.Debug, e);
+                // LogProvider.LogException(LogLevel.Debug, e);
                 return null;
             }
         }
@@ -188,7 +189,7 @@ namespace TheGodfather.Services
                     var str = await process.StandardOutput.ReadToEndAsync();
                     var err = await process.StandardError.ReadToEndAsync();
                     if (!string.IsNullOrEmpty(err))
-                        TheGodfather.LogProvider.LogMessage(LogLevel.Warning, err);
+                        ; // LogProvider.LogMessage(LogLevel.Warning, err);
                     if (!string.IsNullOrWhiteSpace(str))
                         data = str.Split('\n');
                 }
@@ -209,7 +210,7 @@ namespace TheGodfather.Services
                     Query = "https://youtube.com/watch?v=" + data[1],
                 };
             } catch (Exception e) {
-                TheGodfather.LogProvider.LogException(LogLevel.Debug, e);
+                // LogProvider.LogException(LogLevel.Debug, e);
                 return null;
             }
         }

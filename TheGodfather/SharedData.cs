@@ -23,9 +23,11 @@ namespace TheGodfather
 {
     public sealed class SharedData
     {
+        public BotConfig BotConfiguration { get; internal set; }
+        public Logger LogProvider { get; internal set; }
+        public bool ListeningStatus { get; internal set; } = true;
         public ConcurrentHashSet<ulong> BlockedUsers { get; internal set; } = new ConcurrentHashSet<ulong>();
         public ConcurrentHashSet<ulong> BlockedChannels { get; internal set; } = new ConcurrentHashSet<ulong>();
-        public BotConfig BotConfiguration { get; internal set; }
         public ConcurrentDictionary<ulong, CachedGuildConfig> GuildConfigurations { get; internal set; }
         public ConcurrentDictionary<ulong, Deck> CardDecks { get; internal set; } = new ConcurrentDictionary<ulong, Deck>();
         public CancellationTokenSource CTS { get; internal set; }
@@ -38,6 +40,7 @@ namespace TheGodfather
         public ConcurrentDictionary<ulong, CancellationTokenSource> SpaceCheckingCTS = new ConcurrentDictionary<ulong, CancellationTokenSource>();
         public ConcurrentDictionary<ulong, MusicPlayer> MusicPlayers = new ConcurrentDictionary<ulong, MusicPlayer>();
         public ConcurrentDictionary<ulong, ConcurrentHashSet<ulong>> AwaitingUsersInteractively = new ConcurrentDictionary<ulong, ConcurrentHashSet<ulong>>();
+
 
 
         public CachedGuildConfig GetGuildConfig(ulong gid)
@@ -120,12 +123,8 @@ namespace TheGodfather
 
         public async Task SyncDataWithDatabaseAsync(DBService db)
         {
-            try {
-                await SaveRanksToDatabaseAsync(db)
-                    .ConfigureAwait(false);
-            } catch (Exception e) {
-                TheGodfather.LogProvider.LogException(LogLevel.Error, e);
-            }
+            await SaveRanksToDatabaseAsync(db)
+                .ConfigureAwait(false);
         }
 
         private async Task SaveRanksToDatabaseAsync(DBService db)
@@ -136,6 +135,7 @@ namespace TheGodfather
 
         public void Dispose()
         {
+            CTS.Dispose();
             foreach (var kvp in SavedTasks)
                 kvp.Value.Dispose();
         }

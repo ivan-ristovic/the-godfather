@@ -9,7 +9,7 @@ using DSharpPlus.EventArgs;
 
 namespace TheGodfather.Common
 {
-    internal class Logger
+    public class Logger
     {
         public bool LogToFile {
             get => _filelog;
@@ -32,6 +32,14 @@ namespace TheGodfather.Common
         private readonly object _lock = new object();
         private bool _filelog = true;
         private string _path = "gf_log.txt";
+
+
+        public Logger(BotConfig cfg)
+        {
+            LogLevel = cfg.LogLevel;
+            LogToFile = cfg.LogToFile;
+            Path = cfg.LogPath;
+        }
 
 
         public bool Clear()

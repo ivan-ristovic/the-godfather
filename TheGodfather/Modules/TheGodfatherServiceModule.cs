@@ -2,7 +2,7 @@
 
 namespace TheGodfather.Modules
 {
-    public class TheGodfatherServiceModule<TService> : TheGodfatherBaseModule where TService : IGodfatherService
+    public abstract class TheGodfatherServiceModule<TService> : TheGodfatherBaseModule where TService : ITheGodfatherService
     {
         protected TService _Service;
 

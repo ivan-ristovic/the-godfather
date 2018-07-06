@@ -3,6 +3,7 @@ using System;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
+using TheGodfather.Common;
 using TheGodfather.Services.Common;
 
 using DSharpPlus;
@@ -14,7 +15,7 @@ namespace TheGodfather.Services
     {
         public static string XkcdUrl { get; } = "https://xkcd.com";
         public static int ComicNum { get; } = 1900;
-
+        
 
         public static async Task<XkcdComic> GetComicAsync(int? id = null)
         {
@@ -30,7 +31,7 @@ namespace TheGodfather.Services
                 var comic = JsonConvert.DeserializeObject<XkcdComic>(response);
                 return comic;
             } catch (Exception e) {
-                TheGodfather.LogProvider.LogException(LogLevel.Debug, e);
+                // LogProvider.LogProvider.LogException(LogLevel.Debug, e);
                 return null;
             }
         }

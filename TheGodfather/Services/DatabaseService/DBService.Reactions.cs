@@ -1,6 +1,7 @@
 ﻿#region USING_DIRECTIVES
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -43,7 +44,7 @@ namespace TheGodfather.Services
             return id;
         }
 
-        public async Task<Dictionary<ulong, List<TextReaction>>> GetTextReactionsForAllGuildsAsync()
+        public async Task<IReadOnlyDictionary<ulong, List<TextReaction>>> GetTextReactionsForAllGuildsAsync()
         {
             var treactions = new Dictionary<ulong, List<TextReaction>>();
 
@@ -77,7 +78,7 @@ namespace TheGodfather.Services
                 _sem.Release();
             }
 
-            return treactions;
+            return new ReadOnlyDictionary<ulong, List<TextReaction>>(treactions);
         }
 
         public async Task RemoveAllGuildTextReactionsAsync(ulong gid)
@@ -159,7 +160,7 @@ namespace TheGodfather.Services
             return id;
         }
 
-        public async Task<Dictionary<ulong, List<EmojiReaction>>> GetEmojiReactionsForAllGuildsAsync()
+        public async Task<IReadOnlyDictionary<ulong, List<EmojiReaction>>> GetEmojiReactionsForAllGuildsAsync()
         {
             var ereactions = new Dictionary<ulong, List<EmojiReaction>>();
 
@@ -193,7 +194,7 @@ namespace TheGodfather.Services
                 _sem.Release();
             }
 
-            return ereactions;
+            return new ReadOnlyDictionary<ulong, List<EmojiReaction>>(ereactions);
         }
 
         public async Task RemoveAllEmojiReactionTriggersForReactionAsync(ulong gid, string reaction)

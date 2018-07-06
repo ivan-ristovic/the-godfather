@@ -20,9 +20,6 @@ namespace TheGodfather.EventListeners
         [AsyncExecuter(EventTypes.GuildMemberAdded)]
         public static async Task Client_GuildMemberAdded(TheGodfatherShard shard, GuildMemberAddEventArgs e)
         {
-            if (!TheGodfather.Listening)
-                return;
-
             shard.Log(LogLevel.Info, $"| Member joined: {e.Member.ToString()}\n{e.Guild.ToString()}");
 
             var wchn = await shard.Database.GetWelcomeChannelAsync(e.Guild)
@@ -62,7 +59,7 @@ namespace TheGodfather.EventListeners
                     }
                 }
             } catch (Exception exc) {
-                TheGodfather.LogProvider.LogException(LogLevel.Debug, exc);
+                shard.Shared.LogProvider.LogException(LogLevel.Debug, exc);
             }
 
             var logchn = shard.Shared.GetLogChannelForGuild(shard.Client, e.Guild);
@@ -85,7 +82,7 @@ namespace TheGodfather.EventListeners
         [AsyncExecuter(EventTypes.GuildMemberRemoved)]
         public static async Task Client_GuildMemberRemoved(TheGodfatherShard shard, GuildMemberRemoveEventArgs e)
         {
-            if (!TheGodfather.Listening || e.Member.Id == e.Client.CurrentUser.Id)
+            if (e.Member.Id == e.Client.CurrentUser.Id)
                 return;
 
             shard.Log(LogLevel.Info, $"| Member left: {e.Member.ToString()}\n{e.Guild.ToString()}");

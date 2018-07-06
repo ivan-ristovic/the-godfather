@@ -31,7 +31,7 @@ namespace TheGodfather.Services
                 var data = JsonConvert.DeserializeObject<QuizCategoryList>(response);
                 return data.Categories.AsReadOnly();
             } catch (Exception e) {
-                TheGodfather.LogProvider.LogException(LogLevel.Debug, e);
+                // LogProvider.LogProvider.LogException(LogLevel.Debug, e);
                 return new List<QuizCategory>();
             }
         }
@@ -53,7 +53,7 @@ namespace TheGodfather.Services
                         return q;
                     }).ToList().AsReadOnly();
             } catch (Exception e) {
-                TheGodfather.LogProvider.LogException(LogLevel.Debug, e);
+                // LogProvider.LogProvider.LogException(LogLevel.Debug, e);
             }
 
             return null;

@@ -119,7 +119,7 @@ namespace TheGodfather.Modules.Misc
                 await Database.RemoveAllGuildMemesAsync(ctx.Guild.Id)
                     .ConfigureAwait(false);
             } catch (Exception e) {
-                TheGodfather.LogProvider.LogException(LogLevel.Warning, e);
+                Shared.LogProvider.LogException(LogLevel.Warning, e);
                 throw new CommandFailedException("Failed to delete memes from the database.");
             }
 

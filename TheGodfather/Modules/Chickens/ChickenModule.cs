@@ -256,7 +256,7 @@ namespace TheGodfather.Modules.Chickens
                     chicken.Owner = await ctx.Client.GetUserAsync(chicken.OwnerId)
                         .ConfigureAwait(false);
                 } catch (Exception e) {
-                    TheGodfather.LogProvider.LogException(LogLevel.Warning, e);
+                    Shared.LogProvider.LogException(LogLevel.Warning, e);
                 }
             }
 
@@ -285,7 +285,7 @@ namespace TheGodfather.Modules.Chickens
                     chicken.Owner = await ctx.Client.GetUserAsync(chicken.OwnerId)
                         .ConfigureAwait(false);
                 } catch (Exception e) {
-                    TheGodfather.LogProvider.LogException(LogLevel.Warning, e);
+                    Shared.LogProvider.LogException(LogLevel.Warning, e);
                 }
             }
 

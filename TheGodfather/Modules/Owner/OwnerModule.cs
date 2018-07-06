@@ -50,7 +50,7 @@ namespace TheGodfather.Modules.Owner
                 return;
 
             var errors = new StringBuilder();
-            foreach (var shard in TheGodfather.Shards) {
+            foreach (var shard in TheGodfather.ActiveShards) {
                 foreach (var guild in shard.Client.Guilds.Values) {
                     try {
                         await guild.GetDefaultChannel().SendMessageAsync()
@@ -131,7 +131,7 @@ namespace TheGodfather.Modules.Owner
             if (!await ctx.AskYesNoQuestionAsync("Are you sure you want to clear the logs?").ConfigureAwait(false))
                 return;
 
-            if (!TheGodfather.LogProvider.Clear())
+            if (!Shared.LogProvider.Clear())
                 throw new CommandFailedException("Failed to delete log file!");
 
             await ctx.RespondWithIconEmbedAsync()
@@ -289,7 +289,7 @@ namespace TheGodfather.Modules.Owner
         public async Task FileLogAsync(CommandContext ctx,
                                       [Description("True/False")] bool b = true)
         {
-            TheGodfather.LogProvider.LogToFile = b;
+            Shared.LogProvider.LogToFile = b;
 
             await ctx.RespondWithIconEmbedAsync($"File logging set to {b}")
                 .ConfigureAwait(false);
@@ -318,7 +318,7 @@ namespace TheGodfather.Modules.Owner
                 current = Directory.CreateDirectory(folder);
                 parts = Directory.CreateDirectory(Path.Combine(current.FullName, "Parts"));
             } catch (Exception e) {
-                TheGodfather.LogProvider.LogException(LogLevel.Warning, e);
+                Shared.LogProvider.LogException(LogLevel.Warning, e);
                 throw new CommandFailedException("Failed to create directories!", e);
             }
 
@@ -569,8 +569,8 @@ namespace TheGodfather.Modules.Owner
         [RequirePriviledgedUser]
         public async Task ToggleIgnoreAsync(CommandContext ctx)
         {
-            TheGodfather.Listening = !TheGodfather.Listening;
-            await ctx.RespondWithIconEmbedAsync($"Listening status set to: {Formatter.Bold(TheGodfather.Listening.ToString())}")
+            Shared.ListeningStatus = !Shared.ListeningStatus;
+            await ctx.RespondWithIconEmbedAsync($"Listening status set to: {Formatter.Bold(Shared.ListeningStatus.ToString())}")
                 .ConfigureAwait(false);
         }
         #endregion

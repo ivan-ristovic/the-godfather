@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
+using TheGodfather.Common;
 using TheGodfather.Services.Common;
 
 using DSharpPlus;
@@ -14,7 +15,7 @@ using DSharpPlus.Interactivity;
 
 namespace TheGodfather.Services
 {
-    public class OMDbService : TheGodfatherHttpService, IGodfatherService
+    public class OMDbService : TheGodfatherHttpService
     {
         private readonly string _requestUrl;
 
@@ -95,7 +96,7 @@ namespace TheGodfather.Services
                 var data = JsonConvert.DeserializeObject<OMDbResponse>(response);
                 return data.Success ? data.Results?.AsReadOnly() : null;
             } catch (Exception e) {
-                TheGodfather.LogProvider.LogException(LogLevel.Debug, e);
+                // LogProvider.LogProvider.LogException(LogLevel.Debug, e);
                 return null;
             }
         }
@@ -108,7 +109,7 @@ namespace TheGodfather.Services
                 var data = JsonConvert.DeserializeObject<MovieInfo>(response);
                 return data.Success ? data : null;
             } catch (Exception e) {
-                TheGodfather.LogProvider.LogException(LogLevel.Debug, e);
+                // LogProvider.LogProvider.LogException(LogLevel.Debug, e);
                 return null;
             }
         }
@@ -121,7 +122,7 @@ namespace TheGodfather.Services
                 var data = JsonConvert.DeserializeObject<MovieInfo>(response);
                 return data.Success ? data : null;
             } catch (Exception e) {
-                TheGodfather.LogProvider.LogException(LogLevel.Debug, e);
+                // LogProvider.LogProvider.LogException(LogLevel.Debug, e);
                 return null;
             }
         }

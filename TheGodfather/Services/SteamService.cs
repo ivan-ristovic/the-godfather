@@ -3,6 +3,8 @@ using System;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
 
+using TheGodfather.Common;
+
 using DSharpPlus;
 using DSharpPlus.Entities;
 
@@ -13,7 +15,7 @@ using Steam.Models.SteamCommunity;
 
 namespace TheGodfather.Services
 {
-    public class SteamService : IGodfatherService
+    public class SteamService : ITheGodfatherService
     {
         private SteamUser _steam { get; set; }
 
@@ -38,7 +40,7 @@ namespace TheGodfather.Services
                 summary = await _steam.GetPlayerSummaryAsync(id)
                     .ConfigureAwait(false);
             } catch (Exception e) {
-                TheGodfather.LogProvider.LogException(LogLevel.Debug, e);
+                // LogProvider.LogProvider.LogException(LogLevel.Debug, e);
             }
 
             if (profile == null || summary == null || summary.Data == null)
@@ -75,7 +77,7 @@ namespace TheGodfather.Services
             if (!string.IsNullOrWhiteSpace(model.Location))
                 em.AddField("Location: ", model.Location);
 
-            //em.AddField("Game activity", $"{model.HoursPlayedLastTwoWeeks} hours past 2 weeks.", inline: true);
+            // em.AddField("Game activity", $"{model.HoursPlayedLastTwoWeeks} hours past 2 weeks.", inline: true);
 
             if (model.IsVacBanned) {
                 var bans = _steam.GetPlayerBansAsync(model.SteamID).Result.Data;

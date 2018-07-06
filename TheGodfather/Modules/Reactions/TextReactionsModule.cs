@@ -88,7 +88,7 @@ namespace TheGodfather.Modules.Reactions
                 await Database.RemoveAllGuildTextReactionsAsync(ctx.Guild.Id)
                     .ConfigureAwait(false);
             } catch (Exception e) {
-                TheGodfather.LogProvider.LogException(LogLevel.Warning, e);
+                Shared.LogProvider.LogException(LogLevel.Warning, e);
                 throw new CommandFailedException("Failed to delete text reactions from the database.");
             }
 
@@ -136,7 +136,7 @@ namespace TheGodfather.Modules.Reactions
                 await Database.RemoveTextReactionsAsync(ctx.Guild.Id, ids)
                     .ConfigureAwait(false);
             } catch (Exception e) {
-                TheGodfather.LogProvider.LogException(LogLevel.Warning, e);
+                Shared.LogProvider.LogException(LogLevel.Warning, e);
                 errors.AppendLine($"Warning: Failed to remove some reactions from the database.");
             }
 
@@ -204,7 +204,7 @@ namespace TheGodfather.Modules.Reactions
                 await Database.RemoveTextReactionTriggersAsync(ctx.Guild.Id, triggers)
                     .ConfigureAwait(false);
             } catch (Exception e) {
-                TheGodfather.LogProvider.LogException(LogLevel.Warning, e);
+                Shared.LogProvider.LogException(LogLevel.Warning, e);
                 errors.AppendLine($"Warning: Failed to remove some triggers from the database.");
             }
 
@@ -284,7 +284,7 @@ namespace TheGodfather.Modules.Reactions
                 id = await Database.AddTextReactionAsync(ctx.Guild.Id, trigger, response, is_regex_trigger)
                     .ConfigureAwait(false);
             } catch (Exception e) {
-                TheGodfather.LogProvider.LogException(LogLevel.Warning, e);
+                Shared.LogProvider.LogException(LogLevel.Warning, e);
                 errors = $"Warning: Failed to add trigger {Formatter.Bold(trigger)} to the database.";
             }
 

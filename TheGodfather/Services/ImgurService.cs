@@ -9,6 +9,8 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
+using TheGodfather.Common;
+
 using Imgur.API;
 using Imgur.API.Authentication.Impl;
 using Imgur.API.Endpoints.Impl;
@@ -18,7 +20,7 @@ using Imgur.API.Models;
 
 namespace TheGodfather.Services
 {
-    public class ImgurService : IGodfatherService
+    public class ImgurService : ITheGodfatherService
     {
         private ImgurClient _imgur { get; set; }
         private GalleryEndpoint _gendpoint { get; set; }

@@ -36,7 +36,7 @@ namespace TheGodfather.EventListeners
         [AsyncExecuter(EventTypes.CommandErrored)]
         public static async Task CommandErrored(TheGodfatherShard shard, CommandErrorEventArgs e)
         {
-            if (!TheGodfather.Listening || e.Exception == null)
+            if (!shard.IsListening || e.Exception == null)
                 return;
 
             var ex = e.Exception;

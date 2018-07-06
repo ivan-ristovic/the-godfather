@@ -33,7 +33,7 @@ namespace TheGodfather.Services
                     return Enumerable.Empty<string>().ToList().AsReadOnly();
                 return res.Split('\n').ToList().AsReadOnly();
             } catch (Exception e) {
-                TheGodfather.LogProvider.LogException(LogLevel.Debug, e);
+                // LogProvider.LogProvider.LogException(LogLevel.Debug, e);
                 return null;
             }
         }
@@ -45,7 +45,7 @@ namespace TheGodfather.Services
                     .ConfigureAwait(false);
                 return JObject.Parse(data)["joke"].ToString();
             } catch (Exception e) {
-                TheGodfather.LogProvider.LogException(LogLevel.Debug, e);
+                // LogProvider.LogProvider.LogException(LogLevel.Debug, e);
                 return null;
             }
         }

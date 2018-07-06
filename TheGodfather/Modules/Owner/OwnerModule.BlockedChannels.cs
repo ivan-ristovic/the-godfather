@@ -144,7 +144,7 @@ namespace TheGodfather.Modules.Owner
                             .ConfigureAwait(false);
                     } catch (Exception e) {
                         sb.AppendLine($"Warning: Failed to remove {channel.ToString()} from the database!");
-                        TheGodfather.LogProvider.LogException(LogLevel.Warning, e);
+                        Shared.LogProvider.LogException(LogLevel.Warning, e);
                         continue;
                     }
 
@@ -173,12 +173,12 @@ namespace TheGodfather.Modules.Owner
                             .ConfigureAwait(false);
                         lines.Add($"{channel.ToString()} ({Formatter.Italic(string.IsNullOrWhiteSpace(tup.Item2) ? "No reason provided." : tup.Item2)})");
                     } catch (NotFoundException) {
-                        TheGodfather.LogProvider.LogMessage(LogLevel.Warning, $"Removed 404 blocked channel with ID {tup.Item1}");
+                        Shared.LogProvider.LogMessage(LogLevel.Warning, $"Removed 404 blocked channel with ID {tup.Item1}");
                         Shared.BlockedChannels.TryRemove(tup.Item1);
                         await Database.RemoveBlockedChannelAsync(tup.Item1)
                             .ConfigureAwait(false);
                     } catch (UnauthorizedException) {
-                        TheGodfather.LogProvider.LogMessage(LogLevel.Warning, $"Removed 403 blocked channel with ID {tup.Item1}");
+                        Shared.LogProvider.LogMessage(LogLevel.Warning, $"Removed 403 blocked channel with ID {tup.Item1}");
                         Shared.BlockedChannels.TryRemove(tup.Item1);
                         await Database.RemoveBlockedChannelAsync(tup.Item1)
                             .ConfigureAwait(false);

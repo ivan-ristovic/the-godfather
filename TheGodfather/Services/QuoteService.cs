@@ -30,7 +30,7 @@ namespace TheGodfather.Services
                 var data = JsonConvert.DeserializeObject<QuoteApiResponse>(response);
                 return data?.Contents?.Quotes?.FirstOrDefault();
             } catch (Exception e) {
-                TheGodfather.LogProvider.LogException(LogLevel.Debug, e);
+                // LogProvider.LogProvider.LogException(LogLevel.Debug, e);
                 return null;
             }
         }
@@ -44,7 +44,7 @@ namespace TheGodfather.Services
                 data = _tagMatcher.Replace(data, String.Empty);
                 return WebUtility.HtmlDecode(data).Trim();
             } catch (Exception e) {
-                TheGodfather.LogProvider.LogException(LogLevel.Debug, e);
+                // LogProvider.LogProvider.LogException(LogLevel.Debug, e);
                 return null;
             }
         }
