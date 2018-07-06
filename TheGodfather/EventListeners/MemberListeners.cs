@@ -22,10 +22,10 @@ namespace TheGodfather.EventListeners
         {
             shard.Log(LogLevel.Info, $"| Member joined: {e.Member.ToString()}\n{e.Guild.ToString()}");
 
-            var wchn = await shard.Database.GetWelcomeChannelAsync(e.Guild)
+            var wchn = await shard.DatabaseService.GetWelcomeChannelAsync(e.Guild)
                 .ConfigureAwait(false);
             if (wchn != null) {
-                var msg = await shard.Database.GetWelcomeMessageAsync(e.Guild.Id)
+                var msg = await shard.DatabaseService.GetWelcomeMessageAsync(e.Guild.Id)
                     .ConfigureAwait(false);
                 if (string.IsNullOrWhiteSpace(msg)) {
                     await wchn.SendIconEmbedAsync($"Welcome to {Formatter.Bold(e.Guild.Name)}, {e.Member.Mention}!", DiscordEmoji.FromName(shard.Client, ":wave:"))
@@ -37,13 +37,13 @@ namespace TheGodfather.EventListeners
             }
 
             try {
-                var rids = await shard.Database.GetAutomaticRolesForGuildAsync(e.Guild.Id)
+                var rids = await shard.DatabaseService.GetAutomaticRolesForGuildAsync(e.Guild.Id)
                     .ConfigureAwait(false);
                 foreach (var rid in rids) {
                     try {
                         var role = e.Guild.GetRole(rid);
                         if (role == null) {
-                            await shard.Database.RemoveAutomaticRoleAsync(e.Guild.Id, rid)
+                            await shard.DatabaseService.RemoveAutomaticRoleAsync(e.Guild.Id, rid)
                                 .ConfigureAwait(false);
                         } else {
                             await e.Member.GrantRoleAsync(role)
@@ -59,10 +59,10 @@ namespace TheGodfather.EventListeners
                     }
                 }
             } catch (Exception exc) {
-                shard.Shared.LogProvider.LogException(LogLevel.Debug, exc);
+                shard.SharedData.LogProvider.LogException(LogLevel.Debug, exc);
             }
 
-            var logchn = shard.Shared.GetLogChannelForGuild(shard.Client, e.Guild);
+            var logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
                     Title = "Member joined",
@@ -87,10 +87,10 @@ namespace TheGodfather.EventListeners
 
             shard.Log(LogLevel.Info, $"| Member left: {e.Member.ToString()}\n{e.Guild.ToString()}");
 
-            var lchn = await shard.Database.GetLeaveChannelAsync(e.Guild)
+            var lchn = await shard.DatabaseService.GetLeaveChannelAsync(e.Guild)
                 .ConfigureAwait(false);
             if (lchn != null) {
-                var msg = await shard.Database.GetLeaveMessageAsync(e.Guild.Id)
+                var msg = await shard.DatabaseService.GetLeaveMessageAsync(e.Guild.Id)
                     .ConfigureAwait(false);
                 if (string.IsNullOrWhiteSpace(msg)) {
                     await lchn.SendIconEmbedAsync($"{Formatter.Bold(e.Member?.Username ?? "<unknown user>")} left the server! Bye!", StaticDiscordEmoji.Wave)
@@ -101,7 +101,7 @@ namespace TheGodfather.EventListeners
                 }
             }
 
-            var logchn = shard.Shared.GetLogChannelForGuild(shard.Client, e.Guild);
+            var logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
                     Title = "Member left",
@@ -121,7 +121,7 @@ namespace TheGodfather.EventListeners
         [AsyncExecuter(EventTypes.GuildMemberUpdated)]
         public static async Task Client_GuildMemberUpdated(TheGodfatherShard shard, GuildMemberUpdateEventArgs e)
         {
-            var logchn = shard.Shared.GetLogChannelForGuild(shard.Client, e.Guild);
+            var logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
                     Title = "Member updated",

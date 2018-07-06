@@ -195,5 +195,29 @@ namespace TheGodfather.Extensions
                 return null;
             }
         }
+
+        public static IReadOnlyList<Command> GetAllRegisteredCommands(this CommandsNextExtension cnext)
+        {
+            return cnext.RegisteredCommands
+                .SelectMany(cnext.CommandSelector)
+                .Distinct()
+                .ToList()
+                .AsReadOnly();
+        }
+
+        public static IEnumerable<Command> CommandSelector(this CommandsNextExtension cnext, KeyValuePair<string, Command> c)
+        {
+            return cnext.CommandSelector(c.Value);
+        }
+
+        public static IEnumerable<Command> CommandSelector(this CommandsNextExtension cnext, Command c)
+        {
+            var arr = new[] { c };
+
+            if (c is CommandGroup group)
+                return arr.Concat(group.Children.SelectMany(cnext.CommandSelector));
+
+            return arr;
+        }
     }
 }

@@ -68,21 +68,5 @@ namespace TheGodfather.Modules
             result = new Regex($@"\b{pattern}\b", RegexOptions.IgnoreCase);
             return true;
         }
-
-
-        public static IEnumerable<Command> CommandSelector(KeyValuePair<string, Command> c)
-        {
-            return CommandSelector(c.Value);
-        }
-
-        public static IEnumerable<Command> CommandSelector(Command c)
-        {
-            var arr = new[] { c };
-
-            if (c is CommandGroup group)
-                return arr.Concat(group.Children.SelectMany(CommandSelector));
-
-            return arr;
-        }
     }
 }

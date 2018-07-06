@@ -22,7 +22,7 @@ namespace TheGodfather.EventListeners
         [AsyncExecuter(EventTypes.MessagesBulkDeleted)]
         public static async Task Client_MessagesBulkDeleted(TheGodfatherShard shard, MessageBulkDeleteEventArgs e)
         {
-            var logchn = shard.Shared.GetLogChannelForGuild(shard.Client, e.Channel.Guild);
+            var logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Channel.Guild);
             if (logchn != null) {
                 await logchn.SendMessageAsync(embed: new DiscordEmbedBuilder() {
                     Title = $"Bulk message deletion occured ({e.Messages.Count} total)",
@@ -35,15 +35,15 @@ namespace TheGodfather.EventListeners
         [AsyncExecuter(EventTypes.MessageCreated)]
         public static async Task Client_MessageCreated(TheGodfatherShard shard, MessageCreateEventArgs e)
         {
-            if (e.Author.IsBot || e.Channel.IsPrivate || shard.Shared.BlockedChannels.Contains(e.Channel.Id) || shard.Shared.BlockedUsers.Contains(e.Author.Id))
+            if (e.Author.IsBot || e.Channel.IsPrivate || shard.SharedData.BlockedChannels.Contains(e.Channel.Id) || shard.SharedData.BlockedUsers.Contains(e.Author.Id))
                 return;
 
             if (!e.Channel.PermissionsFor(e.Guild.CurrentMember).HasFlag(Permissions.SendMessages))
                 return;
 
-            var rank = shard.Shared.UpdateMessageCount(e.Author.Id);
+            var rank = shard.SharedData.UpdateMessageCount(e.Author.Id);
             if (rank != -1) {
-                var rankname = await shard.Database.GetCustomRankNameForGuildAsync(e.Guild.Id, rank)
+                var rankname = await shard.DatabaseService.GetCustomRankNameForGuildAsync(e.Guild.Id, rank)
                     .ConfigureAwait(false);
                 await e.Channel.SendIconEmbedAsync($"GG {e.Author.Mention}! You have advanced to level {Formatter.Bold(rank.ToString())} {(string.IsNullOrWhiteSpace(rankname) ? "" : $": {Formatter.Italic(rankname)}")} !", DiscordEmoji.FromName(shard.Client, ":military_medal:"))
                     .ConfigureAwait(false);
@@ -53,10 +53,10 @@ namespace TheGodfather.EventListeners
         [AsyncExecuter(EventTypes.MessageCreated)]
         public static async Task Client_MessageCreatedFilters(TheGodfatherShard shard, MessageCreateEventArgs e)
         {
-            if (e.Author.IsBot || e.Message?.Content == null || e.Channel.IsPrivate || shard.Shared.BlockedChannels.Contains(e.Channel.Id))
+            if (e.Author.IsBot || e.Message?.Content == null || e.Channel.IsPrivate || shard.SharedData.BlockedChannels.Contains(e.Channel.Id))
                 return;
 
-            if (shard.Shared.MessageContainsFilter(e.Guild.Id, e.Message.Content)) {
+            if (shard.SharedData.MessageContainsFilter(e.Guild.Id, e.Message.Content)) {
                 try {
                     await e.Message.DeleteAsync("_gf: Filter hit")
                         .ConfigureAwait(false);
@@ -80,14 +80,14 @@ namespace TheGodfather.EventListeners
         [AsyncExecuter(EventTypes.MessageCreated)]
         public static async Task Client_MessageCreatedEmojiReactions(TheGodfatherShard shard, MessageCreateEventArgs e)
         {
-            if (e.Author.IsBot || string.IsNullOrWhiteSpace(e.Message?.Content) || e.Channel.IsPrivate || shard.Shared.BlockedChannels.Contains(e.Channel.Id) || shard.Shared.BlockedUsers.Contains(e.Author.Id))
+            if (e.Author.IsBot || string.IsNullOrWhiteSpace(e.Message?.Content) || e.Channel.IsPrivate || shard.SharedData.BlockedChannels.Contains(e.Channel.Id) || shard.SharedData.BlockedUsers.Contains(e.Author.Id))
                 return;
 
             if (!e.Channel.PermissionsFor(e.Guild.CurrentMember).HasFlag(Permissions.AddReactions))
                 return;
 
-            if (shard.Shared.EmojiReactions.ContainsKey(e.Guild.Id)) {
-                var ereactions = shard.Shared.EmojiReactions[e.Guild.Id].Where(er => er.Matches(e.Message.Content));
+            if (shard.SharedData.EmojiReactions.ContainsKey(e.Guild.Id)) {
+                var ereactions = shard.SharedData.EmojiReactions[e.Guild.Id].Where(er => er.Matches(e.Message.Content));
                 foreach (var er in ereactions) {
                     shard.Log(LogLevel.Debug,
                         $"| Emoji reaction detected: {er.Response}\n" +
@@ -100,7 +100,7 @@ namespace TheGodfather.EventListeners
                         await e.Message.CreateReactionAsync(emoji)
                             .ConfigureAwait(false);
                     } catch (ArgumentException) {
-                        await shard.Database.RemoveAllEmojiReactionTriggersForReactionAsync(e.Guild.Id, er.Response)
+                        await shard.DatabaseService.RemoveAllEmojiReactionTriggersForReactionAsync(e.Guild.Id, er.Response)
                             .ConfigureAwait(false);
                     } catch (UnauthorizedException) {
                         shard.Log(LogLevel.Debug,
@@ -118,14 +118,14 @@ namespace TheGodfather.EventListeners
         [AsyncExecuter(EventTypes.MessageCreated)]
         public static async Task Client_MessageCreatedTextReactions(TheGodfatherShard shard, MessageCreateEventArgs e)
         {
-            if (e.Author.IsBot || e.Message?.Content == null || e.Channel.IsPrivate || shard.Shared.BlockedChannels.Contains(e.Channel.Id) || shard.Shared.BlockedUsers.Contains(e.Author.Id))
+            if (e.Author.IsBot || e.Message?.Content == null || e.Channel.IsPrivate || shard.SharedData.BlockedChannels.Contains(e.Channel.Id) || shard.SharedData.BlockedUsers.Contains(e.Author.Id))
                 return;
 
             if (!e.Channel.PermissionsFor(e.Guild.CurrentMember).HasFlag(Permissions.SendMessages))
                 return;
 
-            if (shard.Shared.TextReactions.ContainsKey(e.Guild.Id)) {
-                var tr = shard.Shared.TextReactions[e.Guild.Id]?.FirstOrDefault(r => r.Matches(e.Message.Content));
+            if (shard.SharedData.TextReactions.ContainsKey(e.Guild.Id)) {
+                var tr = shard.SharedData.TextReactions[e.Guild.Id]?.FirstOrDefault(r => r.Matches(e.Message.Content));
                 if (tr != null && tr.CanSend()) {
                     shard.Log(LogLevel.Debug,
                         $"| Text reaction detected: {tr.Response}\n" +
@@ -145,7 +145,7 @@ namespace TheGodfather.EventListeners
             if (e.Channel.IsPrivate)
                 return;
 
-            var logchn = shard.Shared.GetLogChannelForGuild(shard.Client, e.Guild);
+            var logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
             if (logchn != null && e.Message != null) {
                 var emb = new DiscordEmbedBuilder() {
                     Description = $"In channel {e.Channel.Mention}\nFrom {e.Message.Author?.ToString() ?? "<unknown>"}",
@@ -164,7 +164,7 @@ namespace TheGodfather.EventListeners
                     emb.WithTitle("Message deleted");
                 }
 
-                if (!string.IsNullOrWhiteSpace(e.Message.Content) && shard.Shared.MessageContainsFilter(e.Guild.Id, e.Message.Content))
+                if (!string.IsNullOrWhiteSpace(e.Message.Content) && shard.SharedData.MessageContainsFilter(e.Guild.Id, e.Message.Content))
                     emb.AddField("Reason", "Filter triggered");
                 if (e.Message.Embeds.Count > 0)
                     emb.AddField("Embeds", e.Message.Embeds.Count.ToString(), inline: true);
@@ -186,10 +186,10 @@ namespace TheGodfather.EventListeners
             if (e.Author == null || e.Author.IsBot || e.Message == null || e.Channel.IsPrivate)
                 return;
 
-            if (shard.Shared.BlockedChannels.Contains(e.Channel.Id))
+            if (shard.SharedData.BlockedChannels.Contains(e.Channel.Id))
                 return;
             
-            if (e.Message.Content != null && shard.Shared.MessageContainsFilter(e.Guild.Id, e.Message.Content)) {
+            if (e.Message.Content != null && shard.SharedData.MessageContainsFilter(e.Guild.Id, e.Message.Content)) {
                 try {
                     await e.Message.DeleteAsync("_gf: Filter hit after update")
                         .ConfigureAwait(false);
@@ -211,7 +211,7 @@ namespace TheGodfather.EventListeners
             }
 
             try {
-                var logchn = shard.Shared.GetLogChannelForGuild(shard.Client, e.Guild);
+                var logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
                 if (logchn != null && !e.Author.IsBot && e.Message.EditedTimestamp != null) {
                     var detailspre = $"{Formatter.BlockCode(Formatter.Sanitize(string.IsNullOrWhiteSpace(e.MessageBefore?.Content) ? "<empty or unknown content>" : e.MessageBefore.Content))}Created at: {(e.Message.CreationTimestamp != null ? e.Message.CreationTimestamp.ToUniversalTime().ToString() : "<unknown>")}; Embeds: {e.MessageBefore?.Embeds?.Count ?? 0}; Reactions: {e.MessageBefore?.Reactions?.Count ?? 0}; Attachments: {e.MessageBefore?.Attachments?.Count ?? 0}";
                     var detailsafter = $"{Formatter.BlockCode(Formatter.Sanitize(string.IsNullOrWhiteSpace(e.Message?.Content) ? "<empty or unknown content>" : e.Message.Content))}Edited at: {(e.Message.EditedTimestamp != null ? e.Message.EditedTimestamp.ToUniversalTime().ToString() : "<unknown>")}; Embeds: {e.Message.Embeds.Count}; Reactions: {e.Message.Reactions.Count}; Attachments: {e.Message.Attachments.Count}";

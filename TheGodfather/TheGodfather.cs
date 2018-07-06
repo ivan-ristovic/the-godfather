@@ -251,7 +251,7 @@ namespace TheGodfather
             await MiscActionsTask;
 
             foreach (TheGodfatherShard shard in Shards)
-                await shard.DisconnectAndDisposeAsync();
+                await shard.DisposeAsync();
             SharedData.Dispose();
 
             SharedData.LogProvider.ElevatedLog(LogLevel.Info, "Cleanup complete! Powering off...");

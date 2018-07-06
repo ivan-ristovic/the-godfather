@@ -23,13 +23,13 @@ namespace TheGodfather.EventListeners
         [AsyncExecuter(EventTypes.MessageCreated)]
         public static async Task Client_MessageCreatedLinkfilter(TheGodfatherShard shard, MessageCreateEventArgs e)
         {
-            if (e.Author.IsBot || e.Channel.IsPrivate || shard.Shared.BlockedChannels.Contains(e.Channel.Id))
+            if (e.Author.IsBot || e.Channel.IsPrivate || shard.SharedData.BlockedChannels.Contains(e.Channel.Id))
                 return;
 
             if (e.Message?.Content == null)
                 return;
 
-            var gcfg = shard.Shared.GetGuildConfig(e.Guild.Id);
+            var gcfg = shard.SharedData.GetGuildConfig(e.Guild.Id);
             if (!gcfg.LinkfilterEnabled)
                 return;
             
@@ -175,7 +175,7 @@ namespace TheGodfather.EventListeners
        
         private static async Task LogLinkfilterMatchAsync(TheGodfatherShard shard, MessageCreateEventArgs e, string desc)
         {
-            var logchn = shard.Shared.GetLogChannelForGuild(shard.Client, e.Guild);
+            var logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
                     Title = "Linkfilter action triggered",

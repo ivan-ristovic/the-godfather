@@ -326,9 +326,8 @@ namespace TheGodfather.Modules.Owner
             sb.AppendLine("# Command list");
             sb.AppendLine();
 
-            var commands = ctx.CommandsNext.RegisteredCommands.SelectMany(CommandSelector);
-            var modules = commands.Distinct()
-                                  .GroupBy(c => c.CustomAttributes.FirstOrDefault(a => a is ModuleAttribute))
+            var commands = ctx.CommandsNext.GetAllRegisteredCommands();
+            var modules = commands.GroupBy(c => c.CustomAttributes.FirstOrDefault(a => a is ModuleAttribute))
                                   .OrderBy(g => (g.Key as ModuleAttribute)?.Module)
                                   .ToDictionary(g => g.Key as ModuleAttribute ?? new ModuleAttribute(ModuleType.Uncategorized), g => g.OrderBy(c => c.QualifiedName).ToList());
 

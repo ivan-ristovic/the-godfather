@@ -60,9 +60,9 @@ namespace TheGodfather.EventListeners
             };
             var sb = new StringBuilder($"{DiscordEmoji.FromName(e.Context.Client, ":no_entry:")} ");
 
-            if (ex is CommandNotFoundException cne && shard.Shared.GuildConfigurations[e.Context.Guild.Id].SuggestionsEnabled) {
+            if (ex is CommandNotFoundException cne && shard.SharedData.GuildConfigurations[e.Context.Guild.Id].SuggestionsEnabled) {
                 emb.WithTitle($"Command {cne.CommandName} not found. Did you mean...");
-                var ordered = TheGodfatherShard.CommandNames
+                var ordered = TheGodfatherShard.Commands
                     .OrderBy(tup => cne.CommandName.LevenshteinDistance(tup.Item1))
                     .Take(3);
                 foreach (var (alias, cmd) in ordered)

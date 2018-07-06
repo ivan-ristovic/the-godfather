@@ -17,7 +17,7 @@ namespace TheGodfather.EventListeners
         [AsyncExecuter(EventTypes.GuildBanAdded)]
         public static async Task Client_GuildBanAdded(TheGodfatherShard shard, GuildBanAddEventArgs e)
         {
-            var logchn = shard.Shared.GetLogChannelForGuild(shard.Client, e.Guild);
+            var logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
                     Title = "Member banned",
@@ -45,7 +45,7 @@ namespace TheGodfather.EventListeners
         [AsyncExecuter(EventTypes.GuildBanRemoved)]
         public static async Task Client_GuildBanRemoved(TheGodfatherShard shard, GuildBanRemoveEventArgs e)
         {
-            var logchn = shard.Shared.GetLogChannelForGuild(shard.Client, e.Guild);
+            var logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
                     Title = "Member unbanned",
@@ -74,15 +74,15 @@ namespace TheGodfather.EventListeners
         {
             shard.Log(LogLevel.Info, $"| Left guild: {e.Guild.ToString()}");
 
-            await shard.Database.UnregisterGuildAsync(e.Guild.Id)
+            await shard.DatabaseService.UnregisterGuildAsync(e.Guild.Id)
                 .ConfigureAwait(false);
-            shard.Shared.GuildConfigurations.TryRemove(e.Guild.Id, out _);
+            shard.SharedData.GuildConfigurations.TryRemove(e.Guild.Id, out _);
         }
 
         [AsyncExecuter(EventTypes.GuildEmojisUpdated)]
         public static async Task Client_GuildEmojisUpdated(TheGodfatherShard shard, GuildEmojisUpdateEventArgs e)
         {
-            var logchn = shard.Shared.GetLogChannelForGuild(shard.Client, e.Guild);
+            var logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
                     Color = DiscordColor.Gold
@@ -119,7 +119,7 @@ namespace TheGodfather.EventListeners
         [AsyncExecuter(EventTypes.GuildIntegrationsUpdated)]
         public static async Task Client_GuildIntegrationsUpdated(TheGodfatherShard shard, GuildIntegrationsUpdateEventArgs e)
         {
-            var logchn = shard.Shared.GetLogChannelForGuild(shard.Client, e.Guild);
+            var logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
                     Title = "Guild integrations updated",
@@ -133,7 +133,7 @@ namespace TheGodfather.EventListeners
         [AsyncExecuter(EventTypes.GuildRoleCreated)]
         public static async Task Client_GuildRoleCreated(TheGodfatherShard shard, GuildRoleCreateEventArgs e)
         {
-            var logchn = shard.Shared.GetLogChannelForGuild(shard.Client, e.Guild);
+            var logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
                     Title = "Role created",
@@ -172,7 +172,7 @@ namespace TheGodfather.EventListeners
         [AsyncExecuter(EventTypes.GuildRoleDeleted)]
         public static async Task Client_GuildRoleDeleted(TheGodfatherShard shard, GuildRoleDeleteEventArgs e)
         {
-            var logchn = shard.Shared.GetLogChannelForGuild(shard.Client, e.Guild);
+            var logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
                     Title = "Role deleted",
@@ -214,7 +214,7 @@ namespace TheGodfather.EventListeners
             if (e.RoleBefore.Position != e.RoleAfter.Position)
                 return;
 
-            var logchn = shard.Shared.GetLogChannelForGuild(shard.Client, e.Guild);
+            var logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
                     Title = "Role updated",
@@ -254,7 +254,7 @@ namespace TheGodfather.EventListeners
         [AsyncExecuter(EventTypes.GuildUpdated)]
         public static async Task Client_GuildUpdated(TheGodfatherShard shard, GuildUpdateEventArgs e)
         {
-            var logchn = shard.Shared.GetLogChannelForGuild(shard.Client, e.Guild);
+            var logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
                     Title = "Guild settings updated",
@@ -292,7 +292,7 @@ namespace TheGodfather.EventListeners
         [AsyncExecuter(EventTypes.VoiceServerUpdated)]
         public static async Task Client_VoiceServerUpdated(TheGodfatherShard shard, VoiceServerUpdateEventArgs e)
         {
-            var logchn = shard.Shared.GetLogChannelForGuild(shard.Client, e.Guild);
+            var logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
                     Title = "Voice server updated",
@@ -308,7 +308,7 @@ namespace TheGodfather.EventListeners
         [AsyncExecuter(EventTypes.WebhooksUpdated)]
         public static async Task Client_WebhooksUpdated(TheGodfatherShard shard, WebhooksUpdateEventArgs e)
         {
-            var logchn = shard.Shared.GetLogChannelForGuild(shard.Client, e.Guild);
+            var logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
             if (logchn != null) {
                 await logchn.SendMessageAsync(embed: new DiscordEmbedBuilder() {
                     Title = "Webhooks updated",

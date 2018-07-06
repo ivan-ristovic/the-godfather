@@ -31,7 +31,7 @@ namespace TheGodfather.Common.Attributes
                     try {
                         await (Task)mi.Invoke(null, new object[] { shard, e });
                     } catch (Exception ex) {
-                        shard.Shared.LogProvider.LogException(LogLevel.Error, ex);
+                        shard.SharedData.LogProvider.LogException(LogLevel.Error, ex);
                     }
                 });
                 return Task.CompletedTask;
@@ -46,7 +46,7 @@ namespace TheGodfather.Common.Attributes
                     try {
                         await (Task)mi.Invoke(null, new object[] { shard });
                     } catch (Exception ex) {
-                        shard.Shared.LogProvider.LogException(LogLevel.Error, ex);
+                        shard.SharedData.LogProvider.LogException(LogLevel.Error, ex);
                     }
                 });
                 return Task.CompletedTask;
@@ -189,10 +189,10 @@ namespace TheGodfather.Common.Attributes
                     client.Heartbeated += OnEventWithArgs;
                     break;
                 case EventTypes.CommandExecuted:
-                    shard.Commands.CommandExecuted += OnEventWithArgs;
+                    shard.CNext.CommandExecuted += OnEventWithArgs;
                     break;
                 case EventTypes.CommandErrored:
-                    shard.Commands.CommandErrored += OnEventWithArgs;
+                    shard.CNext.CommandErrored += OnEventWithArgs;
                     break;
             }
         }
