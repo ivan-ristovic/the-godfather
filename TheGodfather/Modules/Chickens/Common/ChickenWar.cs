@@ -56,7 +56,7 @@ namespace TheGodfather.Modules.Chickens.Common
             emb.AddField(Team1Name, string.Join(", ", Team1.Select(c => c.Name)));
             emb.AddField(Team2Name, string.Join(", ", Team2.Select(c => c.Name)));
 
-            await _channel.SendMessageAsync(embed: emb.Build())
+            await Channel.SendMessageAsync(embed: emb.Build())
                 .ConfigureAwait(false);
 
             await Task.Delay(TimeSpan.FromSeconds(10))

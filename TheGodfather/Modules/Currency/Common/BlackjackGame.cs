@@ -55,7 +55,7 @@ namespace TheGodfather.Modules.Currency.Common
         {
             Started = true;
 
-            var msg = await _channel.SendIconEmbedAsync("Starting blackjack game...")
+            var msg = await Channel.SendIconEmbedAsync("Starting blackjack game...")
                 .ConfigureAwait(false);
 
             foreach (var participant in _participants) {
@@ -82,7 +82,7 @@ namespace TheGodfather.Modules.Currency.Common
                     await PrintGameAsync(msg, participant)
                         .ConfigureAwait(false);
 
-                    if (await _interactivity.WaitForYesNoAnswerAsync(_channel.Id, participant.Id).ConfigureAwait(false)) 
+                    if (await Interactivity.WaitForYesNoAnswerAsync(Channel.Id, participant.Id).ConfigureAwait(false)) 
                         participant.Hand.Add(_deck.GetNextCard());
                     else 
                         participant.Standing = true;
@@ -102,7 +102,7 @@ namespace TheGodfather.Modules.Currency.Common
                 _hand.Add(_deck.GetNextCard());
 
             if (_hand.Count == 2 && HandValue(_hand) == 21) {
-                await _channel.SendIconEmbedAsync("BLACKJACK!")
+                await Channel.SendIconEmbedAsync("BLACKJACK!")
                     .ConfigureAwait(false);
             }
 

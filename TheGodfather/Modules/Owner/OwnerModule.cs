@@ -408,8 +408,7 @@ namespace TheGodfather.Modules.Owner
                         }
                     }
 
-                    var examples = cmd.CustomAttributes.FirstOrDefault(chk => chk is UsageExamplesAttribute) as UsageExamplesAttribute;
-                    if (examples != null) {
+                    if (cmd.CustomAttributes.FirstOrDefault(chk => chk is UsageExamplesAttribute) is UsageExamplesAttribute examples) {
                         sb.AppendLine(Formatter.Bold("Examples:")).AppendLine().AppendLine("```");
                         sb.AppendLine(examples.JoinExamples());
                         sb.AppendLine("```");

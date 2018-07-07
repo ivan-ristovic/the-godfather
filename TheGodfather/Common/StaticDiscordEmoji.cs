@@ -1,8 +1,6 @@
 ﻿#region USING_DIRECTIVES
-using System;
-using System.Collections.Generic;
-
 using DSharpPlus.Entities;
+using System.Collections.Generic;
 #endregion
 
 namespace TheGodfather.Common

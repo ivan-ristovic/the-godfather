@@ -36,7 +36,7 @@ namespace TheGodfather.Modules.Games.Common
             Started = true;
 
             for (int chance = 1; chance < 5 && ParticipantCount > 1; chance++) {
-                var msg = await _channel.SendMessageAsync($"Round #{chance} starts in 5s!")
+                var msg = await Channel.SendMessageAsync($"Round #{chance} starts in 5s!")
                     .ConfigureAwait(false);
 
                 await Task.Delay(TimeSpan.FromSeconds(5))

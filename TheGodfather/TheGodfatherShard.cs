@@ -23,8 +23,7 @@ namespace TheGodfather
 {
     internal sealed class TheGodfatherShard
     {
-        #region PROPERTIES
-        public static IReadOnlyList<(string, Command)> Commands { get; private set; }
+        public static IReadOnlyList<(string, Command)> Commands;
 
         public bool IsListening => this.SharedData.ListeningStatus;
         public int Id { get; }
@@ -32,9 +31,8 @@ namespace TheGodfather
         public CommandsNextExtension CNext { get; private set; }
         public InteractivityExtension Interactivity { get; private set; }
         public VoiceNextExtension Voice { get; private set; }
-        public SharedData SharedData { get; }
-        public DBService DatabaseService { get; }
-        #endregion
+        public SharedData SharedData { get; private set; }
+        public DBService DatabaseService { get; private set; }
 
 
         public TheGodfatherShard(int sid, DBService db, SharedData shared)

@@ -18,7 +18,6 @@ namespace TheGodfather
 {
     public sealed class SharedData
     {
-        #region PROPERTIES
         public ConcurrentHashSet<ulong> BlockedChannels { get; internal set; }
         public ConcurrentHashSet<ulong> BlockedUsers { get; internal set; }
         public BotConfig BotConfiguration { get; internal set; }
@@ -33,7 +32,6 @@ namespace TheGodfather
         public ConcurrentDictionary<int, SavedTaskExecuter> SavedTasks { get; internal set; }
         public bool StatusRotationEnabled { get; internal set; }
         public ConcurrentDictionary<ulong, ConcurrentHashSet<TextReaction>> TextReactions { get; internal set; }
-        #endregion
 
 
         public SharedData()
@@ -56,8 +54,8 @@ namespace TheGodfather
         public void Dispose()
         {
             this.CTS.Dispose();
-            foreach (var kvp in this.SavedTasks)
-                kvp.Value.Dispose();
+            foreach ((int tid, SavedTaskExecuter texec) in this.SavedTasks)
+                texec.Dispose();
         }
 
         public async Task SyncDataWithDatabaseAsync(DBService db)
@@ -67,7 +65,7 @@ namespace TheGodfather
         }
 
 
-        #region RANKS
+        #region RANK_HELPERS
         public ushort CalculateRankForMessageCount(ulong msgcount)
             => (ushort)Math.Floor(Math.Sqrt(msgcount / 10));
 
@@ -96,7 +94,7 @@ namespace TheGodfather
         }
         #endregion
 
-        #region GUILD
+        #region GUILD_DATA_HELPERS
         public CachedGuildConfig GetGuildConfig(ulong gid)
             => this.GuildConfigurations.ContainsKey(gid) ? this.GuildConfigurations[gid] : CachedGuildConfig.Default;
 
@@ -130,7 +128,7 @@ namespace TheGodfather
         }
         #endregion
 
-        #region PENDING_RESPONSES
+        #region PENDING_RESPONSES_HELPERS
         public void AddPendingResponse(ulong cid, ulong uid)
         {
             this.PendingResponses.AddOrUpdate(

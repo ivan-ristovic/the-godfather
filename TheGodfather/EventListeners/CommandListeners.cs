@@ -22,7 +22,7 @@ namespace TheGodfather.EventListeners
 {
     internal static class CommandListeners
     {
-        [AsyncEventListener(EventTypes.CommandExecuted)]
+        [AsyncEventListener(DiscordEventType.CommandExecuted)]
         public static async Task CommandExecuted(TheGodfatherShard shard, CommandExecutionEventArgs e)
         {
             await Task.Delay(0).ConfigureAwait(false);
@@ -33,7 +33,7 @@ namespace TheGodfather.EventListeners
             );
         }
 
-        [AsyncEventListener(EventTypes.CommandErrored)]
+        [AsyncEventListener(DiscordEventType.CommandErrored)]
         public static async Task CommandErrored(TheGodfatherShard shard, CommandErrorEventArgs e)
         {
             if (!shard.IsListening || e.Exception == null)

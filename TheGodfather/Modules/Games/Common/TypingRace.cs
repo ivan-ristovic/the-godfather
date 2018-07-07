@@ -80,15 +80,15 @@ namespace TheGodfather.Modules.Games.Common
                 using (var ms = new MemoryStream()) {
                     image.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
                     ms.Position = 0;
-                    await _channel.SendFileAsync(ms, "typing-challenge.jpg", content: "(you have 60s to to type)")
+                    await Channel.SendFileAsync(ms, "typing-challenge.jpg", content: "(you have 60s to to type)")
                         .ConfigureAwait(false);
                 }
             }
 
             msg = PrepareText(msg);
-            var mctx = await _interactivity.WaitForMessageAsync(
+            var mctx = await Interactivity.WaitForMessageAsync(
                 m => {
-                    if (m.ChannelId != _channel.Id || m.Author.IsBot)
+                    if (m.ChannelId != Channel.Id || m.Author.IsBot)
                         return false;
                     int errors = msg.LevenshteinDistance(PrepareText(m.Content));
                     if (errors > 50)
@@ -100,9 +100,9 @@ namespace TheGodfather.Modules.Games.Common
             
             var ordered = _results.Where(kvp => kvp.Value < 100).OrderBy(kvp => kvp.Value);
             if (ordered.Any())
-                await _channel.SendMessageAsync(embed: EmbedResults(ordered)).ConfigureAwait(false);
+                await Channel.SendMessageAsync(embed: EmbedResults(ordered)).ConfigureAwait(false);
             else
-                await _channel.SendFailedEmbedAsync("No results to be shown for the typing race.");
+                await Channel.SendFailedEmbedAsync("No results to be shown for the typing race.");
 
             Winner = ordered.FirstOrDefault(kvp => kvp.Value == 0).Key;
         }

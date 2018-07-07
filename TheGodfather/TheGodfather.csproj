@@ -425,7 +425,7 @@
     <Compile Include="Common\Attributes\UsageExamplesAttribute.cs" />
     <Compile Include="Common\Converters\CustomUriConverter.cs" />
     <Compile Include="Common\DatabaseConfig.cs" />
-    <Compile Include="Common\EventTypes.cs" />
+    <Compile Include="Common\DiscordEventType.cs" />
     <Compile Include="Common\GFRandom.cs" />
     <Compile Include="Common\PartialGuildConfig.cs" />
     <Compile Include="Common\SavedTaskExecuter.cs" />

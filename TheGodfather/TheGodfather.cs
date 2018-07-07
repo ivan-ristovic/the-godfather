@@ -23,22 +23,16 @@ namespace TheGodfather
 {
     internal static class TheGodfather
     {
-        #region PROPERTIES
         public static IReadOnlyList<TheGodfatherShard> ActiveShards
             => Shards.AsReadOnly();
         private static BotConfig BotConfiguration { get; set; }
         private static DBService DatabaseService { get; set; }
         private static List<TheGodfatherShard> Shards { get; set; }
         private static SharedData SharedData { get; set; }
-
-        #region PERIODIC_TASKS
         private static Task BotStatusChangeTask { get; set; }
         private static Task DbSyncTask { get; set; }
         private static Task FeedCheckTask { get; set; }
         private static Task MiscActionsTask { get; set; }
-        #endregion
-
-        #endregion
 
 
         internal static async Task Main(string[] args)
@@ -57,7 +51,7 @@ namespace TheGodfather
 
                 try {
                     // Waiting indefinitely for shutdown signal
-                    await Task.Delay(-1, SharedData.CTS.Token);
+                    await Task.Delay(Timeout.Infinite, SharedData.CTS.Token);
                 } catch (TaskCanceledException) {
                     SharedData.LogProvider.ElevatedLog(LogLevel.Info, "Shutdown signal received!");
                 }
@@ -208,7 +202,7 @@ namespace TheGodfather
 
             DbSyncTask = PeriodicActionExecuterAsync(
                 TimeSpan.FromMinutes(1),
-                TimeSpan.FromSeconds(BotConfiguration.DbSyncInterval),
+                TimeSpan.FromSeconds(BotConfiguration.DatabaseSyncInterval),
                 DatabaseSyncCallbackAsync
             );
 

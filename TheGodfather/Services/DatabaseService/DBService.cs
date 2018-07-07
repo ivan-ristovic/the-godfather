@@ -36,7 +36,7 @@ namespace TheGodfather.Services
             var csb = new NpgsqlConnectionStringBuilder() {
                 Host = _cfg.Hostname,
                 Port = _cfg.Port,
-                Database = _cfg.Database,
+                Database = _cfg.DatabaseName,
                 Username = _cfg.Username,
                 Password = _cfg.Password,
                 Pooling = true

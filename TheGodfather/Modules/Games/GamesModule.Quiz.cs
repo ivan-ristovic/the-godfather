@@ -75,7 +75,7 @@ namespace TheGodfather.Modules.Games
                     await quiz.RunAsync()
                         .ConfigureAwait(false);
 
-                    if (quiz.TimedOut) {
+                    if (quiz.IsTimeoutReached) {
                         await ctx.RespondWithIconEmbedAsync("Aborting quiz due to no replies...", ":alarm_clock:")
                             .ConfigureAwait(false);
                         return;
@@ -168,7 +168,7 @@ namespace TheGodfather.Modules.Games
                     await quiz.RunAsync()
                         .ConfigureAwait(false);
 
-                    if (quiz.TimedOut) {
+                    if (quiz.IsTimeoutReached) {
                         await ctx.RespondWithIconEmbedAsync("Aborting quiz due to no replies...", ":alarm_clock:")
                             .ConfigureAwait(false);
                         return;
@@ -213,7 +213,7 @@ namespace TheGodfather.Modules.Games
                     await quiz.RunAsync()
                         .ConfigureAwait(false);
 
-                    if (quiz.TimedOut) {
+                    if (quiz.IsTimeoutReached) {
                         await ctx.RespondWithIconEmbedAsync("Aborting quiz due to no replies...", ":alarm_clock:")
                             .ConfigureAwait(false);
                         return;

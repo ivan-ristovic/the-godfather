@@ -4,7 +4,7 @@ using System;
 
 namespace TheGodfather.Common.Attributes
 {
-    internal enum ModuleType : byte
+    internal enum ModuleType
     {
         Administration,
         Chickens,

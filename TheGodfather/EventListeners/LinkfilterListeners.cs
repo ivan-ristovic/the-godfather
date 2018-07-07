@@ -20,7 +20,7 @@ namespace TheGodfather.EventListeners
         public static readonly Regex InviteRegex = new Regex(@"discord(?:\.gg|app\.com\/invite)\/([\w\-]+)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
 
-        [AsyncEventListener(EventTypes.MessageCreated)]
+        [AsyncEventListener(DiscordEventType.MessageCreated)]
         public static async Task Client_MessageCreatedLinkfilter(TheGodfatherShard shard, MessageCreateEventArgs e)
         {
             if (e.Author.IsBot || e.Channel.IsPrivate || shard.SharedData.BlockedChannels.Contains(e.Channel.Id))

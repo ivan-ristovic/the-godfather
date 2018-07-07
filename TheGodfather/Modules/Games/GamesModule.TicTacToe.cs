@@ -54,7 +54,7 @@ namespace TheGodfather.Modules.Games
                         .ConfigureAwait(false);
 
                     if (ttt.Winner != null) {
-                        if (ttt.TimedOut == false)
+                        if (ttt.IsTimeoutReached == false)
                             await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Trophy, $"The winner is: {ttt.Winner.Mention}!").ConfigureAwait(false);
                         else
                             await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Trophy, $"{ttt.Winner.Mention} won due to no replies from opponent!").ConfigureAwait(false);

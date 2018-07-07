@@ -14,7 +14,7 @@ namespace TheGodfather.EventListeners
 {
     internal static class GuildListeners
     {
-        [AsyncEventListener(EventTypes.GuildBanAdded)]
+        [AsyncEventListener(DiscordEventType.GuildBanAdded)]
         public static async Task Client_GuildBanAdded(TheGodfatherShard shard, GuildBanAddEventArgs e)
         {
             var logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
@@ -42,7 +42,7 @@ namespace TheGodfather.EventListeners
             }
         }
 
-        [AsyncEventListener(EventTypes.GuildBanRemoved)]
+        [AsyncEventListener(DiscordEventType.GuildBanRemoved)]
         public static async Task Client_GuildBanRemoved(TheGodfatherShard shard, GuildBanRemoveEventArgs e)
         {
             var logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
@@ -69,7 +69,7 @@ namespace TheGodfather.EventListeners
             }
         }
 
-        [AsyncEventListener(EventTypes.GuildDeleted)]
+        [AsyncEventListener(DiscordEventType.GuildDeleted)]
         public static async Task Client_GuildDeleted(TheGodfatherShard shard, GuildDeleteEventArgs e)
         {
             shard.Log(LogLevel.Info, $"| Left guild: {e.Guild.ToString()}");
@@ -79,7 +79,7 @@ namespace TheGodfather.EventListeners
             shard.SharedData.GuildConfigurations.TryRemove(e.Guild.Id, out _);
         }
 
-        [AsyncEventListener(EventTypes.GuildEmojisUpdated)]
+        [AsyncEventListener(DiscordEventType.GuildEmojisUpdated)]
         public static async Task Client_GuildEmojisUpdated(TheGodfatherShard shard, GuildEmojisUpdateEventArgs e)
         {
             var logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
@@ -116,7 +116,7 @@ namespace TheGodfather.EventListeners
             }
         }
 
-        [AsyncEventListener(EventTypes.GuildIntegrationsUpdated)]
+        [AsyncEventListener(DiscordEventType.GuildIntegrationsUpdated)]
         public static async Task Client_GuildIntegrationsUpdated(TheGodfatherShard shard, GuildIntegrationsUpdateEventArgs e)
         {
             var logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
@@ -130,7 +130,7 @@ namespace TheGodfather.EventListeners
             }
         }
 
-        [AsyncEventListener(EventTypes.GuildRoleCreated)]
+        [AsyncEventListener(DiscordEventType.GuildRoleCreated)]
         public static async Task Client_GuildRoleCreated(TheGodfatherShard shard, GuildRoleCreateEventArgs e)
         {
             var logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
@@ -169,7 +169,7 @@ namespace TheGodfather.EventListeners
             }
         }
 
-        [AsyncEventListener(EventTypes.GuildRoleDeleted)]
+        [AsyncEventListener(DiscordEventType.GuildRoleDeleted)]
         public static async Task Client_GuildRoleDeleted(TheGodfatherShard shard, GuildRoleDeleteEventArgs e)
         {
             var logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
@@ -208,7 +208,7 @@ namespace TheGodfather.EventListeners
             }
         }
 
-        [AsyncEventListener(EventTypes.GuildRoleUpdated)]
+        [AsyncEventListener(DiscordEventType.GuildRoleUpdated)]
         public static async Task Client_GuildRoleUpdated(TheGodfatherShard shard, GuildRoleUpdateEventArgs e)
         {
             if (e.RoleBefore.Position != e.RoleAfter.Position)
@@ -251,7 +251,7 @@ namespace TheGodfather.EventListeners
             }
         }
 
-        [AsyncEventListener(EventTypes.GuildUpdated)]
+        [AsyncEventListener(DiscordEventType.GuildUpdated)]
         public static async Task Client_GuildUpdated(TheGodfatherShard shard, GuildUpdateEventArgs e)
         {
             var logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
@@ -289,7 +289,7 @@ namespace TheGodfather.EventListeners
             }
         }
 
-        [AsyncEventListener(EventTypes.VoiceServerUpdated)]
+        [AsyncEventListener(DiscordEventType.VoiceServerUpdated)]
         public static async Task Client_VoiceServerUpdated(TheGodfatherShard shard, VoiceServerUpdateEventArgs e)
         {
             var logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
@@ -305,7 +305,7 @@ namespace TheGodfather.EventListeners
             }
         }
 
-        [AsyncEventListener(EventTypes.WebhooksUpdated)]
+        [AsyncEventListener(DiscordEventType.WebhooksUpdated)]
         public static async Task Client_WebhooksUpdated(TheGodfatherShard shard, WebhooksUpdateEventArgs e)
         {
             var logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
