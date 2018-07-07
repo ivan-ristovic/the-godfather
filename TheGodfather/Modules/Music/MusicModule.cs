@@ -1,11 +1,13 @@
 ﻿#region USING_DIRECTIVES
+using System.Collections.Concurrent;
 using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
-using TheGodfather.Services;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
+using TheGodfather.Modules.Music.Common;
+using TheGodfather.Services;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -22,6 +24,8 @@ namespace TheGodfather.Modules.Music
     [RequireOwner]
     public partial class MusicModule : TheGodfatherServiceModule<YoutubeService>
     {
+        public static ConcurrentDictionary<ulong, MusicPlayer> MusicPlayers { get; } = new ConcurrentDictionary<ulong, MusicPlayer>();
+
 
         public MusicModule(YoutubeService yt, SharedData shared) : base(yt, shared) { }
 
@@ -73,9 +77,9 @@ namespace TheGodfather.Modules.Music
             if (vnc == null)
                 throw new CommandFailedException("Not connected in this guild.");
 
-            if (Shared.MusicPlayers.ContainsKey(ctx.Guild.Id)) {
-                Shared.MusicPlayers[ctx.Guild.Id].Stop();
-                Shared.MusicPlayers.TryRemove(ctx.Guild.Id, out _);
+            if (MusicPlayers.ContainsKey(ctx.Guild.Id)) {
+                MusicPlayers[ctx.Guild.Id].Stop();
+                MusicPlayers.TryRemove(ctx.Guild.Id, out _);
             }
             await Task.Delay(500);
             vnc.Disconnect();
@@ -90,10 +94,10 @@ namespace TheGodfather.Modules.Music
         [UsageExample("!skip")]
         public async Task SkipAsync(CommandContext ctx)
         {
-            if (!Shared.MusicPlayers.ContainsKey(ctx.Guild.Id))
+            if (!MusicPlayers.ContainsKey(ctx.Guild.Id))
                 throw new CommandFailedException("Not playing in this guild");
 
-            Shared.MusicPlayers[ctx.Guild.Id].Skip();
+            MusicPlayers[ctx.Guild.Id].Skip();
             await Task.Delay(0);
         }
         #endregion
@@ -104,10 +108,10 @@ namespace TheGodfather.Modules.Music
         [UsageExample("!stop")]
         public async Task StopAsync(CommandContext ctx)
         {
-            if (!Shared.MusicPlayers.ContainsKey(ctx.Guild.Id))
+            if (!MusicPlayers.ContainsKey(ctx.Guild.Id))
                 throw new CommandFailedException("Not playing in this guild");
 
-            Shared.MusicPlayers[ctx.Guild.Id].Stop();
+            MusicPlayers[ctx.Guild.Id].Stop();
             await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Headphones, "Stopped.")
                 .ConfigureAwait(false);
         }

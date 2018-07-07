@@ -15,6 +15,7 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using System.Collections.Concurrent;
 #endregion
 
 namespace TheGodfather.Modules.SWAT
@@ -26,6 +27,8 @@ namespace TheGodfather.Modules.SWAT
     [NotBlocked]
     public partial class SwatModule : TheGodfatherBaseModule
     {
+        public static ConcurrentDictionary<ulong, CancellationTokenSource> SpaceCheckingCTS { get; } = new ConcurrentDictionary<ulong, CancellationTokenSource>();
+
 
         public SwatModule(SharedData shared, DBService db) : base(shared, db) { }
 

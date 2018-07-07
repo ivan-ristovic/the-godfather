@@ -15,7 +15,7 @@ namespace TheGodfather.Common.Attributes
         public override Task<bool> ExecuteCheckAsync(CommandContext ctx, bool help)
         {
             var shared = ctx.Services.GetService<SharedData>();
-            if (shared.AwaitingUsersInteractively.ContainsKey(ctx.Channel.Id) && shared.AwaitingUsersInteractively[ctx.Channel.Id].Contains(ctx.User.Id))
+            if (shared.PendingResponses.ContainsKey(ctx.Channel.Id) && shared.PendingResponses[ctx.Channel.Id].Contains(ctx.User.Id))
                 return Task.FromResult(false);
             else
                 return Task.FromResult(true);

@@ -68,7 +68,7 @@ namespace TheGodfather.Modules.Administration
                     continue;
                 }
 
-                if (Shared.TextTriggerExists(ctx.Guild.Id, filter)) {
+                if (Shared.GuildHasTextReaction(ctx.Guild.Id, filter)) {
                     errors.AppendLine($"Error: Filter {Formatter.Bold(filter)} cannot be added because of a conflict with an existing text trigger in this guild.");
                     continue;
                 }

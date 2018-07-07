@@ -37,8 +37,8 @@ namespace TheGodfather.Modules.Misc
             if (user == null)
                 user = ctx.User;
 
-            var rank = Shared.GetRankForUser(user.Id);
-            var msgcount = Shared.GetMessageCountForId(user.Id);
+            var rank = Shared.CalculateRankForUser(user.Id);
+            var msgcount = Shared.GetMessageCountForUser(user.Id);
             var rankname = await Database.GetCustomRankNameForGuildAsync(ctx.Guild.Id, rank)
                 .ConfigureAwait(false);
 
@@ -115,7 +115,7 @@ namespace TheGodfather.Modules.Misc
             await ctx.SendPaginatedCollectionAsync(
                 "Custom ranks in this guild",
                 ranks,
-                kvp => $"{kvp.Key} | {Formatter.Bold(kvp.Value)} | XP needed: {Formatter.Bold(Shared.XpNeededForRankWithIndex(kvp.Key).ToString())}",
+                kvp => $"{kvp.Key} | {Formatter.Bold(kvp.Value)} | XP needed: {Formatter.Bold(Shared.CalculateXpNeededForRank(kvp.Key).ToString())}",
                 DiscordColor.IndianRed
             ).ConfigureAwait(false);
         }
@@ -146,7 +146,7 @@ namespace TheGodfather.Modules.Misc
                     Shared.MessageCount.TryRemove(kvp.Key, out _);
                     // TODO remove from db
                 }
-                var rank = Shared.GetRankForMessageCount(kvp.Value);
+                var rank = Shared.CalculateRankForMessageCount(kvp.Value);
                 if (ranks.ContainsKey(rank))
                     emb.AddField(u.Username ?? "<unknown>", $"{ranks[rank]} ({rank}) ({kvp.Value} XP)");
                 else

@@ -57,7 +57,7 @@ namespace TheGodfather.Extensions
         public static async Task<bool> WaitForYesNoAnswerAsync(this InteractivityExtension interactivity, ulong cid, ulong uid, SharedData shared = null)
         {
             if (shared != null)
-                shared.AddAwaitingUser(cid, uid);
+                shared.AddPendingResponse(cid, uid);
 
             bool response = false;
             var mctx = await interactivity.WaitForMessageAsync(
@@ -71,7 +71,7 @@ namespace TheGodfather.Extensions
             ).ConfigureAwait(false);
 
             if (shared != null)
-                shared.RemoveAwaitingUser(cid, uid);
+                shared.TryRemovePendingResponse(cid, uid);
 
             return response;
         }
@@ -126,7 +126,7 @@ namespace TheGodfather.Extensions
         public static async Task<DiscordUser> WaitForGameOpponentAsync(this CommandContext ctx)
         {
             var shared = ctx.Services.GetService<SharedData>();
-            shared.AddAwaitingUser(ctx.Channel.Id, ctx.User.Id);
+            shared.AddPendingResponse(ctx.Channel.Id, ctx.User.Id);
 
             var mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(
                 xm => {
@@ -137,7 +137,7 @@ namespace TheGodfather.Extensions
                 }
             ).ConfigureAwait(false);
 
-            shared.RemoveAwaitingUser(ctx.Channel.Id, ctx.User.Id);
+            shared.TryRemovePendingResponse(ctx.Channel.Id, ctx.User.Id);
 
             return mctx?.User;
         }
@@ -171,7 +171,7 @@ namespace TheGodfather.Extensions
         public static async Task<List<string>> WaitAndParsePollOptionsAsync(this CommandContext ctx)
         {
             var shared = ctx.Services.GetService<SharedData>();
-            shared.AddAwaitingUser(ctx.Channel.Id, ctx.User.Id);
+            shared.AddPendingResponse(ctx.Channel.Id, ctx.User.Id);
 
             var mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(
                 xm => xm.Author.Id == ctx.User.Id && xm.Channel.Id == ctx.Channel.Id,
@@ -180,7 +180,7 @@ namespace TheGodfather.Extensions
             if (mctx == null)
                 return null;
 
-            shared.RemoveAwaitingUser(ctx.Channel.Id, ctx.User.Id);
+            shared.TryRemovePendingResponse(ctx.Channel.Id, ctx.User.Id);
 
             return mctx.Message.Content.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries).Distinct().ToList();
         }

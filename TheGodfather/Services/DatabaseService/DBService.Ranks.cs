@@ -12,9 +12,9 @@ namespace TheGodfather.Services
 {
     public partial class DBService
     {
-        public async Task<IReadOnlyDictionary<int, string>> GetAllCustomRankNamesForGuildAsync(ulong gid)
+        public async Task<IReadOnlyDictionary<ushort, string>> GetAllCustomRankNamesForGuildAsync(ulong gid)
         {
-            var ranks = new Dictionary<int, string>();
+            var ranks = new Dictionary<ushort, string>();
 
             await _sem.WaitAsync();
             try {
@@ -25,14 +25,14 @@ namespace TheGodfather.Services
 
                     using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
                         while (await reader.ReadAsync().ConfigureAwait(false))
-                            ranks[(int)reader["rank"]] = (string)reader["name"];
+                            ranks[(ushort)(short)reader["rank"]] = (string)reader["name"];
                     }
                 }
             } finally {
                 _sem.Release();
             }
 
-            return new ReadOnlyDictionary<int, string>(ranks);
+            return new ReadOnlyDictionary<ushort, string>(ranks);
         }
 
         public async Task<string> GetCustomRankNameForGuildAsync(ulong gid, int rank)

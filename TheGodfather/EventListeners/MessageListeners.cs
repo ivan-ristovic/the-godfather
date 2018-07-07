@@ -41,8 +41,8 @@ namespace TheGodfather.EventListeners
             if (!e.Channel.PermissionsFor(e.Guild.CurrentMember).HasFlag(Permissions.SendMessages))
                 return;
 
-            var rank = shard.SharedData.UpdateMessageCount(e.Author.Id);
-            if (rank != -1) {
+            var rank = shard.SharedData.IncrementMessageCountForUser(e.Author.Id);
+            if (rank != 0) {
                 var rankname = await shard.DatabaseService.GetCustomRankNameForGuildAsync(e.Guild.Id, rank)
                     .ConfigureAwait(false);
                 await e.Channel.SendIconEmbedAsync($"GG {e.Author.Mention}! You have advanced to level {Formatter.Bold(rank.ToString())} {(string.IsNullOrWhiteSpace(rankname) ? "" : $": {Formatter.Italic(rankname)}")} !", DiscordEmoji.FromName(shard.Client, ":military_medal:"))

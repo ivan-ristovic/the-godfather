@@ -272,7 +272,7 @@ namespace TheGodfather.Modules.Reactions
             if (is_regex_trigger && !IsValidRegex(trigger))
                 throw new CommandFailedException($"Trigger {Formatter.Bold(trigger)} is not a valid regular expression.");
 
-            if (Shared.TextTriggerExists(ctx.Guild.Id, trigger))
+            if (Shared.GuildHasTextReaction(ctx.Guild.Id, trigger))
                 throw new CommandFailedException($"Trigger {Formatter.Bold(trigger)} already exists.");
 
             if (Shared.Filters.ContainsKey(ctx.Guild.Id) && Shared.Filters[ctx.Guild.Id].Any(f => f.Trigger.IsMatch(trigger)))

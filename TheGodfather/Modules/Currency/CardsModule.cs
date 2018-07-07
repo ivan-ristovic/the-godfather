@@ -1,4 +1,5 @@
 ﻿#region USING_DIRECTIVES
+using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -22,6 +23,8 @@ namespace TheGodfather.Modules.Currency
     [NotBlocked]
     public class CardsModule : TheGodfatherBaseModule
     {
+        public static ConcurrentDictionary<ulong, Deck> Decks { get; internal set; } = new ConcurrentDictionary<ulong, Deck>();
+
 
         public CardsModule(SharedData shared) : base(shared: shared) { }
 
@@ -39,10 +42,10 @@ namespace TheGodfather.Modules.Currency
         public async Task DrawAsync(CommandContext ctx,
                                    [Description("Amount (in range [1-10]).")] int amount = 1)
         {
-            if (!Shared.CardDecks.ContainsKey(ctx.Channel.Id) || Shared.CardDecks[ctx.Channel.Id] == null)
+            if (!Decks.ContainsKey(ctx.Channel.Id) || Decks[ctx.Channel.Id] == null)
                 throw new CommandFailedException($"No deck to deal from. Use command {Formatter.InlineCode("deck")} to open a deck.");
 
-            var deck = Shared.CardDecks[ctx.Channel.Id];
+            var deck = Decks[ctx.Channel.Id];
             
             if (amount <= 0 || amount >= 10)
                 throw new InvalidCommandUsageException("Cannot draw less than 1 or more than 10 cards...");
@@ -63,10 +66,10 @@ namespace TheGodfather.Modules.Currency
         [UsageExample("!deck reset")]
         public async Task ResetDeckAsync(CommandContext ctx)
         {
-            if (Shared.CardDecks.ContainsKey(ctx.Channel.Id))
+            if (Decks.ContainsKey(ctx.Channel.Id))
                 throw new CommandFailedException($"A deck is already opened in this channel! If you want to reset it, use {Formatter.InlineCode("!deck new")}");
 
-            Shared.CardDecks[ctx.Channel.Id] = new Deck();
+            Decks[ctx.Channel.Id] = new Deck();
 
             await ctx.RespondWithIconEmbedAsync("A new shuffled deck is opened in this channel!", ":spades:")
                 .ConfigureAwait(false);
