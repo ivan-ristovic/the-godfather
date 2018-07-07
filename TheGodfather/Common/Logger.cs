@@ -27,11 +27,11 @@ namespace TheGodfather.Common
 
         public Logger(BotConfig cfg)
         {
+            this.writeLock = new object();
             this.BufferSize = 512;
             this.LogLevel = cfg.LogLevel;
             this.LogToFile = cfg.LogToFile;
             this.path = cfg.LogPath ?? "gf_log.txt";
-            this.writeLock = new object();
         }
 
 

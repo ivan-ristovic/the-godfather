@@ -29,8 +29,8 @@ namespace TheGodfather
         public bool ListeningStatus { get; internal set; }
         public ConcurrentDictionary<ulong, ulong> MessageCount { get; internal set; }
         public ConcurrentDictionary<ulong, ConcurrentHashSet<ulong>> PendingResponses { get; }
-        public ConcurrentDictionary<int, SavedTaskExecuter> SavedTasks { get; internal set; }
         public bool StatusRotationEnabled { get; internal set; }
+        public ConcurrentDictionary<int, SavedTaskExecuter> TaskExecuters { get; internal set; }
         public ConcurrentDictionary<ulong, ConcurrentHashSet<TextReaction>> TextReactions { get; internal set; }
 
 
@@ -47,15 +47,16 @@ namespace TheGodfather
             this.MessageCount = new ConcurrentDictionary<ulong, ulong>();
             this.PendingResponses = new ConcurrentDictionary<ulong, ConcurrentHashSet<ulong>>();
             this.StatusRotationEnabled = true;
+            this.TaskExecuters = new ConcurrentDictionary<int, SavedTaskExecuter>();
             this.TextReactions = new ConcurrentDictionary<ulong, ConcurrentHashSet<TextReaction>>();
         }
 
 
-        public void Dispose()
+        public async Task DisposeAsync()
         {
             this.CTS.Dispose();
-            foreach ((int tid, SavedTaskExecuter texec) in this.SavedTasks)
-                texec.Dispose();
+            foreach ((int tid, SavedTaskExecuter texec) in this.TaskExecuters)
+                await texec.DisposeAsync();
         }
 
         public async Task SyncDataWithDatabaseAsync(DBService db)

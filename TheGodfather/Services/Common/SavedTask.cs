@@ -8,6 +8,18 @@ namespace TheGodfather.Services.Common
         Unban = 1
     }
 
+    public static class SavedTaskTypeExtensions
+    {
+        public static string ToTypeString(this SavedTaskType type)
+        {
+            switch (type) {
+                case SavedTaskType.SendMessage: return "Send Message";
+                case SavedTaskType.Unban: return "Unban";
+                default: return "Unknown";
+            }
+        }
+    }
+
     public class SavedTask
     {
         public SavedTaskType Type { get; set; }

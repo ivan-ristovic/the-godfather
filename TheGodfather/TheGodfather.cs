@@ -245,7 +245,7 @@ namespace TheGodfather
 
             foreach (TheGodfatherShard shard in Shards)
                 await shard.DisposeAsync();
-            SharedData.Dispose();
+            await SharedData.DisposeAsync();
 
             SharedData.LogProvider.ElevatedLog(LogLevel.Info, "Cleanup complete! Powering off...");
         }

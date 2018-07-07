@@ -8,6 +8,7 @@ using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Services;
+using TheGodfather.Services.Common;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -174,7 +175,14 @@ namespace TheGodfather.Modules.Administration
             await ctx.RespondWithIconEmbedAsync($"{Formatter.Bold(ctx.User.Username)} BANNED {Formatter.Bold(member.Username)} for {Formatter.Bold(until.ToLongTimeString())} UTC!")
                 .ConfigureAwait(false);
 
-            if (!await SavedTaskExecuter.ScheduleAsync(ctx.Client, Shared, Database, member.Id, ctx.Channel.Id, ctx.Guild.Id, Services.Common.SavedTaskType.Unban, null, until).ConfigureAwait(false))
+            var task = new SavedTask() {
+                ChannelId = ctx.Channel.Id,
+                ExecutionTime = until,
+                GuildId = ctx.Guild.Id,
+                Type = SavedTaskType.Unban,
+                UserId = member.Id
+            };
+            if (!await SavedTaskExecuter.TryScheduleAsync(ctx, task).ConfigureAwait(false))
                 throw new CommandFailedException("Failed to schedule the unban task!");
         }
 
