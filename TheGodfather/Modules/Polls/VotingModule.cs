@@ -16,7 +16,7 @@ namespace TheGodfather.Modules.Polls
     [Group("vote"), Module(ModuleType.Polls)]
     [Description("Commands for voting in running polls. If invoked without subcommands, registers a vote in the current poll to the option you entered.")]
     [Aliases("votefor", "vf")]
-    [UsageExample("!vote 1")]
+    [UsageExamples("!vote 1")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     [NotBlocked]
     public class VotingModule : TheGodfatherBaseModule
@@ -47,7 +47,7 @@ namespace TheGodfather.Modules.Polls
         [Command("cancel"), Module(ModuleType.Polls)]
         [Description("Vote for an option in the current running poll.")]
         [Aliases("c", "reset")]
-        [UsageExample("!vote cancel")]
+        [UsageExamples("!vote cancel")]
         public async Task CancelAsync(CommandContext ctx)
         {
             var poll = Poll.GetPollInChannel(ctx.Channel.Id);

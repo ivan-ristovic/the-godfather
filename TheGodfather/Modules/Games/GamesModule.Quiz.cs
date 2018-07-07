@@ -26,14 +26,14 @@ namespace TheGodfather.Modules.Games
         [Group("quiz"), Module(ModuleType.Games)]
         [Description("List all available quiz categories.")]
         [Aliases("trivia", "q")]
-        [UsageExample("!game quiz")]
-        [UsageExample("!game quiz countries")]
-        [UsageExample("!game quiz 9")]
-        [UsageExample("!game quiz history")]
-        [UsageExample("!game quiz history hard")]
-        [UsageExample("!game quiz history hard 15")]
-        [UsageExample("!game quiz 9 hard")]
-        [UsageExample("!game quiz 9 hard 15")]
+        [UsageExamples("!game quiz",
+                       "!game quiz countries",
+                       "!game quiz 9",
+                       "!game quiz history",
+                       "!game quiz history hard",
+                       "!game quiz history hard 15",
+                       "!game quiz 9 hard",
+                       "!game quiz 9 hard 15")]
         [NotBlocked]
         public class QuizModule : TheGodfatherBaseModule
         {
@@ -141,8 +141,8 @@ namespace TheGodfather.Modules.Games
             [Command("capitals"), Module(ModuleType.Games)]
             [Description("Country capitals guessing quiz. You can also specify how many questions there will be in the quiz.")]
             [Aliases("capitaltowns")]
-            [UsageExample("!game quiz capitals")]
-            [UsageExample("!game quiz capitals 15")]
+            [UsageExamples("!game quiz capitals",
+                           "!game quiz capitals 15")]
             public async Task CapitalsQuizAsync(CommandContext ctx,
                                                [Description("Number of questions.")] int qnum = 10)
             {
@@ -186,8 +186,8 @@ namespace TheGodfather.Modules.Games
             [Command("countries"), Module(ModuleType.Games)]
             [Description("Country flags guessing quiz. You can also specify how many questions there will be in the quiz.")]
             [Aliases("flags")]
-            [UsageExample("!game quiz countries")]
-            [UsageExample("!game quiz countries 15")]
+            [UsageExamples("!game quiz countries",
+                           "!game quiz countries 15")]
             public async Task CountriesQuizAsync(CommandContext ctx,
                                                 [Description("Number of questions.")] int qnum = 10)
             {
@@ -231,7 +231,7 @@ namespace TheGodfather.Modules.Games
             [Command("stats"), Module(ModuleType.Games)]
             [Description("Print the leaderboard for this game.")]
             [Aliases("top", "leaderboard")]
-            [UsageExample("!game quiz stats")]
+            [UsageExamples("!game quiz stats")]
             public async Task StatsAsync(CommandContext ctx)
             {
                 var top = await Database.GetTopQuizPlayersStringAsync(ctx.Client)

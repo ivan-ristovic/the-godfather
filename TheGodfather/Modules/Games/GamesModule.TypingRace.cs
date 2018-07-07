@@ -24,7 +24,7 @@ namespace TheGodfather.Modules.Games
         [Group("typingrace"), Module(ModuleType.Games)]
         [Description("Start a new typing race!")]
         [Aliases("tr", "trace", "typerace", "typing", "typingr")]
-        [UsageExample("!game typingrace")]
+        [UsageExamples("!game typingrace")]
         [NotBlocked]
         public class TypingRaceModule : TheGodfatherBaseModule
         {
@@ -77,7 +77,7 @@ namespace TheGodfather.Modules.Games
             [Command("join"), Module(ModuleType.Games)]
             [Description("Join an existing typing race game.")]
             [Aliases("+", "compete", "enter", "j")]
-            [UsageExample("!game typingrace join")]
+            [UsageExamples("!game typingrace join")]
             public async Task JoinAsync(CommandContext ctx)
             {
                 if (!(ChannelEvent.GetEventInChannel(ctx.Channel.Id) is TypingRace game))

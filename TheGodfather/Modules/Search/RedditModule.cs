@@ -16,7 +16,7 @@ namespace TheGodfather.Modules.Search
     [Group("reddit"), Module(ModuleType.Searches)]
     [Description("Reddit commands.")]
     [Aliases("r")]
-    [UsageExample("!reddit aww")]
+    [UsageExamples("!reddit aww")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     [NotBlocked]
     public class RedditModule : TheGodfatherBaseModule
@@ -48,7 +48,7 @@ namespace TheGodfather.Modules.Search
         [Command("subscribe"), Module(ModuleType.Searches)]
         [Description("Add new feed for a subreddit.")]
         [Aliases("add", "a", "+", "sub")]
-        [UsageExample("!reddit sub aww")]
+        [UsageExamples("!reddit sub aww")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task SubscribeAsync(CommandContext ctx,
                                         [Description("Subreddit.")] string sub)
@@ -70,8 +70,8 @@ namespace TheGodfather.Modules.Search
         [Module(ModuleType.Searches)]
         [Description("Remove a subreddit feed using subreddit name or subscription ID (use command ``feed list`` to see IDs).")]
         [Aliases("del", "d", "rm", "-", "unsub")]
-        [UsageExample("!reddit unsub aww")]
-        [UsageExample("!reddit unsub 12")]
+        [UsageExamples("!reddit unsub aww",
+                       "!reddit unsub 12")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task UnsubscribeAsync(CommandContext ctx,
                                           [Description("Subreddit.")] string sub)

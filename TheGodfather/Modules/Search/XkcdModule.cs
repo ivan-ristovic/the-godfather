@@ -15,7 +15,7 @@ namespace TheGodfather.Modules.Search
     [Group("xkcd"), Module(ModuleType.Searches)]
     [Description("Search xkcd. If invoked without subcommands returns random comic or, if an ID is provided, a comic with given ID.")]
     [Aliases("x")]
-    [UsageExample("!xkcd")]
+    [UsageExamples("!xkcd")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     [NotBlocked]
     public class XkcdModule : TheGodfatherBaseModule
@@ -34,7 +34,7 @@ namespace TheGodfather.Modules.Search
         #region COMMAND_XKCD_ID
         [Command("id"), Module(ModuleType.Searches)]
         [Description("Retrieves comic with given ID from xkcd.")]
-        [UsageExample("!xkcd id 650")]
+        [UsageExamples("!xkcd id 650")]
         public async Task ByIdAsync(CommandContext ctx,
                                  [Description("Comic ID.")] int? id = null)
         {
@@ -53,7 +53,7 @@ namespace TheGodfather.Modules.Search
         [Command("latest"), Module(ModuleType.Searches)]
         [Description("Retrieves latest comic from xkcd.")]
         [Aliases("fresh", "newest", "l")]
-        [UsageExample("!xkcd latest")]
+        [UsageExamples("!xkcd latest")]
         public Task LatestAsync(CommandContext ctx)
             => ByIdAsync(ctx);
         #endregion

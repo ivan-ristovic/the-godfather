@@ -23,7 +23,7 @@ namespace TheGodfather.Modules.Games
         [Group("duel"), Module(ModuleType.Games)]
         [Description("Starts a duel which I will commentate.")]
         [Aliases("fight", "vs", "d")]
-        [UsageExample("!game duel @Someone")]
+        [UsageExamples("!game duel @Someone")]
         public class DuelModule : TheGodfatherBaseModule
         {
 
@@ -75,7 +75,7 @@ namespace TheGodfather.Modules.Games
             [Command("rules"), Module(ModuleType.Games)]
             [Description("Explain the Duel game rules.")]
             [Aliases("help", "h", "ruling", "rule")]
-            [UsageExample("!game duel rules")]
+            [UsageExamples("!game duel rules")]
             public async Task RulesAsync(CommandContext ctx)
             {
                 await ctx.RespondWithIconEmbedAsync(
@@ -89,7 +89,7 @@ namespace TheGodfather.Modules.Games
             [Command("stats"), Module(ModuleType.Games)]
             [Description("Print the leaderboard for this game.")]
             [Aliases("top", "leaderboard")]
-            [UsageExample("!game duel stats")]
+            [UsageExamples("!game duel stats")]
             public async Task StatsAsync(CommandContext ctx)
             {
                 var top = await Database.GetTopDuelistsStringAsync(ctx.Client)

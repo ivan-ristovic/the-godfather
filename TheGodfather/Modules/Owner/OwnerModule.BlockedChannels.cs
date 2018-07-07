@@ -60,11 +60,11 @@ namespace TheGodfather.Modules.Owner
             [Module(ModuleType.Owner)]
             [Description("Add channel to blocked channels list.")]
             [Aliases("+", "a")]
-            [UsageExample("!owner blockedchannels add #channel")]
-            [UsageExample("!owner blockedchannels add #channel Some reason for blocking")]
-            [UsageExample("!owner blockedchannels add 123123123123123")]
-            [UsageExample("!owner blockedchannels add #channel 123123123123123")]
-            [UsageExample("!owner blockedchannels add \"This is some reason\" #channel 123123123123123")]
+            [UsageExamples("!owner blockedchannels add #channel",
+                           "!owner blockedchannels add #channel Some reason for blocking",
+                           "!owner blockedchannels add 123123123123123",
+                           "!owner blockedchannels add #channel 123123123123123",
+                           "!owner blockedchannels add \"This is some reason\" #channel 123123123123123")]
             public Task AddAsync(CommandContext ctx,
                                 [Description("Channels to block.")] params DiscordChannel[] channels)
                 => AddAsync(ctx, null, channels);
@@ -118,9 +118,9 @@ namespace TheGodfather.Modules.Owner
             [Command("delete"), Module(ModuleType.Owner)]
             [Description("Remove channel from blocked channels list..")]
             [Aliases("-", "remove", "rm", "del")]
-            [UsageExample("!owner blockedchannels remove #channel")]
-            [UsageExample("!owner blockedchannels remove 123123123123123")]
-            [UsageExample("!owner blockedchannels remove @Someone 123123123123123")]
+            [UsageExamples("!owner blockedchannels remove #channel",
+                           "!owner blockedchannels remove 123123123123123",
+                           "!owner blockedchannels remove @Someone 123123123123123")]
             public async Task DeleteAsync(CommandContext ctx,
                                          [Description("Channels to unblock.")] params DiscordChannel[] channels)
             {
@@ -160,7 +160,7 @@ namespace TheGodfather.Modules.Owner
             [Command("list"), Module(ModuleType.Owner)]
             [Description("List all blocked channels.")]
             [Aliases("ls")]
-            [UsageExample("!owner blockedchannels list")]
+            [UsageExamples("!owner blockedchannels list")]
             public async Task ListAsync(CommandContext ctx)
             {
                 var blocked = await Database.GetAllBlockedChannelsAsync()

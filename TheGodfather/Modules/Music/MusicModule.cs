@@ -34,8 +34,8 @@ namespace TheGodfather.Modules.Music
         [Command("connect"), Module(ModuleType.Music)]
         [Description("Connect the bot to a voice channel. If the channel is not given, connects the bot to the same channel you are in.")]
         [Aliases("con", "conn", "enter")]
-        [UsageExample("!connect")]
-        [UsageExample("!connect Music")]
+        [UsageExamples("!connect",
+                       "!connect Music")]
         public async Task ConnectAsync(CommandContext ctx, 
                                       [Description("Channel.")] DiscordChannel c = null)
         {
@@ -66,7 +66,7 @@ namespace TheGodfather.Modules.Music
         [Command("disconnect"), Module(ModuleType.Music)]
         [Description("Disconnects the bot from the voice channel.")]
         [Aliases("dcon", "dconn", "discon", "disconn", "dc")]
-        [UsageExample("!disconnect")]
+        [UsageExamples("!disconnect")]
         public async Task DisconnectAsync(CommandContext ctx)
         {
             var vnext = ctx.Client.GetVoiceNext();
@@ -91,7 +91,7 @@ namespace TheGodfather.Modules.Music
         #region COMMAND_SKIP
         [Command("skip"), Module(ModuleType.Music)]
         [Description("Skip current voice playback.")]
-        [UsageExample("!skip")]
+        [UsageExamples("!skip")]
         public async Task SkipAsync(CommandContext ctx)
         {
             if (!MusicPlayers.ContainsKey(ctx.Guild.Id))
@@ -105,7 +105,7 @@ namespace TheGodfather.Modules.Music
         #region COMMAND_STOP
         [Command("stop"), Module(ModuleType.Music)]
         [Description("Stops current voice playback.")]
-        [UsageExample("!stop")]
+        [UsageExamples("!stop")]
         public async Task StopAsync(CommandContext ctx)
         {
             if (!MusicPlayers.ContainsKey(ctx.Guild.Id))

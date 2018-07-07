@@ -22,7 +22,8 @@ namespace TheGodfather.Modules.Currency
     [Description("Bank account manipulation. If invoked alone, prints out your bank balance. Accounts periodically get a bonus.")]
     [Aliases("$", "$$", "$$$")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    [UsageExample("!bank")]
+    [UsageExamples("!bank",
+                   "!bank @Someone")]
     [NotBlocked]
     public class BankModule : TheGodfatherBaseModule
     {
@@ -40,7 +41,7 @@ namespace TheGodfather.Modules.Currency
         [Command("balance"), Module(ModuleType.Currency)]
         [Description("View account balance for given user. If the user is not given, checks sender's balance.")]
         [Aliases("s", "status", "bal", "money", "credits")]
-        [UsageExample("!bank balance @Someone")]
+        [UsageExamples("!bank balance @Someone")]
         public async Task GetBalanceAsync(CommandContext ctx,
                                          [Description("User.")] DiscordUser user = null)
         {
@@ -73,8 +74,8 @@ namespace TheGodfather.Modules.Currency
         [Module(ModuleType.Currency)]
         [Description("Magically give funds to some user.")]
         [Aliases("give")]
-        [UsageExample("!bank grant @Someone 1000")]
-        [UsageExample("!bank grant 1000 @Someone")]
+        [UsageExamples("!bank grant @Someone 1000",
+                       "!bank grant 1000 @Someone")]
         [RequirePriviledgedUser]
         public async Task GrantAsync(CommandContext ctx,
                                     [Description("User.")] DiscordUser user,
@@ -103,7 +104,7 @@ namespace TheGodfather.Modules.Currency
         [Command("register"), Module(ModuleType.Currency)]
         [Description("Create an account for you in WM bank.")]
         [Aliases("r", "signup", "activate")]
-        [UsageExample("!bank register")]
+        [UsageExamples("!bank register")]
         public async Task RegisterAsync(CommandContext ctx)
         {
             if (await Database.BankContainsUserAsync(ctx.User.Id, ctx.Guild.Id).ConfigureAwait(false))
@@ -120,7 +121,7 @@ namespace TheGodfather.Modules.Currency
         [Command("top"), Module(ModuleType.Currency)]
         [Description("Print the richest users.")]
         [Aliases("leaderboard", "elite")]
-        [UsageExample("!bank top")]
+        [UsageExamples("!bank top")]
         public async Task GetLeaderboardAsync(CommandContext ctx)
         {
             var top = await Database.GetTenRichestUsersAsync(ctx.Guild.Id)
@@ -151,7 +152,7 @@ namespace TheGodfather.Modules.Currency
         [Command("topglobal"), Module(ModuleType.Currency)]
         [Description("Print the globally richest users.")]
         [Aliases("globalleaderboard", "globalelite", "gtop", "topg", "globaltop")]
-        [UsageExample("!bank gtop")]
+        [UsageExamples("!bank gtop")]
         public async Task GetGlobalLeaderboardAsync(CommandContext ctx)
         {
             var top = await Database.GetTenRichestUsersAsync()
@@ -183,8 +184,8 @@ namespace TheGodfather.Modules.Currency
         [Module(ModuleType.Currency)]
         [Description("Transfer funds from your account to another one.")]
         [Aliases("lend")]
-        [UsageExample("!bank transfer @Someone 40")]
-        [UsageExample("!bank transfer 40 @Someone")]
+        [UsageExamples("!bank transfer @Someone 40",
+                       "!bank transfer 40 @Someone")]
         public async Task TransferCreditsAsync(CommandContext ctx,
                                               [Description("User to send credits to.")] DiscordUser user,
                                               [Description("Amount.")] long amount)
@@ -213,7 +214,7 @@ namespace TheGodfather.Modules.Currency
         [Command("unregister"), Module(ModuleType.Currency)]
         [Description("Delete an account from WM bank.")]
         [Aliases("ur", "signout", "deleteaccount", "delacc", "disable", "deactivate")]
-        [UsageExample("!bank unregister @Someone")]
+        [UsageExamples("!bank unregister @Someone")]
         [RequirePriviledgedUser]
         public async Task UnregisterAsync(CommandContext ctx,
                                          [Description("User whose account to delete.")] DiscordUser user)

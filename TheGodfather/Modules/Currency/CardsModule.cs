@@ -38,7 +38,7 @@ namespace TheGodfather.Modules.Currency
         [Command("draw"), Module(ModuleType.Currency)]
         [Description("Draw cards from the top of the deck. If amount of cards is not specified, draws one card.")]
         [Aliases("take")]
-        [UsageExample("!deck draw 5")]
+        [UsageExamples("!deck draw 5")]
         public async Task DrawAsync(CommandContext ctx,
                                    [Description("Amount (in range [1-10]).")] int amount = 1)
         {
@@ -63,7 +63,7 @@ namespace TheGodfather.Modules.Currency
         [Command("reset"), Module(ModuleType.Currency)]
         [Description("Opens a brand new card deck.")]
         [Aliases("new", "opennew", "open")]
-        [UsageExample("!deck reset")]
+        [UsageExamples("!deck reset")]
         public async Task ResetDeckAsync(CommandContext ctx)
         {
             if (Decks.ContainsKey(ctx.Channel.Id))

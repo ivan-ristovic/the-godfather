@@ -19,8 +19,8 @@ namespace TheGodfather.Modules.Misc
     [Group("meme"), Module(ModuleType.Miscellaneous)]
     [Description("Manipulate guild memes. When invoked without subcommands, returns a meme from this guild's meme list given by name, otherwise returns random one.")]
     [Aliases("memes", "mm")]
-    [UsageExample("!meme")]
-    [UsageExample("!meme SomeMemeNameWhichYouAdded")]
+    [UsageExamples("!meme",
+                   "!meme SomeMemeNameWhichYouAdded")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     [NotBlocked]
     public partial class MemeModule : TheGodfatherBaseModule
@@ -73,7 +73,7 @@ namespace TheGodfather.Modules.Misc
         [Module(ModuleType.Miscellaneous)]
         [Description("Add a new meme to the list.")]
         [Aliases("+", "new", "a")]
-        [UsageExample("!meme add pepe http://i0.kym-cdn.com/photos/images/facebook/000/862/065/0e9.jpg")]
+        [UsageExamples("!meme add pepe http://i0.kym-cdn.com/photos/images/facebook/000/862/065/0e9.jpg")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task AddMemeAsync(CommandContext ctx,
                                       [Description("Short name (case insensitive).")] string name,
@@ -107,7 +107,7 @@ namespace TheGodfather.Modules.Misc
         [Command("clear"), Module(ModuleType.Miscellaneous)]
         [Description("Deletes all guild memes.")]
         [Aliases("da", "ca", "cl", "clearall")]
-        [UsageExample("!memes clear")]
+        [UsageExamples("!memes clear")]
         [RequireUserPermissions(Permissions.Administrator)]
         [UsesInteractivity]
         public async Task ClearMemesAsync(CommandContext ctx)
@@ -132,7 +132,7 @@ namespace TheGodfather.Modules.Misc
         [Command("create"), Module(ModuleType.Miscellaneous)]
         [Description("Creates a new meme from blank template.")]
         [Aliases("maker", "c", "make", "m")]
-        [UsageExample("!meme create 1stworld \"Top text\" \"Bottom text\"")]
+        [UsageExamples("!meme create 1stworld \"Top text\" \"Bottom text\"")]
         [RequirePermissions(Permissions.EmbedLinks)]
         public async Task CreateMemeAsync(CommandContext ctx,
                                          [Description("Template.")] string template,
@@ -152,7 +152,7 @@ namespace TheGodfather.Modules.Misc
         [Command("delete"), Module(ModuleType.Miscellaneous)]
         [Description("Deletes a meme from this guild's meme list.")]
         [Aliases("-", "del", "remove", "rm", "d", "rem")]
-        [UsageExample("!meme delete pepe")]
+        [UsageExamples("!meme delete pepe")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task DeleteMemeAsync(CommandContext ctx,
                                          [Description("Short name (case insensitive).")] string name)
@@ -171,7 +171,7 @@ namespace TheGodfather.Modules.Misc
         [Command("list"), Module(ModuleType.Miscellaneous)]
         [Description("List all registered memes for this guild.")]
         [Aliases("ls", "l")]
-        [UsageExample("!meme list")]
+        [UsageExamples("!meme list")]
         public async Task ListAsync(CommandContext ctx)
         {
             var memes = await Database.GetMemesForAllGuildsAsync(ctx.Guild.Id)
@@ -190,7 +190,7 @@ namespace TheGodfather.Modules.Misc
         [Command("templates"), Module(ModuleType.Miscellaneous)]
         [Description("Lists all available meme templates.")]
         [Aliases("template", "t")]
-        [UsageExample("!meme templates")]
+        [UsageExamples("!meme templates")]
         public async Task TemplatesAsync(CommandContext ctx)
         {
             var templates = await MemeGenService.GetMemeTemplatesAsync()

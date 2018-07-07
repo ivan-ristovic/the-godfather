@@ -23,7 +23,7 @@ namespace TheGodfather.Modules.Games
         [Group("hangman"), Module(ModuleType.Games)]
         [Description("Starts a hangman game.")]
         [Aliases("h", "hang")]
-        [UsageExample("!game hangman")]
+        [UsageExamples("!game hangman")]
         public class HangmanModule : TheGodfatherBaseModule
         {
 
@@ -75,7 +75,7 @@ namespace TheGodfather.Modules.Games
             [Command("rules"), Module(ModuleType.Games)]
             [Description("Explain the Hangman game rules.")]
             [Aliases("help", "h", "ruling", "rule")]
-            [UsageExample("!game hangman rules")]
+            [UsageExamples("!game hangman rules")]
             public async Task RulesAsync(CommandContext ctx)
             {
                 await ctx.RespondWithIconEmbedAsync(
@@ -90,7 +90,7 @@ namespace TheGodfather.Modules.Games
             [Command("stats"), Module(ModuleType.Games)]
             [Description("Print the leaderboard for this game.")]
             [Aliases("top", "leaderboard")]
-            [UsageExample("!game hangman stats")]
+            [UsageExamples("!game hangman stats")]
             public async Task StatsAsync(CommandContext ctx)
             {
                 var top = await Database.GetTopHangmanPlayersStringAsync(ctx.Client)

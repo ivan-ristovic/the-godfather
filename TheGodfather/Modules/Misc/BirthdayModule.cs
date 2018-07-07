@@ -53,11 +53,11 @@ namespace TheGodfather.Modules.Misc
         [Module(ModuleType.Miscellaneous)]
         [Description("Add a birthday to the database. If date is not specified, uses the current date as a birthday date. If the channel is not specified, uses the current channel.")]
         [Aliases("+", "a")]
-        [UsageExample("!birthday add @Someone")]
-        [UsageExample("!birthday add @Someone #channel_to_send_message_to")]
-        [UsageExample("!birthday add @Someone 15.2.1990")]
-        [UsageExample("!birthday add @Someone #channel_to_send_message_to 15.2.1990")]
-        [UsageExample("!birthday add @Someone 15.2.1990 #channel_to_send_message_to")]
+        [UsageExamples("!birthday add @Someone",
+                       "!birthday add @Someone #channel_to_send_message_to",
+                       "!birthday add @Someone 15.2.1990",
+                       "!birthday add @Someone #channel_to_send_message_to 15.2.1990",
+                       "!birthday add @Someone 15.2.1990 #channel_to_send_message_to")]
         public async Task AddAsync(CommandContext ctx,
                                   [Description("Birthday boy/girl.")] DiscordUser user,
                                   [Description("Birth date.")] string date_str = null,
@@ -88,7 +88,7 @@ namespace TheGodfather.Modules.Misc
         [Command("delete"), Module(ModuleType.Miscellaneous)]
         [Description("Remove status from running queue.")]
         [Aliases("-", "remove", "rm", "del")]
-        [UsageExample("!birthday delete @Someone")]
+        [UsageExamples("!birthday delete @Someone")]
         public async Task DeleteAsync(CommandContext ctx,
                                      [Description("User whose birthday to remove.")] DiscordUser user)
         {
@@ -103,7 +103,7 @@ namespace TheGodfather.Modules.Misc
         [Command("list"), Module(ModuleType.Miscellaneous)]
         [Description("List all registered birthdays.")]
         [Aliases("ls")]
-        [UsageExample("!birthday list")]
+        [UsageExamples("!birthday list")]
         public async Task ListAsync(CommandContext ctx)
         {
             var birthdays = await Database.GetAllBirthdaysAsync()

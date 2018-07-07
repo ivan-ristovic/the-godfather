@@ -24,8 +24,8 @@ namespace TheGodfather.Modules.Chickens
         [Group("war"), Module(ModuleType.Chickens)]
         [Description("Declare a chicken war! Other users can put their chickens into teams which names you specify.")]
         [Aliases("gangwar", "battle")]
-        [UsageExample("!chicken war Team1 Team2")]
-        [UsageExample("!chicken war \"Team 1 name\" \"Team 2 name")]
+        [UsageExamples("!chicken war Team1 Team2",
+                       "!chicken war \"Team 1 name\" \"Team 2 name")]
         public class WarModule : TheGodfatherBaseModule
         {
 
@@ -95,7 +95,7 @@ namespace TheGodfather.Modules.Chickens
             [Module(ModuleType.Chickens)]
             [Description("Join a pending chicken war. Specify a team which you want to join, or numbers 1 or 2 corresponding to team one and team two, respectively.")]
             [Aliases("+", "compete", "enter", "j")]
-            [UsageExample("!chicken war join Team Name")]
+            [UsageExamples("!chicken war join Team Name")]
             public async Task JoinAsync(CommandContext ctx,
                                        [Description("Number 1 or 2 depending of team you wish to join.")] int team)
             {

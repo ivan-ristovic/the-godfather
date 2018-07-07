@@ -19,7 +19,7 @@ namespace TheGodfather.Modules.Misc
     [Group("insult"), Module(ModuleType.Miscellaneous)]
     [Description("Insults manipulation. If invoked without subcommands, insults a given user.")]
     [Aliases("burn", "insults", "ins", "roast")]
-    [UsageExample("!insult @Someone")]
+    [UsageExamples("!insult @Someone")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     [NotBlocked]
     public class InsultModule : TheGodfatherBaseModule
@@ -55,7 +55,7 @@ namespace TheGodfather.Modules.Misc
         [Command("add"), Module(ModuleType.Miscellaneous)]
         [Description("Add insult to list (use %user% instead of user mention).")]
         [Aliases("+", "new", "a")]
-        [UsageExample("!insult add You are so dumb, %user%!")]
+        [UsageExamples("!insult add You are so dumb, %user%!")]
         [RequireOwner]
         public async Task AddInsultAsync(CommandContext ctx,
                                         [RemainingText, Description("Insult (must contain ``%user%``).")] string insult)
@@ -81,7 +81,7 @@ namespace TheGodfather.Modules.Misc
         [Command("clear"), Module(ModuleType.Miscellaneous)]
         [Description("Delete all insults.")]
         [Aliases("da", "c", "ca", "cl", "clearall")]
-        [UsageExample("!insults clear")]
+        [UsageExamples("!insults clear")]
         [RequireOwner]
         [UsesInteractivity]
         public async Task ClearAllInsultsAsync(CommandContext ctx)
@@ -100,7 +100,7 @@ namespace TheGodfather.Modules.Misc
         [Command("delete"), Module(ModuleType.Miscellaneous)]
         [Description("Remove insult with a given index from list. (use command ``insults list`` to view insult indexes).")]
         [Aliases("-", "remove", "del", "rm", "rem", "d")]
-        [UsageExample("!insult delete 2")]
+        [UsageExamples("!insult delete 2")]
         [RequireOwner]
         public async Task DeleteInsultAsync(CommandContext ctx, 
                                            [Description("Index of the insult to remove.")] int index)
@@ -116,7 +116,7 @@ namespace TheGodfather.Modules.Misc
         [Command("list"), Module(ModuleType.Miscellaneous)]
         [Description("Show all insults.")]
         [Aliases("ls", "l")]
-        [UsageExample("!insult list")]
+        [UsageExamples("!insult list")]
         public async Task ListInsultsAsync(CommandContext ctx)
         {
             var insults = await Database.GetAllInsultsAsync()

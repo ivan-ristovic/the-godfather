@@ -20,8 +20,8 @@ namespace TheGodfather.Modules.Misc
     [Group("rank"), Module(ModuleType.Miscellaneous)]
     [Description("User ranking commands. If invoked without subcommands, prints sender's rank.")]
     [Aliases("ranks", "ranking", "level")]
-    [UsageExample("!rank")]
-    [UsageExample("!rank @Someone")]
+    [UsageExamples("!rank",
+                   "!rank @Someone")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     [NotBlocked]
     public class RanksModule : TheGodfatherBaseModule
@@ -63,7 +63,7 @@ namespace TheGodfather.Modules.Misc
         [Description("Add a custom name for given rank in this guild.")]
         [Aliases("+", "a", "rename")]
         [RequireUserPermissions(Permissions.ManageGuild)]
-        [UsageExample("!rank add 1 Private")]
+        [UsageExamples("!rank add 1 Private")]
         public async Task AddAsync(CommandContext ctx,
                                   [Description("Rank.")] int rank,
                                   [RemainingText, Description("Rank name.")] string name)
@@ -89,7 +89,7 @@ namespace TheGodfather.Modules.Misc
         [Description("Remove a custom name for given rank in this guild.")]
         [Aliases("-", "remove", "rm", "del", "revert")]
         [RequireUserPermissions(Permissions.ManageGuild)]
-        [UsageExample("!rank delete 3")]
+        [UsageExamples("!rank delete 3")]
         public async Task DeleteAsync(CommandContext ctx,
                                      [Description("Rank.")] int rank)
         {
@@ -104,7 +104,7 @@ namespace TheGodfather.Modules.Misc
         [Command("list"), Module(ModuleType.Miscellaneous)]
         [Description("Print all customized ranks for this guild.")]
         [Aliases("levels")]
-        [UsageExample("!rank list")]
+        [UsageExamples("!rank list")]
         public async Task RankListAsync(CommandContext ctx)
         {
             var ranks = await Database.GetAllCustomRankNamesForGuildAsync(ctx.Guild.Id)
@@ -124,7 +124,7 @@ namespace TheGodfather.Modules.Misc
         #region COMMAND_RANK_TOP
         [Command("top"), Module(ModuleType.Miscellaneous)]
         [Description("Get rank leaderboard.")]
-        [UsageExample("!rank top")]
+        [UsageExamples("!rank top")]
         public async Task TopAsync(CommandContext ctx)
         {
             var top = Shared.MessageCount.OrderByDescending(v => v.Value).Take(10);

@@ -21,8 +21,8 @@ namespace TheGodfather.Modules.Music
         [Group("play"), Module(ModuleType.Music)]
         [Description("Commands for playing music. If invoked without subcommand, plays given URL or searches YouTube for given query and plays the first result.")]
         [Aliases("music", "p")]
-        [UsageExample("!play https://www.youtube.com/watch?v=dQw4w9WgXcQ")]
-        [UsageExample("!play what is love?")]
+        [UsageExamples("!play https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+                       "!play what is love?")]
         [RequireBotPermissions(Permissions.Speak)]
         [RequireOwner]
         [NotBlocked]
@@ -72,7 +72,7 @@ namespace TheGodfather.Modules.Music
             [Command("file"), Module(ModuleType.Music)]
             [Description("Plays an audio file from the server filesystem.")]
             [Aliases("f")]
-            [UsageExample("!play file test.mp3")]
+            [UsageExamples("!play file test.mp3")]
             [RequireOwner]
             public async Task PlayFileAsync(CommandContext ctx,
                                            [RemainingText, Description("Full path to the file to play.")] string filename)
@@ -98,15 +98,15 @@ namespace TheGodfather.Modules.Music
                     Uri = filename
                 };
 
-                if (Shared.MusicPlayers.ContainsKey(ctx.Guild.Id)) {
-                    Shared.MusicPlayers[ctx.Guild.Id].Enqueue(si);
+                if (MusicPlayers.ContainsKey(ctx.Guild.Id)) {
+                    MusicPlayers[ctx.Guild.Id].Enqueue(si);
                     await ctx.RespondAsync("Added to queue:", embed: si.Embed())
                         .ConfigureAwait(false);
                 } else {
-                    if (!Shared.MusicPlayers.TryAdd(ctx.Guild.Id, new MusicPlayer(ctx.Client, ctx.Channel, vnc)))
+                    if (!MusicPlayers.TryAdd(ctx.Guild.Id, new MusicPlayer(ctx.Client, ctx.Channel, vnc)))
                         throw new CommandFailedException("Failed to initialize music player!");
-                    Shared.MusicPlayers[ctx.Guild.Id].Enqueue(si);
-                    await Shared.MusicPlayers[ctx.Guild.Id].StartAsync();
+                    MusicPlayers[ctx.Guild.Id].Enqueue(si);
+                    await MusicPlayers[ctx.Guild.Id].StartAsync();
                 }
             }
             #endregion
@@ -125,15 +125,15 @@ namespace TheGodfather.Modules.Music
                     vnc = vnext.GetConnection(ctx.Guild);
                 }
 
-                if (Shared.MusicPlayers.ContainsKey(ctx.Guild.Id)) {
-                    Shared.MusicPlayers[ctx.Guild.Id].Enqueue(si);
+                if (MusicPlayers.ContainsKey(ctx.Guild.Id)) {
+                    MusicPlayers[ctx.Guild.Id].Enqueue(si);
                     await ctx.RespondAsync("Added to queue:", embed: si.Embed())
                         .ConfigureAwait(false);
                 } else {
-                    if (!Shared.MusicPlayers.TryAdd(ctx.Guild.Id, new MusicPlayer(ctx.Client, ctx.Channel, vnc)))
+                    if (!MusicPlayers.TryAdd(ctx.Guild.Id, new MusicPlayer(ctx.Client, ctx.Channel, vnc)))
                         throw new CommandFailedException("Failed to initialize music player!");
-                    Shared.MusicPlayers[ctx.Guild.Id].Enqueue(si);
-                    var t = Task.Run(() => Shared.MusicPlayers[ctx.Guild.Id].StartAsync());
+                    MusicPlayers[ctx.Guild.Id].Enqueue(si);
+                    var t = Task.Run(() => MusicPlayers[ctx.Guild.Id].StartAsync());
                 }
             }
             #endregion

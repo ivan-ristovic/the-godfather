@@ -107,13 +107,11 @@ namespace TheGodfather.Common
                 }
             }
 
-            var examples = command.CustomAttributes.Where(chk => chk is UsageExamplesAttribute)
-                                                   .Select(chk => chk as UsageExamplesAttribute);
+            var examples = command.CustomAttributes.FirstOrDefault(chk => chk is UsageExamplesAttribute) as UsageExamplesAttribute;
             var eb = new StringBuilder();
-            if (examples.Any()) {
+            if (examples != null) {
                 eb.AppendLine("```");
-                foreach (var example in examples)
-                    eb.AppendLine(example.Example);
+                eb.AppendLine(examples.JoinExamples());
                 eb.AppendLine("```");
             }
             string examplestr = eb.ToString();

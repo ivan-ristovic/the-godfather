@@ -37,7 +37,7 @@ namespace TheGodfather.Modules.SWAT
         [Command("ip"), Module(ModuleType.SWAT)]
         [Description("Return IP of the registered server by name.")]
         [Aliases("getip")]
-        [UsageExample("!s4 ip wm")]
+        [UsageExamples("!s4 ip wm")]
         public async Task QueryAsync(CommandContext ctx,
                                     [Description("Registered name.")] string name)
         {
@@ -58,9 +58,9 @@ namespace TheGodfather.Modules.SWAT
         [Command("query"), Module(ModuleType.SWAT)]
         [Description("Return server information.")]
         [Aliases("q", "info", "i")]
-        [UsageExample("!s4 q 109.70.149.158")]
-        [UsageExample("!s4 q 109.70.149.158:10480")]
-        [UsageExample("!s4 q wm")]
+        [UsageExamples("!s4 q 109.70.149.158",
+                       "!s4 q 109.70.149.158:10480",
+                       "!s4 q wm")]
         public async Task QueryAsync(CommandContext ctx,
                                     [Description("Registered name or IP.")] string ip,
                                     [Description("Query port")] int queryport = 10481)
@@ -87,7 +87,7 @@ namespace TheGodfather.Modules.SWAT
         #region COMMAND_SETTIMEOUT
         [Command("settimeout"), Module(ModuleType.SWAT)]
         [Description("Set checking timeout.")]
-        [UsageExample("!swat settimeout 500")]
+        [UsageExamples("!swat settimeout 500")]
         [RequireOwner]
         public async Task SetTimeoutAsync(CommandContext ctx,
                                          [Description("Timeout (in ms).")] int timeout)
@@ -103,7 +103,7 @@ namespace TheGodfather.Modules.SWAT
         #region COMMAND_SERVERLIST
         [Command("serverlist"), Module(ModuleType.SWAT)]
         [Description("Print the serverlist with current player numbers.")]
-        [UsageExample("!swat serverlist")]
+        [UsageExamples("!swat serverlist")]
         public async Task ServerlistAsync(CommandContext ctx)
         {
             var em = new DiscordEmbedBuilder() {
@@ -134,9 +134,9 @@ namespace TheGodfather.Modules.SWAT
         [Command("startcheck"), Module(ModuleType.SWAT)]
         [Description("Start listening for space on a given server and notifies you when there is space.")]
         [Aliases("checkspace", "spacecheck")]
-        [UsageExample("!s4 startcheck 109.70.149.158")]
-        [UsageExample("!s4 startcheck 109.70.149.158:10480")]
-        [UsageExample("!swat startcheck wm")]
+        [UsageExamples("!s4 startcheck 109.70.149.158",
+                       "!s4 startcheck 109.70.149.158:10480",
+                       "!swat startcheck wm")]
         [UsesInteractivity]
         public async Task StartCheckAsync(CommandContext ctx,
                                          [Description("Registered name or IP.")] string ip,
@@ -148,10 +148,10 @@ namespace TheGodfather.Modules.SWAT
             if (queryport <= 0 || queryport > 65535)
                 throw new InvalidCommandUsageException("Port range invalid (must be in range [1-65535])!");
 
-            if (Shared.SpaceCheckingCTS.ContainsKey(ctx.User.Id))
+            if (SpaceCheckingCTS.ContainsKey(ctx.User.Id))
                 throw new CommandFailedException("Already checking space for you!");
 
-            if (Shared.SpaceCheckingCTS.Count > 10)
+            if (SpaceCheckingCTS.Count > 10)
                 throw new CommandFailedException("Maximum number of simultanous checks reached (10), please try later!");
 
             var server = await Database.GetSwatServerAsync(ip, queryport, name: ip.ToLowerInvariant())
@@ -159,12 +159,12 @@ namespace TheGodfather.Modules.SWAT
             await ctx.RespondWithIconEmbedAsync($"Starting space listening on {server.IP}:{server.JoinPort}...")
                 .ConfigureAwait(false);
 
-            if (!Shared.SpaceCheckingCTS.TryAdd(ctx.User.Id, new CancellationTokenSource()))
+            if (!SpaceCheckingCTS.TryAdd(ctx.User.Id, new CancellationTokenSource()))
                 throw new CommandFailedException("Failed to register space check task! Please try again.");
 
             try {
                 var t = Task.Run(async () => {
-                    while (Shared.SpaceCheckingCTS.ContainsKey(ctx.User.Id) && !Shared.SpaceCheckingCTS[ctx.User.Id].IsCancellationRequested) {
+                    while (SpaceCheckingCTS.ContainsKey(ctx.User.Id) && !SpaceCheckingCTS[ctx.User.Id].IsCancellationRequested) {
                         var info = await SwatServerInfo.QueryIPAsync(server.IP, server.QueryPort)
                             .ConfigureAwait(false);
                         if (info == null) {
@@ -180,9 +180,9 @@ namespace TheGodfather.Modules.SWAT
                         await Task.Delay(TimeSpan.FromSeconds(2))
                             .ConfigureAwait(false);
                     }
-                }, Shared.SpaceCheckingCTS[ctx.User.Id].Token);
+                }, SpaceCheckingCTS[ctx.User.Id].Token);
             } catch {
-                Shared.SpaceCheckingCTS.TryRemove(ctx.User.Id, out _);
+                SpaceCheckingCTS.TryRemove(ctx.User.Id, out _);
             }
         }
         #endregion
@@ -191,14 +191,14 @@ namespace TheGodfather.Modules.SWAT
         [Command("stopcheck"), Module(ModuleType.SWAT)]
         [Description("Stops space checking.")]
         [Aliases("checkstop")]
-        [UsageExample("!swat stopcheck")]
+        [UsageExamples("!swat stopcheck")]
         public async Task StopCheckAsync(CommandContext ctx)
         {
-            if (!Shared.SpaceCheckingCTS.ContainsKey(ctx.User.Id))
+            if (!SpaceCheckingCTS.ContainsKey(ctx.User.Id))
                 throw new CommandFailedException("You haven't started any space listeners.");
-            Shared.SpaceCheckingCTS[ctx.User.Id].Cancel();
-            Shared.SpaceCheckingCTS[ctx.User.Id].Dispose();
-            Shared.SpaceCheckingCTS.TryRemove(ctx.User.Id, out _);
+            SpaceCheckingCTS[ctx.User.Id].Cancel();
+            SpaceCheckingCTS[ctx.User.Id].Dispose();
+            SpaceCheckingCTS.TryRemove(ctx.User.Id, out _);
             await ctx.RespondWithIconEmbedAsync("Checking stopped.")
                 .ConfigureAwait(false);
         }

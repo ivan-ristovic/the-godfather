@@ -22,8 +22,8 @@ namespace TheGodfather.Modules.Games
         [Group("othello"), Module(ModuleType.Games)]
         [Description("Starts an \"Othello\" game. Play a move by writing a pair of numbers from 1 to 10 corresponding to the row and column where you wish to play. You can also specify a time window in which player must submit their move.")]
         [Aliases("reversi", "oth", "rev")]
-        [UsageExample("!game othello")]
-        [UsageExample("!game othello 10s")]
+        [UsageExamples("!game othello",
+                       "!game othello 10s")]
         public class OthelloModule : TheGodfatherBaseModule
         {
 
@@ -79,7 +79,7 @@ namespace TheGodfather.Modules.Games
             [Command("rules"), Module(ModuleType.Games)]
             [Description("Explain the Othello game rules.")]
             [Aliases("help", "h", "ruling", "rule")]
-            [UsageExample("!game othello rules")]
+            [UsageExamples("!game othello rules")]
             public async Task RulesAsync(CommandContext ctx)
             {
                 await ctx.RespondWithIconEmbedAsync(
@@ -100,7 +100,7 @@ namespace TheGodfather.Modules.Games
             [Command("stats"), Module(ModuleType.Games)]
             [Description("Print the leaderboard for this game.")]
             [Aliases("top", "leaderboard")]
-            [UsageExample("!game othello stats")]
+            [UsageExamples("!game othello stats")]
             public async Task StatsAsync(CommandContext ctx)
             {
                 var top = await Database.GetTopOthelloPlayersStringAsync(ctx.Client)

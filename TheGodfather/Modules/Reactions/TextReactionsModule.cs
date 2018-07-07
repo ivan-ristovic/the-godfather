@@ -23,8 +23,8 @@ namespace TheGodfather.Modules.Reactions
     [Group("textreaction"), Module(ModuleType.Reactions)]
     [Description("Orders a bot to react with given text to a message containing a trigger word inside (guild specific). If invoked without subcommands, adds a new text reaction to a given trigger word. Note: Trigger words can be regular expressions (use ``textreaction addregex`` command). You can also use \"%user%\" inside response and the bot will replace it with mention for the user who triggers the reaction. Text reactions have a one minute cooldown.")]
     [Aliases("treact", "tr", "txtr", "textreactions")]
-    [UsageExample("!textreaction hi hello")]
-    [UsageExample("!textreaction \"hi\" \"Hello, %user%!\"")]
+    [UsageExamples("!textreaction hi hello",
+                   "!textreaction \"hi\" \"Hello, %user%!\"")]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
     [NotBlocked]
     public class TextReactionsModule : TheGodfatherBaseModule
@@ -49,7 +49,7 @@ namespace TheGodfather.Modules.Reactions
         [Command("add"), Module(ModuleType.Reactions)]
         [Description("Add a new text reaction to guild text reaction list.")]
         [Aliases("+", "new", "a")]
-        [UsageExample("!textreaction add \"hi\" \"Hello, %user%!\"")]
+        [UsageExamples("!textreaction add \"hi\" \"Hello, %user%!\"")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public Task AddAsync(CommandContext ctx,
                             [Description("Trigger string (case insensitive).")] string trigger,
@@ -61,7 +61,7 @@ namespace TheGodfather.Modules.Reactions
         [Command("addregex"), Module(ModuleType.Reactions)]
         [Description("Add a new text reaction triggered by a regex to guild text reaction list.")]
         [Aliases("+r", "+regex", "+regexp", "+rgx", "newregex", "addrgx")]
-        [UsageExample("!textreaction addregex \"h(i|ey|ello|owdy)\" \"Hello, %user%!\"")]
+        [UsageExamples("!textreaction addregex \"h(i|ey|ello|owdy)\" \"Hello, %user%!\"")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public Task AddRegexAsync(CommandContext ctx,
                                  [Description("Regex (case insensitive).")] string trigger,
@@ -73,7 +73,7 @@ namespace TheGodfather.Modules.Reactions
         [Command("clear"), Module(ModuleType.Reactions)]
         [Description("Delete all text reactions for the current guild.")]
         [Aliases("da", "c", "ca", "cl", "clearall")]
-        [UsageExample("!textreactions clear")]
+        [UsageExamples("!textreactions clear")]
         [RequireUserPermissions(Permissions.Administrator)]
         [UsesInteractivity]
         public async Task ClearAsync(CommandContext ctx)
@@ -114,9 +114,9 @@ namespace TheGodfather.Modules.Reactions
         [Module(ModuleType.Reactions)]
         [Description("Remove text reaction from guild text reaction list.")]
         [Aliases("-", "remove", "del", "rm", "d")]
-        [UsageExample("!textreaction delete 5")]
-        [UsageExample("!textreaction delete 5 8")]
-        [UsageExample("!textreaction delete hi")]
+        [UsageExamples("!textreaction delete 5",
+                       "!textreaction delete 5 8",
+                       "!textreaction delete hi")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task DeleteAsync(CommandContext ctx,
                                      [Description("IDs of the reactions to remove.")] params int[] ids)
@@ -238,7 +238,7 @@ namespace TheGodfather.Modules.Reactions
         [Command("list"), Module(ModuleType.Reactions)]
         [Description("Show all text reactions for the guild.")]
         [Aliases("ls", "l", "view")]
-        [UsageExample("!textreactions list")]
+        [UsageExamples("!textreactions list")]
         public async Task ListAsync(CommandContext ctx)
         {
             if (!Shared.TextReactions.ContainsKey(ctx.Guild.Id) || !Shared.TextReactions[ctx.Guild.Id].Any())

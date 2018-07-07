@@ -23,7 +23,7 @@ namespace TheGodfather.Modules.Chickens
         [Group("buy"), Module(ModuleType.Chickens)]
         [Description("Buy a new chicken in this guild using your credits from WM bank.")]
         [Aliases("b", "shop")]
-        [UsageExample("!chicken buy My Chicken Name")]
+        [UsageExamples("!chicken buy My Chicken Name")]
         [UsesInteractivity]
         public class BuyModule : TheGodfatherBaseModule
         {
@@ -41,7 +41,7 @@ namespace TheGodfather.Modules.Chickens
             [Command("default"), Module(ModuleType.Chickens)]
             [Description("Buy a chicken of default strength (cheapest).")]
             [Aliases("d", "def")]
-            [UsageExample("!chicken buy default My Chicken Name")]
+            [UsageExamples("!chicken buy default My Chicken Name")]
             public Task DefaultAsync(CommandContext ctx,
                                     [RemainingText, Description("Chicken name.")] string name = null)
                 => HandleBuyAsync(ctx, ChickenType.Default, name);
@@ -51,7 +51,7 @@ namespace TheGodfather.Modules.Chickens
             [Command("wellfed"), Module(ModuleType.Chickens)]
             [Description("Buy a well-fed chicken.")]
             [Aliases("wf", "fed")]
-            [UsageExample("!chicken buy wellfed My Chicken Name")]
+            [UsageExamples("!chicken buy wellfed My Chicken Name")]
             public Task WellFedAsync(CommandContext ctx,
                                     [RemainingText, Description("Chicken name.")] string name = null)
                 => HandleBuyAsync(ctx, ChickenType.WellFed, name);
@@ -61,7 +61,7 @@ namespace TheGodfather.Modules.Chickens
             [Command("trained"), Module(ModuleType.Chickens)]
             [Description("Buy a trained chicken.")]
             [Aliases("wf", "fed")]
-            [UsageExample("!chicken buy trained My Chicken Name")]
+            [UsageExamples("!chicken buy trained My Chicken Name")]
             public Task TrainedAsync(CommandContext ctx,
                                     [RemainingText, Description("Chicken name.")] string name = null)
                 => HandleBuyAsync(ctx, ChickenType.Trained, name);
@@ -71,7 +71,7 @@ namespace TheGodfather.Modules.Chickens
             [Command("steroidempowered"), Module(ModuleType.Chickens)]
             [Description("Buy a steroid-empowered chicken.")]
             [Aliases("steroid", "empowered")]
-            [UsageExample("!chicken buy steroidempowered My Chicken Name")]
+            [UsageExamples("!chicken buy steroidempowered My Chicken Name")]
             public Task EmpoweredAsync(CommandContext ctx,
                                       [RemainingText, Description("Chicken name.")] string name = null)
                 => HandleBuyAsync(ctx, ChickenType.SteroidEmpowered, name);
@@ -81,7 +81,7 @@ namespace TheGodfather.Modules.Chickens
             [Command("alien"), Module(ModuleType.Chickens)]
             [Description("Buy an alien chicken.")]
             [Aliases("a", "extraterrestrial")]
-            [UsageExample("!chicken buy alien My Chicken Name")]
+            [UsageExamples("!chicken buy alien My Chicken Name")]
             public Task AlienAsync(CommandContext ctx,
                                   [RemainingText, Description("Chicken name.")] string name = null)
                 => HandleBuyAsync(ctx, ChickenType.Alien, name);
@@ -91,7 +91,7 @@ namespace TheGodfather.Modules.Chickens
             [Command("list"), Module(ModuleType.Chickens)]
             [Description("List all available chicken types.")]
             [Aliases("ls", "view")]
-            [UsageExample("!chicken buy list")]
+            [UsageExamples("!chicken buy list")]
             public async Task ListAsync(CommandContext ctx)
             {
                 var emb = new DiscordEmbedBuilder() {

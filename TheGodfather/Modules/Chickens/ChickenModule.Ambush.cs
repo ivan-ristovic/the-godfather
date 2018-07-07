@@ -25,7 +25,7 @@ namespace TheGodfather.Modules.Chickens
         [Group("ambush"), Module(ModuleType.Chickens)]
         [Description("Start an ambush for another user's chicken. Other users can put their chickens into your ambush and collectively attack the target chicken combining their strength.")]
         [Aliases("gangattack")]
-        [UsageExample("!chicken ambush @Someone")]
+        [UsageExamples("!chicken ambush @Someone")]
         public class AmbushModule : TheGodfatherBaseModule
         {
 
@@ -110,7 +110,7 @@ namespace TheGodfather.Modules.Chickens
             [Command("join"), Module(ModuleType.Chickens)]
             [Description("Join a pending chicken ambush as one of the ambushers.")]
             [Aliases("+", "compete", "enter", "j")]
-            [UsageExample("!chicken ambush join")]
+            [UsageExamples("!chicken ambush join")]
             public async Task JoinAsync(CommandContext ctx)
             {
                 if (!(ChannelEvent.GetEventInChannel(ctx.Channel.Id) is ChickenWar ambush))
@@ -139,7 +139,7 @@ namespace TheGodfather.Modules.Chickens
             [Command("help"), Module(ModuleType.Chickens)]
             [Description("Join a pending chicken ambush and help the ambushed chicken.")]
             [Aliases("h", "halp", "hlp", "ha")]
-            [UsageExample("!chicken ambush help")]
+            [UsageExamples("!chicken ambush help")]
             public async Task HelpAsync(CommandContext ctx)
             {
                 if (!(ChannelEvent.GetEventInChannel(ctx.Channel.Id) is ChickenWar ambush))

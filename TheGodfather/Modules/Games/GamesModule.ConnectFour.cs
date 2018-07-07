@@ -22,8 +22,8 @@ namespace TheGodfather.Modules.Games
         [Group("connect4"), Module(ModuleType.Games)]
         [Description("Starts a \"Connect 4\" game. Play a move by writing a number from 1 to 9 corresponding to the column where you wish to insert your piece. You can also specify a time window in which player must submit their move.")]
         [Aliases("connectfour", "chain4", "chainfour", "c4", "fourinarow", "fourinaline", "4row", "4line", "cfour")]
-        [UsageExample("!game connect4")]
-        [UsageExample("!game connect4 10s")]
+        [UsageExamples("!game connect4",
+                       "!game connect4 10s")]
         public class ConnectFourModule : TheGodfatherBaseModule
         {
 
@@ -79,7 +79,7 @@ namespace TheGodfather.Modules.Games
             [Command("rules"), Module(ModuleType.Games)]
             [Description("Explain the Connect4 game rules.")]
             [Aliases("help", "h", "ruling", "rule")]
-            [UsageExample("!game connect4 rules")]
+            [UsageExamples("!game connect4 rules")]
             public async Task RulesAsync(CommandContext ctx)
             {
                 await ctx.RespondWithIconEmbedAsync(
@@ -98,7 +98,7 @@ namespace TheGodfather.Modules.Games
             [Command("stats"), Module(ModuleType.Games)]
             [Description("Print the leaderboard for this game.")]
             [Aliases("top", "leaderboard")]
-            [UsageExample("!game connect4 stats")]
+            [UsageExamples("!game connect4 stats")]
             public async Task StatsAsync(CommandContext ctx)
             {
                 var top = await Database.GetTopChain4PlayersStringAsync(ctx.Client)

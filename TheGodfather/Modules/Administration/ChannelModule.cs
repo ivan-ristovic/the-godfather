@@ -21,6 +21,8 @@ namespace TheGodfather.Modules.Administration
     [Group("channel"), Module(ModuleType.Administration)]
     [Description("Miscellaneous channel control commands. If invoked without subcommands, prints out channel information.")]
     [Aliases("channels", "c", "chn")]
+    [UsageExamples("!channel", 
+                   "!channel #general")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     [NotBlocked]
     public class ChannelModule : TheGodfatherBaseModule
@@ -39,7 +41,7 @@ namespace TheGodfather.Modules.Administration
         [Command("createcategory"), Module(ModuleType.Administration)]
         [Description("Create new channel category.")]
         [Aliases("createcat", "createc", "ccat", "cc", "+cat", "+c", "+category")]
-        [UsageExample("!channel createcategory My New Category")]
+        [UsageExamples("!channel createcategory My New Category")]
         [RequirePermissions(Permissions.ManageChannels)]
         [UsesInteractivity]
         public async Task CreateCategoryAsync(CommandContext ctx,
@@ -67,9 +69,9 @@ namespace TheGodfather.Modules.Administration
         [Module(ModuleType.Administration)]
         [Description("Create new text channel.")]
         [Aliases("createtxt", "createt", "ctxt", "ct", "+", "+t", "+txt")]
-        [UsageExample("!channel createtext newtextchannel ParentCategory no")]
-        [UsageExample("!channel createtext newtextchannel no")]
-        [UsageExample("!channel createtext ParentCategory newtextchannel")]
+        [UsageExamples("!channel createtext newtextchannel ParentCategory no",
+                       "!channel createtext newtextchannel no",
+                       "!channel createtext ParentCategory newtextchannel")]
         [RequirePermissions(Permissions.ManageChannels)]
         [UsesInteractivity]
         public async Task CreateTextChannelAsync(CommandContext ctx,
@@ -121,9 +123,9 @@ namespace TheGodfather.Modules.Administration
         [Module(ModuleType.Administration)]
         [Description("Create new voice channel.")]
         [Aliases("createv", "cvoice", "cv", "+voice", "+v")]
-        [UsageExample("!channel createtext \"My voice channel\" ParentCategory 0 96000")]
-        [UsageExample("!channel createtext \"My voice channel\" 10 96000")]
-        [UsageExample("!channel createtext ParentCategory \"My voice channel\" 10 96000")]
+        [UsageExamples("!channel createtext \"My voice channel\" ParentCategory 0 96000",
+                       "!channel createtext \"My voice channel\" 10 96000",
+                       "!channel createtext ParentCategory \"My voice channel\" 10 96000")]
         [RequirePermissions(Permissions.ManageChannels)]
         [UsesInteractivity]
         public async Task CreateVoiceChannelAsync(CommandContext ctx,
@@ -176,9 +178,9 @@ namespace TheGodfather.Modules.Administration
         [Module(ModuleType.Administration)]
         [Description("Delete a given channel or category. If the channel isn't given, deletes the current one.")]
         [Aliases("-", "del", "d", "remove", "rm")]
-        [UsageExample("!channel delete")]
-        [UsageExample("!channel delete \"My voice channel\"")]
-        [UsageExample("!channel delete \"My voice channel\" Because I can!")]
+        [UsageExamples("!channel delete", 
+                       "!channel delete \"My voice channel\"", 
+                       "!channel delete \"My voice channel\" Because I can!")]
         [RequirePermissions(Permissions.ManageChannels)]
         [UsesInteractivity]
         public async Task DeleteAsync(CommandContext ctx,
@@ -218,8 +220,8 @@ namespace TheGodfather.Modules.Administration
         [Command("info"), Module(ModuleType.Administration)]
         [Description("Get information about a given channel. If the channel isn't given, uses the current one.")]
         [Aliases("i", "information")]
-        [UsageExample("!channel info")]
-        [UsageExample("!channel info \"My voice channel\"")]
+        [UsageExamples("!channel info", 
+                       "!channel info \"My voice channel\"")]
         [RequirePermissions(Permissions.AccessChannels)]
         public async Task InfoAsync(CommandContext ctx,
                                           [Description("Channel.")] DiscordChannel channel = null)
@@ -255,7 +257,7 @@ namespace TheGodfather.Modules.Administration
         [Module(ModuleType.Administration)]
         [Description("Modify a given voice channel. Set 0 if you wish to keep the value as it is.")]
         [Aliases("edit", "mod", "m", "e")]
-        [UsageExample("!channel modify \"My voice channel\" 20 96000 Some reason")]
+        [UsageExamples("!channel modify \"My voice channel\" 20 96000 Some reason")]
         [RequirePermissions(Permissions.ManageChannels)]
         public async Task ModifyAsync(CommandContext ctx,
                                      [Description("Voice channel to edit")] DiscordChannel channel,
@@ -294,9 +296,9 @@ namespace TheGodfather.Modules.Administration
         [Module(ModuleType.Administration)]
         [Description("Rename channel. If the channel isn't given, uses the current one.")]
         [Aliases("r", "name", "setname")]
-        [UsageExample("!channel rename New name for this channel")]
-        [UsageExample("!channel rename \"My voice channel\" \"My old voice channel\"")]
-        [UsageExample("!channel rename \"My reason\" \"My voice channel\" \"My old voice channel\"")]
+        [UsageExamples("!channel rename New name for this channel",
+                       "!channel rename \"My voice channel\" \"My old voice channel\"",
+                       "!channel rename \"My reason\" \"My voice channel\" \"My old voice channel\"")]
         [RequirePermissions(Permissions.ManageChannels)]
         public async Task RenameAsync(CommandContext ctx,
                                      [Description("Reason.")] string reason,
@@ -345,8 +347,8 @@ namespace TheGodfather.Modules.Administration
         [Module(ModuleType.Administration)]
         [Description("Change the parent of the given channel. If the channel isn't given, uses the current one.")]
         [Aliases("setpar", "par", "parent")]
-        [UsageExample("!channel setparent \"My channel\" ParentCategory")]
-        [UsageExample("!channel setparent ParentCategory I set a new parent for this channel!")]
+        [UsageExamples("!channel setparent \"My channel\" ParentCategory",
+                       "!channel setparent ParentCategory I set a new parent for this channel!")]
         [RequirePermissions(Permissions.ManageChannels)]
         public async Task ChangeParentAsync(CommandContext ctx,
                                            [Description("Child channel.")] DiscordChannel channel,
@@ -380,9 +382,9 @@ namespace TheGodfather.Modules.Administration
         [Module(ModuleType.Administration)]
         [Description("Change the position of the given channel in the guild channel list. If the channel isn't given, uses the current one.")]
         [Aliases("setpos", "pos", "position")]
-        [UsageExample("!channel setposition 4")]
-        [UsageExample("!channel setposition \"My channel\" 1")]
-        [UsageExample("!channel setposition \"My channel\" 4 I changed position :)")]
+        [UsageExamples("!channel setposition 4", 
+                       "!channel setposition \"My channel\" 1",
+                       "!channel setposition \"My channel\" 4 I changed position :)")]
         [RequirePermissions(Permissions.ManageChannels)]
         public async Task ReorderChannelAsync(CommandContext ctx,
                                              [Description("Channel to reorder.")] DiscordChannel channel,
@@ -421,8 +423,8 @@ namespace TheGodfather.Modules.Administration
         [Module(ModuleType.Administration)]
         [Description("Set channel topic. If the channel isn't given, uses the current one.")]
         [Aliases("t", "topic", "sett")]
-        [UsageExample("!channel settopic New channel topic")]
-        [UsageExample("!channel settopic \"My channel\" New channel topic")]
+        [UsageExamples("!channel settopic New channel topic", 
+                       "!channel settopic \"My channel\" New channel topic")]
         [RequirePermissions(Permissions.ManageChannels)]
         public async Task SetChannelTopicAsync(CommandContext ctx,
                                               [Description("Reason.")] string reason,
@@ -459,10 +461,10 @@ namespace TheGodfather.Modules.Administration
         [Module(ModuleType.Administration)]
         [Description("View permissions for a member or role in the given channel. If the member is not given, lists the sender's permissions. If the channel is not given, uses current one.")]
         [Aliases("tp", "perms", "permsfor", "testperms", "listperms")]
-        [UsageExample("!channel viewperms @Someone")]
-        [UsageExample("!channel viewperms Admins")]
-        [UsageExample("!channel viewperms #private everyone")]
-        [UsageExample("!channel viewperms everyone #private")]
+        [UsageExamples("!channel viewperms @Someone",
+                       "!channel viewperms Admins",
+                       "!channel viewperms #private everyone",
+                       "!channel viewperms everyone #private")]
         public async Task PrintPermsAsync(CommandContext ctx,
                                          [Description("Member.")] DiscordMember member = null,
                                          [Description("Channel.")] DiscordChannel channel = null)

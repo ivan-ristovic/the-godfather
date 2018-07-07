@@ -19,7 +19,7 @@ namespace TheGodfather.Modules.Search
     [Group("joke"), Module(ModuleType.Searches)]
     [Description("Group for searching jokes. If invoked without a subcommand, returns a random joke.")]
     [Aliases("jokes", "j")]
-    [UsageExample("!joke")]
+    [UsageExamples("!joke")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     [NotBlocked]
     public class JokesModule : TheGodfatherBaseModule
@@ -46,7 +46,7 @@ namespace TheGodfather.Modules.Search
         [Command("search"), Module(ModuleType.Searches)]
         [Description("Search for the joke containing the given query.")]
         [Aliases("s")]
-        [UsageExample("!joke search blonde")]
+        [UsageExamples("!joke search blonde")]
         public async Task SearchAsync(CommandContext ctx,
                                      [RemainingText, Description("Query.")] string query)
         {
@@ -72,7 +72,7 @@ namespace TheGodfather.Modules.Search
         [Command("yourmom"), Module(ModuleType.Searches)]
         [Description("Yo mama so...")]
         [Aliases("mama", "m", "yomomma", "yomom", "yomoma", "yomamma", "yomama")]
-        [UsageExample("!joke yourmom")]
+        [UsageExamples("!joke yourmom")]
         public async Task YomamaAsync(CommandContext ctx)
         {
             var joke = await JokesService.GetYoMommaJokeAsync()

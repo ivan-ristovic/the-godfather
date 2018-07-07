@@ -22,8 +22,8 @@ namespace TheGodfather.Modules.Games
         [Group("tictactoe"), Module(ModuleType.Games)]
         [Description("Starts a \"Tic-Tac-Toe\" game. Play a move by writing a number from 1 to 9 corresponding to the field where you wish to play. You can also specify a time window in which player must submit their move.")]
         [Aliases("ttt")]
-        [UsageExample("!game tictactoe")]
-        [UsageExample("!game tictactoe 10s")]
+        [UsageExamples("!game tictactoe",
+                       "!game tictactoe 10s")]
         public class TicTacToeModule : TheGodfatherBaseModule
         {
 
@@ -79,7 +79,7 @@ namespace TheGodfather.Modules.Games
             [Command("rules"), Module(ModuleType.Games)]
             [Description("Explain the Tic-Tac-Toe game rules.")]
             [Aliases("help", "h", "ruling", "rule")]
-            [UsageExample("!game tictactoe rules")]
+            [UsageExamples("!game tictactoe rules")]
             public async Task RulesAsync(CommandContext ctx)
             {
                 await ctx.RespondWithIconEmbedAsync(
@@ -96,7 +96,7 @@ namespace TheGodfather.Modules.Games
             [Command("stats"), Module(ModuleType.Games)]
             [Description("Print the leaderboard for this game.")]
             [Aliases("top", "leaderboard")]
-            [UsageExample("!game tictactoe stats")]
+            [UsageExamples("!game tictactoe stats")]
             public async Task StatsAsync(CommandContext ctx)
             {
                 var top = await Database.GetTopTTTPlayersStringAsync(ctx.Client)

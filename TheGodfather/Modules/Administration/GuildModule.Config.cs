@@ -24,7 +24,7 @@ namespace TheGodfather.Modules.Administration
         [Group("configure"), Module(ModuleType.Administration)]
         [Description("Allows manipulation of guild settings for this bot. If invoked without subcommands, lists the current guild configuration.")]
         [Aliases("config", "cfg")]
-        [UsageExample("!guild configure")]
+        [UsageExamples("!guild configure")]
         [Cooldown(3, 5, CooldownBucketType.Guild)]
         [RequireUserPermissions(Permissions.ManageGuild)]
         [NotBlocked]
@@ -84,7 +84,7 @@ namespace TheGodfather.Modules.Administration
             [Command("setup"), Module(ModuleType.Administration)]
             [Description("Starts an interactive wizard for configuring the guild settings.")]
             [Aliases("wizard")]
-            [UsageExample("!guild cfg setup")]
+            [UsageExamples("!guild cfg setup")]
             [UsesInteractivity]
             public async Task SetupAsync(CommandContext ctx)
             {
@@ -286,7 +286,7 @@ namespace TheGodfather.Modules.Administration
             [Group("suggestions"), Module(ModuleType.Administration)]
             [Description("Command suggestions configuration.")]
             [Aliases("suggestion", "sugg", "sug", "s")]
-            [UsageExample("!guild cfg suggestions")]
+            [UsageExamples("!guild cfg suggestions")]
             public class Suggestions : TheGodfatherBaseModule
             {
 
@@ -306,7 +306,7 @@ namespace TheGodfather.Modules.Administration
                 [Command("enable"), Module(ModuleType.Administration)]
                 [Description("Enables command suggestions for this guild.")]
                 [Aliases("on")]
-                [UsageExample("!guild cfg suggestions on")]
+                [UsageExamples("!guild cfg suggestions on")]
                 public async Task EnableAsync(CommandContext ctx)
                 {
                     var gcfg = Shared.GetGuildConfig(ctx.Guild.Id);
@@ -336,7 +336,7 @@ namespace TheGodfather.Modules.Administration
                 [Command("disable"), Module(ModuleType.Administration)]
                 [Description("Disables command suggestions for this guild.")]
                 [Aliases("off")]
-                [UsageExample("!guild cfg suggestions off")]
+                [UsageExamples("!guild cfg suggestions off")]
                 public async Task DisableAsync(CommandContext ctx)
                 {
                     var gcfg = Shared.GetGuildConfig(ctx.Guild.Id);
@@ -368,7 +368,7 @@ namespace TheGodfather.Modules.Administration
             [Group("logging"), Module(ModuleType.Administration)]
             [Description("Command action logging configuration.")]
             [Aliases("log", "modlog")]
-            [UsageExample("!guild cfg logging")]
+            [UsageExamples("!guild cfg logging")]
             public class Logging : TheGodfatherBaseModule
             {
 
@@ -388,7 +388,7 @@ namespace TheGodfather.Modules.Administration
                 [Command("enable"), Module(ModuleType.Administration)]
                 [Description("Enables action logging for this guild in the given channel.")]
                 [Aliases("on")]
-                [UsageExample("!guild cfg logging on")]
+                [UsageExamples("!guild cfg logging on")]
                 public async Task EnableAsync(CommandContext ctx,
                                              [Description("Channel.")] DiscordChannel channel = null)
                 {
@@ -423,7 +423,7 @@ namespace TheGodfather.Modules.Administration
                 [Command("disable"), Module(ModuleType.Administration)]
                 [Description("Disables action logging for this guild.")]
                 [Aliases("off")]
-                [UsageExample("!guild cfg logging off")]
+                [UsageExamples("!guild cfg logging off")]
                 public async Task DisableAsync(CommandContext ctx)
                 {
                     var gcfg = Shared.GetGuildConfig(ctx.Guild.Id);
@@ -454,8 +454,8 @@ namespace TheGodfather.Modules.Administration
                 [Command("channel"), Module(ModuleType.Administration)]
                 [Description("Gets or sets current action log channel.")]
                 [Aliases("chn", "c")]
-                [UsageExample("!guild cfg logging channel")]
-                [UsageExample("!guild cfg logging channel #modlog")]
+                [UsageExamples("!guild cfg logging channel",
+                               "!guild cfg logging channel #modlog")]
                 public async Task ChannelAsync(CommandContext ctx,
                                               [Description("Channel.")] DiscordChannel channel = null)
                 {
@@ -504,7 +504,7 @@ namespace TheGodfather.Modules.Administration
             [Group("welcome"), Module(ModuleType.Administration)]
             [Description("Allows user welcoming configuration.")]
             [Aliases("enter", "join", "wlc", "w")]
-            [UsageExample("!guild cfg welcome")]
+            [UsageExamples("!guild cfg welcome")]
             public class Enter : TheGodfatherBaseModule
             {
 
@@ -525,8 +525,8 @@ namespace TheGodfather.Modules.Administration
                 [Command("channel"), Module(ModuleType.Administration)]
                 [Description("Gets or sets welcome message channel.")]
                 [Aliases("chn", "c")]
-                [UsageExample("!guild cfg welcome channel")]
-                [UsageExample("!guild cfg welcome channel #lobby")]
+                [UsageExamples("!guild cfg welcome channel",
+                               "!guild cfg welcome channel #lobby")]
                 public async Task ChannelAsync(CommandContext ctx,
                                               [Description("Channel.")] DiscordChannel channel = null)
                 {
@@ -570,8 +570,8 @@ namespace TheGodfather.Modules.Administration
                 [Command("message"), Module(ModuleType.Administration)]
                 [Description("Gets or sets current welcome message.")]
                 [Aliases("msg", "m")]
-                [UsageExample("!guild cfg welcome message")]
-                [UsageExample("!guild cfg welcome message Welcome, %user%!")]
+                [UsageExamples("!guild cfg welcome message",
+                               "!guild cfg welcome message Welcome, %user%!")]
                 public async Task MessageAsync(CommandContext ctx,
                                               [RemainingText, Description("Welcome message.")] string message = null)
                 {
@@ -611,8 +611,8 @@ namespace TheGodfather.Modules.Administration
                 [Command("enable"), Module(ModuleType.Administration)]
                 [Description("Enables member welcoming for this guild. Provide a channel to send the messages to and optional custom welcome message. Any occurances of ``%user%`` inside the message will be replaced with appropriate mention.")]
                 [Aliases("on")]
-                [UsageExample("!guild cfg welcome on")]
-                [UsageExample("!guild cfg welcome on #lobby Welcome, %user%!")]
+                [UsageExamples("!guild cfg welcome on",
+                               "!guild cfg welcome on #lobby Welcome, %user%!")]
                 public async Task EnableAsync(CommandContext ctx,
                                              [Description("Channel.")] DiscordChannel channel = null,
                                              [RemainingText, Description("Welcome message.")] string message = null)
@@ -657,7 +657,7 @@ namespace TheGodfather.Modules.Administration
                 [Command("disable"), Module(ModuleType.Administration)]
                 [Description("Disables member welcome messages for this guild.")]
                 [Aliases("off")]
-                [UsageExample("!guild cfg welcome off")]
+                [UsageExamples("!guild cfg welcome off")]
                 public async Task DisableAsync(CommandContext ctx)
                 {
                     await Database.RemoveWelcomeChannelAsync(ctx.Guild.Id)
@@ -687,7 +687,7 @@ namespace TheGodfather.Modules.Administration
             [Group("leave"), Module(ModuleType.Administration)]
             [Description("Allows user leaving message configuration.")]
             [Aliases("exit", "drop", "lv", "l")]
-            [UsageExample("!guild cfg leave")]
+            [UsageExamples("!guild cfg leave")]
             public class Leave : TheGodfatherBaseModule
             {
 
@@ -708,8 +708,8 @@ namespace TheGodfather.Modules.Administration
                 [Command("channel"), Module(ModuleType.Administration)]
                 [Description("Gets or sets leave message channel.")]
                 [Aliases("chn", "c")]
-                [UsageExample("!guild cfg leave channel")]
-                [UsageExample("!guild cfg leave channel #lobby")]
+                [UsageExamples("!guild cfg leave channel",
+                               "!guild cfg leave channel #lobby")]
                 public async Task ChannelAsync(CommandContext ctx,
                                               [Description("Channel.")] DiscordChannel channel = null)
                 {
@@ -752,8 +752,8 @@ namespace TheGodfather.Modules.Administration
                 [Command("message"), Module(ModuleType.Administration)]
                 [Description("Gets or sets current leave message.")]
                 [Aliases("msg", "m")]
-                [UsageExample("!guild cfg leave message")]
-                [UsageExample("!guild cfg leave message Bye, %user%!")]
+                [UsageExamples("!guild cfg leave message",
+                               "!guild cfg leave message Bye, %user%!")]
                 public async Task MessageAsync(CommandContext ctx,
                                               [RemainingText, Description("Leave message.")] string message = null)
                 {
@@ -793,8 +793,8 @@ namespace TheGodfather.Modules.Administration
                 [Command("enable"), Module(ModuleType.Administration)]
                 [Description("Enables member leave messages for this guild. Provide a channel to send the messages to and optional custom leave message. Any occurances of ``%user%`` inside the message will be replaced with appropriate mention.")]
                 [Aliases("on")]
-                [UsageExample("!guild cfg leave on")]
-                [UsageExample("!guild cfg leave on #lobby Welcome, %user%!")]
+                [UsageExamples("!guild cfg leave on",
+                               "!guild cfg leave on #lobby Welcome, %user%!")]
                 public async Task EnableAsync(CommandContext ctx,
                                              [Description("Channel.")] DiscordChannel channel = null,
                                              [RemainingText, Description("Leave message.")] string message = null)
@@ -839,7 +839,7 @@ namespace TheGodfather.Modules.Administration
                 [Command("disable"), Module(ModuleType.Administration)]
                 [Description("Disables member leave messages for this guild.")]
                 [Aliases("off")]
-                [UsageExample("!guild cfg leave off")]
+                [UsageExamples("!guild cfg leave off")]
                 public async Task DisableAsync(CommandContext ctx)
                 {
                     await Database.RemoveLeaveChannelAsync(ctx.Guild.Id)

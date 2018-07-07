@@ -46,8 +46,8 @@ namespace TheGodfather.Modules.Owner
             [Command("add"), Module(ModuleType.Owner)]
             [Description("Add users to priviledged users list.")]
             [Aliases("+", "a")]
-            [UsageExample("!owner priviledgedusers add @Someone")]
-            [UsageExample("!owner priviledgedusers add @Someone @SomeoneElse")]
+            [UsageExamples("!owner priviledgedusers add @Someone",
+                           "!owner priviledgedusers add @Someone @SomeoneElse")]
             public async Task AddAsync(CommandContext ctx,
                                       [Description("Users to grant priviledge to.")] params DiscordUser[] users)
             {
@@ -75,9 +75,9 @@ namespace TheGodfather.Modules.Owner
             [Command("delete"), Module(ModuleType.Owner)]
             [Description("Remove users from priviledged users list..")]
             [Aliases("-", "remove", "rm", "del")]
-            [UsageExample("!owner priviledgedusers remove @Someone")]
-            [UsageExample("!owner priviledgedusers remove 123123123123123")]
-            [UsageExample("!owner priviledgedusers remove @Someone 123123123123123")]
+            [UsageExamples("!owner priviledgedusers remove @Someone",
+                           "!owner priviledgedusers remove 123123123123123",
+                           "!owner priviledgedusers remove @Someone 123123123123123")]
             public async Task DeleteAsync(CommandContext ctx,
                                          [Description("Users to revoke priviledges from.")] params DiscordUser[] users)
             {
@@ -106,7 +106,7 @@ namespace TheGodfather.Modules.Owner
             [Command("list"), Module(ModuleType.Owner)]
             [Description("List all priviledged users.")]
             [Aliases("ls")]
-            [UsageExample("!owner priviledgedusers list")]
+            [UsageExamples("!owner priviledgedusers list")]
             public async Task ListAsync(CommandContext ctx)
             {
                 var priviledged = await Database.GetAllPriviledgedUsersAsync()

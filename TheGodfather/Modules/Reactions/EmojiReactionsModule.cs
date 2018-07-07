@@ -23,7 +23,7 @@ namespace TheGodfather.Modules.Reactions
     [Group("emojireaction"), Module(ModuleType.Reactions)]
     [Description("Orders a bot to react with given emoji to a message containing a trigger word inside (guild specific). If invoked without subcommands, adds a new emoji reaction to a given trigger word list. Note: Trigger words can be regular expressions (use ``emojireaction addregex`` command).")]
     [Aliases("ereact", "er", "emojir", "emojireactions")]
-    [UsageExample("!emojireaction :smile: haha laughing")]
+    [UsageExamples("!emojireaction :smile: haha laughing")]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
     [NotBlocked]
     public class EmojiReactionsModule : TheGodfatherBaseModule
@@ -56,8 +56,8 @@ namespace TheGodfather.Modules.Reactions
         [Module(ModuleType.Reactions)]
         [Description("Add emoji reaction to guild reaction list.")]
         [Aliases("+", "new", "a")]
-        [UsageExample("!emojireaction add :smile: haha")]
-        [UsageExample("!emojireaction add haha :smile:")]
+        [UsageExamples("!emojireaction add :smile: haha",
+                       "!emojireaction add haha :smile:")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public Task AddAsync(CommandContext ctx,
                             [Description("Emoji to send.")] DiscordEmoji emoji,
@@ -76,8 +76,8 @@ namespace TheGodfather.Modules.Reactions
         [Module(ModuleType.Reactions)]
         [Description("Add emoji reaction triggered by a regex to guild reaction list.")]
         [Aliases("+r", "+regex", "+regexp", "+rgx", "newregex", "addrgx")]
-        [UsageExample("!emojireaction addregex :smile: (ha)+")]
-        [UsageExample("!emojireaction addregex (ha)+ :smile:")]
+        [UsageExamples("!emojireaction addregex :smile: (ha)+",
+                       "!emojireaction addregex (ha)+ :smile:")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public Task AddRegexAsync(CommandContext ctx,
                                  [Description("Emoji to send.")] DiscordEmoji emoji,
@@ -95,7 +95,7 @@ namespace TheGodfather.Modules.Reactions
         [Command("clear"), Module(ModuleType.Reactions)]
         [Description("Delete all reactions for the current guild.")]
         [Aliases("da", "c", "ca", "cl", "clearall")]
-        [UsageExample("!emojireactions clear")]
+        [UsageExamples("!emojireactions clear")]
         [RequireUserPermissions(Permissions.Administrator)]
         [UsesInteractivity]
         public async Task ClearAsync(CommandContext ctx)
@@ -136,10 +136,10 @@ namespace TheGodfather.Modules.Reactions
         [Module(ModuleType.Reactions)]
         [Description("Remove emoji reactions for given trigger words.")]
         [Aliases("-", "remove", "del", "rm", "d")]
-        [UsageExample("!emojireaction delete haha sometrigger")]
-        [UsageExample("!emojireaction delete 5")]
-        [UsageExample("!emojireaction delete 5 4")]
-        [UsageExample("!emojireaction delete :joy:")]
+        [UsageExamples("!emojireaction delete haha sometrigger",
+                       "!emojireaction delete 5",
+                       "!emojireaction delete 5 4",
+                       "!emojireaction delete :joy:")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task DeleteAsync(CommandContext ctx,
                                      [Description("Emoji to remove reactions for.")] DiscordEmoji emoji)
@@ -298,7 +298,7 @@ namespace TheGodfather.Modules.Reactions
         [Command("list"), Module(ModuleType.Reactions)]
         [Description("Show all emoji reactions for this guild.")]
         [Aliases("ls", "l", "view")]
-        [UsageExample("!emojireaction list")]
+        [UsageExamples("!emojireaction list")]
         public async Task ListAsync(CommandContext ctx)
         {
             if (!Shared.EmojiReactions.ContainsKey(ctx.Guild.Id) || !Shared.EmojiReactions[ctx.Guild.Id].Any())

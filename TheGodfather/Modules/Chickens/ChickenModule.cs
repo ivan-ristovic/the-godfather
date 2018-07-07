@@ -22,8 +22,8 @@ namespace TheGodfather.Modules.Chickens
     [Description("Manage your chicken. If invoked without subcommands, prints out your chicken information.")]
     [Aliases("cock", "hen", "chick", "coc", "cc")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    [UsageExample("!chicken")]
-    [UsageExample("!chicken @Someone")]
+    [UsageExamples("!chicken",
+                   "!chicken @Someone")]
     [NotBlocked]
     public partial class ChickenModule : TheGodfatherBaseModule
     {
@@ -41,7 +41,7 @@ namespace TheGodfather.Modules.Chickens
         [Command("fight"), Module(ModuleType.Chickens)]
         [Description("Make your chicken and another user's chicken fight eachother!")]
         [Aliases("f", "duel", "attack")]
-        [UsageExample("!chicken duel @Someone")]
+        [UsageExamples("!chicken duel @Someone")]
         public async Task FightAsync(CommandContext ctx,
                                     [Description("User.")] DiscordUser user)
         {
@@ -107,7 +107,7 @@ namespace TheGodfather.Modules.Chickens
         [Command("flu"), Module(ModuleType.Chickens)]
         [Description("Pay a well-known scientist to create a disease that disintegrates weak chickens.")]
         [Aliases("cancer", "disease", "blackdeath")]
-        [UsageExample("!chicken flu")]
+        [UsageExamples("!chicken flu")]
         [UsesInteractivity]
         public async Task FluAsync(CommandContext ctx)
         {
@@ -134,7 +134,7 @@ namespace TheGodfather.Modules.Chickens
         [Description("Heal your chicken (+100 HP). There is one medicine made each 10 minutes, so you need to grab it before the others do!")]
         [Aliases("+hp", "hp")]
         [Cooldown(1, 300, CooldownBucketType.Guild)]
-        [UsageExample("!chicken heal")]
+        [UsageExamples("!chicken heal")]
         public async Task HealAsync(CommandContext ctx)
         {
             if (ChannelEvent.GetEventInChannel(ctx.Channel.Id) is ChickenWar)
@@ -158,7 +158,7 @@ namespace TheGodfather.Modules.Chickens
         [Command("info"), Module(ModuleType.Chickens)]
         [Description("View user's chicken info. If the user is not given, views sender's chicken info.")]
         [Aliases("information", "stats")]
-        [UsageExample("!chicken info @Someone")]
+        [UsageExamples("!chicken info @Someone")]
         public async Task InfoAsync(CommandContext ctx,
                                    [Description("User.")] DiscordUser user = null)
         {
@@ -179,7 +179,7 @@ namespace TheGodfather.Modules.Chickens
         [Command("rename"), Module(ModuleType.Chickens)]
         [Description("Rename your chicken.")]
         [Aliases("rn", "name")]
-        [UsageExample("!chicken name New Name")]
+        [UsageExamples("!chicken name New Name")]
         public async Task RenameAsync(CommandContext ctx,
                                      [RemainingText, Description("Chicken name.")] string name = null)
         {
@@ -213,7 +213,7 @@ namespace TheGodfather.Modules.Chickens
         [Command("sell"), Module(ModuleType.Chickens)]
         [Description("Sell your chicken.")]
         [Aliases("s")]
-        [UsageExample("!chicken sell")]
+        [UsageExamples("!chicken sell")]
         [UsesInteractivity]
         public async Task SellAsync(CommandContext ctx)
         {
@@ -243,7 +243,7 @@ namespace TheGodfather.Modules.Chickens
         [Command("top"), Module(ModuleType.Chickens)]
         [Description("View the list of strongest chickens in the current guild.")]
         [Aliases("best", "strongest")]
-        [UsageExample("!chicken top")]
+        [UsageExamples("!chicken top")]
         public async Task TopAsync(CommandContext ctx)
         {
             var chickens = await Database.GetStrongestChickensForGuildAsync(ctx.Guild.Id)
@@ -272,7 +272,7 @@ namespace TheGodfather.Modules.Chickens
         [Command("topglobal"), Module(ModuleType.Chickens)]
         [Description("View the list of strongest chickens globally.")]
         [Aliases("bestglobally", "globallystrongest", "globaltop", "topg", "gtop")]
-        [UsageExample("!chicken topglobal")]
+        [UsageExamples("!chicken topglobal")]
         public async Task GlobalTopAsync(CommandContext ctx)
         {
             var chickens = await Database.GetStrongestChickensForGuildAsync()

@@ -21,7 +21,7 @@ namespace TheGodfather.Modules.Chickens
         [Group("train"), Module(ModuleType.Chickens)]
         [Description("Train your chicken using your credits from WM bank.")]
         [Aliases("tr", "t", "exercise")]
-        [UsageExample("!chicken train")]
+        [UsageExamples("!chicken train")]
         [UsesInteractivity]
         public class TrainModule : TheGodfatherBaseModule
         {
@@ -38,7 +38,7 @@ namespace TheGodfather.Modules.Chickens
             [Command("strength"), Module(ModuleType.Chickens)]
             [Description("Train your chicken's strength using your credits from WM bank.")]
             [Aliases("str", "st", "s")]
-            [UsageExample("!chicken train strength")]
+            [UsageExamples("!chicken train strength")]
             public async Task StrengthAsync(CommandContext ctx)
             {
                 var chicken = await Database.GetChickenInfoAsync(ctx.User.Id, ctx.Guild.Id)
@@ -78,7 +78,7 @@ namespace TheGodfather.Modules.Chickens
             [Command("vitality"), Module(ModuleType.Chickens)]
             [Description("Train your chicken's vitality using your credits from WM bank.")]
             [Aliases("vit", "vi", "v")]
-            [UsageExample("!chicken train vitality")]
+            [UsageExamples("!chicken train vitality")]
             public async Task VitalityAsync(CommandContext ctx)
             {
                 var chicken = await Database.GetChickenInfoAsync(ctx.User.Id, ctx.Guild.Id)

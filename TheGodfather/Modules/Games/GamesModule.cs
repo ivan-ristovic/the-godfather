@@ -41,7 +41,7 @@ namespace TheGodfather.Modules.Games
         [Command("leaderboard"), Module(ModuleType.Games)]
         [Description("View the global game leaderboard.")]
         [Aliases("globalstats")]
-        [UsageExample("!game leaderboard")]
+        [UsageExamples("!game leaderboard")]
         public async Task LeaderboardAsync(CommandContext ctx)
         {
             var em = await Database.GetStatsLeaderboardAsync(ctx.Client)
@@ -55,7 +55,7 @@ namespace TheGodfather.Modules.Games
         [Command("rps"), Module(ModuleType.Games)]
         [Description("Rock, paper, scissors game against TheGodfather")]
         [Aliases("rockpaperscissors")]
-        [UsageExample("!game rps scissors")]
+        [UsageExamples("!game rps scissors")]
         public async Task RpsAsync(CommandContext ctx,
                                   [Description("rock/paper/scissors")] string rps)
         {
@@ -93,8 +93,8 @@ namespace TheGodfather.Modules.Games
         [Command("stats"), Module(ModuleType.Games)]
         [Description("Print game stats for given user.")]
         [Aliases("s", "st")]
-        [UsageExample("!game stats")]
-        [UsageExample("!game stats @Someone")]
+        [UsageExamples("!game stats",
+                       "!game stats @Someone")]
         public async Task StatsAsync(CommandContext ctx,
                                     [Description("User.")] DiscordUser user = null)
         {

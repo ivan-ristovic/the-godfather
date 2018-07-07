@@ -24,7 +24,7 @@ namespace TheGodfather.Modules.Polls
         [Module(ModuleType.Polls)]
         [Description("Starts a poll with reactions in the channel.")]
         [Aliases("rpoll", "pollr", "voter")]
-        [UsageExample("!rpoll :smile: :joy:")]
+        [UsageExamples("!rpoll :smile: :joy:")]
         public async Task ReactionsPollAsync(CommandContext ctx,
                                             [Description("Time for poll to run.")] TimeSpan timeout,
                                             [RemainingText, Description("Question.")] string question)

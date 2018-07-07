@@ -24,7 +24,7 @@ namespace TheGodfather.Modules.Chickens
         [Group("upgrades"), Module(ModuleType.Chickens)]
         [Description("Upgrade your chicken with items you can buy using your credits from WM bank. Invoking the group lists all upgrades available.")]
         [Aliases("perks", "upgrade", "u")]
-        [UsageExample("!chicken upgrade")]
+        [UsageExamples("!chicken upgrade")]
         public class UpgradeModule : TheGodfatherBaseModule
         {
 
@@ -74,7 +74,7 @@ namespace TheGodfather.Modules.Chickens
             [Command("list"), Module(ModuleType.Chickens)]
             [Description("List all available upgrades.")]
             [Aliases("ls", "view")]
-            [UsageExample("!chicken upgrade list")]
+            [UsageExamples("!chicken upgrade list")]
             public async Task ListAsync(CommandContext ctx)
             {
                 var upgrades = await Database.GetAllChickenUpgradesAsync()

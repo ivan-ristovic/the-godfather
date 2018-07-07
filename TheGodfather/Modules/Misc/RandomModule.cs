@@ -26,7 +26,7 @@ namespace TheGodfather.Modules.Misc
         #region COMMAND_CAT
         [Command("cat"), Module(ModuleType.Miscellaneous)]
         [Description("Get a random cat image.")]
-        [UsageExample("!random cat")]
+        [UsageExamples("!random cat")]
         public async Task RandomCatAsync(CommandContext ctx)
         {
             string url = await PetImagesService.GetRandomCatImageAsync()
@@ -44,7 +44,7 @@ namespace TheGodfather.Modules.Misc
         #region COMMAND_DOG
         [Command("dog"), Module(ModuleType.Miscellaneous)]
         [Description("Get a random dog image.")]
-        [UsageExample("!random dog")]
+        [UsageExamples("!random dog")]
         public async Task RandomDogAsync(CommandContext ctx)
         {
             string url = await PetImagesService.GetRandomDogImageAsync()
@@ -63,7 +63,7 @@ namespace TheGodfather.Modules.Misc
         [Command("choose"), Module(ModuleType.Miscellaneous)]
         [Description("Choose one of the provided options separated by comma.")]
         [Aliases("select")]
-        [UsageExample("!random choose option 1, option 2, option 3...")]
+        [UsageExamples("!random choose option 1, option 2, option 3...")]
         public async Task ChooseAsync(CommandContext ctx,
                                      [RemainingText, Description("Option list (separated by comma).")] string text)
         {
@@ -83,8 +83,8 @@ namespace TheGodfather.Modules.Misc
         [Command("raffle"), Module(ModuleType.Miscellaneous)]
         [Description("Choose a user from the online members list belonging to a given role.")]
         [Aliases("chooseuser")]
-        [UsageExample("!random raffle")]
-        [UsageExample("!random raffle Admins")]
+        [UsageExamples("!random raffle",
+                       "!random raffle Admins")]
         public async Task RaffleAsync(CommandContext ctx,
                                      [Description("Role.")] DiscordRole role = null)
         {

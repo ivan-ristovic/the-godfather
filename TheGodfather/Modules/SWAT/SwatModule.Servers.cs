@@ -33,8 +33,8 @@ namespace TheGodfather.Modules.SWAT
             [Command("add"), Module(ModuleType.SWAT)]
             [Description("Add a server to serverlist.")]
             [Aliases("+", "a")]
-            [UsageExample("!swat servers add 4u 109.70.149.158:10480")]
-            [UsageExample("!swat servers add 4u 109.70.149.158:10480 10481")]
+            [UsageExamples("!swat servers add 4u 109.70.149.158:10480",
+                           "!swat servers add 4u 109.70.149.158:10480 10481")]
             public async Task AddAsync(CommandContext ctx,
                                       [Description("Name.")] string name,
                                       [Description("IP.")] string ip,
@@ -59,7 +59,7 @@ namespace TheGodfather.Modules.SWAT
             [Command("delete"), Module(ModuleType.SWAT)]
             [Description("Remove a server from serverlist.")]
             [Aliases("-", "del", "d")]
-            [UsageExample("!swat servers delete 4u")]
+            [UsageExamples("!swat servers delete 4u")]
             public async Task DeleteAsync(CommandContext ctx,
                                          [Description("Name.")] string name)
             {
@@ -77,7 +77,7 @@ namespace TheGodfather.Modules.SWAT
             [Command("list"), Module(ModuleType.SWAT)]
             [Description("List all registered servers.")]
             [Aliases("ls", "l")]
-            [UsageExample("!swat servers list")]
+            [UsageExamples("!swat servers list")]
             public async Task ListAsync(CommandContext ctx)
             {
                 var servers = await Database.GetAllSwatServersAsync()

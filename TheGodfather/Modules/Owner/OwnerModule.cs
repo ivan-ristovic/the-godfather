@@ -40,7 +40,7 @@ namespace TheGodfather.Modules.Owner
         [Command("announce"), Module(ModuleType.Owner)]
         [Description("Send a message to all guilds the bot is in.")]
         [Aliases("a", "ann")]
-        [UsageExample("!owner announce SPAM SPAM")]
+        [UsageExamples("!owner announce SPAM SPAM")]
         [RequireOwner]
         [NotBlocked, UsesInteractivity]
         public async Task ClearLogAsync(CommandContext ctx,
@@ -70,7 +70,7 @@ namespace TheGodfather.Modules.Owner
         [Command("botavatar"), Module(ModuleType.Owner)]
         [Description("Set bot avatar.")]
         [Aliases("setbotavatar", "setavatar")]
-        [UsageExample("!owner botavatar http://someimage.png")]
+        [UsageExamples("!owner botavatar http://someimage.png")]
         [RequireOwner]
         [NotBlocked]
         public async Task SetBotAvatarAsync(CommandContext ctx,
@@ -103,7 +103,7 @@ namespace TheGodfather.Modules.Owner
         [Command("botname"), Module(ModuleType.Owner)]
         [Description("Set bot name.")]
         [Aliases("setbotname", "setname")]
-        [UsageExample("!owner setname TheBotfather")]
+        [UsageExamples("!owner setname TheBotfather")]
         [RequireOwner]
         [NotBlocked]
         public async Task SetBotNameAsync(CommandContext ctx,
@@ -123,7 +123,7 @@ namespace TheGodfather.Modules.Owner
         [Command("clearlog"), Module(ModuleType.Owner)]
         [Description("Clear application logs.")]
         [Aliases("clearlogs", "deletelogs", "deletelog")]
-        [UsageExample("!owner clearlog")]
+        [UsageExamples("!owner clearlog")]
         [RequireOwner]
         [NotBlocked, UsesInteractivity]
         public async Task ClearLogAsync(CommandContext ctx)
@@ -143,7 +143,7 @@ namespace TheGodfather.Modules.Owner
         [Command("dbquery"), Module(ModuleType.Owner)]
         [Description("Execute SQL query on the bot database.")]
         [Aliases("sql", "dbq", "q")]
-        [UsageExample("!owner dbquery SELECT * FROM gf.msgcount;")]
+        [UsageExamples("!owner dbquery SELECT * FROM gf.msgcount;")]
         [RequireOwner]
         [NotBlocked]
         public async Task DatabaseQuery(CommandContext ctx,
@@ -188,7 +188,7 @@ namespace TheGodfather.Modules.Owner
         [Command("eval"), Module(ModuleType.Owner)]
         [Description("Evaluates a snippet of C# code, in context. Surround the code in the code block.")]
         [Aliases("compile", "run", "e", "c", "r")]
-        [UsageExample("!owner eval ```await Context.RespondAsync(\"Hello!\");```")]
+        [UsageExamples("!owner eval ```await Context.RespondAsync(\"Hello!\");```")]
         [RequireOwner]
         [NotBlocked]
         public async Task EvaluateAsync(CommandContext ctx,
@@ -282,8 +282,8 @@ namespace TheGodfather.Modules.Owner
         [Command("filelog"), Module(ModuleType.Owner)]
         [Description("Toggle writing to log file.")]
         [Aliases("setfl", "fl", "setfilelog")]
-        [UsageExample("!owner filelog yes")]
-        [UsageExample("!owner filelog false")]
+        [UsageExamples("!owner filelog yes",
+                       "!owner filelog false")]
         [RequireOwner]
         [NotBlocked]
         public async Task FileLogAsync(CommandContext ctx,
@@ -300,8 +300,8 @@ namespace TheGodfather.Modules.Owner
         [Command("generatecommandlist"), Module(ModuleType.Owner)]
         [Description("Generates a markdown command-list. You can also provide a folder for the output.")]
         [Aliases("cmdlist", "gencmdlist", "gencmds", "gencmdslist")]
-        [UsageExample("!owner generatecommandlist")]
-        [UsageExample("!owner generatecommandlist Temp/blabla.md")]
+        [UsageExamples("!owner generatecommandlist",
+                       "!owner generatecommandlist Temp/blabla.md")]
         [RequireOwner]
         [NotBlocked]
         public async Task GenerateCommandListAsync(CommandContext ctx,
@@ -408,12 +408,10 @@ namespace TheGodfather.Modules.Owner
                         }
                     }
 
-                    var examples = cmd.CustomAttributes.Where(chk => chk is UsageExampleAttribute)
-                                                       .Select(chk => chk as UsageExampleAttribute);
-                    if (examples.Any()) {
+                    var examples = cmd.CustomAttributes.FirstOrDefault(chk => chk is UsageExamplesAttribute) as UsageExamplesAttribute;
+                    if (examples != null) {
                         sb.AppendLine(Formatter.Bold("Examples:")).AppendLine().AppendLine("```");
-                        foreach (var example in examples)
-                            sb.AppendLine(example.JoinExamples());
+                        sb.AppendLine(examples.JoinExamples());
                         sb.AppendLine("```");
                     }
 
@@ -451,8 +449,8 @@ namespace TheGodfather.Modules.Owner
         [Command("leaveguilds"), Module(ModuleType.Owner)]
         [Description("Leaves the given guilds.")]
         [Aliases("leave", "gtfo")]
-        [UsageExample("!owner leave 337570344149975050")]
-        [UsageExample("!owner leave 337570344149975050 201315884709576708")]
+        [UsageExamples("!owner leave 337570344149975050",
+                       "!owner leave 337570344149975050 201315884709576708")]
         [RequireOwner]
         [NotBlocked]
         public async Task LeaveGuildsAsync(CommandContext ctx,
@@ -485,8 +483,8 @@ namespace TheGodfather.Modules.Owner
         [Command("sendmessage"), Module(ModuleType.Owner)]
         [Description("Sends a message to a user or channel.")]
         [Aliases("send", "s")]
-        [UsageExample("!owner send u 303463460233150464 Hi to user!")]
-        [UsageExample("!owner send c 120233460278590414 Hi to channel!")]
+        [UsageExamples("!owner send u 303463460233150464 Hi to user!",
+                       "!owner send c 120233460278590414 Hi to channel!")]
         [RequirePriviledgedUser]
         [NotBlocked]
         public async Task SendAsync(CommandContext ctx,
@@ -523,7 +521,7 @@ namespace TheGodfather.Modules.Owner
         [Module(ModuleType.Owner)]
         [Description("Triggers the dying in the vineyard scene (power off the bot).")]
         [Aliases("disable", "poweroff", "exit", "quit")]
-        [UsageExample("!owner shutdown")]
+        [UsageExamples("!owner shutdown")]
         [RequirePriviledgedUser]
         [NotBlocked]
         public async Task ExitAsync(CommandContext ctx,
@@ -545,7 +543,7 @@ namespace TheGodfather.Modules.Owner
         [Command("sudo"), Module(ModuleType.Owner)]
         [Description("Executes a command as another user.")]
         [Aliases("execas", "as")]
-        [UsageExample("!owner sudo @Someone !rate")]
+        [UsageExamples("!owner sudo @Someone !rate")]
         [RequirePriviledgedUser]
         [NotBlocked]
         public async Task SudoAsync(CommandContext ctx,
@@ -564,7 +562,7 @@ namespace TheGodfather.Modules.Owner
         [Command("toggleignore"), Module(ModuleType.Owner)]
         [Description("Toggle bot's reaction to commands.")]
         [Aliases("ti")]
-        [UsageExample("!owner toggleignore")]
+        [UsageExamples("!owner toggleignore")]
         [RequirePriviledgedUser]
         public async Task ToggleIgnoreAsync(CommandContext ctx)
         {

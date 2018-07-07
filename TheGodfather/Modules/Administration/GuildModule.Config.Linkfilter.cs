@@ -25,7 +25,7 @@ namespace TheGodfather.Modules.Administration
             [Group("linkfilter"), Module(ModuleType.Administration)]
             [Description("Linkfilter configuration.")]
             [Aliases("lf", "linkf", "linkremove", "filterlinks")]
-            [UsageExample("!guild cfg linkfilter")]
+            [UsageExamples("!guild cfg linkfilter")]
             public class LinkFilter : TheGodfatherBaseModule
             {
 
@@ -60,7 +60,7 @@ namespace TheGodfather.Modules.Administration
                 [Command("enable"), Module(ModuleType.Administration)]
                 [Description("Enables link filtering for this guild.")]
                 [Aliases("on")]
-                [UsageExample("!guild cfg linkfilter on")]
+                [UsageExamples("!guild cfg linkfilter on")]
                 public async Task EnableAsync(CommandContext ctx)
                 {
                     var gcfg = Shared.GetGuildConfig(ctx.Guild.Id);
@@ -80,7 +80,7 @@ namespace TheGodfather.Modules.Administration
                 [Command("disable"), Module(ModuleType.Administration)]
                 [Description("Disables link filtering for this guild.")]
                 [Aliases("off")]
-                [UsageExample("!guild cfg linkfilter off")]
+                [UsageExamples("!guild cfg linkfilter off")]
                 public async Task DisableAsync(CommandContext ctx)
                 {
                     var gcfg = Shared.GetGuildConfig(ctx.Guild.Id);
@@ -101,7 +101,7 @@ namespace TheGodfather.Modules.Administration
                 [Group("booters"), Module(ModuleType.Administration)]
                 [Description("Enable or disable DDoS/Booter website filtering.")]
                 [Aliases("ddos", "boot", "dos")]
-                [UsageExample("!guild cfg linkfilter booters")]
+                [UsageExamples("!guild cfg linkfilter booters")]
                 public class Booters : LinkFilter
                 {
 
@@ -121,7 +121,7 @@ namespace TheGodfather.Modules.Administration
                     [Command("enable"), Module(ModuleType.Administration)]
                     [Description("Enables DDoS/Booter website filtering for this guild.")]
                     [Aliases("on")]
-                    [UsageExample("!guild cfg linkfilter booters on")]
+                    [UsageExamples("!guild cfg linkfilter booters on")]
                     new public async Task EnableAsync(CommandContext ctx)
                     {
                         var gcfg = Shared.GetGuildConfig(ctx.Guild.Id);
@@ -141,7 +141,7 @@ namespace TheGodfather.Modules.Administration
                     [Command("disable"), Module(ModuleType.Administration)]
                     [Description("Disables DDoS/Booter website filtering for this guild.")]
                     [Aliases("off")]
-                    [UsageExample("!guild cfg linkfilter booters off")]
+                    [UsageExamples("!guild cfg linkfilter booters off")]
                     new public async Task DisableAsync(CommandContext ctx)
                     {
                         var gcfg = Shared.GetGuildConfig(ctx.Guild.Id);
@@ -164,7 +164,7 @@ namespace TheGodfather.Modules.Administration
                 [Group("invites"), Module(ModuleType.Administration)]
                 [Description("Enable or disable Discord invite filters.")]
                 [Aliases("invite", "inv", "i")]
-                [UsageExample("!guild cfg linkfilter invites")]
+                [UsageExamples("!guild cfg linkfilter invites")]
                 public class Invites : LinkFilter
                 {
 
@@ -184,7 +184,7 @@ namespace TheGodfather.Modules.Administration
                     [Command("enable"), Module(ModuleType.Administration)]
                     [Description("Enables Discord invite filtering for this guild.")]
                     [Aliases("on")]
-                    [UsageExample("!guild cfg linkfilter invites on")]
+                    [UsageExamples("!guild cfg linkfilter invites on")]
                     new public async Task EnableAsync(CommandContext ctx)
                     {
                         var gcfg = Shared.GetGuildConfig(ctx.Guild.Id);
@@ -204,7 +204,7 @@ namespace TheGodfather.Modules.Administration
                     [Command("disable"), Module(ModuleType.Administration)]
                     [Description("Disables Discord invite filtering for this guild.")]
                     [Aliases("off")]
-                    [UsageExample("!guild cfg linkfilter invites off")]
+                    [UsageExamples("!guild cfg linkfilter invites off")]
                     new public async Task DisableAsync(CommandContext ctx)
                     {
                         var gcfg = Shared.GetGuildConfig(ctx.Guild.Id);
@@ -226,7 +226,7 @@ namespace TheGodfather.Modules.Administration
                 [Group("disturbingsites"), Module(ModuleType.Administration)]
                 [Description("Enable or disable shock website filtering.")]
                 [Aliases("disturbing", "shock", "shocksites")]
-                [UsageExample("!guild cfg linkfilter disturbing")]
+                [UsageExamples("!guild cfg linkfilter disturbing")]
                 public class DisturbingSites : LinkFilter
                 {
 
@@ -246,7 +246,7 @@ namespace TheGodfather.Modules.Administration
                     [Command("enable"), Module(ModuleType.Administration)]
                     [Description("Enables shock website filtering for this guild.")]
                     [Aliases("on")]
-                    [UsageExample("!guild cfg linkfilter disturbing on")]
+                    [UsageExamples("!guild cfg linkfilter disturbing on")]
                     new public async Task EnableAsync(CommandContext ctx)
                     {
                         var gcfg = Shared.GetGuildConfig(ctx.Guild.Id);
@@ -266,7 +266,7 @@ namespace TheGodfather.Modules.Administration
                     [Command("disable"), Module(ModuleType.Administration)]
                     [Description("Disables shock website filtering for this guild.")]
                     [Aliases("off")]
-                    [UsageExample("!guild cfg linkfilter disturbing off")]
+                    [UsageExamples("!guild cfg linkfilter disturbing off")]
                     new public async Task DisableAsync(CommandContext ctx)
                     {
                         var gcfg = Shared.GetGuildConfig(ctx.Guild.Id);
@@ -288,7 +288,7 @@ namespace TheGodfather.Modules.Administration
                 [Group("iploggers"), Module(ModuleType.Administration)]
                 [Description("Enable or disable filtering of IP logger websites.")]
                 [Aliases("ip", "loggers", "ipleech")]
-                [UsageExample("!guild cfg linkfilter iploggers")]
+                [UsageExamples("!guild cfg linkfilter iploggers")]
                 public class IpLoggers : LinkFilter
                 {
 
@@ -308,7 +308,7 @@ namespace TheGodfather.Modules.Administration
                     [Command("enable"), Module(ModuleType.Administration)]
                     [Description("Enables IP logger websites filtering for this guild.")]
                     [Aliases("on")]
-                    [UsageExample("!guild cfg linkfilter iploggers on")]
+                    [UsageExamples("!guild cfg linkfilter iploggers on")]
                     new public async Task EnableAsync(CommandContext ctx)
                     {
                         var gcfg = Shared.GetGuildConfig(ctx.Guild.Id);
@@ -328,7 +328,7 @@ namespace TheGodfather.Modules.Administration
                     [Command("disable"), Module(ModuleType.Administration)]
                     [Description("Disables IP logging website filtering for this guild.")]
                     [Aliases("off")]
-                    [UsageExample("!guild cfg linkfilter iploggers off")]
+                    [UsageExamples("!guild cfg linkfilter iploggers off")]
                     new public async Task DisableAsync(CommandContext ctx)
                     {
                         var gcfg = Shared.GetGuildConfig(ctx.Guild.Id);
@@ -350,7 +350,7 @@ namespace TheGodfather.Modules.Administration
                 [Group("shorteners"), Module(ModuleType.Administration)]
                 [Description("Enable or disable filtering of URL shortener websites.")]
                 [Aliases("urlshort", "shortenurl", "urlshorteners")]
-                [UsageExample("!guild cfg linkfilter shorteners")]
+                [UsageExamples("!guild cfg linkfilter shorteners")]
                 public class Shorteners : LinkFilter
                 {
 
@@ -370,7 +370,7 @@ namespace TheGodfather.Modules.Administration
                     [Command("enable"), Module(ModuleType.Administration)]
                     [Description("Enables URL shortener websites filtering for this guild.")]
                     [Aliases("on")]
-                    [UsageExample("!guild cfg linkfilter shorteners on")]
+                    [UsageExamples("!guild cfg linkfilter shorteners on")]
                     new public async Task EnableAsync(CommandContext ctx)
                     {
                         var gcfg = Shared.GetGuildConfig(ctx.Guild.Id);
@@ -390,7 +390,7 @@ namespace TheGodfather.Modules.Administration
                     [Command("disable"), Module(ModuleType.Administration)]
                     [Description("Disables URL shortener website filtering for this guild.")]
                     [Aliases("off")]
-                    [UsageExample("!guild cfg linkfilter shorteners off")]
+                    [UsageExamples("!guild cfg linkfilter shorteners off")]
                     new public async Task DisableAsync(CommandContext ctx)
                     {
                         var gcfg = Shared.GetGuildConfig(ctx.Guild.Id);

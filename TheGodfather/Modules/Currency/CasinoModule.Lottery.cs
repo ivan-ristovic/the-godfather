@@ -26,7 +26,7 @@ namespace TheGodfather.Modules.Currency
         [Group("lottery"), Module(ModuleType.Currency)]
         [Description("Play a lottery game. The three numbers are drawn from 1 to 15 and they can't repeat.")]
         [Aliases("lotto")]
-        [UsageExample("!casino lottery 2 10 8")]
+        [UsageExamples("!casino lottery 2 10 8")]
         public class LotteryModule : TheGodfatherBaseModule
         {
 
@@ -83,7 +83,7 @@ namespace TheGodfather.Modules.Currency
             [Command("join"), Module(ModuleType.Currency)]
             [Description("Join a pending Lottery game.")]
             [Aliases("+", "compete", "enter", "j")]
-            [UsageExample("!casino lottery join 2 10 8")]
+            [UsageExamples("!casino lottery join 2 10 8")]
             public async Task JoinAsync(CommandContext ctx,
                                        [RemainingText, Description("Three numbers.")] params int[] numbers)
             {
@@ -118,7 +118,7 @@ namespace TheGodfather.Modules.Currency
             [Command("rules"), Module(ModuleType.Currency)]
             [Description("Explain the Lottery rules.")]
             [Aliases("help", "h", "ruling", "rule")]
-            [UsageExample("!casino lottery rules")]
+            [UsageExamples("!casino lottery rules")]
             public async Task RulesAsync(CommandContext ctx)
             {
                 await ctx.RespondWithIconEmbedAsync(

@@ -24,7 +24,7 @@ namespace TheGodfather.Modules.Games
         [Group("animalrace"), Module(ModuleType.Games)]
         [Description("Start a new animal race!")]
         [Aliases("animr", "arace", "ar", "animalr")]
-        [UsageExample("!game animalrace")]
+        [UsageExamples("!game animalrace")]
         [NotBlocked]
         public class AnimalRaceModule : TheGodfatherBaseModule
         {
@@ -74,7 +74,7 @@ namespace TheGodfather.Modules.Games
             [Command("join"), Module(ModuleType.Games)]
             [Description("Join an existing animal race game.")]
             [Aliases("+", "compete", "enter", "j")]
-            [UsageExample("!game animalrace join")]
+            [UsageExamples("!game animalrace join")]
             public async Task JoinAsync(CommandContext ctx)
             {
                 if (!(ChannelEvent.GetEventInChannel(ctx.Channel.Id) is AnimalRace game))
@@ -98,7 +98,7 @@ namespace TheGodfather.Modules.Games
             [Command("stats"), Module(ModuleType.Games)]
             [Description("Print the leaderboard for this game.")]
             [Aliases("top", "leaderboard")]
-            [UsageExample("!game animalrace stats")]
+            [UsageExamples("!game animalrace stats")]
             public async Task StatsAsync(CommandContext ctx)
             {
                 var top = await Database.GetTopRacersStringAsync(ctx.Client)

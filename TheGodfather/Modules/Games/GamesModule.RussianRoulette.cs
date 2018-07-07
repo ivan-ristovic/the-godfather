@@ -23,7 +23,7 @@ namespace TheGodfather.Modules.Games
         [Group("russianroulette"), Module(ModuleType.Games)]
         [Description("Starts a russian roulette game which I will commentate.")]
         [Aliases("rr", "roulette", "russianr")]
-        [UsageExample("!game russianroulette")]
+        [UsageExamples("!game russianroulette")]
         public class RussianRouletteModule : TheGodfatherBaseModule
         {
 
@@ -73,7 +73,7 @@ namespace TheGodfather.Modules.Games
             [Command("join"), Module(ModuleType.Games)]
             [Description("Join an existing Russian roulette game pool.")]
             [Aliases("+", "compete", "j", "enter")]
-            [UsageExample("!game russianroulette join")]
+            [UsageExamples("!game russianroulette join")]
             public async Task JoinAsync(CommandContext ctx)
             {
                 if (!(ChannelEvent.GetEventInChannel(ctx.Channel.Id) is RussianRoulette game))
@@ -97,7 +97,7 @@ namespace TheGodfather.Modules.Games
             [Command("rules"), Module(ModuleType.Games)]
             [Description("Explain the Russian roulette rules.")]
             [Aliases("help", "h", "ruling", "rule")]
-            [UsageExample("!game numberrace rules")]
+            [UsageExamples("!game numberrace rules")]
             public async Task RulesAsync(CommandContext ctx)
             {
                 await ctx.RespondWithIconEmbedAsync(

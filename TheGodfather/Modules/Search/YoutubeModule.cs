@@ -17,7 +17,7 @@ namespace TheGodfather.Modules.Search
     [Group("youtube"), Module(ModuleType.Searches)]
     [Description("Youtube search commands. If invoked without subcommands, searches YouTube for given query.")]
     [Aliases("y", "yt", "ytube")]
-    [UsageExample("!youtube never gonna give you up")]
+    [UsageExamples("!youtube never gonna give you up")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     [NotBlocked]
     public class YoutubeModule : TheGodfatherServiceModule<YoutubeService>
@@ -36,7 +36,7 @@ namespace TheGodfather.Modules.Search
         [Command("search"), Module(ModuleType.Searches)]
         [Description("Advanced youtube search.")]
         [Aliases("s")]
-        [UsageExample("!youtube search 5 rick astley")]
+        [UsageExamples("!youtube search 5 rick astley")]
         public Task AdvancedSearchAsync(CommandContext ctx,
                                        [Description("Amount of results. [1-10]")] int amount,
                                        [RemainingText, Description("Search query.")] string query)
@@ -47,7 +47,7 @@ namespace TheGodfather.Modules.Search
         [Command("searchvideo"), Module(ModuleType.Searches)]
         [Description("Advanced youtube search for videos only.")]
         [Aliases("sv", "searchv")]
-        [UsageExample("!youtube searchvideo 5 rick astley")]
+        [UsageExamples("!youtube searchvideo 5 rick astley")]
         public Task SearchVideoAsync(CommandContext ctx,
                                     [RemainingText, Description("Search query.")] string query)
             => SearchAndSendResultsAsync(ctx, 5, query, "video");
@@ -57,7 +57,7 @@ namespace TheGodfather.Modules.Search
         [Command("searchchannel"), Module(ModuleType.Searches)]
         [Description("Advanced youtube search for channels only.")]
         [Aliases("sc", "searchc")]
-        [UsageExample("!youtube searchchannel 5 rick astley")]
+        [UsageExamples("!youtube searchchannel 5 rick astley")]
         public Task SearchChannelAsync(CommandContext ctx,
                                       [RemainingText, Description("Search query.")] string query)
             => SearchAndSendResultsAsync(ctx, 5, query, "channel");
@@ -67,7 +67,7 @@ namespace TheGodfather.Modules.Search
         [Command("searchp"), Module(ModuleType.Searches)]
         [Description("Advanced youtube search for playlists only.")]
         [Aliases("sp", "searchplaylist")]
-        [UsageExample("!youtube searchplaylist 5 rick astley")]
+        [UsageExamples("!youtube searchplaylist 5 rick astley")]
         public Task SearchPlaylistAsync(CommandContext ctx,
                                        [RemainingText, Description("Search query.")] string query)
             => SearchAndSendResultsAsync(ctx, 5, query, "playlist");
@@ -77,8 +77,8 @@ namespace TheGodfather.Modules.Search
         [Command("subscribe"), Module(ModuleType.Searches)]
         [Description("Add a new subscription for a YouTube channel.")]
         [Aliases("add", "a", "+", "sub")]
-        [UsageExample("!youtube subscribe https://www.youtube.com/user/RickAstleyVEVO")]
-        [UsageExample("!youtube subscribe https://www.youtube.com/user/RickAstleyVEVO rick")]
+        [UsageExamples("!youtube subscribe https://www.youtube.com/user/RickAstleyVEVO",
+                       "!youtube subscribe https://www.youtube.com/user/RickAstleyVEVO rick")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task SubscribeAsync(CommandContext ctx,
                                         [Description("Channel URL.")] string url,
@@ -105,8 +105,8 @@ namespace TheGodfather.Modules.Search
         [Command("unsubscribe"), Module(ModuleType.Searches)]
         [Description("Remove a YouTube channel subscription.")]
         [Aliases("del", "d", "rm", "-", "unsub")]
-        [UsageExample("!youtube unsubscribe https://www.youtube.com/user/RickAstleyVEVO")]
-        [UsageExample("!youtube unsubscribe rick")]
+        [UsageExamples("!youtube unsubscribe https://www.youtube.com/user/RickAstleyVEVO",
+                       "!youtube unsubscribe rick")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task UnsubscribeAsync(CommandContext ctx,
                                           [Description("Channel URL or subscription name.")] string name_url)

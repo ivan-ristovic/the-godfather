@@ -24,7 +24,7 @@ namespace TheGodfather.Modules.Administration
     [Group("filter"), Module(ModuleType.Administration)]
     [Description("Message filtering commands. If invoked without subcommand, either lists all filters or adds a new filter for the given word list. Words can be regular expressions.")]
     [Aliases("f", "filters")]
-    [UsageExample("!filter fuck fk f+u+c+k+")]
+    [UsageExamples("!filter fuck fk f+u+c+k+")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     [NotBlocked]
     public class FilterModule : TheGodfatherBaseModule
@@ -48,7 +48,7 @@ namespace TheGodfather.Modules.Administration
         [Command("add"), Module(ModuleType.Administration)]
         [Description("Add filter to guild filter list.")]
         [Aliases("+", "new", "a")]
-        [UsageExample("!filter add fuck f+u+c+k+")]
+        [UsageExamples("!filter add fuck f+u+c+k+")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task AddAsync(CommandContext ctx,
                                   [RemainingText, Description("Filter list. Filter is a regular expression (case insensitive).")] params string[] filters)
@@ -133,7 +133,7 @@ namespace TheGodfather.Modules.Administration
         [Command("clear"), Module(ModuleType.Administration)]
         [Description("Delete all filters for the current guild.")]
         [Aliases("da", "c", "ca", "cl", "clearall")]
-        [UsageExample("!filter clear")]
+        [UsageExamples("!filter clear")]
         [RequireUserPermissions(Permissions.Administrator)]
         [UsesInteractivity]
         public async Task ClearAsync(CommandContext ctx)
@@ -174,7 +174,7 @@ namespace TheGodfather.Modules.Administration
         [Module(ModuleType.Administration)]
         [Description("Remove filters from guild filter list.")]
         [Aliases("-", "remove", "del", "rm", "rem", "d")]
-        [UsageExample("!filter delete fuck f+u+c+k+")]
+        [UsageExamples("!filter delete fuck f+u+c+k+")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task DeleteAsync(CommandContext ctx,
                                      [RemainingText, Description("Filters IDs to remove.")] params int[] ids)
@@ -268,7 +268,7 @@ namespace TheGodfather.Modules.Administration
         [Command("list"), Module(ModuleType.Administration)]
         [Description("Show all filters for this guild.")]
         [Aliases("ls", "l")]
-        [UsageExample("!filter list")]
+        [UsageExamples("!filter list")]
         public async Task ListAsync(CommandContext ctx)
         {
             if (!Shared.Filters.ContainsKey(ctx.Guild.Id) || !Shared.Filters[ctx.Guild.Id].Any())

@@ -18,7 +18,7 @@ namespace TheGodfather.Modules.Search
     [Group("rss"), Module(ModuleType.Searches)]
     [Description("Commands for RSS feed querying or subscribing. If invoked without subcommand, gives the latest topic from the given RSS URL.")]
     [Aliases("feed")]
-    [UsageExample("!rss https://news.google.com/news/rss/")]
+    [UsageExamples("!rss https://news.google.com/news/rss/")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     [NotBlocked]
     public class RSSModule : TheGodfatherBaseModule
@@ -49,7 +49,7 @@ namespace TheGodfather.Modules.Search
         [Command("list"), Module(ModuleType.Searches)]
         [Description("Get feed list for the current channel.")]
         [Aliases("ls", "listsubs", "listfeeds")]
-        [UsageExample("!feed list")]
+        [UsageExamples("!feed list")]
         public async Task FeedListAsync(CommandContext ctx)
         {
             var subs = await Database.GetFeedEntriesForChannelAsync(ctx.Channel.Id)
@@ -71,8 +71,8 @@ namespace TheGodfather.Modules.Search
         [Command("subscribe"), Module(ModuleType.Searches)]
         [Description("Subscribe to given RSS feed URL. The bot will send a message when the latest topic is changed.")]
         [Aliases("sub", "add", "+")]
-        [UsageExample("!rss subscribe https://news.google.com/news/rss/")]
-        [UsageExample("!rss subscribe https://news.google.com/news/rss/ news")]
+        [UsageExamples("!rss subscribe https://news.google.com/news/rss/",
+                       "!rss subscribe https://news.google.com/news/rss/ news")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task AddUrlFeedAsync(CommandContext ctx,
                                          [Description("URL.")] string url,
@@ -97,7 +97,7 @@ namespace TheGodfather.Modules.Search
         [Module(ModuleType.Searches)]
         [Description("Remove an existing feed subscription.")]
         [Aliases("del", "d", "rm", "-", "unsub")]
-        [UsageExample("!rss unsubscribe 1")]
+        [UsageExamples("!rss unsubscribe 1")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task UnsubscribeAsync(CommandContext ctx,
                                           [Description("ID of the subscription.")] int id)
@@ -122,7 +122,7 @@ namespace TheGodfather.Modules.Search
         #region COMMAND_RSS_WM
         [Command("wm"), Module(ModuleType.Searches)]
         [Description("Get newest topics from WM forum.")]
-        [UsageExample("!rss wm")]
+        [UsageExamples("!rss wm")]
         public async Task WmRssAsync(CommandContext ctx)
         {
             var res = RSSService.GetFeedResults("http://worldmafia.net/forum/forums/-/index.rss");

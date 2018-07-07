@@ -18,7 +18,7 @@ namespace TheGodfather.Modules.Misc
     [Group("shop"), Module(ModuleType.Miscellaneous)]
     [Description("Shop for items using WM credits from your bank account. If invoked without subcommand, lists all available items for purchase.")]
     [Aliases("store")]
-    [UsageExample("!shop")]
+    [UsageExamples("!shop")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     [NotBlocked]
     public class ShopModule : TheGodfatherBaseModule
@@ -37,9 +37,9 @@ namespace TheGodfather.Modules.Misc
         [Module(ModuleType.Miscellaneous)]
         [Description("Add a new item to guild purchasable items list.")]
         [Aliases("+", "a")]
-        [UsageExample("!shop add Barbie 500")]
-        [UsageExample("!shop add \"New Barbie\" 500")]
-        [UsageExample("!shop add 500 Newest Barbie")]
+        [UsageExamples("!shop add Barbie 500",
+                       "!shop add \"New Barbie\" 500",
+                       "!shop add 500 Newest Barbie")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task AddAsync(CommandContext ctx,
                                   [Description("Item price.")] long price,
@@ -68,7 +68,7 @@ namespace TheGodfather.Modules.Misc
         [Command("buy"), Module(ModuleType.Miscellaneous)]
         [Description("Purchase an item from this guild's shop.")]
         [Aliases("purchase", "shutupandtakemymoney", "b", "p")]
-        [UsageExample("!shop buy 3")]
+        [UsageExamples("!shop buy 3")]
         [UsesInteractivity]
         public async Task BuyAsync(CommandContext ctx,
                                   [Description("Item ID.")] int id)
@@ -98,7 +98,7 @@ namespace TheGodfather.Modules.Misc
         [Command("sell"), Module(ModuleType.Miscellaneous)]
         [Description("Sell a purchased item for half the buy price.")]
         [Aliases("return")]
-        [UsageExample("!shop sell 3")]
+        [UsageExamples("!shop sell 3")]
         [UsesInteractivity]
         public async Task SellAsync(CommandContext ctx,
                                    [Description("Item ID.")] int id)
@@ -129,9 +129,9 @@ namespace TheGodfather.Modules.Misc
         [Module(ModuleType.Miscellaneous)]
         [Description("Remove purchasable item from this guild item list. You can remove an item by ID or by name.")]
         [Aliases("-", "remove", "rm", "del")]
-        [UsageExample("!shop delete Barbie")]
-        [UsageExample("!shop delete 5")]
-        [UsageExample("!shop delete 1 2 3 4 5")]
+        [UsageExamples("!shop delete Barbie",
+                       "!shop delete 5",
+                       "!shop delete 1 2 3 4 5")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task DeleteAsync(CommandContext ctx,
                                      [Description("ID list of items to remove.")] params int[] ids)
@@ -150,7 +150,7 @@ namespace TheGodfather.Modules.Misc
         [Command("list"), Module(ModuleType.Miscellaneous)]
         [Description("List all purchasable items for this guild.")]
         [Aliases("ls")]
-        [UsageExample("!shop list")]
+        [UsageExamples("!shop list")]
         public async Task ListAsync(CommandContext ctx)
         {
             var items = await Database.GetItemsFromGuildShopAsync(ctx.Guild.Id)
@@ -173,7 +173,7 @@ namespace TheGodfather.Modules.Misc
         [Command("listall"), Module(ModuleType.Miscellaneous)]
         [Description("List all purchasable items for all guilds.")]
         [Aliases("la")]
-        [UsageExample("!shop listall")]
+        [UsageExamples("!shop listall")]
         [RequireOwner]
         public async Task ListAllAsync(CommandContext ctx)
         {

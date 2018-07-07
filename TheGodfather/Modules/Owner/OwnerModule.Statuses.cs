@@ -42,8 +42,8 @@ namespace TheGodfather.Modules.Owner
             [Command("add"), Module(ModuleType.Owner)]
             [Description("Add a status to running status queue.")]
             [Aliases("+", "a")]
-            [UsageExample("!owner status add Playing CS:GO")]
-            [UsageExample("!owner status add Streaming on Twitch")]
+            [UsageExamples("!owner status add Playing CS:GO",
+                           "!owner status add Streaming on Twitch")]
             public async Task AddAsync(CommandContext ctx,
                                       [Description("Activity type (Playing/Watching/Streaming/ListeningTo).")] ActivityType activity,
                                       [RemainingText, Description("Status.")] string status)
@@ -65,7 +65,7 @@ namespace TheGodfather.Modules.Owner
             [Command("delete"), Module(ModuleType.Owner)]
             [Description("Remove status from running queue.")]
             [Aliases("-", "remove", "rm", "del")]
-            [UsageExample("!owner status delete 1")]
+            [UsageExamples("!owner status delete 1")]
             public async Task DeleteAsync(CommandContext ctx,
                                          [Description("Status ID.")] int id)
             {
@@ -80,7 +80,7 @@ namespace TheGodfather.Modules.Owner
             [Command("list"), Module(ModuleType.Owner)]
             [Description("List all bot statuses.")]
             [Aliases("ls")]
-            [UsageExample("!owner status list")]
+            [UsageExamples("!owner status list")]
             public async Task ListAsync(CommandContext ctx)
             {
                 var statuses = await Database.GetAllBotStatusesAsync()
@@ -100,8 +100,8 @@ namespace TheGodfather.Modules.Owner
             [Command("setrotation"), Module(ModuleType.Owner)]
             [Description("Set automatic rotation of bot statuses.")]
             [Aliases("sr", "setr")]
-            [UsageExample("!owner status setrotation")]
-            [UsageExample("!owner status setrotation false")]
+            [UsageExamples("!owner status setrotation",
+                           "!owner status setrotation false")]
             public async Task SetRotationAsync(CommandContext ctx,
                                               [Description("True/False")] bool b = true)
             {
@@ -116,8 +116,8 @@ namespace TheGodfather.Modules.Owner
             [Module(ModuleType.Owner)]
             [Description("Set status to given string or status with given index in database. This sets rotation to false.")]
             [Aliases("s")]
-            [UsageExample("!owner status set Playing with fire")]
-            [UsageExample("!owner status set 5")]
+            [UsageExamples("!owner status set Playing with fire",
+                           "!owner status set 5")]
             public async Task SetAsync(CommandContext ctx,
                                       [Description("Activity type (Playing/Watching/Streaming/ListeningTo).")] ActivityType activity,
                                       [RemainingText, Description("Status.")] string status)
