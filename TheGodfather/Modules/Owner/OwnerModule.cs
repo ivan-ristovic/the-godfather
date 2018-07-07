@@ -413,7 +413,7 @@ namespace TheGodfather.Modules.Owner
                     if (examples.Any()) {
                         sb.AppendLine(Formatter.Bold("Examples:")).AppendLine().AppendLine("```");
                         foreach (var example in examples)
-                            sb.AppendLine(example.Example);
+                            sb.AppendLine(example.JoinExamples());
                         sb.AppendLine("```");
                     }
 

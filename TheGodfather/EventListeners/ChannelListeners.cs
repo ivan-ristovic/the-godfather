@@ -17,7 +17,7 @@ namespace TheGodfather.EventListeners
 {
     internal static class ChannelListeners
     {
-        [AsyncExecuter(EventTypes.ChannelCreated)]
+        [AsyncEventListener(EventTypes.ChannelCreated)]
         public static async Task Client_ChannelCreated(TheGodfatherShard shard, ChannelCreateEventArgs e)
         {
             var logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
@@ -45,7 +45,7 @@ namespace TheGodfather.EventListeners
             }
         }
 
-        [AsyncExecuter(EventTypes.ChannelDeleted)]
+        [AsyncEventListener(EventTypes.ChannelDeleted)]
         public static async Task Client_ChannelDeleted(TheGodfatherShard shard, ChannelDeleteEventArgs e)
         {
             var logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
@@ -74,7 +74,7 @@ namespace TheGodfather.EventListeners
             }
         }
 
-        [AsyncExecuter(EventTypes.ChannelPinsUpdated)]
+        [AsyncEventListener(EventTypes.ChannelPinsUpdated)]
         public static async Task Client_ChannelPinsUpdated(TheGodfatherShard shard, ChannelPinsUpdateEventArgs e)
         {
             var logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Channel.Guild);
@@ -90,7 +90,7 @@ namespace TheGodfather.EventListeners
             }
         }
 
-        [AsyncExecuter(EventTypes.ChannelUpdated)]
+        [AsyncEventListener(EventTypes.ChannelUpdated)]
         public static async Task Client_ChannelUpdated(TheGodfatherShard shard, ChannelUpdateEventArgs e)
         {
             if (e.ChannelBefore.Position != e.ChannelAfter.Position)

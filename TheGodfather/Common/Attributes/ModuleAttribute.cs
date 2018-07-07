@@ -4,7 +4,7 @@ using System;
 
 namespace TheGodfather.Common.Attributes
 {
-    public enum ModuleType : byte
+    internal enum ModuleType : byte
     {
         Administration,
         Chickens,
@@ -22,14 +22,14 @@ namespace TheGodfather.Common.Attributes
 
 
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, AllowMultiple = false)]
-    internal class ModuleAttribute : Attribute
+    internal sealed class ModuleAttribute : Attribute
     {
         public ModuleType Module { get; private set; }
 
 
         public ModuleAttribute(ModuleType module)
         {
-            Module = module;
+            this.Module = module;
         }
     }
 }

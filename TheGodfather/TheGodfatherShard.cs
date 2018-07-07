@@ -104,15 +104,15 @@ namespace TheGodfather
                 EnableMentionPrefix = true,
                 PrefixResolver = this.PrefixResolverAsync,
                 Services = new ServiceCollection()
-                    .AddSingleton(new YoutubeService(this.SharedData.BotConfiguration.YouTubeKey))
+                    .AddSingleton(this)
+                    .AddSingleton(this.SharedData)
+                    .AddSingleton(this.DatabaseService)
                     .AddSingleton(new GiphyService(this.SharedData.BotConfiguration.GiphyKey))
                     .AddSingleton(new ImgurService(this.SharedData.BotConfiguration.ImgurKey))
                     .AddSingleton(new OMDbService(this.SharedData.BotConfiguration.OMDbKey))
                     .AddSingleton(new SteamService(this.SharedData.BotConfiguration.SteamKey))
                     .AddSingleton(new WeatherService(this.SharedData.BotConfiguration.WeatherKey))
-                    .AddSingleton(this)
-                    .AddSingleton(this.DatabaseService)
-                    .AddSingleton(this.SharedData)
+                    .AddSingleton(new YoutubeService(this.SharedData.BotConfiguration.YouTubeKey))
                     .BuildServiceProvider(),
             });
             this.CNext.SetHelpFormatter<CustomHelpFormatter>();

@@ -53,15 +53,21 @@ namespace TheGodfather
         }
 
 
-        public void AddPendingResponse(ulong cid, ulong uid)
+        public void Dispose()
         {
-            this.PendingResponses.AddOrUpdate(
-                cid,
-                new ConcurrentHashSet<ulong> { uid },
-                (k, v) => { v.Add(uid); return v; }
-            );
+            this.CTS.Dispose();
+            foreach (var kvp in this.SavedTasks)
+                kvp.Value.Dispose();
         }
 
+        public async Task SyncDataWithDatabaseAsync(DBService db)
+        {
+            foreach ((ulong uid, ulong count) in this.MessageCount)
+                await db.UpdateExperienceForUserAsync(uid, count);
+        }
+
+
+        #region RANKS
         public ushort CalculateRankForMessageCount(ulong msgcount)
             => (ushort)Math.Floor(Math.Sqrt(msgcount / 10));
 
@@ -71,38 +77,8 @@ namespace TheGodfather
         public uint CalculateXpNeededForRank(ushort index)
             => (uint)(index * index * 10);
 
-        public void Dispose()
-        {
-            this.CTS.Dispose();
-            foreach (var kvp in this.SavedTasks)
-                kvp.Value.Dispose();
-        }
-
-        public CachedGuildConfig GetGuildConfig(ulong gid)
-            => this.GuildConfigurations.ContainsKey(gid) ? this.GuildConfigurations[gid] : CachedGuildConfig.Default;
-
-        public string GetGuildPrefix(ulong gid)
-        {
-            if (this.GuildConfigurations.ContainsKey(gid) && !string.IsNullOrWhiteSpace(this.GuildConfigurations[gid].Prefix))
-                return this.GuildConfigurations[gid].Prefix;
-            else
-                return this.BotConfiguration.DefaultPrefix;
-        }
-
         public ulong GetMessageCountForUser(ulong uid)
             => this.MessageCount.ContainsKey(uid) ? this.MessageCount[uid] : 0;
-
-        public DiscordChannel GetLogChannelForGuild(DiscordClient client, DiscordGuild guild)
-        {
-            var gcfg = GetGuildConfig(guild.Id);
-            return gcfg.LoggingEnabled ? guild.GetChannel(gcfg.LogChannelId) : null;
-        }
-
-        public bool GuildHasTextReaction(ulong gid, string trigger)
-            => this.TextReactions.ContainsKey(gid) && this.TextReactions[gid] != null && this.TextReactions[gid].Any(tr => tr.ContainsTriggerPattern(trigger));
-
-        public bool GuildHasEmojiReaction(ulong gid, string trigger)
-            => this.EmojiReactions.ContainsKey(gid) && this.EmojiReactions[gid] != null && this.EmojiReactions[gid].Any(er => er.ContainsTriggerPattern(trigger));
 
         public ushort IncrementMessageCountForUser(ulong uid)
         {
@@ -118,6 +94,31 @@ namespace TheGodfather
 
             return curr != prev ? curr : (ushort)0;
         }
+        #endregion
+
+        #region GUILD
+        public CachedGuildConfig GetGuildConfig(ulong gid)
+            => this.GuildConfigurations.ContainsKey(gid) ? this.GuildConfigurations[gid] : CachedGuildConfig.Default;
+
+        public string GetGuildPrefix(ulong gid)
+        {
+            if (this.GuildConfigurations.ContainsKey(gid) && !string.IsNullOrWhiteSpace(this.GuildConfigurations[gid].Prefix))
+                return this.GuildConfigurations[gid].Prefix;
+            else
+                return this.BotConfiguration.DefaultPrefix;
+        }
+
+        public DiscordChannel GetLogChannelForGuild(DiscordClient client, DiscordGuild guild)
+        {
+            var gcfg = GetGuildConfig(guild.Id);
+            return gcfg.LoggingEnabled ? guild.GetChannel(gcfg.LogChannelId) : null;
+        }
+
+        public bool GuildHasTextReaction(ulong gid, string trigger)
+            => this.TextReactions.ContainsKey(gid) && this.TextReactions[gid] != null && this.TextReactions[gid].Any(tr => tr.ContainsTriggerPattern(trigger));
+
+        public bool GuildHasEmojiReaction(ulong gid, string trigger)
+            => this.EmojiReactions.ContainsKey(gid) && this.EmojiReactions[gid] != null && this.EmojiReactions[gid].Any(er => er.ContainsTriggerPattern(trigger));
 
         public bool MessageContainsFilter(ulong gid, string message)
         {
@@ -127,12 +128,20 @@ namespace TheGodfather
             message = message.ToLowerInvariant();
             return this.Filters[gid].Any(f => f.Trigger.IsMatch(message));
         }
+        #endregion
 
-        public async Task SyncDataWithDatabaseAsync(DBService db)
+        #region PENDING_RESPONSES
+        public void AddPendingResponse(ulong cid, ulong uid)
         {
-            foreach ((ulong uid, ulong count) in this.MessageCount)
-                await db.UpdateExperienceForUserAsync(uid, count);
+            this.PendingResponses.AddOrUpdate(
+                cid,
+                new ConcurrentHashSet<ulong> { uid },
+                (k, v) => { v.Add(uid); return v; }
+            );
         }
+
+        public bool PendingResponseExists(ulong cid, ulong uid)
+            => this.PendingResponses.ContainsKey(cid) && this.PendingResponses[cid].Contains(uid);
 
         public bool TryRemovePendingResponse(ulong cid, ulong uid)
         {
@@ -141,5 +150,6 @@ namespace TheGodfather
                 this.PendingResponses.TryRemove(cid, out _);
             return success;
         }
+        #endregion
     }
 }

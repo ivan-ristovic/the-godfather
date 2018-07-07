@@ -1,17 +1,16 @@
 ﻿#region USING_DIRECTIVES
-using System;
-using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
-
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
+using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Threading.Tasks;
 #endregion
 
 namespace TheGodfather.Common.Attributes
 {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
-    internal class NotBlockedAttribute : CheckBaseAttribute
+    internal sealed class NotBlockedAttribute : CheckBaseAttribute
     {
         public override Task<bool> ExecuteCheckAsync(CommandContext ctx, bool help)
         {

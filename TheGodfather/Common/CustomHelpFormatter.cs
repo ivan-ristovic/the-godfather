@@ -107,8 +107,8 @@ namespace TheGodfather.Common
                 }
             }
 
-            var examples = command.CustomAttributes.Where(chk => chk is UsageExampleAttribute)
-                                                   .Select(chk => chk as UsageExampleAttribute);
+            var examples = command.CustomAttributes.Where(chk => chk is UsageExamplesAttribute)
+                                                   .Select(chk => chk as UsageExamplesAttribute);
             var eb = new StringBuilder();
             if (examples.Any()) {
                 eb.AppendLine("```");

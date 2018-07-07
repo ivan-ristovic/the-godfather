@@ -21,9 +21,9 @@ namespace TheGodfather.EventListeners
             ListenerMethods =
                 from types in assembly.GetTypes()
                 from methods in types.GetMethods()
-                let attribute = methods.GetCustomAttribute(typeof(AsyncExecuterAttribute), true)
+                let attribute = methods.GetCustomAttribute(typeof(AsyncEventListenerAttribute), true)
                 where attribute != null
-                select new ListenerMethod { Method = methods, Attribute = attribute as AsyncExecuterAttribute };
+                select new ListenerMethod { Method = methods, Attribute = attribute as AsyncEventListenerAttribute };
 
             foreach (var listener in ListenerMethods)
                 listener.Attribute.Register(shard, client, listener.Method);
@@ -34,6 +34,6 @@ namespace TheGodfather.EventListeners
     internal class ListenerMethod
     {
         public MethodInfo Method { get; internal set; }
-        public AsyncExecuterAttribute Attribute { get; internal set; }
+        public AsyncEventListenerAttribute Attribute { get; internal set; }
     }
 }

@@ -1,22 +1,21 @@
 ﻿#region USING_DIRECTIVES
+using DSharpPlus;
 using System;
 using System.Reflection;
 using System.Threading.Tasks;
-
-using DSharpPlus;
 #endregion
 
 namespace TheGodfather.Common.Attributes
 {
     [AttributeUsage(AttributeTargets.Method)]
-    internal class AsyncExecuterAttribute : Attribute
+    internal sealed class AsyncEventListenerAttribute : Attribute
     {
         public EventTypes Target { get; }
 
 
-        public AsyncExecuterAttribute(EventTypes targetType)
+        public AsyncEventListenerAttribute(EventTypes targetType)
         {
-            Target = targetType;
+            this.Target = targetType;
         }
 
 
@@ -52,7 +51,7 @@ namespace TheGodfather.Common.Attributes
                 return Task.CompletedTask;
             }
 
-            switch (Target) {
+            switch (this.Target) {
                 case EventTypes.ClientErrored:
                     client.ClientErrored += OnEventWithArgs;
                     break;

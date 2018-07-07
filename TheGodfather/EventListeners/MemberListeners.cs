@@ -17,7 +17,7 @@ namespace TheGodfather.EventListeners
 {
     internal static class MemberListeners
     {
-        [AsyncExecuter(EventTypes.GuildMemberAdded)]
+        [AsyncEventListener(EventTypes.GuildMemberAdded)]
         public static async Task Client_GuildMemberAdded(TheGodfatherShard shard, GuildMemberAddEventArgs e)
         {
             shard.Log(LogLevel.Info, $"| Member joined: {e.Member.ToString()}\n{e.Guild.ToString()}");
@@ -79,7 +79,7 @@ namespace TheGodfather.EventListeners
             }
         }
 
-        [AsyncExecuter(EventTypes.GuildMemberRemoved)]
+        [AsyncEventListener(EventTypes.GuildMemberRemoved)]
         public static async Task Client_GuildMemberRemoved(TheGodfatherShard shard, GuildMemberRemoveEventArgs e)
         {
             if (e.Member.Id == e.Client.CurrentUser.Id)
@@ -118,7 +118,7 @@ namespace TheGodfather.EventListeners
             }
         }
 
-        [AsyncExecuter(EventTypes.GuildMemberUpdated)]
+        [AsyncEventListener(EventTypes.GuildMemberUpdated)]
         public static async Task Client_GuildMemberUpdated(TheGodfatherShard shard, GuildMemberUpdateEventArgs e)
         {
             var logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
