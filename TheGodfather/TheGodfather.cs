@@ -220,8 +220,7 @@ namespace TheGodfather
 
             MiscActionsTask = PeriodicActionExecuterAsync(
                 TimeSpan.FromSeconds(5),
-                TimeSpan.FromSeconds(15),
-//                TimeSpan.FromHours(12),
+                TimeSpan.FromHours(12),
                 MiscellaneousActionsCallbackAsync
             );
 

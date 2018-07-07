@@ -1,9 +1,8 @@
 ﻿#region USING_DIRECTIVES
-using System.Threading.Tasks;
-
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Converters;
 using DSharpPlus.Entities;
+using System.Threading.Tasks;
 #endregion
 
 namespace TheGodfather.Common.Converters
@@ -47,14 +46,13 @@ namespace TheGodfather.Common.Converters
         }
 
 
-        public async Task<Optional<bool>> ConvertAsync(string value, CommandContext ctx)
+        public Task<Optional<bool>> ConvertAsync(string value, CommandContext ctx)
         {
-            await Task.Delay(0);
             bool? b = TryConvert(value);
             if (b.HasValue)
-                return new Optional<bool>(b.Value);
+                return Task.FromResult(new Optional<bool>(b.Value));
             else
-                return new Optional<bool>();
+                return Task.FromResult(new Optional<bool>());
         }
     }
 }

@@ -1,44 +1,41 @@
 ﻿#region USING_DIRECTIVES
-using System.Threading.Tasks;
-
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Converters;
 using DSharpPlus.Entities;
-
 using Imgur.API.Enums;
+using System.Threading.Tasks;
 #endregion
 
 namespace TheGodfather.Common.Converters
 {
     public class CustomTimeWindowConverter : IArgumentConverter<TimeWindow>
     {
-        public async Task<Optional<TimeWindow>> ConvertAsync(string value, CommandContext ctx)
+        public Task<Optional<TimeWindow>> ConvertAsync(string value, CommandContext ctx)
         {
-            await Task.Delay(0);
-
-            TimeWindow t = TimeWindow.Day;
+            TimeWindow result = TimeWindow.Day;
             bool parses = true;
             switch (value.ToLowerInvariant()) {
                 case "day":
                 case "d":
-                    t = TimeWindow.Day;
+                case "24h":
+                    result = TimeWindow.Day;
                     break;
                 case "week":
                 case "7d":
                 case "w":
-                    t = TimeWindow.Week;
+                    result = TimeWindow.Week;
                     break;
                 case "month":
                 case "m":
-                    t = TimeWindow.Month;
+                    result = TimeWindow.Month;
                     break;
                 case "year":
                 case "y":
-                    t = TimeWindow.Year;
+                    result = TimeWindow.Year;
                     break;
                 case "all":
                 case "a":
-                    t = TimeWindow.All;
+                    result = TimeWindow.All;
                     break;
                 default:
                     parses = false;
@@ -46,9 +43,9 @@ namespace TheGodfather.Common.Converters
             }
 
             if (parses)
-                return new Optional<TimeWindow>(t);
+                return Task.FromResult(new Optional<TimeWindow>(result));
             else
-                return new Optional<TimeWindow>();
+                return Task.FromResult(new Optional<TimeWindow>());
         }
     }
 }
