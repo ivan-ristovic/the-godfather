@@ -25,7 +25,6 @@ namespace TheGodfather
     {
         public static IReadOnlyList<(string, Command)> Commands;
 
-        public bool IsListening => this.SharedData.ListeningStatus;
         public int Id { get; }
         public DiscordClient Client { get; private set; }
         public CommandsNextExtension CNext { get; private set; }
@@ -33,6 +32,8 @@ namespace TheGodfather
         public VoiceNextExtension Voice { get; private set; }
         public SharedData SharedData { get; private set; }
         public DBService DatabaseService { get; private set; }
+
+        public bool IsListening => this.SharedData.ListeningStatus;
 
 
         public TheGodfatherShard(int sid, DBService db, SharedData shared)

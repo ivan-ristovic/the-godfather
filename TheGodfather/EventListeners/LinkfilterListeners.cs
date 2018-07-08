@@ -32,7 +32,7 @@ namespace TheGodfather.EventListeners
             var gcfg = shard.SharedData.GetGuildConfig(e.Guild.Id);
             if (!gcfg.LinkfilterEnabled)
                 return;
-            
+
             if ((e.Channel.PermissionsFor(e.Author as DiscordMember).HasPermission(Permissions.ManageMessages)))
                 return;
 

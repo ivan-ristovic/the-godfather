@@ -431,7 +431,7 @@
     <Compile Include="Common\SavedTaskExecuter.cs" />
     <Compile Include="EventListeners\CommandListeners.cs" />
     <Compile Include="EventListeners\Common\LinkfilterMatch.cs" />
-    <Compile Include="EventListeners\Common\SuspiciousSites.cs" />
+    <Compile Include="EventListeners\Common\Matchers.cs" />
     <Compile Include="EventListeners\LinkfilterListeners.cs" />
     <Compile Include="Extensions\HoldemExtensions.cs" />
     <Compile Include="Extensions\KeyValuePairExtensions.cs" />

@@ -1,9 +1,9 @@
 ﻿#region USING_DIRECTIVES
+using DSharpPlus.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-
-using DSharpPlus.Entities;
 #endregion
 
 namespace TheGodfather.EventListeners.Common
@@ -14,10 +14,15 @@ namespace TheGodfather.EventListeners.Common
         public string Matched { get; }
 
 
+        public LinkfilterMatch()
+        {
+            this.Success = false;
+        }
+
         public LinkfilterMatch(Match match)
         {
-            Success = match.Success;
-            Matched = match.Groups[0].Value;
+            this.Success = match.Success;
+            this.Matched = match.Groups[0].Value;
         }
     }
 
@@ -26,13 +31,15 @@ namespace TheGodfather.EventListeners.Common
         public LinkfilterMatcher(params string[] items) 
             : base($@"({string.Join("|", items.Select(Escape))})", RegexOptions.IgnoreCase)
         {
-
+            if (!items.Any())
+                throw new ArgumentException("No items provided for matching.");
         }
 
         public LinkfilterMatcher(IEnumerable<string> items) 
             : base($@"({string.Join("|", items.Select(Escape))})", RegexOptions.IgnoreCase)
         {
-
+            if (!items.Any())
+                throw new ArgumentException("No items provided for matching.");
         }
 
         public LinkfilterMatch Check(DiscordMessage message)
