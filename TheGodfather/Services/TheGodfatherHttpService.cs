@@ -1,6 +1,6 @@
-﻿using System.Net.Http;
-
-using TheGodfather.Common;
+﻿#region USING_DIRECTIVES
+using System.Net.Http;
+#endregion
 
 namespace TheGodfather.Services
 {

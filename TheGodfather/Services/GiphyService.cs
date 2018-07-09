@@ -1,47 +1,51 @@
 ﻿#region USING_DIRECTIVES
-using System.Threading.Tasks;
-
-using TheGodfather.Common;
-
 using GiphyDotNet.Manager;
 using GiphyDotNet.Model.Parameters;
+using System;
+using System.Threading.Tasks;
+using ImageData = GiphyDotNet.Model.GiphyImage.Data;
+using RandomImageData = GiphyDotNet.Model.GiphyRandomImage.Data;
 #endregion
 
 namespace TheGodfather.Services
 {
     public class GiphyService : ITheGodfatherService
     {
-        private Giphy _giphy { get; set; }
+        private readonly Giphy giphy;
 
 
         public GiphyService(string key)
         {
-            _giphy = new Giphy(key);
+            this.giphy = new Giphy(key);
         }
 
         
-        public async Task<GiphyDotNet.Model.GiphyImage.Data[]> SearchAsync(string query, int limit = 1)
+        public async Task<ImageData[]> SearchAsync(string query, int amount = 1)
         {
-            var res = await _giphy.GifSearch(new SearchParameter() {
+            if (string.IsNullOrWhiteSpace(query))
+                throw new ArgumentException("Query cannot be null or whitespace", "query");
+
+            if (amount < 1 || amount > 20)
+                throw new ArgumentException("Result amount out of range", "amount");
+
+            var res = await this.giphy.GifSearch(new SearchParameter() {
                 Query = query,
-                Limit = limit
+                Limit = amount
             }).ConfigureAwait(false);
 
             return res.Data;
         }
 
-        public async Task<GiphyDotNet.Model.GiphyRandomImage.Data> GetRandomGifAsync()
-        {
-            var res = await _giphy.RandomGif(new RandomParameter())
-                .ConfigureAwait(false);
+        public async Task<RandomImageData> GetRandomGifAsync()
+            => (await this.giphy.RandomGif(new RandomParameter()).ConfigureAwait(false))?.Data;
 
-            return res.Data;
-        }
-
-        public async Task<GiphyDotNet.Model.GiphyImage.Data[]> GetTrendingGifsAsync(int limit)
+        public async Task<ImageData[]> GetTrendingGifsAsync(int amount = 1)
         {
-            var res = await _giphy.TrendingGifs(new TrendingParameter() {
-                Limit = limit
+            if (amount < 1 || amount > 20)
+                throw new ArgumentException("Result amount out of range", "amount");
+
+            var res = await this.giphy.TrendingGifs(new TrendingParameter() {
+                Limit = amount
             }).ConfigureAwait(false);
 
             return res.Data;
