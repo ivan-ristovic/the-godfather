@@ -14,6 +14,7 @@ using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
+using Npgsql;
 #endregion
 
 namespace TheGodfather.EventListeners
@@ -71,8 +72,8 @@ namespace TheGodfather.EventListeners
                 sb.Append($"Argument conversion error (please check {Formatter.Bold($"help {e.Command.QualifiedName}")}).\n\nDetails: {Formatter.Italic(ex.Message)}");
             } else if (ex is CommandFailedException) {
                 sb.Append($"{ex.Message} {ex.InnerException?.Message}");
-            } else if (ex is Npgsql.NpgsqlException) {
-                sb.Append($"Database action failed. Please {Formatter.InlineCode("report")} this.");
+            } else if (ex is NpgsqlException dbex) {
+                sb.Append($"Database operation failed. Details: {dbex.Message}");
             } else if (ex is ChecksFailedException exc) {
                 var attr = exc.FailedChecks.First();
                 if (attr is CooldownAttribute) {

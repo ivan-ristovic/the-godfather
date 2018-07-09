@@ -542,7 +542,7 @@
     <Compile Include="Services\TheGodfatherService.cs" />
     <Compile Include="Modules\TheGodfatherBaseModule.cs" />
     <Compile Include="Modules\Search\JokesModule.cs" />
-    <Compile Include="Exceptions\DatabaseServiceException.cs" />
+    <Compile Include="Exceptions\DatabaseOperationException.cs" />
     <Compile Include="Modules\TheGodfatherServiceModule.cs" />
     <Compile Include="Services\DatabaseService\DBService.Ranks.cs" />
     <Compile Include="Services\Common\FeedEntry.cs" />

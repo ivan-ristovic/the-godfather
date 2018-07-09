@@ -62,7 +62,7 @@ namespace TheGodfather.Services
                 var cmd = await OpenConnectionAndCreateCommandAsync();
                 cmd.Dispose();
             } catch (NpgsqlException e) {
-                throw new DatabaseServiceException("Database connection failed. Check your login details in the config.json file.", e);
+                throw new DatabaseOperationException("Database connection failed. Check your login details in the config.json file.", e);
             } finally {
                 _sem.Release();
             }

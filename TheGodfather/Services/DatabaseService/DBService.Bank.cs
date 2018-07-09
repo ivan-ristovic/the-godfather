@@ -169,7 +169,7 @@ namespace TheGodfather.Services
                             var res = await cmd2.ExecuteScalarAsync().ConfigureAwait(false);
                             if (res == null || res is DBNull || (long)res < amount) {
                                 await transaction.RollbackAsync().ConfigureAwait(false);
-                                throw new DatabaseServiceException("Source user's currency amount is insufficient for the transfer.");
+                                throw new DatabaseOperationException("Source user's currency amount is insufficient for the transfer.");
                             }
 
                             var cmd3 = con.CreateCommand();

@@ -412,7 +412,7 @@ namespace TheGodfather.Modules.Misc
                 UserId = ctx.User.Id
             };
             if (!await SavedTaskExecuter.TryScheduleAsync(ctx, task).ConfigureAwait(false))
-                throw new DatabaseServiceException("Failed to set a reminder in the database!");
+                throw new DatabaseOperationException("Failed to set a reminder in the database!");
 
             await ctx.RespondWithIconEmbedAsync($"I will remind {channel.Mention} in {Formatter.Bold(timespan.Humanize(5))} (at {when.ToUniversalTime().ToString()} UTC) to:\n\n{Formatter.Italic(message)}", ":alarm_clock:")
                 .ConfigureAwait(false);
