@@ -190,7 +190,7 @@ namespace TheGodfather.Services
             return cid != 0 ? guild.GetChannel(cid) : null;
         }
 
-        public async Task<string> GetLeaveMessageAsync(ulong gid)
+        public async Task<string> GetLeaveMessageForGuildAsync(ulong gid)
         {
             string msg = null;
 

@@ -4,17 +4,24 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 #endregion
 
 namespace TheGodfather.EventListeners.Common
 {
-    public static class SuspiciousSites
+    public static class LinkfilterMatcherCollection
     {
+        public static readonly Regex InviteRegex = new Regex(@"discord(?:\.gg|app\.com\/invite)\/([\w\-]+)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
         public static readonly LinkfilterMatcher IpLoggerMatcher = new LinkfilterMatcher(GetWebsiteUrlsFromJson("Resources/linkfilter/ip_loggers.json"));
 
         public static readonly LinkfilterMatcher BooterMatcher = new LinkfilterMatcher(GetWebsiteUrlsFromJson("Resources/linkfilter/booters.json"));
 
         public static readonly LinkfilterMatcher DisturbingWebsiteMatcher = new LinkfilterMatcher(GetWebsiteUrlsFromJson("Resources/linkfilter/disturbing_sites.json"));
+
+        public static readonly ImmutableDictionary<string, string> UrlShorteners = GetUrlShorteners().ToImmutableDictionary();
+
+        public static readonly LinkfilterMatcher UrlShortenerRegex = new LinkfilterMatcher(UrlShorteners.Keys);
 
         private static List<string> GetWebsiteUrlsFromJson(string path)
         {
@@ -34,13 +41,6 @@ namespace TheGodfather.EventListeners.Common
                 return new List<string>();
             }
         }
-    }
-
-    public static class UrlShortenerConstants
-    {
-        public static readonly ImmutableDictionary<string, string> UrlShorteners = GetUrlShorteners().ToImmutableDictionary();
-
-        public static readonly LinkfilterMatcher UrlShortenerRegex = new LinkfilterMatcher(UrlShorteners.Keys);
 
         private static Dictionary<string, string> GetUrlShorteners()
         {

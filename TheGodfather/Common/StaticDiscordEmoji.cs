@@ -69,8 +69,11 @@ namespace TheGodfather.Common
 
         // Misc
         public static DiscordEmoji CheckMarkSuccess => DiscordEmoji.FromUnicode("\u2705");
-        public static DiscordEmoji Question => DiscordEmoji.FromUnicode("\u2753");
         public static DiscordEmoji Chicken => DiscordEmoji.FromUnicode("\U0001f414");
+        public static DiscordEmoji Medal => DiscordEmoji.FromUnicode("\U0001f3c5");
+        public static DiscordEmoji NoEntry => DiscordEmoji.FromUnicode("\u26d4");
+        public static DiscordEmoji Question => DiscordEmoji.FromUnicode("\u2753");
+        public static DiscordEmoji Wave => DiscordEmoji.FromUnicode("\U0001f44b");
 
         public static DiscordEmoji GetRandomDuelWeapon()
             => DuelWeapons[GFRandom.Generator.Next(DuelWeapons.Count)];
@@ -91,7 +94,6 @@ namespace TheGodfather.Common
         public static DiscordEmoji Syringe => DiscordEmoji.FromUnicode("\U0001f489");
         public static DiscordEmoji Trophy => DiscordEmoji.FromUnicode("\U0001f3c6");
         public static DiscordEmoji Relieved => DiscordEmoji.FromUnicode("\U0001f616");
-        public static DiscordEmoji Wave => DiscordEmoji.FromUnicode("\U0001f44b");
         public static DiscordEmoji WhiteSquare => DiscordEmoji.FromUnicode("\u2b1c");
 
         // Slot machine

@@ -758,7 +758,7 @@ namespace TheGodfather.Modules.Administration
                                               [RemainingText, Description("Leave message.")] string message = null)
                 {
                     if (string.IsNullOrWhiteSpace(message)) {
-                        var msg = await Database.GetLeaveMessageAsync(ctx.Guild.Id)
+                        var msg = await Database.GetLeaveMessageForGuildAsync(ctx.Guild.Id)
                             .ConfigureAwait(false);
 
                         await ctx.RespondWithIconEmbedAsync($"Leave message:\n\n{Formatter.Italic(msg ?? "Not set.")}")

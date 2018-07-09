@@ -190,10 +190,15 @@ namespace TheGodfather.Extensions
             try {
                 var entries = await guild.GetAuditLogsAsync(1, action_type: type)
                     .ConfigureAwait(false);
-                return entries.Any() ? entries.FirstOrDefault() : null;
+                var entry = entries?.FirstOrDefault();
+                if (entry == null)
+                    return null;
+                if (DateTime.UtcNow - entry.CreationTimestamp.ToUniversalTime() < TimeSpan.FromSeconds(5))
+                    return entry;
             } catch {
-                return null;
+
             }
+            return null;
         }
 
         public static IReadOnlyList<Command> GetAllRegisteredCommands(this CommandsNextExtension cnext)

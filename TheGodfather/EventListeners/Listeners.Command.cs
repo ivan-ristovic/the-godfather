@@ -1,42 +1,40 @@
 ﻿#region USING_DIRECTIVES
-using System;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-
-using TheGodfather.Common;
-using TheGodfather.Common.Attributes;
-using TheGodfather.Exceptions;
-using TheGodfather.Extensions;
-
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Exceptions;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
+using System;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
+using TheGodfather.Common;
+using TheGodfather.Common.Attributes;
+using TheGodfather.Exceptions;
+using TheGodfather.Extensions;
 #endregion
 
 namespace TheGodfather.EventListeners
 {
-    internal static class CommandListeners
+    internal static partial class Listeners
     {
         [AsyncEventListener(DiscordEventType.CommandExecuted)]
-        public static async Task CommandExecuted(TheGodfatherShard shard, CommandExecutionEventArgs e)
+        public static Task CommandExecutionEventHandler(TheGodfatherShard shard, CommandExecutionEventArgs e)
         {
-            await Task.Delay(0).ConfigureAwait(false);
             shard.Log(LogLevel.Info,
                 $"| Executed: {e.Command?.QualifiedName ?? "<unknown command>"}\n" +
                 $"| {e.Context.User.ToString()}\n" +
                 $"| {e.Context.Guild.ToString()}; {e.Context.Channel.ToString()}"
             );
+            return Task.CompletedTask;
         }
 
         [AsyncEventListener(DiscordEventType.CommandErrored)]
-        public static async Task CommandErrored(TheGodfatherShard shard, CommandErrorEventArgs e)
+        public static async Task CommandErrorEventHandlerAsync(TheGodfatherShard shard, CommandErrorEventArgs e)
         {
-            if (!shard.IsListening || e.Exception == null)
+            if (e.Exception == null)
                 return;
 
             var ex = e.Exception;
@@ -58,14 +56,14 @@ namespace TheGodfather.EventListeners
             var emb = new DiscordEmbedBuilder {
                 Color = DiscordColor.Red
             };
-            var sb = new StringBuilder($"{DiscordEmoji.FromName(e.Context.Client, ":no_entry:")} ");
+            var sb = new StringBuilder(StaticDiscordEmoji.NoEntry).Append(" ");
 
             if (ex is CommandNotFoundException cne && shard.SharedData.GuildConfigurations[e.Context.Guild.Id].SuggestionsEnabled) {
-                emb.WithTitle($"Command {cne.CommandName} not found. Did you mean...");
+                emb.WithTitle($"Command {Formatter.Bold(cne.CommandName)} not found. Did you mean...");
                 var ordered = TheGodfatherShard.Commands
                     .OrderBy(tup => cne.CommandName.LevenshteinDistance(tup.Item1))
                     .Take(3);
-                foreach (var (alias, cmd) in ordered)
+                foreach ((string alias, Command cmd) in ordered)
                     emb.AddField($"{alias} ({cmd.QualifiedName})", cmd.Description);
             } else if (ex is InvalidCommandUsageException) {
                 sb.Append($"Invalid usage! {ex.Message}");
@@ -78,34 +76,35 @@ namespace TheGodfather.EventListeners
             } else if (ex is ChecksFailedException exc) {
                 var attr = exc.FailedChecks.First();
                 if (attr is CooldownAttribute) {
-                    await e.Context.Message.CreateReactionAsync(DiscordEmoji.FromName(e.Context.Client, ":no_entry:"))
-                        .ConfigureAwait(false);
+                    await e.Context.Message.CreateReactionAsync(StaticDiscordEmoji.NoEntry);
                     return;
                 }
 
                 if (attr is UsesInteractivityAttribute) {
                     sb.Append($"I am waiting for your answer and you cannot execute commands until you either answer, or the timeout is reached.");
                 } else {
-                    sb.AppendLine($"Command {e.Command.QualifiedName} cannot be executed because:").AppendLine();
-                    if (attr is RequirePermissionsAttribute perms)
-                        sb.AppendLine($"One of us does not have the required permissions ({perms.Permissions.ToPermissionString()})!");
-                    if (attr is RequireUserPermissionsAttribute uperms)
-                        sb.AppendLine($"You do not have the required permissions ({uperms.Permissions.ToPermissionString()})!");
-                    if (attr is RequireBotPermissionsAttribute bperms)
-                        sb.AppendLine($"I do not have the required permissions ({bperms.Permissions.ToPermissionString()})!");
-                    if (attr is RequirePriviledgedUserAttribute)
-                        sb.AppendLine($"That command is reserved for my owner and priviledged users!");
-                    if (attr is RequireOwnerAttribute)
-                        sb.AppendLine($"That command is reserved for my owner only!");
-                    if (attr is RequireNsfwAttribute)
-                        sb.AppendLine($"That command is allowed in NSFW channels only!");
-                    if (attr is RequirePrefixesAttribute pattr)
-                        sb.AppendLine($"That command can only be invoked only with the following prefixes: {string.Join(" ", pattr.Prefixes)}!");
+                    sb.AppendLine($"Command {Formatter.Bold(e.Command.QualifiedName)} cannot be executed because:").AppendLine();
+                    foreach (CheckBaseAttribute failed in exc.FailedChecks) {
+                        if (failed is RequirePermissionsAttribute perms)
+                            sb.AppendLine($"- One of us does not have the required permissions ({perms.Permissions.ToPermissionString()})!");
+                        else if (failed is RequireUserPermissionsAttribute uperms)
+                            sb.AppendLine($"- You do not have sufficient permissions ({uperms.Permissions.ToPermissionString()})!");
+                        else if (failed is RequireBotPermissionsAttribute bperms)
+                            sb.AppendLine($"- I do not have sufficient permissions ({bperms.Permissions.ToPermissionString()})!");
+                        else if (failed is RequirePriviledgedUserAttribute)
+                            sb.AppendLine($"- That command is reserved for my owner and priviledged users!");
+                        else if (failed is RequireOwnerAttribute)
+                            sb.AppendLine($"- That command is reserved only for my owner!");
+                        else if (failed is RequireNsfwAttribute)
+                            sb.AppendLine($"- That command is allowed only in NSFW channels!");
+                        else if (failed is RequirePrefixesAttribute pattr)
+                            sb.AppendLine($"- That command can only be invoked only with the following prefixes: {string.Join(" ", pattr.Prefixes)}!");
+                    }
                 }
             } else if (ex is UnauthorizedException) {
-                sb.Append($"I am unauthorized to do that.");
+                sb.Append($"I am not authorized to do that.");
             } else if (ex is TargetInvocationException) {
-                sb.Append($"{ex.InnerException?.Message ?? "An unknown error occured. Please check the arguments provided and try again."}");
+                sb.Append($"{ex.InnerException?.Message ?? "Target invocation error occured. Please check the arguments provided and try again."}");
             } else {
                 sb.AppendLine($"Command {Formatter.Bold(e.Command.QualifiedName)} errored!").AppendLine();
                 sb.AppendLine($"Exception: {Formatter.InlineCode(ex.GetType().ToString())}");
@@ -117,8 +116,7 @@ namespace TheGodfather.EventListeners
             }
 
             emb.Description = sb.ToString();
-            await e.Context.RespondAsync(embed: emb.Build())
-                .ConfigureAwait(false);
+            await e.Context.RespondAsync(embed: emb.Build());
         }
     }
 }
