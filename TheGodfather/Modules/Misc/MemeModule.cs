@@ -92,7 +92,7 @@ namespace TheGodfather.Modules.Misc
 
             await Database.AddMemeAsync(ctx.Guild.Id, name, url.AbsoluteUri)
                 .ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync($"Meme {Formatter.Bold(name)} successfully added!")
+            await ctx.InformSuccessAsync($"Meme {Formatter.Bold(name)} successfully added!")
                 .ConfigureAwait(false);
         }
 
@@ -112,7 +112,7 @@ namespace TheGodfather.Modules.Misc
         [UsesInteractivity]
         public async Task ClearMemesAsync(CommandContext ctx)
         {
-            if (!await ctx.AskYesNoQuestionAsync("Are you sure you want to delete all memes for this guild?").ConfigureAwait(false))
+            if (!await ctx.WaitForBoolReplyAsync("Are you sure you want to delete all memes for this guild?").ConfigureAwait(false))
                 return;
 
             try {
@@ -123,7 +123,7 @@ namespace TheGodfather.Modules.Misc
                 throw new CommandFailedException("Failed to delete memes from the database.");
             }
 
-            await ctx.RespondWithIconEmbedAsync("Removed all memes!")
+            await ctx.InformSuccessAsync("Removed all memes!")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -162,7 +162,7 @@ namespace TheGodfather.Modules.Misc
 
             await Database.RemoveMemeAsync(ctx.Guild.Id, name)
                 .ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync($"Meme {Formatter.Bold(name)} successfully removed!")
+            await ctx.InformSuccessAsync($"Meme {Formatter.Bold(name)} successfully removed!")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -177,7 +177,7 @@ namespace TheGodfather.Modules.Misc
             var memes = await Database.GetMemesForAllGuildsAsync(ctx.Guild.Id)
                 .ConfigureAwait(false); ;
 
-            await ctx.SendPaginatedCollectionAsync(
+            await ctx.SendCollectionInPagesAsync(
                 "Memes registered in this guild",
                 memes.OrderBy(kvp => kvp.Key),
                 kvp => $"{Formatter.Bold(kvp.Key)} ({kvp.Value})",
@@ -198,7 +198,7 @@ namespace TheGodfather.Modules.Misc
             if (templates == null)
                 throw new CommandFailedException("Failed to retrieve meme templates.");
 
-            await ctx.SendPaginatedCollectionAsync(
+            await ctx.SendCollectionInPagesAsync(
                 "Meme templates",
                 templates,
                 s => s,

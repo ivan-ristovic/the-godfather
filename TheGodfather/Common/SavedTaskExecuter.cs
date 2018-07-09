@@ -94,7 +94,7 @@ namespace TheGodfather.Common
                     case SavedTaskType.SendMessage:
                         var channel = await this.Client.GetChannelAsync(this.SavedTask.ChannelId);
                         var user = await this.Client.GetUserAsync(this.SavedTask.UserId);
-                        await channel.SendFailedEmbedAsync($"I have been asleep and failed to remind {user.Mention} to:\n\n{Formatter.Italic(this.SavedTask.Comment)}\n\nat {this.SavedTask.ExecutionTime.ToLongTimeString()} UTC");
+                        await channel.InformFailureAsync($"I have been asleep and failed to remind {user.Mention} to:\n\n{Formatter.Italic(this.SavedTask.Comment)}\n\nat {this.SavedTask.ExecutionTime.ToLongTimeString()} UTC");
                         break;
                     case SavedTaskType.Unban:
                         await UnbanUserAsync();
@@ -135,7 +135,7 @@ namespace TheGodfather.Common
         {
             var channel = await this.Client.GetChannelAsync(this.SavedTask.ChannelId);
             var user = await this.Client.GetUserAsync(this.SavedTask.UserId);
-            await channel.SendIconEmbedAsync($"{user.Mention}'s reminder:\n\n{Formatter.Italic(this.SavedTask.Comment)}", DiscordEmoji.FromName(this.Client, ":alarm_clock:"));
+            await channel.InformSuccessAsync($"{user.Mention}'s reminder:\n\n{Formatter.Italic(this.SavedTask.Comment)}", DiscordEmoji.FromName(this.Client, ":alarm_clock:"));
         }
 
         private async Task UnbanUserAsync()

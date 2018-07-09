@@ -48,7 +48,7 @@ namespace TheGodfather.Modules.Currency.Common
         {
             Started = true;
 
-            var msg = await Channel.SendIconEmbedAsync("Starting Hold'Em game... Keep an eye on DM!")
+            var msg = await Channel.InformSuccessAsync("Starting Hold'Em game... Keep an eye on DM!")
                 .ConfigureAwait(false);
 
             foreach (var participant in Participants) {
@@ -81,10 +81,10 @@ namespace TheGodfather.Modules.Currency.Common
                         await PrintGameAsync(msg, bet, participant)
                             .ConfigureAwait(false);
 
-                        if (await Interactivity.WaitForYesNoAnswerAsync(Channel.Id, participant.Id).ConfigureAwait(false)) {
+                        if (await Interactivity.WaitForBoolReplyAsync(Channel.Id, participant.Id).ConfigureAwait(false)) {
                             await Channel.SendMessageAsync($"Do you wish to raise the current bet? If yes, reply yes and then reply raise amount in new message, otherwise say no. Max: {participant.Balance - bet}")
                                 .ConfigureAwait(false);
-                            if (await Interactivity.WaitForYesNoAnswerAsync(Channel.Id, participant.Id).ConfigureAwait(false)) {
+                            if (await Interactivity.WaitForBoolReplyAsync(Channel.Id, participant.Id).ConfigureAwait(false)) {
                                 int raise = 0;
                                 var mctx = await Interactivity.WaitForMessageAsync(
                                     m => m.Channel.Id == Channel.Id && m.Author.Id == participant.Id && int.TryParse(m.Content, out raise) && bet + raise <= participant.Balance

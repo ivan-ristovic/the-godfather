@@ -50,7 +50,7 @@ namespace TheGodfather.Modules.SWAT
 
                 await Database.AddSwatServerAsync(name, server)
                     .ConfigureAwait(false);
-                await ctx.RespondWithIconEmbedAsync("Server added. You can now query it using the name provided.")
+                await ctx.InformSuccessAsync("Server added. You can now query it using the name provided.")
                     .ConfigureAwait(false);
             }
             #endregion
@@ -68,7 +68,7 @@ namespace TheGodfather.Modules.SWAT
 
                 await Database.RemoveSwatServerAsync(name)
                     .ConfigureAwait(false);
-                await ctx.RespondWithIconEmbedAsync("Server successfully removed.")
+                await ctx.InformSuccessAsync("Server successfully removed.")
                     .ConfigureAwait(false);
             }
             #endregion
@@ -83,7 +83,7 @@ namespace TheGodfather.Modules.SWAT
                 var servers = await Database.GetAllSwatServersAsync()
                     .ConfigureAwait(false);
 
-                await ctx.SendPaginatedCollectionAsync(
+                await ctx.SendCollectionInPagesAsync(
                     "Available servers",
                     servers,
                     server => $"{Formatter.Bold(server.Name)} : {server.IP}:{server.JoinPort}",

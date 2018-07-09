@@ -35,7 +35,7 @@ namespace TheGodfather.EventListeners
             shard.SharedData.GuildConfigurations.TryAdd(e.Guild.Id, CachedGuildConfig.Default);
 
             var emoji = DiscordEmoji.FromName(e.Client, ":small_blue_diamond:");
-            await e.Guild.GetDefaultChannel().SendIconEmbedAsync(
+            await e.Guild.GetDefaultChannel().InformSuccessAsync(
                 $"{Formatter.Bold("Thank you for adding me!")}\n\n" +
                 $"{emoji} The default prefix for commands is {Formatter.Bold(shard.SharedData.BotConfiguration.DefaultPrefix)}, but it can be changed using {Formatter.Bold("prefix")} command.\n" +
                 $"{emoji} I advise you to run the configuration wizard for this guild in order to quickly configure functions like logging, notifications etc. The wizard can be invoked using {Formatter.Bold("guild config setup")} command.\n" +

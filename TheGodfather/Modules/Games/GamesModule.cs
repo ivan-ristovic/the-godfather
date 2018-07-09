@@ -30,7 +30,7 @@ namespace TheGodfather.Modules.Games
         [GroupCommand]
         public Task ExecuteGroupAsync(CommandContext ctx)
         {
-            return ctx.RespondWithIconEmbedAsync(
+            return ctx.InformSuccessAsync(
                 Formatter.Bold("Games:\n\n") +
                 "animalrace, caro, connect4, duel, hangman, leaderboard, numberrace, othello, quiz, rps, russianroulette, stats, tictactoe, typingrace"
             );
@@ -84,7 +84,7 @@ namespace TheGodfather.Modules.Games
                     gfe = DiscordEmoji.FromName(ctx.Client, ":scissors:");
                     break;
             }
-            await ctx.RespondWithIconEmbedAsync($"{ctx.User.Mention} {usre} {gfe} {ctx.Client.CurrentUser.Mention}", null)
+            await ctx.InformSuccessAsync($"{ctx.User.Mention} {usre} {gfe} {ctx.Client.CurrentUser.Mention}", null)
                  .ConfigureAwait(false);
         }
         #endregion

@@ -38,12 +38,12 @@ namespace TheGodfather.Modules.Search
                 .ConfigureAwait(false);
 
             if (data == null) {
-                await ctx.RespondWithFailedEmbedAsync("No results found!")
+                await ctx.InformFailureAsync("No results found!")
                     .ConfigureAwait(false);
                 return;
             }
 
-            await ctx.SendPaginatedCollectionAsync(
+            await ctx.SendCollectionInPagesAsync(
                 $"Urban Dictionary definitions for \"{query}\"",
                 data.List,
                 res => $"Definition by {Formatter.Bold(res.Author)}:\n\n" +

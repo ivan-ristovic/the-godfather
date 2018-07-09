@@ -35,7 +35,7 @@ namespace TheGodfather.Modules.Search
                 .ConfigureAwait(false);
 
             if (em == null) {
-                await ctx.RespondWithFailedEmbedAsync("User with such ID does not exist!")
+                await ctx.InformFailureAsync("User with such ID does not exist!")
                     .ConfigureAwait(false);
                 return;
             }

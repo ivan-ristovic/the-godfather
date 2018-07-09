@@ -65,7 +65,7 @@ namespace TheGodfather.Modules.Chickens
                     ambush.AddParticipant(ambushed, user, team1: true);
                     await JoinAsync(ctx)
                         .ConfigureAwait(false);
-                    await ctx.RespondWithIconEmbedAsync($"The ambush will start in 1 minute. Use command {Formatter.InlineCode("chicken ambush")} to make your chicken join the ambush, or {Formatter.InlineCode("chicken ambush help")} to help the ambushed chicken.", ":clock1:")
+                    await ctx.InformSuccessAsync($"The ambush will start in 1 minute. Use command {Formatter.InlineCode("chicken ambush")} to make your chicken join the ambush, or {Formatter.InlineCode("chicken ambush help")} to help the ambushed chicken.", ":clock1:")
                         .ConfigureAwait(false);
                     await Task.Delay(TimeSpan.FromMinutes(1))
                         .ConfigureAwait(false);
@@ -97,7 +97,7 @@ namespace TheGodfather.Modules.Chickens
                             }
                         }
 
-                        await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, $"{Formatter.Bold(ambush.Team1Won ? ambush.Team1Name : ambush.Team2Name)} won!\n\n{sb.ToString()}")
+                        await ctx.InformSuccessAsync(StaticDiscordEmoji.Chicken, $"{Formatter.Bold(ambush.Team1Won ? ambush.Team1Name : ambush.Team2Name)} won!\n\n{sb.ToString()}")
                             .ConfigureAwait(false);
                     }
                 } finally {
@@ -130,7 +130,7 @@ namespace TheGodfather.Modules.Chickens
                 if (!ambush.AddParticipant(chicken, ctx.User, team2: true))
                     throw new CommandFailedException("Your chicken is already participating in the ambush.");
 
-                await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, $"{Formatter.Bold(chicken.Name)} has joined the ambushers.")
+                await ctx.InformSuccessAsync(StaticDiscordEmoji.Chicken, $"{Formatter.Bold(chicken.Name)} has joined the ambushers.")
                     .ConfigureAwait(false);
             }
             #endregion
@@ -159,7 +159,7 @@ namespace TheGodfather.Modules.Chickens
                 if (!ambush.AddParticipant(chicken, ctx.User, team1: true))
                     throw new CommandFailedException("Your chicken is already participating in the ambush.");
 
-                await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, $"{Formatter.Bold(chicken.Name)} has joined the ambushed party.")
+                await ctx.InformSuccessAsync(StaticDiscordEmoji.Chicken, $"{Formatter.Bold(chicken.Name)} has joined the ambushed party.")
                     .ConfigureAwait(false);
             }
             #endregion

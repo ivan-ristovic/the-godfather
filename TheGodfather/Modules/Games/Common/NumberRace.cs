@@ -32,7 +32,7 @@ namespace TheGodfather.Modules.Games.Common
             Started = true;
 
             int num = GFRandom.Generator.Next(1000);
-            await Channel.SendIconEmbedAsync(num.ToString(), DiscordEmoji.FromUnicode("\U0001f199"))
+            await Channel.InformSuccessAsync(num.ToString(), DiscordEmoji.FromUnicode("\U0001f199"))
                 .ConfigureAwait(false);
             
             while (ParticipantCount > 1) {
@@ -53,7 +53,7 @@ namespace TheGodfather.Modules.Games.Common
                     num++;
                     Winner = mctx.User;
                 } else {
-                    await Channel.SendIconEmbedAsync($"{mctx.User.Mention} lost!", DiscordEmoji.FromUnicode("\u2757"))
+                    await Channel.InformSuccessAsync($"{mctx.User.Mention} lost!", DiscordEmoji.FromUnicode("\u2757"))
                         .ConfigureAwait(false);
                     if (Winner != null && Winner.Id == mctx.User.Id)
                         Winner = null;

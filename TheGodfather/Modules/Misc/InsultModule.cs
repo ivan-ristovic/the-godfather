@@ -36,7 +36,7 @@ namespace TheGodfather.Modules.Misc
                 user = ctx.User;
 
             if (user.Id == ctx.Client.CurrentUser.Id) {
-                await ctx.RespondWithIconEmbedAsync("How original, trying to make me insult myself. Sadly it won't work.", ":middle_finger:")
+                await ctx.InformSuccessAsync("How original, trying to make me insult myself. Sadly it won't work.", ":middle_finger:")
                     .ConfigureAwait(false);
                 return;
             }
@@ -46,7 +46,7 @@ namespace TheGodfather.Modules.Misc
             if (insult == null)
                 throw new CommandFailedException("No available insults.");
 
-            await ctx.RespondWithIconEmbedAsync(insult.Replace("%user%", user.Mention), ":middle_finger:")
+            await ctx.InformSuccessAsync(insult.Replace("%user%", user.Mention), ":middle_finger:")
                 .ConfigureAwait(false);
         }
 
@@ -72,7 +72,7 @@ namespace TheGodfather.Modules.Misc
             await Database.AddInsultAsync(insult)
                 .ConfigureAwait(false);
 
-            await ctx.RespondWithIconEmbedAsync()
+            await ctx.InformSuccessAsync()
                 .ConfigureAwait(false);
         }
         #endregion
@@ -86,12 +86,12 @@ namespace TheGodfather.Modules.Misc
         [UsesInteractivity]
         public async Task ClearAllInsultsAsync(CommandContext ctx)
         {
-            if (!await ctx.AskYesNoQuestionAsync("Are you sure you want to delete all insults?").ConfigureAwait(false))
+            if (!await ctx.WaitForBoolReplyAsync("Are you sure you want to delete all insults?").ConfigureAwait(false))
                 return;
 
             await Database.RemoveAllInsultsAsync()
                 .ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync("All insults successfully removed.")
+            await ctx.InformSuccessAsync("All insults successfully removed.")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -107,7 +107,7 @@ namespace TheGodfather.Modules.Misc
         {
             await Database.RemoveInsultAsync(index)
                 .ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync()
+            await ctx.InformSuccessAsync()
                 .ConfigureAwait(false);
         }
         #endregion
@@ -125,7 +125,7 @@ namespace TheGodfather.Modules.Misc
             if (insults == null || !insults.Any())
                 throw new CommandFailedException("No insults registered.");
 
-            await ctx.SendPaginatedCollectionAsync(
+            await ctx.SendCollectionInPagesAsync(
                 "Available insults",
                 insults.Values,
                 i => Formatter.Italic(i),

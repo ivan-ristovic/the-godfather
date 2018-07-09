@@ -78,7 +78,7 @@ namespace TheGodfather.Modules.Reactions
         [UsesInteractivity]
         public async Task ClearAsync(CommandContext ctx)
         {
-            if (!await ctx.AskYesNoQuestionAsync("Are you sure you want to delete all text reactions for this guild?").ConfigureAwait(false))
+            if (!await ctx.WaitForBoolReplyAsync("Are you sure you want to delete all text reactions for this guild?").ConfigureAwait(false))
                 return;
 
             if (Shared.TextReactions.ContainsKey(ctx.Guild.Id))
@@ -104,7 +104,7 @@ namespace TheGodfather.Modules.Reactions
                     .ConfigureAwait(false);
             }
 
-            await ctx.RespondWithIconEmbedAsync("Removed all text reactions!")
+            await ctx.InformSuccessAsync("Removed all text reactions!")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -161,7 +161,7 @@ namespace TheGodfather.Modules.Reactions
                 }
             }
 
-            await ctx.RespondWithIconEmbedAsync($"Successfully removed {removed} text reactions!\n\n{errlist}")
+            await ctx.InformSuccessAsync($"Successfully removed {removed} text reactions!\n\n{errlist}")
                 .ConfigureAwait(false);
         }
 
@@ -229,7 +229,7 @@ namespace TheGodfather.Modules.Reactions
                 }
             }
 
-            await ctx.RespondWithIconEmbedAsync($"Successfully removed {removed} text reactions!\n\n{errlist}")
+            await ctx.InformSuccessAsync($"Successfully removed {removed} text reactions!\n\n{errlist}")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -244,7 +244,7 @@ namespace TheGodfather.Modules.Reactions
             if (!Shared.TextReactions.ContainsKey(ctx.Guild.Id) || !Shared.TextReactions[ctx.Guild.Id].Any())
                 throw new CommandFailedException("This guild has no text reactions registered.");
             
-            await ctx.SendPaginatedCollectionAsync(
+            await ctx.SendCollectionInPagesAsync(
                 "Text reactions for this guild",
                 Shared.TextReactions[ctx.Guild.Id].OrderBy(tr => tr.OrderedTriggerStrings.First()),
                 tr => $"{tr.Id} : {tr.Response} | Triggers: {string.Join(", ", tr.TriggerStrings)}",
@@ -313,7 +313,7 @@ namespace TheGodfather.Modules.Reactions
                     .ConfigureAwait(false);
             }
 
-            await ctx.RespondWithIconEmbedAsync($"Done!\n\n{errors}")
+            await ctx.InformSuccessAsync($"Done!\n\n{errors}")
                 .ConfigureAwait(false);
         }
         #endregion

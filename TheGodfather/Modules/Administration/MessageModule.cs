@@ -104,7 +104,7 @@ namespace TheGodfather.Modules.Administration
 
             await ctx.Channel.DeleteMessagesAsync(del, ctx.BuildReasonString(reason))
                 .ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync()
+            await ctx.InformSuccessAsync()
                 .ConfigureAwait(false);
         }
 
@@ -139,7 +139,7 @@ namespace TheGodfather.Modules.Administration
 
             await msg.DeleteAllReactionsAsync(ctx.BuildReasonString(reason))
                 .ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync()
+            await ctx.InformSuccessAsync()
                 .ConfigureAwait(false);
         }
         #endregion
@@ -176,7 +176,7 @@ namespace TheGodfather.Modules.Administration
 
             await ctx.Channel.DeleteMessagesAsync(del, ctx.BuildReasonString(reason))
                 .ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync()
+            await ctx.InformSuccessAsync()
                 .ConfigureAwait(false);
         }
 
@@ -199,12 +199,12 @@ namespace TheGodfather.Modules.Administration
                 .ConfigureAwait(false);
             
             if (!pinned.Any()) {
-                await ctx.RespondWithIconEmbedAsync("No pinned messages in this channel")
+                await ctx.InformSuccessAsync("No pinned messages in this channel")
                     .ConfigureAwait(false);
                 return;
             }
             
-            await ctx.SendPaginatedCollectionAsync(
+            await ctx.SendCollectionInPagesAsync(
                 "Pinned messages:",
                 pinned,
                 m => $"({Formatter.InlineCode(m.CreationTimestamp.ToString())}) {Formatter.Bold(m.Author.Username)} : {(string.IsNullOrWhiteSpace(m.Content) ? "<embedded message>" : m.Content)}" , 
@@ -281,7 +281,7 @@ namespace TheGodfather.Modules.Administration
 
             await pinned.ElementAt(index - 1).UnpinAsync()
                 .ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync()
+            await ctx.InformSuccessAsync()
                 .ConfigureAwait(false);
         }
         #endregion
@@ -306,7 +306,7 @@ namespace TheGodfather.Modules.Administration
                     failed++;
                 }
             }
-            await ctx.RespondWithIconEmbedAsync(failed > 0 ? $"Failed to unpin {failed} messages!" : "All messages successfully unpinned!")
+            await ctx.InformSuccessAsync(failed > 0 ? $"Failed to unpin {failed} messages!" : "All messages successfully unpinned!")
                 .ConfigureAwait(false);
         }
         #endregion

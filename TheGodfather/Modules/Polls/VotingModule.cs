@@ -38,7 +38,7 @@ namespace TheGodfather.Modules.Polls
                 throw new CommandFailedException("You have already voted in this poll!");
 
             poll.VoteFor(ctx.User.Id, option);
-            await ctx.RespondWithIconEmbedAsync($"{ctx.User.Mention} voted for: {Formatter.Bold(poll.OptionWithId(option))} in poll: {Formatter.Italic($"\"{poll.Question}\"")}")
+            await ctx.InformSuccessAsync($"{ctx.User.Mention} voted for: {Formatter.Bold(poll.OptionWithId(option))} in poll: {Formatter.Italic($"\"{poll.Question}\"")}")
                 .ConfigureAwait(false);
         }
 
@@ -60,7 +60,7 @@ namespace TheGodfather.Modules.Polls
             if (!poll.CancelVote(ctx.User.Id))
                 throw new CommandFailedException("Failed to cancel your vote!");
 
-            await ctx.RespondWithIconEmbedAsync("Your vote has been cancelled!")
+            await ctx.InformSuccessAsync("Your vote has been cancelled!")
                 .ConfigureAwait(false);
         }
         #endregion

@@ -53,7 +53,7 @@ namespace TheGodfather.Modules.Misc
 
             await Database.AddItemToGuildShopAsync(ctx.Guild.Id, name, price)
                 .ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync($"Item {Formatter.Bold(name)} ({Formatter.Bold(price.ToString())} credits) successfully added to this guild's shop.")
+            await ctx.InformSuccessAsync($"Item {Formatter.Bold(name)} ({Formatter.Bold(price.ToString())} credits) successfully added to this guild's shop.")
                 .ConfigureAwait(false);
         }
 
@@ -81,7 +81,7 @@ namespace TheGodfather.Modules.Misc
             if (await Database.IsItemPurchasedByUserAsync(ctx.User.Id, item.Id))
                 throw new CommandFailedException("You have already purchased this item!");
 
-            if (!await ctx.AskYesNoQuestionAsync($"Are you sure you want to buy a {Formatter.Bold(item.Name)} for {Formatter.Bold(item.Price.ToString())} credits?").ConfigureAwait(false))
+            if (!await ctx.WaitForBoolReplyAsync($"Are you sure you want to buy a {Formatter.Bold(item.Name)} for {Formatter.Bold(item.Price.ToString())} credits?").ConfigureAwait(false))
                 return;
 
             if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, ctx.Guild.Id, item.Price))
@@ -89,7 +89,7 @@ namespace TheGodfather.Modules.Misc
 
             await Database.RegisterPurchaseForItemAsync(ctx.User.Id, item.Id)
                 .ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync($"{ctx.User.Mention} bought a {Formatter.Bold(item.Name)} for {Formatter.Bold(item.Price.ToString())} credits!", ":moneybag:")
+            await ctx.InformSuccessAsync($"{ctx.User.Mention} bought a {Formatter.Bold(item.Name)} for {Formatter.Bold(item.Price.ToString())} credits!", ":moneybag:")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -112,14 +112,14 @@ namespace TheGodfather.Modules.Misc
                 throw new CommandFailedException("You did not purchase this item!");
 
             long retval = item.Price / 2;
-            if (!await ctx.AskYesNoQuestionAsync($"Are you sure you want to sell a {Formatter.Bold(item.Name)} for {Formatter.Bold(retval.ToString())} credits?").ConfigureAwait(false))
+            if (!await ctx.WaitForBoolReplyAsync($"Are you sure you want to sell a {Formatter.Bold(item.Name)} for {Formatter.Bold(retval.ToString())} credits?").ConfigureAwait(false))
                 return;
 
             await Database.GiveCreditsToUserAsync(ctx.User.Id, ctx.Guild.Id, retval)
                 .ConfigureAwait(false);
             await Database.UnregisterPurchaseForItemAsync(ctx.User.Id, item.Id)
                 .ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync($"{ctx.User.Mention} sold a {Formatter.Bold(item.Name)} for {Formatter.Bold(retval.ToString())} credits!", ":moneybag:")
+            await ctx.InformSuccessAsync($"{ctx.User.Mention} sold a {Formatter.Bold(item.Name)} for {Formatter.Bold(retval.ToString())} credits!", ":moneybag:")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -141,7 +141,7 @@ namespace TheGodfather.Modules.Misc
 
             await Database.RemoveItemsFromGuildShopAsync(ctx.Guild.Id, ids)
                 .ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync()
+            await ctx.InformSuccessAsync()
                 .ConfigureAwait(false);
         }
         #endregion
@@ -159,7 +159,7 @@ namespace TheGodfather.Modules.Misc
             if (!items.Any())
                 throw new CommandFailedException("No items in shop!");
 
-            await ctx.SendPaginatedCollectionAsync(
+            await ctx.SendCollectionInPagesAsync(
                 $"{ctx.Guild.Name}'s shop:",
                 items,
                 item => $"{item.Id} | {Formatter.Bold(item.Name)} : {Formatter.Bold(item.Price.ToString())} credits",
@@ -183,7 +183,7 @@ namespace TheGodfather.Modules.Misc
             if (!items.Any())
                 throw new CommandFailedException("No items in shop!");
 
-            await ctx.SendPaginatedCollectionAsync(
+            await ctx.SendCollectionInPagesAsync(
                 $"Registered purchasable items:",
                 items,
                 item => $"{item.Id} | {item.GuildId} | {Formatter.Bold(item.Name)} : {Formatter.Bold(item.Price.ToString())} credits",

@@ -103,7 +103,7 @@ namespace TheGodfather.Modules.Owner
                     sb.AppendLine($"Blocked: {user.ToString()}!");
                 }
 
-                await ctx.RespondWithIconEmbedAsync(sb.ToString())
+                await ctx.InformSuccessAsync(sb.ToString())
                     .ConfigureAwait(false);
             }
 
@@ -151,7 +151,7 @@ namespace TheGodfather.Modules.Owner
                     sb.AppendLine($"Unblocked: {user.ToString()}!");
                 }
 
-                await ctx.RespondWithIconEmbedAsync(sb.ToString())
+                await ctx.InformSuccessAsync(sb.ToString())
                     .ConfigureAwait(false);
             }
             #endregion
@@ -182,7 +182,7 @@ namespace TheGodfather.Modules.Owner
                 if (!lines.Any())
                     throw new CommandFailedException("No blocked users registered!");
 
-                await ctx.SendPaginatedCollectionAsync(
+                await ctx.SendCollectionInPagesAsync(
                     "Blocked users (in database):",
                     lines,
                     line => line,

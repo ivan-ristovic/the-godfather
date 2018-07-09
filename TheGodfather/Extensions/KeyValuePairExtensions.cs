@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿#region USING_DIRECTIVES
+using System.Collections.Generic;
+#endregion
 
 namespace TheGodfather.Extensions
 {

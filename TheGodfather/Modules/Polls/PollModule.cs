@@ -43,7 +43,7 @@ namespace TheGodfather.Modules.Polls
             if (!Poll.RegisterPollInChannel(poll, ctx.Channel.Id))
                 throw new CommandFailedException("Failed to start the poll. Please try again.");
             try {
-                await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Question, "And what will be the possible answers? (separate with semicolon ``;``)")
+                await ctx.InformSuccessAsync(StaticDiscordEmoji.Question, "And what will be the possible answers? (separate with semicolon ``;``)")
                     .ConfigureAwait(false);
                 var options = await ctx.WaitAndParsePollOptionsAsync()
                     .ConfigureAwait(false);

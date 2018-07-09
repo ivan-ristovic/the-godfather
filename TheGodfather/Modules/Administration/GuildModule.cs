@@ -46,7 +46,7 @@ namespace TheGodfather.Modules.Administration
             var bans = await ctx.Guild.GetBansAsync()
                 .ConfigureAwait(false);
 
-            await ctx.SendPaginatedCollectionAsync(
+            await ctx.SendCollectionInPagesAsync(
                 "Guild bans",
                 bans,
                 b => $"- {b.User.ToString()} | Reason: {b.Reason} ",
@@ -119,7 +119,7 @@ namespace TheGodfather.Modules.Administration
             var members = await ctx.Guild.GetAllMembersAsync()
                 .ConfigureAwait(false);
 
-            await ctx.SendPaginatedCollectionAsync(
+            await ctx.SendCollectionInPagesAsync(
                 "Members",
                 members.OrderBy(m => m.Username),
                 m => m.ToString(),
@@ -151,12 +151,12 @@ namespace TheGodfather.Modules.Administration
                 return;
             }
 
-            if (!await ctx.AskYesNoQuestionAsync($"Pruning will remove {Formatter.Bold(count.ToString())} member(s). Continue?").ConfigureAwait(false))
+            if (!await ctx.WaitForBoolReplyAsync($"Pruning will remove {Formatter.Bold(count.ToString())} member(s). Continue?").ConfigureAwait(false))
                 return;
 
             await ctx.Guild.PruneAsync(days, ctx.BuildReasonString(reason))
                 .ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync()
+            await ctx.InformSuccessAsync()
                 .ConfigureAwait(false);
         }
         #endregion
@@ -179,7 +179,7 @@ namespace TheGodfather.Modules.Administration
                 m.Name = newname;
                 m.AuditLogReason = ctx.BuildReasonString(reason);
             })).ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync()
+            await ctx.InformSuccessAsync()
                 .ConfigureAwait(false);
         }
 
@@ -214,7 +214,7 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException("An error occured.", e);
             }
 
-            await ctx.RespondWithIconEmbedAsync()
+            await ctx.InformSuccessAsync()
                 .ConfigureAwait(false);
         }
         #endregion

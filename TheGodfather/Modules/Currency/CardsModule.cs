@@ -54,7 +54,7 @@ namespace TheGodfather.Modules.Currency
             if (!drawn.Any())
                 throw new CommandFailedException($"Current deck doesn't have enough cards. Use command {Formatter.InlineCode("deck reset")} to reset the deck.");
 
-            await ctx.RespondWithIconEmbedAsync($"{ctx.User.Mention} drew {string.Join(" ", drawn)}", ":ticket:")
+            await ctx.InformSuccessAsync($"{ctx.User.Mention} drew {string.Join(" ", drawn)}", ":ticket:")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -71,7 +71,7 @@ namespace TheGodfather.Modules.Currency
 
             Decks[ctx.Channel.Id] = new Deck();
 
-            await ctx.RespondWithIconEmbedAsync("A new shuffled deck is opened in this channel!", ":spades:")
+            await ctx.InformSuccessAsync("A new shuffled deck is opened in this channel!", ":spades:")
                 .ConfigureAwait(false);
         }
         #endregion

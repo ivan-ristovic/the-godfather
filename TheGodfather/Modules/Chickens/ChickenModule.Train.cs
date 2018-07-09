@@ -53,7 +53,7 @@ namespace TheGodfather.Modules.Chickens
                     throw new CommandFailedException($"{ctx.User.Mention}, your chicken is too weak for that action! Heal it using {Formatter.BlockCode("chicken heal")} command.");
 
                 var price = chicken.TrainStrengthPrice;
-                if (!await ctx.AskYesNoQuestionAsync($"{ctx.User.Mention}, are you sure you want to train your chicken for {Formatter.Bold(price.ToString())} credits?\n\nNote: This action will also weaken the vitality of your chicken by 1."))
+                if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to train your chicken for {Formatter.Bold(price.ToString())} credits?\n\nNote: This action will also weaken the vitality of your chicken by 1."))
                     return;
 
                 if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, ctx.Guild.Id, price).ConfigureAwait(false))
@@ -69,7 +69,7 @@ namespace TheGodfather.Modules.Chickens
                 await Database.ModifyChickenAsync(chicken, ctx.Guild.Id)
                     .ConfigureAwait(false);
 
-                await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, result)
+                await ctx.InformSuccessAsync(StaticDiscordEmoji.Chicken, result)
                     .ConfigureAwait(false);
             }
             #endregion
@@ -93,7 +93,7 @@ namespace TheGodfather.Modules.Chickens
                     throw new CommandFailedException($"{ctx.User.Mention}, your chicken is too weak for that action! Heal it using {Formatter.BlockCode("chicken heal")} command.");
 
                 var price = chicken.TrainVitalityPrice;
-                if (!await ctx.AskYesNoQuestionAsync($"{ctx.User.Mention}, are you sure you want to train your chicken for {Formatter.Bold(price.ToString())} credits?\n\nNote: This action will also weaken the vitality of your chicken by 1."))
+                if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to train your chicken for {Formatter.Bold(price.ToString())} credits?\n\nNote: This action will also weaken the vitality of your chicken by 1."))
                     return;
 
                 if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, ctx.Guild.Id, price).ConfigureAwait(false))
@@ -109,7 +109,7 @@ namespace TheGodfather.Modules.Chickens
                 await Database.ModifyChickenAsync(chicken, ctx.Guild.Id)
                     .ConfigureAwait(false);
 
-                await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, result)
+                await ctx.InformSuccessAsync(StaticDiscordEmoji.Chicken, result)
                     .ConfigureAwait(false);
             }
             #endregion

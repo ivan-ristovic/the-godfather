@@ -93,7 +93,7 @@ namespace TheGodfather.Modules.Chickens
             await Database.GiveCreditsToUserAsync(winner.OwnerId, ctx.Guild.Id, gain * 2000)
                 .ConfigureAwait(false);
 
-            await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken,
+            await ctx.InformSuccessAsync(StaticDiscordEmoji.Chicken,
                 header +
                 $"{StaticDiscordEmoji.Trophy} Winner: {Formatter.Bold(winner.Name)}\n\n" +
                 $"{Formatter.Bold(winner.Name)} gained {Formatter.Bold(gain.ToString())} strength!\n" +
@@ -114,7 +114,7 @@ namespace TheGodfather.Modules.Chickens
             if (ChannelEvent.GetEventInChannel(ctx.Channel.Id) is ChickenWar ambush)
                 throw new CommandFailedException("There is a chicken war running in this channel. No actions are allowed before the war finishes.");
 
-            if (!await ctx.AskYesNoQuestionAsync($"{ctx.User.Mention}, are you sure you want to pay {Formatter.Bold("1000000")} credits to create a disease?"))
+            if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to pay {Formatter.Bold("1000000")} credits to create a disease?"))
                 return;
 
             if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, ctx.Guild.Id, 1000000).ConfigureAwait(false))
@@ -124,7 +124,7 @@ namespace TheGodfather.Modules.Chickens
             await Database.FilterChickensByVitalityAsync(ctx.Guild.Id, threshold)
                 .ConfigureAwait(false);
 
-            await ctx.RespondWithIconEmbedAsync($"The deadly chicken flu killed all chickens with vitality less than or equal to {Formatter.Bold(threshold.ToString())}!")
+            await ctx.InformSuccessAsync($"The deadly chicken flu killed all chickens with vitality less than or equal to {Formatter.Bold(threshold.ToString())}!")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -149,7 +149,7 @@ namespace TheGodfather.Modules.Chickens
             await Database.ModifyChickenAsync(chicken, ctx.Guild.Id)
                 .ConfigureAwait(false);
 
-            await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} healed his chicken (+100 to current HP)!")
+            await ctx.InformSuccessAsync(StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} healed his chicken (+100 to current HP)!")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -204,7 +204,7 @@ namespace TheGodfather.Modules.Chickens
             await Database.ModifyChickenAsync(chicken, ctx.Guild.Id)
                 .ConfigureAwait(false);
 
-            await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} renamed his chicken to {Formatter.Bold(name)}")
+            await ctx.InformSuccessAsync(StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} renamed his chicken to {Formatter.Bold(name)}")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -226,7 +226,7 @@ namespace TheGodfather.Modules.Chickens
                 throw new CommandFailedException("There is a chicken war running in this channel. No sells are allowed before the war finishes.");
 
             var price = chicken.SellPrice;
-            if (!await ctx.AskYesNoQuestionAsync($"{ctx.User.Mention}, are you sure you want to sell your chicken for {Formatter.Bold(price.ToString())} credits?"))
+            if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to sell your chicken for {Formatter.Bold(price.ToString())} credits?"))
                 return;
 
             await Database.RemoveChickenAsync(ctx.User.Id, ctx.Guild.Id)
@@ -234,7 +234,7 @@ namespace TheGodfather.Modules.Chickens
             await Database.GiveCreditsToUserAsync(ctx.User.Id, ctx.Guild.Id, price)
                 .ConfigureAwait(false);
 
-            await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} sold {Formatter.Bold(chicken.Name)} for {Formatter.Bold(price.ToString())} credits!")
+            await ctx.InformSuccessAsync(StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} sold {Formatter.Bold(chicken.Name)} for {Formatter.Bold(price.ToString())} credits!")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -260,7 +260,7 @@ namespace TheGodfather.Modules.Chickens
                 }
             }
 
-            await ctx.SendPaginatedCollectionAsync(
+            await ctx.SendCollectionInPagesAsync(
                 "Strongest bare strength chickens in this guild:",
                 chickens,
                 c => $"{Formatter.Bold(c.Name)} | {c.Owner.Mention} | {c.Stats.TotalStrength} STR"
@@ -289,7 +289,7 @@ namespace TheGodfather.Modules.Chickens
                 }
             }
 
-            await ctx.SendPaginatedCollectionAsync(
+            await ctx.SendCollectionInPagesAsync(
                 "Strongest bare strength chickens (globally):",
                 chickens,
                 c => $"{Formatter.Bold(c.Name)} | {c.Owner.Mention} | {c.Stats.TotalStrength} STR"

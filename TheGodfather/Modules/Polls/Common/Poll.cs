@@ -100,7 +100,7 @@ namespace TheGodfather.Modules.Polls.Common
                     await Task.Delay(UntilEnd <= TimeSpan.FromSeconds(5) ? UntilEnd : TimeSpan.FromSeconds(5), _cts.Token)
                         .ConfigureAwait(false);
                 } catch (TaskCanceledException) {
-                    await _channel.SendFailedEmbedAsync("The poll has been cancelled!")
+                    await _channel.InformFailureAsync("The poll has been cancelled!")
                         .ConfigureAwait(false);
                 }
             }

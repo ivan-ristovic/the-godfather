@@ -79,7 +79,7 @@ namespace TheGodfather.Modules.Misc
 
             await Database.AddCustomRankNameAsync(ctx.Guild.Id, rank, name)
                 .ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync()
+            await ctx.InformSuccessAsync()
                 .ConfigureAwait(false);
         }
         #endregion
@@ -95,7 +95,7 @@ namespace TheGodfather.Modules.Misc
         {
             await Database.RemoveCustomRankNameAsync(ctx.Guild.Id, rank)
                 .ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync()
+            await ctx.InformSuccessAsync()
                 .ConfigureAwait(false);
         }
         #endregion
@@ -112,7 +112,7 @@ namespace TheGodfather.Modules.Misc
             if (!ranks.Any())
                 throw new CommandFailedException("No custom rank names registered for this guild!");
 
-            await ctx.SendPaginatedCollectionAsync(
+            await ctx.SendCollectionInPagesAsync(
                 "Custom ranks in this guild",
                 ranks,
                 kvp => $"{kvp.Key} | {Formatter.Bold(kvp.Value)} | XP needed: {Formatter.Bold(Shared.CalculateXpNeededForRank(kvp.Key).ToString())}",

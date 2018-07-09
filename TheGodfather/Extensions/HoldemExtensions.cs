@@ -9,24 +9,24 @@ namespace TheGodfather.Extensions
 {
     public static class HoldemExtensions
     {
-        public static string ToUserFriendlyString(this Card c)
+        public static IReadOnlyList<Card> DrawCards(this Deck deck, int amount)
         {
-            if (c.Type >= CardType.Two && c.Type <= CardType.Ace)
-                return StaticDiscordEmoji.CardValues[(int)(c.Type - 1)] + c.Suit.ToFriendlyString();
-            else
-                return StaticDiscordEmoji.Question + c.Suit.ToFriendlyString();
-        }
-
-        public static IReadOnlyList<Card> DrawCards(this Deck d, int amount)
-        {
-            List<Card> _cards = new List<Card>();
+            var cards = new List<Card>();
             try {
                 for (int i = 0; i < amount; i++)
-                    _cards.Add(d.GetNextCard());
+                    cards.Add(deck.GetNextCard());
             } catch {
-                _cards.Clear();
+                cards.Clear();
             }
-            return _cards.AsReadOnly();
+            return cards.AsReadOnly();
+        }
+
+        public static string ToUserFriendlyString(this Card card)
+        {
+            if (card.Type >= CardType.Two && card.Type <= CardType.Ace)
+                return StaticDiscordEmoji.CardValues[(int)(card.Type - 1)] + card.Suit.ToFriendlyString();
+            else
+                return StaticDiscordEmoji.Question + card.Suit.ToFriendlyString();
         }
     }
 }

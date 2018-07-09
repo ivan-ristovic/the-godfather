@@ -37,7 +37,7 @@ namespace TheGodfather.Modules.Search
                 throw new CommandFailedException("Failed to retrieve a joke. Please report this.");
             }
 
-            await ctx.RespondWithIconEmbedAsync(joke, ":joy:")
+            await ctx.InformSuccessAsync(joke, ":joy:")
                 .ConfigureAwait(false);
         }
 
@@ -59,11 +59,11 @@ namespace TheGodfather.Modules.Search
                 throw new CommandFailedException("Failed to retrieve joke. Please report this.");
 
             if (!jokes.Any()) {
-                await ctx.RespondWithIconEmbedAsync("No results...", ":frowning:")
+                await ctx.InformSuccessAsync("No results...", ":frowning:")
                     .ConfigureAwait(false);
                 return;
             }
-            await ctx.RespondWithIconEmbedAsync($"Results:\n\n{string.Join("\n", jokes.Take(5))}", ":joy:")
+            await ctx.InformSuccessAsync($"Results:\n\n{string.Join("\n", jokes.Take(5))}", ":joy:")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -80,7 +80,7 @@ namespace TheGodfather.Modules.Search
             if (joke == null)
                 throw new CommandFailedException("Failed to retrieve joke. Please report this.");
 
-            await ctx.RespondWithIconEmbedAsync(joke, ":joy:")
+            await ctx.InformSuccessAsync(joke, ":joy:")
                 .ConfigureAwait(false);
         }
         #endregion

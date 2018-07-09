@@ -100,7 +100,7 @@ namespace TheGodfather.Modules.Reactions
         [UsesInteractivity]
         public async Task ClearAsync(CommandContext ctx)
         {
-            if (!await ctx.AskYesNoQuestionAsync("Are you sure you want to delete all emoji reactions for this guild?").ConfigureAwait(false))
+            if (!await ctx.WaitForBoolReplyAsync("Are you sure you want to delete all emoji reactions for this guild?").ConfigureAwait(false))
                 return;
 
             if (Shared.EmojiReactions.ContainsKey(ctx.Guild.Id))
@@ -126,7 +126,7 @@ namespace TheGodfather.Modules.Reactions
                     .ConfigureAwait(false);
             }
 
-            await ctx.RespondWithIconEmbedAsync("Removed all emoji reactions!")
+            await ctx.InformSuccessAsync("Removed all emoji reactions!")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -176,7 +176,7 @@ namespace TheGodfather.Modules.Reactions
                     .ConfigureAwait(false);
             }
 
-            await ctx.RespondWithIconEmbedAsync($"Done!\n\n{errlist}")
+            await ctx.InformSuccessAsync($"Done!\n\n{errlist}")
                 .ConfigureAwait(false);
         }
 
@@ -224,7 +224,7 @@ namespace TheGodfather.Modules.Reactions
                 }
             }
 
-            await ctx.RespondWithIconEmbedAsync($"Successfully removed {removed} emoji reactions!\n\n{errlist}")
+            await ctx.InformSuccessAsync($"Successfully removed {removed} emoji reactions!\n\n{errlist}")
                 .ConfigureAwait(false);
         }
 
@@ -289,7 +289,7 @@ namespace TheGodfather.Modules.Reactions
                 }
             }
 
-            await ctx.RespondWithIconEmbedAsync($"Successfully removed {removed} emoji reactions!\n\n{errlist}")
+            await ctx.InformSuccessAsync($"Successfully removed {removed} emoji reactions!\n\n{errlist}")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -304,7 +304,7 @@ namespace TheGodfather.Modules.Reactions
             if (!Shared.EmojiReactions.ContainsKey(ctx.Guild.Id) || !Shared.EmojiReactions[ctx.Guild.Id].Any())
                 throw new CommandFailedException("No emoji reactions registered for this guild.");
 
-            await ctx.SendPaginatedCollectionAsync(
+            await ctx.SendCollectionInPagesAsync(
                 "Emoji reactions for this guild",
                 Shared.EmojiReactions[ctx.Guild.Id].OrderBy(er => er.OrderedTriggerStrings.First()),
                 er => $"{er.Id} : {DiscordEmoji.FromName(ctx.Client, er.Response)} | Triggers: {string.Join(", ", er.TriggerStrings)}",
@@ -378,7 +378,7 @@ namespace TheGodfather.Modules.Reactions
                     .ConfigureAwait(false);
             }
 
-            await ctx.RespondWithIconEmbedAsync($"Done!\n\n{errlist}")
+            await ctx.InformSuccessAsync($"Done!\n\n{errlist}")
                 .ConfigureAwait(false);
         }
         #endregion

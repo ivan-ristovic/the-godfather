@@ -6,14 +6,28 @@ using System;
 
 namespace TheGodfather.EventListeners
 {
+    internal enum EventOrigin
+    {
+        Channel,
+        Client,
+        Command,
+        Emoji,
+        Guild,
+        KickOrBan,
+        Linkfilter,
+        Member,
+        Message,
+        Role
+    }
+
     internal static partial class Listeners
     {
         private static readonly string _unknown = Formatter.Italic("Unknown");
 
-        private static string ToUTC(DateTime datetime)
+        private static string BuildUTCString(DateTime datetime)
             => $"At {datetime.ToUniversalTime().ToString()} UTC";
 
-        private static string FormatEventTime(DateTimeOffset datetime)
+        private static string BuildUTCString(DateTimeOffset datetime)
             => $"At {datetime.ToUniversalTime().ToString()} UTC";
 
         private static DiscordEmbedBuilder FormEmbedBuilder(EventOrigin origin, string title, string desc = null)
@@ -57,20 +71,5 @@ namespace TheGodfather.EventListeners
 
             return emb;
         }
-    }
-
-
-    internal enum EventOrigin
-    {
-        Channel,
-        Client,
-        Command,
-        Emoji,
-        Guild,
-        KickOrBan,
-        Linkfilter,
-        Member,
-        Message,
-        Role
     }
 }

@@ -55,7 +55,7 @@ namespace TheGodfather.Modules.Search
             var subs = await Database.GetFeedEntriesForChannelAsync(ctx.Channel.Id)
                 .ConfigureAwait(false);
 
-            await ctx.SendPaginatedCollectionAsync(
+            await ctx.SendCollectionInPagesAsync(
                 "Subscriptions for this channel:",
                 subs,
                 fe => {
@@ -87,7 +87,7 @@ namespace TheGodfather.Modules.Search
             if (!await Database.AddSubscriptionAsync(ctx.Channel.Id, url, name ?? url).ConfigureAwait(false))
                 throw new CommandFailedException("You are already subscribed to this RSS feed URL!");
 
-            await ctx.RespondWithIconEmbedAsync($"Subscribed to {url}!")
+            await ctx.InformSuccessAsync($"Subscribed to {url}!")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -104,7 +104,7 @@ namespace TheGodfather.Modules.Search
         {
             await Database.RemoveSubscriptionByIdAsync(ctx.Channel.Id, id)
                 .ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync($"Unsubscribed from feed with ID {Formatter.Bold(id.ToString())}")
+            await ctx.InformSuccessAsync($"Unsubscribed from feed with ID {Formatter.Bold(id.ToString())}")
                 .ConfigureAwait(false);
         }
 
@@ -114,7 +114,7 @@ namespace TheGodfather.Modules.Search
         {
             await Database.RemoveSubscriptionByNameAsync(ctx.Channel.Id, name)
                 .ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync($"Unsubscribed from feed with name {Formatter.Bold(name)}")
+            await ctx.InformSuccessAsync($"Unsubscribed from feed with name {Formatter.Bold(name)}")
                 .ConfigureAwait(false);
         }
         #endregion

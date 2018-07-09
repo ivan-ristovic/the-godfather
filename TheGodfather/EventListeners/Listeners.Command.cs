@@ -102,8 +102,10 @@ namespace TheGodfather.EventListeners
                             sb.AppendLine($"- That command can only be invoked only with the following prefixes: {string.Join(" ", pattr.Prefixes)}!");
                     }
                 }
+            } else if (ex is ConcurrentOperationException) {
+                sb.Append(ex.Message);
             } else if (ex is UnauthorizedException) {
-                sb.Append($"I am not authorized to do that.");
+                sb.Append("I am not authorized to do that.");
             } else if (ex is TargetInvocationException) {
                 sb.Append($"{ex.InnerException?.Message ?? "Target invocation error occured. Please check the arguments provided and try again."}");
             } else {

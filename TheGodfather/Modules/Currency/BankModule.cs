@@ -89,7 +89,7 @@ namespace TheGodfather.Modules.Currency
 
             await Database.GiveCreditsToUserAsync(user.Id, ctx.Guild.Id, amount)
                 .ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync($"{Formatter.Bold(user.Mention)} won {Formatter.Bold($"{amount:n0}")} credits on the Serbian lottery! (seems legit)", ":moneybag:")
+            await ctx.InformSuccessAsync($"{Formatter.Bold(user.Mention)} won {Formatter.Bold($"{amount:n0}")} credits on the Serbian lottery! (seems legit)", ":moneybag:")
                 .ConfigureAwait(false);
         }
 
@@ -112,7 +112,7 @@ namespace TheGodfather.Modules.Currency
 
             await Database.OpenBankAccountForUserAsync(ctx.User.Id, ctx.Guild.Id)
                 .ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync($"Account opened for you, {ctx.User.Mention}! Since WM bank is so generous, you get 10000 credits for free.", ":moneybag:")
+            await ctx.InformSuccessAsync($"Account opened for you, {ctx.User.Mention}! Since WM bank is so generous, you get 10000 credits for free.", ":moneybag:")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -199,7 +199,7 @@ namespace TheGodfather.Modules.Currency
             await Database.TransferCreditsAsync(ctx.User.Id, user.Id, ctx.Guild.Id, amount)
                 .ConfigureAwait(false);
 
-            await ctx.RespondWithIconEmbedAsync($"Transfer from {Formatter.Bold(ctx.User.Username)} to {Formatter.Bold(user.Username)} is complete.", ":moneybag:")
+            await ctx.InformSuccessAsync($"Transfer from {Formatter.Bold(ctx.User.Username)} to {Formatter.Bold(user.Username)} is complete.", ":moneybag:")
                 .ConfigureAwait(false);
         }
 
@@ -224,7 +224,7 @@ namespace TheGodfather.Modules.Currency
 
             await Database.CloseBankAccountForUserAsync(user.Id, ctx.Guild.Id)
                 .ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync()
+            await ctx.InformSuccessAsync()
                 .ConfigureAwait(false);
         }
         #endregion

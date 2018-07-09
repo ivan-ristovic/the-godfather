@@ -46,7 +46,7 @@ namespace TheGodfather.Modules.Owner
         public async Task ClearLogAsync(CommandContext ctx,
                                        [RemainingText, Description("Message to send.")] string message)
         {
-            if (!await ctx.AskYesNoQuestionAsync($"Are you sure you want to announce the messsage:\n\n{message}").ConfigureAwait(false))
+            if (!await ctx.WaitForBoolReplyAsync($"Are you sure you want to announce the messsage:\n\n{message}").ConfigureAwait(false))
                 return;
 
             var errors = new StringBuilder();
@@ -61,7 +61,7 @@ namespace TheGodfather.Modules.Owner
                 }
             }
 
-            await ctx.RespondWithIconEmbedAsync($"Message sent!\n\n{errors.ToString()}")
+            await ctx.InformSuccessAsync($"Message sent!\n\n{errors.ToString()}")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -94,7 +94,7 @@ namespace TheGodfather.Modules.Owner
                 throw new CommandFailedException("An error occured.", e);
             }
 
-            await ctx.RespondWithIconEmbedAsync()
+            await ctx.InformSuccessAsync()
                 .ConfigureAwait(false);
         }
         #endregion
@@ -114,7 +114,7 @@ namespace TheGodfather.Modules.Owner
 
             await ctx.Client.UpdateCurrentUserAsync(username: name)
                 .ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync()
+            await ctx.InformSuccessAsync()
                 .ConfigureAwait(false);
         }
         #endregion
@@ -128,13 +128,13 @@ namespace TheGodfather.Modules.Owner
         [NotBlocked, UsesInteractivity]
         public async Task ClearLogAsync(CommandContext ctx)
         {
-            if (!await ctx.AskYesNoQuestionAsync("Are you sure you want to clear the logs?").ConfigureAwait(false))
+            if (!await ctx.WaitForBoolReplyAsync("Are you sure you want to clear the logs?").ConfigureAwait(false))
                 return;
 
             if (!Shared.LogProvider.Clear())
                 throw new CommandFailedException("Failed to delete log file!");
 
-            await ctx.RespondWithIconEmbedAsync()
+            await ctx.InformSuccessAsync()
                 .ConfigureAwait(false);
         }
         #endregion
@@ -168,7 +168,7 @@ namespace TheGodfather.Modules.Owner
 
             var maxlen = res.First().Select(r => r.Key).OrderByDescending(r => r.Length).First().Length + 1;
 
-            await ctx.SendPaginatedCollectionAsync(
+            await ctx.SendCollectionInPagesAsync(
                 $"Results:",
                 res.Take(25),
                 row => {
@@ -291,7 +291,7 @@ namespace TheGodfather.Modules.Owner
         {
             Shared.LogProvider.LogToFile = b;
 
-            await ctx.RespondWithIconEmbedAsync($"File logging set to {b}")
+            await ctx.InformSuccessAsync($"File logging set to {b}")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -439,7 +439,7 @@ namespace TheGodfather.Modules.Owner
                 throw new CommandFailedException($"IO Exception occured while saving the main file!", e);
             }
 
-            await ctx.RespondWithIconEmbedAsync($"Command list created at path: {Formatter.InlineCode(current.FullName)}!")
+            await ctx.InformSuccessAsync($"Command list created at path: {Formatter.InlineCode(current.FullName)}!")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -473,7 +473,7 @@ namespace TheGodfather.Modules.Owner
                     sb.AppendLine($"Failed to leave guild with ID: {Formatter.InlineCode(gid.ToString())}!");
                 }
             }
-            await ctx.RespondWithIconEmbedAsync(sb.ToString())
+            await ctx.InformSuccessAsync(sb.ToString())
                 .ConfigureAwait(false);
         }
         #endregion
@@ -510,7 +510,7 @@ namespace TheGodfather.Modules.Owner
                 throw new InvalidCommandUsageException("Descriptor can only be 'u' or 'c'.");
             }
 
-            await ctx.RespondWithIconEmbedAsync()
+            await ctx.InformSuccessAsync()
                 .ConfigureAwait(false);
         }
         #endregion
@@ -566,7 +566,7 @@ namespace TheGodfather.Modules.Owner
         public async Task ToggleIgnoreAsync(CommandContext ctx)
         {
             Shared.ListeningStatus = !Shared.ListeningStatus;
-            await ctx.RespondWithIconEmbedAsync($"Listening status set to: {Formatter.Bold(Shared.ListeningStatus.ToString())}")
+            await ctx.InformSuccessAsync($"Listening status set to: {Formatter.Bold(Shared.ListeningStatus.ToString())}")
                 .ConfigureAwait(false);
         }
         #endregion

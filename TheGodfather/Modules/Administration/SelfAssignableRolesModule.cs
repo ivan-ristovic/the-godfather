@@ -70,7 +70,7 @@ namespace TheGodfather.Modules.Administration
                     .ConfigureAwait(false);
             }
 
-            await ctx.RespondWithIconEmbedAsync($"Specified self-assignable roles have been added.")
+            await ctx.InformSuccessAsync($"Specified self-assignable roles have been added.")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -84,7 +84,7 @@ namespace TheGodfather.Modules.Administration
         [UsesInteractivity]
         public async Task ClearAsync(CommandContext ctx)
         {
-            if (!await ctx.AskYesNoQuestionAsync("Are you sure you want to delete all self-assignable roles for this guild?").ConfigureAwait(false))
+            if (!await ctx.WaitForBoolReplyAsync("Are you sure you want to delete all self-assignable roles for this guild?").ConfigureAwait(false))
                 return;
 
             await Database.RemoveAllSelfAssignableRolesForGuildAsync(ctx.Guild.Id)
@@ -102,7 +102,7 @@ namespace TheGodfather.Modules.Administration
                     .ConfigureAwait(false);
             }
 
-            await ctx.RespondWithIconEmbedAsync()
+            await ctx.InformSuccessAsync()
                 .ConfigureAwait(false);
         }
         #endregion
@@ -137,7 +137,7 @@ namespace TheGodfather.Modules.Administration
                     .ConfigureAwait(false);
             }
 
-            await ctx.RespondWithIconEmbedAsync()
+            await ctx.InformSuccessAsync()
                 .ConfigureAwait(false);
         }
         #endregion
@@ -164,7 +164,7 @@ namespace TheGodfather.Modules.Administration
                     roles.Add(role);
             }
 
-            await ctx.SendPaginatedCollectionAsync(
+            await ctx.SendCollectionInPagesAsync(
                 "Self-Assignable roles for this guild:",
                 roles,
                 r => r.Name,

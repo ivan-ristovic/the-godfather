@@ -152,7 +152,7 @@ namespace TheGodfather.Modules.Search
         private async Task PrintImagesAsync(DiscordChannel channel, IEnumerable<IGalleryItem> results, int num)
         {
             if (!results.Any()) {
-                await channel.SendFailedEmbedAsync("No results...")
+                await channel.InformFailureAsync("No results...")
                     .ConfigureAwait(false);
                 return;
             }
@@ -182,7 +182,7 @@ namespace TheGodfather.Modules.Search
             }
 
             if (results.Count() != num) {
-                await channel.SendFailedEmbedAsync("These are all of the results returned.")
+                await channel.InformFailureAsync("These are all of the results returned.")
                     .ConfigureAwait(false);
             }
         }

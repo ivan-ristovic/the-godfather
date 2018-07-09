@@ -103,7 +103,7 @@ namespace TheGodfather.Modules.Owner
                     sb.AppendLine($"Blocked: {channel.ToString()}!");
                 }
 
-                await ctx.RespondWithIconEmbedAsync(sb.ToString())
+                await ctx.InformSuccessAsync(sb.ToString())
                     .ConfigureAwait(false);
             }
 
@@ -151,7 +151,7 @@ namespace TheGodfather.Modules.Owner
                     sb.AppendLine($"Unblocked: {channel.ToString()}!");
                 }
 
-                await ctx.RespondWithIconEmbedAsync(sb.ToString())
+                await ctx.InformSuccessAsync(sb.ToString())
                     .ConfigureAwait(false);
             }
             #endregion
@@ -188,7 +188,7 @@ namespace TheGodfather.Modules.Owner
                 if (!lines.Any())
                     throw new CommandFailedException("No blocked channels registered!");
 
-                await ctx.SendPaginatedCollectionAsync(
+                await ctx.SendCollectionInPagesAsync(
                     "Blocked channels (in database):",
                     lines,
                     line => line,

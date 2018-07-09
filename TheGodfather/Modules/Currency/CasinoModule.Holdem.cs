@@ -54,7 +54,7 @@ namespace TheGodfather.Modules.Currency
                 var game = new HoldemGame(ctx.Client.GetInteractivity(), ctx.Channel, balance);
                 ChannelEvent.RegisterEventInChannel(game, ctx.Channel.Id);
                 try {
-                    await ctx.RespondWithIconEmbedAsync($"The Hold'Em game will start in 30s or when there are 7 participants. Use command {Formatter.InlineCode("casino holdem <entering sum>")} to join the pool. Entering sum is set to {game.MoneyNeeded} credits.", ":clock1:")
+                    await ctx.InformSuccessAsync($"The Hold'Em game will start in 30s or when there are 7 participants. Use command {Formatter.InlineCode("casino holdem <entering sum>")} to join the pool. Entering sum is set to {game.MoneyNeeded} credits.", ":clock1:")
                         .ConfigureAwait(false);
                     await JoinAsync(ctx)
                         .ConfigureAwait(false);
@@ -66,7 +66,7 @@ namespace TheGodfather.Modules.Currency
                             .ConfigureAwait(false);
 
                         if (game.Winner != null) {
-                            await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Trophy, $"Winner: {game.Winner.Mention}")
+                            await ctx.InformSuccessAsync(StaticDiscordEmoji.Trophy, $"Winner: {game.Winner.Mention}")
                                 .ConfigureAwait(false);
                         }
 
@@ -77,7 +77,7 @@ namespace TheGodfather.Modules.Currency
                     } else {
                         await Database.GiveCreditsToUserAsync(ctx.User.Id, ctx.Guild.Id, game.MoneyNeeded)
                             .ConfigureAwait(false);
-                        await ctx.RespondWithIconEmbedAsync("Not enough users joined the Hold'Em game.", ":alarm_clock:")
+                        await ctx.InformSuccessAsync("Not enough users joined the Hold'Em game.", ":alarm_clock:")
                             .ConfigureAwait(false);
                     }
                 } finally {
@@ -119,7 +119,7 @@ namespace TheGodfather.Modules.Currency
                     throw new CommandFailedException("You do not have that many credits on your account! Specify a smaller bid amount.");
 
                 game.AddParticipant(ctx.User, handle);
-                await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.CardSuits[0], $"{ctx.User.Mention} joined the Hold'Em game.")
+                await ctx.InformSuccessAsync(StaticDiscordEmoji.CardSuits[0], $"{ctx.User.Mention} joined the Hold'Em game.")
                     .ConfigureAwait(false);
             }
             #endregion
@@ -131,7 +131,7 @@ namespace TheGodfather.Modules.Currency
             [UsageExamples("!casino holdem rules")]
             public async Task RulesAsync(CommandContext ctx)
             {
-                await ctx.RespondWithIconEmbedAsync(
+                await ctx.InformSuccessAsync(
                     "TODO",
                     ":information_source:"
                 ).ConfigureAwait(false);

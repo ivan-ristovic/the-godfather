@@ -53,7 +53,7 @@ namespace TheGodfather.Modules.Currency
                 var game = new LotteryGame(ctx.Client.GetInteractivity(), ctx.Channel);
                 ChannelEvent.RegisterEventInChannel(game, ctx.Channel.Id);
                 try {
-                    await ctx.RespondWithIconEmbedAsync($"The Lottery game will start in 30s or when there are 10 participants. Use command {Formatter.InlineCode("casino lottery")} to join the pool.", ":clock1:")
+                    await ctx.InformSuccessAsync($"The Lottery game will start in 30s or when there are 10 participants. Use command {Formatter.InlineCode("casino lottery")} to join the pool.", ":clock1:")
                         .ConfigureAwait(false);
                     await JoinAsync(ctx, numbers)
                         .ConfigureAwait(false);
@@ -64,13 +64,13 @@ namespace TheGodfather.Modules.Currency
                         .ConfigureAwait(false);
 
                     if (game.Winners.Any()) {
-                        await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.MoneyBag, $"Winnings:\n\n{string.Join(", ", game.Winners.Select(w => $"{w.User.Mention} : {w.WinAmount}"))}")
+                        await ctx.InformSuccessAsync(StaticDiscordEmoji.MoneyBag, $"Winnings:\n\n{string.Join(", ", game.Winners.Select(w => $"{w.User.Mention} : {w.WinAmount}"))}")
                             .ConfigureAwait(false);
                         foreach (var winner in game.Winners)
                             await Database.GiveCreditsToUserAsync(winner.Id, ctx.Guild.Id, winner.WinAmount)
                                 .ConfigureAwait(false);
                     } else {
-                        await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.MoneyBag, "Better luck next time!")
+                        await ctx.InformSuccessAsync(StaticDiscordEmoji.MoneyBag, "Better luck next time!")
                             .ConfigureAwait(false);
                     }
                 } finally {
@@ -109,7 +109,7 @@ namespace TheGodfather.Modules.Currency
                     throw new CommandFailedException($"You do not have enough credits on your account to buy a lottery ticket! The lottery ticket costs {LotteryGame.TicketPrice} credits!");
 
                 game.AddParticipant(ctx.User, numbers);
-                await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.MoneyBag, $"{ctx.User.Mention} joined the Lottery game.")
+                await ctx.InformSuccessAsync(StaticDiscordEmoji.MoneyBag, $"{ctx.User.Mention} joined the Lottery game.")
                     .ConfigureAwait(false);
             }
             #endregion
@@ -121,7 +121,7 @@ namespace TheGodfather.Modules.Currency
             [UsageExamples("!casino lottery rules")]
             public async Task RulesAsync(CommandContext ctx)
             {
-                await ctx.RespondWithIconEmbedAsync(
+                await ctx.InformSuccessAsync(
                     "TODO",
                     ":information_source:"
                 ).ConfigureAwait(false);

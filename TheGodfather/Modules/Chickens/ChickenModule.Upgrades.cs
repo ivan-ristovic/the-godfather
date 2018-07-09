@@ -52,7 +52,7 @@ namespace TheGodfather.Modules.Chickens
                 if (upgrade == null)
                     throw new CommandFailedException($"An upgrade with ID {Formatter.InlineCode(id.ToString())} does not exist! Use command {Formatter.InlineCode("chicken upgrades")} to view all available upgrades.");
 
-                if (!await ctx.AskYesNoQuestionAsync($"{ctx.User.Mention}, are you sure you want to buy {Formatter.Bold(upgrade.Name)} for {Formatter.Bold(upgrade.Price.ToString())} credits?"))
+                if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to buy {Formatter.Bold(upgrade.Name)} for {Formatter.Bold(upgrade.Price.ToString())} credits?"))
                     return;
 
                 if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, ctx.Guild.Id, upgrade.Price).ConfigureAwait(false))
@@ -61,7 +61,7 @@ namespace TheGodfather.Modules.Chickens
                 await Database.BuyChickenUpgradeAsync(ctx.User.Id, ctx.Guild.Id, upgrade)
                     .ConfigureAwait(false);
 
-                await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} bought upgraded his chicken with {Formatter.Bold(upgrade.Name)} (+{upgrade.Modifier}) {upgrade.UpgradesStat.ToStatString()}!")
+                await ctx.InformSuccessAsync(StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} bought upgraded his chicken with {Formatter.Bold(upgrade.Name)} (+{upgrade.Modifier}) {upgrade.UpgradesStat.ToStatString()}!")
                     .ConfigureAwait(false);
             }
 
@@ -80,7 +80,7 @@ namespace TheGodfather.Modules.Chickens
                 var upgrades = await Database.GetAllChickenUpgradesAsync()
                     .ConfigureAwait(false);
 
-                await ctx.SendPaginatedCollectionAsync(
+                await ctx.SendCollectionInPagesAsync(
                     "Available chicken upgrades",
                     upgrades,
                     upgrade => $"{upgrade.Id} | {upgrade.Name} | {Formatter.Bold(upgrade.Price.ToString())} | +{upgrade.Modifier} {upgrade.UpgradesStat.ToStatString()}",

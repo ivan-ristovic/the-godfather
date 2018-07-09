@@ -30,7 +30,7 @@ namespace TheGodfather.EventListeners
                 emb.AddField("User responsible", bentry.UserResponsible.Mention, inline: true);
                 if (!string.IsNullOrWhiteSpace(bentry.Reason))
                     emb.AddField("Reason", bentry.Reason);
-                emb.WithFooter(FormatEventTime(bentry.CreationTimestamp), bentry.UserResponsible.AvatarUrl);
+                emb.WithFooter(BuildUTCString(bentry.CreationTimestamp), bentry.UserResponsible.AvatarUrl);
             }
 
             await logchn.SendMessageAsync(embed: emb.Build());
@@ -54,7 +54,7 @@ namespace TheGodfather.EventListeners
                 emb.AddField("User responsible", bentry.UserResponsible.Mention, inline: true);
                 if (!string.IsNullOrWhiteSpace(bentry.Reason))
                     emb.AddField("Reason", bentry.Reason);
-                emb.WithFooter(FormatEventTime(bentry.CreationTimestamp), bentry.UserResponsible.AvatarUrl);
+                emb.WithFooter(BuildUTCString(bentry.CreationTimestamp), bentry.UserResponsible.AvatarUrl);
             }
 
             await logchn.SendMessageAsync(embed: emb.Build());
@@ -103,7 +103,7 @@ namespace TheGodfather.EventListeners
                 }
                 if (!string.IsNullOrWhiteSpace(eentry.Reason))
                     emb.AddField("Reason", eentry.Reason);
-                emb.WithFooter(FormatEventTime(eentry.CreationTimestamp), eentry.UserResponsible.AvatarUrl);
+                emb.WithFooter(BuildUTCString(eentry.CreationTimestamp), eentry.UserResponsible.AvatarUrl);
             }
 
             await logchn.SendMessageAsync(embed: emb.Build());
@@ -147,7 +147,7 @@ namespace TheGodfather.EventListeners
                     emb.AddField("Position changed to", rentry.PositionChange.After?.ToString() ?? _unknown, inline: true);
                 if (!string.IsNullOrWhiteSpace(rentry.Reason))
                     emb.AddField("Reason", rentry.Reason);
-                emb.WithFooter(FormatEventTime(rentry.CreationTimestamp), rentry.UserResponsible.AvatarUrl);
+                emb.WithFooter(BuildUTCString(rentry.CreationTimestamp), rentry.UserResponsible.AvatarUrl);
             } else {
                 emb.AddField("Error", "Failed to read audit log information. Please check my permissions");
             }
@@ -168,7 +168,7 @@ namespace TheGodfather.EventListeners
             if (entry != null && entry is DiscordAuditLogRoleUpdateEntry rentry) {
                 emb.AddField("User responsible", rentry.UserResponsible.Mention, inline: true); if (!string.IsNullOrWhiteSpace(rentry.Reason))
                     emb.AddField("Reason", rentry.Reason);
-                emb.WithFooter(FormatEventTime(rentry.CreationTimestamp), rentry.UserResponsible.AvatarUrl);
+                emb.WithFooter(BuildUTCString(rentry.CreationTimestamp), rentry.UserResponsible.AvatarUrl);
             } else {
                 emb.AddField("Error", "Failed to read audit log information. Please check my permissions");
             }
@@ -205,7 +205,7 @@ namespace TheGodfather.EventListeners
                     emb.AddField("Position changed to", rentry.PositionChange.After?.ToString() ?? _unknown, inline: true);
                 if (!string.IsNullOrWhiteSpace(rentry.Reason))
                     emb.AddField("Reason", rentry.Reason);
-                emb.WithFooter(FormatEventTime(rentry.CreationTimestamp), rentry.UserResponsible.AvatarUrl);
+                emb.WithFooter(BuildUTCString(rentry.CreationTimestamp), rentry.UserResponsible.AvatarUrl);
             } else {
                 emb.AddField("Error", "Failed to read audit log information. Please check my permissions");
                 emb.AddField("Role", e.RoleBefore?.ToString() ?? _unknown);
@@ -240,7 +240,7 @@ namespace TheGodfather.EventListeners
                     emb.AddField("Owner changed to", gentry.OwnerChange.After?.ToString() ?? _unknown, inline: true);
                 if (!string.IsNullOrWhiteSpace(gentry.Reason))
                     emb.AddField("Reason", gentry.Reason);
-                emb.WithFooter(FormatEventTime(gentry.CreationTimestamp), gentry.UserResponsible.AvatarUrl);
+                emb.WithFooter(BuildUTCString(gentry.CreationTimestamp), gentry.UserResponsible.AvatarUrl);
             } else {
                 emb.AddField("Error", "Failed to read audit log information. Please check my permissions");
             }

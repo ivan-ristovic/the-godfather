@@ -90,14 +90,14 @@ namespace TheGodfather.Modules.Administration
             {
                 var channel = ctx.Guild.Channels.FirstOrDefault(c => c.Name == "gf_setup");
                 if (channel == null) {
-                    if (await ctx.AskYesNoQuestionAsync($"Before we start, if you want to move this somewhere else, would you like me to create a temporary public blank channel for the setup? Alternatively, if you do not want that channel to be public, you can create the channel yourself with name {Formatter.Bold("gf_setup")} and whatever permissions you like, just let me access it. Please reply with yes if you wish for me to create the channel or with no if you plan to do it yourself.").ConfigureAwait(false)) {
+                    if (await ctx.WaitForBoolReplyAsync($"Before we start, if you want to move this somewhere else, would you like me to create a temporary public blank channel for the setup? Please reply with yes if you wish for me to create the channel or with no if you want us to continue here. Alternatively, if you do not want that channel to be public, let this command to timeout and create the channel yourself with name {Formatter.Bold("gf_setup")} and whatever permissions you like (just let me access it) and re-run the wizard.", reply: false).ConfigureAwait(false)) {
                         try {
                             channel = await ctx.Guild.CreateChannelAsync("gf_setup", ChannelType.Text, reason: "TheGodfather setup channel creation.")
                                 .ConfigureAwait(false);
-                            await ctx.RespondWithIconEmbedAsync($"Alright, let's move the setup to {channel.Mention}")
+                            await ctx.InformSuccessAsync($"Alright, let's move the setup to {channel.Mention}")
                                 .ConfigureAwait(false);
                         } catch {
-                            await ctx.RespondWithFailedEmbedAsync($"I have failed to create a setup channel. Could you kindly create the channel called {Formatter.Bold("gf_setup")} and then re-run the command or give me the permission to create channels? The wizard will now exit...")
+                            await ctx.InformFailureAsync($"I have failed to create a setup channel. Could you kindly create the channel called {Formatter.Bold("gf_setup")} and then re-run the command or give me the permission to create channels? The wizard will now exit...")
                                 .ConfigureAwait(false);
                             return;
                         }
@@ -107,24 +107,24 @@ namespace TheGodfather.Modules.Administration
                 }
 
                 var gcfg = CachedGuildConfig.Default;
-                await channel.SendIconEmbedAsync("Welcome to the guild configuration wizard!\n\nI will guide you through the configuration. You can always re-run this setup or manually change the settings so do not worry if you don't do everything like you wanted.\n\nThat being said, let's start the fun! Note that the changes will apply after the wizard finishes.")
+                await channel.InformSuccessAsync("Welcome to the guild configuration wizard!\n\nI will guide you through the configuration. You can always re-run this setup or manually change the settings so do not worry if you don't do everything like you wanted.\n\nThat being said, let's start the fun! Note that the changes will apply after the wizard finishes.")
                     .ConfigureAwait(false);
                 await Task.Delay(TimeSpan.FromSeconds(10))
                     .ConfigureAwait(false);
 
-                if (await channel.AskYesNoQuestionAsync(ctx, "Do you wish to change the prefix for the bot? (y/n)")) {
-                    await channel.SendIconEmbedAsync("What will the new prefix be?")
+                if (await channel.WaitForBoolResponseAsync(ctx, "Do you wish to change the prefix for the bot? (y/n)", reply: false)) {
+                    await channel.InformSuccessAsync("What will the new prefix be?")
                         .ConfigureAwait(false);
                     var mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id)
                         .ConfigureAwait(false);
                     gcfg.Prefix = mctx?.Message.Content;
                 }
 
-                gcfg.SuggestionsEnabled = await channel.AskYesNoQuestionAsync(ctx, "Do you wish to enable command suggestions for those nasty times when you just can't remember the command name? (y/n)")
+                gcfg.SuggestionsEnabled = await channel.WaitForBoolResponseAsync(ctx, "Do you wish to enable command suggestions for those nasty times when you just can't remember the command name? (y/n)", reply: false)
                     .ConfigureAwait(false);
 
-                if (await channel.AskYesNoQuestionAsync(ctx, "I can log the actions that happen in the guild (such as message deletion, channel updates etc.), so you always know what is going on in the guild. Do you wish to enable the action log? (y/n)")) {
-                    await channel.SendIconEmbedAsync($"Alright, cool. In order for action logs to work you will need to tell me where to dump the log. Please reply with a channel mention, for example {Formatter.Bold("#logs")} .")
+                if (await channel.WaitForBoolResponseAsync(ctx, "I can log the actions that happen in the guild (such as message deletion, channel updates etc.), so you always know what is going on in the guild. Do you wish to enable the action log? (y/n)", reply: false)) {
+                    await channel.InformSuccessAsync($"Alright, cool. In order for action logs to work you will need to tell me where to dump the log. Please reply with a channel mention, for example {Formatter.Bold("#logs")} .")
                         .ConfigureAwait(false);
                     var mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id && m.MentionedChannels.Count == 1)
                         .ConfigureAwait(false);
@@ -133,21 +133,21 @@ namespace TheGodfather.Modules.Administration
 
                 ulong wcid = 0;
                 string wmessage = null;
-                if (await channel.AskYesNoQuestionAsync(ctx, "I can also send a welcome message when someone joins the guild. Do you wish to enable this feature? (y/n)")) {
-                    await channel.SendIconEmbedAsync($"I will need a channel where to send the welcome messages. Please reply with a channel mention, for example {Formatter.Bold("#general")} .")
+                if (await channel.WaitForBoolResponseAsync(ctx, "I can also send a welcome message when someone joins the guild. Do you wish to enable this feature? (y/n)", reply: false)) {
+                    await channel.InformSuccessAsync($"I will need a channel where to send the welcome messages. Please reply with a channel mention, for example {Formatter.Bold("#general")} .")
                         .ConfigureAwait(false);
                     var mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id && m.MentionedChannels.Count == 1)
                         .ConfigureAwait(false);
 
                     wcid = mctx?.MentionedChannels.FirstOrDefault()?.Id ?? 0;
                     if (wcid != 0 && ctx.Guild.GetChannel(wcid).Type != ChannelType.Text) {
-                        await channel.SendFailedEmbedAsync("You need to provide a text channel!")
+                        await channel.InformFailureAsync("You need to provide a text channel!")
                             .ConfigureAwait(false);
                         wcid = 0;
                     }
 
-                    if (await channel.AskYesNoQuestionAsync(ctx, "You can also customize the welcome message. Do you want to do that now? (y/n)")) {
-                        await channel.SendIconEmbedAsync($"Tell me what message you want me to send when someone joins the guild. Note that you can use the wildcard {Formatter.Bold("%user%")} and I will replace it with the mention for the member who joined.")
+                    if (await channel.WaitForBoolResponseAsync(ctx, "You can also customize the welcome message. Do you want to do that now? (y/n)", reply: false)) {
+                        await channel.InformSuccessAsync($"Tell me what message you want me to send when someone joins the guild. Note that you can use the wildcard {Formatter.Bold("%user%")} and I will replace it with the mention for the member who joined.")
                             .ConfigureAwait(false);
                         mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id)
                             .ConfigureAwait(false);
@@ -157,21 +157,21 @@ namespace TheGodfather.Modules.Administration
 
                 ulong lcid = 0;
                 string lmessage = null;
-                if (await channel.AskYesNoQuestionAsync(ctx, "The same applies for member leave messages. Do you wish to enable this feature? (y/n)")) {
-                    await channel.SendIconEmbedAsync($"I will need a channel where to send the leave messages. Please reply with a channel mention, for example {Formatter.Bold("#general")} .")
+                if (await channel.WaitForBoolResponseAsync(ctx, "The same applies for member leave messages. Do you wish to enable this feature? (y/n)", reply: false)) {
+                    await channel.InformSuccessAsync($"I will need a channel where to send the leave messages. Please reply with a channel mention, for example {Formatter.Bold("#general")} .")
                         .ConfigureAwait(false);
                     var mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id && m.MentionedChannels.Count == 1)
                         .ConfigureAwait(false);
 
                     lcid = mctx?.MentionedChannels.FirstOrDefault()?.Id ?? 0;
                     if (lcid != 0 && ctx.Guild.GetChannel(lcid).Type != ChannelType.Text) {
-                        await channel.SendFailedEmbedAsync("You need to provide a text channel!")
+                        await channel.InformFailureAsync("You need to provide a text channel!")
                             .ConfigureAwait(false);
                         lcid = 0;
                     }
 
-                    if (await channel.AskYesNoQuestionAsync(ctx, "You can also customize the leave message. Do you want to do that now? (y/n)")) {
-                        await channel.SendIconEmbedAsync($"Tell me what message you want me to send when someone leaves the guild. Note that you can use the wildcard {Formatter.Bold("%user%")} and I will replace it with the mention for the member who left.")
+                    if (await channel.WaitForBoolResponseAsync(ctx, "You can also customize the leave message. Do you want to do that now? (y/n)", reply: false)) {
+                        await channel.InformSuccessAsync($"Tell me what message you want me to send when someone leaves the guild. Note that you can use the wildcard {Formatter.Bold("%user%")} and I will replace it with the mention for the member who left.")
                             .ConfigureAwait(false);
                         mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id)
                             .ConfigureAwait(false);
@@ -179,25 +179,25 @@ namespace TheGodfather.Modules.Administration
                     }
                 }
 
-                if (await channel.AskYesNoQuestionAsync(ctx, "Do you wish to enable link filtering? (y/n)")) {
+                if (await channel.WaitForBoolResponseAsync(ctx, "Do you wish to enable link filtering? (y/n)", reply: false)) {
                     gcfg.LinkfilterEnabled = true;
-                    if (await channel.AskYesNoQuestionAsync(ctx, "Do you wish to enable Discord invite links filtering? (y/n)"))
+                    if (await channel.WaitForBoolResponseAsync(ctx, "Do you wish to enable Discord invite links filtering? (y/n)", reply: false))
                         gcfg.BlockDiscordInvites = true;
                     else
                         gcfg.BlockDiscordInvites = false;
-                    if (await channel.AskYesNoQuestionAsync(ctx, "Do you wish to enable DDoS/Booter websites filtering? (y/n)"))
+                    if (await channel.WaitForBoolResponseAsync(ctx, "Do you wish to enable DDoS/Booter websites filtering? (y/n)", reply: false))
                         gcfg.BlockBooterWebsites = true;
                     else
                         gcfg.BlockBooterWebsites = false;
-                    if (await channel.AskYesNoQuestionAsync(ctx, "Do you wish to enable IP logging websites filtering? (y/n)"))
+                    if (await channel.WaitForBoolResponseAsync(ctx, "Do you wish to enable IP logging websites filtering? (y/n)", reply: false))
                         gcfg.BlockIpLoggingWebsites = true;
                     else
                         gcfg.BlockIpLoggingWebsites = false;
-                    if (await channel.AskYesNoQuestionAsync(ctx, "Do you wish to enable disturbing/shock/gore websites filtering? (y/n)"))
+                    if (await channel.WaitForBoolResponseAsync(ctx, "Do you wish to enable disturbing/shock/gore websites filtering? (y/n)", reply: false))
                         gcfg.BlockDisturbingWebsites = true;
                     else
                         gcfg.BlockDisturbingWebsites = false;
-                    if (await channel.AskYesNoQuestionAsync(ctx, "Do you wish to enable URL shorteners filtering? (y/n)"))
+                    if (await channel.WaitForBoolResponseAsync(ctx, "Do you wish to enable URL shorteners filtering? (y/n)", reply: false))
                         gcfg.BlockUrlShorteners = true;
                     else
                         gcfg.BlockUrlShorteners = false;
@@ -237,10 +237,10 @@ namespace TheGodfather.Modules.Administration
                     sb.AppendLine(Formatter.Bold("disabled"));
                 }
 
-                await channel.SendIconEmbedAsync($"Selected settings:\n\n{sb.ToString()}")
+                await channel.InformSuccessAsync($"Selected settings:\n\n{sb.ToString()}")
                     .ConfigureAwait(false);
 
-                if (await channel.AskYesNoQuestionAsync(ctx, "We are almost done! Please review the settings above and say whether you want me to apply them. (y/n)")) {
+                if (await channel.WaitForBoolResponseAsync(ctx, "We are almost done! Please review the settings above and say whether you want me to apply them. (y/n)")) {
                     await Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg)
                         .ConfigureAwait(false);
                     await Database.SetWelcomeChannelAsync(ctx.Guild.Id, wcid)
@@ -274,10 +274,10 @@ namespace TheGodfather.Modules.Administration
                         await logchn.SendMessageAsync(embed: emb.Build())
                             .ConfigureAwait(false);
                     }
-                }
 
-                await channel.SendIconEmbedAsync($"All done! Have a nice day!", StaticDiscordEmoji.CheckMarkSuccess)
-                    .ConfigureAwait(false);
+                    await channel.InformSuccessAsync($"All done! Have a nice day!", StaticDiscordEmoji.CheckMarkSuccess)
+                        .ConfigureAwait(false);
+                }
             }
             #endregion
 
@@ -297,7 +297,7 @@ namespace TheGodfather.Modules.Administration
                 public async Task ExecuteGroupAsync(CommandContext ctx)
                 {
                     var gcfg = Shared.GetGuildConfig(ctx.Guild.Id);
-                    await ctx.RespondWithIconEmbedAsync($"Command suggestions for this guild are {Formatter.Bold(gcfg.SuggestionsEnabled ? "enabled" : "disabled")}!")
+                    await ctx.InformSuccessAsync($"Command suggestions for this guild are {Formatter.Bold(gcfg.SuggestionsEnabled ? "enabled" : "disabled")}!")
                         .ConfigureAwait(false);
                 }
 
@@ -327,7 +327,7 @@ namespace TheGodfather.Modules.Administration
                             .ConfigureAwait(false);
                     }
 
-                    await ctx.RespondWithIconEmbedAsync("Enabled command suggestions!")
+                    await ctx.InformSuccessAsync("Enabled command suggestions!")
                         .ConfigureAwait(false);
                 }
                 #endregion
@@ -357,7 +357,7 @@ namespace TheGodfather.Modules.Administration
                             .ConfigureAwait(false);
                     }
 
-                    await ctx.RespondWithIconEmbedAsync("Disabled command suggestions!")
+                    await ctx.InformSuccessAsync("Disabled command suggestions!")
                         .ConfigureAwait(false);
                 }
                 #endregion
@@ -379,7 +379,7 @@ namespace TheGodfather.Modules.Administration
                 public async Task ExecuteGroupAsync(CommandContext ctx)
                 {
                     var gcfg = Shared.GetGuildConfig(ctx.Guild.Id);
-                    await ctx.RespondWithIconEmbedAsync($"Action logging for this guild is {Formatter.Bold(gcfg.LoggingEnabled ? "enabled" : "disabled")}!")
+                    await ctx.InformSuccessAsync($"Action logging for this guild is {Formatter.Bold(gcfg.LoggingEnabled ? "enabled" : "disabled")}!")
                         .ConfigureAwait(false);
                 }
 
@@ -414,7 +414,7 @@ namespace TheGodfather.Modules.Administration
                             .ConfigureAwait(false);
                     }
 
-                    await ctx.RespondWithIconEmbedAsync($"Enabled action log in channel {channel.Mention}!")
+                    await ctx.InformSuccessAsync($"Enabled action log in channel {channel.Mention}!")
                         .ConfigureAwait(false);
                 }
                 #endregion
@@ -445,7 +445,7 @@ namespace TheGodfather.Modules.Administration
                             .ConfigureAwait(false);
                     }
 
-                    await ctx.RespondWithIconEmbedAsync("Disabled action logging!")
+                    await ctx.InformSuccessAsync("Disabled action logging!")
                         .ConfigureAwait(false);
                 }
                 #endregion
@@ -465,10 +465,10 @@ namespace TheGodfather.Modules.Administration
                             var c = ctx.Guild.GetChannel(gcfg.LogChannelId);
                             if (c == null)
                                 throw new CommandFailedException($"Action logging channel was set but does not exist anymore (id: {gcfg.LogChannelId}).");
-                            await ctx.RespondWithIconEmbedAsync($"Action logging channel: {c.Mention}.")
+                            await ctx.InformSuccessAsync($"Action logging channel: {c.Mention}.")
                                 .ConfigureAwait(false);
                         } else {
-                            await ctx.RespondWithIconEmbedAsync("Action logging channel isn't set for this guild.")
+                            await ctx.InformSuccessAsync("Action logging channel isn't set for this guild.")
                                 .ConfigureAwait(false);
                         }
                     } else {
@@ -492,7 +492,7 @@ namespace TheGodfather.Modules.Administration
                                 .ConfigureAwait(false);
                         }
 
-                        await ctx.RespondWithIconEmbedAsync($"Action logging channel set to {channel.Mention}.")
+                        await ctx.InformSuccessAsync($"Action logging channel set to {channel.Mention}.")
                             .ConfigureAwait(false);
                     }
                 }
@@ -516,7 +516,7 @@ namespace TheGodfather.Modules.Administration
                 {
                     var channel = await Database.GetWelcomeChannelAsync(ctx.Guild)
                         .ConfigureAwait(false);
-                    await ctx.RespondWithIconEmbedAsync($"Member welcome messages for this guild are: {Formatter.Bold(channel != null ? $"enabled in channel: {channel.Mention}" : "disabled")}!")
+                    await ctx.InformSuccessAsync($"Member welcome messages for this guild are: {Formatter.Bold(channel != null ? $"enabled in channel: {channel.Mention}" : "disabled")}!")
                         .ConfigureAwait(false);
                 }
 
@@ -534,10 +534,10 @@ namespace TheGodfather.Modules.Administration
                         var c = await Database.GetWelcomeChannelAsync(ctx.Guild)
                             .ConfigureAwait(false);
                         if (c != null) {
-                            await ctx.RespondWithIconEmbedAsync($"Welcome message channel: {c.Mention}.")
+                            await ctx.InformSuccessAsync($"Welcome message channel: {c.Mention}.")
                                 .ConfigureAwait(false);
                         } else {
-                            await ctx.RespondWithIconEmbedAsync("Welcome message channel isn't set for this guild (or it was set but does not exist anymore).")
+                            await ctx.InformSuccessAsync("Welcome message channel isn't set for this guild (or it was set but does not exist anymore).")
                                 .ConfigureAwait(false);
                         }
                     } else {
@@ -560,7 +560,7 @@ namespace TheGodfather.Modules.Administration
                                 .ConfigureAwait(false);
                         }
 
-                        await ctx.RespondWithIconEmbedAsync($"Welcome message channel set to {channel.Mention}.")
+                        await ctx.InformSuccessAsync($"Welcome message channel set to {channel.Mention}.")
                             .ConfigureAwait(false);
                     }
                 }
@@ -579,7 +579,7 @@ namespace TheGodfather.Modules.Administration
                         var msg = await Database.GetWelcomeMessageAsync(ctx.Guild.Id)
                             .ConfigureAwait(false);
 
-                        await ctx.RespondWithIconEmbedAsync($"Welcome message:\n\n{Formatter.Italic(msg ?? "Not set.")}")
+                        await ctx.InformSuccessAsync($"Welcome message:\n\n{Formatter.Italic(msg ?? "Not set.")}")
                             .ConfigureAwait(false);
                     } else {
                         if (message.Length < 3 || message.Length > 120)
@@ -601,7 +601,7 @@ namespace TheGodfather.Modules.Administration
                                 .ConfigureAwait(false);
                         }
 
-                        await ctx.RespondWithIconEmbedAsync($"Welcome message set to:\n{Formatter.Bold(message ?? "Default message")}.")
+                        await ctx.InformSuccessAsync($"Welcome message set to:\n{Formatter.Bold(message ?? "Default message")}.")
                             .ConfigureAwait(false);
                     }
                 }
@@ -648,7 +648,7 @@ namespace TheGodfather.Modules.Administration
                             .ConfigureAwait(false);
                     }
 
-                    await ctx.RespondWithIconEmbedAsync($"Welcome message channel set to {Formatter.Bold(channel.Name)} with message: {Formatter.Bold(string.IsNullOrWhiteSpace(message) ? "<previously set>" : message)}.")
+                    await ctx.InformSuccessAsync($"Welcome message channel set to {Formatter.Bold(channel.Name)} with message: {Formatter.Bold(string.IsNullOrWhiteSpace(message) ? "<previously set>" : message)}.")
                         .ConfigureAwait(false);
                 }
                 #endregion
@@ -676,7 +676,7 @@ namespace TheGodfather.Modules.Administration
                             .ConfigureAwait(false);
                     }
 
-                    await ctx.RespondWithIconEmbedAsync($"Welcome messages are now disabled.")
+                    await ctx.InformSuccessAsync($"Welcome messages are now disabled.")
                         .ConfigureAwait(false);
                 }
                 #endregion
@@ -699,7 +699,7 @@ namespace TheGodfather.Modules.Administration
                 {
                     var channel = await Database.GetLeaveChannelAsync(ctx.Guild)
                         .ConfigureAwait(false);
-                    await ctx.RespondWithIconEmbedAsync($"Member leave messages for this guild are: {Formatter.Bold(channel != null ? $"enabled in channel: {channel.Mention}" : "disabled")}!")
+                    await ctx.InformSuccessAsync($"Member leave messages for this guild are: {Formatter.Bold(channel != null ? $"enabled in channel: {channel.Mention}" : "disabled")}!")
                         .ConfigureAwait(false);
                 }
 
@@ -717,10 +717,10 @@ namespace TheGodfather.Modules.Administration
                         var c = await Database.GetLeaveChannelAsync(ctx.Guild)
                             .ConfigureAwait(false);
                         if (c != null) {
-                            await ctx.RespondWithIconEmbedAsync($"Leave message channel: {c.Mention}.")
+                            await ctx.InformSuccessAsync($"Leave message channel: {c.Mention}.")
                                 .ConfigureAwait(false);
                         } else {
-                            await ctx.RespondWithIconEmbedAsync("Leave message channel isn't set for this guild (or it was set but does not exist anymore).")
+                            await ctx.InformSuccessAsync("Leave message channel isn't set for this guild (or it was set but does not exist anymore).")
                                 .ConfigureAwait(false);
                         }
                     } else {
@@ -742,7 +742,7 @@ namespace TheGodfather.Modules.Administration
                                 .ConfigureAwait(false);
                         }
 
-                        await ctx.RespondWithIconEmbedAsync($"Leave message channel set to {channel.Mention}.")
+                        await ctx.InformSuccessAsync($"Leave message channel set to {channel.Mention}.")
                             .ConfigureAwait(false);
                     }
                 }
@@ -761,7 +761,7 @@ namespace TheGodfather.Modules.Administration
                         var msg = await Database.GetLeaveMessageForGuildAsync(ctx.Guild.Id)
                             .ConfigureAwait(false);
 
-                        await ctx.RespondWithIconEmbedAsync($"Leave message:\n\n{Formatter.Italic(msg ?? "Not set.")}")
+                        await ctx.InformSuccessAsync($"Leave message:\n\n{Formatter.Italic(msg ?? "Not set.")}")
                             .ConfigureAwait(false);
                     } else {
                         if (message.Length < 3 || message.Length > 120)
@@ -783,7 +783,7 @@ namespace TheGodfather.Modules.Administration
                                 .ConfigureAwait(false);
                         }
 
-                        await ctx.RespondWithIconEmbedAsync($"Leave message set to:\n{Formatter.Bold(message ?? "Default message")}.")
+                        await ctx.InformSuccessAsync($"Leave message set to:\n{Formatter.Bold(message ?? "Default message")}.")
                             .ConfigureAwait(false);
                     }
                 }
@@ -830,7 +830,7 @@ namespace TheGodfather.Modules.Administration
                             .ConfigureAwait(false);
                     }
 
-                    await ctx.RespondWithIconEmbedAsync($"Leave message channel set to {Formatter.Bold(channel.Name)} with message: {Formatter.Bold(string.IsNullOrWhiteSpace(message) ? "<previously set>" : message)}.")
+                    await ctx.InformSuccessAsync($"Leave message channel set to {Formatter.Bold(channel.Name)} with message: {Formatter.Bold(string.IsNullOrWhiteSpace(message) ? "<previously set>" : message)}.")
                         .ConfigureAwait(false);
                 }
                 #endregion
@@ -858,7 +858,7 @@ namespace TheGodfather.Modules.Administration
                             .ConfigureAwait(false);
                     }
 
-                    await ctx.RespondWithIconEmbedAsync($"Leave messages are now disabled.")
+                    await ctx.InformSuccessAsync($"Leave messages are now disabled.")
                         .ConfigureAwait(false);
                 }
                 #endregion

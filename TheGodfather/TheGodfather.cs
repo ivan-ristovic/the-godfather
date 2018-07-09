@@ -293,7 +293,7 @@ namespace TheGodfather
             foreach (Birthday birthday in birthdays) {
                 var channel = await Shards[0].Client.GetChannelAsync(birthday.ChannelId);
                 var user = await Shards[0].Client.GetUserAsync(birthday.UserId);
-                await channel.SendIconEmbedAsync($"Happy birthday, {user.Mention}!", DiscordEmoji.FromName(Shards[0].Client, ":tada:"));
+                await channel.InformSuccessAsync($"Happy birthday, {user.Mention}!", DiscordEmoji.FromName(Shards[0].Client, ":tada:"));
                 await DatabaseService.UpdateBirthdayLastNotifiedDateAsync(birthday.UserId, channel.Id);
             }
 

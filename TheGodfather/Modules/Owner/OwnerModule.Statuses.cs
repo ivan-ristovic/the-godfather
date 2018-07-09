@@ -56,7 +56,7 @@ namespace TheGodfather.Modules.Owner
 
                 await Database.AddBotStatusAsync(status, activity)
                     .ConfigureAwait(false);
-                await ctx.RespondWithIconEmbedAsync()
+                await ctx.InformSuccessAsync()
                     .ConfigureAwait(false);
             }
             #endregion
@@ -71,7 +71,7 @@ namespace TheGodfather.Modules.Owner
             {
                 await Database.RemoveBotStatusAsync(id)
                     .ConfigureAwait(false);
-                await ctx.RespondWithIconEmbedAsync()
+                await ctx.InformSuccessAsync()
                     .ConfigureAwait(false);
             }
             #endregion
@@ -86,7 +86,7 @@ namespace TheGodfather.Modules.Owner
                 var statuses = await Database.GetAllBotStatusesAsync()
                     .ConfigureAwait(false);
 
-                await ctx.SendPaginatedCollectionAsync(
+                await ctx.SendCollectionInPagesAsync(
                     "Statuses:",
                     statuses,
                     kvp => $"{Formatter.Bold(kvp.Key.ToString())}: {kvp.Value}",
@@ -106,7 +106,7 @@ namespace TheGodfather.Modules.Owner
                                               [Description("True/False")] bool b = true)
             {
                 Shared.StatusRotationEnabled = b;
-                await ctx.RespondWithIconEmbedAsync()
+                await ctx.InformSuccessAsync()
                     .ConfigureAwait(false);
             }
             #endregion
@@ -131,7 +131,7 @@ namespace TheGodfather.Modules.Owner
                 Shared.StatusRotationEnabled = false;
                 await ctx.Client.UpdateStatusAsync(new DiscordActivity(status, activity))
                  .ConfigureAwait(false);
-                await ctx.RespondWithIconEmbedAsync()
+                await ctx.InformSuccessAsync()
                     .ConfigureAwait(false);
             }
 
@@ -147,7 +147,7 @@ namespace TheGodfather.Modules.Owner
                 Shared.StatusRotationEnabled = false;
                 await ctx.Client.UpdateStatusAsync(new DiscordActivity(status.Item2, status.Item1))
                  .ConfigureAwait(false);
-                await ctx.RespondWithIconEmbedAsync()
+                await ctx.InformSuccessAsync()
                     .ConfigureAwait(false);
             }
             #endregion

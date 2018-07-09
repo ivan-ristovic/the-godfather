@@ -37,7 +37,7 @@ namespace TheGodfather.Modules.Search
                 .ConfigureAwait(false);
 
             if (!res.Any()) {
-                await ctx.RespondWithFailedEmbedAsync("No results...")
+                await ctx.InformFailureAsync("No results...")
                     .ConfigureAwait(false);
                 return;
             }

@@ -75,7 +75,7 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException("Possibly emoji slots are full for this guild or the image format is not supported?", e);
             }
 
-            await ctx.RespondWithIconEmbedAsync($"Emoji {Formatter.Bold(name)} successfully added!")
+            await ctx.InformSuccessAsync($"Emoji {Formatter.Bold(name)} successfully added!")
                 .ConfigureAwait(false);
         }
 
@@ -118,7 +118,7 @@ namespace TheGodfather.Modules.Administration
                 string name = gemoji.Name;
                 await ctx.Guild.DeleteEmojiAsync(gemoji, ctx.BuildReasonString())
                     .ConfigureAwait(false);
-                await ctx.RespondWithIconEmbedAsync($"Emoji {Formatter.Bold(name)} successfully deleted!")
+                await ctx.InformSuccessAsync($"Emoji {Formatter.Bold(name)} successfully deleted!")
                     .ConfigureAwait(false);
             } catch (NotFoundException) {
                 throw new CommandFailedException("Can't find that emoji in list of emoji that I made for this guild.");
@@ -161,7 +161,7 @@ namespace TheGodfather.Modules.Administration
         [UsageExamples("!emoji list")]
         public async Task ListAsync(CommandContext ctx)
         {
-            await ctx.SendPaginatedCollectionAsync(
+            await ctx.SendCollectionInPagesAsync(
                 "Guild specific emojis:",
                 ctx.Guild.Emojis.OrderBy(e => e.Name),
                 e => $"{e}  {e.Name}",
@@ -190,7 +190,7 @@ namespace TheGodfather.Modules.Administration
                     .ConfigureAwait(false);
                 await ctx.Guild.ModifyEmojiAsync(gemoji, name: newname, reason: ctx.BuildReasonString())
                     .ConfigureAwait(false);
-                await ctx.RespondWithIconEmbedAsync()
+                await ctx.InformSuccessAsync()
                     .ConfigureAwait(false);
             } catch (NotFoundException) {
                 throw new CommandFailedException("Can't find that emoji in list of emoji that I made for this guild.");

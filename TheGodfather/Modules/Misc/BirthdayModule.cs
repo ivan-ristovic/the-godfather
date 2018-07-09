@@ -72,7 +72,7 @@ namespace TheGodfather.Modules.Misc
 
             await Database.AddBirthdayAsync(user.Id, channel.Id, date)
                 .ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync()
+            await ctx.InformSuccessAsync()
                 .ConfigureAwait(false);
         }
 
@@ -94,7 +94,7 @@ namespace TheGodfather.Modules.Misc
         {
             await Database.RemoveBirthdayAsync(user.Id)
                 .ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync()
+            await ctx.InformSuccessAsync()
                 .ConfigureAwait(false);
         }
         #endregion
@@ -126,7 +126,7 @@ namespace TheGodfather.Modules.Misc
                 }
             }
 
-            await ctx.SendPaginatedCollectionAsync(
+            await ctx.SendCollectionInPagesAsync(
                 "Birthdays:",
                 lines,
                 line => line,

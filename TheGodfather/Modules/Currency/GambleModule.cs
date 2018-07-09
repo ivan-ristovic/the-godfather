@@ -70,7 +70,7 @@ namespace TheGodfather.Modules.Currency
                 await Database.GiveCreditsToUserAsync(ctx.User.Id, ctx.Guild.Id, bid * 2)
                     .ConfigureAwait(false);
 
-            await ctx.RespondWithIconEmbedAsync(sb.ToString(), ":game_die:")
+            await ctx.InformSuccessAsync(sb.ToString(), ":game_die:")
                 .ConfigureAwait(false);
         }
 
@@ -124,7 +124,7 @@ namespace TheGodfather.Modules.Currency
               .Append(guess_int == rnd ? $"won {Formatter.Bold((bid * 5).ToString())}" : $"lost {Formatter.Bold((bid).ToString())}")
               .Append(" credits!");
 
-            await ctx.RespondWithIconEmbedAsync(sb.ToString(), ":game_die:")
+            await ctx.InformSuccessAsync(sb.ToString(), ":game_die:")
                 .ConfigureAwait(false);
 
             if (rnd == guess_int)

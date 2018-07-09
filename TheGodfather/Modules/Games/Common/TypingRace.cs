@@ -102,7 +102,7 @@ namespace TheGodfather.Modules.Games.Common
             if (ordered.Any())
                 await Channel.SendMessageAsync(embed: EmbedResults(ordered)).ConfigureAwait(false);
             else
-                await Channel.SendFailedEmbedAsync("No results to be shown for the typing race.");
+                await Channel.InformFailureAsync("No results to be shown for the typing race.");
 
             Winner = ordered.FirstOrDefault(kvp => kvp.Value == 0).Key;
         }

@@ -54,7 +54,7 @@ namespace TheGodfather.Modules.Games.Common
 
                 await Channel.TriggerTypingAsync()
                     .ConfigureAwait(false);
-                await Channel.SendIconEmbedAsync($"The capital of {Formatter.Bold(question)} is?", StaticDiscordEmoji.Question)
+                await Channel.InformSuccessAsync($"The capital of {Formatter.Bold(question)} is?", StaticDiscordEmoji.Question)
                     .ConfigureAwait(false);
 
                 bool noresponse = true;

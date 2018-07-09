@@ -31,7 +31,7 @@ namespace TheGodfather.Modules.Currency
         [GroupCommand]
         public Task ExecuteGroupAsync(CommandContext ctx)
         {
-            return ctx.RespondWithIconEmbedAsync(
+            return ctx.InformSuccessAsync(
                 Formatter.Bold("Casino games:\n\n") +
                 "holdem, lottery, slot, wheeloffortune"
             );

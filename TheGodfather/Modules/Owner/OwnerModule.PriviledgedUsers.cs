@@ -66,7 +66,7 @@ namespace TheGodfather.Modules.Owner
                     sb.AppendLine($"Added: {user.ToString()}!");
                 }
 
-                await ctx.RespondWithIconEmbedAsync(sb.ToString())
+                await ctx.InformSuccessAsync(sb.ToString())
                     .ConfigureAwait(false);
             }
             #endregion
@@ -97,7 +97,7 @@ namespace TheGodfather.Modules.Owner
                     sb.AppendLine($"Removed: {user.ToString()}!");
                 }
 
-                await ctx.RespondWithIconEmbedAsync(sb.ToString())
+                await ctx.InformSuccessAsync(sb.ToString())
                     .ConfigureAwait(false);
             }
             #endregion
@@ -128,7 +128,7 @@ namespace TheGodfather.Modules.Owner
                 if (!users.Any())
                     throw new CommandFailedException("No priviledged users registered!");
 
-                await ctx.SendPaginatedCollectionAsync(
+                await ctx.SendCollectionInPagesAsync(
                     "Priviledged users (in database):",
                     users,
                     user => user.ToString(),

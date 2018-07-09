@@ -124,7 +124,7 @@ namespace TheGodfather.Modules.Administration
                     .ConfigureAwait(false);
             }
 
-            await ctx.RespondWithIconEmbedAsync($"Done!\n\n{errlist}")
+            await ctx.InformSuccessAsync($"Done!\n\n{errlist}")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -138,7 +138,7 @@ namespace TheGodfather.Modules.Administration
         [UsesInteractivity]
         public async Task ClearAsync(CommandContext ctx)
         {
-            if (!await ctx.AskYesNoQuestionAsync("Are you sure you want to delete all filters for this guild?").ConfigureAwait(false))
+            if (!await ctx.WaitForBoolReplyAsync("Are you sure you want to delete all filters for this guild?").ConfigureAwait(false))
                 return;
 
             if (Shared.Filters.ContainsKey(ctx.Guild.Id))
@@ -164,7 +164,7 @@ namespace TheGodfather.Modules.Administration
                     .ConfigureAwait(false);
             }
 
-            await ctx.RespondWithIconEmbedAsync("Removed all filters!")
+            await ctx.InformSuccessAsync("Removed all filters!")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -214,7 +214,7 @@ namespace TheGodfather.Modules.Administration
                     .ConfigureAwait(false);
             }
 
-            await ctx.RespondWithIconEmbedAsync($"Done!\n\n{errlist}")
+            await ctx.InformSuccessAsync($"Done!\n\n{errlist}")
                 .ConfigureAwait(false);
         }
 
@@ -258,7 +258,7 @@ namespace TheGodfather.Modules.Administration
                     .ConfigureAwait(false);
             }
 
-            await ctx.RespondWithIconEmbedAsync($"Done!\n\n{errlist}")
+            await ctx.InformSuccessAsync($"Done!\n\n{errlist}")
                 .ConfigureAwait(false);
         }
 
@@ -274,7 +274,7 @@ namespace TheGodfather.Modules.Administration
             if (!Shared.Filters.ContainsKey(ctx.Guild.Id) || !Shared.Filters[ctx.Guild.Id].Any())
                 throw new CommandFailedException("No filters registered for this guild.");
 
-            await ctx.SendPaginatedCollectionAsync(
+            await ctx.SendCollectionInPagesAsync(
                 "Filters registered for this guild",
                 Shared.Filters[ctx.Guild.Id],
                 f => $"{f.Id} | {f.Trigger.ToString().Replace(@"\b", "")}",

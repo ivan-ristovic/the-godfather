@@ -54,12 +54,12 @@ namespace TheGodfather.Modules.Administration
                 throw new InvalidCommandUsageException("Name must be longer than 2 and shorter than 100 characters.");
 
             if (ctx.Guild.Channels.Any(chn => chn.Name == name.ToLowerInvariant()))
-                if (!await ctx.AskYesNoQuestionAsync("A channel with that name already exists. Continue?").ConfigureAwait(false))
+                if (!await ctx.WaitForBoolReplyAsync("A channel with that name already exists. Continue?").ConfigureAwait(false))
                     return;
 
             await ctx.Guild.CreateChannelCategoryAsync(name, reason: ctx.BuildReasonString())
                 .ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync($"Category {Formatter.Bold(name)} successfully created.")
+            await ctx.InformSuccessAsync($"Category {Formatter.Bold(name)} successfully created.")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -89,7 +89,7 @@ namespace TheGodfather.Modules.Administration
                 throw new InvalidCommandUsageException("Name must be longer than 2 and shorter than 100 characters.");
 
             if (ctx.Guild.Channels.Any(chn => chn.Name == name.ToLowerInvariant())) {
-                if (!await ctx.AskYesNoQuestionAsync("A channel with that name already exists. Continue anyway?").ConfigureAwait(false))
+                if (!await ctx.WaitForBoolReplyAsync("A channel with that name already exists. Continue anyway?").ConfigureAwait(false))
                     return;
             }
 
@@ -99,7 +99,7 @@ namespace TheGodfather.Modules.Administration
             await ctx.Guild.CreateTextChannelAsync(name, parent, nsfw: nsfw, reason: ctx.BuildReasonString())
                 .ConfigureAwait(false);
 
-            await ctx.RespondWithIconEmbedAsync($"Channel {Formatter.Bold(name)} successfully created.")
+            await ctx.InformSuccessAsync($"Channel {Formatter.Bold(name)} successfully created.")
                 .ConfigureAwait(false);
         }
 
@@ -141,7 +141,7 @@ namespace TheGodfather.Modules.Administration
                 throw new InvalidCommandUsageException("Name must be longer than 2 and shorter than 100 characters.");
 
             if (ctx.Guild.Channels.Any(chn => chn.Name == name.ToLowerInvariant())) {
-                if (!await ctx.AskYesNoQuestionAsync("A channel with that name already exists. Continue anyway?").ConfigureAwait(false))
+                if (!await ctx.WaitForBoolReplyAsync("A channel with that name already exists. Continue anyway?").ConfigureAwait(false))
                     return;
             }
 
@@ -151,7 +151,7 @@ namespace TheGodfather.Modules.Administration
             await ctx.Guild.CreateVoiceChannelAsync(name, parent, bitrate, userlimit, reason: ctx.BuildReasonString())
                 .ConfigureAwait(false);
 
-            await ctx.RespondWithIconEmbedAsync($"Channel {Formatter.Bold(name)} successfully created.")
+            await ctx.InformSuccessAsync($"Channel {Formatter.Bold(name)} successfully created.")
                 .ConfigureAwait(false);
         }
 
@@ -191,7 +191,7 @@ namespace TheGodfather.Modules.Administration
                 channel = ctx.Channel;
 
             if (channel.Type == ChannelType.Category && channel.Children.Count() > 0) {
-                if (await ctx.AskYesNoQuestionAsync("The channel specified is a non-empty category. Delete all channels in it recursively?")) {
+                if (await ctx.WaitForBoolReplyAsync("The channel specified is a non-empty category. Delete all channels in it recursively?")) {
                     foreach (var chn in channel.Children.ToList()) {
                         await chn.DeleteAsync(reason: ctx.BuildReasonString(reason))
                             .ConfigureAwait(false);
@@ -199,14 +199,14 @@ namespace TheGodfather.Modules.Administration
                 }
             }
 
-            if (!await ctx.AskYesNoQuestionAsync($"Are you sure you want to delete channel {channel.Mention}? This cannot be undone! (y/n)"))
+            if (!await ctx.WaitForBoolReplyAsync($"Are you sure you want to delete channel {channel.Mention}? This cannot be undone! (y/n)"))
                 return;
 
             string name = channel.Name;
             await channel.DeleteAsync(reason: ctx.BuildReasonString(reason))
                 .ConfigureAwait(false);
             if (channel.Id != ctx.Channel.Id)
-                await ctx.RespondWithIconEmbedAsync($"Channel {Formatter.Bold(name)} successfully deleted.")
+                await ctx.InformSuccessAsync($"Channel {Formatter.Bold(name)} successfully deleted.")
                     .ConfigureAwait(false);
         }
 
@@ -279,7 +279,7 @@ namespace TheGodfather.Modules.Administration
                 m.AuditLogReason = ctx.BuildReasonString(reason);
             })).ConfigureAwait(false);
 
-            await ctx.RespondWithIconEmbedAsync()
+            await ctx.InformSuccessAsync()
                 .ConfigureAwait(false);
         }
 
@@ -326,7 +326,7 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException("An error occured. Maybe the name entered contains invalid characters?", e);
             }
 
-            await ctx.RespondWithIconEmbedAsync()
+            await ctx.InformSuccessAsync()
                 .ConfigureAwait(false);
         }
 
@@ -366,7 +366,7 @@ namespace TheGodfather.Modules.Administration
                 m.AuditLogReason = ctx.BuildReasonString(reason);
             })).ConfigureAwait(false);
 
-            await ctx.RespondWithIconEmbedAsync()
+            await ctx.InformSuccessAsync()
                 .ConfigureAwait(false);
         }
 
@@ -400,7 +400,7 @@ namespace TheGodfather.Modules.Administration
             await channel.ModifyPositionAsync(position, ctx.BuildReasonString(reason))
                 .ConfigureAwait(false);
 
-            await ctx.RespondWithIconEmbedAsync()
+            await ctx.InformSuccessAsync()
                 .ConfigureAwait(false);
         }
 
@@ -440,7 +440,7 @@ namespace TheGodfather.Modules.Administration
                 m.Topic = topic;
                 m.AuditLogReason = ctx.BuildReasonString();
             })).ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync()
+            await ctx.InformSuccessAsync()
                 .ConfigureAwait(false);
         }
 

@@ -26,7 +26,7 @@ namespace TheGodfather.Modules.Administration
         [GroupCommand, Priority(1)]
         public async Task ExecuteGroupAsync(CommandContext ctx)
         {
-            await ctx.SendPaginatedCollectionAsync(
+            await ctx.SendCollectionInPagesAsync(
                 "Roles in this guild:",
                 ctx.Guild.Roles.OrderByDescending(r => r.Position),
                 r => $"{Formatter.Bold(r.Name)} | {r.Color.ToString()} | ID: {Formatter.InlineCode(r.Id.ToString())}",
@@ -61,13 +61,13 @@ namespace TheGodfather.Modules.Administration
                 throw new InvalidCommandUsageException("Missing role name.");
 
             if (ctx.Guild.Roles.Any(r => string.Compare(r.Name, name, true) == 0)) {
-                if (!await ctx.AskYesNoQuestionAsync("A role with that name already exists. Continue?").ConfigureAwait(false))
+                if (!await ctx.WaitForBoolReplyAsync("A role with that name already exists. Continue?").ConfigureAwait(false))
                     return;
             }
 
             await ctx.Guild.CreateRoleAsync(name, null, color, hoisted, mentionable, ctx.BuildReasonString())
                 .ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync($"Successfully created role {Formatter.Bold(name)}!")
+            await ctx.InformSuccessAsync($"Successfully created role {Formatter.Bold(name)}!")
                 .ConfigureAwait(false);
         }
 
@@ -97,7 +97,7 @@ namespace TheGodfather.Modules.Administration
             string name = role.Name;
             await role.DeleteAsync(ctx.BuildReasonString(reason))
                 .ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync($"Successfully removed role {Formatter.Bold(name)}!")
+            await ctx.InformSuccessAsync($"Successfully removed role {Formatter.Bold(name)}!")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -171,7 +171,7 @@ namespace TheGodfather.Modules.Administration
         {
             await role.ModifyAsync(color: color, reason: ctx.BuildReasonString())
                 .ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync($"Successfully changed color for {Formatter.Bold(role.Name)}!")
+            await ctx.InformSuccessAsync($"Successfully changed color for {Formatter.Bold(role.Name)}!")
                 .ConfigureAwait(false);
         }
 
@@ -199,7 +199,7 @@ namespace TheGodfather.Modules.Administration
 
             await role.ModifyAsync(name: name, reason: ctx.BuildReasonString())
                 .ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync($"Successfully changed role name to {Formatter.Bold(name)}.")
+            await ctx.InformSuccessAsync($"Successfully changed role name to {Formatter.Bold(name)}.")
                 .ConfigureAwait(false);
         }
 
@@ -225,7 +225,7 @@ namespace TheGodfather.Modules.Administration
         {
             await role.ModifyAsync(mentionable: mentionable, reason: ctx.BuildReasonString())
                 .ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync($"Successfully set mentionable var for {Formatter.Bold(role.Name)} to {Formatter.Bold(mentionable.ToString())}.")
+            await ctx.InformSuccessAsync($"Successfully set mentionable var for {Formatter.Bold(role.Name)} to {Formatter.Bold(mentionable.ToString())}.")
                 .ConfigureAwait(false);
         }
 
@@ -251,7 +251,7 @@ namespace TheGodfather.Modules.Administration
         {
             await role.ModifyAsync(hoist: hoisted, reason: ctx.BuildReasonString())
                 .ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync($"Successfully set hoisted var for role {Formatter.Bold(role.Name)} to {Formatter.Bold(hoisted.ToString())}.")
+            await ctx.InformSuccessAsync($"Successfully set hoisted var for role {Formatter.Bold(role.Name)} to {Formatter.Bold(hoisted.ToString())}.")
                 .ConfigureAwait(false);
         }
 

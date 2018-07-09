@@ -34,7 +34,7 @@ namespace TheGodfather.EventListeners
                 emb.AddField("Channel type", centry.Target?.Type.ToString() ?? _unknown, inline: true);
                 if (!string.IsNullOrWhiteSpace(centry.Reason))
                     emb.AddField("Reason", centry.Reason);
-                emb.WithFooter(FormatEventTime(centry.CreationTimestamp), centry.UserResponsible.AvatarUrl);
+                emb.WithFooter(BuildUTCString(centry.CreationTimestamp), centry.UserResponsible.AvatarUrl);
             }
 
             await logchn.SendMessageAsync(embed: emb.Build());
@@ -58,7 +58,7 @@ namespace TheGodfather.EventListeners
                 emb.AddField("User responsible", centry.UserResponsible?.Mention ?? _unknown, inline: true);
                 if (!string.IsNullOrWhiteSpace(centry.Reason))
                     emb.AddField("Reason", centry.Reason);
-                emb.WithFooter(FormatEventTime(centry.CreationTimestamp), centry.UserResponsible.AvatarUrl);
+                emb.WithFooter(BuildUTCString(centry.CreationTimestamp), centry.UserResponsible.AvatarUrl);
             }
 
             await logchn.SendMessageAsync(embed: emb.Build());
@@ -78,7 +78,7 @@ namespace TheGodfather.EventListeners
                 string content = string.IsNullOrWhiteSpace(pinned.First().Content) ? "<embedded message>" : pinned.First().Content;
                 emb.AddField("Content", Formatter.BlockCode(Formatter.Sanitize(content)));
             }
-            emb.AddField("Last pin timestamp", FormatEventTime(e.LastPinTimestamp));
+            emb.AddField("Last pin timestamp", BuildUTCString(e.LastPinTimestamp));
 
             await logchn.SendMessageAsync(embed: emb.Build());
         }
@@ -163,7 +163,7 @@ namespace TheGodfather.EventListeners
 
                     if (!string.IsNullOrWhiteSpace(owentry.Reason))
                         emb.AddField("Reason", owentry.Reason);
-                    emb.WithFooter(FormatEventTime(owentry.CreationTimestamp), owentry.UserResponsible.AvatarUrl);
+                    emb.WithFooter(BuildUTCString(owentry.CreationTimestamp), owentry.UserResponsible.AvatarUrl);
                 } else {
                     emb.AddField("Error", "Failed to read audit log information. Please check my permissions");
                     emb.AddField("Channel", e.ChannelBefore?.ToString() ?? _unknown);

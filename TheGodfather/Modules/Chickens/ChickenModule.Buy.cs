@@ -126,7 +126,7 @@ namespace TheGodfather.Modules.Chickens
                 if (await Database.GetChickenInfoAsync(ctx.User.Id, ctx.Guild.Id).ConfigureAwait(false) != null)
                     throw new CommandFailedException("You already own a chicken!");
 
-                if (!await ctx.AskYesNoQuestionAsync($"{ctx.User.Mention}, are you sure you want to buy a chicken for {Formatter.Bold(Chicken.Price(type).ToString())} credits?"))
+                if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to buy a chicken for {Formatter.Bold(Chicken.Price(type).ToString())} credits?"))
                     return;
 
                 if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, ctx.Guild.Id, Chicken.Price(type)).ConfigureAwait(false))
@@ -135,7 +135,7 @@ namespace TheGodfather.Modules.Chickens
                 await Database.BuyChickenAsync(ctx.User.Id, ctx.Guild.Id, name, Chicken.StartingStats[type])
                     .ConfigureAwait(false);
 
-                await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} bought a chicken named {Formatter.Bold(name)}")
+                await ctx.InformSuccessAsync(StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} bought a chicken named {Formatter.Bold(name)}")
                     .ConfigureAwait(false);
             }
             #endregion

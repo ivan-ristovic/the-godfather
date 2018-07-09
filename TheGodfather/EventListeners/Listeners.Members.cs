@@ -24,9 +24,9 @@ namespace TheGodfather.EventListeners
             if (wchn != null) {
                 string msg = await shard.DatabaseService.GetWelcomeMessageAsync(e.Guild.Id);
                 if (string.IsNullOrWhiteSpace(msg))
-                    await wchn.SendIconEmbedAsync($"Welcome to {Formatter.Bold(e.Guild.Name)}, {e.Member.Mention}!", StaticDiscordEmoji.Wave);
+                    await wchn.InformSuccessAsync($"Welcome to {Formatter.Bold(e.Guild.Name)}, {e.Member.Mention}!", StaticDiscordEmoji.Wave);
                 else
-                    await wchn.SendIconEmbedAsync(msg.Replace("%user%", e.Member.Mention), StaticDiscordEmoji.Wave);
+                    await wchn.InformSuccessAsync(msg.Replace("%user%", e.Member.Mention), StaticDiscordEmoji.Wave);
             }
 
             try {
@@ -58,7 +58,7 @@ namespace TheGodfather.EventListeners
 
             DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Member, "Member joined", e.Member.ToString());
             emb.WithThumbnailUrl(e.Member.AvatarUrl);
-            emb.AddField("Registration time", FormatEventTime(e.Member.CreationTimestamp), inline: true);
+            emb.AddField("Registration time", BuildUTCString(e.Member.CreationTimestamp), inline: true);
             if (!string.IsNullOrWhiteSpace(e.Member.Email))
                 emb.AddField("Email", e.Member.Email);
 
@@ -77,9 +77,9 @@ namespace TheGodfather.EventListeners
             if (lchn != null) {
                 string msg = await shard.DatabaseService.GetLeaveMessageForGuildAsync(e.Guild.Id);
                 if (string.IsNullOrWhiteSpace(msg))
-                    await lchn.SendIconEmbedAsync($"{Formatter.Bold(e.Member?.Username ?? _unknown)} left the server! Bye!", StaticDiscordEmoji.Wave);
+                    await lchn.InformSuccessAsync($"{Formatter.Bold(e.Member?.Username ?? _unknown)} left the server! Bye!", StaticDiscordEmoji.Wave);
                 else
-                    await lchn.SendIconEmbedAsync(msg.Replace("%user%", e.Member?.Username ?? _unknown), StaticDiscordEmoji.Wave);
+                    await lchn.InformSuccessAsync(msg.Replace("%user%", e.Member?.Username ?? _unknown), StaticDiscordEmoji.Wave);
             }
 
             DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
@@ -88,7 +88,7 @@ namespace TheGodfather.EventListeners
 
             DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Member, "Member left", e.Member.ToString());
             emb.WithThumbnailUrl(e.Member.AvatarUrl);
-            emb.AddField("Registration time", FormatEventTime(e.Member.CreationTimestamp), inline: true);
+            emb.AddField("Registration time", BuildUTCString(e.Member.CreationTimestamp), inline: true);
             if (!string.IsNullOrWhiteSpace(e.Member.Email))
                 emb.AddField("Email", e.Member.Email);
 
@@ -120,7 +120,7 @@ namespace TheGodfather.EventListeners
                     emb.AddField("Removed roles", string.Join(",", mentry.RemovedRoles.Select(r => r.Name)), inline: true);
                 if (!string.IsNullOrWhiteSpace(mentry.Reason))
                     emb.AddField("Reason", mentry.Reason);
-                emb.WithFooter(FormatEventTime(mentry.CreationTimestamp), mentry.UserResponsible.AvatarUrl);
+                emb.WithFooter(BuildUTCString(mentry.CreationTimestamp), mentry.UserResponsible.AvatarUrl);
             } else {
                 emb.AddField("Error", "Failed to read audit log information. Please check my permissions");
                 emb.AddField("Name before", e.NicknameBefore ?? _unknown, inline: true);
