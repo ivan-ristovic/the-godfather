@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
 
-namespace TheGodfather.Services.Tests
+namespace TheGodfatherTests.Services
 {
     [TestClass()]
     public class RSSServiceTests

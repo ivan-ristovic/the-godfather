@@ -1,13 +1,14 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using TheGodfather.Common;
+using TheGodfather.Services;
 using System;
 using System.IO;
 using System.Threading.Tasks;
 using ImageData = GiphyDotNet.Model.GiphyImage.Data;
 using RandomImageData = GiphyDotNet.Model.GiphyRandomImage.Data;
 
-namespace TheGodfather.Services.Tests
+namespace TheGodfatherTests.Services
 {
     [TestClass()]
     public class GiphyServiceTests
