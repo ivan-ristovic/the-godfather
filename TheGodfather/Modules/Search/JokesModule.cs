@@ -28,15 +28,8 @@ namespace TheGodfather.Modules.Search
         [GroupCommand]
         public async Task ExecuteGroupAsync(CommandContext ctx)
         {
-            string joke = null;
-            try {
-                joke = await JokesService.GetRandomJokeAsync()
-                    .ConfigureAwait(false);
-            } catch (Exception e) {
-                Shared.LogProvider.LogException(LogLevel.Warning, e);
-                throw new CommandFailedException("Failed to retrieve a joke. Please report this.");
-            }
-
+            string joke = await JokesService.GetRandomJokeAsync()
+                .ConfigureAwait(false);
             await ctx.InformSuccessAsync(joke, ":joy:")
                 .ConfigureAwait(false);
         }
@@ -50,21 +43,15 @@ namespace TheGodfather.Modules.Search
         public async Task SearchAsync(CommandContext ctx,
                                      [RemainingText, Description("Query.")] string query)
         {
-            if (string.IsNullOrWhiteSpace(query))
-                throw new InvalidCommandUsageException("Query missing.");
-
             var jokes = await JokesService.SearchForJokesAsync(query)
                 .ConfigureAwait(false);
-            if (jokes == null)
-                throw new CommandFailedException("Failed to retrieve joke. Please report this.");
-
-            if (!jokes.Any()) {
-                await ctx.InformSuccessAsync("No results...", ":frowning:")
+            if (jokes != null) {
+                await ctx.InformSuccessAsync($"Results:\n\n{string.Join("\n", jokes.Take(5))}", ":joy:")
                     .ConfigureAwait(false);
-                return;
+            } else {
+                await ctx.InformFailureAsync("No results...")
+                    .ConfigureAwait(false);
             }
-            await ctx.InformSuccessAsync($"Results:\n\n{string.Join("\n", jokes.Take(5))}", ":joy:")
-                .ConfigureAwait(false);
         }
         #endregion
 
@@ -75,11 +62,8 @@ namespace TheGodfather.Modules.Search
         [UsageExamples("!joke yourmom")]
         public async Task YomamaAsync(CommandContext ctx)
         {
-            var joke = await JokesService.GetYoMommaJokeAsync()
+            string joke = await JokesService.GetRandomYoMommaJokeAsync()
                 .ConfigureAwait(false);
-            if (joke == null)
-                throw new CommandFailedException("Failed to retrieve joke. Please report this.");
-
             await ctx.InformSuccessAsync(joke, ":joy:")
                 .ConfigureAwait(false);
         }
