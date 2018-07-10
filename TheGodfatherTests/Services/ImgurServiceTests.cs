@@ -40,14 +40,13 @@ namespace TheGodfatherTests.Services
 
             results = await _service.GetItemsFromSubAsync("test", 1, SubredditGallerySortOrder.Top, TimeWindow.All);
             Assert.IsNotNull(results);
-            Assert.AreEqual(results.Count(), 1);
+            Assert.AreEqual(1, results.Count());
             Assert.IsNotNull(results.FirstOrDefault());
 
             results = await _service.GetItemsFromSubAsync("test", 5, SubredditGallerySortOrder.Top, TimeWindow.All);
             Assert.IsNotNull(results);
-            Assert.AreEqual(results.Count(), 5);
-            foreach (IGalleryItem result in results)
-                Assert.IsNotNull(result);
+            Assert.AreEqual(5, results.Count());
+            CollectionAssert.AllItemsAreNotNull(results.ToList());
 
 
             await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {

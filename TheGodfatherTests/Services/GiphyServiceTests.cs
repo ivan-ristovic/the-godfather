@@ -38,21 +38,19 @@ namespace TheGodfatherTests.Services
 
             results = await _service.SearchAsync("test");
             Assert.IsNotNull(results);
-            Assert.AreEqual(results.Length, 1);
+            Assert.AreEqual(1, results.Length);
             Assert.IsNotNull(results[0]);
             Assert.IsNotNull(results[0].Url);
 
             results = await _service.SearchAsync("test", 5);
             Assert.IsNotNull(results);
-            Assert.AreEqual(results.Length, 5);
-            foreach (ImageData result in results) {
-                Assert.IsNotNull(result);
-                Assert.IsNotNull(result.Url);
-            }
+            Assert.AreEqual(5, results.Length);
+            CollectionAssert.AllItemsAreNotNull(results);
 
             results = await _service.SearchAsync("test", 15);
             Assert.IsNotNull(results);
-            Assert.AreEqual(results.Length, 15);
+            Assert.AreEqual(15, results.Length);
+            CollectionAssert.AllItemsAreNotNull(results);
 
             await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
                 await _service.SearchAsync("test", 0);
@@ -95,13 +93,13 @@ namespace TheGodfatherTests.Services
 
             results = await _service.GetTrendingGifsAsync();
             Assert.IsNotNull(results);
-            Assert.AreEqual(results.Length, 1);
+            Assert.AreEqual(1, results.Length);
             Assert.IsNotNull(results[0]);
             Assert.IsNotNull(results[0].Url);
 
             results = await _service.GetTrendingGifsAsync(5);
             Assert.IsNotNull(results);
-            Assert.AreEqual(results.Length, 5);
+            Assert.AreEqual(5, results.Length);
             foreach (ImageData result in results) {
                 Assert.IsNotNull(result);
                 Assert.IsNotNull(result.Url);

@@ -119,6 +119,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\GiphyServiceTests.cs" />
     <Compile Include="Services\ImgurServiceTests.cs" />
+    <Compile Include="Services\MemeGenServiceTests.cs" />
     <Compile Include="Services\JokesServiceTests.cs" />
     <Compile Include="Services\RSSServiceTests.cs" />
   </ItemGroup>
