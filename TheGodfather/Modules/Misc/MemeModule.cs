@@ -139,7 +139,7 @@ namespace TheGodfather.Modules.Misc
                                          [Description("Top Text.")] string topText,
                                          [Description("Bottom Text.")] string bottomText)
         {
-            var url = MemeGenService.GetMemeGenerateUrl(template, topText, bottomText);
+            var url = MemeGenService.GenerateMeme(template, topText, bottomText);
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
                 Title = url,
                 Url = url,

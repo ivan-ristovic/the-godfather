@@ -1,22 +1,23 @@
 ﻿#region USING_DIRECTIVES
+using DSharpPlus;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-
-using TheGodfather.Common;
-
-using DSharpPlus;
 #endregion
 
 namespace TheGodfather.Services
 {
     public class MemeGenService : TheGodfatherHttpService
     {
+        private static readonly string _url = "http://memegen.link";
+        private static readonly string _urlHttps = "https://memegen.link";
+        private static readonly Regex _whitespaceRegex = new Regex(@"\s+", RegexOptions.Compiled);
         private static readonly ImmutableDictionary<char, string> _replacements = new Dictionary<char, string>() {
             {'?', "~q"},
             {'%', "~p"},
@@ -29,35 +30,36 @@ namespace TheGodfather.Services
         }.ToImmutableDictionary();
 
 
-        public static string GetMemeGenerateUrl(string template, string topText, string bottomText)
-            => $"http://memegen.link/{ Replace(template) }/{ Replace(topText) }/{ Replace(bottomText) }.jpg?font=impact";
+        public static string GenerateMeme(string template, string topText, string bottomText)
+            => $"{_url}/{Sanitize(template)}/{Sanitize(topText)}/{Sanitize(bottomText)}.jpg?font=impact";
 
         public static async Task<IReadOnlyList<string>> GetMemeTemplatesAsync()
         {
-            try {
-                var json = await _http.GetStringAsync("https://memegen.link/api/templates/")
-                    .ConfigureAwait(false);
-                var data = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
-                return data.OrderBy(kvp => kvp.Key).Select(kvp => $"{Formatter.Bold(kvp.Key)} {Path.GetFileName(kvp.Value)}").ToList().AsReadOnly();
-            } catch (Exception e) {
-                // LogProvider.LogProvider.LogException(LogLevel.Warning, e);
-            }
-
-            return null;
+            string json = await _http.GetStringAsync($"{_urlHttps}/api/templates/").ConfigureAwait(false);
+            var data = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+            return data
+                .OrderBy(kvp => kvp.Key)
+                .Where(kvp => !string.IsNullOrWhiteSpace(kvp.Key))
+                .Select(kvp => $"{Formatter.Bold(kvp.Key)} {Path.GetFileName(kvp.Value)}")
+                .ToList()
+                .AsReadOnly();
         }
 
-        private static string Replace(string input)
+        private static string Sanitize(string input)
         {
             if (string.IsNullOrWhiteSpace(input))
                 return "_";
 
+            input = _whitespaceRegex.Replace(input, " ");
+
             var sb = new StringBuilder();
-            foreach (var c in input) {
-                if (_replacements.TryGetValue(c, out var tmp))
+            foreach (char c in input) {
+                if (_replacements.TryGetValue(c, out string tmp))
                     sb.Append(tmp);
                 else
                     sb.Append(c);
             }
+
             return sb.ToString();
         }
     }

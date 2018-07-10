@@ -108,6 +108,8 @@ namespace TheGodfather.EventListeners
                 sb.Append("I am not authorized to do that.");
             } else if (ex is TargetInvocationException) {
                 sb.Append($"{ex.InnerException?.Message ?? "Target invocation error occured. Please check the arguments provided and try again."}");
+            } else if (ex is TaskCanceledException) {
+                return;
             } else {
                 sb.AppendLine($"Command {Formatter.Bold(e.Command.QualifiedName)} errored!").AppendLine();
                 sb.AppendLine($"Exception: {Formatter.InlineCode(ex.GetType().ToString())}");
