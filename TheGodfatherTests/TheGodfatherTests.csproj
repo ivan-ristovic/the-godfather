@@ -39,6 +39,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DSharpPlus.Interactivity, Version=4.0.0.467, Culture=neutral, PublicKeyToken=null" />
     <Reference Include="GiphyDotNet, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\GiphyDotNet.1.0.0.0\lib\GiphyDotNet.dll</HintPath>
     </Reference>
@@ -121,6 +122,7 @@
     <Compile Include="Services\ImgurServiceTests.cs" />
     <Compile Include="Services\MemeGenServiceTests.cs" />
     <Compile Include="Services\JokesServiceTests.cs" />
+    <Compile Include="Services\OMDbServiceTests.cs" />
     <Compile Include="Services\RSSServiceTests.cs" />
   </ItemGroup>
   <ItemGroup>
