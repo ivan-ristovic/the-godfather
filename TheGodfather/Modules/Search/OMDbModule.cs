@@ -73,13 +73,13 @@ namespace TheGodfather.Modules.Search
         #region HELPER_FUNCTIONS
         private async Task SearchAndSendResultAsync(CommandContext ctx, OMDbQueryType type, string query)
         {
-            var page = await _Service.GetSingleResultAsync(type, query)
+            var info = await _Service.GetSingleResultAsync(type, query)
                 .ConfigureAwait(false);
 
-            if (page == null)
+            if (info == null)
                 throw new CommandFailedException("No results found!");
 
-            await ctx.Client.GetInteractivity().SendPaginatedMessage(ctx.Channel, ctx.User, new Page[] { page })
+            await ctx.RespondAsync(embed: info.ToDiscordEmbed())
                 .ConfigureAwait(false);
         }
         #endregion

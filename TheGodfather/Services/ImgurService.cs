@@ -30,10 +30,10 @@ namespace TheGodfather.Services
             SubredditGallerySortOrder order, TimeWindow time)
         {
             if (string.IsNullOrWhiteSpace(sub))
-                throw new ArgumentException("Subreddit cannot be null or whitespace", "sub");
+                throw new ArgumentException("Subreddit missing!", "sub");
 
             if (amount < 1 || amount > 20)
-                throw new ArgumentException("Result amount out of range", "amount");
+                throw new ArgumentException("Result amount out of range (max 20)", "amount");
 
             IEnumerable<IGalleryItem> images = await this.gEndpoint.GetSubredditGalleryAsync(sub, order, time).ConfigureAwait(false);
             return images.Take(amount);

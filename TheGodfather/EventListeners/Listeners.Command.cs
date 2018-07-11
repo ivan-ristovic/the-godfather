@@ -59,13 +59,17 @@ namespace TheGodfather.EventListeners
             };
             var sb = new StringBuilder(StaticDiscordEmoji.NoEntry).Append(" ");
 
-            if (ex is CommandNotFoundException cne && shard.SharedData.GuildConfigurations[e.Context.Guild.Id].SuggestionsEnabled) {
-                emb.WithTitle($"Command {Formatter.Bold(cne.CommandName)} not found. Did you mean...");
-                var ordered = TheGodfatherShard.Commands
-                    .OrderBy(tup => cne.CommandName.LevenshteinDistance(tup.Item1))
-                    .Take(3);
-                foreach ((string alias, Command cmd) in ordered)
-                    emb.AddField($"{alias} ({cmd.QualifiedName})", cmd.Description);
+            if (ex is CommandNotFoundException cne) {
+                if (shard.SharedData.GuildConfigurations[e.Context.Guild.Id].SuggestionsEnabled) {
+                    emb.WithTitle($"Command {Formatter.Bold(cne.CommandName)} not found. Did you mean...");
+                    var ordered = TheGodfatherShard.Commands
+                        .OrderBy(tup => cne.CommandName.LevenshteinDistance(tup.Item1))
+                        .Take(3);
+                    foreach ((string alias, Command cmd) in ordered)
+                        emb.AddField($"{alias} ({cmd.QualifiedName})", cmd.Description);
+                } else {
+                    return;
+                }
             } else if (ex is InvalidCommandUsageException) {
                 sb.Append($"Invalid usage! {ex.Message}");
             } else if (ex is ArgumentException) {
