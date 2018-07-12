@@ -29,14 +29,14 @@ namespace TheGodfather.EventListeners.Common
     public class LinkfilterMatcher : Regex
     {
         public LinkfilterMatcher(params string[] items) 
-            : base($@"({string.Join("|", items.Select(Escape))})", RegexOptions.IgnoreCase)
+            : base($@"\b({string.Join("|", items.Select(Escape))})\b", RegexOptions.IgnoreCase)
         {
             if (!items.Any())
                 throw new ArgumentException("No items provided for matching.");
         }
 
         public LinkfilterMatcher(IEnumerable<string> items) 
-            : base($@"({string.Join("|", items.Select(Escape))})", RegexOptions.IgnoreCase)
+            : base($@"\b({string.Join("|", items.Select(Escape))})\b", RegexOptions.IgnoreCase)
         {
             if (!items.Any())
                 throw new ArgumentException("No items provided for matching.");

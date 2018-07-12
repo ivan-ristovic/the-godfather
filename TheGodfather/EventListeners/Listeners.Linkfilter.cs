@@ -25,10 +25,10 @@ namespace TheGodfather.EventListeners
             CachedGuildConfig gcfg = shard.SharedData.GetGuildConfig(e.Guild.Id);
             if (!gcfg.LinkfilterEnabled)
                 return;
-
-            if ((e.Channel.PermissionsFor(e.Author as DiscordMember).HasPermission(Permissions.ManageMessages)))
+            
+            if ((e.Channel.PermissionsFor(e.Author as DiscordMember).HasPermission(Permissions.Administrator)))
                 return;
-
+            
             if (gcfg.BlockDiscordInvites && await ScanForInvitesInvitesAsync(shard, e))
                 return;
 
@@ -135,7 +135,8 @@ namespace TheGodfather.EventListeners
                 await LogLinkfilterMatchAsync(shard, e, "URL shortener website matched");
                 await (e.Author as DiscordMember).SendMessageAsync(
                     $"Your message:\n{Formatter.BlockCode(e.Message.Content)}\nwas automatically removed from " +
-                    $"{Formatter.Bold(e.Guild.Name)} because it contained a link to a link shortener website: {Formatter.InlineCode(match.Matched)} (possible origin: {LinkfilterMatcherCollection.UrlShorteners[match.Matched]})"
+                    $"{Formatter.Bold(e.Guild.Name)} because it is suspected to contain a link to a link shortener website: {Formatter.InlineCode(match.Matched)} (possible origin: {LinkfilterMatcherCollection.UrlShorteners[match.Matched]})" +
+                    $"If you think this is a false detection, please report."
                 );
             } catch (UnauthorizedException) {
 
