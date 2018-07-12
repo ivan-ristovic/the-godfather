@@ -124,6 +124,7 @@
     <Compile Include="Services\JokesServiceTests.cs" />
     <Compile Include="Services\OMDbServiceTests.cs" />
     <Compile Include="Services\PetImagesServiceTests.cs" />
+    <Compile Include="Services\QuizServiceTests.cs" />
     <Compile Include="Services\RSSServiceTests.cs" />
   </ItemGroup>
   <ItemGroup>
