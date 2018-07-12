@@ -10,7 +10,7 @@ using RandomImageData = GiphyDotNet.Model.GiphyRandomImage.Data;
 
 namespace TheGodfatherTests.Services
 {
-    [TestClass()]
+    [TestClass]
     public class GiphyServiceTests
     {
         private static GiphyService _service;
@@ -31,7 +31,7 @@ namespace TheGodfatherTests.Services
         }
 
 
-        [TestMethod()]
+        [TestMethod]
         public async Task SearchAsyncTest()
         {
             ImageData[] results;
@@ -78,7 +78,7 @@ namespace TheGodfatherTests.Services
             });
         }
 
-        [TestMethod()]
+        [TestMethod]
         public async Task GetRandomGifAsyncTest()
         {
             RandomImageData data = await _service.GetRandomGifAsync();
@@ -86,7 +86,7 @@ namespace TheGodfatherTests.Services
             Assert.IsNotNull(data.Url);
         }
 
-        [TestMethod()]
+        [TestMethod]
         public async Task GetTrendingGifsAsyncTest()
         {
             ImageData[] results;

@@ -7,10 +7,10 @@ using TheGodfather.Services;
 
 namespace TheGodfatherTests.Services
 {
-    [TestClass()]
+    [TestClass]
     public class MemeGenServiceTests
     {
-        [TestMethod()]
+        [TestMethod]
         public void GenerateMemeTest()
         {
             Assert.AreEqual(
@@ -111,7 +111,7 @@ namespace TheGodfatherTests.Services
             );
         }
 
-        [TestMethod()]
+        [TestMethod]
         public async Task GetMemeTemplatesAsync()
         {
             IReadOnlyList<string> templates = await MemeGenService.GetMemeTemplatesAsync();

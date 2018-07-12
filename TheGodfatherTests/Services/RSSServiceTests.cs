@@ -9,10 +9,10 @@ using System.Xml;
 
 namespace TheGodfatherTests.Services
 {
-    [TestClass()]
+    [TestClass]
     public class RSSServiceTests
     {
-        [TestMethod()]
+        [TestMethod]
         public void IsValidRSSFeedURLTest()
         {
             Assert.IsTrue(RSSService.IsValidRSSFeedURL("https://www.reddit.com/r/MrRobot/.rss"));
@@ -22,7 +22,7 @@ namespace TheGodfatherTests.Services
             Assert.IsFalse(RSSService.IsValidRSSFeedURL("https://nonexisting.dsdsd/info.rss"));
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void GetFeedURLForSubredditTest()
         {
             string s = null;
@@ -72,7 +72,7 @@ namespace TheGodfatherTests.Services
             //Assert.IsNull(RSSService.GetFeedURLForSubreddit("Global?Offensive", out s));
         }
 
-        [TestMethod()]
+        [TestMethod]
         public void GetFeedResultsTest()
         {
             Assert.IsTrue(RSSService.GetFeedResults("https://www.reddit.com/r/aww/new/.rss").Any());

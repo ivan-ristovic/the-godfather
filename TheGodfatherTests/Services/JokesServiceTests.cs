@@ -5,24 +5,24 @@ using TheGodfather.Services;
 
 namespace TheGodfatherTests.Services
 {
-    [TestClass()]
+    [TestClass]
     public class JokesServiceTests
     {
-        [TestMethod()]
+        [TestMethod]
         public async Task GetRandomJokeAsyncTest()
         {
             for (int i = 0; i < 10; i++)
                 Assert.IsNotNull(await JokesService.GetRandomJokeAsync());
         }
 
-        [TestMethod()]
+        [TestMethod]
         public async Task GetRandomYoMommaJokeAsync()
         {
             for (int i = 0; i < 10; i++)
                 Assert.IsNotNull(await JokesService.GetRandomYoMommaJokeAsync());
         }
 
-        [TestMethod()]
+        [TestMethod]
         public async Task SearchForJokesAsyncTest()
         {
             Assert.IsNotNull(await JokesService.SearchForJokesAsync("dad joke"));

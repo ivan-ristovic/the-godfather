@@ -123,6 +123,7 @@
     <Compile Include="Services\MemeGenServiceTests.cs" />
     <Compile Include="Services\JokesServiceTests.cs" />
     <Compile Include="Services\OMDbServiceTests.cs" />
+    <Compile Include="Services\PetImagesServiceTests.cs" />
     <Compile Include="Services\RSSServiceTests.cs" />
   </ItemGroup>
   <ItemGroup>

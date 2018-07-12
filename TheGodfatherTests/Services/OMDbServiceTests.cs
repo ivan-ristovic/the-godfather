@@ -12,7 +12,7 @@ using TheGodfather.Services.Common;
 
 namespace TheGodfatherTests.Services
 {
-    [TestClass()]
+    [TestClass]
     public class OMDbServiceTests
     {
         private static OMDbService _service;
@@ -33,7 +33,7 @@ namespace TheGodfatherTests.Services
         }
 
 
-        [TestMethod()]
+        [TestMethod]
         public async Task SearchAsyncTest()
         {
             IReadOnlyList<Page> results;
@@ -61,7 +61,7 @@ namespace TheGodfatherTests.Services
             });
         }
 
-        [TestMethod()]
+        [TestMethod]
         public async Task GetSingleResultAsyncTest()
         {
             MovieInfo result;

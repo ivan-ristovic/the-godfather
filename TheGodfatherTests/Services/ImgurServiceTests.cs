@@ -12,7 +12,7 @@ using TheGodfather.Services;
 
 namespace TheGodfatherTests.Services
 {
-    [TestClass()]
+    [TestClass]
     public class ImgurServiceTests
     {
         private static ImgurService _service;
@@ -33,7 +33,7 @@ namespace TheGodfatherTests.Services
         }
 
 
-        [TestMethod()]
+        [TestMethod]
         public async Task GetItemsFromSubAsyncTest()
         {
             IEnumerable<IGalleryItem> results;
