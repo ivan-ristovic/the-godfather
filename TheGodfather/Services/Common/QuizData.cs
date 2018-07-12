@@ -1,6 +1,6 @@
 ﻿#region USING_DIRECTIVES
-using System.Collections.Generic;
 using Newtonsoft.Json;
+using System.Collections.Generic;
 #endregion
 
 namespace TheGodfather.Services.Common
@@ -12,7 +12,7 @@ namespace TheGodfather.Services.Common
         Hard
     }
 
-    public static class QuizEnumDataExtensions
+    public static class QuestionDifficultyExtensions
     {
         public static string ToAPIString(this QuestionDifficulty diff)
         {
@@ -20,19 +20,19 @@ namespace TheGodfather.Services.Common
                 case QuestionDifficulty.Easy: return "easy";
                 case QuestionDifficulty.Medium: return "medium";
                 case QuestionDifficulty.Hard: return "hard";
+                default: return "unknown";
             }
-            return "unknown";
         }
     }
 
 
     public class QuizData
     {
-        [JsonProperty("response_code")]
-        public int ResponseCode { get; set; }
-
         [JsonProperty("results")]
         public List<QuizQuestion> Questions { get; set; }
+
+        [JsonProperty("response_code")]
+        public int ResponseCode { get; set; }
     }
 
     public class QuizQuestion
@@ -40,14 +40,14 @@ namespace TheGodfather.Services.Common
         [JsonProperty("category")]
         public string Category { get; set; }
 
-        [JsonIgnore]
-        public QuestionDifficulty Difficulty { get; set; }
-
         [JsonProperty("question")]
         public string Content { get; set; }
 
         [JsonProperty("correct_answer")]
         public string CorrectAnswer { get; set; }
+
+        [JsonIgnore]
+        public QuestionDifficulty Difficulty { get; set; }
 
         [JsonProperty("incorrect_answers")]
         public List<string> IncorrectAnswers { get; set; }
@@ -70,11 +70,11 @@ namespace TheGodfather.Services.Common
 
     public class TokenResponse
     {
-        [JsonProperty("response_code")]
-        public int ResponseCode { get; set; }
-
         [JsonProperty("response_message")]
         public string Message { get; set; }
+
+        [JsonProperty("response_code")]
+        public int ResponseCode { get; set; }
 
         [JsonProperty("token")]
         public string Token { get; set; }

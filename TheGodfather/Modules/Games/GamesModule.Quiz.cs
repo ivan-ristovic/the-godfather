@@ -59,7 +59,7 @@ namespace TheGodfather.Modules.Games
                     case "hard": difficulty = QuestionDifficulty.Hard; break;
                 }
 
-                var questions = await QuizService.GetQuizQuestionsAsync(id, amount, difficulty)
+                var questions = await QuizService.GetQuestionsAsync(id, amount, difficulty)
                     .ConfigureAwait(false);
 
                 if (questions == null || !questions.Any())
@@ -102,7 +102,7 @@ namespace TheGodfather.Modules.Games
             {
                 int? id = await QuizService.GetCategoryIdAsync(category).ConfigureAwait(false);
                 if (!id.HasValue)
-                    throw new CommandFailedException("Category with that name doesn't exist!!");
+                    throw new CommandFailedException("Category with that name doesn't exist!");
 
                 await ExecuteGroupAsync(ctx, id.Value, amount, diff).ConfigureAwait(false);
             }
@@ -113,7 +113,7 @@ namespace TheGodfather.Modules.Games
             {
                 int? id = await QuizService.GetCategoryIdAsync(category).ConfigureAwait(false);
                 if (!id.HasValue)
-                    throw new CommandFailedException("Category with that name doesn't exist!!");
+                    throw new CommandFailedException("Category with that name doesn't exist!");
 
                 await ExecuteGroupAsync(ctx, id.Value, 10)
                     .ConfigureAwait(false);
@@ -123,7 +123,7 @@ namespace TheGodfather.Modules.Games
             [GroupCommand, Priority(0)]
             public async Task ExecuteGroupAsync(CommandContext ctx)
             {
-                var categories = await QuizService.GetQuizCategoriesAsync()
+                var categories = await QuizService.GetCategoriesAsync()
                     .ConfigureAwait(false);
 
                 await ctx.InformSuccessAsync(
