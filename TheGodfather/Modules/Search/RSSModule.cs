@@ -34,13 +34,13 @@ namespace TheGodfather.Modules.Search
             if (string.IsNullOrWhiteSpace(url))
                 throw new InvalidCommandUsageException("URL missing.");
 
-            if (!RSSService.IsValidRSSFeedURL(url))
+            if (!RssService.IsValidFeedURL(url))
                 throw new InvalidCommandUsageException("No results found for given URL (maybe forbidden?).");
 
-            var res = RSSService.GetFeedResults(url);
+            var res = RssService.GetFeedResults(url);
             if (res == null)
                 throw new CommandFailedException("Error getting feed from given URL.");
-            await RSSService.SendFeedResultsAsync(ctx.Channel, res)
+            await RssService.SendFeedResultsAsync(ctx.Channel, res)
                 .ConfigureAwait(false);
         }
 
@@ -81,7 +81,7 @@ namespace TheGodfather.Modules.Search
             if (string.IsNullOrWhiteSpace(url))
                 throw new InvalidCommandUsageException("URL missing.");
 
-            if (!RSSService.IsValidRSSFeedURL(url))
+            if (!RssService.IsValidFeedURL(url))
                 throw new InvalidCommandUsageException("Given URL isn't a valid RSS feed URL.");
 
             if (!await Database.AddSubscriptionAsync(ctx.Channel.Id, url, name ?? url).ConfigureAwait(false))
@@ -125,10 +125,10 @@ namespace TheGodfather.Modules.Search
         [UsageExamples("!rss wm")]
         public async Task WmRssAsync(CommandContext ctx)
         {
-            var res = RSSService.GetFeedResults("http://worldmafia.net/forum/forums/-/index.rss");
+            var res = RssService.GetFeedResults("http://worldmafia.net/forum/forums/-/index.rss");
             if (res == null)
                 throw new CommandFailedException("An error occured while reaching WM forum. Possibly Pakistani didn't pay this month?");
-            await RSSService.SendFeedResultsAsync(ctx.Channel, res)
+            await RssService.SendFeedResultsAsync(ctx.Channel, res)
                 .ConfigureAwait(false);
         }
         #endregion

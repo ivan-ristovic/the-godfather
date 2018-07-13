@@ -32,14 +32,14 @@ namespace TheGodfather.Modules.Search
             if (string.IsNullOrWhiteSpace(sub))
                 throw new InvalidCommandUsageException("Subreddit missing.");
 
-            var url = RSSService.GetFeedURLForSubreddit(sub, out string rsub);
+            var url = RssService.GetFeedURLForSubreddit(sub, out string rsub);
             if (url == null)
                 throw new CommandFailedException("That subreddit doesn't exist.");
 
-            var res = RSSService.GetFeedResults(url);
+            var res = RssService.GetFeedResults(url);
             if (res == null)
                 throw new CommandFailedException($"Failed to get the data from that subreddit ({Formatter.Bold(rsub)}).");
-            await RSSService.SendFeedResultsAsync(ctx.Channel, res)
+            await RssService.SendFeedResultsAsync(ctx.Channel, res)
                 .ConfigureAwait(false);
         }
 
@@ -53,7 +53,7 @@ namespace TheGodfather.Modules.Search
         public async Task SubscribeAsync(CommandContext ctx,
                                         [Description("Subreddit.")] string sub)
         {
-            var url = RSSService.GetFeedURLForSubreddit(sub, out string rsub);
+            var url = RssService.GetFeedURLForSubreddit(sub, out string rsub);
             if (url == null)
                 throw new CommandFailedException("That subreddit doesn't exist.");
 
@@ -76,7 +76,7 @@ namespace TheGodfather.Modules.Search
         public async Task UnsubscribeAsync(CommandContext ctx,
                                           [Description("Subreddit.")] string sub)
         {
-            if (RSSService.GetFeedURLForSubreddit(sub, out string rsub) == null)
+            if (RssService.GetFeedURLForSubreddit(sub, out string rsub) == null)
                 throw new CommandFailedException("That subreddit doesn't exist.");
 
             await Database.RemoveSubscriptionByNameAsync(ctx.Channel.Id, rsub)

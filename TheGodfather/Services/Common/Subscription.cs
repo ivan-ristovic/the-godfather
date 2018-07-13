@@ -8,8 +8,8 @@
 
         public Subscription(ulong cid, string qname)
         {
-            ChannelId = cid;
-            QualifiedName = qname;
+            this.ChannelId = cid;
+            this.QualifiedName = qname;
         }
     }
 }

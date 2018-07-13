@@ -283,7 +283,7 @@ namespace TheGodfather
 
         private static async Task FeedCheckCallbackAsync()
         {
-            await RSSService.CheckFeedsForChangesAsync(Shards[0].Client, DatabaseService);
+            await RssService.CheckFeedsForChangesAsync(Shards[0].Client, DatabaseService);
         }
 
         private static async Task MiscellaneousActionsCallbackAsync()

@@ -86,7 +86,7 @@ namespace TheGodfather.Services
 
         public async Task<bool> AddSubscriptionAsync(ulong cid, string url, string qname = null)
         {
-            var newest = RSSService.GetFeedResults(url)?.First();
+            var newest = RssService.GetFeedResults(url)?.First();
             if (newest == null)
                 return false;
 
