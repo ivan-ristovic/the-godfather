@@ -127,6 +127,7 @@
     <Compile Include="Services\QuizServiceTests.cs" />
     <Compile Include="Services\QuoteServiceTests.cs" />
     <Compile Include="Services\RSSServiceTests.cs" />
+    <Compile Include="Services\UrbanDictServiceTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TheGodfather\TheGodfather.csproj">
