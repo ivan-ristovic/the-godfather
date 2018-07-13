@@ -39,6 +39,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DSharpPlus, Version=4.0.0.467, Culture=neutral, PublicKeyToken=null" />
     <Reference Include="DSharpPlus.Interactivity, Version=4.0.0.467, Culture=neutral, PublicKeyToken=null" />
     <Reference Include="GiphyDotNet, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\GiphyDotNet.1.0.0.0\lib\GiphyDotNet.dll</HintPath>
@@ -128,6 +129,7 @@
     <Compile Include="Services\QuoteServiceTests.cs" />
     <Compile Include="Services\RSSServiceTests.cs" />
     <Compile Include="Services\UrbanDictServiceTests.cs" />
+    <Compile Include="Services\WeatherServiceTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TheGodfather\TheGodfather.csproj">
