@@ -1,42 +1,37 @@
 ﻿#region USING_DIRECTIVES
-using System;
-using Newtonsoft.Json;
-
 using DSharpPlus.Entities;
+using Newtonsoft.Json;
 #endregion
 
 namespace TheGodfather.Services.Common
 {
     public class XkcdComic
     {
-        [JsonProperty("month")]
-        public string Month { get; set; }
-
         [JsonProperty("num")]
-        public int Num { get; set; }
-
-        [JsonProperty("year")]
-        public string Year { get; set; }
-
-        [JsonProperty("safe_title")]
-        public string Title { get; set; }
+        public int Id { get; set; }
 
         [JsonProperty("img")]
         public string ImageUrl { get; set; }
 
-        [JsonProperty("alt")]
-        public string Alt { get; set; }
+        [JsonProperty("month")]
+        public string Month { get; set; }
+
+        [JsonProperty("safe_title")]
+        public string Title { get; set; }
+
+        [JsonProperty("year")]
+        public string Year { get; set; }
 
 
-        public DiscordEmbed Embed()
+        public DiscordEmbed ToDiscordEmbed()
         {
             var emb = new DiscordEmbedBuilder() {
-                Title = $"xkcd #{Num} : {Title}",
+                Title = $"xkcd #{this.Id} : {this.Title}",
                 ImageUrl = ImageUrl,
-                Url = $"{XkcdService.XkcdUrl}/{Num}"
+                Url = XkcdService.CreateUrlForComic(this.Id)
             };
 
-            emb.WithFooter($"Publish date: {Month}/{Year}");
+            emb.WithFooter($"Publish date: {this.Month}/{this.Year}");
 
             return emb.Build();
         }
