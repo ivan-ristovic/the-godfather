@@ -128,7 +128,7 @@
     <Compile Include="Services\QuizServiceTests.cs" />
     <Compile Include="Services\QuoteServiceTests.cs" />
     <Compile Include="Services\RSSServiceTests.cs" />
-    <Compile Include="Services\UnitTest1.cs" />
+    <Compile Include="Services\XkcdServiceTests.cs" />
     <Compile Include="Services\UrbanDictServiceTests.cs" />
     <Compile Include="Services\WeatherServiceTests.cs" />
   </ItemGroup>
