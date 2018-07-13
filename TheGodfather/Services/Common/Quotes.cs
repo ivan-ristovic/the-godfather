@@ -1,20 +1,19 @@
 ﻿#region USING_DIRECTIVES
-using System.Collections.Generic;
-using Newtonsoft.Json;
-
 using DSharpPlus;
 using DSharpPlus.Entities;
+using Newtonsoft.Json;
+using System.Collections.Generic;
 #endregion
 
 namespace TheGodfather.Services.Common
 {
     public class QuoteApiResponse
     {
-        [JsonProperty("success")]
-        public QuoteApiSuccess Success { get; set; }
-
         [JsonProperty("contents")]
         public QuoteApiContent Contents { get; set; }
+
+        [JsonProperty("success")]
+        public QuoteApiSuccess Success { get; set; }
     }
 
     public class QuoteApiSuccess
@@ -31,32 +30,33 @@ namespace TheGodfather.Services.Common
 
     public class Quote
     {
-        [JsonProperty("quote")]
-        public string Content { get; set; }
-
         [JsonProperty("author")]
         public string Author { get; set; }
-
-        [JsonProperty("category")]
-        public string Category { get; set; }
-
-        [JsonProperty("permalink")]
-        public string Permalink { get; set; }
 
         [JsonProperty("background")]
         public string BackgroundImageUrl { get; set; }
 
+        [JsonProperty("category")]
+        public string Category { get; set; }
 
-        public DiscordEmbed Embed(string title = null)
+        [JsonProperty("quote")]
+        public string Content { get; set; }
+
+        [JsonProperty("permalink")]
+        public string Permalink { get; set; }
+
+
+        public DiscordEmbed ToDiscordEmbed(string altTitle = null)
         {
             var emb = new DiscordEmbedBuilder() {
-                Title = title ?? "Quote",
-                Description = Formatter.Italic($"\"{Content}\""),
+                Title = string.IsNullOrWhiteSpace(altTitle) ? "Quote" : altTitle,
+                Description = Formatter.Italic($"\"{this.Content}\""),
                 Color = DiscordColor.SpringGreen,
                 ThumbnailUrl = BackgroundImageUrl,
                 Url = Permalink
             };
-            emb.AddField("Author", Author);
+            emb.AddField("Author", this.Author);
+
             emb.WithFooter("Powered by theysaidso.com");
 
             return emb.Build();

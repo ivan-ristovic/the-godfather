@@ -331,7 +331,7 @@ namespace TheGodfather.Modules.Misc
             if (quote == null)
                 throw new CommandFailedException("Failed to retrieve quote! Possibly the given quote category does not exist.");
             
-            await ctx.RespondAsync(embed: quote.Embed($"Quote of the day{(string.IsNullOrWhiteSpace(category) ? "" : $" in category {category}")}:"))
+            await ctx.RespondAsync(embed: quote.ToDiscordEmbed($"Quote of the day{(string.IsNullOrWhiteSpace(category) ? "" : $" in category {category}")}:"))
                 .ConfigureAwait(false);
         }
         #endregion
