@@ -131,6 +131,7 @@
     <Compile Include="Services\XkcdServiceTests.cs" />
     <Compile Include="Services\UrbanDictServiceTests.cs" />
     <Compile Include="Services\WeatherServiceTests.cs" />
+    <Compile Include="Services\YtServiceTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TheGodfather\TheGodfather.csproj">
