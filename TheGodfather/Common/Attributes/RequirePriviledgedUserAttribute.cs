@@ -4,7 +4,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Threading.Tasks;
-using TheGodfather.Services;
+using TheGodfather.Services.Database;
 #endregion
 
 namespace TheGodfather.Common.Attributes

@@ -13,15 +13,15 @@ using Npgsql;
 using NpgsqlTypes;
 #endregion
 
-namespace TheGodfather.Services
+namespace TheGodfather.Services.Database
 {
     public partial class DBService
     {
         public async Task AddBotStatusAsync(string status, ActivityType type)
         {
-            await _sem.WaitAsync();
+            await accessSemaphore.WaitAsync();
             try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var con = await OpenConnectionAsync())
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "INSERT INTO gf.statuses(status, type) VALUES (@status, @type);";
                     cmd.Parameters.AddWithValue("status", NpgsqlDbType.Varchar, status);
@@ -30,7 +30,7 @@ namespace TheGodfather.Services
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
             } finally {
-                _sem.Release();
+                accessSemaphore.Release();
             }
         }
 
@@ -38,9 +38,9 @@ namespace TheGodfather.Services
         {
             var dict = new Dictionary<int, string>();
 
-            await _sem.WaitAsync();
+            await accessSemaphore.WaitAsync();
             try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var con = await OpenConnectionAsync())
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "SELECT * FROM gf.statuses;";
 
@@ -56,7 +56,7 @@ namespace TheGodfather.Services
                     }
                 }
             } finally {
-                _sem.Release();
+                accessSemaphore.Release();
             }
 
             return new ReadOnlyDictionary<int, string>(dict);
@@ -66,9 +66,9 @@ namespace TheGodfather.Services
         {
             (ActivityType, string) status = (ActivityType.Playing, null);
 
-            await _sem.WaitAsync();
+            await accessSemaphore.WaitAsync();
             try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var con = await OpenConnectionAsync())
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "SELECT type, status FROM gf.statuses WHERE id = @id LIMIT 1;";
                     cmd.Parameters.AddWithValue("id", NpgsqlDbType.Integer, id);
@@ -79,7 +79,7 @@ namespace TheGodfather.Services
                     }
                 }
             } finally {
-                _sem.Release();
+                accessSemaphore.Release();
             }
 
             return status;
@@ -90,9 +90,9 @@ namespace TheGodfather.Services
             int type = 0;
             string status = null;
 
-            await _sem.WaitAsync();
+            await accessSemaphore.WaitAsync();
             try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var con = await OpenConnectionAsync())
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "SELECT status, type FROM gf.statuses LIMIT 1 OFFSET floor(random() * (SELECT count(*) FROM gf.statuses));";
 
@@ -104,7 +104,7 @@ namespace TheGodfather.Services
                     }
                 }
             } finally {
-                _sem.Release();
+                accessSemaphore.Release();
             }
 
             if (!Enum.IsDefined(typeof(ActivityType), type)) {
@@ -117,9 +117,9 @@ namespace TheGodfather.Services
 
         public async Task RemoveBotStatusAsync(int id)
         {
-            await _sem.WaitAsync();
+            await accessSemaphore.WaitAsync();
             try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var con = await OpenConnectionAsync())
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "DELETE FROM gf.statuses WHERE id = @id;";
                     cmd.Parameters.AddWithValue("id", NpgsqlDbType.Integer, id);
@@ -127,7 +127,7 @@ namespace TheGodfather.Services
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
             } finally {
-                _sem.Release();
+                accessSemaphore.Release();
             }
         }
     }

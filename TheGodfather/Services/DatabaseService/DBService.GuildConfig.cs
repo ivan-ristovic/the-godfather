@@ -12,7 +12,7 @@ using Npgsql;
 using NpgsqlTypes;
 #endregion
 
-namespace TheGodfather.Services
+namespace TheGodfather.Services.Database
 {
     public partial class DBService
     {
@@ -20,9 +20,9 @@ namespace TheGodfather.Services
         {
             var dict = new Dictionary<ulong, CachedGuildConfig>();
 
-            await _sem.WaitAsync();
+            await accessSemaphore.WaitAsync();
             try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var con = await OpenConnectionAsync())
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "SELECT * FROM gf.guild_cfg;";
 
@@ -43,7 +43,7 @@ namespace TheGodfather.Services
                     }
                 }
             } finally {
-                _sem.Release();
+                accessSemaphore.Release();
             }
 
             return new ReadOnlyDictionary<ulong, CachedGuildConfig>(dict);
@@ -52,9 +52,9 @@ namespace TheGodfather.Services
 
         public async Task RegisterGuildAsync(ulong gid)
         {
-            await _sem.WaitAsync();
+            await accessSemaphore.WaitAsync();
             try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var con = await OpenConnectionAsync())
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "INSERT INTO gf.guild_cfg VALUES (@gid) ON CONFLICT DO NOTHING;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
@@ -62,15 +62,15 @@ namespace TheGodfather.Services
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
             } finally {
-                _sem.Release();
+                accessSemaphore.Release();
             }
         }
 
         public async Task UnregisterGuildAsync(ulong gid)
         {
-            await _sem.WaitAsync();
+            await accessSemaphore.WaitAsync();
             try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var con = await OpenConnectionAsync())
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "DELETE FROM gf.guild_cfg WHERE gid = @gid;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
@@ -78,16 +78,16 @@ namespace TheGodfather.Services
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
             } finally {
-                _sem.Release();
+                accessSemaphore.Release();
             }
         }
 
 
         public async Task SetPrefixAsync(ulong gid, string prefix)
         {
-            await _sem.WaitAsync();
+            await accessSemaphore.WaitAsync();
             try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var con = await OpenConnectionAsync())
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "UPDATE gf.guild_cfg SET prefix = @prefix WHERE gid = @gid;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
@@ -96,15 +96,15 @@ namespace TheGodfather.Services
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
             } finally {
-                _sem.Release();
+                accessSemaphore.Release();
             }
         }
 
         public async Task ResetPrefixAsync(ulong gid)
         {
-            await _sem.WaitAsync();
+            await accessSemaphore.WaitAsync();
             try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var con = await OpenConnectionAsync())
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "UPDATE gf.guild_cfg SET prefix = NULL WHERE gid = @gid;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
@@ -112,16 +112,16 @@ namespace TheGodfather.Services
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
             } finally {
-                _sem.Release();
+                accessSemaphore.Release();
             }
         }
 
 
         public async Task UpdateGuildSettingsAsync(ulong gid, CachedGuildConfig cfg)
         {
-            await _sem.WaitAsync();
+            await accessSemaphore.WaitAsync();
             try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var con = await OpenConnectionAsync())
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "UPDATE gf.guild_cfg SET (prefix, suggestions_enabled, log_cid, linkfilter_enabled, linkfilter_invites, linkfilter_booters, linkfilter_disturbing, linkfilter_iploggers, linkfilter_shorteners) = (@prefix, @suggestions_enabled, @log_cid, @linkfilter_enabled, @linkfilter_invites, @linkfilter_booters, @linkfilter_disturbing, @linkfilter_iploggers, @linkfilter_shorteners) WHERE gid = @gid;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
@@ -141,7 +141,7 @@ namespace TheGodfather.Services
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
             } finally {
-                _sem.Release();
+                accessSemaphore.Release();
             }
         }
 
@@ -150,9 +150,9 @@ namespace TheGodfather.Services
         {
             ulong cid = 0;
 
-            await _sem.WaitAsync();
+            await accessSemaphore.WaitAsync();
             try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var con = await OpenConnectionAsync())
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "SELECT welcome_cid FROM gf.guild_cfg WHERE gid = @gid LIMIT 1;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)guild.Id);
@@ -162,7 +162,7 @@ namespace TheGodfather.Services
                         cid = (ulong)(long)res;
                 }
             } finally {
-                _sem.Release();
+                accessSemaphore.Release();
             }
 
             return cid != 0 ? guild.GetChannel(cid) : null;
@@ -172,9 +172,9 @@ namespace TheGodfather.Services
         {
             ulong cid = 0;
 
-            await _sem.WaitAsync();
+            await accessSemaphore.WaitAsync();
             try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var con = await OpenConnectionAsync())
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "SELECT leave_cid FROM gf.guild_cfg WHERE gid = @gid LIMIT 1;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)guild.Id);
@@ -184,7 +184,7 @@ namespace TheGodfather.Services
                         cid = (ulong)(long)res;
                 }
             } finally {
-                _sem.Release();
+                accessSemaphore.Release();
             }
 
             return cid != 0 ? guild.GetChannel(cid) : null;
@@ -194,9 +194,9 @@ namespace TheGodfather.Services
         {
             string msg = null;
 
-            await _sem.WaitAsync();
+            await accessSemaphore.WaitAsync();
             try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var con = await OpenConnectionAsync())
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "SELECT leave_msg FROM gf.guild_cfg WHERE gid = @gid LIMIT 1;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
@@ -206,7 +206,7 @@ namespace TheGodfather.Services
                         msg = (string)res;
                 }
             } finally {
-                _sem.Release();
+                accessSemaphore.Release();
             }
 
             return msg;
@@ -216,9 +216,9 @@ namespace TheGodfather.Services
         {
             string msg = null;
 
-            await _sem.WaitAsync();
+            await accessSemaphore.WaitAsync();
             try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var con = await OpenConnectionAsync())
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "SELECT welcome_msg FROM gf.guild_cfg WHERE gid = @gid LIMIT 1;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
@@ -228,7 +228,7 @@ namespace TheGodfather.Services
                         msg = (string)res;
                 }
             } finally {
-                _sem.Release();
+                accessSemaphore.Release();
             }
 
             return msg;
@@ -248,9 +248,9 @@ namespace TheGodfather.Services
 
         public async Task SetWelcomeChannelAsync(ulong gid, ulong cid)
         {
-            await _sem.WaitAsync();
+            await accessSemaphore.WaitAsync();
             try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var con = await OpenConnectionAsync())
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "UPDATE gf.guild_cfg SET welcome_cid = @cid WHERE gid = @gid;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
@@ -259,15 +259,15 @@ namespace TheGodfather.Services
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
             } finally {
-                _sem.Release();
+                accessSemaphore.Release();
             }
         }
 
         public async Task SetWelcomeMessageAsync(ulong gid, string message)
         {
-            await _sem.WaitAsync();
+            await accessSemaphore.WaitAsync();
             try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var con = await OpenConnectionAsync())
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "UPDATE gf.guild_cfg SET welcome_msg = @message WHERE gid = @gid;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
@@ -279,15 +279,15 @@ namespace TheGodfather.Services
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
             } finally {
-                _sem.Release();
+                accessSemaphore.Release();
             }
         }
 
         public async Task SetLeaveChannelAsync(ulong gid, ulong cid)
         {
-            await _sem.WaitAsync();
+            await accessSemaphore.WaitAsync();
             try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var con = await OpenConnectionAsync())
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "UPDATE gf.guild_cfg SET leave_cid = @cid WHERE gid = @gid;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
@@ -296,15 +296,15 @@ namespace TheGodfather.Services
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
             } finally {
-                _sem.Release();
+                accessSemaphore.Release();
             }
         }
 
         public async Task SetLeaveMessageAsync(ulong gid, string message)
         {
-            await _sem.WaitAsync();
+            await accessSemaphore.WaitAsync();
             try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var con = await OpenConnectionAsync())
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "UPDATE gf.guild_cfg SET leave_msg = @message WHERE gid = @gid;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
@@ -316,7 +316,7 @@ namespace TheGodfather.Services
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
             } finally {
-                _sem.Release();
+                accessSemaphore.Release();
             }
         }
     }

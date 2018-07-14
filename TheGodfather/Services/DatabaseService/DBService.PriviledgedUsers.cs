@@ -7,15 +7,15 @@ using Npgsql;
 using NpgsqlTypes;
 #endregion
 
-namespace TheGodfather.Services
+namespace TheGodfather.Services.Database
 {
     public partial class DBService
     {
         public async Task AddPriviledgedUserAsync(ulong uid)
         {
-            await _sem.WaitAsync();
+            await accessSemaphore.WaitAsync();
             try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var con = await OpenConnectionAsync())
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "INSERT INTO gf.priviledged (uid) VALUES (@uid);";
                     cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
@@ -23,7 +23,7 @@ namespace TheGodfather.Services
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
             } finally {
-                _sem.Release();
+                accessSemaphore.Release();
             }
         }
 
@@ -31,9 +31,9 @@ namespace TheGodfather.Services
         {
             var priviledged = new List<ulong>();
 
-            await _sem.WaitAsync();
+            await accessSemaphore.WaitAsync();
             try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var con = await OpenConnectionAsync())
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "SELECT uid FROM gf.priviledged;";
 
@@ -43,7 +43,7 @@ namespace TheGodfather.Services
                     }
                 }
             } finally {
-                _sem.Release();
+                accessSemaphore.Release();
             }
 
             return priviledged.AsReadOnly();
@@ -51,9 +51,9 @@ namespace TheGodfather.Services
 
         public async Task<bool> IsPriviledgedUserAsync(ulong uid)
         {
-            await _sem.WaitAsync();
+            await accessSemaphore.WaitAsync();
             try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var con = await OpenConnectionAsync())
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "SELECT uid FROM gf.priviledged WHERE uid = @uid LIMIT 1;";
                     cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
@@ -63,7 +63,7 @@ namespace TheGodfather.Services
                         return true;
                 }
             } finally {
-                _sem.Release();
+                accessSemaphore.Release();
             }
 
             return false;
@@ -71,9 +71,9 @@ namespace TheGodfather.Services
 
         public async Task RemovePrivilegedUserAsync(ulong uid)
         {
-            await _sem.WaitAsync();
+            await accessSemaphore.WaitAsync();
             try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var con = await OpenConnectionAsync())
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "DELETE FROM gf.priviledged WHERE uid = @uid;";
                     cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
@@ -81,7 +81,7 @@ namespace TheGodfather.Services
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
             } finally {
-                _sem.Release();
+                accessSemaphore.Release();
             }
         }
     }

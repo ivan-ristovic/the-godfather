@@ -7,8 +7,8 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using TheGodfather.Extensions;
-using TheGodfather.Services;
 using TheGodfather.Services.Common;
+using TheGodfather.Services.Database;
 #endregion
 
 namespace TheGodfather.Common

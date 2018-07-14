@@ -9,15 +9,15 @@ using Npgsql;
 using NpgsqlTypes;
 #endregion
 
-namespace TheGodfather.Services
+namespace TheGodfather.Services.Database
 {
     public partial class DBService
     {
         public async Task AddItemToGuildShopAsync(ulong gid, string name, long price)
         {
-            await _sem.WaitAsync();
+            await accessSemaphore.WaitAsync();
             try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var con = await OpenConnectionAsync())
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "INSERT INTO gf.items (gid, name, price) VALUES (@gid, @name, @price) ON CONFLICT DO NOTHING;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
@@ -27,7 +27,7 @@ namespace TheGodfather.Services
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
             } finally {
-                _sem.Release();
+                accessSemaphore.Release();
             }
         }
 
@@ -35,9 +35,9 @@ namespace TheGodfather.Services
         {
             var blocked = new List<PurchasableItem>();
 
-            await _sem.WaitAsync();
+            await accessSemaphore.WaitAsync();
             try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var con = await OpenConnectionAsync())
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "SELECT * FROM gf.items ORDER BY gid;";
 
@@ -53,7 +53,7 @@ namespace TheGodfather.Services
                     }
                 }
             } finally {
-                _sem.Release();
+                accessSemaphore.Release();
             }
 
             return blocked.AsReadOnly();
@@ -63,9 +63,9 @@ namespace TheGodfather.Services
         {
             PurchasableItem item = null;
 
-            await _sem.WaitAsync();
+            await accessSemaphore.WaitAsync();
             try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var con = await OpenConnectionAsync())
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "SELECT * FROM gf.items WHERE id = @id AND gid = @gid LIMIT 1;";
                     cmd.Parameters.AddWithValue("id", NpgsqlDbType.Integer, id);
@@ -83,7 +83,7 @@ namespace TheGodfather.Services
                     }
                 }
             } finally {
-                _sem.Release();
+                accessSemaphore.Release();
             }
 
             return item;
@@ -93,9 +93,9 @@ namespace TheGodfather.Services
         {
             var items = new List<PurchasableItem>();
 
-            await _sem.WaitAsync();
+            await accessSemaphore.WaitAsync();
             try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var con = await OpenConnectionAsync())
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "SELECT * FROM gf.items WHERE gid = @gid ORDER BY price DESC;";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
@@ -112,7 +112,7 @@ namespace TheGodfather.Services
                     }
                 }
             } finally {
-                _sem.Release();
+                accessSemaphore.Release();
             }
 
             return items.AsReadOnly();
@@ -122,9 +122,9 @@ namespace TheGodfather.Services
         {
             var items = new List<PurchasableItem>();
 
-            await _sem.WaitAsync();
+            await accessSemaphore.WaitAsync();
             try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var con = await OpenConnectionAsync())
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "SELECT items.id, gid, name, price FROM gf.purchases JOIN gf.items ON purchases.id = items.id WHERE uid = @uid ORDER BY price DESC;";
                     cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
@@ -141,7 +141,7 @@ namespace TheGodfather.Services
                     }
                 }
             } finally {
-                _sem.Release();
+                accessSemaphore.Release();
             }
 
             return items.AsReadOnly();
@@ -149,9 +149,9 @@ namespace TheGodfather.Services
 
         public async Task<bool> IsItemPurchasedByUserAsync(ulong uid, int id)
         {
-            await _sem.WaitAsync();
+            await accessSemaphore.WaitAsync();
             try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var con = await OpenConnectionAsync())
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "SELECT * FROM gf.purchases WHERE id = @id AND uid = @uid LIMIT 1;";
                     cmd.Parameters.AddWithValue("id", NpgsqlDbType.Integer, id);
@@ -162,7 +162,7 @@ namespace TheGodfather.Services
                         return true;
                 }
             } finally {
-                _sem.Release();
+                accessSemaphore.Release();
             }
 
             return false;
@@ -170,9 +170,9 @@ namespace TheGodfather.Services
 
         public async Task RegisterPurchaseForItemAsync(ulong uid, int id)
         {
-            await _sem.WaitAsync();
+            await accessSemaphore.WaitAsync();
             try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var con = await OpenConnectionAsync())
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "INSERT INTO gf.purchases VALUES (@id, @uid) ON CONFLICT DO NOTHING;";
                     cmd.Parameters.AddWithValue("id", NpgsqlDbType.Integer, id);
@@ -181,15 +181,15 @@ namespace TheGodfather.Services
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
             } finally {
-                _sem.Release();
+                accessSemaphore.Release();
             }
         }
 
         public async Task RemoveItemFromGuildShopAsync(ulong gid, string name)
         {
-            await _sem.WaitAsync();
+            await accessSemaphore.WaitAsync();
             try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var con = await OpenConnectionAsync())
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "DELETE FROM gf.items WHERE gid = @gid AND name = @name;";
                     cmd.Parameters.AddWithValue("name", NpgsqlDbType.Varchar, name);
@@ -198,15 +198,15 @@ namespace TheGodfather.Services
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
             } finally {
-                _sem.Release();
+                accessSemaphore.Release();
             }
         }
 
         public async Task RemoveItemsFromGuildShopAsync(ulong gid, params int[] ids)
         {
-            await _sem.WaitAsync();
+            await accessSemaphore.WaitAsync();
             try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var con = await OpenConnectionAsync())
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "DELETE FROM gf.items WHERE gid = @gid AND id = ANY(:ids);";
                     cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
@@ -215,15 +215,15 @@ namespace TheGodfather.Services
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
             } finally {
-                _sem.Release();
+                accessSemaphore.Release();
             }
         }
 
         public async Task UnregisterPurchaseForItemAsync(ulong uid, int id)
         {
-            await _sem.WaitAsync();
+            await accessSemaphore.WaitAsync();
             try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var con = await OpenConnectionAsync())
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "DELETE FROM gf.purchases WHERE id = @id AND uid = @uid;";
                     cmd.Parameters.AddWithValue("id", NpgsqlDbType.Integer, id);
@@ -232,7 +232,7 @@ namespace TheGodfather.Services
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
             } finally {
-                _sem.Release();
+                accessSemaphore.Release();
             }
         }
     }

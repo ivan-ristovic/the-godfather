@@ -14,6 +14,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Interactivity;
 
 using Humanizer;
+using TheGodfather.Services.Database;
 #endregion
 
 namespace TheGodfather.Modules.Currency

@@ -13,6 +13,7 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
+using TheGodfather.Services.Database;
 #endregion
 
 namespace TheGodfather.Modules.Misc

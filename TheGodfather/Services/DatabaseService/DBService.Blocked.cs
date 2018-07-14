@@ -7,16 +7,16 @@ using Npgsql;
 using NpgsqlTypes;
 #endregion
 
-namespace TheGodfather.Services
+namespace TheGodfather.Services.Database
 {
     public partial class DBService
     {
         #region BLOCKED_USERS
         public async Task AddBlockedUserAsync(ulong uid, string reason = null)
         {
-            await _sem.WaitAsync();
+            await accessSemaphore.WaitAsync();
             try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var con = await OpenConnectionAsync())
                 using (var cmd = con.CreateCommand()) {
                     if (string.IsNullOrWhiteSpace(reason)) {
                         cmd.CommandText = "INSERT INTO gf.blocked_users VALUES (@uid, NULL);";
@@ -30,7 +30,7 @@ namespace TheGodfather.Services
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
             } finally {
-                _sem.Release();
+                accessSemaphore.Release();
             }
         }
 
@@ -38,9 +38,9 @@ namespace TheGodfather.Services
         {
             var blocked = new List<(ulong, string)>();
 
-            await _sem.WaitAsync();
+            await accessSemaphore.WaitAsync();
             try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var con = await OpenConnectionAsync())
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "SELECT * FROM gf.blocked_users;";
 
@@ -50,7 +50,7 @@ namespace TheGodfather.Services
                     }
                 }
             } finally {
-                _sem.Release();
+                accessSemaphore.Release();
             }
 
             return blocked.AsReadOnly();
@@ -58,9 +58,9 @@ namespace TheGodfather.Services
 
         public async Task RemoveBlockedUserAsync(ulong uid)
         {
-            await _sem.WaitAsync();
+            await accessSemaphore.WaitAsync();
             try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var con = await OpenConnectionAsync())
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "DELETE FROM gf.blocked_users WHERE uid = @uid;";
                     cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
@@ -68,7 +68,7 @@ namespace TheGodfather.Services
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
             } finally {
-                _sem.Release();
+                accessSemaphore.Release();
             }
         }
         #endregion
@@ -76,9 +76,9 @@ namespace TheGodfather.Services
         #region BLOCKED_CHANNELS
         public async Task AddBlockedChannelAsync(ulong cid, string reason = null)
         {
-            await _sem.WaitAsync();
+            await accessSemaphore.WaitAsync();
             try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var con = await OpenConnectionAsync())
                 using (var cmd = con.CreateCommand()) {
                     if (string.IsNullOrWhiteSpace(reason)) {
                         cmd.CommandText = "INSERT INTO gf.blocked_channels VALUES (@cid, NULL);";
@@ -92,7 +92,7 @@ namespace TheGodfather.Services
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
             } finally {
-                _sem.Release();
+                accessSemaphore.Release();
             }
         }
 
@@ -100,9 +100,9 @@ namespace TheGodfather.Services
         {
             var blocked = new List<(ulong, string)>();
 
-            await _sem.WaitAsync();
+            await accessSemaphore.WaitAsync();
             try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var con = await OpenConnectionAsync())
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "SELECT * FROM gf.blocked_channels;";
 
@@ -112,7 +112,7 @@ namespace TheGodfather.Services
                     }
                 }
             } finally {
-                _sem.Release();
+                accessSemaphore.Release();
             }
 
             return blocked.AsReadOnly();
@@ -120,9 +120,9 @@ namespace TheGodfather.Services
 
         public async Task RemoveBlockedChannelAsync(ulong cid)
         {
-            await _sem.WaitAsync();
+            await accessSemaphore.WaitAsync();
             try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var con = await OpenConnectionAsync())
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "DELETE FROM gf.blocked_channels WHERE cid = @cid;";
                     cmd.Parameters.AddWithValue("cid", NpgsqlDbType.Bigint, (long)cid);
@@ -130,7 +130,7 @@ namespace TheGodfather.Services
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
             } finally {
-                _sem.Release();
+                accessSemaphore.Release();
             }
         }
         #endregion

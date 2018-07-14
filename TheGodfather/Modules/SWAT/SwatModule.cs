@@ -16,6 +16,7 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using System.Collections.Concurrent;
+using TheGodfather.Services.Database;
 #endregion
 
 namespace TheGodfather.Modules.SWAT

@@ -10,7 +10,7 @@ using Npgsql;
 using NpgsqlTypes;
 #endregion
 
-namespace TheGodfather.Services
+namespace TheGodfather.Services.Database
 {
     public partial class DBService
     {
@@ -18,9 +18,9 @@ namespace TheGodfather.Services
         {
             int id = 0;
 
-            await _sem.WaitAsync();
+            await accessSemaphore.WaitAsync();
             try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var con = await OpenConnectionAsync())
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "INSERT INTO gf.saved_tasks(type, cid, uid, gid, execution_time, comment) VALUES (@type, @cid, @uid, @gid, @execution_time, @comment) RETURNING id;";
                     cmd.Parameters.AddWithValue("type", NpgsqlDbType.Smallint, (short)task.Type);
@@ -38,7 +38,7 @@ namespace TheGodfather.Services
                         id = (int)res;
                 }
             } finally {
-                _sem.Release();
+                accessSemaphore.Release();
             }
 
             return id;
@@ -48,9 +48,9 @@ namespace TheGodfather.Services
         {
             var tasks = new Dictionary<int, SavedTask>();
 
-            await _sem.WaitAsync();
+            await accessSemaphore.WaitAsync();
             try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var con = await OpenConnectionAsync())
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "SELECT * FROM gf.saved_tasks;";
 
@@ -71,7 +71,7 @@ namespace TheGodfather.Services
                     }
                 }
             } finally {
-                _sem.Release();
+                accessSemaphore.Release();
             }
 
             return new ReadOnlyDictionary<int, SavedTask>(tasks);
@@ -79,9 +79,9 @@ namespace TheGodfather.Services
 
         public async Task RemoveSavedTaskAsync(int id)
         {
-            await _sem.WaitAsync();
+            await accessSemaphore.WaitAsync();
             try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var con = await OpenConnectionAsync())
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "DELETE FROM gf.saved_tasks WHERE id = @id;";
                     cmd.Parameters.AddWithValue("id", NpgsqlDbType.Integer, id);
@@ -89,7 +89,7 @@ namespace TheGodfather.Services
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
             } finally {
-                _sem.Release();
+                accessSemaphore.Release();
             }
         }
     }

@@ -20,6 +20,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 
 using Humanizer;
+using TheGodfather.Services.Database;
 #endregion
 
 namespace TheGodfather.Modules.Misc

@@ -21,6 +21,7 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using TheGodfather.Services.Database;
 #endregion
 
 namespace TheGodfather.Modules.Owner
@@ -147,7 +148,7 @@ namespace TheGodfather.Modules.Owner
         [RequireOwner]
         [NotBlocked]
         public async Task DatabaseQuery(CommandContext ctx,
-                                        [RemainingText, Description("SQL Query.")] string query)
+                                       [RemainingText, Description("SQL Query.")] string query)
         {
             if (string.IsNullOrWhiteSpace(query))
                 throw new InvalidCommandUsageException("Query missing.");

@@ -11,7 +11,7 @@ using TheGodfather.Common.Collections;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Reactions.Common;
-using TheGodfather.Services;
+using TheGodfather.Services.Database;
 #endregion
 
 namespace TheGodfather

@@ -12,6 +12,7 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using TheGodfather.Modules.Chickens.Common;
+using TheGodfather.Services.Database;
 #endregion
 
 namespace TheGodfather.Modules.Chickens

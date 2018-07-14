@@ -9,7 +9,7 @@ using Npgsql;
 using NpgsqlTypes;
 #endregion
 
-namespace TheGodfather.Services
+namespace TheGodfather.Services.Database
 {
     public partial class DBService
     {
@@ -22,9 +22,9 @@ namespace TheGodfather.Services
 
         public async Task CloseBankAccountForUserAsync(ulong uid, ulong gid)
         {
-            await _sem.WaitAsync();
+            await accessSemaphore.WaitAsync();
             try {
-                using (var con = await OpenConnectionAndCreateCommandAsync()) 
+                using (var con = await OpenConnectionAsync()) 
                 using (var cmd = con.CreateCommand()) { 
                     cmd.CommandText = "DELETE FROM gf.accounts WHERE uid = @uid AND gid = @gid;";
                     cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
@@ -33,7 +33,7 @@ namespace TheGodfather.Services
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
             } finally {
-                _sem.Release();
+                accessSemaphore.Release();
             }
         }
 
@@ -51,9 +51,9 @@ namespace TheGodfather.Services
         {
             long? balance = null;
 
-            await _sem.WaitAsync();
+            await accessSemaphore.WaitAsync();
             try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var con = await OpenConnectionAsync())
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "SELECT balance FROM gf.accounts WHERE uid = @uid AND gid = @gid LIMIT 1;";
                     cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
@@ -64,7 +64,7 @@ namespace TheGodfather.Services
                         balance = (long)res;
                 }
             } finally {
-                _sem.Release();
+                accessSemaphore.Release();
             }
             
             return balance;
@@ -72,9 +72,9 @@ namespace TheGodfather.Services
 
         public async Task GiveCreditsToUserAsync(ulong uid, ulong gid, long amount)
         {
-            await _sem.WaitAsync();
+            await accessSemaphore.WaitAsync();
             try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var con = await OpenConnectionAsync())
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "UPDATE gf.accounts SET balance = balance + @amount WHERE uid = @uid AND gid = @gid;";
                     cmd.Parameters.AddWithValue("amount", NpgsqlDbType.Bigint, (long)amount);
@@ -84,15 +84,15 @@ namespace TheGodfather.Services
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
             } finally {
-                _sem.Release();
+                accessSemaphore.Release();
             }
         }
 
         public async Task OpenBankAccountForUserAsync(ulong uid, ulong gid)
         {
-            await _sem.WaitAsync();
+            await accessSemaphore.WaitAsync();
             try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var con = await OpenConnectionAsync())
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "INSERT INTO gf.accounts(uid, gid, balance) VALUES(@uid, @gid, 10000);";
                     cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
@@ -101,7 +101,7 @@ namespace TheGodfather.Services
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
             } finally {
-                _sem.Release();
+                accessSemaphore.Release();
             }
         }
 
@@ -112,9 +112,9 @@ namespace TheGodfather.Services
             if (!balance.HasValue || balance.Value < amount)
                 return false;
 
-            await _sem.WaitAsync();
+            await accessSemaphore.WaitAsync();
             try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var con = await OpenConnectionAsync())
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "UPDATE gf.accounts SET balance = balance - @amount WHERE uid = @uid AND gid = @gid;";
                     cmd.Parameters.AddWithValue("amount", NpgsqlDbType.Bigint, amount);
@@ -124,7 +124,7 @@ namespace TheGodfather.Services
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
             } finally {
-                _sem.Release();
+                accessSemaphore.Release();
             }
 
             return true;
@@ -132,9 +132,9 @@ namespace TheGodfather.Services
 
         public async Task TransferCreditsAsync(ulong source, ulong target, ulong gid, long amount)
         {
-            await _sem.WaitAsync();
+            await accessSemaphore.WaitAsync();
             try {
-                using (var con = new NpgsqlConnection(_connectionString)) {
+                using (var con = new NpgsqlConnection(connectionString)) {
                     await con.OpenAsync().ConfigureAwait(false);
 
                     using (var cmd = con.CreateCommand()) {
@@ -148,7 +148,7 @@ namespace TheGodfather.Services
                             await OpenBankAccountForUserAsync(target, gid);
                     }
 
-                    await _tsem.WaitAsync().ConfigureAwait(false);
+                    await transactionSemaphore.WaitAsync().ConfigureAwait(false);
                     try {
                         using (var transaction = con.BeginTransaction()) {
                             var cmd1 = con.CreateCommand();
@@ -198,26 +198,26 @@ namespace TheGodfather.Services
                             cmd4.Dispose();
                         }
                     } finally {
-                        _tsem.Release();
+                        transactionSemaphore.Release();
                     }
                 }
             } finally {
-                _sem.Release();
+                accessSemaphore.Release();
             }
         }
 
         public async Task UpdateBankAccountsAsync()
         {
-            await _sem.WaitAsync();
+            await accessSemaphore.WaitAsync();
             try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
+                using (var con = await OpenConnectionAsync())
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "UPDATE gf.accounts SET balance = GREATEST(CEILING(1.0015 * balance), 10);";
 
                     await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
                 }
             } finally {
-                _sem.Release();
+                accessSemaphore.Release();
             }
         }
     }

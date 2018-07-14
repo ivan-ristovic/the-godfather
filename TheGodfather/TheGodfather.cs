@@ -17,6 +17,7 @@ using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Reactions.Common;
 using TheGodfather.Services;
 using TheGodfather.Services.Common;
+using TheGodfather.Services.Database;
 #endregion
 
 namespace TheGodfather
@@ -277,15 +278,11 @@ namespace TheGodfather
             await Shards[0].Client.UpdateStatusAsync(activity);
         }
 
-        private static async Task DatabaseSyncCallbackAsync()
-        {
-            await SharedData.SyncDataWithDatabaseAsync(DatabaseService);
-        }
+        private static Task DatabaseSyncCallbackAsync()
+            => SharedData.SyncDataWithDatabaseAsync(DatabaseService);
 
-        private static async Task FeedCheckCallbackAsync()
-        {
-            await RssService.CheckFeedsForChangesAsync(Shards[0].Client, DatabaseService);
-        }
+        private static Task FeedCheckCallbackAsync() 
+            => RssService.CheckFeedsForChangesAsync(Shards[0].Client, DatabaseService);
 
         private static async Task MiscellaneousActionsCallbackAsync()
         {
