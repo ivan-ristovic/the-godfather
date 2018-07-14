@@ -20,10 +20,10 @@ namespace TheGodfather.Modules.Search
     [UsageExamples("!youtube never gonna give you up")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     [NotBlocked]
-    public class YoutubeModule : TheGodfatherServiceModule<YoutubeService>
+    public class YoutubeModule : TheGodfatherServiceModule<YtService>
     {
 
-        public YoutubeModule(YoutubeService yt, DBService db) : base(yt, db: db) { }
+        public YoutubeModule(YtService yt, DBService db) : base(yt, db: db) { }
 
 
         [GroupCommand]
@@ -87,13 +87,13 @@ namespace TheGodfather.Modules.Search
             if (string.IsNullOrWhiteSpace(url))
                 throw new InvalidCommandUsageException("Channel URL missing.");
 
-            var chid = await _Service.GetYoutubeIdAsync(url)
+            var chid = await _Service.ExtractChannelIdAsync(url)
                 .ConfigureAwait(false);
 
             if (chid == null)
                 throw new CommandFailedException("Failed retrieving channel ID for that URL.");
 
-            var feedurl = YoutubeService.GetYoutubeRSSFeedLinkForChannelId(chid);
+            var feedurl = YtService.GetRssUrlForChannel(chid);
             if (await Database.AddSubscriptionAsync(ctx.Channel.Id, feedurl, string.IsNullOrWhiteSpace(name) ? url : name).ConfigureAwait(false))
                 await ctx.InformSuccessAsync("Subscribed!").ConfigureAwait(false);
             else
@@ -117,10 +117,10 @@ namespace TheGodfather.Modules.Search
             await Database.RemoveSubscriptionByNameAsync(ctx.Channel.Id, name_url)
                 .ConfigureAwait(false);
 
-            var chid = await _Service.GetYoutubeIdAsync(name_url)
+            var chid = await _Service.ExtractChannelIdAsync(name_url)
                 .ConfigureAwait(false);
             if (chid != null) {
-                var feedurl = YoutubeService.GetYoutubeRSSFeedLinkForChannelId(chid);
+                var feedurl = YtService.GetRssUrlForChannel(chid);
                 await Database.RemoveSubscriptionByUrlAsync(ctx.Channel.Id, feedurl)
                     .ConfigureAwait(false);
             }
@@ -140,7 +140,7 @@ namespace TheGodfather.Modules.Search
             if (amount < 1 || amount > 10)
                 throw new CommandFailedException("Invalid amount (must be 1-10).");
 
-            var pages = await _Service.GetPaginatedResults(query, amount, type)
+            var pages = await _Service.GetPaginatedResultsAsync(query, amount, type)
                 .ConfigureAwait(false);
             if (pages == null) {
                 await ctx.InformFailureAsync("No results found!")

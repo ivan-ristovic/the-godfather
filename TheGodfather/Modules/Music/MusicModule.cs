@@ -22,12 +22,12 @@ namespace TheGodfather.Modules.Music
     [RequirePermissions(Permissions.UseVoice)]
     [NotBlocked]
     [RequireOwner]
-    public partial class MusicModule : TheGodfatherServiceModule<YoutubeService>
+    public partial class MusicModule : TheGodfatherServiceModule<YtService>
     {
         public static ConcurrentDictionary<ulong, MusicPlayer> MusicPlayers { get; } = new ConcurrentDictionary<ulong, MusicPlayer>();
 
 
-        public MusicModule(YoutubeService yt, SharedData shared) : base(yt, shared) { }
+        public MusicModule(YtService yt, SharedData shared) : base(yt, shared) { }
 
 
         #region COMMAND_CONNECT

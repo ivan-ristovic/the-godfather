@@ -61,7 +61,8 @@ namespace TheGodfather.EventListeners
 
             if (ex is CommandNotFoundException cne) {
                 if (shard.SharedData.GuildConfigurations[e.Context.Guild.Id].SuggestionsEnabled) {
-                    emb.WithTitle($"Command {Formatter.Bold(cne.CommandName)} not found. Did you mean...");
+                    sb.Clear();
+                    sb.AppendLine(Formatter.Bold($"Command {Formatter.InlineCode(cne.CommandName)} not found. Did you mean..."));
                     var ordered = TheGodfatherShard.Commands
                         .OrderBy(tup => cne.CommandName.LevenshteinDistance(tup.Item1))
                         .Take(3);

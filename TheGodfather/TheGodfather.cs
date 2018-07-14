@@ -23,6 +23,7 @@ namespace TheGodfather
 {
     internal static class TheGodfather
     {
+        public static readonly string ApplicationName = "TheGodfather";
         public static IReadOnlyList<TheGodfatherShard> ActiveShards
             => Shards.AsReadOnly();
         private static BotConfig BotConfiguration { get; set; }

@@ -20,7 +20,7 @@ namespace TheGodfather.Common.Attributes
                     return Task.FromResult(false);
 
                 if (!help) {
-                    ctx.Client.DebugLogger.LogMessage(LogLevel.Debug, "TheGodfather",
+                    ctx.Client.DebugLogger.LogMessage(LogLevel.Debug, TheGodfather.ApplicationName,
                         $"| Executing: {ctx.Command?.QualifiedName ?? "<unknown command>"}\n" + 
                         $"| {ctx.User.ToString()}\n" +
                         $"| {ctx.Guild.ToString()} ; {ctx.Channel.ToString()}\n" +

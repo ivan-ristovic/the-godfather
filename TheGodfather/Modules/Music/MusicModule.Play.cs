@@ -29,7 +29,7 @@ namespace TheGodfather.Modules.Music
         public class PlayModule : MusicModule
         {
 
-            public PlayModule(YoutubeService yt, SharedData shared) : base(yt, shared) { }
+            public PlayModule(YtService yt, SharedData shared) : base(yt, shared) { }
 
 
             [GroupCommand, Priority(1)]

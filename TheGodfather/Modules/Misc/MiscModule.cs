@@ -339,7 +339,7 @@ namespace TheGodfather.Modules.Misc
         #region COMMAND_RATE
         [Command("rate"), Module(ModuleType.Miscellaneous)]
         [Description("Gives a rating chart for the user. If the user is not provided, rates sender.")]
-        [Aliases("score", "graph")]
+        [Aliases("score", "graph", "rating")]
         [UsageExamples("!rate @Someone")]
         [RequireBotPermissions(Permissions.AttachFiles)]
         public async Task RateAsync(CommandContext ctx,

@@ -11,6 +11,16 @@ namespace TheGodfather.Services
 {
     public class WeatherService : TheGodfatherHttpService
     {
+        private readonly string url = "http://api.openweathermap.org/data/2.5";
+        private readonly string key;
+
+
+        public WeatherService(string key)
+        {
+            this.key = key;
+        }
+
+
         public static string GetCityUrl(City city)
         {
             if (city == null)
@@ -25,16 +35,6 @@ namespace TheGodfather.Services
                 throw new ArgumentException("Weather missing", "weather");
 
             return $"http://openweathermap.org/img/w/{ weather.Icon }.png";
-        }
-
-
-        private readonly string url = "http://api.openweathermap.org/data/2.5";
-        private readonly string key;
-
-
-        public WeatherService(string key)
-        {
-            this.key = key;
         }
 
 

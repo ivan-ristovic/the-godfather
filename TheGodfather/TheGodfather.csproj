@@ -536,7 +536,6 @@
     <Compile Include="Modules\Search\WeatherModule.cs" />
     <Compile Include="Modules\SWAT\SwatModule.Servers.cs" />
     <Compile Include="Services\Common\XkcdComic.cs" />
-    <Compile Include="Services\Common\YouTubeResponse.cs" />
     <Compile Include="Services\DatabaseService\DBService.Birthdays.cs" />
     <Compile Include="Services\DatabaseService\DBService.PriviledgedUsers.cs" />
     <Compile Include="Services\DatabaseService\DBService.SavedTasks.cs" />
@@ -615,7 +614,7 @@
     <Compile Include="Services\JokesService.cs" />
     <Compile Include="Services\SteamService.cs" />
     <Compile Include="Services\UrbanDictService.cs" />
-    <Compile Include="Services\YoutubeService.cs" />
+    <Compile Include="Services\YtService.cs" />
     <Compile Include="SharedData.cs" />
     <Compile Include="TheGodfatherShard.cs" />
   </ItemGroup>
