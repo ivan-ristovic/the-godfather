@@ -83,6 +83,14 @@ namespace TheGodfather.Services.Database
                 cmd.CommandText = "SELECT uid, cid, bday, last_updated FROM gf.birthdays;";
                 await cmd.ExecuteScalarAsync().ConfigureAwait(false);
             });
+            await ExecuteCommandAsync(async (cmd) => {
+                cmd.CommandText = "SELECT cid, reason FROM gf.blocked_channels;";
+                await cmd.ExecuteScalarAsync().ConfigureAwait(false);
+            });
+            await ExecuteCommandAsync(async (cmd) => {
+                cmd.CommandText = "SELECT uid, reason FROM gf.blocked_users;";
+                await cmd.ExecuteScalarAsync().ConfigureAwait(false);
+            });
         }
 
         public async Task<IReadOnlyList<IReadOnlyDictionary<string, string>>> ExecuteRawQueryAsync(string query)

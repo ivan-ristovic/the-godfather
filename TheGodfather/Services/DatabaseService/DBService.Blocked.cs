@@ -1,138 +1,96 @@
 ﻿#region USING_DIRECTIVES
+using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-
-using Npgsql;
-using NpgsqlTypes;
 #endregion
 
-namespace TheGodfather.Services.Database
+namespace TheGodfather.Services.Database.Blocked
 {
-    public partial class DBService
+    public static class DBServiceBlockedExtensions
     {
-        #region BLOCKED_USERS
-        public async Task AddBlockedUserAsync(ulong uid, string reason = null)
+        public static async Task AddBlockedChannelAsync(this DBService db, ulong cid, string reason = null)
         {
-            await accessSemaphore.WaitAsync();
-            try {
-                using (var con = await OpenConnectionAsync())
-                using (var cmd = con.CreateCommand()) {
-                    if (string.IsNullOrWhiteSpace(reason)) {
-                        cmd.CommandText = "INSERT INTO gf.blocked_users VALUES (@uid, NULL);";
-                        cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
-                    } else {
-                        cmd.CommandText = "INSERT INTO gf.blocked_users VALUES (@uid, @reason);";
-                        cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
-                        cmd.Parameters.AddWithValue("reason", NpgsqlDbType.Varchar, reason);
-                    }
-
-                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+            await db.ExecuteCommandAsync(async (cmd) => {
+                if (string.IsNullOrWhiteSpace(reason)) {
+                    cmd.CommandText = "INSERT INTO gf.blocked_channels VALUES (@cid, NULL);";
+                    cmd.Parameters.Add(new NpgsqlParameter("cid", (long)cid));
+                } else {
+                    cmd.CommandText = "INSERT INTO gf.blocked_channels VALUES (@cid, @reason);";
+                    cmd.Parameters.Add(new NpgsqlParameter("cid", (long)cid));
+                    cmd.Parameters.Add(new NpgsqlParameter("reason", reason));
                 }
-            } finally {
-                accessSemaphore.Release();
-            }
+
+                await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+            });
         }
 
-        public async Task<IReadOnlyList<(ulong, string)>> GetAllBlockedUsersAsync()
+        public static async Task AddBlockedUserAsync(this DBService db, ulong uid, string reason = null)
+        {
+            await db.ExecuteCommandAsync(async (cmd) => {
+                if (string.IsNullOrWhiteSpace(reason)) {
+                    cmd.CommandText = "INSERT INTO gf.blocked_users VALUES (@uid, NULL);";
+                    cmd.Parameters.Add(new NpgsqlParameter("uid", (long)uid));
+                } else {
+                    cmd.CommandText = "INSERT INTO gf.blocked_users VALUES (@uid, @reason);";
+                    cmd.Parameters.Add(new NpgsqlParameter("uid", (long)uid));
+                    cmd.Parameters.Add(new NpgsqlParameter("reason", reason));
+                }
+
+                await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+            });
+        }
+
+        public static async Task<IReadOnlyList<(ulong, string)>> GetAllBlockedChannelsAsync(this DBService db)
         {
             var blocked = new List<(ulong, string)>();
 
-            await accessSemaphore.WaitAsync();
-            try {
-                using (var con = await OpenConnectionAsync())
-                using (var cmd = con.CreateCommand()) {
-                    cmd.CommandText = "SELECT * FROM gf.blocked_users;";
+            await db.ExecuteCommandAsync(async (cmd) => {
+                cmd.CommandText = "SELECT cid, reason FROM gf.blocked_channels;";
 
-                    using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
-                        while (await reader.ReadAsync().ConfigureAwait(false))
-                            blocked.Add(((ulong)(long)reader["uid"], reader["reason"] is DBNull ? null : (string)reader["reason"]));
-                    }
+                using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
+                    while (await reader.ReadAsync().ConfigureAwait(false))
+                        blocked.Add(((ulong)(long)reader["cid"], reader["reason"] is DBNull ? null : (string)reader["reason"]));
                 }
-            } finally {
-                accessSemaphore.Release();
-            }
+            });
 
             return blocked.AsReadOnly();
         }
 
-        public async Task RemoveBlockedUserAsync(ulong uid)
-        {
-            await accessSemaphore.WaitAsync();
-            try {
-                using (var con = await OpenConnectionAsync())
-                using (var cmd = con.CreateCommand()) {
-                    cmd.CommandText = "DELETE FROM gf.blocked_users WHERE uid = @uid;";
-                    cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
-
-                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
-                }
-            } finally {
-                accessSemaphore.Release();
-            }
-        }
-        #endregion
-
-        #region BLOCKED_CHANNELS
-        public async Task AddBlockedChannelAsync(ulong cid, string reason = null)
-        {
-            await accessSemaphore.WaitAsync();
-            try {
-                using (var con = await OpenConnectionAsync())
-                using (var cmd = con.CreateCommand()) {
-                    if (string.IsNullOrWhiteSpace(reason)) {
-                        cmd.CommandText = "INSERT INTO gf.blocked_channels VALUES (@cid, NULL);";
-                        cmd.Parameters.AddWithValue("cid", NpgsqlDbType.Bigint, (long)cid);
-                    } else {
-                        cmd.CommandText = "INSERT INTO gf.blocked_channels VALUES (@cid, @reason);";
-                        cmd.Parameters.AddWithValue("cid", NpgsqlDbType.Bigint, (long)cid);
-                        cmd.Parameters.AddWithValue("reason", NpgsqlDbType.Varchar, reason);
-                    }
-
-                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
-                }
-            } finally {
-                accessSemaphore.Release();
-            }
-        }
-
-        public async Task<IReadOnlyList<(ulong, string)>> GetAllBlockedChannelsAsync()
+        public static async Task<IReadOnlyList<(ulong, string)>> GetAllBlockedUsersAsync(this DBService db)
         {
             var blocked = new List<(ulong, string)>();
 
-            await accessSemaphore.WaitAsync();
-            try {
-                using (var con = await OpenConnectionAsync())
-                using (var cmd = con.CreateCommand()) {
-                    cmd.CommandText = "SELECT * FROM gf.blocked_channels;";
+            await db.ExecuteCommandAsync(async (cmd) => {
+                cmd.CommandText = "SELECT uid, reason FROM gf.blocked_users;";
 
-                    using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
-                        while (await reader.ReadAsync().ConfigureAwait(false))
-                            blocked.Add(((ulong)(long)reader["cid"], reader["reason"] is DBNull ? null : (string)reader["reason"]));
-                    }
+                using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
+                    while (await reader.ReadAsync().ConfigureAwait(false))
+                        blocked.Add(((ulong)(long)reader["cid"], reader["reason"] is DBNull ? null : (string)reader["reason"]));
                 }
-            } finally {
-                accessSemaphore.Release();
-            }
+            });
 
             return blocked.AsReadOnly();
         }
 
-        public async Task RemoveBlockedChannelAsync(ulong cid)
+        public static async Task RemoveBlockedChannelAsync(this DBService db, ulong cid)
         {
-            await accessSemaphore.WaitAsync();
-            try {
-                using (var con = await OpenConnectionAsync())
-                using (var cmd = con.CreateCommand()) {
-                    cmd.CommandText = "DELETE FROM gf.blocked_channels WHERE cid = @cid;";
-                    cmd.Parameters.AddWithValue("cid", NpgsqlDbType.Bigint, (long)cid);
+            await db.ExecuteCommandAsync(async (cmd) => {
+                cmd.CommandText = "DELETE FROM gf.blocked_channels WHERE cid = @cid;";
+                cmd.Parameters.Add(new NpgsqlParameter("cid", (long)cid));
 
-                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
-                }
-            } finally {
-                accessSemaphore.Release();
-            }
+                await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+            });
         }
-        #endregion
+
+        public static async Task RemoveBlockedUserAsync(this DBService db, ulong uid)
+        {
+            await db.ExecuteCommandAsync(async (cmd) => {
+                cmd.CommandText = "DELETE FROM gf.blocked_users WHERE uid = @uid;";
+                cmd.Parameters.Add(new NpgsqlParameter("uid", (long)uid));
+
+                await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+            });
+        }
     }
 }
