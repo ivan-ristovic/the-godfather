@@ -19,6 +19,7 @@ using TheGodfather.Services;
 using TheGodfather.Services.Common;
 using TheGodfather.Services.Database;
 using TheGodfather.Services.Database.Bank;
+using TheGodfather.Services.Database.Birthdays;
 #endregion
 
 namespace TheGodfather
@@ -61,6 +62,8 @@ namespace TheGodfather
                 await DisposeAsync();
             } catch (Exception e) {
                 Console.WriteLine($"\nException occured: {e.GetType()} :\n{e.Message}");
+                if (e.InnerException != null)
+                    Console.WriteLine($"Inner exception: {e.InnerException.GetType()} :\n{e.InnerException.Message}");
             }
             Console.WriteLine("\nPress any key to exit...");
             Console.ReadKey();
