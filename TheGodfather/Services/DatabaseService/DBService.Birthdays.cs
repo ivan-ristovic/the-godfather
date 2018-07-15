@@ -11,15 +11,15 @@ namespace TheGodfather.Services.Database.Birthdays
 {
     public static class DBServiceBirthdaysExtensions
     {
-        public static async Task AddBirthdayAsync(this DBService db, ulong uid, ulong cid, DateTime? date = null)
+        public static Task AddBirthdayAsync(this DBService db, ulong uid, ulong cid, DateTime? date = null)
         {
-            await db.ExecuteCommandAsync(async (cmd) => {
+            return db.ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "INSERT INTO gf.birthdays VALUES (@uid, @cid, @date, date_part('year', CURRENT_DATE)) ON CONFLICT DO NOTHING;";
                 cmd.Parameters.Add(new NpgsqlParameter("uid", (long)uid));
                 cmd.Parameters.Add(new NpgsqlParameter("cid", (long)cid));
                 cmd.Parameters.AddWithValue("date", NpgsqlDbType.Date, date?.Date ?? DateTime.UtcNow.Date);
 
-                await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                return cmd.ExecuteNonQueryAsync();
             });
         }
 
@@ -67,24 +67,24 @@ namespace TheGodfather.Services.Database.Birthdays
             return birthdays.AsReadOnly();
         }
 
-        public static async Task RemoveBirthdayAsync(this DBService db, ulong uid)
+        public static Task RemoveBirthdayAsync(this DBService db, ulong uid)
         {
-            await db.ExecuteCommandAsync(async (cmd) => {
+            return db.ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "DELETE FROM gf.birthdays WHERE uid = @uid;";
                 cmd.Parameters.Add(new NpgsqlParameter("uid", (long)uid));
 
-                await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                return cmd.ExecuteNonQueryAsync();
             });
         }
 
-        public static async Task UpdateBirthdayLastNotifiedDateAsync(this DBService db, ulong uid, ulong cid)
+        public static Task UpdateBirthdayLastNotifiedDateAsync(this DBService db, ulong uid, ulong cid)
         {
-            await db.ExecuteCommandAsync(async (cmd) => {
+            return db.ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "UPDATE gf.birthdays SET last_updated = date_part('year', CURRENT_DATE) WHERE uid = @uid AND cid = @cid;";
                 cmd.Parameters.Add(new NpgsqlParameter("uid", (long)uid));
                 cmd.Parameters.Add(new NpgsqlParameter("cid", (long)cid));
 
-                await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                return cmd.ExecuteNonQueryAsync();
             });
         }
     }

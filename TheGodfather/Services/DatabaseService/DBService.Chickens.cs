@@ -9,9 +9,9 @@ namespace TheGodfather.Services.Database.Chickens
 {
     public static class DBServiceChickenExtensions
     {
-        public static async Task AddChickenAsync(this DBService db, ulong uid, ulong gid, string name, ChickenStats stats)
+        public static Task AddChickenAsync(this DBService db, ulong uid, ulong gid, string name, ChickenStats stats)
         {
-            await db.ExecuteCommandAsync(async (cmd) => {
+            return db.ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "INSERT INTO gf.chickens(uid, gid, name, strength, vitality, max_vitality) VALUES (@uid, @gid, @name, @strength, @vitality, @max_vitality) ON CONFLICT DO NOTHING;";
                 cmd.Parameters.Add(new NpgsqlParameter("uid", (long)uid));
                 cmd.Parameters.Add(new NpgsqlParameter("gid", (long)gid));
@@ -23,29 +23,29 @@ namespace TheGodfather.Services.Database.Chickens
                 else
                     cmd.Parameters.Add(new NpgsqlParameter("name", name));
 
-                await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                return cmd.ExecuteNonQueryAsync();
             });
         }
 
-        public static async Task AddChickenUpgradeAsync(this DBService db, ulong uid, ulong gid, ChickenUpgrade upgrade)
+        public static Task AddChickenUpgradeAsync(this DBService db, ulong uid, ulong gid, ChickenUpgrade upgrade)
         {
-            await db.ExecuteCommandAsync(async (cmd) => {
+            return db.ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "INSERT INTO gf.chicken_active_upgrades VALUES (@uid, @gid, @wid) ON CONFLICT DO NOTHING;";
                 cmd.Parameters.Add(new NpgsqlParameter("uid", (long)uid));
                 cmd.Parameters.Add(new NpgsqlParameter("gid", (long)gid));
                 cmd.Parameters.Add(new NpgsqlParameter("wid", upgrade.Id));
 
-                await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                return cmd.ExecuteNonQueryAsync();
             });
         }
 
-        public static async Task FilterChickensByVitalityAsync(this DBService db, ulong gid, int threshold)
+        public static Task FilterChickensByVitalityAsync(this DBService db, ulong gid, int threshold)
         {
-            await db.ExecuteCommandAsync(async (cmd) => {
+            return db.ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "DELETE FROM gf.chickens WHERE gid = @gid AND vitality <= @threshold;";
                 cmd.Parameters.Add(new NpgsqlParameter("gid", (long)gid));
 
-                await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                return cmd.ExecuteNonQueryAsync();
             });
         }
 
@@ -183,9 +183,9 @@ namespace TheGodfather.Services.Database.Chickens
             return upgrades.AsReadOnly();
         }
 
-        public static async Task ModifyChickenAsync(this DBService db, Chicken chicken, ulong gid)
+        public static Task ModifyChickenAsync(this DBService db, Chicken chicken, ulong gid)
         {
-            await db.ExecuteCommandAsync(async (cmd) => {
+            return db.ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "UPDATE gf.chickens SET (name, strength, vitality, max_vitality) = (@name, @strength, @vitality, @max_vitality) WHERE uid = @uid AND gid = @gid;";
                 cmd.Parameters.Add(new NpgsqlParameter("uid", (long)chicken.OwnerId));
                 cmd.Parameters.Add(new NpgsqlParameter("gid", (long)gid));
@@ -194,18 +194,18 @@ namespace TheGodfather.Services.Database.Chickens
                 cmd.Parameters.Add(new NpgsqlParameter("vitality", chicken.Stats.BareVitality));
                 cmd.Parameters.Add(new NpgsqlParameter("max_vitality", chicken.Stats.BareMaxVitality));
 
-                await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                return cmd.ExecuteNonQueryAsync();
             });
         }
 
-        public static async Task RemoveChickenAsync(this DBService db, ulong uid, ulong gid)
+        public static Task RemoveChickenAsync(this DBService db, ulong uid, ulong gid)
         {
-            await db.ExecuteCommandAsync(async (cmd) => {
+            return db.ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "DELETE FROM gf.chickens WHERE uid = @uid AND gid = @gid;";
                 cmd.Parameters.Add(new NpgsqlParameter("uid", (long)uid));
                 cmd.Parameters.Add(new NpgsqlParameter("gid", (long)gid));
 
-                await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                return cmd.ExecuteNonQueryAsync();
             });
         }
     }

@@ -45,11 +45,11 @@ namespace TheGodfather.Services.Database
 
         public async Task ExecuteCommandAsync(Func<NpgsqlCommand, Task> action)
         {
-            await this.accessSemaphore.WaitAsync();
+            await this.accessSemaphore.WaitAsync().ConfigureAwait(false);
             try {
                 using (var con = await OpenConnectionAsync())
                 using (var cmd = con.CreateCommand())
-                    await action(cmd);
+                    await action(cmd).ConfigureAwait(false);
             } catch (NpgsqlException e) {
                 throw new DatabaseOperationException("Database operation failed!", e);
             } finally {

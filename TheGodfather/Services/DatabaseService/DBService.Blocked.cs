@@ -9,9 +9,9 @@ namespace TheGodfather.Services.Database.Blocked
 {
     public static class DBServiceBlockedExtensions
     {
-        public static async Task AddBlockedChannelAsync(this DBService db, ulong cid, string reason = null)
+        public static Task AddBlockedChannelAsync(this DBService db, ulong cid, string reason = null)
         {
-            await db.ExecuteCommandAsync(async (cmd) => {
+            return db.ExecuteCommandAsync(cmd => {
                 if (string.IsNullOrWhiteSpace(reason)) {
                     cmd.CommandText = "INSERT INTO gf.blocked_channels VALUES (@cid, NULL);";
                     cmd.Parameters.Add(new NpgsqlParameter("cid", (long)cid));
@@ -21,13 +21,13 @@ namespace TheGodfather.Services.Database.Blocked
                     cmd.Parameters.Add(new NpgsqlParameter("reason", reason));
                 }
 
-                await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                return cmd.ExecuteNonQueryAsync();
             });
         }
 
-        public static async Task AddBlockedUserAsync(this DBService db, ulong uid, string reason = null)
+        public static Task AddBlockedUserAsync(this DBService db, ulong uid, string reason = null)
         {
-            await db.ExecuteCommandAsync(async (cmd) => {
+            return db.ExecuteCommandAsync(cmd => {
                 if (string.IsNullOrWhiteSpace(reason)) {
                     cmd.CommandText = "INSERT INTO gf.blocked_users VALUES (@uid, NULL);";
                     cmd.Parameters.Add(new NpgsqlParameter("uid", (long)uid));
@@ -37,7 +37,7 @@ namespace TheGodfather.Services.Database.Blocked
                     cmd.Parameters.Add(new NpgsqlParameter("reason", reason));
                 }
 
-                await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                return cmd.ExecuteNonQueryAsync();
             });
         }
 
@@ -73,23 +73,23 @@ namespace TheGodfather.Services.Database.Blocked
             return blocked.AsReadOnly();
         }
 
-        public static async Task RemoveBlockedChannelAsync(this DBService db, ulong cid)
+        public static Task RemoveBlockedChannelAsync(this DBService db, ulong cid)
         {
-            await db.ExecuteCommandAsync(async (cmd) => {
+            return db.ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "DELETE FROM gf.blocked_channels WHERE cid = @cid;";
                 cmd.Parameters.Add(new NpgsqlParameter("cid", (long)cid));
 
-                await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                return cmd.ExecuteNonQueryAsync();
             });
         }
 
-        public static async Task RemoveBlockedUserAsync(this DBService db, ulong uid)
+        public static Task RemoveBlockedUserAsync(this DBService db, ulong uid)
         {
-            await db.ExecuteCommandAsync(async (cmd) => {
+            return db.ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "DELETE FROM gf.blocked_users WHERE uid = @uid;";
                 cmd.Parameters.Add(new NpgsqlParameter("uid", (long)uid));
 
-                await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                return cmd.ExecuteNonQueryAsync();
             });
         }
     }

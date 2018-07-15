@@ -11,23 +11,23 @@ namespace TheGodfather.Services.Database.Bank
 {
     public static class DBServiceBankExtensions
     {
-        public static async Task BulkIncreaseAllBankAccountsAsync(this DBService db)
+        public static Task BulkIncreaseAllBankAccountsAsync(this DBService db)
         {
-            await db.ExecuteCommandAsync(async (cmd) => {
+            return db.ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "UPDATE gf.accounts SET balance = GREATEST(CEILING(1.0015 * balance), 10);";
 
-                await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                return cmd.ExecuteNonQueryAsync();
             });
         }
 
-        public static async Task CloseBankAccountAsync(this DBService db, ulong uid, ulong gid)
+        public static Task CloseBankAccountAsync(this DBService db, ulong uid, ulong gid)
         {
-            await db.ExecuteCommandAsync(async (cmd) => {
+            return db.ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "DELETE FROM gf.accounts WHERE uid = @uid AND gid = @gid;";
                 cmd.Parameters.Add(new NpgsqlParameter("uid", (long)uid));
                 cmd.Parameters.Add(new NpgsqlParameter("gid", (long)gid));
 
-                await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                return cmd.ExecuteNonQueryAsync();
             });
         }
 
@@ -37,13 +37,13 @@ namespace TheGodfather.Services.Database.Bank
             if (!balance.HasValue || balance.Value < amount)
                 return false;
 
-            await db.ExecuteCommandAsync(async (cmd) => {
+            await db.ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "UPDATE gf.accounts SET balance = balance - @amount WHERE uid = @uid AND gid = @gid;";
                 cmd.Parameters.Add(new NpgsqlParameter("amount", amount));
                 cmd.Parameters.Add(new NpgsqlParameter("uid", (long)uid));
                 cmd.Parameters.Add(new NpgsqlParameter("gid", (long)gid));
 
-                await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                return cmd.ExecuteNonQueryAsync();
             });
 
             return true;
@@ -84,26 +84,26 @@ namespace TheGodfather.Services.Database.Bank
             return balance.HasValue;
         }
 
-        public static async Task IncreaseBankAccountBalanceAsync(this DBService db, ulong uid, ulong gid, long amount)
+        public static Task IncreaseBankAccountBalanceAsync(this DBService db, ulong uid, ulong gid, long amount)
         {
-            await db.ExecuteCommandAsync(async (cmd) => {
+            return db.ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "UPDATE gf.accounts SET balance = balance + @amount WHERE uid = @uid AND gid = @gid;";
                 cmd.Parameters.Add(new NpgsqlParameter("amount", amount));
                 cmd.Parameters.Add(new NpgsqlParameter("uid", (long)uid));
                 cmd.Parameters.Add(new NpgsqlParameter("gid", (long)gid));
 
-                await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                return cmd.ExecuteNonQueryAsync();
             });
         }
 
-        public static async Task OpenBankAccountAsync(this DBService db, ulong uid, ulong gid)
+        public static Task OpenBankAccountAsync(this DBService db, ulong uid, ulong gid)
         {
-            await db.ExecuteCommandAsync(async (cmd) => {
+            return db.ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "INSERT INTO gf.accounts(uid, gid, balance) VALUES(@uid, @gid, 10000);";
                 cmd.Parameters.Add(new NpgsqlParameter("uid", (long)uid));
                 cmd.Parameters.Add(new NpgsqlParameter("gid", (long)gid));
 
-                await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+                return cmd.ExecuteNonQueryAsync();
             });
         }
 
