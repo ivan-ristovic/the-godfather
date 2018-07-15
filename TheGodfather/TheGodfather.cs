@@ -140,7 +140,7 @@ namespace TheGodfather
                 gcfg.TryAdd(gid, cfg);
 
             // Guild filters
-            IReadOnlyList<(ulong, Filter)> gfilters_db = await DatabaseService.GetFiltersForAllGuildsAsync();
+            IReadOnlyList<(ulong, Filter)> gfilters_db = await DatabaseService.GetAllFiltersAsync();
             var gfilters = new ConcurrentDictionary<ulong, ConcurrentHashSet<Filter>>();
             foreach ((ulong gid, Filter filter) in gfilters_db) {
                 if (!gfilters.ContainsKey(gid))

@@ -11,7 +11,7 @@ using TheGodfather.Common.Collections;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Common;
-using TheGodfather.Services;
+using TheGodfather.Services.Database.Filters;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -146,7 +146,7 @@ namespace TheGodfather.Modules.Administration
                 Shared.Filters.TryRemove(ctx.Guild.Id, out _);
 
             try {
-                await Database.RemoveAllGuildFiltersAsync(ctx.Guild.Id)
+                await Database.RemoveFiltersForGuildAsync(ctx.Guild.Id)
                     .ConfigureAwait(false);
             } catch (Exception e) {
                 Shared.LogProvider.LogException(LogLevel.Warning, e);

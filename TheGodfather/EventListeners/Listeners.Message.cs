@@ -2,7 +2,6 @@
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
-using DSharpPlus.Exceptions;
 using Humanizer;
 using System;
 using System.Collections.Generic;
