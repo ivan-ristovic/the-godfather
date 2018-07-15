@@ -9,7 +9,7 @@ using TheGodfather.Exceptions;
 
 namespace TheGodfather.Services.Database.Bank
 {
-    public static class DBServiceBankExtensions
+    internal static class DBServiceBankExtensions
     {
         public static Task BulkIncreaseAllBankAccountsAsync(this DBService db)
         {

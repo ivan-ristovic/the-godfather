@@ -73,7 +73,29 @@ namespace TheGodfather.Services.Database
         public Task InitializeAsync()
             => ExecuteCommandAsync(cmd => Task.CompletedTask );
 
-        public async Task CheckIntegrityAsync()
+        public async Task<IReadOnlyList<IReadOnlyDictionary<string, string>>> ExecuteRawQueryAsync(string query)
+        {
+            var dicts = new List<IReadOnlyDictionary<string, string>>();
+
+            await ExecuteCommandAsync(async (cmd) => {
+                cmd.CommandText = query;
+                using (var reader = await cmd.ExecuteReaderAsync()) {
+                    while (await reader.ReadAsync()) {
+                        var dict = new Dictionary<string, string>();
+
+                        for (int i = 0; i < reader.FieldCount; i++)
+                            dict[reader.GetName(i)] = reader[i] is DBNull ? "<null>" : reader[i].ToString();
+
+                        dicts.Add(new ReadOnlyDictionary<string, string>(dict));
+                    }
+                }
+            });
+
+            return dicts.AsReadOnly();
+        }
+
+
+        internal async Task CheckIntegrityAsync()
         {
             await ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "SELECT uid, gid, balance FROM gf.accounts LIMIT 1;";
@@ -115,27 +137,6 @@ namespace TheGodfather.Services.Database
                 cmd.CommandText = "SELECT id, gid, filter FROM gf.filters LIMIT 1;";
                 return cmd.ExecuteScalarAsync();
             });
-        }
-
-        public async Task<IReadOnlyList<IReadOnlyDictionary<string, string>>> ExecuteRawQueryAsync(string query)
-        {
-            var dicts = new List<IReadOnlyDictionary<string, string>>();
-
-            await ExecuteCommandAsync(async (cmd) => {
-                cmd.CommandText = query;
-                using (var reader = await cmd.ExecuteReaderAsync()) {
-                    while (await reader.ReadAsync()) {
-                        var dict = new Dictionary<string, string>();
-
-                        for (int i = 0; i < reader.FieldCount; i++)
-                            dict[reader.GetName(i)] = reader[i] is DBNull ? "<null>" : reader[i].ToString();
-
-                        dicts.Add(new ReadOnlyDictionary<string, string>(dict));
-                    }
-                }
-            });
-
-            return dicts.AsReadOnly();
         }
 
 

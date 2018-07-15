@@ -9,7 +9,7 @@ using TheGodfather.Modules.Misc.Common;
 
 namespace TheGodfather.Services.Database.Birthdays
 {
-    public static class DBServiceBirthdaysExtensions
+    internal static class DBServiceBirthdaysExtensions
     {
         public static Task AddBirthdayAsync(this DBService db, ulong uid, ulong cid, DateTime? date = null)
         {

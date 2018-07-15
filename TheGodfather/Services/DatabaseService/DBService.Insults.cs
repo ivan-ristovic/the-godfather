@@ -1,16 +1,14 @@
 ﻿#region USING_DIRECTIVES
+using NpgsqlTypes;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
-
-using Npgsql;
-using NpgsqlTypes;
 #endregion
 
 namespace TheGodfather.Services.Database
 {
-    public partial class DBService
+    internal static class DBServiceInsultExtensions
     {
         public async Task AddInsultAsync(string insult)
         {

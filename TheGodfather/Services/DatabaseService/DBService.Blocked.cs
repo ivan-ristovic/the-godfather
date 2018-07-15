@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace TheGodfather.Services.Database.Blocked
 {
-    public static class DBServiceBlockedExtensions
+    internal static class DBServiceBlockedExtensions
     {
         public static Task AddBlockedChannelAsync(this DBService db, ulong cid, string reason = null)
         {

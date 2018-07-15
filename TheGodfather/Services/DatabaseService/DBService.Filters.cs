@@ -8,7 +8,7 @@ using TheGodfather.Modules.Administration.Common;
 
 namespace TheGodfather.Services.Database.Filters
 {
-    public static class DBServiceFilterExtensions
+    internal static class DBServiceFilterExtensions
     {
         public static async Task<int> AddFilterAsync(this DBService db, ulong gid, string filter)
         {

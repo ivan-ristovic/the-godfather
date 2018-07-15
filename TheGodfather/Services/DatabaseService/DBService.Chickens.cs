@@ -7,7 +7,7 @@ using TheGodfather.Modules.Chickens.Common;
 
 namespace TheGodfather.Services.Database.Chickens
 {
-    public static class DBServiceChickenExtensions
+    internal static class DBServiceChickenExtensions
     {
         public static Task AddChickenAsync(this DBService db, ulong uid, ulong gid, string name, ChickenStats stats)
         {

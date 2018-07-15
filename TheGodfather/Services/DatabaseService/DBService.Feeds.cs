@@ -10,7 +10,7 @@ using TheGodfather.Services.Common;
 
 namespace TheGodfather.Services.Database.Feeds
 {
-    public static class DBServiceFeedExtensions
+    internal static class DBServiceFeedExtensions
     {
         public static async Task<IReadOnlyList<FeedEntry>> GetAllFeedEntriesAsync(this DBService db)
         {

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Extensions;
+using TheGodfather.Services.Database.GuildConfig;
 #endregion
 
 namespace TheGodfather.EventListeners

@@ -22,6 +22,8 @@ using TheGodfather.Services.Database;
 using TheGodfather.Services.Database.Bank;
 using TheGodfather.Services.Database.Birthdays;
 using TheGodfather.Services.Database.Blocked;
+using TheGodfather.Services.Database.Filters;
+using TheGodfather.Services.Database.GuildConfig;
 #endregion
 
 namespace TheGodfather
@@ -134,7 +136,7 @@ namespace TheGodfather
                 blockedchn.Add(cid);
 
             // Guild config
-            IReadOnlyDictionary<ulong, CachedGuildConfig> gcfg_db = await DatabaseService.GetPartialGuildConfigurations();
+            IReadOnlyDictionary<ulong, CachedGuildConfig> gcfg_db = await DatabaseService.GetAllPartialGuildConfigurations();
             var gcfg = new ConcurrentDictionary<ulong, CachedGuildConfig>();
             foreach ((ulong gid, CachedGuildConfig cfg) in gcfg_db)
                 gcfg.TryAdd(gid, cfg);

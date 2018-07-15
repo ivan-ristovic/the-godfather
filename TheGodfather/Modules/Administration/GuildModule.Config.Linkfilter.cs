@@ -8,7 +8,7 @@ using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-using TheGodfather.Services;
+using TheGodfather.Services.Database.GuildConfig;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
