@@ -493,7 +493,7 @@
     <Compile Include="Services\Common\OMDbData.cs" />
     <Compile Include="Services\Common\PurchasableItem.cs" />
     <Compile Include="Services\Common\QuizData.cs" />
-    <Compile Include="Services\Common\Quotes.cs" />
+    <Compile Include="Services\Common\QuoteData.cs" />
     <Compile Include="Services\Common\SavedTask.cs" />
     <Compile Include="Extensions\DiscordChannelExtensions.cs" />
     <Compile Include="Modules\Owner\OwnerModule.BlockedUsers.cs" />
@@ -609,7 +609,6 @@
     <Compile Include="Services\DatabaseService\DBService.Statuses.cs" />
     <Compile Include="Services\DatabaseService\DBService.SWAT.cs" />
     <Compile Include="Services\RSSService.cs" />
-    <Compile Include="Services\Common\Subscription.cs" />
     <Compile Include="Services\GiphyService.cs" />
     <Compile Include="Services\ImgurService.cs" />
     <Compile Include="Services\JokesService.cs" />

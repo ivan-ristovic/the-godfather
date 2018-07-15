@@ -5,12 +5,13 @@ using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Services;
+using TheGodfather.Services.Database;
+using TheGodfather.Services.Database.Feeds;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Interactivity;
-using TheGodfather.Services.Database;
 #endregion
 
 namespace TheGodfather.Modules.Search
@@ -95,7 +96,7 @@ namespace TheGodfather.Modules.Search
                 throw new CommandFailedException("Failed retrieving channel ID for that URL.");
 
             var feedurl = YtService.GetRssUrlForChannel(chid);
-            if (await Database.AddSubscriptionAsync(ctx.Channel.Id, feedurl, string.IsNullOrWhiteSpace(name) ? url : name).ConfigureAwait(false))
+            if (await Database.TryAddSubscriptionAsync(ctx.Channel.Id, feedurl, string.IsNullOrWhiteSpace(name) ? url : name).ConfigureAwait(false))
                 await ctx.InformSuccessAsync("Subscribed!").ConfigureAwait(false);
             else
                 await ctx.InformFailureAsync("Either the channel URL you is invalid or you are already subscribed to it!").ConfigureAwait(false);

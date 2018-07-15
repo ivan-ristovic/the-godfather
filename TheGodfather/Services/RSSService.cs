@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Xml;
 using TheGodfather.Services.Common;
 using TheGodfather.Services.Database;
+using TheGodfather.Services.Database.Feeds;
 #endregion
 
 namespace TheGodfather.Services
@@ -28,11 +29,11 @@ namespace TheGodfather.Services
             foreach (var feed in feeds) {
                 try {
                     if (!feed.Subscriptions.Any()) {
-                        await db.RemoveFeedAsync(feed.Id);
+                        await db.RemoveFeedEntryAsync(feed.Id);
                         continue;
                     }
 
-                    SyndicationItem latest = GetFeedResults(feed.URL)?.FirstOrDefault();
+                    SyndicationItem latest = GetFeedResults(feed.Url)?.FirstOrDefault();
                     if (latest == null)
                         continue;
 
@@ -40,7 +41,7 @@ namespace TheGodfather.Services
                     if (url == null)
                         continue;
 
-                    if (string.Compare(url, feed.SavedURL, true) != 0) {
+                    if (string.Compare(url, feed.SavedUrl, true) != 0) {
                         await db.UpdateFeedSavedURLAsync(feed.Id, url);
 
                         foreach (var sub in feed.Subscriptions) {

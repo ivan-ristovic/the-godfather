@@ -5,11 +5,12 @@ using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Services;
+using TheGodfather.Services.Database;
+using TheGodfather.Services.Database.Feeds;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-using TheGodfather.Services.Database;
 #endregion
 
 namespace TheGodfather.Modules.Search
@@ -58,7 +59,7 @@ namespace TheGodfather.Modules.Search
             if (url == null)
                 throw new CommandFailedException("That subreddit doesn't exist.");
 
-            if (!await Database.AddSubscriptionAsync(ctx.Channel.Id, url, rsub).ConfigureAwait(false))
+            if (!await Database.TryAddSubscriptionAsync(ctx.Channel.Id, url, rsub).ConfigureAwait(false))
                 throw new CommandFailedException("You are already subscribed to this subreddit!");
 
             await ctx.InformSuccessAsync($"Subscribed to {Formatter.Bold(rsub)} !")

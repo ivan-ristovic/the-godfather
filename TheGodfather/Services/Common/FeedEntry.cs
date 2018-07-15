@@ -4,20 +4,17 @@ using System.Collections.Generic;
 
 namespace TheGodfather.Services.Common
 {
+    public sealed class Subscription
+    {
+        public ulong ChannelId { get; set; }
+        public string QualifiedName { get; set; }
+    }
+
     public sealed class FeedEntry
     {
         public int Id { get; set; }
-        public string SavedURL { get; internal set; }
+        public string SavedUrl { get; internal set; }
         public List<Subscription> Subscriptions { get; set; }
-        public string URL { get; set; }
-
-
-        public FeedEntry(int id, string url, List<Subscription> subs, string savedUrl = null)
-        {
-            this.Id = id;
-            this.SavedURL = savedUrl;
-            this.Subscriptions = subs;
-            this.URL = url;
-        }
+        public string Url { get; set; }
     }
 }

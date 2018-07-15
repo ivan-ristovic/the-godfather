@@ -1,210 +1,170 @@
 ﻿#region USING_DIRECTIVES
+using Npgsql;
+using NpgsqlTypes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
 using TheGodfather.Services.Common;
-
-using Npgsql;
-using NpgsqlTypes;
 #endregion
 
-namespace TheGodfather.Services.Database
+namespace TheGodfather.Services.Database.Feeds
 {
-    public partial class DBService
+    public static class DBServiceFeedExtensions
     {
-        public async Task<IReadOnlyList<FeedEntry>> GetAllFeedEntriesAsync()
+        public static async Task<IReadOnlyList<FeedEntry>> GetAllFeedEntriesAsync(this DBService db)
         {
             var subscriptions = new Dictionary<int, FeedEntry>();
 
-            await accessSemaphore.WaitAsync();
-            try {
-                using (var con = await OpenConnectionAsync())
-                using (var cmd = con.CreateCommand()) {
-                    cmd.CommandText = "SELECT * FROM gf.feeds JOIN gf.subscriptions ON feeds.id = subscriptions.id;";
+            await db.ExecuteCommandAsync(async (cmd) => {
+                cmd.CommandText = "SELECT * FROM gf.feeds JOIN gf.subscriptions ON feeds.id = subscriptions.id;";
 
-                    using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
-                        while (await reader.ReadAsync().ConfigureAwait(false)) {
-                            int id = (int)reader["id"];
-                            if (subscriptions.ContainsKey(id)) {
-                                subscriptions[id].Subscriptions.Add(new Subscription((ulong)(long)reader["cid"], (string)reader["qname"]));
-                            } else {
-                                subscriptions.Add(id, new FeedEntry(
-                                    id,
-                                    (string)reader["url"],
-                                    new List<Subscription>() { new Subscription((ulong)(long)reader["cid"], (string)reader["qname"]) },
-                                    (string)reader["savedurl"]
-                                ));
-                            }
+                using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
+                    while (await reader.ReadAsync().ConfigureAwait(false)) {
+                        int id = (int)reader["id"];
+                        if (subscriptions.ContainsKey(id)) {
+                            subscriptions[id].Subscriptions.Add(new Subscription() {
+                                ChannelId = (ulong)(long)reader["cid"],
+                                QualifiedName = (string)reader["qname"]
+                            });
+                        } else {
+                            subscriptions.Add(id, new FeedEntry() {
+                                Id = id,
+                                SavedUrl = (string)reader["savedurl"],
+                                Subscriptions = new List<Subscription>() {
+                                    new Subscription() {
+                                        ChannelId = (ulong)(long)reader["cid"],
+                                        QualifiedName = (string)reader["qname"]
+                                    }
+                                },
+                                Url = (string)reader["url"]
+                            });
                         }
                     }
                 }
-            } finally {
-                accessSemaphore.Release();
-            }
+            });
 
-            var feeds = new List<FeedEntry>();
-            foreach (FeedEntry f in subscriptions.Values)
-                feeds.Add(f);
-
-            return feeds.AsReadOnly();
+            return subscriptions.Values
+                .ToList()
+                .AsReadOnly();
         }
 
-        public async Task<IReadOnlyList<FeedEntry>> GetFeedEntriesForChannelAsync(ulong cid)
+        public static async Task<IReadOnlyList<FeedEntry>> GetFeedEntriesForChannelAsync(this DBService db, ulong cid)
         {
             var subscriptions = new Dictionary<int, FeedEntry>();
 
-            await accessSemaphore.WaitAsync();
-            try {
-                using (var con = await OpenConnectionAsync())
-                using (var cmd = con.CreateCommand()) {
-                    cmd.CommandText = "SELECT feeds.id, qname, url FROM gf.feeds JOIN gf.subscriptions ON feeds.id = subscriptions.id WHERE cid = @cid;";
-                    cmd.Parameters.AddWithValue("cid", NpgsqlDbType.Bigint, (long)cid);
+            await db.ExecuteCommandAsync(async (cmd) => {
+                cmd.CommandText = "SELECT feeds.id, qname, url FROM gf.feeds JOIN gf.subscriptions ON feeds.id = subscriptions.id WHERE cid = @cid;";
+                cmd.Parameters.Add(new NpgsqlParameter("cid", (long)cid));
 
-                    using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
-                        while (await reader.ReadAsync().ConfigureAwait(false)) {
-                            int id = (int)reader["id"];
-                            subscriptions.Add(id, new FeedEntry(
-                                id,
-                                (string)reader["url"],
-                                new List<Subscription>() { new Subscription(cid, (string)reader["qname"]) }
-                            ));
-                        }
+                using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
+                    while (await reader.ReadAsync().ConfigureAwait(false)) {
+                        int id = (int)reader["id"];
+                        subscriptions.Add(id, new FeedEntry() {
+                            Id = id,
+                            Subscriptions = new List<Subscription>() {
+                                new Subscription() {
+                                    ChannelId = cid,
+                                    QualifiedName = (string)reader["qname"]
+                                }
+                            },
+                            Url = (string)reader["url"],
+                        });
                     }
                 }
-            } finally {
-                accessSemaphore.Release();
-            }
+            });
 
-            var feeds = new List<FeedEntry>();
-            foreach (FeedEntry f in subscriptions.Values)
-                feeds.Add(f);
-
-            return feeds.AsReadOnly();
+            return subscriptions.Values
+                .ToList()
+                .AsReadOnly();
         }
 
-        public async Task<bool> AddSubscriptionAsync(ulong cid, string url, string qname = null)
+        public static async Task<bool> TryAddSubscriptionAsync(this DBService db, ulong cid, string url, string qname = null)
         {
-            var newest = RssService.GetFeedResults(url)?.First();
+            var newest = RssService.GetFeedResults(url)?.FirstOrDefault();
             if (newest == null)
                 return false;
 
             int? sid = null;
-            await accessSemaphore.WaitAsync();
-            try {
-                using (var con = new NpgsqlConnection(connectionString)) {
-                    await con.OpenAsync().ConfigureAwait(false);
+            await db.ExecuteTransactionAsync(async (con, tsem) => {
+                int? id = null;
+                using (var cmd = con.CreateCommand()) {
+                    cmd.CommandText = "INSERT INTO gf.feeds VALUES (DEFAULT, @url, @savedurl) ON CONFLICT (url) DO UPDATE SET url = EXCLUDED.url RETURNING id;";
+                    cmd.Parameters.AddWithValue("url", NpgsqlDbType.Text, url);
+                    cmd.Parameters.AddWithValue("savedurl", NpgsqlDbType.Text, newest.Links[0].Uri.ToString());
 
-                    int? id = null;
-                    using (var cmd = con.CreateCommand()) {
-                        cmd.CommandText = "INSERT INTO gf.feeds VALUES (DEFAULT, @url, @savedurl) ON CONFLICT (url) DO UPDATE SET url = EXCLUDED.url RETURNING id;";
-                        cmd.Parameters.AddWithValue("url", NpgsqlDbType.Text, url);
-                        cmd.Parameters.AddWithValue("savedurl", NpgsqlDbType.Text, newest.Links[0].Uri.ToString());
-                        var res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
-                        if (res != null && !(res is DBNull))
-                            id = (int)res;
-                    }
-
-                    using (var cmd = con.CreateCommand()) {
-                        cmd.CommandText = "INSERT INTO gf.subscriptions VALUES (@id, @cid, @qname) ON CONFLICT DO NOTHING RETURNING id;";
-                        cmd.Parameters.AddWithValue("id", NpgsqlDbType.Integer, id.Value);
-                        cmd.Parameters.AddWithValue("cid", NpgsqlDbType.Bigint, (long)cid);
-                        cmd.Parameters.AddWithValue("qname", NpgsqlDbType.Varchar, qname);
-                        var res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
-                        if (res != null && !(res is DBNull))
-                            sid = (int)res;
-                    }
+                    object res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
+                    if (res != null && !(res is DBNull))
+                        id = (int)res;
                 }
-            } finally {
-                accessSemaphore.Release();
-            }
+
+                using (var cmd = con.CreateCommand()) {
+                    cmd.CommandText = "INSERT INTO gf.subscriptions VALUES (@id, @cid, @qname) ON CONFLICT DO NOTHING RETURNING id;";
+                    cmd.Parameters.Add(new NpgsqlParameter("id", id.Value));
+                    cmd.Parameters.Add(new NpgsqlParameter("cid", (long)cid));
+                    cmd.Parameters.Add(new NpgsqlParameter("qname", qname));
+
+                    object res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
+                    if (res != null && !(res is DBNull))
+                        sid = (int)res;
+                }
+            });
 
             return sid.HasValue;
         }
 
-        public async Task RemoveFeedAsync(int id)
+        public static Task RemoveFeedEntryAsync(this DBService db, int id)
         {
-            await accessSemaphore.WaitAsync();
-            try {
-                using (var con = await OpenConnectionAsync())
-                using (var cmd = con.CreateCommand()) {
-                    cmd.CommandText = "DELETE FROM gf.feeds WHERE id = @fid;";
-                    cmd.Parameters.AddWithValue("fid", NpgsqlDbType.Integer, id);
+            return db.ExecuteCommandAsync(cmd => {
+                cmd.CommandText = "DELETE FROM gf.feeds WHERE id = @fid;";
+                cmd.Parameters.Add(new NpgsqlParameter("fid", id));
 
-                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
-                }
-            } finally {
-                accessSemaphore.Release();
-            }
+                return cmd.ExecuteNonQueryAsync();
+            });
         }
 
-        public async Task RemoveSubscriptionByIdAsync(ulong cid, int id)
+        public static Task RemoveSubscriptionByIdAsync(this DBService db, ulong cid, int id)
         {
-            await accessSemaphore.WaitAsync();
-            try {
-                using (var con = await OpenConnectionAsync())
-                using (var cmd = con.CreateCommand()) {
-                    cmd.CommandText = "DELETE FROM gf.subscriptions WHERE cid = @cid AND id = @id;";
-                    cmd.Parameters.AddWithValue("cid", NpgsqlDbType.Bigint, (long)cid);
-                    cmd.Parameters.AddWithValue("id", NpgsqlDbType.Integer, id);
+            return db.ExecuteCommandAsync(cmd => {
+                cmd.CommandText = "DELETE FROM gf.subscriptions WHERE cid = @cid AND id = @id;";
+                cmd.Parameters.Add(new NpgsqlParameter("cid", (long)cid));
+                cmd.Parameters.Add(new NpgsqlParameter("id", id));
 
-                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
-                }
-            } finally {
-                accessSemaphore.Release();
-            }
+                return cmd.ExecuteNonQueryAsync();
+            });
         }
 
-        public async Task RemoveSubscriptionByNameAsync(ulong cid, string qname)
+        public static Task RemoveSubscriptionByNameAsync(this DBService db, ulong cid, string qname)
         {
-            await accessSemaphore.WaitAsync();
-            try {
-                using (var con = await OpenConnectionAsync())
-                using (var cmd = con.CreateCommand()) {
-                    cmd.CommandText = "DELETE FROM gf.subscriptions WHERE cid = @cid AND qname = @qname;";
-                    cmd.Parameters.AddWithValue("cid", NpgsqlDbType.Bigint, (long)cid);
-                    cmd.Parameters.AddWithValue("qname", NpgsqlDbType.Varchar, qname);
+            return db.ExecuteCommandAsync(cmd => {
+                cmd.CommandText = "DELETE FROM gf.subscriptions WHERE cid = @cid AND id = @id;";
+                cmd.Parameters.Add(new NpgsqlParameter("cid", (long)cid));
+                cmd.Parameters.Add(new NpgsqlParameter("qname", qname));
 
-                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
-                }
-            } finally {
-                accessSemaphore.Release();
-            }
+                return cmd.ExecuteNonQueryAsync();
+            });
         }
 
-        public async Task RemoveSubscriptionByUrlAsync(ulong cid, string url)
+        public static Task RemoveSubscriptionByUrlAsync(this DBService db, ulong cid, string url)
         {
-            await accessSemaphore.WaitAsync();
-            try {
-                using (var con = await OpenConnectionAsync())
-                using (var cmd = con.CreateCommand()) {
-                    cmd.CommandText = "DELETE FROM gf.subscriptions WHERE cid = @cid AND id = (SELECT id FROM gf.feeds WHERE url = @url LIMIT 1);";
-                    cmd.Parameters.AddWithValue("url", NpgsqlDbType.Text, url);
-                    cmd.Parameters.AddWithValue("cid", NpgsqlDbType.Bigint, (long)cid);
+            return db.ExecuteCommandAsync(cmd => {
+                cmd.CommandText = "DELETE FROM gf.subscriptions WHERE cid = @cid AND id = (SELECT id FROM gf.feeds WHERE url = @url LIMIT 1);";
+                cmd.Parameters.Add(new NpgsqlParameter("cid", (long)cid));
+                cmd.Parameters.AddWithValue("url", NpgsqlDbType.Text, url);
 
-                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
-                }
-            } finally {
-                accessSemaphore.Release();
-            }
+                return cmd.ExecuteNonQueryAsync();
+            });
         }
 
-        public async Task UpdateFeedSavedURLAsync(int id, string newurl)
+        public static Task UpdateFeedSavedURLAsync(this DBService db, int id, string newurl)
         {
-            await accessSemaphore.WaitAsync();
-            try {
-                using (var con = await OpenConnectionAsync())
-                using (var cmd = con.CreateCommand()) {
-                    cmd.CommandText = "UPDATE gf.feeds SET savedurl = @newurl WHERE id = @id;";
-                    cmd.Parameters.AddWithValue("id", NpgsqlDbType.Integer, id);
-                    cmd.Parameters.AddWithValue("newurl", NpgsqlDbType.Text, newurl);
+            return db.ExecuteCommandAsync(cmd => {
+                cmd.CommandText = "UPDATE gf.feeds SET savedurl = @newurl WHERE id = @id;";
+                cmd.Parameters.Add(new NpgsqlParameter("id", id));
+                cmd.Parameters.AddWithValue("newurl", NpgsqlDbType.Text, newurl);
 
-                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
-                }
-            } finally {
-                accessSemaphore.Release();
-            }
+                return cmd.ExecuteNonQueryAsync();
+            });
         }
     }
 }
