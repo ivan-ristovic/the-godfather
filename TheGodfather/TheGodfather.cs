@@ -18,6 +18,7 @@ using TheGodfather.Modules.Reactions.Common;
 using TheGodfather.Services;
 using TheGodfather.Services.Common;
 using TheGodfather.Services.Database;
+using TheGodfather.Services.Database.Bank;
 #endregion
 
 namespace TheGodfather
@@ -295,7 +296,7 @@ namespace TheGodfather
                 await DatabaseService.UpdateBirthdayLastNotifiedDateAsync(birthday.UserId, channel.Id);
             }
 
-            await DatabaseService.UpdateBankAccountsAsync();
+            await DatabaseService.BulkIncreaseAllBankAccountsAsync();
         }
         #endregion
     }

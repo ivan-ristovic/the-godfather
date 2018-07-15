@@ -8,7 +8,7 @@ using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Chickens.Common;
-using TheGodfather.Services;
+using TheGodfather.Services.Database.Bank;
 using TheGodfather.Services.Common;
 
 using DSharpPlus;
@@ -56,7 +56,7 @@ namespace TheGodfather.Modules.Chickens
                 if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to buy {Formatter.Bold(upgrade.Name)} for {Formatter.Bold(upgrade.Price.ToString())} credits?"))
                     return;
 
-                if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, ctx.Guild.Id, upgrade.Price).ConfigureAwait(false))
+                if (!await Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, upgrade.Price).ConfigureAwait(false))
                     throw new CommandFailedException($"You do not have enought credits to buy that upgrade!");
 
                 await Database.BuyChickenUpgradeAsync(ctx.User.Id, ctx.Guild.Id, upgrade)

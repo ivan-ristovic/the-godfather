@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using TheGodfather.Common;
 using TheGodfather.Exceptions;
+using TheGodfather.Services.Database.Bank;
 #endregion
 
 namespace TheGodfather.Services.Database
@@ -32,13 +33,15 @@ namespace TheGodfather.Services.Database
                 Database = this.cfg.DatabaseName,
                 Username = this.cfg.Username,
                 Password = this.cfg.Password,
-                Pooling = true
+                Pooling = true,
+                MaxAutoPrepare = 50,
+                AutoPrepareMinUsages = 3
                 //SslMode = SslMode.Require,
                 //TrustServerCertificate = true
             };
             this.connectionString = csb.ConnectionString;
         }
-
+        
 
         public async Task ExecuteCommandAsync(Func<NpgsqlCommand, Task> action)
         {
@@ -54,14 +57,28 @@ namespace TheGodfather.Services.Database
             }
         }
 
+        public async Task ExecuteTransactionAsync(Func<NpgsqlConnection, SemaphoreSlim, Task> action)
+        {
+            await this.accessSemaphore.WaitAsync();
+            try {
+                using (var con = await OpenConnectionAsync())
+                    await action(con, this.transactionSemaphore);
+            } catch (NpgsqlException e) {
+                throw new DatabaseOperationException("Database operation failed!", e);
+            } finally {
+                this.accessSemaphore.Release();
+            }
+        }
+
         public Task InitializeAsync()
             => ExecuteCommandAsync(cmd => Task.CompletedTask );
 
         public async Task CheckIntegrityAsync()
         {
-            // TODO
-            await Task.Delay(0);
-            //throw new DatabaseServiceException("Database integrity check failed!");
+            await ExecuteCommandAsync(async (cmd) => {
+                cmd.CommandText = "SELECT uid, gid, balance FROM gf.accounts;";
+                await cmd.ExecuteScalarAsync().ConfigureAwait(false);
+            });
         }
 
         public async Task<IReadOnlyList<IReadOnlyDictionary<string, string>>> ExecuteRawQueryAsync(string query)

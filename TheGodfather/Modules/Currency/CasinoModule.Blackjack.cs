@@ -9,8 +9,8 @@ using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Currency.Common;
 using TheGodfather.Modules.Games.Common;
-using TheGodfather.Services;
 using TheGodfather.Services.Common;
+using TheGodfather.Services.Database.Bank;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -46,7 +46,7 @@ namespace TheGodfather.Modules.Currency
                     return;
                 }
 
-                long? balance = await Database.GetUserCreditAmountAsync(ctx.User.Id, ctx.Guild.Id)
+                long? balance = await Database.GetBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id)
                     .ConfigureAwait(false);
                 if (!balance.HasValue || balance < bid)
                     throw new CommandFailedException("You do not have that many credits on your account! Specify a smaller bid amount.");
@@ -68,14 +68,14 @@ namespace TheGodfather.Modules.Currency
                         if (game.Winner != null) {
                             await ctx.InformSuccessAsync(StaticDiscordEmoji.CardSuits[0], $"{game.Winner.Mention} got the BlackJack!")
                                 .ConfigureAwait(false);
-                            await Database.GiveCreditsToUserAsync(game.Winner.Id, ctx.Guild.Id, game.Winners.First(p => p.Id == game.Winner.Id).Bid)
+                            await Database.IncreaseBankAccountBalanceAsync(game.Winner.Id, ctx.Guild.Id, game.Winners.First(p => p.Id == game.Winner.Id).Bid)
                                     .ConfigureAwait(false);
                         } else {
                             await ctx.InformSuccessAsync(StaticDiscordEmoji.CardSuits[0], $"Winners:\n\n{string.Join(", ", game.Winners.Select(w => w.User.Mention))}")
                                 .ConfigureAwait(false);
 
                             foreach (var winner in game.Winners)
-                                await Database.GiveCreditsToUserAsync(winner.Id, ctx.Guild.Id, winner.Bid * 2)
+                                await Database.IncreaseBankAccountBalanceAsync(winner.Id, ctx.Guild.Id, winner.Bid * 2)
                                     .ConfigureAwait(false);
                         }
                     } else {
@@ -108,7 +108,7 @@ namespace TheGodfather.Modules.Currency
                 if (game.IsParticipating(ctx.User))
                     throw new CommandFailedException("You are already participating in the Blackjack game!");
 
-                if (bid <= 0 || !await Database.TakeCreditsFromUserAsync(ctx.User.Id, ctx.Guild.Id, bid))
+                if (bid <= 0 || !await Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, bid))
                     throw new CommandFailedException("You do not have that many credits on your account! Specify a smaller bid amount.");
 
                 game.AddParticipant(ctx.User, bid);

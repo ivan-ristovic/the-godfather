@@ -6,7 +6,7 @@ using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-using TheGodfather.Services;
+using TheGodfather.Services.Database.Bank;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -53,7 +53,7 @@ namespace TheGodfather.Modules.Currency
             else
                 throw new CommandFailedException($"Invalid coin outcome call (has to be {Formatter.Bold("heads")} or {Formatter.Bold("tails")})");
 
-            if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, ctx.Guild.Id, bid).ConfigureAwait(false))
+            if (!await Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, bid).ConfigureAwait(false))
                 throw new CommandFailedException("You do not have enough credits in WM bank!");
 
             bool rnd = GFRandom.Generator.GetBool();
@@ -68,7 +68,7 @@ namespace TheGodfather.Modules.Currency
               .Append(" credits!");
 
             if (rnd == guess)
-                await Database.GiveCreditsToUserAsync(ctx.User.Id, ctx.Guild.Id, bid * 2)
+                await Database.IncreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, bid * 2)
                     .ConfigureAwait(false);
 
             await ctx.InformSuccessAsync(sb.ToString(), ":game_die:")
@@ -112,7 +112,7 @@ namespace TheGodfather.Modules.Currency
                     throw new CommandFailedException($"Invalid guess. Has to be a number from {Formatter.Bold("one")} to {Formatter.Bold("six")})");
             }
 
-            if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, ctx.Guild.Id, bid).ConfigureAwait(false))
+            if (!await Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, bid).ConfigureAwait(false))
                 throw new CommandFailedException("You do not have enough credits in WM bank!");
 
             int rnd = GFRandom.Generator.Next(1, 7);
@@ -129,7 +129,7 @@ namespace TheGodfather.Modules.Currency
                 .ConfigureAwait(false);
 
             if (rnd == guess_int)
-                await Database.GiveCreditsToUserAsync(ctx.User.Id, ctx.Guild.Id, bid * 6)
+                await Database.IncreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, bid * 6)
                     .ConfigureAwait(false);
         }
 

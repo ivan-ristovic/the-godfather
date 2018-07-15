@@ -6,7 +6,7 @@ using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Currency.Common;
-using TheGodfather.Services;
+using TheGodfather.Services.Database.Bank;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -51,14 +51,14 @@ namespace TheGodfather.Modules.Currency
             if (bid <= 0 || bid > 1000000000)
                 throw new InvalidCommandUsageException($"Invalid bid amount! Needs to be in range [1 - {1000000000:n0}]");
 
-            if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, ctx.Guild.Id, bid).ConfigureAwait(false))
+            if (!await Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, bid).ConfigureAwait(false))
                 throw new CommandFailedException("You do not have enough credits in WM bank!");
 
             await ctx.RespondAsync(embed: SlotMachine.EmbedSlotRoll(ctx.User, bid, out long won))
                 .ConfigureAwait(false);
 
             if (won > 0)
-                await Database.GiveCreditsToUserAsync(ctx.User.Id, ctx.Guild.Id, won)
+                await Database.IncreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, won)
                     .ConfigureAwait(false);
         }
 
@@ -91,7 +91,7 @@ namespace TheGodfather.Modules.Currency
             if (bid <= 0 || bid > 1000000000)
                 throw new InvalidCommandUsageException($"Invalid bid amount! Needs to be in range [1 - {1000000000:n0}]");
 
-            if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, ctx.Guild.Id, bid).ConfigureAwait(false))
+            if (!await Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, bid).ConfigureAwait(false))
                 throw new CommandFailedException("You do not have enough credits in WM bank!");
 
             var wof = new WheelOfFortune(ctx.Client.GetInteractivity(), ctx.Channel, ctx.User, bid);
@@ -99,7 +99,7 @@ namespace TheGodfather.Modules.Currency
                 .ConfigureAwait(false);
             
             if (wof.WonAmount > 0)
-                await Database.GiveCreditsToUserAsync(ctx.User.Id, ctx.Guild.Id, wof.WonAmount)
+                await Database.IncreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, wof.WonAmount)
                     .ConfigureAwait(false);
         }
 

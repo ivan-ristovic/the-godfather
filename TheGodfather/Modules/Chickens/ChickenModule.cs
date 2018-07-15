@@ -8,13 +8,13 @@ using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Chickens.Common;
-using TheGodfather.Services;
+using TheGodfather.Services.Database;
+using TheGodfather.Services.Database.Bank;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-using TheGodfather.Services.Database;
 #endregion
 
 namespace TheGodfather.Modules.Chickens
@@ -91,7 +91,7 @@ namespace TheGodfather.Modules.Chickens
             else
                 await Database.RemoveChickenAsync(loser.OwnerId, ctx.Guild.Id).ConfigureAwait(false);
 
-            await Database.GiveCreditsToUserAsync(winner.OwnerId, ctx.Guild.Id, gain * 2000)
+            await Database.IncreaseBankAccountBalanceAsync(winner.OwnerId, ctx.Guild.Id, gain * 2000)
                 .ConfigureAwait(false);
 
             await ctx.InformSuccessAsync(StaticDiscordEmoji.Chicken,
@@ -118,7 +118,7 @@ namespace TheGodfather.Modules.Chickens
             if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to pay {Formatter.Bold("1000000")} credits to create a disease?"))
                 return;
 
-            if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, ctx.Guild.Id, 1000000).ConfigureAwait(false))
+            if (!await Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, 1000000).ConfigureAwait(false))
                 throw new CommandFailedException($"You do not have enought credits to pay for the disease creation!");
 
             short threshold = (short)GFRandom.Generator.Next(50, 100);
@@ -232,7 +232,7 @@ namespace TheGodfather.Modules.Chickens
 
             await Database.RemoveChickenAsync(ctx.User.Id, ctx.Guild.Id)
                 .ConfigureAwait(false);
-            await Database.GiveCreditsToUserAsync(ctx.User.Id, ctx.Guild.Id, price)
+            await Database.IncreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, price)
                 .ConfigureAwait(false);
 
             await ctx.InformSuccessAsync(StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} sold {Formatter.Bold(chicken.Name)} for {Formatter.Bold(price.ToString())} credits!")

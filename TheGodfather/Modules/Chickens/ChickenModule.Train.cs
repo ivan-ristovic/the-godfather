@@ -6,7 +6,7 @@ using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-using TheGodfather.Services;
+using TheGodfather.Services.Database.Bank;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -57,7 +57,7 @@ namespace TheGodfather.Modules.Chickens
                 if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to train your chicken for {Formatter.Bold(price.ToString())} credits?\n\nNote: This action will also weaken the vitality of your chicken by 1."))
                     return;
 
-                if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, ctx.Guild.Id, price).ConfigureAwait(false))
+                if (!await Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, price).ConfigureAwait(false))
                     throw new CommandFailedException($"You do not have enought credits to train a chicken ({price} needed)!");
 
                 string result;
@@ -97,7 +97,7 @@ namespace TheGodfather.Modules.Chickens
                 if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to train your chicken for {Formatter.Bold(price.ToString())} credits?\n\nNote: This action will also weaken the vitality of your chicken by 1."))
                     return;
 
-                if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, ctx.Guild.Id, price).ConfigureAwait(false))
+                if (!await Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, price).ConfigureAwait(false))
                     throw new CommandFailedException($"You do not have enought credits to train a chicken ({price} needed)!");
 
                 string result;

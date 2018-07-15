@@ -9,7 +9,7 @@ using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Chickens.Common;
-using TheGodfather.Services;
+using TheGodfather.Services.Database.Bank;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -60,7 +60,7 @@ namespace TheGodfather.Modules.Chickens
                             chicken.Stats.BareVitality -= 10;
                             await Database.ModifyChickenAsync(chicken, ctx.Guild.Id)
                                 .ConfigureAwait(false);
-                            await Database.GiveCreditsToUserAsync(chicken.OwnerId, ctx.Guild.Id, 100000)
+                            await Database.IncreaseBankAccountBalanceAsync(chicken.OwnerId, ctx.Guild.Id, 100000)
                                 .ConfigureAwait(false);
                             sb.AppendLine($"{Formatter.Bold(chicken.Name)} gained {war.Gain} STR and lost 10 HP!");
                         }

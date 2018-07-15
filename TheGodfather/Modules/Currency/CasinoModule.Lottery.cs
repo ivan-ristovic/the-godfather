@@ -9,7 +9,7 @@ using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Currency.Common;
 using TheGodfather.Modules.Games.Common;
-using TheGodfather.Services;
+using TheGodfather.Services.Database.Bank;
 using TheGodfather.Services.Common;
 
 using DSharpPlus;
@@ -46,7 +46,7 @@ namespace TheGodfather.Modules.Currency
                     return;
                 }
 
-                long? balance = await Database.GetUserCreditAmountAsync(ctx.User.Id, ctx.Guild.Id)
+                long? balance = await Database.GetBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id)
                     .ConfigureAwait(false);
                 if (!balance.HasValue || balance < LotteryGame.TicketPrice)
                     throw new CommandFailedException($"You do not have enough credits on your account to buy a lottery ticket! The lottery ticket costs {LotteryGame.TicketPrice} credits!");
@@ -68,7 +68,7 @@ namespace TheGodfather.Modules.Currency
                         await ctx.InformSuccessAsync(StaticDiscordEmoji.MoneyBag, $"Winnings:\n\n{string.Join(", ", game.Winners.Select(w => $"{w.User.Mention} : {w.WinAmount}"))}")
                             .ConfigureAwait(false);
                         foreach (var winner in game.Winners)
-                            await Database.GiveCreditsToUserAsync(winner.Id, ctx.Guild.Id, winner.WinAmount)
+                            await Database.IncreaseBankAccountBalanceAsync(winner.Id, ctx.Guild.Id, winner.WinAmount)
                                 .ConfigureAwait(false);
                     } else {
                         await ctx.InformSuccessAsync(StaticDiscordEmoji.MoneyBag, "Better luck next time!")
@@ -106,7 +106,7 @@ namespace TheGodfather.Modules.Currency
                 if (game.IsParticipating(ctx.User))
                     throw new CommandFailedException("You are already participating in the Lottery game!");
 
-                if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, ctx.Guild.Id, LotteryGame.TicketPrice))
+                if (!await Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, LotteryGame.TicketPrice))
                     throw new CommandFailedException($"You do not have enough credits on your account to buy a lottery ticket! The lottery ticket costs {LotteryGame.TicketPrice} credits!");
 
                 game.AddParticipant(ctx.User, numbers);

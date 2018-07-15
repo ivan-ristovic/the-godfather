@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-using TheGodfather.Services;
+using TheGodfather.Services.Database.Bank;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -85,7 +85,7 @@ namespace TheGodfather.Modules.Misc
             if (!await ctx.WaitForBoolReplyAsync($"Are you sure you want to buy a {Formatter.Bold(item.Name)} for {Formatter.Bold(item.Price.ToString())} credits?").ConfigureAwait(false))
                 return;
 
-            if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, ctx.Guild.Id, item.Price))
+            if (!await Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, item.Price))
                 throw new CommandFailedException("You do not have enough money to purchase that item!");
 
             await Database.RegisterPurchaseForItemAsync(ctx.User.Id, item.Id)
@@ -116,7 +116,7 @@ namespace TheGodfather.Modules.Misc
             if (!await ctx.WaitForBoolReplyAsync($"Are you sure you want to sell a {Formatter.Bold(item.Name)} for {Formatter.Bold(retval.ToString())} credits?").ConfigureAwait(false))
                 return;
 
-            await Database.GiveCreditsToUserAsync(ctx.User.Id, ctx.Guild.Id, retval)
+            await Database.IncreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, retval)
                 .ConfigureAwait(false);
             await Database.UnregisterPurchaseForItemAsync(ctx.User.Id, item.Id)
                 .ConfigureAwait(false);
