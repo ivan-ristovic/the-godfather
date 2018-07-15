@@ -1,4 +1,5 @@
 ﻿#region USING_DIRECTIVES
+using Npgsql;
 using NpgsqlTypes;
 using System;
 using System.Collections.Generic;
@@ -6,98 +7,68 @@ using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 #endregion
 
-namespace TheGodfather.Services.Database
+namespace TheGodfather.Services.Database.Insults
 {
     internal static class DBServiceInsultExtensions
     {
-        public async Task AddInsultAsync(string insult)
+        public static Task AddInsultAsync(this DBService db, string insult)
         {
-            await accessSemaphore.WaitAsync();
-            try {
-                using (var con = await OpenConnectionAsync())
-                using (var cmd = con.CreateCommand()) {
-                    cmd.CommandText = "INSERT INTO gf.insults(insult) VALUES (@insult);";
-                    cmd.Parameters.AddWithValue("insult", NpgsqlDbType.Varchar, insult);
+            return db.ExecuteCommandAsync(cmd => {
+                cmd.CommandText = "INSERT INTO gf.insults(insult) VALUES (@insult);";
+                cmd.Parameters.Add(new NpgsqlParameter("insult", insult));
 
-                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
-                }
-            } finally {
-                accessSemaphore.Release();
-            }
+                return cmd.ExecuteNonQueryAsync();
+            });
         }
 
-        public async Task<IReadOnlyDictionary<int, string>> GetAllInsultsAsync()
+        public static async Task<IReadOnlyDictionary<int, string>> GetAllInsultsAsync(this DBService db)
         {
             var insults = new Dictionary<int, string>();
 
-            await accessSemaphore.WaitAsync();
-            try {
-                using (var con = await OpenConnectionAsync())
-                using (var cmd = con.CreateCommand()) {
-                    cmd.CommandText = "SELECT * FROM gf.insults;";
+            await db.ExecuteCommandAsync(async (cmd) => {
+                cmd.CommandText = "SELECT * FROM gf.insults;";
 
-                    using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
-                        while (await reader.ReadAsync().ConfigureAwait(false))
-                            insults.Add((int)reader["id"], (string)reader["insult"]);
-                    }
+                using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
+                    while (await reader.ReadAsync().ConfigureAwait(false))
+                        insults.Add((int)reader["id"], (string)reader["insult"]);
                 }
-            } finally {
-                accessSemaphore.Release();
-            }
+            });
 
             return new ReadOnlyDictionary<int, string>(insults);
         }
 
-        public async Task<string> GetRandomInsultAsync()
+        public static async Task<string> GetRandomInsultAsync(this DBService db)
         {
             string insult = null;
 
-            await accessSemaphore.WaitAsync();
-            try {
-                using (var con = await OpenConnectionAsync())
-                using (var cmd = con.CreateCommand()) {
-                    cmd.CommandText = "SELECT insult FROM gf.insults LIMIT 1 OFFSET floor(random() * (SELECT count(*) FROM gf.insults));";
+            await db.ExecuteCommandAsync(async (cmd) => {
+                cmd.CommandText = "SELECT insult FROM gf.insults LIMIT 1 OFFSET floor(random() * (SELECT count(*) FROM gf.insults));";
 
-                    var res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
-                    if (res != null && !(res is DBNull))
-                        insult = (string)res;
-                }
-            } finally {
-                accessSemaphore.Release();
-            }
+                object res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
+                if (res != null && !(res is DBNull))
+                    insult = (string)res;
+            });
 
             return insult;
         }
 
-        public async Task RemoveInsultAsync(int id)
+        public static Task RemoveInsultAsync(this DBService db, int id)
         {
-            await accessSemaphore.WaitAsync();
-            try {
-                using (var con = await OpenConnectionAsync())
-                using (var cmd = con.CreateCommand()) {
-                    cmd.CommandText = "DELETE FROM gf.insults WHERE id = @id;";
-                    cmd.Parameters.AddWithValue("id", NpgsqlDbType.Integer, id);
+            return db.ExecuteCommandAsync(cmd => {
+                cmd.CommandText = "DELETE FROM gf.insults WHERE id = @id;";
+                cmd.Parameters.Add(new NpgsqlParameter("id", id));
 
-                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
-                }
-            } finally {
-                accessSemaphore.Release();
-            }
+                return cmd.ExecuteNonQueryAsync();
+            });
         }
 
-        public async Task RemoveAllInsultsAsync()
+        public static Task RemoveAllInsultsAsync(this DBService db)
         {
-            await accessSemaphore.WaitAsync();
-            try {
-                using (var con = await OpenConnectionAsync())
-                using (var cmd = con.CreateCommand()) {
-                    cmd.CommandText = "DELETE FROM gf.insults;";
+            return db.ExecuteCommandAsync(cmd => {
+                cmd.CommandText = "DELETE FROM gf.insults;";
 
-                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
-                }
-            } finally {
-                accessSemaphore.Release();
-            }
+                return cmd.ExecuteNonQueryAsync();
+            });
         }
     }
 }
