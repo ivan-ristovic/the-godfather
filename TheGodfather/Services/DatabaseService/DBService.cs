@@ -75,45 +75,45 @@ namespace TheGodfather.Services.Database
 
         public async Task CheckIntegrityAsync()
         {
-            await ExecuteCommandAsync(async (cmd) => {
+            await ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "SELECT uid, gid, balance FROM gf.accounts LIMIT 1;";
-                await cmd.ExecuteScalarAsync().ConfigureAwait(false);
+                return cmd.ExecuteScalarAsync();
             });
-            await ExecuteCommandAsync(async (cmd) => {
+            await ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "SELECT uid, cid, bday, last_updated FROM gf.birthdays LIMIT 1;";
-                await cmd.ExecuteScalarAsync().ConfigureAwait(false);
+                return cmd.ExecuteScalarAsync();
             });
-            await ExecuteCommandAsync(async (cmd) => {
+            await ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "SELECT cid, reason FROM gf.blocked_channels LIMIT 1;";
-                await cmd.ExecuteScalarAsync().ConfigureAwait(false);
+                return cmd.ExecuteScalarAsync();
             });
-            await ExecuteCommandAsync(async (cmd) => {
+            await ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "SELECT uid, reason FROM gf.blocked_users LIMIT 1;";
-                await cmd.ExecuteScalarAsync().ConfigureAwait(false);
+                return cmd.ExecuteScalarAsync();
             });
-            await ExecuteCommandAsync(async (cmd) => {
+            await ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "SELECT uid, gid, name, strength, vitality, max_vitality FROM gf.chickens LIMIT 1;";
-                await cmd.ExecuteScalarAsync().ConfigureAwait(false);
+                return cmd.ExecuteScalarAsync();
             });
-            await ExecuteCommandAsync(async (cmd) => {
+            await ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "SELECT wid, name, price, upgrades_stat, modifier FROM gf.chicken_upgrades LIMIT 1;";
-                await cmd.ExecuteScalarAsync().ConfigureAwait(false);
+                return cmd.ExecuteScalarAsync();
             });
-            await ExecuteCommandAsync(async (cmd) => {
+            await ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "SELECT uid, gid, wid FROM gf.chicken_active_upgrades LIMIT 1;";
-                await cmd.ExecuteScalarAsync().ConfigureAwait(false);
+                return cmd.ExecuteScalarAsync();
             });
-            await ExecuteCommandAsync(async (cmd) => {
+            await ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "SELECT id, url, savedurl FROM gf.feeds LIMIT 1;";
-                await cmd.ExecuteScalarAsync().ConfigureAwait(false);
+                return cmd.ExecuteScalarAsync();
             });
-            await ExecuteCommandAsync(async (cmd) => {
+            await ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "SELECT id, cid, qname FROM gf.subscriptions LIMIT 1;";
-                await cmd.ExecuteScalarAsync().ConfigureAwait(false);
+                return cmd.ExecuteScalarAsync();
             });
-            await ExecuteCommandAsync(async (cmd) => {
+            await ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "SELECT id, gid, filter FROM gf.filters LIMIT 1;";
-                await cmd.ExecuteScalarAsync().ConfigureAwait(false);
+                return cmd.ExecuteScalarAsync();
             });
         }
 
