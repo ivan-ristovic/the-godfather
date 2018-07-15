@@ -1,278 +1,212 @@
 ﻿#region USING_DIRECTIVES
-using System;
+using Npgsql;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-
-using TheGodfather.Services.Common;
-
-using Npgsql;
-using NpgsqlTypes;
+using TheGodfather.Modules.Chickens.Common;
 #endregion
 
-namespace TheGodfather.Services.Database
+namespace TheGodfather.Services.Database.Chickens
 {
-    public partial class DBService
+    public static class DBServiceChickenExtensions
     {
-        public async Task<IReadOnlyList<ChickenUpgrade>> GetAllChickenUpgradesAsync()
+        public static async Task AddChickenAsync(this DBService db, ulong uid, ulong gid, string name, ChickenStats stats)
+        {
+            await db.ExecuteCommandAsync(async (cmd) => {
+                cmd.CommandText = "INSERT INTO gf.chickens(uid, gid, name, strength, vitality, max_vitality) VALUES (@uid, @gid, @name, @strength, @vitality, @max_vitality) ON CONFLICT DO NOTHING;";
+                cmd.Parameters.Add(new NpgsqlParameter("uid", (long)uid));
+                cmd.Parameters.Add(new NpgsqlParameter("gid", (long)gid));
+                cmd.Parameters.Add(new NpgsqlParameter("strength", stats.BareStrength));
+                cmd.Parameters.Add(new NpgsqlParameter("vitality", stats.BareVitality));
+                cmd.Parameters.Add(new NpgsqlParameter("max_vitality", stats.BareMaxVitality));
+                if (string.IsNullOrWhiteSpace(name))
+                    cmd.Parameters.Add(new NpgsqlParameter<string>("name", null));
+                else
+                    cmd.Parameters.Add(new NpgsqlParameter("name", name));
+
+                await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+            });
+        }
+
+        public static async Task AddChickenUpgradeAsync(this DBService db, ulong uid, ulong gid, ChickenUpgrade upgrade)
+        {
+            await db.ExecuteCommandAsync(async (cmd) => {
+                cmd.CommandText = "INSERT INTO gf.chicken_active_upgrades VALUES (@uid, @gid, @wid) ON CONFLICT DO NOTHING;";
+                cmd.Parameters.Add(new NpgsqlParameter("uid", (long)uid));
+                cmd.Parameters.Add(new NpgsqlParameter("gid", (long)gid));
+                cmd.Parameters.Add(new NpgsqlParameter("wid", upgrade.Id));
+
+                await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+            });
+        }
+
+        public static async Task FilterChickensByVitalityAsync(this DBService db, ulong gid, int threshold)
+        {
+            await db.ExecuteCommandAsync(async (cmd) => {
+                cmd.CommandText = "DELETE FROM gf.chickens WHERE gid = @gid AND vitality <= @threshold;";
+                cmd.Parameters.Add(new NpgsqlParameter("gid", (long)gid));
+
+                await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+            });
+        }
+
+        public static async Task<IReadOnlyList<ChickenUpgrade>> GetAllChickenUpgradesAsync(this DBService db)
         {
             var upgrades = new List<ChickenUpgrade>();
 
-            await accessSemaphore.WaitAsync();
-            try {
-                using (var con = await OpenConnectionAsync())
-                using (var cmd = con.CreateCommand()) {
-                    cmd.CommandText = "SELECT * FROM gf.chicken_upgrades;";
+            await db.ExecuteCommandAsync(async (cmd) => {
+                cmd.CommandText = "SELECT wid, modifier, name, price, upgrades_stat FROM gf.chicken_upgrades;";
 
-                    using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
-                        while (await reader.ReadAsync().ConfigureAwait(false)) {
-                            upgrades.Add(new ChickenUpgrade() {
-                                Id = (int)reader["wid"],
-                                Name = (string)reader["name"],
-                                Price = (long)reader["price"],
-                                UpgradesStat = (UpgradedStat)(short)reader["upgrades_stat"],
-                                Modifier = (int)reader["modifier"]
-                            });
-                        }
+                using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
+                    while (await reader.ReadAsync().ConfigureAwait(false)) {
+                        upgrades.Add(new ChickenUpgrade() {
+                            Id = (int)reader["wid"],
+                            Modifier = (int)reader["modifier"],
+                            Name = (string)reader["name"],
+                            Price = (long)reader["price"],
+                            UpgradesStat = (ChickenStatUpgrade)(short)reader["upgrades_stat"]
+                        });
                     }
                 }
-            } finally {
-                accessSemaphore.Release();
-            }
+            });
 
             return upgrades.AsReadOnly();
         }
 
-        public async Task<ChickenUpgrade> GetChickenUpgradeAsync(int wid)
-        {
-            ChickenUpgrade upgrade = null;
-
-            await accessSemaphore.WaitAsync();
-            try {
-                using (var con = await OpenConnectionAsync())
-                using (var cmd = con.CreateCommand()) {
-                    cmd.CommandText = "SELECT * FROM gf.chicken_upgrades WHERE wid = @wid LIMIT 1;";
-                    cmd.Parameters.AddWithValue("wid", NpgsqlDbType.Integer, wid);
-
-                    using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
-                        if (await reader.ReadAsync().ConfigureAwait(false)) {
-                            upgrade = new ChickenUpgrade() {
-                                Id = (int)reader["wid"],
-                                Name = (string)reader["name"],
-                                Price = (long)reader["price"],
-                                UpgradesStat = (UpgradedStat)(short)reader["upgrades_stat"],
-                                Modifier = (int)reader["modifier"]
-                            };
-                        }
-                    }
-                }
-            } finally {
-                accessSemaphore.Release();
-            }
-
-            return upgrade;
-        }
-
-        public async Task<IReadOnlyList<ChickenUpgrade>> GetChickenUpgradesAsync(ulong uid, ulong gid)
-        {
-            var upgrades = new List<ChickenUpgrade>();
-
-            await accessSemaphore.WaitAsync();
-            try {
-                using (var con = await OpenConnectionAsync())
-                using (var cmd = con.CreateCommand()) {
-                    cmd.CommandText = "SELECT * FROM gf.chicken_active_upgrades JOIN gf.chicken_upgrades ON gid = @gid AND uid = @uid AND gf.chicken_active_upgrades.wid = gf.chicken_upgrades.wid;";
-                    cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
-                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
-
-                    using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
-                        while (await reader.ReadAsync().ConfigureAwait(false)) {
-                            upgrades.Add(new ChickenUpgrade() {
-                                Id = (int)reader["wid"],
-                                Name = (string)reader["name"],
-                                Price = (long)reader["price"],
-                                UpgradesStat = (UpgradedStat)(short)reader["upgrades_stat"],
-                                Modifier = (int)reader["modifier"]
-                            });
-                        }
-                    }
-                }
-            } finally {
-                accessSemaphore.Release();
-            }
-
-            return upgrades.AsReadOnly();
-        }
-
-        public async Task<IReadOnlyList<Chicken>> GetStrongestChickensForGuildAsync(ulong gid = 0)
-        {
-            var chickens = new List<Chicken>();
-
-            await accessSemaphore.WaitAsync();
-            try {
-                using (var con = await OpenConnectionAsync())
-                using (var cmd = con.CreateCommand()) {
-                    if (gid != 0) {
-                        cmd.CommandText = "SELECT * FROM gf.chickens WHERE gid = @gid ORDER BY strength DESC;";
-                        cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
-                    } else {
-                        cmd.CommandText = "SELECT * FROM gf.chickens ORDER BY strength DESC;";
-                    }
-
-                    using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
-                        while (await reader.ReadAsync().ConfigureAwait(false)) {
-                            chickens.Add(new Chicken() {
-                                Name = (string)reader["name"],
-                                OwnerId = (ulong)(long)reader["uid"],
-                                Stats = new ChickenStats() {
-                                    BareStrength = (int)reader["strength"],
-                                    BareMaxVitality = (int)reader["max_vitality"],
-                                    BareVitality = (int)reader["vitality"]
-                                }
-                            });
-                        }
-                    }
-                }
-            } finally {
-                accessSemaphore.Release();
-            }
-
-            return chickens.AsReadOnly();
-        }
-
-        public async Task BuyChickenAsync(ulong uid, ulong gid, string name, ChickenStats stats)
-        {
-            await accessSemaphore.WaitAsync();
-            try {
-                using (var con = await OpenConnectionAsync())
-                using (var cmd = con.CreateCommand()) {
-                    cmd.CommandText = "INSERT INTO gf.chickens VALUES (@uid, @gid, @name, @strength, @vitality, @max_vitality) ON CONFLICT DO NOTHING;";
-                    cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
-                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
-                    cmd.Parameters.AddWithValue("strength", NpgsqlDbType.Smallint, stats.BareStrength);
-                    cmd.Parameters.AddWithValue("vitality", NpgsqlDbType.Smallint, stats.BareVitality);
-                    cmd.Parameters.AddWithValue("max_vitality", NpgsqlDbType.Smallint, stats.BareMaxVitality);
-                    if (string.IsNullOrWhiteSpace(name))
-                        cmd.Parameters.AddWithValue("name", NpgsqlDbType.Varchar, DBNull.Value);
-                    else
-                        cmd.Parameters.AddWithValue("name", NpgsqlDbType.Varchar, name);
-
-                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
-                }
-            } finally {
-                accessSemaphore.Release();
-            }
-        }
-
-        public async Task BuyChickenUpgradeAsync(ulong uid, ulong gid, ChickenUpgrade upgrade)
-        {
-            await accessSemaphore.WaitAsync();
-            try {
-                using (var con = await OpenConnectionAsync())
-                using (var cmd = con.CreateCommand()) {
-                    cmd.CommandText = "INSERT INTO gf.chicken_active_upgrades VALUES (@uid, @gid, @wid) ON CONFLICT DO NOTHING;";
-                    cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
-                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
-                    cmd.Parameters.AddWithValue("wid", NpgsqlDbType.Integer, upgrade.Id);
-
-                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
-                }
-            } finally {
-                accessSemaphore.Release();
-            }
-        }
-
-        public async Task<Chicken> GetChickenInfoAsync(ulong uid, ulong gid)
+        public static async Task<Chicken> GetChickenAsync(this DBService db, ulong uid, ulong gid)
         {
             Chicken chicken = null;
 
-            await accessSemaphore.WaitAsync();
-            try {
-                using (var con = await OpenConnectionAsync())
-                using (var cmd = con.CreateCommand()) {
-                    cmd.CommandText = "SELECT * FROM gf.chickens WHERE uid = @uid AND gid = @gid LIMIT 1;";
-                    cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
-                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
+            await db.ExecuteCommandAsync(async (cmd) => {
+                cmd.CommandText = "SELECT * FROM gf.chickens WHERE uid = @uid AND gid = @gid LIMIT 1;";
+                cmd.Parameters.Add(new NpgsqlParameter("uid", (long)uid));
+                cmd.Parameters.Add(new NpgsqlParameter("gid", (long)gid));
 
-                    using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
-                        if (await reader.ReadAsync().ConfigureAwait(false)) {
-                            chicken = new Chicken() {
-                                Name = (string)reader["name"],
-                                OwnerId = (ulong)(long)reader["uid"],
-                                Stats = new ChickenStats() {
-                                    BareStrength = (int)reader["strength"],
-                                    BareMaxVitality = (int)reader["max_vitality"],
-                                    BareVitality = (int)reader["vitality"],
-                                }
-                            };
-                        }
+                using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
+                    if (await reader.ReadAsync().ConfigureAwait(false)) {
+                        chicken = new Chicken() {
+                            Name = (string)reader["name"],
+                            OwnerId = (ulong)(long)reader["uid"],
+                            Stats = new ChickenStats() {
+                                BareMaxVitality = (int)reader["max_vitality"],
+                                BareStrength = (int)reader["strength"],
+                                BareVitality = (int)reader["vitality"],
+                            }
+                        };
                     }
                 }
-            } finally {
-                accessSemaphore.Release();
-            }
-            
+            });
+
             if (chicken != null) {
-                var upgrades = await GetChickenUpgradesAsync(uid, gid)
-                    .ConfigureAwait(false);
+                IReadOnlyList<ChickenUpgrade> upgrades = await db.GetUpgradesForChickenAsync(uid, gid);
                 chicken.Stats.Upgrades = upgrades;
             }
 
             return chicken;
         }
 
-        public async Task ModifyChickenAsync(Chicken chicken, ulong gid)
+        public static async Task<ChickenUpgrade> GetChickenUpgradeAsync(this DBService db, int wid)
         {
-            await accessSemaphore.WaitAsync();
-            try {
-                using (var con = await OpenConnectionAsync())
-                using (var cmd = con.CreateCommand()) {
-                    cmd.CommandText = "UPDATE gf.chickens SET (name, strength, vitality, max_vitality) = (@name, @strength, @vitality, @max_vitality) WHERE uid = @uid AND gid = @gid;";
-                    cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)chicken.OwnerId);
-                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
-                    cmd.Parameters.AddWithValue("name", NpgsqlDbType.Varchar, chicken.Name);
-                    cmd.Parameters.AddWithValue("strength", NpgsqlDbType.Smallint, chicken.Stats.BareStrength);
-                    cmd.Parameters.AddWithValue("vitality", NpgsqlDbType.Smallint, chicken.Stats.BareVitality);
-                    cmd.Parameters.AddWithValue("max_vitality", NpgsqlDbType.Smallint, chicken.Stats.BareMaxVitality);
+            ChickenUpgrade upgrade = null;
 
-                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+            await db.ExecuteCommandAsync(async (cmd) => {
+                cmd.CommandText = "SELECT name, modifier, price, upgrades_stat FROM gf.chicken_upgrades WHERE wid = @wid LIMIT 1;";
+                cmd.Parameters.Add(new NpgsqlParameter("wid", wid));
+
+                using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
+                    if (await reader.ReadAsync().ConfigureAwait(false)) {
+                        upgrade = new ChickenUpgrade() {
+                            Id = wid,
+                            Modifier = (int)reader["modifier"],
+                            Name = (string)reader["name"],
+                            Price = (long)reader["price"],
+                            UpgradesStat = (ChickenStatUpgrade)(short)reader["upgrades_stat"]
+                        };
+                    }
                 }
-            } finally {
-                accessSemaphore.Release();
-            }
+            });
+
+            return upgrade;
         }
 
-        public async Task RemoveChickenAsync(ulong uid, ulong gid)
+        public static async Task<IReadOnlyList<Chicken>> GetStrongestChickensAsync(this DBService db, ulong gid = 0)
         {
-            await accessSemaphore.WaitAsync();
-            try {
-                using (var con = await OpenConnectionAsync())
-                using (var cmd = con.CreateCommand()) {
-                    cmd.CommandText = "DELETE FROM gf.chickens WHERE uid = @uid AND gid = @gid;";
-                    cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
-                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
+            var chickens = new List<Chicken>();
 
-                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+            await db.ExecuteCommandAsync(async (cmd) => {
+                if (gid != 0) {
+                    cmd.CommandText = "SELECT * FROM gf.chickens WHERE gid = @gid ORDER BY strength DESC;";
+                    cmd.Parameters.Add(new NpgsqlParameter("gid", (long)gid));
+                } else {
+                    cmd.CommandText = "SELECT * FROM gf.chickens ORDER BY strength DESC;";
                 }
-            } finally {
-                accessSemaphore.Release();
-            }
+
+                using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
+                    while (await reader.ReadAsync().ConfigureAwait(false)) {
+                        chickens.Add(new Chicken() {
+                            Name = (string)reader["name"],
+                            OwnerId = (ulong)(long)reader["uid"],
+                            Stats = new ChickenStats() {
+                                BareMaxVitality = (int)reader["max_vitality"],
+                                BareStrength = (int)reader["strength"],
+                                BareVitality = (int)reader["vitality"]
+                            }
+                        });
+                    }
+                }
+            });
+
+            return chickens.AsReadOnly();
         }
 
-        public async Task FilterChickensByVitalityAsync(ulong gid, int threshold)
+        public static async Task<IReadOnlyList<ChickenUpgrade>> GetUpgradesForChickenAsync(this DBService db, ulong uid, ulong gid)
         {
-            await accessSemaphore.WaitAsync();
-            try {
-                using (var con = await OpenConnectionAsync())
-                using (var cmd = con.CreateCommand()) {
-                    cmd.CommandText = "DELETE FROM gf.chickens WHERE gid = @gid AND vitality <= @threshold;";
-                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
-                    cmd.Parameters.AddWithValue("threshold", NpgsqlDbType.Integer, threshold);
+            var upgrades = new List<ChickenUpgrade>();
 
-                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+            await db.ExecuteCommandAsync(async (cmd) => {
+                cmd.CommandText = "SELECT gf.chicken_upgrades.wid, modifier, name, price, upgrades_stat FROM gf.chicken_active_upgrades JOIN gf.chicken_upgrades ON gid = @gid AND uid = @uid AND gf.chicken_active_upgrades.wid = gf.chicken_upgrades.wid;";
+                cmd.Parameters.Add(new NpgsqlParameter("uid", (long)uid));
+                cmd.Parameters.Add(new NpgsqlParameter("gid", (long)gid));
+
+                using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
+                    while (await reader.ReadAsync().ConfigureAwait(false)) {
+                        upgrades.Add(new ChickenUpgrade() {
+                            Id = (int)reader["wid"],
+                            Modifier = (int)reader["modifier"],
+                            Name = (string)reader["name"],
+                            Price = (long)reader["price"],
+                            UpgradesStat = (ChickenStatUpgrade)(short)reader["upgrades_stat"]
+                        });
+                    }
                 }
-            } finally {
-                accessSemaphore.Release();
-            }
+            });
+
+            return upgrades.AsReadOnly();
+        }
+
+        public static async Task ModifyChickenAsync(this DBService db, Chicken chicken, ulong gid)
+        {
+            await db.ExecuteCommandAsync(async (cmd) => {
+                cmd.CommandText = "UPDATE gf.chickens SET (name, strength, vitality, max_vitality) = (@name, @strength, @vitality, @max_vitality) WHERE uid = @uid AND gid = @gid;";
+                cmd.Parameters.Add(new NpgsqlParameter("uid", (long)chicken.OwnerId));
+                cmd.Parameters.Add(new NpgsqlParameter("gid", (long)gid));
+                cmd.Parameters.Add(new NpgsqlParameter("name", chicken.Name));
+                cmd.Parameters.Add(new NpgsqlParameter("strength", chicken.Stats.BareStrength));
+                cmd.Parameters.Add(new NpgsqlParameter("vitality", chicken.Stats.BareVitality));
+                cmd.Parameters.Add(new NpgsqlParameter("max_vitality", chicken.Stats.BareMaxVitality));
+
+                await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+            });
+        }
+
+        public static async Task RemoveChickenAsync(this DBService db, ulong uid, ulong gid)
+        {
+            await db.ExecuteCommandAsync(async (cmd) => {
+                cmd.CommandText = "DELETE FROM gf.chickens WHERE uid = @uid AND gid = @gid;";
+                cmd.Parameters.Add(new NpgsqlParameter("uid", (long)uid));
+                cmd.Parameters.Add(new NpgsqlParameter("gid", (long)gid));
+
+                await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
+            });
         }
     }
 }

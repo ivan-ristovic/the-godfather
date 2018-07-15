@@ -7,6 +7,7 @@ using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Services.Database.Bank;
+using TheGodfather.Services.Database.Chickens;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -42,7 +43,7 @@ namespace TheGodfather.Modules.Chickens
             [UsageExamples("!chicken train strength")]
             public async Task StrengthAsync(CommandContext ctx)
             {
-                var chicken = await Database.GetChickenInfoAsync(ctx.User.Id, ctx.Guild.Id)
+                var chicken = await Database.GetChickenAsync(ctx.User.Id, ctx.Guild.Id)
                     .ConfigureAwait(false);
                 if (chicken == null)
                     throw new CommandFailedException("You do not own a chicken!");
@@ -82,7 +83,7 @@ namespace TheGodfather.Modules.Chickens
             [UsageExamples("!chicken train vitality")]
             public async Task VitalityAsync(CommandContext ctx)
             {
-                var chicken = await Database.GetChickenInfoAsync(ctx.User.Id, ctx.Guild.Id)
+                var chicken = await Database.GetChickenAsync(ctx.User.Id, ctx.Guild.Id)
                     .ConfigureAwait(false);
                 if (chicken == null)
                     throw new CommandFailedException("You do not own a chicken!");

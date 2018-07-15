@@ -7,7 +7,7 @@ using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-using TheGodfather.Services.Common;
+using TheGodfather.Services.Database.Chickens;
 using TheGodfather.Services.Database.Bank;
 
 using DSharpPlus;
@@ -15,6 +15,7 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using TheGodfather.Services.Database;
+using TheGodfather.Modules.Chickens.Common;
 #endregion
 
 namespace TheGodfather.Modules.Chickens
@@ -124,7 +125,7 @@ namespace TheGodfather.Modules.Chickens
                 if (!name.All(c => Char.IsLetterOrDigit(c) || Char.IsWhiteSpace(c)))
                     throw new InvalidCommandUsageException("Name cannot contain characters that are not letters or digits.");
 
-                if (await Database.GetChickenInfoAsync(ctx.User.Id, ctx.Guild.Id).ConfigureAwait(false) != null)
+                if (await Database.GetChickenAsync(ctx.User.Id, ctx.Guild.Id).ConfigureAwait(false) != null)
                     throw new CommandFailedException("You already own a chicken!");
 
                 if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to buy a chicken for {Formatter.Bold(Chicken.Price(type).ToString())} credits?"))
@@ -133,7 +134,7 @@ namespace TheGodfather.Modules.Chickens
                 if (!await Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, Chicken.Price(type)).ConfigureAwait(false))
                     throw new CommandFailedException($"You do not have enought credits to buy a chicken ({Chicken.Price(type)} needed)!");
 
-                await Database.BuyChickenAsync(ctx.User.Id, ctx.Guild.Id, name, Chicken.StartingStats[type])
+                await Database.AddChickenAsync(ctx.User.Id, ctx.Guild.Id, name, Chicken.StartingStats[type])
                     .ConfigureAwait(false);
 
                 await ctx.InformSuccessAsync(StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} bought a chicken named {Formatter.Bold(name)}")

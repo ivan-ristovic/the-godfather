@@ -9,6 +9,7 @@ using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Chickens.Common;
+using TheGodfather.Services.Database.Chickens;
 using TheGodfather.Services;
 
 using DSharpPlus;
@@ -48,12 +49,12 @@ namespace TheGodfather.Modules.Chickens
                 if (user == null)
                     throw new InvalidCommandUsageException("You need to specify a user whose chicken you want to ambush!");
 
-                var ambushed = await Database.GetChickenInfoAsync(user.Id, ctx.Guild.Id)
+                var ambushed = await Database.GetChickenAsync(user.Id, ctx.Guild.Id)
                     .ConfigureAwait(false);
                 if (ambushed == null)
                     throw new CommandFailedException("Given user does not have a chicken in this guild!");
 
-                var ambusher = await Database.GetChickenInfoAsync(ctx.User.Id, ctx.Guild.Id)
+                var ambusher = await Database.GetChickenAsync(ctx.User.Id, ctx.Guild.Id)
                     .ConfigureAwait(false);
                 if (ambusher == null)
                     throw new CommandFailedException("You do not own a chicken!");
@@ -117,7 +118,7 @@ namespace TheGodfather.Modules.Chickens
                 if (!(ChannelEvent.GetEventInChannel(ctx.Channel.Id) is ChickenWar ambush))
                     throw new CommandFailedException("There are no ambushes running in this channel.");
 
-                var chicken = await Database.GetChickenInfoAsync(ctx.User.Id, ctx.Guild.Id)
+                var chicken = await Database.GetChickenAsync(ctx.User.Id, ctx.Guild.Id)
                     .ConfigureAwait(false);
                 if (chicken == null)
                     throw new CommandFailedException("You do not own a chicken!");
@@ -146,7 +147,7 @@ namespace TheGodfather.Modules.Chickens
                 if (!(ChannelEvent.GetEventInChannel(ctx.Channel.Id) is ChickenWar ambush))
                     throw new CommandFailedException("There are no ambushes running in this channel.");
 
-                var chicken = await Database.GetChickenInfoAsync(ctx.User.Id, ctx.Guild.Id)
+                var chicken = await Database.GetChickenAsync(ctx.User.Id, ctx.Guild.Id)
                     .ConfigureAwait(false);
                 if (chicken == null)
                     throw new CommandFailedException("You do not own a chicken!");

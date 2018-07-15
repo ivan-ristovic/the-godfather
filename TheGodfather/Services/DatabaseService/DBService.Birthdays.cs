@@ -4,7 +4,7 @@ using NpgsqlTypes;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using TheGodfather.Services.Common;
+using TheGodfather.Modules.Misc.Common;
 #endregion
 
 namespace TheGodfather.Services.Database.Birthdays

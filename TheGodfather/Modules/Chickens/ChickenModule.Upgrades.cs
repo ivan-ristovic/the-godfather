@@ -9,6 +9,7 @@ using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Chickens.Common;
 using TheGodfather.Services.Database.Bank;
+using TheGodfather.Services.Database.Chickens;
 using TheGodfather.Services.Common;
 
 using DSharpPlus;
@@ -40,7 +41,7 @@ namespace TheGodfather.Modules.Chickens
                 if (ChannelEvent.GetEventInChannel(ctx.Channel.Id) is ChickenWar)
                     throw new CommandFailedException("There is a chicken war running in this channel. No sells are allowed before the war finishes.");
 
-                var chicken = await Database.GetChickenInfoAsync(ctx.User.Id, ctx.Guild.Id)
+                var chicken = await Database.GetChickenAsync(ctx.User.Id, ctx.Guild.Id)
                     .ConfigureAwait(false);
                 if (chicken == null)
                     throw new CommandFailedException($"You do not own a chicken in this guild! Use command {Formatter.InlineCode("chicken buy")} to buy a chicken (1000 credits).");
@@ -59,10 +60,10 @@ namespace TheGodfather.Modules.Chickens
                 if (!await Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, upgrade.Price).ConfigureAwait(false))
                     throw new CommandFailedException($"You do not have enought credits to buy that upgrade!");
 
-                await Database.BuyChickenUpgradeAsync(ctx.User.Id, ctx.Guild.Id, upgrade)
+                await Database.AddChickenUpgradeAsync(ctx.User.Id, ctx.Guild.Id, upgrade)
                     .ConfigureAwait(false);
 
-                await ctx.InformSuccessAsync(StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} bought upgraded his chicken with {Formatter.Bold(upgrade.Name)} (+{upgrade.Modifier}) {upgrade.UpgradesStat.ToStatString()}!")
+                await ctx.InformSuccessAsync(StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} bought upgraded his chicken with {Formatter.Bold(upgrade.Name)} (+{upgrade.Modifier}) {upgrade.UpgradesStat.ToShortString()}!")
                     .ConfigureAwait(false);
             }
 
@@ -84,7 +85,7 @@ namespace TheGodfather.Modules.Chickens
                 await ctx.SendCollectionInPagesAsync(
                     "Available chicken upgrades",
                     upgrades,
-                    upgrade => $"{upgrade.Id} | {upgrade.Name} | {Formatter.Bold(upgrade.Price.ToString())} | +{upgrade.Modifier} {upgrade.UpgradesStat.ToStatString()}",
+                    upgrade => $"{upgrade.Id} | {upgrade.Name} | {Formatter.Bold(upgrade.Price.ToString())} | +{upgrade.Modifier} {upgrade.UpgradesStat.ToShortString()}",
                     DiscordColor.Orange
                 ).ConfigureAwait(false);
             }

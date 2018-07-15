@@ -454,6 +454,8 @@
     <Compile Include="Modules\Chickens\ChickenModule.Upgrades.cs" />
     <Compile Include="Modules\Chickens\ChickenModule.Train.cs" />
     <Compile Include="Modules\Chickens\ChickenModule.Buy.cs" />
+    <Compile Include="Modules\Chickens\Common\ChickenStats.cs" />
+    <Compile Include="Modules\Chickens\Common\ChickenUpgrade.cs" />
     <Compile Include="Modules\Currency\CasinoModule.Blackjack.cs" />
     <Compile Include="Modules\Currency\CasinoModule.Holdem.cs" />
     <Compile Include="Modules\Currency\CasinoModule.Lottery.cs" />
@@ -486,9 +488,8 @@
     <Compile Include="Modules\Music\MusicModule.Play.cs" />
     <Compile Include="Modules\Search\OMDbModule.cs" />
     <Compile Include="Modules\Search\XkcdModule.cs" />
-    <Compile Include="Services\Common\Birthday.cs" />
-    <Compile Include="Services\Common\Chicken.cs" />
-    <Compile Include="Services\Common\ChickenUpgrade.cs" />
+    <Compile Include="Modules\Misc\Common\Birthday.cs" />
+    <Compile Include="Modules\Chickens\Common\Chicken.cs" />
     <Compile Include="Services\Common\OMDbData.cs" />
     <Compile Include="Services\Common\PurchasableItem.cs" />
     <Compile Include="Services\Common\QuizData.cs" />

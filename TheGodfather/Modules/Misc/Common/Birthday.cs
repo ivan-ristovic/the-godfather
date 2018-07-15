@@ -2,7 +2,7 @@
 using System;
 #endregion
 
-namespace TheGodfather.Services.Common
+namespace TheGodfather.Modules.Misc.Common
 {
     public class Birthday
     {
