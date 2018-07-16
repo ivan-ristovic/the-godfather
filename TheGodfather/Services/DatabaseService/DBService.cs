@@ -188,6 +188,14 @@ namespace TheGodfather.Services.Database
                 cmd.CommandText = "SELECT id, uid FROM gf.purchases LIMIT 1;";
                 return cmd.ExecuteScalarAsync();
             });
+            await ExecuteCommandAsync(cmd => {
+                cmd.CommandText = "SELECT gid, rid FROM gf.assignable_roles LIMIT 1;";
+                return cmd.ExecuteScalarAsync();
+            });
+            await ExecuteCommandAsync(cmd => {
+                cmd.CommandText = "SELECT gid, rid FROM gf.automatic_roles LIMIT 1;";
+                return cmd.ExecuteScalarAsync();
+            });
         }
 
 

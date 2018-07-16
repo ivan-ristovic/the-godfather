@@ -10,6 +10,7 @@ using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Extensions;
 using TheGodfather.Services.Database.GuildConfig;
+using TheGodfather.Services.Database.SpecialRoles;
 #endregion
 
 namespace TheGodfather.EventListeners

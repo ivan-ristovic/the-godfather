@@ -15,6 +15,7 @@ using TheGodfather.Services;
 using TheGodfather.Services.Common;
 using TheGodfather.Services.Database.GuildConfig;
 using TheGodfather.Services.Database.Shop;
+using TheGodfather.Services.Database.SpecialRoles;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -88,7 +89,7 @@ namespace TheGodfather.Modules.Misc
         public async Task GiveRoleAsync(CommandContext ctx,
                                        [Description("Role to grant.")] DiscordRole role)
         {
-            if (!await Database.SelfAssignableRoleExistsForGuildAsync(ctx.Guild.Id, role.Id))
+            if (!await Database.IsSelfAssignableRoleAsync(ctx.Guild.Id, role.Id))
                 throw new CommandFailedException("That role is not in this guild's self-assignable roles list.");
 
             await ctx.Member.GrantRoleAsync(role, ctx.BuildReasonString("Granted self-assignable role."))
