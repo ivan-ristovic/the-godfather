@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-using TheGodfather.Services;
+using TheGodfather.Services.Database.Statuses;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -140,7 +140,7 @@ namespace TheGodfather.Modules.Owner
             public async Task SetAsync(CommandContext ctx,
                                       [Description("Status ID.")] int id)
             {
-                var status = await Database.GetBotStatusWithIdAsync(id)
+                var status = await Database.GetBotStatusByIdAsync(id)
                     .ConfigureAwait(false);
                 if (string.IsNullOrWhiteSpace(status.Item2))
                     throw new CommandFailedException("Status with given ID doesn't exist!");

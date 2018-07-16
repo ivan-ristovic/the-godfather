@@ -13,122 +13,88 @@ using Npgsql;
 using NpgsqlTypes;
 #endregion
 
-namespace TheGodfather.Services.Database
+namespace TheGodfather.Services.Database.Statuses
 {
-    public partial class DBService
+    internal static class DBServiceStatusExtensions
     {
-        public async Task AddBotStatusAsync(string status, ActivityType type)
+        public static Task AddBotStatusAsync(this DBService db, string status, ActivityType type)
         {
-            await accessSemaphore.WaitAsync();
-            try {
-                using (var con = await OpenConnectionAsync())
-                using (var cmd = con.CreateCommand()) {
-                    cmd.CommandText = "INSERT INTO gf.statuses(status, type) VALUES (@status, @type);";
-                    cmd.Parameters.AddWithValue("status", NpgsqlDbType.Varchar, status);
-                    cmd.Parameters.AddWithValue("type", NpgsqlDbType.Smallint, type);
+            return db.ExecuteCommandAsync(cmd => {
+                cmd.CommandText = "INSERT INTO gf.statuses(status, type) VALUES (@status, @type);";
+                cmd.Parameters.Add(new NpgsqlParameter<string>("status", status));
+                cmd.Parameters.Add(new NpgsqlParameter<short>("type", (short)type));
 
-                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
-                }
-            } finally {
-                accessSemaphore.Release();
-            }
+                return cmd.ExecuteNonQueryAsync();
+            });
         }
 
-        public async Task<IReadOnlyDictionary<int, string>> GetAllBotStatusesAsync()
+        public static async Task<IReadOnlyDictionary<int, string>> GetAllBotStatusesAsync(this DBService db)
         {
             var dict = new Dictionary<int, string>();
 
-            await accessSemaphore.WaitAsync();
-            try {
-                using (var con = await OpenConnectionAsync())
-                using (var cmd = con.CreateCommand()) {
-                    cmd.CommandText = "SELECT * FROM gf.statuses;";
+            await db.ExecuteCommandAsync(async (cmd) => {
+                cmd.CommandText = "SELECT id, type, status FROM gf.statuses;";
 
-                    using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
-                        while (await reader.ReadAsync().ConfigureAwait(false)) {
-                            int type = (short)reader["type"];
-                            if (!Enum.IsDefined(typeof(ActivityType), type)) {
-                                // Shared.LogProvider.LogMessage(LogLevel.Warning, "Undefined status activity found in database");
-                                type = 0;
-                            }
-                            dict[(int)reader["id"]] = ((ActivityType)type).ToString() + " " + (string)reader["status"];
-                        }
+                using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
+                    while (await reader.ReadAsync().ConfigureAwait(false)) {
+                        int type = (short)reader["type"];
+                        if (!Enum.IsDefined(typeof(ActivityType), type))
+                            type = 0;
+                        dict[(int)reader["id"]] = $"{((ActivityType)type).ToString()} {(string)reader["status"]}";
                     }
                 }
-            } finally {
-                accessSemaphore.Release();
-            }
+            });
 
             return new ReadOnlyDictionary<int, string>(dict);
         }
 
-        public async Task<(ActivityType, string)> GetBotStatusWithIdAsync(int id)
+        public static async Task<(ActivityType, string)> GetBotStatusByIdAsync(this DBService db, int id)
         {
             (ActivityType, string) status = (ActivityType.Playing, null);
 
-            await accessSemaphore.WaitAsync();
-            try {
-                using (var con = await OpenConnectionAsync())
-                using (var cmd = con.CreateCommand()) {
-                    cmd.CommandText = "SELECT type, status FROM gf.statuses WHERE id = @id LIMIT 1;";
-                    cmd.Parameters.AddWithValue("id", NpgsqlDbType.Integer, id);
+            await db.ExecuteCommandAsync(async (cmd) => {
+                cmd.CommandText = "SELECT type, status FROM gf.statuses WHERE id = @id LIMIT 1;";
+                cmd.Parameters.Add(new NpgsqlParameter<int>("id", id));
 
-                    using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
-                        if (await reader.ReadAsync().ConfigureAwait(false))
-                            status = ((ActivityType)(short)reader["type"], (string)reader["status"]);
-                    }
+                using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
+                    if (await reader.ReadAsync().ConfigureAwait(false))
+                        status = ((ActivityType)(short)reader["type"], (string)reader["status"]);
                 }
-            } finally {
-                accessSemaphore.Release();
-            }
+            });
 
             return status;
         }
 
-        public async Task<DiscordActivity> GetRandomBotActivityAsync()
+        public static async Task<DiscordActivity> GetRandomBotActivityAsync(this DBService db)
         {
             int type = 0;
             string status = null;
 
-            await accessSemaphore.WaitAsync();
-            try {
-                using (var con = await OpenConnectionAsync())
-                using (var cmd = con.CreateCommand()) {
-                    cmd.CommandText = "SELECT status, type FROM gf.statuses LIMIT 1 OFFSET floor(random() * (SELECT count(*) FROM gf.statuses));";
+            await db.ExecuteCommandAsync(async (cmd) => {
+                cmd.CommandText = "SELECT status, type FROM gf.statuses LIMIT 1 OFFSET floor(random() * (SELECT count(*) FROM gf.statuses));";
 
-                    using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
-                        if (await reader.ReadAsync().ConfigureAwait(false)) {
-                            status = (string)reader["status"];
-                            type = (short)reader["type"];
-                        }
+                using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
+                    if (await reader.ReadAsync().ConfigureAwait(false)) {
+                        status = (string)reader["status"];
+                        type = (short)reader["type"];
                     }
                 }
-            } finally {
-                accessSemaphore.Release();
-            }
+            });
 
-            if (!Enum.IsDefined(typeof(ActivityType), type)) {
-                // Shared.LogProvider.LogMessage(LogLevel.Warning, "Undefined status activity found in database");
+            if (!Enum.IsDefined(typeof(ActivityType), type))
                 type = 0;
-            }
 
             return new DiscordActivity(status ?? "@TheGodfather help", (ActivityType)type);
         }
 
-        public async Task RemoveBotStatusAsync(int id)
+        public static Task RemoveBotStatusAsync(this DBService db, int id)
         {
-            await accessSemaphore.WaitAsync();
-            try {
-                using (var con = await OpenConnectionAsync())
-                using (var cmd = con.CreateCommand()) {
-                    cmd.CommandText = "DELETE FROM gf.statuses WHERE id = @id;";
-                    cmd.Parameters.AddWithValue("id", NpgsqlDbType.Integer, id);
+            return db.ExecuteCommandAsync(cmd => {
+                cmd.CommandText = "DELETE FROM gf.statuses WHERE id = @id;";
+                cmd.Parameters.Add(new NpgsqlParameter<int>("id", id));
 
-                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
-                }
-            } finally {
-                accessSemaphore.Release();
-            }
+                return cmd.ExecuteNonQueryAsync();
+            });
         }
     }
 }

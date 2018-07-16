@@ -196,6 +196,10 @@ namespace TheGodfather.Services.Database
                 cmd.CommandText = "SELECT gid, rid FROM gf.automatic_roles LIMIT 1;";
                 return cmd.ExecuteScalarAsync();
             });
+            await ExecuteCommandAsync(cmd => {
+                cmd.CommandText = "SELECT status, type, id FROM gf.statuses LIMIT 1;";
+                return cmd.ExecuteScalarAsync();
+            });
         }
 
 
