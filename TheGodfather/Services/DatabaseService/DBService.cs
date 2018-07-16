@@ -156,6 +156,18 @@ namespace TheGodfather.Services.Database
                 cmd.CommandText = "SELECT uid FROM gf.privileged LIMIT 1;";
                 return cmd.ExecuteScalarAsync();
             });
+            await ExecuteCommandAsync(cmd => {
+                cmd.CommandText = "SELECT uid, count FROM gf.msgcount LIMIT 1;";
+                return cmd.ExecuteScalarAsync();
+            });
+            await ExecuteCommandAsync(cmd => {
+                cmd.CommandText = "SELECT uid, count FROM gf.msgcount LIMIT 1;";
+                return cmd.ExecuteScalarAsync();
+            });
+            await ExecuteCommandAsync(cmd => {
+                cmd.CommandText = "SELECT gid, rank, name FROM gf.ranks LIMIT 1;";
+                return cmd.ExecuteScalarAsync();
+            });
         }
 
 

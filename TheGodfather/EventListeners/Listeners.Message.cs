@@ -11,6 +11,7 @@ using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Reactions.Common;
+using TheGodfather.Services.Database.Ranks;
 #endregion
 
 namespace TheGodfather.EventListeners
@@ -42,7 +43,7 @@ namespace TheGodfather.EventListeners
 
             ushort rank = shard.SharedData.IncrementMessageCountForUser(e.Author.Id);
             if (rank != 0) {
-                string rankname = await shard.DatabaseService.GetCustomRankNameForGuildAsync(e.Guild.Id, rank);
+                string rankname = await shard.DatabaseService.GetRankAsync(e.Guild.Id, rank);
                 await e.Channel.InformSuccessAsync($"GG {e.Author.Mention}! You have advanced to level {Formatter.Bold(rank.ToString())} {(string.IsNullOrWhiteSpace(rankname) ? "" : $": {Formatter.Italic(rankname)}")} !", StaticDiscordEmoji.Medal);
             }
         }

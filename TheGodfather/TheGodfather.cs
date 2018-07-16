@@ -24,6 +24,7 @@ using TheGodfather.Services.Database.Birthdays;
 using TheGodfather.Services.Database.Blocked;
 using TheGodfather.Services.Database.Filters;
 using TheGodfather.Services.Database.GuildConfig;
+using TheGodfather.Services.Database.Ranks;
 #endregion
 
 namespace TheGodfather
@@ -163,7 +164,7 @@ namespace TheGodfather
                 gemojireactions.TryAdd(reaction.Key, new ConcurrentHashSet<EmojiReaction>(reaction.Value));
 
             // User message count (XP)
-            IReadOnlyDictionary<ulong, ulong> msgcount_db = await DatabaseService.GetExperienceForAllUsersAsync();
+            IReadOnlyDictionary<ulong, ulong> msgcount_db = await DatabaseService.GetXpForAllUsersAsync();
             var msgcount = new ConcurrentDictionary<ulong, ulong>();
             foreach (KeyValuePair<ulong, ulong> entry in msgcount_db)
                 msgcount.TryAdd(entry.Key, entry.Value);

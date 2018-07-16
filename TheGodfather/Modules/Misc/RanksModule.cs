@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-using TheGodfather.Services;
+using TheGodfather.Services.Database.Ranks;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -40,7 +40,7 @@ namespace TheGodfather.Modules.Misc
 
             var rank = Shared.CalculateRankForUser(user.Id);
             var msgcount = Shared.GetMessageCountForUser(user.Id);
-            var rankname = await Database.GetCustomRankNameForGuildAsync(ctx.Guild.Id, rank)
+            var rankname = await Database.GetRankAsync(ctx.Guild.Id, rank)
                 .ConfigureAwait(false);
 
             var emb = new DiscordEmbedBuilder() {
@@ -78,7 +78,7 @@ namespace TheGodfather.Modules.Misc
             if (name.Length > 30)
                 throw new CommandFailedException("Rank name cannot be longer than 30 characters!");
 
-            await Database.AddCustomRankNameAsync(ctx.Guild.Id, rank, name)
+            await Database.AddRankAsync(ctx.Guild.Id, rank, name)
                 .ConfigureAwait(false);
             await ctx.InformSuccessAsync()
                 .ConfigureAwait(false);
@@ -94,7 +94,7 @@ namespace TheGodfather.Modules.Misc
         public async Task DeleteAsync(CommandContext ctx,
                                      [Description("Rank.")] int rank)
         {
-            await Database.RemoveCustomRankNameAsync(ctx.Guild.Id, rank)
+            await Database.RemoveRankAsync(ctx.Guild.Id, rank)
                 .ConfigureAwait(false);
             await ctx.InformSuccessAsync()
                 .ConfigureAwait(false);
@@ -108,7 +108,7 @@ namespace TheGodfather.Modules.Misc
         [UsageExamples("!rank list")]
         public async Task RankListAsync(CommandContext ctx)
         {
-            var ranks = await Database.GetAllCustomRankNamesForGuildAsync(ctx.Guild.Id)
+            var ranks = await Database.GetAllRanksAsync(ctx.Guild.Id)
                 .ConfigureAwait(false);
             if (!ranks.Any())
                 throw new CommandFailedException("No custom rank names registered for this guild!");
@@ -134,7 +134,7 @@ namespace TheGodfather.Modules.Misc
                 Color = DiscordColor.Purple
             };
 
-            var ranks = await Database.GetAllCustomRankNamesForGuildAsync(ctx.Guild.Id)
+            var ranks = await Database.GetAllRanksAsync(ctx.Guild.Id)
                 .ConfigureAwait(false);
 
             foreach (var kvp in top) {

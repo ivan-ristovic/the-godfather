@@ -12,6 +12,7 @@ using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Reactions.Common;
 using TheGodfather.Services.Database;
+using TheGodfather.Services.Database.Ranks;
 #endregion
 
 namespace TheGodfather
@@ -62,7 +63,7 @@ namespace TheGodfather
         public async Task SyncDataWithDatabaseAsync(DBService db)
         {
             foreach ((ulong uid, ulong count) in this.MessageCount)
-                await db.UpdateExperienceForUserAsync(uid, count);
+                await db.ModifyXpAsync(uid, count);
         }
 
 
