@@ -45,7 +45,7 @@ namespace TheGodfather.Services.Database.GuildConfig
 
             await db.ExecuteCommandAsync(async (cmd) => {
                 cmd.CommandText = "SELECT leave_cid FROM gf.guild_cfg WHERE gid = @gid LIMIT 1;";
-                cmd.Parameters.Add(new NpgsqlParameter("gid", (long)guild.Id));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)guild.Id));
 
                 object res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
                 if (res != null && !(res is DBNull))
@@ -61,7 +61,7 @@ namespace TheGodfather.Services.Database.GuildConfig
 
             await db.ExecuteCommandAsync(async (cmd) => {
                 cmd.CommandText = "SELECT leave_msg FROM gf.guild_cfg WHERE gid = @gid LIMIT 1;";
-                cmd.Parameters.Add(new NpgsqlParameter("gid", (long)gid));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
 
                 object res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
                 if (res != null && !(res is DBNull))
@@ -77,7 +77,7 @@ namespace TheGodfather.Services.Database.GuildConfig
 
             await db.ExecuteCommandAsync(async (cmd) => {
                 cmd.CommandText = "SELECT welcome_cid FROM gf.guild_cfg WHERE gid = @gid LIMIT 1;";
-                cmd.Parameters.Add(new NpgsqlParameter("gid", (long)guild.Id));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)guild.Id));
 
                 object res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
                 if (res != null && !(res is DBNull))
@@ -93,7 +93,7 @@ namespace TheGodfather.Services.Database.GuildConfig
 
             await db.ExecuteCommandAsync(async (cmd) => {
                 cmd.CommandText = "SELECT welcome_msg FROM gf.guild_cfg WHERE gid = @gid LIMIT 1;";
-                cmd.Parameters.Add(new NpgsqlParameter("gid", (long)gid));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
 
                 object res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
                 if (res != null && !(res is DBNull))
@@ -107,7 +107,7 @@ namespace TheGodfather.Services.Database.GuildConfig
         {
             return db.ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "INSERT INTO gf.guild_cfg VALUES (@gid) ON CONFLICT DO NOTHING;";
-                cmd.Parameters.Add(new NpgsqlParameter("gid", (long)gid));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
 
                 return cmd.ExecuteNonQueryAsync();
             });
@@ -129,7 +129,7 @@ namespace TheGodfather.Services.Database.GuildConfig
         {
             return db.ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "UPDATE gf.guild_cfg SET prefix = NULL WHERE gid = @gid;";
-                cmd.Parameters.Add(new NpgsqlParameter("gid", (long)gid));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
 
                 return cmd.ExecuteNonQueryAsync();
             });
@@ -139,8 +139,8 @@ namespace TheGodfather.Services.Database.GuildConfig
         {
             return db.ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "UPDATE gf.guild_cfg SET leave_cid = @cid WHERE gid = @gid;";
-                cmd.Parameters.Add(new NpgsqlParameter("gid", (long)gid));
-                cmd.Parameters.Add(new NpgsqlParameter("cid", (long)cid));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("cid", (long)cid));
 
                 return cmd.ExecuteNonQueryAsync();
             });
@@ -150,11 +150,8 @@ namespace TheGodfather.Services.Database.GuildConfig
         {
             return db.ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "UPDATE gf.guild_cfg SET leave_msg = @message WHERE gid = @gid;";
-                cmd.Parameters.Add(new NpgsqlParameter("gid", (long)gid));
-                if (string.IsNullOrWhiteSpace(message))
-                    cmd.Parameters.Add(new NpgsqlParameter<string>("message", message));
-                else
-                    cmd.Parameters.Add(new NpgsqlParameter("message", message));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
+                cmd.Parameters.Add(new NpgsqlParameter<string>("message", message));
 
                 return cmd.ExecuteNonQueryAsync();
             });
@@ -164,8 +161,8 @@ namespace TheGodfather.Services.Database.GuildConfig
         {
             return db.ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "UPDATE gf.guild_cfg SET prefix = @prefix WHERE gid = @gid;";
-                cmd.Parameters.Add(new NpgsqlParameter("gid", (long)gid));
-                cmd.Parameters.Add(new NpgsqlParameter("prefix", prefix));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
+                cmd.Parameters.Add(new NpgsqlParameter<string>("prefix", prefix));
 
                 return cmd.ExecuteNonQueryAsync();
             });
@@ -175,8 +172,8 @@ namespace TheGodfather.Services.Database.GuildConfig
         {
             return db.ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "UPDATE gf.guild_cfg SET welcome_cid = @cid WHERE gid = @gid;";
-                cmd.Parameters.Add(new NpgsqlParameter("gid", (long)gid));
-                cmd.Parameters.Add(new NpgsqlParameter("cid", (long)cid));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("cid", (long)cid));
 
                 return cmd.ExecuteNonQueryAsync();
             });
@@ -186,11 +183,8 @@ namespace TheGodfather.Services.Database.GuildConfig
         {
             return db.ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "UPDATE gf.guild_cfg SET welcome_msg = @message WHERE gid = @gid;";
-                cmd.Parameters.Add(new NpgsqlParameter("gid", (long)gid));
-                if (string.IsNullOrWhiteSpace(message))
-                    cmd.Parameters.Add(new NpgsqlParameter<string>("message", message));
-                else
-                    cmd.Parameters.Add(new NpgsqlParameter("message", message));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
+                cmd.Parameters.Add(new NpgsqlParameter<string>("message", message));
 
                 return cmd.ExecuteNonQueryAsync();
             });
@@ -200,7 +194,7 @@ namespace TheGodfather.Services.Database.GuildConfig
         {
             return db.ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "DELETE FROM gf.guild_cfg WHERE gid = @gid;";
-                cmd.Parameters.Add(new NpgsqlParameter("gid", (long)gid));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
 
                 return cmd.ExecuteNonQueryAsync();
             });
@@ -210,19 +204,16 @@ namespace TheGodfather.Services.Database.GuildConfig
         {
             return db.ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "UPDATE gf.guild_cfg SET (prefix, suggestions_enabled, log_cid, linkfilter_enabled, linkfilter_invites, linkfilter_booters, linkfilter_disturbing, linkfilter_iploggers, linkfilter_shorteners) = (@prefix, @suggestions_enabled, @log_cid, @linkfilter_enabled, @linkfilter_invites, @linkfilter_booters, @linkfilter_disturbing, @linkfilter_iploggers, @linkfilter_shorteners) WHERE gid = @gid;";
-                cmd.Parameters.Add(new NpgsqlParameter("gid", (long)gid));
-                if (string.IsNullOrWhiteSpace(cfg.Prefix))
-                    cmd.Parameters.Add(new NpgsqlParameter<string>("prefix", null));
-                else
-                    cmd.Parameters.Add(new NpgsqlParameter("prefix", cfg.Prefix));
-                cmd.Parameters.Add(new NpgsqlParameter("log_cid", (long)cfg.LogChannelId));
-                cmd.Parameters.Add(new NpgsqlParameter("suggestions_enabled", cfg.SuggestionsEnabled));
-                cmd.Parameters.Add(new NpgsqlParameter("linkfilter_enabled", cfg.LinkfilterEnabled));
-                cmd.Parameters.Add(new NpgsqlParameter("linkfilter_invites", cfg.BlockDiscordInvites));
-                cmd.Parameters.Add(new NpgsqlParameter("linkfilter_booters", cfg.BlockBooterWebsites));
-                cmd.Parameters.Add(new NpgsqlParameter("linkfilter_disturbing", cfg.BlockDisturbingWebsites));
-                cmd.Parameters.Add(new NpgsqlParameter("linkfilter_iploggers", cfg.BlockIpLoggingWebsites));
-                cmd.Parameters.Add(new NpgsqlParameter("linkfilter_shorteners", cfg.BlockUrlShorteners));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
+                cmd.Parameters.Add(new NpgsqlParameter<string>("prefix", cfg.Prefix));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("log_cid", (long)cfg.LogChannelId));
+                cmd.Parameters.Add(new NpgsqlParameter<bool>("suggestions_enabled", cfg.SuggestionsEnabled));
+                cmd.Parameters.Add(new NpgsqlParameter<bool>("linkfilter_enabled", cfg.LinkfilterEnabled));
+                cmd.Parameters.Add(new NpgsqlParameter<bool>("linkfilter_invites", cfg.BlockDiscordInvites));
+                cmd.Parameters.Add(new NpgsqlParameter<bool>("linkfilter_booters", cfg.BlockBooterWebsites));
+                cmd.Parameters.Add(new NpgsqlParameter<bool>("linkfilter_disturbing", cfg.BlockDisturbingWebsites));
+                cmd.Parameters.Add(new NpgsqlParameter<bool>("linkfilter_iploggers", cfg.BlockIpLoggingWebsites));
+                cmd.Parameters.Add(new NpgsqlParameter<bool>("linkfilter_shorteners", cfg.BlockUrlShorteners));
 
                 return cmd.ExecuteNonQueryAsync();
             });

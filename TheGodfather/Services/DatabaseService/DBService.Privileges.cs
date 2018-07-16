@@ -13,7 +13,7 @@ namespace TheGodfather.Services.Database.Privileges
         {
             return db.ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "INSERT INTO gf.privileged (uid) VALUES (@uid);";
-                cmd.Parameters.Add(new NpgsqlParameter("uid", (long)uid));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("uid", (long)uid));
 
                 return cmd.ExecuteNonQueryAsync();
             });
@@ -41,7 +41,7 @@ namespace TheGodfather.Services.Database.Privileges
 
             await db.ExecuteCommandAsync(async (cmd) => {
                 cmd.CommandText = "SELECT uid FROM gf.privileged WHERE uid = @uid LIMIT 1;";
-                cmd.Parameters.Add(new NpgsqlParameter("uid", (long)uid));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("uid", (long)uid));
 
                 object res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
                 if (res != null && !(res is DBNull))
@@ -55,7 +55,7 @@ namespace TheGodfather.Services.Database.Privileges
         {
             return db.ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "DELETE FROM gf.privileged WHERE uid = @uid;";
-                cmd.Parameters.Add(new NpgsqlParameter("uid", (long)uid));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("uid", (long)uid));
 
                 return cmd.ExecuteNonQueryAsync();
             });

@@ -15,9 +15,9 @@ namespace TheGodfather.Services.Database.Memes
         {
             return db.ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "INSERT INTO gf.memes VALUES (@gid, @name, @url) ON CONFLICT (gid, name) DO UPDATE SET url = @url;";
-                cmd.Parameters.Add(new NpgsqlParameter("gid", (long)gid));
-                cmd.Parameters.Add(new NpgsqlParameter("name", name));
-                cmd.Parameters.Add(new NpgsqlParameter("url", url));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
+                cmd.Parameters.Add(new NpgsqlParameter<string>("name", name));
+                cmd.Parameters.Add(new NpgsqlParameter<string>("url", url));
 
                 return cmd.ExecuteNonQueryAsync();
             });
@@ -29,7 +29,7 @@ namespace TheGodfather.Services.Database.Memes
 
             await db.ExecuteCommandAsync(async (cmd) => {
                 cmd.CommandText = "SELECT name, url FROM gf.memes WHERE gid = @gid;";
-                cmd.Parameters.Add(new NpgsqlParameter("gid", (long)gid));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
 
                 using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
                     while (await reader.ReadAsync().ConfigureAwait(false))
@@ -46,8 +46,8 @@ namespace TheGodfather.Services.Database.Memes
 
             await db.ExecuteCommandAsync(async (cmd) => {
                 cmd.CommandText = "SELECT url FROM gf.memes WHERE gid = @gid AND name = @name LIMIT 1;";
-                cmd.Parameters.Add(new NpgsqlParameter("gid", (long)gid));
-                cmd.Parameters.Add(new NpgsqlParameter("name", name));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
+                cmd.Parameters.Add(new NpgsqlParameter<string>("name", name));
 
                 object res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
                 if (res != null && !(res is DBNull))
@@ -63,7 +63,7 @@ namespace TheGodfather.Services.Database.Memes
 
             await db.ExecuteCommandAsync(async (cmd) => {
                 cmd.CommandText = "SELECT url FROM gf.memes WHERE gid = @gid LIMIT 1 OFFSET floor(random() * (SELECT count(*) FROM gf.memes WHERE gid = @gid));";
-                cmd.Parameters.Add(new NpgsqlParameter("gid", (long)gid));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
 
                 object res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
                 if (res != null && !(res is DBNull))
@@ -77,7 +77,7 @@ namespace TheGodfather.Services.Database.Memes
         {
             return db.ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "DELETE FROM gf.memes WHERE gid = @gid;";
-                cmd.Parameters.Add(new NpgsqlParameter("gid", (long)gid));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
 
                 return cmd.ExecuteNonQueryAsync();
             });
@@ -87,8 +87,8 @@ namespace TheGodfather.Services.Database.Memes
         {
             return db.ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "DELETE FROM gf.memes WHERE gid = @gid AND name = @name;";
-                cmd.Parameters.Add(new NpgsqlParameter("gid", (long)gid));
-                cmd.Parameters.Add(new NpgsqlParameter("name", name));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
+                cmd.Parameters.Add(new NpgsqlParameter<string>("name", name));
 
                 return cmd.ExecuteNonQueryAsync();
             });

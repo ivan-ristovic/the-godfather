@@ -14,11 +14,11 @@ namespace TheGodfather.Services.Database.Blocked
             return db.ExecuteCommandAsync(cmd => {
                 if (string.IsNullOrWhiteSpace(reason)) {
                     cmd.CommandText = "INSERT INTO gf.blocked_channels VALUES (@cid, NULL);";
-                    cmd.Parameters.Add(new NpgsqlParameter("cid", (long)cid));
+                    cmd.Parameters.Add(new NpgsqlParameter<long>("cid", (long)cid));
                 } else {
                     cmd.CommandText = "INSERT INTO gf.blocked_channels VALUES (@cid, @reason);";
-                    cmd.Parameters.Add(new NpgsqlParameter("cid", (long)cid));
-                    cmd.Parameters.Add(new NpgsqlParameter("reason", reason));
+                    cmd.Parameters.Add(new NpgsqlParameter<long>("cid", (long)cid));
+                    cmd.Parameters.Add(new NpgsqlParameter<string>("reason", reason));
                 }
 
                 return cmd.ExecuteNonQueryAsync();
@@ -30,11 +30,11 @@ namespace TheGodfather.Services.Database.Blocked
             return db.ExecuteCommandAsync(cmd => {
                 if (string.IsNullOrWhiteSpace(reason)) {
                     cmd.CommandText = "INSERT INTO gf.blocked_users VALUES (@uid, NULL);";
-                    cmd.Parameters.Add(new NpgsqlParameter("uid", (long)uid));
+                    cmd.Parameters.Add(new NpgsqlParameter<long>("uid", (long)uid));
                 } else {
                     cmd.CommandText = "INSERT INTO gf.blocked_users VALUES (@uid, @reason);";
-                    cmd.Parameters.Add(new NpgsqlParameter("uid", (long)uid));
-                    cmd.Parameters.Add(new NpgsqlParameter("reason", reason));
+                    cmd.Parameters.Add(new NpgsqlParameter<long>("uid", (long)uid));
+                    cmd.Parameters.Add(new NpgsqlParameter<string>("reason", reason));
                 }
 
                 return cmd.ExecuteNonQueryAsync();
@@ -77,7 +77,7 @@ namespace TheGodfather.Services.Database.Blocked
         {
             return db.ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "DELETE FROM gf.blocked_channels WHERE cid = @cid;";
-                cmd.Parameters.Add(new NpgsqlParameter("cid", (long)cid));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("cid", (long)cid));
 
                 return cmd.ExecuteNonQueryAsync();
             });
@@ -87,7 +87,7 @@ namespace TheGodfather.Services.Database.Blocked
         {
             return db.ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "DELETE FROM gf.blocked_users WHERE uid = @uid;";
-                cmd.Parameters.Add(new NpgsqlParameter("uid", (long)uid));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("uid", (long)uid));
 
                 return cmd.ExecuteNonQueryAsync();
             });

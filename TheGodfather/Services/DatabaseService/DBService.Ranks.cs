@@ -14,9 +14,9 @@ namespace TheGodfather.Services.Database.Ranks
         {
             return db.ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "INSERT INTO gf.ranks(gid, rank, name) VALUES (@gid, @rank, @name) ON CONFLICT (gid, rank) DO UPDATE SET name = EXCLUDED.name;";
-                cmd.Parameters.Add(new NpgsqlParameter("gid", (long)gid));
-                cmd.Parameters.Add(new NpgsqlParameter("rank", rank));
-                cmd.Parameters.Add(new NpgsqlParameter("name", name));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
+                cmd.Parameters.Add(new NpgsqlParameter<int>("rank", rank));
+                cmd.Parameters.Add(new NpgsqlParameter<string>("name", name));
 
                 return cmd.ExecuteNonQueryAsync();
             });
@@ -28,7 +28,7 @@ namespace TheGodfather.Services.Database.Ranks
 
             await db.ExecuteCommandAsync(async (cmd) => {
                 cmd.CommandText = "SELECT rank, name FROM gf.ranks WHERE gid = @gid;";
-                cmd.Parameters.Add(new NpgsqlParameter("gid", (long)gid));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
 
                 using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
                     while (await reader.ReadAsync().ConfigureAwait(false))
@@ -45,8 +45,8 @@ namespace TheGodfather.Services.Database.Ranks
 
             await db.ExecuteCommandAsync(async (cmd) => {
                 cmd.CommandText = "SELECT name FROM gf.ranks WHERE gid = @gid AND rank = @rank LIMIT 1;";
-                cmd.Parameters.Add(new NpgsqlParameter("gid", (long)gid));
-                cmd.Parameters.Add(new NpgsqlParameter("rank", rank));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
+                cmd.Parameters.Add(new NpgsqlParameter<int>("rank", rank));
 
                 object res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
                 if (res != null && !(res is DBNull))
@@ -77,8 +77,8 @@ namespace TheGodfather.Services.Database.Ranks
             return db.ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "INSERT INTO gf.msgcount VALUES (@uid, @count) ON CONFLICT (uid) DO UPDATE SET count = EXCLUDED.count;";
 
-                cmd.Parameters.Add(new NpgsqlParameter("uid", (long)uid));
-                cmd.Parameters.Add(new NpgsqlParameter("count", (long)xp));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("uid", (long)uid));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("count", (long)xp));
 
                 return cmd.ExecuteNonQueryAsync();
             });
@@ -88,8 +88,8 @@ namespace TheGodfather.Services.Database.Ranks
         {
             return db.ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "DELETE FROM gf.ranks WHERE gid = @gid AND rank = @rank;";
-                cmd.Parameters.Add(new NpgsqlParameter("gid", (long)gid));
-                cmd.Parameters.Add(new NpgsqlParameter("rank", rank));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
+                cmd.Parameters.Add(new NpgsqlParameter<int>("rank", rank));
 
                 return cmd.ExecuteNonQueryAsync();
             });

@@ -55,7 +55,7 @@ namespace TheGodfather.Services.Database.Feeds
 
             await db.ExecuteCommandAsync(async (cmd) => {
                 cmd.CommandText = "SELECT feeds.id, qname, url FROM gf.feeds JOIN gf.subscriptions ON feeds.id = subscriptions.id WHERE cid = @cid;";
-                cmd.Parameters.Add(new NpgsqlParameter("cid", (long)cid));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("cid", (long)cid));
 
                 using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
                     while (await reader.ReadAsync().ConfigureAwait(false)) {
@@ -100,9 +100,9 @@ namespace TheGodfather.Services.Database.Feeds
 
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "INSERT INTO gf.subscriptions VALUES (@id, @cid, @qname) ON CONFLICT DO NOTHING RETURNING id;";
-                    cmd.Parameters.Add(new NpgsqlParameter("id", id.Value));
-                    cmd.Parameters.Add(new NpgsqlParameter("cid", (long)cid));
-                    cmd.Parameters.Add(new NpgsqlParameter("qname", qname));
+                    cmd.Parameters.Add(new NpgsqlParameter<int>("id", id.Value));
+                    cmd.Parameters.Add(new NpgsqlParameter<long>("cid", (long)cid));
+                    cmd.Parameters.Add(new NpgsqlParameter<string>("qname", qname));
 
                     object res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
                     if (res != null && !(res is DBNull))
@@ -117,7 +117,7 @@ namespace TheGodfather.Services.Database.Feeds
         {
             return db.ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "DELETE FROM gf.feeds WHERE id = @fid;";
-                cmd.Parameters.Add(new NpgsqlParameter("fid", id));
+                cmd.Parameters.Add(new NpgsqlParameter<int>("fid", id));
 
                 return cmd.ExecuteNonQueryAsync();
             });
@@ -127,8 +127,8 @@ namespace TheGodfather.Services.Database.Feeds
         {
             return db.ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "DELETE FROM gf.subscriptions WHERE cid = @cid AND id = @id;";
-                cmd.Parameters.Add(new NpgsqlParameter("cid", (long)cid));
-                cmd.Parameters.Add(new NpgsqlParameter("id", id));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("cid", (long)cid));
+                cmd.Parameters.Add(new NpgsqlParameter<int>("id", id));
 
                 return cmd.ExecuteNonQueryAsync();
             });
@@ -138,8 +138,8 @@ namespace TheGodfather.Services.Database.Feeds
         {
             return db.ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "DELETE FROM gf.subscriptions WHERE cid = @cid AND id = @id;";
-                cmd.Parameters.Add(new NpgsqlParameter("cid", (long)cid));
-                cmd.Parameters.Add(new NpgsqlParameter("qname", qname));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("cid", (long)cid));
+                cmd.Parameters.Add(new NpgsqlParameter<string>("qname", qname));
 
                 return cmd.ExecuteNonQueryAsync();
             });
@@ -149,7 +149,7 @@ namespace TheGodfather.Services.Database.Feeds
         {
             return db.ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "DELETE FROM gf.subscriptions WHERE cid = @cid AND id = (SELECT id FROM gf.feeds WHERE url = @url LIMIT 1);";
-                cmd.Parameters.Add(new NpgsqlParameter("cid", (long)cid));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("cid", (long)cid));
                 cmd.Parameters.AddWithValue("url", NpgsqlDbType.Text, url);
 
                 return cmd.ExecuteNonQueryAsync();
@@ -160,7 +160,7 @@ namespace TheGodfather.Services.Database.Feeds
         {
             return db.ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "UPDATE gf.feeds SET savedurl = @newurl WHERE id = @id;";
-                cmd.Parameters.Add(new NpgsqlParameter("id", id));
+                cmd.Parameters.Add(new NpgsqlParameter<int>("id", id));
                 cmd.Parameters.AddWithValue("newurl", NpgsqlDbType.Text, newurl);
 
                 return cmd.ExecuteNonQueryAsync();

@@ -15,7 +15,7 @@ namespace TheGodfather.Services.Database.Insults
         {
             return db.ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "INSERT INTO gf.insults(insult) VALUES (@insult);";
-                cmd.Parameters.Add(new NpgsqlParameter("insult", insult));
+                cmd.Parameters.Add(new NpgsqlParameter<string>("insult", insult));
 
                 return cmd.ExecuteNonQueryAsync();
             });
@@ -56,7 +56,7 @@ namespace TheGodfather.Services.Database.Insults
         {
             return db.ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "DELETE FROM gf.insults WHERE id = @id;";
-                cmd.Parameters.Add(new NpgsqlParameter("id", id));
+                cmd.Parameters.Add(new NpgsqlParameter<int>("id", id));
 
                 return cmd.ExecuteNonQueryAsync();
             });

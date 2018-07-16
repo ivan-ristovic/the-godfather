@@ -13,15 +13,15 @@ namespace TheGodfather.Services.Database.Chickens
         {
             return db.ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "INSERT INTO gf.chickens(uid, gid, name, strength, vitality, max_vitality) VALUES (@uid, @gid, @name, @strength, @vitality, @max_vitality) ON CONFLICT DO NOTHING;";
-                cmd.Parameters.Add(new NpgsqlParameter("uid", (long)uid));
-                cmd.Parameters.Add(new NpgsqlParameter("gid", (long)gid));
-                cmd.Parameters.Add(new NpgsqlParameter("strength", stats.BareStrength));
-                cmd.Parameters.Add(new NpgsqlParameter("vitality", stats.BareVitality));
-                cmd.Parameters.Add(new NpgsqlParameter("max_vitality", stats.BareMaxVitality));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("uid", (long)uid));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
+                cmd.Parameters.Add(new NpgsqlParameter<int>("strength", stats.BareStrength));
+                cmd.Parameters.Add(new NpgsqlParameter<int>("vitality", stats.BareVitality));
+                cmd.Parameters.Add(new NpgsqlParameter<int>("max_vitality", stats.BareMaxVitality));
                 if (string.IsNullOrWhiteSpace(name))
                     cmd.Parameters.Add(new NpgsqlParameter<string>("name", null));
                 else
-                    cmd.Parameters.Add(new NpgsqlParameter("name", name));
+                    cmd.Parameters.Add(new NpgsqlParameter<string>("name", name));
 
                 return cmd.ExecuteNonQueryAsync();
             });
@@ -31,9 +31,9 @@ namespace TheGodfather.Services.Database.Chickens
         {
             return db.ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "INSERT INTO gf.chicken_active_upgrades VALUES (@uid, @gid, @wid) ON CONFLICT DO NOTHING;";
-                cmd.Parameters.Add(new NpgsqlParameter("uid", (long)uid));
-                cmd.Parameters.Add(new NpgsqlParameter("gid", (long)gid));
-                cmd.Parameters.Add(new NpgsqlParameter("wid", upgrade.Id));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("uid", (long)uid));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
+                cmd.Parameters.Add(new NpgsqlParameter<int>("wid", upgrade.Id));
 
                 return cmd.ExecuteNonQueryAsync();
             });
@@ -43,7 +43,7 @@ namespace TheGodfather.Services.Database.Chickens
         {
             return db.ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "DELETE FROM gf.chickens WHERE gid = @gid AND vitality <= @threshold;";
-                cmd.Parameters.Add(new NpgsqlParameter("gid", (long)gid));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
 
                 return cmd.ExecuteNonQueryAsync();
             });
@@ -78,8 +78,8 @@ namespace TheGodfather.Services.Database.Chickens
 
             await db.ExecuteCommandAsync(async (cmd) => {
                 cmd.CommandText = "SELECT * FROM gf.chickens WHERE uid = @uid AND gid = @gid LIMIT 1;";
-                cmd.Parameters.Add(new NpgsqlParameter("uid", (long)uid));
-                cmd.Parameters.Add(new NpgsqlParameter("gid", (long)gid));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("uid", (long)uid));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
 
                 using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
                     if (await reader.ReadAsync().ConfigureAwait(false)) {
@@ -110,7 +110,7 @@ namespace TheGodfather.Services.Database.Chickens
 
             await db.ExecuteCommandAsync(async (cmd) => {
                 cmd.CommandText = "SELECT name, modifier, price, upgrades_stat FROM gf.chicken_upgrades WHERE wid = @wid LIMIT 1;";
-                cmd.Parameters.Add(new NpgsqlParameter("wid", wid));
+                cmd.Parameters.Add(new NpgsqlParameter<int>("wid", wid));
 
                 using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
                     if (await reader.ReadAsync().ConfigureAwait(false)) {
@@ -135,7 +135,7 @@ namespace TheGodfather.Services.Database.Chickens
             await db.ExecuteCommandAsync(async (cmd) => {
                 if (gid != 0) {
                     cmd.CommandText = "SELECT * FROM gf.chickens WHERE gid = @gid ORDER BY strength DESC;";
-                    cmd.Parameters.Add(new NpgsqlParameter("gid", (long)gid));
+                    cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
                 } else {
                     cmd.CommandText = "SELECT * FROM gf.chickens ORDER BY strength DESC;";
                 }
@@ -164,8 +164,8 @@ namespace TheGodfather.Services.Database.Chickens
 
             await db.ExecuteCommandAsync(async (cmd) => {
                 cmd.CommandText = "SELECT gf.chicken_upgrades.wid, modifier, name, price, upgrades_stat FROM gf.chicken_active_upgrades JOIN gf.chicken_upgrades ON gid = @gid AND uid = @uid AND gf.chicken_active_upgrades.wid = gf.chicken_upgrades.wid;";
-                cmd.Parameters.Add(new NpgsqlParameter("uid", (long)uid));
-                cmd.Parameters.Add(new NpgsqlParameter("gid", (long)gid));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("uid", (long)uid));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
 
                 using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
                     while (await reader.ReadAsync().ConfigureAwait(false)) {
@@ -187,12 +187,12 @@ namespace TheGodfather.Services.Database.Chickens
         {
             return db.ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "UPDATE gf.chickens SET (name, strength, vitality, max_vitality) = (@name, @strength, @vitality, @max_vitality) WHERE uid = @uid AND gid = @gid;";
-                cmd.Parameters.Add(new NpgsqlParameter("uid", (long)chicken.OwnerId));
-                cmd.Parameters.Add(new NpgsqlParameter("gid", (long)gid));
-                cmd.Parameters.Add(new NpgsqlParameter("name", chicken.Name));
-                cmd.Parameters.Add(new NpgsqlParameter("strength", chicken.Stats.BareStrength));
-                cmd.Parameters.Add(new NpgsqlParameter("vitality", chicken.Stats.BareVitality));
-                cmd.Parameters.Add(new NpgsqlParameter("max_vitality", chicken.Stats.BareMaxVitality));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("uid", (long)chicken.OwnerId));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
+                cmd.Parameters.Add(new NpgsqlParameter<string>("name", chicken.Name));
+                cmd.Parameters.Add(new NpgsqlParameter<int>("strength", chicken.Stats.BareStrength));
+                cmd.Parameters.Add(new NpgsqlParameter<int>("vitality", chicken.Stats.BareVitality));
+                cmd.Parameters.Add(new NpgsqlParameter<int>("max_vitality", chicken.Stats.BareMaxVitality));
 
                 return cmd.ExecuteNonQueryAsync();
             });
@@ -202,8 +202,8 @@ namespace TheGodfather.Services.Database.Chickens
         {
             return db.ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "DELETE FROM gf.chickens WHERE uid = @uid AND gid = @gid;";
-                cmd.Parameters.Add(new NpgsqlParameter("uid", (long)uid));
-                cmd.Parameters.Add(new NpgsqlParameter("gid", (long)gid));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("uid", (long)uid));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
 
                 return cmd.ExecuteNonQueryAsync();
             });

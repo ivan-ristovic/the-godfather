@@ -24,8 +24,8 @@ namespace TheGodfather.Services.Database.Bank
         {
             return db.ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "DELETE FROM gf.accounts WHERE uid = @uid AND gid = @gid;";
-                cmd.Parameters.Add(new NpgsqlParameter("uid", (long)uid));
-                cmd.Parameters.Add(new NpgsqlParameter("gid", (long)gid));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("uid", (long)uid));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
 
                 return cmd.ExecuteNonQueryAsync();
             });
@@ -39,9 +39,9 @@ namespace TheGodfather.Services.Database.Bank
 
             await db.ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "UPDATE gf.accounts SET balance = balance - @amount WHERE uid = @uid AND gid = @gid;";
-                cmd.Parameters.Add(new NpgsqlParameter("amount", amount));
-                cmd.Parameters.Add(new NpgsqlParameter("uid", (long)uid));
-                cmd.Parameters.Add(new NpgsqlParameter("gid", (long)gid));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("amount", amount));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("uid", (long)uid));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
 
                 return cmd.ExecuteNonQueryAsync();
             });
@@ -55,8 +55,8 @@ namespace TheGodfather.Services.Database.Bank
 
             await db.ExecuteCommandAsync(async (cmd) => {
                 cmd.CommandText = "SELECT balance FROM gf.accounts WHERE uid = @uid AND gid = @gid LIMIT 1;";
-                cmd.Parameters.Add(new NpgsqlParameter("uid", (long)uid));
-                cmd.Parameters.Add(new NpgsqlParameter("gid", (long)gid));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("uid", (long)uid));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
 
                 object res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
                 if (res != null && !(res is DBNull))
@@ -88,9 +88,9 @@ namespace TheGodfather.Services.Database.Bank
         {
             return db.ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "UPDATE gf.accounts SET balance = balance + @amount WHERE uid = @uid AND gid = @gid;";
-                cmd.Parameters.Add(new NpgsqlParameter("amount", amount));
-                cmd.Parameters.Add(new NpgsqlParameter("uid", (long)uid));
-                cmd.Parameters.Add(new NpgsqlParameter("gid", (long)gid));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("amount", amount));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("uid", (long)uid));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
 
                 return cmd.ExecuteNonQueryAsync();
             });
@@ -100,8 +100,8 @@ namespace TheGodfather.Services.Database.Bank
         {
             return db.ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "INSERT INTO gf.accounts(uid, gid, balance) VALUES(@uid, @gid, 10000);";
-                cmd.Parameters.Add(new NpgsqlParameter("uid", (long)uid));
-                cmd.Parameters.Add(new NpgsqlParameter("gid", (long)gid));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("uid", (long)uid));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
 
                 return cmd.ExecuteNonQueryAsync();
             });
@@ -112,8 +112,8 @@ namespace TheGodfather.Services.Database.Bank
             await db.ExecuteTransactionAsync(async (con, tsem) => {
                 using (var cmd = con.CreateCommand()) {
                     cmd.CommandText = "SELECT balance FROM gf.accounts WHERE uid = @target AND gid = @gid;";
-                    cmd.Parameters.Add(new NpgsqlParameter("target", (long)target));
-                    cmd.Parameters.Add(new NpgsqlParameter("gid", (long)gid));
+                    cmd.Parameters.Add(new NpgsqlParameter<long>("target", (long)target));
+                    cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
 
                     object res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
 
@@ -127,17 +127,17 @@ namespace TheGodfather.Services.Database.Bank
                         var cmd1 = con.CreateCommand();
                         cmd1.Transaction = transaction;
                         cmd1.CommandText = "SELECT balance FROM gf.accounts WHERE (uid = @source OR uid = @target) AND gid = @gid FOR UPDATE;";
-                        cmd1.Parameters.Add(new NpgsqlParameter("source", (long)source));
-                        cmd1.Parameters.Add(new NpgsqlParameter("target", (long)target));
-                        cmd1.Parameters.Add(new NpgsqlParameter("gid", (long)gid));
+                        cmd1.Parameters.Add(new NpgsqlParameter<long>("source", (long)source));
+                        cmd1.Parameters.Add(new NpgsqlParameter<long>("target", (long)target));
+                        cmd1.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
 
                         await cmd1.ExecuteNonQueryAsync().ConfigureAwait(false);
 
                         var cmd2 = con.CreateCommand();
                         cmd2.Transaction = transaction;
                         cmd2.CommandText = "SELECT balance FROM gf.accounts WHERE uid = @source AND gid = @gid;";
-                        cmd2.Parameters.Add(new NpgsqlParameter("source", (long)source));
-                        cmd2.Parameters.Add(new NpgsqlParameter("gid", (long)gid));
+                        cmd2.Parameters.Add(new NpgsqlParameter<long>("source", (long)source));
+                        cmd2.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
 
                         object res = await cmd2.ExecuteScalarAsync().ConfigureAwait(false);
                         if (res == null || res is DBNull || (long)res < amount) {
@@ -148,18 +148,18 @@ namespace TheGodfather.Services.Database.Bank
                         var cmd3 = con.CreateCommand();
                         cmd3.Transaction = transaction;
                         cmd3.CommandText = "UPDATE gf.accounts SET balance = balance - @amount WHERE uid = @source AND gid = @gid;";
-                        cmd3.Parameters.Add(new NpgsqlParameter("amount", amount));
-                        cmd3.Parameters.Add(new NpgsqlParameter("source", (long)source));
-                        cmd3.Parameters.Add(new NpgsqlParameter("gid", (long)gid));
+                        cmd3.Parameters.Add(new NpgsqlParameter<long>("amount", amount));
+                        cmd3.Parameters.Add(new NpgsqlParameter<long>("source", (long)source));
+                        cmd3.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
 
                         await cmd3.ExecuteNonQueryAsync().ConfigureAwait(false);
 
                         var cmd4 = con.CreateCommand();
                         cmd4.Transaction = transaction;
                         cmd4.CommandText = "UPDATE gf.accounts SET balance = balance + @amount WHERE uid = @target AND gid = @gid;";
-                        cmd4.Parameters.Add(new NpgsqlParameter("amount", amount));
-                        cmd4.Parameters.Add(new NpgsqlParameter("target", (long)target));
-                        cmd4.Parameters.Add(new NpgsqlParameter("gid", (long)gid));
+                        cmd4.Parameters.Add(new NpgsqlParameter<long>("amount", amount));
+                        cmd4.Parameters.Add(new NpgsqlParameter<long>("target", (long)target));
+                        cmd4.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
 
                         await cmd4.ExecuteNonQueryAsync().ConfigureAwait(false);
 
