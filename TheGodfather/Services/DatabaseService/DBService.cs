@@ -200,6 +200,10 @@ namespace TheGodfather.Services.Database
                 cmd.CommandText = "SELECT status, type, id FROM gf.statuses LIMIT 1;";
                 return cmd.ExecuteScalarAsync();
             });
+            await ExecuteCommandAsync(cmd => {
+                cmd.CommandText = "SELECT ip, joinport, queryport, name FROM gf.swat_servers LIMIT 1;";
+                return cmd.ExecuteScalarAsync();
+            });
         }
 
 

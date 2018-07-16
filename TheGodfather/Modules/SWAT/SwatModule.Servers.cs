@@ -6,7 +6,7 @@ using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.SWAT.Common;
-using TheGodfather.Services;
+using TheGodfather.Services.Database.Swat;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -87,7 +87,7 @@ namespace TheGodfather.Modules.SWAT
                 await ctx.SendCollectionInPagesAsync(
                     "Available servers",
                     servers,
-                    server => $"{Formatter.Bold(server.Name)} : {server.IP}:{server.JoinPort}",
+                    server => $"{Formatter.Bold(server.Name)} : {server.Ip}:{server.JoinPort}",
                     DiscordColor.Black
                 ).ConfigureAwait(false);
             }

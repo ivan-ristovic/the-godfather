@@ -9,7 +9,7 @@ using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.SWAT.Common;
-using TheGodfather.Services;
+using TheGodfather.Services.Database.Swat;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -50,7 +50,7 @@ namespace TheGodfather.Modules.SWAT
             if (server == null)
                 throw new CommandFailedException("Server with such name isn't found in the database.");
 
-            await ctx.InformSuccessAsync($"IP: {Formatter.Bold($"{server.IP}:{server.JoinPort}")}")
+            await ctx.InformSuccessAsync($"IP: {Formatter.Bold($"{server.Ip}:{server.JoinPort}")}")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -75,7 +75,7 @@ namespace TheGodfather.Modules.SWAT
             var server = await Database.GetSwatServerAsync(ip, queryport, name: ip.ToLowerInvariant())
                 .ConfigureAwait(false);
 
-            var info = await SwatServerInfo.QueryIPAsync(server.IP, server.QueryPort)
+            var info = await SwatServerInfo.QueryIPAsync(server.Ip, server.QueryPort)
                 .ConfigureAwait(false);
 
             if (info != null)
@@ -119,12 +119,12 @@ namespace TheGodfather.Modules.SWAT
                 throw new CommandFailedException("No servers found in the database.");
 
             foreach (var server in servers) {
-                var info = await SwatServerInfo.QueryIPAsync(server.IP, server.QueryPort)
+                var info = await SwatServerInfo.QueryIPAsync(server.Ip, server.QueryPort)
                     .ConfigureAwait(false);
                 if (info != null)
-                    em.AddField(info.HostName, $"IP: {server.IP}:{server.JoinPort}\nPlayers: {Formatter.Bold(info.Players + " / " + info.MaxPlayers)}");
+                    em.AddField(info.HostName, $"IP: {server.Ip}:{server.JoinPort}\nPlayers: {Formatter.Bold(info.Players + " / " + info.MaxPlayers)}");
                 else
-                    em.AddField(server.Name, $"IP: {server.IP}:{server.JoinPort}\nPlayers: Offline");
+                    em.AddField(server.Name, $"IP: {server.Ip}:{server.JoinPort}\nPlayers: Offline");
             }
             await ctx.RespondAsync(embed: em.Build())
                 .ConfigureAwait(false);
@@ -157,7 +157,7 @@ namespace TheGodfather.Modules.SWAT
 
             var server = await Database.GetSwatServerAsync(ip, queryport, name: ip.ToLowerInvariant())
                 .ConfigureAwait(false);
-            await ctx.InformSuccessAsync($"Starting space listening on {server.IP}:{server.JoinPort}...")
+            await ctx.InformSuccessAsync($"Starting space listening on {server.Ip}:{server.JoinPort}...")
                 .ConfigureAwait(false);
 
             if (!SpaceCheckingCTS.TryAdd(ctx.User.Id, new CancellationTokenSource()))
@@ -166,7 +166,7 @@ namespace TheGodfather.Modules.SWAT
             try {
                 var t = Task.Run(async () => {
                     while (SpaceCheckingCTS.ContainsKey(ctx.User.Id) && !SpaceCheckingCTS[ctx.User.Id].IsCancellationRequested) {
-                        var info = await SwatServerInfo.QueryIPAsync(server.IP, server.QueryPort)
+                        var info = await SwatServerInfo.QueryIPAsync(server.Ip, server.QueryPort)
                             .ConfigureAwait(false);
                         if (info == null) {
                             if (!await ctx.WaitForBoolReplyAsync("No reply from server. Should I try again?").ConfigureAwait(false)) {

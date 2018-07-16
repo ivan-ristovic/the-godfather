@@ -5,7 +5,7 @@ namespace TheGodfather.Modules.SWAT.Common
     public sealed class SwatServer
     {
         public string Name { get; set; }
-        public string IP { get; set; }
+        public string Ip { get; set; }
         public int JoinPort { get; set; }
         public int QueryPort { get; set; }
 
@@ -13,7 +13,7 @@ namespace TheGodfather.Modules.SWAT.Common
         public SwatServer(string name, string ip, int joinport, int queryport)
         {
             Name = name;
-            IP = ip;
+            Ip = ip;
             JoinPort = joinport;
             QueryPort = queryport;
         }
