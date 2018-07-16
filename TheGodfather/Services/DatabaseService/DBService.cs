@@ -137,6 +137,21 @@ namespace TheGodfather.Services.Database
                 cmd.CommandText = "SELECT id, gid, filter FROM gf.filters LIMIT 1;";
                 return cmd.ExecuteScalarAsync();
             });
+            await ExecuteCommandAsync(cmd => {
+                cmd.CommandText = @"SELECT gid, welcome_cid, leave_cid, welcome_msg, leave_msg, prefix, 
+                   suggestions_enabled, log_cid, linkfilter_enabled, linkfilter_invites, 
+                   linkfilter_booters, linkfilter_disturbing, linkfilter_iploggers, 
+                   linkfilter_shorteners FROM gf.guild_cfg LIMIT 1;";
+                return cmd.ExecuteScalarAsync();
+            });
+            await ExecuteCommandAsync(cmd => {
+                cmd.CommandText = "SELECT id, insult FROM gf.insults LIMIT 1;";
+                return cmd.ExecuteScalarAsync();
+            });
+            await ExecuteCommandAsync(cmd => {
+                cmd.CommandText = "SELECT gid, name, url FROM gf.memes LIMIT 1;";
+                return cmd.ExecuteScalarAsync();
+            });
         }
 
 

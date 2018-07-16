@@ -7,12 +7,13 @@ using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Services;
+using TheGodfather.Services.Database;
+using TheGodfather.Services.Database.Memes;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-using TheGodfather.Services.Database;
 #endregion
 
 namespace TheGodfather.Modules.Misc
@@ -33,7 +34,7 @@ namespace TheGodfather.Modules.Misc
         [GroupCommand, Priority(1)]
         public async Task ExecuteGroupAsync(CommandContext ctx)
         {
-            string url = await Database.GetRandomGuildMemeAsync(ctx.Guild.Id)
+            string url = await Database.GetRandomMemeAsync(ctx.Guild.Id)
                 .ConfigureAwait(false);
 
             if (url == null)
@@ -51,10 +52,10 @@ namespace TheGodfather.Modules.Misc
                                            [RemainingText, Description("Meme name.")] string name)
         {
             string text = "DANK MEME YOU ASKED FOR";
-            string url = await Database.GetGuildMemeUrlAsync(ctx.Guild.Id, name)
+            string url = await Database.GetMemeAsync(ctx.Guild.Id, name)
                 .ConfigureAwait(false);
             if (url == null) {
-                url = await Database.GetRandomGuildMemeAsync(ctx.Guild.Id)
+                url = await Database.GetRandomMemeAsync(ctx.Guild.Id)
                     .ConfigureAwait(false);
                 if (url == null)
                     throw new CommandFailedException("No memes registered in this guild!");
@@ -117,7 +118,7 @@ namespace TheGodfather.Modules.Misc
                 return;
 
             try {
-                await Database.RemoveAllGuildMemesAsync(ctx.Guild.Id)
+                await Database.RemoveAllMemesForGuildAsync(ctx.Guild.Id)
                     .ConfigureAwait(false);
             } catch (Exception e) {
                 Shared.LogProvider.LogException(LogLevel.Warning, e);
@@ -175,7 +176,7 @@ namespace TheGodfather.Modules.Misc
         [UsageExamples("!meme list")]
         public async Task ListAsync(CommandContext ctx)
         {
-            var memes = await Database.GetMemesForAllGuildsAsync(ctx.Guild.Id)
+            var memes = await Database.GetAllMemesAsync(ctx.Guild.Id)
                 .ConfigureAwait(false); ;
 
             await ctx.SendCollectionInPagesAsync(
