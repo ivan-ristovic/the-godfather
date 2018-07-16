@@ -10,7 +10,7 @@ using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Common.Collections;
 using TheGodfather.Modules.Reactions.Common;
-using TheGodfather.Services;
+using TheGodfather.Services.Database.Reactions;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -154,7 +154,7 @@ namespace TheGodfather.Modules.Reactions
 
             var errors = new StringBuilder();
             try {
-                await Database.RemoveAllEmojiReactionTriggersForReactionAsync(ctx.Guild.Id, ename)
+                await Database.RemoveAllTriggersForEmojiReactionAsync(ctx.Guild.Id, ename)
                     .ConfigureAwait(false);
             } catch (Exception e) {
                 Shared.LogProvider.LogException(LogLevel.Warning, e);
@@ -345,7 +345,7 @@ namespace TheGodfather.Modules.Reactions
 
                 int id = 0;
                 try {
-                    id = await Database.AddEmojiReactionAsync(ctx.Guild.Id, trigger, ename, is_regex_trigger: is_regex)
+                    id = await Database.AddEmojiReactionAsync(ctx.Guild.Id, trigger, ename, regex: is_regex)
                         .ConfigureAwait(false);
                 } catch (Exception e) {
                     Shared.LogProvider.LogException(LogLevel.Warning, e);
@@ -354,10 +354,10 @@ namespace TheGodfather.Modules.Reactions
 
                 var reaction = Shared.EmojiReactions[ctx.Guild.Id].FirstOrDefault(tr => tr.Response == ename);
                 if (reaction != null) {
-                    if (!reaction.AddTrigger(trigger, is_regex_trigger: is_regex))
+                    if (!reaction.AddTrigger(trigger, regex: is_regex))
                         throw new CommandFailedException($"Failed to add trigger {Formatter.Bold(trigger)}.");
                 } else {
-                    if (!Shared.EmojiReactions[ctx.Guild.Id].Add(new EmojiReaction(id, trigger, ename, is_regex_trigger: is_regex)))
+                    if (!Shared.EmojiReactions[ctx.Guild.Id].Add(new EmojiReaction(id, trigger, ename, regex: is_regex)))
                         throw new CommandFailedException($"Failed to add trigger {Formatter.Bold(trigger)}.");
                 }
             }

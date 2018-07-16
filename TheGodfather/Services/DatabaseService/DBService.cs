@@ -168,6 +168,14 @@ namespace TheGodfather.Services.Database
                 cmd.CommandText = "SELECT gid, rank, name FROM gf.ranks LIMIT 1;";
                 return cmd.ExecuteScalarAsync();
             });
+            await ExecuteCommandAsync(cmd => {
+                cmd.CommandText = "SELECT gid, trigger, response, id FROM gf.text_reactions LIMIT 1;";
+                return cmd.ExecuteScalarAsync();
+            });
+            await ExecuteCommandAsync(cmd => {
+                cmd.CommandText = "SELECT gid, trigger, reaction, id FROM gf.emoji_reactions LIMIT 1;";
+                return cmd.ExecuteScalarAsync();
+            });
         }
 
 

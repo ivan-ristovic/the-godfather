@@ -10,7 +10,7 @@ using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Common.Collections;
 using TheGodfather.Modules.Reactions.Common;
-using TheGodfather.Services;
+using TheGodfather.Services.Database.Reactions;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;

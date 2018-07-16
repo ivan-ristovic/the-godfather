@@ -12,6 +12,7 @@ using TheGodfather.Common.Attributes;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Reactions.Common;
 using TheGodfather.Services.Database.Ranks;
+using TheGodfather.Services.Database.Reactions;
 #endregion
 
 namespace TheGodfather.EventListeners
@@ -99,7 +100,7 @@ namespace TheGodfather.EventListeners
                     var emoji = DiscordEmoji.FromName(shard.Client, er.Response);
                     await e.Message.CreateReactionAsync(emoji);
                 } catch (ArgumentException) {
-                    await shard.DatabaseService.RemoveAllEmojiReactionTriggersForReactionAsync(e.Guild.Id, er.Response);
+                    await shard.DatabaseService.RemoveAllTriggersForEmojiReactionAsync(e.Guild.Id, er.Response);
                 }
             }
         }
@@ -120,7 +121,7 @@ namespace TheGodfather.EventListeners
                 return;
 
             TextReaction tr = shard.SharedData.TextReactions[e.Guild.Id]?.FirstOrDefault(r => r.Matches(e.Message.Content));
-            if (tr != null && tr.CanSend())
+            if (tr != null && tr.IsNotCooldownActive())
                 await e.Channel.SendMessageAsync(tr.Response.Replace("%user%", e.Author.Mention));
         }
 

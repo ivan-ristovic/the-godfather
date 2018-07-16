@@ -29,9 +29,9 @@ namespace TheGodfather.Modules.Reactions.Common
         }
 
 
-        public bool AddTrigger(string trigger, bool is_regex_trigger = false)
+        public bool AddTrigger(string trigger, bool regex = false)
         {
-            if (is_regex_trigger)
+            if (regex)
                 return TriggerRegexes.Add(new Regex(GetRegexString(trigger.ToLowerInvariant()), RegexOptions.IgnoreCase));
             else
                 return TriggerRegexes.Add(new Regex(GetRegexString(Regex.Escape(trigger.ToLowerInvariant())), RegexOptions.IgnoreCase));
