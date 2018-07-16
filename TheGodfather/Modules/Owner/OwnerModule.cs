@@ -485,7 +485,7 @@ namespace TheGodfather.Modules.Owner
         [Aliases("send", "s")]
         [UsageExamples("!owner send u 303463460233150464 Hi to user!",
                        "!owner send c 120233460278590414 Hi to channel!")]
-        [RequirePriviledgedUser]
+        [RequirePrivilegedUser]
         [NotBlocked]
         public async Task SendAsync(CommandContext ctx,
                                    [Description("u/c (for user or channel.)")] string desc,
@@ -522,7 +522,7 @@ namespace TheGodfather.Modules.Owner
         [Description("Triggers the dying in the vineyard scene (power off the bot).")]
         [Aliases("disable", "poweroff", "exit", "quit")]
         [UsageExamples("!owner shutdown")]
-        [RequirePriviledgedUser]
+        [RequirePrivilegedUser]
         [NotBlocked]
         public async Task ExitAsync(CommandContext ctx,
                                    [Description("Time until shutdown.")] TimeSpan timespan)
@@ -544,7 +544,7 @@ namespace TheGodfather.Modules.Owner
         [Description("Executes a command as another user.")]
         [Aliases("execas", "as")]
         [UsageExamples("!owner sudo @Someone !rate")]
-        [RequirePriviledgedUser]
+        [RequirePrivilegedUser]
         [NotBlocked]
         public async Task SudoAsync(CommandContext ctx,
                                    [Description("Member to execute as.")] DiscordMember member,
@@ -563,7 +563,7 @@ namespace TheGodfather.Modules.Owner
         [Description("Toggle bot's reaction to commands.")]
         [Aliases("ti")]
         [UsageExamples("!owner toggleignore")]
-        [RequirePriviledgedUser]
+        [RequirePrivilegedUser]
         public async Task ToggleIgnoreAsync(CommandContext ctx)
         {
             Shared.ListeningStatus = !Shared.ListeningStatus;

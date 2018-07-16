@@ -97,8 +97,8 @@ namespace TheGodfather.EventListeners
                             sb.AppendLine($"- You do not have sufficient permissions ({uperms.Permissions.ToPermissionString()})!");
                         else if (failed is RequireBotPermissionsAttribute bperms)
                             sb.AppendLine($"- I do not have sufficient permissions ({bperms.Permissions.ToPermissionString()})!");
-                        else if (failed is RequirePriviledgedUserAttribute)
-                            sb.AppendLine($"- That command is reserved for my owner and priviledged users!");
+                        else if (failed is RequirePrivilegedUserAttribute)
+                            sb.AppendLine($"- That command is reserved for my owner and privileged users!");
                         else if (failed is RequireOwnerAttribute)
                             sb.AppendLine($"- That command is reserved only for my owner!");
                         else if (failed is RequireNsfwAttribute)

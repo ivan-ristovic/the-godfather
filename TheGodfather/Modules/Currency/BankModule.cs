@@ -77,7 +77,7 @@ namespace TheGodfather.Modules.Currency
         [Aliases("give")]
         [UsageExamples("!bank grant @Someone 1000",
                        "!bank grant 1000 @Someone")]
-        [RequirePriviledgedUser]
+        [RequirePrivilegedUser]
         public async Task GrantAsync(CommandContext ctx,
                                     [Description("User.")] DiscordUser user,
                                     [Description("Amount.")] long amount)
@@ -216,7 +216,7 @@ namespace TheGodfather.Modules.Currency
         [Description("Delete an account from WM bank.")]
         [Aliases("ur", "signout", "deleteaccount", "delacc", "disable", "deactivate")]
         [UsageExamples("!bank unregister @Someone")]
-        [RequirePriviledgedUser]
+        [RequirePrivilegedUser]
         public async Task UnregisterAsync(CommandContext ctx,
                                          [Description("User whose account to delete.")] DiscordUser user)
         {

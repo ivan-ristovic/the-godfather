@@ -152,6 +152,10 @@ namespace TheGodfather.Services.Database
                 cmd.CommandText = "SELECT gid, name, url FROM gf.memes LIMIT 1;";
                 return cmd.ExecuteScalarAsync();
             });
+            await ExecuteCommandAsync(cmd => {
+                cmd.CommandText = "SELECT uid FROM gf.privileged LIMIT 1;";
+                return cmd.ExecuteScalarAsync();
+            });
         }
 
 

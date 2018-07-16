@@ -421,7 +421,7 @@
     <Compile Include="EventListeners\AsyncExecutionManager.cs" />
     <Compile Include="Common\Attributes\AsyncEventListenerAttribute.cs" />
     <Compile Include="Common\Attributes\ModuleAttribute.cs" />
-    <Compile Include="Common\Attributes\RequirePriviledgedUserAttribute.cs" />
+    <Compile Include="Common\Attributes\RequirePrivilegedUserAttribute.cs" />
     <Compile Include="Common\Attributes\UsageExamplesAttribute.cs" />
     <Compile Include="Common\Converters\CustomUriConverter.cs" />
     <Compile Include="Common\DatabaseConfig.cs" />
@@ -479,7 +479,7 @@
     <Compile Include="Modules\Misc\ShopModule.cs" />
     <Compile Include="Modules\Music\Common\MusicPlayer.cs" />
     <Compile Include="Modules\Misc\BirthdayModule.cs" />
-    <Compile Include="Modules\Owner\OwnerModule.PriviledgedUsers.cs" />
+    <Compile Include="Modules\Owner\OwnerModule.PrivilegedUsers.cs" />
     <Compile Include="Modules\Polls\ReactionsPollModule.cs" />
     <Compile Include="Modules\Reactions\Common\EmojiReaction.cs" />
     <Compile Include="Modules\Reactions\Common\Reaction.cs" />
@@ -538,7 +538,7 @@
     <Compile Include="Modules\SWAT\SwatModule.Servers.cs" />
     <Compile Include="Services\Common\XkcdComic.cs" />
     <Compile Include="Services\DatabaseService\DBService.Birthdays.cs" />
-    <Compile Include="Services\DatabaseService\DBService.PriviledgedUsers.cs" />
+    <Compile Include="Services\DatabaseService\DBService.Privileges.cs" />
     <Compile Include="Services\DatabaseService\DBService.SavedTasks.cs" />
     <Compile Include="Services\DatabaseService\DBService.Blocked.cs" />
     <Compile Include="Services\DatabaseService\DBService.Chickens.cs" />

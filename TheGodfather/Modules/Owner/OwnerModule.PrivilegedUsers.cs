@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-using TheGodfather.Services;
+using TheGodfather.Services.Database.Privileges;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -22,15 +22,15 @@ namespace TheGodfather.Modules.Owner
 {
     public partial class OwnerModule
     {
-        [Group("priviledgedusers"), Module(ModuleType.Owner)]
-        [Description("Manipulate priviledged users. Priviledged users can invoke commands marked with RequirePriviledgedUsers permission.")]
+        [Group("privilegedusers"), Module(ModuleType.Owner)]
+        [Description("Manipulate privileged users. Privileged users can invoke commands marked with RequirePrivilegedUsers permission.")]
         [Aliases("pu", "privu", "privuser", "pusers", "puser", "pusr")]
         [RequireOwner]
         [NotBlocked]
-        public class PriviledgedUsersModule : TheGodfatherBaseModule
+        public class PrivilegedUsersModule : TheGodfatherBaseModule
         {
 
-            public PriviledgedUsersModule(SharedData shared, DBService db) : base(shared, db) { }
+            public PrivilegedUsersModule(SharedData shared, DBService db) : base(shared, db) { }
 
 
             [GroupCommand, Priority(1)]
@@ -39,29 +39,29 @@ namespace TheGodfather.Modules.Owner
 
             [GroupCommand, Priority(0)]
             public Task ExecuteGroupAsync(CommandContext ctx,
-                                         [Description("Users to grant priviledge to.")] params DiscordUser[] users)
+                                         [Description("Users to grant privilege to.")] params DiscordUser[] users)
                 => AddAsync(ctx, users);
 
 
-            #region COMMAND_PRIVILEDGEDUSERS_ADD
+            #region COMMAND_PRIVILEGEDUSERS_ADD
             [Command("add"), Module(ModuleType.Owner)]
-            [Description("Add users to priviledged users list.")]
+            [Description("Add users to privileged users list.")]
             [Aliases("+", "a")]
-            [UsageExamples("!owner priviledgedusers add @Someone",
-                           "!owner priviledgedusers add @Someone @SomeoneElse")]
+            [UsageExamples("!owner privilegedusers add @Someone",
+                           "!owner privilegedusers add @Someone @SomeoneElse")]
             public async Task AddAsync(CommandContext ctx,
-                                      [Description("Users to grant priviledge to.")] params DiscordUser[] users)
+                                      [Description("Users to grant privilege to.")] params DiscordUser[] users)
             {
                 if (!users.Any())
-                    throw new InvalidCommandUsageException("Missing users to grant priviledge to.");
+                    throw new InvalidCommandUsageException("Missing users to grant privilege to.");
 
-                var sb = new StringBuilder("Add priviledged users action results:\n\n");
+                var sb = new StringBuilder("Add privileged users action results:\n\n");
                 foreach (var user in users) {
                     try {
-                        await Database.AddPriviledgedUserAsync(user.Id)
+                        await Database.AddPrivilegedUserAsync(user.Id)
                             .ConfigureAwait(false);
                     } catch {
-                        sb.AppendLine($"Warning: Failed to add {user.ToString()} to the priviledged users list!");
+                        sb.AppendLine($"Warning: Failed to add {user.ToString()} to the privileged users list!");
                         continue;
                     }
                     sb.AppendLine($"Added: {user.ToString()}!");
@@ -72,23 +72,23 @@ namespace TheGodfather.Modules.Owner
             }
             #endregion
 
-            #region COMMAND_PRIVILEDGEDUSERS_DELETE
+            #region COMMAND_PRIVILEGEDUSERS_DELETE
             [Command("delete"), Module(ModuleType.Owner)]
-            [Description("Remove users from priviledged users list..")]
+            [Description("Remove users from privileged users list..")]
             [Aliases("-", "remove", "rm", "del")]
-            [UsageExamples("!owner priviledgedusers remove @Someone",
-                           "!owner priviledgedusers remove 123123123123123",
-                           "!owner priviledgedusers remove @Someone 123123123123123")]
+            [UsageExamples("!owner privilegedusers remove @Someone",
+                           "!owner privilegedusers remove 123123123123123",
+                           "!owner privilegedusers remove @Someone 123123123123123")]
             public async Task DeleteAsync(CommandContext ctx,
-                                         [Description("Users to revoke priviledges from.")] params DiscordUser[] users)
+                                         [Description("Users to revoke privileges from.")] params DiscordUser[] users)
             {
                 if (!users.Any())
                     throw new InvalidCommandUsageException("Missing users.");
 
-                var sb = new StringBuilder("Delete priviledged users action results:\n\n");
+                var sb = new StringBuilder("Delete privileged users action results:\n\n");
                 foreach (var user in users) {
                     try {
-                        await Database.RemovePrivilegedUserAsync(user.Id)
+                        await Database.RemovePrivileedUserAsync(user.Id)
                             .ConfigureAwait(false);
                     } catch (Exception e) {
                         sb.AppendLine($"Warning: Failed to remove {user.ToString()} from the database!");
@@ -103,34 +103,34 @@ namespace TheGodfather.Modules.Owner
             }
             #endregion
 
-            #region COMMAND_PRIVILEDGEDUSERS_LIST
+            #region COMMAND_PRIVILEGEDUSERS_LIST
             [Command("list"), Module(ModuleType.Owner)]
-            [Description("List all priviledged users.")]
+            [Description("List all privileged users.")]
             [Aliases("ls")]
-            [UsageExamples("!owner priviledgedusers list")]
+            [UsageExamples("!owner privilegedusers list")]
             public async Task ListAsync(CommandContext ctx)
             {
-                var priviledged = await Database.GetAllPriviledgedUsersAsync()
+                var privileged = await Database.GetAllPrivilegedUsersAsync()
                     .ConfigureAwait(false);
 
                 List<DiscordUser> users = new List<DiscordUser>();
-                foreach (var uid in priviledged) {
+                foreach (var uid in privileged) {
                     try {
                         var user = await ctx.Client.GetUserAsync(uid)
                             .ConfigureAwait(false);
                         users.Add(user);
                     } catch (NotFoundException) {
-                        Shared.LogProvider.LogMessage(LogLevel.Warning, $"Removed 404 priviledged user with ID {uid}");
-                        await Database.RemovePrivilegedUserAsync(uid)
+                        Shared.LogProvider.LogMessage(LogLevel.Warning, $"Removed 404 privileged user with ID {uid}");
+                        await Database.RemovePrivileedUserAsync(uid)
                             .ConfigureAwait(false);
                     }
                 }
 
                 if (!users.Any())
-                    throw new CommandFailedException("No priviledged users registered!");
+                    throw new CommandFailedException("No privileged users registered!");
 
                 await ctx.SendCollectionInPagesAsync(
-                    "Priviledged users (in database):",
+                    "Privileged users (in database):",
                     users,
                     user => user.ToString(),
                     DiscordColor.Azure,
