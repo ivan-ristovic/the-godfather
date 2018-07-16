@@ -176,6 +176,18 @@ namespace TheGodfather.Services.Database
                 cmd.CommandText = "SELECT gid, trigger, reaction, id FROM gf.emoji_reactions LIMIT 1;";
                 return cmd.ExecuteScalarAsync();
             });
+            await ExecuteCommandAsync(cmd => {
+                cmd.CommandText = "SELECT id, type, uid, cid, gid, comment, execution_time FROM gf.saved_tasks LIMIT 1;";
+                return cmd.ExecuteScalarAsync();
+            });
+            await ExecuteCommandAsync(cmd => {
+                cmd.CommandText = "SELECT id, gid, name, price FROM gf.items LIMIT 1;";
+                return cmd.ExecuteScalarAsync();
+            });
+            await ExecuteCommandAsync(cmd => {
+                cmd.CommandText = "SELECT id, uid FROM gf.purchases LIMIT 1;";
+                return cmd.ExecuteScalarAsync();
+            });
         }
 
 

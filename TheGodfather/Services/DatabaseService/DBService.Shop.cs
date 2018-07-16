@@ -1,239 +1,157 @@
 ﻿#region USING_DIRECTIVES
+using Npgsql;
+using NpgsqlTypes;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-
 using TheGodfather.Services.Common;
-
-using Npgsql;
-using NpgsqlTypes;
 #endregion
 
-namespace TheGodfather.Services.Database
+namespace TheGodfather.Services.Database.Shop
 {
-    public partial class DBService
+    public static class DBServiceShopExtensions
     {
-        public async Task AddItemToGuildShopAsync(ulong gid, string name, long price)
+        public static Task AddPurchasableItemAsync(this DBService db, ulong gid, string name, long price)
         {
-            await accessSemaphore.WaitAsync();
-            try {
-                using (var con = await OpenConnectionAsync())
-                using (var cmd = con.CreateCommand()) {
-                    cmd.CommandText = "INSERT INTO gf.items (gid, name, price) VALUES (@gid, @name, @price) ON CONFLICT DO NOTHING;";
-                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
-                    cmd.Parameters.AddWithValue("name", NpgsqlDbType.Varchar, name);
-                    cmd.Parameters.AddWithValue("price", NpgsqlDbType.Bigint, price);
+            return db.ExecuteCommandAsync(cmd => {
+                cmd.CommandText = "INSERT INTO gf.items (gid, name, price) VALUES (@gid, @name, @price) ON CONFLICT DO NOTHING;";
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
+                cmd.Parameters.Add(new NpgsqlParameter<string>("name", name));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("price", price));
 
-                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
-                }
-            } finally {
-                accessSemaphore.Release();
-            }
+                return cmd.ExecuteNonQueryAsync();
+            });
         }
 
-        public async Task<IReadOnlyList<PurchasableItem>> GetAllPurchasableItemsAsync()
+        public static Task AddPurchaseAsync(this DBService db, ulong uid, int id)
         {
-            var blocked = new List<PurchasableItem>();
+            return db.ExecuteCommandAsync(cmd => {
+                cmd.CommandText = "INSERT INTO gf.purchases VALUES (@id, @uid) ON CONFLICT DO NOTHING;";
+                cmd.Parameters.Add(new NpgsqlParameter<int>("id", id));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("uid", (long)uid));
 
-            await accessSemaphore.WaitAsync();
-            try {
-                using (var con = await OpenConnectionAsync())
-                using (var cmd = con.CreateCommand()) {
-                    cmd.CommandText = "SELECT * FROM gf.items ORDER BY gid;";
+                return cmd.ExecuteNonQueryAsync();
+            });
+        }
 
-                    using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
-                        while (await reader.ReadAsync().ConfigureAwait(false)) {
-                            blocked.Add(new PurchasableItem() {
-                                GuildId = (ulong)(long)reader["gid"],
-                                Id = (int)reader["id"],
-                                Name = (string)reader["name"],
-                                Price = (long)reader["price"]
-                            });
-                        }
+        public static async Task<IReadOnlyList<PurchasableItem>> GetAllPurchasableItemsAsync(this DBService db, ulong gid)
+        {
+            var items = new List<PurchasableItem>();
+
+            await db.ExecuteCommandAsync(async (cmd) => {
+                cmd.CommandText = "SELECT * FROM gf.items WHERE gid = @gid ORDER BY price DESC;";
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
+
+                using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
+                    while (await reader.ReadAsync().ConfigureAwait(false)) {
+                        items.Add(new PurchasableItem() {
+                            GuildId = (ulong)(long)reader["gid"],
+                            Id = (int)reader["id"],
+                            Name = (string)reader["name"],
+                            Price = (long)reader["price"]
+                        });
                     }
                 }
-            } finally {
-                accessSemaphore.Release();
-            }
+            });
 
-            return blocked.AsReadOnly();
+            return items.AsReadOnly();
         }
 
-        public async Task<PurchasableItem> GetItemFromGuildShopAsync(ulong gid, int id)
+        public static async Task<PurchasableItem> GetPurchasableItemAsync(this DBService db, ulong gid, int id)
         {
             PurchasableItem item = null;
 
-            await accessSemaphore.WaitAsync();
-            try {
-                using (var con = await OpenConnectionAsync())
-                using (var cmd = con.CreateCommand()) {
-                    cmd.CommandText = "SELECT * FROM gf.items WHERE id = @id AND gid = @gid LIMIT 1;";
-                    cmd.Parameters.AddWithValue("id", NpgsqlDbType.Integer, id);
-                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
+            await db.ExecuteCommandAsync(async (cmd) => {
+                cmd.CommandText = "SELECT id, gid, name, price FROM gf.items WHERE id = @id AND gid = @gid LIMIT 1;";
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
+                cmd.Parameters.Add(new NpgsqlParameter<int>("id", id));
 
-                    using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
-                        if (await reader.ReadAsync().ConfigureAwait(false)) {
-                            item = new PurchasableItem() {
-                                GuildId = (ulong)(long)reader["gid"],
-                                Id = (int)reader["id"],
-                                Name = (string)reader["name"],
-                                Price = (long)reader["price"]
-                            };
-                        }
+                using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
+                    if (await reader.ReadAsync().ConfigureAwait(false)) {
+                        item = new PurchasableItem() {
+                            GuildId = (ulong)(long)reader["gid"],
+                            Id = (int)reader["id"],
+                            Name = (string)reader["name"],
+                            Price = (long)reader["price"]
+                        };
                     }
                 }
-            } finally {
-                accessSemaphore.Release();
-            }
+            });
 
             return item;
         }
 
-        public async Task<IReadOnlyList<PurchasableItem>> GetItemsFromGuildShopAsync(ulong gid)
+        public static async Task<IReadOnlyList<PurchasableItem>> GetPurchasedItemsAsync(this DBService db, ulong uid)
         {
             var items = new List<PurchasableItem>();
 
-            await accessSemaphore.WaitAsync();
-            try {
-                using (var con = await OpenConnectionAsync())
-                using (var cmd = con.CreateCommand()) {
-                    cmd.CommandText = "SELECT * FROM gf.items WHERE gid = @gid ORDER BY price DESC;";
-                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
+            await db.ExecuteCommandAsync(async (cmd) => {
+                cmd.CommandText = "SELECT items.id, gid, name, price FROM gf.purchases JOIN gf.items ON purchases.id = items.id WHERE uid = @uid ORDER BY price DESC;";
+                cmd.Parameters.Add(new NpgsqlParameter<long>("uid", (long)uid));
 
-                    using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
-                        while (await reader.ReadAsync().ConfigureAwait(false)) {
-                            items.Add(new PurchasableItem() {
-                                GuildId = (ulong)(long)reader["gid"],
-                                Id = (int)reader["id"],
-                                Name = (string)reader["name"],
-                                Price = (long)reader["price"]
-                            });
-                        }
+                using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
+                    while (await reader.ReadAsync().ConfigureAwait(false)) {
+                        items.Add(new PurchasableItem() {
+                            GuildId = (ulong)(long)reader["gid"],
+                            Id = (int)reader["id"],
+                            Name = (string)reader["name"],
+                            Price = (long)reader["price"]
+                        });
                     }
                 }
-            } finally {
-                accessSemaphore.Release();
-            }
+            });
 
             return items.AsReadOnly();
         }
 
-        public async Task<IReadOnlyList<PurchasableItem>> GetPurchasedItemsForUserAsync(ulong uid)
+        public static Task RemovePurchasableItemAsync(this DBService db, ulong gid, string name)
         {
-            var items = new List<PurchasableItem>();
+            return db.ExecuteCommandAsync(cmd => {
+                cmd.CommandText = "DELETE FROM gf.items WHERE gid = @gid AND name = @name;";
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
+                cmd.Parameters.Add(new NpgsqlParameter<string>("name", name));
 
-            await accessSemaphore.WaitAsync();
-            try {
-                using (var con = await OpenConnectionAsync())
-                using (var cmd = con.CreateCommand()) {
-                    cmd.CommandText = "SELECT items.id, gid, name, price FROM gf.purchases JOIN gf.items ON purchases.id = items.id WHERE uid = @uid ORDER BY price DESC;";
-                    cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
-
-                    using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
-                        while (await reader.ReadAsync().ConfigureAwait(false)) {
-                            items.Add(new PurchasableItem() {
-                                GuildId = (ulong)(long)reader["gid"],
-                                Id = (int)reader["id"],
-                                Name = (string)reader["name"],
-                                Price = (long)reader["price"]
-                            });
-                        }
-                    }
-                }
-            } finally {
-                accessSemaphore.Release();
-            }
-
-            return items.AsReadOnly();
+                return cmd.ExecuteNonQueryAsync();
+            });
         }
 
-        public async Task<bool> IsItemPurchasedByUserAsync(ulong uid, int id)
+        public static Task RemovePurchasableItemsAsync(this DBService db, ulong gid, params int[] ids)
         {
-            await accessSemaphore.WaitAsync();
-            try {
-                using (var con = await OpenConnectionAsync())
-                using (var cmd = con.CreateCommand()) {
-                    cmd.CommandText = "SELECT * FROM gf.purchases WHERE id = @id AND uid = @uid LIMIT 1;";
-                    cmd.Parameters.AddWithValue("id", NpgsqlDbType.Integer, id);
-                    cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
+            return db.ExecuteCommandAsync(cmd => {
+                cmd.CommandText = "DELETE FROM gf.items WHERE gid = @gid AND id = ANY(:ids);";
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
+                cmd.Parameters.Add("ids", NpgsqlDbType.Array | NpgsqlDbType.Integer).Value = ids;
 
-                    var res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
-                    if (res != null && !(res is DBNull))
-                        return true;
-                }
-            } finally {
-                accessSemaphore.Release();
-            }
-
-            return false;
+                return cmd.ExecuteNonQueryAsync();
+            });
         }
 
-        public async Task RegisterPurchaseForItemAsync(ulong uid, int id)
+        public static Task RemovePurchaseAsync(this DBService db, ulong uid, int id)
         {
-            await accessSemaphore.WaitAsync();
-            try {
-                using (var con = await OpenConnectionAsync())
-                using (var cmd = con.CreateCommand()) {
-                    cmd.CommandText = "INSERT INTO gf.purchases VALUES (@id, @uid) ON CONFLICT DO NOTHING;";
-                    cmd.Parameters.AddWithValue("id", NpgsqlDbType.Integer, id);
-                    cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
-                    
-                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
-                }
-            } finally {
-                accessSemaphore.Release();
-            }
+            return db.ExecuteCommandAsync(cmd => {
+                cmd.CommandText = "DELETE FROM gf.purchases WHERE id = @id AND uid = @uid;";
+                cmd.Parameters.Add(new NpgsqlParameter<long>("uid", (long)uid));
+                cmd.Parameters.Add(new NpgsqlParameter<int>("id", id));
+
+                return cmd.ExecuteNonQueryAsync();
+            });
         }
 
-        public async Task RemoveItemFromGuildShopAsync(ulong gid, string name)
+        public static async Task<bool> UserHasPurchasedItemAsync(this DBService db, ulong uid, int id)
         {
-            await accessSemaphore.WaitAsync();
-            try {
-                using (var con = await OpenConnectionAsync())
-                using (var cmd = con.CreateCommand()) {
-                    cmd.CommandText = "DELETE FROM gf.items WHERE gid = @gid AND name = @name;";
-                    cmd.Parameters.AddWithValue("name", NpgsqlDbType.Varchar, name);
-                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
+            bool purchased = false;
 
-                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
-                }
-            } finally {
-                accessSemaphore.Release();
-            }
-        }
+            await db.ExecuteCommandAsync(async (cmd) => {
+                cmd.CommandText = "SELECT * FROM gf.purchases WHERE id = @id AND uid = @uid LIMIT 1;";
+                cmd.Parameters.Add(new NpgsqlParameter<long>("uid", (long)uid));
+                cmd.Parameters.Add(new NpgsqlParameter<int>("id", id));
 
-        public async Task RemoveItemsFromGuildShopAsync(ulong gid, params int[] ids)
-        {
-            await accessSemaphore.WaitAsync();
-            try {
-                using (var con = await OpenConnectionAsync())
-                using (var cmd = con.CreateCommand()) {
-                    cmd.CommandText = "DELETE FROM gf.items WHERE gid = @gid AND id = ANY(:ids);";
-                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
-                    cmd.Parameters.Add("ids", NpgsqlDbType.Array | NpgsqlDbType.Integer).Value = ids;
+                object res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
+                if (res != null && !(res is DBNull))
+                    purchased = true;
+            });
 
-                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
-                }
-            } finally {
-                accessSemaphore.Release();
-            }
-        }
-
-        public async Task UnregisterPurchaseForItemAsync(ulong uid, int id)
-        {
-            await accessSemaphore.WaitAsync();
-            try {
-                using (var con = await OpenConnectionAsync())
-                using (var cmd = con.CreateCommand()) {
-                    cmd.CommandText = "DELETE FROM gf.purchases WHERE id = @id AND uid = @uid;";
-                    cmd.Parameters.AddWithValue("id", NpgsqlDbType.Integer, id);
-                    cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
-
-                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
-                }
-            } finally {
-                accessSemaphore.Release();
-            }
+            return purchased;
         }
     }
 }

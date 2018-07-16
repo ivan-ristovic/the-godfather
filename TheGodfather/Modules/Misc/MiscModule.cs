@@ -14,7 +14,7 @@ using TheGodfather.Modules.Misc.Common;
 using TheGodfather.Services;
 using TheGodfather.Services.Common;
 using TheGodfather.Services.Database.GuildConfig;
-using TheGodfather.Services.Database.SavedTasks;
+using TheGodfather.Services.Database.Shop;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -135,7 +135,7 @@ namespace TheGodfather.Modules.Misc
             if (user == null)
                 user = ctx.User;
 
-            var items = await Database.GetPurchasedItemsForUserAsync(user.Id)
+            var items = await Database.GetPurchasedItemsAsync(user.Id)
                 .ConfigureAwait(false);
 
             if (!items.Any())

@@ -6,6 +6,7 @@ using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Services.Database.Bank;
+using TheGodfather.Services.Database.Shop;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -52,7 +53,7 @@ namespace TheGodfather.Modules.Misc
             if (price <= 0 || price > 100000000000)
                 throw new InvalidCommandUsageException("Item price must be positive and cannot exceed 100 billion credits.");
 
-            await Database.AddItemToGuildShopAsync(ctx.Guild.Id, name, price)
+            await Database.AddPurchasableItemAsync(ctx.Guild.Id, name, price)
                 .ConfigureAwait(false);
             await ctx.InformSuccessAsync($"Item {Formatter.Bold(name)} ({Formatter.Bold(price.ToString())} credits) successfully added to this guild's shop.")
                 .ConfigureAwait(false);
@@ -74,12 +75,12 @@ namespace TheGodfather.Modules.Misc
         public async Task BuyAsync(CommandContext ctx,
                                   [Description("Item ID.")] int id)
         {
-            var item = await Database.GetItemFromGuildShopAsync(ctx.Guild.Id, id)
+            var item = await Database.GetPurchasableItemAsync(ctx.Guild.Id, id)
                 .ConfigureAwait(false);
             if (item == null)
                 throw new CommandFailedException("Item with such ID does not exist in this guild's shop!");
 
-            if (await Database.IsItemPurchasedByUserAsync(ctx.User.Id, item.Id))
+            if (await Database.UserHasPurchasedItemAsync(ctx.User.Id, item.Id))
                 throw new CommandFailedException("You have already purchased this item!");
 
             if (!await ctx.WaitForBoolReplyAsync($"Are you sure you want to buy a {Formatter.Bold(item.Name)} for {Formatter.Bold(item.Price.ToString())} credits?").ConfigureAwait(false))
@@ -88,7 +89,7 @@ namespace TheGodfather.Modules.Misc
             if (!await Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, item.Price))
                 throw new CommandFailedException("You do not have enough money to purchase that item!");
 
-            await Database.RegisterPurchaseForItemAsync(ctx.User.Id, item.Id)
+            await Database.AddPurchaseAsync(ctx.User.Id, item.Id)
                 .ConfigureAwait(false);
             await ctx.InformSuccessAsync($"{ctx.User.Mention} bought a {Formatter.Bold(item.Name)} for {Formatter.Bold(item.Price.ToString())} credits!", ":moneybag:")
                 .ConfigureAwait(false);
@@ -104,12 +105,12 @@ namespace TheGodfather.Modules.Misc
         public async Task SellAsync(CommandContext ctx,
                                    [Description("Item ID.")] int id)
         {
-            var item = await Database.GetItemFromGuildShopAsync(ctx.Guild.Id, id)
+            var item = await Database.GetPurchasableItemAsync(ctx.Guild.Id, id)
                 .ConfigureAwait(false);
             if (item == null)
                 throw new CommandFailedException("Item with such ID does not exist in this guild's shop!");
 
-            if (!await Database.IsItemPurchasedByUserAsync(ctx.User.Id, item.Id))
+            if (!await Database.UserHasPurchasedItemAsync(ctx.User.Id, item.Id))
                 throw new CommandFailedException("You did not purchase this item!");
 
             long retval = item.Price / 2;
@@ -118,7 +119,7 @@ namespace TheGodfather.Modules.Misc
 
             await Database.IncreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, retval)
                 .ConfigureAwait(false);
-            await Database.UnregisterPurchaseForItemAsync(ctx.User.Id, item.Id)
+            await Database.RemovePurchaseAsync(ctx.User.Id, item.Id)
                 .ConfigureAwait(false);
             await ctx.InformSuccessAsync($"{ctx.User.Mention} sold a {Formatter.Bold(item.Name)} for {Formatter.Bold(retval.ToString())} credits!", ":moneybag:")
                 .ConfigureAwait(false);
@@ -140,7 +141,7 @@ namespace TheGodfather.Modules.Misc
             if (!ids.Any())
                 throw new InvalidCommandUsageException("Missing item IDs.");
 
-            await Database.RemoveItemsFromGuildShopAsync(ctx.Guild.Id, ids)
+            await Database.RemovePurchasableItemsAsync(ctx.Guild.Id, ids)
                 .ConfigureAwait(false);
             await ctx.InformSuccessAsync()
                 .ConfigureAwait(false);
@@ -154,7 +155,7 @@ namespace TheGodfather.Modules.Misc
         [UsageExamples("!shop list")]
         public async Task ListAsync(CommandContext ctx)
         {
-            var items = await Database.GetItemsFromGuildShopAsync(ctx.Guild.Id)
+            var items = await Database.GetAllPurchasableItemsAsync(ctx.Guild.Id)
                 .ConfigureAwait(false);
 
             if (!items.Any())
@@ -164,30 +165,6 @@ namespace TheGodfather.Modules.Misc
                 $"{ctx.Guild.Name}'s shop:",
                 items,
                 item => $"{item.Id} | {Formatter.Bold(item.Name)} : {Formatter.Bold(item.Price.ToString())} credits",
-                DiscordColor.Azure,
-                5
-            ).ConfigureAwait(false);
-        }
-        #endregion
-
-        #region COMMAND_SHOP_LISTALL
-        [Command("listall"), Module(ModuleType.Miscellaneous)]
-        [Description("List all purchasable items for all guilds.")]
-        [Aliases("la")]
-        [UsageExamples("!shop listall")]
-        [RequireOwner]
-        public async Task ListAllAsync(CommandContext ctx)
-        {
-            var items = await Database.GetAllPurchasableItemsAsync()
-                .ConfigureAwait(false);
-
-            if (!items.Any())
-                throw new CommandFailedException("No items in shop!");
-
-            await ctx.SendCollectionInPagesAsync(
-                $"Registered purchasable items:",
-                items,
-                item => $"{item.Id} | {item.GuildId} | {Formatter.Bold(item.Name)} : {Formatter.Bold(item.Price.ToString())} credits",
                 DiscordColor.Azure,
                 5
             ).ConfigureAwait(false);
