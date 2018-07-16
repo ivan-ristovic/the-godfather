@@ -121,7 +121,7 @@ namespace TheGodfather.EventListeners
                 return;
 
             TextReaction tr = shard.SharedData.TextReactions[e.Guild.Id]?.FirstOrDefault(r => r.Matches(e.Message.Content));
-            if (tr != null && tr.IsNotCooldownActive())
+            if (tr != null && !tr.IsCooldownActive())
                 await e.Channel.SendMessageAsync(tr.Response.Replace("%user%", e.Author.Mention));
         }
 

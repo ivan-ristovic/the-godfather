@@ -20,7 +20,7 @@ namespace TheGodfather.Modules.Reactions.Common
         }
 
 
-        public bool IsNotCooldownActive()
+        public bool IsCooldownActive()
         {
             bool success = false;
 
@@ -37,7 +37,7 @@ namespace TheGodfather.Modules.Reactions.Common
                 }
             }
             
-            return success;
+            return !success;
         }
     }
 }
