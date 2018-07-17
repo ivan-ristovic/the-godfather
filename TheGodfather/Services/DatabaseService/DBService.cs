@@ -12,8 +12,7 @@ using TheGodfather.Services.Database.Bank;
 
 namespace TheGodfather.Services.Database
 {
-    // TODO : Remove partial once all the parts are refactored to extensions
-    public partial class DBService
+    public class DBService
     {
         private readonly string connectionString;
         private readonly SemaphoreSlim accessSemaphore;
@@ -202,6 +201,12 @@ namespace TheGodfather.Services.Database
             });
             await ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "SELECT ip, joinport, queryport, name FROM gf.swat_servers LIMIT 1;";
+                return cmd.ExecuteScalarAsync();
+            });
+            await ExecuteCommandAsync(cmd => {
+                cmd.CommandText = @"SELECT uid, duels_won, duels_lost, hangman_won, numraces_won, 
+                   quizes_won, races_won, ttt_won, ttt_lost, chain4_won, chain4_lost, caro_won, 
+                   caro_lost, othello_won, othello_lost FROM gf.stats LIMIT 1;";
                 return cmd.ExecuteScalarAsync();
             });
         }

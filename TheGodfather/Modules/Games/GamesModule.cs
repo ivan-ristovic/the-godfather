@@ -6,7 +6,7 @@ using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-using TheGodfather.Services;
+using TheGodfather.Services.Database.Stats;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -102,9 +102,18 @@ namespace TheGodfather.Modules.Games
             if (user == null)
                 user = ctx.User;
 
-            var em = await Database.GetEmbeddedStatsForUserAsync(user)
-                .ConfigureAwait(false);
-            await ctx.RespondAsync(embed: em)
+            var stats = await Database.GetGameStatsForUserAsync(user.Id);
+            if (stats == null) {
+                await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
+                    Title = $"Stats for {user.Username}",
+                    Description = "No games played yet!",
+                    ThumbnailUrl = user.AvatarUrl,
+                    Color = DiscordColor.Chartreuse
+                }.Build());
+                return;
+            }
+
+            await ctx.RespondAsync(embed: stats.ToDiscordEmbed(user))
                 .ConfigureAwait(false);
         }
         #endregion

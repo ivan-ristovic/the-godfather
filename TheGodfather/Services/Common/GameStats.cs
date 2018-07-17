@@ -29,14 +29,16 @@ namespace TheGodfather.Services.Common
 
     public class GameStats
     {
-        private IReadOnlyDictionary<string, string> Stats { get; }
-        public ulong UserId => ulong.TryParse(Stats["uid"], out ulong uid) ? uid : 0;
+        private readonly IReadOnlyDictionary<string, string> stats;
+
+        public ulong UserId 
+            => ulong.TryParse(this.stats["uid"], out ulong uid) ? uid : 0;
 
 
         public GameStats(IReadOnlyDictionary<string, string> statdict)
         {
             if (statdict == null || !statdict.Any()) {
-                Stats = new Dictionary<string, string>() {
+                this.stats = new Dictionary<string, string>() {
                     { "duels_won" , "0" },
                     { "duels_lost" , "0" },
                     { "ttt_won" , "0" },
@@ -51,7 +53,7 @@ namespace TheGodfather.Services.Common
                     { "hangman_won" , "0" }
                 };
             } else {
-                Stats = statdict;
+                this.stats = statdict;
             }
         }
 
@@ -73,32 +75,13 @@ namespace TheGodfather.Services.Common
             return emb;
         }
 
-        public string DuelStatsString()
-            => $"W: {Stats["duels_won"]} L: {Stats["duels_lost"]} ({Formatter.Bold($"{CalculateWinPercentage(Stats["duels_won"], Stats["duels_lost"])}")}%)";
-
-        public string TTTStatsString()
-            => $"W: {Stats["ttt_won"]} L: {Stats["ttt_lost"]} ({Formatter.Bold($"{CalculateWinPercentage(Stats["ttt_won"], Stats["ttt_lost"])}")}%)";
-
-        public string Chain4StatsString()
-            => $"W: {Stats["chain4_won"]} L: {Stats["chain4_lost"]} ({Formatter.Bold($"{CalculateWinPercentage(Stats["chain4_won"], Stats["chain4_lost"])}")}%)";
-
-        public string CaroStatsString()
-            => $"W: {Stats["caro_won"]} L: {Stats["caro_lost"]} ({Formatter.Bold($"{CalculateWinPercentage(Stats["caro_won"], Stats["caro_lost"])}")}%)";
-
-        public string NunchiStatsString()
-            => $"W: {Stats["numraces_won"]}";
-
-        public string QuizStatsString()
-            => $"W: {Stats["quizes_won"]}";
-
-        public string RaceStatsString()
-            => $"W: {Stats["races_won"]}";
-
-        public string HangmanStatsString()
-            => $"W: {Stats["hangman_won"]}";
-
-        public string OthelloStatsString()
-            => $"W: {Stats["othello_won"]} L: {Stats["othello_lost"]} ({Formatter.Bold($"{CalculateWinPercentage(Stats["othello_won"], Stats["othello_lost"])}")}%)";
+        public DiscordEmbed ToDiscordEmbed(DiscordUser user)
+        {
+            DiscordEmbedBuilder emb = this.GetEmbedBuilder();
+            emb.WithTitle($"Stats for {user.Username}");
+            emb.WithThumbnailUrl(user.AvatarUrl);
+            return emb.Build();
+        }
 
         public uint CalculateWinPercentage(string won, string lost)
         {
@@ -110,5 +93,32 @@ namespace TheGodfather.Services.Common
 
             return (uint)Math.Round((double)w / (w + l) * 100);
         }
+
+        public string DuelStatsString()
+            => $"W: {this.stats["duels_won"]} L: {this.stats["duels_lost"]} ({Formatter.Bold($"{CalculateWinPercentage(this.stats["duels_won"], this.stats["duels_lost"])}")}%)";
+
+        public string TTTStatsString()
+            => $"W: {this.stats["ttt_won"]} L: {this.stats["ttt_lost"]} ({Formatter.Bold($"{CalculateWinPercentage(this.stats["ttt_won"], this.stats["ttt_lost"])}")}%)";
+
+        public string Chain4StatsString()
+            => $"W: {this.stats["chain4_won"]} L: {this.stats["chain4_lost"]} ({Formatter.Bold($"{CalculateWinPercentage(this.stats["chain4_won"], this.stats["chain4_lost"])}")}%)";
+
+        public string CaroStatsString()
+            => $"W: {this.stats["caro_won"]} L: {this.stats["caro_lost"]} ({Formatter.Bold($"{CalculateWinPercentage(this.stats["caro_won"], this.stats["caro_lost"])}")}%)";
+
+        public string NunchiStatsString()
+            => $"W: {this.stats["numraces_won"]}";
+
+        public string QuizStatsString()
+            => $"W: {this.stats["quizes_won"]}";
+
+        public string RaceStatsString()
+            => $"W: {this.stats["races_won"]}";
+
+        public string HangmanStatsString()
+            => $"W: {this.stats["hangman_won"]}";
+
+        public string OthelloStatsString()
+            => $"W: {this.stats["othello_won"]} L: {this.stats["othello_lost"]} ({Formatter.Bold($"{CalculateWinPercentage(this.stats["othello_won"], this.stats["othello_lost"])}")}%)";
     }
 }
