@@ -21,9 +21,9 @@ namespace TheGodfather.Modules.Games.Common
         {
             int field = 0;
             bool player1plays = _move % 2 == 0;
-            var mctx = await _interactivity.WaitForMessageAsync(
+            var mctx = await Interactivity.WaitForMessageAsync(
                 xm => {
-                    if (xm.Channel.Id != _channel.Id) return false;
+                    if (xm.Channel.Id != Channel.Id) return false;
                     if (player1plays && (xm.Author.Id != _p1.Id)) return false;
                     if (!player1plays && (xm.Author.Id != _p2.Id)) return false;
                     if (!int.TryParse(xm.Content, out field)) return false;
@@ -32,7 +32,7 @@ namespace TheGodfather.Modules.Games.Common
                 _movetime
             ).ConfigureAwait(false);
             if (mctx == null) {
-                TimedOut = true;
+                IsTimeoutReached = true;
                 Winner = player1plays ? _p2 : _p1;
                 return;
             }
@@ -44,13 +44,13 @@ namespace TheGodfather.Modules.Games.Common
                         await mctx.Message.DeleteAsync()
                             .ConfigureAwait(false);
                     } catch {
-                        await _channel.SendMessageAsync("Consider giving me the permissions to delete messages so that I can clean up the move posts and keep the board at the bottom.")
+                        await Channel.SendMessageAsync("Consider giving me the permissions to delete messages so that I can clean up the move posts and keep the board at the bottom.")
                             .ConfigureAwait(false);
                         _deletefailed = true;
                     }
                 }
             } else {
-                await _channel.SendMessageAsync("Invalid move.")
+                await Channel.SendMessageAsync("Invalid move.")
                     .ConfigureAwait(false);
             }
         }

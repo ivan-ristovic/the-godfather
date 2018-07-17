@@ -17,7 +17,7 @@ namespace TheGodfather.Modules.Search
     [Group("gif"), Module(ModuleType.Searches)]
     [Description("GIPHY commands. If invoked without a subcommand, searches GIPHY with given query.")]
     [Aliases("giphy")]
-    [UsageExample("!gif wat")]
+    [UsageExamples("!gif wat")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     [NotBlocked]
     public class GiphyModule : TheGodfatherServiceModule<GiphyService>
@@ -37,7 +37,7 @@ namespace TheGodfather.Modules.Search
                 .ConfigureAwait(false);
 
             if (!res.Any()) {
-                await ctx.RespondWithFailedEmbedAsync("No results...")
+                await ctx.InformFailureAsync("No results...")
                     .ConfigureAwait(false);
                 return;
             }
@@ -51,7 +51,7 @@ namespace TheGodfather.Modules.Search
         [Command("random"), Module(ModuleType.Searches)]
         [Description("Return a random GIF.")]
         [Aliases("r", "rand", "rnd")]
-        [UsageExample("!gif random")]
+        [UsageExamples("!gif random")]
         public async Task RandomAsync(CommandContext ctx)
         {
             var res = await _Service.GetRandomGifAsync()
@@ -65,8 +65,8 @@ namespace TheGodfather.Modules.Search
         [Command("trending"), Module(ModuleType.Searches)]
         [Description("Return an amount of trending GIFs.")]
         [Aliases("t", "tr", "trend")]
-        [UsageExample("!gif trending 3")]
-        [UsageExample("!gif trending")]
+        [UsageExamples("!gif trending",
+                       "!gif trending 3")]
         public async Task TrendingAsync(CommandContext ctx,
                                        [Description("Number of results (1-10).")] int amount = 5)
         {

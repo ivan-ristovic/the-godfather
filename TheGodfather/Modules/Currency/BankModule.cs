@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-using TheGodfather.Services;
+using TheGodfather.Services.Database;
+using TheGodfather.Services.Database.Bank;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -22,7 +23,8 @@ namespace TheGodfather.Modules.Currency
     [Description("Bank account manipulation. If invoked alone, prints out your bank balance. Accounts periodically get a bonus.")]
     [Aliases("$", "$$", "$$$")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    [UsageExample("!bank")]
+    [UsageExamples("!bank",
+                   "!bank @Someone")]
     [NotBlocked]
     public class BankModule : TheGodfatherBaseModule
     {
@@ -40,14 +42,14 @@ namespace TheGodfather.Modules.Currency
         [Command("balance"), Module(ModuleType.Currency)]
         [Description("View account balance for given user. If the user is not given, checks sender's balance.")]
         [Aliases("s", "status", "bal", "money", "credits")]
-        [UsageExample("!bank balance @Someone")]
+        [UsageExamples("!bank balance @Someone")]
         public async Task GetBalanceAsync(CommandContext ctx,
                                          [Description("User.")] DiscordUser user = null)
         {
             if (user == null)
                 user = ctx.User;
 
-            long? balance = await Database.GetUserCreditAmountAsync(user.Id, ctx.Guild.Id)
+            long? balance = await Database.GetBankAccountBalanceAsync(user.Id, ctx.Guild.Id)
                 .ConfigureAwait(false);
 
             var emb = new DiscordEmbedBuilder() {
@@ -73,9 +75,9 @@ namespace TheGodfather.Modules.Currency
         [Module(ModuleType.Currency)]
         [Description("Magically give funds to some user.")]
         [Aliases("give")]
-        [UsageExample("!bank grant @Someone 1000")]
-        [UsageExample("!bank grant 1000 @Someone")]
-        [RequirePriviledgedUser]
+        [UsageExamples("!bank grant @Someone 1000",
+                       "!bank grant 1000 @Someone")]
+        [RequirePrivilegedUser]
         public async Task GrantAsync(CommandContext ctx,
                                     [Description("User.")] DiscordUser user,
                                     [Description("Amount.")] long amount)
@@ -83,12 +85,12 @@ namespace TheGodfather.Modules.Currency
             if (amount <= 0 || amount > 10000000000)
                 throw new InvalidCommandUsageException($"Invalid amount! Needs to be in range [1 - {1000000000:n0}]");
 
-            if (!await Database.BankContainsUserAsync(user.Id, ctx.Guild.Id).ConfigureAwait(false))
+            if (!await Database.HasBankAccountAsync(user.Id, ctx.Guild.Id).ConfigureAwait(false))
                 throw new CommandFailedException("Given user does not have a WM bank account!");
 
-            await Database.GiveCreditsToUserAsync(user.Id, ctx.Guild.Id, amount)
+            await Database.IncreaseBankAccountBalanceAsync(user.Id, ctx.Guild.Id, amount)
                 .ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync($"{Formatter.Bold(user.Mention)} won {Formatter.Bold($"{amount:n0}")} credits on the Serbian lottery! (seems legit)", ":moneybag:")
+            await ctx.InformSuccessAsync($"{Formatter.Bold(user.Mention)} won {Formatter.Bold($"{amount:n0}")} credits on the Serbian lottery! (seems legit)", ":moneybag:")
                 .ConfigureAwait(false);
         }
 
@@ -103,15 +105,15 @@ namespace TheGodfather.Modules.Currency
         [Command("register"), Module(ModuleType.Currency)]
         [Description("Create an account for you in WM bank.")]
         [Aliases("r", "signup", "activate")]
-        [UsageExample("!bank register")]
+        [UsageExamples("!bank register")]
         public async Task RegisterAsync(CommandContext ctx)
         {
-            if (await Database.BankContainsUserAsync(ctx.User.Id, ctx.Guild.Id).ConfigureAwait(false))
+            if (await Database.HasBankAccountAsync(ctx.User.Id, ctx.Guild.Id).ConfigureAwait(false))
                 throw new CommandFailedException("You already own an account in WM bank!");
 
-            await Database.OpenBankAccountForUserAsync(ctx.User.Id, ctx.Guild.Id)
+            await Database.OpenBankAccountAsync(ctx.User.Id, ctx.Guild.Id)
                 .ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync($"Account opened for you, {ctx.User.Mention}! Since WM bank is so generous, you get 10000 credits for free.", ":moneybag:")
+            await ctx.InformSuccessAsync($"Account opened for you, {ctx.User.Mention}! Since WM bank is so generous, you get 10000 credits for free.", ":moneybag:")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -120,10 +122,10 @@ namespace TheGodfather.Modules.Currency
         [Command("top"), Module(ModuleType.Currency)]
         [Description("Print the richest users.")]
         [Aliases("leaderboard", "elite")]
-        [UsageExample("!bank top")]
+        [UsageExamples("!bank top")]
         public async Task GetLeaderboardAsync(CommandContext ctx)
         {
-            var top = await Database.GetTenRichestUsersAsync(ctx.Guild.Id)
+            var top = await Database.GetTopBankAccountsAsync(ctx.Guild.Id)
                 .ConfigureAwait(false);
 
             StringBuilder sb = new StringBuilder();
@@ -135,7 +137,7 @@ namespace TheGodfather.Modules.Currency
                         .ConfigureAwait(false);
                     sb.AppendLine($"{Formatter.Bold(u.Username)} : {row["balance"]}");
                 } catch (Exception e) {
-                    TheGodfather.LogProvider.LogException(LogLevel.Warning, e);
+                    Shared.LogProvider.LogException(LogLevel.Warning, e);
                 }
             }
 
@@ -151,10 +153,10 @@ namespace TheGodfather.Modules.Currency
         [Command("topglobal"), Module(ModuleType.Currency)]
         [Description("Print the globally richest users.")]
         [Aliases("globalleaderboard", "globalelite", "gtop", "topg", "globaltop")]
-        [UsageExample("!bank gtop")]
+        [UsageExamples("!bank gtop")]
         public async Task GetGlobalLeaderboardAsync(CommandContext ctx)
         {
-            var top = await Database.GetTenRichestUsersAsync()
+            var top = await Database.GetTopBankAccountsAsync()
                 .ConfigureAwait(false);
 
             StringBuilder sb = new StringBuilder();
@@ -166,7 +168,7 @@ namespace TheGodfather.Modules.Currency
                         .ConfigureAwait(false);
                     sb.AppendLine($"{Formatter.Bold(u.Username)} : {row["total_balance"]}");
                 } catch (Exception e) {
-                    TheGodfather.LogProvider.LogException(LogLevel.Warning, e);
+                    Shared.LogProvider.LogException(LogLevel.Warning, e);
                 }
             }
 
@@ -183,8 +185,8 @@ namespace TheGodfather.Modules.Currency
         [Module(ModuleType.Currency)]
         [Description("Transfer funds from your account to another one.")]
         [Aliases("lend")]
-        [UsageExample("!bank transfer @Someone 40")]
-        [UsageExample("!bank transfer 40 @Someone")]
+        [UsageExamples("!bank transfer @Someone 40",
+                       "!bank transfer 40 @Someone")]
         public async Task TransferCreditsAsync(CommandContext ctx,
                                               [Description("User to send credits to.")] DiscordUser user,
                                               [Description("Amount.")] long amount)
@@ -195,10 +197,10 @@ namespace TheGodfather.Modules.Currency
             if (user.Id == ctx.User.Id)
                 throw new CommandFailedException("You can't transfer funds to yourself.");
 
-            await Database.TransferCreditsAsync(ctx.User.Id, user.Id, ctx.Guild.Id, amount)
+            await Database.TransferBetweenBankAccountsAsync(ctx.User.Id, user.Id, ctx.Guild.Id, amount)
                 .ConfigureAwait(false);
 
-            await ctx.RespondWithIconEmbedAsync($"Transfer from {Formatter.Bold(ctx.User.Username)} to {Formatter.Bold(user.Username)} is complete.", ":moneybag:")
+            await ctx.InformSuccessAsync($"Transfer from {Formatter.Bold(ctx.User.Username)} to {Formatter.Bold(user.Username)} is complete.", ":moneybag:")
                 .ConfigureAwait(false);
         }
 
@@ -213,17 +215,17 @@ namespace TheGodfather.Modules.Currency
         [Command("unregister"), Module(ModuleType.Currency)]
         [Description("Delete an account from WM bank.")]
         [Aliases("ur", "signout", "deleteaccount", "delacc", "disable", "deactivate")]
-        [UsageExample("!bank unregister @Someone")]
-        [RequirePriviledgedUser]
+        [UsageExamples("!bank unregister @Someone")]
+        [RequirePrivilegedUser]
         public async Task UnregisterAsync(CommandContext ctx,
                                          [Description("User whose account to delete.")] DiscordUser user)
         {
-            if (!await Database.BankContainsUserAsync(user.Id, ctx.Guild.Id).ConfigureAwait(false))
+            if (!await Database.HasBankAccountAsync(user.Id, ctx.Guild.Id).ConfigureAwait(false))
                 throw new CommandFailedException("There is no account registered for that user in WM bank!");
 
-            await Database.CloseBankAccountForUserAsync(user.Id, ctx.Guild.Id)
+            await Database.CloseBankAccountAsync(user.Id, ctx.Guild.Id)
                 .ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync()
+            await ctx.InformSuccessAsync()
                 .ConfigureAwait(false);
         }
         #endregion

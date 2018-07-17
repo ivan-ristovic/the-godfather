@@ -15,6 +15,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Net.Models;
+using TheGodfather.Services.Database;
 #endregion
 
 namespace TheGodfather.Modules.Administration
@@ -39,14 +40,14 @@ namespace TheGodfather.Modules.Administration
         [Command("bans"), Module(ModuleType.Administration)]
         [Description("Get guild ban list.")]
         [Aliases("banlist", "viewbanlist", "getbanlist", "getbans", "viewbans")]
-        [UsageExample("!guild banlist")]
+        [UsageExamples("!guild banlist")]
         [RequirePermissions(Permissions.ViewAuditLog)]
         public async Task GetBansAsync(CommandContext ctx)
         {
             var bans = await ctx.Guild.GetBansAsync()
                 .ConfigureAwait(false);
 
-            await ctx.SendPaginatedCollectionAsync(
+            await ctx.SendCollectionInPagesAsync(
                 "Guild bans",
                 bans,
                 b => $"- {b.User.ToString()} | Reason: {b.Reason} ",
@@ -59,7 +60,7 @@ namespace TheGodfather.Modules.Administration
         [Command("log"), Module(ModuleType.Administration)]
         [Description("Get audit logs.")]
         [Aliases("auditlog", "viewlog", "getlog", "getlogs", "logs")]
-        [UsageExample("!guild logs")]
+        [UsageExamples("!guild logs")]
         [RequirePermissions(Permissions.ViewAuditLog)]
         public async Task GetAuditLogsAsync(CommandContext ctx,
                                            [Description("Amount of entries to fetch")] int amount = 10)
@@ -90,7 +91,7 @@ namespace TheGodfather.Modules.Administration
         #region COMMAND_GUILD_INFO
         [Command("info"), Module(ModuleType.Administration)]
         [Description("Get guild information.")]
-        [UsageExample("!guild info")]
+        [UsageExamples("!guild info")]
         [Aliases("i", "information")]
         public async Task GuildInfoAsync(CommandContext ctx)
         {
@@ -112,14 +113,14 @@ namespace TheGodfather.Modules.Administration
         #region COMMAND_GUILD_LISTMEMBERS
         [Command("listmembers"), Module(ModuleType.Administration)]
         [Description("Get guild member list.")]
-        [UsageExample("!guild memberlist")]
+        [UsageExamples("!guild memberlist")]
         [Aliases("memberlist", "lm", "members")]
         public async Task ListMembersAsync(CommandContext ctx)
         {
             var members = await ctx.Guild.GetAllMembersAsync()
                 .ConfigureAwait(false);
 
-            await ctx.SendPaginatedCollectionAsync(
+            await ctx.SendCollectionInPagesAsync(
                 "Members",
                 members.OrderBy(m => m.Username),
                 m => m.ToString(),
@@ -132,7 +133,7 @@ namespace TheGodfather.Modules.Administration
         [Command("prune"), Module(ModuleType.Administration)]
         [Description("Kick guild members who weren't active in given amount of days (1-7).")]
         [Aliases("p", "clean")]
-        [UsageExample("!guild prune 5 Kicking inactives..")]
+        [UsageExamples("!guild prune 5 Kicking inactives..")]
         [RequirePermissions(Permissions.KickMembers)]
         [RequireUserPermissions(Permissions.Administrator)]
         [UsesInteractivity]
@@ -151,12 +152,12 @@ namespace TheGodfather.Modules.Administration
                 return;
             }
 
-            if (!await ctx.AskYesNoQuestionAsync($"Pruning will remove {Formatter.Bold(count.ToString())} member(s). Continue?").ConfigureAwait(false))
+            if (!await ctx.WaitForBoolReplyAsync($"Pruning will remove {Formatter.Bold(count.ToString())} member(s). Continue?").ConfigureAwait(false))
                 return;
 
             await ctx.Guild.PruneAsync(days, ctx.BuildReasonString(reason))
                 .ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync()
+            await ctx.InformSuccessAsync()
                 .ConfigureAwait(false);
         }
         #endregion
@@ -165,8 +166,8 @@ namespace TheGodfather.Modules.Administration
         [Command("rename"), Module(ModuleType.Administration)]
         [Description("Rename guild.")]
         [Aliases("r", "name", "setname")]
-        [UsageExample("!guild rename New guild name")]
-        [UsageExample("!guild rename \"Reason for renaming\" New guild name")]
+        [UsageExamples("!guild rename New guild name",
+                       "!guild rename \"Reason for renaming\" New guild name")]
         [RequirePermissions(Permissions.ManageGuild)]
         public async Task RenameGuildAsync(CommandContext ctx,
                                           [Description("Reason.")] string reason,
@@ -179,7 +180,7 @@ namespace TheGodfather.Modules.Administration
                 m.Name = newname;
                 m.AuditLogReason = ctx.BuildReasonString(reason);
             })).ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync()
+            await ctx.InformSuccessAsync()
                 .ConfigureAwait(false);
         }
 
@@ -193,7 +194,7 @@ namespace TheGodfather.Modules.Administration
         [Command("seticon"), Module(ModuleType.Administration)]
         [Description("Change icon of the guild.")]
         [Aliases("icon", "si")]
-        [UsageExample("!guild seticon http://imgur.com/someimage.png")]
+        [UsageExamples("!guild seticon http://imgur.com/someimage.png")]
         [RequirePermissions(Permissions.ManageGuild)]
         public async Task SetIconAsync(CommandContext ctx,
                                       [Description("New icon URL.")] Uri url = null)
@@ -210,11 +211,11 @@ namespace TheGodfather.Modules.Administration
                     await ctx.Guild.ModifyAsync(new Action<GuildEditModel>(e => e.Icon = stream))
                         .ConfigureAwait(false);
             } catch (Exception e) {
-                TheGodfather.LogProvider.LogException(LogLevel.Debug, e);
+                Shared.LogProvider.LogException(LogLevel.Debug, e);
                 throw new CommandFailedException("An error occured.", e);
             }
 
-            await ctx.RespondWithIconEmbedAsync()
+            await ctx.InformSuccessAsync()
                 .ConfigureAwait(false);
         }
         #endregion

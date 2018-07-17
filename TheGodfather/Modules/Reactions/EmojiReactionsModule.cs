@@ -10,12 +10,13 @@ using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Common.Collections;
 using TheGodfather.Modules.Reactions.Common;
-using TheGodfather.Services;
+using TheGodfather.Services.Database.Reactions;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using TheGodfather.Services.Database;
 #endregion
 
 namespace TheGodfather.Modules.Reactions
@@ -23,7 +24,7 @@ namespace TheGodfather.Modules.Reactions
     [Group("emojireaction"), Module(ModuleType.Reactions)]
     [Description("Orders a bot to react with given emoji to a message containing a trigger word inside (guild specific). If invoked without subcommands, adds a new emoji reaction to a given trigger word list. Note: Trigger words can be regular expressions (use ``emojireaction addregex`` command).")]
     [Aliases("ereact", "er", "emojir", "emojireactions")]
-    [UsageExample("!emojireaction :smile: haha laughing")]
+    [UsageExamples("!emojireaction :smile: haha laughing")]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
     [NotBlocked]
     public class EmojiReactionsModule : TheGodfatherBaseModule
@@ -56,8 +57,8 @@ namespace TheGodfather.Modules.Reactions
         [Module(ModuleType.Reactions)]
         [Description("Add emoji reaction to guild reaction list.")]
         [Aliases("+", "new", "a")]
-        [UsageExample("!emojireaction add :smile: haha")]
-        [UsageExample("!emojireaction add haha :smile:")]
+        [UsageExamples("!emojireaction add :smile: haha",
+                       "!emojireaction add haha :smile:")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public Task AddAsync(CommandContext ctx,
                             [Description("Emoji to send.")] DiscordEmoji emoji,
@@ -76,8 +77,8 @@ namespace TheGodfather.Modules.Reactions
         [Module(ModuleType.Reactions)]
         [Description("Add emoji reaction triggered by a regex to guild reaction list.")]
         [Aliases("+r", "+regex", "+regexp", "+rgx", "newregex", "addrgx")]
-        [UsageExample("!emojireaction addregex :smile: (ha)+")]
-        [UsageExample("!emojireaction addregex (ha)+ :smile:")]
+        [UsageExamples("!emojireaction addregex :smile: (ha)+",
+                       "!emojireaction addregex (ha)+ :smile:")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public Task AddRegexAsync(CommandContext ctx,
                                  [Description("Emoji to send.")] DiscordEmoji emoji,
@@ -95,12 +96,12 @@ namespace TheGodfather.Modules.Reactions
         [Command("clear"), Module(ModuleType.Reactions)]
         [Description("Delete all reactions for the current guild.")]
         [Aliases("da", "c", "ca", "cl", "clearall")]
-        [UsageExample("!emojireactions clear")]
+        [UsageExamples("!emojireactions clear")]
         [RequireUserPermissions(Permissions.Administrator)]
         [UsesInteractivity]
         public async Task ClearAsync(CommandContext ctx)
         {
-            if (!await ctx.AskYesNoQuestionAsync("Are you sure you want to delete all emoji reactions for this guild?").ConfigureAwait(false))
+            if (!await ctx.WaitForBoolReplyAsync("Are you sure you want to delete all emoji reactions for this guild?").ConfigureAwait(false))
                 return;
 
             if (Shared.EmojiReactions.ContainsKey(ctx.Guild.Id))
@@ -110,7 +111,7 @@ namespace TheGodfather.Modules.Reactions
                 await Database.RemoveAllGuildEmojiReactionsAsync(ctx.Guild.Id)
                     .ConfigureAwait(false);
             } catch (Exception e) {
-                TheGodfather.LogProvider.LogException(LogLevel.Warning, e);
+                Shared.LogProvider.LogException(LogLevel.Warning, e);
                 throw new CommandFailedException("Failed to delete emoji reactions from the database.");
             }
 
@@ -126,7 +127,7 @@ namespace TheGodfather.Modules.Reactions
                     .ConfigureAwait(false);
             }
 
-            await ctx.RespondWithIconEmbedAsync("Removed all emoji reactions!")
+            await ctx.InformSuccessAsync("Removed all emoji reactions!")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -136,10 +137,10 @@ namespace TheGodfather.Modules.Reactions
         [Module(ModuleType.Reactions)]
         [Description("Remove emoji reactions for given trigger words.")]
         [Aliases("-", "remove", "del", "rm", "d")]
-        [UsageExample("!emojireaction delete haha sometrigger")]
-        [UsageExample("!emojireaction delete 5")]
-        [UsageExample("!emojireaction delete 5 4")]
-        [UsageExample("!emojireaction delete :joy:")]
+        [UsageExamples("!emojireaction delete haha sometrigger",
+                       "!emojireaction delete 5",
+                       "!emojireaction delete 5 4",
+                       "!emojireaction delete :joy:")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task DeleteAsync(CommandContext ctx,
                                      [Description("Emoji to remove reactions for.")] DiscordEmoji emoji)
@@ -153,10 +154,10 @@ namespace TheGodfather.Modules.Reactions
 
             var errors = new StringBuilder();
             try {
-                await Database.RemoveAllEmojiReactionTriggersForReactionAsync(ctx.Guild.Id, ename)
+                await Database.RemoveAllTriggersForEmojiReactionAsync(ctx.Guild.Id, ename)
                     .ConfigureAwait(false);
             } catch (Exception e) {
-                TheGodfather.LogProvider.LogException(LogLevel.Warning, e);
+                Shared.LogProvider.LogException(LogLevel.Warning, e);
                 errors.AppendLine($"Warning: Failed to remove reaction from the database.");
             }
 
@@ -176,7 +177,7 @@ namespace TheGodfather.Modules.Reactions
                     .ConfigureAwait(false);
             }
 
-            await ctx.RespondWithIconEmbedAsync($"Done!\n\n{errlist}")
+            await ctx.InformSuccessAsync($"Done!\n\n{errlist}")
                 .ConfigureAwait(false);
         }
 
@@ -199,7 +200,7 @@ namespace TheGodfather.Modules.Reactions
                 await Database.RemoveEmojiReactionsAsync(ctx.Guild.Id, ids)
                     .ConfigureAwait(false);
             } catch (Exception e) {
-                TheGodfather.LogProvider.LogException(LogLevel.Warning, e);
+                Shared.LogProvider.LogException(LogLevel.Warning, e);
                 errors.AppendLine($"Warning: Failed to remove some reactions from the database.");
             }
 
@@ -224,7 +225,7 @@ namespace TheGodfather.Modules.Reactions
                 }
             }
 
-            await ctx.RespondWithIconEmbedAsync($"Successfully removed {removed} emoji reactions!\n\n{errlist}")
+            await ctx.InformSuccessAsync($"Successfully removed {removed} emoji reactions!\n\n{errlist}")
                 .ConfigureAwait(false);
         }
 
@@ -264,7 +265,7 @@ namespace TheGodfather.Modules.Reactions
                 await Database.RemoveEmojiReactionTriggersAsync(ctx.Guild.Id, triggers)
                     .ConfigureAwait(false);
             } catch (Exception e) {
-                TheGodfather.LogProvider.LogException(LogLevel.Warning, e);
+                Shared.LogProvider.LogException(LogLevel.Warning, e);
                 errors.AppendLine($"Warning: Failed to remove some triggers from the database.");
             }
 
@@ -289,7 +290,7 @@ namespace TheGodfather.Modules.Reactions
                 }
             }
 
-            await ctx.RespondWithIconEmbedAsync($"Successfully removed {removed} emoji reactions!\n\n{errlist}")
+            await ctx.InformSuccessAsync($"Successfully removed {removed} emoji reactions!\n\n{errlist}")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -298,13 +299,13 @@ namespace TheGodfather.Modules.Reactions
         [Command("list"), Module(ModuleType.Reactions)]
         [Description("Show all emoji reactions for this guild.")]
         [Aliases("ls", "l", "view")]
-        [UsageExample("!emojireaction list")]
+        [UsageExamples("!emojireaction list")]
         public async Task ListAsync(CommandContext ctx)
         {
             if (!Shared.EmojiReactions.ContainsKey(ctx.Guild.Id) || !Shared.EmojiReactions[ctx.Guild.Id].Any())
                 throw new CommandFailedException("No emoji reactions registered for this guild.");
 
-            await ctx.SendPaginatedCollectionAsync(
+            await ctx.SendCollectionInPagesAsync(
                 "Emoji reactions for this guild",
                 Shared.EmojiReactions[ctx.Guild.Id].OrderBy(er => er.OrderedTriggerStrings.First()),
                 er => $"{er.Id} : {DiscordEmoji.FromName(ctx.Client, er.Response)} | Triggers: {string.Join(", ", er.TriggerStrings)}",
@@ -344,19 +345,19 @@ namespace TheGodfather.Modules.Reactions
 
                 int id = 0;
                 try {
-                    id = await Database.AddEmojiReactionAsync(ctx.Guild.Id, trigger, ename, is_regex_trigger: is_regex)
+                    id = await Database.AddEmojiReactionAsync(ctx.Guild.Id, trigger, ename, regex: is_regex)
                         .ConfigureAwait(false);
                 } catch (Exception e) {
-                    TheGodfather.LogProvider.LogException(LogLevel.Warning, e);
+                    Shared.LogProvider.LogException(LogLevel.Warning, e);
                     errors.AppendLine($"Warning: Failed to add trigger {Formatter.Bold(trigger)} to the database.");
                 }
 
                 var reaction = Shared.EmojiReactions[ctx.Guild.Id].FirstOrDefault(tr => tr.Response == ename);
                 if (reaction != null) {
-                    if (!reaction.AddTrigger(trigger, is_regex_trigger: is_regex))
+                    if (!reaction.AddTrigger(trigger, regex: is_regex))
                         throw new CommandFailedException($"Failed to add trigger {Formatter.Bold(trigger)}.");
                 } else {
-                    if (!Shared.EmojiReactions[ctx.Guild.Id].Add(new EmojiReaction(id, trigger, ename, is_regex_trigger: is_regex)))
+                    if (!Shared.EmojiReactions[ctx.Guild.Id].Add(new EmojiReaction(id, trigger, ename, regex: is_regex)))
                         throw new CommandFailedException($"Failed to add trigger {Formatter.Bold(trigger)}.");
                 }
             }
@@ -378,7 +379,7 @@ namespace TheGodfather.Modules.Reactions
                     .ConfigureAwait(false);
             }
 
-            await ctx.RespondWithIconEmbedAsync($"Done!\n\n{errlist}")
+            await ctx.InformSuccessAsync($"Done!\n\n{errlist}")
                 .ConfigureAwait(false);
         }
         #endregion

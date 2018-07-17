@@ -1,323 +1,222 @@
 ﻿#region USING_DIRECTIVES
+using DSharpPlus.Entities;
+using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
-
 using TheGodfather.Common;
-
-using DSharpPlus.Entities;
-
-using Npgsql;
-using NpgsqlTypes;
 #endregion
 
-namespace TheGodfather.Services
+namespace TheGodfather.Services.Database.GuildConfig
 {
-    public partial class DBService
+    internal static class DBServiceGuildConfigExtensions
     {
-        public async Task<IReadOnlyDictionary<ulong, CachedGuildConfig>> GetPartialGuildConfigurations()
+        public static async Task<IReadOnlyDictionary<ulong, CachedGuildConfig>> GetAllPartialGuildConfigurations(this DBService db)
         {
             var dict = new Dictionary<ulong, CachedGuildConfig>();
 
-            await _sem.WaitAsync();
-            try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
-                using (var cmd = con.CreateCommand()) {
-                    cmd.CommandText = "SELECT * FROM gf.guild_cfg;";
+            await db.ExecuteCommandAsync(async (cmd) => {
+                cmd.CommandText = "SELECT * FROM gf.guild_cfg;";
 
-                    using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
-                        while (await reader.ReadAsync().ConfigureAwait(false)) {
-                            dict.Add((ulong)(long)reader["gid"], new CachedGuildConfig() {
-                                BlockBooterWebsites = (bool)reader["linkfilter_booters"],
-                                BlockDiscordInvites = (bool)reader["linkfilter_invites"],
-                                BlockDisturbingWebsites = (bool)reader["linkfilter_disturbing"],
-                                BlockIpLoggingWebsites = (bool)reader["linkfilter_iploggers"],
-                                BlockUrlShorteners = (bool)reader["linkfilter_shorteners"],
-                                LinkfilterEnabled = (bool)reader["linkfilter_enabled"],
-                                LogChannelId = (ulong)(long)reader["log_cid"],
-                                Prefix = reader["prefix"] is DBNull ? null : (string)reader["prefix"],
-                                SuggestionsEnabled = (bool)reader["suggestions_enabled"],
-                            });
-                        }
+                using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
+                    while (await reader.ReadAsync().ConfigureAwait(false)) {
+                        dict.Add((ulong)(long)reader["gid"], new CachedGuildConfig() {
+                            BlockBooterWebsites = (bool)reader["linkfilter_booters"],
+                            BlockDiscordInvites = (bool)reader["linkfilter_invites"],
+                            BlockDisturbingWebsites = (bool)reader["linkfilter_disturbing"],
+                            BlockIpLoggingWebsites = (bool)reader["linkfilter_iploggers"],
+                            BlockUrlShorteners = (bool)reader["linkfilter_shorteners"],
+                            LinkfilterEnabled = (bool)reader["linkfilter_enabled"],
+                            LogChannelId = (ulong)(long)reader["log_cid"],
+                            Prefix = reader["prefix"] is DBNull ? null : (string)reader["prefix"],
+                            SuggestionsEnabled = (bool)reader["suggestions_enabled"],
+                        });
                     }
                 }
-            } finally {
-                _sem.Release();
-            }
+            });
 
             return new ReadOnlyDictionary<ulong, CachedGuildConfig>(dict);
         }
 
-
-        public async Task RegisterGuildAsync(ulong gid)
-        {
-            await _sem.WaitAsync();
-            try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
-                using (var cmd = con.CreateCommand()) {
-                    cmd.CommandText = "INSERT INTO gf.guild_cfg VALUES (@gid) ON CONFLICT DO NOTHING;";
-                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
-
-                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
-                }
-            } finally {
-                _sem.Release();
-            }
-        }
-
-        public async Task UnregisterGuildAsync(ulong gid)
-        {
-            await _sem.WaitAsync();
-            try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
-                using (var cmd = con.CreateCommand()) {
-                    cmd.CommandText = "DELETE FROM gf.guild_cfg WHERE gid = @gid;";
-                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
-
-                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
-                }
-            } finally {
-                _sem.Release();
-            }
-        }
-
-
-        public async Task SetPrefixAsync(ulong gid, string prefix)
-        {
-            await _sem.WaitAsync();
-            try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
-                using (var cmd = con.CreateCommand()) {
-                    cmd.CommandText = "UPDATE gf.guild_cfg SET prefix = @prefix WHERE gid = @gid;";
-                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
-                    cmd.Parameters.AddWithValue("prefix", NpgsqlDbType.Varchar, prefix);
-
-                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
-                }
-            } finally {
-                _sem.Release();
-            }
-        }
-
-        public async Task ResetPrefixAsync(ulong gid)
-        {
-            await _sem.WaitAsync();
-            try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
-                using (var cmd = con.CreateCommand()) {
-                    cmd.CommandText = "UPDATE gf.guild_cfg SET prefix = NULL WHERE gid = @gid;";
-                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
-
-                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
-                }
-            } finally {
-                _sem.Release();
-            }
-        }
-
-
-        public async Task UpdateGuildSettingsAsync(ulong gid, CachedGuildConfig cfg)
-        {
-            await _sem.WaitAsync();
-            try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
-                using (var cmd = con.CreateCommand()) {
-                    cmd.CommandText = "UPDATE gf.guild_cfg SET (prefix, suggestions_enabled, log_cid, linkfilter_enabled, linkfilter_invites, linkfilter_booters, linkfilter_disturbing, linkfilter_iploggers, linkfilter_shorteners) = (@prefix, @suggestions_enabled, @log_cid, @linkfilter_enabled, @linkfilter_invites, @linkfilter_booters, @linkfilter_disturbing, @linkfilter_iploggers, @linkfilter_shorteners) WHERE gid = @gid;";
-                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
-                    if (string.IsNullOrWhiteSpace(cfg.Prefix))
-                        cmd.Parameters.AddWithValue("prefix", NpgsqlDbType.Varchar, DBNull.Value);
-                    else
-                        cmd.Parameters.AddWithValue("prefix", NpgsqlDbType.Varchar, cfg.Prefix);
-                    cmd.Parameters.AddWithValue("suggestions_enabled", NpgsqlDbType.Boolean, cfg.SuggestionsEnabled);
-                    cmd.Parameters.AddWithValue("log_cid", NpgsqlDbType.Bigint, (long)cfg.LogChannelId);
-                    cmd.Parameters.AddWithValue("linkfilter_enabled", NpgsqlDbType.Boolean, cfg.LinkfilterEnabled);
-                    cmd.Parameters.AddWithValue("linkfilter_invites", NpgsqlDbType.Boolean, cfg.BlockDiscordInvites);
-                    cmd.Parameters.AddWithValue("linkfilter_booters", NpgsqlDbType.Boolean, cfg.BlockBooterWebsites);
-                    cmd.Parameters.AddWithValue("linkfilter_disturbing", NpgsqlDbType.Boolean, cfg.BlockDisturbingWebsites);
-                    cmd.Parameters.AddWithValue("linkfilter_iploggers", NpgsqlDbType.Boolean, cfg.BlockIpLoggingWebsites);
-                    cmd.Parameters.AddWithValue("linkfilter_shorteners", NpgsqlDbType.Boolean, cfg.BlockUrlShorteners);
-                    
-                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
-                }
-            } finally {
-                _sem.Release();
-            }
-        }
-
-
-        public async Task<DiscordChannel> GetWelcomeChannelAsync(DiscordGuild guild)
+        public static async Task<DiscordChannel> GetLeaveChannelAsync(this DBService db, DiscordGuild guild)
         {
             ulong cid = 0;
 
-            await _sem.WaitAsync();
-            try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
-                using (var cmd = con.CreateCommand()) {
-                    cmd.CommandText = "SELECT welcome_cid FROM gf.guild_cfg WHERE gid = @gid LIMIT 1;";
-                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)guild.Id);
+            await db.ExecuteCommandAsync(async (cmd) => {
+                cmd.CommandText = "SELECT leave_cid FROM gf.guild_cfg WHERE gid = @gid LIMIT 1;";
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)guild.Id));
 
-                    var res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
-                    if (res != null && !(res is DBNull))
-                        cid = (ulong)(long)res;
-                }
-            } finally {
-                _sem.Release();
-            }
+                object res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
+                if (res != null && !(res is DBNull))
+                    cid = (ulong)(long)res;
+            });
 
             return cid != 0 ? guild.GetChannel(cid) : null;
         }
 
-        public async Task<DiscordChannel> GetLeaveChannelAsync(DiscordGuild guild)
+        public static async Task<string> GetLeaveMessageForGuildAsync(this DBService db, ulong gid)
+        {
+            string msg = null;
+
+            await db.ExecuteCommandAsync(async (cmd) => {
+                cmd.CommandText = "SELECT leave_msg FROM gf.guild_cfg WHERE gid = @gid LIMIT 1;";
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
+
+                object res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
+                if (res != null && !(res is DBNull))
+                    msg = (string)res;
+            });
+
+            return msg;
+        }
+
+        public static async Task<DiscordChannel> GetWelcomeChannelAsync(this DBService db, DiscordGuild guild)
         {
             ulong cid = 0;
 
-            await _sem.WaitAsync();
-            try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
-                using (var cmd = con.CreateCommand()) {
-                    cmd.CommandText = "SELECT leave_cid FROM gf.guild_cfg WHERE gid = @gid LIMIT 1;";
-                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)guild.Id);
+            await db.ExecuteCommandAsync(async (cmd) => {
+                cmd.CommandText = "SELECT welcome_cid FROM gf.guild_cfg WHERE gid = @gid LIMIT 1;";
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)guild.Id));
 
-                    var res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
-                    if (res != null && !(res is DBNull))
-                        cid = (ulong)(long)res;
-                }
-            } finally {
-                _sem.Release();
-            }
+                object res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
+                if (res != null && !(res is DBNull))
+                    cid = (ulong)(long)res;
+            });
 
             return cid != 0 ? guild.GetChannel(cid) : null;
         }
 
-        public async Task<string> GetLeaveMessageAsync(ulong gid)
+        public static async Task<string> GetWelcomeMessageAsync(this DBService db, ulong gid)
         {
             string msg = null;
 
-            await _sem.WaitAsync();
-            try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
-                using (var cmd = con.CreateCommand()) {
-                    cmd.CommandText = "SELECT leave_msg FROM gf.guild_cfg WHERE gid = @gid LIMIT 1;";
-                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
+            await db.ExecuteCommandAsync(async (cmd) => {
+                cmd.CommandText = "SELECT welcome_msg FROM gf.guild_cfg WHERE gid = @gid LIMIT 1;";
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
 
-                    var res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
-                    if (res != null && !(res is DBNull))
-                        msg = (string)res;
-                }
-            } finally {
-                _sem.Release();
-            }
+                object res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
+                if (res != null && !(res is DBNull))
+                    msg = (string)res;
+            });
 
             return msg;
         }
 
-        public async Task<string> GetWelcomeMessageAsync(ulong gid)
+        public static Task RegisterGuildAsync(this DBService db, ulong gid)
         {
-            string msg = null;
+            return db.ExecuteCommandAsync(cmd => {
+                cmd.CommandText = "INSERT INTO gf.guild_cfg VALUES (@gid) ON CONFLICT DO NOTHING;";
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
 
-            await _sem.WaitAsync();
-            try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
-                using (var cmd = con.CreateCommand()) {
-                    cmd.CommandText = "SELECT welcome_msg FROM gf.guild_cfg WHERE gid = @gid LIMIT 1;";
-                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
-
-                    var res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
-                    if (res != null && !(res is DBNull))
-                        msg = (string)res;
-                }
-            } finally {
-                _sem.Release();
-            }
-
-            return msg;
+                return cmd.ExecuteNonQueryAsync();
+            });
         }
 
-        public Task RemoveWelcomeChannelAsync(ulong gid)
-            => SetWelcomeChannelAsync(gid, 0);
+        public static Task RemoveWelcomeChannelAsync(this DBService db, ulong gid)
+            => db.SetWelcomeChannelAsync(gid, 0);
 
-        public Task RemoveWelcomeMessageAsync(ulong gid)
-            => SetWelcomeMessageAsync(gid, null);
+        public static Task RemoveWelcomeMessageAsync(this DBService db, ulong gid)
+            => db.SetWelcomeMessageAsync(gid, null);
 
-        public Task RemoveLeaveChannelAsync(ulong gid)
-            => SetLeaveChannelAsync(gid, 0);
+        public static Task RemoveLeaveChannelAsync(this DBService db, ulong gid)
+            => db.SetLeaveChannelAsync(gid, 0);
 
-        public Task RemoveLeaveMessageAsync(ulong gid)
-            => SetLeaveMessageAsync(gid, null);
+        public static Task RemoveLeaveMessageAsync(this DBService db, ulong gid)
+            => db.SetLeaveMessageAsync(gid, null);
 
-        public async Task SetWelcomeChannelAsync(ulong gid, ulong cid)
+        public static Task ResetPrefixAsync(this DBService db, ulong gid)
         {
-            await _sem.WaitAsync();
-            try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
-                using (var cmd = con.CreateCommand()) {
-                    cmd.CommandText = "UPDATE gf.guild_cfg SET welcome_cid = @cid WHERE gid = @gid;";
-                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
-                    cmd.Parameters.AddWithValue("cid", NpgsqlDbType.Bigint, (long)cid);
+            return db.ExecuteCommandAsync(cmd => {
+                cmd.CommandText = "UPDATE gf.guild_cfg SET prefix = NULL WHERE gid = @gid;";
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
 
-                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
-                }
-            } finally {
-                _sem.Release();
-            }
+                return cmd.ExecuteNonQueryAsync();
+            });
         }
 
-        public async Task SetWelcomeMessageAsync(ulong gid, string message)
+        public static Task SetLeaveChannelAsync(this DBService db, ulong gid, ulong cid)
         {
-            await _sem.WaitAsync();
-            try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
-                using (var cmd = con.CreateCommand()) {
-                    cmd.CommandText = "UPDATE gf.guild_cfg SET welcome_msg = @message WHERE gid = @gid;";
-                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
-                    if (string.IsNullOrWhiteSpace(message))
-                        cmd.Parameters.AddWithValue("message", NpgsqlDbType.Varchar, DBNull.Value);
-                    else
-                        cmd.Parameters.AddWithValue("message", NpgsqlDbType.Varchar, message);
+            return db.ExecuteCommandAsync(cmd => {
+                cmd.CommandText = "UPDATE gf.guild_cfg SET leave_cid = @cid WHERE gid = @gid;";
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("cid", (long)cid));
 
-                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
-                }
-            } finally {
-                _sem.Release();
-            }
+                return cmd.ExecuteNonQueryAsync();
+            });
         }
 
-        public async Task SetLeaveChannelAsync(ulong gid, ulong cid)
+        public static Task SetLeaveMessageAsync(this DBService db, ulong gid, string message)
         {
-            await _sem.WaitAsync();
-            try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
-                using (var cmd = con.CreateCommand()) {
-                    cmd.CommandText = "UPDATE gf.guild_cfg SET leave_cid = @cid WHERE gid = @gid;";
-                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
-                    cmd.Parameters.AddWithValue("cid", NpgsqlDbType.Bigint, (long)cid);
+            return db.ExecuteCommandAsync(cmd => {
+                cmd.CommandText = "UPDATE gf.guild_cfg SET leave_msg = @message WHERE gid = @gid;";
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
+                cmd.Parameters.Add(new NpgsqlParameter<string>("message", message));
 
-                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
-                }
-            } finally {
-                _sem.Release();
-            }
+                return cmd.ExecuteNonQueryAsync();
+            });
         }
 
-        public async Task SetLeaveMessageAsync(ulong gid, string message)
+        public static Task SetPrefixAsync(this DBService db, ulong gid, string prefix)
         {
-            await _sem.WaitAsync();
-            try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
-                using (var cmd = con.CreateCommand()) {
-                    cmd.CommandText = "UPDATE gf.guild_cfg SET leave_msg = @message WHERE gid = @gid;";
-                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
-                    if (string.IsNullOrWhiteSpace(message))
-                        cmd.Parameters.AddWithValue("message", NpgsqlDbType.Varchar, DBNull.Value);
-                    else
-                        cmd.Parameters.AddWithValue("message", NpgsqlDbType.Varchar, message);
+            return db.ExecuteCommandAsync(cmd => {
+                cmd.CommandText = "UPDATE gf.guild_cfg SET prefix = @prefix WHERE gid = @gid;";
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
+                cmd.Parameters.Add(new NpgsqlParameter<string>("prefix", prefix));
 
-                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
-                }
-            } finally {
-                _sem.Release();
-            }
+                return cmd.ExecuteNonQueryAsync();
+            });
+        }
+
+        public static Task SetWelcomeChannelAsync(this DBService db, ulong gid, ulong cid)
+        {
+            return db.ExecuteCommandAsync(cmd => {
+                cmd.CommandText = "UPDATE gf.guild_cfg SET welcome_cid = @cid WHERE gid = @gid;";
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("cid", (long)cid));
+
+                return cmd.ExecuteNonQueryAsync();
+            });
+        }
+
+        public static Task SetWelcomeMessageAsync(this DBService db, ulong gid, string message)
+        {
+            return db.ExecuteCommandAsync(cmd => {
+                cmd.CommandText = "UPDATE gf.guild_cfg SET welcome_msg = @message WHERE gid = @gid;";
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
+                cmd.Parameters.Add(new NpgsqlParameter<string>("message", message));
+
+                return cmd.ExecuteNonQueryAsync();
+            });
+        }
+
+        public static Task UnregisterGuildAsync(this DBService db, ulong gid)
+        {
+            return db.ExecuteCommandAsync(cmd => {
+                cmd.CommandText = "DELETE FROM gf.guild_cfg WHERE gid = @gid;";
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
+
+                return cmd.ExecuteNonQueryAsync();
+            });
+        }
+
+        public static Task UpdateGuildSettingsAsync(this DBService db, ulong gid, CachedGuildConfig cfg)
+        {
+            return db.ExecuteCommandAsync(cmd => {
+                cmd.CommandText = "UPDATE gf.guild_cfg SET (prefix, suggestions_enabled, log_cid, linkfilter_enabled, linkfilter_invites, linkfilter_booters, linkfilter_disturbing, linkfilter_iploggers, linkfilter_shorteners) = (@prefix, @suggestions_enabled, @log_cid, @linkfilter_enabled, @linkfilter_invites, @linkfilter_booters, @linkfilter_disturbing, @linkfilter_iploggers, @linkfilter_shorteners) WHERE gid = @gid;";
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
+                cmd.Parameters.Add(new NpgsqlParameter<string>("prefix", cfg.Prefix));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("log_cid", (long)cfg.LogChannelId));
+                cmd.Parameters.Add(new NpgsqlParameter<bool>("suggestions_enabled", cfg.SuggestionsEnabled));
+                cmd.Parameters.Add(new NpgsqlParameter<bool>("linkfilter_enabled", cfg.LinkfilterEnabled));
+                cmd.Parameters.Add(new NpgsqlParameter<bool>("linkfilter_invites", cfg.BlockDiscordInvites));
+                cmd.Parameters.Add(new NpgsqlParameter<bool>("linkfilter_booters", cfg.BlockBooterWebsites));
+                cmd.Parameters.Add(new NpgsqlParameter<bool>("linkfilter_disturbing", cfg.BlockDisturbingWebsites));
+                cmd.Parameters.Add(new NpgsqlParameter<bool>("linkfilter_iploggers", cfg.BlockIpLoggingWebsites));
+                cmd.Parameters.Add(new NpgsqlParameter<bool>("linkfilter_shorteners", cfg.BlockUrlShorteners));
+
+                return cmd.ExecuteNonQueryAsync();
+            });
         }
     }
 }

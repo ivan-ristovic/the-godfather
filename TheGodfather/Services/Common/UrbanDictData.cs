@@ -35,7 +35,7 @@ namespace TheGodfather.Services.Common
         public string Word { get; set; }
 
         [JsonProperty("defid")]
-        public int Defid { get; set; }
+        public int DefinitionId { get; set; }
 
         [JsonProperty("current_vote")]
         public string CurrentVote { get; set; }

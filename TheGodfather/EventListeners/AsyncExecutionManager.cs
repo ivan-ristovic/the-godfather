@@ -1,11 +1,9 @@
 ﻿#region USING_DIRECTIVES
+using DSharpPlus;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-
 using TheGodfather.Common.Attributes;
-
-using DSharpPlus;
 #endregion
 
 namespace TheGodfather.EventListeners
@@ -16,17 +14,18 @@ namespace TheGodfather.EventListeners
 
         public static void RegisterEventListeners(DiscordClient client, TheGodfatherShard shard)
         {
-            var assembly = Assembly.GetExecutingAssembly();
-
             ListenerMethods =
-                from types in assembly.GetTypes()
+                from types in Assembly.GetExecutingAssembly().GetTypes()
                 from methods in types.GetMethods()
-                let attribute = methods.GetCustomAttribute(typeof(AsyncExecuterAttribute), true)
+                let attribute = methods.GetCustomAttribute(typeof(AsyncEventListenerAttribute), inherit: true)
                 where attribute != null
-                select new ListenerMethod { Method = methods, Attribute = attribute as AsyncExecuterAttribute };
+                select new ListenerMethod {
+                    Method = methods,
+                    Attribute = attribute as AsyncEventListenerAttribute
+                };
 
-            foreach (var listener in ListenerMethods)
-                listener.Attribute.Register(shard, client, listener.Method);
+            foreach (ListenerMethod lm in ListenerMethods)
+                lm.Attribute.Register(shard, client, lm.Method);
         }
     }
 
@@ -34,6 +33,6 @@ namespace TheGodfather.EventListeners
     internal class ListenerMethod
     {
         public MethodInfo Method { get; internal set; }
-        public AsyncExecuterAttribute Attribute { get; internal set; }
+        public AsyncEventListenerAttribute Attribute { get; internal set; }
     }
 }

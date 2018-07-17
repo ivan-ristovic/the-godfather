@@ -1,48 +1,47 @@
 ﻿#region USING_DIRECTIVES
-using System.Collections.Concurrent;
-using System.Threading.Tasks;
-
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
+using System.Collections.Concurrent;
+using System.Threading.Tasks;
 #endregion
 
 namespace TheGodfather.Common
 {
     public abstract class ChannelEvent
     {
-        private static ConcurrentDictionary<ulong, ChannelEvent> _events = new ConcurrentDictionary<ulong, ChannelEvent>();
+        private static ConcurrentDictionary<ulong, ChannelEvent> Events = new ConcurrentDictionary<ulong, ChannelEvent>();
 
 
         public static ChannelEvent GetEventInChannel(ulong cid)
-            => _events.ContainsKey(cid) ? _events[cid] : null;
+            => Events.ContainsKey(cid) ? Events[cid] : null;
 
         public static bool IsEventRunningInChannel(ulong cid)
-            => _events.ContainsKey(cid) && _events[cid] != null;
+            => Events.ContainsKey(cid) && Events[cid] != null;
 
         public static void RegisterEventInChannel(ChannelEvent cevent, ulong cid)
-            => _events.AddOrUpdate(cid, cevent, (c, e) => cevent);
+            => Events.AddOrUpdate(cid, cevent, (c, e) => cevent);
 
         public static void UnregisterEventInChannel(ulong cid)
         {
-            if (!_events.ContainsKey(cid))
+            if (!Events.ContainsKey(cid))
                 return;
-            if (!_events.TryRemove(cid, out _))
-                _events[cid] = null;
+            if (!Events.TryRemove(cid, out _))
+                Events[cid] = null;
         }
+
+
+        public DiscordChannel Channel { get; protected set; }
+        public InteractivityExtension Interactivity { get; protected set; }
+        public bool IsTimeoutReached { get; protected set; }
+        public DiscordUser Winner { get; protected set; }
 
 
         protected ChannelEvent(InteractivityExtension interactivity, DiscordChannel channel)
         {
-            _interactivity = interactivity;
-            _channel = channel;
+            this.Interactivity = interactivity;
+            this.Channel = channel;
         }
 
-
-        public DiscordUser Winner { get; protected set; }
-        public bool TimedOut { get; protected set; }
-
-        protected DiscordChannel _channel;
-        protected InteractivityExtension _interactivity;
 
         public abstract Task RunAsync();
     }

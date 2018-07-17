@@ -6,6 +6,8 @@ using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Services;
+using TheGodfather.Services.Database;
+using TheGodfather.Services.Database.Feeds;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -18,7 +20,7 @@ namespace TheGodfather.Modules.Search
     [Group("rss"), Module(ModuleType.Searches)]
     [Description("Commands for RSS feed querying or subscribing. If invoked without subcommand, gives the latest topic from the given RSS URL.")]
     [Aliases("feed")]
-    [UsageExample("!rss https://news.google.com/news/rss/")]
+    [UsageExamples("!rss https://news.google.com/news/rss/")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     [NotBlocked]
     public class RSSModule : TheGodfatherBaseModule
@@ -34,13 +36,13 @@ namespace TheGodfather.Modules.Search
             if (string.IsNullOrWhiteSpace(url))
                 throw new InvalidCommandUsageException("URL missing.");
 
-            if (!RSSService.IsValidRSSFeedURL(url))
+            if (!RssService.IsValidFeedURL(url))
                 throw new InvalidCommandUsageException("No results found for given URL (maybe forbidden?).");
 
-            var res = RSSService.GetFeedResults(url);
+            var res = RssService.GetFeedResults(url);
             if (res == null)
                 throw new CommandFailedException("Error getting feed from given URL.");
-            await RSSService.SendFeedResultsAsync(ctx.Channel, res)
+            await RssService.SendFeedResultsAsync(ctx.Channel, res)
                 .ConfigureAwait(false);
         }
 
@@ -49,18 +51,18 @@ namespace TheGodfather.Modules.Search
         [Command("list"), Module(ModuleType.Searches)]
         [Description("Get feed list for the current channel.")]
         [Aliases("ls", "listsubs", "listfeeds")]
-        [UsageExample("!feed list")]
+        [UsageExamples("!feed list")]
         public async Task FeedListAsync(CommandContext ctx)
         {
             var subs = await Database.GetFeedEntriesForChannelAsync(ctx.Channel.Id)
                 .ConfigureAwait(false);
 
-            await ctx.SendPaginatedCollectionAsync(
+            await ctx.SendCollectionInPagesAsync(
                 "Subscriptions for this channel:",
                 subs,
                 fe => {
                     string qname = fe.Subscriptions.First().QualifiedName;
-                    return (string.IsNullOrWhiteSpace(qname) ? fe.URL : qname) + $" (ID: {fe.Id})";
+                    return (string.IsNullOrWhiteSpace(qname) ? fe.Url : qname) + $" (ID: {fe.Id})";
                 },
                 DiscordColor.Goldenrod
             ).ConfigureAwait(false);
@@ -71,8 +73,8 @@ namespace TheGodfather.Modules.Search
         [Command("subscribe"), Module(ModuleType.Searches)]
         [Description("Subscribe to given RSS feed URL. The bot will send a message when the latest topic is changed.")]
         [Aliases("sub", "add", "+")]
-        [UsageExample("!rss subscribe https://news.google.com/news/rss/")]
-        [UsageExample("!rss subscribe https://news.google.com/news/rss/ news")]
+        [UsageExamples("!rss subscribe https://news.google.com/news/rss/",
+                       "!rss subscribe https://news.google.com/news/rss/ news")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task AddUrlFeedAsync(CommandContext ctx,
                                          [Description("URL.")] string url,
@@ -81,13 +83,13 @@ namespace TheGodfather.Modules.Search
             if (string.IsNullOrWhiteSpace(url))
                 throw new InvalidCommandUsageException("URL missing.");
 
-            if (!RSSService.IsValidRSSFeedURL(url))
+            if (!RssService.IsValidFeedURL(url))
                 throw new InvalidCommandUsageException("Given URL isn't a valid RSS feed URL.");
 
-            if (!await Database.AddSubscriptionAsync(ctx.Channel.Id, url, name ?? url).ConfigureAwait(false))
+            if (!await Database.TryAddSubscriptionAsync(ctx.Channel.Id, url, name ?? url).ConfigureAwait(false))
                 throw new CommandFailedException("You are already subscribed to this RSS feed URL!");
 
-            await ctx.RespondWithIconEmbedAsync($"Subscribed to {url}!")
+            await ctx.InformSuccessAsync($"Subscribed to {url}!")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -97,14 +99,14 @@ namespace TheGodfather.Modules.Search
         [Module(ModuleType.Searches)]
         [Description("Remove an existing feed subscription.")]
         [Aliases("del", "d", "rm", "-", "unsub")]
-        [UsageExample("!rss unsubscribe 1")]
+        [UsageExamples("!rss unsubscribe 1")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task UnsubscribeAsync(CommandContext ctx,
                                           [Description("ID of the subscription.")] int id)
         {
             await Database.RemoveSubscriptionByIdAsync(ctx.Channel.Id, id)
                 .ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync($"Unsubscribed from feed with ID {Formatter.Bold(id.ToString())}")
+            await ctx.InformSuccessAsync($"Unsubscribed from feed with ID {Formatter.Bold(id.ToString())}")
                 .ConfigureAwait(false);
         }
 
@@ -114,7 +116,7 @@ namespace TheGodfather.Modules.Search
         {
             await Database.RemoveSubscriptionByNameAsync(ctx.Channel.Id, name)
                 .ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync($"Unsubscribed from feed with name {Formatter.Bold(name)}")
+            await ctx.InformSuccessAsync($"Unsubscribed from feed with name {Formatter.Bold(name)}")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -122,13 +124,13 @@ namespace TheGodfather.Modules.Search
         #region COMMAND_RSS_WM
         [Command("wm"), Module(ModuleType.Searches)]
         [Description("Get newest topics from WM forum.")]
-        [UsageExample("!rss wm")]
+        [UsageExamples("!rss wm")]
         public async Task WmRssAsync(CommandContext ctx)
         {
-            var res = RSSService.GetFeedResults("http://worldmafia.net/forum/forums/-/index.rss");
+            var res = RssService.GetFeedResults("http://worldmafia.net/forum/forums/-/index.rss");
             if (res == null)
                 throw new CommandFailedException("An error occured while reaching WM forum. Possibly Pakistani didn't pay this month?");
-            await RSSService.SendFeedResultsAsync(ctx.Channel, res)
+            await RssService.SendFeedResultsAsync(ctx.Channel, res)
                 .ConfigureAwait(false);
         }
         #endregion

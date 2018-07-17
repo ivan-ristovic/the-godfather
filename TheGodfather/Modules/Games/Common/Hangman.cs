@@ -37,7 +37,7 @@ namespace TheGodfather.Modules.Games
 
         public override async Task RunAsync()
         {
-            _msg = await _channel.SendIconEmbedAsync("Game starts!", StaticDiscordEmoji.Joystick)
+            _msg = await Channel.InformSuccessAsync("Game starts!", StaticDiscordEmoji.Joystick)
                 .ConfigureAwait(false);
 
             await UpdateHangmanAsync()
@@ -47,27 +47,27 @@ namespace TheGodfather.Modules.Games
                     .ConfigureAwait(false);
             }
 
-            if (TimedOut) {
+            if (IsTimeoutReached) {
                 Winner = null;
-                await _channel.SendIconEmbedAsync($"Nobody replies so I am stopping the game... The word was: {Formatter.Bold(_word)}", StaticDiscordEmoji.Joystick)
+                await Channel.InformSuccessAsync($"Nobody replies so I am stopping the game... The word was: {Formatter.Bold(_word)}", StaticDiscordEmoji.Joystick)
                     .ConfigureAwait(false);
                 return;
             }
 
             if (_lives > 0) {
-                await _channel.SendIconEmbedAsync($"{Winner.Mention} won the game!", StaticDiscordEmoji.Joystick)
+                await Channel.InformSuccessAsync($"{Winner.Mention} won the game!", StaticDiscordEmoji.Joystick)
                     .ConfigureAwait(false);
             } else {
                 Winner = _initiator;
-                await _channel.SendIconEmbedAsync($"Nobody guessed the word so {Winner.Mention} won the game! The word was: {Formatter.Bold(_word)}", StaticDiscordEmoji.Joystick)
+                await Channel.InformSuccessAsync($"Nobody guessed the word so {Winner.Mention} won the game! The word was: {Formatter.Bold(_word)}", StaticDiscordEmoji.Joystick)
                     .ConfigureAwait(false);
             }
         }
 
         private async Task AdvanceAsync()
         {
-            var mctx = await _interactivity.WaitForMessageAsync(
-                    xm => (xm.Channel.Id == _channel.Id && xm.Author.Id != _initiator.Id &&
+            var mctx = await Interactivity.WaitForMessageAsync(
+                    xm => (xm.Channel.Id == Channel.Id && xm.Author.Id != _initiator.Id &&
                           !xm.Author.IsBot &&
                           xm.Content.Length == 1 &&
                           Char.IsLetterOrDigit(xm.Content[0]) &&
@@ -76,7 +76,7 @@ namespace TheGodfather.Modules.Games
                 ).ConfigureAwait(false);
             if (mctx == null) {
                 _gameOver = true;
-                TimedOut = true;
+                IsTimeoutReached = true;
                 return;
             }
 

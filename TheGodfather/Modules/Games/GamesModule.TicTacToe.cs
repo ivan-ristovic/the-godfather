@@ -9,10 +9,12 @@ using TheGodfather.Extensions;
 using TheGodfather.Modules.Games.Common;
 using TheGodfather.Services;
 using TheGodfather.Services.Common;
+using TheGodfather.Services.Database.Stats;
 
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Interactivity;
+using TheGodfather.Services.Database;
 #endregion
 
 namespace TheGodfather.Modules.Games
@@ -22,8 +24,8 @@ namespace TheGodfather.Modules.Games
         [Group("tictactoe"), Module(ModuleType.Games)]
         [Description("Starts a \"Tic-Tac-Toe\" game. Play a move by writing a number from 1 to 9 corresponding to the field where you wish to play. You can also specify a time window in which player must submit their move.")]
         [Aliases("ttt")]
-        [UsageExample("!game tictactoe")]
-        [UsageExample("!game tictactoe 10s")]
+        [UsageExamples("!game tictactoe",
+                       "!game tictactoe 10s")]
         public class TicTacToeModule : TheGodfatherBaseModule
         {
 
@@ -37,7 +39,7 @@ namespace TheGodfather.Modules.Games
                 if (ChannelEvent.IsEventRunningInChannel(ctx.Channel.Id))
                     throw new CommandFailedException("Another event is already running in the current channel!");
 
-                await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Question, $"Who wants to play Tic-Tac-Toe with {ctx.User.Username}?")
+                await ctx.InformSuccessAsync(StaticDiscordEmoji.Question, $"Who wants to play Tic-Tac-Toe with {ctx.User.Username}?")
                     .ConfigureAwait(false);
                 var opponent = await ctx.WaitForGameOpponentAsync()
                     .ConfigureAwait(false);
@@ -54,10 +56,10 @@ namespace TheGodfather.Modules.Games
                         .ConfigureAwait(false);
 
                     if (ttt.Winner != null) {
-                        if (ttt.TimedOut == false)
-                            await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Trophy, $"The winner is: {ttt.Winner.Mention}!").ConfigureAwait(false);
+                        if (ttt.IsTimeoutReached == false)
+                            await ctx.InformSuccessAsync(StaticDiscordEmoji.Trophy, $"The winner is: {ttt.Winner.Mention}!").ConfigureAwait(false);
                         else
-                            await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Trophy, $"{ttt.Winner.Mention} won due to no replies from opponent!").ConfigureAwait(false);
+                            await ctx.InformSuccessAsync(StaticDiscordEmoji.Trophy, $"{ttt.Winner.Mention} won due to no replies from opponent!").ConfigureAwait(false);
 
                         await Database.UpdateUserStatsAsync(ttt.Winner.Id, GameStatsType.TicTacToesWon)
                             .ConfigureAwait(false);
@@ -66,7 +68,7 @@ namespace TheGodfather.Modules.Games
                         else
                             await Database.UpdateUserStatsAsync(ctx.User.Id, GameStatsType.TicTacToesWon).ConfigureAwait(false);
                     } else {
-                        await ctx.RespondWithIconEmbedAsync("A draw... Pathetic...", ":video_game:")
+                        await ctx.InformSuccessAsync("A draw... Pathetic...", ":video_game:")
                             .ConfigureAwait(false);
                     }
                 } finally {
@@ -79,10 +81,10 @@ namespace TheGodfather.Modules.Games
             [Command("rules"), Module(ModuleType.Games)]
             [Description("Explain the Tic-Tac-Toe game rules.")]
             [Aliases("help", "h", "ruling", "rule")]
-            [UsageExample("!game tictactoe rules")]
+            [UsageExamples("!game tictactoe rules")]
             public async Task RulesAsync(CommandContext ctx)
             {
-                await ctx.RespondWithIconEmbedAsync(
+                await ctx.InformSuccessAsync(
                     "The object of Tic Tac Toe is to get three in a row. " +
                     "You play on a three by three game board. The first player is known as X and the second is O. " +
                     "Players alternate placing Xs and Os on the game board until either oppent has three in a row " +
@@ -96,13 +98,13 @@ namespace TheGodfather.Modules.Games
             [Command("stats"), Module(ModuleType.Games)]
             [Description("Print the leaderboard for this game.")]
             [Aliases("top", "leaderboard")]
-            [UsageExample("!game tictactoe stats")]
+            [UsageExamples("!game tictactoe stats")]
             public async Task StatsAsync(CommandContext ctx)
             {
                 var top = await Database.GetTopTTTPlayersStringAsync(ctx.Client)
                     .ConfigureAwait(false);
 
-                await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Trophy, $"Top players in Tic-Tac-Toe:\n\n{top}")
+                await ctx.InformSuccessAsync(StaticDiscordEmoji.Trophy, $"Top players in Tic-Tac-Toe:\n\n{top}")
                     .ConfigureAwait(false);
             }
             #endregion

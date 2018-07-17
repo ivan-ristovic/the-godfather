@@ -8,12 +8,14 @@ using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Services;
+using TheGodfather.Services.Common;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Net.Models;
+using TheGodfather.Services.Database;
 #endregion
 
 namespace TheGodfather.Modules.Administration
@@ -40,8 +42,8 @@ namespace TheGodfather.Modules.Administration
         [Module(ModuleType.Administration)]
         [Description("Assign a role to a member.")]
         [Aliases("+role", "+r", "ar", "addr", "+roles", "addroles", "giverole", "giveroles", "grantrole", "grantroles", "gr")]
-        [UsageExample("!user addrole @User Admins")]
-        [UsageExample("!user addrole Admins @User")]
+        [UsageExamples("!user addrole @User Admins",
+                       "!user addrole Admins @User")]
         [RequirePermissions(Permissions.ManageRoles)]
         public async Task AddRoleAsync(CommandContext ctx,
                                       [Description("Member.")] DiscordMember member,
@@ -54,7 +56,7 @@ namespace TheGodfather.Modules.Administration
                 await member.GrantRoleAsync(role, reason: ctx.BuildReasonString())
                     .ConfigureAwait(false);
 
-            await ctx.RespondWithIconEmbedAsync($"Successfully granted given roles to {Formatter.Bold(member.DisplayName)}.")
+            await ctx.InformSuccessAsync($"Successfully granted given roles to {Formatter.Bold(member.DisplayName)}.")
                 .ConfigureAwait(false);
         }
 
@@ -69,7 +71,7 @@ namespace TheGodfather.Modules.Administration
         [Command("avatar"), Module(ModuleType.Administration)]
         [Description("Get avatar from user.")]
         [Aliases("a", "pic", "profilepic")]
-        [UsageExample("!user avatar @Someone")]
+        [UsageExamples("!user avatar @Someone")]
         public async Task GetAvatarAsync(CommandContext ctx,
                                         [Description("User.")] DiscordUser user)
         {
@@ -85,8 +87,8 @@ namespace TheGodfather.Modules.Administration
         [Command("ban"), Module(ModuleType.Administration)]
         [Description("Bans the user from the guild.")]
         [Aliases("b")]
-        [UsageExample("!user ban @Someone")]
-        [UsageExample("!user ban @Someone Troublemaker")]
+        [UsageExamples("!user ban @Someone",
+                       "!user ban @Someone Troublemaker")]
         [RequirePermissions(Permissions.BanMembers)]
         public async Task BanAsync(CommandContext ctx,
                                   [Description("Member.")] DiscordMember member,
@@ -97,7 +99,7 @@ namespace TheGodfather.Modules.Administration
 
             await member.BanAsync(delete_message_days: 7, reason: ctx.BuildReasonString(reason))
                 .ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync($"{Formatter.Bold(ctx.User.Username)} BANNED {Formatter.Bold(member.Username)}!")
+            await ctx.InformSuccessAsync($"{Formatter.Bold(ctx.User.Username)} BANNED {Formatter.Bold(member.Username)}!")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -106,8 +108,8 @@ namespace TheGodfather.Modules.Administration
         [Command("banid"), Module(ModuleType.Administration)]
         [Description("Bans the ID from the server.")]
         [Aliases("bid")]
-        [UsageExample("!user banid 154956794490845232")]
-        [UsageExample("!user banid 154558794490846232 Troublemaker")]
+        [UsageExamples("!user banid 154956794490845232",
+                       "!user banid 154558794490846232 Troublemaker")]
         [RequirePermissions(Permissions.BanMembers)]
         public async Task BanIDAsync(CommandContext ctx,
                                     [Description("ID.")] ulong id,
@@ -122,7 +124,7 @@ namespace TheGodfather.Modules.Administration
             await ctx.Guild.BanMemberAsync(u.Id, delete_message_days: 7, reason: ctx.BuildReasonString(reason))
                 .ConfigureAwait(false);
 
-            await ctx.RespondWithIconEmbedAsync($"{Formatter.Bold(ctx.User.Username)} BANNED {Formatter.Bold(u.ToString())}!")
+            await ctx.InformSuccessAsync($"{Formatter.Bold(ctx.User.Username)} BANNED {Formatter.Bold(u.ToString())}!")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -131,8 +133,8 @@ namespace TheGodfather.Modules.Administration
         [Command("softban"), Module(ModuleType.Administration)]
         [Description("Bans the member from the guild and then unbans him immediately.")]
         [Aliases("sb", "sban")]
-        [UsageExample("!user sban @Someone")]
-        [UsageExample("!user sban @Someone Troublemaker")]
+        [UsageExamples("!user sban @Someone",
+                       "!user sban @Someone Troublemaker")]
         [RequirePermissions(Permissions.BanMembers)]
         public async Task SoftBanAsync(CommandContext ctx,
                                       [Description("User.")] DiscordMember member,
@@ -145,7 +147,7 @@ namespace TheGodfather.Modules.Administration
                 .ConfigureAwait(false);
             await member.UnbanAsync(ctx.Guild, reason: ctx.BuildReasonString("(softban) " + reason))
                 .ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync($"{Formatter.Bold(ctx.User.Username)} SOFTBANNED {Formatter.Bold(member.Username)}!")
+            await ctx.InformSuccessAsync($"{Formatter.Bold(ctx.User.Username)} SOFTBANNED {Formatter.Bold(member.Username)}!")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -155,9 +157,9 @@ namespace TheGodfather.Modules.Administration
         [Module(ModuleType.Administration)]
         [Description("Temporarily ans the user from the server and then unbans him after given timespan.")]
         [Aliases("tb", "tban", "tmpban", "tmpb")]
-        [UsageExample("!user tempban @Someone 3h4m")]
-        [UsageExample("!user tempban 5d @Someone Troublemaker")]
-        [UsageExample("!user tempban @Someone 5h30m30s Troublemaker")]
+        [UsageExamples("!user tempban @Someone 3h4m",
+                       "!user tempban 5d @Someone Troublemaker",
+                       "!user tempban @Someone 5h30m30s Troublemaker")]
         [RequirePermissions(Permissions.BanMembers)]
         public async Task TempBanAsync(CommandContext ctx,
                                       [Description("Time span.")] TimeSpan timespan,
@@ -171,10 +173,17 @@ namespace TheGodfather.Modules.Administration
                 .ConfigureAwait(false);
 
             DateTime until = DateTime.UtcNow + timespan;
-            await ctx.RespondWithIconEmbedAsync($"{Formatter.Bold(ctx.User.Username)} BANNED {Formatter.Bold(member.Username)} for {Formatter.Bold(until.ToLongTimeString())} UTC!")
+            await ctx.InformSuccessAsync($"{Formatter.Bold(ctx.User.Username)} BANNED {Formatter.Bold(member.Username)} for {Formatter.Bold(until.ToLongTimeString())} UTC!")
                 .ConfigureAwait(false);
 
-            if (!await SavedTaskExecuter.ScheduleAsync(ctx.Client, Shared, Database, member.Id, ctx.Channel.Id, ctx.Guild.Id, Services.Common.SavedTaskType.Unban, null, until).ConfigureAwait(false))
+            var task = new SavedTask() {
+                ChannelId = ctx.Channel.Id,
+                ExecutionTime = until,
+                GuildId = ctx.Guild.Id,
+                Type = SavedTaskType.Unban,
+                UserId = member.Id
+            };
+            if (!await SavedTaskExecuter.TryScheduleAsync(ctx, task).ConfigureAwait(false))
                 throw new CommandFailedException("Failed to schedule the unban task!");
         }
 
@@ -190,7 +199,7 @@ namespace TheGodfather.Modules.Administration
         [Command("deafen"), Module(ModuleType.Administration)]
         [Description("Deafen a member.")]
         [Aliases("deaf", "d", "df", "deafenon")]
-        [UsageExample("!user deafen @Someone")]
+        [UsageExamples("!user deafen @Someone")]
         [RequirePermissions(Permissions.DeafenMembers)]
         public async Task DeafenAsync(CommandContext ctx,
                                      [Description("Member.")] DiscordMember member,
@@ -198,7 +207,7 @@ namespace TheGodfather.Modules.Administration
         {
             await member.SetDeafAsync(true, reason: ctx.BuildReasonString(reason))
                 .ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync("Successfully deafened " + Formatter.Bold(member.DisplayName))
+            await ctx.InformSuccessAsync("Successfully deafened " + Formatter.Bold(member.DisplayName))
                 .ConfigureAwait(false);
         }
         #endregion
@@ -207,7 +216,7 @@ namespace TheGodfather.Modules.Administration
         [Command("undeafen"), Module(ModuleType.Administration)]
         [Description("Undeafen a member.")]
         [Aliases("udeaf", "ud", "udf", "deafenoff")]
-        [UsageExample("!user undeafen @Someone")]
+        [UsageExamples("!user undeafen @Someone")]
         [RequirePermissions(Permissions.DeafenMembers)]
         public async Task UndeafenAsync(CommandContext ctx,
                                        [Description("Member.")] DiscordMember member,
@@ -215,7 +224,7 @@ namespace TheGodfather.Modules.Administration
         {
             await member.SetDeafAsync(false, reason: ctx.BuildReasonString(reason))
                 .ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync("Successfully undeafened " + Formatter.Bold(member.DisplayName))
+            await ctx.InformSuccessAsync("Successfully undeafened " + Formatter.Bold(member.DisplayName))
                 .ConfigureAwait(false);
         }
         #endregion
@@ -224,7 +233,7 @@ namespace TheGodfather.Modules.Administration
         [Command("info"), Module(ModuleType.Administration)]
         [Description("Print the information about the given user. If the user is not given, uses the sender.")]
         [Aliases("i", "information")]
-        [UsageExample("!user info @Someone")]
+        [UsageExamples("!user info @Someone")]
         public async Task InfoAsync(CommandContext ctx,
                                    [Description("User.")] DiscordUser user = null)
         {
@@ -264,8 +273,8 @@ namespace TheGodfather.Modules.Administration
         [Command("kick"), Module(ModuleType.Administration)]
         [Description("Kicks the member from the guild.")]
         [Aliases("k")]
-        [UsageExample("!user kick @Someone")]
-        [UsageExample("!user kick @Someone Troublemaker")]
+        [UsageExamples("!user kick @Someone",
+                       "!user kick @Someone Troublemaker")]
         [RequirePermissions(Permissions.KickMembers)]
         public async Task KickAsync(CommandContext ctx,
                                    [Description("Member.")] DiscordMember member,
@@ -276,7 +285,7 @@ namespace TheGodfather.Modules.Administration
 
             await member.RemoveAsync(reason: ctx.BuildReasonString(reason))
                 .ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync($"{Formatter.Bold(ctx.User.Username)} kicked {Formatter.Bold(member.DisplayName)} in the cojones.")
+            await ctx.InformSuccessAsync($"{Formatter.Bold(ctx.User.Username)} kicked {Formatter.Bold(member.DisplayName)} in the cojones.")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -285,8 +294,8 @@ namespace TheGodfather.Modules.Administration
         [Command("mute"), Module(ModuleType.Administration)]
         [Description("Mute a member.")]
         [Aliases("m")]
-        [UsageExample("!user mute @Someone")]
-        [UsageExample("!user mute @Someone Trashtalk")]
+        [UsageExamples("!user mute @Someone",
+                       "!user mute @Someone Trashtalk")]
         [RequirePermissions(Permissions.MuteMembers)]
         public async Task MuteAsync(CommandContext ctx,
                                    [Description("Member to mute.")] DiscordMember member,
@@ -294,7 +303,7 @@ namespace TheGodfather.Modules.Administration
         {
             await member.SetMuteAsync(true, reason: ctx.BuildReasonString(reason))
                 .ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync("Successfully muted " + Formatter.Bold(member.DisplayName))
+            await ctx.InformSuccessAsync("Successfully muted " + Formatter.Bold(member.DisplayName))
                 .ConfigureAwait(false);
         }
         #endregion
@@ -303,8 +312,8 @@ namespace TheGodfather.Modules.Administration
         [Command("unmute"), Module(ModuleType.Administration)]
         [Description("Unmute a member.")]
         [Aliases("um")]
-        [UsageExample("!user unmute @Someone")]
-        [UsageExample("!user unmute @Someone Some reason")]
+        [UsageExamples("!user unmute @Someone",
+                       "!user unmute @Someone Some reason")]
         [RequirePermissions(Permissions.MuteMembers)]
         public async Task UnmuteAsync(CommandContext ctx,
                                      [Description("Member to unmute.")] DiscordMember member,
@@ -312,7 +321,7 @@ namespace TheGodfather.Modules.Administration
         {
             await member.SetMuteAsync(false, reason: ctx.BuildReasonString(reason))
                 .ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync("Successfully unmuted " + Formatter.Bold(member.DisplayName))
+            await ctx.InformSuccessAsync("Successfully unmuted " + Formatter.Bold(member.DisplayName))
                 .ConfigureAwait(false);
         }
         #endregion
@@ -322,8 +331,8 @@ namespace TheGodfather.Modules.Administration
         [Module(ModuleType.Administration)]
         [Description("Revoke a role from member.")]
         [Aliases("remrole", "rmrole", "rr", "-role", "-r", "removeroles", "revokerole", "revokeroles")]
-        [UsageExample("!user removerole @Someone Admins")]
-        [UsageExample("!user removerole Admins @Someone")]
+        [UsageExamples("!user removerole @Someone Admins",
+                       "!user removerole Admins @Someone")]
         [RequirePermissions(Permissions.ManageRoles)]
         public async Task RevokeRoleAsync(CommandContext ctx,
                                          [Description("Member.")] DiscordMember member,
@@ -335,7 +344,7 @@ namespace TheGodfather.Modules.Administration
 
             await member.RevokeRoleAsync(role, reason: ctx.BuildReasonString(reason))
                 .ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync($"Successfully removed role {Formatter.Bold(role.Name)} from {Formatter.Bold(member.DisplayName)}.")
+            await ctx.InformSuccessAsync($"Successfully removed role {Formatter.Bold(role.Name)} from {Formatter.Bold(member.DisplayName)}.")
                 .ConfigureAwait(false);
         }
 
@@ -357,7 +366,7 @@ namespace TheGodfather.Modules.Administration
             foreach (var role in roles)
                 await member.RevokeRoleAsync(role, reason: ctx.BuildReasonString())
                     .ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync($"Successfully revoked all given roles from {Formatter.Bold(member.DisplayName)}.")
+            await ctx.InformSuccessAsync($"Successfully revoked all given roles from {Formatter.Bold(member.DisplayName)}.")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -366,7 +375,7 @@ namespace TheGodfather.Modules.Administration
         [Command("removeallroles"), Module(ModuleType.Administration)]
         [Description("Revoke all roles from user.")]
         [Aliases("remallroles", "-ra", "-rall", "-allr")]
-        [UsageExample("!user removeallroles @Someone")]
+        [UsageExamples("!user removeallroles @Someone")]
         [RequirePermissions(Permissions.ManageRoles)]
         public async Task RemoveAllRolesAsync(CommandContext ctx,
                                              [Description("Member.")] DiscordMember member,
@@ -377,7 +386,7 @@ namespace TheGodfather.Modules.Administration
 
             await member.ReplaceRolesAsync(Enumerable.Empty<DiscordRole>(), reason: ctx.BuildReasonString(reason))
                 .ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync()
+            await ctx.InformSuccessAsync()
                 .ConfigureAwait(false);
         }
         #endregion
@@ -386,7 +395,7 @@ namespace TheGodfather.Modules.Administration
         [Command("setname"), Module(ModuleType.Administration)]
         [Description("Gives someone a new nickname.")]
         [Aliases("nick", "newname", "name", "rename")]
-        [UsageExample("!user setname @Someone Newname")]
+        [UsageExamples("!user setname @Someone Newname")]
         [RequirePermissions(Permissions.ManageNicknames)]
         public async Task SetNameAsync(CommandContext ctx,
                                       [Description("User.")] DiscordMember member,
@@ -399,7 +408,7 @@ namespace TheGodfather.Modules.Administration
                 m.Nickname = newname;
                 m.AuditLogReason = ctx.BuildReasonString();
             })).ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync()
+            await ctx.InformSuccessAsync()
                 .ConfigureAwait(false);
         }
         #endregion
@@ -408,7 +417,7 @@ namespace TheGodfather.Modules.Administration
         [Command("unban"), Module(ModuleType.Administration)]
         [Description("Unbans the user ID from the server.")]
         [Aliases("ub")]
-        [UsageExample("!user unban 154956794490845232")]
+        [UsageExamples("!user unban 154956794490845232")]
         [RequirePermissions(Permissions.BanMembers)]
         public async Task UnbanAsync(CommandContext ctx,
                                     [Description("ID.")] ulong id,
@@ -422,7 +431,7 @@ namespace TheGodfather.Modules.Administration
 
             await ctx.Guild.UnbanMemberAsync(id, reason: ctx.BuildReasonString(reason))
                 .ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync($"{Formatter.Bold(ctx.User.Username)} removed an ID ban for {Formatter.Bold(u.ToString())}!")
+            await ctx.InformSuccessAsync($"{Formatter.Bold(ctx.User.Username)} removed an ID ban for {Formatter.Bold(u.ToString())}!")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -431,7 +440,7 @@ namespace TheGodfather.Modules.Administration
         [Command("warn"), Module(ModuleType.Administration)]
         [Description("Warn a member in private message by sending a given warning text.")]
         [Aliases("w")]
-        [UsageExample("!user warn @Someone Stop spamming or kick!")]
+        [UsageExamples("!user warn @Someone Stop spamming or kick!")]
         [RequireUserPermissions(Permissions.KickMembers)]
         public async Task WarnAsync(CommandContext ctx,
                                    [Description("Member.")] DiscordMember member,
@@ -459,7 +468,7 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException("I can't talk to that user...");
             }
 
-            await ctx.RespondWithIconEmbedAsync($"Successfully warned {Formatter.Bold(member.Username)}.")
+            await ctx.InformSuccessAsync($"Successfully warned {Formatter.Bold(member.Username)}.")
                 .ConfigureAwait(false);
         }
         #endregion

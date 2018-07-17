@@ -1,39 +1,36 @@
 ﻿#region USING_DIRECTIVES
-using System.Threading.Tasks;
-
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Converters;
 using DSharpPlus.Entities;
+using System.Threading.Tasks;
 #endregion
 
 namespace TheGodfather.Common.Converters
 {
     public class CustomActivityTypeConverter : IArgumentConverter<ActivityType>
     {
-        public async Task<Optional<ActivityType>> ConvertAsync(string value, CommandContext ctx)
+        public Task<Optional<ActivityType>> ConvertAsync(string value, CommandContext ctx)
         {
-            await Task.Delay(0);
-
-            ActivityType activity = ActivityType.Playing;
+            ActivityType result = ActivityType.Playing;
             bool parses = true;
             switch (value.ToLowerInvariant()) {
                 case "playing":
                 case "plays":
                 case "play":
                 case "p":
-                    activity = ActivityType.Playing;
+                    result = ActivityType.Playing;
                     break;
                 case "watching":
                 case "watches":
                 case "watch":
                 case "w":
-                    activity = ActivityType.Watching;
+                    result = ActivityType.Watching;
                     break;
                 case "streaming":
                 case "streams":
                 case "stream":
                 case "s":
-                    activity = ActivityType.Streaming;
+                    result = ActivityType.Streaming;
                     break;
                 case "listeningto":
                 case "listensto":
@@ -41,7 +38,7 @@ namespace TheGodfather.Common.Converters
                 case "listens":
                 case "listening":
                 case "l":
-                    activity = ActivityType.ListeningTo;
+                    result = ActivityType.ListeningTo;
                     break;
                 default:
                     parses = false;
@@ -49,9 +46,9 @@ namespace TheGodfather.Common.Converters
             }
 
             if (parses)
-                return new Optional<ActivityType>(activity);
+                return Task.FromResult(new Optional<ActivityType>(result));
             else
-                return new Optional<ActivityType>();
+                return Task.FromResult(new Optional<ActivityType>());
         }
     }
 }

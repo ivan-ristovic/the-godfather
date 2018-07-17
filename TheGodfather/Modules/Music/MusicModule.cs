@@ -1,11 +1,13 @@
 ﻿#region USING_DIRECTIVES
+using System.Collections.Concurrent;
 using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
-using TheGodfather.Services;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
+using TheGodfather.Modules.Music.Common;
+using TheGodfather.Services;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -20,18 +22,20 @@ namespace TheGodfather.Modules.Music
     [RequirePermissions(Permissions.UseVoice)]
     [NotBlocked]
     [RequireOwner]
-    public partial class MusicModule : TheGodfatherServiceModule<YoutubeService>
+    public partial class MusicModule : TheGodfatherServiceModule<YtService>
     {
+        public static ConcurrentDictionary<ulong, MusicPlayer> MusicPlayers { get; } = new ConcurrentDictionary<ulong, MusicPlayer>();
 
-        public MusicModule(YoutubeService yt, SharedData shared) : base(yt, shared) { }
+
+        public MusicModule(YtService yt, SharedData shared) : base(yt, shared) { }
 
 
         #region COMMAND_CONNECT
         [Command("connect"), Module(ModuleType.Music)]
         [Description("Connect the bot to a voice channel. If the channel is not given, connects the bot to the same channel you are in.")]
         [Aliases("con", "conn", "enter")]
-        [UsageExample("!connect")]
-        [UsageExample("!connect Music")]
+        [UsageExamples("!connect",
+                       "!connect Music")]
         public async Task ConnectAsync(CommandContext ctx, 
                                       [Description("Channel.")] DiscordChannel c = null)
         {
@@ -53,7 +57,7 @@ namespace TheGodfather.Modules.Music
             vnc = await vnext.ConnectAsync(c)
                 .ConfigureAwait(false);
 
-            await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Headphones, $"Connected to {Formatter.Bold(c.Name)}.")
+            await ctx.InformSuccessAsync(StaticDiscordEmoji.Headphones, $"Connected to {Formatter.Bold(c.Name)}.")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -62,7 +66,7 @@ namespace TheGodfather.Modules.Music
         [Command("disconnect"), Module(ModuleType.Music)]
         [Description("Disconnects the bot from the voice channel.")]
         [Aliases("dcon", "dconn", "discon", "disconn", "dc")]
-        [UsageExample("!disconnect")]
+        [UsageExamples("!disconnect")]
         public async Task DisconnectAsync(CommandContext ctx)
         {
             var vnext = ctx.Client.GetVoiceNext();
@@ -73,13 +77,13 @@ namespace TheGodfather.Modules.Music
             if (vnc == null)
                 throw new CommandFailedException("Not connected in this guild.");
 
-            if (Shared.MusicPlayers.ContainsKey(ctx.Guild.Id)) {
-                Shared.MusicPlayers[ctx.Guild.Id].Stop();
-                Shared.MusicPlayers.TryRemove(ctx.Guild.Id, out _);
+            if (MusicPlayers.ContainsKey(ctx.Guild.Id)) {
+                MusicPlayers[ctx.Guild.Id].Stop();
+                MusicPlayers.TryRemove(ctx.Guild.Id, out _);
             }
             await Task.Delay(500);
             vnc.Disconnect();
-            await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Headphones, "Disconnected.")
+            await ctx.InformSuccessAsync(StaticDiscordEmoji.Headphones, "Disconnected.")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -87,13 +91,13 @@ namespace TheGodfather.Modules.Music
         #region COMMAND_SKIP
         [Command("skip"), Module(ModuleType.Music)]
         [Description("Skip current voice playback.")]
-        [UsageExample("!skip")]
+        [UsageExamples("!skip")]
         public async Task SkipAsync(CommandContext ctx)
         {
-            if (!Shared.MusicPlayers.ContainsKey(ctx.Guild.Id))
+            if (!MusicPlayers.ContainsKey(ctx.Guild.Id))
                 throw new CommandFailedException("Not playing in this guild");
 
-            Shared.MusicPlayers[ctx.Guild.Id].Skip();
+            MusicPlayers[ctx.Guild.Id].Skip();
             await Task.Delay(0);
         }
         #endregion
@@ -101,14 +105,14 @@ namespace TheGodfather.Modules.Music
         #region COMMAND_STOP
         [Command("stop"), Module(ModuleType.Music)]
         [Description("Stops current voice playback.")]
-        [UsageExample("!stop")]
+        [UsageExamples("!stop")]
         public async Task StopAsync(CommandContext ctx)
         {
-            if (!Shared.MusicPlayers.ContainsKey(ctx.Guild.Id))
+            if (!MusicPlayers.ContainsKey(ctx.Guild.Id))
                 throw new CommandFailedException("Not playing in this guild");
 
-            Shared.MusicPlayers[ctx.Guild.Id].Stop();
-            await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Headphones, "Stopped.")
+            MusicPlayers[ctx.Guild.Id].Stop();
+            await ctx.InformSuccessAsync(StaticDiscordEmoji.Headphones, "Stopped.")
                 .ConfigureAwait(false);
         }
         #endregion

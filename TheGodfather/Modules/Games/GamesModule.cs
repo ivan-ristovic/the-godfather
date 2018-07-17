@@ -6,12 +6,13 @@ using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-using TheGodfather.Services;
+using TheGodfather.Services.Database.Stats;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using TheGodfather.Services.Database;
 #endregion
 
 namespace TheGodfather.Modules.Games
@@ -30,7 +31,7 @@ namespace TheGodfather.Modules.Games
         [GroupCommand]
         public Task ExecuteGroupAsync(CommandContext ctx)
         {
-            return ctx.RespondWithIconEmbedAsync(
+            return ctx.InformSuccessAsync(
                 Formatter.Bold("Games:\n\n") +
                 "animalrace, caro, connect4, duel, hangman, leaderboard, numberrace, othello, quiz, rps, russianroulette, stats, tictactoe, typingrace"
             );
@@ -41,7 +42,7 @@ namespace TheGodfather.Modules.Games
         [Command("leaderboard"), Module(ModuleType.Games)]
         [Description("View the global game leaderboard.")]
         [Aliases("globalstats")]
-        [UsageExample("!game leaderboard")]
+        [UsageExamples("!game leaderboard")]
         public async Task LeaderboardAsync(CommandContext ctx)
         {
             var em = await Database.GetStatsLeaderboardAsync(ctx.Client)
@@ -55,7 +56,7 @@ namespace TheGodfather.Modules.Games
         [Command("rps"), Module(ModuleType.Games)]
         [Description("Rock, paper, scissors game against TheGodfather")]
         [Aliases("rockpaperscissors")]
-        [UsageExample("!game rps scissors")]
+        [UsageExamples("!game rps scissors")]
         public async Task RpsAsync(CommandContext ctx,
                                   [Description("rock/paper/scissors")] string rps)
         {
@@ -84,7 +85,7 @@ namespace TheGodfather.Modules.Games
                     gfe = DiscordEmoji.FromName(ctx.Client, ":scissors:");
                     break;
             }
-            await ctx.RespondWithIconEmbedAsync($"{ctx.User.Mention} {usre} {gfe} {ctx.Client.CurrentUser.Mention}", null)
+            await ctx.InformSuccessAsync($"{ctx.User.Mention} {usre} {gfe} {ctx.Client.CurrentUser.Mention}", null)
                  .ConfigureAwait(false);
         }
         #endregion
@@ -93,17 +94,26 @@ namespace TheGodfather.Modules.Games
         [Command("stats"), Module(ModuleType.Games)]
         [Description("Print game stats for given user.")]
         [Aliases("s", "st")]
-        [UsageExample("!game stats")]
-        [UsageExample("!game stats @Someone")]
+        [UsageExamples("!game stats",
+                       "!game stats @Someone")]
         public async Task StatsAsync(CommandContext ctx,
                                     [Description("User.")] DiscordUser user = null)
         {
             if (user == null)
                 user = ctx.User;
 
-            var em = await Database.GetEmbeddedStatsForUserAsync(user)
-                .ConfigureAwait(false);
-            await ctx.RespondAsync(embed: em)
+            var stats = await Database.GetGameStatsForUserAsync(user.Id);
+            if (stats == null) {
+                await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
+                    Title = $"Stats for {user.Username}",
+                    Description = "No games played yet!",
+                    ThumbnailUrl = user.AvatarUrl,
+                    Color = DiscordColor.Chartreuse
+                }.Build());
+                return;
+            }
+
+            await ctx.RespondAsync(embed: stats.ToDiscordEmbed(user))
                 .ConfigureAwait(false);
         }
         #endregion

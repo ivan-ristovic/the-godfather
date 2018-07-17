@@ -1,45 +1,46 @@
 ﻿#region USING_DIRECTIVES
+using DSharpPlus;
+using DSharpPlus.EventArgs;
 using System;
 using System.IO;
 using System.Text;
-
-using DSharpPlus;
-using DSharpPlus.EventArgs;
 #endregion
 
 namespace TheGodfather.Common
 {
-    internal class Logger
+    public class Logger
     {
+        public int BufferSize { get; set; }
+        public LogLevel LogLevel { get; set; }
         public bool LogToFile {
-            get => _filelog;
+            get => this.filelog;
             set {
-                lock (_lock)
-                    _filelog = value;
+                lock (this.writeLock)
+                    this.filelog = value;
             }
         }
-        public LogLevel LogLevel { get; set; } = LogLevel.Debug;
-        public string Path
+
+        public readonly string path;
+        private bool filelog;
+        private readonly object writeLock;
+
+
+        public Logger(BotConfig cfg)
         {
-            get => _path;
-            set {
-                if (!string.IsNullOrWhiteSpace(value))
-                    _path = value;
-            }
+            this.writeLock = new object();
+            this.BufferSize = 512;
+            this.LogLevel = cfg.LogLevel;
+            this.LogToFile = cfg.LogToFile;
+            this.path = cfg.LogPath ?? "gf_log.txt";
         }
-        public int BufferSize { get; set; } = 512;
-        
-        private readonly object _lock = new object();
-        private bool _filelog = true;
-        private string _path = "gf_log.txt";
 
 
         public bool Clear()
         {
-            lock (_lock) {
+            lock (this.writeLock) {
                 Console.Clear();
                 try {
-                    File.Delete(_path);
+                    File.Delete(this.path);
                 } catch (Exception e) {
                     LogException(LogLevel.Error, e);
                     return false;
@@ -50,61 +51,62 @@ namespace TheGodfather.Common
 
         public void ElevatedLog(LogLevel level, string message, int? shard = null, DateTime? timestamp = null, bool filelog = true)
         {
-            lock (_lock) {
+            lock (this.writeLock) {
                 PrintTimestamp(timestamp);
                 PrintApplicationInfo(shard, null);
                 PrintLevel(level);
                 PrintLogMessage(message);
-                if (filelog && _filelog)
+                if (filelog && this.filelog)
                     WriteToLogFile(level, message, timestamp);
-            }
-        }
-
-        public void LogMessage(LogLevel level, string message, int? shard = null, DateTime? timestamp = null, bool filelog = true)
-        {
-            if (level > LogLevel)
-                return;
-
-            ElevatedLog(level, message, shard, timestamp, filelog);
-        }
-
-        public void LogMessage(int shard, DebugLogMessageEventArgs e, bool filelog = true)
-        {
-            if (e.Level > LogLevel)
-                return;
-
-            lock (_lock) {
-                PrintTimestamp(e.Timestamp);
-                PrintApplicationInfo(shard, e.Application);
-                PrintLevel(e.Level);
-                PrintLogMessage(e.Message);
-                if (filelog && _filelog)
-                    WriteToLogFile(shard, e);
             }
         }
 
         public void LogException(LogLevel level, Exception e, DateTime? timestamp = null, bool filelog = true)
         {
-            if (level > LogLevel)
+            if (level > this.LogLevel)
                 return;
 
-            lock (_lock) {
+            lock (this.writeLock) {
                 PrintTimestamp(timestamp);
                 PrintLevel(level);
                 PrintLogMessage($"| Exception occured: {e.GetType()}\n| Details: {e.Message}\n");
                 if (e.InnerException != null)
                     PrintLogMessage($"| Inner exception: {e.InnerException}\n");
                 PrintLogMessage($"| Stack trace:\n{e.StackTrace}");
-                if (filelog && _filelog)
+                if (filelog && this.filelog)
                     WriteToLogFile(level, e);
             }
         }
 
+        public void LogMessage(int shard, DebugLogMessageEventArgs e, bool filelog = true)
+        {
+            if (e.Level > this.LogLevel)
+                return;
 
+            lock (this.writeLock) {
+                PrintTimestamp(e.Timestamp);
+                PrintApplicationInfo(shard, e.Application);
+                PrintLevel(e.Level);
+                PrintLogMessage(e.Message);
+                if (filelog && this.filelog)
+                    WriteToLogFile(shard, e);
+            }
+        }
+
+        public void LogMessage(LogLevel level, string message, int? shard = null, DateTime? timestamp = null, bool filelog = true)
+        {
+            if (level > this.LogLevel)
+                return;
+
+            ElevatedLog(level, message, shard, timestamp, filelog);
+        }
+
+
+        #region FILE_LOGGING
         private void WriteToLogFile(LogLevel level, string message, DateTime? timestamp = null)
         {
             try {
-                using (StreamWriter sw = new StreamWriter(_path, true, Encoding.UTF8, BufferSize)) {
+                using (var sw = new StreamWriter(this.path, true, Encoding.UTF8, this.BufferSize)) {
                     sw.WriteLine($"[{(timestamp ?? DateTime.Now):yyyy-MM-dd HH:mm:ss zzz}] [{level}]");
                     sw.WriteLine(message.Trim().Replace("\n", Environment.NewLine));
                     sw.WriteLine();
@@ -118,7 +120,7 @@ namespace TheGodfather.Common
         private void WriteToLogFile(int shard, DebugLogMessageEventArgs e)
         {
             try {
-                using (var sw = new StreamWriter(_path, true, Encoding.UTF8, BufferSize)) {
+                using (var sw = new StreamWriter(this.path, true, Encoding.UTF8, this.BufferSize)) {
                     sw.WriteLine($"[{e.Timestamp:yyyy-MM-dd HH:mm:ss zzz}] [#{shard}] [{e.Application}] [{e.Level}]");
                     sw.WriteLine(e.Message.Trim().Replace("\n", Environment.NewLine));
                     sw.WriteLine();
@@ -132,7 +134,7 @@ namespace TheGodfather.Common
         private void WriteToLogFile(LogLevel level, Exception e, DateTime? timestamp = null)
         {
             try {
-                using (var sw = new StreamWriter(_path, true, Encoding.UTF8, BufferSize)) {
+                using (var sw = new StreamWriter(this.path, true, Encoding.UTF8, this.BufferSize)) {
                     sw.WriteLine($"[{(timestamp ?? DateTime.Now):yyyy-MM-dd HH:mm:ss zzz}] [{level}]");
                     sw.WriteLine($"| Exception occured: {e.GetType()}");
                     sw.WriteLine($"| Details: {e.Message}");
@@ -146,8 +148,9 @@ namespace TheGodfather.Common
                 LogException(LogLevel.Error, exc, filelog: false);
             }
         }
+        #endregion
 
-
+        #region CONSOLE_PRINT_HELPERS
         private static void PrintLevel(LogLevel level)
         {
             var ccfg = ConsoleColor.Gray;
@@ -198,5 +201,6 @@ namespace TheGodfather.Common
 
         private static void PrintLogMessage(string message)
             => Console.WriteLine(message.Trim() + Environment.NewLine);
+        #endregion
     }
 }

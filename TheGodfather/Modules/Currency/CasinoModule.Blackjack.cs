@@ -9,14 +9,15 @@ using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Currency.Common;
 using TheGodfather.Modules.Games.Common;
-using TheGodfather.Services;
 using TheGodfather.Services.Common;
+using TheGodfather.Services.Database.Bank;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
+using TheGodfather.Services.Database;
 #endregion
 
 namespace TheGodfather.Modules.Currency
@@ -26,7 +27,7 @@ namespace TheGodfather.Modules.Currency
         [Group("blackjack"), Module(ModuleType.Currency)]
         [Description("Play a blackjack game.")]
         [Aliases("bj")]
-        [UsageExample("!casino blackjack")]
+        [UsageExamples("!casino blackjack")]
         public class BlackjackModule : TheGodfatherBaseModule
         {
 
@@ -45,7 +46,7 @@ namespace TheGodfather.Modules.Currency
                     return;
                 }
 
-                long? balance = await Database.GetUserCreditAmountAsync(ctx.User.Id, ctx.Guild.Id)
+                long? balance = await Database.GetBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id)
                     .ConfigureAwait(false);
                 if (!balance.HasValue || balance < bid)
                     throw new CommandFailedException("You do not have that many credits on your account! Specify a smaller bid amount.");
@@ -53,7 +54,7 @@ namespace TheGodfather.Modules.Currency
                 var game = new BlackjackGame(ctx.Client.GetInteractivity(), ctx.Channel);
                 ChannelEvent.RegisterEventInChannel(game, ctx.Channel.Id);
                 try {
-                    await ctx.RespondWithIconEmbedAsync($"The Blackjack game will start in 30s or when there are 5 participants. Use command {Formatter.InlineCode("casino blackjack <bid>")} to join the pool. Default bid is 5 credits.", ":clock1:")
+                    await ctx.InformSuccessAsync($"The Blackjack game will start in 30s or when there are 5 participants. Use command {Formatter.InlineCode("casino blackjack <bid>")} to join the pool. Default bid is 5 credits.", ":clock1:")
                         .ConfigureAwait(false);
                     await JoinAsync(ctx, bid)
                         .ConfigureAwait(false);
@@ -65,20 +66,20 @@ namespace TheGodfather.Modules.Currency
 
                     if (game.Winners.Any()) {
                         if (game.Winner != null) {
-                            await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.CardSuits[0], $"{game.Winner.Mention} got the BlackJack!")
+                            await ctx.InformSuccessAsync(StaticDiscordEmoji.CardSuits[0], $"{game.Winner.Mention} got the BlackJack!")
                                 .ConfigureAwait(false);
-                            await Database.GiveCreditsToUserAsync(game.Winner.Id, ctx.Guild.Id, game.Winners.First(p => p.Id == game.Winner.Id).Bid)
+                            await Database.IncreaseBankAccountBalanceAsync(game.Winner.Id, ctx.Guild.Id, game.Winners.First(p => p.Id == game.Winner.Id).Bid)
                                     .ConfigureAwait(false);
                         } else {
-                            await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.CardSuits[0], $"Winners:\n\n{string.Join(", ", game.Winners.Select(w => w.User.Mention))}")
+                            await ctx.InformSuccessAsync(StaticDiscordEmoji.CardSuits[0], $"Winners:\n\n{string.Join(", ", game.Winners.Select(w => w.User.Mention))}")
                                 .ConfigureAwait(false);
 
                             foreach (var winner in game.Winners)
-                                await Database.GiveCreditsToUserAsync(winner.Id, ctx.Guild.Id, winner.Bid * 2)
+                                await Database.IncreaseBankAccountBalanceAsync(winner.Id, ctx.Guild.Id, winner.Bid * 2)
                                     .ConfigureAwait(false);
                         }
                     } else {
-                        await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.CardSuits[0], "The House always wins!")
+                        await ctx.InformSuccessAsync(StaticDiscordEmoji.CardSuits[0], "The House always wins!")
                             .ConfigureAwait(false);
                     }
                 } finally {
@@ -91,7 +92,7 @@ namespace TheGodfather.Modules.Currency
             [Command("join"), Module(ModuleType.Currency)]
             [Description("Join a pending Blackjack game.")]
             [Aliases("+", "compete", "enter", "j")]
-            [UsageExample("!casino blackjack join")]
+            [UsageExamples("!casino blackjack join")]
             public async Task JoinAsync(CommandContext ctx,
                                        [Description("Bid amount.")] int bid = 5)
             {
@@ -107,11 +108,11 @@ namespace TheGodfather.Modules.Currency
                 if (game.IsParticipating(ctx.User))
                     throw new CommandFailedException("You are already participating in the Blackjack game!");
 
-                if (bid <= 0 || !await Database.TakeCreditsFromUserAsync(ctx.User.Id, ctx.Guild.Id, bid))
+                if (bid <= 0 || !await Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, bid))
                     throw new CommandFailedException("You do not have that many credits on your account! Specify a smaller bid amount.");
 
                 game.AddParticipant(ctx.User, bid);
-                await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.CardSuits[0], $"{ctx.User.Mention} joined the Blackjack game.")
+                await ctx.InformSuccessAsync(StaticDiscordEmoji.CardSuits[0], $"{ctx.User.Mention} joined the Blackjack game.")
                     .ConfigureAwait(false);
             }
             #endregion
@@ -120,10 +121,10 @@ namespace TheGodfather.Modules.Currency
             [Command("rules"), Module(ModuleType.Currency)]
             [Description("Explain the Blackjack rules.")]
             [Aliases("help", "h", "ruling", "rule")]
-            [UsageExample("!casino blackjack rules")]
+            [UsageExamples("!casino blackjack rules")]
             public async Task RulesAsync(CommandContext ctx)
             {
-                await ctx.RespondWithIconEmbedAsync(
+                await ctx.InformSuccessAsync(
                     "Each participant attempts to beat the dealer by getting a count as close to 21 as possible, without going over 21. " +
                     "It is up to each individual player if an ace is worth 1 or 11. Face cards are 10 and any other card is its pip value. " +
                     "Each player is dealt two cards in the begining and in turns they decide whether to hit (get one more card dealt) or stand. " +

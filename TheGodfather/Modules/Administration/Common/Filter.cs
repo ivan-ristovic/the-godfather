@@ -1,10 +1,5 @@
 ﻿#region USING_DIRECTIVES
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
-
-using TheGodfather.Common.Collections;
 #endregion
 
 namespace TheGodfather.Modules.Administration.Common
@@ -17,14 +12,14 @@ namespace TheGodfather.Modules.Administration.Common
 
         public Filter(int id, string trigger)
         {
-            Id = id;
-            Trigger = new Regex($@"\b{trigger}\b");
+            this.Id = id;
+            this.Trigger = new Regex($@"\b{trigger}\b");
         }
 
         public Filter(int id, Regex trigger)
         {
-            Id = id;
-            Trigger = trigger;
+            this.Id = id;
+            this.Trigger = trigger;
         }
     }
 }

@@ -1,135 +1,98 @@
 ﻿#region USING_DIRECTIVES
+using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
-
-using Npgsql;
-using NpgsqlTypes;
 #endregion
 
-namespace TheGodfather.Services
+namespace TheGodfather.Services.Database.Ranks
 {
-    public partial class DBService
+    internal static class DBServiceRanksExtensions
     {
-        public async Task<IReadOnlyDictionary<int, string>> GetAllCustomRankNamesForGuildAsync(ulong gid)
+        public static Task AddRankAsync(this DBService db, ulong gid, int rank, string name)
         {
-            var ranks = new Dictionary<int, string>();
+            return db.ExecuteCommandAsync(cmd => {
+                cmd.CommandText = "INSERT INTO gf.ranks(gid, rank, name) VALUES (@gid, @rank, @name) ON CONFLICT (gid, rank) DO UPDATE SET name = EXCLUDED.name;";
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
+                cmd.Parameters.Add(new NpgsqlParameter<int>("rank", rank));
+                cmd.Parameters.Add(new NpgsqlParameter<string>("name", name));
 
-            await _sem.WaitAsync();
-            try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
-                using (var cmd = con.CreateCommand()) {
-                    cmd.CommandText = "SELECT rank, name FROM gf.ranks WHERE gid = @gid;";
-                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
-
-                    using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
-                        while (await reader.ReadAsync().ConfigureAwait(false))
-                            ranks[(int)reader["rank"]] = (string)reader["name"];
-                    }
-                }
-            } finally {
-                _sem.Release();
-            }
-
-            return new ReadOnlyDictionary<int, string>(ranks);
+                return cmd.ExecuteNonQueryAsync();
+            });
         }
 
-        public async Task<string> GetCustomRankNameForGuildAsync(ulong gid, int rank)
+        public static async Task<IReadOnlyDictionary<ushort, string>> GetAllRanksAsync(this DBService db, ulong gid)
+        {
+            var ranks = new Dictionary<ushort, string>();
+
+            await db.ExecuteCommandAsync(async (cmd) => {
+                cmd.CommandText = "SELECT rank, name FROM gf.ranks WHERE gid = @gid;";
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
+
+                using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
+                    while (await reader.ReadAsync().ConfigureAwait(false))
+                        ranks[(ushort)(short)reader["rank"]] = (string)reader["name"];
+                }
+            });
+
+            return new ReadOnlyDictionary<ushort, string>(ranks);
+        }
+
+        public static async Task<string> GetRankAsync(this DBService db, ulong gid, int rank)
         {
             string name = null;
 
-            await _sem.WaitAsync();
-            try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
-                using (var cmd = con.CreateCommand()) {
-                    cmd.CommandText = "SELECT name FROM gf.ranks WHERE gid = @gid AND rank = @rank LIMIT 1;";
-                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
-                    cmd.Parameters.AddWithValue("rank", NpgsqlDbType.Integer, rank);
+            await db.ExecuteCommandAsync(async (cmd) => {
+                cmd.CommandText = "SELECT name FROM gf.ranks WHERE gid = @gid AND rank = @rank LIMIT 1;";
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
+                cmd.Parameters.Add(new NpgsqlParameter<int>("rank", rank));
 
-                    var res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
-                    if (res != null && !(res is DBNull))
-                        name = (string)res;
-                }
-            } finally {
-                _sem.Release();
-            }
+                object res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
+                if (res != null && !(res is DBNull))
+                    name = (string)res;
+            });
 
             return name;
         }
 
-        public async Task<IReadOnlyDictionary<ulong, ulong>> GetExperienceForAllUsersAsync()
+        public static async Task<IReadOnlyDictionary<ulong, ulong>> GetXpForAllUsersAsync(this DBService db)
         {
             var msgcount = new Dictionary<ulong, ulong>();
 
-            await _sem.WaitAsync();
-            try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
-                using (var cmd = con.CreateCommand()) {
-                    cmd.CommandText = "SELECT * FROM gf.msgcount;";
+            await db.ExecuteCommandAsync(async (cmd) => {
+                cmd.CommandText = "SELECT * FROM gf.msgcount;";
 
-                    using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
-                        while (await reader.ReadAsync().ConfigureAwait(false))
-                            msgcount[(ulong)(long)reader["uid"]] = (ulong)(long)reader["count"];
-                    }
+                using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
+                    while (await reader.ReadAsync().ConfigureAwait(false))
+                        msgcount[(ulong)(long)reader["uid"]] = (ulong)(long)reader["count"];
                 }
-            } finally {
-                _sem.Release();
-            }
+            });
 
             return new ReadOnlyDictionary<ulong, ulong>(msgcount);
         }
 
-        public async Task AddCustomRankNameAsync(ulong gid, int rank, string name)
+        public static Task ModifyXpAsync(this DBService db, ulong uid, ulong xp)
         {
-            await _sem.WaitAsync();
-            try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
-                using (var cmd = con.CreateCommand()) {
-                    cmd.CommandText = "INSERT INTO gf.ranks(gid, rank, name) VALUES (@gid, @rank, @name) ON CONFLICT (gid, rank) DO UPDATE SET name = EXCLUDED.name;";
-                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
-                    cmd.Parameters.AddWithValue("rank", NpgsqlDbType.Integer, rank);
-                    cmd.Parameters.AddWithValue("name", NpgsqlDbType.Varchar, name);
+            return db.ExecuteCommandAsync(cmd => {
+                cmd.CommandText = "INSERT INTO gf.msgcount VALUES (@uid, @count) ON CONFLICT (uid) DO UPDATE SET count = EXCLUDED.count;";
 
-                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
-                }
-            } finally {
-                _sem.Release();
-            }
+                cmd.Parameters.Add(new NpgsqlParameter<long>("uid", (long)uid));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("count", (long)xp));
+
+                return cmd.ExecuteNonQueryAsync();
+            });
         }
 
-        public async Task RemoveCustomRankNameAsync(ulong gid, int rank)
+        public static Task RemoveRankAsync(this DBService db, ulong gid, int rank)
         {
-            await _sem.WaitAsync();
-            try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
-                using (var cmd = con.CreateCommand()) {
-                    cmd.CommandText = "DELETE FROM gf.ranks WHERE gid = @gid AND rank = @rank;";
-                    cmd.Parameters.AddWithValue("gid", NpgsqlDbType.Bigint, (long)gid);
-                    cmd.Parameters.AddWithValue("rank", NpgsqlDbType.Integer, rank);
+            return db.ExecuteCommandAsync(cmd => {
+                cmd.CommandText = "DELETE FROM gf.ranks WHERE gid = @gid AND rank = @rank;";
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
+                cmd.Parameters.Add(new NpgsqlParameter<int>("rank", rank));
 
-                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
-                }
-            } finally {
-                _sem.Release();
-            }
-        }
-
-        public async Task UpdateExperienceForUserAsync(ulong uid, ulong count)
-        {
-            await _sem.WaitAsync();
-            try {
-                using (var con = await OpenConnectionAndCreateCommandAsync())
-                using (var cmd = con.CreateCommand()) {
-                    cmd.CommandText = "INSERT INTO gf.msgcount VALUES (@uid, @count) ON CONFLICT (uid) DO UPDATE SET count = EXCLUDED.count;";
-                    cmd.Parameters.AddWithValue("uid", NpgsqlDbType.Bigint, (long)uid);
-                    cmd.Parameters.AddWithValue("count", NpgsqlDbType.Bigint, (long)count);
-
-                    await cmd.ExecuteNonQueryAsync().ConfigureAwait(false);
-                }
-            } finally {
-                _sem.Release();
-            }
+                return cmd.ExecuteNonQueryAsync();
+            });
         }
     }
 }

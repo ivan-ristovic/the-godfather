@@ -21,7 +21,7 @@ namespace TheGodfather.Modules.Search
     [Group("urbandict"), Module(ModuleType.Searches)]
     [Description("Urban Dictionary commands. If invoked without subcommand, searches Urban Dictionary for a given query.")]
     [Aliases("ud", "urban")]
-    [UsageExample("!urbandict blonde")]
+    [UsageExamples("!urbandict blonde")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     [NotBlocked]
     public class UrbanDictModule : TheGodfatherBaseModule
@@ -38,12 +38,12 @@ namespace TheGodfather.Modules.Search
                 .ConfigureAwait(false);
 
             if (data == null) {
-                await ctx.RespondWithFailedEmbedAsync("No results found!")
+                await ctx.InformFailureAsync("No results found!")
                     .ConfigureAwait(false);
                 return;
             }
 
-            await ctx.SendPaginatedCollectionAsync(
+            await ctx.SendCollectionInPagesAsync(
                 $"Urban Dictionary definitions for \"{query}\"",
                 data.List,
                 res => $"Definition by {Formatter.Bold(res.Author)}:\n\n" +

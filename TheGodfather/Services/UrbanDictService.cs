@@ -1,32 +1,29 @@
 ﻿#region USING_DIRECTIVES
+using Newtonsoft.Json;
 using System;
 using System.Net;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-
-using TheGodfather.Common;
 using TheGodfather.Services.Common;
-
-using DSharpPlus;
 #endregion
 
 namespace TheGodfather.Services
 {
     public class UrbanDictService : TheGodfatherHttpService
     {
+        private static readonly string _url = "http://api.urbandictionary.com/v0";
+
+
         public static async Task<UrbanDictData> GetDefinitionForTermAsync(string query)
         {
-            try {
-                var result = await _http.GetStringAsync($"http://api.urbandictionary.com/v0/define?term={ WebUtility.UrlEncode(query) }")
-                    .ConfigureAwait(false);
-                var data = JsonConvert.DeserializeObject<UrbanDictData>(result);
-                if (data.ResultType != "no_results")
-                    return data;
-            } catch (Exception e) {
-                TheGodfather.LogProvider.LogException(LogLevel.Debug, e);
-            }
+            if (string.IsNullOrWhiteSpace(query))
+                throw new ArgumentException("Query missing", "query");
 
-            return null;
+            string result = await _http.GetStringAsync($"{_url}/define?term={WebUtility.UrlEncode(query)}").ConfigureAwait(false);
+            var data = JsonConvert.DeserializeObject<UrbanDictData>(result);
+            if (data.ResultType == "no_results")
+                return null;
+
+            return data;
         }
     }
 }

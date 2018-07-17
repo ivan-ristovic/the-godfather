@@ -1,47 +1,112 @@
 ﻿#region USING_DIRECTIVES
+using DSharpPlus;
+using DSharpPlus.Entities;
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-
 using TheGodfather.Common;
 using TheGodfather.Common.Collections;
+using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Common;
-using TheGodfather.Modules.Music.Common;
 using TheGodfather.Modules.Reactions.Common;
-using TheGodfather.Services;
-
-using DSharpPlus;
-using DSharpPlus.Entities;
-
-using TexasHoldem.Logic.Cards;
+using TheGodfather.Services.Database;
+using TheGodfather.Services.Database.Ranks;
 #endregion
 
 namespace TheGodfather
 {
     public sealed class SharedData
     {
-        public ConcurrentHashSet<ulong> BlockedUsers { get; internal set; } = new ConcurrentHashSet<ulong>();
-        public ConcurrentHashSet<ulong> BlockedChannels { get; internal set; } = new ConcurrentHashSet<ulong>();
+        public ConcurrentHashSet<ulong> BlockedChannels { get; internal set; }
+        public ConcurrentHashSet<ulong> BlockedUsers { get; internal set; }
         public BotConfig BotConfiguration { get; internal set; }
-        public ConcurrentDictionary<ulong, CachedGuildConfig> GuildConfigurations { get; internal set; }
-        public ConcurrentDictionary<ulong, Deck> CardDecks { get; internal set; } = new ConcurrentDictionary<ulong, Deck>();
         public CancellationTokenSource CTS { get; internal set; }
-        public ConcurrentDictionary<ulong, ConcurrentHashSet<Filter>> Filters { get; internal set; }
-        public ConcurrentDictionary<ulong, ConcurrentHashSet<TextReaction>> TextReactions { get; internal set; }
         public ConcurrentDictionary<ulong, ConcurrentHashSet<EmojiReaction>> EmojiReactions { get; internal set; }
+        public ConcurrentDictionary<ulong, ConcurrentHashSet<Filter>> Filters { get; internal set; }
+        public ConcurrentDictionary<ulong, CachedGuildConfig> GuildConfigurations { get; internal set; }
+        public Logger LogProvider { get; internal set; }
+        public bool ListeningStatus { get; internal set; }
         public ConcurrentDictionary<ulong, ulong> MessageCount { get; internal set; }
-        public ConcurrentDictionary<int, SavedTaskExecuter> SavedTasks { get; internal set; } = new ConcurrentDictionary<int, SavedTaskExecuter>();
-        public bool StatusRotationEnabled { get; internal set; } = true;
-        public ConcurrentDictionary<ulong, CancellationTokenSource> SpaceCheckingCTS = new ConcurrentDictionary<ulong, CancellationTokenSource>();
-        public ConcurrentDictionary<ulong, MusicPlayer> MusicPlayers = new ConcurrentDictionary<ulong, MusicPlayer>();
-        public ConcurrentDictionary<ulong, ConcurrentHashSet<ulong>> AwaitingUsersInteractively = new ConcurrentDictionary<ulong, ConcurrentHashSet<ulong>>();
+        public ConcurrentDictionary<ulong, ConcurrentHashSet<ulong>> PendingResponses { get; }
+        public bool StatusRotationEnabled { get; internal set; }
+        public ConcurrentDictionary<int, SavedTaskExecuter> TaskExecuters { get; internal set; }
+        public ConcurrentDictionary<ulong, ConcurrentHashSet<TextReaction>> TextReactions { get; internal set; }
 
 
+        public SharedData()
+        {
+            this.BlockedChannels = new ConcurrentHashSet<ulong>();
+            this.BlockedUsers = new ConcurrentHashSet<ulong>();
+            this.BotConfiguration = BotConfig.Default;
+            this.CTS = new CancellationTokenSource();
+            this.EmojiReactions = new ConcurrentDictionary<ulong, ConcurrentHashSet<EmojiReaction>>();
+            this.Filters = new ConcurrentDictionary<ulong, ConcurrentHashSet<Filter>>();
+            this.GuildConfigurations = new ConcurrentDictionary<ulong, CachedGuildConfig>();
+            this.ListeningStatus = true;
+            this.MessageCount = new ConcurrentDictionary<ulong, ulong>();
+            this.PendingResponses = new ConcurrentDictionary<ulong, ConcurrentHashSet<ulong>>();
+            this.StatusRotationEnabled = true;
+            this.TaskExecuters = new ConcurrentDictionary<int, SavedTaskExecuter>();
+            this.TextReactions = new ConcurrentDictionary<ulong, ConcurrentHashSet<TextReaction>>();
+        }
+
+
+        public async Task DisposeAsync()
+        {
+            this.CTS.Dispose();
+            foreach ((int tid, SavedTaskExecuter texec) in this.TaskExecuters)
+                await texec.DisposeAsync();
+        }
+
+        public async Task SyncDataWithDatabaseAsync(DBService db)
+        {
+            foreach ((ulong uid, ulong count) in this.MessageCount)
+                await db.ModifyXpAsync(uid, count);
+        }
+
+
+        #region RANK_HELPERS
+        public ushort CalculateRankForMessageCount(ulong msgcount)
+            => (ushort)Math.Floor(Math.Sqrt(msgcount / 10));
+
+        public ushort CalculateRankForUser(ulong uid)
+            => this.MessageCount.ContainsKey(uid) ? CalculateRankForMessageCount(this.MessageCount[uid]) : (ushort)0;
+
+        public uint CalculateXpNeededForRank(ushort index)
+            => (uint)(index * index * 10);
+
+        public ulong GetMessageCountForUser(ulong uid)
+            => this.MessageCount.ContainsKey(uid) ? this.MessageCount[uid] : 0;
+
+        public ushort IncrementMessageCountForUser(ulong uid)
+        {
+            ushort prev = CalculateRankForMessageCount(this.MessageCount[uid]);
+
+            if (this.MessageCount.ContainsKey(uid)) {
+                this.MessageCount[uid]++;
+            } else if (!this.MessageCount.TryAdd(uid, 1)) {
+                return 0;
+            }
+
+            ushort curr = CalculateRankForMessageCount(this.MessageCount[uid]);
+
+            return curr != prev ? curr : (ushort)0;
+        }
+        #endregion
+
+        #region GUILD_DATA_HELPERS
         public CachedGuildConfig GetGuildConfig(ulong gid)
-            => GuildConfigurations.ContainsKey(gid) ? GuildConfigurations[gid] : CachedGuildConfig.Default;
+            => this.GuildConfigurations.ContainsKey(gid) ? this.GuildConfigurations[gid] : CachedGuildConfig.Default;
+
+        public string GetGuildPrefix(ulong gid)
+        {
+            if (this.GuildConfigurations.ContainsKey(gid) && !string.IsNullOrWhiteSpace(this.GuildConfigurations[gid].Prefix))
+                return this.GuildConfigurations[gid].Prefix;
+            else
+                return this.BotConfiguration.DefaultPrefix;
+        }
 
         public DiscordChannel GetLogChannelForGuild(DiscordClient client, DiscordGuild guild)
         {
@@ -49,95 +114,42 @@ namespace TheGodfather
             return gcfg.LoggingEnabled ? guild.GetChannel(gcfg.LogChannelId) : null;
         }
 
-        public void AddAwaitingUser(ulong cid, ulong uid)
+        public bool GuildHasTextReaction(ulong gid, string trigger)
+            => this.TextReactions.ContainsKey(gid) && this.TextReactions[gid] != null && this.TextReactions[gid].Any(tr => tr.ContainsTriggerPattern(trigger));
+
+        public bool GuildHasEmojiReaction(ulong gid, string trigger)
+            => this.EmojiReactions.ContainsKey(gid) && this.EmojiReactions[gid] != null && this.EmojiReactions[gid].Any(er => er.ContainsTriggerPattern(trigger));
+
+        public bool MessageContainsFilter(ulong gid, string message)
         {
-            AwaitingUsersInteractively.AddOrUpdate(
+            if (!this.Filters.ContainsKey(gid) || this.Filters[gid] == null)
+                return false;
+
+            message = message.ToLowerInvariant();
+            return this.Filters[gid].Any(f => f.Trigger.IsMatch(message));
+        }
+        #endregion
+
+        #region PENDING_RESPONSES_HELPERS
+        public void AddPendingResponse(ulong cid, ulong uid)
+        {
+            this.PendingResponses.AddOrUpdate(
                 cid,
                 new ConcurrentHashSet<ulong> { uid },
                 (k, v) => { v.Add(uid); return v; }
             );
         }
 
-        public void RemoveAwaitingUser(ulong cid, ulong uid)
+        public bool PendingResponseExists(ulong cid, ulong uid)
+            => this.PendingResponses.ContainsKey(cid) && this.PendingResponses[cid].Contains(uid);
+
+        public bool TryRemovePendingResponse(ulong cid, ulong uid)
         {
-            AwaitingUsersInteractively[cid].TryRemove(uid);
-            if (AwaitingUsersInteractively[cid].Count == 0)
-                AwaitingUsersInteractively.TryRemove(cid, out _);
+            bool success = this.PendingResponses[cid].TryRemove(uid);
+            if (!this.PendingResponses[cid].Any())
+                this.PendingResponses.TryRemove(cid, out _);
+            return success;
         }
-
-        public string GetGuildPrefix(ulong gid)
-        {
-            if (GuildConfigurations.ContainsKey(gid) && !string.IsNullOrWhiteSpace(GuildConfigurations[gid].Prefix))
-                return GuildConfigurations[gid].Prefix;
-            else
-                return BotConfiguration.DefaultPrefix;
-        }
-        
-        public ulong GetMessageCountForId(ulong uid)
-            => MessageCount.ContainsKey(uid) ? MessageCount[uid] : 0;
-
-        public int GetRankForMessageCount(ulong msgcount)
-            => (int)Math.Floor(Math.Sqrt(msgcount / 10));
-
-        public int GetRankForUser(ulong uid)
-            => MessageCount.ContainsKey(uid) ? GetRankForMessageCount(MessageCount[uid]) : 0;
-
-        public bool MessageContainsFilter(ulong gid, string message)
-        {
-            if (!Filters.ContainsKey(gid) || Filters[gid] == null)
-                return false;
-
-            message = message.ToLowerInvariant();
-            return Filters[gid].Any(f => f.Trigger.IsMatch(message));
-        }
-
-        public bool TextTriggerExists(ulong gid, string trigger)
-        {
-            return TextReactions.ContainsKey(gid) && TextReactions[gid] != null && TextReactions[gid].Any(tr => tr.ContainsTriggerPattern(trigger));
-        }
-
-        public bool EmojiTriggerExists(ulong gid, string trigger)
-        {
-            return EmojiReactions.ContainsKey(gid) && EmojiReactions[gid] != null && EmojiReactions[gid].Any(er => er.ContainsTriggerPattern(trigger));
-        }
-
-        public int UpdateMessageCount(ulong uid)
-        {
-            if (MessageCount.ContainsKey(uid)) {
-                MessageCount[uid]++;
-            } else if (!MessageCount.TryAdd(uid, 1)) {
-                return -1;
-            }
-
-            int curr = GetRankForMessageCount(MessageCount[uid]);
-            int prev = GetRankForMessageCount(MessageCount[uid] - 1);
-
-            return curr != prev ? curr : -1;
-        }
-
-        public uint XpNeededForRankWithIndex(int index)
-            => (uint)(index * index * 10);
-
-        public async Task SyncDataWithDatabaseAsync(DBService db)
-        {
-            try {
-                await SaveRanksToDatabaseAsync(db)
-                    .ConfigureAwait(false);
-            } catch (Exception e) {
-                TheGodfather.LogProvider.LogException(LogLevel.Error, e);
-            }
-        }
-
-        private async Task SaveRanksToDatabaseAsync(DBService db)
-        {
-            foreach (var entry in MessageCount)
-                await db.UpdateExperienceForUserAsync(entry.Key, entry.Value).ConfigureAwait(false);
-        }
-
-        public void Dispose()
-        {
-            foreach (var kvp in SavedTasks)
-                kvp.Value.Dispose();
-        }
+        #endregion
     }
 }

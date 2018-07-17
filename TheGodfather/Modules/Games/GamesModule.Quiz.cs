@@ -11,12 +11,14 @@ using TheGodfather.Extensions;
 using TheGodfather.Modules.Games.Common;
 using TheGodfather.Services;
 using TheGodfather.Services.Common;
+using TheGodfather.Services.Database.Stats;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
+using TheGodfather.Services.Database;
 #endregion
 
 namespace TheGodfather.Modules.Games
@@ -26,14 +28,14 @@ namespace TheGodfather.Modules.Games
         [Group("quiz"), Module(ModuleType.Games)]
         [Description("List all available quiz categories.")]
         [Aliases("trivia", "q")]
-        [UsageExample("!game quiz")]
-        [UsageExample("!game quiz countries")]
-        [UsageExample("!game quiz 9")]
-        [UsageExample("!game quiz history")]
-        [UsageExample("!game quiz history hard")]
-        [UsageExample("!game quiz history hard 15")]
-        [UsageExample("!game quiz 9 hard")]
-        [UsageExample("!game quiz 9 hard 15")]
+        [UsageExamples("!game quiz",
+                       "!game quiz countries",
+                       "!game quiz 9",
+                       "!game quiz history",
+                       "!game quiz history hard",
+                       "!game quiz history hard 15",
+                       "!game quiz 9 hard",
+                       "!game quiz 9 hard 15")]
         [NotBlocked]
         public class QuizModule : TheGodfatherBaseModule
         {
@@ -59,7 +61,7 @@ namespace TheGodfather.Modules.Games
                     case "hard": difficulty = QuestionDifficulty.Hard; break;
                 }
 
-                var questions = await QuizService.GetQuizQuestionsAsync(id, amount, difficulty)
+                var questions = await QuizService.GetQuestionsAsync(id, amount, difficulty)
                     .ConfigureAwait(false);
 
                 if (questions == null || !questions.Any())
@@ -68,15 +70,15 @@ namespace TheGodfather.Modules.Games
                 var quiz = new Quiz(ctx.Client.GetInteractivity(), ctx.Channel, questions);
                 ChannelEvent.RegisterEventInChannel(quiz, ctx.Channel.Id);
                 try {
-                    await ctx.RespondWithIconEmbedAsync("Quiz will start in 10s! Get ready!", ":clock1:")
+                    await ctx.InformSuccessAsync("Quiz will start in 10s! Get ready!", ":clock1:")
                         .ConfigureAwait(false);
                     await Task.Delay(TimeSpan.FromSeconds(10))
                         .ConfigureAwait(false);
                     await quiz.RunAsync()
                         .ConfigureAwait(false);
 
-                    if (quiz.TimedOut) {
-                        await ctx.RespondWithIconEmbedAsync("Aborting quiz due to no replies...", ":alarm_clock:")
+                    if (quiz.IsTimeoutReached) {
+                        await ctx.InformSuccessAsync("Aborting quiz due to no replies...", ":alarm_clock:")
                             .ConfigureAwait(false);
                         return;
                     }
@@ -102,7 +104,7 @@ namespace TheGodfather.Modules.Games
             {
                 int? id = await QuizService.GetCategoryIdAsync(category).ConfigureAwait(false);
                 if (!id.HasValue)
-                    throw new CommandFailedException("Category with that name doesn't exist!!");
+                    throw new CommandFailedException("Category with that name doesn't exist!");
 
                 await ExecuteGroupAsync(ctx, id.Value, amount, diff).ConfigureAwait(false);
             }
@@ -113,7 +115,7 @@ namespace TheGodfather.Modules.Games
             {
                 int? id = await QuizService.GetCategoryIdAsync(category).ConfigureAwait(false);
                 if (!id.HasValue)
-                    throw new CommandFailedException("Category with that name doesn't exist!!");
+                    throw new CommandFailedException("Category with that name doesn't exist!");
 
                 await ExecuteGroupAsync(ctx, id.Value, 10)
                     .ConfigureAwait(false);
@@ -123,10 +125,10 @@ namespace TheGodfather.Modules.Games
             [GroupCommand, Priority(0)]
             public async Task ExecuteGroupAsync(CommandContext ctx)
             {
-                var categories = await QuizService.GetQuizCategoriesAsync()
+                var categories = await QuizService.GetCategoriesAsync()
                     .ConfigureAwait(false);
 
-                await ctx.RespondWithIconEmbedAsync(
+                await ctx.InformSuccessAsync(
                     $"You need to specify a quiz type!\n\n{Formatter.Bold("Available quiz categories:")}\n\n" +
                     $"- Custom quiz type (command): {Formatter.Bold("Capitals")}\n" +
                     $"- Custom quiz type (command): {Formatter.Bold("Countries")}\n" + 
@@ -141,8 +143,8 @@ namespace TheGodfather.Modules.Games
             [Command("capitals"), Module(ModuleType.Games)]
             [Description("Country capitals guessing quiz. You can also specify how many questions there will be in the quiz.")]
             [Aliases("capitaltowns")]
-            [UsageExample("!game quiz capitals")]
-            [UsageExample("!game quiz capitals 15")]
+            [UsageExamples("!game quiz capitals",
+                           "!game quiz capitals 15")]
             public async Task CapitalsQuizAsync(CommandContext ctx,
                                                [Description("Number of questions.")] int qnum = 10)
             {
@@ -161,15 +163,15 @@ namespace TheGodfather.Modules.Games
                 var quiz = new QuizCapitals(ctx.Client.GetInteractivity(), ctx.Channel, qnum);
                 ChannelEvent.RegisterEventInChannel(quiz, ctx.Channel.Id);
                 try {
-                    await ctx.RespondWithIconEmbedAsync("Quiz will start in 10s! Get ready!", ":clock1:")
+                    await ctx.InformSuccessAsync("Quiz will start in 10s! Get ready!", ":clock1:")
                         .ConfigureAwait(false);
                     await Task.Delay(TimeSpan.FromSeconds(10))
                         .ConfigureAwait(false);
                     await quiz.RunAsync()
                         .ConfigureAwait(false);
 
-                    if (quiz.TimedOut) {
-                        await ctx.RespondWithIconEmbedAsync("Aborting quiz due to no replies...", ":alarm_clock:")
+                    if (quiz.IsTimeoutReached) {
+                        await ctx.InformSuccessAsync("Aborting quiz due to no replies...", ":alarm_clock:")
                             .ConfigureAwait(false);
                         return;
                     }
@@ -186,8 +188,8 @@ namespace TheGodfather.Modules.Games
             [Command("countries"), Module(ModuleType.Games)]
             [Description("Country flags guessing quiz. You can also specify how many questions there will be in the quiz.")]
             [Aliases("flags")]
-            [UsageExample("!game quiz countries")]
-            [UsageExample("!game quiz countries 15")]
+            [UsageExamples("!game quiz countries",
+                           "!game quiz countries 15")]
             public async Task CountriesQuizAsync(CommandContext ctx,
                                                 [Description("Number of questions.")] int qnum = 10)
             {
@@ -206,15 +208,15 @@ namespace TheGodfather.Modules.Games
                 var quiz = new QuizCountries(ctx.Client.GetInteractivity(), ctx.Channel, qnum);
                 ChannelEvent.RegisterEventInChannel(quiz, ctx.Channel.Id);
                 try {
-                    await ctx.RespondWithIconEmbedAsync("Quiz will start in 10s! Get ready!", ":clock1:")
+                    await ctx.InformSuccessAsync("Quiz will start in 10s! Get ready!", ":clock1:")
                         .ConfigureAwait(false);
                     await Task.Delay(TimeSpan.FromSeconds(10))
                         .ConfigureAwait(false);
                     await quiz.RunAsync()
                         .ConfigureAwait(false);
 
-                    if (quiz.TimedOut) {
-                        await ctx.RespondWithIconEmbedAsync("Aborting quiz due to no replies...", ":alarm_clock:")
+                    if (quiz.IsTimeoutReached) {
+                        await ctx.InformSuccessAsync("Aborting quiz due to no replies...", ":alarm_clock:")
                             .ConfigureAwait(false);
                         return;
                     }
@@ -231,13 +233,13 @@ namespace TheGodfather.Modules.Games
             [Command("stats"), Module(ModuleType.Games)]
             [Description("Print the leaderboard for this game.")]
             [Aliases("top", "leaderboard")]
-            [UsageExample("!game quiz stats")]
+            [UsageExamples("!game quiz stats")]
             public async Task StatsAsync(CommandContext ctx)
             {
                 var top = await Database.GetTopQuizPlayersStringAsync(ctx.Client)
                     .ConfigureAwait(false);
 
-                await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Trophy, $"Top players in Quiz:\n\n{top}")
+                await ctx.InformSuccessAsync(StaticDiscordEmoji.Trophy, $"Top players in Quiz:\n\n{top}")
                     .ConfigureAwait(false);
             }
             #endregion

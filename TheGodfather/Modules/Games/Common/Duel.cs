@@ -46,7 +46,7 @@ namespace TheGodfather.Modules.Games.Common
         {
             UpdateHpBars();
             
-            _msg = await _channel.SendIconEmbedAsync($"{_p1.Mention} {_hp1bar} {StaticDiscordEmoji.DuelSwords} {_hp2bar} {_p2.Mention}")
+            _msg = await Channel.InformSuccessAsync($"{_p1.Mention} {_hp1bar} {StaticDiscordEmoji.DuelSwords} {_hp2bar} {_p2.Mention}")
                 .ConfigureAwait(false);
 
             while (_hp1 > 0 && _hp2 > 0) {
@@ -56,7 +56,7 @@ namespace TheGodfather.Modules.Games.Common
 
             Winner = _hp1 > 0 ? _p1 : _p2;
 
-            await _channel.SendIconEmbedAsync($"{StaticDiscordEmoji.DuelSwords} {Winner.Mention}, FINISH HIM! {StaticDiscordEmoji.DuelSwords}")
+            await Channel.InformSuccessAsync($"{StaticDiscordEmoji.DuelSwords} {Winner.Mention}, FINISH HIM! {StaticDiscordEmoji.DuelSwords}")
                 .ConfigureAwait(false);
             FinishingMove = await WaitForFinishingMoveAsync()
                 .ConfigureAwait(false);
@@ -98,9 +98,9 @@ namespace TheGodfather.Modules.Games.Common
 
         private async Task WaitForPotionUseAsync()
         {
-            var mctx = await _interactivity.WaitForMessageAsync(
+            var mctx = await Interactivity.WaitForMessageAsync(
                 msg =>
-                    msg.ChannelId == _channel.Id && msg.Content.ToLowerInvariant() == "hp" &&
+                    msg.ChannelId == Channel.Id && msg.Content.ToLowerInvariant() == "hp" &&
                     ((!_pot1used && msg.Author.Id == _p1.Id) || (!_pot2used && msg.Author.Id == _p2.Id))
                 , TimeSpan.FromSeconds(2)
             ).ConfigureAwait(false);
@@ -119,8 +119,8 @@ namespace TheGodfather.Modules.Games.Common
 
         private async Task<string> WaitForFinishingMoveAsync()
         {
-            var mctx = await _interactivity.WaitForMessageAsync(
-                m => m.ChannelId == _channel.Id && m.Author.Id == Winner.Id
+            var mctx = await Interactivity.WaitForMessageAsync(
+                m => m.ChannelId == Channel.Id && m.Author.Id == Winner.Id
             ).ConfigureAwait(false);
 
             if (mctx != null && !string.IsNullOrWhiteSpace(mctx.Message?.Content))

@@ -9,11 +9,13 @@ using TheGodfather.Extensions;
 using TheGodfather.Modules.Games.Common;
 using TheGodfather.Services;
 using TheGodfather.Services.Common;
+using TheGodfather.Services.Database.Stats;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Interactivity;
+using TheGodfather.Services.Database;
 #endregion
 
 namespace TheGodfather.Modules.Games
@@ -23,7 +25,7 @@ namespace TheGodfather.Modules.Games
         [Group("hangman"), Module(ModuleType.Games)]
         [Description("Starts a hangman game.")]
         [Aliases("h", "hang")]
-        [UsageExample("!game hangman")]
+        [UsageExamples("!game hangman")]
         public class HangmanModule : TheGodfatherBaseModule
         {
 
@@ -75,10 +77,10 @@ namespace TheGodfather.Modules.Games
             [Command("rules"), Module(ModuleType.Games)]
             [Description("Explain the Hangman game rules.")]
             [Aliases("help", "h", "ruling", "rule")]
-            [UsageExample("!game hangman rules")]
+            [UsageExamples("!game hangman rules")]
             public async Task RulesAsync(CommandContext ctx)
             {
-                await ctx.RespondWithIconEmbedAsync(
+                await ctx.InformSuccessAsync(
                     "\nI will ask a player for the word. Once he gives me the secret word, the other players try to guess by posting letters. For each failed guess you lose a \"life\"." +
                     " The game ends if the word is guessed or when all lives are spent.",
                     ":book:"
@@ -90,13 +92,13 @@ namespace TheGodfather.Modules.Games
             [Command("stats"), Module(ModuleType.Games)]
             [Description("Print the leaderboard for this game.")]
             [Aliases("top", "leaderboard")]
-            [UsageExample("!game hangman stats")]
+            [UsageExamples("!game hangman stats")]
             public async Task StatsAsync(CommandContext ctx)
             {
                 var top = await Database.GetTopHangmanPlayersStringAsync(ctx.Client)
                     .ConfigureAwait(false);
 
-                await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Trophy, $"Top players in Hangman:\n\n{top}")
+                await ctx.InformSuccessAsync(StaticDiscordEmoji.Trophy, $"Top players in Hangman:\n\n{top}")
                     .ConfigureAwait(false);
             }
             #endregion

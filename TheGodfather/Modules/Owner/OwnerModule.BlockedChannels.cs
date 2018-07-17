@@ -9,13 +9,14 @@ using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-using TheGodfather.Services;
+using TheGodfather.Services.Database.Blocked;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
+using TheGodfather.Services.Database;
 #endregion
 
 namespace TheGodfather.Modules.Owner
@@ -25,7 +26,7 @@ namespace TheGodfather.Modules.Owner
         [Group("blockedchannels"), Module(ModuleType.Owner)]
         [Description("Manipulate blocked channels. Bot will not listen for commands in blocked channels or react (either with text or emoji) to messages inside.")]
         [Aliases("bc", "blockedc", "blockchannel", "bchannels", "bchannel", "bchn")]
-        [RequirePriviledgedUser]
+        [RequirePrivilegedUser]
         [NotBlocked]
         public class BlockedChannelsModule : TheGodfatherBaseModule
         {
@@ -60,11 +61,11 @@ namespace TheGodfather.Modules.Owner
             [Module(ModuleType.Owner)]
             [Description("Add channel to blocked channels list.")]
             [Aliases("+", "a")]
-            [UsageExample("!owner blockedchannels add #channel")]
-            [UsageExample("!owner blockedchannels add #channel Some reason for blocking")]
-            [UsageExample("!owner blockedchannels add 123123123123123")]
-            [UsageExample("!owner blockedchannels add #channel 123123123123123")]
-            [UsageExample("!owner blockedchannels add \"This is some reason\" #channel 123123123123123")]
+            [UsageExamples("!owner blockedchannels add #channel",
+                           "!owner blockedchannels add #channel Some reason for blocking",
+                           "!owner blockedchannels add 123123123123123",
+                           "!owner blockedchannels add #channel 123123123123123",
+                           "!owner blockedchannels add \"This is some reason\" #channel 123123123123123")]
             public Task AddAsync(CommandContext ctx,
                                 [Description("Channels to block.")] params DiscordChannel[] channels)
                 => AddAsync(ctx, null, channels);
@@ -103,7 +104,7 @@ namespace TheGodfather.Modules.Owner
                     sb.AppendLine($"Blocked: {channel.ToString()}!");
                 }
 
-                await ctx.RespondWithIconEmbedAsync(sb.ToString())
+                await ctx.InformSuccessAsync(sb.ToString())
                     .ConfigureAwait(false);
             }
 
@@ -118,9 +119,9 @@ namespace TheGodfather.Modules.Owner
             [Command("delete"), Module(ModuleType.Owner)]
             [Description("Remove channel from blocked channels list..")]
             [Aliases("-", "remove", "rm", "del")]
-            [UsageExample("!owner blockedchannels remove #channel")]
-            [UsageExample("!owner blockedchannels remove 123123123123123")]
-            [UsageExample("!owner blockedchannels remove @Someone 123123123123123")]
+            [UsageExamples("!owner blockedchannels remove #channel",
+                           "!owner blockedchannels remove 123123123123123",
+                           "!owner blockedchannels remove @Someone 123123123123123")]
             public async Task DeleteAsync(CommandContext ctx,
                                          [Description("Channels to unblock.")] params DiscordChannel[] channels)
             {
@@ -144,14 +145,14 @@ namespace TheGodfather.Modules.Owner
                             .ConfigureAwait(false);
                     } catch (Exception e) {
                         sb.AppendLine($"Warning: Failed to remove {channel.ToString()} from the database!");
-                        TheGodfather.LogProvider.LogException(LogLevel.Warning, e);
+                        Shared.LogProvider.LogException(LogLevel.Warning, e);
                         continue;
                     }
 
                     sb.AppendLine($"Unblocked: {channel.ToString()}!");
                 }
 
-                await ctx.RespondWithIconEmbedAsync(sb.ToString())
+                await ctx.InformSuccessAsync(sb.ToString())
                     .ConfigureAwait(false);
             }
             #endregion
@@ -160,7 +161,7 @@ namespace TheGodfather.Modules.Owner
             [Command("list"), Module(ModuleType.Owner)]
             [Description("List all blocked channels.")]
             [Aliases("ls")]
-            [UsageExample("!owner blockedchannels list")]
+            [UsageExamples("!owner blockedchannels list")]
             public async Task ListAsync(CommandContext ctx)
             {
                 var blocked = await Database.GetAllBlockedChannelsAsync()
@@ -173,12 +174,12 @@ namespace TheGodfather.Modules.Owner
                             .ConfigureAwait(false);
                         lines.Add($"{channel.ToString()} ({Formatter.Italic(string.IsNullOrWhiteSpace(tup.Item2) ? "No reason provided." : tup.Item2)})");
                     } catch (NotFoundException) {
-                        TheGodfather.LogProvider.LogMessage(LogLevel.Warning, $"Removed 404 blocked channel with ID {tup.Item1}");
+                        Shared.LogProvider.LogMessage(LogLevel.Warning, $"Removed 404 blocked channel with ID {tup.Item1}");
                         Shared.BlockedChannels.TryRemove(tup.Item1);
                         await Database.RemoveBlockedChannelAsync(tup.Item1)
                             .ConfigureAwait(false);
                     } catch (UnauthorizedException) {
-                        TheGodfather.LogProvider.LogMessage(LogLevel.Warning, $"Removed 403 blocked channel with ID {tup.Item1}");
+                        Shared.LogProvider.LogMessage(LogLevel.Warning, $"Removed 403 blocked channel with ID {tup.Item1}");
                         Shared.BlockedChannels.TryRemove(tup.Item1);
                         await Database.RemoveBlockedChannelAsync(tup.Item1)
                             .ConfigureAwait(false);
@@ -188,7 +189,7 @@ namespace TheGodfather.Modules.Owner
                 if (!lines.Any())
                     throw new CommandFailedException("No blocked channels registered!");
 
-                await ctx.SendPaginatedCollectionAsync(
+                await ctx.SendCollectionInPagesAsync(
                     "Blocked channels (in database):",
                     lines,
                     line => line,

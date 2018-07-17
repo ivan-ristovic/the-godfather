@@ -23,9 +23,9 @@ namespace TheGodfather.Modules.Search
     [Group("imgur"), Module(ModuleType.Searches)]
     [Description("Search imgur. Invoking without subcommand retrieves top ranked images from given subreddit.")]
     [Aliases("img", "im", "i")]
-    [UsageExample("!imgur aww")]
-    [UsageExample("!imgur 10 aww")]
-    [UsageExample("!imgur aww 10")]
+    [UsageExamples("!imgur aww",
+                   "!imgur 10 aww",
+                   "!imgur aww 10")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     [NotBlocked]
     public class ImgurModule : TheGodfatherServiceModule<ImgurService>
@@ -66,8 +66,8 @@ namespace TheGodfather.Modules.Search
         [Module(ModuleType.Searches)]
         [Description("Return latest images from given subreddit.")]
         [Aliases("l", "new", "newest")]
-        [UsageExample("!imgur latest 5 aww")]
-        [UsageExample("!imgur latest aww 5")]
+        [UsageExamples("!imgur latest 5 aww",
+                       "!imgur latest aww 5")]
         public async Task LatestAsync(CommandContext ctx,
                                      [Description("Number of images to print [1-10].")] int amount,
                                      [RemainingText, Description("Subreddit.")] string sub)
@@ -100,10 +100,10 @@ namespace TheGodfather.Modules.Search
         [Module(ModuleType.Searches)]
         [Description("Return amount of top rated images in the given subreddit for given timespan.")]
         [Aliases("t")]
-        [UsageExample("!imgur top day 10 aww")]
-        [UsageExample("!imgur top 10 day aww")]
-        [UsageExample("!imgur top 5 aww")]
-        [UsageExample("!imgur top day aww")]
+        [UsageExamples("!imgur top day 10 aww",
+                       "!imgur top 10 day aww",
+                       "!imgur top 5 aww",
+                       "!imgur top day aww")]
         public async Task TopAsync(CommandContext ctx,
                                   [Description("Timespan in which to search (day/week/month/year/all).")] TimeWindow timespan,
                                   [Description("Number of images to print [1-10].")] int amount,
@@ -152,7 +152,7 @@ namespace TheGodfather.Modules.Search
         private async Task PrintImagesAsync(DiscordChannel channel, IEnumerable<IGalleryItem> results, int num)
         {
             if (!results.Any()) {
-                await channel.SendFailedEmbedAsync("No results...")
+                await channel.InformFailureAsync("No results...")
                     .ConfigureAwait(false);
                 return;
             }
@@ -182,7 +182,7 @@ namespace TheGodfather.Modules.Search
             }
 
             if (results.Count() != num) {
-                await channel.SendFailedEmbedAsync("These are all of the results returned.")
+                await channel.InformFailureAsync("These are all of the results returned.")
                     .ConfigureAwait(false);
             }
         }

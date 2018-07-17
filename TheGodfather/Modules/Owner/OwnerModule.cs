@@ -21,6 +21,7 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using TheGodfather.Services.Database;
 #endregion
 
 namespace TheGodfather.Modules.Owner
@@ -40,17 +41,17 @@ namespace TheGodfather.Modules.Owner
         [Command("announce"), Module(ModuleType.Owner)]
         [Description("Send a message to all guilds the bot is in.")]
         [Aliases("a", "ann")]
-        [UsageExample("!owner announce SPAM SPAM")]
+        [UsageExamples("!owner announce SPAM SPAM")]
         [RequireOwner]
         [NotBlocked, UsesInteractivity]
         public async Task ClearLogAsync(CommandContext ctx,
                                        [RemainingText, Description("Message to send.")] string message)
         {
-            if (!await ctx.AskYesNoQuestionAsync($"Are you sure you want to announce the messsage:\n\n{message}").ConfigureAwait(false))
+            if (!await ctx.WaitForBoolReplyAsync($"Are you sure you want to announce the messsage:\n\n{message}").ConfigureAwait(false))
                 return;
 
             var errors = new StringBuilder();
-            foreach (var shard in TheGodfather.Shards) {
+            foreach (var shard in TheGodfather.ActiveShards) {
                 foreach (var guild in shard.Client.Guilds.Values) {
                     try {
                         await guild.GetDefaultChannel().SendMessageAsync()
@@ -61,7 +62,7 @@ namespace TheGodfather.Modules.Owner
                 }
             }
 
-            await ctx.RespondWithIconEmbedAsync($"Message sent!\n\n{errors.ToString()}")
+            await ctx.InformSuccessAsync($"Message sent!\n\n{errors.ToString()}")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -70,7 +71,7 @@ namespace TheGodfather.Modules.Owner
         [Command("botavatar"), Module(ModuleType.Owner)]
         [Description("Set bot avatar.")]
         [Aliases("setbotavatar", "setavatar")]
-        [UsageExample("!owner botavatar http://someimage.png")]
+        [UsageExamples("!owner botavatar http://someimage.png")]
         [RequireOwner]
         [NotBlocked]
         public async Task SetBotAvatarAsync(CommandContext ctx,
@@ -94,7 +95,7 @@ namespace TheGodfather.Modules.Owner
                 throw new CommandFailedException("An error occured.", e);
             }
 
-            await ctx.RespondWithIconEmbedAsync()
+            await ctx.InformSuccessAsync()
                 .ConfigureAwait(false);
         }
         #endregion
@@ -103,7 +104,7 @@ namespace TheGodfather.Modules.Owner
         [Command("botname"), Module(ModuleType.Owner)]
         [Description("Set bot name.")]
         [Aliases("setbotname", "setname")]
-        [UsageExample("!owner setname TheBotfather")]
+        [UsageExamples("!owner setname TheBotfather")]
         [RequireOwner]
         [NotBlocked]
         public async Task SetBotNameAsync(CommandContext ctx,
@@ -114,7 +115,7 @@ namespace TheGodfather.Modules.Owner
 
             await ctx.Client.UpdateCurrentUserAsync(username: name)
                 .ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync()
+            await ctx.InformSuccessAsync()
                 .ConfigureAwait(false);
         }
         #endregion
@@ -123,18 +124,18 @@ namespace TheGodfather.Modules.Owner
         [Command("clearlog"), Module(ModuleType.Owner)]
         [Description("Clear application logs.")]
         [Aliases("clearlogs", "deletelogs", "deletelog")]
-        [UsageExample("!owner clearlog")]
+        [UsageExamples("!owner clearlog")]
         [RequireOwner]
         [NotBlocked, UsesInteractivity]
         public async Task ClearLogAsync(CommandContext ctx)
         {
-            if (!await ctx.AskYesNoQuestionAsync("Are you sure you want to clear the logs?").ConfigureAwait(false))
+            if (!await ctx.WaitForBoolReplyAsync("Are you sure you want to clear the logs?").ConfigureAwait(false))
                 return;
 
-            if (!TheGodfather.LogProvider.Clear())
+            if (!Shared.LogProvider.Clear())
                 throw new CommandFailedException("Failed to delete log file!");
 
-            await ctx.RespondWithIconEmbedAsync()
+            await ctx.InformSuccessAsync()
                 .ConfigureAwait(false);
         }
         #endregion
@@ -143,11 +144,11 @@ namespace TheGodfather.Modules.Owner
         [Command("dbquery"), Module(ModuleType.Owner)]
         [Description("Execute SQL query on the bot database.")]
         [Aliases("sql", "dbq", "q")]
-        [UsageExample("!owner dbquery SELECT * FROM gf.msgcount;")]
+        [UsageExamples("!owner dbquery SELECT * FROM gf.msgcount;")]
         [RequireOwner]
         [NotBlocked]
         public async Task DatabaseQuery(CommandContext ctx,
-                                        [RemainingText, Description("SQL Query.")] string query)
+                                       [RemainingText, Description("SQL Query.")] string query)
         {
             if (string.IsNullOrWhiteSpace(query))
                 throw new InvalidCommandUsageException("Query missing.");
@@ -168,7 +169,7 @@ namespace TheGodfather.Modules.Owner
 
             var maxlen = res.First().Select(r => r.Key).OrderByDescending(r => r.Length).First().Length + 1;
 
-            await ctx.SendPaginatedCollectionAsync(
+            await ctx.SendCollectionInPagesAsync(
                 $"Results:",
                 res.Take(25),
                 row => {
@@ -188,7 +189,7 @@ namespace TheGodfather.Modules.Owner
         [Command("eval"), Module(ModuleType.Owner)]
         [Description("Evaluates a snippet of C# code, in context. Surround the code in the code block.")]
         [Aliases("compile", "run", "e", "c", "r")]
-        [UsageExample("!owner eval ```await Context.RespondAsync(\"Hello!\");```")]
+        [UsageExamples("!owner eval ```await Context.RespondAsync(\"Hello!\");```")]
         [RequireOwner]
         [NotBlocked]
         public async Task EvaluateAsync(CommandContext ctx,
@@ -282,16 +283,16 @@ namespace TheGodfather.Modules.Owner
         [Command("filelog"), Module(ModuleType.Owner)]
         [Description("Toggle writing to log file.")]
         [Aliases("setfl", "fl", "setfilelog")]
-        [UsageExample("!owner filelog yes")]
-        [UsageExample("!owner filelog false")]
+        [UsageExamples("!owner filelog yes",
+                       "!owner filelog false")]
         [RequireOwner]
         [NotBlocked]
         public async Task FileLogAsync(CommandContext ctx,
                                       [Description("True/False")] bool b = true)
         {
-            TheGodfather.LogProvider.LogToFile = b;
+            Shared.LogProvider.LogToFile = b;
 
-            await ctx.RespondWithIconEmbedAsync($"File logging set to {b}")
+            await ctx.InformSuccessAsync($"File logging set to {b}")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -300,8 +301,8 @@ namespace TheGodfather.Modules.Owner
         [Command("generatecommandlist"), Module(ModuleType.Owner)]
         [Description("Generates a markdown command-list. You can also provide a folder for the output.")]
         [Aliases("cmdlist", "gencmdlist", "gencmds", "gencmdslist")]
-        [UsageExample("!owner generatecommandlist")]
-        [UsageExample("!owner generatecommandlist Temp/blabla.md")]
+        [UsageExamples("!owner generatecommandlist",
+                       "!owner generatecommandlist Temp/blabla.md")]
         [RequireOwner]
         [NotBlocked]
         public async Task GenerateCommandListAsync(CommandContext ctx,
@@ -318,7 +319,7 @@ namespace TheGodfather.Modules.Owner
                 current = Directory.CreateDirectory(folder);
                 parts = Directory.CreateDirectory(Path.Combine(current.FullName, "Parts"));
             } catch (Exception e) {
-                TheGodfather.LogProvider.LogException(LogLevel.Warning, e);
+                Shared.LogProvider.LogException(LogLevel.Warning, e);
                 throw new CommandFailedException("Failed to create directories!", e);
             }
 
@@ -326,9 +327,8 @@ namespace TheGodfather.Modules.Owner
             sb.AppendLine("# Command list");
             sb.AppendLine();
 
-            var commands = ctx.CommandsNext.RegisteredCommands.SelectMany(CommandSelector);
-            var modules = commands.Distinct()
-                                  .GroupBy(c => c.CustomAttributes.FirstOrDefault(a => a is ModuleAttribute))
+            var commands = ctx.CommandsNext.GetAllRegisteredCommands();
+            var modules = commands.GroupBy(c => c.CustomAttributes.FirstOrDefault(a => a is ModuleAttribute))
                                   .OrderBy(g => (g.Key as ModuleAttribute)?.Module)
                                   .ToDictionary(g => g.Key as ModuleAttribute ?? new ModuleAttribute(ModuleType.Uncategorized), g => g.OrderBy(c => c.QualifiedName).ToList());
 
@@ -409,12 +409,9 @@ namespace TheGodfather.Modules.Owner
                         }
                     }
 
-                    var examples = cmd.CustomAttributes.Where(chk => chk is UsageExampleAttribute)
-                                                       .Select(chk => chk as UsageExampleAttribute);
-                    if (examples.Any()) {
+                    if (cmd.CustomAttributes.FirstOrDefault(chk => chk is UsageExamplesAttribute) is UsageExamplesAttribute examples) {
                         sb.AppendLine(Formatter.Bold("Examples:")).AppendLine().AppendLine("```");
-                        foreach (var example in examples)
-                            sb.AppendLine(example.Example);
+                        sb.AppendLine(examples.JoinExamples());
                         sb.AppendLine("```");
                     }
 
@@ -443,7 +440,7 @@ namespace TheGodfather.Modules.Owner
                 throw new CommandFailedException($"IO Exception occured while saving the main file!", e);
             }
 
-            await ctx.RespondWithIconEmbedAsync($"Command list created at path: {Formatter.InlineCode(current.FullName)}!")
+            await ctx.InformSuccessAsync($"Command list created at path: {Formatter.InlineCode(current.FullName)}!")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -452,8 +449,8 @@ namespace TheGodfather.Modules.Owner
         [Command("leaveguilds"), Module(ModuleType.Owner)]
         [Description("Leaves the given guilds.")]
         [Aliases("leave", "gtfo")]
-        [UsageExample("!owner leave 337570344149975050")]
-        [UsageExample("!owner leave 337570344149975050 201315884709576708")]
+        [UsageExamples("!owner leave 337570344149975050",
+                       "!owner leave 337570344149975050 201315884709576708")]
         [RequireOwner]
         [NotBlocked]
         public async Task LeaveGuildsAsync(CommandContext ctx,
@@ -477,7 +474,7 @@ namespace TheGodfather.Modules.Owner
                     sb.AppendLine($"Failed to leave guild with ID: {Formatter.InlineCode(gid.ToString())}!");
                 }
             }
-            await ctx.RespondWithIconEmbedAsync(sb.ToString())
+            await ctx.InformSuccessAsync(sb.ToString())
                 .ConfigureAwait(false);
         }
         #endregion
@@ -486,9 +483,9 @@ namespace TheGodfather.Modules.Owner
         [Command("sendmessage"), Module(ModuleType.Owner)]
         [Description("Sends a message to a user or channel.")]
         [Aliases("send", "s")]
-        [UsageExample("!owner send u 303463460233150464 Hi to user!")]
-        [UsageExample("!owner send c 120233460278590414 Hi to channel!")]
-        [RequirePriviledgedUser]
+        [UsageExamples("!owner send u 303463460233150464 Hi to user!",
+                       "!owner send c 120233460278590414 Hi to channel!")]
+        [RequirePrivilegedUser]
         [NotBlocked]
         public async Task SendAsync(CommandContext ctx,
                                    [Description("u/c (for user or channel.)")] string desc,
@@ -514,7 +511,7 @@ namespace TheGodfather.Modules.Owner
                 throw new InvalidCommandUsageException("Descriptor can only be 'u' or 'c'.");
             }
 
-            await ctx.RespondWithIconEmbedAsync()
+            await ctx.InformSuccessAsync()
                 .ConfigureAwait(false);
         }
         #endregion
@@ -524,8 +521,8 @@ namespace TheGodfather.Modules.Owner
         [Module(ModuleType.Owner)]
         [Description("Triggers the dying in the vineyard scene (power off the bot).")]
         [Aliases("disable", "poweroff", "exit", "quit")]
-        [UsageExample("!owner shutdown")]
-        [RequirePriviledgedUser]
+        [UsageExamples("!owner shutdown")]
+        [RequirePrivilegedUser]
         [NotBlocked]
         public async Task ExitAsync(CommandContext ctx,
                                    [Description("Time until shutdown.")] TimeSpan timespan)
@@ -546,8 +543,8 @@ namespace TheGodfather.Modules.Owner
         [Command("sudo"), Module(ModuleType.Owner)]
         [Description("Executes a command as another user.")]
         [Aliases("execas", "as")]
-        [UsageExample("!owner sudo @Someone !rate")]
-        [RequirePriviledgedUser]
+        [UsageExamples("!owner sudo @Someone !rate")]
+        [RequirePrivilegedUser]
         [NotBlocked]
         public async Task SudoAsync(CommandContext ctx,
                                    [Description("Member to execute as.")] DiscordMember member,
@@ -565,12 +562,12 @@ namespace TheGodfather.Modules.Owner
         [Command("toggleignore"), Module(ModuleType.Owner)]
         [Description("Toggle bot's reaction to commands.")]
         [Aliases("ti")]
-        [UsageExample("!owner toggleignore")]
-        [RequirePriviledgedUser]
+        [UsageExamples("!owner toggleignore")]
+        [RequirePrivilegedUser]
         public async Task ToggleIgnoreAsync(CommandContext ctx)
         {
-            TheGodfather.Listening = !TheGodfather.Listening;
-            await ctx.RespondWithIconEmbedAsync($"Listening status set to: {Formatter.Bold(TheGodfather.Listening.ToString())}")
+            Shared.ListeningStatus = !Shared.ListeningStatus;
+            await ctx.InformSuccessAsync($"Listening status set to: {Formatter.Bold(Shared.ListeningStatus.ToString())}")
                 .ConfigureAwait(false);
         }
         #endregion

@@ -5,6 +5,8 @@ using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Services;
+using TheGodfather.Services.Database;
+using TheGodfather.Services.Database.Feeds;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -16,7 +18,7 @@ namespace TheGodfather.Modules.Search
     [Group("reddit"), Module(ModuleType.Searches)]
     [Description("Reddit commands.")]
     [Aliases("r")]
-    [UsageExample("!reddit aww")]
+    [UsageExamples("!reddit aww")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     [NotBlocked]
     public class RedditModule : TheGodfatherBaseModule
@@ -32,14 +34,14 @@ namespace TheGodfather.Modules.Search
             if (string.IsNullOrWhiteSpace(sub))
                 throw new InvalidCommandUsageException("Subreddit missing.");
 
-            var url = RSSService.GetFeedURLForSubreddit(sub, out string rsub);
+            var url = RssService.GetFeedURLForSubreddit(sub, out string rsub);
             if (url == null)
                 throw new CommandFailedException("That subreddit doesn't exist.");
 
-            var res = RSSService.GetFeedResults(url);
+            var res = RssService.GetFeedResults(url);
             if (res == null)
                 throw new CommandFailedException($"Failed to get the data from that subreddit ({Formatter.Bold(rsub)}).");
-            await RSSService.SendFeedResultsAsync(ctx.Channel, res)
+            await RssService.SendFeedResultsAsync(ctx.Channel, res)
                 .ConfigureAwait(false);
         }
 
@@ -48,19 +50,19 @@ namespace TheGodfather.Modules.Search
         [Command("subscribe"), Module(ModuleType.Searches)]
         [Description("Add new feed for a subreddit.")]
         [Aliases("add", "a", "+", "sub")]
-        [UsageExample("!reddit sub aww")]
+        [UsageExamples("!reddit sub aww")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task SubscribeAsync(CommandContext ctx,
                                         [Description("Subreddit.")] string sub)
         {
-            var url = RSSService.GetFeedURLForSubreddit(sub, out string rsub);
+            var url = RssService.GetFeedURLForSubreddit(sub, out string rsub);
             if (url == null)
                 throw new CommandFailedException("That subreddit doesn't exist.");
 
-            if (!await Database.AddSubscriptionAsync(ctx.Channel.Id, url, rsub).ConfigureAwait(false))
+            if (!await Database.TryAddSubscriptionAsync(ctx.Channel.Id, url, rsub).ConfigureAwait(false))
                 throw new CommandFailedException("You are already subscribed to this subreddit!");
 
-            await ctx.RespondWithIconEmbedAsync($"Subscribed to {Formatter.Bold(rsub)} !")
+            await ctx.InformSuccessAsync($"Subscribed to {Formatter.Bold(rsub)} !")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -70,18 +72,18 @@ namespace TheGodfather.Modules.Search
         [Module(ModuleType.Searches)]
         [Description("Remove a subreddit feed using subreddit name or subscription ID (use command ``feed list`` to see IDs).")]
         [Aliases("del", "d", "rm", "-", "unsub")]
-        [UsageExample("!reddit unsub aww")]
-        [UsageExample("!reddit unsub 12")]
+        [UsageExamples("!reddit unsub aww",
+                       "!reddit unsub 12")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task UnsubscribeAsync(CommandContext ctx,
                                           [Description("Subreddit.")] string sub)
         {
-            if (RSSService.GetFeedURLForSubreddit(sub, out string rsub) == null)
+            if (RssService.GetFeedURLForSubreddit(sub, out string rsub) == null)
                 throw new CommandFailedException("That subreddit doesn't exist.");
 
             await Database.RemoveSubscriptionByNameAsync(ctx.Channel.Id, rsub)
                 .ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync($"Unsubscribed from {Formatter.Bold(rsub)} !")
+            await ctx.InformSuccessAsync($"Unsubscribed from {Formatter.Bold(rsub)} !")
                 .ConfigureAwait(false);
         }
 
@@ -91,7 +93,7 @@ namespace TheGodfather.Modules.Search
         {
             await Database.RemoveSubscriptionByIdAsync(ctx.Channel.Id, id)
                 .ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync()
+            await ctx.InformSuccessAsync()
                 .ConfigureAwait(false);
         }
         #endregion

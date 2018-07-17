@@ -40,7 +40,7 @@ namespace TheGodfather.Modules.Currency.Common
                 try {
                     _image = new Bitmap("Resources/wof.png");
                 } catch (FileNotFoundException e) {
-                    TheGodfather.LogProvider.LogException(LogLevel.Error, e);
+                    throw new Exception("WOF image is missing from the server!", e);
                 }
             }
         }
@@ -53,13 +53,13 @@ namespace TheGodfather.Modules.Currency.Common
                 using (var ms = new MemoryStream()) {
                     wof.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
                     ms.Position = 0;
-                    await _channel.SendFileAsync(ms, "wof.png", embed: new DiscordEmbedBuilder() {
+                    await Channel.SendFileAsync(ms, "wof.png", embed: new DiscordEmbedBuilder() {
                         Description = $"{_user.Mention} won {Formatter.Bold(WonAmount.ToWords())} ({WonAmount:n0}) credits!",
                         Color = DiscordColor.Cyan
                     }).ConfigureAwait(false);
                 }
             } catch (Exception e) {
-                TheGodfather.LogProvider.LogException(LogLevel.Error, e);
+                throw new Exception("Failed to read WOF image!", e);
             }
         }
 

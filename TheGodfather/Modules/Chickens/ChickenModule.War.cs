@@ -9,12 +9,14 @@ using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Chickens.Common;
-using TheGodfather.Services;
+using TheGodfather.Services.Database.Bank;
+using TheGodfather.Services.Database.Chickens;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Interactivity;
+using TheGodfather.Services.Database;
 #endregion
 
 namespace TheGodfather.Modules.Chickens
@@ -24,8 +26,8 @@ namespace TheGodfather.Modules.Chickens
         [Group("war"), Module(ModuleType.Chickens)]
         [Description("Declare a chicken war! Other users can put their chickens into teams which names you specify.")]
         [Aliases("gangwar", "battle")]
-        [UsageExample("!chicken war Team1 Team2")]
-        [UsageExample("!chicken war \"Team 1 name\" \"Team 2 name")]
+        [UsageExamples("!chicken war Team1 Team2",
+                       "!chicken war \"Team 1 name\" \"Team 2 name")]
         public class WarModule : TheGodfatherBaseModule
         {
 
@@ -43,7 +45,7 @@ namespace TheGodfather.Modules.Chickens
                 var war = new ChickenWar(ctx.Client.GetInteractivity(), ctx.Channel, team1, team2);
                 ChannelEvent.RegisterEventInChannel(war, ctx.Channel.Id);
                 try {
-                    await ctx.RespondWithIconEmbedAsync($"The war will start in 1 minute. Use command {Formatter.InlineCode("chicken war join <teamname>")} to make your chicken join the war.", ":clock1:")
+                    await ctx.InformSuccessAsync($"The war will start in 1 minute. Use command {Formatter.InlineCode("chicken war join <teamname>")} to make your chicken join the war.", ":clock1:")
                         .ConfigureAwait(false);
                     await Task.Delay(TimeSpan.FromMinutes(1))
                         .ConfigureAwait(false);
@@ -59,7 +61,7 @@ namespace TheGodfather.Modules.Chickens
                             chicken.Stats.BareVitality -= 10;
                             await Database.ModifyChickenAsync(chicken, ctx.Guild.Id)
                                 .ConfigureAwait(false);
-                            await Database.GiveCreditsToUserAsync(chicken.OwnerId, ctx.Guild.Id, 100000)
+                            await Database.IncreaseBankAccountBalanceAsync(chicken.OwnerId, ctx.Guild.Id, 100000)
                                 .ConfigureAwait(false);
                             sb.AppendLine($"{Formatter.Bold(chicken.Name)} gained {war.Gain} STR and lost 10 HP!");
                         }
@@ -77,10 +79,10 @@ namespace TheGodfather.Modules.Chickens
                             }
                         }
 
-                        await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, $"{Formatter.Bold(war.Team1Won ? war.Team1Name : war.Team2Name)} won the war!\n\nEach chicken owner in the won party gains 100000 credits.\n\n{sb.ToString()}")
+                        await ctx.InformSuccessAsync(StaticDiscordEmoji.Chicken, $"{Formatter.Bold(war.Team1Won ? war.Team1Name : war.Team2Name)} won the war!\n\nEach chicken owner in the won party gains 100000 credits.\n\n{sb.ToString()}")
                             .ConfigureAwait(false);
                     } else {
-                        await ctx.RespondWithIconEmbedAsync("Not enough chickens joined the war (need atleast one in each team).", ":alarm_clock:")
+                        await ctx.InformSuccessAsync("Not enough chickens joined the war (need atleast one in each team).", ":alarm_clock:")
                             .ConfigureAwait(false);
                     }
 
@@ -95,7 +97,7 @@ namespace TheGodfather.Modules.Chickens
             [Module(ModuleType.Chickens)]
             [Description("Join a pending chicken war. Specify a team which you want to join, or numbers 1 or 2 corresponding to team one and team two, respectively.")]
             [Aliases("+", "compete", "enter", "j")]
-            [UsageExample("!chicken war join Team Name")]
+            [UsageExamples("!chicken war join Team Name")]
             public async Task JoinAsync(CommandContext ctx,
                                        [Description("Number 1 or 2 depending of team you wish to join.")] int team)
             {
@@ -108,7 +110,7 @@ namespace TheGodfather.Modules.Chickens
                 if (war.IsParticipating(ctx.User))
                     throw new CommandFailedException("Your chicken is already participating in the war!");
                 
-                var chicken = await Database.GetChickenInfoAsync(ctx.User.Id, ctx.Guild.Id)
+                var chicken = await Database.GetChickenAsync(ctx.User.Id, ctx.Guild.Id)
                     .ConfigureAwait(false);
                 if (chicken == null)
                     throw new CommandFailedException("You do not own a chicken!");
@@ -123,7 +125,7 @@ namespace TheGodfather.Modules.Chickens
                         throw new CommandFailedException($"No such team exists in this war. Teams that are active are {Formatter.Bold(war.Team1Name)} and {Formatter.Bold(war.Team1Name)}.");
                 }
 
-                await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, $"{Formatter.Bold(chicken.Name)} joined the war team {Formatter.Bold(team == 1 ? war.Team1Name : war.Team2Name)}.")
+                await ctx.InformSuccessAsync(StaticDiscordEmoji.Chicken, $"{Formatter.Bold(chicken.Name)} joined the war team {Formatter.Bold(team == 1 ? war.Team1Name : war.Team2Name)}.")
                     .ConfigureAwait(false);
             }
 
@@ -140,7 +142,7 @@ namespace TheGodfather.Modules.Chickens
                 if (war.IsParticipating(ctx.User))
                     throw new CommandFailedException("Your chicken is already participating in the war!");
 
-                var chicken = await Database.GetChickenInfoAsync(ctx.User.Id, ctx.Guild.Id)
+                var chicken = await Database.GetChickenAsync(ctx.User.Id, ctx.Guild.Id)
                     .ConfigureAwait(false);
                 if (chicken == null)
                     throw new CommandFailedException("You do not own a chicken!");
@@ -155,7 +157,7 @@ namespace TheGodfather.Modules.Chickens
                 else
                     throw new CommandFailedException($"No such team exists in this war. Teams that are active are {Formatter.Bold(war.Team1Name)} and {Formatter.Bold(war.Team1Name)}.");
 
-                await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Chicken, $"{Formatter.Bold(chicken.Name)} joined the war team {Formatter.Bold(team)}.")
+                await ctx.InformSuccessAsync(StaticDiscordEmoji.Chicken, $"{Formatter.Bold(chicken.Name)} joined the war team {Formatter.Bold(team)}.")
                     .ConfigureAwait(false);
             }
             #endregion

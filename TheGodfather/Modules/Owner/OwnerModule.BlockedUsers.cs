@@ -9,13 +9,14 @@ using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-using TheGodfather.Services;
+using TheGodfather.Services.Database.Blocked;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
+using TheGodfather.Services.Database;
 #endregion
 
 namespace TheGodfather.Modules.Owner
@@ -25,7 +26,7 @@ namespace TheGodfather.Modules.Owner
         [Group("blockedusers"), Module(ModuleType.Owner)]
         [Description("Manipulate blocked users. Bot will not allow blocked users to invoke commands and will not react (either with text or emoji) to their messages.")]
         [Aliases("bu", "blockedu", "blockuser", "busers", "buser", "busr")]
-        [RequirePriviledgedUser]
+        [RequirePrivilegedUser]
         [NotBlocked]
         public class BlockedUsersModule : TheGodfatherBaseModule
         {
@@ -60,11 +61,11 @@ namespace TheGodfather.Modules.Owner
             [Module(ModuleType.Owner)]
             [Description("Add users to blocked users list.")]
             [Aliases("+", "a")]
-            [UsageExample("!owner blockedusers add @Someone")]
-            [UsageExample("!owner blockedusers add @Someone Troublemaker and spammer")]
-            [UsageExample("!owner blockedusers add 123123123123123")]
-            [UsageExample("!owner blockedusers add @Someone 123123123123123")]
-            [UsageExample("!owner blockedusers add \"This is some reason\" @Someone 123123123123123")]
+            [UsageExamples("!owner blockedusers add @Someone",
+                           "!owner blockedusers add @Someone Troublemaker and spammer",
+                           "!owner blockedusers add 123123123123123",
+                           "!owner blockedusers add @Someone 123123123123123",
+                           "!owner blockedusers add \"This is some reason\" @Someone 123123123123123")]
             public Task AddAsync(CommandContext ctx,
                                 [Description("Users to block.")] params DiscordUser[] users)
                 => AddAsync(ctx, null, users);
@@ -103,7 +104,7 @@ namespace TheGodfather.Modules.Owner
                     sb.AppendLine($"Blocked: {user.ToString()}!");
                 }
 
-                await ctx.RespondWithIconEmbedAsync(sb.ToString())
+                await ctx.InformSuccessAsync(sb.ToString())
                     .ConfigureAwait(false);
             }
 
@@ -118,9 +119,9 @@ namespace TheGodfather.Modules.Owner
             [Command("delete"), Module(ModuleType.Owner)]
             [Description("Remove users from blocked users list..")]
             [Aliases("-", "remove", "rm", "del")]
-            [UsageExample("!owner blockedusers remove @Someone")]
-            [UsageExample("!owner blockedusers remove 123123123123123")]
-            [UsageExample("!owner blockedusers remove @Someone 123123123123123")]
+            [UsageExamples("!owner blockedusers remove @Someone",
+                           "!owner blockedusers remove 123123123123123",
+                           "!owner blockedusers remove @Someone 123123123123123")]
             public async Task DeleteAsync(CommandContext ctx,
                                          [Description("Users to unblock.")] params DiscordUser[] users)
             {
@@ -144,14 +145,14 @@ namespace TheGodfather.Modules.Owner
                             .ConfigureAwait(false);
                     } catch (Exception e) {
                         sb.AppendLine($"Warning: Failed to remove {user.ToString()} from the database!");
-                        TheGodfather.LogProvider.LogException(LogLevel.Warning, e);
+                        Shared.LogProvider.LogException(LogLevel.Warning, e);
                         continue;
                     }
 
                     sb.AppendLine($"Unblocked: {user.ToString()}!");
                 }
 
-                await ctx.RespondWithIconEmbedAsync(sb.ToString())
+                await ctx.InformSuccessAsync(sb.ToString())
                     .ConfigureAwait(false);
             }
             #endregion
@@ -160,7 +161,7 @@ namespace TheGodfather.Modules.Owner
             [Command("list"), Module(ModuleType.Owner)]
             [Description("List all blocked users.")]
             [Aliases("ls")]
-            [UsageExample("!owner blockedusers list")]
+            [UsageExamples("!owner blockedusers list")]
             public async Task ListAsync(CommandContext ctx)
             {
                 var blocked = await Database.GetAllBlockedUsersAsync()
@@ -173,7 +174,7 @@ namespace TheGodfather.Modules.Owner
                             .ConfigureAwait(false);
                         lines.Add($"{user.ToString()} ({Formatter.Italic(string.IsNullOrWhiteSpace(tup.Item2) ? "No reason provided." : tup.Item2)})");
                     } catch (NotFoundException) {
-                        TheGodfather.LogProvider.LogMessage(LogLevel.Warning, $"Removed 404 blocked user with ID {tup.Item1}");
+                        Shared.LogProvider.LogMessage(LogLevel.Warning, $"Removed 404 blocked user with ID {tup.Item1}");
                         await Database.RemoveBlockedUserAsync(tup.Item1)
                             .ConfigureAwait(false);
                     }
@@ -182,7 +183,7 @@ namespace TheGodfather.Modules.Owner
                 if (!lines.Any())
                     throw new CommandFailedException("No blocked users registered!");
 
-                await ctx.SendPaginatedCollectionAsync(
+                await ctx.SendCollectionInPagesAsync(
                     "Blocked users (in database):",
                     lines,
                     line => line,

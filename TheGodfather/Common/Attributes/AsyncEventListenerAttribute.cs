@@ -1,22 +1,21 @@
 ﻿#region USING_DIRECTIVES
+using DSharpPlus;
 using System;
 using System.Reflection;
 using System.Threading.Tasks;
-
-using DSharpPlus;
 #endregion
 
 namespace TheGodfather.Common.Attributes
 {
     [AttributeUsage(AttributeTargets.Method)]
-    internal class AsyncExecuterAttribute : Attribute
+    internal sealed class AsyncEventListenerAttribute : Attribute
     {
-        public EventTypes Target { get; }
+        public DiscordEventType Target { get; }
 
 
-        public AsyncExecuterAttribute(EventTypes targetType)
+        public AsyncEventListenerAttribute(DiscordEventType targetType)
         {
-            Target = targetType;
+            this.Target = targetType;
         }
 
 
@@ -24,14 +23,14 @@ namespace TheGodfather.Common.Attributes
         {
             Task OnEventWithArgs(object e)
             {
-                if (!TheGodfather.Listening)
+                if (!shard.IsListening)
                     return Task.CompletedTask;
 
                 _ = Task.Run(async () => {
                     try {
                         await (Task)mi.Invoke(null, new object[] { shard, e });
                     } catch (Exception ex) {
-                        TheGodfather.LogProvider.LogException(LogLevel.Error, ex);
+                        shard.SharedData.LogProvider.LogException(LogLevel.Error, ex);
                     }
                 });
                 return Task.CompletedTask;
@@ -39,160 +38,160 @@ namespace TheGodfather.Common.Attributes
 
             Task OnEventVoid()
             {
-                if (!TheGodfather.Listening)
+                if (!shard.IsListening)
                     return Task.CompletedTask;
 
                 _ = Task.Run(async () => {
                     try {
                         await (Task)mi.Invoke(null, new object[] { shard });
                     } catch (Exception ex) {
-                        TheGodfather.LogProvider.LogException(LogLevel.Error, ex);
+                        shard.SharedData.LogProvider.LogException(LogLevel.Error, ex);
                     }
                 });
                 return Task.CompletedTask;
             }
 
-            switch (Target) {
-                case EventTypes.ClientErrored:
+            switch (this.Target) {
+                case DiscordEventType.ClientErrored:
                     client.ClientErrored += OnEventWithArgs;
                     break;
-                case EventTypes.SocketErrored:
+                case DiscordEventType.SocketErrored:
                     client.SocketErrored += OnEventWithArgs;
                     break;
-                case EventTypes.SocketOpened:
+                case DiscordEventType.SocketOpened:
                     client.SocketOpened += OnEventVoid;
                     break;
-                case EventTypes.SocketClosed:
+                case DiscordEventType.SocketClosed:
                     client.SocketClosed += OnEventWithArgs;
                     break;
-                case EventTypes.Ready:
+                case DiscordEventType.Ready:
                     client.Ready += OnEventWithArgs;
                     break;
-                case EventTypes.Resumed:
+                case DiscordEventType.Resumed:
                     client.Resumed += OnEventWithArgs;
                     break;
-                case EventTypes.ChannelCreated:
+                case DiscordEventType.ChannelCreated:
                     client.ChannelCreated += OnEventWithArgs;
                     break;
-                case EventTypes.DmChannelCreated:
+                case DiscordEventType.DmChannelCreated:
                     client.DmChannelCreated += OnEventWithArgs;
                     break;
-                case EventTypes.ChannelUpdated:
+                case DiscordEventType.ChannelUpdated:
                     client.ChannelUpdated += OnEventWithArgs;
                     break;
-                case EventTypes.ChannelDeleted:
+                case DiscordEventType.ChannelDeleted:
                     client.ChannelDeleted += OnEventWithArgs;
                     break;
-                case EventTypes.DmChannelDeleted:
+                case DiscordEventType.DmChannelDeleted:
                     client.DmChannelDeleted += OnEventWithArgs;
                     break;
-                case EventTypes.ChannelPinsUpdated:
+                case DiscordEventType.ChannelPinsUpdated:
                     client.ChannelPinsUpdated += OnEventWithArgs;
                     break;
-                case EventTypes.GuildCreated:
+                case DiscordEventType.GuildCreated:
                     client.GuildCreated += OnEventWithArgs;
                     break;
-                case EventTypes.GuildAvailable:
+                case DiscordEventType.GuildAvailable:
                     client.GuildAvailable += OnEventWithArgs;
                     break;
-                case EventTypes.GuildUpdated:
+                case DiscordEventType.GuildUpdated:
                     client.GuildUpdated += OnEventWithArgs;
                     break;
-                case EventTypes.GuildDeleted:
+                case DiscordEventType.GuildDeleted:
                     client.GuildDeleted += OnEventWithArgs;
                     break;
-                case EventTypes.GuildUnavailable:
+                case DiscordEventType.GuildUnavailable:
                     client.GuildUnavailable += OnEventWithArgs;
                     break;
-                case EventTypes.MessageCreated:
+                case DiscordEventType.MessageCreated:
                     client.MessageCreated += OnEventWithArgs;
                     break;
-                case EventTypes.PresenceUpdated:
+                case DiscordEventType.PresenceUpdated:
                     client.PresenceUpdated += OnEventWithArgs;
                     break;
-                case EventTypes.GuildBanAdded:
+                case DiscordEventType.GuildBanAdded:
                     client.GuildBanAdded += OnEventWithArgs;
                     break;
-                case EventTypes.GuildBanRemoved:
+                case DiscordEventType.GuildBanRemoved:
                     client.GuildBanRemoved += OnEventWithArgs;
                     break;
-                case EventTypes.GuildEmojisUpdated:
+                case DiscordEventType.GuildEmojisUpdated:
                     client.GuildEmojisUpdated += OnEventWithArgs;
                     break;
-                case EventTypes.GuildIntegrationsUpdated:
+                case DiscordEventType.GuildIntegrationsUpdated:
                     client.GuildIntegrationsUpdated += OnEventWithArgs;
                     break;
-                case EventTypes.GuildMemberAdded:
+                case DiscordEventType.GuildMemberAdded:
                     client.GuildMemberAdded += OnEventWithArgs;
                     break;
-                case EventTypes.GuildMemberRemoved:
+                case DiscordEventType.GuildMemberRemoved:
                     client.GuildMemberRemoved += OnEventWithArgs;
                     break;
-                case EventTypes.GuildMemberUpdated:
+                case DiscordEventType.GuildMemberUpdated:
                     client.GuildMemberUpdated += OnEventWithArgs;
                     break;
-                case EventTypes.GuildRoleCreated:
+                case DiscordEventType.GuildRoleCreated:
                     client.GuildRoleCreated += OnEventWithArgs;
                     break;
-                case EventTypes.GuildRoleUpdated:
+                case DiscordEventType.GuildRoleUpdated:
                     client.GuildRoleUpdated += OnEventWithArgs;
                     break;
-                case EventTypes.GuildRoleDeleted:
+                case DiscordEventType.GuildRoleDeleted:
                     client.GuildRoleDeleted += OnEventWithArgs;
                     break;
-                case EventTypes.MessageAcknowledged:
+                case DiscordEventType.MessageAcknowledged:
                     client.MessageAcknowledged += OnEventWithArgs;
                     break;
-                case EventTypes.MessageUpdated:
+                case DiscordEventType.MessageUpdated:
                     client.MessageUpdated += OnEventWithArgs;
                     break;
-                case EventTypes.MessageDeleted:
+                case DiscordEventType.MessageDeleted:
                     client.MessageDeleted += OnEventWithArgs;
                     break;
-                case EventTypes.MessagesBulkDeleted:
+                case DiscordEventType.MessagesBulkDeleted:
                     client.MessagesBulkDeleted += OnEventWithArgs;
                     break;
-                case EventTypes.TypingStarted:
+                case DiscordEventType.TypingStarted:
                     client.TypingStarted += OnEventWithArgs;
                     break;
-                case EventTypes.UserSettingsUpdated:
+                case DiscordEventType.UserSettingsUpdated:
                     client.UserSettingsUpdated += OnEventWithArgs;
                     break;
-                case EventTypes.UserUpdated:
+                case DiscordEventType.UserUpdated:
                     client.UserUpdated += OnEventWithArgs;
                     break;
-                case EventTypes.VoiceStateUpdated:
+                case DiscordEventType.VoiceStateUpdated:
                     client.VoiceStateUpdated += OnEventWithArgs;
                     break;
-                case EventTypes.VoiceServerUpdated:
+                case DiscordEventType.VoiceServerUpdated:
                     client.VoiceServerUpdated += OnEventWithArgs;
                     break;
-                case EventTypes.GuildMembersChunked:
+                case DiscordEventType.GuildMembersChunked:
                     client.GuildMembersChunked += OnEventWithArgs;
                     break;
-                case EventTypes.UnknownEvent:
+                case DiscordEventType.UnknownEvent:
                     client.UnknownEvent += OnEventWithArgs;
                     break;
-                case EventTypes.MessageReactionAdded:
+                case DiscordEventType.MessageReactionAdded:
                     client.MessageReactionAdded += OnEventWithArgs;
                     break;
-                case EventTypes.MessageReactionRemoved:
+                case DiscordEventType.MessageReactionRemoved:
                     client.MessageReactionRemoved += OnEventWithArgs;
                     break;
-                case EventTypes.MessageReactionsCleared:
+                case DiscordEventType.MessageReactionsCleared:
                     client.MessageReactionsCleared += OnEventWithArgs;
                     break;
-                case EventTypes.WebhooksUpdated:
+                case DiscordEventType.WebhooksUpdated:
                     client.WebhooksUpdated += OnEventWithArgs;
                     break;
-                case EventTypes.Heartbeated:
+                case DiscordEventType.Heartbeated:
                     client.Heartbeated += OnEventWithArgs;
                     break;
-                case EventTypes.CommandExecuted:
-                    shard.Commands.CommandExecuted += OnEventWithArgs;
+                case DiscordEventType.CommandExecuted:
+                    shard.CNext.CommandExecuted += OnEventWithArgs;
                     break;
-                case EventTypes.CommandErrored:
-                    shard.Commands.CommandErrored += OnEventWithArgs;
+                case DiscordEventType.CommandErrored:
+                    shard.CNext.CommandErrored += OnEventWithArgs;
                     break;
             }
         }

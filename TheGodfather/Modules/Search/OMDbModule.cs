@@ -16,7 +16,7 @@ namespace TheGodfather.Modules.Search
     [Group("imdb"), Module(ModuleType.Searches)]
     [Description("Search Open Movie Database.")]
     [Aliases("movies", "series", "serie", "movie", "film", "cinema", "omdb")]
-    [UsageExample("!imdb Airplane")]
+    [UsageExamples("!imdb Airplane")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     [NotBlocked]
     public class OMDbModule : TheGodfatherServiceModule<OMDbService>
@@ -30,11 +30,12 @@ namespace TheGodfather.Modules.Search
                                      [RemainingText, Description("Title.")] string title)
             => SearchByTitleAsync(ctx, title);
 
+
         #region COMMAND_IMDB_SEARCH
         [Command("search"), Module(ModuleType.Searches)]
         [Description("Searches IMDb for given query and returns paginated results.")]
         [Aliases("s", "find")]
-        [UsageExample("!imdb search Kill Bill")]
+        [UsageExamples("!imdb search Kill Bill")]
         public async Task SearchAsync(CommandContext ctx,
                                      [RemainingText, Description("Search query.")] string query)
         {
@@ -53,7 +54,7 @@ namespace TheGodfather.Modules.Search
         [Command("title"), Module(ModuleType.Searches)]
         [Description("Search by title.")]
         [Aliases("t", "name", "n")]
-        [UsageExample("!imdb title Airplane")]
+        [UsageExamples("!imdb title Airplane")]
         public Task SearchByTitleAsync(CommandContext ctx,
                                       [RemainingText, Description("Title.")] string title)
             => SearchAndSendResultAsync(ctx, OMDbQueryType.Title, title);
@@ -62,7 +63,7 @@ namespace TheGodfather.Modules.Search
         #region COMMAND_IMDB_ID
         [Command("id"), Module(ModuleType.Searches)]
         [Description("Search by IMDb ID.")]
-        [UsageExample("!imdb id tt4158110")]
+        [UsageExamples("!imdb id tt4158110")]
         public Task SearchByIdAsync(CommandContext ctx,
                                    [Description("ID.")] string id)
             => SearchAndSendResultAsync(ctx, OMDbQueryType.Id, id);
@@ -72,13 +73,13 @@ namespace TheGodfather.Modules.Search
         #region HELPER_FUNCTIONS
         private async Task SearchAndSendResultAsync(CommandContext ctx, OMDbQueryType type, string query)
         {
-            var page = await _Service.GetSingleResultAsync(type, query)
+            var info = await _Service.GetSingleResultAsync(type, query)
                 .ConfigureAwait(false);
 
-            if (page == null)
+            if (info == null)
                 throw new CommandFailedException("No results found!");
 
-            await ctx.Client.GetInteractivity().SendPaginatedMessage(ctx.Channel, ctx.User, new Page[] { page })
+            await ctx.RespondAsync(embed: info.ToDiscordEmbed())
                 .ConfigureAwait(false);
         }
         #endregion

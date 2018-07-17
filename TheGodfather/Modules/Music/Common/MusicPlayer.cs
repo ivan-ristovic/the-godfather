@@ -119,7 +119,7 @@ namespace TheGodfather.Modules.Music.Common
                     await _current.DeleteAllReactionsAsync();
                 }
             } catch (Exception e) {
-                TheGodfather.LogProvider.LogException(LogLevel.Warning, e);
+                // handle exc
             } finally {
                 await _vnc.SendSpeakingAsync(false);
                 lock (_lock) {

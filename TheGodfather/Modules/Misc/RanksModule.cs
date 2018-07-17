@@ -6,13 +6,14 @@ using System.Threading.Tasks;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-using TheGodfather.Services;
+using TheGodfather.Services.Database.Ranks;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
+using TheGodfather.Services.Database;
 #endregion
 
 namespace TheGodfather.Modules.Misc
@@ -20,8 +21,8 @@ namespace TheGodfather.Modules.Misc
     [Group("rank"), Module(ModuleType.Miscellaneous)]
     [Description("User ranking commands. If invoked without subcommands, prints sender's rank.")]
     [Aliases("ranks", "ranking", "level")]
-    [UsageExample("!rank")]
-    [UsageExample("!rank @Someone")]
+    [UsageExamples("!rank",
+                   "!rank @Someone")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     [NotBlocked]
     public class RanksModule : TheGodfatherBaseModule
@@ -37,9 +38,9 @@ namespace TheGodfather.Modules.Misc
             if (user == null)
                 user = ctx.User;
 
-            var rank = Shared.GetRankForUser(user.Id);
-            var msgcount = Shared.GetMessageCountForId(user.Id);
-            var rankname = await Database.GetCustomRankNameForGuildAsync(ctx.Guild.Id, rank)
+            var rank = Shared.CalculateRankForUser(user.Id);
+            var msgcount = Shared.GetMessageCountForUser(user.Id);
+            var rankname = await Database.GetRankAsync(ctx.Guild.Id, rank)
                 .ConfigureAwait(false);
 
             var emb = new DiscordEmbedBuilder() {
@@ -63,7 +64,7 @@ namespace TheGodfather.Modules.Misc
         [Description("Add a custom name for given rank in this guild.")]
         [Aliases("+", "a", "rename")]
         [RequireUserPermissions(Permissions.ManageGuild)]
-        [UsageExample("!rank add 1 Private")]
+        [UsageExamples("!rank add 1 Private")]
         public async Task AddAsync(CommandContext ctx,
                                   [Description("Rank.")] int rank,
                                   [RemainingText, Description("Rank name.")] string name)
@@ -77,9 +78,9 @@ namespace TheGodfather.Modules.Misc
             if (name.Length > 30)
                 throw new CommandFailedException("Rank name cannot be longer than 30 characters!");
 
-            await Database.AddCustomRankNameAsync(ctx.Guild.Id, rank, name)
+            await Database.AddRankAsync(ctx.Guild.Id, rank, name)
                 .ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync()
+            await ctx.InformSuccessAsync()
                 .ConfigureAwait(false);
         }
         #endregion
@@ -89,13 +90,13 @@ namespace TheGodfather.Modules.Misc
         [Description("Remove a custom name for given rank in this guild.")]
         [Aliases("-", "remove", "rm", "del", "revert")]
         [RequireUserPermissions(Permissions.ManageGuild)]
-        [UsageExample("!rank delete 3")]
+        [UsageExamples("!rank delete 3")]
         public async Task DeleteAsync(CommandContext ctx,
                                      [Description("Rank.")] int rank)
         {
-            await Database.RemoveCustomRankNameAsync(ctx.Guild.Id, rank)
+            await Database.RemoveRankAsync(ctx.Guild.Id, rank)
                 .ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync()
+            await ctx.InformSuccessAsync()
                 .ConfigureAwait(false);
         }
         #endregion
@@ -104,18 +105,18 @@ namespace TheGodfather.Modules.Misc
         [Command("list"), Module(ModuleType.Miscellaneous)]
         [Description("Print all customized ranks for this guild.")]
         [Aliases("levels")]
-        [UsageExample("!rank list")]
+        [UsageExamples("!rank list")]
         public async Task RankListAsync(CommandContext ctx)
         {
-            var ranks = await Database.GetAllCustomRankNamesForGuildAsync(ctx.Guild.Id)
+            var ranks = await Database.GetAllRanksAsync(ctx.Guild.Id)
                 .ConfigureAwait(false);
             if (!ranks.Any())
                 throw new CommandFailedException("No custom rank names registered for this guild!");
 
-            await ctx.SendPaginatedCollectionAsync(
+            await ctx.SendCollectionInPagesAsync(
                 "Custom ranks in this guild",
                 ranks,
-                kvp => $"{kvp.Key} | {Formatter.Bold(kvp.Value)} | XP needed: {Formatter.Bold(Shared.XpNeededForRankWithIndex(kvp.Key).ToString())}",
+                kvp => $"{kvp.Key} | {Formatter.Bold(kvp.Value)} | XP needed: {Formatter.Bold(Shared.CalculateXpNeededForRank(kvp.Key).ToString())}",
                 DiscordColor.IndianRed
             ).ConfigureAwait(false);
         }
@@ -124,7 +125,7 @@ namespace TheGodfather.Modules.Misc
         #region COMMAND_RANK_TOP
         [Command("top"), Module(ModuleType.Miscellaneous)]
         [Description("Get rank leaderboard.")]
-        [UsageExample("!rank top")]
+        [UsageExamples("!rank top")]
         public async Task TopAsync(CommandContext ctx)
         {
             var top = Shared.MessageCount.OrderByDescending(v => v.Value).Take(10);
@@ -133,7 +134,7 @@ namespace TheGodfather.Modules.Misc
                 Color = DiscordColor.Purple
             };
 
-            var ranks = await Database.GetAllCustomRankNamesForGuildAsync(ctx.Guild.Id)
+            var ranks = await Database.GetAllRanksAsync(ctx.Guild.Id)
                 .ConfigureAwait(false);
 
             foreach (var kvp in top) {
@@ -146,7 +147,7 @@ namespace TheGodfather.Modules.Misc
                     Shared.MessageCount.TryRemove(kvp.Key, out _);
                     // TODO remove from db
                 }
-                var rank = Shared.GetRankForMessageCount(kvp.Value);
+                var rank = Shared.CalculateRankForMessageCount(kvp.Value);
                 if (ranks.ContainsKey(rank))
                     emb.AddField(u.Username ?? "<unknown>", $"{ranks[rank]} ({rank}) ({kvp.Value} XP)");
                 else

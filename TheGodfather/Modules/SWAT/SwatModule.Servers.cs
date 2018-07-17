@@ -6,12 +6,13 @@ using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.SWAT.Common;
-using TheGodfather.Services;
+using TheGodfather.Services.Database.Swat;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using TheGodfather.Services.Database;
 #endregion
 
 namespace TheGodfather.Modules.SWAT
@@ -33,8 +34,8 @@ namespace TheGodfather.Modules.SWAT
             [Command("add"), Module(ModuleType.SWAT)]
             [Description("Add a server to serverlist.")]
             [Aliases("+", "a")]
-            [UsageExample("!swat servers add 4u 109.70.149.158:10480")]
-            [UsageExample("!swat servers add 4u 109.70.149.158:10480 10481")]
+            [UsageExamples("!swat servers add 4u 109.70.149.158:10480",
+                           "!swat servers add 4u 109.70.149.158:10480 10481")]
             public async Task AddAsync(CommandContext ctx,
                                       [Description("Name.")] string name,
                                       [Description("IP.")] string ip,
@@ -50,7 +51,7 @@ namespace TheGodfather.Modules.SWAT
 
                 await Database.AddSwatServerAsync(name, server)
                     .ConfigureAwait(false);
-                await ctx.RespondWithIconEmbedAsync("Server added. You can now query it using the name provided.")
+                await ctx.InformSuccessAsync("Server added. You can now query it using the name provided.")
                     .ConfigureAwait(false);
             }
             #endregion
@@ -59,7 +60,7 @@ namespace TheGodfather.Modules.SWAT
             [Command("delete"), Module(ModuleType.SWAT)]
             [Description("Remove a server from serverlist.")]
             [Aliases("-", "del", "d")]
-            [UsageExample("!swat servers delete 4u")]
+            [UsageExamples("!swat servers delete 4u")]
             public async Task DeleteAsync(CommandContext ctx,
                                          [Description("Name.")] string name)
             {
@@ -68,7 +69,7 @@ namespace TheGodfather.Modules.SWAT
 
                 await Database.RemoveSwatServerAsync(name)
                     .ConfigureAwait(false);
-                await ctx.RespondWithIconEmbedAsync("Server successfully removed.")
+                await ctx.InformSuccessAsync("Server successfully removed.")
                     .ConfigureAwait(false);
             }
             #endregion
@@ -77,16 +78,16 @@ namespace TheGodfather.Modules.SWAT
             [Command("list"), Module(ModuleType.SWAT)]
             [Description("List all registered servers.")]
             [Aliases("ls", "l")]
-            [UsageExample("!swat servers list")]
+            [UsageExamples("!swat servers list")]
             public async Task ListAsync(CommandContext ctx)
             {
                 var servers = await Database.GetAllSwatServersAsync()
                     .ConfigureAwait(false);
 
-                await ctx.SendPaginatedCollectionAsync(
+                await ctx.SendCollectionInPagesAsync(
                     "Available servers",
                     servers,
-                    server => $"{Formatter.Bold(server.Name)} : {server.IP}:{server.JoinPort}",
+                    server => $"{Formatter.Bold(server.Name)} : {server.Ip}:{server.JoinPort}",
                     DiscordColor.Black
                 ).ConfigureAwait(false);
             }

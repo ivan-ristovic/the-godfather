@@ -18,8 +18,8 @@ namespace TheGodfather.Modules.Polls
 {
     [Group("poll"), Module(ModuleType.Polls)]
     [Description("Starts a new poll in the current channel. You can provide also the time for the poll to run.")]
-    [UsageExample("!poll Do you vote for User1 or User2?")]
-    [UsageExample("!poll 5m Do you vote for User1 or User2?")]
+    [UsageExamples("!poll Do you vote for User1 or User2?",
+                   "!poll 5m Do you vote for User1 or User2?")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     [NotBlocked, UsesInteractivity]
     public class PollModule : TheGodfatherBaseModule
@@ -43,7 +43,7 @@ namespace TheGodfather.Modules.Polls
             if (!Poll.RegisterPollInChannel(poll, ctx.Channel.Id))
                 throw new CommandFailedException("Failed to start the poll. Please try again.");
             try {
-                await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Question, "And what will be the possible answers? (separate with semicolon ``;``)")
+                await ctx.InformSuccessAsync(StaticDiscordEmoji.Question, "And what will be the possible answers? (separate with semicolon ``;``)")
                     .ConfigureAwait(false);
                 var options = await ctx.WaitAndParsePollOptionsAsync()
                     .ConfigureAwait(false);
@@ -72,7 +72,7 @@ namespace TheGodfather.Modules.Polls
         #region COMMAND_STOP
         [Command("stop"), Module(ModuleType.Polls)]
         [Description("Stops a running poll.")]
-        [UsageExample("!poll stop")]
+        [UsageExamples("!poll stop")]
         [RequireUserPermissions(Permissions.Administrator)]
         public async Task StopAsync(CommandContext ctx)
         {

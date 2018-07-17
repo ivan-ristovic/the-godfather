@@ -24,7 +24,7 @@ namespace TheGodfather.Modules.Polls
         [Module(ModuleType.Polls)]
         [Description("Starts a poll with reactions in the channel.")]
         [Aliases("rpoll", "pollr", "voter")]
-        [UsageExample("!rpoll :smile: :joy:")]
+        [UsageExamples("!rpoll :smile: :joy:")]
         public async Task ReactionsPollAsync(CommandContext ctx,
                                             [Description("Time for poll to run.")] TimeSpan timeout,
                                             [RemainingText, Description("Question.")] string question)
@@ -42,7 +42,7 @@ namespace TheGodfather.Modules.Polls
             if (!Poll.RegisterPollInChannel(rpoll, ctx.Channel.Id))
                 throw new CommandFailedException("Failed to start the poll. Please try again.");
             try {
-                await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Question, "And what will be the possible answers? (separate with semicolon ``;``)")
+                await ctx.InformSuccessAsync(StaticDiscordEmoji.Question, "And what will be the possible answers? (separate with semicolon ``;``)")
                     .ConfigureAwait(false);
                 var options = await ctx.WaitAndParsePollOptionsAsync()
                     .ConfigureAwait(false);

@@ -6,7 +6,7 @@ using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Currency.Common;
-using TheGodfather.Services;
+using TheGodfather.Services.Database.Bank;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -14,6 +14,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Interactivity;
 
 using Humanizer;
+using TheGodfather.Services.Database;
 #endregion
 
 namespace TheGodfather.Modules.Currency
@@ -31,7 +32,7 @@ namespace TheGodfather.Modules.Currency
         [GroupCommand]
         public Task ExecuteGroupAsync(CommandContext ctx)
         {
-            return ctx.RespondWithIconEmbedAsync(
+            return ctx.InformSuccessAsync(
                 Formatter.Bold("Casino games:\n\n") +
                 "holdem, lottery, slot, wheeloffortune"
             );
@@ -43,21 +44,21 @@ namespace TheGodfather.Modules.Currency
         [Module(ModuleType.Currency)]
         [Description("Roll a slot machine. You need to specify a bid amount. Default bid amount is 5.")]
         [Aliases("slotmachine")]
-        [UsageExample("!casino slot 20")]
+        [UsageExamples("!casino slot 20")]
         public async Task SlotAsync(CommandContext ctx,
                                    [Description("Bid.")] long bid = 5)
         {
             if (bid <= 0 || bid > 1000000000)
                 throw new InvalidCommandUsageException($"Invalid bid amount! Needs to be in range [1 - {1000000000:n0}]");
 
-            if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, ctx.Guild.Id, bid).ConfigureAwait(false))
+            if (!await Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, bid).ConfigureAwait(false))
                 throw new CommandFailedException("You do not have enough credits in WM bank!");
 
             await ctx.RespondAsync(embed: SlotMachine.EmbedSlotRoll(ctx.User, bid, out long won))
                 .ConfigureAwait(false);
 
             if (won > 0)
-                await Database.GiveCreditsToUserAsync(ctx.User.Id, ctx.Guild.Id, won)
+                await Database.IncreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, won)
                     .ConfigureAwait(false);
         }
 
@@ -83,14 +84,14 @@ namespace TheGodfather.Modules.Currency
         [Module(ModuleType.Currency)]
         [Description("Roll a Wheel Of Fortune. You need to specify a bid amount. Default bid amount is 5.")]
         [Aliases("wof")]
-        [UsageExample("!casino wof 20")]
+        [UsageExamples("!casino wof 20")]
         public async Task WheelOfFortuneAsync(CommandContext ctx,
                                              [Description("Bid.")] long bid = 5)
         {
             if (bid <= 0 || bid > 1000000000)
                 throw new InvalidCommandUsageException($"Invalid bid amount! Needs to be in range [1 - {1000000000:n0}]");
 
-            if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, ctx.Guild.Id, bid).ConfigureAwait(false))
+            if (!await Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, bid).ConfigureAwait(false))
                 throw new CommandFailedException("You do not have enough credits in WM bank!");
 
             var wof = new WheelOfFortune(ctx.Client.GetInteractivity(), ctx.Channel, ctx.User, bid);
@@ -98,7 +99,7 @@ namespace TheGodfather.Modules.Currency
                 .ConfigureAwait(false);
             
             if (wof.WonAmount > 0)
-                await Database.GiveCreditsToUserAsync(ctx.User.Id, ctx.Guild.Id, wof.WonAmount)
+                await Database.IncreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, wof.WonAmount)
                     .ConfigureAwait(false);
         }
 

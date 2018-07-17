@@ -6,11 +6,12 @@ using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-using TheGodfather.Services;
+using TheGodfather.Services.Database.Bank;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
+using TheGodfather.Services.Database;
 #endregion
 
 namespace TheGodfather.Modules.Currency
@@ -31,8 +32,8 @@ namespace TheGodfather.Modules.Currency
         [Module(ModuleType.Currency)]
         [Description("Flip a coin and bet on the outcome.")]
         [Aliases("coin", "flip")]
-        [UsageExample("!bet coinflip 10 heads")]
-        [UsageExample("!bet coinflip tails 20")]
+        [UsageExamples("!bet coinflip 10 heads",
+                       "!bet coinflip tails 20")]
         public async Task CoinflipAsync(CommandContext ctx,
                                        [Description("Bid.")] long bid,
                                        [Description("Heads/Tails (h/t).")] string bet)
@@ -52,7 +53,7 @@ namespace TheGodfather.Modules.Currency
             else
                 throw new CommandFailedException($"Invalid coin outcome call (has to be {Formatter.Bold("heads")} or {Formatter.Bold("tails")})");
 
-            if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, ctx.Guild.Id, bid).ConfigureAwait(false))
+            if (!await Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, bid).ConfigureAwait(false))
                 throw new CommandFailedException("You do not have enough credits in WM bank!");
 
             bool rnd = GFRandom.Generator.GetBool();
@@ -67,10 +68,10 @@ namespace TheGodfather.Modules.Currency
               .Append(" credits!");
 
             if (rnd == guess)
-                await Database.GiveCreditsToUserAsync(ctx.User.Id, ctx.Guild.Id, bid * 2)
+                await Database.IncreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, bid * 2)
                     .ConfigureAwait(false);
 
-            await ctx.RespondWithIconEmbedAsync(sb.ToString(), ":game_die:")
+            await ctx.InformSuccessAsync(sb.ToString(), ":game_die:")
                 .ConfigureAwait(false);
         }
 
@@ -86,8 +87,8 @@ namespace TheGodfather.Modules.Currency
         [Module(ModuleType.Currency)]
         [Description("Roll a dice and bet on the outcome.")]
         [Aliases("roll", "die")]
-        [UsageExample("!bet dice 50 six")]
-        [UsageExample("!bet dice three 10")]
+        [UsageExamples("!bet dice 50 six",
+                       "!bet dice three 10")]
         public async Task RollDiceAsync(CommandContext ctx,
                                        [Description("Bid.")] long bid,
                                        [Description("Number guess (has to be a word one-six).")] string guess)
@@ -111,7 +112,7 @@ namespace TheGodfather.Modules.Currency
                     throw new CommandFailedException($"Invalid guess. Has to be a number from {Formatter.Bold("one")} to {Formatter.Bold("six")})");
             }
 
-            if (!await Database.TakeCreditsFromUserAsync(ctx.User.Id, ctx.Guild.Id, bid).ConfigureAwait(false))
+            if (!await Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, bid).ConfigureAwait(false))
                 throw new CommandFailedException("You do not have enough credits in WM bank!");
 
             int rnd = GFRandom.Generator.Next(1, 7);
@@ -124,11 +125,11 @@ namespace TheGodfather.Modules.Currency
               .Append(guess_int == rnd ? $"won {Formatter.Bold((bid * 5).ToString())}" : $"lost {Formatter.Bold((bid).ToString())}")
               .Append(" credits!");
 
-            await ctx.RespondWithIconEmbedAsync(sb.ToString(), ":game_die:")
+            await ctx.InformSuccessAsync(sb.ToString(), ":game_die:")
                 .ConfigureAwait(false);
 
             if (rnd == guess_int)
-                await Database.GiveCreditsToUserAsync(ctx.User.Id, ctx.Guild.Id, bid * 6)
+                await Database.IncreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, bid * 6)
                     .ConfigureAwait(false);
         }
 

@@ -21,7 +21,7 @@ namespace TheGodfather.Modules.Administration
     [Group("emoji"), Module(ModuleType.Administration)]
     [Description("Manipulate guild emoji. Standalone call lists all guild emoji or gives information about given emoji.")]
     [Aliases("emojis", "e")]
-    [UsageExample("!emoji")]
+    [UsageExamples("!emoji")]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
     [NotBlocked]
     public class EmojiModule : TheGodfatherBaseModule
@@ -42,9 +42,9 @@ namespace TheGodfather.Modules.Administration
         [Module(ModuleType.Administration)]
         [Description("Add emoji specified via URL or message attachment. If you have Discord Nitro, you can also pass emojis from another guild as arguments instead of their URLs.")]
         [Aliases("create", "a", "+", "install")]
-        [UsageExample("!emoji add pepe http://i0.kym-cdn.com/photos/images/facebook/000/862/065/0e9.jpg")]
-        [UsageExample("!emoji add pepe [ATTACHED IMAGE]")]
-        [UsageExample("!emoji add pepe :pepe_from_other_server:")]
+        [UsageExamples("!emoji add pepe http://i0.kym-cdn.com/photos/images/facebook/000/862/065/0e9.jpg",
+                       "!emoji add pepe [ATTACHED IMAGE]",
+                       "!emoji add pepe :pepe_from_other_server:")]
         [RequirePermissions(Permissions.ManageEmojis)]
         public async Task AddAsync(CommandContext ctx,
                                   [Description("Name.")] string name,
@@ -75,7 +75,7 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException("Possibly emoji slots are full for this guild or the image format is not supported?", e);
             }
 
-            await ctx.RespondWithIconEmbedAsync($"Emoji {Formatter.Bold(name)} successfully added!")
+            await ctx.InformSuccessAsync($"Emoji {Formatter.Bold(name)} successfully added!")
                 .ConfigureAwait(false);
         }
 
@@ -107,7 +107,7 @@ namespace TheGodfather.Modules.Administration
         [Command("delete"), Module(ModuleType.Administration)]
         [Description("Remove guild emoji. Note: bots can only delete emojis they created.")]
         [Aliases("remove", "del", "-", "d")]
-        [UsageExample("!emoji delete pepe")]
+        [UsageExamples("!emoji delete pepe")]
         [RequirePermissions(Permissions.ManageEmojis)]
         public async Task DeleteAsync(CommandContext ctx,
                                      [Description("Emoji to delete.")] DiscordEmoji emoji)
@@ -118,7 +118,7 @@ namespace TheGodfather.Modules.Administration
                 string name = gemoji.Name;
                 await ctx.Guild.DeleteEmojiAsync(gemoji, ctx.BuildReasonString())
                     .ConfigureAwait(false);
-                await ctx.RespondWithIconEmbedAsync($"Emoji {Formatter.Bold(name)} successfully deleted!")
+                await ctx.InformSuccessAsync($"Emoji {Formatter.Bold(name)} successfully deleted!")
                     .ConfigureAwait(false);
             } catch (NotFoundException) {
                 throw new CommandFailedException("Can't find that emoji in list of emoji that I made for this guild.");
@@ -129,7 +129,7 @@ namespace TheGodfather.Modules.Administration
         #region COMMAND_EMOJI_INFO
         [Command("info"), Module(ModuleType.Administration)]
         [Description("Get information for given guild emoji.")]
-        [UsageExample("!emoji info pepe")]
+        [UsageExamples("!emoji info pepe")]
         [Aliases("details", "information", "i")]
         public async Task InfoAsync(CommandContext ctx,
                                    [Description("Emoji.")] DiscordEmoji emoji)
@@ -158,10 +158,10 @@ namespace TheGodfather.Modules.Administration
         [Command("list"), Module(ModuleType.Administration)]
         [Description("View guild emojis.")]
         [Aliases("print", "show", "l", "p", "ls")]
-        [UsageExample("!emoji list")]
+        [UsageExamples("!emoji list")]
         public async Task ListAsync(CommandContext ctx)
         {
-            await ctx.SendPaginatedCollectionAsync(
+            await ctx.SendCollectionInPagesAsync(
                 "Guild specific emojis:",
                 ctx.Guild.Emojis.OrderBy(e => e.Name),
                 e => $"{e}  {e.Name}",
@@ -175,8 +175,8 @@ namespace TheGodfather.Modules.Administration
         [Module(ModuleType.Administration)]
         [Description("Edit name of an existing guild emoji.")]
         [Aliases("edit", "mod", "e", "m", "rename")]
-        [UsageExample("!emoji modify :pepe: newname")]
-        [UsageExample("!emoji modify newname :pepe:")]
+        [UsageExamples("!emoji modify :pepe: newname",
+                       "!emoji modify newname :pepe:")]
         [RequirePermissions(Permissions.ManageEmojis)]
         public async Task ModifyAsync(CommandContext ctx,
                                      [Description("Emoji.")] DiscordEmoji emoji,
@@ -190,7 +190,7 @@ namespace TheGodfather.Modules.Administration
                     .ConfigureAwait(false);
                 await ctx.Guild.ModifyEmojiAsync(gemoji, name: newname, reason: ctx.BuildReasonString())
                     .ConfigureAwait(false);
-                await ctx.RespondWithIconEmbedAsync()
+                await ctx.InformSuccessAsync()
                     .ConfigureAwait(false);
             } catch (NotFoundException) {
                 throw new CommandFailedException("Can't find that emoji in list of emoji that I made for this guild.");

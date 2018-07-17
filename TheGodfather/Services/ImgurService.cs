@@ -1,47 +1,42 @@
 ﻿#region USING_DIRECTIVES
-using System;
-using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
-using System.Drawing.Text;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-
-using Imgur.API;
 using Imgur.API.Authentication.Impl;
 using Imgur.API.Endpoints.Impl;
 using Imgur.API.Enums;
 using Imgur.API.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 #endregion
 
 namespace TheGodfather.Services
 {
-    public class ImgurService : IGodfatherService
+    public class ImgurService : ITheGodfatherService
     {
-        private ImgurClient _imgur { get; set; }
-        private GalleryEndpoint _gendpoint { get; set; }
-        private ImageEndpoint _iendpoint { get; set; }
+        private readonly ImgurClient imgur;
+        private readonly GalleryEndpoint gEndpoint;
+        //private readonly ImageEndpoint iEndpoint;
 
 
         public ImgurService(string key)
         {
-            _imgur = new ImgurClient(key);
-            _gendpoint = new GalleryEndpoint(_imgur);
-            _iendpoint = new ImageEndpoint(_imgur);
+            this.imgur = new ImgurClient(key);
+            this.gEndpoint = new GalleryEndpoint(this.imgur);
+            //this.iEndpoint = new ImageEndpoint(this.imgur);
         }
 
 
-        public async Task<IEnumerable<IGalleryItem>> GetItemsFromSubAsync(string sub,
-                                                                          int num,
-                                                                          SubredditGallerySortOrder order,
-                                                                          TimeWindow time)
+        public async Task<IEnumerable<IGalleryItem>> GetItemsFromSubAsync(string sub, int amount,
+            SubredditGallerySortOrder order, TimeWindow time)
         {
+            if (string.IsNullOrWhiteSpace(sub))
+                throw new ArgumentException("Subreddit missing!", "sub");
 
-            var images = await _gendpoint.GetSubredditGalleryAsync(sub, order, time)
-                .ConfigureAwait(false);
-            return images.Take(num);
+            if (amount < 1 || amount > 20)
+                throw new ArgumentException("Result amount out of range (max 20)", "amount");
+
+            IEnumerable<IGalleryItem> images = await this.gEndpoint.GetSubredditGalleryAsync(sub, order, time).ConfigureAwait(false);
+            return images.Take(amount);
         }
     }
 }

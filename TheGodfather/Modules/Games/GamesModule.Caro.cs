@@ -7,12 +7,13 @@ using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Games.Common;
-using TheGodfather.Services;
 using TheGodfather.Services.Common;
+using TheGodfather.Services.Database.Stats;
 
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Interactivity;
+using TheGodfather.Services.Database;
 #endregion
 
 namespace TheGodfather.Modules.Games
@@ -22,8 +23,8 @@ namespace TheGodfather.Modules.Games
         [Group("caro"), Module(ModuleType.Games)]
         [Description("Starts a \"Caro\" game. Play a move by writing a pair of numbers from 1 to 10 corresponding to the row and column where you wish to play. You can also specify a time window in which player must submit their move.")]
         [Aliases("c", "gomoku", "gobang")]
-        [UsageExample("!game caro")]
-        [UsageExample("!game caro 10s")]
+        [UsageExamples("!game caro",
+                       "!game caro 10s")]
         public class CaroModule : TheGodfatherBaseModule
         {
 
@@ -37,7 +38,7 @@ namespace TheGodfather.Modules.Games
                 if (ChannelEvent.IsEventRunningInChannel(ctx.Channel.Id))
                     throw new CommandFailedException("Another event is already running in the current channel!");
 
-                await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Question, $"Who wants to play Caro with {ctx.User.Username}?")
+                await ctx.InformSuccessAsync(StaticDiscordEmoji.Question, $"Who wants to play Caro with {ctx.User.Username}?")
                     .ConfigureAwait(false);
                 var opponent = await ctx.WaitForGameOpponentAsync()
                     .ConfigureAwait(false);
@@ -54,10 +55,10 @@ namespace TheGodfather.Modules.Games
                         .ConfigureAwait(false);
 
                     if (caro.Winner != null) {
-                        if (caro.TimedOut == false)
-                            await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Trophy, $"The winner is: {caro.Winner.Mention}!").ConfigureAwait(false);
+                        if (caro.IsTimeoutReached == false)
+                            await ctx.InformSuccessAsync(StaticDiscordEmoji.Trophy, $"The winner is: {caro.Winner.Mention}!").ConfigureAwait(false);
                         else
-                            await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Trophy, $"{caro.Winner.Mention} won due to no replies from opponent!").ConfigureAwait(false);
+                            await ctx.InformSuccessAsync(StaticDiscordEmoji.Trophy, $"{caro.Winner.Mention} won due to no replies from opponent!").ConfigureAwait(false);
 
                         await Database.UpdateUserStatsAsync(caro.Winner.Id, GameStatsType.CarosWon)
                             .ConfigureAwait(false);
@@ -66,7 +67,7 @@ namespace TheGodfather.Modules.Games
                         else
                             await Database.UpdateUserStatsAsync(ctx.User.Id, GameStatsType.CarosLost).ConfigureAwait(false);
                     } else {
-                        await ctx.RespondWithIconEmbedAsync("A draw... Pathetic...", ":video_game:")
+                        await ctx.InformSuccessAsync("A draw... Pathetic...", ":video_game:")
                             .ConfigureAwait(false);
                     } 
                 } finally {
@@ -79,10 +80,10 @@ namespace TheGodfather.Modules.Games
             [Command("rules"), Module(ModuleType.Games)]
             [Description("Explain the Caro game rules.")]
             [Aliases("help", "h", "ruling", "rule")]
-            [UsageExample("!game caro rules")]
+            [UsageExamples("!game caro rules")]
             public async Task RulesAsync(CommandContext ctx)
             {
-                await ctx.RespondWithIconEmbedAsync(
+                await ctx.InformSuccessAsync(
                     "\nCaro (aka ``Gomoku`` or ``Gobang``) is basically a Tic-Tac-Toe game played on a 10x10 board." +
                     "The goal is to have an unbroken row of 5 symbols in order to win the game." +
                     "Players play in turns, placing their symbols on the board. The game ends when someone makes 5 symbols " +
@@ -96,13 +97,13 @@ namespace TheGodfather.Modules.Games
             [Command("stats"), Module(ModuleType.Games)]
             [Description("Print the leaderboard for this game.")]
             [Aliases("top", "leaderboard")]
-            [UsageExample("!game caro stats")]
+            [UsageExamples("!game caro stats")]
             public async Task StatsAsync(CommandContext ctx)
             {
                 var top = await Database.GetTopCaroPlayersStringAsync(ctx.Client)
                     .ConfigureAwait(false);
 
-                await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Trophy, $"Top players in Caro:\n\n{top}")
+                await ctx.InformSuccessAsync(StaticDiscordEmoji.Trophy, $"Top players in Caro:\n\n{top}")
                     .ConfigureAwait(false);
             }
             #endregion

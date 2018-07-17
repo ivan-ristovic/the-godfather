@@ -1,32 +1,34 @@
 ﻿#region USING_DIRECTIVES
+using DSharpPlus;
+using Newtonsoft.Json;
 using System;
 using System.IO;
-using Newtonsoft.Json;
-
-using DSharpPlus;
 #endregion
 
 namespace TheGodfather.Common
 {
     public sealed class BotConfig
     {
-        [JsonProperty("token")]
-        public string Token { get; private set; }
+        [JsonProperty("db-config")]
+        public DatabaseConfig DatabaseConfig { get; private set; }
 
-        [JsonProperty("shard-count")]
-        public int ShardCount { get; private set; }
+        [JsonProperty("db_sync_interval")]
+        public int DatabaseSyncInterval { get; private set; }
 
         [JsonProperty("prefix")]
         public string DefaultPrefix { get; private set; }
 
-        [JsonProperty("db_sync_interval")]
-        public int DbSyncInterval { get; private set; }
+        [JsonProperty("feed_check_interval")]
+        public int FeedCheckInterval { get; private set; }
 
         [JsonProperty("feed_check_start_delay")]
         public int FeedCheckStartDelay { get; private set; }
 
-        [JsonProperty("feed_check_interval")]
-        public int FeedCheckInterval { get; private set; }
+        [JsonProperty("key-giphy")]
+        public string GiphyKey { get; private set; }
+
+        [JsonProperty("key-imgur")]
+        public string ImgurKey { get; private set; }
 
         [JsonProperty("log-level")]
         public LogLevel LogLevel { get; private set; }
@@ -37,26 +39,23 @@ namespace TheGodfather.Common
         [JsonProperty("log-to-file")]
         public bool LogToFile { get; private set; }
 
-        [JsonProperty("key-giphy")]
-        public string GiphyKey { get; private set; }
+        [JsonProperty("key-omdb")]
+        public string OMDbKey { get; private set; }
+
+        [JsonProperty("shard-count")]
+        public int ShardCount { get; private set; }
 
         [JsonProperty("key-steam")]
         public string SteamKey { get; private set; }
 
-        [JsonProperty("key-imgur")]
-        public string ImgurKey { get; private set; }
+        [JsonProperty("token")]
+        public string Token { get; private set; }
 
         [JsonProperty("key-weather")]
         public string WeatherKey { get; private set; }
 
         [JsonProperty("key-youtube")]
         public string YouTubeKey { get; private set; }
-
-        [JsonProperty("key-omdb")]
-        public string OMDbKey { get; private set; }
-
-        [JsonProperty("db-config")]
-        public DatabaseConfig DatabaseConfig { get; private set; }
 
 
         public static BotConfig Load()
@@ -74,22 +73,22 @@ namespace TheGodfather.Common
 
         [JsonIgnore]
         public static BotConfig Default => new BotConfig {
-            Token = "<insert bot token here>",
-            ShardCount = 1,
+            DatabaseConfig = DatabaseConfig.Default,
+            DatabaseSyncInterval = 600,
             DefaultPrefix = "!",
-            DbSyncInterval = 600,
-            FeedCheckStartDelay = 30,
             FeedCheckInterval = 300,
+            FeedCheckStartDelay = 30,
+            GiphyKey = "<insert GIPHY API key>",
+            ImgurKey = "<insert Imgur API key>",
             LogLevel = LogLevel.Info,
             LogPath = "log.txt",
             LogToFile = false,
-            GiphyKey = "<insert GIPHY API key>",
-            SteamKey = "<insert Steam API key>",
-            ImgurKey = "<insert Imgur API key>",
-            WeatherKey = "<insert OpenWeatherMaps API key>",
-            YouTubeKey = "<insert YouTube API key>",
             OMDbKey = "<insert OMDb API key>",
-            DatabaseConfig = DatabaseConfig.Default
+            ShardCount = 1,
+            SteamKey = "<insert Steam API key>",
+            Token = "<insert bot token here>",
+            WeatherKey = "<insert OpenWeatherMaps API key>",
+            YouTubeKey = "<insert YouTube API key>"
         };
     }
 }

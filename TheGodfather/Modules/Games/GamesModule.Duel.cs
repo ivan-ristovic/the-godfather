@@ -7,13 +7,14 @@ using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Games.Common;
-using TheGodfather.Services;
 using TheGodfather.Services.Common;
+using TheGodfather.Services.Database.Stats;
 
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
+using TheGodfather.Services.Database;
 #endregion
 
 namespace TheGodfather.Modules.Games
@@ -23,7 +24,7 @@ namespace TheGodfather.Modules.Games
         [Group("duel"), Module(ModuleType.Games)]
         [Description("Starts a duel which I will commentate.")]
         [Aliases("fight", "vs", "d")]
-        [UsageExample("!game duel @Someone")]
+        [UsageExamples("!game duel @Someone")]
         public class DuelModule : TheGodfatherBaseModule
         {
 
@@ -75,10 +76,10 @@ namespace TheGodfather.Modules.Games
             [Command("rules"), Module(ModuleType.Games)]
             [Description("Explain the Duel game rules.")]
             [Aliases("help", "h", "ruling", "rule")]
-            [UsageExample("!game duel rules")]
+            [UsageExamples("!game duel rules")]
             public async Task RulesAsync(CommandContext ctx)
             {
-                await ctx.RespondWithIconEmbedAsync(
+                await ctx.InformSuccessAsync(
                     "\nDuel is a death battle with no rules! Rumours say that typing ``hp`` might heal give you an extra boost during the duel...",
                     ":book:"
                 ).ConfigureAwait(false);
@@ -89,13 +90,13 @@ namespace TheGodfather.Modules.Games
             [Command("stats"), Module(ModuleType.Games)]
             [Description("Print the leaderboard for this game.")]
             [Aliases("top", "leaderboard")]
-            [UsageExample("!game duel stats")]
+            [UsageExamples("!game duel stats")]
             public async Task StatsAsync(CommandContext ctx)
             {
                 var top = await Database.GetTopDuelistsStringAsync(ctx.Client)
                     .ConfigureAwait(false);
 
-                await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Trophy, $"Top Duelists:\n\n{top}")
+                await ctx.InformSuccessAsync(StaticDiscordEmoji.Trophy, $"Top Duelists:\n\n{top}")
                     .ConfigureAwait(false);
             }
             #endregion

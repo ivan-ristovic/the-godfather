@@ -51,18 +51,18 @@ namespace TheGodfather.Modules.Games.Common
                 for (int index = 0; index < answers.Count; index++)
                     emb.AddField($"Answer #{index + 1}:", answers[index], inline: true);
 
-                await _channel.TriggerTypingAsync()
+                await Channel.TriggerTypingAsync()
                     .ConfigureAwait(false);
-                await _channel.SendMessageAsync(embed: emb.Build())
+                await Channel.SendMessageAsync(embed: emb.Build())
                     .ConfigureAwait(false);
 
                 bool noresponse = true;
                 MessageContext mctx;
                 ConcurrentHashSet<ulong> failed = new ConcurrentHashSet<ulong>();
                 Regex ansregex = new Regex($@"\b{question.CorrectAnswer}\b", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
-                mctx = await _interactivity.WaitForMessageAsync(
+                mctx = await Interactivity.WaitForMessageAsync(
                     xm => {
-                        if (xm.ChannelId != _channel.Id || xm.Author.IsBot || failed.Contains(xm.Author.Id))
+                        if (xm.ChannelId != Channel.Id || xm.Author.IsBot || failed.Contains(xm.Author.Id))
                             return false;
                         if (int.TryParse(xm.Content, out int index) && index > 0 && index <= answers.Count) {
                             noresponse = false;
@@ -80,13 +80,13 @@ namespace TheGodfather.Modules.Games.Common
                     else
                         timeouts = 0;
                     if (timeouts == 3) {
-                        TimedOut = true;
+                        IsTimeoutReached = true;
                         return;
                     }
-                    await _channel.SendMessageAsync($"Time is out! The correct answer was: {Formatter.Bold(question.CorrectAnswer)}")
+                    await Channel.SendMessageAsync($"Time is out! The correct answer was: {Formatter.Bold(question.CorrectAnswer)}")
                         .ConfigureAwait(false);
                 } else {
-                    await _channel.SendMessageAsync($"GG {mctx.User.Mention}, you got it right!")
+                    await Channel.SendMessageAsync($"GG {mctx.User.Mention}, you got it right!")
                         .ConfigureAwait(false);
                     Results.AddOrUpdate(mctx.User, u => 1, (u, v) => v + 1);
                 }

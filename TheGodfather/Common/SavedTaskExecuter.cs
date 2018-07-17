@@ -1,15 +1,15 @@
 ﻿#region USING_DIRECTIVES
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-
-using TheGodfather.Extensions;
-using TheGodfather.Services;
-using TheGodfather.Services.Common;
-
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
+using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Threading;
+using System.Threading.Tasks;
+using TheGodfather.Extensions;
+using TheGodfather.Services.Common;
+using TheGodfather.Services.Database;
+using TheGodfather.Services.Database.SavedTasks;
 #endregion
 
 namespace TheGodfather.Common
@@ -19,31 +19,23 @@ namespace TheGodfather.Common
         public int Id { get; private set; }
         public SavedTask SavedTask { get; }
 
-        private DiscordClient _client;
-        private SharedData _shared;
-        private DBService _db;
-        private Timer _timer;
+        private DiscordClient Client { get; }
+        private SharedData Shared { get; }
+        private DBService Database { get; }
+        private CancellationTokenSource CTS { get; }
+        private Task SystemTask { get; set; }
 
 
-        public static async Task<bool> ScheduleAsync(DiscordClient client, SharedData shared, DBService db, 
-            ulong uid, ulong cid, ulong gid, SavedTaskType type, string comment, DateTime exectime)
+        public static async Task<bool> TryScheduleAsync(CommandContext ctx, SavedTask task)
         {
-            var task = new SavedTask() {
-                ChannelId = cid,
-                Comment = comment,
-                ExecutionTime = exectime,
-                GuildId = gid,
-                Type = type,
-                UserId = uid
-            };
-
+            var shared = ctx.Services.GetService<SharedData>();
+            var db = ctx.Services.GetService<DBService>();
             try {
-                var id = await db.AddSavedTaskAsync(task)
-                    .ConfigureAwait(false);
-                var texec = new SavedTaskExecuter(id, client, task, shared, db);
+                int id = await db.AddSavedTaskAsync(task);
+                var texec = new SavedTaskExecuter(id, ctx.Client, task, shared, db);
                 texec.ScheduleExecution();
             } catch (Exception e) {
-                TheGodfather.LogProvider.LogException(LogLevel.Warning, e);
+                shared.LogProvider.LogException(LogLevel.Warning, e);
                 return false;
             }
 
@@ -53,107 +45,106 @@ namespace TheGodfather.Common
 
         public SavedTaskExecuter(int id, DiscordClient client, SavedTask task, SharedData data, DBService db)
         {
-            Id = id;
-            _client = client;
-            SavedTask = task;
-            _shared = data;
-            _db = db;
+            this.Id = id;
+            this.Client = client;
+            this.SavedTask = task;
+            this.Shared = data;
+            this.Database = db;
+            this.CTS = new CancellationTokenSource();
         }
 
 
-        public void ScheduleExecution()
+        public async Task DisposeAsync()
         {
-            _shared.SavedTasks.TryAdd(Id, this);
-            _timer = new Timer(Execute, null, (int)SavedTask.TimeUntilExecution.TotalMilliseconds, Timeout.Infinite);
+            this.CTS.Cancel();
+            await this.SystemTask;
         }
 
-        private void Execute(object _)
+        private async Task ExecuteAsync()
         {
             try {
-                switch (SavedTask.Type) {
+                await Task.Delay(this.SavedTask.TimeUntilExecution, this.CTS.Token);
+                switch (this.SavedTask.Type) {
                     case SavedTaskType.SendMessage:
-                        SendMessageAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+                        await SendMessageAsync();
                         break;
                     case SavedTaskType.Unban:
-                        UnbanUserAsync().ConfigureAwait(false).GetAwaiter().GetResult();
+                        await UnbanUserAsync();
                         break;
                 }
-                TheGodfather.LogProvider.LogMessage(LogLevel.Info, 
-                    $"| Saved task executed: {SavedTask.Type.GetType()} ({SavedTask.Comment})\n" +
-                    $"| User ID: {SavedTask.UserId}\n" +
-                    $"| Guild ID: {SavedTask.GuildId}\n" +
-                    $"| Channel ID: {SavedTask.ChannelId}"
+                this.Shared.LogProvider.LogMessage(LogLevel.Info,
+                    $"| Saved task executed: {this.SavedTask.Type.ToTypeString()}\n" +
+                    $"| Task comment: {this.SavedTask.Comment}]n" +
+                    $"| User ID: {this.SavedTask.UserId}\n" +
+                    $"| Guild ID: {this.SavedTask.GuildId}\n" +
+                    $"| Channel ID: {this.SavedTask.ChannelId}"
                 );
-            } catch (Exception e) {
-                TheGodfather.LogProvider.LogException(LogLevel.Warning, e);
-            } finally {
-                RemoveTaskFromDatabase().ConfigureAwait(false).GetAwaiter().GetResult();
-            }
-        }
+            } catch (TaskCanceledException) {
 
-        public async Task RemoveTaskFromDatabase()
-        {
-            if (_shared.SavedTasks.ContainsKey(Id))
-                _shared.SavedTasks.TryRemove(Id, out var _);
-            await _db.RemoveSavedTaskAsync(Id)
-                .ConfigureAwait(false);
+            } catch (Exception e) {
+                this.Shared.LogProvider.LogException(LogLevel.Warning, e);
+            } finally {
+                await UnscheduleTask();
+            }
         }
 
         public async Task HandleMissedExecutionAsync()
         {
             try {
-                switch (SavedTask.Type) {
+                switch (this.SavedTask.Type) {
                     case SavedTaskType.SendMessage:
-                        var channel = await _client.GetChannelAsync(SavedTask.ChannelId)
-                            .ConfigureAwait(false);
-                        var user = await _client.GetUserAsync(SavedTask.UserId)
-                            .ConfigureAwait(false);
-                        await channel.SendFailedEmbedAsync($"I have been asleep and failed to remind {user.Mention} to:\n\n{Formatter.Italic(SavedTask.Comment)}\n\nat {SavedTask.ExecutionTime.ToLongTimeString()} UTC")
-                            .ConfigureAwait(false);
+                        var channel = await this.Client.GetChannelAsync(this.SavedTask.ChannelId);
+                        var user = await this.Client.GetUserAsync(this.SavedTask.UserId);
+                        await channel.InformFailureAsync($"I have been asleep and failed to remind {user.Mention} to:\n\n{Formatter.Italic(this.SavedTask.Comment)}\n\nat {this.SavedTask.ExecutionTime.ToLongTimeString()} UTC");
                         break;
                     case SavedTaskType.Unban:
-                        await UnbanUserAsync()
-                            .ConfigureAwait(false);
+                        await UnbanUserAsync();
                         break;
                     default:
                         break;
                 }
-                TheGodfather.LogProvider.LogMessage(LogLevel.Warning, 
-                    $"| Executed missed saved task of type {SavedTask.Type.GetType()}\n|" +
-                    $"| User ID: {SavedTask.UserId}\n" +
-                    $"| Guild ID: {SavedTask.GuildId}\n" +
-                    $"| Channel ID: {SavedTask.ChannelId}"
+                this.Shared.LogProvider.LogMessage(LogLevel.Warning,
+                    $"| Executed missed task: {this.SavedTask.Type.ToTypeString()}\n" +
+                    $"| Task comment: {this.SavedTask.Comment}\n" +
+                    $"| User ID: {this.SavedTask.UserId}\n" +
+                    $"| Guild ID: {this.SavedTask.GuildId}\n" +
+                    $"| Channel ID: {this.SavedTask.ChannelId}"
                 );
             } catch (Exception e) {
-                TheGodfather.LogProvider.LogException(LogLevel.Warning, e);
+                this.Shared.LogProvider.LogException(LogLevel.Warning, e);
             } finally {
-                RemoveTaskFromDatabase().ConfigureAwait(false).GetAwaiter().GetResult();
+                await UnscheduleTask();
             }
+        }
+
+        public void ScheduleExecution()
+        {
+            this.Shared.TaskExecuters.TryAdd(this.Id, this);
+            this.SystemTask = ExecuteAsync();
+        }
+
+
+        #region CALLBACKS
+        public async Task UnscheduleTask()
+        {
+            if (this.Shared.TaskExecuters.ContainsKey(this.Id))
+                this.Shared.TaskExecuters.TryRemove(this.Id, out var _);
+            await this.Database.RemoveSavedTaskAsync(this.Id);
         }
 
         private async Task SendMessageAsync()
         {
-            var channel = await _client.GetChannelAsync(SavedTask.ChannelId)
-                .ConfigureAwait(false);
-            var user = await _client.GetUserAsync(SavedTask.UserId)
-                .ConfigureAwait(false);
-            await channel.SendIconEmbedAsync($"{user.Mention}'s reminder:\n\n{Formatter.Italic(SavedTask.Comment)}", DiscordEmoji.FromName(_client, ":alarm_clock:"))
-                .ConfigureAwait(false);
+            var channel = await this.Client.GetChannelAsync(this.SavedTask.ChannelId);
+            var user = await this.Client.GetUserAsync(this.SavedTask.UserId);
+            await channel.InformSuccessAsync($"{user.Mention}'s reminder:\n\n{Formatter.Italic(this.SavedTask.Comment)}", DiscordEmoji.FromName(this.Client, ":alarm_clock:"));
         }
 
         private async Task UnbanUserAsync()
         {
-            var guild = await _client.GetGuildAsync(SavedTask.GuildId)
-                .ConfigureAwait(false);
-            var user = await _client.GetUserAsync(SavedTask.UserId)
-                .ConfigureAwait(false);
-            await guild.UnbanMemberAsync(user, $"Temporary ban time expired")
-                .ConfigureAwait(false);
+            var guild = await this.Client.GetGuildAsync(this.SavedTask.GuildId);
+            var user = await this.Client.GetUserAsync(this.SavedTask.UserId);
+            await guild.UnbanMemberAsync(user, $"Temporary ban time expired");
         }
-
-        public void Dispose()
-        {
-            _timer.Dispose();
-        }
+        #endregion
     }
 }

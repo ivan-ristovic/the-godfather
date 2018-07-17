@@ -10,6 +10,7 @@ using TheGodfather.Services;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
+using TheGodfather.Services.Database;
 #endregion
 
 namespace TheGodfather.Modules
@@ -38,7 +39,7 @@ namespace TheGodfather.Modules
                 if (!response.Content.Headers.ContentType.MediaType.StartsWith("image/"))
                     return false;
             } catch (Exception e) {
-                TheGodfather.LogProvider.LogException(LogLevel.Debug, e);
+                Shared.LogProvider.LogException(LogLevel.Debug, e);
                 return false;
             }
 
@@ -67,22 +68,6 @@ namespace TheGodfather.Modules
 
             result = new Regex($@"\b{pattern}\b", RegexOptions.IgnoreCase);
             return true;
-        }
-
-
-        public static IEnumerable<Command> CommandSelector(KeyValuePair<string, Command> c)
-        {
-            return CommandSelector(c.Value);
-        }
-
-        public static IEnumerable<Command> CommandSelector(Command c)
-        {
-            var arr = new[] { c };
-
-            if (c is CommandGroup group)
-                return arr.Concat(group.Children.SelectMany(CommandSelector));
-
-            return arr;
         }
     }
 }

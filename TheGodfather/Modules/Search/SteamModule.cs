@@ -15,7 +15,7 @@ namespace TheGodfather.Modules.Search
     [Group("steam"), Module(ModuleType.Searches)]
     [Description("Steam commands.")]
     [Aliases("s", "st")]
-    [UsageExample("!steam profile 123456123")]
+    [UsageExamples("!steam profile 123456123")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     [NotBlocked]
     public class SteamModule : TheGodfatherServiceModule<SteamService>
@@ -31,11 +31,11 @@ namespace TheGodfather.Modules.Search
         public async Task InfoAsync(CommandContext ctx,
                                    [Description("ID.")] ulong id)
         {
-            var em = await _Service.GetEmbeddedResultAsync(id)
+            var em = await _Service.GetEmbeddedInfoAsync(id)
                 .ConfigureAwait(false);
 
             if (em == null) {
-                await ctx.RespondWithFailedEmbedAsync("User with such ID does not exist!")
+                await ctx.InformFailureAsync("User with such ID does not exist!")
                     .ConfigureAwait(false);
                 return;
             }

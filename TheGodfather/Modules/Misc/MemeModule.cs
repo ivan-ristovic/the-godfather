@@ -7,6 +7,8 @@ using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Services;
+using TheGodfather.Services.Database;
+using TheGodfather.Services.Database.Memes;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -19,8 +21,8 @@ namespace TheGodfather.Modules.Misc
     [Group("meme"), Module(ModuleType.Miscellaneous)]
     [Description("Manipulate guild memes. When invoked without subcommands, returns a meme from this guild's meme list given by name, otherwise returns random one.")]
     [Aliases("memes", "mm")]
-    [UsageExample("!meme")]
-    [UsageExample("!meme SomeMemeNameWhichYouAdded")]
+    [UsageExamples("!meme",
+                   "!meme SomeMemeNameWhichYouAdded")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     [NotBlocked]
     public partial class MemeModule : TheGodfatherBaseModule
@@ -32,7 +34,7 @@ namespace TheGodfather.Modules.Misc
         [GroupCommand, Priority(1)]
         public async Task ExecuteGroupAsync(CommandContext ctx)
         {
-            string url = await Database.GetRandomGuildMemeAsync(ctx.Guild.Id)
+            string url = await Database.GetRandomMemeAsync(ctx.Guild.Id)
                 .ConfigureAwait(false);
 
             if (url == null)
@@ -50,10 +52,10 @@ namespace TheGodfather.Modules.Misc
                                            [RemainingText, Description("Meme name.")] string name)
         {
             string text = "DANK MEME YOU ASKED FOR";
-            string url = await Database.GetGuildMemeUrlAsync(ctx.Guild.Id, name)
+            string url = await Database.GetMemeAsync(ctx.Guild.Id, name)
                 .ConfigureAwait(false);
             if (url == null) {
-                url = await Database.GetRandomGuildMemeAsync(ctx.Guild.Id)
+                url = await Database.GetRandomMemeAsync(ctx.Guild.Id)
                     .ConfigureAwait(false);
                 if (url == null)
                     throw new CommandFailedException("No memes registered in this guild!");
@@ -73,7 +75,7 @@ namespace TheGodfather.Modules.Misc
         [Module(ModuleType.Miscellaneous)]
         [Description("Add a new meme to the list.")]
         [Aliases("+", "new", "a")]
-        [UsageExample("!meme add pepe http://i0.kym-cdn.com/photos/images/facebook/000/862/065/0e9.jpg")]
+        [UsageExamples("!meme add pepe http://i0.kym-cdn.com/photos/images/facebook/000/862/065/0e9.jpg")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task AddMemeAsync(CommandContext ctx,
                                       [Description("Short name (case insensitive).")] string name,
@@ -92,7 +94,7 @@ namespace TheGodfather.Modules.Misc
 
             await Database.AddMemeAsync(ctx.Guild.Id, name, url.AbsoluteUri)
                 .ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync($"Meme {Formatter.Bold(name)} successfully added!")
+            await ctx.InformSuccessAsync($"Meme {Formatter.Bold(name)} successfully added!")
                 .ConfigureAwait(false);
         }
 
@@ -107,23 +109,23 @@ namespace TheGodfather.Modules.Misc
         [Command("clear"), Module(ModuleType.Miscellaneous)]
         [Description("Deletes all guild memes.")]
         [Aliases("da", "ca", "cl", "clearall")]
-        [UsageExample("!memes clear")]
+        [UsageExamples("!memes clear")]
         [RequireUserPermissions(Permissions.Administrator)]
         [UsesInteractivity]
         public async Task ClearMemesAsync(CommandContext ctx)
         {
-            if (!await ctx.AskYesNoQuestionAsync("Are you sure you want to delete all memes for this guild?").ConfigureAwait(false))
+            if (!await ctx.WaitForBoolReplyAsync("Are you sure you want to delete all memes for this guild?").ConfigureAwait(false))
                 return;
 
             try {
-                await Database.RemoveAllGuildMemesAsync(ctx.Guild.Id)
+                await Database.RemoveAllMemesForGuildAsync(ctx.Guild.Id)
                     .ConfigureAwait(false);
             } catch (Exception e) {
-                TheGodfather.LogProvider.LogException(LogLevel.Warning, e);
+                Shared.LogProvider.LogException(LogLevel.Warning, e);
                 throw new CommandFailedException("Failed to delete memes from the database.");
             }
 
-            await ctx.RespondWithIconEmbedAsync("Removed all memes!")
+            await ctx.InformSuccessAsync("Removed all memes!")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -132,14 +134,14 @@ namespace TheGodfather.Modules.Misc
         [Command("create"), Module(ModuleType.Miscellaneous)]
         [Description("Creates a new meme from blank template.")]
         [Aliases("maker", "c", "make", "m")]
-        [UsageExample("!meme create 1stworld \"Top text\" \"Bottom text\"")]
+        [UsageExamples("!meme create 1stworld \"Top text\" \"Bottom text\"")]
         [RequirePermissions(Permissions.EmbedLinks)]
         public async Task CreateMemeAsync(CommandContext ctx,
                                          [Description("Template.")] string template,
                                          [Description("Top Text.")] string topText,
                                          [Description("Bottom Text.")] string bottomText)
         {
-            var url = MemeGenService.GetMemeGenerateUrl(template, topText, bottomText);
+            var url = MemeGenService.GenerateMeme(template, topText, bottomText);
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
                 Title = url,
                 Url = url,
@@ -152,7 +154,7 @@ namespace TheGodfather.Modules.Misc
         [Command("delete"), Module(ModuleType.Miscellaneous)]
         [Description("Deletes a meme from this guild's meme list.")]
         [Aliases("-", "del", "remove", "rm", "d", "rem")]
-        [UsageExample("!meme delete pepe")]
+        [UsageExamples("!meme delete pepe")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task DeleteMemeAsync(CommandContext ctx,
                                          [Description("Short name (case insensitive).")] string name)
@@ -162,7 +164,7 @@ namespace TheGodfather.Modules.Misc
 
             await Database.RemoveMemeAsync(ctx.Guild.Id, name)
                 .ConfigureAwait(false);
-            await ctx.RespondWithIconEmbedAsync($"Meme {Formatter.Bold(name)} successfully removed!")
+            await ctx.InformSuccessAsync($"Meme {Formatter.Bold(name)} successfully removed!")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -171,13 +173,13 @@ namespace TheGodfather.Modules.Misc
         [Command("list"), Module(ModuleType.Miscellaneous)]
         [Description("List all registered memes for this guild.")]
         [Aliases("ls", "l")]
-        [UsageExample("!meme list")]
+        [UsageExamples("!meme list")]
         public async Task ListAsync(CommandContext ctx)
         {
-            var memes = await Database.GetMemesForAllGuildsAsync(ctx.Guild.Id)
+            var memes = await Database.GetAllMemesAsync(ctx.Guild.Id)
                 .ConfigureAwait(false); ;
 
-            await ctx.SendPaginatedCollectionAsync(
+            await ctx.SendCollectionInPagesAsync(
                 "Memes registered in this guild",
                 memes.OrderBy(kvp => kvp.Key),
                 kvp => $"{Formatter.Bold(kvp.Key)} ({kvp.Value})",
@@ -190,7 +192,7 @@ namespace TheGodfather.Modules.Misc
         [Command("templates"), Module(ModuleType.Miscellaneous)]
         [Description("Lists all available meme templates.")]
         [Aliases("template", "t")]
-        [UsageExample("!meme templates")]
+        [UsageExamples("!meme templates")]
         public async Task TemplatesAsync(CommandContext ctx)
         {
             var templates = await MemeGenService.GetMemeTemplatesAsync()
@@ -198,7 +200,7 @@ namespace TheGodfather.Modules.Misc
             if (templates == null)
                 throw new CommandFailedException("Failed to retrieve meme templates.");
 
-            await ctx.SendPaginatedCollectionAsync(
+            await ctx.SendCollectionInPagesAsync(
                 "Meme templates",
                 templates,
                 s => s,

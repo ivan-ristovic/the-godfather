@@ -32,14 +32,14 @@ namespace TheGodfather.Modules.Games.Common
             Started = true;
 
             int num = GFRandom.Generator.Next(1000);
-            await _channel.SendIconEmbedAsync(num.ToString(), DiscordEmoji.FromUnicode("\U0001f199"))
+            await Channel.InformSuccessAsync(num.ToString(), DiscordEmoji.FromUnicode("\U0001f199"))
                 .ConfigureAwait(false);
             
             while (ParticipantCount > 1) {
                 int guess = 0;
-                var mctx = await _interactivity.WaitForMessageAsync(
+                var mctx = await Interactivity.WaitForMessageAsync(
                     xm => {
-                        if (xm.Channel.Id != _channel.Id || xm.Author.IsBot) return false;
+                        if (xm.Channel.Id != Channel.Id || xm.Author.IsBot) return false;
                         if (!_participants.Contains(xm.Author)) return false;
                         return int.TryParse(xm.Content, out guess);
                     },
@@ -47,13 +47,13 @@ namespace TheGodfather.Modules.Games.Common
                 ).ConfigureAwait(false);
 
                 if (mctx == null) {
-                    TimedOut = true;
+                    IsTimeoutReached = true;
                     return;
                 } else if (guess == num + 1) {
                     num++;
                     Winner = mctx.User;
                 } else {
-                    await _channel.SendIconEmbedAsync($"{mctx.User.Mention} lost!", DiscordEmoji.FromUnicode("\u2757"))
+                    await Channel.InformSuccessAsync($"{mctx.User.Mention} lost!", DiscordEmoji.FromUnicode("\u2757"))
                         .ConfigureAwait(false);
                     if (Winner != null && Winner.Id == mctx.User.Id)
                         Winner = null;

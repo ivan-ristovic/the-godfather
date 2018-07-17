@@ -14,6 +14,7 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Interactivity;
+using TheGodfather.Services.Database;
 #endregion
 
 namespace TheGodfather.Modules.Games
@@ -23,7 +24,7 @@ namespace TheGodfather.Modules.Games
         [Group("russianroulette"), Module(ModuleType.Games)]
         [Description("Starts a russian roulette game which I will commentate.")]
         [Aliases("rr", "roulette", "russianr")]
-        [UsageExample("!game russianroulette")]
+        [UsageExamples("!game russianroulette")]
         public class RussianRouletteModule : TheGodfatherBaseModule
         {
 
@@ -44,7 +45,7 @@ namespace TheGodfather.Modules.Games
                 var game = new RussianRoulette(ctx.Client.GetInteractivity(), ctx.Channel);
                 ChannelEvent.RegisterEventInChannel(game, ctx.Channel.Id);
                 try {
-                    await ctx.RespondWithIconEmbedAsync($"The russian roulette game will start in 30s or when there are 10 participants. Use command {Formatter.InlineCode("game russianroulette")} to join the pool.", ":clock1:")
+                    await ctx.InformSuccessAsync($"The russian roulette game will start in 30s or when there are 10 participants. Use command {Formatter.InlineCode("game russianroulette")} to join the pool.", ":clock1:")
                         .ConfigureAwait(false);
                     await JoinAsync(ctx)
                         .ConfigureAwait(false);
@@ -56,11 +57,11 @@ namespace TheGodfather.Modules.Games
                             .ConfigureAwait(false);
 
                         if (game.Survivors.Any())
-                            await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Trophy, $"Survivors:\n\n{string.Join("\n", game.Survivors.Select(u => u.Mention))}").ConfigureAwait(false);
+                            await ctx.InformSuccessAsync(StaticDiscordEmoji.Trophy, $"Survivors:\n\n{string.Join("\n", game.Survivors.Select(u => u.Mention))}").ConfigureAwait(false);
                         else
-                            await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Dead, "Nobody survived!").ConfigureAwait(false);
+                            await ctx.InformSuccessAsync(StaticDiscordEmoji.Dead, "Nobody survived!").ConfigureAwait(false);
                     } else {
-                        await ctx.RespondWithIconEmbedAsync("Not enough users joined the Russian roulette pool.", ":alarm_clock:")
+                        await ctx.InformSuccessAsync("Not enough users joined the Russian roulette pool.", ":alarm_clock:")
                             .ConfigureAwait(false);
                     }
                 } finally {
@@ -73,7 +74,7 @@ namespace TheGodfather.Modules.Games
             [Command("join"), Module(ModuleType.Games)]
             [Description("Join an existing Russian roulette game pool.")]
             [Aliases("+", "compete", "j", "enter")]
-            [UsageExample("!game russianroulette join")]
+            [UsageExamples("!game russianroulette join")]
             public async Task JoinAsync(CommandContext ctx)
             {
                 if (!(ChannelEvent.GetEventInChannel(ctx.Channel.Id) is RussianRoulette game))
@@ -88,7 +89,7 @@ namespace TheGodfather.Modules.Games
                 if (!game.AddParticipant(ctx.User))
                     throw new CommandFailedException("You are already participating in the Russian roulette!");
 
-                await ctx.RespondWithIconEmbedAsync(StaticDiscordEmoji.Gun, $"{ctx.User.Mention} joined the Russian roulette pool.")
+                await ctx.InformSuccessAsync(StaticDiscordEmoji.Gun, $"{ctx.User.Mention} joined the Russian roulette pool.")
                     .ConfigureAwait(false);
             }
             #endregion
@@ -97,10 +98,10 @@ namespace TheGodfather.Modules.Games
             [Command("rules"), Module(ModuleType.Games)]
             [Description("Explain the Russian roulette rules.")]
             [Aliases("help", "h", "ruling", "rule")]
-            [UsageExample("!game numberrace rules")]
+            [UsageExamples("!game numberrace rules")]
             public async Task RulesAsync(CommandContext ctx)
             {
-                await ctx.RespondWithIconEmbedAsync(
+                await ctx.InformSuccessAsync(
                     "Every user has a gun in hand. The game is played in rounds. Each round everyone adds another bullet to their revolvers and rolls." +
                     "After that, everyone pulls the trigger. Those that survive, move on the next round. The game stops when there is only one survivor left, or when round 6 is reached (at that point everyone who is alive up until that point wins).",
                     ":information_source:"

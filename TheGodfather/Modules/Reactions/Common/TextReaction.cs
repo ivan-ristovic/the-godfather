@@ -1,40 +1,43 @@
-﻿using System;
+﻿#region USING_DIRECTIVES
+using System;
+#endregion
 
 namespace TheGodfather.Modules.Reactions.Common
 {
     public class TextReaction : Reaction
     {
-        private static readonly TimeSpan CooldownTimeout = TimeSpan.FromMinutes(5);
-        private bool _cooldown = false;
-        private DateTimeOffset _resetTime;
-        private readonly object _lock = new object();
+        private static readonly TimeSpan _cooldownTimeout = TimeSpan.FromMinutes(5);
+
+        private bool cooldown = false;
+        private DateTimeOffset resetTime;
+        private readonly object cooldownLock = new object();
 
 
-        public TextReaction(int id, string trigger, string response, bool is_regex_trigger = false)
-            : base(id, trigger, response, is_regex_trigger)
+        public TextReaction(int id, string trigger, string response, bool regex = false)
+            : base(id, trigger, response, regex)
         {
-            _resetTime = DateTimeOffset.UtcNow + CooldownTimeout;
+            this.resetTime = DateTimeOffset.UtcNow + _cooldownTimeout;
         }
 
 
-        public bool CanSend()
+        public bool IsCooldownActive()
         {
             bool success = false;
 
-            lock (_lock) {
+            lock (this.cooldownLock) {
                 var now = DateTimeOffset.UtcNow;
-                if (now >= _resetTime) {
-                    _cooldown = false;
-                    _resetTime = now + CooldownTimeout;
+                if (now >= this.resetTime) {
+                    this.cooldown = false;
+                    this.resetTime = now + _cooldownTimeout;
                 }
                 
-                if (!_cooldown) {
-                    _cooldown = true;
+                if (!this.cooldown) {
+                    this.cooldown = true;
                     success = true;
                 }
             }
             
-            return success;
+            return !success;
         }
     }
 }

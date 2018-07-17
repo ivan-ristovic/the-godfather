@@ -43,7 +43,7 @@ namespace TheGodfather.Modules.Games.Common
         {
             Started = true;
 
-            var msg = await _channel.SendIconEmbedAsync("Race starting...")
+            var msg = await Channel.InformSuccessAsync("Race starting...")
                 .ConfigureAwait(false);
             while (!_participants.Any(p => p.Progress >= TRACK_SIZE)) {
                 await PrintRaceAsync(msg)

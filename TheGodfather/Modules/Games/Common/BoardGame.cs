@@ -47,10 +47,10 @@ namespace TheGodfather.Modules.Games.Common
 
         public sealed override async Task RunAsync()
         {
-            _msg = await _channel.SendMessageAsync($"{_p1.Mention} vs {_p2.Mention}")
+            _msg = await Channel.SendMessageAsync($"{_p1.Mention} vs {_p2.Mention}")
                 .ConfigureAwait(false);
 
-            while (TimedOut == false && _move < BOARD_SIZE_X * BOARD_SIZE_Y && !GameOver()) {
+            while (IsTimeoutReached == false && _move < BOARD_SIZE_X * BOARD_SIZE_Y && !GameOver()) {
                 await UpdateBoardAsync()
                     .ConfigureAwait(false);
                 await AdvanceAsync()
@@ -76,9 +76,9 @@ namespace TheGodfather.Modules.Games.Common
         {
             int row = 0, col = 0;
             bool player1plays = (_move % 2 == 0);
-            var mctx = await _interactivity.WaitForMessageAsync(
+            var mctx = await Interactivity.WaitForMessageAsync(
                 xm => {
-                    if (xm.Channel.Id != _channel.Id) return false;
+                    if (xm.Channel.Id != Channel.Id) return false;
                     if (player1plays && (xm.Author.Id != _p1.Id)) return false;
                     if (!player1plays && (xm.Author.Id != _p2.Id)) return false;
                     var split = xm.Content.Split(' ');
@@ -90,7 +90,7 @@ namespace TheGodfather.Modules.Games.Common
                 _movetime
             ).ConfigureAwait(false);
             if (mctx == null) {
-                TimedOut = true;
+                IsTimeoutReached = true;
                 Winner = player1plays ? _p2 : _p1;
                 return;
             }
@@ -102,13 +102,13 @@ namespace TheGodfather.Modules.Games.Common
                         await mctx.Message.DeleteAsync()
                             .ConfigureAwait(false);
                     } catch {
-                        await _channel.SendFailedEmbedAsync("Consider giving me the permissions to delete messages so that I can clean up the move posts.")
+                        await Channel.InformFailureAsync("Consider giving me the permissions to delete messages so that I can clean up the move posts.")
                             .ConfigureAwait(false);
                         _deletefailed = true;
                     }
                 }
             } else {
-                await _channel.SendFailedEmbedAsync($"Move [{row} {col}] is invalid.")
+                await Channel.InformFailureAsync($"Move [{row} {col}] is invalid.")
                     .ConfigureAwait(false);
             }
         }

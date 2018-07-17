@@ -11,12 +11,13 @@ using TheGodfather.Common.Collections;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Common;
-using TheGodfather.Services;
+using TheGodfather.Services.Database.Filters;
 
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using TheGodfather.Services.Database;
 #endregion
 
 namespace TheGodfather.Modules.Administration
@@ -24,7 +25,7 @@ namespace TheGodfather.Modules.Administration
     [Group("filter"), Module(ModuleType.Administration)]
     [Description("Message filtering commands. If invoked without subcommand, either lists all filters or adds a new filter for the given word list. Words can be regular expressions.")]
     [Aliases("f", "filters")]
-    [UsageExample("!filter fuck fk f+u+c+k+")]
+    [UsageExamples("!filter fuck fk f+u+c+k+")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     [NotBlocked]
     public class FilterModule : TheGodfatherBaseModule
@@ -48,7 +49,7 @@ namespace TheGodfather.Modules.Administration
         [Command("add"), Module(ModuleType.Administration)]
         [Description("Add filter to guild filter list.")]
         [Aliases("+", "new", "a")]
-        [UsageExample("!filter add fuck f+u+c+k+")]
+        [UsageExamples("!filter add fuck f+u+c+k+")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task AddAsync(CommandContext ctx,
                                   [RemainingText, Description("Filter list. Filter is a regular expression (case insensitive).")] params string[] filters)
@@ -68,7 +69,7 @@ namespace TheGodfather.Modules.Administration
                     continue;
                 }
 
-                if (Shared.TextTriggerExists(ctx.Guild.Id, filter)) {
+                if (Shared.GuildHasTextReaction(ctx.Guild.Id, filter)) {
                     errors.AppendLine($"Error: Filter {Formatter.Bold(filter)} cannot be added because of a conflict with an existing text trigger in this guild.");
                     continue;
                 }
@@ -100,7 +101,7 @@ namespace TheGodfather.Modules.Administration
                     id = await Database.AddFilterAsync(ctx.Guild.Id, filter)
                         .ConfigureAwait(false);
                 } catch (Exception e) {
-                    TheGodfather.LogProvider.LogException(LogLevel.Warning, e);
+                    Shared.LogProvider.LogException(LogLevel.Warning, e);
                     errors.AppendLine($"Warning: Failed to add filter {Formatter.Bold(filter)} to the database.");
                 }
 
@@ -124,7 +125,7 @@ namespace TheGodfather.Modules.Administration
                     .ConfigureAwait(false);
             }
 
-            await ctx.RespondWithIconEmbedAsync($"Done!\n\n{errlist}")
+            await ctx.InformSuccessAsync($"Done!\n\n{errlist}")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -133,22 +134,22 @@ namespace TheGodfather.Modules.Administration
         [Command("clear"), Module(ModuleType.Administration)]
         [Description("Delete all filters for the current guild.")]
         [Aliases("da", "c", "ca", "cl", "clearall")]
-        [UsageExample("!filter clear")]
+        [UsageExamples("!filter clear")]
         [RequireUserPermissions(Permissions.Administrator)]
         [UsesInteractivity]
         public async Task ClearAsync(CommandContext ctx)
         {
-            if (!await ctx.AskYesNoQuestionAsync("Are you sure you want to delete all filters for this guild?").ConfigureAwait(false))
+            if (!await ctx.WaitForBoolReplyAsync("Are you sure you want to delete all filters for this guild?").ConfigureAwait(false))
                 return;
 
             if (Shared.Filters.ContainsKey(ctx.Guild.Id))
                 Shared.Filters.TryRemove(ctx.Guild.Id, out _);
 
             try {
-                await Database.RemoveAllGuildFiltersAsync(ctx.Guild.Id)
+                await Database.RemoveFiltersForGuildAsync(ctx.Guild.Id)
                     .ConfigureAwait(false);
             } catch (Exception e) {
-                TheGodfather.LogProvider.LogException(LogLevel.Warning, e);
+                Shared.LogProvider.LogException(LogLevel.Warning, e);
                 throw new CommandFailedException("Failed to delete filters from the database.");
             }
 
@@ -164,7 +165,7 @@ namespace TheGodfather.Modules.Administration
                     .ConfigureAwait(false);
             }
 
-            await ctx.RespondWithIconEmbedAsync("Removed all filters!")
+            await ctx.InformSuccessAsync("Removed all filters!")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -174,7 +175,7 @@ namespace TheGodfather.Modules.Administration
         [Module(ModuleType.Administration)]
         [Description("Remove filters from guild filter list.")]
         [Aliases("-", "remove", "del", "rm", "rem", "d")]
-        [UsageExample("!filter delete fuck f+u+c+k+")]
+        [UsageExamples("!filter delete fuck f+u+c+k+")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task DeleteAsync(CommandContext ctx,
                                      [RemainingText, Description("Filters IDs to remove.")] params int[] ids)
@@ -193,7 +194,7 @@ namespace TheGodfather.Modules.Administration
                     await Database.RemoveFilterAsync(ctx.Guild.Id, id)
                         .ConfigureAwait(false);
                 } catch (Exception e) {
-                    TheGodfather.LogProvider.LogException(LogLevel.Warning, e);
+                    Shared.LogProvider.LogException(LogLevel.Warning, e);
                     errors.AppendLine($"Warning: Failed to remove filter with ID {Formatter.Bold(id.ToString())} from the database.");
                 }
             }
@@ -214,7 +215,7 @@ namespace TheGodfather.Modules.Administration
                     .ConfigureAwait(false);
             }
 
-            await ctx.RespondWithIconEmbedAsync($"Done!\n\n{errlist}")
+            await ctx.InformSuccessAsync($"Done!\n\n{errlist}")
                 .ConfigureAwait(false);
         }
 
@@ -237,7 +238,7 @@ namespace TheGodfather.Modules.Administration
                     await Database.RemoveFilterAsync(ctx.Guild.Id, filter)
                         .ConfigureAwait(false);
                 } catch (Exception e) {
-                    TheGodfather.LogProvider.LogException(LogLevel.Warning, e);
+                    Shared.LogProvider.LogException(LogLevel.Warning, e);
                     errors.AppendLine($"Warning: Failed to remove filter {Formatter.Bold(filter)} from the database.");
                 }
             }
@@ -258,7 +259,7 @@ namespace TheGodfather.Modules.Administration
                     .ConfigureAwait(false);
             }
 
-            await ctx.RespondWithIconEmbedAsync($"Done!\n\n{errlist}")
+            await ctx.InformSuccessAsync($"Done!\n\n{errlist}")
                 .ConfigureAwait(false);
         }
 
@@ -268,13 +269,13 @@ namespace TheGodfather.Modules.Administration
         [Command("list"), Module(ModuleType.Administration)]
         [Description("Show all filters for this guild.")]
         [Aliases("ls", "l")]
-        [UsageExample("!filter list")]
+        [UsageExamples("!filter list")]
         public async Task ListAsync(CommandContext ctx)
         {
             if (!Shared.Filters.ContainsKey(ctx.Guild.Id) || !Shared.Filters[ctx.Guild.Id].Any())
                 throw new CommandFailedException("No filters registered for this guild.");
 
-            await ctx.SendPaginatedCollectionAsync(
+            await ctx.SendCollectionInPagesAsync(
                 "Filters registered for this guild",
                 Shared.Filters[ctx.Guild.Id],
                 f => $"{f.Id} | {f.Trigger.ToString().Replace(@"\b", "")}",

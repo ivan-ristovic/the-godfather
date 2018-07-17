@@ -40,6 +40,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -90,25 +91,25 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AngleSharp, Version=0.9.9.0, Culture=neutral, PublicKeyToken=e83494dcdc6d31ea, processorArchitecture=MSIL">
-      <HintPath>..\packages\AngleSharp.0.9.9.2\lib\net45\AngleSharp.dll</HintPath>
+      <HintPath>..\packages\AngleSharp.0.9.10\lib\net45\AngleSharp.dll</HintPath>
     </Reference>
     <Reference Include="AutoMapper, Version=7.0.1.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
       <HintPath>..\packages\AutoMapper.7.0.1\lib\net45\AutoMapper.dll</HintPath>
     </Reference>
-    <Reference Include="DSharpPlus, Version=4.0.0.467, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\DSharpPlus.4.0.0-beta-00467\lib\net47\DSharpPlus.dll</HintPath>
+    <Reference Include="DSharpPlus, Version=4.0.0.470, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\DSharpPlus.4.0.0-beta-00470\lib\net47\DSharpPlus.dll</HintPath>
     </Reference>
-    <Reference Include="DSharpPlus.CommandsNext, Version=4.0.0.467, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\DSharpPlus.CommandsNext.4.0.0-beta-00467\lib\net47\DSharpPlus.CommandsNext.dll</HintPath>
+    <Reference Include="DSharpPlus.CommandsNext, Version=4.0.0.470, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\DSharpPlus.CommandsNext.4.0.0-beta-00470\lib\net47\DSharpPlus.CommandsNext.dll</HintPath>
     </Reference>
-    <Reference Include="DSharpPlus.Interactivity, Version=4.0.0.467, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\DSharpPlus.Interactivity.4.0.0-beta-00467\lib\net47\DSharpPlus.Interactivity.dll</HintPath>
+    <Reference Include="DSharpPlus.Interactivity, Version=4.0.0.470, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\DSharpPlus.Interactivity.4.0.0-beta-00470\lib\net47\DSharpPlus.Interactivity.dll</HintPath>
     </Reference>
-    <Reference Include="DSharpPlus.VoiceNext, Version=4.0.0.467, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\DSharpPlus.VoiceNext.4.0.0-beta-00467\lib\net47\DSharpPlus.VoiceNext.dll</HintPath>
+    <Reference Include="DSharpPlus.VoiceNext, Version=4.0.0.470, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\DSharpPlus.VoiceNext.4.0.0-beta-00470\lib\net47\DSharpPlus.VoiceNext.dll</HintPath>
     </Reference>
-    <Reference Include="DSharpPlus.WebSocket.WebSocket4Net, Version=4.0.0.467, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\DSharpPlus.WebSocket.WebSocket4Net.4.0.0-beta-00467\lib\net47\DSharpPlus.WebSocket.WebSocket4Net.dll</HintPath>
+    <Reference Include="DSharpPlus.WebSocket.WebSocket4Net, Version=4.0.0.470, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\DSharpPlus.WebSocket.WebSocket4Net.4.0.0-beta-00470\lib\net47\DSharpPlus.WebSocket.WebSocket4Net.dll</HintPath>
     </Reference>
     <Reference Include="GiphyDotNet, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\GiphyDotNet.1.0.0.0\lib\GiphyDotNet.dll</HintPath>
@@ -177,8 +178,8 @@
     <Reference Include="Newtonsoft.Json, Version=11.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.11.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="Npgsql, Version=4.0.1.0, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7, processorArchitecture=MSIL">
-      <HintPath>..\packages\Npgsql.4.0.1\lib\net451\Npgsql.dll</HintPath>
+    <Reference Include="Npgsql, Version=4.0.2.0, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Npgsql.4.0.2\lib\net451\Npgsql.dll</HintPath>
     </Reference>
     <Reference Include="RedditSharp, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\RedditSharp.2.0.0-CI00065\lib\net462\RedditSharp.dll</HintPath>
@@ -232,7 +233,7 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Interactive.Async, Version=3.2.0.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Interactive.Async.3.2.0-preview.620\lib\net46\System.Interactive.Async.dll</HintPath>
+      <HintPath>..\packages\System.Interactive.Async.3.2.0\lib\net46\System.Interactive.Async.dll</HintPath>
     </Reference>
     <Reference Include="System.IO, Version=4.1.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.IO.4.3.0\lib\net462\System.IO.dll</HintPath>
@@ -420,25 +421,32 @@
     <Compile Include="EventListeners\AsyncExecutionManager.cs" />
     <Compile Include="Common\Attributes\AsyncEventListenerAttribute.cs" />
     <Compile Include="Common\Attributes\ModuleAttribute.cs" />
-    <Compile Include="Common\Attributes\RequirePriviledgedUserAttribute.cs" />
-    <Compile Include="Common\Attributes\UsageExampleAttribute.cs" />
+    <Compile Include="Common\Attributes\RequirePrivilegedUserAttribute.cs" />
+    <Compile Include="Common\Attributes\UsageExamplesAttribute.cs" />
     <Compile Include="Common\Converters\CustomUriConverter.cs" />
     <Compile Include="Common\DatabaseConfig.cs" />
-    <Compile Include="Common\EventTypes.cs" />
+    <Compile Include="Common\DiscordEventType.cs" />
     <Compile Include="Common\GFRandom.cs" />
     <Compile Include="Common\PartialGuildConfig.cs" />
     <Compile Include="Common\SavedTaskExecuter.cs" />
-    <Compile Include="EventListeners\CommandListeners.cs" />
+    <Compile Include="EventListeners\Listeners.Command.cs" />
     <Compile Include="EventListeners\Common\LinkfilterMatch.cs" />
-    <Compile Include="EventListeners\Common\SuspiciousSites.cs" />
-    <Compile Include="EventListeners\LinkfilterListeners.cs" />
+    <Compile Include="EventListeners\Common\LinkfilterMatcherCollection.cs" />
+    <Compile Include="EventListeners\Listeners.Linkfilter.cs" />
+    <Compile Include="EventListeners\Listeners.cs" />
+    <Compile Include="Exceptions\ConcurrentOperationException.cs" />
+    <Compile Include="Extensions\CNextExtensions.cs" />
+    <Compile Include="Extensions\CommandContextExtensions.cs" />
+    <Compile Include="Extensions\DiscordGuildExtensions.cs" />
     <Compile Include="Extensions\HoldemExtensions.cs" />
+    <Compile Include="Extensions\InteractivityExtensions.cs" />
+    <Compile Include="Extensions\KeyValuePairExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
-    <Compile Include="EventListeners\MessageListeners.cs" />
-    <Compile Include="EventListeners\MemberListeners.cs" />
-    <Compile Include="EventListeners\GuildListeners.cs" />
-    <Compile Include="EventListeners\ChannelListeners.cs" />
-    <Compile Include="EventListeners\ClientListeners.cs" />
+    <Compile Include="EventListeners\Listeners.Message.cs" />
+    <Compile Include="EventListeners\Listeners.Members.cs" />
+    <Compile Include="EventListeners\Listeners.Guild.cs" />
+    <Compile Include="EventListeners\Listeners.Channel.cs" />
+    <Compile Include="EventListeners\Listeners.Client.cs" />
     <Compile Include="Modules\Administration\AutomaticRolesModule.cs" />
     <Compile Include="Modules\Administration\Common\Filter.cs" />
     <Compile Include="Modules\Administration\GuildModule.Config.Linkfilter.cs" />
@@ -446,6 +454,8 @@
     <Compile Include="Modules\Chickens\ChickenModule.Upgrades.cs" />
     <Compile Include="Modules\Chickens\ChickenModule.Train.cs" />
     <Compile Include="Modules\Chickens\ChickenModule.Buy.cs" />
+    <Compile Include="Modules\Chickens\Common\ChickenStats.cs" />
+    <Compile Include="Modules\Chickens\Common\ChickenUpgrade.cs" />
     <Compile Include="Modules\Currency\CasinoModule.Blackjack.cs" />
     <Compile Include="Modules\Currency\CasinoModule.Holdem.cs" />
     <Compile Include="Modules\Currency\CasinoModule.Lottery.cs" />
@@ -468,8 +478,8 @@
     <Compile Include="Modules\Games\GamesModule.TypingRace.cs" />
     <Compile Include="Modules\Misc\ShopModule.cs" />
     <Compile Include="Modules\Music\Common\MusicPlayer.cs" />
-    <Compile Include="Modules\Misc\Birthdays.cs" />
-    <Compile Include="Modules\Owner\OwnerModule.PriviledgedUsers.cs" />
+    <Compile Include="Modules\Misc\BirthdayModule.cs" />
+    <Compile Include="Modules\Owner\OwnerModule.PrivilegedUsers.cs" />
     <Compile Include="Modules\Polls\ReactionsPollModule.cs" />
     <Compile Include="Modules\Reactions\Common\EmojiReaction.cs" />
     <Compile Include="Modules\Reactions\Common\Reaction.cs" />
@@ -478,15 +488,14 @@
     <Compile Include="Modules\Music\MusicModule.Play.cs" />
     <Compile Include="Modules\Search\OMDbModule.cs" />
     <Compile Include="Modules\Search\XkcdModule.cs" />
-    <Compile Include="Services\Common\Birthday.cs" />
-    <Compile Include="Services\Common\Chicken.cs" />
-    <Compile Include="Services\Common\ChickenUpgrade.cs" />
+    <Compile Include="Modules\Misc\Common\Birthday.cs" />
+    <Compile Include="Modules\Chickens\Common\Chicken.cs" />
     <Compile Include="Services\Common\OMDbData.cs" />
     <Compile Include="Services\Common\PurchasableItem.cs" />
     <Compile Include="Services\Common\QuizData.cs" />
-    <Compile Include="Services\Common\Quotes.cs" />
+    <Compile Include="Services\Common\QuoteData.cs" />
     <Compile Include="Services\Common\SavedTask.cs" />
-    <Compile Include="Extensions\DSharpPlusExtensions.cs" />
+    <Compile Include="Extensions\DiscordChannelExtensions.cs" />
     <Compile Include="Modules\Owner\OwnerModule.BlockedUsers.cs" />
     <Compile Include="Modules\Owner\OwnerModule.BlockedChannels.cs" />
     <Compile Include="Services\Common\UrbanDictData.cs" />
@@ -528,18 +537,17 @@
     <Compile Include="Modules\Search\WeatherModule.cs" />
     <Compile Include="Modules\SWAT\SwatModule.Servers.cs" />
     <Compile Include="Services\Common\XkcdComic.cs" />
-    <Compile Include="Services\Common\YouTubeResponse.cs" />
     <Compile Include="Services\DatabaseService\DBService.Birthdays.cs" />
-    <Compile Include="Services\DatabaseService\DBService.PriviledgedUsers.cs" />
+    <Compile Include="Services\DatabaseService\DBService.Privileges.cs" />
     <Compile Include="Services\DatabaseService\DBService.SavedTasks.cs" />
     <Compile Include="Services\DatabaseService\DBService.Blocked.cs" />
     <Compile Include="Services\DatabaseService\DBService.Chickens.cs" />
     <Compile Include="Services\DatabaseService\DBService.Shop.cs" />
     <Compile Include="Services\DatabaseService\DBService.SpecialRoles.cs" />
-    <Compile Include="Services\IGodfatherService.cs" />
+    <Compile Include="Services\ITheGodfatherService.cs" />
     <Compile Include="Modules\TheGodfatherBaseModule.cs" />
     <Compile Include="Modules\Search\JokesModule.cs" />
-    <Compile Include="Exceptions\DatabaseServiceException.cs" />
+    <Compile Include="Exceptions\DatabaseOperationException.cs" />
     <Compile Include="Modules\TheGodfatherServiceModule.cs" />
     <Compile Include="Services\DatabaseService\DBService.Ranks.cs" />
     <Compile Include="Services\Common\FeedEntry.cs" />
@@ -582,7 +590,7 @@
     <Compile Include="Services\MemeGenService.cs" />
     <Compile Include="Services\OMDbService.cs" />
     <Compile Include="Services\PetImagesService.cs" />
-    <Compile Include="Services\HttpService.cs" />
+    <Compile Include="Services\TheGodfatherHttpService.cs" />
     <Compile Include="Services\QuizService.cs" />
     <Compile Include="Services\QuoteService.cs" />
     <Compile Include="Services\WeatherService.cs" />
@@ -599,15 +607,14 @@
     <Compile Include="Services\DatabaseService\DBService.Reactions.cs" />
     <Compile Include="Services\DatabaseService\DBService.Stats.cs" />
     <Compile Include="Services\DatabaseService\DBService.Statuses.cs" />
-    <Compile Include="Services\DatabaseService\DBService.SWAT.cs" />
+    <Compile Include="Services\DatabaseService\DBService.Swat.cs" />
     <Compile Include="Services\RSSService.cs" />
-    <Compile Include="Services\Common\Subscription.cs" />
     <Compile Include="Services\GiphyService.cs" />
     <Compile Include="Services\ImgurService.cs" />
     <Compile Include="Services\JokesService.cs" />
     <Compile Include="Services\SteamService.cs" />
     <Compile Include="Services\UrbanDictService.cs" />
-    <Compile Include="Services\YoutubeService.cs" />
+    <Compile Include="Services\YtService.cs" />
     <Compile Include="SharedData.cs" />
     <Compile Include="TheGodfatherShard.cs" />
   </ItemGroup>

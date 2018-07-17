@@ -8,23 +8,25 @@ namespace TheGodfather.Common
     public sealed class GFRandom
     {
         private static GFRandom _instance;
-        public static GFRandom Generator
-        {
+        public static GFRandom Generator {
             get {
                 if (_instance == null)
                     _instance = new GFRandom();
                 return _instance;
             }
         }
-        
-        private RandomNumberGenerator _rng = RandomNumberGenerator.Create();
+
+        private readonly RandomNumberGenerator rng;
 
 
-        private GFRandom() { }
+        private GFRandom()
+        {
+            this.rng = RandomNumberGenerator.Create();
+        }
 
         ~GFRandom()
         {
-            _rng.Dispose();
+            this.rng.Dispose();
         }
 
 
@@ -36,8 +38,8 @@ namespace TheGodfather.Common
             if (count <= 0)
                 throw new ArgumentOutOfRangeException(nameof(count), "Must get at least 1 byte.");
 
-            var bytes = new byte[count];
-            _rng.GetBytes(bytes);
+            byte[] bytes = new byte[count];
+            this.rng.GetBytes(bytes);
             return bytes;
         }
 
@@ -47,7 +49,7 @@ namespace TheGodfather.Common
                 throw new ArgumentOutOfRangeException(nameof(count), "Must get at least 1 byte.");
 
             bytes = new byte[count];
-            _rng.GetBytes(bytes);
+            this.rng.GetBytes(bytes);
         }
 
         public byte GetU8()
@@ -85,7 +87,7 @@ namespace TheGodfather.Common
             if (max <= min)
                 throw new ArgumentOutOfRangeException(nameof(max), "Maximum needs to be greater than minimum.");
 
-            var offset = 0;
+            int offset = 0;
             if (min < 0)
                 offset = -min;
 
