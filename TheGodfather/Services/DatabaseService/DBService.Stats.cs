@@ -102,6 +102,7 @@ namespace TheGodfather.Services.Database.Stats
             return emb.Build();
         }
 
+
         private static async Task<IEnumerable<GameStats>> GetOrderedGameStatsAsync(this DBService db, string orderstr, params string[] selectors)
         {
             IReadOnlyList<IReadOnlyDictionary<string, string>> res = await db.ExecuteRawQueryAsync($@"
@@ -125,7 +126,7 @@ namespace TheGodfather.Services.Database.Stats
                 try {
                     var u = await client.GetUserAsync(stats.UserId)
                         .ConfigureAwait(false);
-                    sb.Append(u.Username);
+                    sb.Append(u.Mention);
                     sb.Append(": ");
                 } catch (NotFoundException) {
                     sb.Append("<unknown name>: ");
@@ -146,7 +147,7 @@ namespace TheGodfather.Services.Database.Stats
                 try {
                     var u = await client.GetUserAsync(stats.UserId)
                         .ConfigureAwait(false);
-                    sb.Append(u.Username);
+                    sb.Append(u.Mention);
                     sb.Append(": ");
                 } catch (NotFoundException) {
                     sb.Append("<unknown name>: ");
@@ -167,7 +168,7 @@ namespace TheGodfather.Services.Database.Stats
                 try {
                     var u = await client.GetUserAsync(stats.UserId)
                         .ConfigureAwait(false);
-                    sb.Append(u.Username);
+                    sb.Append(u.Mention);
                     sb.Append(": ");
                 } catch (NotFoundException) {
                     sb.Append("<unknown name>: ");
@@ -188,7 +189,7 @@ namespace TheGodfather.Services.Database.Stats
                 try {
                     var u = await client.GetUserAsync(stats.UserId)
                         .ConfigureAwait(false);
-                    sb.Append(u.Username);
+                    sb.Append(u.Mention);
                     sb.Append(": ");
                 } catch (NotFoundException) {
                     sb.Append("<unknown name>: ");
@@ -209,7 +210,7 @@ namespace TheGodfather.Services.Database.Stats
                 try {
                     var u = await client.GetUserAsync(stats.UserId)
                         .ConfigureAwait(false);
-                    sb.Append(u.Username);
+                    sb.Append(u.Mention);
                     sb.Append(": ");
                 } catch (NotFoundException) {
                     sb.Append("<unknown name>: ");
@@ -230,7 +231,7 @@ namespace TheGodfather.Services.Database.Stats
                 try {
                     var u = await client.GetUserAsync(stats.UserId)
                         .ConfigureAwait(false);
-                    sb.Append(u.Username);
+                    sb.Append(u.Mention);
                     sb.Append(": ");
                 } catch (NotFoundException) {
                     sb.Append("<unknown name>: ");
@@ -251,7 +252,7 @@ namespace TheGodfather.Services.Database.Stats
                 try {
                     var u = await client.GetUserAsync(stats.UserId)
                         .ConfigureAwait(false);
-                    sb.Append(u.Username);
+                    sb.Append(u.Mention);
                     sb.Append(": ");
                 } catch (NotFoundException) {
                     sb.Append("<unknown name>: ");
@@ -272,7 +273,7 @@ namespace TheGodfather.Services.Database.Stats
                 try {
                     var u = await client.GetUserAsync(stats.UserId)
                         .ConfigureAwait(false);
-                    sb.Append(u.Username);
+                    sb.Append(u.Mention);
                     sb.Append(": ");
                 } catch (NotFoundException) {
                     sb.Append("<unknown name>: ");
@@ -293,7 +294,7 @@ namespace TheGodfather.Services.Database.Stats
                 try {
                     var u = await client.GetUserAsync(stats.UserId)
                         .ConfigureAwait(false);
-                    sb.Append(u.Username);
+                    sb.Append(u.Mention);
                     sb.Append(": ");
                 } catch (NotFoundException) {
                     sb.Append("<unknown name>: ");

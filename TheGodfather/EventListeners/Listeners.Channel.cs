@@ -78,7 +78,8 @@ namespace TheGodfather.EventListeners
                 string content = string.IsNullOrWhiteSpace(pinned.First().Content) ? "<embedded message>" : pinned.First().Content;
                 emb.AddField("Content", Formatter.BlockCode(Formatter.Sanitize(content)));
             }
-            emb.AddField("Last pin timestamp", BuildUTCString(e.LastPinTimestamp));
+            if (e.LastPinTimestamp != null)
+                emb.AddField("Last pin timestamp", BuildUTCString(e.LastPinTimestamp.Value));
 
             await logchn.SendMessageAsync(embed: emb.Build());
         }
