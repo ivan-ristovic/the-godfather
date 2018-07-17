@@ -58,7 +58,7 @@ namespace TheGodfather.Services.Common
         }
 
 
-        public DiscordEmbedBuilder GetEmbedBuilder()
+        public DiscordEmbedBuilder ToPartialDiscordEmbed()
         {
             var emb = new DiscordEmbedBuilder() {
                 Color = DiscordColor.Chartreuse
@@ -77,7 +77,7 @@ namespace TheGodfather.Services.Common
 
         public DiscordEmbed ToDiscordEmbed(DiscordUser user)
         {
-            DiscordEmbedBuilder emb = this.GetEmbedBuilder();
+            DiscordEmbedBuilder emb = this.ToPartialDiscordEmbed();
             emb.WithTitle($"Stats for {user.Username}");
             emb.WithThumbnailUrl(user.AvatarUrl);
             return emb.Build();
