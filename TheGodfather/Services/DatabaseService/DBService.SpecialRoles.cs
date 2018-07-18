@@ -115,7 +115,7 @@ namespace TheGodfather.Services.Database.SpecialRoles
             await db.ExecuteCommandAsync(async (cmd) => {
                 cmd.CommandText = "SELECT rid FROM gf.assignable_roles WHERE gid = @gid AND rid = @rid LIMIT 1;";
                 cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
-                cmd.Parameters.Add(new NpgsqlParameter<long>("rid", (long)gid));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("rid", (long)rid));
 
                 object res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
                 if (res != null && !(res is DBNull))
