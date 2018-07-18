@@ -59,7 +59,7 @@ namespace TheGodfather.Services.Database.Stats
 
                 cmd.CommandText = $"INSERT INTO gf.stats (uid, {col}) VALUES (@uid, @add) ON CONFLICT (uid) DO UPDATE SET {col} = stats.{col} + @add;";
                 cmd.Parameters.Add(new NpgsqlParameter<long>("uid", (long)uid));
-                cmd.Parameters.Add(new NpgsqlParameter<int>("uid", add));
+                cmd.Parameters.Add(new NpgsqlParameter<int>("add", add));
 
                 return cmd.ExecuteNonQueryAsync();
             });

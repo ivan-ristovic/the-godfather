@@ -82,14 +82,13 @@ namespace TheGodfather
 
         public ushort IncrementMessageCountForUser(ulong uid)
         {
-            ushort prev = CalculateRankForMessageCount(this.MessageCount[uid]);
-
             if (this.MessageCount.ContainsKey(uid)) {
                 this.MessageCount[uid]++;
             } else if (!this.MessageCount.TryAdd(uid, 1)) {
                 return 0;
             }
 
+            ushort prev = CalculateRankForMessageCount(this.MessageCount[uid] - 1);
             ushort curr = CalculateRankForMessageCount(this.MessageCount[uid]);
 
             return curr != prev ? curr : (ushort)0;
