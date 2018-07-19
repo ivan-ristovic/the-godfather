@@ -27,7 +27,7 @@ namespace TheGodfather.Modules.Games
         [Aliases("animr", "arace", "ar", "animalr")]
         [UsageExamples("!game animalrace")]
         [NotBlocked]
-        public class AnimalRaceModule : TheGodfatherBaseModule
+        public class AnimalRaceModule : TheGodfatherModule
         {
 
             public AnimalRaceModule(DBService db) : base(db: db) { }

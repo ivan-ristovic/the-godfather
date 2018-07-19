@@ -19,13 +19,13 @@ using TheGodfather.Services.Database;
 
 namespace TheGodfather.Modules.Games
 {
-    public partial class GamesModule : TheGodfatherBaseModule
+    public partial class GamesModule : TheGodfatherModule
     {
         [Group("duel"), Module(ModuleType.Games)]
         [Description("Starts a duel which I will commentate.")]
         [Aliases("fight", "vs", "d")]
         [UsageExamples("!game duel @Someone")]
-        public class DuelModule : TheGodfatherBaseModule
+        public class DuelModule : TheGodfatherModule
         {
 
             public DuelModule(DBService db) : base(db: db) { }

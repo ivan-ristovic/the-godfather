@@ -20,13 +20,13 @@ using TheGodfather.Services.Database;
 
 namespace TheGodfather.Modules.Games
 {
-    public partial class GamesModule : TheGodfatherBaseModule
+    public partial class GamesModule : TheGodfatherModule
     {
         [Group("hangman"), Module(ModuleType.Games)]
         [Description("Starts a hangman game.")]
         [Aliases("h", "hang")]
         [UsageExamples("!game hangman")]
-        public class HangmanModule : TheGodfatherBaseModule
+        public class HangmanModule : TheGodfatherModule
         {
 
             public HangmanModule(DBService db) : base(db: db) { }

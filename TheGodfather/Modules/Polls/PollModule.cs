@@ -22,7 +22,7 @@ namespace TheGodfather.Modules.Polls
                    "!poll 5m Do you vote for User1 or User2?")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     [NotBlocked, UsesInteractivity]
-    public class PollModule : TheGodfatherBaseModule
+    public class PollModule : TheGodfatherModule
     {
 
         [GroupCommand, Priority(2)]

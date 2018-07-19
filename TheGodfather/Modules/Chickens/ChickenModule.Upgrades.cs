@@ -27,7 +27,7 @@ namespace TheGodfather.Modules.Chickens
         [Description("Upgrade your chicken with items you can buy using your credits from WM bank. Invoking the group lists all upgrades available.")]
         [Aliases("perks", "upgrade", "u")]
         [UsageExamples("!chicken upgrade")]
-        public class UpgradeModule : TheGodfatherBaseModule
+        public class UpgradeModule : TheGodfatherModule
         {
 
             public UpgradeModule(DBService db) : base(db: db) { }

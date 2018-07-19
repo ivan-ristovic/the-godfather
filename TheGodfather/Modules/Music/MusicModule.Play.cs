@@ -36,7 +36,7 @@ namespace TheGodfather.Modules.Music
             public async Task ExecuteGroupAsync(CommandContext ctx,
                                                [Description("URL.")] Uri url)
             {
-                var si = await _Service.GetSongInfoAsync(url.AbsoluteUri)
+                var si = await Service.GetSongInfoAsync(url.AbsoluteUri)
                     .ConfigureAwait(false);
 
                 if (si == null)
@@ -51,13 +51,13 @@ namespace TheGodfather.Modules.Music
             public async Task ExecuteGroupAsync(CommandContext ctx,
                                                [RemainingText, Description("YouTube search query.")] string query)
             {
-                var result = await _Service.GetFirstVideoResultAsync(query)
+                var result = await Service.GetFirstVideoResultAsync(query)
                     .ConfigureAwait(false);
 
                 if (string.IsNullOrWhiteSpace(result))
                     throw new CommandFailedException("No results found!");
 
-                var si = await _Service.GetSongInfoAsync(result)
+                var si = await Service.GetSongInfoAsync(result)
                     .ConfigureAwait(false);
                 if (si == null)
                     throw new CommandFailedException("Failed to retrieve song information for that query.");

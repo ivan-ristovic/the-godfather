@@ -19,14 +19,14 @@ using TheGodfather.Services.Database;
 
 namespace TheGodfather.Modules.Games
 {
-    public partial class GamesModule : TheGodfatherBaseModule
+    public partial class GamesModule : TheGodfatherModule
     {
         [Group("tictactoe"), Module(ModuleType.Games)]
         [Description("Starts a \"Tic-Tac-Toe\" game. Play a move by writing a number from 1 to 9 corresponding to the field where you wish to play. You can also specify a time window in which player must submit their move.")]
         [Aliases("ttt")]
         [UsageExamples("!game tictactoe",
                        "!game tictactoe 10s")]
-        public class TicTacToeModule : TheGodfatherBaseModule
+        public class TicTacToeModule : TheGodfatherModule
         {
 
             public TicTacToeModule(DBService db) : base(db: db) { }

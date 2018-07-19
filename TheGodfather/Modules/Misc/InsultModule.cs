@@ -23,7 +23,7 @@ namespace TheGodfather.Modules.Misc
     [UsageExamples("!insult @Someone")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     [NotBlocked]
-    public class InsultModule : TheGodfatherBaseModule
+    public class InsultModule : TheGodfatherModule
     {
 
         public InsultModule(DBService db) : base(db: db) { }

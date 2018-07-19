@@ -23,7 +23,7 @@ namespace TheGodfather.Modules.Misc
     [UsageExamples("!shop")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     [NotBlocked]
-    public class ShopModule : TheGodfatherBaseModule
+    public class ShopModule : TheGodfatherModule
     {
 
         public ShopModule(DBService db) : base(db: db) { }

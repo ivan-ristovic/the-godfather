@@ -89,7 +89,7 @@ namespace TheGodfather.Modules.Search
             if (string.IsNullOrWhiteSpace(url))
                 throw new InvalidCommandUsageException("Channel URL missing.");
 
-            var chid = await _Service.ExtractChannelIdAsync(url)
+            var chid = await Service.ExtractChannelIdAsync(url)
                 .ConfigureAwait(false);
 
             if (chid == null)
@@ -119,7 +119,7 @@ namespace TheGodfather.Modules.Search
             await Database.RemoveSubscriptionByNameAsync(ctx.Channel.Id, name_url)
                 .ConfigureAwait(false);
 
-            var chid = await _Service.ExtractChannelIdAsync(name_url)
+            var chid = await Service.ExtractChannelIdAsync(name_url)
                 .ConfigureAwait(false);
             if (chid != null) {
                 var feedurl = YtService.GetRssUrlForChannel(chid);
@@ -142,7 +142,7 @@ namespace TheGodfather.Modules.Search
             if (amount < 1 || amount > 10)
                 throw new CommandFailedException("Invalid amount (must be 1-10).");
 
-            var pages = await _Service.GetPaginatedResultsAsync(query, amount, type)
+            var pages = await Service.GetPaginatedResultsAsync(query, amount, type)
                 .ConfigureAwait(false);
             if (pages == null) {
                 await ctx.InformFailureAsync("No results found!")

@@ -27,7 +27,7 @@ namespace TheGodfather.Modules.Chickens
     [UsageExamples("!chicken",
                    "!chicken @Someone")]
     [NotBlocked]
-    public partial class ChickenModule : TheGodfatherBaseModule
+    public partial class ChickenModule : TheGodfatherModule
     {
 
         public ChickenModule(DBService db) : base(db: db) { }

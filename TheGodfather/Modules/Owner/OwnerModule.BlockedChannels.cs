@@ -28,7 +28,7 @@ namespace TheGodfather.Modules.Owner
         [Aliases("bc", "blockedc", "blockchannel", "bchannels", "bchannel", "bchn")]
         [RequirePrivilegedUser]
         [NotBlocked]
-        public class BlockedChannelsModule : TheGodfatherBaseModule
+        public class BlockedChannelsModule : TheGodfatherModule
         {
 
             public BlockedChannelsModule(SharedData shared, DBService db) : base(shared, db) { }

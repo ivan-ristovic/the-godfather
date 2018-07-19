@@ -31,7 +31,7 @@ namespace TheGodfather.Modules.Owner
     [Aliases("admin", "o")]
     [Hidden]
     [Cooldown(3, 5, CooldownBucketType.Global)]
-    public partial class OwnerModule : TheGodfatherBaseModule
+    public partial class OwnerModule : TheGodfatherModule
     {
 
         public OwnerModule(SharedData shared, DBService db) : base(shared, db) { }
@@ -81,7 +81,7 @@ namespace TheGodfather.Modules.Owner
                 throw new CommandFailedException("URL must point to an image and use http or https protocols.");
 
             try {
-                var stream = await HTTPClient.GetStreamAsync(url)
+                var stream = await _http.GetStreamAsync(url)
                    .ConfigureAwait(false);
                 using (var ms = new MemoryStream()) {
                     await stream.CopyToAsync(ms)

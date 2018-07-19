@@ -24,7 +24,7 @@ namespace TheGodfather.Modules.SWAT
         [Aliases("s", "srv")]
         [RequireOwner]
         [Hidden]
-        public class SwatServersModule : TheGodfatherBaseModule
+        public class SwatServersModule : TheGodfatherModule
         {
 
             public SwatServersModule(DBService db) : base(db: db) { }

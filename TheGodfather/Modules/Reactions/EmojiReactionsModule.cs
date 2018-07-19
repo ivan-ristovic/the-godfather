@@ -27,7 +27,7 @@ namespace TheGodfather.Modules.Reactions
     [UsageExamples("!emojireaction :smile: haha laughing")]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
     [NotBlocked]
-    public class EmojiReactionsModule : TheGodfatherBaseModule
+    public class EmojiReactionsModule : TheGodfatherModule
     {
 
         public EmojiReactionsModule(SharedData shared, DBService db) : base(shared, db) { }
@@ -241,7 +241,7 @@ namespace TheGodfather.Modules.Reactions
 
             var errors = new StringBuilder();
             foreach (var trigger in triggers.Select(t => t.ToLowerInvariant())) {
-                if (!IsValidRegex(trigger)) {
+                if (!trigger.IsValidRegex()) {
                     errors.AppendLine($"Error: Trigger {Formatter.Bold(trigger)} is not a valid regular expression.");
                     continue;
                 }
@@ -331,7 +331,7 @@ namespace TheGodfather.Modules.Reactions
                 if (!Shared.EmojiReactions.ContainsKey(ctx.Guild.Id))
                     Shared.EmojiReactions.TryAdd(ctx.Guild.Id, new ConcurrentHashSet<EmojiReaction>());
 
-                if (!IsValidRegex(trigger)) {
+                if (!trigger.IsValidRegex()) {
                     errors.AppendLine($"Error: Trigger {Formatter.Bold(trigger)} is not a valid regular expression.");
                     continue;
                 }

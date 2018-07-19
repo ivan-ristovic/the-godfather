@@ -28,7 +28,7 @@ namespace TheGodfather.Modules.Owner
         [Aliases("bu", "blockedu", "blockuser", "busers", "buser", "busr")]
         [RequirePrivilegedUser]
         [NotBlocked]
-        public class BlockedUsersModule : TheGodfatherBaseModule
+        public class BlockedUsersModule : TheGodfatherModule
         {
 
             public BlockedUsersModule(SharedData shared, DBService db) : base(shared, db) { }
