@@ -1,11 +1,26 @@
 ﻿#region USING_DIRECTIVES
 using System;
+using System.Text.RegularExpressions;
 #endregion
 
 namespace TheGodfather.Extensions
 {
     public static class StringExtensions
     {
+        public static bool IsValidRegex(this string pattern)
+        {
+            if (string.IsNullOrEmpty(pattern))
+                return false;
+
+            try {
+                Regex.Match("", pattern);
+            } catch (ArgumentException) {
+                return false;
+            }
+
+            return true;
+        }
+
         // http://www.dotnetperls.com/levenshtein
         public static int LevenshteinDistance(this string s, string t)
         {
@@ -41,6 +56,16 @@ namespace TheGodfather.Extensions
 
             // Step 7
             return d[n, m];
+        }
+
+        public static bool TryParseRegex(this string pattern, out Regex result)
+        {
+            result = null;
+            if (!IsValidRegex(pattern))
+                return false;
+
+            result = new Regex($@"\b{pattern}\b", RegexOptions.IgnoreCase);
+            return true;
         }
     }
 }

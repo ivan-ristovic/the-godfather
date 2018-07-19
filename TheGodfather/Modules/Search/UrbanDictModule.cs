@@ -24,7 +24,7 @@ namespace TheGodfather.Modules.Search
     [UsageExamples("!urbandict blonde")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     [NotBlocked]
-    public class UrbanDictModule : TheGodfatherBaseModule
+    public class UrbanDictModule : TheGodfatherModule
     {
 
         [GroupCommand]

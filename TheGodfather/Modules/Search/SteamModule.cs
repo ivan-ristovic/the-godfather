@@ -31,7 +31,7 @@ namespace TheGodfather.Modules.Search
         public async Task InfoAsync(CommandContext ctx,
                                    [Description("ID.")] ulong id)
         {
-            var em = await _Service.GetEmbeddedInfoAsync(id)
+            var em = await Service.GetEmbeddedInfoAsync(id)
                 .ConfigureAwait(false);
 
             if (em == null) {

@@ -23,7 +23,7 @@ namespace TheGodfather.Modules.Search
     [UsageExamples("!rss https://news.google.com/news/rss/")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     [NotBlocked]
-    public class RSSModule : TheGodfatherBaseModule
+    public class RSSModule : TheGodfatherModule
     {
 
         public RSSModule(DBService db) : base(db: db) { }

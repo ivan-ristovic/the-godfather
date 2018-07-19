@@ -21,13 +21,13 @@ namespace TheGodfather.Modules.Administration
 {
     public partial class GuildModule
     {
-        public partial class ConfigModule : TheGodfatherBaseModule
+        public partial class ConfigModule : TheGodfatherModule
         {
             [Group("linkfilter"), Module(ModuleType.Administration)]
             [Description("Linkfilter configuration.")]
             [Aliases("lf", "linkf", "linkremove", "filterlinks")]
             [UsageExamples("!guild cfg linkfilter")]
-            public class LinkFilter : TheGodfatherBaseModule
+            public class LinkFilter : TheGodfatherModule
             {
 
                 public LinkFilter(SharedData shared, DBService db) : base(shared, db) { }

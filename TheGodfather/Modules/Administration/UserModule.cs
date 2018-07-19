@@ -25,7 +25,7 @@ namespace TheGodfather.Modules.Administration
     [Aliases("users", "u", "usr")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     [NotBlocked]
-    public class UserModule : TheGodfatherBaseModule
+    public class UserModule : TheGodfatherModule
     {
 
         public UserModule(SharedData shared, DBService db) : base(shared, db) { }

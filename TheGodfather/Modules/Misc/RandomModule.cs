@@ -21,7 +21,7 @@ namespace TheGodfather.Modules.Misc
     [Aliases("rnd", "rand")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     [NotBlocked]
-    public class CommandsRandomGroup : TheGodfatherBaseModule
+    public class CommandsRandomGroup : TheGodfatherModule
     {
         #region COMMAND_CAT
         [Command("cat"), Module(ModuleType.Miscellaneous)]

@@ -17,7 +17,7 @@ namespace TheGodfather.Modules.Polls
 {
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     [NotBlocked, UsesInteractivity]
-    public class ReactionsPollModule : TheGodfatherBaseModule
+    public class ReactionsPollModule : TheGodfatherModule
     {
         #region COMMAND_REACTIONSPOLL
         [Command("reactionspoll"), Priority(1)]

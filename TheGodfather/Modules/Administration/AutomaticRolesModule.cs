@@ -24,7 +24,7 @@ namespace TheGodfather.Modules.Administration
                    "!ar @Guests")]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
     [NotBlocked]
-    public class AutomaticRolesModule : TheGodfatherBaseModule
+    public class AutomaticRolesModule : TheGodfatherModule
     {
 
         public AutomaticRolesModule(SharedData shared, DBService db) : base(shared, db) { }

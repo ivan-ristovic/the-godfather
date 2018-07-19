@@ -26,7 +26,7 @@ namespace TheGodfather.Modules.Games
         [Aliases("tr", "trace", "typerace", "typing", "typingr")]
         [UsageExamples("!game typingrace")]
         [NotBlocked]
-        public class TypingRaceModule : TheGodfatherBaseModule
+        public class TypingRaceModule : TheGodfatherModule
         {
 
             [GroupCommand]

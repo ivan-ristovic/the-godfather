@@ -28,7 +28,7 @@ namespace TheGodfather.Modules.Chickens
         [Description("Start an ambush for another user's chicken. Other users can put their chickens into your ambush and collectively attack the target chicken combining their strength.")]
         [Aliases("gangattack")]
         [UsageExamples("!chicken ambush @Someone")]
-        public class AmbushModule : TheGodfatherBaseModule
+        public class AmbushModule : TheGodfatherModule
         {
 
             public AmbushModule(DBService db) : base(db: db) { }

@@ -26,7 +26,7 @@ namespace TheGodfather.Modules.SWAT
     [Aliases("s4", "swat4")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     [NotBlocked]
-    public partial class SwatModule : TheGodfatherBaseModule
+    public partial class SwatModule : TheGodfatherModule
     {
         public static ConcurrentDictionary<ulong, CancellationTokenSource> SpaceCheckingCTS { get; } = new ConcurrentDictionary<ulong, CancellationTokenSource>();
 

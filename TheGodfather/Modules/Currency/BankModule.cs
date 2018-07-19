@@ -26,7 +26,7 @@ namespace TheGodfather.Modules.Currency
     [UsageExamples("!bank",
                    "!bank @Someone")]
     [NotBlocked]
-    public class BankModule : TheGodfatherBaseModule
+    public class BankModule : TheGodfatherModule
     {
 
         public BankModule(DBService db) : base(db: db) { }

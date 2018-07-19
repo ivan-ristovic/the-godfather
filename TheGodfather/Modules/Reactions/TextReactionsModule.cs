@@ -28,7 +28,7 @@ namespace TheGodfather.Modules.Reactions
                    "!textreaction \"hi\" \"Hello, %user%!\"")]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
     [NotBlocked]
-    public class TextReactionsModule : TheGodfatherBaseModule
+    public class TextReactionsModule : TheGodfatherModule
     {
 
         public TextReactionsModule(SharedData shared, DBService db) : base(shared, db) { }
@@ -181,7 +181,7 @@ namespace TheGodfather.Modules.Reactions
                 if (string.IsNullOrWhiteSpace(trigger))
                     continue;
 
-                if (!IsValidRegex(trigger)) {
+                if (!trigger.IsValidRegex()) {
                     errors.AppendLine($"Error: Trigger {Formatter.Bold(trigger)} is not a valid regular expression.");
                     continue;
                 }
@@ -270,7 +270,7 @@ namespace TheGodfather.Modules.Reactions
             if (!Shared.TextReactions.ContainsKey(ctx.Guild.Id))
                 Shared.TextReactions.TryAdd(ctx.Guild.Id, new ConcurrentHashSet<TextReaction>());
 
-            if (is_regex_trigger && !IsValidRegex(trigger))
+            if (is_regex_trigger && !trigger.IsValidRegex())
                 throw new CommandFailedException($"Trigger {Formatter.Bold(trigger)} is not a valid regular expression.");
 
             if (Shared.GuildHasTextReaction(ctx.Guild.Id, trigger))

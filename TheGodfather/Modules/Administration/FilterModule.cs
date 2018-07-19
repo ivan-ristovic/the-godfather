@@ -28,7 +28,7 @@ namespace TheGodfather.Modules.Administration
     [UsageExamples("!filter fuck fk f+u+c+k+")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     [NotBlocked]
-    public class FilterModule : TheGodfatherBaseModule
+    public class FilterModule : TheGodfatherModule
     {
 
         public FilterModule(SharedData shared, DBService db) : base(shared, db) { }
@@ -74,7 +74,7 @@ namespace TheGodfather.Modules.Administration
                     continue;
                 }
 
-                if (!TryParseRegex(filter, out var regex)) {
+                if (!filter.TryParseRegex(out var regex)) {
                     errors.AppendLine($"Error: Filter {Formatter.Bold(filter)} is not a valid regular expression.");
                     continue;
                 }

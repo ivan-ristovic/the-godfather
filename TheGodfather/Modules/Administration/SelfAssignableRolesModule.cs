@@ -24,7 +24,7 @@ namespace TheGodfather.Modules.Administration
                    "!sar @Announcements")]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
     [NotBlocked]
-    public class SelfAssignableRolesModule : TheGodfatherBaseModule
+    public class SelfAssignableRolesModule : TheGodfatherModule
     {
 
         public SelfAssignableRolesModule(SharedData shared, DBService db) : base(shared, db) { }

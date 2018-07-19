@@ -25,7 +25,7 @@ namespace TheGodfather.Modules.Chickens
         [Aliases("tr", "t", "exercise")]
         [UsageExamples("!chicken train")]
         [UsesInteractivity]
-        public class TrainModule : TheGodfatherBaseModule
+        public class TrainModule : TheGodfatherModule
         {
 
             public TrainModule(DBService db) : base(db: db) { }

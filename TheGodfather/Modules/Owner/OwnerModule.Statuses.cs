@@ -22,7 +22,7 @@ namespace TheGodfather.Modules.Owner
         [Aliases("status", "botstatus", "activity", "activities")]
         [RequireOwner]
         [NotBlocked]
-        public class StatusModule : TheGodfatherBaseModule
+        public class StatusModule : TheGodfatherModule
         {
 
             public StatusModule(SharedData shared, DBService db) : base(shared, db) { }

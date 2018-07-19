@@ -27,7 +27,7 @@ namespace TheGodfather.Modules.Chickens
         [Aliases("b", "shop")]
         [UsageExamples("!chicken buy My Chicken Name")]
         [UsesInteractivity]
-        public class BuyModule : TheGodfatherBaseModule
+        public class BuyModule : TheGodfatherModule
         {
 
             public BuyModule(DBService db) : base(db: db) { }

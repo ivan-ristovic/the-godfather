@@ -22,7 +22,7 @@ namespace TheGodfather.Modules.Games
     [Aliases("games", "gm")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     [NotBlocked]
-    public partial class GamesModule : TheGodfatherBaseModule
+    public partial class GamesModule : TheGodfatherModule
     {
 
         public GamesModule(DBService db) : base(db: db) { }

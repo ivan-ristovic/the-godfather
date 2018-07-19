@@ -182,7 +182,7 @@ namespace TheGodfather.EventListeners
             }
 
             DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
-            if (logchn == null || e.Message?.EditedTimestamp == null)
+            if (logchn == null || !e.Message.IsEdited)
                 return;
 
             string pcontent = string.IsNullOrWhiteSpace(e.MessageBefore?.Content) ? "" : e.MessageBefore.Content.Truncate(750);

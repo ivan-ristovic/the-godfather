@@ -25,7 +25,7 @@ namespace TheGodfather.Modules.Misc
                    "!rank @Someone")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     [NotBlocked]
-    public class RanksModule : TheGodfatherBaseModule
+    public class RanksModule : TheGodfatherModule
     {
 
         public RanksModule(SharedData shared, DBService db) : base(shared, db) { }

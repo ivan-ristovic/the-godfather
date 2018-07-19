@@ -20,7 +20,7 @@ namespace TheGodfather.Modules.Administration
     [Aliases("role", "rl")]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
     [NotBlocked]
-    public class RoleModule : TheGodfatherBaseModule
+    public class RoleModule : TheGodfatherModule
     {
 
         [GroupCommand, Priority(1)]

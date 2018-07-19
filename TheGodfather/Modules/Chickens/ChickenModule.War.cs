@@ -28,7 +28,7 @@ namespace TheGodfather.Modules.Chickens
         [Aliases("gangwar", "battle")]
         [UsageExamples("!chicken war Team1 Team2",
                        "!chicken war \"Team 1 name\" \"Team 2 name")]
-        public class WarModule : TheGodfatherBaseModule
+        public class WarModule : TheGodfatherModule
         {
 
             public WarModule(DBService db) : base(db: db) { }

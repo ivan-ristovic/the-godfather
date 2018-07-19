@@ -39,7 +39,7 @@ namespace TheGodfather.Modules.Search
         public async Task SearchAsync(CommandContext ctx,
                                      [RemainingText, Description("Search query.")] string query)
         {
-            var pages = await _Service.GetPaginatedResultsAsync(query)
+            var pages = await Service.GetPaginatedResultsAsync(query)
                 .ConfigureAwait(false);
 
             if (pages == null)
@@ -73,7 +73,7 @@ namespace TheGodfather.Modules.Search
         #region HELPER_FUNCTIONS
         private async Task SearchAndSendResultAsync(CommandContext ctx, OMDbQueryType type, string query)
         {
-            var info = await _Service.GetSingleResultAsync(type, query)
+            var info = await Service.GetSingleResultAsync(type, query)
                 .ConfigureAwait(false);
 
             if (info == null)

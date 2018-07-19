@@ -28,7 +28,7 @@ namespace TheGodfather.Modules.Currency
         [Description("Play a blackjack game.")]
         [Aliases("bj")]
         [UsageExamples("!casino blackjack")]
-        public class BlackjackModule : TheGodfatherBaseModule
+        public class BlackjackModule : TheGodfatherModule
         {
 
             public BlackjackModule(DBService db) : base(db: db) { }
