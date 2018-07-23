@@ -49,8 +49,6 @@ namespace TheGodfather.Services.Database
                 using (var con = await OpenConnectionAsync())
                 using (var cmd = con.CreateCommand())
                     await action(cmd).ConfigureAwait(false);
-            } catch (NpgsqlException e) {
-                throw new DatabaseOperationException("Database operation failed!", e);
             } finally {
                 this.accessSemaphore.Release();
             }

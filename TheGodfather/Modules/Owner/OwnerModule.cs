@@ -153,13 +153,8 @@ namespace TheGodfather.Modules.Owner
             if (string.IsNullOrWhiteSpace(query))
                 throw new InvalidCommandUsageException("Query missing.");
 
-            IReadOnlyList<IReadOnlyDictionary<string, string>> res;
-            try {
-                res = await Database.ExecuteRawQueryAsync(query)
-                    .ConfigureAwait(false);
-            } catch (Npgsql.NpgsqlException e) {
-                throw new CommandFailedException("An error occured while attempting to execute the query.", e);
-            }
+            var res = await Database.ExecuteRawQueryAsync(query)
+                .ConfigureAwait(false);
 
             if (!res.Any() || !res.First().Any()) {
                 await ctx.RespondAsync("No results.")

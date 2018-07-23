@@ -49,7 +49,7 @@ namespace TheGodfather.Modules.SWAT
 
                 var server = SwatServer.FromIP(ip, queryport, name);
 
-                await Database.AddSwatServerAsync(name, server)
+                await Database.AddSwatServerAsync(server)
                     .ConfigureAwait(false);
                 await ctx.InformSuccessAsync("Server added. You can now query it using the name provided.")
                     .ConfigureAwait(false);
