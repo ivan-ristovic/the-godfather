@@ -52,7 +52,7 @@ namespace TheGodfather.Modules.Games.Common
 
                 await Channel.TriggerTypingAsync()
                     .ConfigureAwait(false);
-                await Channel.SendFileAsync(new FileStream(question, FileMode.Open), "flag.png", content: $"Question #{Formatter.Bold(i.ToString())}:")
+                await Channel.SendFileAsync("flag.png", new FileStream(question, FileMode.Open), content: $"Question #{Formatter.Bold(i.ToString())}:")
                     .ConfigureAwait(false);
 
                 bool noresponse = true;

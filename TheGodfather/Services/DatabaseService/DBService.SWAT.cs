@@ -10,7 +10,7 @@ namespace TheGodfather.Services.Database.Swat
 {
     internal static class DBServiceSwatExtensions
     {
-        public static Task AddSwatServerAsync(this DBService db, string name, SwatServer server)
+        public static Task AddSwatServerAsync(this DBService db, SwatServer server)
         {
             return db.ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "INSERT INTO gf.swat_servers(ip, joinport, queryport, name) VALUES (@ip, @joinport, @queryport, @name);";

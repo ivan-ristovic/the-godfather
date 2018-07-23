@@ -1,5 +1,6 @@
 ﻿#region USING_DIRECTIVES
 using DSharpPlus.CommandsNext;
+using DSharpPlus.Entities;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -10,17 +11,19 @@ namespace TheGodfather.Modules
 {
     public abstract class TheGodfatherModule : BaseCommandModule
     {
-        protected static readonly HttpClient _http = new HttpClient(_handler, true);
         private static readonly HttpClientHandler _handler = new HttpClientHandler { AllowAutoRedirect = false };
+        protected static readonly HttpClient _http = new HttpClient(_handler, true);
 
         protected SharedData Shared { get; }
         protected DBService Database { get; }
+        protected DiscordColor ModuleColor { get; set; }
 
 
         protected TheGodfatherModule(SharedData shared = null, DBService db = null)
         {
             this.Shared = shared;
             this.Database = db;
+            this.ModuleColor = DiscordColor.Green;
         }
         
 

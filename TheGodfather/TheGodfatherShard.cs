@@ -3,6 +3,7 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
+using DSharpPlus.Lavalink;
 using DSharpPlus.Net.WebSocket;
 using DSharpPlus.VoiceNext;
 using Microsoft.Extensions.DependencyInjection;
