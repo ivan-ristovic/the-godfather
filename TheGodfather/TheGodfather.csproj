@@ -496,6 +496,8 @@
     <Compile Include="Modules\Chickens\Common\Chicken.cs" />
     <Compile Include="Modules\SWAT\Common\SwatBanEntry.cs" />
     <Compile Include="Modules\SWAT\SwatModule.Banlist.cs" />
+    <Compile Include="Modules\SWAT\SwatModule.Database.cs" />
+    <Compile Include="Modules\SWAT\SwatModule.Search.cs" />
     <Compile Include="Services\Common\OMDbData.cs" />
     <Compile Include="Services\Common\PurchasableItem.cs" />
     <Compile Include="Services\Common\QuizData.cs" />
