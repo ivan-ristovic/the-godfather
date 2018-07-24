@@ -207,6 +207,14 @@ namespace TheGodfather.Services.Database
                    caro_lost, othello_won, othello_lost FROM gf.stats LIMIT 1;";
                 return cmd.ExecuteScalarAsync();
             });
+            await ExecuteCommandAsync(cmd => {
+                cmd.CommandText = "SELECT name, ip FROM gf.swat_ips LIMIT 1;";
+                return cmd.ExecuteScalarAsync();
+            });
+            await ExecuteCommandAsync(cmd => {
+                cmd.CommandText = "SELECT name, ip, reason FROM gf.swat_banlist LIMIT 1;";
+                return cmd.ExecuteScalarAsync();
+            });
         }
 
 
