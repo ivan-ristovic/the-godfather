@@ -44,7 +44,7 @@ namespace TheGodfather.Modules.SWAT
                                       [Description("Player name.")] string name,
                                       [Description("IP.")] string ip)
             {
-                await Database.AddIpEntryAsync(name, ip)
+                await Database.AddSwatIpEntryAsync(name, ip)
                     .ConfigureAwait(false);
                 await ctx.InformSuccessAsync($"Added a database entry for {Formatter.Bold(name)} ({Formatter.InlineCode(ip)})")
                     .ConfigureAwait(false);
@@ -59,7 +59,7 @@ namespace TheGodfather.Modules.SWAT
             public async Task DeleteAsync(CommandContext ctx,
                                          [Description("IP.")] string ip)
             {
-                await Database.RemoveIpEntryAsync(ip)
+                await Database.RemoveSwatIpEntryAsync(ip)
                     .ConfigureAwait(false);
                 await ctx.InformSuccessAsync()
                     .ConfigureAwait(false);
@@ -73,7 +73,7 @@ namespace TheGodfather.Modules.SWAT
             [UsageExamples("!swat db list")]
             public async Task ListAsync(CommandContext ctx)
             {
-                var entries = await Database.GetAllIpEntriesAsync()
+                var entries = await Database.GetAllSwatIpEntriesAsync()
                     .ConfigureAwait(false);
 
                 await ctx.SendCollectionInPagesAsync(

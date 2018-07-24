@@ -46,7 +46,7 @@ namespace TheGodfather.Modules.SWAT
                                       [Description("IP.")] string ip,
                                       [RemainingText, Description("Reason for ban.")] string reason = null)
             {
-                await Database.AddIpBanAsync(name, ip, reason)
+                await Database.AddSwatIpBanAsync(name, ip, reason)
                     .ConfigureAwait(false);
                 await ctx.InformSuccessAsync($"Added a ban entry for {Formatter.Bold(name)} ({Formatter.InlineCode(ip)})")
                     .ConfigureAwait(false);
@@ -61,7 +61,7 @@ namespace TheGodfather.Modules.SWAT
             public async Task DeleteAsync(CommandContext ctx,
                                          [Description("IP.")] string ip)
             {
-                await Database.RemoveIpBanAsync(ip)
+                await Database.RemoveSwatIpBanAsync(ip)
                     .ConfigureAwait(false);
                 await ctx.InformSuccessAsync($"Removed an IP ban rule for {Formatter.InlineCode(ip)}.")
                     .ConfigureAwait(false);
@@ -75,7 +75,7 @@ namespace TheGodfather.Modules.SWAT
             [UsageExamples("!swat banlist list")]
             public async Task ListAsync(CommandContext ctx)
             {
-                var bans = await Database.GetAllBanlistEntriesAsync()
+                var bans = await Database.GetAllSwatBanlistEntriesAsync()
                     .ConfigureAwait(false);
 
                 await ctx.SendCollectionInPagesAsync(
