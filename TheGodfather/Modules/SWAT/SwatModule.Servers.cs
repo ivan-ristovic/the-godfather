@@ -22,9 +22,9 @@ namespace TheGodfather.Modules.SWAT
         [Group("servers"), Module(ModuleType.SWAT)]
         [Description("SWAT4 serverlist manipulation commands.")]
         [Aliases("s", "srv")]
-        [RequireOwner]
+        [RequirePrivilegedUser]
         [Hidden]
-        public class SwatServersModule : TheGodfatherBaseModule
+        public class SwatServersModule : TheGodfatherModule
         {
 
             public SwatServersModule(DBService db) : base(db: db) { }
@@ -49,7 +49,7 @@ namespace TheGodfather.Modules.SWAT
 
                 var server = SwatServer.FromIP(ip, queryport, name);
 
-                await Database.AddSwatServerAsync(name, server)
+                await Database.AddSwatServerAsync(server)
                     .ConfigureAwait(false);
                 await ctx.InformSuccessAsync("Server added. You can now query it using the name provided.")
                     .ConfigureAwait(false);

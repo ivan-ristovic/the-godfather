@@ -21,7 +21,7 @@ namespace TheGodfather.Modules.Currency
     [Aliases("deck")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     [NotBlocked]
-    public class CardsModule : TheGodfatherBaseModule
+    public class CardsModule : TheGodfatherModule
     {
         public static ConcurrentDictionary<ulong, Deck> Decks { get; internal set; } = new ConcurrentDictionary<ulong, Deck>();
 

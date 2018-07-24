@@ -80,7 +80,7 @@ namespace TheGodfather.Modules.Games.Common
                 using (var ms = new MemoryStream()) {
                     image.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
                     ms.Position = 0;
-                    await Channel.SendFileAsync(ms, "typing-challenge.jpg", content: "(you have 60s to to type)")
+                    await Channel.SendFileAsync("typing-challenge.jpg", ms, content: "(you have 60s to to type)")
                         .ConfigureAwait(false);
                 }
             }

@@ -27,7 +27,7 @@ namespace TheGodfather.Modules.Owner
         [Aliases("pu", "privu", "privuser", "pusers", "puser", "pusr")]
         [RequireOwner]
         [NotBlocked]
-        public class PrivilegedUsersModule : TheGodfatherBaseModule
+        public class PrivilegedUsersModule : TheGodfatherModule
         {
 
             public PrivilegedUsersModule(SharedData shared, DBService db) : base(shared, db) { }

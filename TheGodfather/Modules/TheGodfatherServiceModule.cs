@@ -1,17 +1,19 @@
-﻿using TheGodfather.Services;
+﻿#region USING_DIRECTIVES
+using TheGodfather.Services;
 using TheGodfather.Services.Database;
+#endregion
 
 namespace TheGodfather.Modules
 {
-    public abstract class TheGodfatherServiceModule<TService> : TheGodfatherBaseModule where TService : ITheGodfatherService
+    public abstract class TheGodfatherServiceModule<TService> : TheGodfatherModule where TService : ITheGodfatherService
     {
-        protected TService _Service;
+        protected TService Service { get; }
 
 
         protected TheGodfatherServiceModule(TService service, SharedData shared = null, DBService db = null)
             : base(shared, db)
         {
-            _Service = service;
+            this.Service = service;
         }
     }
 }

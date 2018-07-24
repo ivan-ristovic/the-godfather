@@ -26,7 +26,7 @@ namespace TheGodfather.Modules.Administration
                    "!channel #general")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     [NotBlocked]
-    public class ChannelModule : TheGodfatherBaseModule
+    public class ChannelModule : TheGodfatherModule
     {
 
         public ChannelModule(DBService db) : base(db: db) { }

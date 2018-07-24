@@ -25,7 +25,7 @@ namespace TheGodfather.Modules.Administration
     [Aliases("server", "g")]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
     [NotBlocked]
-    public partial class GuildModule : TheGodfatherBaseModule
+    public partial class GuildModule : TheGodfatherModule
     {
 
         public GuildModule(DBService db) : base(db: db) { }
@@ -206,7 +206,7 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException("URL must point to an image and use http or https protocols.");
 
             try {
-                using (var response = await HTTPClient.GetAsync(url).ConfigureAwait(false))
+                using (var response = await _http.GetAsync(url).ConfigureAwait(false))
                 using (var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
                     await ctx.Guild.ModifyAsync(new Action<GuildEditModel>(e => e.Icon = stream))
                         .ConfigureAwait(false);

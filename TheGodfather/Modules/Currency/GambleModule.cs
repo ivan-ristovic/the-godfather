@@ -21,7 +21,7 @@ namespace TheGodfather.Modules.Currency
     [Aliases("bet")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     [NotBlocked]
-    public partial class GambleModule : TheGodfatherBaseModule
+    public partial class GambleModule : TheGodfatherModule
     {
 
         public GambleModule(DBService db) : base(db: db) { }

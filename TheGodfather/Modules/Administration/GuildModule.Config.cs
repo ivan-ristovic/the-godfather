@@ -29,7 +29,7 @@ namespace TheGodfather.Modules.Administration
         [Cooldown(3, 5, CooldownBucketType.Guild)]
         [RequireUserPermissions(Permissions.ManageGuild)]
         [NotBlocked]
-        public partial class ConfigModule : TheGodfatherBaseModule
+        public partial class ConfigModule : TheGodfatherModule
         {
 
             public ConfigModule(SharedData shared, DBService db) : base(shared, db) { }
@@ -288,7 +288,7 @@ namespace TheGodfather.Modules.Administration
             [Description("Command suggestions configuration.")]
             [Aliases("suggestion", "sugg", "sug", "s")]
             [UsageExamples("!guild cfg suggestions")]
-            public class Suggestions : TheGodfatherBaseModule
+            public class Suggestions : TheGodfatherModule
             {
 
                 public Suggestions(SharedData shared, DBService db) : base(shared, db) { }
@@ -370,7 +370,7 @@ namespace TheGodfather.Modules.Administration
             [Description("Command action logging configuration.")]
             [Aliases("log", "modlog")]
             [UsageExamples("!guild cfg logging")]
-            public class Logging : TheGodfatherBaseModule
+            public class Logging : TheGodfatherModule
             {
 
                 public Logging(SharedData shared, DBService db) : base(shared, db) { }
@@ -506,7 +506,7 @@ namespace TheGodfather.Modules.Administration
             [Description("Allows user welcoming configuration.")]
             [Aliases("enter", "join", "wlc", "w")]
             [UsageExamples("!guild cfg welcome")]
-            public class Enter : TheGodfatherBaseModule
+            public class Enter : TheGodfatherModule
             {
 
                 public Enter(SharedData shared, DBService db) : base(shared, db) { }
@@ -689,7 +689,7 @@ namespace TheGodfather.Modules.Administration
             [Description("Allows user leaving message configuration.")]
             [Aliases("exit", "drop", "lv", "l")]
             [UsageExamples("!guild cfg leave")]
-            public class Leave : TheGodfatherBaseModule
+            public class Leave : TheGodfatherModule
             {
 
                 public Leave(SharedData shared, DBService db) : base(shared, db) { }

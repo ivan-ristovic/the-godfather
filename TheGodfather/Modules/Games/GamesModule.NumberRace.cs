@@ -27,7 +27,7 @@ namespace TheGodfather.Modules.Games
         [Aliases("nr", "n", "nunchi", "numbers", "numbersrace")]
         [UsageExamples("!game numberrace")]
         [NotBlocked]
-        public class NumberRaceModule : TheGodfatherBaseModule
+        public class NumberRaceModule : TheGodfatherModule
         {
 
             public NumberRaceModule(DBService db) : base(db: db) { }

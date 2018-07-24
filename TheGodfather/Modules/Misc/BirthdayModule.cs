@@ -24,7 +24,7 @@ namespace TheGodfather.Modules.Misc
     [RequireUserPermissions(Permissions.ManageGuild)]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
     [NotBlocked]
-    public class BirthdayModule : TheGodfatherBaseModule
+    public class BirthdayModule : TheGodfatherModule
     {
 
         public BirthdayModule(DBService db) : base(db: db) { }

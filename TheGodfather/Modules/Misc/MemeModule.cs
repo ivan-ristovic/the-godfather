@@ -25,7 +25,7 @@ namespace TheGodfather.Modules.Misc
                    "!meme SomeMemeNameWhichYouAdded")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     [NotBlocked]
-    public partial class MemeModule : TheGodfatherBaseModule
+    public partial class MemeModule : TheGodfatherModule
     {
 
         public MemeModule(DBService db) : base(db: db) { }

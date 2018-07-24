@@ -22,7 +22,7 @@ namespace TheGodfather.Modules.Search
     [UsageExamples("!joke")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     [NotBlocked]
-    public class JokesModule : TheGodfatherBaseModule
+    public class JokesModule : TheGodfatherModule
     {
 
         [GroupCommand]

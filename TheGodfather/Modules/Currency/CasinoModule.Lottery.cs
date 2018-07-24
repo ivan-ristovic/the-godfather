@@ -28,7 +28,7 @@ namespace TheGodfather.Modules.Currency
         [Description("Play a lottery game. The three numbers are drawn from 1 to 15 and they can't repeat.")]
         [Aliases("lotto")]
         [UsageExamples("!casino lottery 2 10 8")]
-        public class LotteryModule : TheGodfatherBaseModule
+        public class LotteryModule : TheGodfatherModule
         {
 
             public LotteryModule(DBService db) : base(db: db) { }

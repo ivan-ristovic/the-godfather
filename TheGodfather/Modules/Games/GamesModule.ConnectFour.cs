@@ -19,14 +19,14 @@ using TheGodfather.Services.Database;
 
 namespace TheGodfather.Modules.Games
 {
-    public partial class GamesModule : TheGodfatherBaseModule
+    public partial class GamesModule : TheGodfatherModule
     {
         [Group("connect4"), Module(ModuleType.Games)]
         [Description("Starts a \"Connect 4\" game. Play a move by writing a number from 1 to 9 corresponding to the column where you wish to insert your piece. You can also specify a time window in which player must submit their move.")]
         [Aliases("connectfour", "chain4", "chainfour", "c4", "fourinarow", "fourinaline", "4row", "4line", "cfour")]
         [UsageExamples("!game connect4",
                        "!game connect4 10s")]
-        public class ConnectFourModule : TheGodfatherBaseModule
+        public class ConnectFourModule : TheGodfatherModule
         {
 
             public ConnectFourModule(DBService db) : base(db: db) { }

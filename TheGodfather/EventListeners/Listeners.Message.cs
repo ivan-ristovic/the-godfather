@@ -23,7 +23,7 @@ namespace TheGodfather.EventListeners
         public static async Task BulkDeleteEventHandlerAsync(TheGodfatherShard shard, MessageBulkDeleteEventArgs e)
         {
             DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Channel.Guild);
-            if (logchn != null)
+            if (logchn == null)
                 return;
 
             DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Message, $"Bulk message deletion occured ({e.Messages.Count} total)", $"In channel {e.Channel.Mention}");
@@ -42,10 +42,12 @@ namespace TheGodfather.EventListeners
             if (!e.Channel.PermissionsFor(e.Guild.CurrentMember).HasFlag(Permissions.SendMessages))
                 return;
 
-            ushort rank = shard.SharedData.IncrementMessageCountForUser(e.Author.Id);
-            if (rank != 0) {
-                string rankname = await shard.DatabaseService.GetRankAsync(e.Guild.Id, rank);
-                await e.Channel.InformSuccessAsync($"GG {e.Author.Mention}! You have advanced to level {Formatter.Bold(rank.ToString())} {(string.IsNullOrWhiteSpace(rankname) ? "" : $": {Formatter.Italic(rankname)}")} !", StaticDiscordEmoji.Medal);
+            if (!string.IsNullOrWhiteSpace(e.Message?.Content) && !e.Message.Content.StartsWith(shard.SharedData.GetGuildPrefix(e.Guild.Id))) {
+                ushort rank = shard.SharedData.IncrementMessageCountForUser(e.Author.Id);
+                if (rank != 0) {
+                    string rankname = await shard.DatabaseService.GetRankAsync(e.Guild.Id, rank);
+                    await e.Channel.InformSuccessAsync($"GG {e.Author.Mention}! You have advanced to level {Formatter.Bold(rank.ToString())} {(string.IsNullOrWhiteSpace(rankname) ? "" : $": {Formatter.Italic(rankname)}")} !", StaticDiscordEmoji.Medal);
+                }
             }
         }
 
@@ -67,7 +69,7 @@ namespace TheGodfather.EventListeners
             await e.Message.DeleteAsync("_gf: Filter hit");
 
             DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
-            if (logchn != null)
+            if (logchn == null)
                 return;
 
             DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Message, $"Filter triggered");
@@ -182,13 +184,13 @@ namespace TheGodfather.EventListeners
             }
 
             DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
-            if (logchn == null || e.Message?.EditedTimestamp == null)
+            if (logchn == null || !e.Message.IsEdited)
                 return;
 
             string pcontent = string.IsNullOrWhiteSpace(e.MessageBefore?.Content) ? "" : e.MessageBefore.Content.Truncate(750);
             string acontent = string.IsNullOrWhiteSpace(e.Message?.Content) ? "" : e.Message.Content.Truncate(750);
             string ctime = e.Message.CreationTimestamp != null ? BuildUTCString(e.Message.CreationTimestamp) : _unknown;
-            string etime = e.Message.EditedTimestamp != null ? BuildUTCString(e.Message.EditedTimestamp) : _unknown;
+            string etime = e.Message.EditedTimestamp != null ? BuildUTCString(e.Message.EditedTimestamp.Value) : _unknown;
             string bextra = $"Embeds: {e.MessageBefore?.Embeds?.Count ?? 0}, Reactions: {e.MessageBefore?.Reactions?.Count ?? 0}, Attachments: {e.MessageBefore?.Attachments?.Count ?? 0}";
             string aextra = $"Embeds: {e.Message.Embeds.Count}, Reactions: {e.Message.Reactions.Count}, Attachments: {e.Message.Attachments.Count}";
 

@@ -17,7 +17,11 @@ namespace TheGodfather.Modules.Polls
 {
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     [NotBlocked, UsesInteractivity]
-    public class ReactionsPollModule : TheGodfatherBaseModule
+
+    // FIXME D#+ bug, disabled until patch
+    [RequireOwner]
+
+    public class ReactionsPollModule : TheGodfatherModule
     {
         #region COMMAND_REACTIONSPOLL
         [Command("reactionspoll"), Priority(1)]

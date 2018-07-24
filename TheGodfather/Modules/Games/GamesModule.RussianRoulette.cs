@@ -19,13 +19,13 @@ using TheGodfather.Services.Database;
 
 namespace TheGodfather.Modules.Games
 {
-    public partial class GamesModule : TheGodfatherBaseModule
+    public partial class GamesModule : TheGodfatherModule
     {
         [Group("russianroulette"), Module(ModuleType.Games)]
         [Description("Starts a russian roulette game which I will commentate.")]
         [Aliases("rr", "roulette", "russianr")]
         [UsageExamples("!game russianroulette")]
-        public class RussianRouletteModule : TheGodfatherBaseModule
+        public class RussianRouletteModule : TheGodfatherModule
         {
 
             public RussianRouletteModule(DBService db) : base(db: db) { }

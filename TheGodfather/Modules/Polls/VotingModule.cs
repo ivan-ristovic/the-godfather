@@ -19,7 +19,7 @@ namespace TheGodfather.Modules.Polls
     [UsageExamples("!vote 1")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     [NotBlocked]
-    public class VotingModule : TheGodfatherBaseModule
+    public class VotingModule : TheGodfatherModule
     {
 
         [GroupCommand]

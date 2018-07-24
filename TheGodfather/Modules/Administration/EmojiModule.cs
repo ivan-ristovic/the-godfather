@@ -24,7 +24,7 @@ namespace TheGodfather.Modules.Administration
     [UsageExamples("!emoji")]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
     [NotBlocked]
-    public class EmojiModule : TheGodfatherBaseModule
+    public class EmojiModule : TheGodfatherModule
     {
 
         [GroupCommand, Priority(1)]
@@ -62,7 +62,7 @@ namespace TheGodfather.Modules.Administration
                 throw new InvalidCommandUsageException("URL must point to an image and use HTTP or HTTPS protocols.");
 
             try {
-                using (var response = await HTTPClient.GetAsync(url).ConfigureAwait(false))
+                using (var response = await _http.GetAsync(url).ConfigureAwait(false))
                 using (var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false)) {
                     if (stream.Length >= 256000)
                         throw new CommandFailedException("The specified emoji is too large. Maximum allowed image size is 256KB.");

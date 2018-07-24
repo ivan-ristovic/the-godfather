@@ -30,7 +30,7 @@ namespace TheGodfather.Modules.Misc
 {
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     [NotBlocked]
-    public class MiscModule : TheGodfatherBaseModule
+    public class MiscModule : TheGodfatherModule
     {
 
         public MiscModule(SharedData shared, DBService db) : base(shared, db) { }

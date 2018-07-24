@@ -21,7 +21,7 @@ namespace TheGodfather.Modules.Search
     [UsageExamples("!reddit aww")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     [NotBlocked]
-    public class RedditModule : TheGodfatherBaseModule
+    public class RedditModule : TheGodfatherModule
     {
 
         public RedditModule(DBService db) : base(db: db) { }

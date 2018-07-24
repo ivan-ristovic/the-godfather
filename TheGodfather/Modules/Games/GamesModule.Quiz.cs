@@ -37,7 +37,7 @@ namespace TheGodfather.Modules.Games
                        "!game quiz 9 hard",
                        "!game quiz 9 hard 15")]
         [NotBlocked]
-        public class QuizModule : TheGodfatherBaseModule
+        public class QuizModule : TheGodfatherModule
         {
 
             public QuizModule(DBService db) : base(db: db) { }
