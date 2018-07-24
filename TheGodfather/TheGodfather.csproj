@@ -494,6 +494,8 @@
     <Compile Include="Modules\Search\XkcdModule.cs" />
     <Compile Include="Modules\Misc\Common\Birthday.cs" />
     <Compile Include="Modules\Chickens\Common\Chicken.cs" />
+    <Compile Include="Modules\SWAT\Common\SwatBanEntry.cs" />
+    <Compile Include="Modules\SWAT\SwatModule.Banlist.cs" />
     <Compile Include="Services\Common\OMDbData.cs" />
     <Compile Include="Services\Common\PurchasableItem.cs" />
     <Compile Include="Services\Common\QuizData.cs" />
