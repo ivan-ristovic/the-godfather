@@ -1,6 +1,7 @@
 ﻿#region USING_DIRECTIVES
 using Npgsql;
 using NpgsqlTypes;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using TheGodfather.Modules.SWAT.Common;
@@ -10,6 +11,22 @@ namespace TheGodfather.Services.Database.Swat
 {
     internal static class DBServiceSwatExtensions
     {
+        public static Task AddIpBanAsync(this DBService db, string ip, string name, string reason = null)
+        {
+            return db.ExecuteCommandAsync(cmd => {
+                cmd.CommandText = "INSERT INTO gf.swat_banlist(name, ip, reason) VALUES (@ip, @name, @reason);";
+                cmd.Parameters.Add(new NpgsqlParameter<string>("name", name));
+                cmd.Parameters.Add(new NpgsqlParameter<string>("ip", ip));
+
+                if (string.IsNullOrWhiteSpace(reason))
+                    cmd.Parameters.AddWithValue("reason", NpgsqlDbType.Varchar, DBNull.Value);
+                else
+                    cmd.Parameters.Add(new NpgsqlParameter<string>("reason", reason));
+
+                return cmd.ExecuteNonQueryAsync();
+            });
+        }
+
         public static Task AddSwatServerAsync(this DBService db, SwatServer server)
         {
             return db.ExecuteCommandAsync(cmd => {
@@ -21,6 +38,27 @@ namespace TheGodfather.Services.Database.Swat
 
                 return cmd.ExecuteNonQueryAsync();
             });
+        }
+
+        public static async Task<IReadOnlyList<SwatBanEntry>> GetAllBanlistEntriesAsync(this DBService db)
+        {
+            var servers = new List<SwatBanEntry>();
+
+            await db.ExecuteCommandAsync(async (cmd) => {
+                cmd.CommandText = "SELECT name, ip, reason FROM gf.swat_banlist ORDER BY name;";
+
+                using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
+                    while (await reader.ReadAsync().ConfigureAwait(false)) {
+                        servers.Add(new SwatBanEntry() {
+                            Ip = (string)reader["ip"],
+                            Name = (string)reader["name"],
+                            Reason = reader["reason"] is DBNull ? null : (string)reader["reason"]
+                        });
+                    }
+                }
+            });
+
+            return servers.AsReadOnly();
         }
 
         public static async Task<IReadOnlyList<SwatServer>> GetAllSwatServersAsync(this DBService db)
@@ -72,6 +110,16 @@ namespace TheGodfather.Services.Database.Swat
             });
 
             return server;
+        }
+
+        public static Task RemoveIpBanAsync(this DBService db, string ip)
+        {
+            return db.ExecuteCommandAsync(cmd => {
+                cmd.CommandText = "DELETE FROM gf.swat_banlist WHERE ip = @ip;";
+                cmd.Parameters.Add(new NpgsqlParameter<string>("ip", ip));
+
+                return cmd.ExecuteNonQueryAsync();
+            });
         }
 
         public static Task RemoveSwatServerAsync(this DBService db, string name)

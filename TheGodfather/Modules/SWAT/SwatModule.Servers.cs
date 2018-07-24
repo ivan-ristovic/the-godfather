@@ -22,7 +22,7 @@ namespace TheGodfather.Modules.SWAT
         [Group("servers"), Module(ModuleType.SWAT)]
         [Description("SWAT4 serverlist manipulation commands.")]
         [Aliases("s", "srv")]
-        [RequireOwner]
+        [RequirePrivilegedUser]
         [Hidden]
         public class SwatServersModule : TheGodfatherModule
         {
