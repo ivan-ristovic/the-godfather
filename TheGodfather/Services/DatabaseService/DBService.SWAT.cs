@@ -11,6 +11,17 @@ namespace TheGodfather.Services.Database.Swat
 {
     internal static class DBServiceSwatExtensions
     {
+        public static Task AddIpEntryAsync(this DBService db, string ip, string name)
+        {
+            return db.ExecuteCommandAsync(cmd => {
+                cmd.CommandText = "INSERT INTO gf.swat_ips(name, ip) VALUES (@ip, @name);";
+                cmd.Parameters.Add(new NpgsqlParameter<string>("name", name));
+                cmd.Parameters.Add(new NpgsqlParameter<string>("ip", ip));
+
+                return cmd.ExecuteNonQueryAsync();
+            });
+        }
+
         public static Task AddIpBanAsync(this DBService db, string ip, string name, string reason = null)
         {
             return db.ExecuteCommandAsync(cmd => {
@@ -59,6 +70,23 @@ namespace TheGodfather.Services.Database.Swat
             });
 
             return servers.AsReadOnly();
+        }
+
+        public static async Task<IReadOnlyList<(string, string)>> GetAllIpEntriesAsync(this DBService db)
+        {
+            var entries = new List<(string, string)>();
+
+            await db.ExecuteCommandAsync(async (cmd) => {
+                cmd.CommandText = "SELECT name, ip FROM gf.swat_ips ORDER BY name;";
+
+                using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
+                    while (await reader.ReadAsync().ConfigureAwait(false)) {
+                        entries.Add(((string)reader["name"], (string)reader["ip"]));
+                    }
+                }
+            });
+
+            return entries.AsReadOnly();
         }
 
         public static async Task<IReadOnlyList<SwatServer>> GetAllSwatServersAsync(this DBService db)
@@ -110,6 +138,16 @@ namespace TheGodfather.Services.Database.Swat
             });
 
             return server;
+        }
+
+        public static Task RemoveIpEntryAsync(this DBService db, string ip)
+        {
+            return db.ExecuteCommandAsync(cmd => {
+                cmd.CommandText = "DELETE FROM gf.swat_ips WHERE ip = @ip;";
+                cmd.Parameters.Add(new NpgsqlParameter<string>("ip", ip));
+
+                return cmd.ExecuteNonQueryAsync();
+            });
         }
 
         public static Task RemoveIpBanAsync(this DBService db, string ip)
