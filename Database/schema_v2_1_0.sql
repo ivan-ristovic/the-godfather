@@ -36,6 +36,20 @@ CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 
 
+--
+-- Name: fuzzystrmatch; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS fuzzystrmatch WITH SCHEMA gf;
+
+
+--
+-- Name: EXTENSION fuzzystrmatch; Type: COMMENT; Schema: -; Owner: -
+--
+
+COMMENT ON EXTENSION fuzzystrmatch IS 'determine similarities and distance between strings';
+
+
 SET default_tablespace = '';
 
 SET default_with_oids = false;
@@ -262,26 +276,6 @@ ALTER SEQUENCE gf.filters_id_seq OWNED BY gf.filters.id;
 
 
 --
--- Name: filters_id_seq1; Type: SEQUENCE; Schema: gf; Owner: -
---
-
-CREATE SEQUENCE gf.filters_id_seq1
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: filters_id_seq1; Type: SEQUENCE OWNED BY; Schema: gf; Owner: -
---
-
-ALTER SEQUENCE gf.filters_id_seq1 OWNED BY gf.filters.id;
-
-
---
 -- Name: guild_cfg; Type: TABLE; Schema: gf; Owner: -
 --
 
@@ -385,10 +379,10 @@ CREATE TABLE gf.msgcount (
 
 
 --
--- Name: priviledged; Type: TABLE; Schema: gf; Owner: -
+-- Name: privileged; Type: TABLE; Schema: gf; Owner: -
 --
 
-CREATE TABLE gf.priviledged (
+CREATE TABLE gf.privileged (
     uid bigint NOT NULL
 );
 
@@ -428,7 +422,7 @@ ALTER SEQUENCE gf.purchases_id_seq OWNED BY gf.purchases.id;
 
 CREATE TABLE gf.ranks (
     gid bigint NOT NULL,
-    rank integer NOT NULL,
+    rank smallint NOT NULL,
     name character varying(32) NOT NULL
 );
 
@@ -548,6 +542,27 @@ CREATE SEQUENCE gf.subscriptions_id_seq
 --
 
 ALTER SEQUENCE gf.subscriptions_id_seq OWNED BY gf.subscriptions.id;
+
+
+--
+-- Name: swat_banlist; Type: TABLE; Schema: gf; Owner: -
+--
+
+CREATE TABLE gf.swat_banlist (
+    name character varying(32) NOT NULL,
+    ip character varying(16) NOT NULL,
+    reason character varying(64) DEFAULT NULL::character varying
+);
+
+
+--
+-- Name: swat_ips; Type: TABLE; Schema: gf; Owner: -
+--
+
+CREATE TABLE gf.swat_ips (
+    name character varying(32) NOT NULL,
+    ip character varying(16) NOT NULL
+);
 
 
 --
@@ -751,14 +766,6 @@ ALTER TABLE ONLY gf.emoji_reactions
 
 
 --
--- Name: filters f_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
---
-
-ALTER TABLE ONLY gf.filters
-    ADD CONSTRAINT f_pkey PRIMARY KEY (id);
-
-
---
 -- Name: feeds feeds_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
 --
 
@@ -772,6 +779,14 @@ ALTER TABLE ONLY gf.feeds
 
 ALTER TABLE ONLY gf.feeds
     ADD CONSTRAINT feeds_url_key UNIQUE (url);
+
+
+--
+-- Name: filters filters_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
+--
+
+ALTER TABLE ONLY gf.filters
+    ADD CONSTRAINT filters_pkey PRIMARY KEY (id);
 
 
 --
@@ -831,10 +846,10 @@ ALTER TABLE ONLY gf.msgcount
 
 
 --
--- Name: priviledged priviledged_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
+-- Name: privileged priviledged_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
 --
 
-ALTER TABLE ONLY gf.priviledged
+ALTER TABLE ONLY gf.privileged
     ADD CONSTRAINT priviledged_pkey PRIMARY KEY (uid);
 
 
@@ -884,6 +899,30 @@ ALTER TABLE ONLY gf.statuses
 
 ALTER TABLE ONLY gf.subscriptions
     ADD CONSTRAINT subscriptions_pkey PRIMARY KEY (id, cid);
+
+
+--
+-- Name: swat_banlist swat_banlist_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
+--
+
+ALTER TABLE ONLY gf.swat_banlist
+    ADD CONSTRAINT swat_banlist_pkey PRIMARY KEY (ip);
+
+
+--
+-- Name: swat_banlist swat_banlist_unique; Type: CONSTRAINT; Schema: gf; Owner: -
+--
+
+ALTER TABLE ONLY gf.swat_banlist
+    ADD CONSTRAINT swat_banlist_unique UNIQUE (name, ip);
+
+
+--
+-- Name: swat_ips swat_ips_pkey; Type: CONSTRAINT; Schema: gf; Owner: -
+--
+
+ALTER TABLE ONLY gf.swat_ips
+    ADD CONSTRAINT swat_ips_pkey PRIMARY KEY (name, ip);
 
 
 --
