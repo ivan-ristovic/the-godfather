@@ -41,18 +41,10 @@ namespace TheGodfatherTests.Services
 
             Assert.IsNull(await _service.GetEmbeddedCurrentWeatherDataAsync("NOT EXISTING LOCATION"));
 
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await _service.GetEmbeddedCurrentWeatherDataAsync(null);
-            });
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await _service.GetEmbeddedCurrentWeatherDataAsync("");
-            });
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await _service.GetEmbeddedCurrentWeatherDataAsync(" ");
-            });
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await _service.GetEmbeddedCurrentWeatherDataAsync("\n");
-            });
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetEmbeddedCurrentWeatherDataAsync(null));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetEmbeddedCurrentWeatherDataAsync(""));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetEmbeddedCurrentWeatherDataAsync(" "));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetEmbeddedCurrentWeatherDataAsync("\n"));
         }
 
         [TestMethod]
@@ -82,27 +74,14 @@ namespace TheGodfatherTests.Services
 
             Assert.IsNull(await _service.GetEmbeddedWeatherForecastAsync("NOT EXISTING LOCATION"));
 
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await _service.GetEmbeddedWeatherForecastAsync(null);
-            });
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await _service.GetEmbeddedWeatherForecastAsync("");
-            });
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await _service.GetEmbeddedWeatherForecastAsync(" ");
-            });
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await _service.GetEmbeddedWeatherForecastAsync("\n");
-            });
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await _service.GetEmbeddedWeatherForecastAsync("belgrade", -1);
-            });
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await _service.GetEmbeddedWeatherForecastAsync("belgrade", 0);
-            });
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await _service.GetEmbeddedWeatherForecastAsync("belgrade", 21);
-            });
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetEmbeddedWeatherForecastAsync(null));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetEmbeddedWeatherForecastAsync(""));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetEmbeddedWeatherForecastAsync(" "));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetEmbeddedWeatherForecastAsync("\n"));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetEmbeddedWeatherForecastAsync("belgrade", -1));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetEmbeddedWeatherForecastAsync("belgrade", 0));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetEmbeddedWeatherForecastAsync("belgrade", 100));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetEmbeddedWeatherForecastAsync("belgrade", 21));
         }
     }
 }

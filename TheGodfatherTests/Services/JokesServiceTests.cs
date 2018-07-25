@@ -28,21 +28,10 @@ namespace TheGodfatherTests.Services
             Assert.IsNotNull(await JokesService.SearchForJokesAsync("dad joke"));
             Assert.IsNull(await JokesService.SearchForJokesAsync("FOOOOOOOOOOOOO1231231313123"));
 
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await JokesService.SearchForJokesAsync(null);
-            });
-
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await JokesService.SearchForJokesAsync("");
-            });
-
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await JokesService.SearchForJokesAsync(" ");
-            });
-
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await JokesService.SearchForJokesAsync("\n");
-            });
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => JokesService.SearchForJokesAsync(null));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => JokesService.SearchForJokesAsync(""));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => JokesService.SearchForJokesAsync(" "));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => JokesService.SearchForJokesAsync("\n"));
         }
     }
 }

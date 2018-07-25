@@ -27,18 +27,10 @@ namespace TheGodfatherTests.Services
 
             Assert.IsNull(await QuizService.GetCategoryIdAsync("test test test fail"));
 
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await QuizService.GetCategoryIdAsync(null);
-            });
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await QuizService.GetCategoryIdAsync("");
-            });
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await QuizService.GetCategoryIdAsync(" ");
-            });
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await QuizService.GetCategoryIdAsync("\n");
-            });
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => QuizService.GetCategoryIdAsync(null));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => QuizService.GetCategoryIdAsync(""));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => QuizService.GetCategoryIdAsync(" "));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => QuizService.GetCategoryIdAsync("\n"));
         }
 
         [TestMethod]
@@ -81,21 +73,11 @@ namespace TheGodfatherTests.Services
 
             Assert.IsNull(await QuizService.GetQuestionsAsync(50000));
 
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await QuizService.GetQuestionsAsync(-1);
-            });
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await QuizService.GetQuestionsAsync(9, -1);
-            });
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await QuizService.GetQuestionsAsync(9, 0);
-            });
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await QuizService.GetQuestionsAsync(9, 21);
-            });
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await QuizService.GetQuestionsAsync(9, 500);
-            });
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => QuizService.GetQuestionsAsync(-1));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => QuizService.GetQuestionsAsync(9, -1));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => QuizService.GetQuestionsAsync(9, 0));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => QuizService.GetQuestionsAsync(9, 100));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => QuizService.GetQuestionsAsync(9, 21));
         }
     }
 }

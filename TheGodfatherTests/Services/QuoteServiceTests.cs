@@ -23,8 +23,6 @@ namespace TheGodfatherTests.Services
 
             Assert.IsNotNull(await QuoteService.GetQuoteOfTheDayAsync("art"));
             await Task.Delay(100);
-            Assert.IsNotNull(await QuoteService.GetQuoteOfTheDayAsync("inspiring"));
-            await Task.Delay(100);
             Assert.IsNotNull(await QuoteService.GetQuoteOfTheDayAsync("sports"));
             await Task.Delay(100);
             Assert.IsNotNull(await QuoteService.GetQuoteOfTheDayAsync("life"));

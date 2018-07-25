@@ -47,18 +47,10 @@ namespace TheGodfatherTests.Services
             results = await _service.GetPaginatedResultsAsync("FOOOOOASDJSADBNKSANDKAS");
             Assert.IsNull(results);
 
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await _service.GetPaginatedResultsAsync(null);
-            });
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await _service.GetPaginatedResultsAsync("");
-            });
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await _service.GetPaginatedResultsAsync(" ");
-            });
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await _service.GetPaginatedResultsAsync("\n");
-            });
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetPaginatedResultsAsync(null));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetPaginatedResultsAsync(""));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetPaginatedResultsAsync(" "));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetPaginatedResultsAsync("\n"));
         }
 
         [TestMethod]
@@ -78,18 +70,10 @@ namespace TheGodfatherTests.Services
             result = await _service.GetSingleResultAsync(OMDbQueryType.Id, "FASODFSOADOSADNOSADNA");
             Assert.IsNull(result);
 
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await _service.GetSingleResultAsync(OMDbQueryType.Id, null);
-            });
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await _service.GetSingleResultAsync(OMDbQueryType.Id, "");
-            });
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await _service.GetSingleResultAsync(OMDbQueryType.Id, " ");
-            });
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await _service.GetSingleResultAsync(OMDbQueryType.Id, "\n");
-            });
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetSingleResultAsync(OMDbQueryType.Id, null));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetSingleResultAsync(OMDbQueryType.Id, ""));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetSingleResultAsync(OMDbQueryType.Id, " "));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetSingleResultAsync(OMDbQueryType.Id, "\n"));
         }
     }
 }

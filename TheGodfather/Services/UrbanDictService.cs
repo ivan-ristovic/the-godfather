@@ -1,6 +1,7 @@
 ﻿#region USING_DIRECTIVES
 using Newtonsoft.Json;
 using System;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using TheGodfather.Services.Common;
@@ -20,7 +21,7 @@ namespace TheGodfather.Services
 
             string result = await _http.GetStringAsync($"{_url}/define?term={WebUtility.UrlEncode(query)}").ConfigureAwait(false);
             var data = JsonConvert.DeserializeObject<UrbanDictData>(result);
-            if (data.ResultType == "no_results")
+            if (data.ResultType == "no_results" || !data.List.Any())
                 return null;
 
             return data;

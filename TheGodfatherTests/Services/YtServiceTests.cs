@@ -39,30 +39,14 @@ namespace TheGodfatherTests.Services
         {
             Assert.IsNotNull(YtService.GetRssUrlForChannel("UCuAXFkgsw1L7xaCfnd5JJOw"));
 
-            Assert.ThrowsException<ArgumentException>(() => {
-                YtService.GetRssUrlForChannel(null);
-            });
-            Assert.ThrowsException<ArgumentException>(() => {
-                YtService.GetRssUrlForChannel("");
-            });
-            Assert.ThrowsException<ArgumentException>(() => {
-                YtService.GetRssUrlForChannel(" ");
-            });
-            Assert.ThrowsException<ArgumentException>(() => {
-                YtService.GetRssUrlForChannel("\n");
-            });
-            Assert.ThrowsException<ArgumentException>(() => {
-                YtService.GetRssUrlForChannel("/");
-            });
-            Assert.ThrowsException<ArgumentException>(() => {
-                YtService.GetRssUrlForChannel("test|");
-            });
-            Assert.ThrowsException<ArgumentException>(() => {
-                YtService.GetRssUrlForChannel("@4");
-            });
-            Assert.ThrowsException<ArgumentException>(() => {
-                YtService.GetRssUrlForChannel("user/123");
-            });
+            Assert.ThrowsException<ArgumentException>(() => YtService.GetRssUrlForChannel(null));
+            Assert.ThrowsException<ArgumentException>(() => YtService.GetRssUrlForChannel(""));
+            Assert.ThrowsException<ArgumentException>(() => YtService.GetRssUrlForChannel(" "));
+            Assert.ThrowsException<ArgumentException>(() => YtService.GetRssUrlForChannel("\n"));
+            Assert.ThrowsException<ArgumentException>(() => YtService.GetRssUrlForChannel("/"));
+            Assert.ThrowsException<ArgumentException>(() => YtService.GetRssUrlForChannel("test|"));
+            Assert.ThrowsException<ArgumentException>(() => YtService.GetRssUrlForChannel("@4"));
+            Assert.ThrowsException<ArgumentException>(() => YtService.GetRssUrlForChannel("user/123"));
         }
 
         [TestMethod]
@@ -77,18 +61,10 @@ namespace TheGodfatherTests.Services
             Assert.IsNull(await _service.ExtractChannelIdAsync("https://www.google.com/watch?v=dQw4w9WgXcQ"));
             Assert.IsNull(await _service.ExtractChannelIdAsync("aaa"));
 
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await _service.ExtractChannelIdAsync(null);
-            });
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await _service.ExtractChannelIdAsync("");
-            });
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await _service.ExtractChannelIdAsync(" ");
-            });
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await _service.ExtractChannelIdAsync("\n");
-            });
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.ExtractChannelIdAsync(null));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.ExtractChannelIdAsync(""));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.ExtractChannelIdAsync(" "));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.ExtractChannelIdAsync("\n"));
         }
 
         [TestMethod]
@@ -101,18 +77,10 @@ namespace TheGodfatherTests.Services
 
             Assert.IsNull(await _service.GetFirstVideoResultAsync("nsakjdnkjsandjksandjksadkansdjksadsksandjkada"));
 
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await _service.GetFirstVideoResultAsync(null);
-            });
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await _service.GetFirstVideoResultAsync("");
-            });
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await _service.GetFirstVideoResultAsync(" ");
-            });
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await _service.GetFirstVideoResultAsync("\n");
-            });
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetFirstVideoResultAsync(null));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetFirstVideoResultAsync(""));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetFirstVideoResultAsync(" "));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetFirstVideoResultAsync("\n"));
         }
 
         [TestMethod]
@@ -146,27 +114,14 @@ namespace TheGodfatherTests.Services
 
             Assert.IsNull(await _service.GetFirstVideoResultAsync("nsakjdnkjsandjksandjksadkansdjksadsksandjkada"));
 
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await _service.GetPaginatedResultsAsync(null);
-            });
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await _service.GetPaginatedResultsAsync("");
-            });
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await _service.GetPaginatedResultsAsync(" ");
-            });
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await _service.GetPaginatedResultsAsync("\n");
-            });
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await _service.GetPaginatedResultsAsync("rick astley", 0);
-            });
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await _service.GetPaginatedResultsAsync("rick astley", -1);
-            });
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await _service.GetPaginatedResultsAsync("rick astley", 21);
-            });
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetPaginatedResultsAsync(null));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetPaginatedResultsAsync(""));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetPaginatedResultsAsync(" "));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetPaginatedResultsAsync("\n"));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetPaginatedResultsAsync("rick astley", -1));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetPaginatedResultsAsync("rick astley", 0));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetPaginatedResultsAsync("rick astley", 100));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetPaginatedResultsAsync("rick astley", 21));
         }
 
         [TestMethod]
@@ -187,18 +142,10 @@ namespace TheGodfatherTests.Services
             Assert.IsNull(await _service.GetSongInfoAsync("aaaaa"));
             Assert.IsNull(await _service.GetSongInfoAsync("http://google.com"));
 
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await _service.GetSongInfoAsync(null);
-            });
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await _service.GetSongInfoAsync("");
-            });
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await _service.GetSongInfoAsync(" ");
-            });
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await _service.GetSongInfoAsync("\n");
-            });
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetSongInfoAsync(null));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetSongInfoAsync(""));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetSongInfoAsync(" "));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetSongInfoAsync("\n"));
         }
     }
 }

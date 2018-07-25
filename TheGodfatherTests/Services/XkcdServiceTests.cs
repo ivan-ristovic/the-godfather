@@ -20,15 +20,9 @@ namespace TheGodfatherTests.Services
             Assert.IsNotNull(await XkcdService.GetComicAsync(1000));
             Assert.IsNotNull(await XkcdService.GetComicAsync(2000));
 
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await XkcdService.GetComicAsync(-1);
-            });
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await XkcdService.GetComicAsync(0);
-            });
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await XkcdService.GetComicAsync(100000);
-            });
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => XkcdService.GetComicAsync(-1));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => XkcdService.GetComicAsync(0));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => XkcdService.GetComicAsync(100000));
         }
 
         [TestMethod]

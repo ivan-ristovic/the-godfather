@@ -52,30 +52,14 @@ namespace TheGodfatherTests.Services
             Assert.AreEqual(15, results.Length);
             CollectionAssert.AllItemsAreNotNull(results);
 
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await _service.SearchAsync("test", 0);
-            });
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await _service.SearchAsync("test", -5);
-            });
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await _service.SearchAsync("test", 100);
-            });
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await _service.SearchAsync("test", 21);
-            });
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await _service.SearchAsync(null);
-            });
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await _service.SearchAsync("");
-            });
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await _service.SearchAsync("  ");
-            });
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await _service.SearchAsync("\n");
-            });
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.SearchAsync("test", 0));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.SearchAsync("test", -5));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.SearchAsync("test", 100));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.SearchAsync("test", 21));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.SearchAsync(null));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.SearchAsync(""));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.SearchAsync(" "));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.SearchAsync("\n"));
         }
 
         [TestMethod]
@@ -105,18 +89,10 @@ namespace TheGodfatherTests.Services
                 Assert.IsNotNull(result.Url);
             }
 
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await _service.GetTrendingGifsAsync(0);
-            });
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await _service.GetTrendingGifsAsync(-1);
-            });
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await _service.GetTrendingGifsAsync(21);
-            });
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await _service.GetTrendingGifsAsync(100);
-            });
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetTrendingGifsAsync(0));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetTrendingGifsAsync(-1));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetTrendingGifsAsync(100));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetTrendingGifsAsync(21));
         }
     }
 }

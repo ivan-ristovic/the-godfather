@@ -19,20 +19,12 @@ namespace TheGodfatherTests.Services
             Assert.IsNotNull(await UrbanDictService.GetDefinitionForTermAsync("machine learning"));
             Assert.IsNotNull(await UrbanDictService.GetDefinitionForTermAsync("banzai!"));
 
-            Assert.IsNull(await UrbanDictService.GetDefinitionForTermAsync("foo2dajkdnsakjdnska"));
+            Assert.IsNull(await UrbanDictService.GetDefinitionForTermAsync("SDSANDJKSANDkJSANDKJSANDKAJND"));
 
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await UrbanDictService.GetDefinitionForTermAsync(null);
-            });
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await UrbanDictService.GetDefinitionForTermAsync("");
-            });
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await UrbanDictService.GetDefinitionForTermAsync(" ");
-            });
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await UrbanDictService.GetDefinitionForTermAsync("\n");
-            });
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => UrbanDictService.GetDefinitionForTermAsync(null));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => UrbanDictService.GetDefinitionForTermAsync(""));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => UrbanDictService.GetDefinitionForTermAsync(" "));
+            await Assert.ThrowsExceptionAsync<ArgumentException>(() => UrbanDictService.GetDefinitionForTermAsync("\n"));
         }
     }
 }

@@ -48,38 +48,30 @@ namespace TheGodfatherTests.Services
             Assert.AreEqual(5, results.Count());
             CollectionAssert.AllItemsAreNotNull(results.ToList());
 
-
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await _service.GetItemsFromSubAsync("test", 0, SubredditGallerySortOrder.Top, TimeWindow.All);
-            });
-
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await _service.GetItemsFromSubAsync("test", -1, SubredditGallerySortOrder.Top, TimeWindow.All);
-            });
-
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await _service.GetItemsFromSubAsync("test", 21, SubredditGallerySortOrder.Top, TimeWindow.All);
-            });
-
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await _service.GetItemsFromSubAsync("test", 100, SubredditGallerySortOrder.Top, TimeWindow.All);
-            });
-
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await _service.GetItemsFromSubAsync("", 5, SubredditGallerySortOrder.Top, TimeWindow.All);
-            });
-
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await _service.GetItemsFromSubAsync(" ", 5, SubredditGallerySortOrder.Top, TimeWindow.All);
-            });
-
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await _service.GetItemsFromSubAsync("\n", 5, SubredditGallerySortOrder.Top, TimeWindow.All);
-            });
-
-            await Assert.ThrowsExceptionAsync<ArgumentException>(async () => {
-                await _service.GetItemsFromSubAsync(null, 5, SubredditGallerySortOrder.Top, TimeWindow.All);
-            });
+            await Assert.ThrowsExceptionAsync<ArgumentException>(
+                () => _service.GetItemsFromSubAsync("test", 0, SubredditGallerySortOrder.Top, TimeWindow.All)
+            );
+            await Assert.ThrowsExceptionAsync<ArgumentException>(
+                () => _service.GetItemsFromSubAsync("test", -1, SubredditGallerySortOrder.Top, TimeWindow.All)
+            );
+            await Assert.ThrowsExceptionAsync<ArgumentException>(
+                () => _service.GetItemsFromSubAsync("test", 100, SubredditGallerySortOrder.Top, TimeWindow.All)
+            );
+            await Assert.ThrowsExceptionAsync<ArgumentException>(
+                () => _service.GetItemsFromSubAsync("test", 21, SubredditGallerySortOrder.Top, TimeWindow.All)
+            );
+            await Assert.ThrowsExceptionAsync<ArgumentException>(
+                () => _service.GetItemsFromSubAsync(null, 5, SubredditGallerySortOrder.Top, TimeWindow.All)
+            );
+            await Assert.ThrowsExceptionAsync<ArgumentException>(
+                () => _service.GetItemsFromSubAsync("", 5, SubredditGallerySortOrder.Top, TimeWindow.All)
+            );
+            await Assert.ThrowsExceptionAsync<ArgumentException>(
+                () => _service.GetItemsFromSubAsync(" ", 5, SubredditGallerySortOrder.Top, TimeWindow.All)
+            );
+            await Assert.ThrowsExceptionAsync<ArgumentException>(
+                () => _service.GetItemsFromSubAsync("\n", 5, SubredditGallerySortOrder.Top, TimeWindow.All)
+            );
         }
     }
 }
