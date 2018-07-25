@@ -20,7 +20,7 @@ namespace TheGodfather.Services.Database
         private readonly DatabaseConfig cfg;
 
 
-        public DBService(DatabaseConfig config)
+        public DBService(DatabaseConfig config = null)
         {
             this.cfg = config ?? DatabaseConfig.Default;
             this.accessSemaphore = new SemaphoreSlim(100, 100);
@@ -40,35 +40,19 @@ namespace TheGodfather.Services.Database
             };
             this.connectionString = csb.ConnectionString;
         }
-        
+
 
         public async Task ExecuteCommandAsync(Func<NpgsqlCommand, Task> action)
         {
             await this.accessSemaphore.WaitAsync().ConfigureAwait(false);
             try {
-                using (var con = await OpenConnectionAsync())
-                using (var cmd = con.CreateCommand())
-                    await action(cmd).ConfigureAwait(false);
+                using (NpgsqlConnection connection = await OpenConnectionAsync().ConfigureAwait(false))
+                using (NpgsqlCommand command = connection.CreateCommand())
+                    await action(command).ConfigureAwait(false);
             } finally {
                 this.accessSemaphore.Release();
             }
         }
-
-        public async Task ExecuteTransactionAsync(Func<NpgsqlConnection, SemaphoreSlim, Task> action)
-        {
-            await this.accessSemaphore.WaitAsync();
-            try {
-                using (var con = await OpenConnectionAsync())
-                    await action(con, this.transactionSemaphore);
-            } catch (NpgsqlException e) {
-                throw new DatabaseOperationException("Database operation failed!", e);
-            } finally {
-                this.accessSemaphore.Release();
-            }
-        }
-
-        public Task InitializeAsync()
-            => ExecuteCommandAsync(cmd => Task.CompletedTask );
 
         public async Task<IReadOnlyList<IReadOnlyDictionary<string, string>>> ExecuteRawQueryAsync(string query)
         {
@@ -76,8 +60,8 @@ namespace TheGodfather.Services.Database
 
             await ExecuteCommandAsync(async (cmd) => {
                 cmd.CommandText = query;
-                using (var reader = await cmd.ExecuteReaderAsync()) {
-                    while (await reader.ReadAsync()) {
+                using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
+                    while (await reader.ReadAsync().ConfigureAwait(false)) {
                         var dict = new Dictionary<string, string>();
 
                         for (int i = 0; i < reader.FieldCount; i++)
@@ -90,6 +74,22 @@ namespace TheGodfather.Services.Database
 
             return dicts.AsReadOnly();
         }
+
+        public async Task ExecuteTransactionAsync(Func<NpgsqlConnection, SemaphoreSlim, Task> action)
+        {
+            await this.accessSemaphore.WaitAsync().ConfigureAwait(false);
+            try {
+                using (NpgsqlConnection connection = await OpenConnectionAsync().ConfigureAwait(false))
+                    await action(connection, this.transactionSemaphore).ConfigureAwait(false);
+            } catch (NpgsqlException e) {
+                throw new DatabaseOperationException("Database operation failed!", e);
+            } finally {
+                this.accessSemaphore.Release();
+            }
+        }
+
+        public Task InitializeAsync()
+            => ExecuteCommandAsync(cmd => Task.CompletedTask);
 
 
         internal async Task CheckIntegrityAsync()
@@ -220,9 +220,9 @@ namespace TheGodfather.Services.Database
 
         private async Task<NpgsqlConnection> OpenConnectionAsync()
         {
-            var con = new NpgsqlConnection(this.connectionString);
-            await con.OpenAsync().ConfigureAwait(false);
-            return con;
+            var connection = new NpgsqlConnection(this.connectionString);
+            await connection.OpenAsync().ConfigureAwait(false);
+            return connection;
         }
     }
 }

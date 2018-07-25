@@ -491,6 +491,7 @@
     <Compile Include="Modules\Music\Common\SongInfo.cs" />
     <Compile Include="Modules\Music\MusicModule.Play.cs" />
     <Compile Include="Modules\Search\OMDbModule.cs" />
+    <Compile Include="Modules\Search\SearchesModule.cs" />
     <Compile Include="Modules\Search\XkcdModule.cs" />
     <Compile Include="Modules\Misc\Common\Birthday.cs" />
     <Compile Include="Modules\Chickens\Common\Chicken.cs" />
@@ -498,6 +499,7 @@
     <Compile Include="Modules\SWAT\SwatModule.Banlist.cs" />
     <Compile Include="Modules\SWAT\SwatModule.Database.cs" />
     <Compile Include="Modules\SWAT\SwatModule.Search.cs" />
+    <Compile Include="Services\Common\GeolocationData.cs" />
     <Compile Include="Services\Common\OMDbData.cs" />
     <Compile Include="Services\Common\PurchasableItem.cs" />
     <Compile Include="Services\Common\QuizData.cs" />
@@ -552,6 +554,7 @@
     <Compile Include="Services\DatabaseService\DBService.Chickens.cs" />
     <Compile Include="Services\DatabaseService\DBService.Shop.cs" />
     <Compile Include="Services\DatabaseService\DBService.SpecialRoles.cs" />
+    <Compile Include="Services\IpGeolocationService.cs" />
     <Compile Include="Services\ITheGodfatherService.cs" />
     <Compile Include="Modules\TheGodfatherModule.cs" />
     <Compile Include="Modules\Search\JokesModule.cs" />
