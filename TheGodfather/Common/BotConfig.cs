@@ -27,6 +27,9 @@ namespace TheGodfather.Common
         [JsonProperty("key-giphy")]
         public string GiphyKey { get; private set; }
 
+        [JsonProperty("key-goodreads")]
+        public string GoodreadsKey { get; private set; }
+
         [JsonProperty("key-imgur")]
         public string ImgurKey { get; private set; }
 
@@ -79,6 +82,7 @@ namespace TheGodfather.Common
             FeedCheckInterval = 300,
             FeedCheckStartDelay = 30,
             GiphyKey = "<insert GIPHY API key>",
+            GoodreadsKey = "<insert Goodreads API key>",
             ImgurKey = "<insert Imgur API key>",
             LogLevel = LogLevel.Info,
             LogPath = "log.txt",

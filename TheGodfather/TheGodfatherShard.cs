@@ -109,12 +109,13 @@ namespace TheGodfather
                     .AddSingleton(this.SharedData)
                     .AddSingleton(this.DatabaseService)
                     .AddSingleton(new GiphyService(this.SharedData.BotConfiguration.GiphyKey))
+                    .AddSingleton(new GoodreadsService(this.SharedData.BotConfiguration.GoodreadsKey))
                     .AddSingleton(new ImgurService(this.SharedData.BotConfiguration.ImgurKey))
                     .AddSingleton(new OMDbService(this.SharedData.BotConfiguration.OMDbKey))
                     .AddSingleton(new SteamService(this.SharedData.BotConfiguration.SteamKey))
                     .AddSingleton(new WeatherService(this.SharedData.BotConfiguration.WeatherKey))
                     .AddSingleton(new YtService(this.SharedData.BotConfiguration.YouTubeKey))
-                    .BuildServiceProvider(),
+                    .BuildServiceProvider()
             });
             this.CNext.SetHelpFormatter<CustomHelpFormatter>();
             this.CNext.RegisterCommands(Assembly.GetExecutingAssembly());

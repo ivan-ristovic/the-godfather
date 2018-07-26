@@ -11,7 +11,8 @@ namespace TheGodfather.Services
 {
     public class WeatherService : TheGodfatherHttpService
     {
-        private readonly string url = "http://api.openweathermap.org/data/2.5";
+        private static readonly string _url = "http://api.openweathermap.org/data/2.5";
+
         private readonly string key;
 
 
@@ -44,7 +45,7 @@ namespace TheGodfather.Services
                 throw new ArgumentException("Query missing", "query");
 
             try {
-                string response = await _http.GetStringAsync($"{this.url}/weather?q={query}&appid={this.key}&units=metric").ConfigureAwait(false);
+                string response = await _http.GetStringAsync($"{_url}/weather?q={query}&appid={this.key}&units=metric").ConfigureAwait(false);
                 var data = JsonConvert.DeserializeObject<WeatherData>(response);
                 return data.ToDiscordEmbed();
             } catch {
@@ -61,7 +62,7 @@ namespace TheGodfather.Services
                 throw new ArgumentException("Days amount out of range (max 20)", "amount");
 
             try {
-                string response = await _http.GetStringAsync($"{this.url}/forecast?q={query}&appid={this.key}&units=metric").ConfigureAwait(false);
+                string response = await _http.GetStringAsync($"{_url}/forecast?q={query}&appid={this.key}&units=metric").ConfigureAwait(false);
                 var forecast = JsonConvert.DeserializeObject<Forecast>(response);
                 return forecast.ToDiscordEmbeds(amount);
             } catch {
