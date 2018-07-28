@@ -59,8 +59,11 @@ namespace TheGodfather.EventListeners
             };
             var sb = new StringBuilder(StaticDiscordEmoji.NoEntry).Append(" ");
 
-            if (ex is CommandNotFoundException cne) {
-                if (shard.SharedData.GuildConfigurations[e.Context.Guild.Id].SuggestionsEnabled) {
+            switch (ex) {
+                case CommandNotFoundException cne:
+                    if (!shard.SharedData.GuildConfigurations[e.Context.Guild.Id].SuggestionsEnabled)
+                        return;
+
                     sb.Clear();
                     sb.AppendLine(Formatter.Bold($"Command {Formatter.InlineCode(cne.CommandName)} not found. Did you mean..."));
                     var ordered = TheGodfatherShard.Commands
@@ -68,61 +71,79 @@ namespace TheGodfather.EventListeners
                         .Take(3);
                     foreach ((string alias, Command cmd) in ordered)
                         emb.AddField($"{alias} ({cmd.QualifiedName})", cmd.Description);
-                } else {
-                    return;
-                }
-            } else if (ex is InvalidCommandUsageException) {
-                sb.Append($"Invalid usage! {ex.Message}");
-            } else if (ex is ArgumentException) {
-                sb.Append($"Argument conversion error (please check {Formatter.Bold($"help {e.Command.QualifiedName}")}).\n\nDetails: {Formatter.Italic(ex.Message)}");
-            } else if (ex is CommandFailedException) {
-                sb.Append($"{ex.Message} {ex.InnerException?.Message}");
-            } else if (ex is NpgsqlException dbex) {
-                sb.Append($"Database operation failed. Details: {dbex.Message}");
-            } else if (ex is ChecksFailedException exc) {
-                var attr = exc.FailedChecks.First();
-                if (attr is CooldownAttribute) {
-                    await e.Context.Message.CreateReactionAsync(StaticDiscordEmoji.NoEntry);
-                    return;
-                }
 
-                if (attr is UsesInteractivityAttribute) {
-                    sb.Append($"I am waiting for your answer and you cannot execute commands until you either answer, or the timeout is reached.");
-                } else {
-                    sb.AppendLine($"Command {Formatter.Bold(e.Command.QualifiedName)} cannot be executed because:").AppendLine();
-                    foreach (CheckBaseAttribute failed in exc.FailedChecks) {
-                        if (failed is RequirePermissionsAttribute perms)
-                            sb.AppendLine($"- One of us does not have the required permissions ({perms.Permissions.ToPermissionString()})!");
-                        else if (failed is RequireUserPermissionsAttribute uperms)
-                            sb.AppendLine($"- You do not have sufficient permissions ({uperms.Permissions.ToPermissionString()})!");
-                        else if (failed is RequireBotPermissionsAttribute bperms)
-                            sb.AppendLine($"- I do not have sufficient permissions ({bperms.Permissions.ToPermissionString()})!");
-                        else if (failed is RequirePrivilegedUserAttribute)
-                            sb.AppendLine($"- That command is reserved for my owner and privileged users!");
-                        else if (failed is RequireOwnerAttribute)
-                            sb.AppendLine($"- That command is reserved only for my owner!");
-                        else if (failed is RequireNsfwAttribute)
-                            sb.AppendLine($"- That command is allowed only in NSFW channels!");
-                        else if (failed is RequirePrefixesAttribute pattr)
-                            sb.AppendLine($"- That command can only be invoked only with the following prefixes: {string.Join(" ", pattr.Prefixes)}!");
+                    break;
+                case InvalidCommandUsageException _:
+                    sb.Append($"Invalid usage! {ex.Message}");
+                    break;
+                case ArgumentException _:
+                    sb.AppendLine($"Argument conversion error (please check {Formatter.Bold($"help {e.Command.QualifiedName}")}).");
+                    sb.AppendLine().Append("Details: {Formatter.Italic(ex.Message)}");
+                    break;
+                case CommandFailedException _:
+                    sb.Append($"{ex.Message} {ex.InnerException?.Message}");
+                    break;
+                case NpgsqlException dbex:
+                    sb.Append($"Database operation failed. Details: {dbex.Message}");
+                    break;
+                case ChecksFailedException cfex:
+                    switch (cfex.FailedChecks.First()) {
+                        case CooldownAttribute _:
+                            await e.Context.Message.CreateReactionAsync(StaticDiscordEmoji.NoEntry);
+                            return;
+                        case UsesInteractivityAttribute _:
+                            sb.Append($"I am waiting for your answer and you cannot execute commands until you either answer, or the timeout is reached.");
+                            break;
+                        default:
+                            sb.AppendLine($"Command {Formatter.Bold(e.Command.QualifiedName)} cannot be executed because:").AppendLine();
+                            foreach (CheckBaseAttribute attr in cfex.FailedChecks) {
+                                switch (attr) {
+                                    case RequirePermissionsAttribute perms:
+                                        sb.AppendLine($"- One of us does not have the required permissions ({perms.Permissions.ToPermissionString()})!");
+                                        break;
+                                    case RequireUserPermissionsAttribute uperms:
+                                        sb.AppendLine($"- You do not have sufficient permissions ({uperms.Permissions.ToPermissionString()})!");
+                                        break;
+                                    case RequireBotPermissionsAttribute bperms:
+                                        sb.AppendLine($"- I do not have sufficient permissions ({bperms.Permissions.ToPermissionString()})!");
+                                        break;
+                                    case RequirePrivilegedUserAttribute _:
+                                        sb.AppendLine($"- That command is reserved for my owner and privileged users!");
+                                        break;
+                                    case RequireOwnerAttribute _:
+                                        sb.AppendLine($"- That command is reserved only for my owner!");
+                                        break;
+                                    case RequireNsfwAttribute _:
+                                        sb.AppendLine($"- That command is allowed only in NSFW channels!");
+                                        break;
+                                    case RequirePrefixesAttribute pattr:
+                                        sb.AppendLine($"- That command can only be invoked only with the following prefixes: {string.Join(" ", pattr.Prefixes)}!");
+                                        break;
+                                }
+                            }
+                            break;
                     }
-                }
-            } else if (ex is ConcurrentOperationException) {
-                sb.Append(ex.Message);
-            } else if (ex is UnauthorizedException) {
-                sb.Append("I am not authorized to do that.");
-            } else if (ex is TargetInvocationException) {
-                sb.Append($"{ex.InnerException?.Message ?? "Target invocation error occured. Please check the arguments provided and try again."}");
-            } else if (ex is TaskCanceledException) {
-                return;
-            } else {
-                sb.AppendLine($"Command {Formatter.Bold(e.Command.QualifiedName)} errored!").AppendLine();
-                sb.AppendLine($"Exception: {Formatter.InlineCode(ex.GetType().ToString())}");
-                sb.AppendLine($"Details: {Formatter.Italic(ex.Message)}");
-                if (ex.InnerException != null) {
-                    sb.AppendLine($"Inner exception: {Formatter.InlineCode(ex.InnerException.GetType().ToString())}");
-                    sb.AppendLine($"Details: {Formatter.Italic(ex.InnerException.Message ?? "No details provided")}");
-                }
+                    break;
+                case ConcurrentOperationException _:
+                    sb.Append(ex.Message);
+                    break;
+                case UnauthorizedException _:
+                    sb.Append("I am not authorized to do that.");
+                    break;
+                case TargetInvocationException _:
+                    sb.Append($"{ex.InnerException?.Message ?? "Target invocation error occured. Please check the arguments provided and try again."}");
+                    break;
+                case TaskCanceledException _:
+                    return;
+                default:
+                    sb.AppendLine($"Command {Formatter.Bold(e.Command.QualifiedName)} errored!").AppendLine();
+                    sb.AppendLine($"Exception: {Formatter.InlineCode(ex.GetType().ToString())}");
+                    sb.AppendLine($"Details: {Formatter.Italic(ex.Message)}");
+                    if (ex.InnerException != null) {
+                        sb.AppendLine($"Inner exception: {Formatter.InlineCode(ex.InnerException.GetType().ToString())}");
+                        sb.AppendLine($"Details: {Formatter.Italic(ex.InnerException.Message ?? "No details provided")}");
+                    }
+                    break;
             }
 
             emb.Description = sb.ToString();
