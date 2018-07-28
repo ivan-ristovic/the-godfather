@@ -86,10 +86,10 @@ namespace TheGodfather.Services
         public static IReadOnlyList<SyndicationItem> GetFeedResults(string url, int amount = 5)
         {
             if (string.IsNullOrWhiteSpace(url))
-                throw new ArgumentException("URL missing", "url");
+                throw new ArgumentException("URL missing", nameof(url));
 
             if (amount < 1 || amount > 20)
-                throw new ArgumentException("Question amount out of range (max 20)", "amount");
+                throw new ArgumentException("Question amount out of range (max 20)", nameof(amount));
 
             try {
                 using (var reader = XmlReader.Create(url)) {
@@ -104,10 +104,10 @@ namespace TheGodfather.Services
         public static string GetFeedURLForSubreddit(string sub, out string rsub)
         {
             if (string.IsNullOrWhiteSpace(sub))
-                throw new ArgumentException("Subreddit missing", "sub");
+                throw new ArgumentException("Subreddit missing", nameof(sub));
 
             if (_sanitizeRegex.IsMatch(sub))
-                throw new ArgumentException("Subreddit is in invalid format (needs to be lowercase and without spaces, for example `/r/rule34`)", "sub");
+                throw new ArgumentException("Subreddit is in invalid format (needs to be lowercase and without spaces, for example `/r/rule34`)", nameof(sub));
 
             sub = _subPrefixRegex.Replace(sub, String.Empty);
             rsub = "/r/" + sub.ToLowerInvariant();

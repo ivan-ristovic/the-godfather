@@ -20,7 +20,7 @@ namespace TheGodfather.Services
         public static string CreateUrlForComic(int id)
         {
             if (id < 1 || id > _comicNum)
-                throw new ArgumentException("Comic ID is not valid (max 2019)", "id");
+                throw new ArgumentException("Comic ID is not valid (max 2019)", nameof(id));
 
             return $"{_url}/{id}";
         }
@@ -28,7 +28,7 @@ namespace TheGodfather.Services
         public static Task<XkcdComic> GetComicAsync(int? id = null)
         {
             if (id < 1 || id > _comicNum)
-                throw new ArgumentException("Comic ID is not valid (max 2019)", "id");
+                throw new ArgumentException("Comic ID is not valid (max 2019)", nameof(id));
 
             return id.HasValue ? GetComicByIdAsync(id.Value) : GetLatestComicAsync();
         }

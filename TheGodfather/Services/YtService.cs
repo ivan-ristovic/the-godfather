@@ -45,7 +45,7 @@ namespace TheGodfather.Services
         public static string GetRssUrlForChannel(string id)
         {
             if (string.IsNullOrWhiteSpace(id) || _sanitizeRegex.IsMatch(id))
-                throw new ArgumentException("YouTube channel ID is either missing or invalid!", "id");
+                throw new ArgumentException("YouTube channel ID is either missing or invalid!", nameof(id));
 
             return $"{_ytUrl}/feeds/videos.xml?channel_id={id}";
         }
@@ -54,7 +54,7 @@ namespace TheGodfather.Services
         public async Task<string> ExtractChannelIdAsync(string url)
         {
             if (string.IsNullOrWhiteSpace(url))
-                throw new ArgumentException("URL missing!", "url");
+                throw new ArgumentException("URL missing!", nameof(url));
 
             if (YoutubeClient.TryParseChannelId(url, out string id))
                 return id;
@@ -80,7 +80,7 @@ namespace TheGodfather.Services
         public async Task<string> GetFirstVideoResultAsync(string query)
         {
             if (string.IsNullOrWhiteSpace(query))
-                throw new ArgumentException("Query missing!", "query");
+                throw new ArgumentException("Query missing!", nameof(query));
 
             var res = await SearchAsync(query, 1, "video");
             if (!res.Any())
@@ -92,10 +92,10 @@ namespace TheGodfather.Services
         public async Task<IReadOnlyList<Page>> GetPaginatedResultsAsync(string query, int amount = 1, string type = null)
         {
             if (string.IsNullOrWhiteSpace(query))
-                throw new ArgumentException("Query missing!", "query");
+                throw new ArgumentException("Query missing!", nameof(query));
 
             if (amount < 1 || amount > 20)
-                throw new ArgumentException("Result amount out of range (max 20)", "amount");
+                throw new ArgumentException("Result amount out of range (max 20)", nameof(amount));
 
             IReadOnlyList<SearchResult> results = await SearchAsync(query, amount, type);
             if (results == null || !results.Any())
@@ -136,7 +136,7 @@ namespace TheGodfather.Services
         public async Task<SongInfo> GetSongInfoAsync(string url)
         {
             if (string.IsNullOrWhiteSpace(url))
-                throw new ArgumentException("URL missing!", "url");
+                throw new ArgumentException("URL missing!", nameof(url));
 
             return await GetSongInfoViaYtExplodeAsync(url) ?? await GetSongInfoViaYtDlAsync(url);
         }

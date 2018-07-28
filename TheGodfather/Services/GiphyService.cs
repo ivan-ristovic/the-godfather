@@ -23,10 +23,10 @@ namespace TheGodfather.Services
         public async Task<ImageData[]> SearchAsync(string query, int amount = 1)
         {
             if (string.IsNullOrWhiteSpace(query))
-                throw new ArgumentException("Query missing!", "query");
+                throw new ArgumentException("Query missing!", nameof(query));
 
             if (amount < 1 || amount > 20)
-                throw new ArgumentException("Result amount out of range (max 20)", "amount");
+                throw new ArgumentException("Result amount out of range (max 20)", nameof(amount));
 
             var res = await this.giphy.GifSearch(new SearchParameter() {
                 Query = query,
@@ -42,7 +42,7 @@ namespace TheGodfather.Services
         public async Task<ImageData[]> GetTrendingGifsAsync(int amount = 1)
         {
             if (amount < 1 || amount > 20)
-                throw new ArgumentException("Result amount out of range (max 20)", "amount");
+                throw new ArgumentException("Result amount out of range (max 20)", nameof(amount));
 
             var res = await this.giphy.TrendingGifs(new TrendingParameter() {
                 Limit = amount

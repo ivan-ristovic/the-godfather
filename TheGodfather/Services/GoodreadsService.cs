@@ -28,7 +28,7 @@ namespace TheGodfather.Services
         public async Task<GoodreadsSearchInfo> SearchBooksAsync(string query)
         {
             if (string.IsNullOrWhiteSpace(query))
-                throw new ArgumentException("Query missing.", "query");
+                throw new ArgumentException("Query missing.", nameof(query));
 
             await _requestSemaphore.WaitAsync();
             try {

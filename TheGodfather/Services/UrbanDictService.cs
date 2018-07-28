@@ -17,7 +17,7 @@ namespace TheGodfather.Services
         public static async Task<UrbanDictData> GetDefinitionForTermAsync(string query)
         {
             if (string.IsNullOrWhiteSpace(query))
-                throw new ArgumentException("Query missing", "query");
+                throw new ArgumentException("Query missing", nameof(query));
 
             string result = await _http.GetStringAsync($"{_url}/define?term={WebUtility.UrlEncode(query)}").ConfigureAwait(false);
             var data = JsonConvert.DeserializeObject<UrbanDictData>(result);

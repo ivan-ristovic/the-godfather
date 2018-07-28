@@ -15,7 +15,7 @@ namespace TheGodfather.Services
         public static async Task<IpInfo> GetInfoForIpAsync(string ip)
         {
             if (string.IsNullOrWhiteSpace(ip))
-                throw new ArgumentException("IP missing!", "ip");
+                throw new ArgumentException("IP missing!", nameof(ip));
 
             string response = await _http.GetStringAsync($"{_url}/{ip}").ConfigureAwait(false);
             var data = JsonConvert.DeserializeObject<IpInfo>(response);

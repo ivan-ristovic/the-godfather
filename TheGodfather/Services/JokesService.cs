@@ -27,7 +27,7 @@ namespace TheGodfather.Services
         public static async Task<IReadOnlyList<string>> SearchForJokesAsync(string query)
         {
             if (string.IsNullOrWhiteSpace(query))
-                throw new ArgumentException("Query missing!", "query");
+                throw new ArgumentException("Query missing!", nameof(query));
 
             string res = await ReadResponseAsync($"{_url}/search?term={WebUtility.UrlEncode(query)}").ConfigureAwait(false);
             if (string.IsNullOrWhiteSpace(res))

@@ -25,7 +25,7 @@ namespace TheGodfather.Services
         public static string GetCityUrl(City city)
         {
             if (city == null)
-                throw new ArgumentException("City missing", "city");
+                throw new ArgumentException("City missing", nameof(city));
 
             return $"https://openweathermap.org/city/{ city.Id }";
         }
@@ -33,7 +33,7 @@ namespace TheGodfather.Services
         public static string GetWeatherIconUrl(Weather weather)
         {
             if (weather == null)
-                throw new ArgumentException("Weather missing", "weather");
+                throw new ArgumentException("Weather missing", nameof(weather));
 
             return $"http://openweathermap.org/img/w/{ weather.Icon }.png";
         }
@@ -42,7 +42,7 @@ namespace TheGodfather.Services
         public async Task<DiscordEmbed> GetEmbeddedCurrentWeatherDataAsync(string query)
         {
             if (string.IsNullOrWhiteSpace(query))
-                throw new ArgumentException("Query missing", "query");
+                throw new ArgumentException("Query missing", nameof(query));
 
             try {
                 string response = await _http.GetStringAsync($"{_url}/weather?q={query}&appid={this.key}&units=metric").ConfigureAwait(false);
@@ -56,10 +56,10 @@ namespace TheGodfather.Services
         public async Task<IReadOnlyList<DiscordEmbed>> GetEmbeddedWeatherForecastAsync(string query, int amount = 7)
         {
             if (string.IsNullOrWhiteSpace(query))
-                throw new ArgumentException("Query missing", "query");
+                throw new ArgumentException("Query missing", nameof(query));
             
             if (amount < 1 || amount > 20)
-                throw new ArgumentException("Days amount out of range (max 20)", "amount");
+                throw new ArgumentException("Days amount out of range (max 20)", nameof(amount));
 
             try {
                 string response = await _http.GetStringAsync($"{_url}/forecast?q={query}&appid={this.key}&units=metric").ConfigureAwait(false);

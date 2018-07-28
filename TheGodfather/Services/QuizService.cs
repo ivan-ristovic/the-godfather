@@ -19,7 +19,7 @@ namespace TheGodfather.Services
         public static async Task<int?> GetCategoryIdAsync(string category)
         {
             if (string.IsNullOrWhiteSpace(category))
-                throw new ArgumentException("Category missing!", "category");
+                throw new ArgumentException("Category missing!", nameof(category));
 
             category = category.ToLowerInvariant();
 
@@ -44,10 +44,10 @@ namespace TheGodfather.Services
         public static async Task<IReadOnlyList<QuizQuestion>> GetQuestionsAsync(int category, int amount = 10, QuestionDifficulty difficulty = QuestionDifficulty.Easy)
         {
             if (category < 0)
-                throw new ArgumentException("Category ID is invalid!", "category");
+                throw new ArgumentException("Category ID is invalid!", nameof(category));
 
             if (amount < 1 || amount > 20)
-                throw new ArgumentException("Question amount out of range (max 20)", "amount");
+                throw new ArgumentException("Question amount out of range (max 20)", nameof(amount));
 
             string reqUrl = $"{_url}/api.php?amount={amount}&category={category}&difficulty={difficulty.ToAPIString()}&type=multiple&encode=url3986";
             string response = await _http.GetStringAsync(reqUrl).ConfigureAwait(false);

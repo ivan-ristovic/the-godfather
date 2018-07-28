@@ -26,7 +26,7 @@ namespace TheGodfather.Services
         public async Task<IReadOnlyList<Page>> GetPaginatedResultsAsync(string query)
         {
             if (string.IsNullOrWhiteSpace(query))
-                throw new ArgumentException("Query missing!", "query");
+                throw new ArgumentException("Query missing!", nameof(query));
             
             string response = await _http.GetStringAsync($"{_url}?apikey={this.key}&s={query}").ConfigureAwait(false);
             var data = JsonConvert.DeserializeObject<OMDbResponse>(response);
@@ -43,7 +43,7 @@ namespace TheGodfather.Services
         public async Task<MovieInfo> GetSingleResultAsync(OMDbQueryType type, string query)
         {
             if (string.IsNullOrWhiteSpace(query))
-                throw new ArgumentException("Query missing!", "query");
+                throw new ArgumentException("Query missing!", nameof(query));
 
             string response = await _http.GetStringAsync($"{_url}?apikey={this.key}&{type.ToApiString()}={query}").ConfigureAwait(false);
             var data = JsonConvert.DeserializeObject<MovieInfo>(response);
