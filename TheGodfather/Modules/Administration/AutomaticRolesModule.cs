@@ -118,7 +118,7 @@ namespace TheGodfather.Modules.Administration
         [Aliases("removeall", "rmrf", "rma", "clearall", "clear", "delall", "da")]
         [UsageExamples("!ar deleteall")]
         [RequireUserPermissions(Permissions.Administrator)]
-        public async Task ClearAsync(CommandContext ctx)
+        public async Task DeleteAllAsync(CommandContext ctx)
         {
             if (!await ctx.WaitForBoolReplyAsync("Are you sure you want to delete all automatic roles for this guild?"))
                 return;

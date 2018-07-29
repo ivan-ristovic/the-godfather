@@ -9,11 +9,17 @@ namespace TheGodfather.Modules.Administration.Common
         public int Id { get; }
         public Regex Trigger { get; }
 
+        public static string Wrap(string str)
+            => $@"\b{str}\b";
+
+        public static string Unwrap(string str)
+            => str.Replace(@"\b", "");
+
 
         public Filter(int id, string trigger)
         {
             this.Id = id;
-            this.Trigger = new Regex($@"\b{trigger}\b");
+            this.Trigger = new Regex(Wrap(trigger));
         }
 
         public Filter(int id, Regex trigger)
@@ -21,6 +27,9 @@ namespace TheGodfather.Modules.Administration.Common
             this.Id = id;
             this.Trigger = trigger;
         }
+
+        public string GetBaseRegexString() 
+            => Unwrap(this.Trigger.ToString());
     }
 }
 
