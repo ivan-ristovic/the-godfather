@@ -89,7 +89,7 @@ namespace TheGodfather.EventListeners
                 case ChecksFailedException cfex:
                     switch (cfex.FailedChecks.First()) {
                         case CooldownAttribute _:
-                            await e.Context.Message.CreateReactionAsync(StaticDiscordEmoji.NoEntry);
+                            // await e.Context.Message.CreateReactionAsync(StaticDiscordEmoji.NoEntry);
                             return;
                         case UsesInteractivityAttribute _:
                             sb.Append($"I am waiting for your answer and you cannot execute commands until you either answer, or the timeout is reached.");

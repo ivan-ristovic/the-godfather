@@ -1,31 +1,35 @@
 ﻿#region USING_DIRECTIVES
-using System;
-using System.IO;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
-
-using TheGodfather.Common.Attributes;
-using TheGodfather.Exceptions;
-using TheGodfather.Extensions;
-
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
+using System;
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
+using TheGodfather.Common.Attributes;
+using TheGodfather.Exceptions;
+using TheGodfather.Extensions;
 #endregion
 
 namespace TheGodfather.Modules.Administration
 {
-    [Group("emoji"), Module(ModuleType.Administration)]
-    [Description("Manipulate guild emoji. Standalone call lists all guild emoji or gives information about given emoji.")]
+    [Group("emoji"), Module(ModuleType.Administration), NotBlocked]
+    [Description("Manipulate guild emoji. Standalone call lists all guild emoji or prints information about given emoji.")]
     [Aliases("emojis", "e")]
-    [UsageExamples("!emoji")]
+    [UsageExamples("!emoji",
+                   "!emoji :some_emoji:")]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
-    [NotBlocked]
     public class EmojiModule : TheGodfatherModule
     {
+
+        public EmojiModule()
+            : base()
+        {
+            this.ModuleColor = DiscordColor.CornflowerBlue;
+        }
+
 
         [GroupCommand, Priority(1)]
         public Task ExecuteGroupAsync(CommandContext ctx)
@@ -38,56 +42,55 @@ namespace TheGodfather.Modules.Administration
 
 
         #region COMMAND_EMOJI_ADD
-        [Command("add"), Priority(3)]
-        [Module(ModuleType.Administration)]
-        [Description("Add emoji specified via URL or message attachment. If you have Discord Nitro, you can also pass emojis from another guild as arguments instead of their URLs.")]
-        [Aliases("create", "a", "+", "install")]
+        [Command("add"), Priority(3), Module(ModuleType.Administration)]
+        [Description("Add emoji specified via URL or as an attachment. If you have Discord Nitro, you can " +
+                     "also pass emojis from another guild as arguments instead of their URLs.")]
+        [Aliases("addnew", "create", "install", "a", "+", "+=", "<", "<<")]
         [UsageExamples("!emoji add pepe http://i0.kym-cdn.com/photos/images/facebook/000/862/065/0e9.jpg",
                        "!emoji add pepe [ATTACHED IMAGE]",
                        "!emoji add pepe :pepe_from_other_server:")]
         [RequirePermissions(Permissions.ManageEmojis)]
         public async Task AddAsync(CommandContext ctx,
-                                  [Description("Name.")] string name,
-                                  [Description("URL.")] Uri url = null)
+                                  [Description("Name for the emoji.")] string name,
+                                  [Description("Image URL.")] Uri url = null)
         {
+            // TODO check
             if (string.IsNullOrWhiteSpace(name))
                 throw new InvalidCommandUsageException("Emoji name missing or invalid.");
 
             if (url == null) {
                 if (!ctx.Message.Attachments.Any() || !Uri.TryCreate(ctx.Message.Attachments.First().Url, UriKind.Absolute, out url))
-                    throw new InvalidCommandUsageException("Please specify a name and a URL pointing to an emoji image or attach an emoji image.");
+                    throw new InvalidCommandUsageException("Please specify a name and URL pointing to an emoji image or attach an image.");
             }
 
-            if (!await IsValidImageUriAsync(url).ConfigureAwait(false))
+            if (!await IsValidImageUriAsync(url))
                 throw new InvalidCommandUsageException("URL must point to an image and use HTTP or HTTPS protocols.");
 
             try {
-                using (var response = await _http.GetAsync(url).ConfigureAwait(false))
-                using (var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false)) {
+                using (var response = await _http.GetAsync(url))
+                using (var stream = await response.Content.ReadAsStreamAsync()) {
                     if (stream.Length >= 256000)
                         throw new CommandFailedException("The specified emoji is too large. Maximum allowed image size is 256KB.");
-                    await ctx.Guild.CreateEmojiAsync(name, stream, reason: ctx.BuildReasonString())
-                        .ConfigureAwait(false);
+                    await ctx.Guild.CreateEmojiAsync(name, stream, reason: ctx.BuildReasonString());
                 }
             } catch (WebException e) {
-                throw new CommandFailedException("Error getting the image.", e);
+                throw new CommandFailedException("An error occured while fetching the image.", e);
             } catch (BadRequestException e) {
-                throw new CommandFailedException("Possibly emoji slots are full for this guild or the image format is not supported?", e);
+                throw new CommandFailedException("Discord prevented the emoji from being added. Possibly emoji slots are full for this guild or the image format is not supported?", e);
             }
 
-            await ctx.InformSuccessAsync($"Emoji {Formatter.Bold(name)} successfully added!")
-                .ConfigureAwait(false);
+            await ctx.InformSuccessAsync();
         }
 
         [Command("add"), Priority(2)]
         public Task AddAsync(CommandContext ctx,
-                            [Description("URL.")] Uri url,
-                            [Description("Name.")] string name)
+                            [Description("Image URL.")] Uri url,
+                            [Description("Name for the emoji.")] string name)
             => AddAsync(ctx, name, url);
 
         [Command("add"), Priority(1)]
         public Task AddAsync(CommandContext ctx,
-                            [Description("Name.")] string name,
+                            [Description("Name for the emoji.")] string name,
                             [Description("Emoji from another server to steal.")] DiscordEmoji emoji)
         {
             if (emoji.Id == 0)
@@ -105,102 +108,94 @@ namespace TheGodfather.Modules.Administration
 
         #region COMMAND_EMOJI_DELETE
         [Command("delete"), Module(ModuleType.Administration)]
-        [Description("Remove guild emoji. Note: bots can only delete emojis they created.")]
-        [Aliases("remove", "del", "-", "d")]
+        [Description("Remove guild emoji. Note: Bots can only delete emojis they created!")]
+        [Aliases("remove", "rm", "del", "d", "-", "-=", ">", ">>")]
         [UsageExamples("!emoji delete pepe")]
         [RequirePermissions(Permissions.ManageEmojis)]
         public async Task DeleteAsync(CommandContext ctx,
                                      [Description("Emoji to delete.")] DiscordEmoji emoji)
         {
             try {
-                var gemoji = await ctx.Guild.GetEmojiAsync(emoji.Id)
-                    .ConfigureAwait(false);
-                string name = gemoji.Name;
-                await ctx.Guild.DeleteEmojiAsync(gemoji, ctx.BuildReasonString())
-                    .ConfigureAwait(false);
-                await ctx.InformSuccessAsync($"Emoji {Formatter.Bold(name)} successfully deleted!")
-                    .ConfigureAwait(false);
+                DiscordGuildEmoji gemoji = await ctx.Guild.GetEmojiAsync(emoji.Id);
+                await ctx.Guild.DeleteEmojiAsync(gemoji, ctx.BuildReasonString());
             } catch (NotFoundException) {
                 throw new CommandFailedException("Can't find that emoji in list of emoji that I made for this guild.");
             }
+
+            await ctx.InformSuccessAsync();
         }
         #endregion
 
         #region COMMAND_EMOJI_INFO
         [Command("info"), Module(ModuleType.Administration)]
-        [Description("Get information for given guild emoji.")]
-        [UsageExamples("!emoji info pepe")]
+        [Description("Prints information for given guild emoji.")]
+        [UsageExamples("!emoji info :pepe:")]
         [Aliases("details", "information", "i")]
         public async Task InfoAsync(CommandContext ctx,
                                    [Description("Emoji.")] DiscordEmoji emoji)
         {
-            try {
-                var gemoji = await ctx.Guild.GetEmojiAsync(emoji.Id)
-                    .ConfigureAwait(false);
-                var emb = new DiscordEmbedBuilder() {
-                    Title = "Details for emoji:",
-                    Description = gemoji,
-                    Color = DiscordColor.CornflowerBlue,
-                    ThumbnailUrl = gemoji.Url
-                };
-                emb.AddField("Name", Formatter.InlineCode(gemoji.Name), inline: true);
-                emb.AddField("Created by", gemoji.User != null ? gemoji.User.Username : "<unknown>", inline: true);
-                emb.AddField("Integration managed", gemoji.IsManaged.ToString(), inline: true);
-                await ctx.RespondAsync(embed: emb.Build())
-                    .ConfigureAwait(false);
-            } catch (NotFoundException) {
-                throw new CommandFailedException("Can't find that emoji in list of emoji for this guild.");
-            }
+            DiscordGuildEmoji gemoji = await ctx.Guild.GetEmojiAsync(emoji.Id);
+
+            var emb = new DiscordEmbedBuilder() {
+                Title = "Emoji details:",
+                Description = gemoji,
+                Color = this.ModuleColor,
+                ThumbnailUrl = gemoji.Url
+            };
+
+            emb.AddField("Name", Formatter.InlineCode(Formatter.Sanitize(gemoji.Name)), inline: true);
+            emb.AddField("Created by", gemoji.User != null ? gemoji.User.Username : "<unknown>", inline: true);
+            emb.AddField("Integration managed", gemoji.IsManaged.ToString(), inline: true);
+
+            await ctx.RespondAsync(embed: emb.Build());
         }
         #endregion
 
         #region COMMAND_EMOJI_LIST
         [Command("list"), Module(ModuleType.Administration)]
-        [Description("View guild emojis.")]
+        [Description("List all emojis for this guild.")]
         [Aliases("print", "show", "l", "p", "ls")]
         [UsageExamples("!emoji list")]
-        public async Task ListAsync(CommandContext ctx)
+        public Task ListAsync(CommandContext ctx)
         {
-            await ctx.SendCollectionInPagesAsync(
-                "Guild specific emojis:",
+            return ctx.SendCollectionInPagesAsync(
+                $"Emoji available for guild {ctx.Guild.Name}:",
                 ctx.Guild.Emojis.OrderBy(e => e.Name),
-                e => $"{e}  {e.Name}",
-                DiscordColor.CornflowerBlue
-            ).ConfigureAwait(false);
+                emoji => $"{emoji} {Formatter.InlineCode(Formatter.Sanitize(emoji.Name))}",
+                this.ModuleColor
+            );
         }
         #endregion
 
         #region COMMAND_EMOJI_MODIFY
-        [Command("modify"), Priority(1)]
-        [Module(ModuleType.Administration)]
+        [Command("modify"), Priority(1), Module(ModuleType.Administration)]
         [Description("Edit name of an existing guild emoji.")]
         [Aliases("edit", "mod", "e", "m", "rename")]
         [UsageExamples("!emoji modify :pepe: newname",
                        "!emoji modify newname :pepe:")]
         [RequirePermissions(Permissions.ManageEmojis)]
         public async Task ModifyAsync(CommandContext ctx,
-                                     [Description("Emoji.")] DiscordEmoji emoji,
-                                     [Description("Name.")] string newname)
+                                     [Description("Emoji to rename.")] DiscordEmoji emoji,
+                                     [Description("New name.")] string newname)
         {
+            // TODO check
             if (string.IsNullOrWhiteSpace(newname))
                 throw new InvalidCommandUsageException("Name missing.");
 
             try {
-                var gemoji = await ctx.Guild.GetEmojiAsync(emoji.Id)
-                    .ConfigureAwait(false);
-                await ctx.Guild.ModifyEmojiAsync(gemoji, name: newname, reason: ctx.BuildReasonString())
-                    .ConfigureAwait(false);
-                await ctx.InformSuccessAsync()
-                    .ConfigureAwait(false);
+                DiscordGuildEmoji gemoji = await ctx.Guild.GetEmojiAsync(emoji.Id);
+                await ctx.Guild.ModifyEmojiAsync(gemoji, name: newname, reason: ctx.BuildReasonString());
             } catch (NotFoundException) {
                 throw new CommandFailedException("Can't find that emoji in list of emoji that I made for this guild.");
             }
+
+            await ctx.InformSuccessAsync();
         }
 
         [Command("modify"), Priority(0)]
         public Task ModifyAsync(CommandContext ctx,
-                               [Description("Name.")] string newname,
-                               [Description("Emoji.")] DiscordEmoji emoji)
+                               [Description("New name.")] string newname,
+                               [Description("Emoji to rename.")] DiscordEmoji emoji)
             => ModifyAsync(ctx, emoji, newname);
         #endregion
     }
