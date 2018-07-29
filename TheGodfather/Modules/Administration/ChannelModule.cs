@@ -1,112 +1,109 @@
 ﻿#region USING_DIRECTIVES
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-
-using TheGodfather.Common.Attributes;
-using TheGodfather.Exceptions;
-using TheGodfather.Extensions;
-using TheGodfather.Services;
-
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-using DSharpPlus.Exceptions;
 using DSharpPlus.Net.Models;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using TheGodfather.Common.Attributes;
+using TheGodfather.Exceptions;
+using TheGodfather.Extensions;
 using TheGodfather.Services.Database;
 #endregion
 
 namespace TheGodfather.Modules.Administration
 {
-    [Group("channel"), Module(ModuleType.Administration)]
-    [Description("Miscellaneous channel control commands. If invoked without subcommands, prints out channel information.")]
-    [Aliases("channels", "c", "chn")]
+    [Group("channel"), Module(ModuleType.Administration), NotBlocked]
+    [Description("Channel administration. Group call prints channel information.")]
+    [Aliases("channels", "chn", "ch", "c")]
     [UsageExamples("!channel", 
                    "!channel #general")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    [NotBlocked]
     public class ChannelModule : TheGodfatherModule
     {
 
-        public ChannelModule(DBService db) : base(db: db) { }
+        public ChannelModule(DBService db) 
+            : base(db: db)
+        {
+            this.ModuleColor = DiscordColor.Turquoise;
+        }
 
 
         [GroupCommand]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [Description("Channel.")] DiscordChannel channel = null)
+                                     [Description("Channel which info to view.")] DiscordChannel channel = null)
             => InfoAsync(ctx, channel);
 
 
         #region COMMAND_CHANNEL_CREATECATEGORY
-        [Command("createcategory"), Module(ModuleType.Administration)]
+        [Command("createcategory"), Module(ModuleType.Administration), UsesInteractivity]
         [Description("Create new channel category.")]
-        [Aliases("createcat", "createc", "ccat", "cc", "+cat", "+c", "+category")]
+        [Aliases("addcategory", "createcat", "createc", "ccat", "cc", "+category", "+cat", "+c", "<c", "<<c")]
         [UsageExamples("!channel createcategory My New Category")]
         [RequirePermissions(Permissions.ManageChannels)]
-        [UsesInteractivity]
         public async Task CreateCategoryAsync(CommandContext ctx,
-                                             [RemainingText, Description("Name.")] string name)
+                                             [RemainingText, Description("Name for the category.")] string name)
         {
+            // TODO check
             if (string.IsNullOrWhiteSpace(name))
                 throw new InvalidCommandUsageException("Missing category name.");
 
+            // TODO check
             if (name.Length < 2 || name.Length > 100)
-                throw new InvalidCommandUsageException("Name must be longer than 2 and shorter than 100 characters.");
+                throw new InvalidCommandUsageException("Channel name must be longer than 2 and shorter than 100 characters.");
 
-            if (ctx.Guild.Channels.Any(chn => chn.Name == name.ToLowerInvariant()))
-                if (!await ctx.WaitForBoolReplyAsync("A channel with that name already exists. Continue?").ConfigureAwait(false))
+            if (ctx.Guild.Channels.Any(chn => chn.Name == name.ToLowerInvariant())) {
+                if (!await ctx.WaitForBoolReplyAsync("A channel with that name already exists. Continue?"))
                     return;
+            }
 
-            await ctx.Guild.CreateChannelCategoryAsync(name, reason: ctx.BuildReasonString())
-                .ConfigureAwait(false);
-            await ctx.InformSuccessAsync($"Category {Formatter.Bold(name)} successfully created.")
-                .ConfigureAwait(false);
+            await ctx.Guild.CreateChannelCategoryAsync(name, reason: ctx.BuildReasonString());
+            await ctx.InformSuccessAsync();
         }
         #endregion
 
         #region COMMAND_CHANNEL_CREATETEXT
-        [Command("createtext"), Priority(2)]
-        [Module(ModuleType.Administration)]
-        [Description("Create new text channel.")]
-        [Aliases("createtxt", "createt", "ctxt", "ct", "+", "+t", "+txt")]
-        [UsageExamples("!channel createtext newtextchannel ParentCategory no",
-                       "!channel createtext newtextchannel no",
-                       "!channel createtext ParentCategory newtextchannel")]
+        [Command("createtext"), Priority(2), Module(ModuleType.Administration), UsesInteractivity]
+        [Description("Create new text channel. You can also specify channel parent, user limit and bitrate.")]
+        [Aliases("addtext", "addtxt", "createtxt", "createt", "ctxt", "ct", "+", "+txt", "+t", "<t", "<<t")]
+        [UsageExamples("!channel addtext newtextchannel ParentCategory no",
+                       "!channel addtext newtextchannel no",
+                       "!channel addtext ParentCategory newtextchannel")]
         [RequirePermissions(Permissions.ManageChannels)]
-        [UsesInteractivity]
         public async Task CreateTextChannelAsync(CommandContext ctx,
-                                                [Description("Name.")] string name,
+                                                [Description("Name for the channel.")] string name,
                                                 [Description("Parent category.")] DiscordChannel parent = null,
                                                 [Description("NSFW?")] bool nsfw = false)
         {
+            // TODO check
             if (string.IsNullOrWhiteSpace(name))
                 throw new InvalidCommandUsageException("Missing channel name.");
 
             if (name.Contains(' '))
-                throw new InvalidCommandUsageException("Name cannot contain spaces.");
+                throw new InvalidCommandUsageException("Text channel name cannot contain spaces.");
 
+            // TODO check 
             if (name.Length < 2 || name.Length > 100)
-                throw new InvalidCommandUsageException("Name must be longer than 2 and shorter than 100 characters.");
-
-            if (ctx.Guild.Channels.Any(chn => chn.Name == name.ToLowerInvariant())) {
-                if (!await ctx.WaitForBoolReplyAsync("A channel with that name already exists. Continue anyway?").ConfigureAwait(false))
-                    return;
-            }
+                throw new InvalidCommandUsageException("Channel name must be longer than 2 and shorter than 100 characters.");
 
             if (parent != null && parent.Type != ChannelType.Category)
                 throw new CommandFailedException("Channel parent must be a category!");
 
-            await ctx.Guild.CreateTextChannelAsync(name, parent, nsfw: nsfw, reason: ctx.BuildReasonString())
-                .ConfigureAwait(false);
+            name = name.ToLowerInvariant();
+            if (ctx.Guild.Channels.Any(chn => chn.Name == name)) {
+                if (!await ctx.WaitForBoolReplyAsync("A channel with that name already exists. Continue anyway?"))
+                    return;
+            }
 
-            await ctx.InformSuccessAsync($"Channel {Formatter.Bold(name)} successfully created.")
-                .ConfigureAwait(false);
+            await ctx.Guild.CreateTextChannelAsync(name, parent, nsfw: nsfw, reason: ctx.BuildReasonString());
+            await ctx.InformSuccessAsync();
         }
 
         [Command("createtext"), Priority(1)]
         public Task CreateTextChannelAsync(CommandContext ctx,
-                                          [Description("Name.")] string name,
+                                          [Description("Name for the channel.")] string name,
                                           [Description("NSFW?")] bool nsfw = false,
                                           [Description("Parent category.")] DiscordChannel parent = null)
            => CreateTextChannelAsync(ctx, name, parent, nsfw);
@@ -114,52 +111,50 @@ namespace TheGodfather.Modules.Administration
         [Command("createtext"), Priority(0)]
         public Task CreateTextChannelAsync(CommandContext ctx,
                                           [Description("Parent category.")] DiscordChannel parent,
-                                          [Description("Name.")] string name,
+                                          [Description("Name for the channel.")] string name,
                                           [Description("NSFW?")] bool nsfw = false)
            => CreateTextChannelAsync(ctx, name, parent, nsfw);
         #endregion
 
         #region COMMAND_CHANNEL_CREATEVOICE
-        [Command("createvoice"), Priority(2)]
-        [Module(ModuleType.Administration)]
-        [Description("Create new voice channel.")]
-        [Aliases("createv", "cvoice", "cv", "+voice", "+v")]
+        [Command("createvoice"), Priority(2), Module(ModuleType.Administration), UsesInteractivity]
+        [Description("Create new voice channel. You can also specify channel parent, user limit and bitrate.")]
+        [Aliases("addvoice", "addv", "createv", "cvoice", "cv", "+voice", "+v", "<v", "<<v")]
         [UsageExamples("!channel createtext \"My voice channel\" ParentCategory 0 96000",
                        "!channel createtext \"My voice channel\" 10 96000",
                        "!channel createtext ParentCategory \"My voice channel\" 10 96000")]
         [RequirePermissions(Permissions.ManageChannels)]
-        [UsesInteractivity]
         public async Task CreateVoiceChannelAsync(CommandContext ctx,
-                                                 [Description("Name.")] string name,
+                                                 [Description("Name for the channel.")] string name,
                                                  [Description("Parent category.")] DiscordChannel parent = null,
                                                  [Description("User limit.")] int? userlimit = null,
                                                  [Description("Bitrate.")] int? bitrate = null)
         {
+            // TODO check
             if (string.IsNullOrWhiteSpace(name))
                 throw new InvalidCommandUsageException("Missing channel name.");
 
+            // TODO check
             if (name.Length < 2 || name.Length > 100)
                 throw new InvalidCommandUsageException("Name must be longer than 2 and shorter than 100 characters.");
-
-            if (ctx.Guild.Channels.Any(chn => chn.Name == name.ToLowerInvariant())) {
-                if (!await ctx.WaitForBoolReplyAsync("A channel with that name already exists. Continue anyway?").ConfigureAwait(false))
-                    return;
-            }
 
             if (parent != null && parent.Type != ChannelType.Category)
                 throw new CommandFailedException("Channel parent must be a category!");
 
-            await ctx.Guild.CreateVoiceChannelAsync(name, parent, bitrate, userlimit, reason: ctx.BuildReasonString())
-                .ConfigureAwait(false);
+            name = name.ToLowerInvariant();
+            if (ctx.Guild.Channels.Any(chn => chn.Name == name)) {
+                if (!await ctx.WaitForBoolReplyAsync("A channel with that name already exists. Continue anyway?"))
+                    return;
+            }
 
-            await ctx.InformSuccessAsync($"Channel {Formatter.Bold(name)} successfully created.")
-                .ConfigureAwait(false);
+            await ctx.Guild.CreateVoiceChannelAsync(name, parent, bitrate, userlimit, reason: ctx.BuildReasonString());
+            await ctx.InformSuccessAsync();
         }
 
 
         [Command("createvoice"), Priority(1)]
         public Task CreateVoiceChannelAsync(CommandContext ctx,
-                                           [Description("Name.")] string name,
+                                           [Description("Name for the channel.")] string name,
                                            [Description("User limit.")] int? userlimit = null,
                                            [Description("Bitrate.")] int? bitrate = null,
                                            [Description("Parent category.")] DiscordChannel parent = null)
@@ -168,22 +163,21 @@ namespace TheGodfather.Modules.Administration
         [Command("createvoice"), Priority(0)]
         public Task CreateVoiceChannelAsync(CommandContext ctx,
                                            [Description("Parent category.")] DiscordChannel parent,
-                                           [Description("Name.")] string name,
+                                           [Description("Name for the channel.")] string name,
                                            [Description("User limit.")] int? userlimit = null,
                                            [Description("Bitrate.")] int? bitrate = null)
             => CreateVoiceChannelAsync(ctx, name, parent, userlimit, bitrate);
         #endregion
 
         #region COMMAND_CHANNEL_DELETE
-        [Command("delete"), Priority(1)]
-        [Module(ModuleType.Administration)]
-        [Description("Delete a given channel or category. If the channel isn't given, deletes the current one.")]
+        [Command("delete"), Priority(1), Module(ModuleType.Administration), UsesInteractivity]
+        [Description("Delete a given channel or category. If the channel isn't given, deletes the current one. " +
+                     "You can also specify reason for deletion.")]
         [Aliases("-", "del", "d", "remove", "rm")]
         [UsageExamples("!channel delete", 
                        "!channel delete \"My voice channel\"", 
                        "!channel delete \"My voice channel\" Because I can!")]
         [RequirePermissions(Permissions.ManageChannels)]
-        [UsesInteractivity]
         public async Task DeleteAsync(CommandContext ctx,
                                      [Description("Channel to delete.")] DiscordChannel channel = null,
                                      [RemainingText, Description("Reason.")] string reason = null)
@@ -191,24 +185,20 @@ namespace TheGodfather.Modules.Administration
             if (channel == null)
                 channel = ctx.Channel;
 
-            if (channel.Type == ChannelType.Category && channel.Children.Count() > 0) {
-                if (await ctx.WaitForBoolReplyAsync("The channel specified is a non-empty category. Delete all channels in it recursively?")) {
-                    foreach (var chn in channel.Children.ToList()) {
-                        await chn.DeleteAsync(reason: ctx.BuildReasonString(reason))
-                            .ConfigureAwait(false);
-                    }
+            // TODO check : Deleting category will also delete all channels in it recursively?
+            if (channel.Type == ChannelType.Category && channel.Children.Any()) {
+                if (await ctx.WaitForBoolReplyAsync("The channel specified is a non-empty category. Continue? (y/n)")) {
+                    foreach (DiscordChannel child in channel.Children)
+                        await child.DeleteAsync(reason: ctx.BuildReasonString(reason));
                 }
+            } else {
+                if (!await ctx.WaitForBoolReplyAsync($"Are you sure you want to delete channel {channel.Mention}? This cannot be undone! (y/n)"))
+                    return;
             }
 
-            if (!await ctx.WaitForBoolReplyAsync($"Are you sure you want to delete channel {channel.Mention}? This cannot be undone! (y/n)"))
-                return;
-
-            string name = channel.Name;
-            await channel.DeleteAsync(reason: ctx.BuildReasonString(reason))
-                .ConfigureAwait(false);
+            await channel.DeleteAsync(reason: ctx.BuildReasonString(reason));
             if (channel.Id != ctx.Channel.Id)
-                await ctx.InformSuccessAsync($"Channel {Formatter.Bold(name)} successfully deleted.")
-                    .ConfigureAwait(false);
+                await ctx.InformSuccessAsync();
         }
 
         [Command("delete"), Priority(0)]
@@ -219,44 +209,44 @@ namespace TheGodfather.Modules.Administration
 
         #region COMMAND_CHANNEL_INFO
         [Command("info"), Module(ModuleType.Administration)]
-        [Description("Get information about a given channel. If the channel isn't given, uses the current one.")]
+        [Description("Print information about a given channel. If the channel is not given, uses the current one.")]
         [Aliases("i", "information")]
         [UsageExamples("!channel info", 
                        "!channel info \"My voice channel\"")]
         [RequirePermissions(Permissions.AccessChannels)]
-        public async Task InfoAsync(CommandContext ctx,
-                                          [Description("Channel.")] DiscordChannel channel = null)
+        public Task InfoAsync(CommandContext ctx,
+                             [Description("Channel.")] DiscordChannel channel = null)
         {
             if (channel == null)
                 channel = ctx.Channel;
 
-            if (!ctx.Member.PermissionsIn(channel).HasFlag(Permissions.AccessChannels))
-                throw new CommandFailedException("You are not allowed to see this channel! (nice try smartass)");
+            // TODO check
+            if (!ctx.Member.PermissionsIn(channel).HasPermission(Permissions.AccessChannels))
+                throw new CommandFailedException("You are not allowed to see this channel! (You thought you are smart, right?)");
 
             var emb = new DiscordEmbedBuilder() {
-                Title = "Information for: " + channel.ToString(),
-                Description = "Current channel topic: " + (string.IsNullOrWhiteSpace(channel.Topic) ? "None." : Formatter.Italic(channel.Topic)),
-                Color = DiscordColor.Goldenrod
+                Title = channel.ToString(),
+                Description = $"Current channel topic: {Formatter.Italic(channel.Topic ?? "None")}",
+                Color = this.ModuleColor
             };
-            emb.AddField("Type", channel.Type.ToString(), inline: true)
-               .AddField("NSFW", channel.IsNSFW ? "Yes" : "No", inline: true)
-               .AddField("Private", channel.IsPrivate ? "Yes" : "No", inline: true)
-               .AddField("Position", channel.Position.ToString());
+
+            emb.AddField("Type", channel.Type.ToString(), inline: true);
+            emb.AddField("NSFW", channel.IsNSFW.ToString(), inline: true);
+            emb.AddField("Private", channel.IsPrivate.ToString(), inline: true);
+            emb.AddField("Position", channel.Position.ToString(), inline: true);
             if (channel.Type == ChannelType.Voice) {
-                emb.AddField("Bitrate", channel.Bitrate.ToString(), inline: true)
-                   .AddField("User limit", channel.UserLimit == 0 ? "No limit." : channel.UserLimit.ToString(), inline: true);
+                emb.AddField("Bitrate", channel.Bitrate.ToString(), inline: true);
+                emb.AddField("User limit", channel.UserLimit == 0 ? "No limit." : channel.UserLimit.ToString(), inline: true);
             }
             emb.AddField("Creation time", channel.CreationTimestamp.ToString(), inline: true);
 
-            await ctx.RespondAsync(embed: emb.Build())
-                .ConfigureAwait(false);
+            return ctx.RespondAsync(embed: emb.Build());
         }
         #endregion
 
         #region COMMAND_CHANNEL_MODIFY
-        [Command("modify"), Priority(1)]
-        [Module(ModuleType.Administration)]
-        [Description("Modify a given voice channel. Set 0 if you wish to keep the value as it is.")]
+        [Command("modify"), Priority(1), Module(ModuleType.Administration)]
+        [Description("Modify a given voice channel. Give 0 as an argument if you wish to keep the value unchanged.")]
         [Aliases("edit", "mod", "m", "e")]
         [UsageExamples("!channel modify \"My voice channel\" 20 96000 Some reason")]
         [RequirePermissions(Permissions.ManageChannels)]
@@ -266,22 +256,22 @@ namespace TheGodfather.Modules.Administration
                                      [Description("Bitrate.")] int bitrate = 0,
                                      [RemainingText, Description("Reason.")] string reason = null)
         {
+            // TODO check
             if (channel == null)
-                throw new InvalidCommandUsageException("Channel missing.");
+                channel = ctx.Channel;
 
             if (channel.Type != ChannelType.Voice)
-                throw new InvalidCommandUsageException("That isn't a voice channel!");
+                throw new InvalidCommandUsageException("You can only modify voice channels!");
 
             await channel.ModifyAsync(new Action<ChannelEditModel>(m => {
                 if (limit > 0)
                     m.Userlimit = limit;
-                if (channel.Type == ChannelType.Voice && bitrate > 0)
+                if (bitrate > 0)
                     m.Bitrate = bitrate;
                 m.AuditLogReason = ctx.BuildReasonString(reason);
             })).ConfigureAwait(false);
 
-            await ctx.InformSuccessAsync()
-                .ConfigureAwait(false);
+            await ctx.InformSuccessAsync();
         }
 
         [Command("modify"), Priority(0)]
@@ -293,10 +283,9 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_CHANNEL_RENAME
-        [Command("rename"), Priority(2)]
-        [Module(ModuleType.Administration)]
-        [Description("Rename channel. If the channel isn't given, uses the current one.")]
-        [Aliases("r", "name", "setname")]
+        [Command("rename"), Priority(2), Module(ModuleType.Administration)]
+        [Description("Rename given channel. If the channel is not given, renames the current one.")]
+        [Aliases("r", "name", "setname", "rn")]
         [UsageExamples("!channel rename New name for this channel",
                        "!channel rename \"My voice channel\" \"My old voice channel\"",
                        "!channel rename \"My reason\" \"My voice channel\" \"My old voice channel\"")]
@@ -306,29 +295,25 @@ namespace TheGodfather.Modules.Administration
                                      [Description("Channel to rename.")] DiscordChannel channel,
                                      [RemainingText, Description("New name.")] string newname)
         {
+            // TODO check
             if (string.IsNullOrWhiteSpace(newname))
                 throw new InvalidCommandUsageException("Missing new channel name.");
 
             if (newname.Length < 2 || newname.Length > 100)
-                throw new InvalidCommandUsageException("Name must be longer than 2 and shorter than 100 characters.");
+                throw new InvalidCommandUsageException("Channel name must be longer than 2 and shorter than 100 characters.");
 
             if (channel == null)
                 channel = ctx.Channel;
 
             if (channel.Type == ChannelType.Text && newname.Contains(' '))
-                throw new InvalidCommandUsageException("Name cannot contain spaces for a text channel.");
+                throw new InvalidCommandUsageException("Text channel name cannot contain spaces.");
 
-            try {
-                await channel.ModifyAsync(new Action<ChannelEditModel>(m => {
-                    m.Name = newname;
-                    m.AuditLogReason = ctx.BuildReasonString(reason);
-                })).ConfigureAwait(false);
-            } catch (BadRequestException e) {
-                throw new CommandFailedException("An error occured. Maybe the name entered contains invalid characters?", e);
-            }
-
-            await ctx.InformSuccessAsync()
-                .ConfigureAwait(false);
+            // TODO test bad req w invalid chars
+            await channel.ModifyAsync(new Action<ChannelEditModel>(m => {
+                m.Name = newname;
+                m.AuditLogReason = ctx.BuildReasonString(reason);
+            }));
+            await ctx.InformSuccessAsync();
         }
 
         [Command("rename"), Priority(1)]
@@ -344,9 +329,9 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_CHANNEL_SETPARENT
-        [Command("setparent"), Priority(1)]
-        [Module(ModuleType.Administration)]
-        [Description("Change the parent of the given channel. If the channel isn't given, uses the current one.")]
+        [Command("setparent"), Priority(1), Module(ModuleType.Administration)]
+        [Description("Change the given channel's parent. If the channel is not given, uses the current one. " +
+                     "You can also provide a reason.")]
         [Aliases("setpar", "par", "parent")]
         [UsageExamples("!channel setparent \"My channel\" ParentCategory",
                        "!channel setparent ParentCategory I set a new parent for this channel!")]
@@ -357,7 +342,7 @@ namespace TheGodfather.Modules.Administration
                                            [RemainingText, Description("Reason.")] string reason = null)
         {
             if (parent.Type != ChannelType.Category)
-                throw new CommandFailedException("Parent channel must be a category.");
+                throw new CommandFailedException("Parent must be a category.");
 
             if (channel == null)
                 channel = ctx.Channel;
@@ -365,10 +350,8 @@ namespace TheGodfather.Modules.Administration
             await channel.ModifyAsync(new Action<ChannelEditModel>(m => {
                 m.Parent = parent;
                 m.AuditLogReason = ctx.BuildReasonString(reason);
-            })).ConfigureAwait(false);
-
-            await ctx.InformSuccessAsync()
-                .ConfigureAwait(false);
+            }));
+            await ctx.InformSuccessAsync();
         }
 
         [Command("setparent"), Priority(0)]
@@ -379,30 +362,27 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_CHANNEL_SETPOSITION
-        [Command("setposition"), Priority(2)]
-        [Module(ModuleType.Administration)]
-        [Description("Change the position of the given channel in the guild channel list. If the channel isn't given, uses the current one.")]
+        [Command("setposition"), Priority(2), Module(ModuleType.Administration)]
+        [Description("Change the position of the given channel in the guild channel list. If the channel " +
+                     "is not given, repositions the current one. You can also provide reason.")]
         [Aliases("setpos", "pos", "position")]
         [UsageExamples("!channel setposition 4", 
                        "!channel setposition \"My channel\" 1",
                        "!channel setposition \"My channel\" 4 I changed position :)")]
         [RequirePermissions(Permissions.ManageChannels)]
         public async Task ReorderChannelAsync(CommandContext ctx,
-                                             [Description("Channel to reorder.")] DiscordChannel channel,
-                                             [Description("Position.")] int position,
+                                             [Description("Channel to reposition.")] DiscordChannel channel,
+                                             [Description("New position.")] int position,
                                              [RemainingText, Description("Reason.")] string reason = null)
         {
             if (position < 0)
-                throw new InvalidCommandUsageException("Position cannot be negative...");
+                throw new ArgumentException("Position cannot be negative.", nameof(position));
 
             if (channel == null)
                 channel = ctx.Channel;
 
-            await channel.ModifyPositionAsync(position, ctx.BuildReasonString(reason))
-                .ConfigureAwait(false);
-
-            await ctx.InformSuccessAsync()
-                .ConfigureAwait(false);
+            await channel.ModifyPositionAsync(position, ctx.BuildReasonString(reason));
+            await ctx.InformSuccessAsync();
         }
 
         [Command("setposition"), Priority(1)]
@@ -420,9 +400,8 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_CHANNEL_SETTOPIC
-        [Command("settopic"), Priority(2)]
-        [Module(ModuleType.Administration)]
-        [Description("Set channel topic. If the channel isn't given, uses the current one.")]
+        [Command("settopic"), Priority(2), Module(ModuleType.Administration)]
+        [Description("Set channel topic. If the channel is not given, uses the current one.")]
         [Aliases("t", "topic", "sett")]
         [UsageExamples("!channel settopic New channel topic", 
                        "!channel settopic \"My channel\" New channel topic")]
@@ -432,17 +411,18 @@ namespace TheGodfather.Modules.Administration
                                               [Description("Channel.")] DiscordChannel channel,
                                               [RemainingText, Description("New topic.")] string topic)
         {
+            // TODO check
             if (string.IsNullOrWhiteSpace(topic))
                 throw new InvalidCommandUsageException("Missing topic.");
+
             if (channel == null)
                 channel = ctx.Channel;
 
             await channel.ModifyAsync(new Action<ChannelEditModel>(m => {
                 m.Topic = topic;
                 m.AuditLogReason = ctx.BuildReasonString();
-            })).ConfigureAwait(false);
-            await ctx.InformSuccessAsync()
-                .ConfigureAwait(false);
+            }));
+            await ctx.InformSuccessAsync();
         }
 
         [Command("settopic"), Priority(1)]
@@ -458,15 +438,17 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_CHANNEL_VIEWPERMS
-        [Command("viewperms"), Priority(3)]
-        [Module(ModuleType.Administration)]
-        [Description("View permissions for a member or role in the given channel. If the member is not given, lists the sender's permissions. If the channel is not given, uses current one.")]
+        [Command("viewperms"), Priority(3), Module(ModuleType.Administration)]
+        [Description("View permissions for a member or role in the given channel. If the member is not " +
+                     "given, lists the sender's permissions. If the channel is not given, uses the current one.")]
         [Aliases("tp", "perms", "permsfor", "testperms", "listperms")]
         [UsageExamples("!channel viewperms @Someone",
                        "!channel viewperms Admins",
                        "!channel viewperms #private everyone",
                        "!channel viewperms everyone #private")]
-        public async Task PrintPermsAsync(CommandContext ctx,
+        // TODO check
+        [RequireBotPermissions(Permissions.AccessChannels)]
+        public Task PrintPermsAsync(CommandContext ctx,
                                          [Description("Member.")] DiscordMember member = null,
                                          [Description("Channel.")] DiscordChannel channel = null)
         {
@@ -480,11 +462,11 @@ namespace TheGodfather.Modules.Administration
             if (member.PermissionsIn(channel).HasPermission(Permissions.AccessChannels))
                 perms = member.PermissionsIn(channel).ToPermissionString();
 
-            await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
-                Title = $"Permissions for member {member.Username} in channel {channel.Name}:",
+            return ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
+                Title = $"Permissions for {member.ToString()} in {channel.ToString()}:",
                 Description = perms,
-                Color = DiscordColor.Turquoise
-            }.Build()).ConfigureAwait(false);
+                Color = this.ModuleColor
+            }.Build());
         }
 
         [Command("viewperms"), Priority(2)]
@@ -505,9 +487,8 @@ namespace TheGodfather.Modules.Administration
                 channel = ctx.Channel;
 
             DiscordOverwrite overwrite = null;
-            foreach (var o in ctx.Channel.PermissionOverwrites) {
-                var r = await o.GetRoleAsync()
-                    .ConfigureAwait(false);
+            foreach (DiscordOverwrite o in channel.PermissionOverwrites.Where(o => o.Type == OverwriteType.Role)) {
+                DiscordRole r = await o.GetRoleAsync();
                 if (r.Id == role.Id) {
                     overwrite = o;
                     break;
@@ -515,8 +496,8 @@ namespace TheGodfather.Modules.Administration
             }
 
             var emb = new DiscordEmbedBuilder() {
-                Title = $"Permissions for role {role.Name} in channel {channel.Name}:",
-                Color = DiscordColor.Turquoise
+                Title = $"Permissions for {role.ToString()} in {channel.ToString()}:",
+                Color = this.ModuleColor
             };
 
             if (overwrite != null) {
@@ -526,8 +507,7 @@ namespace TheGodfather.Modules.Administration
                 emb.AddField("No overwrites found, listing default role permissions:\n", role.Permissions.ToPermissionString());
             }
 
-            await ctx.RespondAsync(embed: emb.Build())
-                .ConfigureAwait(false);
+            await ctx.RespondAsync(embed: emb.Build());
         }
 
         [Command("viewperms"), Priority(0)]

@@ -15,7 +15,7 @@ using TheGodfather.Services.Database.SpecialRoles;
 
 namespace TheGodfather.Modules.Administration
 {
-    [Group("automaticroles"), Module(ModuleType.Administration)]
+    [Group("automaticroles"), Module(ModuleType.Administration), NotBlocked]
     [Description("Automatic roles management. Automatic roles are automatically granted to a new member " +
                  "of the guild. Group call lists all the automatic roles for the guild. Group call with " +
                  "arbitrary amount of roles will add those roles to the automatic roles list for this " +
@@ -24,7 +24,6 @@ namespace TheGodfather.Modules.Administration
     [UsageExamples("!ar", 
                    "!ar @Guests")]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
-    [NotBlocked]
     public class AutomaticRolesModule : TheGodfatherModule
     { 
 
