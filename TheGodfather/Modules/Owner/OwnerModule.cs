@@ -323,9 +323,9 @@ namespace TheGodfather.Modules.Owner
             sb.AppendLine();
 
             var commands = ctx.CommandsNext.GetAllRegisteredCommands();
-            var modules = commands.GroupBy(c => c.CustomAttributes.FirstOrDefault(a => a is ModuleAttribute))
-                                  .OrderBy(g => (g.Key as ModuleAttribute)?.Module)
-                                  .ToDictionary(g => g.Key as ModuleAttribute ?? new ModuleAttribute(ModuleType.Uncategorized), g => g.OrderBy(c => c.QualifiedName).ToList());
+            var modules = commands.GroupBy(c => ModuleAttribute.ForCommand(c))
+                                  .OrderBy(g => g.Key.Module)
+                                  .ToDictionary(g => g.Key, g => g.OrderBy(c => c.QualifiedName).ToList());
 
             foreach (var module in modules) {
                 sb.Append("# Module: ").Append(module.Key.Module.ToString()).AppendLine().AppendLine();

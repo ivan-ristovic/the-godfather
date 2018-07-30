@@ -47,7 +47,7 @@ namespace TheGodfather.Modules.Administration
 
 
         #region COMMAND_FILTER_ADD
-        [Command("add"), Module(ModuleType.Administration)]
+        [Command("add")]
         [Description("Add filter to guild filter list.")]
         [Aliases("addnew", "create", "a", "+", "+=", "<", "<<")]
         [UsageExamples("!filter add fuck f+u+c+k+")]
@@ -129,7 +129,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_FILTER_DELETE
-        [Command("delete"), Priority(1), Module(ModuleType.Administration)]
+        [Command("delete"), Priority(1)]
         [Description("Removes filter either by ID or plain text.")]
         [Aliases("remove", "rm", "del", "d", "-", "-=", ">", ">>")]
         [UsageExamples("!filter delete fuck f+u+c+k+",
@@ -223,7 +223,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_FILTERS_DELETEALL
-        [Command("deleteall"), Module(ModuleType.Administration), UsesInteractivity]
+        [Command("deleteall"), UsesInteractivity]
         [Description("Delete all filters for the current guild.")]
         [Aliases("removeall", "rmrf", "rma", "clearall", "clear", "delall", "da")]
         [UsageExamples("!filter clear")]
@@ -259,7 +259,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_FILTER_LIST
-        [Command("list"), Module(ModuleType.Administration)]
+        [Command("list")]
         [Description("Show all filters for this guild.")]
         [Aliases("ls", "l")]
         [UsageExamples("!filter list")]

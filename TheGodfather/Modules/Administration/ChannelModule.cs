@@ -38,7 +38,7 @@ namespace TheGodfather.Modules.Administration
 
 
         #region COMMAND_CHANNEL_CREATECATEGORY
-        [Command("createcategory"), Module(ModuleType.Administration), UsesInteractivity]
+        [Command("createcategory"), UsesInteractivity]
         [Description("Create new channel category.")]
         [Aliases("addcategory", "createcat", "createc", "ccat", "cc", "+category", "+cat", "+c", "<c", "<<c")]
         [UsageExamples("!channel createcategory My New Category")]
@@ -63,7 +63,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_CHANNEL_CREATETEXT
-        [Command("createtext"), Priority(2), Module(ModuleType.Administration), UsesInteractivity]
+        [Command("createtext"), Priority(2), UsesInteractivity]
         [Description("Create new text channel. You can also specify channel parent, user limit and bitrate.")]
         [Aliases("addtext", "addtxt", "createtxt", "createt", "ctxt", "ct", "+", "+txt", "+t", "<t", "<<t")]
         [UsageExamples("!channel addtext newtextchannel ParentCategory no",
@@ -112,7 +112,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_CHANNEL_CREATEVOICE
-        [Command("createvoice"), Priority(2), Module(ModuleType.Administration), UsesInteractivity]
+        [Command("createvoice"), Priority(2), UsesInteractivity]
         [Description("Create new voice channel. You can also specify channel parent, user limit and bitrate.")]
         [Aliases("addvoice", "addv", "createv", "cvoice", "cv", "+voice", "+v", "<v", "<<v")]
         [UsageExamples("!channel createtext \"My voice channel\" ParentCategory 0 96000",
@@ -162,7 +162,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_CHANNEL_DELETE
-        [Command("delete"), Priority(1), Module(ModuleType.Administration), UsesInteractivity]
+        [Command("delete"), Priority(1), UsesInteractivity]
         [Description("Delete a given channel or category. If the channel isn't given, deletes the current one. " +
                      "You can also specify reason for deletion.")]
         [Aliases("-", "del", "d", "remove", "rm")]
@@ -199,7 +199,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_CHANNEL_INFO
-        [Command("info"), Module(ModuleType.Administration)]
+        [Command("info")]
         [Description("Print information about a given channel. If the channel is not given, uses the current one.")]
         [Aliases("i", "information")]
         [UsageExamples("!channel info", 
@@ -234,7 +234,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_CHANNEL_MODIFY
-        [Command("modify"), Priority(1), Module(ModuleType.Administration)]
+        [Command("modify"), Priority(1)]
         [Description("Modify a given voice channel. Give 0 as an argument if you wish to keep the value unchanged.")]
         [Aliases("edit", "mod", "m", "e")]
         [UsageExamples("!channel modify \"My voice channel\" 20 96000 Some reason")]
@@ -268,7 +268,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_CHANNEL_RENAME
-        [Command("rename"), Priority(2), Module(ModuleType.Administration)]
+        [Command("rename"), Priority(2)]
         [Description("Rename given channel. If the channel is not given, renames the current one.")]
         [Aliases("r", "name", "setname", "rn")]
         [UsageExamples("!channel rename New name for this channel",
@@ -312,7 +312,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_CHANNEL_SETPARENT
-        [Command("setparent"), Priority(1), Module(ModuleType.Administration)]
+        [Command("setparent"), Priority(1)]
         [Description("Change the given channel's parent. If the channel is not given, uses the current one. " +
                      "You can also provide a reason.")]
         [Aliases("setpar", "par", "parent")]
@@ -345,7 +345,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_CHANNEL_SETPOSITION
-        [Command("setposition"), Priority(2), Module(ModuleType.Administration)]
+        [Command("setposition"), Priority(2)]
         [Description("Change the position of the given channel in the guild channel list. If the channel " +
                      "is not given, repositions the current one. You can also provide reason.")]
         [Aliases("setpos", "pos", "position")]
@@ -383,7 +383,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_CHANNEL_SETTOPIC
-        [Command("settopic"), Priority(2), Module(ModuleType.Administration)]
+        [Command("settopic"), Priority(2)]
         [Description("Set channel topic. If the channel is not given, uses the current one.")]
         [Aliases("t", "topic", "sett")]
         [UsageExamples("!channel settopic New channel topic", 
@@ -423,7 +423,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_CHANNEL_VIEWPERMS
-        [Command("viewperms"), Priority(3), Module(ModuleType.Administration)]
+        [Command("viewperms"), Priority(3)]
         [Description("View permissions for a member or role in the given channel. If the member is not " +
                      "given, lists the sender's permissions. If the channel is not given, uses the current one.")]
         [Aliases("tp", "perms", "permsfor", "testperms", "listperms")]

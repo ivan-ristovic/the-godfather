@@ -42,7 +42,7 @@ namespace TheGodfather.Modules.Administration
 
 
         #region COMMAND_EMOJI_ADD
-        [Command("add"), Priority(3), Module(ModuleType.Administration)]
+        [Command("add"), Priority(3)]
         [Description("Add emoji specified via URL or as an attachment. If you have Discord Nitro, you can " +
                      "also pass emojis from another guild as arguments instead of their URLs.")]
         [Aliases("addnew", "create", "install", "a", "+", "+=", "<", "<<")]
@@ -106,7 +106,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_EMOJI_DELETE
-        [Command("delete"), Module(ModuleType.Administration)]
+        [Command("delete")]
         [Description("Remove guild emoji. Note: Bots can only delete emojis they created!")]
         [Aliases("remove", "rm", "del", "d", "-", "-=", ">", ">>")]
         [UsageExamples("!emoji delete pepe")]
@@ -126,7 +126,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_EMOJI_INFO
-        [Command("info"), Module(ModuleType.Administration)]
+        [Command("info")]
         [Description("Prints information for given guild emoji.")]
         [UsageExamples("!emoji info :pepe:")]
         [Aliases("details", "information", "i")]
@@ -151,7 +151,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_EMOJI_LIST
-        [Command("list"), Module(ModuleType.Administration)]
+        [Command("list")]
         [Description("List all emojis for this guild.")]
         [Aliases("print", "show", "l", "p", "ls")]
         [UsageExamples("!emoji list")]
@@ -167,7 +167,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_EMOJI_MODIFY
-        [Command("modify"), Priority(1), Module(ModuleType.Administration)]
+        [Command("modify"), Priority(1)]
         [Description("Edit name of an existing guild emoji.")]
         [Aliases("edit", "mod", "e", "m", "rename")]
         [UsageExamples("!emoji modify :pepe: newname",

@@ -20,7 +20,7 @@ namespace TheGodfather.Modules.Administration
 {
     public partial class GuildModule
     {
-        [Group("configure"), Module(ModuleType.Administration)]
+        [Group("configure")]
         [Description("Allows manipulation of guild settings for this bot. If invoked without subcommands, lists the current guild configuration.")]
         [Aliases("configuration", "config", "cfg")]
         [UsageExamples("!guild configure")]
@@ -79,7 +79,7 @@ namespace TheGodfather.Modules.Administration
             
 
             #region COMMAND_CONFIG_WIZARD
-            [Command("setup"), Module(ModuleType.Administration), UsesInteractivity]
+            [Command("setup"), UsesInteractivity]
             [Description("Starts an interactive wizard for configuring the guild settings.")]
             [Aliases("wizard")]
             [UsageExamples("!guild cfg setup")]
@@ -266,7 +266,7 @@ namespace TheGodfather.Modules.Administration
             #endregion
             
             #region COMMAND_CONFIG_SUGGESTIONS
-            [Command("suggestions"), Priority(1), Module(ModuleType.Administration)]
+            [Command("suggestions"), Priority(1)]
             [Description("Command suggestions configuration.")]
             [Aliases("suggestion", "cmdsug", "sugg", "sug", "cs", "s")]
             [UsageExamples("!guild cfg suggestions",
@@ -303,7 +303,7 @@ namespace TheGodfather.Modules.Administration
             #endregion
             
             #region COMMAND_CONFIG_LOGGING
-            [Command("logging"), Priority(1), Module(ModuleType.Administration)]
+            [Command("logging"), Priority(1)]
             [Description("Command action logging configuration.")]
             [Aliases("log", "modlog")]
             [UsageExamples("!guild cfg logging",
@@ -351,7 +351,7 @@ namespace TheGodfather.Modules.Administration
             #endregion
 
             #region COMMAND_CONFIG_WELCOME
-            [Command("welcome"), Priority(3), Module(ModuleType.Administration)]
+            [Command("welcome"), Priority(3)]
             [Description("Allows user welcoming configuration.")]
             [Aliases("enter", "join", "wlc", "wm", "w")]
             [UsageExamples("!guild cfg welcome",
@@ -436,7 +436,7 @@ namespace TheGodfather.Modules.Administration
             #endregion
             
             #region COMMAND_CONFIG_LEAVE
-            [Command("leave"), Priority(3), Module(ModuleType.Administration)]
+            [Command("leave"), Priority(3)]
             [Description("Allows user leaving message configuration.")]
             [Aliases("exit", "drop", "lvm", "lm", "l")]
             [UsageExamples("!guild cfg leave",

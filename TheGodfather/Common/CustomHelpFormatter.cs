@@ -50,8 +50,7 @@ namespace TheGodfather.Common
             this.Name = cmd is CommandGroup ? $"Group: {cmd.QualifiedName}" : cmd.QualifiedName;
             this.Description = cmd.Description;
 
-            if (cmd.CustomAttributes.FirstOrDefault(a => a is ModuleAttribute) is ModuleAttribute modattr)
-                this.EmbedBuilder.AddField("Module", modattr.Module.ToString());
+            this.EmbedBuilder.AddField("Module", ModuleAttribute.ForCommand(cmd).Module.ToString());
 
             if (cmd.Aliases?.Any() ?? false)
                 this.EmbedBuilder.AddField("Aliases", string.Join(", ", cmd.Aliases.Select(a => Formatter.InlineCode(a))));

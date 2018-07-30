@@ -46,7 +46,7 @@ namespace TheGodfather.Modules.Administration
 
 
         #region COMMAND_AR_ADD
-        [Command("add"), Module(ModuleType.Administration)]
+        [Command("add")]
         [Description("Adds an automatic role(s).")]
         [Aliases("a", "+", "+=", "<<", "<")]
         [UsageExamples("!ar add @Notifications", 
@@ -78,7 +78,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_AR_DELETE
-        [Command("delete"), Module(ModuleType.Administration)]
+        [Command("delete")]
         [Description("Remove automatic role(s).")]
         [Aliases("remove", "rm", "del", "d", "-", "-=", ">", ">>")]
         [UsageExamples("!ar delete @Notifications", 
@@ -107,10 +107,10 @@ namespace TheGodfather.Modules.Administration
 
             await ctx.InformSuccessAsync();
         }
-        #endregion
+        #endregion=
 
         #region COMMAND_AR_DELETEALL
-        [Command("deleteall"), Module(ModuleType.Administration), UsesInteractivity]
+        [Command("deleteall"), UsesInteractivity]
         [Description("Delete all automatic roles for this guild.")]
         [Aliases("removeall", "rmrf", "rma", "clearall", "clear", "delall", "da")]
         [UsageExamples("!ar deleteall")]
@@ -138,7 +138,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_AR_LIST
-        [Command("list"), Module(ModuleType.Administration)]
+        [Command("list")]
         [Description("List all current automatic roles.")]
         [Aliases("print", "show", "ls", "l", "p")]
         [UsageExamples("!ar list")]
