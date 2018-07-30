@@ -39,7 +39,6 @@ namespace TheGodfather.Modules.Administration
             => ListAsync(ctx);
 
         [GroupCommand, Priority(0)]
-        // TODO check
         [RequireUserPermissions(Permissions.Administrator)]
         public Task ExecuteGroupAsync(CommandContext ctx,
                                      [Description("Roles to add.")] params DiscordRole[] roles)
@@ -56,9 +55,8 @@ namespace TheGodfather.Modules.Administration
         public async Task AddAsync(CommandContext ctx,
                                   [Description("Roles to add.")] params DiscordRole[] roles)
         {
-            // TODO check
             if (roles == null || !roles.Any())
-                throw new InvalidCommandUsageException("Role list is missing.");
+                throw new InvalidCommandUsageException("Missing roles to add.");
 
             foreach (DiscordRole role in roles)
                 await this.Database.AddAutomaticRoleAsync(ctx.Guild.Id, role.Id);
@@ -89,9 +87,8 @@ namespace TheGodfather.Modules.Administration
         public async Task DeleteAsync(CommandContext ctx,
                                      [Description("Roles to remove.")] params DiscordRole[] roles)
         {
-            // TODO check
             if (roles == null || !roles.Any())
-                throw new InvalidCommandUsageException("You need to specify roles to delete.");
+                throw new InvalidCommandUsageException("You need to specify roles to remove.");
 
             foreach (DiscordRole role in roles)
                 await this.Database.RemoveAutomaticRoleAsync(ctx.Guild.Id, role.Id);

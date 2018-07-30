@@ -122,6 +122,8 @@ namespace TheGodfather
             this.CNext.RegisterConverter(new CustomActivityTypeConverter());
             this.CNext.RegisterConverter(new CustomBoolConverter());
             this.CNext.RegisterConverter(new CustomTimeWindowConverter());
+            // Registering my own Uri converter
+            this.CNext.UnregisterConverter<Uri>();
             this.CNext.RegisterConverter(new CustomUriConverter());
             
             Commands = this.CNext.GetAllRegisteredCommands()

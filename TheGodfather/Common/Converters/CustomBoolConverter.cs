@@ -23,6 +23,8 @@ namespace TheGodfather.Common.Converters
                 case "yes":
                 case "yea":
                 case "yeah":
+                case "on":
+                case "enable":
                 case "1":
                     result = true;
                     break;
@@ -32,6 +34,8 @@ namespace TheGodfather.Common.Converters
                 case "nope":
                 case "nada":
                 case "no":
+                case "off":
+                case "disable":
                 case "0":
                     result = false;
                     break;

@@ -78,7 +78,7 @@ namespace TheGodfather.EventListeners
                     break;
                 case ArgumentException _:
                     sb.AppendLine($"Argument conversion error (please check {Formatter.Bold($"help {e.Command.QualifiedName}")}).");
-                    sb.AppendLine().Append("Details: {Formatter.Italic(ex.Message)}");
+                    sb.AppendLine().Append($"Details: {Formatter.Italic(ex.Message)}");
                     break;
                 case CommandFailedException _:
                     sb.Append($"{ex.Message} {ex.InnerException?.Message}");

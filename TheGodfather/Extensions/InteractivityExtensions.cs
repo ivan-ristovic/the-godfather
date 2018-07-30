@@ -20,7 +20,7 @@ namespace TheGodfather.Extensions
                 shared.AddPendingResponse(cid, uid);
 
             bool response = false;
-            var mctx = await interactivity.WaitForMessageAsync(
+            MessageContext mctx = await interactivity.WaitForMessageAsync(
                 m => {
                     if (m.ChannelId != cid || m.Author.Id != uid)
                         return false;

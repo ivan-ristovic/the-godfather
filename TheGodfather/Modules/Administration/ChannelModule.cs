@@ -33,7 +33,7 @@ namespace TheGodfather.Modules.Administration
 
         [GroupCommand]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [Description("Channel which info to view.")] DiscordChannel channel = null)
+                                     [Description("Channel to scan.")] DiscordChannel channel = null)
             => InfoAsync(ctx, channel);
 
 
@@ -46,16 +46,14 @@ namespace TheGodfather.Modules.Administration
         public async Task CreateCategoryAsync(CommandContext ctx,
                                              [RemainingText, Description("Name for the category.")] string name)
         {
-            // TODO check
             if (string.IsNullOrWhiteSpace(name))
                 throw new InvalidCommandUsageException("Missing category name.");
-
-            // TODO check
-            if (name.Length < 2 || name.Length > 100)
-                throw new InvalidCommandUsageException("Channel name must be longer than 2 and shorter than 100 characters.");
+            
+            if (name.Length > 100)
+                throw new InvalidCommandUsageException("Channel name must be shorter than 100 characters.");
 
             if (ctx.Guild.Channels.Any(chn => chn.Name == name.ToLowerInvariant())) {
-                if (!await ctx.WaitForBoolReplyAsync("A channel with that name already exists. Continue?"))
+                if (!await ctx.WaitForBoolReplyAsync("A category with that name already exists. Continue? (y/n)"))
                     return;
             }
 
@@ -77,23 +75,20 @@ namespace TheGodfather.Modules.Administration
                                                 [Description("Parent category.")] DiscordChannel parent = null,
                                                 [Description("NSFW?")] bool nsfw = false)
         {
-            // TODO check
             if (string.IsNullOrWhiteSpace(name))
                 throw new InvalidCommandUsageException("Missing channel name.");
 
             if (name.Contains(' '))
                 throw new InvalidCommandUsageException("Text channel name cannot contain spaces.");
-
-            // TODO check 
-            if (name.Length < 2 || name.Length > 100)
-                throw new InvalidCommandUsageException("Channel name must be longer than 2 and shorter than 100 characters.");
+            
+            if (name.Length > 100)
+                throw new InvalidCommandUsageException("Channel name must be shorter than 100 characters.");
 
             if (parent != null && parent.Type != ChannelType.Category)
                 throw new CommandFailedException("Channel parent must be a category!");
-
-            name = name.ToLowerInvariant();
-            if (ctx.Guild.Channels.Any(chn => chn.Name == name)) {
-                if (!await ctx.WaitForBoolReplyAsync("A channel with that name already exists. Continue anyway?"))
+            
+            if (ctx.Guild.Channels.Any(chn => string.Compare(name, chn.Name, true) == 0)) {
+                if (!await ctx.WaitForBoolReplyAsync("A channel with that name already exists. Continue? (y/n)"))
                     return;
             }
 
@@ -130,20 +125,17 @@ namespace TheGodfather.Modules.Administration
                                                  [Description("User limit.")] int? userlimit = null,
                                                  [Description("Bitrate.")] int? bitrate = null)
         {
-            // TODO check
             if (string.IsNullOrWhiteSpace(name))
                 throw new InvalidCommandUsageException("Missing channel name.");
-
-            // TODO check
-            if (name.Length < 2 || name.Length > 100)
-                throw new InvalidCommandUsageException("Name must be longer than 2 and shorter than 100 characters.");
+            
+            if (name.Length > 100)
+                throw new InvalidCommandUsageException("Name must be shorter than 100 characters.");
 
             if (parent != null && parent.Type != ChannelType.Category)
                 throw new CommandFailedException("Channel parent must be a category!");
-
-            name = name.ToLowerInvariant();
-            if (ctx.Guild.Channels.Any(chn => chn.Name == name)) {
-                if (!await ctx.WaitForBoolReplyAsync("A channel with that name already exists. Continue anyway?"))
+            
+            if (ctx.Guild.Channels.Any(chn => string.Compare(name, chn.Name, true) == 0)) {
+                if (!await ctx.WaitForBoolReplyAsync("A channel with that name already exists. Continue? (y/n)"))
                     return;
             }
 
@@ -185,14 +177,13 @@ namespace TheGodfather.Modules.Administration
             if (channel == null)
                 channel = ctx.Channel;
 
-            // TODO check : Deleting category will also delete all channels in it recursively?
             if (channel.Type == ChannelType.Category && channel.Children.Any()) {
-                if (await ctx.WaitForBoolReplyAsync("The channel specified is a non-empty category. Continue? (y/n)")) {
-                    foreach (DiscordChannel child in channel.Children)
+                if (await ctx.WaitForBoolReplyAsync("The channel specified is a non-empty category and deleting it will delete child channels as well. Continue? (y/n)")) {
+                    foreach (DiscordChannel child in channel.Children.ToList())
                         await child.DeleteAsync(reason: ctx.BuildReasonString(reason));
                 }
             } else {
-                if (!await ctx.WaitForBoolReplyAsync($"Are you sure you want to delete channel {channel.Mention}? This cannot be undone! (y/n)"))
+                if (!await ctx.WaitForBoolReplyAsync($"Are you sure you want to delete channel {Formatter.Bold(channel.Name)} (ID: {Formatter.InlineCode(channel.Id.ToString())})? This cannot be undone! (y/n)"))
                     return;
             }
 
@@ -213,20 +204,18 @@ namespace TheGodfather.Modules.Administration
         [Aliases("i", "information")]
         [UsageExamples("!channel info", 
                        "!channel info \"My voice channel\"")]
-        [RequirePermissions(Permissions.AccessChannels)]
         public Task InfoAsync(CommandContext ctx,
                              [Description("Channel.")] DiscordChannel channel = null)
         {
             if (channel == null)
                 channel = ctx.Channel;
-
-            // TODO check
+            
             if (!ctx.Member.PermissionsIn(channel).HasPermission(Permissions.AccessChannels))
                 throw new CommandFailedException("You are not allowed to see this channel! (You thought you are smart, right?)");
 
             var emb = new DiscordEmbedBuilder() {
                 Title = channel.ToString(),
-                Description = $"Current channel topic: {Formatter.Italic(channel.Topic ?? "None")}",
+                Description = $"Current channel topic: {Formatter.Italic(string.IsNullOrWhiteSpace(channel.Topic) ? "None" : channel.Topic)}",
                 Color = this.ModuleColor
             };
 
@@ -256,10 +245,6 @@ namespace TheGodfather.Modules.Administration
                                      [Description("Bitrate.")] int bitrate = 0,
                                      [RemainingText, Description("Reason.")] string reason = null)
         {
-            // TODO check
-            if (channel == null)
-                channel = ctx.Channel;
-
             if (channel.Type != ChannelType.Voice)
                 throw new InvalidCommandUsageException("You can only modify voice channels!");
 
@@ -295,7 +280,6 @@ namespace TheGodfather.Modules.Administration
                                      [Description("Channel to rename.")] DiscordChannel channel,
                                      [RemainingText, Description("New name.")] string newname)
         {
-            // TODO check
             if (string.IsNullOrWhiteSpace(newname))
                 throw new InvalidCommandUsageException("Missing new channel name.");
 
@@ -307,8 +291,7 @@ namespace TheGodfather.Modules.Administration
 
             if (channel.Type == ChannelType.Text && newname.Contains(' '))
                 throw new InvalidCommandUsageException("Text channel name cannot contain spaces.");
-
-            // TODO test bad req w invalid chars
+            
             await channel.ModifyAsync(new Action<ChannelEditModel>(m => {
                 m.Name = newname;
                 m.AuditLogReason = ctx.BuildReasonString(reason);
@@ -411,9 +394,11 @@ namespace TheGodfather.Modules.Administration
                                               [Description("Channel.")] DiscordChannel channel,
                                               [RemainingText, Description("New topic.")] string topic)
         {
-            // TODO check
             if (string.IsNullOrWhiteSpace(topic))
                 throw new InvalidCommandUsageException("Missing topic.");
+
+            if (topic.Length > 1024)
+                throw new InvalidCommandUsageException("Topic cannot exceed 1024 characters!");
 
             if (channel == null)
                 channel = ctx.Channel;
@@ -446,8 +431,7 @@ namespace TheGodfather.Modules.Administration
                        "!channel viewperms Admins",
                        "!channel viewperms #private everyone",
                        "!channel viewperms everyone #private")]
-        // TODO check
-        [RequireBotPermissions(Permissions.AccessChannels)]
+        [RequireBotPermissions(Permissions.Administrator)]
         public Task PrintPermsAsync(CommandContext ctx,
                                          [Description("Member.")] DiscordMember member = null,
                                          [Description("Channel.")] DiscordChannel channel = null)

@@ -93,7 +93,7 @@ namespace TheGodfather.Extensions
             var shared = ctx.Services.GetService<SharedData>();
             shared.AddPendingResponse(ctx.Channel.Id, ctx.User.Id);
 
-            var mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(
+            MessageContext mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(
                 xm => {
                     if (xm.Author.Id == ctx.User.Id || xm.Channel.Id != ctx.Channel.Id)
                         return false;

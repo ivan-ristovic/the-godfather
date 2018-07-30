@@ -54,9 +54,8 @@ namespace TheGodfather.Modules.Administration
                                   [Description("Name for the emoji.")] string name,
                                   [Description("Image URL.")] Uri url = null)
         {
-            // TODO check
-            if (string.IsNullOrWhiteSpace(name))
-                throw new InvalidCommandUsageException("Emoji name missing or invalid.");
+            if (name.Length < 2 || name.Length > 50)
+                throw new InvalidCommandUsageException("Emoji name length must be between 2 and 50 characters.");
 
             if (url == null) {
                 if (!ctx.Message.Attachments.Any() || !Uri.TryCreate(ctx.Message.Attachments.First().Url, UriKind.Absolute, out url))
@@ -143,7 +142,7 @@ namespace TheGodfather.Modules.Administration
                 ThumbnailUrl = gemoji.Url
             };
 
-            emb.AddField("Name", Formatter.InlineCode(Formatter.Sanitize(gemoji.Name)), inline: true);
+            emb.AddField("Name", Formatter.InlineCode(gemoji.Name), inline: true);
             emb.AddField("Created by", gemoji.User != null ? gemoji.User.Username : "<unknown>", inline: true);
             emb.AddField("Integration managed", gemoji.IsManaged.ToString(), inline: true);
 
@@ -161,7 +160,7 @@ namespace TheGodfather.Modules.Administration
             return ctx.SendCollectionInPagesAsync(
                 $"Emoji available for guild {ctx.Guild.Name}:",
                 ctx.Guild.Emojis.OrderBy(e => e.Name),
-                emoji => $"{emoji} {Formatter.InlineCode(Formatter.Sanitize(emoji.Name))}",
+                emoji => $"{emoji} | {Formatter.InlineCode(emoji.Id.ToString())} | {Formatter.InlineCode(emoji.Name)}",
                 this.ModuleColor
             );
         }
