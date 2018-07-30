@@ -1,20 +1,14 @@
 ﻿#region USING_DIRECTIVES
-using System;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using TheGodfather.Common;
-using TheGodfather.Common.Attributes;
-using TheGodfather.Exceptions;
-using TheGodfather.Extensions;
-using TheGodfather.Services.Database.GuildConfig;
-
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using TheGodfather.Services.Database;
+using System.Threading.Tasks;
+using TheGodfather.Common;
+using TheGodfather.Common.Attributes;
+using TheGodfather.Extensions;
+using TheGodfather.Services.Database.GuildConfig;
 #endregion
 
 namespace TheGodfather.Modules.Administration
@@ -24,23 +18,40 @@ namespace TheGodfather.Modules.Administration
         public partial class ConfigModule : TheGodfatherModule
         {
             [Group("linkfilter"), Module(ModuleType.Administration)]
-            [Description("Linkfilter configuration.")]
+            [Description("Linkfilter configuration. Group call prints current configuration, or enables/disables linkfilter if specified.")]
             [Aliases("lf", "linkf", "linkremove", "filterlinks")]
-            [UsageExamples("!guild cfg linkfilter")]
+            [UsageExamples("!guild cfg linkfilter",
+                           "!guild cfg linkfilter on")]
             public class LinkFilter : TheGodfatherModule
             {
 
-                public LinkFilter(SharedData shared, DBService db) : base(shared, db) { }
-
-
-                [GroupCommand]
-                public async Task ExecuteGroupAsync(CommandContext ctx)
+                public LinkFilter(SharedData shared, DBService db) 
+                    : base(shared, db)
                 {
-                    var gcfg = Shared.GetGuildConfig(ctx.Guild.Id);
+                    this.ModuleColor = DiscordColor.Azure;
+                }
+
+
+                [GroupCommand, Priority(1)]
+                public async Task ExecuteGroupAsync(CommandContext ctx,
+                                                   [Description("Enable?")] bool enable)
+                {
+                    CachedGuildConfig gcfg = this.Shared.GetGuildConfig(ctx.Guild.Id);
+                    gcfg.LinkfilterEnabled = enable;
+
+                    await this.Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg);
+                    await ctx.InformSuccessAsync($"{(enable ? "Enabled" : "Disabled")} link filtering!");
+                    await LogConfigChangeAsync(ctx, "Linkfilter", gcfg.LinkfilterEnabled);
+                }
+
+                [GroupCommand, Priority(0)]
+                public Task ExecuteGroupAsync(CommandContext ctx)
+                {
+                    var gcfg = this.Shared.GetGuildConfig(ctx.Guild.Id);
                     if (gcfg.LinkfilterEnabled) {
                         var emb = new DiscordEmbedBuilder() {
                             Title = "Linkfilter modules for this guild",
-                            Color = DiscordColor.Green
+                            Color = this.ModuleColor
                         };
                         emb.AddField("Discord invites filter", gcfg.BlockDiscordInvites ? "enabled" : "disabled", inline: true);
                         emb.AddField("DDoS/Booter websites filter", gcfg.BlockBooterWebsites ? "enabled" : "disabled", inline: true);
@@ -48,372 +59,143 @@ namespace TheGodfather.Modules.Administration
                         emb.AddField("IP logging websites filter", gcfg.BlockIpLoggingWebsites ? "enabled" : "disabled", inline: true);
                         emb.AddField("URL shortening websites filter", gcfg.BlockDisturbingWebsites ? "enabled" : "disabled", inline: true);
 
-                        await ctx.RespondAsync(embed: emb.Build())
-                            .ConfigureAwait(false);
+                        return ctx.RespondAsync(embed: emb.Build());
                     } else {
-                        await ctx.InformSuccessAsync($"Link filtering for this guild is: {Formatter.Bold("disabled")}!")
-                            .ConfigureAwait(false);
+                        return ctx.InformSuccessAsync($"Link filtering for this guild is: {Formatter.Bold("disabled")}!");
                     }
                 }
 
 
-                #region COMMAND_LINKFILTER_ENABLE
-                [Command("enable"), Module(ModuleType.Administration)]
-                [Description("Enables link filtering for this guild.")]
-                [Aliases("on")]
-                [UsageExamples("!guild cfg linkfilter on")]
-                public async Task EnableAsync(CommandContext ctx)
-                {
-                    var gcfg = Shared.GetGuildConfig(ctx.Guild.Id);
-                    gcfg.LinkfilterEnabled = true;
-                    await Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg)
-                        .ConfigureAwait(false);
-
-                    await ctx.InformSuccessAsync("Enabled link filtering!")
-                        .ConfigureAwait(false);
-
-                    await LogConfigChangeAsync(ctx, "Linkfilter", gcfg.LinkfilterEnabled)
-                        .ConfigureAwait(false);
-                }
-                #endregion
-
-                #region COMMAND_LINKFILTER_DISABLE
-                [Command("disable"), Module(ModuleType.Administration)]
-                [Description("Disables link filtering for this guild.")]
-                [Aliases("off")]
-                [UsageExamples("!guild cfg linkfilter off")]
-                public async Task DisableAsync(CommandContext ctx)
-                {
-                    var gcfg = Shared.GetGuildConfig(ctx.Guild.Id);
-                    gcfg.LinkfilterEnabled = false;
-                    await Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg)
-                        .ConfigureAwait(false);
-
-                    await ctx.InformSuccessAsync("Disabled link filtering!")
-                        .ConfigureAwait(false);
-
-                    await LogConfigChangeAsync(ctx, "Linkfilter", gcfg.LinkfilterEnabled)
-                        .ConfigureAwait(false);
-                }
-                #endregion
-
-
-                #region GROUP_CONFIG_LINKFILTER_BOOTERS
-                [Group("booters"), Module(ModuleType.Administration)]
+                #region COMMAND_LINKFILTER_BOOTERS
+                [Command("booters"), Priority(1)]
                 [Description("Enable or disable DDoS/Booter website filtering.")]
                 [Aliases("ddos", "boot", "dos")]
-                [UsageExamples("!guild cfg linkfilter booters")]
-                public class Booters : LinkFilter
+                [UsageExamples("!guild cfg linkfilter booters",
+                               "!guild cfg linkfilter booters on")]
+                public async Task BootersAsync(CommandContext ctx,
+                                              [Description("Enable?")] bool enable)
                 {
+                    CachedGuildConfig gcfg = this.Shared.GetGuildConfig(ctx.Guild.Id);
+                    gcfg.BlockBooterWebsites = enable;
 
-                    public Booters(SharedData shared, DBService db) : base(shared, db) { }
+                    await this.Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg);
+                    await ctx.InformSuccessAsync("Enabled DDoS/Booter website filtering!");
+                    await LogConfigChangeAsync(ctx, "DDoS/Booter websites filtering", gcfg.BlockBooterWebsites);
+                }
 
-
-                    [GroupCommand]
-                    new public async Task ExecuteGroupAsync(CommandContext ctx)
-                    {
-                        var gcfg = Shared.GetGuildConfig(ctx.Guild.Id);
-                        await ctx.InformSuccessAsync($"DDoS/Booter website filtering for this guild is: {Formatter.Bold(gcfg.BlockBooterWebsites ? "enabled" : "disabled")}!")
-                            .ConfigureAwait(false);
-                    }
-
-
-                    #region COMMAND_LINKFILTER_BOOTERS_ENABLE
-                    [Command("enable"), Module(ModuleType.Administration)]
-                    [Description("Enables DDoS/Booter website filtering for this guild.")]
-                    [Aliases("on")]
-                    [UsageExamples("!guild cfg linkfilter booters on")]
-                    new public async Task EnableAsync(CommandContext ctx)
-                    {
-                        var gcfg = Shared.GetGuildConfig(ctx.Guild.Id);
-                        gcfg.BlockBooterWebsites = true;
-                        await Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg)
-                            .ConfigureAwait(false);
-
-                        await ctx.InformSuccessAsync("Enabled DDoS/Booter website filtering!")
-                            .ConfigureAwait(false);
-
-                        await LogConfigChangeAsync(ctx, "DDoS/Booter websites filtering", gcfg.BlockBooterWebsites)
-                            .ConfigureAwait(false);
-                    }
-                    #endregion
-
-                    #region COMMAND_LINKFILTER_BOOTERS_DISABLE
-                    [Command("disable"), Module(ModuleType.Administration)]
-                    [Description("Disables DDoS/Booter website filtering for this guild.")]
-                    [Aliases("off")]
-                    [UsageExamples("!guild cfg linkfilter booters off")]
-                    new public async Task DisableAsync(CommandContext ctx)
-                    {
-                        var gcfg = Shared.GetGuildConfig(ctx.Guild.Id);
-                        gcfg.BlockBooterWebsites = false;
-                        await Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg)
-                            .ConfigureAwait(false);
-
-                        await ctx.InformSuccessAsync("Disabled DDoS/Booter website filtering!")
-                            .ConfigureAwait(false);
-
-                        await LogConfigChangeAsync(ctx, "DDoS/Booter websites filtering", gcfg.BlockBooterWebsites)
-                            .ConfigureAwait(false);
-                    }
-                    #endregion
-
+                [Command("booters"), Priority(0)]
+                public Task BootersAsync(CommandContext ctx)
+                {
+                    CachedGuildConfig gcfg = this.Shared.GetGuildConfig(ctx.Guild.Id);
+                    return ctx.InformSuccessAsync($"DDoS/Booter website filtering for this guild is: {Formatter.Bold(gcfg.BlockBooterWebsites ? "enabled" : "disabled")}!");
                 }
                 #endregion
 
-                #region GROUP_CONFIG_LINKFILTER_INVITES
-                [Group("invites"), Module(ModuleType.Administration)]
+                #region COMMAND_LINKFILTER_INVITES
+                [Command("invites"), Priority(1)]
                 [Description("Enable or disable Discord invite filters.")]
                 [Aliases("invite", "inv", "i")]
-                [UsageExamples("!guild cfg linkfilter invites")]
-                public class Invites : LinkFilter
+                [UsageExamples("!guild cfg linkfilter invites",
+                               "!guild cfg linkfilter invites on")]
+                public async Task InvitesAsync(CommandContext ctx,
+                                              [Description("Enable?")] bool enable)
                 {
+                    CachedGuildConfig gcfg = this.Shared.GetGuildConfig(ctx.Guild.Id);
+                    gcfg.BlockDiscordInvites = enable;
 
-                    public Invites(SharedData shared, DBService db) : base(shared, db) { }
+                    await this.Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg);
+                    await ctx.InformSuccessAsync("Enabled Discord invites filtering!");
+                    await LogConfigChangeAsync(ctx, "Discord invites filtering", gcfg.BlockDiscordInvites);
+                }
 
-
-                    [GroupCommand]
-                    new public async Task ExecuteGroupAsync(CommandContext ctx)
-                    {
-                        var gcfg = Shared.GetGuildConfig(ctx.Guild.Id);
-                        await ctx.InformSuccessAsync($"Invite link filtering for this guild is: {Formatter.Bold(gcfg.BlockDiscordInvites ? "enabled" : "disabled")}!")
-                            .ConfigureAwait(false);
-                    }
-
-
-                    #region COMMAND_LINKFILTER_INVITES_ENABLE
-                    [Command("enable"), Module(ModuleType.Administration)]
-                    [Description("Enables Discord invite filtering for this guild.")]
-                    [Aliases("on")]
-                    [UsageExamples("!guild cfg linkfilter invites on")]
-                    new public async Task EnableAsync(CommandContext ctx)
-                    {
-                        var gcfg = Shared.GetGuildConfig(ctx.Guild.Id);
-                        gcfg.BlockDiscordInvites = true;
-                        await Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg)
-                            .ConfigureAwait(false);
-
-                        await ctx.InformSuccessAsync("Enabled Discord invites filtering!")
-                            .ConfigureAwait(false);
-
-                        await LogConfigChangeAsync(ctx, "Discord invites filtering", gcfg.BlockDiscordInvites)
-                            .ConfigureAwait(false);
-                    }
-                    #endregion
-
-                    #region COMMAND_LINKFILTER_INVITES_DISABLE
-                    [Command("disable"), Module(ModuleType.Administration)]
-                    [Description("Disables Discord invite filtering for this guild.")]
-                    [Aliases("off")]
-                    [UsageExamples("!guild cfg linkfilter invites off")]
-                    new public async Task DisableAsync(CommandContext ctx)
-                    {
-                        var gcfg = Shared.GetGuildConfig(ctx.Guild.Id);
-                        gcfg.BlockDiscordInvites = false;
-                        await Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg)
-                            .ConfigureAwait(false);
-
-                        await ctx.InformSuccessAsync("Disabled Discord invites filtering!")
-                            .ConfigureAwait(false);
-
-                        await LogConfigChangeAsync(ctx, "Discord invites filtering", gcfg.BlockDiscordInvites)
-                            .ConfigureAwait(false);
-                    }
-                    #endregion
+                [Command("invites"), Priority(0)]
+                public Task InvitesAsync(CommandContext ctx)
+                {
+                    CachedGuildConfig gcfg = this.Shared.GetGuildConfig(ctx.Guild.Id);
+                    return ctx.InformSuccessAsync($"Invite link filtering for this guild is: {Formatter.Bold(gcfg.BlockDiscordInvites ? "enabled" : "disabled")}!");
                 }
                 #endregion
 
-                #region GROUP_CONFIG_LINKFILTER_DISTURBING
-                [Group("disturbingsites"), Module(ModuleType.Administration)]
+                #region COMMAND_LINKFILTER_SHOCKSITES
+                [Command("disturbingsites"), Priority(1)]
                 [Description("Enable or disable shock website filtering.")]
                 [Aliases("disturbing", "shock", "shocksites")]
-                [UsageExamples("!guild cfg linkfilter disturbing")]
-                public class DisturbingSites : LinkFilter
+                [UsageExamples("!guild cfg linkfilter disturbing",
+                               "!guild cfg linkfilter disturbing on")]
+                public async Task DisturbingSitesAsync(CommandContext ctx,
+                                                      [Description("Enable?")] bool enable)
                 {
+                    CachedGuildConfig gcfg = this.Shared.GetGuildConfig(ctx.Guild.Id);
+                    gcfg.BlockDisturbingWebsites = enable;
 
-                    public DisturbingSites(SharedData shared, DBService db) : base(shared, db) { }
+                    await this.Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg);
+                    await ctx.InformSuccessAsync("Enabled disturbing website filtering!");
+                    await LogConfigChangeAsync(ctx, "Disturbing websites filtering", gcfg.BlockDisturbingWebsites);
+                }
 
-
-                    [GroupCommand]
-                    new public async Task ExecuteGroupAsync(CommandContext ctx)
-                    {
-                        var gcfg = Shared.GetGuildConfig(ctx.Guild.Id);
-                        await ctx.InformSuccessAsync($"Shock website filtering for this guild is: {Formatter.Bold(gcfg.BlockDisturbingWebsites ? "enabled" : "disabled")}!")
-                            .ConfigureAwait(false);
-                    }
-
-
-                    #region COMMAND_LINKFILTER_DISTURBING_ENABLE
-                    [Command("enable"), Module(ModuleType.Administration)]
-                    [Description("Enables shock website filtering for this guild.")]
-                    [Aliases("on")]
-                    [UsageExamples("!guild cfg linkfilter disturbing on")]
-                    new public async Task EnableAsync(CommandContext ctx)
-                    {
-                        var gcfg = Shared.GetGuildConfig(ctx.Guild.Id);
-                        gcfg.BlockDisturbingWebsites = true;
-                        await Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg)
-                            .ConfigureAwait(false);
-
-                        await ctx.InformSuccessAsync("Enabled disturbing website filtering!")
-                            .ConfigureAwait(false);
-
-                        await LogConfigChangeAsync(ctx, "Disturbing websites filtering", gcfg.BlockDisturbingWebsites)
-                            .ConfigureAwait(false);
-                    }
-                    #endregion
-
-                    #region COMMAND_LINKFILTER_DISTURBING_DISABLE
-                    [Command("disable"), Module(ModuleType.Administration)]
-                    [Description("Disables shock website filtering for this guild.")]
-                    [Aliases("off")]
-                    [UsageExamples("!guild cfg linkfilter disturbing off")]
-                    new public async Task DisableAsync(CommandContext ctx)
-                    {
-                        var gcfg = Shared.GetGuildConfig(ctx.Guild.Id);
-                        gcfg.BlockDisturbingWebsites = false;
-                        await Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg)
-                            .ConfigureAwait(false);
-
-                        await ctx.InformSuccessAsync("Disabled disturbing website filtering!")
-                            .ConfigureAwait(false);
-
-                        await LogConfigChangeAsync(ctx, "Disturbing websites filtering", gcfg.BlockDisturbingWebsites)
-                            .ConfigureAwait(false);
-                    }
-                    #endregion
+                [Command("disturbingsites"), Priority(0)]
+                public Task DisturbingSitesAsync(CommandContext ctx)
+                {
+                    CachedGuildConfig gcfg = this.Shared.GetGuildConfig(ctx.Guild.Id);
+                    return ctx.InformSuccessAsync($"Shock website filtering for this guild is: {Formatter.Bold(gcfg.BlockDisturbingWebsites ? "enabled" : "disabled")}!");
                 }
                 #endregion
 
-                #region GROUP_CONFIG_LINKFILTER_IPLOGGERS
-                [Group("iploggers"), Module(ModuleType.Administration)]
+                #region COMMAND_LINKFILTER_IPLOGGERS
+                [Command("iploggers"), Priority(1)]
                 [Description("Enable or disable filtering of IP logger websites.")]
                 [Aliases("ip", "loggers", "ipleech")]
-                [UsageExamples("!guild cfg linkfilter iploggers")]
-                public class IpLoggers : LinkFilter
+                [UsageExamples("!guild cfg linkfilter iploggers",
+                               "!guild cfg linkfilter iploggers on")]
+                public async Task IpLoggersAsync(CommandContext ctx,
+                                                [Description("Enable?")] bool enable)
                 {
+                    CachedGuildConfig gcfg = this.Shared.GetGuildConfig(ctx.Guild.Id);
+                    gcfg.BlockIpLoggingWebsites = enable;
 
-                    public IpLoggers(SharedData shared, DBService db) : base(shared, db) { }
+                    await this.Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg);
+                    await ctx.InformSuccessAsync("Enabled IP logging website filtering!");
+                    await LogConfigChangeAsync(ctx, "IP logging websites filtering", gcfg.BlockIpLoggingWebsites);
+                }
 
-
-                    [GroupCommand]
-                    new public async Task ExecuteGroupAsync(CommandContext ctx)
-                    {
-                        var gcfg = Shared.GetGuildConfig(ctx.Guild.Id);
-                        await ctx.InformSuccessAsync($"IP logging websites filtering for this guild is: {Formatter.Bold(gcfg.BlockIpLoggingWebsites ? "enabled" : "disabled")}!")
-                            .ConfigureAwait(false);
-                    }
-
-
-                    #region COMMAND_LINKFILTER_IPLOGGERS_ENABLE
-                    [Command("enable"), Module(ModuleType.Administration)]
-                    [Description("Enables IP logger websites filtering for this guild.")]
-                    [Aliases("on")]
-                    [UsageExamples("!guild cfg linkfilter iploggers on")]
-                    new public async Task EnableAsync(CommandContext ctx)
-                    {
-                        var gcfg = Shared.GetGuildConfig(ctx.Guild.Id);
-                        gcfg.BlockIpLoggingWebsites = true;
-                        await Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg)
-                            .ConfigureAwait(false);
-
-                        await ctx.InformSuccessAsync("Enabled IP logging website filtering!")
-                            .ConfigureAwait(false);
-
-                        await LogConfigChangeAsync(ctx, "IP logging websites filtering", gcfg.BlockIpLoggingWebsites)
-                            .ConfigureAwait(false);
-                    }
-                    #endregion
-
-                    #region COMMAND_LINKFILTER_IPLOGGERS_DISABLE
-                    [Command("disable"), Module(ModuleType.Administration)]
-                    [Description("Disables IP logging website filtering for this guild.")]
-                    [Aliases("off")]
-                    [UsageExamples("!guild cfg linkfilter iploggers off")]
-                    new public async Task DisableAsync(CommandContext ctx)
-                    {
-                        var gcfg = Shared.GetGuildConfig(ctx.Guild.Id);
-                        gcfg.BlockIpLoggingWebsites = false;
-                        await Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg)
-                            .ConfigureAwait(false);
-
-                        await ctx.InformSuccessAsync("Disabled IP logging website filtering!")
-                            .ConfigureAwait(false);
-
-                        await LogConfigChangeAsync(ctx, "IP logging websites filtering", gcfg.BlockIpLoggingWebsites)
-                            .ConfigureAwait(false);
-                    }
-                    #endregion
+                [Command("iploggers"), Priority(0)]
+                public Task IpLoggersAsync(CommandContext ctx)
+                {
+                    CachedGuildConfig gcfg = this.Shared.GetGuildConfig(ctx.Guild.Id);
+                    return ctx.InformSuccessAsync($"IP logging websites filtering for this guild is: {Formatter.Bold(gcfg.BlockIpLoggingWebsites ? "enabled" : "disabled")}!");
                 }
                 #endregion
 
-                #region GROUP_CONFIG_LINKFILTER_SHORTENERS
-                [Group("shorteners"), Module(ModuleType.Administration)]
+                #region COMMAND_LINKFILTER_SHORTENERS
+                [Command("shorteners"), Priority(1)]
                 [Description("Enable or disable filtering of URL shortener websites.")]
                 [Aliases("urlshort", "shortenurl", "urlshorteners")]
-                [UsageExamples("!guild cfg linkfilter shorteners")]
-                public class Shorteners : LinkFilter
+                [UsageExamples("!guild cfg linkfilter shorteners",
+                               "!guild cfg linkfilter shorteners on")]
+                public async Task ShortenersAsync(CommandContext ctx,
+                                                 [Description("Enable?")] bool enable)
                 {
+                    CachedGuildConfig gcfg = this.Shared.GetGuildConfig(ctx.Guild.Id);
+                    gcfg.BlockUrlShorteners = enable;
 
-                    public Shorteners(SharedData shared, DBService db) : base(shared, db) { }
+                    await this.Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg);
+                    await ctx.InformSuccessAsync("Enabled URL shortener website filtering!");
+                    await LogConfigChangeAsync(ctx, "URL shorteners filtering", gcfg.BlockUrlShorteners);
+                }
 
-
-                    [GroupCommand]
-                    new public async Task ExecuteGroupAsync(CommandContext ctx)
-                    {
-                        var gcfg = Shared.GetGuildConfig(ctx.Guild.Id);
-                        await ctx.InformSuccessAsync($"URL shortening websites filtering for this guild is: {Formatter.Bold(gcfg.BlockUrlShorteners ? "enabled" : "disabled")}!")
-                            .ConfigureAwait(false);
-                    }
-
-
-                    #region COMMAND_LINKFILTER_SHORTENERS_ENABLE
-                    [Command("enable"), Module(ModuleType.Administration)]
-                    [Description("Enables URL shortener websites filtering for this guild.")]
-                    [Aliases("on")]
-                    [UsageExamples("!guild cfg linkfilter shorteners on")]
-                    new public async Task EnableAsync(CommandContext ctx)
-                    {
-                        var gcfg = Shared.GetGuildConfig(ctx.Guild.Id);
-                        gcfg.BlockUrlShorteners = true;
-                        await Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg)
-                            .ConfigureAwait(false);
-
-                        await ctx.InformSuccessAsync("Enabled URL shortener website filtering!")
-                            .ConfigureAwait(false);
-
-                        await LogConfigChangeAsync(ctx, "URL shorteners filtering", gcfg.BlockUrlShorteners)
-                            .ConfigureAwait(false);
-                    }
-                    #endregion
-
-                    #region COMMAND_LINKFILTER_SHORTENERS_DISABLE
-                    [Command("disable"), Module(ModuleType.Administration)]
-                    [Description("Disables URL shortener website filtering for this guild.")]
-                    [Aliases("off")]
-                    [UsageExamples("!guild cfg linkfilter shorteners off")]
-                    new public async Task DisableAsync(CommandContext ctx)
-                    {
-                        var gcfg = Shared.GetGuildConfig(ctx.Guild.Id);
-                        gcfg.BlockUrlShorteners = false;
-                        await Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg)
-                            .ConfigureAwait(false);
-
-                        await ctx.InformSuccessAsync("Disabled URL shortener website filtering!")
-                            .ConfigureAwait(false);
-
-                        await LogConfigChangeAsync(ctx, "URL shorteners filtering", gcfg.BlockUrlShorteners)
-                            .ConfigureAwait(false);
-                    }
-                    #endregion
+                [Command("shorteners"), Priority(0)]
+                public Task ShortenersAsync(CommandContext ctx)
+                {
+                    CachedGuildConfig gcfg = this.Shared.GetGuildConfig(ctx.Guild.Id);
+                    return ctx.InformSuccessAsync($"URL shortening websites filtering for this guild is: {Formatter.Bold(gcfg.BlockUrlShorteners ? "enabled" : "disabled")}!");
                 }
                 #endregion
-
+                
 
                 #region HELPER_FUNCTIONS
                 protected async Task LogConfigChangeAsync(CommandContext ctx, string module, bool value)
                 {
-                    var logchn = Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
+                    var logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
                     if (logchn != null) {
                         var emb = new DiscordEmbedBuilder() {
                             Title = "Guild config changed",
