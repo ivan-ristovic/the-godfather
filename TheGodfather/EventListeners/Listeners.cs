@@ -1,7 +1,6 @@
 ﻿#region USING_DIRECTIVES
 using DSharpPlus;
 using DSharpPlus.Entities;
-using System;
 #endregion
 
 namespace TheGodfather.EventListeners
@@ -23,12 +22,6 @@ namespace TheGodfather.EventListeners
     internal static partial class Listeners
     {
         private static readonly string _unknown = Formatter.Italic("Unknown");
-
-        private static string BuildUTCString(DateTime datetime)
-            => $"At {datetime.ToUniversalTime().ToString()} UTC";
-
-        private static string BuildUTCString(DateTimeOffset datetime)
-            => $"At {datetime.ToUniversalTime().ToString()} UTC";
 
         private static DiscordEmbedBuilder FormEmbedBuilder(EventOrigin origin, string title, string desc = null)
         {

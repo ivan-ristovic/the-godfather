@@ -146,7 +146,7 @@ namespace TheGodfather.EventListeners
                 emb.AddField("User responsible", mentry.UserResponsible.Mention, inline: true);
                 if (!string.IsNullOrWhiteSpace(mentry.Reason))
                     emb.AddField("Reason", mentry.Reason);
-                emb.WithFooter(BuildUTCString(mentry.CreationTimestamp), mentry.UserResponsible.AvatarUrl);
+                emb.WithFooter(mentry.CreationTimestamp.ToUtcTimestamp(), mentry.UserResponsible.AvatarUrl);
             }
 
             if (!string.IsNullOrWhiteSpace(e.Message.Content)) {
@@ -161,7 +161,7 @@ namespace TheGodfather.EventListeners
             if (e.Message.Attachments.Any())
                 emb.AddField("Attachments", string.Join("\n", e.Message.Attachments.Select(a => a.FileName)), inline: true);
             if (e.Message.CreationTimestamp != null)
-                emb.AddField("Message creation time", BuildUTCString(e.Message.CreationTimestamp), inline: true);
+                emb.AddField("Message creation time", e.Message.CreationTimestamp.ToUtcTimestamp(), inline: true);
 
             await logchn.SendMessageAsync(embed: emb.Build());
         }
@@ -189,8 +189,8 @@ namespace TheGodfather.EventListeners
 
             string pcontent = string.IsNullOrWhiteSpace(e.MessageBefore?.Content) ? "" : e.MessageBefore.Content.Truncate(750);
             string acontent = string.IsNullOrWhiteSpace(e.Message?.Content) ? "" : e.Message.Content.Truncate(750);
-            string ctime = e.Message.CreationTimestamp != null ? BuildUTCString(e.Message.CreationTimestamp) : _unknown;
-            string etime = e.Message.EditedTimestamp != null ? BuildUTCString(e.Message.EditedTimestamp.Value) : _unknown;
+            string ctime = e.Message.CreationTimestamp != null ? e.Message.CreationTimestamp.ToUtcTimestamp() : _unknown;
+            string etime = e.Message.EditedTimestamp != null ? e.Message.EditedTimestamp.Value.ToUtcTimestamp() : _unknown;
             string bextra = $"Embeds: {e.MessageBefore?.Embeds?.Count ?? 0}, Reactions: {e.MessageBefore?.Reactions?.Count ?? 0}, Attachments: {e.MessageBefore?.Attachments?.Count ?? 0}";
             string aextra = $"Embeds: {e.Message.Embeds.Count}, Reactions: {e.Message.Reactions.Count}, Attachments: {e.Message.Attachments.Count}";
 

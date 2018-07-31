@@ -1,16 +1,12 @@
 ﻿#region USING_DIRECTIVES
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-
-using TheGodfather.Common;
-using TheGodfather.Common.Attributes;
-using TheGodfather.Extensions;
-
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
-using DSharpPlus.Exceptions;
+using System.Linq;
+using System.Threading.Tasks;
+using TheGodfather.Common;
+using TheGodfather.Common.Attributes;
+using TheGodfather.Extensions;
 #endregion
 
 namespace TheGodfather.EventListeners
@@ -34,7 +30,7 @@ namespace TheGodfather.EventListeners
                 emb.AddField("Channel type", centry.Target?.Type.ToString() ?? _unknown, inline: true);
                 if (!string.IsNullOrWhiteSpace(centry.Reason))
                     emb.AddField("Reason", centry.Reason);
-                emb.WithFooter(BuildUTCString(centry.CreationTimestamp), centry.UserResponsible.AvatarUrl);
+                emb.WithFooter(centry.CreationTimestamp.ToUtcTimestamp(), centry.UserResponsible.AvatarUrl);
             }
 
             await logchn.SendMessageAsync(embed: emb.Build());
@@ -58,7 +54,7 @@ namespace TheGodfather.EventListeners
                 emb.AddField("User responsible", centry.UserResponsible?.Mention ?? _unknown, inline: true);
                 if (!string.IsNullOrWhiteSpace(centry.Reason))
                     emb.AddField("Reason", centry.Reason);
-                emb.WithFooter(BuildUTCString(centry.CreationTimestamp), centry.UserResponsible.AvatarUrl);
+                emb.WithFooter(centry.CreationTimestamp.ToUtcTimestamp(), centry.UserResponsible.AvatarUrl);
             }
 
             await logchn.SendMessageAsync(embed: emb.Build());
@@ -79,7 +75,7 @@ namespace TheGodfather.EventListeners
                 emb.AddField("Content", Formatter.BlockCode(Formatter.Sanitize(content)));
             }
             if (e.LastPinTimestamp != null)
-                emb.AddField("Last pin timestamp", BuildUTCString(e.LastPinTimestamp.Value));
+                emb.AddField("Last pin timestamp", e.LastPinTimestamp.Value.ToUtcTimestamp());
 
             await logchn.SendMessageAsync(embed: emb.Build());
         }
@@ -164,7 +160,7 @@ namespace TheGodfather.EventListeners
 
                     if (!string.IsNullOrWhiteSpace(owentry.Reason))
                         emb.AddField("Reason", owentry.Reason);
-                    emb.WithFooter(BuildUTCString(owentry.CreationTimestamp), owentry.UserResponsible.AvatarUrl);
+                    emb.WithFooter(owentry.CreationTimestamp.ToUtcTimestamp(), owentry.UserResponsible.AvatarUrl);
                 } else {
                     emb.AddField("Error", "Failed to read audit log information. Please check my permissions");
                     emb.AddField("Channel", e.ChannelBefore?.ToString() ?? _unknown);

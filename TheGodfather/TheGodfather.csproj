@@ -441,6 +441,7 @@
     <Compile Include="Exceptions\ConcurrentOperationException.cs" />
     <Compile Include="Extensions\CNextExtensions.cs" />
     <Compile Include="Extensions\CommandContextExtensions.cs" />
+    <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="Extensions\DiscordGuildExtensions.cs" />
     <Compile Include="Extensions\HoldemExtensions.cs" />
     <Compile Include="Extensions\InteractivityExtensions.cs" />

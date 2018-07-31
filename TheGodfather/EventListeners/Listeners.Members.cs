@@ -60,7 +60,7 @@ namespace TheGodfather.EventListeners
 
             DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Member, "Member joined", e.Member.ToString());
             emb.WithThumbnailUrl(e.Member.AvatarUrl);
-            emb.AddField("Registration time", BuildUTCString(e.Member.CreationTimestamp), inline: true);
+            emb.AddField("Registration time", e.Member.CreationTimestamp.ToUtcTimestamp(), inline: true);
             if (!string.IsNullOrWhiteSpace(e.Member.Email))
                 emb.AddField("Email", e.Member.Email);
 
@@ -90,7 +90,7 @@ namespace TheGodfather.EventListeners
 
             DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Member, "Member left", e.Member.ToString());
             emb.WithThumbnailUrl(e.Member.AvatarUrl);
-            emb.AddField("Registration time", BuildUTCString(e.Member.CreationTimestamp), inline: true);
+            emb.AddField("Registration time", e.Member.CreationTimestamp.ToUtcTimestamp(), inline: true);
             if (!string.IsNullOrWhiteSpace(e.Member.Email))
                 emb.AddField("Email", e.Member.Email);
 
@@ -122,7 +122,7 @@ namespace TheGodfather.EventListeners
                     emb.AddField("Removed roles", string.Join(",", mentry.RemovedRoles.Select(r => r.Name)), inline: true);
                 if (!string.IsNullOrWhiteSpace(mentry.Reason))
                     emb.AddField("Reason", mentry.Reason);
-                emb.WithFooter(BuildUTCString(mentry.CreationTimestamp), mentry.UserResponsible.AvatarUrl);
+                emb.WithFooter(mentry.CreationTimestamp.ToUtcTimestamp(), mentry.UserResponsible.AvatarUrl);
             } else {
                 emb.AddField("Error", "Failed to read audit log information. Please check my permissions");
                 emb.AddField("Name before", e.NicknameBefore ?? _unknown, inline: true);
