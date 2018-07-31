@@ -1,9 +1,9 @@
 ﻿namespace TheGodfather.Modules.SWAT.Common
 {
-    public class SwatBanEntry
+    public class SwatDatabaseEntry
     {
         public string Ip { get; set; }
         public string Name { get; set; }
-        public string Reason { get; set; }
+        public string AdditionalInfo { get; set; }
     }
 }

@@ -56,7 +56,7 @@ namespace TheGodfather.Modules.SWAT
                 await ctx.SendCollectionInPagesAsync(
                     $"Search matches for {ip}",
                     res,
-                    entry => $"{Formatter.InlineCode(entry.Item2)} | {Formatter.Bold(entry.Item1)}",
+                    entry => $"{Formatter.InlineCode(entry.Ip)} | {Formatter.Bold(entry.Name)} | {Formatter.Italic(entry.AdditionalInfo ?? "(no details)")}",
                     DiscordColor.Black
                 ).ConfigureAwait(false);
             }
@@ -80,7 +80,7 @@ namespace TheGodfather.Modules.SWAT
                 await ctx.SendCollectionInPagesAsync(
                     $"Search matches for {name}",
                     res,
-                    entry => $"{Formatter.InlineCode(entry.Item2)} | {Formatter.Bold(entry.Item1)}",
+                    entry => $"{Formatter.Bold(entry.Name)} | {Formatter.InlineCode(entry.Ip)} | {Formatter.Italic(entry.AdditionalInfo ?? "(no details)")}",
                     DiscordColor.Black
                 ).ConfigureAwait(false);
             }

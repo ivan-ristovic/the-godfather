@@ -42,9 +42,13 @@ namespace TheGodfather.Modules.SWAT
             [UsageExamples("!swat db add Name 109.70.149.158")]
             public async Task AddAsync(CommandContext ctx,
                                       [Description("Player name.")] string name,
-                                      [Description("IP.")] string ip)
+                                      [Description("IP.")] string ip,
+                                      [RemainingText, Description("Additional info.")] string info = null)
             {
-                await Database.AddSwatIpEntryAsync(name, ip)
+                if (info?.Length > 120)
+                    throw new InvalidCommandUsageException("Info cannot exceed 120 characters.");
+
+                await Database.AddSwatIpEntryAsync(name, ip, info)
                     .ConfigureAwait(false);
                 await ctx.InformSuccessAsync($"Added a database entry for {Formatter.Bold(name)} ({Formatter.InlineCode(ip)})")
                     .ConfigureAwait(false);
@@ -79,7 +83,7 @@ namespace TheGodfather.Modules.SWAT
                 await ctx.SendCollectionInPagesAsync(
                     "Player IP database",
                     entries,
-                    entry => $"{Formatter.InlineCode(entry.Item2)} | {Formatter.Bold(entry.Item1)}",
+                    entry => $"{Formatter.InlineCode(entry.Name)} | {Formatter.InlineCode(entry.Ip)} | {Formatter.Italic(entry.AdditionalInfo ?? "(no details)")}",
                     DiscordColor.Black,
                     15
                 ).ConfigureAwait(false);

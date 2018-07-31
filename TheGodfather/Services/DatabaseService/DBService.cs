@@ -208,7 +208,7 @@ namespace TheGodfather.Services.Database
                 return cmd.ExecuteScalarAsync();
             });
             await ExecuteCommandAsync(cmd => {
-                cmd.CommandText = "SELECT name, ip FROM gf.swat_ips LIMIT 1;";
+                cmd.CommandText = "SELECT name, ip, additional_info FROM gf.swat_ips LIMIT 1;";
                 return cmd.ExecuteScalarAsync();
             });
             await ExecuteCommandAsync(cmd => {

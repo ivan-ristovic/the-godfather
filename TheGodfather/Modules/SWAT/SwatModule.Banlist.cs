@@ -81,7 +81,7 @@ namespace TheGodfather.Modules.SWAT
                 await ctx.SendCollectionInPagesAsync(
                     "Banlist",
                     bans,
-                    ban => $"{Formatter.InlineCode(ban.Ip)} | {Formatter.Bold(ban.Name)} : {Formatter.Italic(ban.Reason ?? "No reason provided.")}",
+                    ban => $"{Formatter.InlineCode(ban.Ip)} | {Formatter.Bold(ban.Name)} : {Formatter.Italic(ban.AdditionalInfo ?? "No reason provided.")}",
                     DiscordColor.Black,
                     15
                 ).ConfigureAwait(false);

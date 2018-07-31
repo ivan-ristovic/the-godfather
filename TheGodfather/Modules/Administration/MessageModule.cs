@@ -24,8 +24,16 @@ namespace TheGodfather.Modules.Administration
     [NotBlocked]
     public class MessageModule : TheGodfatherModule
     {
+
+        public MessageModule()
+            : base()
+        {
+            this.ModuleColor = DiscordColor.Azure; 
+        }
+
+
         #region COMMAND_MESSAGES_ATTACHMENTS
-        [Command("attachments"), Module(ModuleType.Administration)]
+        [Command("attachments")]
         [Description("View all message attachments. If the message is not provided, uses the last sent message before command invocation.")]
         [Aliases("a", "files", "la")]
         [UsageExamples("!message attachments",
@@ -34,13 +42,13 @@ namespace TheGodfather.Modules.Administration
                                               [Description("Message ID.")] ulong id = 0)
         {
             DiscordMessage msg;
-            if (id != 0) {
-                msg = await ctx.Channel.GetMessageAsync(id)
-                    .ConfigureAwait(false);
-            } else {
-                var _ = await ctx.Channel.GetMessagesBeforeAsync(ctx.Channel.LastMessageId, 1);
-                msg = _.First();
-            }
+            if (id != 0) 
+                msg = await ctx.Channel.GetMessageAsync(id);
+             else 
+                msg = (await ctx.Channel.GetMessagesBeforeAsync(ctx.Channel.LastMessageId, 1))?.FirstOrDefault();
+
+            if (msg == null)
+                throw new CommandFailedException("Cannot retrieve the message!");
 
             var emb = new DiscordEmbedBuilder() {
                 Title = "Attachments:",
@@ -55,7 +63,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_MESSAGES_DELETE
-        [Command("delete"), Module(ModuleType.Administration)]
+        [Command("delete")]
         [Description("Deletes the specified amount of most-recent messages from the channel.")]
         [Aliases("-", "prune", "del", "d")]
         [UsageExamples("!messages delete 10",
@@ -117,7 +125,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_MESSAGES_DELETE_REACTIONS
-        [Command("deletereactions"), Module(ModuleType.Administration)]
+        [Command("deletereactions")]
         [Description("Deletes all reactions from the given message.")]
         [Aliases("-reactions", "-r", "delreactions", "dr")]
         [UsageExamples("!messages deletereactions 408226948855234561")]
@@ -189,7 +197,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_MESSAGES_LISTPINNED
-        [Command("listpinned"), Module(ModuleType.Administration)]
+        [Command("listpinned")]
         [Description("List pinned messages in this channel.")]
         [Aliases("lp", "listpins", "listpin", "pinned")]
         [UsageExamples("!messages listpinned")]
@@ -215,7 +223,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_MESSAGES_MODIFY
-        [Command("modify"), Module(ModuleType.Administration)]
+        [Command("modify")]
         [Description("Modify the given message.")]
         [Aliases("edit", "mod", "e", "m")]
         [UsageExamples("!messages modify 408226948855234561 modified text")]
@@ -235,7 +243,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_MESSAGES_PIN
-        [Command("pin"), Module(ModuleType.Administration)]
+        [Command("pin")]
         [Description("Pins the message given by ID. If the message is not provided, pins the last sent message before command invocation.")]
         [Aliases("p")]
         [UsageExamples("!messages pin",
@@ -264,7 +272,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_MESSAGES_UNPIN
-        [Command("unpin"), Module(ModuleType.Administration)]
+        [Command("unpin")]
         [Description("Unpins the message at given index (starting from 1). If the index is not given, unpins the most recent one.")]
         [Aliases("up")]
         [UsageExamples("!messages unpin",
@@ -287,7 +295,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_MESSAGES_UNPINALL
-        [Command("unpinall"), Module(ModuleType.Administration)]
+        [Command("unpinall")]
         [Description("Unpins all pinned messages in this channel.")]
         [Aliases("upa")]
         [UsageExamples("!messages unpinall")]

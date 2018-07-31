@@ -27,10 +27,15 @@ namespace TheGodfather.Services.Database.Swat
             });
         }
 
-        public static Task AddSwatIpEntryAsync(this DBService db, string ip, string name)
+        public static Task AddSwatIpEntryAsync(this DBService db, string ip, string name, string info = null)
         {
             return db.ExecuteCommandAsync(cmd => {
-                cmd.CommandText = "INSERT INTO gf.swat_ips(name, ip) VALUES (@ip, @name);";
+                if (string.IsNullOrWhiteSpace(info)) {
+                    cmd.CommandText = "INSERT INTO gf.swat_ips(name, ip, additional_information) VALUES (@ip, @name, default);";
+                } else {
+                    cmd.CommandText = "INSERT INTO gf.swat_ips(name, ip, additional_information) VALUES (@ip, @name, @info);";
+                    cmd.Parameters.Add(new NpgsqlParameter<string>("info", info));
+                }
                 cmd.Parameters.Add(new NpgsqlParameter<string>("name", name));
                 cmd.Parameters.Add(new NpgsqlParameter<string>("ip", ip));
 
@@ -51,37 +56,41 @@ namespace TheGodfather.Services.Database.Swat
             });
         }
 
-        public static async Task<IReadOnlyList<SwatBanEntry>> GetAllSwatBanlistEntriesAsync(this DBService db)
+        public static async Task<IReadOnlyList<SwatDatabaseEntry>> GetAllSwatBanlistEntriesAsync(this DBService db)
         {
-            var servers = new List<SwatBanEntry>();
+            var entries = new List<SwatDatabaseEntry>();
 
             await db.ExecuteCommandAsync(async (cmd) => {
                 cmd.CommandText = "SELECT name, ip, reason FROM gf.swat_banlist ORDER BY name;";
 
                 using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
                     while (await reader.ReadAsync().ConfigureAwait(false)) {
-                        servers.Add(new SwatBanEntry() {
+                        entries.Add(new SwatDatabaseEntry() {
                             Ip = (string)reader["ip"],
                             Name = (string)reader["name"],
-                            Reason = reader["reason"] is DBNull ? null : (string)reader["reason"]
+                            AdditionalInfo = reader["reason"] is DBNull ? null : (string)reader["reason"]
                         });
                     }
                 }
             });
 
-            return servers.AsReadOnly();
+            return entries.AsReadOnly();
         }
 
-        public static async Task<IReadOnlyList<(string, string)>> GetAllSwatIpEntriesAsync(this DBService db)
+        public static async Task<IReadOnlyList<SwatDatabaseEntry>> GetAllSwatIpEntriesAsync(this DBService db)
         {
-            var entries = new List<(string, string)>();
+            var entries = new List<SwatDatabaseEntry>();
 
             await db.ExecuteCommandAsync(async (cmd) => {
                 cmd.CommandText = "SELECT name, ip FROM gf.swat_ips ORDER BY name;";
 
                 using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
                     while (await reader.ReadAsync().ConfigureAwait(false)) {
-                        entries.Add(((string)reader["name"], (string)reader["ip"]));
+                        entries.Add(new SwatDatabaseEntry() {
+                            Ip = (string)reader["ip"],
+                            Name = (string)reader["name"],
+                            AdditionalInfo = reader["info"] is DBNull ? null : (string)reader["info"]
+                        });
                     }
                 }
             });
@@ -170,18 +179,22 @@ namespace TheGodfather.Services.Database.Swat
             });
         }
 
-        public static async Task<IReadOnlyList<(string, string)>> SwatDatabaseNameSearchAsync(this DBService db, string name, int limit = 10)
+        public static async Task<IReadOnlyList<SwatDatabaseEntry>> SwatDatabaseNameSearchAsync(this DBService db, string name, int limit = 10)
         {
-            var entries = new List<(string, string)>();
-
+            var entries = new List<SwatDatabaseEntry>();
+            
             await db.ExecuteCommandAsync(async (cmd) => {
-                cmd.CommandText = "SELECT name, ip FROM gf.swat_ips ORDER BY abs(gf.levenshtein(name, @name)) LIMIT @limit;";
-                cmd.Parameters.Add(new NpgsqlParameter<string>("name", name));
+                cmd.CommandText = "SELECT name, ip FROM gf.swat_ips WHERE LOWER(name) LIKE @name ORDER BY ABS(gf.levenshtein(LOWER(name), @name)) LIMIT @limit;";
+                cmd.Parameters.Add(new NpgsqlParameter<string>("name", $"%{name.ToLower()}%"));
                 cmd.Parameters.Add(new NpgsqlParameter<int>("limit", limit));
 
                 using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
                     while (await reader.ReadAsync().ConfigureAwait(false)) {
-                        entries.Add(((string)reader["name"], (string)reader["ip"]));
+                        entries.Add(new SwatDatabaseEntry() {
+                            Ip = (string)reader["ip"],
+                            Name = (string)reader["name"],
+                            AdditionalInfo = reader["info"] is DBNull ? null : (string)reader["info"]
+                        });
                     }
                 }
             });
@@ -189,9 +202,9 @@ namespace TheGodfather.Services.Database.Swat
             return entries.AsReadOnly();
         }
 
-        public static async Task<IReadOnlyList<(string, string)>> SwatDatabaseIpSearchAsync(this DBService db, string ip, int limit = 10)
+        public static async Task<IReadOnlyList<SwatDatabaseEntry>> SwatDatabaseIpSearchAsync(this DBService db, string ip, int limit = 10)
         {
-            var entries = new List<(string, string)>();
+            var entries = new List<SwatDatabaseEntry>();
 
             await db.ExecuteCommandAsync(async (cmd) => {
                 cmd.CommandText = "SELECT name, ip FROM gf.swat_ips WHERE ip LIKE @ip LIMIT @limit;";
@@ -200,7 +213,11 @@ namespace TheGodfather.Services.Database.Swat
 
                 using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
                     while (await reader.ReadAsync().ConfigureAwait(false)) {
-                        entries.Add(((string)reader["name"], (string)reader["ip"]));
+                        entries.Add(new SwatDatabaseEntry() {
+                            Ip = (string)reader["ip"],
+                            Name = (string)reader["name"],
+                            AdditionalInfo = reader["info"] is DBNull ? null : (string)reader["info"]
+                        });
                     }
                 }
             });
