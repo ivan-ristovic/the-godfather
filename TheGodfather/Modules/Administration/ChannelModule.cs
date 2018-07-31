@@ -37,10 +37,10 @@ namespace TheGodfather.Modules.Administration
             => InfoAsync(ctx, channel);
 
 
-         #region COMMAND_CHANNEL_CLONE
+        #region COMMAND_CHANNEL_CLONE
         [Command("clone"), UsesInteractivity]
         [Description("Clone a channel.")]
-        [Aliases("copy")]
+        [Aliases("copy", "cp")]
         [UsageExamples("!channel clone #general newname")]
         [RequirePermissions(Permissions.ManageChannels)]
         public async Task CreateCategoryAsync(CommandContext ctx,
