@@ -15,17 +15,17 @@ namespace TheGodfather.Modules.Administration
 {
     public partial class GuildModule
     {
-        public partial class ConfigModule : TheGodfatherModule
+        public partial class GuildConfigModule
         {
             [Group("linkfilter"), Module(ModuleType.Administration)]
             [Description("Linkfilter configuration. Group call prints current configuration, or enables/disables linkfilter if specified.")]
             [Aliases("lf", "linkf", "linkremove", "filterlinks")]
             [UsageExamples("!guild cfg linkfilter",
                            "!guild cfg linkfilter on")]
-            public class LinkFilter : TheGodfatherModule
+            public class LinkfilterModule : TheGodfatherModule
             {
 
-                public LinkFilter(SharedData shared, DBService db) 
+                public LinkfilterModule(SharedData shared, DBService db) 
                     : base(shared, db)
                 {
                     this.ModuleColor = DiscordColor.Azure;

@@ -67,6 +67,7 @@ namespace TheGodfather
                 } catch (TaskCanceledException) {
                     SharedData.LogProvider.ElevatedLog(LogLevel.Info, "Shutdown signal received!");
                 }
+
                 await DisposeAsync();
             } catch (Exception e) {
                 Console.WriteLine($"\nException occured: {e.GetType()} :\n{e.Message}");

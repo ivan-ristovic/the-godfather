@@ -1,34 +1,35 @@
 ﻿#region USING_DIRECTIVES
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-
-using TheGodfather.Common;
-using TheGodfather.Common.Attributes;
-using TheGodfather.Exceptions;
-using TheGodfather.Extensions;
-using TheGodfather.Services;
-
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Net.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using TheGodfather.Common.Attributes;
+using TheGodfather.Exceptions;
+using TheGodfather.Extensions;
 using TheGodfather.Services.Database;
 #endregion
 
 namespace TheGodfather.Modules.Administration
 {
-    [Group("guild"), Module(ModuleType.Administration)]
-    [Description("Miscellaneous guild control commands. If invoked without subcommands, prints guild information.")]
+    [Group("guild"), Module(ModuleType.Administration), NotBlocked]
+    [Description("Miscellaneous guild control commands. Group call prints guild information.")]
     [Aliases("server", "g")]
+    [UsageExamples("!guild")]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
-    [NotBlocked]
     public partial class GuildModule : TheGodfatherModule
     {
 
-        public GuildModule(DBService db) : base(db: db) { }
+        public GuildModule(SharedData shared, DBService db) 
+            : base(shared, db)
+        {
+            this.ModuleColor = DiscordColor.MidnightBlue;
+        }
 
 
         [GroupCommand]
@@ -37,28 +38,27 @@ namespace TheGodfather.Modules.Administration
 
 
         #region COMMAND_GUILD_GETBANS
-        [Command("bans"), Module(ModuleType.Administration)]
+        [Command("getbans")]
         [Description("Get guild ban list.")]
-        [Aliases("banlist", "viewbanlist", "getbanlist", "getbans", "viewbans")]
+        [Aliases("banlist", "viewbanlist", "getbanlist", "bans", "viewbans")]
         [UsageExamples("!guild banlist")]
         [RequirePermissions(Permissions.ViewAuditLog)]
         public async Task GetBansAsync(CommandContext ctx)
         {
-            var bans = await ctx.Guild.GetBansAsync()
-                .ConfigureAwait(false);
+            IReadOnlyList<DiscordBan> bans = await ctx.Guild.GetBansAsync();
 
             await ctx.SendCollectionInPagesAsync(
                 "Guild bans",
                 bans,
-                b => $"- {b.User.ToString()} | Reason: {b.Reason} ",
+                b => $"{b.User.ToString()} | Reason: {b.Reason}",
                 DiscordColor.Red
-            ).ConfigureAwait(false);
+            );
         }
         #endregion
 
         #region COMMAND_GUILD_GETLOGS
-        [Command("log"), Module(ModuleType.Administration)]
-        [Description("Get audit logs.")]
+        [Command("log")]
+        [Description("View guild audit logs. You can also specify an amount of entries to fetch.")]
         [Aliases("auditlog", "viewlog", "getlog", "getlogs", "logs")]
         [UsageExamples("!guild logs")]
         [RequirePermissions(Permissions.ViewAuditLog)]
@@ -66,104 +66,98 @@ namespace TheGodfather.Modules.Administration
                                            [Description("Amount of entries to fetch")] int amount = 10)
         {
             if (amount < 1 || amount > 50)
-                throw new InvalidCommandUsageException("Amount of entries must be in range [1,50].");
+                throw new InvalidCommandUsageException("Amount of entries must be less than 50.");
 
-            var logs = await ctx.Guild.GetAuditLogsAsync(amount)
-                .ConfigureAwait(false);
+            IReadOnlyList<DiscordAuditLogEntry> logs = await ctx.Guild.GetAuditLogsAsync(amount);
 
-            var pages = logs.Select(entry => new Page() {
-                Embed = new DiscordEmbedBuilder() {
+            IEnumerable<Page> pages = logs.Select(entry => {
+                var emb = new DiscordEmbedBuilder() {
                     Title = $"Audit log entry #{entry.Id}",
-                    Color = DiscordColor.Brown,
+                    Color = this.ModuleColor,
                     Timestamp = entry.CreationTimestamp
-                }.AddField("User responsible", entry.UserResponsible.ToString())
-                 .AddField("Action category", entry.ActionCategory.ToString(), inline: true)
-                 .AddField("Action type", entry.ActionType.ToString(), inline: true)
-                 .AddField("Reason", entry.Reason ?? "No reason provided")
-                 .Build()
+                };
+                emb.AddField("User responsible", entry.UserResponsible.ToString());
+                emb.AddField("Action category", entry.ActionCategory.ToString(), inline: true);
+                emb.AddField("Action type", entry.ActionType.ToString(), inline: true);
+                emb.AddField("Reason", entry.Reason ?? "No reason provided");
+                return new Page() { Embed = emb.Build()};
             });
 
-            await ctx.Client.GetInteractivity().SendPaginatedMessage(ctx.Channel, ctx.User, pages)
-                .ConfigureAwait(false);
+            await ctx.Client.GetInteractivity().SendPaginatedMessage(ctx.Channel, ctx.User, pages);
         }
         #endregion
 
         #region COMMAND_GUILD_INFO
-        [Command("info"), Module(ModuleType.Administration)]
-        [Description("Get guild information.")]
-        [UsageExamples("!guild info")]
+        [Command("info")]
+        [Description("Print guild information.")]
         [Aliases("i", "information")]
-        public async Task GuildInfoAsync(CommandContext ctx)
+        [UsageExamples("!guild info")]
+        public Task GuildInfoAsync(CommandContext ctx)
         {
-            var emb = new DiscordEmbedBuilder()
-                .WithTitle(ctx.Guild.Name)
-                .WithThumbnailUrl(ctx.Guild.IconUrl)
-                .WithColor(DiscordColor.MidnightBlue)
-                .AddField("Members", ctx.Guild.MemberCount.ToString(), inline: true)
-                .AddField("Owner", ctx.Guild.Owner.Username, inline: true)
-                .AddField("Creation date", ctx.Guild.CreationTimestamp.ToString(), inline: true)
-                .AddField("Voice region", ctx.Guild.VoiceRegion.Name, inline: true)
-                .AddField("Verification level", ctx.Guild.VerificationLevel.ToString(), inline: true);
+            var emb = new DiscordEmbedBuilder() {
+                Title = ctx.Guild.ToString(),
+                Color = this.ModuleColor,
+                ThumbnailUrl = ctx.Guild.IconUrl
+            };
 
-            await ctx.RespondAsync(embed: emb.Build())
-                .ConfigureAwait(false);
+            emb.AddField("Members", ctx.Guild.MemberCount.ToString(), inline: true);
+            emb.AddField("Owner", ctx.Guild.Owner.Username, inline: true);
+            emb.AddField("Creation date", ctx.Guild.CreationTimestamp.ToString(), inline: true);
+            emb.AddField("Voice region", ctx.Guild.VoiceRegion.Name, inline: true);
+            emb.AddField("Verification level", ctx.Guild.VerificationLevel.ToString(), inline: true);
+
+            return ctx.RespondAsync(embed: emb.Build());
         }
         #endregion
 
-        #region COMMAND_GUILD_LISTMEMBERS
-        [Command("listmembers"), Module(ModuleType.Administration)]
-        [Description("Get guild member list.")]
+        #region COMMAND_GUILD_MEMBERLIST
+        [Command("memberlist")]
+        [Description("Print the guild member list.")]
+        [Aliases("listmembers", "lm", "members")]
         [UsageExamples("!guild memberlist")]
-        [Aliases("memberlist", "lm", "members")]
-        public async Task ListMembersAsync(CommandContext ctx)
+        public async Task MemberlistAsync(CommandContext ctx)
         {
-            var members = await ctx.Guild.GetAllMembersAsync()
-                .ConfigureAwait(false);
+            IReadOnlyCollection<DiscordMember> members = await ctx.Guild.GetAllMembersAsync();
 
             await ctx.SendCollectionInPagesAsync(
                 "Members",
                 members.OrderBy(m => m.Username),
                 m => m.ToString(),
-                DiscordColor.SapGreen
-            ).ConfigureAwait(false);
+                this.ModuleColor
+            );
         }
         #endregion
 
         #region COMMAND_GUILD_PRUNE
-        [Command("prune"), Module(ModuleType.Administration)]
-        [Description("Kick guild members who weren't active in given amount of days (1-7).")]
+        [Command("prune"), UsesInteractivity]
+        [Description("Prune guild members who weren't active in the given amount of days (1-7).")]
         [Aliases("p", "clean")]
-        [UsageExamples("!guild prune 5 Kicking inactives..")]
+        [UsageExamples("!guild prune 5")]
         [RequirePermissions(Permissions.KickMembers)]
         [RequireUserPermissions(Permissions.Administrator)]
-        [UsesInteractivity]
         public async Task PruneMembersAsync(CommandContext ctx,
                                            [Description("Days.")] int days = 7,
                                            [RemainingText, Description("Reason.")] string reason = null)
         {
-            if (days <= 0 || days > 7)
-                throw new InvalidCommandUsageException("Number of days is not in valid range! [1-7]");
+            if (days < 1 || days > 7)
+                throw new InvalidCommandUsageException("Number of days is not in valid range (max. 7).");
 
-            int count = await ctx.Guild.GetPruneCountAsync(days)
-                .ConfigureAwait(false);
+            int count = await ctx.Guild.GetPruneCountAsync(days);
             if (count == 0) {
-                await ctx.RespondAsync("No members found to prune...")
-                    .ConfigureAwait(false);
+                await ctx.InformFailureAsync("No members found to prune...");
                 return;
             }
 
-            if (!await ctx.WaitForBoolReplyAsync($"Pruning will remove {Formatter.Bold(count.ToString())} member(s). Continue?").ConfigureAwait(false))
+            if (!await ctx.WaitForBoolReplyAsync($"Pruning will remove {Formatter.Bold(count.ToString())} member(s). Continue? (y/n)"))
                 return;
 
-            await ctx.Guild.PruneAsync(days, ctx.BuildReasonString(reason))
-                .ConfigureAwait(false);
-            await ctx.InformSuccessAsync()
-                .ConfigureAwait(false);
+            await ctx.Guild.PruneAsync(days, ctx.BuildReasonString(reason));
+            await ctx.InformSuccessAsync();
         }
         #endregion
 
         #region COMMAND_GUILD_RENAME
-        [Command("rename"), Module(ModuleType.Administration)]
+        [Command("rename")]
         [Description("Rename guild.")]
         [Aliases("r", "name", "setname")]
         [UsageExamples("!guild rename New guild name",
@@ -176,12 +170,14 @@ namespace TheGodfather.Modules.Administration
             if (string.IsNullOrWhiteSpace(newname))
                 throw new InvalidCommandUsageException("Missing new guild name.");
 
+            if (newname.Length > 100)
+                throw new InvalidCommandUsageException("Guild name cannot be longer than 100 characters.");
+
             await ctx.Guild.ModifyAsync(new Action<GuildEditModel>(m => {
                 m.Name = newname;
                 m.AuditLogReason = ctx.BuildReasonString(reason);
-            })).ConfigureAwait(false);
-            await ctx.InformSuccessAsync()
-                .ConfigureAwait(false);
+            }));
+            await ctx.InformSuccessAsync();
         }
 
         [Command("rename")]
@@ -191,32 +187,30 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_GUILD_SETICON
-        [Command("seticon"), Module(ModuleType.Administration)]
+        [Command("seticon")]
         [Description("Change icon of the guild.")]
         [Aliases("icon", "si")]
         [UsageExamples("!guild seticon http://imgur.com/someimage.png")]
         [RequirePermissions(Permissions.ManageGuild)]
         public async Task SetIconAsync(CommandContext ctx,
-                                      [Description("New icon URL.")] Uri url = null)
+                                      [Description("New icon URL.")] Uri url)
         {
             if (url == null)
                 throw new InvalidCommandUsageException("URL missing.");
 
-            if (!await IsValidImageUriAsync(url).ConfigureAwait(false))
-                throw new CommandFailedException("URL must point to an image and use http or https protocols.");
+            if (!await IsValidImageUriAsync(url))
+                throw new CommandFailedException("URL must point to an image and use HTTP or HTTPS protocols.");
 
             try {
                 using (var response = await _http.GetAsync(url).ConfigureAwait(false))
                 using (var stream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
-                    await ctx.Guild.ModifyAsync(new Action<GuildEditModel>(e => e.Icon = stream))
-                        .ConfigureAwait(false);
+                    await ctx.Guild.ModifyAsync(new Action<GuildEditModel>(e => e.Icon = stream));
             } catch (Exception e) {
-                Shared.LogProvider.LogException(LogLevel.Debug, e);
+                this.Shared.LogProvider.LogException(LogLevel.Debug, e);
                 throw new CommandFailedException("An error occured.", e);
             }
 
-            await ctx.InformSuccessAsync()
-                .ConfigureAwait(false);
+            await ctx.InformSuccessAsync();
         }
         #endregion
     }

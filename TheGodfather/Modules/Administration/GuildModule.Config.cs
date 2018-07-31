@@ -25,10 +25,10 @@ namespace TheGodfather.Modules.Administration
         [Aliases("configuration", "config", "cfg")]
         [UsageExamples("!guild configure")]
         [RequireUserPermissions(Permissions.ManageGuild)]
-        public partial class ConfigModule : TheGodfatherModule
+        public partial class GuildConfigModule : TheGodfatherModule
         {
 
-            public ConfigModule(SharedData shared, DBService db)
+            public GuildConfigModule(SharedData shared, DBService db)
                 : base(shared, db)
             {
                 this.ModuleColor = DiscordColor.Brown;
