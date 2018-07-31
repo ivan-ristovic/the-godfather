@@ -37,6 +37,37 @@ namespace TheGodfather.Modules.Administration
             => InfoAsync(ctx, channel);
 
 
+         #region COMMAND_CHANNEL_CLONE
+        [Command("clone"), UsesInteractivity]
+        [Description("Clone a channel.")]
+        [Aliases("copy")]
+        [UsageExamples("!channel clone #general newname")]
+        [RequirePermissions(Permissions.ManageChannels)]
+        public async Task CreateCategoryAsync(CommandContext ctx,
+                                             [Description("Channel to clone.")] DiscordChannel channel,
+                                             [RemainingText, Description("Name for the cloned channel.")] string name = null)
+        {
+            DiscordChannel cloned = await channel.CloneAsync(ctx.BuildReasonString());
+
+            if (!string.IsNullOrWhiteSpace(name)) {
+                if (name.Length > 100)
+                    throw new InvalidCommandUsageException("Channel name must be shorter than 100 characters.");
+
+                if (channel.Type == ChannelType.Text && name.Contains(' '))
+                    throw new CommandFailedException("Text channel name cannot contain spaces!");
+
+                if (ctx.Guild.Channels.Any(chn => chn.Name == name.ToLowerInvariant())) {
+                    if (!await ctx.WaitForBoolReplyAsync("Another channel with that name already exists. Continue? (y/n)"))
+                        return;
+                }
+
+                await cloned.ModifyAsync(new Action<ChannelEditModel>(m => m.Name = name));
+            }
+
+            await ctx.InformSuccessAsync();
+        }
+        #endregion
+
         #region COMMAND_CHANNEL_CREATECATEGORY
         [Command("createcategory"), UsesInteractivity]
         [Description("Create new channel category.")]
