@@ -56,8 +56,8 @@ namespace TheGodfather.Modules.SWAT
             #region COMMAND_BANLIST_DELETE
             [Command("delete"), Module(ModuleType.SWAT)]
             [Description("Remove ban entry from database.")]
-            [Aliases("-", "del", "d")]
-            [UsageExamples("!swat banlist remove 123.123.123.123")]
+            [Aliases("-", "del", "d", "remove")]
+            [UsageExamples("!swat banlist delete 123.123.123.123")]
             public async Task DeleteAsync(CommandContext ctx,
                                          [Description("IP.")] string ip)
             {

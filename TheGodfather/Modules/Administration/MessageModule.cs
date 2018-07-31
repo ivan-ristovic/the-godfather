@@ -1,27 +1,24 @@
 ﻿#region USING_DIRECTIVES
-using System;
-using System.Linq;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-
-using TheGodfather.Common.Attributes;
-using TheGodfather.Exceptions;
-using TheGodfather.Extensions;
-
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-using DSharpPlus.Exceptions;
+using DSharpPlus.Interactivity;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using TheGodfather.Common.Attributes;
+using TheGodfather.Exceptions;
+using TheGodfather.Extensions;
 #endregion
 
 namespace TheGodfather.Modules.Administration
 {
-    [Group("message"), Module(ModuleType.Administration)]
+    [Group("message"), Module(ModuleType.Administration), NotBlocked]
     [Description("Commands for manipulating messages.")]
     [Aliases("m", "msg", "msgs", "messages")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    [NotBlocked]
     public class MessageModule : TheGodfatherModule
     {
 
@@ -34,7 +31,7 @@ namespace TheGodfather.Modules.Administration
 
         #region COMMAND_MESSAGES_ATTACHMENTS
         [Command("attachments")]
-        [Description("View all message attachments. If the message is not provided, uses the last sent message before command invocation.")]
+        [Description("View all message attachments. If the message is not provided, scans the last sent message before command invocation.")]
         [Aliases("a", "files", "la")]
         [UsageExamples("!message attachments",
                        "!message attachments 408226948855234561")]
@@ -52,13 +49,12 @@ namespace TheGodfather.Modules.Administration
 
             var emb = new DiscordEmbedBuilder() {
                 Title = "Attachments:",
-                Color = DiscordColor.Azure
+                Color = this.ModuleColor
             };
-            foreach (var attachment in msg.Attachments) 
+            foreach (DiscordAttachment attachment in msg.Attachments) 
                 emb.AddField($"{attachment.FileName} ({attachment.FileSize} bytes)", attachment.Url);
 
-            await ctx.RespondAsync(embed: emb.Build())
-                .ConfigureAwait(false);
+            await ctx.RespondAsync(embed: emb.Build());
         }
         #endregion
 
@@ -68,52 +64,43 @@ namespace TheGodfather.Modules.Administration
         [Aliases("-", "prune", "del", "d")]
         [UsageExamples("!messages delete 10",
                        "!messages delete 10 Cleaning spam")]
-        [RequirePermissions(Permissions.ManageMessages)]
-        [RequireUserPermissions(Permissions.Administrator)]
+        [RequirePermissions(Permissions.ManageMessages), RequireUserPermissions(Permissions.Administrator)]
         public async Task DeleteMessagesAsync(CommandContext ctx, 
                                              [Description("Amount.")] int amount = 5,
                                              [RemainingText, Description("Reason.")] string reason = null)
         {
-            if (amount <= 0 || amount > 100)
-                throw new CommandFailedException("Invalid number of messages to delete (must be in range [1, 100].");
+            if (amount < 1 || amount > 10000)
+                throw new CommandFailedException("Invalid number of messages to delete (must be in range [1, 10000].");
 
-            var msgs = await ctx.Channel.GetMessagesAsync(amount)
-                .ConfigureAwait(false);
+            if (!await ctx.WaitForBoolReplyAsync($"Are you sure you want to delete {Formatter.Bold(amount.ToString())} messages from this channel?"))
+                return;
+
+            IReadOnlyList<DiscordMessage> msgs = await ctx.Channel.GetMessagesAsync(amount);
             if (!msgs.Any())
                 throw new CommandFailedException("None of the messages in the given range match your description.");
 
-            await ctx.Channel.DeleteMessagesAsync(msgs, ctx.BuildReasonString(reason))
-                .ConfigureAwait(false);
+            await ctx.Channel.DeleteMessagesAsync(msgs, ctx.BuildReasonString(reason));
         }
         #endregion
 
         #region COMMAND_MESSAGES_DELETE_FROM
         [Command("deletefrom"), Priority(1)]
-        [Module(ModuleType.Administration)]
-        [Description("Deletes given amount of most-recent messages from given user.")]
+        [Description("Deletes messages from given user in amount of given messages.")]
         [Aliases("-user", "-u", "deluser", "du", "dfu", "delfrom")]
         [UsageExamples("!messages deletefrom @Someone 10 Cleaning spam",
                        "!messages deletefrom 10 @Someone Cleaning spam")]
-        [RequirePermissions(Permissions.ManageMessages)]
-        [RequireUserPermissions(Permissions.Administrator)]
+        [RequirePermissions(Permissions.ManageMessages), RequireUserPermissions(Permissions.ManageMessages)]
         public async Task DeleteMessagesFromUserAsync(CommandContext ctx, 
-                                                     [Description("User.")] DiscordUser user,
-                                                     [Description("Amount.")] int amount = 5,
+                                                     [Description("User whose messages to delete.")] DiscordUser user,
+                                                     [Description("Message range.")] int amount = 5,
                                                      [RemainingText, Description("Reason.")] string reason = null)
         {
-            if (amount <= 0 || amount > 100)
-                throw new CommandFailedException("Invalid number of messages to delete (must be in range [1, 100].");
+            if (amount <= 0 || amount > 10000)
+                throw new CommandFailedException("Invalid number of messages to delete (must be in range [1, 10000].");
 
-            var msgs = await ctx.Channel.GetMessagesAsync(100)
-                .ConfigureAwait(false);
-            var del = msgs.Where(m => m.Author.Id == user.Id).Take(amount);
-            if (!del.Any())
-                throw new CommandFailedException("None of the messages in the given range match your description.");
+            IReadOnlyList<DiscordMessage> msgs = await ctx.Channel.GetMessagesAsync(amount);
 
-            await ctx.Channel.DeleteMessagesAsync(del, ctx.BuildReasonString(reason))
-                .ConfigureAwait(false);
-            await ctx.InformSuccessAsync()
-                .ConfigureAwait(false);
+            await ctx.Channel.DeleteMessagesAsync(msgs.Where(m => m.Author.Id == user.Id), ctx.BuildReasonString(reason));
         }
 
         [Command("deletefrom"), Priority(0)]
@@ -129,63 +116,46 @@ namespace TheGodfather.Modules.Administration
         [Description("Deletes all reactions from the given message.")]
         [Aliases("-reactions", "-r", "delreactions", "dr")]
         [UsageExamples("!messages deletereactions 408226948855234561")]
-        [RequirePermissions(Permissions.ManageMessages)]
-        [RequireUserPermissions(Permissions.Administrator)]
+        [RequirePermissions(Permissions.ManageMessages), RequireUserPermissions(Permissions.Administrator)]
         public async Task DeleteReactionsAsync(CommandContext ctx,
                                               [Description("ID.")] ulong id = 0,
                                               [RemainingText, Description("Reason.")] string reason = null)
         {
             DiscordMessage msg;
             if (id != 0)
-                msg = await ctx.Channel.GetMessageAsync(id)
-                    .ConfigureAwait(false);
-            else {
-                var _ = await ctx.Channel.GetMessagesBeforeAsync(ctx.Channel.LastMessageId, 1)
-                    .ConfigureAwait(false);
-                msg = _.First();
-            }
+                msg = await ctx.Channel.GetMessageAsync(id);
+            else
+                msg = (await ctx.Channel.GetMessagesBeforeAsync(ctx.Channel.LastMessageId, 1)).FirstOrDefault();
 
-            await msg.DeleteAllReactionsAsync(ctx.BuildReasonString(reason))
-                .ConfigureAwait(false);
-            await ctx.InformSuccessAsync()
-                .ConfigureAwait(false);
+            if (msg == null)
+                throw new CommandFailedException("Cannot find the specified message.");
+
+            await msg.DeleteAllReactionsAsync(ctx.BuildReasonString(reason));
+            await ctx.InformSuccessAsync();
         }
         #endregion
 
         #region COMMAND_MESSAGES_DELETE_REGEX
         [Command("deleteregex"), Priority(1)]
-        [Module(ModuleType.Administration)]
-        [Description("Deletes given amount of most-recent messages that match a given regular expression.")]
+        [Description("Deletes given amount of most-recent messages that match a given regular expression withing a given message amount.")]
         [Aliases("-regex", "-rx", "delregex", "drx")]
         [UsageExamples("!messages deletefrom s+p+a+m+ 10 Cleaning spam",
                        "!messages deletefrom 10 s+p+a+m+ Cleaning spam")]
-        [RequirePermissions(Permissions.ManageMessages)]
-        [RequireUserPermissions(Permissions.Administrator)]
+        [RequirePermissions(Permissions.ManageMessages), RequireUserPermissions(Permissions.Administrator)]
         public async Task DeleteMessagesFromRegexAsync(CommandContext ctx,
                                                       [Description("Pattern (Regex).")] string pattern,
-                                                      [Description("Amount.")] int amount = 5,
+                                                      [Description("Amount.")] int amount = 100,
                                                       [RemainingText, Description("Reason.")] string reason = null)
         {
             if (amount <= 0 || amount > 100)
                 throw new CommandFailedException("Invalid number of messages to delete (must be in range [1, 100].");
 
-            Regex regex;
-            try {
-                regex = new Regex(pattern, RegexOptions.IgnoreCase | RegexOptions.Singleline);
-            } catch (ArgumentException e) {
-                throw new CommandFailedException("Pattern parsing error.", e);
-            }
+            if (!pattern.TryParseRegex(out Regex regex))
+                throw new CommandFailedException("Regex pattern specified is not valid!");
 
-            var msgs = await ctx.Channel.GetMessagesBeforeAsync(ctx.Channel.LastMessageId, 100)
-                .ConfigureAwait(false);
-            var del = msgs.Where(m => regex.IsMatch(m.Content)).Take(amount);
-            if (!del.Any())
-                throw new CommandFailedException("None of the messages in the given range match your description.");
+            IReadOnlyList<DiscordMessage> msgs = await ctx.Channel.GetMessagesBeforeAsync(ctx.Channel.LastMessageId, amount);
 
-            await ctx.Channel.DeleteMessagesAsync(del, ctx.BuildReasonString(reason))
-                .ConfigureAwait(false);
-            await ctx.InformSuccessAsync()
-                .ConfigureAwait(false);
+            await ctx.Channel.DeleteMessagesAsync(msgs.Where(m => !string.IsNullOrWhiteSpace(m.Content) && regex.IsMatch(m.Content)), ctx.BuildReasonString(reason));
         }
 
         [Command("deleteregex"), Priority(0)]
@@ -203,22 +173,21 @@ namespace TheGodfather.Modules.Administration
         [UsageExamples("!messages listpinned")]
         public async Task ListPinnedMessagesAsync(CommandContext ctx)
         {
-            var pinned = await ctx.Channel.GetPinnedMessagesAsync()
-                .ConfigureAwait(false);
-            
+            IReadOnlyList<DiscordMessage> pinned = await ctx.Channel.GetPinnedMessagesAsync();
+
             if (!pinned.Any()) {
-                await ctx.InformSuccessAsync("No pinned messages in this channel")
-                    .ConfigureAwait(false);
+                await ctx.InformFailureAsync("No pinned messages in this channel");
                 return;
             }
-            
-            await ctx.SendCollectionInPagesAsync(
-                "Pinned messages:",
-                pinned,
-                m => $"({Formatter.InlineCode(m.CreationTimestamp.ToString())}) {Formatter.Bold(m.Author.Username)} : {(string.IsNullOrWhiteSpace(m.Content) ? "<embedded message>" : m.Content)}" , 
-                DiscordColor.Cyan,
-                5
-            ).ConfigureAwait(false);
+
+            var pages = pinned.Select(m => new Page() {
+                Content = $"Author: {Formatter.Bold(m.Author.Username)} {m.CreationTimestamp.ToUtcTimestamp()}",
+                Embed = m.Embeds.FirstOrDefault() ?? new DiscordEmbedBuilder() {
+                    Description = m.Content ?? Formatter.Italic("Empty message.")
+                }.Build()
+            }).ToList();
+
+            await ctx.Client.GetInteractivity().SendPaginatedMessage(ctx.Channel, ctx.User, pages);
         }
         #endregion
 
@@ -235,10 +204,8 @@ namespace TheGodfather.Modules.Administration
             if (string.IsNullOrWhiteSpace(content))
                 throw new CommandFailedException("Missing new message content!");
 
-            var msg = await ctx.Channel.GetMessageAsync(id)
-                .ConfigureAwait(false);
-            await msg.ModifyAsync(content)
-                .ConfigureAwait(false);
+            DiscordMessage msg = await ctx.Channel.GetMessageAsync(id);
+            await msg.ModifyAsync(content);
         }
         #endregion
 
@@ -252,22 +219,16 @@ namespace TheGodfather.Modules.Administration
         public async Task PinMessageAsync(CommandContext ctx,
                                          [Description("ID.")] ulong id = 0)
         {
-            try {
-                DiscordMessage msg;
-                if (id != 0)
-                    msg = await ctx.Channel.GetMessageAsync(id)
-                        .ConfigureAwait(false);
-                else {
-                    var _ = await ctx.Channel.GetMessagesBeforeAsync(ctx.Channel.LastMessageId, 1)
-                        .ConfigureAwait(false);
-                    msg = _.First();
-                }
+            DiscordMessage msg;
+            if (id != 0)
+                msg = await ctx.Channel.GetMessageAsync(id);
+            else
+                msg = (await ctx.Channel.GetMessagesBeforeAsync(ctx.Channel.LastMessageId, 1))?.FirstOrDefault();
 
-                await msg.PinAsync()
-                    .ConfigureAwait(false);
-            } catch (BadRequestException e) {
-                throw new CommandFailedException("That message cannot be pinned!", e);
-            }
+            if (msg == null)
+                throw new CommandFailedException("Cannot retrieve the message!");
+
+            await msg.PinAsync();
         }
         #endregion
 
@@ -281,16 +242,13 @@ namespace TheGodfather.Modules.Administration
         public async Task UnpinMessageAsync(CommandContext ctx,
                                            [Description("Index (starting from 1).")] int index = 1)
         {
-            var pinned = await ctx.Channel.GetPinnedMessagesAsync()
-                .ConfigureAwait(false);
+            IReadOnlyList<DiscordMessage> pinned = await ctx.Channel.GetPinnedMessagesAsync();
 
             if (index < 1 || index > pinned.Count)
                 throw new CommandFailedException($"Invalid index (must be in range [1-{pinned.Count}]!");
 
-            await pinned.ElementAt(index - 1).UnpinAsync()
-                .ConfigureAwait(false);
-            await ctx.InformSuccessAsync()
-                .ConfigureAwait(false);
+            await pinned.ElementAt(index - 1).UnpinAsync();
+            await ctx.InformSuccessAsync();
         }
         #endregion
 
@@ -302,20 +260,18 @@ namespace TheGodfather.Modules.Administration
         [RequirePermissions(Permissions.ManageMessages)]
         public async Task UnpinAllMessagesAsync(CommandContext ctx)
         {
-            var pinned = await ctx.Channel.GetPinnedMessagesAsync()
-                .ConfigureAwait(false);
+            IReadOnlyList<DiscordMessage> pinned = await ctx.Channel.GetPinnedMessagesAsync();
 
             int failed = 0;
-            foreach (var m in pinned) {
+            foreach (DiscordMessage m in pinned) {
                 try {
-                    await m.UnpinAsync()
-                        .ConfigureAwait(false);
+                    await m.UnpinAsync();
                 } catch {
                     failed++;
                 }
             }
-            await ctx.InformSuccessAsync(failed > 0 ? $"Failed to unpin {failed} messages!" : "All messages successfully unpinned!")
-                .ConfigureAwait(false);
+
+            await ctx.InformSuccessAsync(failed > 0 ? $"Failed to unpin {failed} messages!" : null);
         }
         #endregion
     }

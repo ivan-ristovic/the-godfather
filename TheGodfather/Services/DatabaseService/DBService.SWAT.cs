@@ -31,9 +31,9 @@ namespace TheGodfather.Services.Database.Swat
         {
             return db.ExecuteCommandAsync(cmd => {
                 if (string.IsNullOrWhiteSpace(info)) {
-                    cmd.CommandText = "INSERT INTO gf.swat_ips(name, ip, additional_information) VALUES (@ip, @name, default);";
+                    cmd.CommandText = "INSERT INTO gf.swat_ips(name, ip, additional_info) VALUES (@ip, @name, default);";
                 } else {
-                    cmd.CommandText = "INSERT INTO gf.swat_ips(name, ip, additional_information) VALUES (@ip, @name, @info);";
+                    cmd.CommandText = "INSERT INTO gf.swat_ips(name, ip, additional_info) VALUES (@ip, @name, @info);";
                     cmd.Parameters.Add(new NpgsqlParameter<string>("info", info));
                 }
                 cmd.Parameters.Add(new NpgsqlParameter<string>("name", name));
@@ -82,14 +82,14 @@ namespace TheGodfather.Services.Database.Swat
             var entries = new List<SwatDatabaseEntry>();
 
             await db.ExecuteCommandAsync(async (cmd) => {
-                cmd.CommandText = "SELECT name, ip FROM gf.swat_ips ORDER BY name;";
+                cmd.CommandText = "SELECT name, ip, additional_info FROM gf.swat_ips ORDER BY name;";
 
                 using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
                     while (await reader.ReadAsync().ConfigureAwait(false)) {
                         entries.Add(new SwatDatabaseEntry() {
                             Ip = (string)reader["ip"],
                             Name = (string)reader["name"],
-                            AdditionalInfo = reader["info"] is DBNull ? null : (string)reader["info"]
+                            AdditionalInfo = reader["additional_info"] is DBNull ? null : (string)reader["additional_info"]
                         });
                     }
                 }
@@ -184,7 +184,7 @@ namespace TheGodfather.Services.Database.Swat
             var entries = new List<SwatDatabaseEntry>();
             
             await db.ExecuteCommandAsync(async (cmd) => {
-                cmd.CommandText = "SELECT name, ip FROM gf.swat_ips WHERE LOWER(name) LIKE @name ORDER BY ABS(gf.levenshtein(LOWER(name), @name)) LIMIT @limit;";
+                cmd.CommandText = "SELECT name, ip, additional_info FROM gf.swat_ips WHERE LOWER(name) LIKE @name ORDER BY ABS(gf.levenshtein(LOWER(name), @name)) LIMIT @limit;";
                 cmd.Parameters.Add(new NpgsqlParameter<string>("name", $"%{name.ToLower()}%"));
                 cmd.Parameters.Add(new NpgsqlParameter<int>("limit", limit));
 
@@ -193,7 +193,7 @@ namespace TheGodfather.Services.Database.Swat
                         entries.Add(new SwatDatabaseEntry() {
                             Ip = (string)reader["ip"],
                             Name = (string)reader["name"],
-                            AdditionalInfo = reader["info"] is DBNull ? null : (string)reader["info"]
+                            AdditionalInfo = reader["additional_info"] is DBNull ? null : (string)reader["additional_info"]
                         });
                     }
                 }
@@ -207,7 +207,7 @@ namespace TheGodfather.Services.Database.Swat
             var entries = new List<SwatDatabaseEntry>();
 
             await db.ExecuteCommandAsync(async (cmd) => {
-                cmd.CommandText = "SELECT name, ip FROM gf.swat_ips WHERE ip LIKE @ip LIMIT @limit;";
+                cmd.CommandText = "SELECT name, ip, additional_info FROM gf.swat_ips WHERE ip LIKE @ip LIMIT @limit;";
                 cmd.Parameters.Add(new NpgsqlParameter<string>("ip", ip + '%'));
                 cmd.Parameters.Add(new NpgsqlParameter<int>("limit", limit));
 
@@ -216,7 +216,7 @@ namespace TheGodfather.Services.Database.Swat
                         entries.Add(new SwatDatabaseEntry() {
                             Ip = (string)reader["ip"],
                             Name = (string)reader["name"],
-                            AdditionalInfo = reader["info"] is DBNull ? null : (string)reader["info"]
+                            AdditionalInfo = reader["additional_info"] is DBNull ? null : (string)reader["additional_info"]
                         });
                     }
                 }
