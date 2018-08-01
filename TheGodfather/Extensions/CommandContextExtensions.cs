@@ -18,20 +18,28 @@ namespace TheGodfather.Extensions
         public static string BuildReasonString(this CommandContext ctx, string reason = null)
             => $"{ctx.User.ToString()} : {reason ?? "No reason provided."} | Invoked in: {ctx.Channel.ToString()}";
 
-        public static Task<DiscordMessage> InformSuccessAsync(this CommandContext ctx, string message = "Done!", string emoji = null)
+        public static Task InformSuccessAsync(this CommandContext ctx, string message = null, string emoji = null)
         {
-            return ctx.RespondAsync(embed: new DiscordEmbedBuilder {
-                Description = $"{(emoji == null ? StaticDiscordEmoji.CheckMarkSuccess : DiscordEmoji.FromName(ctx.Client, emoji))} {message}",
-                Color = DiscordColor.Green
-            });
+            if (string.IsNullOrWhiteSpace(message) && ctx.Services.GetService<SharedData>().GetGuildConfig(ctx.Guild.Id).SilentRespond) {
+                return ctx.Message.CreateReactionAsync(StaticDiscordEmoji.CheckMarkSuccess);
+            } else {
+                return ctx.RespondAsync(embed: new DiscordEmbedBuilder {
+                    Description = $"{(emoji == null ? StaticDiscordEmoji.CheckMarkSuccess : DiscordEmoji.FromName(ctx.Client, emoji))} {message ?? "Done!"}",
+                    Color = DiscordColor.Green
+                });
+            }
         }
 
-        public static Task<DiscordMessage> InformSuccessAsync(this CommandContext ctx, DiscordEmoji icon, string message = "Done!")
+        public static Task InformSuccessAsync(this CommandContext ctx, DiscordEmoji icon, string message = null)
         {
-            return ctx.RespondAsync(embed: new DiscordEmbedBuilder {
-                Description = $"{(icon ?? StaticDiscordEmoji.CheckMarkSuccess)} {message}",
-                Color = DiscordColor.Green
-            });
+            if (string.IsNullOrWhiteSpace(message) && ctx.Services.GetService<SharedData>().GetGuildConfig(ctx.Guild.Id).SilentRespond) {
+                return ctx.Message.CreateReactionAsync(StaticDiscordEmoji.CheckMarkSuccess);
+            } else {
+                return ctx.RespondAsync(embed: new DiscordEmbedBuilder {
+                    Description = $"{(icon ?? StaticDiscordEmoji.CheckMarkSuccess)} {message ?? "Done!"}",
+                    Color = DiscordColor.Green
+                });
+            }
         }
 
         public static Task<DiscordMessage> InformFailureAsync(this CommandContext ctx, string message)

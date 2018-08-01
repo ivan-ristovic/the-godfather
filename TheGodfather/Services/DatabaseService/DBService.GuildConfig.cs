@@ -31,6 +31,7 @@ namespace TheGodfather.Services.Database.GuildConfig
                             LinkfilterEnabled = (bool)reader["linkfilter_enabled"],
                             LogChannelId = (ulong)(long)reader["log_cid"],
                             Prefix = reader["prefix"] is DBNull ? null : (string)reader["prefix"],
+                            SilentRespond = (bool)reader["silent_respond"],
                             SuggestionsEnabled = (bool)reader["suggestions_enabled"],
                         });
                     }
@@ -204,13 +205,14 @@ namespace TheGodfather.Services.Database.GuildConfig
         public static Task UpdateGuildSettingsAsync(this DBService db, ulong gid, CachedGuildConfig cfg)
         {
             return db.ExecuteCommandAsync(cmd => {
-                cmd.CommandText = "UPDATE gf.guild_cfg SET (prefix, suggestions_enabled, log_cid, linkfilter_enabled, linkfilter_invites, linkfilter_booters, linkfilter_disturbing, linkfilter_iploggers, linkfilter_shorteners) = (@prefix, @suggestions_enabled, @log_cid, @linkfilter_enabled, @linkfilter_invites, @linkfilter_booters, @linkfilter_disturbing, @linkfilter_iploggers, @linkfilter_shorteners) WHERE gid = @gid;";
+                cmd.CommandText = "UPDATE gf.guild_cfg SET (prefix, silent_respond, suggestions_enabled, log_cid, linkfilter_enabled, linkfilter_invites, linkfilter_booters, linkfilter_disturbing, linkfilter_iploggers, linkfilter_shorteners) = (@prefix, @silent_respond, @suggestions_enabled, @log_cid, @linkfilter_enabled, @linkfilter_invites, @linkfilter_booters, @linkfilter_disturbing, @linkfilter_iploggers, @linkfilter_shorteners) WHERE gid = @gid;";
                 cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
                 if (string.IsNullOrWhiteSpace(cfg.Prefix))
                     cmd.Parameters.AddWithValue("prefix", NpgsqlDbType.Varchar, DBNull.Value);
                 else
                     cmd.Parameters.Add(new NpgsqlParameter<string>("prefix", cfg.Prefix));
                 cmd.Parameters.Add(new NpgsqlParameter<long>("log_cid", (long)cfg.LogChannelId));
+                cmd.Parameters.Add(new NpgsqlParameter<bool>("silent_respond", cfg.SilentRespond));
                 cmd.Parameters.Add(new NpgsqlParameter<bool>("suggestions_enabled", cfg.SuggestionsEnabled));
                 cmd.Parameters.Add(new NpgsqlParameter<bool>("linkfilter_enabled", cfg.LinkfilterEnabled));
                 cmd.Parameters.Add(new NpgsqlParameter<bool>("linkfilter_invites", cfg.BlockDiscordInvites));
