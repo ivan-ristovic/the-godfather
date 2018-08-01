@@ -72,7 +72,7 @@ namespace TheGodfather.Modules.Administration
             if (amount < 1 || amount > 10000)
                 throw new CommandFailedException("Invalid number of messages to delete (must be in range [1, 10000].");
 
-            if (!await ctx.WaitForBoolReplyAsync($"Are you sure you want to delete {Formatter.Bold(amount.ToString())} messages from this channel?"))
+            if (amount > 100 && !await ctx.WaitForBoolReplyAsync($"Are you sure you want to delete {Formatter.Bold(amount.ToString())} messages from this channel?"))
                 return;
 
             IReadOnlyList<DiscordMessage> msgs = await ctx.Channel.GetMessagesAsync(amount);

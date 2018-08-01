@@ -15,11 +15,10 @@ using DSharpPlus.Entities;
 
 namespace TheGodfather.Modules.Administration
 {
-    [Group("roles"), Module(ModuleType.Administration)]
+    [Group("roles"), Module(ModuleType.Administration), NotBlocked]
     [Description("Miscellaneous role control commands.")]
     [Aliases("role", "rl")]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
-    [NotBlocked]
     public class RoleModule : TheGodfatherModule
     {
 

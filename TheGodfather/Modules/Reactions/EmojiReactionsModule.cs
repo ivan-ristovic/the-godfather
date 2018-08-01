@@ -305,6 +305,8 @@ namespace TheGodfather.Modules.Reactions
             if (!Shared.EmojiReactions.ContainsKey(ctx.Guild.Id) || !Shared.EmojiReactions[ctx.Guild.Id].Any())
                 throw new CommandFailedException("No emoji reactions registered for this guild.");
 
+            // TODO remove non-existing
+
             await ctx.SendCollectionInPagesAsync(
                 "Emoji reactions for this guild",
                 Shared.EmojiReactions[ctx.Guild.Id].OrderBy(er => er.OrderedTriggerStrings.First()),

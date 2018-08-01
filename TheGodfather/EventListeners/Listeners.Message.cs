@@ -96,7 +96,7 @@ namespace TheGodfather.EventListeners
                 return;
 
             IEnumerable<EmojiReaction> ereactions = shard.SharedData.EmojiReactions[e.Guild.Id]
-                .Where(er => er.Matches(e.Message.Content));
+                .Where(er => er.Matches(e.Message?.Content ?? ""));
             foreach (EmojiReaction er in ereactions) {
                 try {
                     var emoji = DiscordEmoji.FromName(shard.Client, er.Response);
