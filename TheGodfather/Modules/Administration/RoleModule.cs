@@ -1,37 +1,42 @@
 ﻿#region USING_DIRECTIVES
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-
-using TheGodfather.Common.Attributes;
-using TheGodfather.Exceptions;
-using TheGodfather.Extensions;
-
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+using TheGodfather.Common.Attributes;
+using TheGodfather.Exceptions;
+using TheGodfather.Extensions;
 #endregion
 
 namespace TheGodfather.Modules.Administration
 {
     [Group("roles"), Module(ModuleType.Administration), NotBlocked]
-    [Description("Miscellaneous role control commands.")]
+    [Description("Miscellaneous role control commands. Group call lists all the roles in this guild or prints information about a given role.")]
     [Aliases("role", "rl")]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
     public class RoleModule : TheGodfatherModule
     {
 
-        [GroupCommand, Priority(1)]
-        public async Task ExecuteGroupAsync(CommandContext ctx)
+        public RoleModule()
+            : base()
         {
-            await ctx.SendCollectionInPagesAsync(
+            this.ModuleColor = DiscordColor.Orange;
+        }
+
+
+        [GroupCommand, Priority(1)]
+        public Task ExecuteGroupAsync(CommandContext ctx)
+        {
+            return ctx.SendCollectionInPagesAsync(
                 "Roles in this guild:",
                 ctx.Guild.Roles.OrderByDescending(r => r.Position),
-                r => $"{Formatter.Bold(r.Name)} | {r.Color.ToString()} | ID: {Formatter.InlineCode(r.Id.ToString())}",
+                r => $"ID: {Formatter.InlineCode(r.Id.ToString())} | {Formatter.Bold(r.Name)} | {r.Color.ToString()}",
                 DiscordColor.Gold,
                 10
-            ).ConfigureAwait(false);
+            );
         }
 
         [GroupCommand, Priority(0)]
@@ -41,15 +46,13 @@ namespace TheGodfather.Modules.Administration
 
 
         #region COMMAND_ROLES_CREATE
-        [Command("create"), Priority(2)]
-        [Module(ModuleType.Administration)]
+        [Command("create"), Priority(2), UsesInteractivity]
         [Description("Create a new role.")]
-        [Aliases("new", "add", "+", "c")]
+        [Aliases("new", "add", "a", "c", "+", "+=", "<", "<<")]
         [UsageExamples("!roles create Role",
                        "!roles create \"My role\" #C77B0F no no",
                        "!roles create #C77B0F My new role")]
         [RequirePermissions(Permissions.ManageRoles)]
-        [UsesInteractivity]
         public async Task CreateAsync(CommandContext ctx,
                                      [Description("Name.")] string name,
                                      [Description("Color.")] DiscordColor? color = null,
@@ -60,14 +63,12 @@ namespace TheGodfather.Modules.Administration
                 throw new InvalidCommandUsageException("Missing role name.");
 
             if (ctx.Guild.Roles.Any(r => string.Compare(r.Name, name, true) == 0)) {
-                if (!await ctx.WaitForBoolReplyAsync("A role with that name already exists. Continue?").ConfigureAwait(false))
+                if (!await ctx.WaitForBoolReplyAsync("A role with that name already exists. Continue? (y/n)"))
                     return;
             }
 
-            await ctx.Guild.CreateRoleAsync(name, null, color, hoisted, mentionable, ctx.BuildReasonString())
-                .ConfigureAwait(false);
-            await ctx.InformSuccessAsync($"Successfully created role {Formatter.Bold(name)}!")
-                .ConfigureAwait(false);
+            await ctx.Guild.CreateRoleAsync(name, null, color, hoisted, mentionable, ctx.BuildReasonString());
+            await ctx.InformSuccessAsync();
         }
 
         [Command("create"), Priority(1)]
@@ -83,9 +84,9 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_ROLES_DELETE
-        [Command("delete"), Module(ModuleType.Administration)]
+        [Command("delete")]
         [Description("Create a new role.")]
-        [Aliases("del", "remove", "d", "-", "rm")]
+        [Aliases("del", "remove", "rm", "d", "-", ">", ">>")]
         [UsageExamples("!role delete My role",
                        "!role delete @admins")]
         [RequirePermissions(Permissions.ManageRoles)]
@@ -93,72 +94,60 @@ namespace TheGodfather.Modules.Administration
                                      [Description("Role.")] DiscordRole role,
                                      [RemainingText, Description("Reason.")] string reason = null)
         {
-            string name = role.Name;
-            await role.DeleteAsync(ctx.BuildReasonString(reason))
-                .ConfigureAwait(false);
-            await ctx.InformSuccessAsync($"Successfully removed role {Formatter.Bold(name)}!")
-                .ConfigureAwait(false);
+            await role.DeleteAsync(ctx.BuildReasonString(reason));
+            await ctx.InformSuccessAsync();
         }
         #endregion
 
         #region COMMAND_ROLES_INFO
-        [Command("info"), Module(ModuleType.Administration)]
+        [Command("info")]
         [Description("Get information about a given role.")]
         [Aliases("i")]
         [UsageExamples("!role info Admins")]
         [RequirePermissions(Permissions.ManageRoles)]
-        public async Task InfoAsync(CommandContext ctx,
-                                   [Description("Role.")] DiscordRole role)
+        public Task InfoAsync(CommandContext ctx,
+                             [Description("Role.")] DiscordRole role)
         {
             var emb = new DiscordEmbedBuilder() {
-                Title = $"Information about role {role.Name}:",
-                Color = DiscordColor.Orange
+                Title = role.Name,
+                Color = this.ModuleColor
             };
-            emb.AddField("Position", role.Position.ToString(), true)
-               .AddField("Color", role.Color.ToString(), true)
-               .AddField("Id", role.Id.ToString(), true)
-               .AddField("Mentionable", role.IsMentionable.ToString(), true)
-               .AddField("Visible", role.IsHoisted.ToString(), true)
-               .AddField("Managed", role.IsManaged.ToString(), true)
-               .AddField("Created at", role.CreationTimestamp.ToString(), true)
-               .AddField("Permissions:", role.Permissions.ToPermissionString(), false);
 
-            await ctx.RespondAsync(embed: emb.Build())
-                .ConfigureAwait(false);
+            emb.AddField("Position", role.Position.ToString(), true);
+            emb.AddField("Color", role.Color.ToString(), true);
+            emb.AddField("Id", role.Id.ToString(), true);
+            emb.AddField("Mentionable", role.IsMentionable.ToString(), true);
+            emb.AddField("Visible", role.IsHoisted.ToString(), true);
+            emb.AddField("Managed", role.IsManaged.ToString(), true);
+            emb.AddField("Created at", role.CreationTimestamp.ToUtcTimestamp(), true);
+            emb.AddField("Permissions:", role.Permissions.ToPermissionString());
+
+            return ctx.RespondAsync(embed: emb.Build());
         }
         #endregion
 
-        #region COMMAND_ROLES_MENTIONALL
-        [Command("mentionall"), Module(ModuleType.Administration)]
-        [Description("Mention all users from given role.")]
-        [Aliases("mention", "@", "ma")]
+        #region COMMAND_ROLES_MENTION
+        [Command("mention")]
+        [Description("Mention the given role. This will bypass the mentionable status for the given role.")]
+        [Aliases("mentionall", "@", "ma")]
         [UsageExamples("!role mentionall Admins")]
-        [RequirePermissions(Permissions.MentionEveryone)]
-        [RequireBotPermissions(Permissions.ManageRoles)]
+        [RequireUserPermissions(Permissions.Administrator), RequireBotPermissions(Permissions.ManageRoles)]
         public async Task MentionAllFromRoleAsync(CommandContext ctx, 
                                                  [Description("Role.")] DiscordRole role)
         {
             if (role.IsMentionable) {
-                await ctx.RespondAsync(role.Mention)
-                    .ConfigureAwait(false);
+                await ctx.RespondAsync(role.Mention);
                 return;
             }
 
-            if (!ctx.Channel.PermissionsFor(ctx.Member).HasPermission(Permissions.Administrator))
-                throw new CommandFailedException("Only administrator can mention the non-mentionable roles.");
-
-            await role.ModifyAsync(mentionable: true)
-                .ConfigureAwait(false);
-            await ctx.RespondAsync(role.Mention)
-                .ConfigureAwait(false);
-            await role.ModifyAsync(mentionable: false)
-                .ConfigureAwait(false);
+            await role.ModifyAsync(mentionable: true);
+            await ctx.RespondAsync(role.Mention);
+            await role.ModifyAsync(mentionable: false);
         }
         #endregion
 
         #region COMMAND_ROLES_SETCOLOR
         [Command("setcolor"), Priority(1)]
-        [Module(ModuleType.Administration)]
         [Description("Set a color for the role.")]
         [Aliases("clr", "c", "sc", "setc")]
         [UsageExamples("!role setcolor #FF0000 Admins",
@@ -168,10 +157,8 @@ namespace TheGodfather.Modules.Administration
                                        [Description("Role.")] DiscordRole role,
                                        [Description("Color.")] DiscordColor color)
         {
-            await role.ModifyAsync(color: color, reason: ctx.BuildReasonString())
-                .ConfigureAwait(false);
-            await ctx.InformSuccessAsync($"Successfully changed color for {Formatter.Bold(role.Name)}!")
-                .ConfigureAwait(false);
+            await role.ModifyAsync(color: color, reason: ctx.BuildReasonString());
+            await ctx.InformSuccessAsync();
         }
 
         [Command("setcolor"), Priority(0)]
@@ -183,7 +170,7 @@ namespace TheGodfather.Modules.Administration
 
         #region COMMAND_ROLES_SETNAME
         [Command("setname"), Priority(1)]
-        [Module(ModuleType.Administration)]
+        
         [Description("Set a name for the role.")]
         [Aliases("name", "rename", "n")]
         [UsageExamples("!role setname @Admins Administrators",
@@ -196,10 +183,8 @@ namespace TheGodfather.Modules.Administration
             if (string.IsNullOrWhiteSpace(name))
                 throw new ArgumentException("I need a new name for the role.");
 
-            await role.ModifyAsync(name: name, reason: ctx.BuildReasonString())
-                .ConfigureAwait(false);
-            await ctx.InformSuccessAsync($"Successfully changed role name to {Formatter.Bold(name)}.")
-                .ConfigureAwait(false);
+            await role.ModifyAsync(name: name, reason: ctx.BuildReasonString());
+            await ctx.InformSuccessAsync();
         }
 
         [Command("setname"), Priority(0)]
@@ -211,7 +196,6 @@ namespace TheGodfather.Modules.Administration
 
         #region COMMAND_ROLES_SETMENTIONABLE
         [Command("setmentionable"), Priority(1)]
-        [Module(ModuleType.Administration)]
         [Description("Set role mentionable var.")]
         [Aliases("mentionable", "m", "setm")]
         [UsageExamples("!role setmentionable Admins",
@@ -222,10 +206,8 @@ namespace TheGodfather.Modules.Administration
                                              [Description("Role.")] DiscordRole role,
                                              [Description("Mentionable?")] bool mentionable = true)
         {
-            await role.ModifyAsync(mentionable: mentionable, reason: ctx.BuildReasonString())
-                .ConfigureAwait(false);
-            await ctx.InformSuccessAsync($"Successfully set mentionable var for {Formatter.Bold(role.Name)} to {Formatter.Bold(mentionable.ToString())}.")
-                .ConfigureAwait(false);
+            await role.ModifyAsync(mentionable: mentionable, reason: ctx.BuildReasonString());
+            await ctx.InformSuccessAsync();
         }
 
         [Command("setmentionable"), Priority(0)]
@@ -237,7 +219,6 @@ namespace TheGodfather.Modules.Administration
 
         #region COMMAND_ROLES_SETVISIBILITY
         [Command("setvisible"), Priority(1)]
-        [Module(ModuleType.Administration)]
         [Description("Set role hoisted var (visibility in online list).")]
         [Aliases("separate", "h", "seth", "hoist", "sethoist")]
         [UsageExamples("!role setvisible Admins",
@@ -248,10 +229,8 @@ namespace TheGodfather.Modules.Administration
                                          [Description("Role.")] DiscordRole role,
                                          [Description("Hoisted (visible in online list)?")] bool hoisted = false)
         {
-            await role.ModifyAsync(hoist: hoisted, reason: ctx.BuildReasonString())
-                .ConfigureAwait(false);
-            await ctx.InformSuccessAsync($"Successfully set hoisted var for role {Formatter.Bold(role.Name)} to {Formatter.Bold(hoisted.ToString())}.")
-                .ConfigureAwait(false);
+            await role.ModifyAsync(hoist: hoisted, reason: ctx.BuildReasonString());
+            await ctx.InformSuccessAsync();
         }
 
         [Command("setvisible"), Priority(0)]

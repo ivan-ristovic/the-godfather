@@ -495,7 +495,7 @@ namespace TheGodfather.Modules.Administration
                                          [Description("Role.")] DiscordRole role,
                                          [Description("Channel.")] DiscordChannel channel = null)
         {
-            if (!ctx.Member.Roles.Any(r => r.Position >= role.Position))
+            if (role.Position > ctx.Member.Hierarchy)
                 throw new CommandFailedException("You cannot view permissions for roles which have position above your highest role position.");
 
             if (channel == null)
