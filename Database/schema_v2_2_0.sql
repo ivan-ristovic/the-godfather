@@ -293,7 +293,8 @@ CREATE TABLE gf.guild_cfg (
     linkfilter_booters boolean DEFAULT true NOT NULL,
     linkfilter_disturbing boolean DEFAULT true NOT NULL,
     linkfilter_iploggers boolean DEFAULT true NOT NULL,
-    linkfilter_shorteners boolean DEFAULT true NOT NULL
+    linkfilter_shorteners boolean DEFAULT true NOT NULL,
+    silent_respond boolean DEFAULT true NOT NULL
 );
 
 
@@ -561,7 +562,8 @@ CREATE TABLE gf.swat_banlist (
 
 CREATE TABLE gf.swat_ips (
     name character varying(32) NOT NULL,
-    ip character varying(16) NOT NULL
+    ip character varying(16) NOT NULL,
+    additional_info character varying(128) DEFAULT NULL::character varying
 );
 
 
