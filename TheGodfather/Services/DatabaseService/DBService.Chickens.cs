@@ -134,10 +134,10 @@ namespace TheGodfather.Services.Database.Chickens
 
             await db.ExecuteCommandAsync(async (cmd) => {
                 if (gid != 0) {
-                    cmd.CommandText = "SELECT * FROM gf.chickens WHERE gid = @gid ORDER BY strength DESC;";
+                    cmd.CommandText = "SELECT * FROM gf.chickens WHERE gid = @gid ORDER BY strength DESC LIMIT 10;";
                     cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
                 } else {
-                    cmd.CommandText = "SELECT * FROM gf.chickens ORDER BY strength DESC;";
+                    cmd.CommandText = "SELECT * FROM gf.chickens ORDER BY strength DESC LIMIT 10;";
                 }
 
                 using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {

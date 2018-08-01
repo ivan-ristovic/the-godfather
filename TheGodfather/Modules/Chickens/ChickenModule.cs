@@ -1,8 +1,12 @@
 ﻿#region USING_DIRECTIVES
+using DSharpPlus;
+using DSharpPlus.CommandsNext;
+using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Entities;
+using System.Collections.Generic;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
@@ -11,26 +15,24 @@ using TheGodfather.Modules.Chickens.Common;
 using TheGodfather.Services.Database;
 using TheGodfather.Services.Database.Bank;
 using TheGodfather.Services.Database.Chickens;
-
-using DSharpPlus;
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
 #endregion
 
 namespace TheGodfather.Modules.Chickens
 {
-    [Group("chicken"), Module(ModuleType.Chickens)]
+    [Group("chicken"), Module(ModuleType.Chickens), NotBlocked]
     [Description("Manage your chicken. If invoked without subcommands, prints out your chicken information.")]
     [Aliases("cock", "hen", "chick", "coc", "cc")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     [UsageExamples("!chicken",
                    "!chicken @Someone")]
-    [NotBlocked]
     public partial class ChickenModule : TheGodfatherModule
     {
 
-        public ChickenModule(DBService db) : base(db: db) { }
+        public ChickenModule(DBService db) 
+            : base(db: db)
+        {
+            this.ModuleColor = DiscordColor.Yellow;
+        }
 
 
         [GroupCommand]
@@ -40,7 +42,7 @@ namespace TheGodfather.Modules.Chickens
 
 
         #region COMMAND_CHICKEN_FIGHT
-        [Command("fight"), Module(ModuleType.Chickens)]
+        [Command("fight")]
         [Description("Make your chicken and another user's chicken fight eachother!")]
         [Aliases("f", "duel", "attack")]
         [UsageExamples("!chicken duel @Someone")]
@@ -56,8 +58,7 @@ namespace TheGodfather.Modules.Chickens
             if (!ctx.Guild.Members.Any(m => m.Id == user.Id))
                 throw new CommandFailedException("That user is not a member of this guild so you cannot fight his chicken.");
 
-            var chicken1 = await Database.GetChickenAsync(ctx.User.Id, ctx.Guild.Id)
-                .ConfigureAwait(false);
+            Chicken chicken1 = await this.Database.GetChickenAsync(ctx.User.Id, ctx.Guild.Id);
             if (chicken1 != null) {
                 if (chicken1.Stats.TotalVitality < 25)
                     throw new CommandFailedException($"{ctx.User.Mention}, your chicken is too weak to start a fight with another chicken! Heal it using {Formatter.InlineCode("chicken heal")} command.");
@@ -65,8 +66,7 @@ namespace TheGodfather.Modules.Chickens
                 throw new CommandFailedException("You do not own a chicken!");
             }
 
-            var chicken2 = await Database.GetChickenAsync(user.Id, ctx.Guild.Id)
-                .ConfigureAwait(false);
+            Chicken chicken2 = await this.Database.GetChickenAsync(user.Id, ctx.Guild.Id);
             if (chicken2 == null)
                 throw new CommandFailedException("The specified user does not own a chicken!");
 
@@ -75,9 +75,9 @@ namespace TheGodfather.Modules.Chickens
 
             string header = $"{Formatter.Bold(chicken1.Name)} ({chicken1.Stats.ToShortString()}) {StaticDiscordEmoji.DuelSwords} {Formatter.Bold(chicken2.Name)} ({chicken2.Stats.ToShortString()}) {StaticDiscordEmoji.Chicken}\n\n";
 
-            var winner = chicken1.Fight(chicken2);
+            Chicken winner = chicken1.Fight(chicken2);
             winner.Owner = winner.OwnerId == ctx.User.Id ? ctx.User : user;
-            var loser = winner == chicken1 ? chicken2 : chicken1;
+            Chicken loser = winner == chicken1 ? chicken2 : chicken1;
             int gain = winner.DetermineStrengthGain(loser);
             winner.Stats.BareStrength += gain;
             winner.Stats.BareMaxVitality -= gain;
@@ -85,15 +85,13 @@ namespace TheGodfather.Modules.Chickens
                 winner.Stats.BareVitality = 1;
             loser.Stats.BareVitality -= 50;
 
-            await Database.ModifyChickenAsync(winner, ctx.Guild.Id)
-                .ConfigureAwait(false);
+            await this.Database.ModifyChickenAsync(winner, ctx.Guild.Id);
             if (loser.Stats.TotalVitality > 0)
-                await Database.ModifyChickenAsync(loser, ctx.Guild.Id).ConfigureAwait(false);
+                await this.Database.ModifyChickenAsync(loser, ctx.Guild.Id);
             else
-                await Database.RemoveChickenAsync(loser.OwnerId, ctx.Guild.Id).ConfigureAwait(false);
+                await this.Database.RemoveChickenAsync(loser.OwnerId, ctx.Guild.Id) ;
 
-            await Database.IncreaseBankAccountBalanceAsync(winner.OwnerId, ctx.Guild.Id, gain * 2000)
-                .ConfigureAwait(false);
+            await this.Database.IncreaseBankAccountBalanceAsync(winner.OwnerId, ctx.Guild.Id, gain * 2000);
 
             await ctx.InformSuccessAsync(StaticDiscordEmoji.Chicken,
                 header +
@@ -101,63 +99,57 @@ namespace TheGodfather.Modules.Chickens
                 $"{Formatter.Bold(winner.Name)} gained {Formatter.Bold(gain.ToString())} strength!\n" +
                 (loser.Stats.TotalVitality > 0 ? $"{Formatter.Bold(loser.Name)} lost {Formatter.Bold("50")} HP!" : $"{Formatter.Bold(loser.Name)} died in the battle!") +
                 $"\n\n{winner.Owner.Mention} won {gain * 200} credits."
-            ).ConfigureAwait(false);
+            );
         }
         #endregion
 
         #region COMMAND_CHICKEN_FLU
-        [Command("flu"), Module(ModuleType.Chickens)]
+        [Command("flu"), UsesInteractivity]
         [Description("Pay a well-known scientist to create a disease that disintegrates weak chickens.")]
         [Aliases("cancer", "disease", "blackdeath")]
         [UsageExamples("!chicken flu")]
-        [UsesInteractivity]
         public async Task FluAsync(CommandContext ctx)
         {
             if (ChannelEvent.GetEventInChannel(ctx.Channel.Id) is ChickenWar ambush)
                 throw new CommandFailedException("There is a chicken war running in this channel. No actions are allowed before the war finishes.");
 
-            if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to pay {Formatter.Bold("1000000")} credits to create a disease?"))
+            if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to pay {Formatter.Bold("1,000,000")} credits to create a disease?"))
                 return;
 
-            if (!await Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, 1000000).ConfigureAwait(false))
+            if (!await this.Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, 1000000))
                 throw new CommandFailedException($"You do not have enought credits to pay for the disease creation!");
 
             short threshold = (short)GFRandom.Generator.Next(50, 100);
-            await Database.FilterChickensByVitalityAsync(ctx.Guild.Id, threshold)
-                .ConfigureAwait(false);
+            await this.Database.FilterChickensByVitalityAsync(ctx.Guild.Id, threshold);
 
-            await ctx.InformSuccessAsync($"The deadly chicken flu killed all chickens with vitality less than or equal to {Formatter.Bold(threshold.ToString())}!")
-                .ConfigureAwait(false);
+            await ctx.InformSuccessAsync($"The deadly chicken flu killed all chickens with vitality less than or equal to {Formatter.Bold(threshold.ToString())}!");
         }
         #endregion
 
         #region COMMAND_CHICKEN_HEAL
-        [Command("heal"), Module(ModuleType.Chickens)]
+        [Command("heal")]
         [Description("Heal your chicken (+100 HP). There is one medicine made each 10 minutes, so you need to grab it before the others do!")]
         [Aliases("+hp", "hp")]
-        [Cooldown(1, 300, CooldownBucketType.Guild)]
         [UsageExamples("!chicken heal")]
+        [Cooldown(1, 300, CooldownBucketType.Guild)]
         public async Task HealAsync(CommandContext ctx)
         {
             if (ChannelEvent.GetEventInChannel(ctx.Channel.Id) is ChickenWar)
                 throw new CommandFailedException("There is a chicken war running in this channel. You are not allowed to heal your chicken before the war finishes.");
 
-            var chicken = await Database.GetChickenAsync(ctx.User.Id, ctx.Guild.Id)
-                .ConfigureAwait(false);
+            Chicken chicken = await this.Database.GetChickenAsync(ctx.User.Id, ctx.Guild.Id);
             if (chicken == null)
                 throw new CommandFailedException("You do not own a chicken!");
 
             chicken.Stats.BareVitality += 100;
-            await Database.ModifyChickenAsync(chicken, ctx.Guild.Id)
-                .ConfigureAwait(false);
+            await this.Database.ModifyChickenAsync(chicken, ctx.Guild.Id);
 
-            await ctx.InformSuccessAsync(StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} healed his chicken (+100 to current HP)!")
-                .ConfigureAwait(false);
+            await ctx.InformSuccessAsync(StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} healed his chicken (+100 to current HP)!");
         }
         #endregion
 
         #region COMMAND_CHICKEN_INFO
-        [Command("info"), Module(ModuleType.Chickens)]
+        [Command("info")]
         [Description("View user's chicken info. If the user is not given, views sender's chicken info.")]
         [Aliases("information", "stats")]
         [UsageExamples("!chicken info @Someone")]
@@ -167,59 +159,53 @@ namespace TheGodfather.Modules.Chickens
             if (user == null)
                 user = ctx.User;
 
-            var chicken = await Database.GetChickenAsync(user.Id, ctx.Guild.Id)
+            Chicken chicken = await this.Database.GetChickenAsync(user.Id, ctx.Guild.Id)
                 .ConfigureAwait(false);
             if (chicken == null)
                 throw new CommandFailedException($"User {user.Mention} does not own a chicken in this guild! Use command {Formatter.InlineCode("chicken buy")} to buy a chicken (1000 credits).");
 
-            await ctx.RespondAsync(embed: chicken.ToDiscordEmbed(user))
-                .ConfigureAwait(false);
+            await ctx.RespondAsync(embed: chicken.ToDiscordEmbed(user));
         }
         #endregion
 
         #region COMMAND_CHICKEN_RENAME
-        [Command("rename"), Module(ModuleType.Chickens)]
+        [Command("rename")]
         [Description("Rename your chicken.")]
         [Aliases("rn", "name")]
         [UsageExamples("!chicken name New Name")]
         public async Task RenameAsync(CommandContext ctx,
-                                     [RemainingText, Description("Chicken name.")] string name = null)
+                                     [RemainingText, Description("New chicken name.")] string newname)
         {
-            if (string.IsNullOrWhiteSpace(name))
+            if (string.IsNullOrWhiteSpace(newname))
                 throw new InvalidCommandUsageException("New name for your chicken is missing.");
 
-            if (name.Length < 2 || name.Length > 30)
+            if (newname.Length < 2 || newname.Length > 30)
                 throw new InvalidCommandUsageException("Name cannot be shorter than 2 and longer than 30 characters.");
 
-            if (!name.All(c => Char.IsLetterOrDigit(c) || Char.IsWhiteSpace(c)))
+            if (!newname.All(c => Char.IsLetterOrDigit(c) || Char.IsWhiteSpace(c)))
                 throw new InvalidCommandUsageException("Name cannot contain characters that are not letters or digits.");
 
             if (ChannelEvent.GetEventInChannel(ctx.Channel.Id) is ChickenWar ambush)
                 throw new CommandFailedException("There is a chicken war running in this channel. No renames are allowed before the war finishes.");
 
-            var chicken = await Database.GetChickenAsync(ctx.User.Id, ctx.Guild.Id)
-                .ConfigureAwait(false);
+            Chicken chicken = await this.Database.GetChickenAsync(ctx.User.Id, ctx.Guild.Id);
             if (chicken == null)
                 throw new CommandFailedException("You do not own a chicken!");
 
-            chicken.Name = name;
-            await Database.ModifyChickenAsync(chicken, ctx.Guild.Id)
-                .ConfigureAwait(false);
-
-            await ctx.InformSuccessAsync(StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} renamed his chicken to {Formatter.Bold(name)}")
-                .ConfigureAwait(false);
+            chicken.Name = newname;
+            await this.Database.ModifyChickenAsync(chicken, ctx.Guild.Id);
+            await ctx.InformSuccessAsync(StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} renamed his chicken to {Formatter.Bold(newname)}");
         }
         #endregion
 
         #region COMMAND_CHICKEN_SELL
-        [Command("sell"), Module(ModuleType.Chickens)]
+        [Command("sell"), UsesInteractivity]
         [Description("Sell your chicken.")]
         [Aliases("s")]
         [UsageExamples("!chicken sell")]
-        [UsesInteractivity]
         public async Task SellAsync(CommandContext ctx)
         {
-            var chicken = await Database.GetChickenAsync(ctx.User.Id, ctx.Guild.Id)
+            Chicken chicken = await this.Database.GetChickenAsync(ctx.User.Id, ctx.Guild.Id)
                 .ConfigureAwait(false);
             if (chicken == null)
                 throw new CommandFailedException("You do not own a chicken!");
@@ -227,75 +213,74 @@ namespace TheGodfather.Modules.Chickens
             if (ChannelEvent.GetEventInChannel(ctx.Channel.Id) is ChickenWar ambush)
                 throw new CommandFailedException("There is a chicken war running in this channel. No sells are allowed before the war finishes.");
 
-            var price = chicken.SellPrice;
-            if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to sell your chicken for {Formatter.Bold(price.ToString())} credits?"))
+            long price = chicken.SellPrice;
+            if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to sell your chicken for {Formatter.Bold($"{price:n0}")} credits?"))
                 return;
 
-            await Database.RemoveChickenAsync(ctx.User.Id, ctx.Guild.Id)
-                .ConfigureAwait(false);
-            await Database.IncreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, price)
-                .ConfigureAwait(false);
+            await this.Database.RemoveChickenAsync(ctx.User.Id, ctx.Guild.Id);
+            await this.Database.IncreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, price);
 
-            await ctx.InformSuccessAsync(StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} sold {Formatter.Bold(chicken.Name)} for {Formatter.Bold(price.ToString())} credits!")
-                .ConfigureAwait(false);
+            await ctx.InformSuccessAsync(StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} sold {Formatter.Bold(chicken.Name)} for {Formatter.Bold($"{price:n0}")} credits!");
         }
         #endregion
 
         #region COMMAND_CHICKEN_TOP
-        [Command("top"), Module(ModuleType.Chickens)]
+        [Command("top")]
         [Description("View the list of strongest chickens in the current guild.")]
         [Aliases("best", "strongest")]
         [UsageExamples("!chicken top")]
         public async Task TopAsync(CommandContext ctx)
         {
-            var chickens = await Database.GetStrongestChickensAsync(ctx.Guild.Id)
-                .ConfigureAwait(false);
+            IReadOnlyList<Chicken> chickens = await this.Database.GetStrongestChickensAsync(ctx.Guild.Id);
             if (chickens == null || !chickens.Any())
                 throw new CommandFailedException("No chickens bought in this guild.");
 
-            foreach (var chicken in chickens) {
+            foreach (Chicken chicken in chickens) {
+                IReadOnlyList<ChickenUpgrade> upgrades = await this.Database.GetUpgradesForChickenAsync(ctx.User.Id, ctx.Guild.Id);
+                chicken.Stats.Upgrades = upgrades;
                 try {
-                    chicken.Owner = await ctx.Client.GetUserAsync(chicken.OwnerId)
-                        .ConfigureAwait(false);
+                    chicken.Owner = await ctx.Client.GetUserAsync(chicken.OwnerId);
                 } catch (Exception e) {
-                    Shared.LogProvider.LogException(LogLevel.Warning, e);
+                    this.Shared.LogProvider.LogException(LogLevel.Warning, e);
                 }
             }
 
             await ctx.SendCollectionInPagesAsync(
-                "Strongest bare strength chickens in this guild:",
+                "Strongest chickens in this guild:",
                 chickens,
-                c => $"{Formatter.Bold(c.Name)} | {c.Owner.Mention} | {c.Stats.TotalStrength} STR"
-            ).ConfigureAwait(false);
+                c => $"{Formatter.Bold(c.Name)} | {c.Owner.Mention} | {c.Stats.TotalStrength} ({c.Stats.BareStrength}) STR",
+                this.ModuleColor
+            );
         }
         #endregion
 
         #region COMMAND_CHICKEN_TOPGLOBAL
-        [Command("topglobal"), Module(ModuleType.Chickens)]
+        [Command("topglobal")]
         [Description("View the list of strongest chickens globally.")]
         [Aliases("bestglobally", "globallystrongest", "globaltop", "topg", "gtop")]
         [UsageExamples("!chicken topglobal")]
         public async Task GlobalTopAsync(CommandContext ctx)
         {
-            var chickens = await Database.GetStrongestChickensAsync()
-                .ConfigureAwait(false);
+            IReadOnlyList<Chicken> chickens = await this.Database.GetStrongestChickensAsync();
             if (chickens == null || !chickens.Any())
                 throw new CommandFailedException("No chickens bought.");
 
-            foreach (var chicken in chickens) {
+            foreach (Chicken chicken in chickens) {
+                IReadOnlyList<ChickenUpgrade> upgrades = await this.Database.GetUpgradesForChickenAsync(ctx.User.Id, ctx.Guild.Id);
+                chicken.Stats.Upgrades = upgrades;
                 try {
-                    chicken.Owner = await ctx.Client.GetUserAsync(chicken.OwnerId)
-                        .ConfigureAwait(false);
+                    chicken.Owner = await ctx.Client.GetUserAsync(chicken.OwnerId);
                 } catch (Exception e) {
-                    Shared.LogProvider.LogException(LogLevel.Warning, e);
+                    this.Shared.LogProvider.LogException(LogLevel.Warning, e);
                 }
             }
 
             await ctx.SendCollectionInPagesAsync(
-                "Strongest bare strength chickens (globally):",
+                "Strongest chickens globally:",
                 chickens,
-                c => $"{Formatter.Bold(c.Name)} | {c.Owner.Mention} | {c.Stats.TotalStrength} STR"
-            ).ConfigureAwait(false);
+                c => $"{Formatter.Bold(c.Name)} | {c.Owner.Mention} | {c.Stats.TotalStrength} ({c.Stats.BareStrength}) STR",
+                this.ModuleColor
+            );
         }
         #endregion
     }

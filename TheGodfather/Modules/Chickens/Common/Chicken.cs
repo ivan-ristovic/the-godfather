@@ -98,11 +98,11 @@ namespace TheGodfather.Modules.Chickens.Common
         {
             var emb = new DiscordEmbedBuilder() {
                 Title = $"{StaticDiscordEmoji.Chicken} {this.Name}",
-                Color = DiscordColor.Aquamarine
+                Color = DiscordColor.Yellow
             };
 
             emb.AddField("Owner", owner.Mention, inline: true);
-            emb.AddField("Credit value", this.SellPrice.ToString(), inline: true);
+            emb.AddField("Credit value", $"{this.SellPrice:n0}", inline: true);
             emb.AddField("Stats", this.Stats.ToString(), inline: true);
             if (this.Stats.Upgrades.Any())
                 emb.AddField("Upgrades", string.Join(", ", this.Stats.Upgrades.Select(u => u.Name)), inline: true);

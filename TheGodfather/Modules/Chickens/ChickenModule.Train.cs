@@ -1,34 +1,34 @@
 ﻿#region USING_DIRECTIVES
-using System;
+using DSharpPlus;
+using DSharpPlus.CommandsNext;
+using DSharpPlus.CommandsNext.Attributes;
+using TheGodfather.Modules.Chickens.Common;
+using TheGodfather.Services.Database;
 using System.Threading.Tasks;
-
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Services.Database.Bank;
 using TheGodfather.Services.Database.Chickens;
-
-using DSharpPlus;
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using TheGodfather.Modules.Chickens.Common;
-using TheGodfather.Services.Database;
 #endregion
 
 namespace TheGodfather.Modules.Chickens
 {
     public partial class ChickenModule
     {
-        [Group("train"), Module(ModuleType.Chickens)]
+        [Group("train"), UsesInteractivity]
         [Description("Train your chicken using your credits from WM bank.")]
         [Aliases("tr", "t", "exercise")]
         [UsageExamples("!chicken train")]
-        [UsesInteractivity]
         public class TrainModule : TheGodfatherModule
         {
 
-            public TrainModule(DBService db) : base(db: db) { }
+            public TrainModule(DBService db) 
+                : base(db: db)
+            {
+
+            }
 
 
             [GroupCommand]
@@ -37,14 +37,13 @@ namespace TheGodfather.Modules.Chickens
 
 
             #region COMMAND_CHICKEN_TRAIN_STRENGTH
-            [Command("strength"), Module(ModuleType.Chickens)]
+            [Command("strength")]
             [Description("Train your chicken's strength using your credits from WM bank.")]
             [Aliases("str", "st", "s")]
             [UsageExamples("!chicken train strength")]
             public async Task StrengthAsync(CommandContext ctx)
             {
-                var chicken = await Database.GetChickenAsync(ctx.User.Id, ctx.Guild.Id)
-                    .ConfigureAwait(false);
+                Chicken chicken = await this.Database.GetChickenAsync(ctx.User.Id, ctx.Guild.Id);
                 if (chicken == null)
                     throw new CommandFailedException("You do not own a chicken!");
 
@@ -54,12 +53,12 @@ namespace TheGodfather.Modules.Chickens
                 if (chicken.Stats.TotalVitality < 25)
                     throw new CommandFailedException($"{ctx.User.Mention}, your chicken is too weak for that action! Heal it using {Formatter.BlockCode("chicken heal")} command.");
 
-                var price = chicken.TrainStrengthPrice;
-                if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to train your chicken for {Formatter.Bold(price.ToString())} credits?\n\nNote: This action will also weaken the vitality of your chicken by 1."))
+                long price = chicken.TrainStrengthPrice;
+                if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to train your chicken for {Formatter.Bold($"{price:n0}")} credits?\n\nNote: This action will also weaken the vitality of your chicken by 1."))
                     return;
 
-                if (!await Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, price).ConfigureAwait(false))
-                    throw new CommandFailedException($"You do not have enought credits to train a chicken ({price} needed)!");
+                if (!await this.Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, price))
+                    throw new CommandFailedException($"You do not have enought credits to train a chicken ({price:n0} needed)!");
 
                 string result;
                 if (chicken.TrainStrength())
@@ -68,23 +67,19 @@ namespace TheGodfather.Modules.Chickens
                     result = $"{ctx.User.Mention}'s chicken got tired and didn't learn anything. New strength: {chicken.Stats.TotalStrength}";
                 chicken.Stats.BareVitality--;
 
-                await Database.ModifyChickenAsync(chicken, ctx.Guild.Id)
-                    .ConfigureAwait(false);
-
-                await ctx.InformSuccessAsync(StaticDiscordEmoji.Chicken, result)
-                    .ConfigureAwait(false);
+                await this.Database.ModifyChickenAsync(chicken, ctx.Guild.Id);
+                await ctx.InformSuccessAsync(StaticDiscordEmoji.Chicken, result);
             }
             #endregion
 
             #region COMMAND_CHICKEN_TRAIN_VITALITY
-            [Command("vitality"), Module(ModuleType.Chickens)]
+            [Command("vitality")]
             [Description("Train your chicken's vitality using your credits from WM bank.")]
             [Aliases("vit", "vi", "v")]
             [UsageExamples("!chicken train vitality")]
             public async Task VitalityAsync(CommandContext ctx)
             {
-                var chicken = await Database.GetChickenAsync(ctx.User.Id, ctx.Guild.Id)
-                    .ConfigureAwait(false);
+                Chicken chicken = await this.Database.GetChickenAsync(ctx.User.Id, ctx.Guild.Id);
                 if (chicken == null)
                     throw new CommandFailedException("You do not own a chicken!");
 
@@ -94,12 +89,12 @@ namespace TheGodfather.Modules.Chickens
                 if (chicken.Stats.TotalVitality < 25)
                     throw new CommandFailedException($"{ctx.User.Mention}, your chicken is too weak for that action! Heal it using {Formatter.BlockCode("chicken heal")} command.");
 
-                var price = chicken.TrainVitalityPrice;
-                if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to train your chicken for {Formatter.Bold(price.ToString())} credits?\n\nNote: This action will also weaken the vitality of your chicken by 1."))
+                long price = chicken.TrainVitalityPrice;
+                if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to train your chicken for {Formatter.Bold($"{price:n0}")} credits?\n\nNote: This action will also weaken the vitality of your chicken by 1."))
                     return;
 
-                if (!await Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, price).ConfigureAwait(false))
-                    throw new CommandFailedException($"You do not have enought credits to train a chicken ({price} needed)!");
+                if (!await this.Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, price))
+                    throw new CommandFailedException($"You do not have enought credits to train a chicken ({price:n0} needed)!");
 
                 string result;
                 if (chicken.TrainVitality())
@@ -108,11 +103,8 @@ namespace TheGodfather.Modules.Chickens
                     result = $"{ctx.User.Mention}'s chicken got tired and didn't learn anything. New max vitality: {chicken.Stats.TotalMaxVitality}";
                 chicken.Stats.BareVitality--;
 
-                await Database.ModifyChickenAsync(chicken, ctx.Guild.Id)
-                    .ConfigureAwait(false);
-
-                await ctx.InformSuccessAsync(StaticDiscordEmoji.Chicken, result)
-                    .ConfigureAwait(false);
+                await this.Database.ModifyChickenAsync(chicken, ctx.Guild.Id);
+                await ctx.InformSuccessAsync(StaticDiscordEmoji.Chicken, result);
             }
             #endregion
         }

@@ -231,7 +231,7 @@ namespace TheGodfather.Modules.Misc
             if (user == null)
                 user = ctx.User;
 
-            if (user.Id == ctx.Client.CurrentUser.Id) {
+            if (user.IsCurrent) {
                 await ctx.InformSuccessAsync($"{user.Mention}'s size:\n\n{Formatter.Bold("8===============================================")}\n{Formatter.Italic("(Please plug in a second monitor for the entire display)")}", ":straight_ruler:")
                     .ConfigureAwait(false);
                 return;
