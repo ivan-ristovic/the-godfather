@@ -63,7 +63,7 @@ namespace TheGodfather.Modules.Administration
                 throw new InvalidCommandUsageException("Missing role name.");
 
             if (ctx.Guild.Roles.Any(r => string.Compare(r.Name, name, true) == 0)) {
-                if (!await ctx.WaitForBoolReplyAsync("A role with that name already exists. Continue? (y/n)"))
+                if (!await ctx.WaitForBoolReplyAsync("A role with that name already exists. Continue?))
                     return;
             }
 

@@ -57,7 +57,7 @@ namespace TheGodfather.Modules.Administration
                     throw new CommandFailedException("Text channel name cannot contain spaces!");
 
                 if (ctx.Guild.Channels.Any(chn => chn.Name == name.ToLowerInvariant())) {
-                    if (!await ctx.WaitForBoolReplyAsync("Another channel with that name already exists. Continue? (y/n)"))
+                    if (!await ctx.WaitForBoolReplyAsync("Another channel with that name already exists. Continue?))
                         return;
                 }
 
@@ -84,7 +84,7 @@ namespace TheGodfather.Modules.Administration
                 throw new InvalidCommandUsageException("Channel name must be shorter than 100 characters.");
 
             if (ctx.Guild.Channels.Any(chn => chn.Name == name.ToLowerInvariant())) {
-                if (!await ctx.WaitForBoolReplyAsync("A category with that name already exists. Continue? (y/n)"))
+                if (!await ctx.WaitForBoolReplyAsync("A category with that name already exists. Continue?))
                     return;
             }
 
@@ -119,7 +119,7 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException("Channel parent must be a category!");
             
             if (ctx.Guild.Channels.Any(chn => string.Compare(name, chn.Name, true) == 0)) {
-                if (!await ctx.WaitForBoolReplyAsync("A channel with that name already exists. Continue? (y/n)"))
+                if (!await ctx.WaitForBoolReplyAsync("A channel with that name already exists. Continue?))
                     return;
             }
 
@@ -166,7 +166,7 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException("Channel parent must be a category!");
             
             if (ctx.Guild.Channels.Any(chn => string.Compare(name, chn.Name, true) == 0)) {
-                if (!await ctx.WaitForBoolReplyAsync("A channel with that name already exists. Continue? (y/n)"))
+                if (!await ctx.WaitForBoolReplyAsync("A channel with that name already exists. Continue?))
                     return;
             }
 
@@ -209,7 +209,7 @@ namespace TheGodfather.Modules.Administration
                 channel = ctx.Channel;
 
             if (channel.Type == ChannelType.Category && channel.Children.Any()) {
-                if (await ctx.WaitForBoolReplyAsync("The channel specified is a non-empty category and deleting it will delete child channels as well. Continue? (y/n)")) {
+                if (await ctx.WaitForBoolReplyAsync("The channel specified is a non-empty category and deleting it will delete child channels as well. Continue?)) {
                     foreach (DiscordChannel child in channel.Children.ToList())
                         await child.DeleteAsync(reason: ctx.BuildReasonString(reason));
                 }

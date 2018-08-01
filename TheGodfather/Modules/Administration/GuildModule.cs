@@ -148,7 +148,7 @@ namespace TheGodfather.Modules.Administration
                 return;
             }
 
-            if (!await ctx.WaitForBoolReplyAsync($"Pruning will remove {Formatter.Bold(count.ToString())} member(s). Continue? (y/n)"))
+            if (!await ctx.WaitForBoolReplyAsync($"Pruning will remove {Formatter.Bold(count.ToString())} member(s). Continue?))
                 return;
 
             await ctx.Guild.PruneAsync(days, ctx.BuildReasonString(reason));

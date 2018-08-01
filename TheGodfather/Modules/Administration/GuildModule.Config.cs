@@ -104,9 +104,12 @@ namespace TheGodfather.Modules.Administration
                 await channel.InformSuccessAsync("Welcome to the guild configuration wizard!\n\nI will guide you through the configuration. You can always re-run this setup or manually change the settings so do not worry if you don't do everything like you wanted.\n\nThat being said, let's start the fun! Note that the changes will apply after the wizard finishes.");
                 await Task.Delay(TimeSpan.FromSeconds(10));
 
+                if (await channel.WaitForBoolResponseAsync(ctx, "Do you wish to enable full reports from my side (for now it's just message reaction when command succeeds)?"))
+                    gcfg.SilentRespond = false;
+
                 InteractivityExtension interactivity = ctx.Client.GetInteractivity();
 
-                if (await channel.WaitForBoolResponseAsync(ctx, "Do you wish to change the prefix for the bot? (y/n)", reply: false)) {
+                if (await channel.WaitForBoolResponseAsync(ctx, "Do you wish to change the prefix for the bot?", reply: false)) {
                     await channel.InformSuccessAsync("What will the new prefix be?");
                     MessageContext mctx = await interactivity.WaitForMessageAsync(
                         m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id
@@ -114,9 +117,9 @@ namespace TheGodfather.Modules.Administration
                     gcfg.Prefix = mctx?.Message.Content;
                 }
 
-                gcfg.SuggestionsEnabled = await channel.WaitForBoolResponseAsync(ctx, "Do you wish to enable command suggestions for those nasty times when you just can't remember the command name? (y/n)", reply: false);
+                gcfg.SuggestionsEnabled = await channel.WaitForBoolResponseAsync(ctx, "Do you wish to enable command suggestions for those nasty times when you just can't remember the command name?", reply: false);
 
-                if (await channel.WaitForBoolResponseAsync(ctx, "I can log the actions that happen in the guild (such as message deletion, channel updates etc.), so you always know what is going on in the guild. Do you wish to enable the action log? (y/n)", reply: false)) {
+                if (await channel.WaitForBoolResponseAsync(ctx, "I can log the actions that happen in the guild (such as message deletion, channel updates etc.), so you always know what is going on in the guild. Do you wish to enable the action log?", reply: false)) {
                     await channel.InformSuccessAsync($"Alright, cool. In order for the action logs to work you will need to tell me where to send the log messages. Please reply with a channel mention, for example {Formatter.Bold("#logs")}");
                     var mctx = await interactivity.WaitForMessageAsync(
                         m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id && m.MentionedChannels.Count == 1
@@ -126,7 +129,7 @@ namespace TheGodfather.Modules.Administration
 
                 ulong wcid = 0;
                 string wmessage = null;
-                if (await channel.WaitForBoolResponseAsync(ctx, "I can also send a welcome message when someone joins the guild. Do you wish to enable this feature? (y/n)", reply: false)) {
+                if (await channel.WaitForBoolResponseAsync(ctx, "I can also send a welcome message when someone joins the guild. Do you wish to enable this feature?", reply: false)) {
                     await channel.InformSuccessAsync($"I will need a channel where to send the welcome messages. Please reply with a channel mention, for example {Formatter.Bold("#general")}");
                     var mctx = await interactivity.WaitForMessageAsync(
                         m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id && m.MentionedChannels.Count == 1
@@ -138,7 +141,7 @@ namespace TheGodfather.Modules.Administration
                         wcid = 0;
                     }
 
-                    if (await channel.WaitForBoolResponseAsync(ctx, "You can also customize the welcome message. Do you want to do that now? (y/n)", reply: false)) {
+                    if (await channel.WaitForBoolResponseAsync(ctx, "You can also customize the welcome message. Do you want to do that now?", reply: false)) {
                         await channel.InformSuccessAsync($"Tell me what message you want me to send when someone joins the guild. Note that you can use the wildcard {Formatter.Bold("%user%")} and I will replace it with the mention for the member who joined.");
                         mctx = await interactivity.WaitForMessageAsync(
                             m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id
@@ -149,7 +152,7 @@ namespace TheGodfather.Modules.Administration
 
                 ulong lcid = 0;
                 string lmessage = null;
-                if (await channel.WaitForBoolResponseAsync(ctx, "The same applies for member leave messages. Do you wish to enable this feature? (y/n)", reply: false)) {
+                if (await channel.WaitForBoolResponseAsync(ctx, "The same applies for member leave messages. Do you wish to enable this feature?", reply: false)) {
                     await channel.InformSuccessAsync($"I will need a channel where to send the leave messages. Please reply with a channel mention, for example {Formatter.Bold("#general")}");
                     var mctx = await interactivity.WaitForMessageAsync(
                         m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id && m.MentionedChannels.Count == 1
@@ -161,7 +164,7 @@ namespace TheGodfather.Modules.Administration
                         lcid = 0;
                     }
 
-                    if (await channel.WaitForBoolResponseAsync(ctx, "You can also customize the leave message. Do you want to do that now? (y/n)", reply: false)) {
+                    if (await channel.WaitForBoolResponseAsync(ctx, "You can also customize the leave message. Do you want to do that now?", reply: false)) {
                         await channel.InformSuccessAsync($"Tell me what message you want me to send when someone leaves the guild. Note that you can use the wildcard {Formatter.Bold("%user%")} and I will replace it with the mention for the member who left.");
                         mctx = await interactivity.WaitForMessageAsync(
                             m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id
@@ -170,25 +173,25 @@ namespace TheGodfather.Modules.Administration
                     }
                 }
 
-                if (await channel.WaitForBoolResponseAsync(ctx, "Do you wish to enable link filtering? (y/n)", reply: false)) {
+                if (await channel.WaitForBoolResponseAsync(ctx, "Do you wish to enable link filtering?", reply: false)) {
                     gcfg.LinkfilterEnabled = true;
-                    if (await channel.WaitForBoolResponseAsync(ctx, "Do you wish to enable Discord invite links filtering? (y/n)", reply: false))
+                    if (await channel.WaitForBoolResponseAsync(ctx, "Do you wish to enable Discord invite links filtering?", reply: false))
                         gcfg.BlockDiscordInvites = true;
                     else
                         gcfg.BlockDiscordInvites = false;
-                    if (await channel.WaitForBoolResponseAsync(ctx, "Do you wish to enable DDoS/Booter websites filtering? (y/n)", reply: false))
+                    if (await channel.WaitForBoolResponseAsync(ctx, "Do you wish to enable DDoS/Booter websites filtering?", reply: false))
                         gcfg.BlockBooterWebsites = true;
                     else
                         gcfg.BlockBooterWebsites = false;
-                    if (await channel.WaitForBoolResponseAsync(ctx, "Do you wish to enable IP logging websites filtering? (y/n)", reply: false))
+                    if (await channel.WaitForBoolResponseAsync(ctx, "Do you wish to enable IP logging websites filtering?", reply: false))
                         gcfg.BlockIpLoggingWebsites = true;
                     else
                         gcfg.BlockIpLoggingWebsites = false;
-                    if (await channel.WaitForBoolResponseAsync(ctx, "Do you wish to enable disturbing/shock/gore websites filtering? (y/n)", reply: false))
+                    if (await channel.WaitForBoolResponseAsync(ctx, "Do you wish to enable disturbing/shock/gore websites filtering?", reply: false))
                         gcfg.BlockDisturbingWebsites = true;
                     else
                         gcfg.BlockDisturbingWebsites = false;
-                    if (await channel.WaitForBoolResponseAsync(ctx, "Do you wish to enable URL shorteners filtering? (y/n)", reply: false))
+                    if (await channel.WaitForBoolResponseAsync(ctx, "Do you wish to enable URL shorteners filtering?", reply: false))
                         gcfg.BlockUrlShorteners = true;
                     else
                         gcfg.BlockUrlShorteners = false;
@@ -264,7 +267,44 @@ namespace TheGodfather.Modules.Administration
                 }
             }
             #endregion
-            
+
+            #region COMMAND_CONFIG_SILENTRESPOND
+            [Command("silentrespond"), Priority(1)]
+            [Description("Configuration of bot's responding options.")]
+            [Aliases("silent", "react", "silentmode")]
+            [UsageExamples("!guild cfg silentrespond",
+                           "!guild cfg silentrespond on")]
+            public async Task SilentResponseAsync(CommandContext ctx,
+                                                 [Description("Enable silent response?")] bool enable)
+            {
+                CachedGuildConfig gcfg = this.Shared.GetGuildConfig(ctx.Guild.Id);
+                gcfg.SilentRespond = enable;
+
+                await this.Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg);
+
+                DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
+                if (logchn != null) {
+                    var emb = new DiscordEmbedBuilder() {
+                        Title = "Guild config changed",
+                        Color = this.ModuleColor
+                    };
+                    emb.AddField("User responsible", ctx.User.Mention, inline: true);
+                    emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
+                    emb.AddField("Silent response", gcfg.SilentRespond ? "on" : "off", inline: true);
+                    await logchn.SendMessageAsync(embed: emb.Build());
+                }
+
+                await ctx.InformSuccessAsync();
+            }
+
+            [Command("suggestions"), Priority(0)]
+            public Task SilentResponseAsync(CommandContext ctx)
+            {
+                CachedGuildConfig gcfg = this.Shared.GetGuildConfig(ctx.Guild.Id);
+                return ctx.InformSuccessAsync($"Silent response for this guild is {Formatter.Bold(gcfg.SilentRespond ? "enabled" : "disabled")}!");
+            }
+            #endregion
+
             #region COMMAND_CONFIG_SUGGESTIONS
             [Command("suggestions"), Priority(1)]
             [Description("Command suggestions configuration.")]
