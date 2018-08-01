@@ -230,7 +230,7 @@ namespace TheGodfather.Modules.Administration
         [RequireUserPermissions(Permissions.Administrator)]
         public async Task DeleteAllAsync(CommandContext ctx)
         {
-            if (!await ctx.WaitForBoolReplyAsync("Are you sure you want to delete all filters for this guild?))
+            if (!await ctx.WaitForBoolReplyAsync("Are you sure you want to delete all filters for this guild?"))
                 return;
 
             if (this.Shared.Filters.ContainsKey(ctx.Guild.Id) && !this.Shared.Filters.TryRemove(ctx.Guild.Id, out _))

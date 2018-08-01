@@ -297,7 +297,7 @@ namespace TheGodfather.Modules.Administration
                 await ctx.InformSuccessAsync();
             }
 
-            [Command("suggestions"), Priority(0)]
+            [Command("silentrespond"), Priority(0)]
             public Task SilentResponseAsync(CommandContext ctx)
             {
                 CachedGuildConfig gcfg = this.Shared.GetGuildConfig(ctx.Guild.Id);
