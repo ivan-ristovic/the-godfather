@@ -10,7 +10,11 @@ namespace TheGodfather.Services
     public class IpGeolocationService : TheGodfatherHttpService
     {
         private static readonly string _url = "http://ip-api.com/json";
-        
+
+
+        public override bool IsDisabled() 
+            => false;
+
 
         public static async Task<IpInfo> GetInfoForIpAsync(string ip)
         {

@@ -14,6 +14,10 @@ namespace TheGodfather.Services
         private static readonly string _url = "http://api.urbandictionary.com/v0";
 
 
+        public override bool IsDisabled() 
+            => false;
+
+
         public static async Task<UrbanDictData> GetDefinitionForTermAsync(string query)
         {
             if (string.IsNullOrWhiteSpace(query))

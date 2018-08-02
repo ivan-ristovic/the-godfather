@@ -41,6 +41,9 @@ namespace TheGodfather.Modules.Search
         public async Task SearchBookAsync(CommandContext ctx,
                                          [RemainingText, Description("Query.")] string query)
         {
+            if (this.Service.IsDisabled())
+                throw new ServiceDisabledException();
+
             var res = await Service.SearchBooksAsync(query)
                 .ConfigureAwait(false);
             await ctx.Client.GetInteractivity().SendPaginatedMessage(ctx.Channel, ctx.User, res.ToPaginatedList())

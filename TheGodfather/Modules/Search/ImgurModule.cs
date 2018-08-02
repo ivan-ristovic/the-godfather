@@ -39,6 +39,9 @@ namespace TheGodfather.Modules.Search
                                            [Description("Number of images to print [1-10].")] int amount,
                                            [RemainingText, Description("Subreddit.")] string sub)
         {
+            if (this.Service.IsDisabled())
+                throw new ServiceDisabledException();
+
             if (string.IsNullOrWhiteSpace(sub))
                 throw new InvalidCommandUsageException("Missing search query.");
             if (amount < 1 || amount > 10)
@@ -61,6 +64,7 @@ namespace TheGodfather.Modules.Search
                                      [Description("Number of images to print [1-10].")] int n = 1)
             => ExecuteGroupAsync(ctx, n, sub);
 
+
         #region COMMAND_IMGUR_LATEST
         [Command("latest"), Priority(1)]
         [Module(ModuleType.Searches)]
@@ -72,6 +76,9 @@ namespace TheGodfather.Modules.Search
                                      [Description("Number of images to print [1-10].")] int amount,
                                      [RemainingText, Description("Subreddit.")] string sub)
         {
+            if (this.Service.IsDisabled())
+                throw new ServiceDisabledException();
+
             if (string.IsNullOrWhiteSpace(sub))
                 throw new InvalidCommandUsageException("Missing subreddit.");
             if (amount < 1 || amount > 10)
@@ -109,6 +116,9 @@ namespace TheGodfather.Modules.Search
                                   [Description("Number of images to print [1-10].")] int amount,
                                   [RemainingText, Description("Subreddit.")] string sub)
         {
+            if (this.Service.IsDisabled())
+                throw new ServiceDisabledException();
+
             if (string.IsNullOrWhiteSpace(sub))
                 throw new InvalidCommandUsageException("Missing subreddit.");
             if (amount < 1 || amount > 10)

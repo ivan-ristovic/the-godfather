@@ -8,6 +8,7 @@ using TheGodfather.Services;
 
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
+using TheGodfather.Exceptions;
 #endregion
 
 namespace TheGodfather.Modules.Search
@@ -31,6 +32,9 @@ namespace TheGodfather.Modules.Search
         public async Task InfoAsync(CommandContext ctx,
                                    [Description("ID.")] ulong id)
         {
+            if (this.Service.IsDisabled())
+                throw new ServiceDisabledException();
+
             var em = await Service.GetEmbeddedInfoAsync(id)
                 .ConfigureAwait(false);
 

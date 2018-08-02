@@ -5,6 +5,8 @@ using System;
 using System.Threading.Tasks;
 using ImageData = GiphyDotNet.Model.GiphyImage.Data;
 using RandomImageData = GiphyDotNet.Model.GiphyRandomImage.Data;
+using RandomImageResult = GiphyDotNet.Model.Results.GiphyRandomResult;
+using SearchResult = GiphyDotNet.Model.Results.GiphySearchResult;
 #endregion
 
 namespace TheGodfather.Services
@@ -16,12 +18,20 @@ namespace TheGodfather.Services
 
         public GiphyService(string key)
         {
-            this.giphy = new Giphy(key);
+            if (!string.IsNullOrWhiteSpace(key))
+                this.giphy = new Giphy(key);
         }
 
-        
+
+        public bool IsDisabled()
+            => this.giphy == null;
+
+
         public async Task<ImageData[]> SearchAsync(string query, int amount = 1)
         {
+            if (this.IsDisabled())
+                return null;
+
             if (string.IsNullOrWhiteSpace(query))
                 throw new ArgumentException("Query missing!", nameof(query));
 
@@ -37,14 +47,23 @@ namespace TheGodfather.Services
         }
 
         public async Task<RandomImageData> GetRandomGifAsync()
-            => (await this.giphy.RandomGif(new RandomParameter()).ConfigureAwait(false))?.Data;
+        {
+            if (this.IsDisabled())
+                return null;
+
+            RandomImageResult res = await this.giphy.RandomGif(new RandomParameter()).ConfigureAwait(false);
+            return res?.Data;
+        }
 
         public async Task<ImageData[]> GetTrendingGifsAsync(int amount = 1)
         {
+            if (this.IsDisabled())
+                return null;
+
             if (amount < 1 || amount > 20)
                 throw new ArgumentException("Result amount out of range (max 20)", nameof(amount));
 
-            var res = await this.giphy.TrendingGifs(new TrendingParameter() {
+            SearchResult res = await this.giphy.TrendingGifs(new TrendingParameter() {
                 Limit = amount
             }).ConfigureAwait(false);
 

@@ -23,8 +23,15 @@ namespace TheGodfather.Services
         }
 
 
+        public override bool IsDisabled() 
+            => string.IsNullOrWhiteSpace(this.key);
+
+
         public async Task<IReadOnlyList<Page>> GetPaginatedResultsAsync(string query)
         {
+            if (this.IsDisabled())
+                return null;
+
             if (string.IsNullOrWhiteSpace(query))
                 throw new ArgumentException("Query missing!", nameof(query));
             
@@ -42,6 +49,9 @@ namespace TheGodfather.Services
 
         public async Task<MovieInfo> GetSingleResultAsync(OMDbQueryType type, string query)
         {
+            if (this.IsDisabled())
+                return null;
+
             if (string.IsNullOrWhiteSpace(query))
                 throw new ArgumentException("Query missing!", nameof(query));
 

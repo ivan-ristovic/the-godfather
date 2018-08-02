@@ -35,6 +35,10 @@ namespace TheGodfather.Services
 
         public static Task<XkcdComic> GetRandomComicAsync()
             => GetComicByIdAsync(GFRandom.Generator.Next(_comicNum));
+        
+
+        public override bool IsDisabled() 
+            => false;
 
 
         private static async Task<XkcdComic> GetComicByIdAsync(int id)

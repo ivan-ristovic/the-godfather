@@ -15,6 +15,10 @@ namespace TheGodfather.Services
         private static readonly string _url = "https://icanhazdadjoke.com";
 
 
+        public override bool IsDisabled()
+            => false;
+
+
         public static Task<string> GetRandomJokeAsync()
             => ReadResponseAsync(_url);
 

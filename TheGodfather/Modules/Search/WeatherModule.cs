@@ -29,6 +29,9 @@ namespace TheGodfather.Modules.Search
         public async Task ExecuteGroupAsync(CommandContext ctx,
                                            [RemainingText, Description("Query.")] string query)
         {
+            if (this.Service.IsDisabled())
+                throw new ServiceDisabledException();
+
             if (string.IsNullOrWhiteSpace(query))
                 throw new InvalidCommandUsageException("You need to specify a query (city usually).");
 
@@ -53,6 +56,9 @@ namespace TheGodfather.Modules.Search
                                        [Description("Amount of days to fetch the forecast for.")] int amount,
                                        [RemainingText, Description("Query.")] string query)
         {
+            if (this.Service.IsDisabled())
+                throw new ServiceDisabledException();
+
             if (string.IsNullOrWhiteSpace(query))
                 throw new InvalidCommandUsageException("You need to specify a query (city usually).");
 

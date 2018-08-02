@@ -20,15 +20,24 @@ namespace TheGodfather.Services
 
         public ImgurService(string key)
         {
-            this.imgur = new ImgurClient(key);
-            this.gEndpoint = new GalleryEndpoint(this.imgur);
-            //this.iEndpoint = new ImageEndpoint(this.imgur);
+            if (!string.IsNullOrWhiteSpace(key)) {
+                this.imgur = new ImgurClient(key);
+                this.gEndpoint = new GalleryEndpoint(this.imgur);
+                //this.iEndpoint = new ImageEndpoint(this.imgur);
+            }
         }
+
+
+        public bool IsDisabled()
+            => this.imgur == null;
 
 
         public async Task<IEnumerable<IGalleryItem>> GetItemsFromSubAsync(string sub, int amount,
             SubredditGallerySortOrder order, TimeWindow time)
         {
+            if (this.IsDisabled())
+                return null;
+
             if (string.IsNullOrWhiteSpace(sub))
                 throw new ArgumentException("Subreddit missing!", nameof(sub));
 

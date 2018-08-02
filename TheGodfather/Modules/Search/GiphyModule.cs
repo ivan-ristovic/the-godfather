@@ -30,6 +30,9 @@ namespace TheGodfather.Modules.Search
         public async Task ExecuteGroupAsync(CommandContext ctx,
                                            [RemainingText, Description("Query.")] string query)
         {
+            if (this.Service.IsDisabled())
+                throw new ServiceDisabledException();
+
             if (string.IsNullOrWhiteSpace(query))
                 throw new InvalidCommandUsageException("Missing search query.");
 
@@ -54,6 +57,9 @@ namespace TheGodfather.Modules.Search
         [UsageExamples("!gif random")]
         public async Task RandomAsync(CommandContext ctx)
         {
+            if (this.Service.IsDisabled())
+                throw new ServiceDisabledException();
+
             var res = await Service.GetRandomGifAsync()
                 .ConfigureAwait(false);
             await ctx.RespondAsync(res.Url)
@@ -70,6 +76,9 @@ namespace TheGodfather.Modules.Search
         public async Task TrendingAsync(CommandContext ctx,
                                        [Description("Number of results (1-10).")] int amount = 5)
         {
+            if (this.Service.IsDisabled())
+                throw new ServiceDisabledException();
+
             if (amount < 1 || amount > 10)
                 throw new CommandFailedException("Number of results must be in range [1-10].");
 

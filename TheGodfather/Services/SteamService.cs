@@ -16,20 +16,32 @@ namespace TheGodfather.Services
         private readonly SteamUser user;
 
 
+        public static string GetProfileUrlForId(ulong id)
+            => $"http://steamcommunity.com/id/{ id }/";
+
+
         public SteamService(string key)
         {
-            this.user = new SteamUser(key);
+            if (!string.IsNullOrWhiteSpace(key))
+                this.user = new SteamUser(key);
         }
+
+
+        public bool IsDisabled() 
+            => this.user == null;
 
 
         public DiscordEmbed EmbedSteamResult(SteamCommunityProfileModel model, PlayerSummaryModel summary)
         {
+            if (this.IsDisabled())
+                return null;
+
             var em = new DiscordEmbedBuilder() {
                 Title = summary.Nickname,
                 Description = Regex.Replace(model.Summary, "<[^>]*>", ""),
                 ThumbnailUrl = model.AvatarFull.ToString(),
                 Color = DiscordColor.Black,
-                Url = ProfileUrlForId(model.SteamID)
+                Url = GetProfileUrlForId(model.SteamID)
             };
 
             if (summary.ProfileVisibility != ProfileVisibility.Public) {
@@ -69,6 +81,9 @@ namespace TheGodfather.Services
 
         public async Task<DiscordEmbed> GetEmbeddedInfoAsync(ulong id)
         {
+            if (this.IsDisabled())
+                return null;
+
             SteamCommunityProfileModel profile = null;
             ISteamWebResponse<PlayerSummaryModel> summary = null;
 
@@ -84,8 +99,5 @@ namespace TheGodfather.Services
 
             return EmbedSteamResult(profile, summary.Data);
         }
-
-        public static string ProfileUrlForId(ulong id)
-            => $"http://steamcommunity.com/id/{ id }/";
     }
 }

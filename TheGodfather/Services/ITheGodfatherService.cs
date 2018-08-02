@@ -2,6 +2,6 @@
 {
     public interface ITheGodfatherService
     {
-
+        bool IsDisabled();
     }
 }

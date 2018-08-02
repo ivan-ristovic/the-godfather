@@ -7,6 +7,10 @@ namespace TheGodfather.Services
 {
     public class PetImagesService : TheGodfatherHttpService
     {
+        public override bool IsDisabled()
+            => false;
+
+
         public static async Task<string> GetRandomCatImageAsync()
         {
             string data = await _http.GetStringAsync("http://aws.random.cat/meow").ConfigureAwait(false);

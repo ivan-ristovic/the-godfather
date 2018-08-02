@@ -557,6 +557,7 @@
     <Compile Include="Services\DatabaseService\DBService.Chickens.cs" />
     <Compile Include="Services\DatabaseService\DBService.Shop.cs" />
     <Compile Include="Services\DatabaseService\DBService.SpecialRoles.cs" />
+    <Compile Include="Exceptions\ServiceDisabledException.cs" />
     <Compile Include="Services\GoodreadsService.cs" />
     <Compile Include="Services\IpGeolocationService.cs" />
     <Compile Include="Services\ITheGodfatherService.cs" />

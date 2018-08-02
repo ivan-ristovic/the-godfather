@@ -16,6 +16,10 @@ namespace TheGodfather.Services
         private static readonly string _url = "https://opentdb.com";
 
 
+        public override bool IsDisabled()
+            => false;
+
+
         public static async Task<int?> GetCategoryIdAsync(string category)
         {
             if (string.IsNullOrWhiteSpace(category))
@@ -65,5 +69,6 @@ namespace TheGodfather.Services
                 return null;
             }
         }
+
     }
 }

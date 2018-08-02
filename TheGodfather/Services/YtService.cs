@@ -33,12 +33,14 @@ namespace TheGodfather.Services
 
         public YtService(string key)
         {
-            this.ytExplode = new YoutubeClient();
             this.key = key;
-            this.yt = new YouTubeService(new BaseClientService.Initializer() {
-                ApiKey = key,
-                ApplicationName = TheGodfather.ApplicationName
-            });
+            this.ytExplode = new YoutubeClient();
+            if (!string.IsNullOrWhiteSpace(key)) {
+                this.yt = new YouTubeService(new BaseClientService.Initializer() {
+                    ApiKey = key,
+                    ApplicationName = TheGodfather.ApplicationName
+                });
+            }
         }
 
 
@@ -49,6 +51,10 @@ namespace TheGodfather.Services
 
             return $"{_ytUrl}/feeds/videos.xml?channel_id={id}";
         }
+
+
+        public override bool IsDisabled() 
+            => string.IsNullOrWhiteSpace(this.key);
 
 
         public async Task<string> ExtractChannelIdAsync(string url)
@@ -79,6 +85,9 @@ namespace TheGodfather.Services
 
         public async Task<string> GetFirstVideoResultAsync(string query)
         {
+            if (this.IsDisabled())
+                return null;
+
             if (string.IsNullOrWhiteSpace(query))
                 throw new ArgumentException("Query missing!", nameof(query));
 
@@ -91,6 +100,9 @@ namespace TheGodfather.Services
 
         public async Task<IReadOnlyList<Page>> GetPaginatedResultsAsync(string query, int amount = 1, string type = null)
         {
+            if (this.IsDisabled())
+                return null;
+
             if (string.IsNullOrWhiteSpace(query))
                 throw new ArgumentException("Query missing!", nameof(query));
 
@@ -135,6 +147,9 @@ namespace TheGodfather.Services
 
         public async Task<SongInfo> GetSongInfoAsync(string url)
         {
+            if (this.IsDisabled())
+                return null;
+
             if (string.IsNullOrWhiteSpace(url))
                 throw new ArgumentException("URL missing!", nameof(url));
 

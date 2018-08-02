@@ -22,6 +22,10 @@ namespace TheGodfather.Services
         }
 
 
+        public override bool IsDisabled() 
+            => string.IsNullOrWhiteSpace(this.key);
+
+
         public static string GetCityUrl(City city)
         {
             if (city == null)

@@ -16,6 +16,10 @@ namespace TheGodfather.Services
         private static readonly Regex _tagMatcher = new Regex("<.*?>", RegexOptions.Compiled);
         private static readonly string _url = "https://quotes.rest/qod.json";
 
+        
+        public override bool IsDisabled() 
+            => false;
+        
 
         public static async Task<Quote> GetQuoteOfTheDayAsync(string category = null)
         {
