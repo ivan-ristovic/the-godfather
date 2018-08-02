@@ -62,7 +62,7 @@ namespace TheGodfather.Modules.Currency
                     await Task.Delay(TimeSpan.FromSeconds(30))
                         .ConfigureAwait(false);
 
-                    if (game.ParticipantCount > 1) {
+                    if (game.Participants.Count > 1) {
                         await game.RunAsync()
                             .ConfigureAwait(false);
 
@@ -71,7 +71,7 @@ namespace TheGodfather.Modules.Currency
                                 .ConfigureAwait(false);
                         }
 
-                        foreach (var participant in game.participants) {
+                        foreach (var participant in game.Participants) {
                             await Database.IncreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, participant.Balance)
                                 .ConfigureAwait(false);
                         }
@@ -100,7 +100,7 @@ namespace TheGodfather.Modules.Currency
                 if (game.Started)
                     throw new CommandFailedException("Texas Hold'Em game has already started, you can't join it.");
 
-                if (game.ParticipantCount >= 7)
+                if (game.Participants.Count >= 7)
                     throw new CommandFailedException("Texas Hold'Em slots are full (max 7 participants), kthxbye.");
                 
                 if (game.IsParticipating(ctx.User))

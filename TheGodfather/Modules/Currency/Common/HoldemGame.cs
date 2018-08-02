@@ -37,13 +37,12 @@ namespace TheGodfather.Modules.Currency.Common
         public int MoneyNeeded { get; private set; }
         public bool Started { get; private set; }
         public long Pot { get; private set; }
-        public int ParticipantCount => this.participants.Count;
+        public ConcurrentQueue<HoldemParticipant> Participants { get; }
 
         private bool GameOver;
         private readonly Deck deck;
         private readonly List<Card> drawn;
-        private readonly ConcurrentQueue<HoldemParticipant> participants;
-        private IEnumerable<HoldemParticipant> ActiveParticipants => this.participants.Where(p => p.Folded == false);
+        private IEnumerable<HoldemParticipant> ActiveParticipants => this.Participants.Where(p => p.Folded == false);
 
 
         public HoldemGame(InteractivityExtension interactivity, DiscordChannel channel, int balance)
@@ -54,7 +53,7 @@ namespace TheGodfather.Modules.Currency.Common
             this.GameOver = false;
             this.deck = new Deck();
             this.drawn = new List<Card>();
-            this.participants = new ConcurrentQueue<HoldemParticipant>();
+            this.Participants = new ConcurrentQueue<HoldemParticipant>();
         }
 
 
@@ -64,7 +63,7 @@ namespace TheGodfather.Modules.Currency.Common
 
             DiscordMessage msg = await this.Channel.InformSuccessAsync("Starting Hold'Em game... Keep an eye on DM!");
 
-            foreach (HoldemParticipant participant in this.participants) {
+            foreach (HoldemParticipant participant in this.Participants) {
                 participant.Card1 = this.deck.GetNextCard();
                 participant.Card2 = this.deck.GetNextCard();
                 try {
@@ -117,7 +116,7 @@ namespace TheGodfather.Modules.Currency.Common
                 p.HandRank = _evaluator.GetBestHand(new List<Card>(this.drawn) { p.Card1, p.Card2 }).RankType;
 
 
-            var winner = this.participants.OrderByDescending(p => p.HandRank).FirstOrDefault();
+            var winner = this.Participants.OrderByDescending(p => p.HandRank).FirstOrDefault();
             if (winner != null)
                 winner.Balance += this.Pot;
             this.Winner = winner?.User;
@@ -128,7 +127,7 @@ namespace TheGodfather.Modules.Currency.Common
             if (IsParticipating(user))
                 return;
 
-            this.participants.Enqueue(new HoldemParticipant {
+            this.Participants.Enqueue(new HoldemParticipant {
                 User = user,
                 Balance = MoneyNeeded,
                 DmHandle = dm
@@ -136,7 +135,7 @@ namespace TheGodfather.Modules.Currency.Common
         }
 
         public bool IsParticipating(DiscordUser user)
-            => this.participants.Any(p => p.Id == user.Id);
+            => this.Participants.Any(p => p.Id == user.Id);
 
         private Task PrintGameAsync(DiscordMessage msg, int bet, HoldemParticipant tomove = null, bool showhands = false)
         {
@@ -146,7 +145,7 @@ namespace TheGodfather.Modules.Currency.Common
             sb.Append("Current pot: ").AppendLine(Formatter.Bold(this.Pot.ToString())).AppendLine();
             sb.Append("Call value: ").AppendLine(Formatter.Bold(bet.ToString())).AppendLine();
 
-            foreach (HoldemParticipant participant in this.participants) {
+            foreach (HoldemParticipant participant in this.Participants) {
                 sb.Append(participant.User.Mention)
                   .Append(" | Chips: ")
                   .Append(Formatter.Bold(participant.Balance.ToString()))
