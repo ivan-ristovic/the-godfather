@@ -71,7 +71,7 @@ namespace TheGodfather.Modules.Currency
                                 .ConfigureAwait(false);
                         }
 
-                        foreach (var participant in game.Participants) {
+                        foreach (var participant in game.participants) {
                             await Database.IncreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, participant.Balance)
                                 .ConfigureAwait(false);
                         }

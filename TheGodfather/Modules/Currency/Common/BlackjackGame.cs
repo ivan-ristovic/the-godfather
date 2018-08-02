@@ -17,14 +17,14 @@ namespace TheGodfather.Modules.Currency.Common
 {
     public sealed class BlackjackParticipant
     {
-        public DiscordUser User { get; internal set; }
-        public List<Card> Hand { get; internal set; } = new List<Card>();
         public int Bid { get; set; }
+        public List<Card> Hand { get; internal set; } = new List<Card>();
+        public DiscordUser User { get; internal set; }
         public bool Standing { get; set; } = false;
         public ulong Id => this.User.Id;
     }
 
-    public class BlackjackGame : ChannelEvent
+    public sealed class BlackjackGame : ChannelEvent
     {
         public bool Started { get; private set; }
         public int ParticipantCount => this.participants.Count;
