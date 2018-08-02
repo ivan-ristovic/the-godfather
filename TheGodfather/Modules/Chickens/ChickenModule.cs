@@ -28,8 +28,8 @@ namespace TheGodfather.Modules.Chickens
     public partial class ChickenModule : TheGodfatherModule
     {
 
-        public ChickenModule(DBService db) 
-            : base(db: db)
+        public ChickenModule(SharedData shared, DBService db) 
+            : base(shared, db)
         {
             this.ModuleColor = DiscordColor.Yellow;
         }
@@ -49,7 +49,7 @@ namespace TheGodfather.Modules.Chickens
         public async Task FightAsync(CommandContext ctx,
                                     [Description("User.")] DiscordUser user)
         {
-            if (ChannelEvent.GetEventInChannel(ctx.Channel.Id) is ChickenWar ambush)
+            if (this.Shared.GetEventInChannel(ctx.Channel.Id) is ChickenWar ambush)
                 throw new CommandFailedException("There is a chicken war running in this channel. No fights are allowed before the war finishes.");
 
             if (user.Id == ctx.User.Id)
@@ -110,7 +110,7 @@ namespace TheGodfather.Modules.Chickens
         [UsageExamples("!chicken flu")]
         public async Task FluAsync(CommandContext ctx)
         {
-            if (ChannelEvent.GetEventInChannel(ctx.Channel.Id) is ChickenWar ambush)
+            if (this.Shared.GetEventInChannel(ctx.Channel.Id) is ChickenWar ambush)
                 throw new CommandFailedException("There is a chicken war running in this channel. No actions are allowed before the war finishes.");
 
             if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to pay {Formatter.Bold("1,000,000")} credits to create a disease?"))
@@ -134,7 +134,7 @@ namespace TheGodfather.Modules.Chickens
         [Cooldown(1, 300, CooldownBucketType.Guild)]
         public async Task HealAsync(CommandContext ctx)
         {
-            if (ChannelEvent.GetEventInChannel(ctx.Channel.Id) is ChickenWar)
+            if (this.Shared.GetEventInChannel(ctx.Channel.Id) is ChickenWar)
                 throw new CommandFailedException("There is a chicken war running in this channel. You are not allowed to heal your chicken before the war finishes.");
 
             Chicken chicken = await this.Database.GetChickenAsync(ctx.User.Id, ctx.Guild.Id);
@@ -185,7 +185,7 @@ namespace TheGodfather.Modules.Chickens
             if (!newname.All(c => Char.IsLetterOrDigit(c) || Char.IsWhiteSpace(c)))
                 throw new InvalidCommandUsageException("Name cannot contain characters that are not letters or digits.");
 
-            if (ChannelEvent.GetEventInChannel(ctx.Channel.Id) is ChickenWar ambush)
+            if (this.Shared.GetEventInChannel(ctx.Channel.Id) is ChickenWar ambush)
                 throw new CommandFailedException("There is a chicken war running in this channel. No renames are allowed before the war finishes.");
 
             Chicken chicken = await this.Database.GetChickenAsync(ctx.User.Id, ctx.Guild.Id);
@@ -210,7 +210,7 @@ namespace TheGodfather.Modules.Chickens
             if (chicken == null)
                 throw new CommandFailedException("You do not own a chicken!");
 
-            if (ChannelEvent.GetEventInChannel(ctx.Channel.Id) is ChickenWar ambush)
+            if (this.Shared.GetEventInChannel(ctx.Channel.Id) is ChickenWar ambush)
                 throw new CommandFailedException("There is a chicken war running in this channel. No sells are allowed before the war finishes.");
 
             long price = chicken.SellPrice;

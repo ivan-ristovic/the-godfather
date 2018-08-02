@@ -29,10 +29,12 @@ namespace TheGodfather
         public Logger LogProvider { get; internal set; }
         public bool ListeningStatus { get; internal set; }
         public ConcurrentDictionary<ulong, ulong> MessageCount { get; internal set; }
-        public ConcurrentDictionary<ulong, ConcurrentHashSet<ulong>> PendingResponses { get; }
         public bool StatusRotationEnabled { get; internal set; }
         public ConcurrentDictionary<int, SavedTaskExecuter> TaskExecuters { get; internal set; }
         public ConcurrentDictionary<ulong, ConcurrentHashSet<TextReaction>> TextReactions { get; internal set; }
+
+        private ConcurrentDictionary<ulong, ChannelEvent> ChannelEvents { get; }
+        private ConcurrentDictionary<ulong, ConcurrentHashSet<ulong>> PendingResponses { get; }
 
 
         public SharedData()
@@ -40,6 +42,7 @@ namespace TheGodfather
             this.BlockedChannels = new ConcurrentHashSet<ulong>();
             this.BlockedUsers = new ConcurrentHashSet<ulong>();
             this.BotConfiguration = BotConfig.Default;
+            this.ChannelEvents = new ConcurrentDictionary<ulong, ChannelEvent>();
             this.CTS = new CancellationTokenSource();
             this.EmojiReactions = new ConcurrentDictionary<ulong, ConcurrentHashSet<EmojiReaction>>();
             this.Filters = new ConcurrentDictionary<ulong, ConcurrentHashSet<Filter>>();
@@ -66,6 +69,25 @@ namespace TheGodfather
                 await db.ModifyXpAsync(uid, count);
         }
 
+
+        #region CHANNEL_EVENT_HELPERS
+        public ChannelEvent GetEventInChannel(ulong cid)
+            => ChannelEvents.ContainsKey(cid) ? ChannelEvents[cid] : null;
+
+        public bool IsEventRunningInChannel(ulong cid)
+            => ChannelEvents.ContainsKey(cid) && ChannelEvents[cid] != null;
+
+        public void RegisterEventInChannel(ChannelEvent cevent, ulong cid)
+            => ChannelEvents.AddOrUpdate(cid, cevent, (c, e) => cevent);
+
+        public void UnregisterEventInChannel(ulong cid)
+        {
+            if (!ChannelEvents.ContainsKey(cid))
+                return;
+            if (!ChannelEvents.TryRemove(cid, out _))
+                ChannelEvents[cid] = null;
+        }
+        #endregion
 
         #region RANK_HELPERS
         public ushort CalculateRankForMessageCount(ulong msgcount)

@@ -28,14 +28,14 @@ namespace TheGodfather.Modules.Games
         public class CaroModule : TheGodfatherModule
         {
 
-            public CaroModule(DBService db) : base(db: db) { }
+            public CaroModule(SharedData shared, DBService db) : base(shared, db) { }
 
 
             [GroupCommand]
             public async Task ExecuteGroupAsync(CommandContext ctx,
                                                [Description("Move time (def. 30s).")] TimeSpan? movetime = null)
             {
-                if (ChannelEvent.IsEventRunningInChannel(ctx.Channel.Id))
+                if (this.Shared.IsEventRunningInChannel(ctx.Channel.Id))
                     throw new CommandFailedException("Another event is already running in the current channel!");
 
                 await ctx.InformSuccessAsync(StaticDiscordEmoji.Question, $"Who wants to play Caro with {ctx.User.Username}?")
@@ -49,7 +49,7 @@ namespace TheGodfather.Modules.Games
                     throw new InvalidCommandUsageException("Move time must be in range of [2-120] seconds.");
                     
                 var caro = new Caro(ctx.Client.GetInteractivity(), ctx.Channel, ctx.User, opponent, movetime);
-                ChannelEvent.RegisterEventInChannel(caro, ctx.Channel.Id);
+                this.Shared.RegisterEventInChannel(caro, ctx.Channel.Id);
                 try {
                     await caro.RunAsync()
                         .ConfigureAwait(false);
@@ -71,7 +71,7 @@ namespace TheGodfather.Modules.Games
                             .ConfigureAwait(false);
                     } 
                 } finally {
-                    ChannelEvent.UnregisterEventInChannel(ctx.Channel.Id);
+                    this.Shared.UnregisterEventInChannel(ctx.Channel.Id);
                 }
             }
 

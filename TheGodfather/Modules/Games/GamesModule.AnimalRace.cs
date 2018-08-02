@@ -30,14 +30,14 @@ namespace TheGodfather.Modules.Games
         public class AnimalRaceModule : TheGodfatherModule
         {
 
-            public AnimalRaceModule(DBService db) : base(db: db) { }
+            public AnimalRaceModule(SharedData shared, DBService db) : base(shared, db) { }
 
 
             [GroupCommand]
             public async Task ExecuteGroupAsync(CommandContext ctx)
             {
-                if (ChannelEvent.IsEventRunningInChannel(ctx.Channel.Id)) {
-                    if (ChannelEvent.GetEventInChannel(ctx.Channel.Id) is AnimalRace)
+                if (this.Shared.IsEventRunningInChannel(ctx.Channel.Id)) {
+                    if (this.Shared.GetEventInChannel(ctx.Channel.Id) is AnimalRace)
                         await JoinAsync(ctx).ConfigureAwait(false);
                     else
                         throw new CommandFailedException("Another event is already running in the current channel.");
@@ -45,7 +45,7 @@ namespace TheGodfather.Modules.Games
                 }
 
                 var game = new AnimalRace(ctx.Client.GetInteractivity(), ctx.Channel);
-                ChannelEvent.RegisterEventInChannel(game, ctx.Channel.Id);
+                this.Shared.RegisterEventInChannel(game, ctx.Channel.Id);
                 try {
                     await ctx.InformSuccessAsync($"The race will start in 30s or when there are 10 participants. Use command {Formatter.InlineCode("game animalrace")} to join the race.", ":clock1:")
                         .ConfigureAwait(false);
@@ -66,7 +66,7 @@ namespace TheGodfather.Modules.Games
                             .ConfigureAwait(false);
                     }
                 } finally {
-                    ChannelEvent.UnregisterEventInChannel(ctx.Channel.Id);
+                    this.Shared.UnregisterEventInChannel(ctx.Channel.Id);
                 }
             }
             
@@ -78,7 +78,7 @@ namespace TheGodfather.Modules.Games
             [UsageExamples("!game animalrace join")]
             public async Task JoinAsync(CommandContext ctx)
             {
-                if (!(ChannelEvent.GetEventInChannel(ctx.Channel.Id) is AnimalRace game))
+                if (!(this.Shared.GetEventInChannel(ctx.Channel.Id) is AnimalRace game))
                     throw new CommandFailedException("There is no animal race game running in this channel.");
 
                 if (game.Started)

@@ -27,8 +27,8 @@ namespace TheGodfather.Modules.Chickens
         public class UpgradeModule : TheGodfatherModule
         {
 
-            public UpgradeModule(DBService db) 
-                : base(db: db)
+            public UpgradeModule(SharedData shared, DBService db) 
+                : base(shared, db)
             {
                 this.ModuleColor = DiscordColor.Yellow;
             }
@@ -38,7 +38,7 @@ namespace TheGodfather.Modules.Chickens
             public async Task ExecuteGroupAsync(CommandContext ctx,
                                                [Description("ID of the upgrade to buy.")] int id)
             {
-                if (ChannelEvent.GetEventInChannel(ctx.Channel.Id) is ChickenWar)
+                if (this.Shared.GetEventInChannel(ctx.Channel.Id) is ChickenWar)
                     throw new CommandFailedException("There is a chicken war running in this channel. No sells are allowed before the war finishes.");
 
                 Chicken chicken = await this.Database.GetChickenAsync(ctx.User.Id, ctx.Guild.Id);
@@ -78,8 +78,8 @@ namespace TheGodfather.Modules.Chickens
 
                 await ctx.SendCollectionInPagesAsync(
                     "Available chicken upgrades",
-                    upgrades,
-                    upgrade => $"{upgrade.Id} | {upgrade.Name} | {Formatter.Bold($"{upgrade.Price:n0}")} | +{upgrade.Modifier} {upgrade.UpgradesStat.ToShortString()}",
+                    upgrades.OrderByDescending(u => u.Price),
+                    upgrade => $"{Formatter.InlineCode($"{upgrade.Id:D2}")} | {upgrade.Name} | {Formatter.Bold($"{upgrade.Price:n0}")} | +{Formatter.Bold(upgrade.Modifier.ToString())} {upgrade.UpgradesStat.ToShortString()}",
                     this.ModuleColor
                 );
             }

@@ -29,14 +29,14 @@ namespace TheGodfather.Modules.Games
         public class ConnectFourModule : TheGodfatherModule
         {
 
-            public ConnectFourModule(DBService db) : base(db: db) { }
+            public ConnectFourModule(SharedData shared, DBService db) : base(shared, db) { }
 
 
             [GroupCommand]
             public async Task ExecuteGroupAsync(CommandContext ctx,
                                                [Description("Move time (def. 30s).")] TimeSpan? movetime = null)
             {
-                if (ChannelEvent.IsEventRunningInChannel(ctx.Channel.Id))
+                if (this.Shared.IsEventRunningInChannel(ctx.Channel.Id))
                     throw new CommandFailedException("Another event is already running in the current channel!");
 
                 await ctx.InformSuccessAsync(StaticDiscordEmoji.Question, $"Who wants to play Connect4 with {ctx.User.Username}?")
@@ -50,7 +50,7 @@ namespace TheGodfather.Modules.Games
                     throw new InvalidCommandUsageException("Move time must be in range of [2-120] seconds.");
 
                 var connect4 = new Connect4(ctx.Client.GetInteractivity(), ctx.Channel, ctx.User, opponent, movetime);
-                ChannelEvent.RegisterEventInChannel(connect4, ctx.Channel.Id);
+                this.Shared.RegisterEventInChannel(connect4, ctx.Channel.Id);
                 try {
                     await connect4.RunAsync()
                         .ConfigureAwait(false);
@@ -72,7 +72,7 @@ namespace TheGodfather.Modules.Games
                             .ConfigureAwait(false);
                     }
                 } finally {
-                    ChannelEvent.UnregisterEventInChannel(ctx.Channel.Id);
+                    this.Shared.UnregisterEventInChannel(ctx.Channel.Id);
                 }
             }
 

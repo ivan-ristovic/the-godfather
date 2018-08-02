@@ -29,8 +29,8 @@ namespace TheGodfather.Modules.Chickens
         public class WarModule : TheGodfatherModule
         {
 
-            public WarModule(DBService db) 
-                : base(db: db)
+            public WarModule(SharedData shared, DBService db) 
+                : base(shared, db)
             {
 
             }
@@ -41,11 +41,11 @@ namespace TheGodfather.Modules.Chickens
                                                [Description("Team 1 name.")] string team1 = null,
                                                [Description("Team 2 name.")] string team2 = null)
             {
-                if (ChannelEvent.IsEventRunningInChannel(ctx.Channel.Id))
+                if (this.Shared.IsEventRunningInChannel(ctx.Channel.Id))
                     throw new CommandFailedException("Another event is already running in the current channel.");
 
                 var war = new ChickenWar(ctx.Client.GetInteractivity(), ctx.Channel, team1, team2);
-                ChannelEvent.RegisterEventInChannel(war, ctx.Channel.Id);
+                this.Shared.RegisterEventInChannel(war, ctx.Channel.Id);
                 try {
                     await ctx.InformSuccessAsync($"The war will start in 1 minute. Use command {Formatter.InlineCode("chicken war join <teamname>")} to make your chicken join the war.", ":clock1:");
                     await Task.Delay(TimeSpan.FromMinutes(1));
@@ -80,7 +80,7 @@ namespace TheGodfather.Modules.Chickens
                     }
 
                 } finally {
-                    ChannelEvent.UnregisterEventInChannel(ctx.Channel.Id);
+                    this.Shared.UnregisterEventInChannel(ctx.Channel.Id);
                 }
             }
 
@@ -93,7 +93,7 @@ namespace TheGodfather.Modules.Chickens
             public async Task JoinAsync(CommandContext ctx,
                                        [Description("Number 1 or 2 depending of team you wish to join.")] int team)
             {
-                if (!(ChannelEvent.GetEventInChannel(ctx.Channel.Id) is ChickenWar war))
+                if (!(this.Shared.GetEventInChannel(ctx.Channel.Id) is ChickenWar war))
                     throw new CommandFailedException("There are no chicken wars running in this channel.");
 
                 if (war.Started)
@@ -123,7 +123,7 @@ namespace TheGodfather.Modules.Chickens
             public async Task JoinAsync(CommandContext ctx,
                                        [RemainingText, Description("Team name to join.")] string team)
             {
-                if (!(ChannelEvent.GetEventInChannel(ctx.Channel.Id) is ChickenWar war))
+                if (!(this.Shared.GetEventInChannel(ctx.Channel.Id) is ChickenWar war))
                     throw new CommandFailedException("There are no chicken wars running in this channel.");
 
                 if (war.Started)

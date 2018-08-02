@@ -31,15 +31,15 @@ namespace TheGodfather.Modules.Currency
         public class BlackjackModule : TheGodfatherModule
         {
 
-            public BlackjackModule(DBService db) : base(db: db) { }
+            public BlackjackModule(SharedData shared, DBService db) : base(db: db) { }
 
 
             [GroupCommand]
             public async Task ExecuteGroupAsync(CommandContext ctx,
                                                [Description("Bid amount.")] int bid = 5)
             {
-                if (ChannelEvent.IsEventRunningInChannel(ctx.Channel.Id)) {
-                    if (ChannelEvent.GetEventInChannel(ctx.Channel.Id) is BlackjackGame)
+                if (this.Shared.IsEventRunningInChannel(ctx.Channel.Id)) {
+                    if (this.Shared.GetEventInChannel(ctx.Channel.Id) is BlackjackGame)
                         await JoinAsync(ctx).ConfigureAwait(false);
                     else
                         throw new CommandFailedException("Another event is already running in the current channel.");
@@ -52,7 +52,7 @@ namespace TheGodfather.Modules.Currency
                     throw new CommandFailedException("You do not have that many credits on your account! Specify a smaller bid amount.");
 
                 var game = new BlackjackGame(ctx.Client.GetInteractivity(), ctx.Channel);
-                ChannelEvent.RegisterEventInChannel(game, ctx.Channel.Id);
+                this.Shared.RegisterEventInChannel(game, ctx.Channel.Id);
                 try {
                     await ctx.InformSuccessAsync($"The Blackjack game will start in 30s or when there are 5 participants. Use command {Formatter.InlineCode("casino blackjack <bid>")} to join the pool. Default bid is 5 credits.", ":clock1:")
                         .ConfigureAwait(false);
@@ -83,7 +83,7 @@ namespace TheGodfather.Modules.Currency
                             .ConfigureAwait(false);
                     }
                 } finally {
-                    ChannelEvent.UnregisterEventInChannel(ctx.Channel.Id);
+                    this.Shared.UnregisterEventInChannel(ctx.Channel.Id);
                 }
             }
 
@@ -96,7 +96,7 @@ namespace TheGodfather.Modules.Currency
             public async Task JoinAsync(CommandContext ctx,
                                        [Description("Bid amount.")] int bid = 5)
             {
-                if (!(ChannelEvent.GetEventInChannel(ctx.Channel.Id) is BlackjackGame game))
+                if (!(this.Shared.GetEventInChannel(ctx.Channel.Id) is BlackjackGame game))
                     throw new CommandFailedException("There are no Blackjack games running in this channel.");
 
                 if (game.Started)

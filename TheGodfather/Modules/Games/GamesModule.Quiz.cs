@@ -40,7 +40,7 @@ namespace TheGodfather.Modules.Games
         public class QuizModule : TheGodfatherModule
         {
 
-            public QuizModule(DBService db) : base(db: db) { }
+            public QuizModule(SharedData shared, DBService db) : base(shared, db) { }
 
 
             [GroupCommand, Priority(4)]
@@ -49,7 +49,7 @@ namespace TheGodfather.Modules.Games
                                                [Description("Amount of questions.")] int amount = 10,
                                                [Description("Difficulty. (easy/medium/hard)")] string diff = "easy")
             {
-                if (ChannelEvent.IsEventRunningInChannel(ctx.Channel.Id))
+                if (this.Shared.IsEventRunningInChannel(ctx.Channel.Id))
                     throw new CommandFailedException("Another event is already running in the current channel.");
 
                 if (amount < 5 || amount > 50)
@@ -68,7 +68,7 @@ namespace TheGodfather.Modules.Games
                     throw new CommandFailedException("Either the ID is not correct or the category does not yet have enough questions for the quiz :(");
 
                 var quiz = new Quiz(ctx.Client.GetInteractivity(), ctx.Channel, questions);
-                ChannelEvent.RegisterEventInChannel(quiz, ctx.Channel.Id);
+                this.Shared.RegisterEventInChannel(quiz, ctx.Channel.Id);
                 try {
                     await ctx.InformSuccessAsync("Quiz will start in 10s! Get ready!", ":clock1:")
                         .ConfigureAwait(false);
@@ -86,7 +86,7 @@ namespace TheGodfather.Modules.Games
                     await HandleQuizResultsAsync(ctx, quiz.Results)
                         .ConfigureAwait(false);
                 } finally {
-                    ChannelEvent.UnregisterEventInChannel(ctx.Channel.Id);
+                    this.Shared.UnregisterEventInChannel(ctx.Channel.Id);
                 }
             }
             [GroupCommand, Priority(3)]
@@ -151,7 +151,7 @@ namespace TheGodfather.Modules.Games
                 if (qnum < 5 || qnum > 50)
                     throw new InvalidCommandUsageException("Number of questions must be in range [5-50]");
 
-                if (ChannelEvent.IsEventRunningInChannel(ctx.Channel.Id))
+                if (this.Shared.IsEventRunningInChannel(ctx.Channel.Id))
                     throw new CommandFailedException("Another event is already running in the current channel.");
 
                 try {
@@ -161,7 +161,7 @@ namespace TheGodfather.Modules.Games
                 }
 
                 var quiz = new QuizCapitals(ctx.Client.GetInteractivity(), ctx.Channel, qnum);
-                ChannelEvent.RegisterEventInChannel(quiz, ctx.Channel.Id);
+                this.Shared.RegisterEventInChannel(quiz, ctx.Channel.Id);
                 try {
                     await ctx.InformSuccessAsync("Quiz will start in 10s! Get ready!", ":clock1:")
                         .ConfigureAwait(false);
@@ -179,7 +179,7 @@ namespace TheGodfather.Modules.Games
                     await HandleQuizResultsAsync(ctx, quiz.Results)
                         .ConfigureAwait(false);
                 } finally {
-                    ChannelEvent.UnregisterEventInChannel(ctx.Channel.Id);
+                    this.Shared.UnregisterEventInChannel(ctx.Channel.Id);
                 }
             }
             #endregion
@@ -196,7 +196,7 @@ namespace TheGodfather.Modules.Games
                 if (qnum < 5 || qnum > 50)
                     throw new InvalidCommandUsageException("Number of questions must be in range [5-50]");
 
-                if (ChannelEvent.IsEventRunningInChannel(ctx.Channel.Id))
+                if (this.Shared.IsEventRunningInChannel(ctx.Channel.Id))
                     throw new CommandFailedException("Another event is already running in the current channel.");
 
                 try {
@@ -206,7 +206,7 @@ namespace TheGodfather.Modules.Games
                 }
 
                 var quiz = new QuizCountries(ctx.Client.GetInteractivity(), ctx.Channel, qnum);
-                ChannelEvent.RegisterEventInChannel(quiz, ctx.Channel.Id);
+                this.Shared.RegisterEventInChannel(quiz, ctx.Channel.Id);
                 try {
                     await ctx.InformSuccessAsync("Quiz will start in 10s! Get ready!", ":clock1:")
                         .ConfigureAwait(false);
@@ -224,7 +224,7 @@ namespace TheGodfather.Modules.Games
                     await HandleQuizResultsAsync(ctx, quiz.Results)
                         .ConfigureAwait(false);
                 } finally {
-                    ChannelEvent.UnregisterEventInChannel(ctx.Channel.Id);
+                    this.Shared.UnregisterEventInChannel(ctx.Channel.Id);
                 }
             }
             #endregion

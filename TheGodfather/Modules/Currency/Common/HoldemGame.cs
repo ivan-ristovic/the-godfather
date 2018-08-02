@@ -25,11 +25,11 @@ namespace TheGodfather.Modules.Currency.Common
     {
         public bool Started { get; private set; }
         public ConcurrentQueue<HoldemParticipant> Participants { get; } = new ConcurrentQueue<HoldemParticipant>();
-        public int ParticipantCount => Participants.Count;
+        public int ParticipantCount => this.Participants.Count;
         public int MoneyNeeded { get; set; }
         public long Pot { get; set; }
 
-        private IEnumerable<HoldemParticipant> ActiveParticipants => Participants.Where(p => p.Folded == false);
+        private IEnumerable<HoldemParticipant> ActiveParticipants => this.Participants.Where(p => p.Folded == false);
         private Deck _deck = new Deck();
         private List<Card> _drawn = new List<Card>();
         private bool GameOver = false;
@@ -39,21 +39,21 @@ namespace TheGodfather.Modules.Currency.Common
         public HoldemGame(InteractivityExtension interactivity, DiscordChannel channel, int balance)
             : base(interactivity, channel)
         {
-            MoneyNeeded = balance;
-            Started = false;
+            this.MoneyNeeded = balance;
+            this.Started = false;
         }
 
 
         public override async Task RunAsync()
         {
-            Started = true;
+            this.Started = true;
 
-            var msg = await Channel.InformSuccessAsync("Starting Hold'Em game... Keep an eye on DM!")
+            var msg = await this.Channel.InformSuccessAsync("Starting Hold'Em game... Keep an eye on DM!")
                 .ConfigureAwait(false);
 
-            foreach (var participant in Participants) {
-                participant.Card1 = _deck.GetNextCard();
-                participant.Card2 = _deck.GetNextCard();
+            foreach (var participant in this.Participants) {
+                participant.Card1 = this._deck.GetNextCard();
+                participant.Card2 = this._deck.GetNextCard();
                 try {
                     participant.DmHandle = await participant.DmHandle.ModifyAsync($"Your hand: {participant.Card1.ToUserFriendlyString()} {participant.Card2.ToUserFriendlyString()}")
                         .ConfigureAwait(false);
@@ -64,30 +64,30 @@ namespace TheGodfather.Modules.Currency.Common
 
             await Task.Delay(TimeSpan.FromSeconds(10))
                 .ConfigureAwait(false);
-            
-            _drawn.Add(_deck.GetNextCard());
-            _drawn.Add(_deck.GetNextCard());
-            _drawn.Add(_deck.GetNextCard());
+
+            this._drawn.Add(this._deck.GetNextCard());
+            this._drawn.Add(this._deck.GetNextCard());
+            this._drawn.Add(this._deck.GetNextCard());
 
             int bet = 5;
             int step = 0;
             do {
-                foreach (var participant in ActiveParticipants)
+                foreach (var participant in this.ActiveParticipants)
                     participant.Bet = 0;
 
-                while (ActiveParticipants.Any(p => p.Bet != bet)) {
-                    foreach (var participant in ActiveParticipants) {
+                while (this.ActiveParticipants.Any(p => p.Bet != bet)) {
+                    foreach (var participant in this.ActiveParticipants) {
 
                         await PrintGameAsync(msg, bet, participant)
                             .ConfigureAwait(false);
 
-                        if (await Interactivity.WaitForBoolReplyAsync(Channel.Id, participant.Id).ConfigureAwait(false)) {
-                            await Channel.SendMessageAsync($"Do you wish to raise the current bet? If yes, reply yes and then reply raise amount in new message, otherwise say no. Max: {participant.Balance - bet}")
+                        if (await this.Interactivity.WaitForBoolReplyAsync(this.Channel.Id, participant.Id).ConfigureAwait(false)) {
+                            await this.Channel.SendMessageAsync($"Do you wish to raise the current bet? If yes, reply yes and then reply raise amount in new message, otherwise say no. Max: {participant.Balance - bet}")
                                 .ConfigureAwait(false);
-                            if (await Interactivity.WaitForBoolReplyAsync(Channel.Id, participant.Id).ConfigureAwait(false)) {
+                            if (await this.Interactivity.WaitForBoolReplyAsync(this.Channel.Id, participant.Id).ConfigureAwait(false)) {
                                 int raise = 0;
-                                var mctx = await Interactivity.WaitForMessageAsync(
-                                    m => m.Channel.Id == Channel.Id && m.Author.Id == participant.Id && int.TryParse(m.Content, out raise) && bet + raise <= participant.Balance
+                                var mctx = await this.Interactivity.WaitForMessageAsync(
+                                    m => m.Channel.Id == this.Channel.Id && m.Author.Id == participant.Id && int.TryParse(m.Content, out raise) && bet + raise <= participant.Balance
                                 ).ConfigureAwait(false);
                                 if (mctx != null) {
                                     bet += raise;
@@ -95,30 +95,30 @@ namespace TheGodfather.Modules.Currency.Common
                             }
                             participant.Balance -= bet - participant.Bet;
                             participant.Bet = bet;
-                            Pot += bet;
+                            this.Pot += bet;
                         } else {
                             participant.Folded = true;
                         }
                     }
                 }
 
-                _drawn.Add(_deck.GetNextCard());
+                this._drawn.Add(this._deck.GetNextCard());
 
                 step++;
             } while (step < 2);
 
-            GameOver = true;
+            this.GameOver = true;
             await PrintGameAsync(msg, bet, showhands: true)
                 .ConfigureAwait(false);
 
-            foreach (var p in ActiveParticipants)
-                p.HandRank = _evaluator.GetBestHand(new List<Card>(_drawn) { p.Card1, p.Card2 }).RankType;
+            foreach (var p in this.ActiveParticipants)
+                p.HandRank = this._evaluator.GetBestHand(new List<Card>(this._drawn) { p.Card1, p.Card2 }).RankType;
 
 
-            var winner = Participants.OrderByDescending(p => p.HandRank).FirstOrDefault();
+            var winner = this.Participants.OrderByDescending(p => p.HandRank).FirstOrDefault();
             if (winner != null)
-                winner.Balance += Pot;
-            Winner = winner?.User;
+                winner.Balance += this.Pot;
+            this.Winner = winner?.User;
         }
 
         public void AddParticipant(DiscordUser user, DiscordMessage dm)
@@ -126,7 +126,7 @@ namespace TheGodfather.Modules.Currency.Common
             if (IsParticipating(user))
                 return;
 
-            Participants.Enqueue(new HoldemParticipant {
+            this.Participants.Enqueue(new HoldemParticipant {
                 User = user,
                 Balance = MoneyNeeded,
                 DmHandle = dm
@@ -134,17 +134,17 @@ namespace TheGodfather.Modules.Currency.Common
         }
 
         public bool IsParticipating(DiscordUser user)
-            => Participants.Any(p => p.Id == user.Id);
+            => this.Participants.Any(p => p.Id == user.Id);
 
         private async Task PrintGameAsync(DiscordMessage msg, int bet, HoldemParticipant tomove = null, bool showhands = false)
         {
             var sb = new StringBuilder();
 
-            sb.AppendLine(string.Join(" ", _drawn)).AppendLine();
-            sb.Append("Current pot: ").AppendLine(Formatter.Bold(Pot.ToString())).AppendLine();
+            sb.AppendLine(string.Join(" ", this._drawn)).AppendLine();
+            sb.Append("Current pot: ").AppendLine(Formatter.Bold(this.Pot.ToString())).AppendLine();
             sb.Append("Call value: ").AppendLine(Formatter.Bold(bet.ToString())).AppendLine();
 
-            foreach (var participant in Participants) {
+            foreach (var participant in this.Participants) {
                 sb.Append(participant.User.Mention)
                   .Append(" | Chips: ")
                   .Append(Formatter.Bold(participant.Balance.ToString()))
@@ -164,7 +164,7 @@ namespace TheGodfather.Modules.Currency.Common
                 Color = DiscordColor.Red
             };
 
-            if (!GameOver && tomove != null)
+            if (!this.GameOver && tomove != null)
                 emb.AddField("Deciding whether to call (type yes/no):", tomove.User.Mention);
 
             await msg.ModifyAsync(embed: emb.Build())
@@ -180,7 +180,7 @@ namespace TheGodfather.Modules.Currency.Common
             public long Balance { get; set; }
             public int Bet { get; set; }
             public bool Folded { get; set; } = false;
-            public ulong Id => User.Id;
+            public ulong Id => this.User.Id;
             public DiscordMessage DmHandle { get; set; }
             public HandRankType HandRank { get; set; }
         }

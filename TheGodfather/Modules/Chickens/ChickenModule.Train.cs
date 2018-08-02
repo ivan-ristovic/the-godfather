@@ -24,7 +24,7 @@ namespace TheGodfather.Modules.Chickens
         public class TrainModule : TheGodfatherModule
         {
 
-            public TrainModule(DBService db) 
+            public TrainModule(SharedData shared, DBService db) 
                 : base(db: db)
             {
 
@@ -47,7 +47,7 @@ namespace TheGodfather.Modules.Chickens
                 if (chicken == null)
                     throw new CommandFailedException("You do not own a chicken!");
 
-                if (ChannelEvent.GetEventInChannel(ctx.Channel.Id) is ChickenWar)
+                if (this.Shared.GetEventInChannel(ctx.Channel.Id) is ChickenWar)
                     throw new CommandFailedException("There is a chicken war running in this channel. No trainings are allowed before the war finishes.");
 
                 if (chicken.Stats.TotalVitality < 25)
@@ -83,7 +83,7 @@ namespace TheGodfather.Modules.Chickens
                 if (chicken == null)
                     throw new CommandFailedException("You do not own a chicken!");
 
-                if (ChannelEvent.GetEventInChannel(ctx.Channel.Id) is ChickenWar)
+                if (this.Shared.GetEventInChannel(ctx.Channel.Id) is ChickenWar)
                     throw new CommandFailedException("There is a chicken war running in this channel. No trainings are allowed before the war finishes.");
 
                 if (chicken.Stats.TotalVitality < 25)

@@ -29,13 +29,13 @@ namespace TheGodfather.Modules.Games
         public class HangmanModule : TheGodfatherModule
         {
 
-            public HangmanModule(DBService db) : base(db: db) { }
+            public HangmanModule(SharedData shared, DBService db) : base(shared, db) { }
 
 
             [GroupCommand]
             public async Task ExecuteGroupAsync(CommandContext ctx)
             {
-                if (ChannelEvent.IsEventRunningInChannel(ctx.Channel.Id))
+                if (this.Shared.IsEventRunningInChannel(ctx.Channel.Id))
                     throw new CommandFailedException("Another event is already running in the current channel!");
 
                 var dm = await ctx.Client.CreateDmChannelAsync(ctx.User.Id)
@@ -60,7 +60,7 @@ namespace TheGodfather.Modules.Games
                 }
 
                 var hangman = new Hangman(ctx.Client.GetInteractivity(), ctx.Channel, mctx.Message.Content, mctx.User);
-                ChannelEvent.RegisterEventInChannel(hangman, ctx.Channel.Id);
+                this.Shared.RegisterEventInChannel(hangman, ctx.Channel.Id);
                 try {
                     await hangman.RunAsync()
                         .ConfigureAwait(false);
@@ -68,7 +68,7 @@ namespace TheGodfather.Modules.Games
                         await Database.UpdateUserStatsAsync(hangman.Winner.Id, GameStatsType.HangmansWon)
                             .ConfigureAwait(false);
                 } finally {
-                    ChannelEvent.UnregisterEventInChannel(ctx.Channel.Id);
+                    this.Shared.UnregisterEventInChannel(ctx.Channel.Id);
                 }
             }
 

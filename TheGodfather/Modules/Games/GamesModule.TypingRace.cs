@@ -15,6 +15,7 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
+using TheGodfather.Services.Database;
 #endregion
 
 namespace TheGodfather.Modules.Games
@@ -29,11 +30,14 @@ namespace TheGodfather.Modules.Games
         public class TypingRaceModule : TheGodfatherModule
         {
 
+            public TypingRaceModule(SharedData shared, DBService db) : base(shared, db) { }
+
+
             [GroupCommand]
             public async Task ExecuteGroupAsync(CommandContext ctx)
             {
-                if (ChannelEvent.IsEventRunningInChannel(ctx.Channel.Id)) {
-                    if (ChannelEvent.GetEventInChannel(ctx.Channel.Id) is TypingRace)
+                if (this.Shared.IsEventRunningInChannel(ctx.Channel.Id)) {
+                    if (this.Shared.GetEventInChannel(ctx.Channel.Id) is TypingRace)
                         await JoinAsync(ctx).ConfigureAwait(false);
                     else
                         throw new CommandFailedException("Another event is already running in the current channel.");
@@ -41,7 +45,7 @@ namespace TheGodfather.Modules.Games
                 }
 
                 var game = new TypingRace(ctx.Client.GetInteractivity(), ctx.Channel);
-                ChannelEvent.RegisterEventInChannel(game, ctx.Channel.Id);
+                this.Shared.RegisterEventInChannel(game, ctx.Channel.Id);
                 try {
                     await ctx.InformSuccessAsync($"The typing race will start in 30s or when there are 10 participants. Use command {Formatter.InlineCode("game typingrace")} to join the race.", ":clock1:")
                         .ConfigureAwait(false);
@@ -68,7 +72,7 @@ namespace TheGodfather.Modules.Games
                             .ConfigureAwait(false);
                     }
                 } finally {
-                    ChannelEvent.UnregisterEventInChannel(ctx.Channel.Id);
+                    this.Shared.UnregisterEventInChannel(ctx.Channel.Id);
                 }
             }
 
@@ -80,7 +84,7 @@ namespace TheGodfather.Modules.Games
             [UsageExamples("!game typingrace join")]
             public async Task JoinAsync(CommandContext ctx)
             {
-                if (!(ChannelEvent.GetEventInChannel(ctx.Channel.Id) is TypingRace game))
+                if (!(this.Shared.GetEventInChannel(ctx.Channel.Id) is TypingRace game))
                     throw new CommandFailedException("There is no typing race game running in this channel.");
 
                 if (game.Started)

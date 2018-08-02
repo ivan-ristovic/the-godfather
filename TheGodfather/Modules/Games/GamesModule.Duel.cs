@@ -28,14 +28,14 @@ namespace TheGodfather.Modules.Games
         public class DuelModule : TheGodfatherModule
         {
 
-            public DuelModule(DBService db) : base(db: db) { }
+            public DuelModule(SharedData shared, DBService db) : base(shared, db) { }
 
 
             [GroupCommand]
             public async Task ExecuteGroupAsync(CommandContext ctx,
                                                [Description("Who to fight with?")] DiscordUser opponent)
             {
-                if (ChannelEvent.IsEventRunningInChannel(ctx.Channel.Id))
+                if (this.Shared.IsEventRunningInChannel(ctx.Channel.Id))
                     throw new CommandFailedException("Another event is already running in the current channel!");
 
                 if (opponent.Id == ctx.User.Id)
@@ -53,7 +53,7 @@ namespace TheGodfather.Modules.Games
                 }
 
                 var duel = new Duel(ctx.Client.GetInteractivity(), ctx.Channel, ctx.User, opponent);
-                ChannelEvent.RegisterEventInChannel(duel, ctx.Channel.Id);
+                this.Shared.RegisterEventInChannel(duel, ctx.Channel.Id);
 
                 try {
                     await duel.RunAsync()
@@ -67,7 +67,7 @@ namespace TheGodfather.Modules.Games
                     await Database.UpdateUserStatsAsync(duel.Winner.Id == ctx.User.Id ? opponent.Id : ctx.User.Id, GameStatsType.DuelsLost)
                         .ConfigureAwait(false);
                 } finally {
-                    ChannelEvent.UnregisterEventInChannel(ctx.Channel.Id);
+                    this.Shared.UnregisterEventInChannel(ctx.Channel.Id);
                 }
             }
 

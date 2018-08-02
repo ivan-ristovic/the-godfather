@@ -1,36 +1,41 @@
 ﻿#region USING_DIRECTIVES
+using DSharpPlus;
+using DSharpPlus.Entities;
+using DSharpPlus.Interactivity;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using TexasHoldem.Logic.Cards;
 using TheGodfather.Common;
 using TheGodfather.Extensions;
-using TheGodfather.Modules.Games.Common;
-
-using DSharpPlus;
-using DSharpPlus.Entities;
-using DSharpPlus.Interactivity;
-
-using TexasHoldem.Logic.Cards;
 #endregion
 
 namespace TheGodfather.Modules.Currency.Common
 {
+    public sealed class BlackjackParticipant
+    {
+        public DiscordUser User { get; internal set; }
+        public List<Card> Hand { get; internal set; } = new List<Card>();
+        public int Bid { get; set; }
+        public bool Standing { get; set; } = false;
+        public ulong Id => this.User.Id;
+    }
+
     public class BlackjackGame : ChannelEvent
     {
         public bool Started { get; private set; }
-        public int ParticipantCount => _participants.Count;
+        public int ParticipantCount => this.participants.Count;
         public IReadOnlyList<BlackjackParticipant> Winners
         {
             get {
-                int hvalue = HandValue(_hand);
+                int hvalue = HandValue(this.hand);
                 if (hvalue > 21)
-                    return _participants.Where(p => HandValue(p.Hand) <= 21).ToList().AsReadOnly();
-                return _participants.Where(p => {
-                    var value = HandValue(p.Hand);
+                    return this.participants.Where(p => HandValue(p.Hand) <= 21).ToList().AsReadOnly();
+                return this.participants.Where(p => {
+                    int value = HandValue(p.Hand);
                     if (value > 21)
                         return false;
                     return value > hvalue;
@@ -38,52 +43,53 @@ namespace TheGodfather.Modules.Currency.Common
             }
         }
 
-        private ConcurrentQueue<BlackjackParticipant> _participants = new ConcurrentQueue<BlackjackParticipant>();
-        private Deck _deck = new Deck();
-        private List<Card> _hand = new List<Card>();
-        private bool GameOver = false;
+        private bool GameOver;
+        private readonly Deck deck;
+        private readonly List<Card> hand;
+        private readonly ConcurrentQueue<BlackjackParticipant> participants;
 
 
         public BlackjackGame(InteractivityExtension interactivity, DiscordChannel channel)
             : base(interactivity, channel)
         {
-            Started = false;
+            this.Started = false;
+            this.GameOver = false;
+            this.deck = new Deck();
+            this.hand = new List<Card>();
+            this.participants = new ConcurrentQueue<BlackjackParticipant>();
         }
 
 
         public override async Task RunAsync()
         {
-            Started = true;
+            this.Started = true;
 
-            var msg = await Channel.InformSuccessAsync("Starting blackjack game...")
-                .ConfigureAwait(false);
+            DiscordMessage msg = await this.Channel.InformSuccessAsync("Starting blackjack game...");
 
-            foreach (var participant in _participants) {
-                participant.Hand.Add(_deck.GetNextCard());
-                participant.Hand.Add(_deck.GetNextCard());
+            foreach (BlackjackParticipant participant in this.participants) {
+                participant.Hand.Add(this.deck.GetNextCard());
+                participant.Hand.Add(this.deck.GetNextCard());
                 if (HandValue(participant.Hand) == 21) {
-                    GameOver = true;
-                    Winner = participant.User;
+                    this.GameOver = true;
+                    this.Winner = participant.User;
                     break;
                 }
             }
 
-            if (GameOver) {
-                await PrintGameAsync(msg)
-                    .ConfigureAwait(false);
+            if (this.GameOver) {
+                await PrintGameAsync(msg);
                 return;
             }
             
-            while (_participants.Any(p => !p.Standing)) {
-                foreach (var participant in _participants) {
+            while (this.participants.Any(p => !p.Standing)) {
+                foreach (BlackjackParticipant participant in this.participants) {
                     if (participant.Standing)
                         continue;
 
-                    await PrintGameAsync(msg, participant)
-                        .ConfigureAwait(false);
+                    await PrintGameAsync(msg, participant);
 
-                    if (await Interactivity.WaitForBoolReplyAsync(Channel.Id, participant.Id).ConfigureAwait(false)) 
-                        participant.Hand.Add(_deck.GetNextCard());
+                    if (await this.Interactivity.WaitForBoolReplyAsync(this.Channel.Id, participant.Id)) 
+                        participant.Hand.Add(this.deck.GetNextCard());
                     else 
                         participant.Standing = true;
 
@@ -92,23 +98,17 @@ namespace TheGodfather.Modules.Currency.Common
                 }
             }
 
-            await PrintGameAsync(msg)
-                .ConfigureAwait(false);
+            await PrintGameAsync(msg);
+            await Task.Delay(TimeSpan.FromSeconds(5));
 
-            await Task.Delay(TimeSpan.FromSeconds(5))
-                .ConfigureAwait(false);
+            while (HandValue(this.hand) <= 17)
+                this.hand.Add(this.deck.GetNextCard());
 
-            while (HandValue(_hand) <= 17)
-                _hand.Add(_deck.GetNextCard());
+            if (this.hand.Count == 2 && HandValue(this.hand) == 21)
+                await this.Channel.InformSuccessAsync("BLACKJACK!");
 
-            if (_hand.Count == 2 && HandValue(_hand) == 21) {
-                await Channel.InformSuccessAsync("BLACKJACK!")
-                    .ConfigureAwait(false);
-            }
-
-            GameOver = true;
-            await PrintGameAsync(msg)
-                .ConfigureAwait(false);
+            this.GameOver = true;
+            await PrintGameAsync(msg);
         }
 
         public void AddParticipant(DiscordUser user, int bid)
@@ -116,19 +116,20 @@ namespace TheGodfather.Modules.Currency.Common
             if (IsParticipating(user))
                 return;
 
-            _participants.Enqueue(new BlackjackParticipant {
+            this.participants.Enqueue(new BlackjackParticipant {
                 User = user,
                 Bid = bid
             });
         }
 
-        public bool IsParticipating(DiscordUser user) => _participants.Any(p => p.Id == user.Id);
+        public bool IsParticipating(DiscordUser user) 
+            => this.participants.Any(p => p.Id == user.Id);
 
         private int HandValue(List<Card> hand)
         {
             int value = 0;
             bool one = false;
-            foreach (var card in hand) {
+            foreach (Card card in hand) {
                 if (card.Type >= CardType.Ten) {
                     value += 10;
                 } else if (card.Type == CardType.Ace) {
@@ -145,45 +146,35 @@ namespace TheGodfather.Modules.Currency.Common
             return value;
         }
 
-        private async Task PrintGameAsync(DiscordMessage msg, BlackjackParticipant tomove = null)
+        private Task PrintGameAsync(DiscordMessage msg, BlackjackParticipant tomove = null)
         {
             var sb = new StringBuilder();
 
-            sb.AppendLine(Formatter.Bold($"House hand: (value: {HandValue(_hand)})")).AppendLine();
-            if (_hand.Any())
-                sb.AppendLine(string.Join(" | ", _hand)).AppendLine();
+            sb.AppendLine(Formatter.Bold($"House hand: (value: {HandValue(this.hand)})")).AppendLine();
+            if (this.hand.Any())
+                sb.AppendLine(string.Join(" | ", this.hand)).AppendLine();
             else
                 sb.AppendLine(StaticDiscordEmoji.Question).AppendLine();
 
-            foreach (var participant in _participants) {
-                sb.Append(participant.User.Mention)
-                  .Append(" (value: ")
-                  .Append(Formatter.Bold(HandValue(participant.Hand).ToString()))
-                  .AppendLine(")").AppendLine()
-                  .AppendLine(string.Join(" | ", participant.Hand))
-                  .AppendLine();
+            foreach (BlackjackParticipant participant in this.participants) {
+                sb.Append(participant.User.Mention);
+                sb.Append(" (value: ");
+                sb.Append(Formatter.Bold(HandValue(participant.Hand).ToString()));
+                sb.AppendLine(")").AppendLine();
+                sb.AppendLine(string.Join(" | ", participant.Hand));
+                sb.AppendLine();
             }
+
             var emb = new DiscordEmbedBuilder() {
                 Title = $"{StaticDiscordEmoji.CardSuits[0]} BLACKJACK GAME STATE {StaticDiscordEmoji.CardSuits[0]}",
                 Description = sb.ToString(),
                 Color = DiscordColor.Red
             };
 
-            if (!GameOver)
+            if (!this.GameOver)
                 emb.AddField("Deciding whether to hit a card (type yes/no):", tomove?.User.Mention ?? "House");
 
-            await msg.ModifyAsync(embed: emb.Build())
-                .ConfigureAwait(false);
-        }
-
-
-        public sealed class BlackjackParticipant
-        {
-            public DiscordUser User { get; internal set; }
-            public List<Card> Hand { get; internal set; } = new List<Card>();
-            public int Bid { get; set; }
-            public bool Standing { get; set; } = false;
-            public ulong Id => User.Id;
+            return msg.ModifyAsync(embed: emb.Build());
         }
     }
 }

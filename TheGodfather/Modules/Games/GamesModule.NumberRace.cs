@@ -30,14 +30,14 @@ namespace TheGodfather.Modules.Games
         public class NumberRaceModule : TheGodfatherModule
         {
 
-            public NumberRaceModule(DBService db) : base(db: db) { }
+            public NumberRaceModule(SharedData shared, DBService db) : base(shared, db) { }
 
 
             [GroupCommand]
             public async Task ExecuteGroupAsync(CommandContext ctx)
             {
-                if (ChannelEvent.IsEventRunningInChannel(ctx.Channel.Id)) {
-                    if (ChannelEvent.GetEventInChannel(ctx.Channel.Id) is NumberRace)
+                if (this.Shared.IsEventRunningInChannel(ctx.Channel.Id)) {
+                    if (this.Shared.GetEventInChannel(ctx.Channel.Id) is NumberRace)
                         await JoinRaceAsync(ctx).ConfigureAwait(false);
                     else
                         throw new CommandFailedException("Another event is already running in the current channel.");
@@ -45,7 +45,7 @@ namespace TheGodfather.Modules.Games
                 }
 
                 var game = new NumberRace(ctx.Client.GetInteractivity(), ctx.Channel);
-                ChannelEvent.RegisterEventInChannel(game, ctx.Channel.Id);
+                this.Shared.RegisterEventInChannel(game, ctx.Channel.Id);
                 try {
                     await ctx.InformSuccessAsync($"The race will start in 30s or when there are 10 participants. Use command {Formatter.InlineCode("game numberrace")} to join the race.", ":clock1:")
                         .ConfigureAwait(false);
@@ -79,7 +79,7 @@ namespace TheGodfather.Modules.Games
                             .ConfigureAwait(false);
                     }
                 } finally {
-                    ChannelEvent.UnregisterEventInChannel(ctx.Channel.Id);
+                    this.Shared.UnregisterEventInChannel(ctx.Channel.Id);
                 }
             }
 
@@ -91,7 +91,7 @@ namespace TheGodfather.Modules.Games
             [UsageExamples("!game numberrace join")]
             public async Task JoinRaceAsync(CommandContext ctx)
             {
-                if (!(ChannelEvent.GetEventInChannel(ctx.Channel.Id) is NumberRace game))
+                if (!(this.Shared.GetEventInChannel(ctx.Channel.Id) is NumberRace game))
                     throw new CommandFailedException("There is no number race game running in this channel.");
 
                 if (game.Started)
