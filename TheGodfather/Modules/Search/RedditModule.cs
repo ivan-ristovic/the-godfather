@@ -62,7 +62,7 @@ namespace TheGodfather.Modules.Search
             if (!await Database.TryAddSubscriptionAsync(ctx.Channel.Id, url, rsub).ConfigureAwait(false))
                 throw new CommandFailedException("You are already subscribed to this subreddit!");
 
-            await ctx.InformSuccessAsync($"Subscribed to {Formatter.Bold(rsub)} !")
+            await InformAsync(ctx, $"Subscribed to {Formatter.Bold(rsub)} !")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -83,7 +83,7 @@ namespace TheGodfather.Modules.Search
 
             await Database.RemoveSubscriptionByNameAsync(ctx.Channel.Id, rsub)
                 .ConfigureAwait(false);
-            await ctx.InformSuccessAsync($"Unsubscribed from {Formatter.Bold(rsub)} !")
+            await InformAsync(ctx, $"Unsubscribed from {Formatter.Bold(rsub)} !")
                 .ConfigureAwait(false);
         }
 
@@ -93,7 +93,7 @@ namespace TheGodfather.Modules.Search
         {
             await Database.RemoveSubscriptionByIdAsync(ctx.Channel.Id, id)
                 .ConfigureAwait(false);
-            await ctx.InformSuccessAsync()
+            await InformAsync(ctx)
                 .ConfigureAwait(false);
         }
         #endregion

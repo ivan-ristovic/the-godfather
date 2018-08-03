@@ -86,6 +86,7 @@ namespace TheGodfather.Common
         public static DiscordEmoji BoardSquare => DiscordEmoji.FromUnicode("\u25fb");
         public static DiscordEmoji BlackSquare => DiscordEmoji.FromUnicode("\u2b1b");
         public static DiscordEmoji Dead => DiscordEmoji.FromUnicode("\U0001f635");
+        public static DiscordEmoji Dice => DiscordEmoji.FromUnicode("\U0001f3b2");
         public static DiscordEmoji DuelSwords => DiscordEmoji.FromUnicode("\u2694");
         public static DiscordEmoji Gun => DiscordEmoji.FromUnicode("\U0001f52b");
         public static DiscordEmoji Headphones => DiscordEmoji.FromUnicode("\U0001f3a7");
@@ -103,6 +104,9 @@ namespace TheGodfather.Common
         public static DiscordEmoji MoneyBag => DiscordEmoji.FromUnicode("\U0001f4b0");
         public static DiscordEmoji Gift => DiscordEmoji.FromUnicode("\U0001f381");
         public static DiscordEmoji LargeBlueDiamond => DiscordEmoji.FromUnicode("\U0001f537");
+        public static DiscordEmoji LargeOrangeDiamond => DiscordEmoji.FromUnicode("\U0001f536");
+        public static DiscordEmoji SmallBlueDiamond => DiscordEmoji.FromUnicode("\U0001f539");
+        public static DiscordEmoji SmallOrangeDiamond => DiscordEmoji.FromUnicode("\U0001f538");
         public static DiscordEmoji Seven => DiscordEmoji.FromUnicode("7\u20e3");
         public static DiscordEmoji Cherries => DiscordEmoji.FromUnicode("\U0001f352");
 

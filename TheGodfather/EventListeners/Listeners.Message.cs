@@ -46,7 +46,7 @@ namespace TheGodfather.EventListeners
                 ushort rank = shard.SharedData.IncrementMessageCountForUser(e.Author.Id);
                 if (rank != 0) {
                     string rankname = await shard.DatabaseService.GetRankAsync(e.Guild.Id, rank);
-                    await e.Channel.InformSuccessAsync($"GG {e.Author.Mention}! You have advanced to level {Formatter.Bold(rank.ToString())} {(string.IsNullOrWhiteSpace(rankname) ? "" : $": {Formatter.Italic(rankname)}")} !", StaticDiscordEmoji.Medal);
+                    await e.Channel.EmbedAsync($"GG {e.Author.Mention}! You have advanced to level {Formatter.Bold(rank.ToString())} {(string.IsNullOrWhiteSpace(rankname) ? "" : $": {Formatter.Italic(rankname)}")} !", StaticDiscordEmoji.Medal);
                 }
             }
         }

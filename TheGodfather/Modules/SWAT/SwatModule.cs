@@ -51,7 +51,7 @@ namespace TheGodfather.Modules.SWAT
             if (server == null)
                 throw new CommandFailedException("Server with such name isn't found in the database.");
 
-            await ctx.InformSuccessAsync($"IP: {Formatter.Bold($"{server.Ip}:{server.JoinPort}")}")
+            await InformAsync(ctx, $"IP: {Formatter.Bold($"{server.Ip}:{server.JoinPort}")}")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -158,7 +158,7 @@ namespace TheGodfather.Modules.SWAT
 
             var server = await Database.GetSwatServerAsync(ip, queryport, name: ip.ToLowerInvariant())
                 .ConfigureAwait(false);
-            await ctx.InformSuccessAsync($"Starting space listening on {server.Ip}:{server.JoinPort}...")
+            await InformAsync(ctx, $"Starting space listening on {server.Ip}:{server.JoinPort}...")
                 .ConfigureAwait(false);
 
             if (!SpaceCheckingCTS.TryAdd(ctx.User.Id, new CancellationTokenSource()))
@@ -176,7 +176,7 @@ namespace TheGodfather.Modules.SWAT
                                 throw new OperationCanceledException();
                             }
                         } else if (info.HasSpace()) {
-                            await ctx.InformSuccessAsync(StaticDiscordEmoji.AlarmClock, $"{ctx.User.Mention}, there is space on {Formatter.Bold(info.HostName)}!")
+                            await InformAsync(ctx, StaticDiscordEmoji.AlarmClock, $"{ctx.User.Mention}, there is space on {Formatter.Bold(info.HostName)}!")
                                 .ConfigureAwait(false);
                         }
                         await Task.Delay(TimeSpan.FromSeconds(2))
@@ -201,7 +201,7 @@ namespace TheGodfather.Modules.SWAT
             SpaceCheckingCTS[ctx.User.Id].Cancel();
             SpaceCheckingCTS[ctx.User.Id].Dispose();
             SpaceCheckingCTS.TryRemove(ctx.User.Id, out _);
-            await ctx.InformSuccessAsync("Checking stopped.")
+            await InformAsync(ctx, "Checking stopped.")
                 .ConfigureAwait(false);
         }
         #endregion

@@ -47,7 +47,7 @@ namespace TheGodfather.Modules.Games
                 var game = new TypingRace(ctx.Client.GetInteractivity(), ctx.Channel);
                 this.Shared.RegisterEventInChannel(game, ctx.Channel.Id);
                 try {
-                    await ctx.InformSuccessAsync(StaticDiscordEmoji.Clock1, $"The typing race will start in 30s or when there are 10 participants. Use command {Formatter.InlineCode("game typingrace")} to join the race.")
+                    await InformAsync(ctx, StaticDiscordEmoji.Clock1, $"The typing race will start in 30s or when there are 10 participants. Use command {Formatter.InlineCode("game typingrace")} to join the race.")
                         .ConfigureAwait(false);
                     await JoinAsync(ctx)
                         .ConfigureAwait(false);
@@ -55,7 +55,7 @@ namespace TheGodfather.Modules.Games
                         .ConfigureAwait(false);
 
                     if (game.ParticipantCount > 1) {
-                        await ctx.InformSuccessAsync(StaticDiscordEmoji.Clock1, "I will send a random quote in 10s. First one to type it correctly wins. Remember, you can try again, your best result will be remembered.")
+                        await InformAsync(ctx, StaticDiscordEmoji.Clock1, "I will send a random quote in 10s. First one to type it correctly wins. Remember, you can try again, your best result will be remembered.")
                             .ConfigureAwait(false);
                         await Task.Delay(TimeSpan.FromSeconds(10))
                             .ConfigureAwait(false);
@@ -64,11 +64,11 @@ namespace TheGodfather.Modules.Games
                             .ConfigureAwait(false);
 
                         if (game.Winner != null) {
-                            await ctx.InformSuccessAsync(StaticDiscordEmoji.Trophy, $"The winner is {game.Winner?.Mention ?? "<unknown>"}!")
+                            await InformAsync(ctx, StaticDiscordEmoji.Trophy, $"The winner is {game.Winner?.Mention ?? "<unknown>"}!")
                                 .ConfigureAwait(false);
                         }
                     } else {
-                        await ctx.InformSuccessAsync(StaticDiscordEmoji.AlarmClock, "Not enough users joined the typing race.")
+                        await InformAsync(ctx, StaticDiscordEmoji.AlarmClock, "Not enough users joined the typing race.")
                             .ConfigureAwait(false);
                     }
                 } finally {
@@ -96,7 +96,7 @@ namespace TheGodfather.Modules.Games
                 if (!game.AddParticipant(ctx.User))
                     throw new CommandFailedException("You are already participating in the race!");
 
-                await ctx.InformSuccessAsync($"{ctx.User.Mention} joined the typing race.", ":bicyclist:")
+                await InformAsync(ctx, $"{ctx.User.Mention} joined the typing race.", ":bicyclist:")
                     .ConfigureAwait(false);
             }
             #endregion

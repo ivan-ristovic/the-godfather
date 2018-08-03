@@ -31,7 +31,7 @@ namespace TheGodfather.Modules.Chickens
             public AmbushModule(SharedData shared, DBService db) 
                 : base(shared, db)
             {
-
+                this.ModuleColor = DiscordColor.Yellow;
             }
 
 
@@ -63,7 +63,7 @@ namespace TheGodfather.Modules.Chickens
                 try {
                     ambush.AddParticipant(ambushed, member, team1: true);
                     await JoinAsync(ctx);
-                    await ctx.InformSuccessAsync(StaticDiscordEmoji.Clock1, $"The ambush will start in 1 minute. Use command {Formatter.InlineCode("chicken ambush")} to make your chicken join the ambush, or {Formatter.InlineCode("chicken ambush help")} to help the ambushed chicken.");
+                    await InformAsync(ctx, StaticDiscordEmoji.Clock1, $"The ambush will start in 1 minute. Use command {Formatter.InlineCode("chicken ambush")} to make your chicken join the ambush, or {Formatter.InlineCode("chicken ambush help")} to help the ambushed chicken.", important: true);
                     await Task.Delay(TimeSpan.FromMinutes(1));
 
                     if (ambush.Team2.Any()) {
@@ -89,7 +89,7 @@ namespace TheGodfather.Modules.Chickens
                             }
                         }
 
-                        await ctx.InformSuccessAsync(StaticDiscordEmoji.Chicken, $"{Formatter.Bold(ambush.Team1Won ? ambush.Team1Name : ambush.Team2Name)} won!\n\n{sb.ToString()}");
+                        await InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{Formatter.Bold(ambush.Team1Won ? ambush.Team1Name : ambush.Team2Name)} won!\n\n{sb.ToString()}", important: true);
                     }
                 } finally {
                     this.Shared.UnregisterEventInChannel(ctx.Channel.Id);
@@ -105,7 +105,7 @@ namespace TheGodfather.Modules.Chickens
             public async Task JoinAsync(CommandContext ctx)
             {
                 Chicken chicken = await TryJoinInternalAsync(ctx, team2: true);
-                await ctx.InformSuccessAsync(StaticDiscordEmoji.Chicken, $"{Formatter.Bold(chicken.Name)} has joined the ambushers.");
+                await InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{Formatter.Bold(chicken.Name)} has joined the ambushers.", important: true);
             }
             #endregion
 
@@ -117,7 +117,7 @@ namespace TheGodfather.Modules.Chickens
             public async Task HelpAsync(CommandContext ctx)
             {
                 Chicken chicken = await TryJoinInternalAsync(ctx, team2: false);
-                await ctx.InformSuccessAsync(StaticDiscordEmoji.Chicken, $"{Formatter.Bold(chicken.Name)} has joined the ambushed party.");
+                await InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{Formatter.Bold(chicken.Name)} has joined the ambushed party.", important: true);
             }
             #endregion
 

@@ -2,13 +2,14 @@
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-using TheGodfather.Modules.Chickens.Common;
-using TheGodfather.Services.Database;
+using DSharpPlus.Entities;
 using System.Threading.Tasks;
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
+using TheGodfather.Modules.Chickens.Common;
+using TheGodfather.Services.Database;
 using TheGodfather.Services.Database.Bank;
 using TheGodfather.Services.Database.Chickens;
 #endregion
@@ -27,7 +28,7 @@ namespace TheGodfather.Modules.Chickens
             public TrainModule(SharedData shared, DBService db) 
                 : base(db: db)
             {
-
+                this.ModuleColor = DiscordColor.Yellow;
             }
 
 
@@ -68,7 +69,7 @@ namespace TheGodfather.Modules.Chickens
                 chicken.Stats.BareVitality--;
 
                 await this.Database.ModifyChickenAsync(chicken, ctx.Guild.Id);
-                await ctx.InformSuccessAsync(StaticDiscordEmoji.Chicken, result);
+                await InformAsync(ctx, StaticDiscordEmoji.Chicken, result, important: true);
             }
             #endregion
 
@@ -104,7 +105,7 @@ namespace TheGodfather.Modules.Chickens
                 chicken.Stats.BareVitality--;
 
                 await this.Database.ModifyChickenAsync(chicken, ctx.Guild.Id);
-                await ctx.InformSuccessAsync(StaticDiscordEmoji.Chicken, result);
+                await InformAsync(ctx, StaticDiscordEmoji.Chicken, result, important: true);
             }
             #endregion
         }

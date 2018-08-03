@@ -73,7 +73,7 @@ namespace TheGodfather.Modules.Administration
                 await logchn.SendMessageAsync(embed: emb.Build());
             }
 
-            await ctx.InformSuccessAsync();
+            await InformAsync(ctx);
         }
         #endregion
 
@@ -105,7 +105,7 @@ namespace TheGodfather.Modules.Administration
                 await logchn.SendMessageAsync(embed: emb.Build());
             }
 
-            await ctx.InformSuccessAsync();
+            await InformAsync(ctx);
         }
         #endregion=
 
@@ -133,7 +133,7 @@ namespace TheGodfather.Modules.Administration
                 await logchn.SendMessageAsync(embed: emb.Build());
             }
 
-            await ctx.InformSuccessAsync();
+            await InformAsync(ctx);
         }
         #endregion
 

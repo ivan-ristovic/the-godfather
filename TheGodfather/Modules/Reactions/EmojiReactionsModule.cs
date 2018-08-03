@@ -127,7 +127,7 @@ namespace TheGodfather.Modules.Reactions
                     .ConfigureAwait(false);
             }
 
-            await ctx.InformSuccessAsync("Removed all emoji reactions!")
+            await InformAsync(ctx, "Removed all emoji reactions!")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -177,7 +177,7 @@ namespace TheGodfather.Modules.Reactions
                     .ConfigureAwait(false);
             }
 
-            await ctx.InformSuccessAsync($"Done!\n\n{errlist}")
+            await InformAsync(ctx, $"Done!\n\n{errlist}")
                 .ConfigureAwait(false);
         }
 
@@ -225,7 +225,7 @@ namespace TheGodfather.Modules.Reactions
                 }
             }
 
-            await ctx.InformSuccessAsync($"Successfully removed {removed} emoji reactions!\n\n{errlist}")
+            await InformAsync(ctx, $"Successfully removed {removed} emoji reactions!\n\n{errlist}")
                 .ConfigureAwait(false);
         }
 
@@ -290,7 +290,7 @@ namespace TheGodfather.Modules.Reactions
                 }
             }
 
-            await ctx.InformSuccessAsync($"Successfully removed {removed} emoji reactions!\n\n{errlist}")
+            await InformAsync(ctx, $"Successfully removed {removed} emoji reactions!\n\n{errlist}")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -381,7 +381,7 @@ namespace TheGodfather.Modules.Reactions
                     .ConfigureAwait(false);
             }
 
-            await ctx.InformSuccessAsync($"Done!\n\n{errlist}")
+            await InformAsync(ctx, $"Done!\n\n{errlist}")
                 .ConfigureAwait(false);
         }
         #endregion

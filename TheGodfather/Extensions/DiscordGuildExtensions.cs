@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace TheGodfather.Extensions
 {
-    public static class DiscordGuildExtensions
+    internal static class DiscordGuildExtensions
     {
         public static async Task<DiscordAuditLogEntry> GetFirstAuditLogEntryAsync(this DiscordGuild guild, AuditLogActionType type)
         {

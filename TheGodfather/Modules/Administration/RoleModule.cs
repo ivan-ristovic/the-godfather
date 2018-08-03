@@ -68,7 +68,7 @@ namespace TheGodfather.Modules.Administration
             }
 
             await ctx.Guild.CreateRoleAsync(name, null, color, hoisted, mentionable, ctx.BuildReasonString());
-            await ctx.InformSuccessAsync();
+            await InformAsync(ctx);
         }
 
         [Command("create"), Priority(1)]
@@ -95,7 +95,7 @@ namespace TheGodfather.Modules.Administration
                                      [RemainingText, Description("Reason.")] string reason = null)
         {
             await role.DeleteAsync(ctx.BuildReasonString(reason));
-            await ctx.InformSuccessAsync();
+            await InformAsync(ctx);
         }
         #endregion
 
@@ -158,7 +158,7 @@ namespace TheGodfather.Modules.Administration
                                        [Description("Color.")] DiscordColor color)
         {
             await role.ModifyAsync(color: color, reason: ctx.BuildReasonString());
-            await ctx.InformSuccessAsync();
+            await InformAsync(ctx);
         }
 
         [Command("setcolor"), Priority(0)]
@@ -184,7 +184,7 @@ namespace TheGodfather.Modules.Administration
                 throw new ArgumentException("I need a new name for the role.");
 
             await role.ModifyAsync(name: name, reason: ctx.BuildReasonString());
-            await ctx.InformSuccessAsync();
+            await InformAsync(ctx);
         }
 
         [Command("setname"), Priority(0)]
@@ -207,7 +207,7 @@ namespace TheGodfather.Modules.Administration
                                              [Description("Mentionable?")] bool mentionable = true)
         {
             await role.ModifyAsync(mentionable: mentionable, reason: ctx.BuildReasonString());
-            await ctx.InformSuccessAsync();
+            await InformAsync(ctx);
         }
 
         [Command("setmentionable"), Priority(0)]
@@ -230,7 +230,7 @@ namespace TheGodfather.Modules.Administration
                                          [Description("Hoisted (visible in online list)?")] bool hoisted = false)
         {
             await role.ModifyAsync(hoist: hoisted, reason: ctx.BuildReasonString());
-            await ctx.InformSuccessAsync();
+            await InformAsync(ctx);
         }
 
         [Command("setvisible"), Priority(0)]

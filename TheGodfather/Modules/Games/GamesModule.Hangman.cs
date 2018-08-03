@@ -80,7 +80,7 @@ namespace TheGodfather.Modules.Games
             [UsageExamples("!game hangman rules")]
             public async Task RulesAsync(CommandContext ctx)
             {
-                await ctx.InformSuccessAsync(
+                await InformAsync(ctx, 
                     "\nI will ask a player for the word. Once he gives me the secret word, the other players try to guess by posting letters. For each failed guess you lose a \"life\"." +
                     " The game ends if the word is guessed or when all lives are spent.",
                     ":book:"
@@ -98,7 +98,7 @@ namespace TheGodfather.Modules.Games
                 var top = await Database.GetTopHangmanPlayersStringAsync(ctx.Client)
                     .ConfigureAwait(false);
 
-                await ctx.InformSuccessAsync(StaticDiscordEmoji.Trophy, $"Top players in Hangman:\n\n{top}")
+                await InformAsync(ctx, StaticDiscordEmoji.Trophy, $"Top players in Hangman:\n\n{top}")
                     .ConfigureAwait(false);
             }
             #endregion

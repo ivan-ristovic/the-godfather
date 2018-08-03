@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 
 namespace TheGodfather.Extensions
 {
-    public static class StringExtensions
+    internal static class StringExtensions
     {
         public static bool IsValidRegex(this string pattern)
         {

@@ -152,7 +152,7 @@ namespace TheGodfather.Modules.Administration
                 return;
 
             await ctx.Guild.PruneAsync(days, ctx.BuildReasonString(reason));
-            await ctx.InformSuccessAsync();
+            await InformAsync(ctx);
         }
         #endregion
 
@@ -177,7 +177,7 @@ namespace TheGodfather.Modules.Administration
                 m.Name = newname;
                 m.AuditLogReason = ctx.BuildReasonString(reason);
             }));
-            await ctx.InformSuccessAsync();
+            await InformAsync(ctx);
         }
 
         [Command("rename")]
@@ -210,7 +210,7 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException("An error occured.", e);
             }
 
-            await ctx.InformSuccessAsync();
+            await InformAsync(ctx);
         }
         #endregion
     }

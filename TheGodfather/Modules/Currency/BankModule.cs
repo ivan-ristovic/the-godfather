@@ -55,8 +55,9 @@ namespace TheGodfather.Modules.Currency
             long? balance = await this.Database.GetBankAccountBalanceAsync(user.Id, ctx.Guild.Id);
 
             var emb = new DiscordEmbedBuilder() {
-                Title = $"Account status for {user.Username}",
-                Color = this.ModuleColor
+                Title = $"{StaticDiscordEmoji.MoneyBag} Bank account for {user.Username}",
+                Color = this.ModuleColor,
+                ThumbnailUrl = user.AvatarUrl
             };
 
             if (balance.HasValue) {
@@ -65,7 +66,7 @@ namespace TheGodfather.Modules.Currency
             } else {
                 emb.WithDescription($"No existing account! Use command {Formatter.InlineCode("bank register")} to open an account.");
             }
-            emb.WithFooter("\" Your money is safe in our hands \" - WM Bank", user.AvatarUrl);
+            emb.WithFooter("\"Your money is safe in our hands.\" - WM Bank");
 
             await ctx.RespondAsync(embed: emb.Build());
         }
@@ -89,9 +90,9 @@ namespace TheGodfather.Modules.Currency
                 throw new CommandFailedException("Given user does not have a WM bank account!");
 
             await this.Database.IncreaseBankAccountBalanceAsync(user.Id, ctx.Guild.Id, amount);
-            await ctx.InformSuccessAsync($"{Formatter.Bold(user.Mention)} won {Formatter.Bold($"{amount:n0}")} credits on the lottery! (seems legit)", StaticDiscordEmoji.MoneyBag);
+            await InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"{Formatter.Bold(user.Mention)} won {Formatter.Bold($"{amount:n0}")} credits on the lottery! (seems legit)", important: true);
         }
-
+        
         [Command("grant"), Priority(0)]
         public Task GrantAsync(CommandContext ctx,
                               [Description("Amount.")] long amount,
@@ -110,7 +111,7 @@ namespace TheGodfather.Modules.Currency
                 throw new CommandFailedException("You already own an account in WM bank!");
 
             await this.Database.OpenBankAccountAsync(ctx.User.Id, ctx.Guild.Id);
-            await ctx.InformSuccessAsync($"Account opened for you, {ctx.User.Mention}! Since WM bank is so generous, you get 10000 credits for free.", StaticDiscordEmoji.MoneyBag);
+            await InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"Account opened for you, {ctx.User.Mention}! Since WM bank is so generous, you get 10000 credits for free.", important: true);
         }
         #endregion
 
@@ -185,7 +186,7 @@ namespace TheGodfather.Modules.Currency
                 throw new CommandFailedException("You can't transfer funds to yourself.");
 
             await this.Database.TransferBetweenBankAccountsAsync(ctx.User.Id, user.Id, ctx.Guild.Id, amount);
-            await ctx.InformSuccessAsync();
+            await InformAsync(ctx);
         }
 
         [Command("transfer"), Priority(0)]
@@ -213,7 +214,7 @@ namespace TheGodfather.Modules.Currency
             else
                 await this.Database.CloseBankAccountAsync(user.Id, ctx.Guild.Id);
 
-            await ctx.InformSuccessAsync();
+            await InformAsync(ctx);
         }
         #endregion
     }

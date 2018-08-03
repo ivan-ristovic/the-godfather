@@ -4,7 +4,7 @@ using System;
 
 namespace TheGodfather.Extensions
 {
-    public static class DateTimeExtensions
+    internal static class DateTimeExtensions
     {
         public static string ToUtcTimestamp(this DateTime datetime)
             => $"At {datetime.ToUniversalTime().ToString()} UTC";

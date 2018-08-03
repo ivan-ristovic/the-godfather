@@ -51,7 +51,7 @@ namespace TheGodfather.Modules.SWAT
 
                 await Database.AddSwatServerAsync(server)
                     .ConfigureAwait(false);
-                await ctx.InformSuccessAsync("Server added. You can now query it using the name provided.")
+                await InformAsync(ctx, "Server added. You can now query it using the name provided.")
                     .ConfigureAwait(false);
             }
             #endregion
@@ -69,7 +69,7 @@ namespace TheGodfather.Modules.SWAT
 
                 await Database.RemoveSwatServerAsync(name)
                     .ConfigureAwait(false);
-                await ctx.InformSuccessAsync("Server successfully removed.")
+                await InformAsync(ctx, "Server successfully removed.")
                     .ConfigureAwait(false);
             }
             #endregion

@@ -47,7 +47,7 @@ namespace TheGodfather.Modules.Games
                 var game = new NumberRace(ctx.Client.GetInteractivity(), ctx.Channel);
                 this.Shared.RegisterEventInChannel(game, ctx.Channel.Id);
                 try {
-                    await ctx.InformSuccessAsync(StaticDiscordEmoji.Clock1, $"The race will start in 30s or when there are 10 participants. Use command {Formatter.InlineCode("game numberrace")} to join the race.")
+                    await InformAsync(ctx, StaticDiscordEmoji.Clock1, $"The race will start in 30s or when there are 10 participants. Use command {Formatter.InlineCode("game numberrace")} to join the race.")
                         .ConfigureAwait(false);
                     await JoinRaceAsync(ctx)
                         .ConfigureAwait(false);
@@ -60,14 +60,14 @@ namespace TheGodfather.Modules.Games
 
                         if (game.IsTimeoutReached) {
                             if (game.Winner != null) {
-                                await ctx.InformSuccessAsync(StaticDiscordEmoji.Trophy, $"{game.Winner.Mention} won due to no replies from other users!")
+                                await InformAsync(ctx, StaticDiscordEmoji.Trophy, $"{game.Winner.Mention} won due to no replies from other users!")
                                     .ConfigureAwait(false);
                             } else {
-                                await ctx.InformSuccessAsync(StaticDiscordEmoji.AlarmClock, "No replies, aborting Number Race...")
+                                await InformAsync(ctx, StaticDiscordEmoji.AlarmClock, "No replies, aborting Number Race...")
                                         .ConfigureAwait(false);
                             }
                         } else {
-                            await ctx.InformSuccessAsync(StaticDiscordEmoji.Trophy, "Winner: " + game.Winner.Mention)
+                            await InformAsync(ctx, StaticDiscordEmoji.Trophy, "Winner: " + game.Winner.Mention)
                                 .ConfigureAwait(false);
                         }
 
@@ -75,7 +75,7 @@ namespace TheGodfather.Modules.Games
                             await Database.UpdateUserStatsAsync(game.Winner.Id, GameStatsType.NumberRacesWon)
                                 .ConfigureAwait(false);
                     } else {
-                        await ctx.InformSuccessAsync(StaticDiscordEmoji.AlarmClock, "Not enough users joined the race.")
+                        await InformAsync(ctx, StaticDiscordEmoji.AlarmClock, "Not enough users joined the race.")
                             .ConfigureAwait(false);
                     }
                 } finally {
@@ -103,7 +103,7 @@ namespace TheGodfather.Modules.Games
                 if (!game.AddParticipant(ctx.User))
                     throw new CommandFailedException("You are already participating in the race!");
 
-                await ctx.InformSuccessAsync($"{ctx.User.Mention} joined the game.", ":bicyclist:")
+                await InformAsync(ctx, $"{ctx.User.Mention} joined the game.", ":bicyclist:")
                     .ConfigureAwait(false);
             }
             #endregion
@@ -115,7 +115,7 @@ namespace TheGodfather.Modules.Games
             [UsageExamples("!game numberrace rules")]
             public async Task RulesAsync(CommandContext ctx)
             {
-                await ctx.InformSuccessAsync(
+                await InformAsync(ctx, 
                     "I will start by typing a number. Users have to count up by 1 from that number. " +
                     "If someone makes a mistake (types an incorrent number, or repeats the same number) " +
                     "they are out of the game. If nobody posts a number 20s after the last number was posted, " +
@@ -135,7 +135,7 @@ namespace TheGodfather.Modules.Games
                 var top = await Database.GetTopNunchiPlayersStringAsync(ctx.Client)
                     .ConfigureAwait(false);
 
-                await ctx.InformSuccessAsync(StaticDiscordEmoji.Trophy, $"Top players in Number Race:\n\n{top}")
+                await InformAsync(ctx, StaticDiscordEmoji.Trophy, $"Top players in Number Race:\n\n{top}")
                     .ConfigureAwait(false);
             }
             #endregion

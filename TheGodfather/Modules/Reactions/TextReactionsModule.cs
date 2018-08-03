@@ -105,7 +105,7 @@ namespace TheGodfather.Modules.Reactions
                     .ConfigureAwait(false);
             }
 
-            await ctx.InformSuccessAsync("Removed all text reactions!")
+            await InformAsync(ctx, "Removed all text reactions!")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -162,7 +162,7 @@ namespace TheGodfather.Modules.Reactions
                 }
             }
 
-            await ctx.InformSuccessAsync($"Successfully removed {removed} text reactions!\n\n{errlist}")
+            await InformAsync(ctx, $"Successfully removed {removed} text reactions!\n\n{errlist}")
                 .ConfigureAwait(false);
         }
 
@@ -230,7 +230,7 @@ namespace TheGodfather.Modules.Reactions
                 }
             }
 
-            await ctx.InformSuccessAsync($"Successfully removed {removed} text reactions!\n\n{errlist}")
+            await InformAsync(ctx, $"Successfully removed {removed} text reactions!\n\n{errlist}")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -314,7 +314,7 @@ namespace TheGodfather.Modules.Reactions
                     .ConfigureAwait(false);
             }
 
-            await ctx.InformSuccessAsync($"Done!\n\n{errors}")
+            await InformAsync(ctx, $"Done!\n\n{errors}")
                 .ConfigureAwait(false);
         }
         #endregion

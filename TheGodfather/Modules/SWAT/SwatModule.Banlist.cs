@@ -48,7 +48,7 @@ namespace TheGodfather.Modules.SWAT
             {
                 await Database.AddSwatIpBanAsync(name, ip, reason)
                     .ConfigureAwait(false);
-                await ctx.InformSuccessAsync($"Added a ban entry for {Formatter.Bold(name)} ({Formatter.InlineCode(ip)})")
+                await InformAsync(ctx, $"Added a ban entry for {Formatter.Bold(name)} ({Formatter.InlineCode(ip)})")
                     .ConfigureAwait(false);
             }
             #endregion
@@ -63,7 +63,7 @@ namespace TheGodfather.Modules.SWAT
             {
                 await Database.RemoveSwatIpBanAsync(ip)
                     .ConfigureAwait(false);
-                await ctx.InformSuccessAsync($"Removed an IP ban rule for {Formatter.InlineCode(ip)}.")
+                await InformAsync(ctx, $"Removed an IP ban rule for {Formatter.InlineCode(ip)}.")
                     .ConfigureAwait(false);
             }
             #endregion

@@ -2,6 +2,7 @@
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 using System;
 using System.Linq;
@@ -29,7 +30,7 @@ namespace TheGodfather.Modules.Currency
             public LotteryModule(SharedData shared, DBService db) 
                 : base(shared, db)
             {
-
+                this.ModuleColor = DiscordColor.SapGreen;
             }
 
 
@@ -52,19 +53,19 @@ namespace TheGodfather.Modules.Currency
                 var game = new LotteryGame(ctx.Client.GetInteractivity(), ctx.Channel);
                 this.Shared.RegisterEventInChannel(game, ctx.Channel.Id);
                 try {
-                    await ctx.InformSuccessAsync(StaticDiscordEmoji.Clock1, $"The Lottery game will start in 30s or when there are 10 participants. Use command {Formatter.InlineCode("casino lottery")} to join the pool.");
+                    await InformAsync(ctx, StaticDiscordEmoji.Clock1, $"The Lottery game will start in 30s or when there are 10 participants. Use command {Formatter.InlineCode("casino lottery")} to join the pool.", important: true);
                     await JoinAsync(ctx, numbers);
                     await Task.Delay(TimeSpan.FromSeconds(30));
 
                     await game.RunAsync();
 
                     if (game.Winners.Any()) {
-                        await ctx.InformSuccessAsync(StaticDiscordEmoji.MoneyBag, $"Winnings:\n\n{string.Join(", ", game.Winners.Select(w => $"{w.User.Mention} : {w.WinAmount}"))}");
+                        await InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"Winnings:\n\n{string.Join(", ", game.Winners.Select(w => $"{w.User.Mention} : {w.WinAmount}"))}");
 
                         foreach (var winner in game.Winners)
                             await this.Database.IncreaseBankAccountBalanceAsync(winner.Id, ctx.Guild.Id, winner.WinAmount);
                     } else {
-                        await ctx.InformSuccessAsync(StaticDiscordEmoji.MoneyBag, "Better luck next time!");
+                        await InformAsync(ctx, StaticDiscordEmoji.MoneyBag, "Better luck next time!", important: true);
                     }
                 } finally {
                     this.Shared.UnregisterEventInChannel(ctx.Channel.Id);
@@ -102,7 +103,7 @@ namespace TheGodfather.Modules.Currency
                     throw new CommandFailedException($"You do not have enough credits to buy a lottery ticket! Use command {Formatter.InlineCode("bank")} to check your account status. The lottery ticket costs {LotteryGame.TicketPrice} credits!");
 
                 game.AddParticipant(ctx.User, numbers);
-                await ctx.InformSuccessAsync(StaticDiscordEmoji.MoneyBag, $"{ctx.User.Mention} joined the Lottery game.");
+                await InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"{ctx.User.Mention} joined the Lottery game.", important: true);
             }
             #endregion
 
@@ -113,10 +114,11 @@ namespace TheGodfather.Modules.Currency
             [UsageExamples("!casino lottery rules")]
             public Task RulesAsync(CommandContext ctx)
             {
-                return ctx.InformSuccessAsync(
+                return InformAsync(ctx, 
                     "Three numbers will be drawn, and rewards will be given to participants depending on " +
                     "the number of correct guesses.",
                     ":information_source:"
+                    , important: true
                 );
             }
             #endregion

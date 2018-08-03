@@ -13,10 +13,20 @@ namespace TheGodfather.Modules.Currency.Common
     {
         private static ImmutableArray<DiscordEmoji> _emoji = new DiscordEmoji[] {
             StaticDiscordEmoji.LargeBlueDiamond,
-            StaticDiscordEmoji.MoneyBag,
             StaticDiscordEmoji.Seven,
+            StaticDiscordEmoji.MoneyBag,
+            StaticDiscordEmoji.Trophy,
             StaticDiscordEmoji.Gift,
             StaticDiscordEmoji.Cherries
+        }.ToImmutableArray();
+
+        private static ImmutableArray<int> _multipliers = new int[] {
+            10,
+            7,
+            5,
+            4,
+            3,
+            2
         }.ToImmutableArray();
 
 
@@ -26,11 +36,17 @@ namespace TheGodfather.Modules.Currency.Common
             won = EvaluateSlotResult(res, bid);
 
             var emb = new DiscordEmbedBuilder() {
-                Title = "TOTALLY NOT RIGGED SERBIAN SLOT MACHINE",
+                Title = $"{StaticDiscordEmoji.LargeOrangeDiamond} SLUT MACHINE {StaticDiscordEmoji.LargeOrangeDiamond}",
                 Description = MakeStringFromResult(res),
-                Color = DiscordColor.Yellow
+                Color = DiscordColor.MidnightBlue,
+                ThumbnailUrl = user.AvatarUrl
             };
 
+            var sb = new StringBuilder();
+            for (int i = 0; i < _emoji.Length; i++)
+                sb.Append(_emoji[i]).Append(Formatter.InlineCode($" x{_multipliers[i]}")).Append(" ");
+
+            emb.AddField("Multipliers", sb.ToString());
             emb.AddField("Result", $"{user.Mention} won {Formatter.Bold(won.ToWords())} ({won:n0}) credits!");
 
             return emb.Build();
@@ -50,11 +66,27 @@ namespace TheGodfather.Modules.Currency.Common
         private static string MakeStringFromResult(int[,] res)
         {
             var sb = new StringBuilder();
+
+            sb.Append(StaticDiscordEmoji.BlackSquare);
+            for (int i = 0; i < 5; i++)
+                sb.Append(StaticDiscordEmoji.SmallOrangeDiamond);
+            sb.AppendLine();
+
             for (int i = 0; i < 3; i++) {
+                if (i % 2 == 1)
+                    sb.Append(StaticDiscordEmoji.Joystick);
+                else
+                    sb.Append(StaticDiscordEmoji.BlackSquare);
+                sb.Append(StaticDiscordEmoji.SmallOrangeDiamond);
                 for (int j = 0; j < 3; j++)
                     sb.Append(_emoji[res[i, j]]);
-                sb.AppendLine();
+                sb.AppendLine(StaticDiscordEmoji.SmallOrangeDiamond);
             }
+
+            sb.Append(StaticDiscordEmoji.BlackSquare);
+            for (int i = 0; i < 5; i++)
+                sb.Append(StaticDiscordEmoji.SmallOrangeDiamond);
+
             return sb.ToString();
         }
 
@@ -62,31 +94,13 @@ namespace TheGodfather.Modules.Currency.Common
         {
             long pts = bid;
 
-            for (int i = 0; i < 3; i++) {
-                if (res[i, 0] == res[i, 1] && res[i, 1] == res[i, 2]) {
-                    if (res[i, 0] == 0)
-                        pts *= 7;
-                    else if (res[i, 0] == 1)
-                        pts *= 5;
-                    else if (res[i, 0] == 2)
-                        pts *= 4;
-                    else
-                        pts *= 3;
-                }
-            }
+            for (int i = 0; i < 3; i++)
+                if (res[i, 0] == res[i, 1] && res[i, 1] == res[i, 2])
+                    pts *= _multipliers[res[i, 0]];
 
-            for (int i = 0; i < 3; i++) {
-                if (res[0, i] == res[1, i] && res[1, i] == res[2, i]) {
-                    if (res[0, i] == 0)
-                        pts *= 7;
-                    else if (res[0, i] == 1)
-                        pts *= 5;
-                    else if (res[0, i] == 2)
-                        pts *= 4;
-                    else
-                        pts *= 3;
-                }
-            }
+            for (int i = 0; i < 3; i++)
+                if (res[0, i] == res[1, i] && res[1, i] == res[2, i])
+                    pts *= _multipliers[res[0, i]];
 
             return pts == bid ? 0L : pts;
         }

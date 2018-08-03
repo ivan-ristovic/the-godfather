@@ -26,9 +26,9 @@ namespace TheGodfather.EventListeners
             if (wchn != null) {
                 string msg = await shard.DatabaseService.GetWelcomeMessageAsync(e.Guild.Id);
                 if (string.IsNullOrWhiteSpace(msg))
-                    await wchn.InformSuccessAsync($"Welcome to {Formatter.Bold(e.Guild.Name)}, {e.Member.Mention}!", StaticDiscordEmoji.Wave);
+                    await wchn.EmbedAsync($"Welcome to {Formatter.Bold(e.Guild.Name)}, {e.Member.Mention}!", StaticDiscordEmoji.Wave);
                 else
-                    await wchn.InformSuccessAsync(msg.Replace("%user%", e.Member.Mention), StaticDiscordEmoji.Wave);
+                    await wchn.EmbedAsync(msg.Replace("%user%", e.Member.Mention), StaticDiscordEmoji.Wave);
             }
 
             try {
@@ -79,9 +79,9 @@ namespace TheGodfather.EventListeners
             if (lchn != null) {
                 string msg = await shard.DatabaseService.GetLeaveMessageForGuildAsync(e.Guild.Id);
                 if (string.IsNullOrWhiteSpace(msg))
-                    await lchn.InformSuccessAsync($"{Formatter.Bold(e.Member?.Username ?? _unknown)} left the server! Bye!", StaticDiscordEmoji.Wave);
+                    await lchn.EmbedAsync($"{Formatter.Bold(e.Member?.Username ?? _unknown)} left the server! Bye!", StaticDiscordEmoji.Wave);
                 else
-                    await lchn.InformSuccessAsync(msg.Replace("%user%", e.Member?.Username ?? _unknown), StaticDiscordEmoji.Wave);
+                    await lchn.EmbedAsync(msg.Replace("%user%", e.Member?.Username ?? _unknown), StaticDiscordEmoji.Wave);
             }
 
             DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);

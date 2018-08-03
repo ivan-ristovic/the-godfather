@@ -74,7 +74,7 @@ namespace TheGodfather.Modules.Misc
                               .Distinct()
                               .Select(s => s.Trim())
                               .Where(s => !string.IsNullOrWhiteSpace(s));
-            await ctx.InformSuccessAsync(options.ElementAt(GFRandom.Generator.Next(options.Count())), ":arrow_right:")
+            await InformAsync(ctx, options.ElementAt(GFRandom.Generator.Next(options.Count())), ":arrow_right:")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -97,7 +97,7 @@ namespace TheGodfather.Modules.Misc
                 throw new CommandFailedException("No online members to raffle from.");
 
             var raffled = online.ElementAt(GFRandom.Generator.Next(online.Count()));
-            await ctx.InformSuccessAsync($"Raffled: {raffled.Mention}", ":game_die:")
+            await InformAsync(ctx, StaticDiscordEmoji.Dice, $"Raffled: {raffled.Mention}")
                 .ConfigureAwait(false);
         }
         #endregion

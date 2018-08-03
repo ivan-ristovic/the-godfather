@@ -79,7 +79,7 @@ namespace TheGodfather.Modules.Games
             [UsageExamples("!game duel rules")]
             public async Task RulesAsync(CommandContext ctx)
             {
-                await ctx.InformSuccessAsync(
+                await InformAsync(ctx, 
                     "\nDuel is a death battle with no rules! Rumours say that typing ``hp`` might heal give you an extra boost during the duel...",
                     ":book:"
                 ).ConfigureAwait(false);
@@ -96,7 +96,7 @@ namespace TheGodfather.Modules.Games
                 var top = await Database.GetTopDuelistsStringAsync(ctx.Client)
                     .ConfigureAwait(false);
 
-                await ctx.InformSuccessAsync(StaticDiscordEmoji.Trophy, $"Top Duelists:\n\n{top}")
+                await InformAsync(ctx, StaticDiscordEmoji.Trophy, $"Top Duelists:\n\n{top}")
                     .ConfigureAwait(false);
             }
             #endregion

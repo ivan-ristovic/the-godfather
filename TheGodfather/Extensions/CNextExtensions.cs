@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace TheGodfather.Extensions
 {
-    public static class CNextExtensions
+    internal static class CNextExtensions
     {
         public static IReadOnlyList<Command> GetAllRegisteredCommands(this CommandsNextExtension cnext)
         {

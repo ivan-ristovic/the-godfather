@@ -64,7 +64,7 @@ namespace TheGodfather.Modules.Currency.Common
         {
             this.Started = true;
 
-            DiscordMessage msg = await this.Channel.InformSuccessAsync("Starting blackjack game...");
+            DiscordMessage msg = await this.Channel.EmbedAsync("Starting blackjack game...");
 
             foreach (BlackjackParticipant participant in this.participants) {
                 participant.Hand.Add(this.deck.GetNextCard());
@@ -105,7 +105,7 @@ namespace TheGodfather.Modules.Currency.Common
                 this.hand.Add(this.deck.GetNextCard());
 
             if (this.hand.Count == 2 && HandValue(this.hand) == 21)
-                await this.Channel.InformSuccessAsync("BLACKJACK!");
+                await this.Channel.EmbedAsync("BLACKJACK!");
 
             this.GameOver = true;
             await PrintGameAsync(msg);

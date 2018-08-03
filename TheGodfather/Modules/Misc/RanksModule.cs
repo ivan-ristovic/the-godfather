@@ -80,7 +80,7 @@ namespace TheGodfather.Modules.Misc
 
             await Database.AddRankAsync(ctx.Guild.Id, rank, name)
                 .ConfigureAwait(false);
-            await ctx.InformSuccessAsync()
+            await InformAsync(ctx)
                 .ConfigureAwait(false);
         }
         #endregion
@@ -96,7 +96,7 @@ namespace TheGodfather.Modules.Misc
         {
             await Database.RemoveRankAsync(ctx.Guild.Id, rank)
                 .ConfigureAwait(false);
-            await ctx.InformSuccessAsync()
+            await InformAsync(ctx)
                 .ConfigureAwait(false);
         }
         #endregion

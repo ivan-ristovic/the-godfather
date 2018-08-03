@@ -94,7 +94,7 @@ namespace TheGodfather.Modules.Misc
 
             await Database.AddMemeAsync(ctx.Guild.Id, name, url.AbsoluteUri)
                 .ConfigureAwait(false);
-            await ctx.InformSuccessAsync($"Meme {Formatter.Bold(name)} successfully added!")
+            await InformAsync(ctx, $"Meme {Formatter.Bold(name)} successfully added!")
                 .ConfigureAwait(false);
         }
 
@@ -125,7 +125,7 @@ namespace TheGodfather.Modules.Misc
                 throw new CommandFailedException("Failed to delete memes from the database.");
             }
 
-            await ctx.InformSuccessAsync("Removed all memes!")
+            await InformAsync(ctx, "Removed all memes!")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -164,7 +164,7 @@ namespace TheGodfather.Modules.Misc
 
             await Database.RemoveMemeAsync(ctx.Guild.Id, name)
                 .ConfigureAwait(false);
-            await ctx.InformSuccessAsync($"Meme {Formatter.Bold(name)} successfully removed!")
+            await InformAsync(ctx, $"Meme {Formatter.Bold(name)} successfully removed!")
                 .ConfigureAwait(false);
         }
         #endregion

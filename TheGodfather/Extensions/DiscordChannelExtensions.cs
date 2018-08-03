@@ -14,7 +14,7 @@ using TheGodfather.Common.Converters;
 
 namespace TheGodfather.Extensions
 {
-    public static class DiscordChannelExtensions
+    internal static class DiscordChannelExtensions
     {
         public static Task<DiscordDmChannel> CreateDmChannelAsync(this DiscordClient client, ulong uid)
         {
@@ -25,11 +25,11 @@ namespace TheGodfather.Extensions
             return member?.CreateDmChannelAsync();
         }
 
-        public static Task<DiscordMessage> InformSuccessAsync(this DiscordChannel channel, string message, DiscordEmoji icon = null)
+        public static Task<DiscordMessage> EmbedAsync(this DiscordChannel channel, string message, DiscordEmoji icon = null, DiscordColor? color = null)
         {
             return channel.SendMessageAsync(embed: new DiscordEmbedBuilder {
                 Description = $"{icon ?? ""} {message}",
-                Color = DiscordColor.Green
+                Color = color ?? DiscordColor.Green
             });
         }
 

@@ -47,7 +47,7 @@ namespace TheGodfather.Modules.Games
                 var game = new AnimalRace(ctx.Client.GetInteractivity(), ctx.Channel);
                 this.Shared.RegisterEventInChannel(game, ctx.Channel.Id);
                 try {
-                    await ctx.InformSuccessAsync(StaticDiscordEmoji.Clock1, $"The race will start in 30s or when there are 10 participants. Use command {Formatter.InlineCode("game animalrace")} to join the race.")
+                    await InformAsync(ctx, StaticDiscordEmoji.Clock1, $"The race will start in 30s or when there are 10 participants. Use command {Formatter.InlineCode("game animalrace")} to join the race.")
                         .ConfigureAwait(false);
                     await JoinAsync(ctx)
                         .ConfigureAwait(false);
@@ -62,7 +62,7 @@ namespace TheGodfather.Modules.Games
                             await Database.UpdateUserStatsAsync(uid, GameStatsType.AnimalRacesWon)
                                 .ConfigureAwait(false);
                     } else {
-                        await ctx.InformSuccessAsync(StaticDiscordEmoji.AlarmClock, "Not enough users joined the race.")
+                        await InformAsync(ctx, StaticDiscordEmoji.AlarmClock, "Not enough users joined the race.")
                             .ConfigureAwait(false);
                     }
                 } finally {
@@ -90,7 +90,7 @@ namespace TheGodfather.Modules.Games
                 if (!game.AddParticipant(ctx.User, out DiscordEmoji emoji))
                     throw new CommandFailedException("You are already participating in the race!");
 
-                await ctx.InformSuccessAsync($"{ctx.User.Mention} joined the race as {emoji}", ":bicyclist:")
+                await InformAsync(ctx, $"{ctx.User.Mention} joined the race as {emoji}", ":bicyclist:")
                     .ConfigureAwait(false);
             }
             #endregion
@@ -105,7 +105,7 @@ namespace TheGodfather.Modules.Games
                 var top = await Database.GetTopRacersStringAsync(ctx.Client)
                     .ConfigureAwait(false);
 
-                await ctx.InformSuccessAsync(StaticDiscordEmoji.Trophy, $"Top players in Animal Race:\n\n{top}")
+                await InformAsync(ctx, StaticDiscordEmoji.Trophy, $"Top players in Animal Race:\n\n{top}")
                     .ConfigureAwait(false);
             }
             #endregion

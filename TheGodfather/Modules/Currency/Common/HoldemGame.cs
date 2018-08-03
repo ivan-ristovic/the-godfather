@@ -61,7 +61,7 @@ namespace TheGodfather.Modules.Currency.Common
         {
             this.Started = true;
 
-            DiscordMessage msg = await this.Channel.InformSuccessAsync("Starting Hold'Em game... Keep an eye on DM!");
+            DiscordMessage msg = await this.Channel.EmbedAsync("Starting Hold'Em game... Keep an eye on DM!");
 
             foreach (HoldemParticipant participant in this.Participants) {
                 participant.Card1 = this.deck.GetNextCard();

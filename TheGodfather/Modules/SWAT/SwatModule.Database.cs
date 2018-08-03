@@ -50,7 +50,7 @@ namespace TheGodfather.Modules.SWAT
 
                 await Database.AddSwatIpEntryAsync(name, ip, info)
                     .ConfigureAwait(false);
-                await ctx.InformSuccessAsync($"Added a database entry for {Formatter.Bold(name)} ({Formatter.InlineCode(ip)})")
+                await InformAsync(ctx, $"Added a database entry for {Formatter.Bold(name)} ({Formatter.InlineCode(ip)})")
                     .ConfigureAwait(false);
             }
             #endregion
@@ -65,7 +65,7 @@ namespace TheGodfather.Modules.SWAT
             {
                 await Database.RemoveSwatIpEntryAsync(ip)
                     .ConfigureAwait(false);
-                await ctx.InformSuccessAsync()
+                await InformAsync(ctx)
                     .ConfigureAwait(false);
             }
             #endregion

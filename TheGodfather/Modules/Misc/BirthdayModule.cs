@@ -73,7 +73,7 @@ namespace TheGodfather.Modules.Misc
 
             await Database.AddBirthdayAsync(user.Id, channel.Id, date)
                 .ConfigureAwait(false);
-            await ctx.InformSuccessAsync()
+            await InformAsync(ctx)
                 .ConfigureAwait(false);
         }
 
@@ -95,7 +95,7 @@ namespace TheGodfather.Modules.Misc
         {
             await Database.RemoveBirthdayAsync(user.Id)
                 .ConfigureAwait(false);
-            await ctx.InformSuccessAsync()
+            await InformAsync(ctx)
                 .ConfigureAwait(false);
         }
         #endregion

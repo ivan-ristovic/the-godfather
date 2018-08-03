@@ -9,7 +9,7 @@ using TheGodfather.Exceptions;
 
 namespace TheGodfather.Extensions
 {
-    public static class InteractivityExtensions
+    internal static class InteractivityExtensions
     {
         public static Task<bool> WaitForBoolReplyAsync(this InteractivityExtension interactivity, CommandContext ctx, ulong uid = 0)
             => interactivity.WaitForBoolReplyAsync(ctx.Channel.Id, uid != 0 ? uid : ctx.User.Id, ctx.Services.GetService<SharedData>());

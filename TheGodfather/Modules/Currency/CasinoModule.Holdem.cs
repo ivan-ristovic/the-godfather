@@ -29,7 +29,7 @@ namespace TheGodfather.Modules.Currency
             public HoldemModule(SharedData shared, DBService db)
                 : base(shared, db)
             {
-
+                this.ModuleColor = DiscordColor.SapGreen;
             }
 
 
@@ -55,7 +55,7 @@ namespace TheGodfather.Modules.Currency
                 var game = new HoldemGame(ctx.Client.GetInteractivity(), ctx.Channel, amount);
                 this.Shared.RegisterEventInChannel(game, ctx.Channel.Id);
                 try {
-                    await ctx.InformSuccessAsync(StaticDiscordEmoji.Clock1, $"The Hold'Em game will start in 30s or when there are 7 participants. Use command {Formatter.InlineCode("casino holdem <entering sum>")} to join the pool. Entering sum is set to {game.MoneyNeeded} credits.");
+                    await InformAsync(ctx, StaticDiscordEmoji.Clock1, $"The Hold'Em game will start in 30s or when there are 7 participants. Use command {Formatter.InlineCode("casino holdem <entering sum>")} to join the pool. Entering sum is set to {game.MoneyNeeded} credits.", important: true);
                     await JoinAsync(ctx);
                     await Task.Delay(TimeSpan.FromSeconds(30));
 
@@ -63,14 +63,14 @@ namespace TheGodfather.Modules.Currency
                         await game.RunAsync();
 
                         if (game.Winner != null)
-                            await ctx.InformSuccessAsync(StaticDiscordEmoji.Trophy, $"Winner: {game.Winner.Mention}");
+                            await InformAsync(ctx, StaticDiscordEmoji.Trophy, $"Winner: {game.Winner.Mention}", important: true);
 
                         foreach (HoldemParticipant participant in game.Participants)
                             await this.Database.IncreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, participant.Balance);
 
                     } else {
                         await this.Database.IncreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, game.MoneyNeeded);
-                        await ctx.InformSuccessAsync(StaticDiscordEmoji.AlarmClock, "Not enough users joined the Hold'Em game.");
+                        await InformAsync(ctx, StaticDiscordEmoji.AlarmClock, "Not enough users joined the Hold'Em game.", important: true);
                     }
                 } finally {
                     this.Shared.UnregisterEventInChannel(ctx.Channel.Id);
@@ -109,7 +109,7 @@ namespace TheGodfather.Modules.Currency
                     throw new CommandFailedException($"You do not have enough credits! Use command {Formatter.InlineCode("bank")} to check your account status.");
 
                 game.AddParticipant(ctx.User, handle);
-                await ctx.InformSuccessAsync(StaticDiscordEmoji.CardSuits[0], $"{ctx.User.Mention} joined the Hold'Em game.");
+                await InformAsync(ctx, StaticDiscordEmoji.CardSuits[0], $"{ctx.User.Mention} joined the Hold'Em game.", important: true);
             }
             #endregion
 
@@ -120,7 +120,7 @@ namespace TheGodfather.Modules.Currency
             [UsageExamples("!casino holdem rules")]
             public Task RulesAsync(CommandContext ctx)
             {
-                return ctx.InformSuccessAsync(
+                return InformAsync(ctx, 
                     "Texas hold 'em (also known as Texas holdem, hold 'em, and holdem) is a variation of " +
                     "the card game of poker. Two cards, known as the hole cards, are dealt face down to " +
                     "each player, and then five community cards are dealt face up in three stages. The " +
@@ -129,6 +129,7 @@ namespace TheGodfather.Modules.Currency
                     "street\"). Each player seeks the best five card poker hand from any combination of " +
                     "the seven cards of the five community cards and their own two hole cards.",
                     ":information_source:"
+                    , important: true
                 );
             }
             #endregion

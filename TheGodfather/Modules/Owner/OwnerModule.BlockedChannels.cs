@@ -104,7 +104,7 @@ namespace TheGodfather.Modules.Owner
                     sb.AppendLine($"Blocked: {channel.ToString()}!");
                 }
 
-                await ctx.InformSuccessAsync(sb.ToString())
+                await InformAsync(ctx, sb.ToString())
                     .ConfigureAwait(false);
             }
 
@@ -152,7 +152,7 @@ namespace TheGodfather.Modules.Owner
                     sb.AppendLine($"Unblocked: {channel.ToString()}!");
                 }
 
-                await ctx.InformSuccessAsync(sb.ToString())
+                await InformAsync(ctx, sb.ToString())
                     .ConfigureAwait(false);
             }
             #endregion

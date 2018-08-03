@@ -7,7 +7,7 @@ using System.Security.Cryptography;
 
 namespace TheGodfather.Extensions
 {
-    public static class EnumerableExtensions
+    internal static class EnumerableExtensions
     {
         public static IEnumerable<T> Shuffle<T>(this IEnumerable<T> items)
         {

@@ -7,7 +7,7 @@ using TexasHoldem.Logic.Cards;
 
 namespace TheGodfather.Extensions
 {
-    public static class HoldemExtensions
+    internal static class HoldemExtensions
     {
         public static IReadOnlyList<Card> DrawCards(this Deck deck, int amount)
         {

@@ -55,7 +55,7 @@ namespace TheGodfather.Modules.Misc
 
             await Database.AddPurchasableItemAsync(ctx.Guild.Id, name, price)
                 .ConfigureAwait(false);
-            await ctx.InformSuccessAsync($"Item {Formatter.Bold(name)} ({Formatter.Bold(price.ToString())} credits) successfully added to this guild's shop.")
+            await InformAsync(ctx, $"Item {Formatter.Bold(name)} ({Formatter.Bold(price.ToString())} credits) successfully added to this guild's shop.")
                 .ConfigureAwait(false);
         }
 
@@ -91,7 +91,7 @@ namespace TheGodfather.Modules.Misc
 
             await Database.AddPurchaseAsync(ctx.User.Id, item.Id)
                 .ConfigureAwait(false);
-            await ctx.InformSuccessAsync($"{ctx.User.Mention} bought a {Formatter.Bold(item.Name)} for {Formatter.Bold(item.Price.ToString())} credits!", ":moneybag:")
+            await InformAsync(ctx, $"{ctx.User.Mention} bought a {Formatter.Bold(item.Name)} for {Formatter.Bold(item.Price.ToString())} credits!", ":moneybag:")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -121,7 +121,7 @@ namespace TheGodfather.Modules.Misc
                 .ConfigureAwait(false);
             await Database.RemovePurchaseAsync(ctx.User.Id, item.Id)
                 .ConfigureAwait(false);
-            await ctx.InformSuccessAsync($"{ctx.User.Mention} sold a {Formatter.Bold(item.Name)} for {Formatter.Bold(retval.ToString())} credits!", ":moneybag:")
+            await InformAsync(ctx, $"{ctx.User.Mention} sold a {Formatter.Bold(item.Name)} for {Formatter.Bold(retval.ToString())} credits!", ":moneybag:")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -143,7 +143,7 @@ namespace TheGodfather.Modules.Misc
 
             await Database.RemovePurchasableItemsAsync(ctx.Guild.Id, ids)
                 .ConfigureAwait(false);
-            await ctx.InformSuccessAsync()
+            await InformAsync(ctx)
                 .ConfigureAwait(false);
         }
         #endregion

@@ -136,7 +136,7 @@ namespace TheGodfather.Modules.Chickens
 
                 await this.Database.AddChickenAsync(ctx.User.Id, ctx.Guild.Id, name, Chicken.StartingStats[type]);
 
-                await ctx.InformSuccessAsync(StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} bought a chicken named {Formatter.Bold(name)}");
+                await InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} bought a chicken named {Formatter.Bold(name)}", important: true);
             }
             #endregion
         }

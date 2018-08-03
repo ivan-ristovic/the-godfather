@@ -4,6 +4,7 @@ using DSharpPlus.Entities;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+using TheGodfather.Extensions;
 using TheGodfather.Services.Database;
 #endregion
 
@@ -25,7 +26,13 @@ namespace TheGodfather.Modules
             this.Database = db;
             this.ModuleColor = DiscordColor.Green;
         }
-        
+
+
+        protected Task InformAsync(CommandContext ctx, string message = null, string icon_emoji = null, bool important = false)
+            => ctx.EmbedAsync(this.Shared, message, important, icon_emoji, this.ModuleColor);
+
+        protected Task InformAsync(CommandContext ctx, DiscordEmoji emoji, string message = null, bool important = false)
+            => ctx.EmbedAsync(this.Shared, emoji, message, important, this.ModuleColor);
 
         protected async Task<bool> IsValidImageUriAsync(Uri uri)
         {

@@ -97,7 +97,7 @@ namespace TheGodfather.Modules.Search
 
             var feedurl = YtService.GetRssUrlForChannel(chid);
             if (await Database.TryAddSubscriptionAsync(ctx.Channel.Id, feedurl, string.IsNullOrWhiteSpace(name) ? url : name).ConfigureAwait(false))
-                await ctx.InformSuccessAsync("Subscribed!").ConfigureAwait(false);
+                await InformAsync(ctx, "Subscribed!").ConfigureAwait(false);
             else
                 await ctx.InformFailureAsync("Either the channel URL you is invalid or you are already subscribed to it!").ConfigureAwait(false);
         }
@@ -127,7 +127,7 @@ namespace TheGodfather.Modules.Search
                     .ConfigureAwait(false);
             }
 
-            await ctx.InformSuccessAsync("Unsubscribed!")
+            await InformAsync(ctx, "Unsubscribed!")
                 .ConfigureAwait(false);
         }
         #endregion

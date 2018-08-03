@@ -78,7 +78,7 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException("Discord prevented the emoji from being added. Possibly emoji slots are full for this guild or the image format is not supported?", e);
             }
 
-            await ctx.InformSuccessAsync();
+            await InformAsync(ctx);
         }
 
         [Command("add"), Priority(2)]
@@ -121,7 +121,7 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException("Can't find that emoji in list of emoji that I made for this guild.");
             }
 
-            await ctx.InformSuccessAsync();
+            await InformAsync(ctx);
         }
         #endregion
 
@@ -177,7 +177,6 @@ namespace TheGodfather.Modules.Administration
                                      [Description("Emoji to rename.")] DiscordEmoji emoji,
                                      [Description("New name.")] string newname)
         {
-            // TODO check
             if (string.IsNullOrWhiteSpace(newname))
                 throw new InvalidCommandUsageException("Name missing.");
 
@@ -188,7 +187,7 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException("Can't find that emoji in list of emoji that I made for this guild.");
             }
 
-            await ctx.InformSuccessAsync();
+            await InformAsync(ctx);
         }
 
         [Command("modify"), Priority(0)]

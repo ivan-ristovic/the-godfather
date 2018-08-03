@@ -70,7 +70,7 @@ namespace TheGodfather.Modules.Games
                 var quiz = new Quiz(ctx.Client.GetInteractivity(), ctx.Channel, questions);
                 this.Shared.RegisterEventInChannel(quiz, ctx.Channel.Id);
                 try {
-                    await ctx.InformSuccessAsync(StaticDiscordEmoji.Clock1, "Quiz will start in 10s! Get ready!")
+                    await InformAsync(ctx, StaticDiscordEmoji.Clock1, "Quiz will start in 10s! Get ready!")
                         .ConfigureAwait(false);
                     await Task.Delay(TimeSpan.FromSeconds(10))
                         .ConfigureAwait(false);
@@ -78,7 +78,7 @@ namespace TheGodfather.Modules.Games
                         .ConfigureAwait(false);
 
                     if (quiz.IsTimeoutReached) {
-                        await ctx.InformSuccessAsync(StaticDiscordEmoji.AlarmClock, "Aborting quiz due to no replies...")
+                        await InformAsync(ctx, StaticDiscordEmoji.AlarmClock, "Aborting quiz due to no replies...")
                             .ConfigureAwait(false);
                         return;
                     }
@@ -128,7 +128,7 @@ namespace TheGodfather.Modules.Games
                 var categories = await QuizService.GetCategoriesAsync()
                     .ConfigureAwait(false);
 
-                await ctx.InformSuccessAsync(
+                await InformAsync(ctx, 
                     $"You need to specify a quiz type!\n\n{Formatter.Bold("Available quiz categories:")}\n\n" +
                     $"- Custom quiz type (command): {Formatter.Bold("Capitals")}\n" +
                     $"- Custom quiz type (command): {Formatter.Bold("Countries")}\n" + 
@@ -162,7 +162,7 @@ namespace TheGodfather.Modules.Games
                 var quiz = new QuizCapitals(ctx.Client.GetInteractivity(), ctx.Channel, qnum);
                 this.Shared.RegisterEventInChannel(quiz, ctx.Channel.Id);
                 try {
-                    await ctx.InformSuccessAsync(StaticDiscordEmoji.Clock1, "Quiz will start in 10s! Get ready!")
+                    await InformAsync(ctx, StaticDiscordEmoji.Clock1, "Quiz will start in 10s! Get ready!")
                         .ConfigureAwait(false);
                     await Task.Delay(TimeSpan.FromSeconds(10))
                         .ConfigureAwait(false);
@@ -170,7 +170,7 @@ namespace TheGodfather.Modules.Games
                         .ConfigureAwait(false);
 
                     if (quiz.IsTimeoutReached) {
-                        await ctx.InformSuccessAsync(StaticDiscordEmoji.AlarmClock, "Aborting quiz due to no replies...")
+                        await InformAsync(ctx, StaticDiscordEmoji.AlarmClock, "Aborting quiz due to no replies...")
                             .ConfigureAwait(false);
                         return;
                     }
@@ -207,7 +207,7 @@ namespace TheGodfather.Modules.Games
                 var quiz = new QuizCountries(ctx.Client.GetInteractivity(), ctx.Channel, qnum);
                 this.Shared.RegisterEventInChannel(quiz, ctx.Channel.Id);
                 try {
-                    await ctx.InformSuccessAsync(StaticDiscordEmoji.Clock1, "Quiz will start in 10s! Get ready!")
+                    await InformAsync(ctx, StaticDiscordEmoji.Clock1, "Quiz will start in 10s! Get ready!")
                         .ConfigureAwait(false);
                     await Task.Delay(TimeSpan.FromSeconds(10))
                         .ConfigureAwait(false);
@@ -215,7 +215,7 @@ namespace TheGodfather.Modules.Games
                         .ConfigureAwait(false);
 
                     if (quiz.IsTimeoutReached) {
-                        await ctx.InformSuccessAsync(StaticDiscordEmoji.AlarmClock, "Aborting quiz due to no replies...")
+                        await InformAsync(ctx, StaticDiscordEmoji.AlarmClock, "Aborting quiz due to no replies...")
                             .ConfigureAwait(false);
                         return;
                     }
@@ -238,7 +238,7 @@ namespace TheGodfather.Modules.Games
                 var top = await Database.GetTopQuizPlayersStringAsync(ctx.Client)
                     .ConfigureAwait(false);
 
-                await ctx.InformSuccessAsync(StaticDiscordEmoji.Trophy, $"Top players in Quiz:\n\n{top}")
+                await InformAsync(ctx, StaticDiscordEmoji.Trophy, $"Top players in Quiz:\n\n{top}")
                     .ConfigureAwait(false);
             }
             #endregion

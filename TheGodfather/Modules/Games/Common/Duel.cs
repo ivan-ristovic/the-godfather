@@ -46,7 +46,7 @@ namespace TheGodfather.Modules.Games.Common
         {
             UpdateHpBars();
             
-            _msg = await Channel.InformSuccessAsync($"{_p1.Mention} {_hp1bar} {StaticDiscordEmoji.DuelSwords} {_hp2bar} {_p2.Mention}")
+            _msg = await Channel.EmbedAsync($"{_p1.Mention} {_hp1bar} {StaticDiscordEmoji.DuelSwords} {_hp2bar} {_p2.Mention}")
                 .ConfigureAwait(false);
 
             while (_hp1 > 0 && _hp2 > 0) {
@@ -56,7 +56,7 @@ namespace TheGodfather.Modules.Games.Common
 
             Winner = _hp1 > 0 ? _p1 : _p2;
 
-            await Channel.InformSuccessAsync($"{StaticDiscordEmoji.DuelSwords} {Winner.Mention}, FINISH HIM! {StaticDiscordEmoji.DuelSwords}")
+            await Channel.EmbedAsync($"{StaticDiscordEmoji.DuelSwords} {Winner.Mention}, FINISH HIM! {StaticDiscordEmoji.DuelSwords}")
                 .ConfigureAwait(false);
             FinishingMove = await WaitForFinishingMoveAsync()
                 .ConfigureAwait(false);

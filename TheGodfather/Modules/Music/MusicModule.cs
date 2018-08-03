@@ -57,7 +57,7 @@ namespace TheGodfather.Modules.Music
             vnc = await vnext.ConnectAsync(c)
                 .ConfigureAwait(false);
 
-            await ctx.InformSuccessAsync(StaticDiscordEmoji.Headphones, $"Connected to {Formatter.Bold(c.Name)}.")
+            await InformAsync(ctx, StaticDiscordEmoji.Headphones, $"Connected to {Formatter.Bold(c.Name)}.")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -83,7 +83,7 @@ namespace TheGodfather.Modules.Music
             }
             await Task.Delay(500);
             vnc.Disconnect();
-            await ctx.InformSuccessAsync(StaticDiscordEmoji.Headphones, "Disconnected.")
+            await InformAsync(ctx, StaticDiscordEmoji.Headphones, "Disconnected.")
                 .ConfigureAwait(false);
         }
         #endregion
@@ -112,7 +112,7 @@ namespace TheGodfather.Modules.Music
                 throw new CommandFailedException("Not playing in this guild");
 
             MusicPlayers[ctx.Guild.Id].Stop();
-            await ctx.InformSuccessAsync(StaticDiscordEmoji.Headphones, "Stopped.")
+            await InformAsync(ctx, StaticDiscordEmoji.Headphones, "Stopped.")
                 .ConfigureAwait(false);
         }
         #endregion

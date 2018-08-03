@@ -54,7 +54,7 @@ namespace TheGodfather.Modules.Administration
             foreach (DiscordRole role in roles)
                 await member.GrantRoleAsync(role, reason: ctx.BuildReasonString());
 
-            await ctx.InformSuccessAsync();
+            await InformAsync(ctx);
         }
 
         [Command("addrole"), Priority(0)]
@@ -95,7 +95,7 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException("You can't ban yourself.");
 
             await member.BanAsync(delete_message_days: 7, reason: ctx.BuildReasonString(reason));
-            await ctx.InformSuccessAsync($"{Formatter.Bold(ctx.Member.Username)} BANNED {Formatter.Bold(member.ToString())}!");
+            await InformAsync(ctx, $"{Formatter.Bold(ctx.Member.Username)} BANNED {Formatter.Bold(member.ToString())}!", important: true);
         }
         #endregion
 
@@ -116,7 +116,7 @@ namespace TheGodfather.Modules.Administration
             DiscordUser u = await ctx.Client.GetUserAsync(id);
 
             await ctx.Guild.BanMemberAsync(u.Id, delete_message_days: 7, reason: ctx.BuildReasonString(reason));
-            await ctx.InformSuccessAsync($"{Formatter.Bold(ctx.User.Username)} BANNED {Formatter.Bold(u.ToString())}!");
+            await InformAsync(ctx, $"{Formatter.Bold(ctx.User.Username)} BANNED {Formatter.Bold(u.ToString())}!", important: true);
         }
         #endregion
 
@@ -133,7 +133,7 @@ namespace TheGodfather.Modules.Administration
                                      [RemainingText, Description("Reason.")] string reason = null)
         {
             await member.SetDeafAsync(deafen, reason: ctx.BuildReasonString(reason));
-            await ctx.InformSuccessAsync();
+            await InformAsync(ctx);
         }
         #endregion
 
@@ -192,7 +192,7 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException("You can't kick yourself.");
 
             await member.RemoveAsync(reason: ctx.BuildReasonString(reason));
-            await ctx.InformSuccessAsync($"{Formatter.Bold(ctx.User.Username)} kicked {Formatter.Bold(member.Username)}.");
+            await InformAsync(ctx, $"{Formatter.Bold(ctx.User.Username)} kicked {Formatter.Bold(member.Username)}.", important: true);
         }
         #endregion
 
@@ -209,7 +209,7 @@ namespace TheGodfather.Modules.Administration
                                    [RemainingText, Description("Reason.")] string reason = null)
         {
             await member.SetMuteAsync(mute, reason: ctx.BuildReasonString(reason));
-            await ctx.InformSuccessAsync();
+            await InformAsync(ctx);
         }
         #endregion
 
@@ -229,7 +229,7 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException("You cannot revoke that role.");
 
             await member.RevokeRoleAsync(role, reason: ctx.BuildReasonString(reason));
-            await ctx.InformSuccessAsync();
+            await InformAsync(ctx);
         }
 
         [Command("removerole"), Priority(0)]
@@ -250,7 +250,7 @@ namespace TheGodfather.Modules.Administration
             foreach (DiscordRole role in roles)
                 await member.RevokeRoleAsync(role, reason: ctx.BuildReasonString());
 
-            await ctx.InformSuccessAsync();
+            await InformAsync(ctx);
         }
         #endregion
 
@@ -268,7 +268,7 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException("You are not authorised to remove roles from this user.");
 
             await member.ReplaceRolesAsync(Enumerable.Empty<DiscordRole>(), reason: ctx.BuildReasonString(reason));
-            await ctx.InformSuccessAsync();
+            await InformAsync(ctx);
         }
         #endregion
 
@@ -290,7 +290,7 @@ namespace TheGodfather.Modules.Administration
                 m.AuditLogReason = ctx.BuildReasonString();
             }));
 
-            await ctx.InformSuccessAsync();
+            await InformAsync(ctx);
         }
         #endregion
 
@@ -310,7 +310,7 @@ namespace TheGodfather.Modules.Administration
 
             await member.BanAsync(delete_message_days: 7, reason: ctx.BuildReasonString("(softban) " + reason));
             await member.UnbanAsync(ctx.Guild, reason: ctx.BuildReasonString("(softban) " + reason));
-            await ctx.InformSuccessAsync($"{Formatter.Bold(ctx.User.Username)} SOFTBANNED {Formatter.Bold(member.Username)}!");
+            await InformAsync(ctx, $"{Formatter.Bold(ctx.User.Username)} SOFTBANNED {Formatter.Bold(member.Username)}!", important: true);
         }
         #endregion
 
@@ -333,7 +333,7 @@ namespace TheGodfather.Modules.Administration
             await member.BanAsync(delete_message_days: 7, reason: ctx.BuildReasonString($"(tempban for {timespan.ToString()}) " + reason));
 
             DateTime until = DateTime.UtcNow + timespan;
-            await ctx.InformSuccessAsync($"{Formatter.Bold(ctx.User.Username)} BANNED {Formatter.Bold(member.Username)} until {Formatter.Bold(until.ToLongTimeString())} UTC!");
+            await InformAsync(ctx, $"{Formatter.Bold(ctx.User.Username)} BANNED {Formatter.Bold(member.Username)} until {Formatter.Bold(until.ToLongTimeString())} UTC!", important: true);
 
             var task = new SavedTask() {
                 ChannelId = ctx.Channel.Id,
@@ -370,7 +370,7 @@ namespace TheGodfather.Modules.Administration
             DiscordUser u = await ctx.Client.GetUserAsync(id);
 
             await ctx.Guild.UnbanMemberAsync(id, reason: ctx.BuildReasonString(reason));
-            await ctx.InformSuccessAsync($"{Formatter.Bold(ctx.User.Username)} removed an ID ban for {Formatter.Bold(u.ToString())}!");
+            await InformAsync(ctx, $"{Formatter.Bold(ctx.User.Username)} removed an ID ban for {Formatter.Bold(u.ToString())}!", important: true);
         }
         #endregion
 
@@ -401,7 +401,7 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException("I can't talk to that user...");
             }
 
-            await ctx.InformSuccessAsync();
+            await InformAsync(ctx);
         }
         #endregion
     }

@@ -131,7 +131,7 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException("Cannot find the specified message.");
 
             await msg.DeleteAllReactionsAsync(ctx.BuildReasonString(reason));
-            await ctx.InformSuccessAsync();
+            await InformAsync(ctx);
         }
         #endregion
 
@@ -248,7 +248,7 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException($"Invalid index (must be in range [1, {pinned.Count}]!");
 
             await pinned.ElementAt(index - 1).UnpinAsync();
-            await ctx.InformSuccessAsync();
+            await InformAsync(ctx);
         }
         #endregion
 
@@ -271,7 +271,10 @@ namespace TheGodfather.Modules.Administration
                 }
             }
 
-            await ctx.InformSuccessAsync(failed > 0 ? $"Failed to unpin {failed} messages!" : null);
+            if (failed > 0)
+                await InformAsync(ctx, $"Failed to unpin {failed} messages!", important: true);
+            else
+                await InformAsync(ctx);
         }
         #endregion
     }

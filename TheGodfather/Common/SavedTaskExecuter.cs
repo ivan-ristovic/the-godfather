@@ -136,7 +136,7 @@ namespace TheGodfather.Common
         {
             var channel = await this.Client.GetChannelAsync(this.SavedTask.ChannelId);
             var user = await this.Client.GetUserAsync(this.SavedTask.UserId);
-            await channel.InformSuccessAsync($"{user.Mention}'s reminder:\n\n{Formatter.Italic(this.SavedTask.Comment)}", StaticDiscordEmoji.AlarmClock);
+            await channel.EmbedAsync($"{user.Mention}'s reminder:\n\n{Formatter.Italic(this.SavedTask.Comment)}", StaticDiscordEmoji.AlarmClock);
         }
 
         private async Task UnbanUserAsync()

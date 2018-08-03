@@ -26,7 +26,7 @@ namespace TheGodfather.Modules.Currency
         public CasinoModule(DBService db) 
             : base(db: db)
         {
-            this.ModuleColor = DiscordColor.PhthaloGreen;
+            this.ModuleColor = DiscordColor.SapGreen;
         }
 
 

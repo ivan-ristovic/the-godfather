@@ -67,7 +67,7 @@ namespace TheGodfather.Modules.Owner
                     sb.AppendLine($"Added: {user.ToString()}!");
                 }
 
-                await ctx.InformSuccessAsync(sb.ToString())
+                await InformAsync(ctx, sb.ToString())
                     .ConfigureAwait(false);
             }
             #endregion
@@ -98,7 +98,7 @@ namespace TheGodfather.Modules.Owner
                     sb.AppendLine($"Removed: {user.ToString()}!");
                 }
 
-                await ctx.InformSuccessAsync(sb.ToString())
+                await InformAsync(ctx, sb.ToString())
                     .ConfigureAwait(false);
             }
             #endregion

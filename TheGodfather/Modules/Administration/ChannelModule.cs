@@ -64,7 +64,7 @@ namespace TheGodfather.Modules.Administration
                 await cloned.ModifyAsync(new Action<ChannelEditModel>(m => m.Name = name));
             }
 
-            await ctx.InformSuccessAsync();
+            await InformAsync(ctx);
         }
         #endregion
 
@@ -89,7 +89,7 @@ namespace TheGodfather.Modules.Administration
             }
 
             await ctx.Guild.CreateChannelCategoryAsync(name, reason: ctx.BuildReasonString());
-            await ctx.InformSuccessAsync();
+            await InformAsync(ctx);
         }
         #endregion
 
@@ -124,7 +124,7 @@ namespace TheGodfather.Modules.Administration
             }
 
             await ctx.Guild.CreateTextChannelAsync(name, parent, nsfw: nsfw, reason: ctx.BuildReasonString());
-            await ctx.InformSuccessAsync();
+            await InformAsync(ctx);
         }
 
         [Command("createtext"), Priority(1)]
@@ -171,7 +171,7 @@ namespace TheGodfather.Modules.Administration
             }
 
             await ctx.Guild.CreateVoiceChannelAsync(name, parent, bitrate, userlimit, reason: ctx.BuildReasonString());
-            await ctx.InformSuccessAsync();
+            await InformAsync(ctx);
         }
 
 
@@ -220,7 +220,7 @@ namespace TheGodfather.Modules.Administration
 
             await channel.DeleteAsync(reason: ctx.BuildReasonString(reason));
             if (channel.Id != ctx.Channel.Id)
-                await ctx.InformSuccessAsync();
+                await InformAsync(ctx);
         }
 
         [Command("delete"), Priority(0)]
@@ -287,7 +287,7 @@ namespace TheGodfather.Modules.Administration
                 m.AuditLogReason = ctx.BuildReasonString(reason);
             })).ConfigureAwait(false);
 
-            await ctx.InformSuccessAsync();
+            await InformAsync(ctx);
         }
 
         [Command("modify"), Priority(0)]
@@ -327,7 +327,7 @@ namespace TheGodfather.Modules.Administration
                 m.Name = newname;
                 m.AuditLogReason = ctx.BuildReasonString(reason);
             }));
-            await ctx.InformSuccessAsync();
+            await InformAsync(ctx);
         }
 
         [Command("rename"), Priority(1)]
@@ -365,7 +365,7 @@ namespace TheGodfather.Modules.Administration
                 m.Parent = parent;
                 m.AuditLogReason = ctx.BuildReasonString(reason);
             }));
-            await ctx.InformSuccessAsync();
+            await InformAsync(ctx);
         }
 
         [Command("setparent"), Priority(0)]
@@ -396,7 +396,7 @@ namespace TheGodfather.Modules.Administration
                 channel = ctx.Channel;
 
             await channel.ModifyPositionAsync(position, ctx.BuildReasonString(reason));
-            await ctx.InformSuccessAsync();
+            await InformAsync(ctx);
         }
 
         [Command("setposition"), Priority(1)]
@@ -438,7 +438,7 @@ namespace TheGodfather.Modules.Administration
                 m.Topic = topic;
                 m.AuditLogReason = ctx.BuildReasonString();
             }));
-            await ctx.InformSuccessAsync();
+            await InformAsync(ctx);
         }
 
         [Command("settopic"), Priority(1)]

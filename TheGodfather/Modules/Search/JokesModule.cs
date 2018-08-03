@@ -30,7 +30,7 @@ namespace TheGodfather.Modules.Search
         {
             string joke = await JokesService.GetRandomJokeAsync()
                 .ConfigureAwait(false);
-            await ctx.InformSuccessAsync(joke, ":joy:")
+            await InformAsync(ctx, joke, ":joy:")
                 .ConfigureAwait(false);
         }
 
@@ -46,7 +46,7 @@ namespace TheGodfather.Modules.Search
             var jokes = await JokesService.SearchForJokesAsync(query)
                 .ConfigureAwait(false);
             if (jokes != null) {
-                await ctx.InformSuccessAsync($"Results:\n\n{string.Join("\n", jokes.Take(5))}", ":joy:")
+                await InformAsync(ctx, $"Results:\n\n{string.Join("\n", jokes.Take(5))}", ":joy:")
                     .ConfigureAwait(false);
             } else {
                 await ctx.InformFailureAsync("No results...")
@@ -64,7 +64,7 @@ namespace TheGodfather.Modules.Search
         {
             string joke = await JokesService.GetRandomYoMommaJokeAsync()
                 .ConfigureAwait(false);
-            await ctx.InformSuccessAsync(joke, ":joy:")
+            await InformAsync(ctx, joke, ":joy:")
                 .ConfigureAwait(false);
         }
         #endregion

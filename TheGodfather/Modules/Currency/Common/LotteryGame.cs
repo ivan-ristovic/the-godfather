@@ -53,7 +53,7 @@ namespace TheGodfather.Modules.Currency.Common
         {
             this.Started = true;
 
-            var msg = await this.Channel.InformSuccessAsync("Drawing lottery numbers in 5s...", StaticDiscordEmoji.MoneyBag);
+            var msg = await this.Channel.EmbedAsync("Drawing lottery numbers in 5s...", StaticDiscordEmoji.MoneyBag);
 
             var drawn = Enumerable.Range(1, MaxNumber + 1).Shuffle().Take(3);
 
