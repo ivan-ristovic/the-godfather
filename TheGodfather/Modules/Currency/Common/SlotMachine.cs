@@ -1,13 +1,10 @@
 ﻿#region USING_DIRECTIVES
-using System.Text;
-using System.Collections.Immutable;
-
-using TheGodfather.Common;
-
 using DSharpPlus;
 using DSharpPlus.Entities;
-
 using Humanizer;
+using System.Text;
+using System.Collections.Immutable;
+using TheGodfather.Common;
 #endregion
 
 namespace TheGodfather.Modules.Currency.Common
@@ -23,9 +20,9 @@ namespace TheGodfather.Modules.Currency.Common
         }.ToImmutableArray();
 
 
-        public static DiscordEmbed EmbedSlotRoll(DiscordUser user, long bid, out long won)
+        public static DiscordEmbed RollToDiscordEmbed(DiscordUser user, long bid, out long won)
         {
-            var res = RollSlot();
+            int[,] res = Roll();
             won = EvaluateSlotResult(res, bid);
 
             var emb = new DiscordEmbedBuilder() {
@@ -40,7 +37,7 @@ namespace TheGodfather.Modules.Currency.Common
         }
 
 
-        private static int[,] RollSlot()
+        private static int[,] Roll()
         {
             int[,] result = new int[3, 3];
             for (int i = 0; i < 3; i++)

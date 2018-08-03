@@ -1,4 +1,7 @@
 ﻿#region USING_DIRECTIVES
+using DSharpPlus;
+using DSharpPlus.Entities;
+using DSharpPlus.Interactivity;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -6,18 +9,21 @@ using System.Collections.Immutable;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
 using TheGodfather.Common;
 using TheGodfather.Extensions;
-using TheGodfather.Modules.Games.Common;
-
-using DSharpPlus;
-using DSharpPlus.Entities;
-using DSharpPlus.Interactivity;
 #endregion
 
 namespace TheGodfather.Modules.Currency.Common
 {
+    public sealed class LotteryParticipant
+    {
+        public DiscordUser User { get; internal set; }
+        public int Bid { get; set; }
+        public ulong Id => this.User.Id;
+        public int[] Numbers { get; set; }
+        public int WinAmount { get; set; }
+    }
+
     public class LotteryGame : ChannelEvent
     {
         public static readonly int MaxNumber = 15;
@@ -28,37 +34,35 @@ namespace TheGodfather.Modules.Currency.Common
         }.ToImmutableArray();
 
         public bool Started { get; private set; }
-        public int ParticipantCount => _participants.Count;
-        public IReadOnlyList<LotteryParticipant> Winners => _participants.Where(p => p.WinAmount > 0).ToList().AsReadOnly();
+        public int ParticipantCount => this.participants.Count;
+        public IReadOnlyList<LotteryParticipant> Winners 
+            => this.participants.Where(p => p.WinAmount > 0).ToList().AsReadOnly();
 
-        private ConcurrentQueue<LotteryParticipant> _participants = new ConcurrentQueue<LotteryParticipant>();
+        private readonly ConcurrentQueue<LotteryParticipant> participants;
        
-
 
         public LotteryGame(InteractivityExtension interactivity, DiscordChannel channel)
             : base(interactivity, channel)
         {
-            Started = false;
+            this.Started = false;
+            this.participants = new ConcurrentQueue<LotteryParticipant>();
         }
 
 
         public override async Task RunAsync()
         {
-            Started = true;
+            this.Started = true;
 
-            var msg = await Channel.InformSuccessAsync("Drawing lottery numbers in 5s...", StaticDiscordEmoji.MoneyBag)
-                .ConfigureAwait(false);
+            var msg = await this.Channel.InformSuccessAsync("Drawing lottery numbers in 5s...", StaticDiscordEmoji.MoneyBag);
 
             var drawn = Enumerable.Range(1, MaxNumber + 1).Shuffle().Take(3);
 
             for (int i = 0; i < DrawCount; i++) {
-                await Task.Delay(TimeSpan.FromSeconds(5))
-                    .ConfigureAwait(false);
-                await PrintGameAsync(msg, drawn, i + 1)
-                    .ConfigureAwait(false);
+                await Task.Delay(TimeSpan.FromSeconds(5));
+                await PrintGameAsync(msg, drawn, i + 1);
             }
 
-            foreach (var participant in _participants) {
+            foreach (LotteryParticipant participant in this.participants) {
                 int guessed = participant.Numbers.Intersect(drawn).Count();
                 participant.WinAmount = Prizes[guessed];
             }
@@ -69,22 +73,23 @@ namespace TheGodfather.Modules.Currency.Common
             if (IsParticipating(user))
                 return;
 
-            _participants.Enqueue(new LotteryParticipant {
+            this.participants.Enqueue(new LotteryParticipant {
                 User = user,
                 Numbers = numbers
             });
         }
 
-        public bool IsParticipating(DiscordUser user) => _participants.Any(p => p.Id == user.Id);
+        public bool IsParticipating(DiscordUser user) 
+            => this.participants.Any(p => p.Id == user.Id);
 
-        private async Task PrintGameAsync(DiscordMessage msg, IEnumerable<int> numbers, int step)
+        private Task PrintGameAsync(DiscordMessage msg, IEnumerable<int> numbers, int step)
         {
             var sb = new StringBuilder();
 
             sb.AppendLine(Formatter.Bold($"Drawn numbers:"));
             sb.AppendLine(Formatter.Bold(string.Join(" ", numbers.Take(step)))).AppendLine();
 
-            foreach (var participant in _participants) {
+            foreach (var participant in this.participants) {
                 sb.Append(participant.User.Mention).Append(" | ");
                 sb.AppendLine(Formatter.Bold(string.Join(" ", participant.Numbers)));
                 sb.AppendLine();
@@ -96,18 +101,7 @@ namespace TheGodfather.Modules.Currency.Common
                 Color = DiscordColor.Gold
             };
 
-            await msg.ModifyAsync(embed: emb.Build())
-                .ConfigureAwait(false);
-        }
-
-
-        public sealed class LotteryParticipant
-        {
-            public DiscordUser User { get; internal set; }
-            public int Bid { get; set; }
-            public ulong Id => User.Id;
-            public int[] Numbers { get; set; }
-            public int WinAmount { get; set; } = 0;
+            return msg.ModifyAsync(embed: emb.Build());
         }
     }
 }

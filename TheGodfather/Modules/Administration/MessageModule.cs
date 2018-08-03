@@ -245,7 +245,7 @@ namespace TheGodfather.Modules.Administration
             IReadOnlyList<DiscordMessage> pinned = await ctx.Channel.GetPinnedMessagesAsync();
 
             if (index < 1 || index > pinned.Count)
-                throw new CommandFailedException($"Invalid index (must be in range [1-{pinned.Count}]!");
+                throw new CommandFailedException($"Invalid index (must be in range [1, {pinned.Count}]!");
 
             await pinned.ElementAt(index - 1).UnpinAsync();
             await ctx.InformSuccessAsync();

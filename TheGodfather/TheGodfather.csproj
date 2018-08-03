@@ -572,7 +572,7 @@
     <Compile Include="Common\CustomHelpFormatter.cs" />
     <Compile Include="Modules\Owner\OwnerModule.cs" />
     <Compile Include="Modules\Currency\BankModule.cs" />
-    <Compile Include="Modules\Currency\CardsModule.cs" />
+    <Compile Include="Modules\Games\CardsModule.cs" />
     <Compile Include="Modules\Games\GamesModule.NumberRace.cs" />
     <Compile Include="Modules\Games\GamesModule.Quiz.cs" />
     <Compile Include="Modules\Games\GamesModule.AnimalRace.cs" />

@@ -1,74 +1,81 @@
 ﻿#region USING_DIRECTIVES
-using System;
-using System.Threading.Tasks;
-
-using TheGodfather.Common.Attributes;
-using TheGodfather.Exceptions;
-using TheGodfather.Extensions;
-using TheGodfather.Modules.Currency.Common;
-using TheGodfather.Services.Database.Bank;
-
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
-
 using Humanizer;
+using System.Text;
+using System.Threading.Tasks;
+using TheGodfather.Common.Attributes;
+using TheGodfather.Exceptions;
+using TheGodfather.Modules.Currency.Common;
 using TheGodfather.Services.Database;
+using TheGodfather.Services.Database.Bank;
 #endregion
 
 namespace TheGodfather.Modules.Currency
 {
-    [Group("casino"), Module(ModuleType.Currency)]
+    [Group("casino"), Module(ModuleType.Currency), NotBlocked]
     [Description("Betting and gambling games.")]
     [Aliases("vegas", "cs", "cas")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    [NotBlocked]
     public partial class CasinoModule : TheGodfatherModule
     {
 
-        public CasinoModule(DBService db) : base(db: db) { }
+        public CasinoModule(DBService db) 
+            : base(db: db)
+        {
+            this.ModuleColor = DiscordColor.PhthaloGreen;
+        }
+
 
         [GroupCommand]
         public Task ExecuteGroupAsync(CommandContext ctx)
         {
-            return ctx.InformSuccessAsync(
-                Formatter.Bold("Casino games:\n\n") +
-                "holdem, lottery, slot, wheeloffortune"
-            );
+            var emoji = DiscordEmoji.FromName(ctx.Client, ":small_blue_diamond:");
+
+            var sb = new StringBuilder();
+            sb.AppendLine().AppendLine();
+            sb.AppendLine(emoji).AppendLine("holdem");
+            sb.AppendLine(emoji).AppendLine("lottery");
+            sb.AppendLine(emoji).AppendLine("slot");
+            sb.AppendLine(emoji).AppendLine("wheeloffortune");
+
+            return ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
+                Title = "Available casino games:",
+                Description = sb.ToString(),
+                Color = this.ModuleColor,
+            }.WithFooter("Start a game by typing: casino <game name>").Build());
         }
 
 
         #region COMMAND_CASINO_SLOT
         [Command("slot"), Priority(1)]
-        [Module(ModuleType.Currency)]
         [Description("Roll a slot machine. You need to specify a bid amount. Default bid amount is 5.")]
         [Aliases("slotmachine")]
         [UsageExamples("!casino slot 20")]
         public async Task SlotAsync(CommandContext ctx,
                                    [Description("Bid.")] long bid = 5)
         {
-            if (bid <= 0 || bid > 1000000000)
-                throw new InvalidCommandUsageException($"Invalid bid amount! Needs to be in range [1 - {1000000000:n0}]");
+            if (bid <= 0 || bid > 1000000000L)
+                throw new InvalidCommandUsageException($"Invalid bid amount! Needs to be in range [1, {1000000000:n0}]");
 
-            if (!await Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, bid).ConfigureAwait(false))
-                throw new CommandFailedException("You do not have enough credits in WM bank!");
+            if (!await this.Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, bid))
+                throw new CommandFailedException($"You do not have enough credits! Use command {Formatter.InlineCode("bank")} to check your account status.");
 
-            await ctx.RespondAsync(embed: SlotMachine.EmbedSlotRoll(ctx.User, bid, out long won))
-                .ConfigureAwait(false);
+            await ctx.RespondAsync(embed: SlotMachine.RollToDiscordEmbed(ctx.User, bid, out long won));
 
             if (won > 0)
-                await Database.IncreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, won)
-                    .ConfigureAwait(false);
+                await this.Database.IncreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, won);
         }
-
 
         [Command("slot"), Priority(0)]
         public Task SlotAsync(CommandContext ctx,
                              [RemainingText, Description("Bid as a metric number.")] string bidstr)
         {
             if (string.IsNullOrWhiteSpace(bidstr))
-                throw new InvalidCommandUsageException($"Bid missing.");
+                throw new InvalidCommandUsageException("Bid missing.");
             
             try {
                 int bid = (int)bidstr.FromMetric();
@@ -81,26 +88,23 @@ namespace TheGodfather.Modules.Currency
 
         #region COMMAND_CASINO_WHEELOFFORTUNE
         [Command("wheeloffortune"), Priority(1)]
-        [Module(ModuleType.Currency)]
         [Description("Roll a Wheel Of Fortune. You need to specify a bid amount. Default bid amount is 5.")]
         [Aliases("wof")]
         [UsageExamples("!casino wof 20")]
         public async Task WheelOfFortuneAsync(CommandContext ctx,
                                              [Description("Bid.")] long bid = 5)
         {
-            if (bid <= 0 || bid > 1000000000)
-                throw new InvalidCommandUsageException($"Invalid bid amount! Needs to be in range [1 - {1000000000:n0}]");
+            if (bid <= 0 || bid > 1000000000L)
+                throw new InvalidCommandUsageException($"Invalid bid amount! Needs to be in range [1, {1000000000:n0}]");
 
-            if (!await Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, bid).ConfigureAwait(false))
-                throw new CommandFailedException("You do not have enough credits in WM bank!");
+            if (!await this.Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, bid))
+                throw new CommandFailedException($"You do not have enough credits! Use command {Formatter.InlineCode("bank")} to check your account status.");
 
             var wof = new WheelOfFortune(ctx.Client.GetInteractivity(), ctx.Channel, ctx.User, bid);
-            await wof.RunAsync()
-                .ConfigureAwait(false);
-            
+            await wof.RunAsync();
+
             if (wof.WonAmount > 0)
-                await Database.IncreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, wof.WonAmount)
-                    .ConfigureAwait(false);
+                await this.Database.IncreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, wof.WonAmount);
         }
 
         [Command("wheeloffortune"), Priority(0)]
@@ -108,7 +112,7 @@ namespace TheGodfather.Modules.Currency
                                        [RemainingText, Description("Bid as a metric number.")] string bidstr)
         {
             if (string.IsNullOrWhiteSpace(bidstr))
-                throw new InvalidCommandUsageException($"Bid missing.");
+                throw new InvalidCommandUsageException("Bid missing.");
 
             try {
                 int bid = (int)bidstr.FromMetric();

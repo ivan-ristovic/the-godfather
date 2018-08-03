@@ -1,6 +1,5 @@
 ﻿#region USING_DIRECTIVES
 using Npgsql;
-using NpgsqlTypes;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -20,12 +19,16 @@ namespace TheGodfather.Services.Database.Bank
             });
         }
 
-        public static Task CloseBankAccountAsync(this DBService db, ulong uid, ulong gid)
+        public static Task CloseBankAccountAsync(this DBService db, ulong uid, ulong? gid = null)
         {
             return db.ExecuteCommandAsync(cmd => {
-                cmd.CommandText = "DELETE FROM gf.accounts WHERE uid = @uid AND gid = @gid;";
+                if (gid.HasValue) {
+                    cmd.CommandText = "DELETE FROM gf.accounts WHERE uid = @uid AND gid = @gid;";
+                    cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid.Value));
+                } else {
+                    cmd.CommandText = "DELETE FROM gf.accounts WHERE uid = @uid;";
+                }
                 cmd.Parameters.Add(new NpgsqlParameter<long>("uid", (long)uid));
-                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
 
                 return cmd.ExecuteNonQueryAsync();
             });
@@ -66,16 +69,31 @@ namespace TheGodfather.Services.Database.Bank
             return balance;
         }
 
-        public static async Task<IReadOnlyList<IReadOnlyDictionary<string, string>>> GetTopBankAccountsAsync(this DBService db, ulong gid = 0)
+        public static async Task<IReadOnlyList<(ulong, long)>> GetTopBankAccountsAsync(this DBService db, ulong? gid = null)
         {
-            IReadOnlyList<IReadOnlyDictionary<string, string>> res;
+            var res = new List<(ulong, long)>();
 
-            if (gid != 0) 
-                res = await db.ExecuteRawQueryAsync($"SELECT * FROM gf.accounts WHERE gid = {gid} ORDER BY balance DESC LIMIT 10");
-            else
-                res = await db.ExecuteRawQueryAsync("SELECT uid, SUM(balance) AS total_balance FROM gf.accounts GROUP BY uid ORDER BY total_balance DESC LIMIT 10");
+            if (gid.HasValue) {
+                await db.ExecuteCommandAsync(async (cmd) => {
+                    cmd.CommandText = $"SELECT * FROM gf.accounts WHERE gid = @gid ORDER BY balance DESC LIMIT 10";
+                    cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid.Value));
 
-            return res;
+                    using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false))
+                        while (await reader.ReadAsync().ConfigureAwait(false))
+                            res.Add(((ulong)(long)reader["uid"], (long)reader["balance"]));
+                });
+
+            } else {
+                await db.ExecuteCommandAsync(async (cmd) => {
+                    cmd.CommandText = $"SELECT uid, SUM(balance) AS total_balance FROM gf.accounts GROUP BY uid ORDER BY total_balance DESC LIMIT 10";
+
+                    using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false))
+                        while (await reader.ReadAsync().ConfigureAwait(false))
+                            res.Add(((ulong)(long)reader["uid"], (long)reader["total_balance"]));
+                });
+            }
+
+            return res.AsReadOnly();
         }
 
         public static async Task<bool> HasBankAccountAsync(this DBService db, ulong uid, ulong gid)

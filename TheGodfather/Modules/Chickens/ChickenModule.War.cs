@@ -47,7 +47,7 @@ namespace TheGodfather.Modules.Chickens
                 var war = new ChickenWar(ctx.Client.GetInteractivity(), ctx.Channel, team1, team2);
                 this.Shared.RegisterEventInChannel(war, ctx.Channel.Id);
                 try {
-                    await ctx.InformSuccessAsync($"The war will start in 1 minute. Use command {Formatter.InlineCode("chicken war join <teamname>")} to make your chicken join the war.", ":clock1:");
+                    await ctx.InformSuccessAsync(StaticDiscordEmoji.Clock1, $"The war will start in 1 minute. Use command {Formatter.InlineCode("chicken war join <teamname>")} to make your chicken join the war.");
                     await Task.Delay(TimeSpan.FromMinutes(1));
 
                     if (war.Team1.Any() && war.Team2.Any()) {
@@ -76,7 +76,7 @@ namespace TheGodfather.Modules.Chickens
 
                         await ctx.InformSuccessAsync(StaticDiscordEmoji.Chicken, $"{Formatter.Bold(war.Team1Won ? war.Team1Name : war.Team2Name)} won the war!\n\nEach chicken owner in the won party gains 100000 credits.\n\n{sb.ToString()}");
                     } else {
-                        await ctx.InformSuccessAsync("Not enough chickens joined the war (need atleast one in each team).", ":alarm_clock:");
+                        await ctx.InformSuccessAsync(StaticDiscordEmoji.AlarmClock, "Not enough chickens joined the war (need atleast one in each team).");
                     }
 
                 } finally {

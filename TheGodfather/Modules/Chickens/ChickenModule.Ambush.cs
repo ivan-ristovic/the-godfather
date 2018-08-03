@@ -37,7 +37,7 @@ namespace TheGodfather.Modules.Chickens
 
             [GroupCommand]
             public async Task ExecuteGroupAsync(CommandContext ctx,
-                                               [Description("Whose chicken to ambush?")] DiscordUser user)
+                                               [Description("Whose chicken to ambush?")] DiscordMember member)
             {
                 if (this.Shared.IsEventRunningInChannel(ctx.Channel.Id)) {
                     if (this.Shared.GetEventInChannel(ctx.Channel.Id) is ChickenWar)
@@ -47,7 +47,7 @@ namespace TheGodfather.Modules.Chickens
                     return;
                 }
 
-                Chicken ambushed = await this.Database.GetChickenAsync(user.Id, ctx.Guild.Id);
+                Chicken ambushed = await this.Database.GetChickenAsync(member.Id, ctx.Guild.Id);
                 if (ambushed == null)
                     throw new CommandFailedException("Given user does not have a chicken in this guild!");
 
@@ -61,9 +61,9 @@ namespace TheGodfather.Modules.Chickens
                 var ambush = new ChickenWar(ctx.Client.GetInteractivity(), ctx.Channel, "Ambushed chickens", "Evil ambushers");
                 this.Shared.RegisterEventInChannel(ambush, ctx.Channel.Id);
                 try {
-                    ambush.AddParticipant(ambushed, user, team1: true);
+                    ambush.AddParticipant(ambushed, member, team1: true);
                     await JoinAsync(ctx);
-                    await ctx.InformSuccessAsync($"The ambush will start in 1 minute. Use command {Formatter.InlineCode("chicken ambush")} to make your chicken join the ambush, or {Formatter.InlineCode("chicken ambush help")} to help the ambushed chicken.", ":clock1:");
+                    await ctx.InformSuccessAsync(StaticDiscordEmoji.Clock1, $"The ambush will start in 1 minute. Use command {Formatter.InlineCode("chicken ambush")} to make your chicken join the ambush, or {Formatter.InlineCode("chicken ambush help")} to help the ambushed chicken.");
                     await Task.Delay(TimeSpan.FromMinutes(1));
 
                     if (ambush.Team2.Any()) {

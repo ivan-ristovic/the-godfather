@@ -45,7 +45,7 @@ namespace TheGodfather.Modules.SWAT
                     throw new InvalidCommandUsageException("Invalid name or IP.");
 
                 if (queryport <= 0 || queryport > 65535)
-                    throw new InvalidCommandUsageException("Port range invalid (must be in range [1-65535])!");
+                    throw new InvalidCommandUsageException("Port range invalid (must be in range [1, 65535])!");
 
                 var server = SwatServer.FromIP(ip, queryport, name);
 

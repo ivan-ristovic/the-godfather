@@ -80,7 +80,7 @@ namespace TheGodfather.Modules.Search
                 throw new ServiceDisabledException();
 
             if (amount < 1 || amount > 10)
-                throw new CommandFailedException("Number of results must be in range [1-10].");
+                throw new CommandFailedException("Number of results must be in range [1, 10].");
 
             var res = await Service.GetTrendingGifsAsync(amount)
                 .ConfigureAwait(false);

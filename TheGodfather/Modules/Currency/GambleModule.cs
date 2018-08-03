@@ -1,35 +1,36 @@
 ﻿#region USING_DIRECTIVES
+using DSharpPlus;
+using DSharpPlus.CommandsNext;
+using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Entities;
 using System.Text;
 using System.Threading.Tasks;
-
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-using TheGodfather.Services.Database.Bank;
-
-using DSharpPlus;
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
 using TheGodfather.Services.Database;
+using TheGodfather.Services.Database.Bank;
 #endregion
 
 namespace TheGodfather.Modules.Currency
 {
-    [Group("gamble"), Module(ModuleType.Currency)]
+    [Group("gamble"), Module(ModuleType.Currency), NotBlocked]
     [Description("Betting and gambling commands.")]
     [Aliases("bet")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    [NotBlocked]
     public partial class GambleModule : TheGodfatherModule
     {
 
-        public GambleModule(DBService db) : base(db: db) { }
+        public GambleModule(DBService db) 
+            : base(db: db)
+        {
+            this.ModuleColor = DiscordColor.MidnightBlue;
+        }
 
 
         #region COMMAND_GAMBLE_COINFLIP
         [Command("coinflip"), Priority(1)]
-        [Module(ModuleType.Currency)]
         [Description("Flip a coin and bet on the outcome.")]
         [Aliases("coin", "flip")]
         [UsageExamples("!bet coinflip 10 heads",
@@ -38,41 +39,47 @@ namespace TheGodfather.Modules.Currency
                                        [Description("Bid.")] long bid,
                                        [Description("Heads/Tails (h/t).")] string bet)
         {
-            if (bid <= 0 || bid > 1000000000)
-                throw new InvalidCommandUsageException($"Invalid bid amount! Needs to be in range [1 - {1000000000:n0}]");
+            if (bid <= 0 || bid > 1000000000L)
+                throw new InvalidCommandUsageException($"Invalid bid amount! Needs to be in range [1, {1000000000:n0}]");
 
             if (string.IsNullOrWhiteSpace(bet))
                 throw new InvalidCommandUsageException("Missing heads or tails call.");
             bet = bet.ToLowerInvariant();
 
             bool guess;
-            if (bet == "heads" || bet == "head" || bet == "h")
-                guess = true;
-            else if (bet == "tails" || bet == "tail" || bet == "t")
-                guess = false;
-            else
-                throw new CommandFailedException($"Invalid coin outcome call (has to be {Formatter.Bold("heads")} or {Formatter.Bold("tails")})");
+            switch (bet) {
+                case "heads":
+                case "head":
+                case "h":
+                    guess = true;
+                    break;
+                case "tails":
+                case "tail":
+                case "t":
+                    guess = false;
+                    break;
+                default:
+                    throw new CommandFailedException($"Invalid coin outcome call (has to be {Formatter.Bold("heads")} or {Formatter.Bold("tails")})");
+            }
 
-            if (!await Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, bid).ConfigureAwait(false))
-                throw new CommandFailedException("You do not have enough credits in WM bank!");
+            if (!await this.Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, bid))
+                throw new CommandFailedException($"You do not have enough credits! Use command {Formatter.InlineCode("bank")} to check your account status.");
 
             bool rnd = GFRandom.Generator.GetBool();
 
-            StringBuilder sb = new StringBuilder();
-            sb.Append(ctx.User.Mention)
-              .Append(" flipped ")
-              .Append(Formatter.Bold(rnd ? "Heads" : "Tails"))
-              .Append(" and ")
-              .Append(guess == rnd ? "won " : "lost ")
-              .Append(Formatter.Bold(bid.ToString()))
-              .Append(" credits!");
+            var sb = new StringBuilder();
+            sb.Append(ctx.User.Mention);
+            sb.Append(" flipped ");
+            sb.Append(Formatter.Bold(rnd ? "Heads" : "Tails"));
+            sb.Append(" and ");
+            sb.Append(guess == rnd ? "won " : "lost ");
+            sb.Append(Formatter.Bold(bid.ToString()));
+            sb.Append(" credits!");
 
             if (rnd == guess)
-                await Database.IncreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, bid * 2)
-                    .ConfigureAwait(false);
+                await this.Database.IncreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, bid * 2);
 
-            await ctx.InformSuccessAsync(sb.ToString(), ":game_die:")
-                .ConfigureAwait(false);
+            await ctx.InformSuccessAsync(sb.ToString(), ":game_die:");
         }
 
         [Command("coinflip"), Priority(0)]
@@ -84,7 +91,6 @@ namespace TheGodfather.Modules.Currency
 
         #region COMMAND_GAMBLE_DICE
         [Command("dice"), Priority(1)]
-        [Module(ModuleType.Currency)]
         [Description("Roll a dice and bet on the outcome.")]
         [Aliases("roll", "die")]
         [UsageExamples("!bet dice 50 six",
@@ -93,14 +99,14 @@ namespace TheGodfather.Modules.Currency
                                        [Description("Bid.")] long bid,
                                        [Description("Number guess (has to be a word one-six).")] string guess)
         {
-            if (bid <= 0 || bid > 1000000000)
-                throw new InvalidCommandUsageException($"Invalid bid amount! Needs to be in range [1 - {1000000000:n0}]");
+            if (bid <= 0 || bid > 1000000000L)
+                throw new InvalidCommandUsageException($"Invalid bid amount! Needs to be in range [1, {1000000000:n0}]");
 
             if (string.IsNullOrWhiteSpace(guess))
                 throw new InvalidCommandUsageException("Missing guess number.");
             guess = guess.ToLowerInvariant();
 
-            int guess_int = 0;
+            int guess_int;
             switch (guess) {
                 case "one": guess_int = 1; break;
                 case "two": guess_int = 2; break;
@@ -112,25 +118,23 @@ namespace TheGodfather.Modules.Currency
                     throw new CommandFailedException($"Invalid guess. Has to be a number from {Formatter.Bold("one")} to {Formatter.Bold("six")})");
             }
 
-            if (!await Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, bid).ConfigureAwait(false))
-                throw new CommandFailedException("You do not have enough credits in WM bank!");
+            if (!await this.Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, bid))
+                throw new CommandFailedException($"You do not have enough credits! Use command {Formatter.InlineCode("bank")} to check your account status.");
 
             int rnd = GFRandom.Generator.Next(1, 7);
 
-            StringBuilder sb = new StringBuilder();
-            sb.Append(ctx.User.Mention)
-              .Append(" rolled a ")
-              .Append(Formatter.Bold(rnd.ToString()))
-              .Append(" and ")
-              .Append(guess_int == rnd ? $"won {Formatter.Bold((bid * 5).ToString())}" : $"lost {Formatter.Bold((bid).ToString())}")
-              .Append(" credits!");
+            var sb = new StringBuilder();
+            sb.Append(ctx.User.Mention);
+            sb.Append(" rolled a ");
+            sb.Append(Formatter.Bold(rnd.ToString()));
+            sb.Append(" and ");
+            sb.Append(guess_int == rnd ? $"won {Formatter.Bold((bid * 5).ToString())}" : $"lost {Formatter.Bold(bid.ToString())}");
+            sb.Append(" credits!");
 
-            await ctx.InformSuccessAsync(sb.ToString(), ":game_die:")
-                .ConfigureAwait(false);
+            await ctx.InformSuccessAsync(sb.ToString(), ":game_die:");
 
             if (rnd == guess_int)
-                await Database.IncreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, bid * 6)
-                    .ConfigureAwait(false);
+                await this.Database.IncreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, bid * 6);
         }
 
         [Command("dice"), Priority(0)]

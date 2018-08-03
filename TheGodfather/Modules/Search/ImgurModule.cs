@@ -45,7 +45,7 @@ namespace TheGodfather.Modules.Search
             if (string.IsNullOrWhiteSpace(sub))
                 throw new InvalidCommandUsageException("Missing search query.");
             if (amount < 1 || amount > 10)
-                throw new CommandFailedException("Number of results must be in range [1-10].");
+                throw new CommandFailedException("Number of results must be in range [1, 10].");
 
             var res = await Service.GetItemsFromSubAsync(
                 sub,
@@ -82,7 +82,7 @@ namespace TheGodfather.Modules.Search
             if (string.IsNullOrWhiteSpace(sub))
                 throw new InvalidCommandUsageException("Missing subreddit.");
             if (amount < 1 || amount > 10)
-                throw new CommandFailedException("Number of results must be in range [1-10].");
+                throw new CommandFailedException("Number of results must be in range [1, 10].");
 
             var res = await Service.GetItemsFromSubAsync(
                 sub, 
@@ -122,7 +122,7 @@ namespace TheGodfather.Modules.Search
             if (string.IsNullOrWhiteSpace(sub))
                 throw new InvalidCommandUsageException("Missing subreddit.");
             if (amount < 1 || amount > 10)
-                throw new CommandFailedException("Number of results must be in range [1-10].");
+                throw new CommandFailedException("Number of results must be in range [1, 10].");
 
             var res = await Service.GetItemsFromSubAsync(
                 sub,

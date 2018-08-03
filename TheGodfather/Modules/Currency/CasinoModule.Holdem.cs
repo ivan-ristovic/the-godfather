@@ -1,85 +1,76 @@
 ﻿#region USING_DIRECTIVES
-using System;
-using System.Threading.Tasks;
-
-using TheGodfather.Common;
-using TheGodfather.Common.Attributes;
-using TheGodfather.Exceptions;
-using TheGodfather.Extensions;
-using TheGodfather.Modules.Currency.Common;
-using TheGodfather.Modules.Games.Common;
-using TheGodfather.Services.Database.Bank;
-
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
+using System;
+using System.Threading.Tasks;
+using TheGodfather.Common;
+using TheGodfather.Common.Attributes;
+using TheGodfather.Exceptions;
+using TheGodfather.Extensions;
+using TheGodfather.Modules.Currency.Common;
 using TheGodfather.Services.Database;
+using TheGodfather.Services.Database.Bank;
 #endregion
 
 namespace TheGodfather.Modules.Currency
 {
     public partial class CasinoModule
     {
-        [Group("holdem"), Module(ModuleType.Currency)]
+        [Group("holdem")]
         [Description("Play a Texas Hold'Em game.")]
         [Aliases("poker", "texasholdem", "texas")]
         [UsageExamples("!casino holdem 10000")]
         public class HoldemModule : TheGodfatherModule
         {
 
-            public HoldemModule(SharedData shared, DBService db) : base(shared, db) { }
+            public HoldemModule(SharedData shared, DBService db)
+                : base(shared, db)
+            {
+
+            }
 
 
             [GroupCommand]
             public async Task ExecuteGroupAsync(CommandContext ctx,
-                                               [Description("Amount of money required to enter.")] int balance = 1000)
+                                               [Description("Amount of money required to enter.")] int amount = 1000)
             {
-                if (balance < 5)
+                if (amount < 5)
                     throw new InvalidCommandUsageException("Entering balance cannot be lower than 5 credits.");
 
                 if (this.Shared.IsEventRunningInChannel(ctx.Channel.Id)) {
                     if (this.Shared.GetEventInChannel(ctx.Channel.Id) is HoldemGame)
-                        await JoinAsync(ctx).ConfigureAwait(false);
+                        await JoinAsync(ctx);
                     else
                         throw new CommandFailedException("Another event is already running in the current channel.");
                     return;
                 }
 
-                long? total = await Database.GetBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id)
-                    .ConfigureAwait(false);
-                if (!total.HasValue || total < balance)
+                long? total = await this.Database.GetBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id);
+                if (!total.HasValue || total < amount)
                     throw new CommandFailedException("You do not have that many credits on your account! Specify a smaller entering amount.");
 
-                var game = new HoldemGame(ctx.Client.GetInteractivity(), ctx.Channel, balance);
+                var game = new HoldemGame(ctx.Client.GetInteractivity(), ctx.Channel, amount);
                 this.Shared.RegisterEventInChannel(game, ctx.Channel.Id);
                 try {
-                    await ctx.InformSuccessAsync($"The Hold'Em game will start in 30s or when there are 7 participants. Use command {Formatter.InlineCode("casino holdem <entering sum>")} to join the pool. Entering sum is set to {game.MoneyNeeded} credits.", ":clock1:")
-                        .ConfigureAwait(false);
-                    await JoinAsync(ctx)
-                        .ConfigureAwait(false);
-                    await Task.Delay(TimeSpan.FromSeconds(30))
-                        .ConfigureAwait(false);
+                    await ctx.InformSuccessAsync(StaticDiscordEmoji.Clock1, $"The Hold'Em game will start in 30s or when there are 7 participants. Use command {Formatter.InlineCode("casino holdem <entering sum>")} to join the pool. Entering sum is set to {game.MoneyNeeded} credits.");
+                    await JoinAsync(ctx);
+                    await Task.Delay(TimeSpan.FromSeconds(30));
 
                     if (game.Participants.Count > 1) {
-                        await game.RunAsync()
-                            .ConfigureAwait(false);
+                        await game.RunAsync();
 
-                        if (game.Winner != null) {
-                            await ctx.InformSuccessAsync(StaticDiscordEmoji.Trophy, $"Winner: {game.Winner.Mention}")
-                                .ConfigureAwait(false);
-                        }
+                        if (game.Winner != null)
+                            await ctx.InformSuccessAsync(StaticDiscordEmoji.Trophy, $"Winner: {game.Winner.Mention}");
 
-                        foreach (var participant in game.Participants) {
-                            await Database.IncreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, participant.Balance)
-                                .ConfigureAwait(false);
-                        }
+                        foreach (HoldemParticipant participant in game.Participants)
+                            await this.Database.IncreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, participant.Balance);
+
                     } else {
-                        await Database.IncreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, game.MoneyNeeded)
-                            .ConfigureAwait(false);
-                        await ctx.InformSuccessAsync("Not enough users joined the Hold'Em game.", ":alarm_clock:")
-                            .ConfigureAwait(false);
+                        await this.Database.IncreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, game.MoneyNeeded);
+                        await ctx.InformSuccessAsync(StaticDiscordEmoji.AlarmClock, "Not enough users joined the Hold'Em game.");
                     }
                 } finally {
                     this.Shared.UnregisterEventInChannel(ctx.Channel.Id);
@@ -88,9 +79,9 @@ namespace TheGodfather.Modules.Currency
 
 
             #region COMMAND_HOLDEM_JOIN
-            [Command("join"), Module(ModuleType.Currency)]
+            [Command("join")]
             [Description("Join a pending Texas Hold'Em game.")]
-            [Aliases("+", "compete", "enter", "j")]
+            [Aliases("+", "compete", "enter", "j", "<<", "<")]
             [UsageExamples("!casino holdem join")]
             public async Task JoinAsync(CommandContext ctx)
             {
@@ -102,40 +93,43 @@ namespace TheGodfather.Modules.Currency
 
                 if (game.Participants.Count >= 7)
                     throw new CommandFailedException("Texas Hold'Em slots are full (max 7 participants), kthxbye.");
-                
+
                 if (game.IsParticipating(ctx.User))
                     throw new CommandFailedException("You are already participating in the Texas Hold'Em game!");
 
                 DiscordMessage handle;
                 try {
-                    var dm = await ctx.Client.CreateDmChannelAsync(ctx.User.Id)
-                        .ConfigureAwait(false);
-                    handle = await dm.SendMessageAsync("Alright, waiting for Hold'Em game to start! Once the game starts, return here to see your hand!")
-                        .ConfigureAwait(false);
+                    DiscordDmChannel dm = await ctx.Client.CreateDmChannelAsync(ctx.User.Id);
+                    handle = await dm.SendMessageAsync("Alright, waiting for Hold'Em game to start! Once the game starts, return here to see your hand!");
                 } catch {
                     throw new CommandFailedException("I can't send you a message! Please enable DMs from me so I can send you the cards.");
                 }
 
-                if (!await Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, game.MoneyNeeded))
-                    throw new CommandFailedException("You do not have that many credits on your account! Specify a smaller bid amount.");
+                if (!await this.Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, game.MoneyNeeded))
+                    throw new CommandFailedException($"You do not have enough credits! Use command {Formatter.InlineCode("bank")} to check your account status.");
 
                 game.AddParticipant(ctx.User, handle);
-                await ctx.InformSuccessAsync(StaticDiscordEmoji.CardSuits[0], $"{ctx.User.Mention} joined the Hold'Em game.")
-                    .ConfigureAwait(false);
+                await ctx.InformSuccessAsync(StaticDiscordEmoji.CardSuits[0], $"{ctx.User.Mention} joined the Hold'Em game.");
             }
             #endregion
 
             #region COMMAND_HOLDEM_RULES
-            [Command("rules"), Module(ModuleType.Currency)]
+            [Command("rules")]
             [Description("Explain the Texas Hold'Em rules.")]
             [Aliases("help", "h", "ruling", "rule")]
             [UsageExamples("!casino holdem rules")]
-            public async Task RulesAsync(CommandContext ctx)
+            public Task RulesAsync(CommandContext ctx)
             {
-                await ctx.InformSuccessAsync(
-                    "TODO",
+                return ctx.InformSuccessAsync(
+                    "Texas hold 'em (also known as Texas holdem, hold 'em, and holdem) is a variation of " +
+                    "the card game of poker. Two cards, known as the hole cards, are dealt face down to " +
+                    "each player, and then five community cards are dealt face up in three stages. The " +
+                    "stages consist of a series of three cards (\"the flop\"), later an additional single " +
+                    "card (\"the turn\" or \"fourth street\"), and a final card (\"the river\" or \"fifth " +
+                    "street\"). Each player seeks the best five card poker hand from any combination of " +
+                    "the seven cards of the five community cards and their own two hole cards.",
                     ":information_source:"
-                ).ConfigureAwait(false);
+                );
             }
             #endregion
         }

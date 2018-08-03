@@ -418,7 +418,7 @@ namespace TheGodfather.Modules.Misc
             if (!await SavedTaskExecuter.TryScheduleAsync(ctx, task).ConfigureAwait(false))
                 throw new DatabaseOperationException("Failed to set a reminder in the database!");
 
-            await ctx.InformSuccessAsync($"I will remind {channel.Mention} in {Formatter.Bold(timespan.Humanize(5))} (at {when.ToUniversalTime().ToString()} UTC) to:\n\n{Formatter.Italic(message)}", ":alarm_clock:")
+            await ctx.InformSuccessAsync(StaticDiscordEmoji.AlarmClock, $"I will remind {channel.Mention} in {Formatter.Bold(timespan.Humanize(5))} (at {when.ToUniversalTime().ToString()} UTC) to:\n\n{Formatter.Italic(message)}")
                 .ConfigureAwait(false);
         }
 

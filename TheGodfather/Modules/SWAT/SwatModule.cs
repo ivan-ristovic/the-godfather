@@ -17,6 +17,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using System.Collections.Concurrent;
 using TheGodfather.Services.Database;
+using TheGodfather.Common;
 #endregion
 
 namespace TheGodfather.Modules.SWAT
@@ -70,7 +71,7 @@ namespace TheGodfather.Modules.SWAT
                 throw new InvalidCommandUsageException("IP missing.");
 
             if (queryport <= 0 || queryport > 65535)
-                throw new InvalidCommandUsageException("Port range invalid (must be in range [1-65535])!");
+                throw new InvalidCommandUsageException("Port range invalid (must be in range [1, 65535])!");
 
             var server = await Database.GetSwatServerAsync(ip, queryport, name: ip.ToLowerInvariant())
                 .ConfigureAwait(false);
@@ -147,7 +148,7 @@ namespace TheGodfather.Modules.SWAT
                 throw new InvalidCommandUsageException("Name/IP missing.");
 
             if (queryport <= 0 || queryport > 65535)
-                throw new InvalidCommandUsageException("Port range invalid (must be in range [1-65535])!");
+                throw new InvalidCommandUsageException("Port range invalid (must be in range [1, 65535])!");
 
             if (SpaceCheckingCTS.ContainsKey(ctx.User.Id))
                 throw new CommandFailedException("Already checking space for you!");
@@ -175,7 +176,7 @@ namespace TheGodfather.Modules.SWAT
                                 throw new OperationCanceledException();
                             }
                         } else if (info.HasSpace()) {
-                            await ctx.InformSuccessAsync($"{ctx.User.Mention}, there is space on {Formatter.Bold(info.HostName)}!", ":alarm_clock:")
+                            await ctx.InformSuccessAsync(StaticDiscordEmoji.AlarmClock, $"{ctx.User.Mention}, there is space on {Formatter.Bold(info.HostName)}!")
                                 .ConfigureAwait(false);
                         }
                         await Task.Delay(TimeSpan.FromSeconds(2))

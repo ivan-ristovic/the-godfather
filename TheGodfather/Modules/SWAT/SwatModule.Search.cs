@@ -48,7 +48,7 @@ namespace TheGodfather.Modules.SWAT
                                            [Description("Number of results")] int amount = 10)
             {
                 if (amount < 1 || amount > 100)
-                    throw new ArgumentException("Amount of results to fetch is out of range [1-100].", "amount");
+                    throw new ArgumentException("Amount of results to fetch is out of range [1, 100].", "amount");
 
                 var res = await Database.SwatDatabaseIpSearchAsync(ip, amount)
                     .ConfigureAwait(false);
@@ -72,7 +72,7 @@ namespace TheGodfather.Modules.SWAT
                                              [Description("Number of results")] int amount = 10)
             {
                 if (amount < 1 || amount > 100)
-                    throw new ArgumentException("Amount of results to fetch is out of range [1-100].", "amount");
+                    throw new ArgumentException("Amount of results to fetch is out of range [1, 100].", "amount");
 
                 var res = await Database.SwatDatabaseNameSearchAsync(name, amount)
                     .ConfigureAwait(false);

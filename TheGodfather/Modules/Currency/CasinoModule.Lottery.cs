@@ -1,37 +1,36 @@
 ﻿#region USING_DIRECTIVES
+using DSharpPlus;
+using DSharpPlus.CommandsNext;
+using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Interactivity;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Currency.Common;
-using TheGodfather.Modules.Games.Common;
-using TheGodfather.Services.Database.Bank;
-using TheGodfather.Services.Common;
-
-using DSharpPlus;
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
-using DSharpPlus.Interactivity;
 using TheGodfather.Services.Database;
+using TheGodfather.Services.Database.Bank;
 #endregion
 
 namespace TheGodfather.Modules.Currency
 {
     public partial class CasinoModule
     {
-        [Group("lottery"), Module(ModuleType.Currency)]
-        [Description("Play a lottery game. The three numbers are drawn from 1 to 15 and they can't repeat.")]
+        [Group("lottery")]
+        [Description("Play a lottery game. The three numbers are drawn from 1 to 15 and they can't be repeated.")]
         [Aliases("lotto")]
         [UsageExamples("!casino lottery 2 10 8")]
         public class LotteryModule : TheGodfatherModule
         {
 
-            public LotteryModule(SharedData shared, DBService db) : base(shared, db) { }
+            public LotteryModule(SharedData shared, DBService db) 
+                : base(shared, db)
+            {
+
+            }
 
 
             [GroupCommand]
@@ -40,39 +39,32 @@ namespace TheGodfather.Modules.Currency
             {
                 if (this.Shared.IsEventRunningInChannel(ctx.Channel.Id)) {
                     if (this.Shared.GetEventInChannel(ctx.Channel.Id) is LotteryGame)
-                        await JoinAsync(ctx, numbers).ConfigureAwait(false);
+                        await JoinAsync(ctx, numbers);
                     else
                         throw new CommandFailedException("Another event is already running in the current channel.");
                     return;
                 }
 
-                long? balance = await Database.GetBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id)
-                    .ConfigureAwait(false);
+                long? balance = await this.Database.GetBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id);
                 if (!balance.HasValue || balance < LotteryGame.TicketPrice)
-                    throw new CommandFailedException($"You do not have enough credits on your account to buy a lottery ticket! The lottery ticket costs {LotteryGame.TicketPrice} credits!");
+                    throw new CommandFailedException($"You do not have enough credits to buy a lottery ticket! Use command {Formatter.InlineCode("bank")} to check your account status. The lottery ticket costs {LotteryGame.TicketPrice} credits!");
 
                 var game = new LotteryGame(ctx.Client.GetInteractivity(), ctx.Channel);
                 this.Shared.RegisterEventInChannel(game, ctx.Channel.Id);
                 try {
-                    await ctx.InformSuccessAsync($"The Lottery game will start in 30s or when there are 10 participants. Use command {Formatter.InlineCode("casino lottery")} to join the pool.", ":clock1:")
-                        .ConfigureAwait(false);
-                    await JoinAsync(ctx, numbers)
-                        .ConfigureAwait(false);
-                    await Task.Delay(TimeSpan.FromSeconds(30))
-                        .ConfigureAwait(false);
+                    await ctx.InformSuccessAsync(StaticDiscordEmoji.Clock1, $"The Lottery game will start in 30s or when there are 10 participants. Use command {Formatter.InlineCode("casino lottery")} to join the pool.");
+                    await JoinAsync(ctx, numbers);
+                    await Task.Delay(TimeSpan.FromSeconds(30));
 
-                    await game.RunAsync()
-                        .ConfigureAwait(false);
+                    await game.RunAsync();
 
                     if (game.Winners.Any()) {
-                        await ctx.InformSuccessAsync(StaticDiscordEmoji.MoneyBag, $"Winnings:\n\n{string.Join(", ", game.Winners.Select(w => $"{w.User.Mention} : {w.WinAmount}"))}")
-                            .ConfigureAwait(false);
+                        await ctx.InformSuccessAsync(StaticDiscordEmoji.MoneyBag, $"Winnings:\n\n{string.Join(", ", game.Winners.Select(w => $"{w.User.Mention} : {w.WinAmount}"))}");
+
                         foreach (var winner in game.Winners)
-                            await Database.IncreaseBankAccountBalanceAsync(winner.Id, ctx.Guild.Id, winner.WinAmount)
-                                .ConfigureAwait(false);
+                            await this.Database.IncreaseBankAccountBalanceAsync(winner.Id, ctx.Guild.Id, winner.WinAmount);
                     } else {
-                        await ctx.InformSuccessAsync(StaticDiscordEmoji.MoneyBag, "Better luck next time!")
-                            .ConfigureAwait(false);
+                        await ctx.InformSuccessAsync(StaticDiscordEmoji.MoneyBag, "Better luck next time!");
                     }
                 } finally {
                     this.Shared.UnregisterEventInChannel(ctx.Channel.Id);
@@ -81,9 +73,9 @@ namespace TheGodfather.Modules.Currency
 
 
             #region COMMAND_LOTTERY_JOIN
-            [Command("join"), Module(ModuleType.Currency)]
+            [Command("join")]
             [Description("Join a pending Lottery game.")]
-            [Aliases("+", "compete", "enter", "j")]
+            [Aliases("+", "compete", "enter", "j", "<<", "<")]
             [UsageExamples("!casino lottery join 2 10 8")]
             public async Task JoinAsync(CommandContext ctx,
                                        [RemainingText, Description("Three numbers.")] params int[] numbers)
@@ -106,26 +98,26 @@ namespace TheGodfather.Modules.Currency
                 if (game.IsParticipating(ctx.User))
                     throw new CommandFailedException("You are already participating in the Lottery game!");
 
-                if (!await Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, LotteryGame.TicketPrice))
-                    throw new CommandFailedException($"You do not have enough credits on your account to buy a lottery ticket! The lottery ticket costs {LotteryGame.TicketPrice} credits!");
+                if (!await this.Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, LotteryGame.TicketPrice))
+                    throw new CommandFailedException($"You do not have enough credits to buy a lottery ticket! Use command {Formatter.InlineCode("bank")} to check your account status. The lottery ticket costs {LotteryGame.TicketPrice} credits!");
 
                 game.AddParticipant(ctx.User, numbers);
-                await ctx.InformSuccessAsync(StaticDiscordEmoji.MoneyBag, $"{ctx.User.Mention} joined the Lottery game.")
-                    .ConfigureAwait(false);
+                await ctx.InformSuccessAsync(StaticDiscordEmoji.MoneyBag, $"{ctx.User.Mention} joined the Lottery game.");
             }
             #endregion
 
             #region COMMAND_LOTTERY_RULES
-            [Command("rules"), Module(ModuleType.Currency)]
+            [Command("rules")]
             [Description("Explain the Lottery rules.")]
             [Aliases("help", "h", "ruling", "rule")]
             [UsageExamples("!casino lottery rules")]
-            public async Task RulesAsync(CommandContext ctx)
+            public Task RulesAsync(CommandContext ctx)
             {
-                await ctx.InformSuccessAsync(
-                    "TODO",
+                return ctx.InformSuccessAsync(
+                    "Three numbers will be drawn, and rewards will be given to participants depending on " +
+                    "the number of correct guesses.",
                     ":information_source:"
-                ).ConfigureAwait(false);
+                );
             }
             #endregion
         }

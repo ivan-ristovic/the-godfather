@@ -37,8 +37,8 @@ namespace TheGodfather.Modules.Chickens
 
         [GroupCommand]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [Description("User.")] DiscordUser user = null)
-            => InfoAsync(ctx, user);
+                                     [Description("User.")] DiscordMember member = null)
+            => InfoAsync(ctx, member);
 
 
         #region COMMAND_CHICKEN_FIGHT
@@ -47,16 +47,13 @@ namespace TheGodfather.Modules.Chickens
         [Aliases("f", "duel", "attack")]
         [UsageExamples("!chicken duel @Someone")]
         public async Task FightAsync(CommandContext ctx,
-                                    [Description("User.")] DiscordUser user)
+                                    [Description("Member whose chicken to fight.")] DiscordMember member)
         {
             if (this.Shared.GetEventInChannel(ctx.Channel.Id) is ChickenWar ambush)
                 throw new CommandFailedException("There is a chicken war running in this channel. No fights are allowed before the war finishes.");
 
-            if (user.Id == ctx.User.Id)
+            if (member.Id == ctx.User.Id)
                 throw new CommandFailedException("You can't fight against your own chicken!");
-
-            if (!ctx.Guild.Members.Any(m => m.Id == user.Id))
-                throw new CommandFailedException("That user is not a member of this guild so you cannot fight his chicken.");
 
             Chicken chicken1 = await this.Database.GetChickenAsync(ctx.User.Id, ctx.Guild.Id);
             if (chicken1 != null) {
@@ -66,7 +63,7 @@ namespace TheGodfather.Modules.Chickens
                 throw new CommandFailedException("You do not own a chicken!");
             }
 
-            Chicken chicken2 = await this.Database.GetChickenAsync(user.Id, ctx.Guild.Id);
+            Chicken chicken2 = await this.Database.GetChickenAsync(member.Id, ctx.Guild.Id);
             if (chicken2 == null)
                 throw new CommandFailedException("The specified user does not own a chicken!");
 
@@ -76,7 +73,7 @@ namespace TheGodfather.Modules.Chickens
             string header = $"{Formatter.Bold(chicken1.Name)} ({chicken1.Stats.ToShortString()}) {StaticDiscordEmoji.DuelSwords} {Formatter.Bold(chicken2.Name)} ({chicken2.Stats.ToShortString()}) {StaticDiscordEmoji.Chicken}\n\n";
 
             Chicken winner = chicken1.Fight(chicken2);
-            winner.Owner = winner.OwnerId == ctx.User.Id ? ctx.User : user;
+            winner.Owner = winner.OwnerId == ctx.User.Id ? ctx.User : member;
             Chicken loser = winner == chicken1 ? chicken2 : chicken1;
             int gain = winner.DetermineStrengthGain(loser);
             winner.Stats.BareStrength += gain;
@@ -154,17 +151,17 @@ namespace TheGodfather.Modules.Chickens
         [Aliases("information", "stats")]
         [UsageExamples("!chicken info @Someone")]
         public async Task InfoAsync(CommandContext ctx,
-                                   [Description("User.")] DiscordUser user = null)
+                                   [Description("User.")] DiscordMember member = null)
         {
-            if (user == null)
-                user = ctx.User;
+            if (member == null)
+                member = ctx.Member;
 
-            Chicken chicken = await this.Database.GetChickenAsync(user.Id, ctx.Guild.Id)
+            Chicken chicken = await this.Database.GetChickenAsync(member.Id, ctx.Guild.Id)
                 .ConfigureAwait(false);
             if (chicken == null)
-                throw new CommandFailedException($"User {user.Mention} does not own a chicken in this guild! Use command {Formatter.InlineCode("chicken buy")} to buy a chicken (1000 credits).");
+                throw new CommandFailedException($"User {member.Mention} does not own a chicken in this guild! Use command {Formatter.InlineCode("chicken buy")} to buy a chicken (1000 credits).");
 
-            await ctx.RespondAsync(embed: chicken.ToDiscordEmbed(user));
+            await ctx.RespondAsync(embed: chicken.ToDiscordEmbed(member));
         }
         #endregion
 
