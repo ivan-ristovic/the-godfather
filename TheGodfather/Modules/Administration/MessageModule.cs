@@ -206,6 +206,7 @@ namespace TheGodfather.Modules.Administration
 
             DiscordMessage msg = await ctx.Channel.GetMessageAsync(id);
             await msg.ModifyAsync(content);
+            await InformAsync(ctx);
         }
         #endregion
 
@@ -229,6 +230,7 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException("Cannot retrieve the message!");
 
             await msg.PinAsync();
+            await InformAsync(ctx, $"Added new channel pin.");
         }
         #endregion
 
@@ -248,7 +250,7 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException($"Invalid index (must be in range [1, {pinned.Count}]!");
 
             await pinned.ElementAt(index - 1).UnpinAsync();
-            await InformAsync(ctx);
+            await InformAsync(ctx, $"Removed the pin.");
         }
         #endregion
 
@@ -274,7 +276,7 @@ namespace TheGodfather.Modules.Administration
             if (failed > 0)
                 await InformAsync(ctx, $"Failed to unpin {failed} messages!", important: true);
             else
-                await InformAsync(ctx);
+                await InformAsync(ctx, "Successfully unpinned all messages in this channel");
         }
         #endregion
     }

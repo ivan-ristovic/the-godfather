@@ -23,7 +23,7 @@ namespace TheGodfather.Modules.Administration
         public RoleModule()
             : base()
         {
-            this.ModuleColor = DiscordColor.Orange;
+            this.ModuleColor = DiscordColor.Azure;
         }
 
 
@@ -67,8 +67,8 @@ namespace TheGodfather.Modules.Administration
                     return;
             }
 
-            await ctx.Guild.CreateRoleAsync(name, null, color, hoisted, mentionable, ctx.BuildReasonString());
-            await InformAsync(ctx);
+            DiscordRole role = await ctx.Guild.CreateRoleAsync(name, null, color, hoisted, mentionable, ctx.BuildReasonString());
+            await InformAsync(ctx, $"Successfully created role: {Formatter.Bold(role.Name)}");
         }
 
         [Command("create"), Priority(1)]
@@ -94,8 +94,9 @@ namespace TheGodfather.Modules.Administration
                                      [Description("Role.")] DiscordRole role,
                                      [RemainingText, Description("Reason.")] string reason = null)
         {
+            string name = Formatter.Bold(role.Name);
             await role.DeleteAsync(ctx.BuildReasonString(reason));
-            await InformAsync(ctx);
+            await InformAsync(ctx, $"Successfully deleted role: {Formatter.Bold(name)}");
         }
         #endregion
 
@@ -158,7 +159,7 @@ namespace TheGodfather.Modules.Administration
                                        [Description("Color.")] DiscordColor color)
         {
             await role.ModifyAsync(color: color, reason: ctx.BuildReasonString());
-            await InformAsync(ctx);
+            await InformAsync(ctx, $"Successfully set the color for the role {Formatter.Bold(role.Name)} to {Formatter.InlineCode(role.Color.ToString())}");
         }
 
         [Command("setcolor"), Priority(0)]
@@ -178,13 +179,14 @@ namespace TheGodfather.Modules.Administration
         [RequirePermissions(Permissions.ManageRoles)]
         public async Task RenameAsync(CommandContext ctx,
                                      [Description("Role.")] DiscordRole role,
-                                     [RemainingText, Description("New name.")] string name)
+                                     [RemainingText, Description("New name.")] string newname)
         {
-            if (string.IsNullOrWhiteSpace(name))
+            if (string.IsNullOrWhiteSpace(newname))
                 throw new ArgumentException("I need a new name for the role.");
 
-            await role.ModifyAsync(name: name, reason: ctx.BuildReasonString());
-            await InformAsync(ctx);
+            string name = role.Name;
+            await role.ModifyAsync(name: newname, reason: ctx.BuildReasonString());
+            await InformAsync(ctx, $"Successfully renamed role {Formatter.Bold(name)} to {Formatter.Bold(role.Name)}");
         }
 
         [Command("setname"), Priority(0)]
@@ -207,7 +209,7 @@ namespace TheGodfather.Modules.Administration
                                              [Description("Mentionable?")] bool mentionable = true)
         {
             await role.ModifyAsync(mentionable: mentionable, reason: ctx.BuildReasonString());
-            await InformAsync(ctx);
+            await InformAsync(ctx, $"Mentionable var for role {Formatter.Bold(role.Name)} is set to {Formatter.InlineCode(mentionable.ToString())}");
         }
 
         [Command("setmentionable"), Priority(0)]
@@ -230,7 +232,7 @@ namespace TheGodfather.Modules.Administration
                                          [Description("Hoisted (visible in online list)?")] bool hoisted = false)
         {
             await role.ModifyAsync(hoist: hoisted, reason: ctx.BuildReasonString());
-            await InformAsync(ctx);
+            await InformAsync(ctx, $"Visibility (hoist) var for role {Formatter.Bold(role.Name)} is set to {Formatter.InlineCode(hoisted.ToString())}");
         }
 
         [Command("setvisible"), Priority(0)]

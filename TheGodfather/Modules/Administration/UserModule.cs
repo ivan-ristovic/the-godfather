@@ -27,7 +27,7 @@ namespace TheGodfather.Modules.Administration
         public UserModule(SharedData shared, DBService db) 
             : base(shared, db)
         {
-            this.ModuleColor = DiscordColor.Cyan;
+            this.ModuleColor = DiscordColor.Sienna;
         }
 
 
@@ -44,9 +44,9 @@ namespace TheGodfather.Modules.Administration
         [UsageExamples("!user addrole @User Admins",
                        "!user addrole Admins @User")]
         [RequirePermissions(Permissions.ManageRoles)]
-        public async Task AddRoleAsync(CommandContext ctx,
-                                      [Description("Member.")] DiscordMember member,
-                                      [Description("Roles to grant.")] params DiscordRole[] roles)
+        public async Task GrantRolesAsync(CommandContext ctx,
+                                         [Description("Member.")] DiscordMember member,
+                                         [Description("Roles to grant.")] params DiscordRole[] roles)
         {
             if (roles.Max(r => r.Position) >= ctx.Member.Hierarchy)
                 throw new CommandFailedException("You are not authorised to grant some of these roles.");
@@ -54,14 +54,14 @@ namespace TheGodfather.Modules.Administration
             foreach (DiscordRole role in roles)
                 await member.GrantRoleAsync(role, reason: ctx.BuildReasonString());
 
-            await InformAsync(ctx);
+            await InformAsync(ctx, $"Successfully updated member {Formatter.Bold(member.DisplayName)} by granting roles:\n\n{string.Join("\n", roles.Select(r => r.ToString()))}");
         }
 
         [Command("addrole"), Priority(0)]
-        public Task AddRoleAsync(CommandContext ctx,
-                                [Description("Role.")] DiscordRole role,
-                                [Description("Member.")] DiscordMember member)
-            => AddRoleAsync(ctx, member, role);
+        public Task GrantRolesAsync(CommandContext ctx,
+                                   [Description("Role.")] DiscordRole role,
+                                   [Description("Member.")] DiscordMember member)
+            => GrantRolesAsync(ctx, member, role);
         #endregion
 
         #region COMMAND_USER_AVATAR
@@ -133,7 +133,7 @@ namespace TheGodfather.Modules.Administration
                                      [RemainingText, Description("Reason.")] string reason = null)
         {
             await member.SetDeafAsync(deafen, reason: ctx.BuildReasonString(reason));
-            await InformAsync(ctx);
+            await InformAsync(ctx, $"Successfully {Formatter.Bold(deafen ? "deafened" : "undeafened")} member {Formatter.Bold(member.DisplayName)}");
         }
         #endregion
 
@@ -209,7 +209,7 @@ namespace TheGodfather.Modules.Administration
                                    [RemainingText, Description("Reason.")] string reason = null)
         {
             await member.SetMuteAsync(mute, reason: ctx.BuildReasonString(reason));
-            await InformAsync(ctx);
+            await InformAsync(ctx, $"Successfully {Formatter.Bold(mute ? "muted" : "unmuted")} member {Formatter.Bold(member.DisplayName)}");
         }
         #endregion
 
@@ -220,29 +220,29 @@ namespace TheGodfather.Modules.Administration
         [UsageExamples("!user removerole @Someone Admins",
                        "!user removerole Admins @Someone")]
         [RequirePermissions(Permissions.ManageRoles)]
-        public async Task RevokeRoleAsync(CommandContext ctx,
-                                         [Description("Member.")] DiscordMember member,
-                                         [Description("Role.")] DiscordRole role,
-                                         [RemainingText, Description("Reason.")] string reason = null)
+        public async Task RevokeRolesAsync(CommandContext ctx,
+                                          [Description("Member.")] DiscordMember member,
+                                          [Description("Role.")] DiscordRole role,
+                                          [RemainingText, Description("Reason.")] string reason = null)
         {
             if (role.Position >= ctx.Member.Hierarchy)
                 throw new CommandFailedException("You cannot revoke that role.");
 
             await member.RevokeRoleAsync(role, reason: ctx.BuildReasonString(reason));
-            await InformAsync(ctx);
+            await InformAsync(ctx, $"Successfully revoked role {Formatter.Bold(role.Name)} from member {Formatter.Bold(member.DisplayName)}");
         }
 
         [Command("removerole"), Priority(0)]
-        public Task RevokeRoleAsync(CommandContext ctx,
-                                   [Description("Role.")] DiscordRole role,
-                                   [Description("Member.")] DiscordMember member,
-                                   [RemainingText, Description("Reason.")] string reason = null)
-            => RevokeRoleAsync(ctx, member, role, reason);
+        public Task RevokeRolesAsync(CommandContext ctx,
+                                    [Description("Role.")] DiscordRole role,
+                                    [Description("Member.")] DiscordMember member,
+                                    [RemainingText, Description("Reason.")] string reason = null)
+            => RevokeRolesAsync(ctx, member, role, reason);
 
         [Command("removerole"), Priority(2)]
-        public async Task RevokeRoleAsync(CommandContext ctx,
-                                         [Description("Member.")] DiscordMember member,
-                                         [Description("Roles to revoke.")] params DiscordRole[] roles)
+        public async Task RevokeRolesAsync(CommandContext ctx,
+                                          [Description("Member.")] DiscordMember member,
+                                          [Description("Roles to revoke.")] params DiscordRole[] roles)
         {
             if (roles.Max(r => r.Position) >= ctx.Member.Hierarchy)
                 throw new CommandFailedException("You cannot revoke some of the given roles.");
@@ -250,7 +250,7 @@ namespace TheGodfather.Modules.Administration
             foreach (DiscordRole role in roles)
                 await member.RevokeRoleAsync(role, reason: ctx.BuildReasonString());
 
-            await InformAsync(ctx);
+            await InformAsync(ctx, $"Successfully updated member {Formatter.Bold(member.DisplayName)} by revoking roles:\n\n{string.Join("\n", roles.Select(r => r.ToString()))}");
         }
         #endregion
 
@@ -268,7 +268,7 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException("You are not authorised to remove roles from this user.");
 
             await member.ReplaceRolesAsync(Enumerable.Empty<DiscordRole>(), reason: ctx.BuildReasonString(reason));
-            await InformAsync(ctx);
+            await InformAsync(ctx, $"Revoked all roles from member {Formatter.Bold(member.DisplayName)}");
         }
         #endregion
 
@@ -285,12 +285,13 @@ namespace TheGodfather.Modules.Administration
             if (string.IsNullOrWhiteSpace(nickname))
                 throw new InvalidCommandUsageException("Missing new name.");
 
+            string name = Formatter.Bold(member.DisplayName);
             await member.ModifyAsync(new Action<MemberEditModel>(m => {
                 m.Nickname = nickname;
                 m.AuditLogReason = ctx.BuildReasonString();
             }));
 
-            await InformAsync(ctx);
+            await InformAsync(ctx, $"Renamed member {name} to {Formatter.Bold(member.DisplayName)}");
         }
         #endregion
 
@@ -401,7 +402,7 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException("I can't talk to that user...");
             }
 
-            await InformAsync(ctx);
+            await InformAsync(ctx, $"Successfully warned member {Formatter.Bold(member.DisplayName)} with message: {Formatter.BlockCode(msg)}");
         }
         #endregion
     }

@@ -28,7 +28,7 @@ namespace TheGodfather.Modules.Administration
         public GuildModule(SharedData shared, DBService db) 
             : base(shared, db)
         {
-            this.ModuleColor = DiscordColor.MidnightBlue;
+            this.ModuleColor = DiscordColor.SapGreen;
         }
 
 
@@ -152,7 +152,7 @@ namespace TheGodfather.Modules.Administration
                 return;
 
             await ctx.Guild.PruneAsync(days, ctx.BuildReasonString(reason));
-            await InformAsync(ctx);
+            await InformAsync(ctx, $"Pruned {Formatter.Bold(count.ToString())} members inactive for {Formatter.Bold(days.ToString())} days");
         }
         #endregion
 
@@ -177,7 +177,7 @@ namespace TheGodfather.Modules.Administration
                 m.Name = newname;
                 m.AuditLogReason = ctx.BuildReasonString(reason);
             }));
-            await InformAsync(ctx);
+            await InformAsync(ctx, $"Successfully renamed the guild to {Formatter.Bold(ctx.Guild.Name)}");
         }
 
         [Command("rename")]
@@ -210,7 +210,7 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException("An error occured.", e);
             }
 
-            await InformAsync(ctx);
+            await InformAsync(ctx, "Successfully changed guild icon.");
         }
         #endregion
     }

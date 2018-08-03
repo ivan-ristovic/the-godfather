@@ -18,32 +18,6 @@ namespace TheGodfather.Extensions
         public static string BuildReasonString(this CommandContext ctx, string reason = null)
             => $"{ctx.User.ToString()} : {reason ?? "No reason provided."} | Invoked in: {ctx.Channel.ToString()}";
 
-        public static Task EmbedAsync(this CommandContext ctx, SharedData shared, string message = null, bool important = false, string emoji = null, DiscordColor? color = null)
-        {
-            shared = shared ?? ctx.Services.GetService<SharedData>();
-            if (!important && shared.GetGuildConfig(ctx.Guild.Id).SilentRespond) {
-                return ctx.Message.CreateReactionAsync(StaticDiscordEmoji.CheckMarkSuccess);
-            } else {
-                return ctx.RespondAsync(embed: new DiscordEmbedBuilder {
-                    Description = $"{(emoji == null ? StaticDiscordEmoji.CheckMarkSuccess : DiscordEmoji.FromName(ctx.Client, emoji))} {message ?? "Done!"}",
-                    Color = color ?? DiscordColor.Green
-                });
-            }
-        }
-
-        public static Task EmbedAsync(this CommandContext ctx, SharedData shared, DiscordEmoji icon, string message = null, bool important = false, DiscordColor? color = null)
-        {
-            shared = shared ?? ctx.Services.GetService<SharedData>();
-            if (!important && shared.GetGuildConfig(ctx.Guild.Id).SilentRespond) {
-                return ctx.Message.CreateReactionAsync(StaticDiscordEmoji.CheckMarkSuccess);
-            } else {
-                return ctx.RespondAsync(embed: new DiscordEmbedBuilder {
-                    Description = $"{(icon ?? StaticDiscordEmoji.CheckMarkSuccess)} {message ?? "Done!"}",
-                    Color = color ?? DiscordColor.Green
-                });
-            }
-        }
-
         public static Task<DiscordMessage> InformFailureAsync(this CommandContext ctx, string message)
         {
             return ctx.RespondAsync(embed: new DiscordEmbedBuilder {

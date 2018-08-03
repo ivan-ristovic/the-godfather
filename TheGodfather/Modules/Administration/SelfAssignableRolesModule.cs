@@ -73,7 +73,7 @@ namespace TheGodfather.Modules.Administration
                 await logchn.SendMessageAsync(embed: emb.Build());
             }
 
-            await InformAsync(ctx);
+            await InformAsync(ctx, $"Added self-assignable roles:\n\n{string.Join("\n", roles.Select(r => r.ToString()))}");
         }
         #endregion
 
@@ -105,7 +105,7 @@ namespace TheGodfather.Modules.Administration
                 await logchn.SendMessageAsync(embed: emb.Build());
             }
 
-            await InformAsync(ctx);
+            await InformAsync(ctx, $"Removed self-assignable roles:\n\n{string.Join("\n", roles.Select(r => r.ToString()))}");
         }
         #endregion
 
@@ -133,7 +133,7 @@ namespace TheGodfather.Modules.Administration
                 await logchn.SendMessageAsync(embed: emb.Build());
             }
 
-            await InformAsync(ctx);
+            await InformAsync(ctx, "Removed all self-assignable roles for this guild!");
         }
         #endregion
 

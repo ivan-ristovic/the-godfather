@@ -31,7 +31,7 @@ namespace TheGodfather.Modules.Administration
             public GuildConfigModule(SharedData shared, DBService db)
                 : base(shared, db)
             {
-                this.ModuleColor = DiscordColor.Brown;
+                this.ModuleColor = DiscordColor.SapGreen;
             }
 
 
@@ -76,7 +76,7 @@ namespace TheGodfather.Modules.Administration
 
                 await ctx.RespondAsync(embed: emb.Build());
             }
-            
+
 
             #region COMMAND_CONFIG_WIZARD
             [Command("setup"), UsesInteractivity]
@@ -104,8 +104,8 @@ namespace TheGodfather.Modules.Administration
                 await channel.EmbedAsync("Welcome to the guild configuration wizard!\n\nI will guide you through the configuration. You can always re-run this setup or manually change the settings so do not worry if you don't do everything like you wanted.\n\nThat being said, let's start the fun! Note that the changes will apply after the wizard finishes.");
                 await Task.Delay(TimeSpan.FromSeconds(10));
 
-                if (await channel.WaitForBoolResponseAsync(ctx, "Do you wish to enable full reports from my side (for now it's just message reaction when command succeeds)?"))
-                    gcfg.SilentRespond = false;
+                if (await channel.WaitForBoolResponseAsync(ctx, "By default I am sending verbose messages whenever a command is executed. However, I can also silently react. Should I continue with the verbose replies?"))
+                    gcfg.ReactionResponse = false;
 
                 InteractivityExtension interactivity = ctx.Client.GetInteractivity();
 
@@ -268,17 +268,17 @@ namespace TheGodfather.Modules.Administration
             }
             #endregion
 
-            #region COMMAND_CONFIG_SILENTRESPOND
-            [Command("silentrespond"), Priority(1)]
+            #region COMMAND_CONFIG_VERBOSE
+            [Command("verbose"), Priority(1)]
             [Description("Configuration of bot's responding options.")]
-            [Aliases("silent", "react", "silentmode")]
-            [UsageExamples("!guild cfg silentrespond",
-                           "!guild cfg silentrespond on")]
+            [Aliases("fullresponse", "verbosereact", "verboseresponse", "v", "vr")]
+            [UsageExamples("!guild cfg verbose",
+                           "!guild cfg verbose on")]
             public async Task SilentResponseAsync(CommandContext ctx,
                                                  [Description("Enable silent response?")] bool enable)
             {
                 CachedGuildConfig gcfg = this.Shared.GetGuildConfig(ctx.Guild.Id);
-                gcfg.SilentRespond = enable;
+                gcfg.ReactionResponse = !enable;
 
                 await this.Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg);
 
@@ -290,18 +290,18 @@ namespace TheGodfather.Modules.Administration
                     };
                     emb.AddField("User responsible", ctx.User.Mention, inline: true);
                     emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
-                    emb.AddField("Silent response", gcfg.SilentRespond ? "on" : "off", inline: true);
+                    emb.AddField("Verbose response", gcfg.ReactionResponse ? "off" : "on", inline: true);
                     await logchn.SendMessageAsync(embed: emb.Build());
                 }
 
-                await InformAsync(ctx);
+                await InformAsync(ctx, $"{Formatter.Bold(gcfg.ReactionResponse ? "Disabled" : "Enabled")} verbose responses.");
             }
 
-            [Command("silentrespond"), Priority(0)]
+            [Command("verbose"), Priority(0)]
             public Task SilentResponseAsync(CommandContext ctx)
             {
                 CachedGuildConfig gcfg = this.Shared.GetGuildConfig(ctx.Guild.Id);
-                return InformAsync(ctx, $"Silent response for this guild is {Formatter.Bold(gcfg.SilentRespond ? "enabled" : "disabled")}!", important: true);
+                return InformAsync(ctx, $"Verbose responses for this guild are {Formatter.Bold(gcfg.ReactionResponse ? "disabled" : "enabled")}!", important: true);
             }
             #endregion
 
@@ -331,7 +331,7 @@ namespace TheGodfather.Modules.Administration
                     await logchn.SendMessageAsync(embed: emb.Build());
                 }
 
-                await InformAsync(ctx);
+                await InformAsync(ctx, $"{Formatter.Bold(gcfg.ReactionResponse ? "Enabled" : "Disabled")} command suggestions.");
             }
 
             [Command("suggestions"), Priority(0)]
@@ -341,7 +341,7 @@ namespace TheGodfather.Modules.Administration
                 return InformAsync(ctx, $"Command suggestions for this guild are {Formatter.Bold(gcfg.SuggestionsEnabled ? "enabled" : "disabled")}!", important: true);
             }
             #endregion
-            
+
             #region COMMAND_CONFIG_LOGGING
             [Command("logging"), Priority(1)]
             [Description("Command action logging configuration.")]
@@ -376,7 +376,7 @@ namespace TheGodfather.Modules.Administration
                     await logchn.SendMessageAsync(embed: emb.Build());
                 }
 
-                await InformAsync(ctx);
+                await InformAsync(ctx, $"{Formatter.Bold(gcfg.ReactionResponse ? "Enabled" : "Disabled")} action logs.");
             }
 
             [Command("logging"), Priority(0)]
@@ -440,7 +440,10 @@ namespace TheGodfather.Modules.Administration
                     await logchn.SendMessageAsync(embed: emb.Build());
                 }
 
-                await InformAsync(ctx);
+                if (enable)
+                    await InformAsync(ctx, $"Welcome message channel set to {Formatter.Bold(wchn.Name)} with message: {Formatter.Bold(string.IsNullOrWhiteSpace(message) ? "<previously set>" : message)}.");
+                else
+                    await InformAsync(ctx, $"Welcome messages are now disabled.");
             }
 
             [Command("welcome"), Priority(1)]
@@ -474,7 +477,7 @@ namespace TheGodfather.Modules.Administration
             }
 
             #endregion
-            
+
             #region COMMAND_CONFIG_LEAVE
             [Command("leave"), Priority(3)]
             [Description("Allows user leaving message configuration.")]
@@ -525,7 +528,10 @@ namespace TheGodfather.Modules.Administration
                     await logchn.SendMessageAsync(embed: emb.Build());
                 }
 
-                await InformAsync(ctx);
+                if (enable)
+                    await InformAsync(ctx, $"Welcome message channel set to {Formatter.Bold(lchn.Name)} with message: {Formatter.Bold(string.IsNullOrWhiteSpace(message) ? "<previously set>" : message)}.");
+                else
+                    await InformAsync(ctx, $"Welcome messages are now disabled.");
             }
 
             [Command("leave"), Priority(1)]

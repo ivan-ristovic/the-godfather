@@ -31,7 +31,7 @@ namespace TheGodfather.Services.Database.GuildConfig
                             LinkfilterEnabled = (bool)reader["linkfilter_enabled"],
                             LogChannelId = (ulong)(long)reader["log_cid"],
                             Prefix = reader["prefix"] is DBNull ? null : (string)reader["prefix"],
-                            SilentRespond = (bool)reader["silent_respond"],
+                            ReactionResponse = (bool)reader["silent_respond"],
                             SuggestionsEnabled = (bool)reader["suggestions_enabled"],
                         });
                     }
@@ -212,7 +212,7 @@ namespace TheGodfather.Services.Database.GuildConfig
                 else
                     cmd.Parameters.Add(new NpgsqlParameter<string>("prefix", cfg.Prefix));
                 cmd.Parameters.Add(new NpgsqlParameter<long>("log_cid", (long)cfg.LogChannelId));
-                cmd.Parameters.Add(new NpgsqlParameter<bool>("silent_respond", cfg.SilentRespond));
+                cmd.Parameters.Add(new NpgsqlParameter<bool>("silent_respond", cfg.ReactionResponse));
                 cmd.Parameters.Add(new NpgsqlParameter<bool>("suggestions_enabled", cfg.SuggestionsEnabled));
                 cmd.Parameters.Add(new NpgsqlParameter<bool>("linkfilter_enabled", cfg.LinkfilterEnabled));
                 cmd.Parameters.Add(new NpgsqlParameter<bool>("linkfilter_invites", cfg.BlockDiscordInvites));

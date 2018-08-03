@@ -70,7 +70,8 @@ namespace TheGodfather.Modules.Administration
                 using (var stream = await response.Content.ReadAsStreamAsync()) {
                     if (stream.Length >= 256000)
                         throw new CommandFailedException("The specified emoji is too large. Maximum allowed image size is 256KB.");
-                    await ctx.Guild.CreateEmojiAsync(name, stream, reason: ctx.BuildReasonString());
+                    DiscordGuildEmoji emoji = await ctx.Guild.CreateEmojiAsync(name, stream, reason: ctx.BuildReasonString());
+                    await InformAsync(ctx, $"Successfully added emoji: {emoji}");
                 }
             } catch (WebException e) {
                 throw new CommandFailedException("An error occured while fetching the image.", e);
@@ -78,7 +79,6 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException("Discord prevented the emoji from being added. Possibly emoji slots are full for this guild or the image format is not supported?", e);
             }
 
-            await InformAsync(ctx);
         }
 
         [Command("add"), Priority(2)]
@@ -116,12 +116,12 @@ namespace TheGodfather.Modules.Administration
         {
             try {
                 DiscordGuildEmoji gemoji = await ctx.Guild.GetEmojiAsync(emoji.Id);
+                string name = gemoji.Name;
                 await ctx.Guild.DeleteEmojiAsync(gemoji, ctx.BuildReasonString());
+                await InformAsync(ctx, $"Successfully deleted emoji: {Formatter.Bold(name)}");
             } catch (NotFoundException) {
                 throw new CommandFailedException("Can't find that emoji in list of emoji that I made for this guild.");
             }
-
-            await InformAsync(ctx);
         }
         #endregion
 
@@ -182,12 +182,11 @@ namespace TheGodfather.Modules.Administration
 
             try {
                 DiscordGuildEmoji gemoji = await ctx.Guild.GetEmojiAsync(emoji.Id);
-                await ctx.Guild.ModifyEmojiAsync(gemoji, name: newname, reason: ctx.BuildReasonString());
+                gemoji = await ctx.Guild.ModifyEmojiAsync(gemoji, name: newname, reason: ctx.BuildReasonString());
+                await InformAsync(ctx, $"Successfully modified emoji: {gemoji}");
             } catch (NotFoundException) {
                 throw new CommandFailedException("Can't find that emoji in list of emoji that I made for this guild.");
             }
-
-            await InformAsync(ctx);
         }
 
         [Command("modify"), Priority(0)]

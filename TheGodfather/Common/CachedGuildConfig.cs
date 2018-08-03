@@ -10,7 +10,7 @@
         public bool LinkfilterEnabled { get; set; }
         public ulong LogChannelId { get; set; }
         public string Prefix { get; set; }
-        public bool SilentRespond { get; set; }
+        public bool ReactionResponse { get; set; }
         public bool SuggestionsEnabled { get; set; }
 
         public bool LoggingEnabled
@@ -26,7 +26,7 @@
             LinkfilterEnabled = false,
             LogChannelId = 0,
             Prefix = null,
-            SilentRespond = true,
+            ReactionResponse = false,
             SuggestionsEnabled = false
         };
     }

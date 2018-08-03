@@ -28,7 +28,7 @@ namespace TheGodfather.Modules.Administration
                 public LinkfilterModule(SharedData shared, DBService db) 
                     : base(shared, db)
                 {
-                    this.ModuleColor = DiscordColor.Azure;
+                    this.ModuleColor = DiscordColor.SapGreen;
                 }
 
 
@@ -40,7 +40,7 @@ namespace TheGodfather.Modules.Administration
                     gcfg.LinkfilterEnabled = enable;
 
                     await this.Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg);
-                    await InformAsync(ctx, $"{(enable ? "Enabled" : "Disabled")} link filtering!", important: true);
+                    await InformAsync(ctx, $"{(enable ? "Enabled" : "Disabled")} link filtering!");
                     await LogConfigChangeAsync(ctx, "Linkfilter", gcfg.LinkfilterEnabled);
                 }
 
@@ -79,7 +79,7 @@ namespace TheGodfather.Modules.Administration
                     gcfg.BlockBooterWebsites = enable;
 
                     await this.Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg);
-                    await InformAsync(ctx, $"{(enable ? "Enabled" : "Disabled")} DDoS/Booter website filtering!", important: true);
+                    await InformAsync(ctx, $"{(enable ? "Enabled" : "Disabled")} DDoS/Booter website filtering!");
                     await LogConfigChangeAsync(ctx, "DDoS/Booter websites filtering", gcfg.BlockBooterWebsites);
                 }
 
@@ -104,7 +104,7 @@ namespace TheGodfather.Modules.Administration
                     gcfg.BlockDiscordInvites = enable;
 
                     await this.Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg);
-                    await InformAsync(ctx, $"{(enable ? "Enabled" : "Disabled")}d Discord invites filtering!", important: true);
+                    await InformAsync(ctx, $"{(enable ? "Enabled" : "Disabled")} Discord invites filtering!");
                     await LogConfigChangeAsync(ctx, "Discord invites filtering", gcfg.BlockDiscordInvites);
                 }
 
@@ -129,7 +129,7 @@ namespace TheGodfather.Modules.Administration
                     gcfg.BlockDisturbingWebsites = enable;
 
                     await this.Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg);
-                    await InformAsync(ctx, $"{(enable ? "Enabled" : "Disabled")} disturbing website filtering!", important: true);
+                    await InformAsync(ctx, $"{(enable ? "Enabled" : "Disabled")} disturbing website filtering!");
                     await LogConfigChangeAsync(ctx, "Disturbing websites filtering", gcfg.BlockDisturbingWebsites);
                 }
 
@@ -154,7 +154,7 @@ namespace TheGodfather.Modules.Administration
                     gcfg.BlockIpLoggingWebsites = enable;
 
                     await this.Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg);
-                    await InformAsync(ctx, $"{(enable ? "Enabled" : "Disabled")} IP logging website filtering!", important: true);
+                    await InformAsync(ctx, $"{(enable ? "Enabled" : "Disabled")} IP logging website filtering!");
                     await LogConfigChangeAsync(ctx, "IP logging websites filtering", gcfg.BlockIpLoggingWebsites);
                 }
 
@@ -179,7 +179,7 @@ namespace TheGodfather.Modules.Administration
                     gcfg.BlockUrlShorteners = enable;
 
                     await this.Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg);
-                    await InformAsync(ctx, $"{(enable ? "Enabled" : "Disabled")} URL shortener website filtering!", important: true);
+                    await InformAsync(ctx, $"{(enable ? "Enabled" : "Disabled")} URL shortener website filtering!");
                     await LogConfigChangeAsync(ctx, "URL shorteners filtering", gcfg.BlockUrlShorteners);
                 }
 
