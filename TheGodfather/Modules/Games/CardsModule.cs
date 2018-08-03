@@ -1,22 +1,19 @@
 ﻿#region USING_DIRECTIVES
-using System.Collections.Concurrent;
-using System.Linq;
-using System.Threading.Tasks;
-
-using TheGodfather.Common.Attributes;
-using TheGodfather.Exceptions;
-using TheGodfather.Extensions;
-
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-
+using System.Collections.Concurrent;
+using System.Linq;
+using System.Threading.Tasks;
 using TexasHoldem.Logic.Cards;
+using TheGodfather.Common.Attributes;
+using TheGodfather.Exceptions;
+using TheGodfather.Extensions;
 #endregion
 
-namespace TheGodfather.Modules.Currency
+namespace TheGodfather.Modules.Games
 {
-    [Group("cards"), Module(ModuleType.Currency)]
+    [Group("cards"), Module(ModuleType.Games)]
     [Description("Manipulate a deck of cards.")]
     [Aliases("deck")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
@@ -40,7 +37,7 @@ namespace TheGodfather.Modules.Currency
         [Aliases("take")]
         [UsageExamples("!deck draw 5")]
         public async Task DrawAsync(CommandContext ctx,
-                                   [Description("Amount (in range [1-10]).")] int amount = 1)
+                                   [Description("Amount (in range [1, 10]).")] int amount = 1)
         {
             if (!Decks.ContainsKey(ctx.Channel.Id) || Decks[ctx.Channel.Id] == null)
                 throw new CommandFailedException($"No deck to deal from. Use command {Formatter.InlineCode("deck")} to open a deck.");

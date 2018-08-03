@@ -47,7 +47,7 @@ namespace TheGodfather.Modules.Games
                 var game = new NumberRace(ctx.Client.GetInteractivity(), ctx.Channel);
                 this.Shared.RegisterEventInChannel(game, ctx.Channel.Id);
                 try {
-                    await ctx.InformSuccessAsync($"The race will start in 30s or when there are 10 participants. Use command {Formatter.InlineCode("game numberrace")} to join the race.", ":clock1:")
+                    await ctx.InformSuccessAsync(StaticDiscordEmoji.Clock1, $"The race will start in 30s or when there are 10 participants. Use command {Formatter.InlineCode("game numberrace")} to join the race.")
                         .ConfigureAwait(false);
                     await JoinRaceAsync(ctx)
                         .ConfigureAwait(false);
@@ -63,7 +63,7 @@ namespace TheGodfather.Modules.Games
                                 await ctx.InformSuccessAsync(StaticDiscordEmoji.Trophy, $"{game.Winner.Mention} won due to no replies from other users!")
                                     .ConfigureAwait(false);
                             } else {
-                                await ctx.InformSuccessAsync("No replies, aborting Number Race...", ":alarm_clock:")
+                                await ctx.InformSuccessAsync(StaticDiscordEmoji.AlarmClock, "No replies, aborting Number Race...")
                                         .ConfigureAwait(false);
                             }
                         } else {
@@ -75,7 +75,7 @@ namespace TheGodfather.Modules.Games
                             await Database.UpdateUserStatsAsync(game.Winner.Id, GameStatsType.NumberRacesWon)
                                 .ConfigureAwait(false);
                     } else {
-                        await ctx.InformSuccessAsync("Not enough users joined the race.", ":alarm_clock:")
+                        await ctx.InformSuccessAsync(StaticDiscordEmoji.AlarmClock, "Not enough users joined the race.")
                             .ConfigureAwait(false);
                     }
                 } finally {

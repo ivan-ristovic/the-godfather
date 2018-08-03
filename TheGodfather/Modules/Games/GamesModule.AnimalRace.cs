@@ -47,7 +47,7 @@ namespace TheGodfather.Modules.Games
                 var game = new AnimalRace(ctx.Client.GetInteractivity(), ctx.Channel);
                 this.Shared.RegisterEventInChannel(game, ctx.Channel.Id);
                 try {
-                    await ctx.InformSuccessAsync($"The race will start in 30s or when there are 10 participants. Use command {Formatter.InlineCode("game animalrace")} to join the race.", ":clock1:")
+                    await ctx.InformSuccessAsync(StaticDiscordEmoji.Clock1, $"The race will start in 30s or when there are 10 participants. Use command {Formatter.InlineCode("game animalrace")} to join the race.")
                         .ConfigureAwait(false);
                     await JoinAsync(ctx)
                         .ConfigureAwait(false);
@@ -62,7 +62,7 @@ namespace TheGodfather.Modules.Games
                             await Database.UpdateUserStatsAsync(uid, GameStatsType.AnimalRacesWon)
                                 .ConfigureAwait(false);
                     } else {
-                        await ctx.InformSuccessAsync("Not enough users joined the race.", ":alarm_clock:")
+                        await ctx.InformSuccessAsync(StaticDiscordEmoji.AlarmClock, "Not enough users joined the race.")
                             .ConfigureAwait(false);
                     }
                 } finally {

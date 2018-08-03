@@ -70,7 +70,7 @@ namespace TheGodfather.Modules.Games
                 var quiz = new Quiz(ctx.Client.GetInteractivity(), ctx.Channel, questions);
                 this.Shared.RegisterEventInChannel(quiz, ctx.Channel.Id);
                 try {
-                    await ctx.InformSuccessAsync("Quiz will start in 10s! Get ready!", ":clock1:")
+                    await ctx.InformSuccessAsync(StaticDiscordEmoji.Clock1, "Quiz will start in 10s! Get ready!")
                         .ConfigureAwait(false);
                     await Task.Delay(TimeSpan.FromSeconds(10))
                         .ConfigureAwait(false);
@@ -78,7 +78,7 @@ namespace TheGodfather.Modules.Games
                         .ConfigureAwait(false);
 
                     if (quiz.IsTimeoutReached) {
-                        await ctx.InformSuccessAsync("Aborting quiz due to no replies...", ":alarm_clock:")
+                        await ctx.InformSuccessAsync(StaticDiscordEmoji.AlarmClock, "Aborting quiz due to no replies...")
                             .ConfigureAwait(false);
                         return;
                     }
@@ -139,7 +139,6 @@ namespace TheGodfather.Modules.Games
 
 
             #region COMMAND_QUIZ_CAPITALS
-
             [Command("capitals"), Module(ModuleType.Games)]
             [Description("Country capitals guessing quiz. You can also specify how many questions there will be in the quiz.")]
             [Aliases("capitaltowns")]
@@ -163,7 +162,7 @@ namespace TheGodfather.Modules.Games
                 var quiz = new QuizCapitals(ctx.Client.GetInteractivity(), ctx.Channel, qnum);
                 this.Shared.RegisterEventInChannel(quiz, ctx.Channel.Id);
                 try {
-                    await ctx.InformSuccessAsync("Quiz will start in 10s! Get ready!", ":clock1:")
+                    await ctx.InformSuccessAsync(StaticDiscordEmoji.Clock1, "Quiz will start in 10s! Get ready!")
                         .ConfigureAwait(false);
                     await Task.Delay(TimeSpan.FromSeconds(10))
                         .ConfigureAwait(false);
@@ -171,7 +170,7 @@ namespace TheGodfather.Modules.Games
                         .ConfigureAwait(false);
 
                     if (quiz.IsTimeoutReached) {
-                        await ctx.InformSuccessAsync("Aborting quiz due to no replies...", ":alarm_clock:")
+                        await ctx.InformSuccessAsync(StaticDiscordEmoji.AlarmClock, "Aborting quiz due to no replies...")
                             .ConfigureAwait(false);
                         return;
                     }
@@ -208,7 +207,7 @@ namespace TheGodfather.Modules.Games
                 var quiz = new QuizCountries(ctx.Client.GetInteractivity(), ctx.Channel, qnum);
                 this.Shared.RegisterEventInChannel(quiz, ctx.Channel.Id);
                 try {
-                    await ctx.InformSuccessAsync("Quiz will start in 10s! Get ready!", ":clock1:")
+                    await ctx.InformSuccessAsync(StaticDiscordEmoji.Clock1, "Quiz will start in 10s! Get ready!")
                         .ConfigureAwait(false);
                     await Task.Delay(TimeSpan.FromSeconds(10))
                         .ConfigureAwait(false);
@@ -216,7 +215,7 @@ namespace TheGodfather.Modules.Games
                         .ConfigureAwait(false);
 
                     if (quiz.IsTimeoutReached) {
-                        await ctx.InformSuccessAsync("Aborting quiz due to no replies...", ":alarm_clock:")
+                        await ctx.InformSuccessAsync(StaticDiscordEmoji.AlarmClock, "Aborting quiz due to no replies...")
                             .ConfigureAwait(false);
                         return;
                     }

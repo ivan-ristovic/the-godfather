@@ -45,7 +45,7 @@ namespace TheGodfather.Modules.Games
                 var game = new RussianRoulette(ctx.Client.GetInteractivity(), ctx.Channel);
                 this.Shared.RegisterEventInChannel(game, ctx.Channel.Id);
                 try {
-                    await ctx.InformSuccessAsync($"The russian roulette game will start in 30s or when there are 10 participants. Use command {Formatter.InlineCode("game russianroulette")} to join the pool.", ":clock1:")
+                    await ctx.InformSuccessAsync(StaticDiscordEmoji.Clock1, $"The russian roulette game will start in 30s or when there are 10 participants. Use command {Formatter.InlineCode("game russianroulette")} to join the pool.")
                         .ConfigureAwait(false);
                     await JoinAsync(ctx)
                         .ConfigureAwait(false);
@@ -61,7 +61,7 @@ namespace TheGodfather.Modules.Games
                         else
                             await ctx.InformSuccessAsync(StaticDiscordEmoji.Dead, "Nobody survived!").ConfigureAwait(false);
                     } else {
-                        await ctx.InformSuccessAsync("Not enough users joined the Russian roulette pool.", ":alarm_clock:")
+                        await ctx.InformSuccessAsync(StaticDiscordEmoji.AlarmClock, "Not enough users joined the Russian roulette pool.")
                             .ConfigureAwait(false);
                     }
                 } finally {
