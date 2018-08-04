@@ -316,7 +316,7 @@ namespace TheGodfather.Modules.Administration
         #endregion
 
         #region COMMAND_USER_TEMPBAN
-        [Command("tempban"), Priority(1)]
+        [Command("tempban"), Priority(3)]
         [Description("Temporarily ans the user from the server and then unbans him after given timespan.")]
         [Aliases("tb", "tban", "tmpban", "tmpb")]
         [UsageExamples("!user tempban @Someone 3h4m",
@@ -331,7 +331,7 @@ namespace TheGodfather.Modules.Administration
             if (member.Id == ctx.User.Id)
                 throw new CommandFailedException("You can't ban yourself.");
 
-            await member.BanAsync(delete_message_days: 7, reason: ctx.BuildReasonString($"(tempban for {timespan.ToString()}) " + reason));
+            await member.BanAsync(delete_message_days: 0, reason: ctx.BuildReasonString($"(tempban for {timespan.ToString()}) " + reason));
 
             DateTime until = DateTime.UtcNow + timespan;
             await InformAsync(ctx, $"{Formatter.Bold(ctx.User.Username)} BANNED {Formatter.Bold(member.Username)} until {Formatter.Bold(until.ToLongTimeString())} UTC!");
@@ -347,12 +347,44 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException("Failed to schedule the unban task!");
         }
 
-        [Command("tempban"), Priority(0)]
+        [Command("tempban"), Priority(2)]
         public Task TempBanAsync(CommandContext ctx,
                                 [Description("User.")] DiscordMember member,
-                                [Description("Time span.")] TimeSpan time,
+                                [Description("Time span.")] TimeSpan timespan,
                                 [RemainingText, Description("Reason.")] string reason = null)
-            => TempBanAsync(ctx, time, member);
+            => TempBanAsync(ctx, timespan, member);
+
+        [Command("tempban"), Priority(1)]
+        public async Task TempBanAsync(CommandContext ctx,
+                                      [Description("User (doesn't have to be a member).")] DiscordUser user,
+                                      [Description("Time span.")] TimeSpan timespan,
+                                      [RemainingText, Description("Reason.")] string reason = null)
+        {
+            if (user.Id == ctx.User.Id)
+                throw new CommandFailedException("You can't ban yourself.");
+
+            await ctx.Guild.BanMemberAsync(user.Id, 0, ctx.BuildReasonString(reason));
+
+            DateTime until = DateTime.UtcNow + timespan;
+            await InformAsync(ctx, $"{Formatter.Bold(ctx.User.Username)} BANNED {Formatter.Bold(user.ToString())} until {Formatter.Bold(until.ToLongTimeString())} UTC!");
+
+            var task = new SavedTask() {
+                ChannelId = ctx.Channel.Id,
+                ExecutionTime = until,
+                GuildId = ctx.Guild.Id,
+                Type = SavedTaskType.Unban,
+                UserId = user.Id
+            };
+            if (!await SavedTaskExecuter.TryScheduleAsync(ctx, task))
+                throw new CommandFailedException("Failed to schedule the unban task!");
+        }
+
+        [Command("tempban"), Priority(0)]
+        public Task TempBanAsync(CommandContext ctx,
+                                [Description("Time span.")] TimeSpan timespan,
+                                [Description("User (doesn't have to be a member).")] DiscordUser user,
+                                [RemainingText, Description("Reason.")] string reason = null)
+            => TempBanAsync(ctx, user, timespan, reason);
         #endregion
 
         #region COMMAND_USER_UNBAN
