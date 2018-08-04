@@ -47,7 +47,7 @@ namespace TheGodfather.Modules.Search
             if (amount < 1 || amount > 10)
                 throw new CommandFailedException("Number of results must be in range [1, 10].");
 
-            var res = await Service.GetItemsFromSubAsync(
+            var res = await this.Service.GetItemsFromSubAsync(
                 sub,
                 amount,
                 SubredditGallerySortOrder.Top,
@@ -84,7 +84,7 @@ namespace TheGodfather.Modules.Search
             if (amount < 1 || amount > 10)
                 throw new CommandFailedException("Number of results must be in range [1, 10].");
 
-            var res = await Service.GetItemsFromSubAsync(
+            var res = await this.Service.GetItemsFromSubAsync(
                 sub, 
                 amount, 
                 SubredditGallerySortOrder.Time, 
@@ -124,7 +124,7 @@ namespace TheGodfather.Modules.Search
             if (amount < 1 || amount > 10)
                 throw new CommandFailedException("Number of results must be in range [1, 10].");
 
-            var res = await Service.GetItemsFromSubAsync(
+            var res = await this.Service.GetItemsFromSubAsync(
                 sub,
                 amount,
                 SubredditGallerySortOrder.Time,

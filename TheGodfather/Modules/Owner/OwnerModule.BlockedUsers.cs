@@ -83,18 +83,18 @@ namespace TheGodfather.Modules.Owner
 
                 var sb = new StringBuilder("Action results:\n\n");
                 foreach (var user in users) {
-                    if (Shared.BlockedUsers.Contains(user.Id)) {
+                    if (this.Shared.BlockedUsers.Contains(user.Id)) {
                         sb.AppendLine($"Error: {user.ToString()} is already blocked!");
                         continue;
                     }
 
-                    if (!Shared.BlockedUsers.Add(user.Id)) {
+                    if (!this.Shared.BlockedUsers.Add(user.Id)) {
                         sb.AppendLine($"Error: Failed to add {user.ToString()} to blocked users list!");
                         continue;
                     }
 
                     try {
-                        await Database.AddBlockedUserAsync(user.Id, reason)
+                        await this.Database.AddBlockedUserAsync(user.Id, reason)
                             .ConfigureAwait(false);
                     } catch {
                         sb.AppendLine($"Warning: Failed to add blocked {user.ToString()} to the database!");
@@ -130,22 +130,22 @@ namespace TheGodfather.Modules.Owner
 
                 var sb = new StringBuilder("Action results:\n\n");
                 foreach (var user in users) {
-                    if (!Shared.BlockedUsers.Contains(user.Id)) {
+                    if (!this.Shared.BlockedUsers.Contains(user.Id)) {
                         sb.AppendLine($"Warning: {user.ToString()} is not blocked!");
                         continue;
                     }
 
-                    if (!Shared.BlockedUsers.TryRemove(user.Id)) {
+                    if (!this.Shared.BlockedUsers.TryRemove(user.Id)) {
                         sb.AppendLine($"Error: Failed to remove {user.ToString()} from blocked users list!");
                         continue;
                     }
 
                     try {
-                        await Database.RemoveBlockedUserAsync(user.Id)
+                        await this.Database.RemoveBlockedUserAsync(user.Id)
                             .ConfigureAwait(false);
                     } catch (Exception e) {
                         sb.AppendLine($"Warning: Failed to remove {user.ToString()} from the database!");
-                        Shared.LogProvider.LogException(LogLevel.Warning, e);
+                        this.Shared.LogProvider.LogException(LogLevel.Warning, e);
                         continue;
                     }
 
@@ -164,7 +164,7 @@ namespace TheGodfather.Modules.Owner
             [UsageExamples("!owner blockedusers list")]
             public async Task ListAsync(CommandContext ctx)
             {
-                var blocked = await Database.GetAllBlockedUsersAsync()
+                var blocked = await this.Database.GetAllBlockedUsersAsync()
                     .ConfigureAwait(false);
 
                 List<string> lines = new List<string>();
@@ -174,8 +174,8 @@ namespace TheGodfather.Modules.Owner
                             .ConfigureAwait(false);
                         lines.Add($"{user.ToString()} ({Formatter.Italic(string.IsNullOrWhiteSpace(tup.Item2) ? "No reason provided." : tup.Item2)})");
                     } catch (NotFoundException) {
-                        Shared.LogProvider.LogMessage(LogLevel.Warning, $"Removed 404 blocked user with ID {tup.Item1}");
-                        await Database.RemoveBlockedUserAsync(tup.Item1)
+                        this.Shared.LogProvider.LogMessage(LogLevel.Warning, $"Removed 404 blocked user with ID {tup.Item1}");
+                        await this.Database.RemoveBlockedUserAsync(tup.Item1)
                             .ConfigureAwait(false);
                     }
                 }

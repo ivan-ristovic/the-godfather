@@ -1,16 +1,13 @@
 ﻿#region USING_DIRECTIVES
+using DSharpPlus;
+using DSharpPlus.Entities;
+using DSharpPlus.VoiceNext;
+using DSharpPlus.EventArgs;
 using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
-
-using TheGodfather.Common;
-
-using DSharpPlus;
-using DSharpPlus.Entities;
-using DSharpPlus.VoiceNext;
-using DSharpPlus.EventArgs;
 #endregion
 
 namespace TheGodfather.Modules.Music.Common
@@ -20,43 +17,46 @@ namespace TheGodfather.Modules.Music.Common
         public bool IsPlaying
         {
             get {
-                lock (_lock) {
-                    return _playing;
+                lock (this.operationLock) {
+                    return this.playing;
                 };
             }
         }
         public bool IsStopped
         {
             get {
-                lock (_lock) {
-                    return _stopped;
+                lock (this.operationLock) {
+                    return this.stopped;
                 };
             }
         }
-        private bool _playing = false;
-        private bool _stopped = false;
-        private readonly object _lock = new object();
-        private ConcurrentQueue<SongInfo> _songs = new ConcurrentQueue<SongInfo>();
-        private VoiceNextConnection _vnc;
-        private DiscordChannel _channel;
-        private DiscordClient _client;
-        private DiscordMessage _current;
+
+        private bool playing = false;
+        private bool stopped = false;
+        private readonly ConcurrentQueue<SongInfo> songs;
+        private readonly VoiceNextConnection vnc;
+        private readonly DiscordChannel channel;
+        private readonly DiscordClient client;
+        private DiscordMessage msgHandle;
+        private readonly object operationLock;
 
 
         public MusicPlayer(DiscordClient client, DiscordChannel chn, VoiceNextConnection vnc)
         {
-            _client = client;
-            _channel = chn;
-            _vnc = vnc;
+            this.operationLock = new object();
+            this.songs = new ConcurrentQueue<SongInfo>();
+            this.client = client;
+            this.channel = chn;
+            this.vnc = vnc;
         }
 
 
         public void Enqueue(SongInfo si)
         {
-            _songs.Enqueue(si);
-            lock (_lock) {
-                if (_stopped) {
-                    _stopped = false;
+            this.songs.Enqueue(si);
+            lock (this.operationLock) {
+                if (this.stopped) {
+                    this.stopped = false;
                     var t = Task.Run(() => StartAsync());
                 }
             }
@@ -64,32 +64,31 @@ namespace TheGodfather.Modules.Music.Common
 
         public void Skip()
         {
-            lock (_lock)
-                _playing = false;
+            lock (this.operationLock)
+                this.playing = false;
         }
 
         public void Stop()
         {
-            lock (_lock) {
-                _playing = false;
-                _stopped = true;
+            lock (this.operationLock) {
+                this.playing = false;
+                this.stopped = true;
             }
         }
 
         public async Task StartAsync()
         {
-            _client.MessageReactionAdded += ReactionHandler;
+            this.client.MessageReactionAdded += this.ReactionHandler;
             try {
-                while (!_songs.IsEmpty && !_stopped) {
-                    if (!_songs.TryDequeue(out var si))
+                while (!this.songs.IsEmpty && !this.stopped) {
+                    if (!this.songs.TryDequeue(out var si))
                         continue;
 
-                    lock (_lock)
-                        _playing = true;
+                    lock (this.operationLock)
+                        this.playing = true;
 
-                    _current = await _channel.SendMessageAsync("Playing: ", embed: si.Embed())
-                        .ConfigureAwait(false);
-                    await _current.CreateReactionAsync(DiscordEmoji.FromUnicode("▶"));
+                    this.msgHandle = await this.channel.SendMessageAsync("Playing: ", embed: si.ToDiscordEmbed());
+                    await this.msgHandle.CreateReactionAsync(DiscordEmoji.FromUnicode("▶"));
 
                     var ffmpeg_inf = new ProcessStartInfo {
                         FileName = "Resources/ffmpeg",
@@ -105,26 +104,26 @@ namespace TheGodfather.Modules.Music.Common
                         await ffout.CopyToAsync(ms);
                         ms.Position = 0;
 
-                        var buff = new byte[3840];
-                        var br = 0;
-                        while (_playing && (br = ms.Read(buff, 0, buff.Length)) > 0) {
+                        byte[] buff = new byte[3840];
+                        int br = 0;
+                        while (this.playing && (br = ms.Read(buff, 0, buff.Length)) > 0) {
                             if (br < buff.Length)
-                                for (var i = br; i < buff.Length; i++)
+                                for (int i = br; i < buff.Length; i++)
                                     buff[i] = 0;
 
-                            await _vnc.SendAsync(buff, 20);
+                            await this.vnc.SendAsync(buff, 20);
                         }
                     }
 
-                    await _current.DeleteAllReactionsAsync();
+                    await this.msgHandle.DeleteAllReactionsAsync();
                 }
             } catch (Exception e) {
                 // handle exc
             } finally {
-                await _vnc.SendSpeakingAsync(false);
-                lock (_lock) {
-                    _playing = false;
-                    _stopped = true;
+                await this.vnc.SendSpeakingAsync(false);
+                lock (this.operationLock) {
+                    this.playing = false;
+                    this.stopped = true;
                 }
 
                 // remove reaction handler
@@ -134,7 +133,7 @@ namespace TheGodfather.Modules.Music.Common
 
         private async Task ReactionHandler(MessageReactionAddEventArgs e)
         {
-            if (e.User.IsBot || e.Message.Id != _current.Id)
+            if (e.User.IsBot || e.Message.Id != this.msgHandle.Id)
                 return;
 
             // perms

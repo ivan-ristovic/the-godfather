@@ -38,15 +38,15 @@ namespace TheGodfather.Modules.Polls.Common
 
         public override async Task RunAsync(TimeSpan timespan)
         {
-            _endTime = DateTime.Now + timespan;
-            Running = true;
-            _message = await _channel.SendMessageAsync(embed: EmbedPoll())
+            this._endTime = DateTime.Now + timespan;
+            this.Running = true;
+            this._message = await this._channel.SendMessageAsync(embed: EmbedPoll())
                 .ConfigureAwait(false);
-            _result = await _interactivity.CreatePollAsync(_message, StaticDiscordEmoji.Numbers.Take(OptionCount), timespan)
+            this._result = await this._interactivity.CreatePollAsync(this._message, StaticDiscordEmoji.Numbers.Take(this.OptionCount), timespan)
                 .ConfigureAwait(false);
-            await _channel.SendMessageAsync(embed: EmbedPollResults())
+            await this._channel.SendMessageAsync(embed: EmbedPollResults())
                 .ConfigureAwait(false);
-            Running = false;
+            this.Running = false;
         }
 
         public override DiscordEmbed EmbedPoll()
@@ -56,12 +56,12 @@ namespace TheGodfather.Modules.Polls.Common
                 Description = "Vote by clicking on the reactions!",
                 Color = DiscordColor.Orange
             };
-            for (int i = 0; i < _options.Count; i++)
-                if (!string.IsNullOrWhiteSpace(_options[i]))
-                    emb.AddField($"{i + 1}", _options[i], inline: true);
+            for (int i = 0; i < this._options.Count; i++)
+                if (!string.IsNullOrWhiteSpace(this._options[i]))
+                    emb.AddField($"{i + 1}", this._options[i], inline: true);
 
-            if (_endTime != null)
-                emb.WithFooter($"Poll ends at: {_endTime.ToUniversalTime().ToString()} UTC (in {UntilEnd:hh\\:mm\\:ss})");
+            if (this._endTime != null)
+                emb.WithFooter($"Poll ends at: {this._endTime.ToUniversalTime().ToString()} UTC (in {this.UntilEnd:hh\\:mm\\:ss})");
 
             return emb.Build();
         }
@@ -69,15 +69,15 @@ namespace TheGodfather.Modules.Polls.Common
         public override DiscordEmbed EmbedPollResults()
         {
             var emb = new DiscordEmbedBuilder() {
-                Title = Question + " (results)",
+                Title = this.Question + " (results)",
                 Color = DiscordColor.Orange
             };
 
-            if (!_result.Reactions.Any())
+            if (!this._result.Reactions.Any())
                 return emb.WithDescription("Nobody voted!").Build();
 
-            foreach (var kvp in _result.Reactions) 
-                emb.AddField(_options[_emojiid[kvp.Key.Name]], kvp.Value.ToString(), inline: true);
+            foreach (var kvp in this._result.Reactions) 
+                emb.AddField(this._options[_emojiid[kvp.Key.Name]], kvp.Value.ToString(), inline: true);
 
             return emb.Build();
         }

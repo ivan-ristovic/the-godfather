@@ -132,7 +132,7 @@ namespace TheGodfather.Modules.Owner
             if (!await ctx.WaitForBoolReplyAsync("Are you sure you want to clear the logs?").ConfigureAwait(false))
                 return;
 
-            if (!Shared.LogProvider.Clear())
+            if (!this.Shared.LogProvider.Clear())
                 throw new CommandFailedException("Failed to delete log file!");
 
             await InformAsync(ctx)
@@ -153,7 +153,7 @@ namespace TheGodfather.Modules.Owner
             if (string.IsNullOrWhiteSpace(query))
                 throw new InvalidCommandUsageException("Query missing.");
 
-            var res = await Database.ExecuteRawQueryAsync(query)
+            var res = await this.Database.ExecuteRawQueryAsync(query)
                 .ConfigureAwait(false);
 
             if (!res.Any() || !res.First().Any()) {
@@ -285,7 +285,7 @@ namespace TheGodfather.Modules.Owner
         public async Task FileLogAsync(CommandContext ctx,
                                       [Description("True/False")] bool b = true)
         {
-            Shared.LogProvider.LogToFile = b;
+            this.Shared.LogProvider.LogToFile = b;
 
             await InformAsync(ctx, $"File logging set to {b}")
                 .ConfigureAwait(false);
@@ -314,7 +314,7 @@ namespace TheGodfather.Modules.Owner
                 current = Directory.CreateDirectory(folder);
                 parts = Directory.CreateDirectory(Path.Combine(current.FullName, "Parts"));
             } catch (Exception e) {
-                Shared.LogProvider.LogException(LogLevel.Warning, e);
+                this.Shared.LogProvider.LogException(LogLevel.Warning, e);
                 throw new CommandFailedException("Failed to create directories!", e);
             }
 
@@ -523,14 +523,14 @@ namespace TheGodfather.Modules.Owner
                                    [Description("Time until shutdown.")] TimeSpan timespan)
         {
             await Task.Delay(0).ConfigureAwait(false);
-            Shared.MainLoopCts.CancelAfter(timespan);
+            this.Shared.MainLoopCts.CancelAfter(timespan);
         }
 
         [Command("shutdown"), Priority(0)]
         public async Task ExitAsync(CommandContext ctx)
         {
             await Task.Delay(0).ConfigureAwait(false);
-            Shared.MainLoopCts.Cancel();
+            this.Shared.MainLoopCts.Cancel();
         }
         #endregion
 
@@ -561,8 +561,8 @@ namespace TheGodfather.Modules.Owner
         [RequirePrivilegedUser]
         public async Task ToggleIgnoreAsync(CommandContext ctx)
         {
-            Shared.ListeningStatus = !Shared.ListeningStatus;
-            await InformAsync(ctx, $"Listening status set to: {Formatter.Bold(Shared.ListeningStatus.ToString())}")
+            this.Shared.ListeningStatus = !this.Shared.ListeningStatus;
+            await InformAsync(ctx, $"Listening status set to: {Formatter.Bold(this.Shared.ListeningStatus.ToString())}")
                 .ConfigureAwait(false);
         }
         #endregion

@@ -104,18 +104,18 @@ namespace TheGodfather.Modules.Reactions
             if (!await ctx.WaitForBoolReplyAsync("Are you sure you want to delete all emoji reactions for this guild?").ConfigureAwait(false))
                 return;
 
-            if (Shared.EmojiReactions.ContainsKey(ctx.Guild.Id))
-                Shared.EmojiReactions.TryRemove(ctx.Guild.Id, out _);
+            if (this.Shared.EmojiReactions.ContainsKey(ctx.Guild.Id))
+                this.Shared.EmojiReactions.TryRemove(ctx.Guild.Id, out _);
 
             try {
-                await Database.RemoveAllGuildEmojiReactionsAsync(ctx.Guild.Id)
+                await this.Database.RemoveAllGuildEmojiReactionsAsync(ctx.Guild.Id)
                     .ConfigureAwait(false);
             } catch (Exception e) {
-                Shared.LogProvider.LogException(LogLevel.Warning, e);
+                this.Shared.LogProvider.LogException(LogLevel.Warning, e);
                 throw new CommandFailedException("Failed to delete emoji reactions from the database.");
             }
 
-            var logchn = Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
+            var logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
                     Title = "All emoji reactions have been deleted",
@@ -145,24 +145,24 @@ namespace TheGodfather.Modules.Reactions
         public async Task DeleteAsync(CommandContext ctx,
                                      [Description("Emoji to remove reactions for.")] DiscordEmoji emoji)
         {
-            if (!Shared.EmojiReactions.ContainsKey(ctx.Guild.Id))
+            if (!this.Shared.EmojiReactions.ContainsKey(ctx.Guild.Id))
                 throw new CommandFailedException("This guild has no emoji reactions registered.");
 
             var ename = emoji.GetDiscordName();
-            if (Shared.EmojiReactions[ctx.Guild.Id].RemoveWhere(er => er.Response == ename) == 0)
+            if (this.Shared.EmojiReactions[ctx.Guild.Id].RemoveWhere(er => er.Response == ename) == 0)
                 throw new CommandFailedException("No such reactions found!");
 
             var errors = new StringBuilder();
             try {
-                await Database.RemoveAllTriggersForEmojiReactionAsync(ctx.Guild.Id, ename)
+                await this.Database.RemoveAllTriggersForEmojiReactionAsync(ctx.Guild.Id, ename)
                     .ConfigureAwait(false);
             } catch (Exception e) {
-                Shared.LogProvider.LogException(LogLevel.Warning, e);
+                this.Shared.LogProvider.LogException(LogLevel.Warning, e);
                 errors.AppendLine($"Warning: Failed to remove reaction from the database.");
             }
 
             string errlist = errors.ToString();
-            var logchn = Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
+            var logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
                     Title = "Several emoji reactions have been deleted",
@@ -185,30 +185,30 @@ namespace TheGodfather.Modules.Reactions
         public async Task DeleteAsync(CommandContext ctx,
                                      [Description("IDs of the reactions to remove.")] params int[] ids)
         {
-            if (!Shared.EmojiReactions.ContainsKey(ctx.Guild.Id))
+            if (!this.Shared.EmojiReactions.ContainsKey(ctx.Guild.Id))
                 throw new CommandFailedException("This guild has no emoji reactions registered.");
 
             var errors = new StringBuilder();
             foreach (var id in ids) {
-                if (!Shared.EmojiReactions[ctx.Guild.Id].Any(tr => tr.Id == id)) {
+                if (!this.Shared.EmojiReactions[ctx.Guild.Id].Any(tr => tr.Id == id)) {
                     errors.AppendLine($"Note: Reaction with ID {id} does not exist in this guild.");
                     continue;
                 }
             }
 
             try {
-                await Database.RemoveEmojiReactionsAsync(ctx.Guild.Id, ids)
+                await this.Database.RemoveEmojiReactionsAsync(ctx.Guild.Id, ids)
                     .ConfigureAwait(false);
             } catch (Exception e) {
-                Shared.LogProvider.LogException(LogLevel.Warning, e);
+                this.Shared.LogProvider.LogException(LogLevel.Warning, e);
                 errors.AppendLine($"Warning: Failed to remove some reactions from the database.");
             }
 
-            int removed = Shared.EmojiReactions[ctx.Guild.Id].RemoveWhere(tr => ids.Contains(tr.Id));
+            int removed = this.Shared.EmojiReactions[ctx.Guild.Id].RemoveWhere(tr => ids.Contains(tr.Id));
 
             string errlist = errors.ToString();
             if (removed > 0) {
-                var logchn = Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
+                var logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
                 if (logchn != null) {
                     var emb = new DiscordEmbedBuilder() {
                         Title = "Several emoji reactions have been deleted",
@@ -236,7 +236,7 @@ namespace TheGodfather.Modules.Reactions
             if (triggers == null)
                 throw new InvalidCommandUsageException("Missing trigger words!");
 
-            if (!Shared.EmojiReactions.ContainsKey(ctx.Guild.Id))
+            if (!this.Shared.EmojiReactions.ContainsKey(ctx.Guild.Id))
                 throw new CommandFailedException("This guild has no emoji reactions registered.");
 
             var errors = new StringBuilder();
@@ -246,7 +246,7 @@ namespace TheGodfather.Modules.Reactions
                     continue;
                 }
 
-                var found = Shared.EmojiReactions[ctx.Guild.Id].Where(er => er.ContainsTriggerPattern(trigger));
+                var found = this.Shared.EmojiReactions[ctx.Guild.Id].Where(er => er.ContainsTriggerPattern(trigger));
                 if (!found.Any()) {
                     errors.AppendLine($"Warning: Trigger {Formatter.Bold(trigger)} does not exist in this guild.");
                     continue;
@@ -262,18 +262,18 @@ namespace TheGodfather.Modules.Reactions
             }
 
             try {
-                await Database.RemoveEmojiReactionTriggersAsync(ctx.Guild.Id, triggers)
+                await this.Database.RemoveEmojiReactionTriggersAsync(ctx.Guild.Id, triggers)
                     .ConfigureAwait(false);
             } catch (Exception e) {
-                Shared.LogProvider.LogException(LogLevel.Warning, e);
+                this.Shared.LogProvider.LogException(LogLevel.Warning, e);
                 errors.AppendLine($"Warning: Failed to remove some triggers from the database.");
             }
 
-            int removed = Shared.EmojiReactions[ctx.Guild.Id].RemoveWhere(er => er.TriggerRegexes.Count == 0);
+            int removed = this.Shared.EmojiReactions[ctx.Guild.Id].RemoveWhere(er => er.TriggerRegexes.Count == 0);
 
             string errlist = errors.ToString();
             if (removed > 0) {
-                var logchn = Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
+                var logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
                 if (logchn != null) {
                     var emb = new DiscordEmbedBuilder() {
                         Title = "Several emoji reactions have been deleted",
@@ -302,14 +302,14 @@ namespace TheGodfather.Modules.Reactions
         [UsageExamples("!emojireaction list")]
         public async Task ListAsync(CommandContext ctx)
         {
-            if (!Shared.EmojiReactions.ContainsKey(ctx.Guild.Id) || !Shared.EmojiReactions[ctx.Guild.Id].Any())
+            if (!this.Shared.EmojiReactions.ContainsKey(ctx.Guild.Id) || !this.Shared.EmojiReactions[ctx.Guild.Id].Any())
                 throw new CommandFailedException("No emoji reactions registered for this guild.");
 
             // TODO remove non-existing
 
             await ctx.SendCollectionInPagesAsync(
                 "Emoji reactions for this guild",
-                Shared.EmojiReactions[ctx.Guild.Id].OrderBy(er => er.OrderedTriggerStrings.First()),
+                this.Shared.EmojiReactions[ctx.Guild.Id].OrderBy(er => er.OrderedTriggerStrings.First()),
                 er => $"{er.Id} : {DiscordEmoji.FromName(ctx.Client, er.Response)} | Triggers: {string.Join(", ", er.TriggerStrings)}",
                 DiscordColor.Blue
             ).ConfigureAwait(false);
@@ -330,8 +330,8 @@ namespace TheGodfather.Modules.Reactions
                     continue;
                 }
 
-                if (!Shared.EmojiReactions.ContainsKey(ctx.Guild.Id))
-                    Shared.EmojiReactions.TryAdd(ctx.Guild.Id, new ConcurrentHashSet<EmojiReaction>());
+                if (!this.Shared.EmojiReactions.ContainsKey(ctx.Guild.Id))
+                    this.Shared.EmojiReactions.TryAdd(ctx.Guild.Id, new ConcurrentHashSet<EmojiReaction>());
 
                 if (!trigger.IsValidRegex()) {
                     errors.AppendLine($"Error: Trigger {Formatter.Bold(trigger)} is not a valid regular expression.");
@@ -340,32 +340,32 @@ namespace TheGodfather.Modules.Reactions
 
                 var ename = emoji.GetDiscordName();
 
-                if (Shared.EmojiReactions[ctx.Guild.Id].Where(er => er.ContainsTriggerPattern(trigger)).Any(er => er.Response == ename)) {
+                if (this.Shared.EmojiReactions[ctx.Guild.Id].Where(er => er.ContainsTriggerPattern(trigger)).Any(er => er.Response == ename)) {
                     errors.AppendLine($"Error: Trigger {Formatter.Bold(trigger)} already exists for this emoji.");
                     continue;
                 }
 
                 int id = 0;
                 try {
-                    id = await Database.AddEmojiReactionAsync(ctx.Guild.Id, trigger, ename, regex: is_regex)
+                    id = await this.Database.AddEmojiReactionAsync(ctx.Guild.Id, trigger, ename, regex: is_regex)
                         .ConfigureAwait(false);
                 } catch (Exception e) {
-                    Shared.LogProvider.LogException(LogLevel.Warning, e);
+                    this.Shared.LogProvider.LogException(LogLevel.Warning, e);
                     errors.AppendLine($"Warning: Failed to add trigger {Formatter.Bold(trigger)} to the database.");
                 }
 
-                var reaction = Shared.EmojiReactions[ctx.Guild.Id].FirstOrDefault(tr => tr.Response == ename);
+                var reaction = this.Shared.EmojiReactions[ctx.Guild.Id].FirstOrDefault(tr => tr.Response == ename);
                 if (reaction != null) {
                     if (!reaction.AddTrigger(trigger, regex: is_regex))
                         throw new CommandFailedException($"Failed to add trigger {Formatter.Bold(trigger)}.");
                 } else {
-                    if (!Shared.EmojiReactions[ctx.Guild.Id].Add(new EmojiReaction(id, trigger, ename, regex: is_regex)))
+                    if (!this.Shared.EmojiReactions[ctx.Guild.Id].Add(new EmojiReaction(id, trigger, ename, regex: is_regex)))
                         throw new CommandFailedException($"Failed to add trigger {Formatter.Bold(trigger)}.");
                 }
             }
 
             string errlist = errors.ToString();
-            var logchn = Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
+            var logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
                     Title = "New emoji reactions added",

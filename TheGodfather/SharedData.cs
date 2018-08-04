@@ -75,20 +75,20 @@ namespace TheGodfather
 
         #region CHANNEL_EVENT_HELPERS
         public ChannelEvent GetEventInChannel(ulong cid)
-            => ChannelEvents.ContainsKey(cid) ? ChannelEvents[cid] : null;
+            => this.ChannelEvents.ContainsKey(cid) ? this.ChannelEvents[cid] : null;
 
         public bool IsEventRunningInChannel(ulong cid)
-            => ChannelEvents.ContainsKey(cid) && ChannelEvents[cid] != null;
+            => this.ChannelEvents.ContainsKey(cid) && this.ChannelEvents[cid] != null;
 
         public void RegisterEventInChannel(ChannelEvent cevent, ulong cid)
-            => ChannelEvents.AddOrUpdate(cid, cevent, (c, e) => cevent);
+            => this.ChannelEvents.AddOrUpdate(cid, cevent, (c, e) => cevent);
 
         public void UnregisterEventInChannel(ulong cid)
         {
-            if (!ChannelEvents.ContainsKey(cid))
+            if (!this.ChannelEvents.ContainsKey(cid))
                 return;
-            if (!ChannelEvents.TryRemove(cid, out _))
-                ChannelEvents[cid] = null;
+            if (!this.ChannelEvents.TryRemove(cid, out _))
+                this.ChannelEvents[cid] = null;
         }
         #endregion
 

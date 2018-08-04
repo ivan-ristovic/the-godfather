@@ -49,7 +49,7 @@ namespace TheGodfather.Modules.SWAT
                 if (info?.Length > 120)
                     throw new InvalidCommandUsageException("Info cannot exceed 120 characters.");
 
-                await Database.AddSwatIpEntryAsync(name, ip, info)
+                await this.Database.AddSwatIpEntryAsync(name, ip, info)
                     .ConfigureAwait(false);
                 await InformAsync(ctx, $"Added a database entry for {Formatter.Bold(name)} ({Formatter.InlineCode(ip)})")
                     .ConfigureAwait(false);
@@ -64,7 +64,7 @@ namespace TheGodfather.Modules.SWAT
             public async Task DeleteAsync(CommandContext ctx,
                                          [Description("IP.")] string ip)
             {
-                await Database.RemoveSwatIpEntryAsync(ip)
+                await this.Database.RemoveSwatIpEntryAsync(ip)
                     .ConfigureAwait(false);
                 await InformAsync(ctx)
                     .ConfigureAwait(false);
@@ -78,7 +78,7 @@ namespace TheGodfather.Modules.SWAT
             [UsageExamples("!swat db list")]
             public async Task ListAsync(CommandContext ctx)
             {
-                var entries = await Database.GetAllSwatIpEntriesAsync()
+                var entries = await this.Database.GetAllSwatIpEntriesAsync()
                     .ConfigureAwait(false);
 
                 await ctx.SendCollectionInPagesAsync(

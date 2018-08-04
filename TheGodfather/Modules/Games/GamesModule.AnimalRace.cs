@@ -55,7 +55,7 @@ namespace TheGodfather.Modules.Games
                         await game.RunAsync();
 
                         foreach (ulong uid in game.WinnerIds)
-                            await Database.UpdateUserStatsAsync(uid, GameStatsType.AnimalRacesWon);
+                            await this.Database.UpdateUserStatsAsync(uid, GameStatsType.AnimalRacesWon);
                     } else {
                         await InformAsync(ctx, StaticDiscordEmoji.AlarmClock, "Not enough users joined the race.");
                     }
@@ -95,7 +95,7 @@ namespace TheGodfather.Modules.Games
             [UsageExamples("!game animalrace stats")]
             public async Task StatsAsync(CommandContext ctx)
             {
-                string top = await Database.GetTopRacersStringAsync(ctx.Client);
+                string top = await this.Database.GetTopRacersStringAsync(ctx.Client);
                 await InformAsync(ctx, StaticDiscordEmoji.Trophy, $"Top players in Animal Race:\n\n{top}");
             }
             #endregion

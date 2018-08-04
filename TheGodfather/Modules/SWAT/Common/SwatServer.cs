@@ -12,10 +12,10 @@ namespace TheGodfather.Modules.SWAT.Common
 
         public SwatServer(string name, string ip, int joinport, int queryport)
         {
-            Name = name;
-            Ip = ip;
-            JoinPort = joinport;
-            QueryPort = queryport;
+            this.Name = name;
+            this.Ip = ip;
+            this.JoinPort = joinport;
+            this.QueryPort = queryport;
         }
 
 

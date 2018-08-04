@@ -90,23 +90,23 @@ namespace TheGodfather.Modules.SWAT.Common
 
         public bool HasSpace()
         {
-            return int.Parse(Players) < int.Parse(MaxPlayers);
+            return int.Parse(this.Players) < int.Parse(this.MaxPlayers);
         }
 
         public DiscordEmbed EmbedData()
         {
             var emb = new DiscordEmbedBuilder() {
-                Url = "https://swat4stats.com/servers/" + IP + ":" + JoinPort,
+                Url = "https://swat4stats.com/servers/" + this.IP + ":" + this.JoinPort,
                 Title = HostName,
-                Description = IP + ":" + JoinPort,
+                Description = this.IP + ":" + this.JoinPort,
                 Color = DiscordColor.Black
             };
-            emb.AddField("Players", Players + "/" + MaxPlayers, inline: true)
-               .AddField("Game", string.IsNullOrWhiteSpace(Game) ? Formatter.Italic("unknown") : Game, inline: true)
-               .AddField("Version", string.IsNullOrWhiteSpace(GameVersion) ? Formatter.Italic("unknown") : GameVersion, inline: true)
-               .AddField("Game mode", string.IsNullOrWhiteSpace(GameMode) ? Formatter.Italic("unknown") : GameMode, inline: true)
-               .AddField("Map", string.IsNullOrWhiteSpace(Map) ? Formatter.Italic("unknown") : Map, inline: true)
-               .AddField("Round", (string.IsNullOrWhiteSpace(Round) ? Formatter.Italic("unknown") : Round) + "/" + (string.IsNullOrWhiteSpace(MaxRounds) ? Formatter.Italic("unknown") : MaxRounds), inline: true);
+            emb.AddField("Players", this.Players + "/" + this.MaxPlayers, inline: true)
+               .AddField("Game", string.IsNullOrWhiteSpace(this.Game) ? Formatter.Italic("unknown") : this.Game, inline: true)
+               .AddField("Version", string.IsNullOrWhiteSpace(this.GameVersion) ? Formatter.Italic("unknown") : this.GameVersion, inline: true)
+               .AddField("Game mode", string.IsNullOrWhiteSpace(this.GameMode) ? Formatter.Italic("unknown") : this.GameMode, inline: true)
+               .AddField("Map", string.IsNullOrWhiteSpace(this.Map) ? Formatter.Italic("unknown") : this.Map, inline: true)
+               .AddField("Round", (string.IsNullOrWhiteSpace(this.Round) ? Formatter.Italic("unknown") : this.Round) + "/" + (string.IsNullOrWhiteSpace(this.MaxRounds) ? Formatter.Italic("unknown") : this.MaxRounds), inline: true);
 
             return emb.Build();
         }

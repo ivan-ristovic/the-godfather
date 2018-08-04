@@ -89,14 +89,14 @@ namespace TheGodfather.Modules.Search
             if (string.IsNullOrWhiteSpace(url))
                 throw new InvalidCommandUsageException("Channel URL missing.");
 
-            var chid = await Service.ExtractChannelIdAsync(url)
+            var chid = await this.Service.ExtractChannelIdAsync(url)
                 .ConfigureAwait(false);
 
             if (chid == null)
                 throw new CommandFailedException("Failed retrieving channel ID for that URL.");
 
             var feedurl = YtService.GetRssUrlForChannel(chid);
-            if (await Database.TryAddSubscriptionAsync(ctx.Channel.Id, feedurl, string.IsNullOrWhiteSpace(name) ? url : name).ConfigureAwait(false))
+            if (await this.Database.TryAddSubscriptionAsync(ctx.Channel.Id, feedurl, string.IsNullOrWhiteSpace(name) ? url : name).ConfigureAwait(false))
                 await InformAsync(ctx, "Subscribed!").ConfigureAwait(false);
             else
                 await InformFailureAsync(ctx, "Either the channel URL you is invalid or you are already subscribed to it!").ConfigureAwait(false);
@@ -116,14 +116,14 @@ namespace TheGodfather.Modules.Search
             if (string.IsNullOrWhiteSpace(name_url))
                 throw new InvalidCommandUsageException("Channel URL missing.");
 
-            await Database.RemoveSubscriptionByNameAsync(ctx.Channel.Id, name_url)
+            await this.Database.RemoveSubscriptionByNameAsync(ctx.Channel.Id, name_url)
                 .ConfigureAwait(false);
 
-            var chid = await Service.ExtractChannelIdAsync(name_url)
+            var chid = await this.Service.ExtractChannelIdAsync(name_url)
                 .ConfigureAwait(false);
             if (chid != null) {
                 var feedurl = YtService.GetRssUrlForChannel(chid);
-                await Database.RemoveSubscriptionByUrlAsync(ctx.Channel.Id, feedurl)
+                await this.Database.RemoveSubscriptionByUrlAsync(ctx.Channel.Id, feedurl)
                     .ConfigureAwait(false);
             }
 
@@ -145,7 +145,7 @@ namespace TheGodfather.Modules.Search
             if (amount < 1 || amount > 10)
                 throw new CommandFailedException("Invalid amount (must be 1-10).");
 
-            var pages = await Service.GetPaginatedResultsAsync(query, amount, type)
+            var pages = await this.Service.GetPaginatedResultsAsync(query, amount, type)
                 .ConfigureAwait(false);
             if (pages == null) {
                 await InformFailureAsync(ctx, "No results found!")

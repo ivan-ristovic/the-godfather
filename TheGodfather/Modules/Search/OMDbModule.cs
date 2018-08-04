@@ -42,7 +42,7 @@ namespace TheGodfather.Modules.Search
             if (this.Service.IsDisabled())
                 throw new ServiceDisabledException();
 
-            var pages = await Service.GetPaginatedResultsAsync(query)
+            var pages = await this.Service.GetPaginatedResultsAsync(query)
                 .ConfigureAwait(false);
 
             if (pages == null)
@@ -79,7 +79,7 @@ namespace TheGodfather.Modules.Search
             if (this.Service.IsDisabled())
                 throw new ServiceDisabledException();
 
-            var info = await Service.GetSingleResultAsync(type, query)
+            var info = await this.Service.GetSingleResultAsync(type, query)
                 .ConfigureAwait(false);
 
             if (info == null)

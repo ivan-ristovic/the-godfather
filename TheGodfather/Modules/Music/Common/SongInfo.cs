@@ -1,9 +1,7 @@
 ﻿#region USING_DIRECTIVES
-using System;
-
-using TheGodfather.Common;
-
 using DSharpPlus.Entities;
+using System;
+using TheGodfather.Common;
 #endregion
 
 namespace TheGodfather.Modules.Music.Common
@@ -16,21 +14,24 @@ namespace TheGodfather.Modules.Music.Common
         public string Title { get; set; }
         public string Uri { get; set; }
         public string Thumbnail { get; set; }
-        public TimeSpan TotalTime { get; set; } = TimeSpan.Zero;
         public string VideoId { get; set; }
+        public TimeSpan TotalTime { get; set; } = TimeSpan.Zero;
 
 
-        public DiscordEmbed Embed()
+        public DiscordEmbed ToDiscordEmbed()
         {
             var emb = new DiscordEmbedBuilder() {
-                Title = $"{StaticDiscordEmoji.Headphones} {Title}",
+                Title = $"{StaticDiscordEmoji.Headphones} {this.Title}",
                 Color = DiscordColor.Red,
-                ThumbnailUrl = Thumbnail ?? "https://i.imgur.com/8tkHOYD.jpg",
+                ThumbnailUrl = this.Thumbnail,
                 Url = Query
             };
-            emb.AddField("Duration", $"{TotalTime:hh\\:mm\\:ss}", inline: true)
-               .AddField("Added by", Queuer ?? "???", inline: true);
-            emb.WithFooter($"Provider: {Provider}");
+
+            emb.AddField("Duration", $"{this.TotalTime:hh\\:mm\\:ss}", inline: true);
+            emb.AddField("Added by", this.Queuer ?? "???", inline: true);
+
+            emb.WithFooter($"Provider: {this.Provider}");
+
             return emb.Build();
         }
     }

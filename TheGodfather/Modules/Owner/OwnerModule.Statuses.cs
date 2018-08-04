@@ -55,7 +55,7 @@ namespace TheGodfather.Modules.Owner
                 if (status.Length > 60)
                     throw new CommandFailedException("Status length cannot be greater than 60 characters.");
 
-                await Database.AddBotStatusAsync(status, activity)
+                await this.Database.AddBotStatusAsync(status, activity)
                     .ConfigureAwait(false);
                 await InformAsync(ctx)
                     .ConfigureAwait(false);
@@ -70,7 +70,7 @@ namespace TheGodfather.Modules.Owner
             public async Task DeleteAsync(CommandContext ctx,
                                          [Description("Status ID.")] int id)
             {
-                await Database.RemoveBotStatusAsync(id)
+                await this.Database.RemoveBotStatusAsync(id)
                     .ConfigureAwait(false);
                 await InformAsync(ctx)
                     .ConfigureAwait(false);
@@ -84,7 +84,7 @@ namespace TheGodfather.Modules.Owner
             [UsageExamples("!owner status list")]
             public async Task ListAsync(CommandContext ctx)
             {
-                var statuses = await Database.GetAllBotStatusesAsync()
+                var statuses = await this.Database.GetAllBotStatusesAsync()
                     .ConfigureAwait(false);
 
                 await ctx.SendCollectionInPagesAsync(
@@ -106,7 +106,7 @@ namespace TheGodfather.Modules.Owner
             public async Task SetRotationAsync(CommandContext ctx,
                                               [Description("True/False")] bool b = true)
             {
-                Shared.StatusRotationEnabled = b;
+                this.Shared.StatusRotationEnabled = b;
                 await InformAsync(ctx)
                     .ConfigureAwait(false);
             }
@@ -129,7 +129,7 @@ namespace TheGodfather.Modules.Owner
                 if (status.Length > 60)
                     throw new CommandFailedException("Status length cannot be greater than 60 characters.");
 
-                Shared.StatusRotationEnabled = false;
+                this.Shared.StatusRotationEnabled = false;
                 await ctx.Client.UpdateStatusAsync(new DiscordActivity(status, activity))
                  .ConfigureAwait(false);
                 await InformAsync(ctx)
@@ -140,12 +140,12 @@ namespace TheGodfather.Modules.Owner
             public async Task SetAsync(CommandContext ctx,
                                       [Description("Status ID.")] int id)
             {
-                var status = await Database.GetBotStatusByIdAsync(id)
+                var status = await this.Database.GetBotStatusByIdAsync(id)
                     .ConfigureAwait(false);
                 if (string.IsNullOrWhiteSpace(status.Item2))
                     throw new CommandFailedException("Status with given ID doesn't exist!");
 
-                Shared.StatusRotationEnabled = false;
+                this.Shared.StatusRotationEnabled = false;
                 await ctx.Client.UpdateStatusAsync(new DiscordActivity(status.Item2, status.Item1))
                  .ConfigureAwait(false);
                 await InformAsync(ctx)

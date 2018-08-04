@@ -46,7 +46,7 @@ namespace TheGodfather.Modules.SWAT
             if (string.IsNullOrWhiteSpace(name))
                 throw new InvalidCommandUsageException("Name missing.");
 
-            var server = await Database.GetSwatServerFromDatabaseAsync(name.ToLowerInvariant())
+            var server = await this.Database.GetSwatServerFromDatabaseAsync(name.ToLowerInvariant())
                 .ConfigureAwait(false);
             if (server == null)
                 throw new CommandFailedException("Server with such name isn't found in the database.");
@@ -73,7 +73,7 @@ namespace TheGodfather.Modules.SWAT
             if (queryport <= 0 || queryport > 65535)
                 throw new InvalidCommandUsageException("Port range invalid (must be in range [1, 65535])!");
 
-            var server = await Database.GetSwatServerAsync(ip, queryport, name: ip.ToLowerInvariant())
+            var server = await this.Database.GetSwatServerAsync(ip, queryport, name: ip.ToLowerInvariant())
                 .ConfigureAwait(false);
 
             var info = await SwatServerInfo.QueryIPAsync(server.Ip, server.QueryPort)
@@ -113,7 +113,7 @@ namespace TheGodfather.Modules.SWAT
                 Color = DiscordColor.Black
             };
 
-            var servers = await Database.GetAllSwatServersAsync()
+            var servers = await this.Database.GetAllSwatServersAsync()
                 .ConfigureAwait(false);
 
             if (servers == null || !servers.Any())
@@ -156,7 +156,7 @@ namespace TheGodfather.Modules.SWAT
             if (SpaceCheckingCTS.Count > 10)
                 throw new CommandFailedException("Maximum number of simultanous checks reached (10), please try later!");
 
-            var server = await Database.GetSwatServerAsync(ip, queryport, name: ip.ToLowerInvariant())
+            var server = await this.Database.GetSwatServerAsync(ip, queryport, name: ip.ToLowerInvariant())
                 .ConfigureAwait(false);
             await InformAsync(ctx, $"Starting space listening on {server.Ip}:{server.JoinPort}...")
                 .ConfigureAwait(false);

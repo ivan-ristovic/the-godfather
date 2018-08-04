@@ -1,79 +1,80 @@
 ﻿#region USING_DIRECTIVES
-using System.Collections.Concurrent;
-using System.Threading.Tasks;
-
-using TheGodfather.Common;
-using TheGodfather.Common.Attributes;
-using TheGodfather.Exceptions;
-using TheGodfather.Extensions;
-using TheGodfather.Modules.Music.Common;
-using TheGodfather.Services;
-
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.VoiceNext;
 using DSharpPlus.Entities;
+using TheGodfather.Common;
+using TheGodfather.Common.Attributes;
+using TheGodfather.Exceptions;
+using TheGodfather.Modules.Music.Common;
+using TheGodfather.Services;
+using System.Collections.Concurrent;
+using System.Threading.Tasks;
 #endregion
 
 namespace TheGodfather.Modules.Music
 {
+    [Module(ModuleType.Music), NotBlocked]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    [RequirePermissions(Permissions.UseVoice)]
-    [NotBlocked]
+    [RequireBotPermissions(Permissions.UseVoice)]
+    // TODO unlock when finished
     [RequireOwner]
     public partial class MusicModule : TheGodfatherServiceModule<YtService>
     {
+        // TODO move to shared or even better create a transient module ?
         public static ConcurrentDictionary<ulong, MusicPlayer> MusicPlayers { get; } = new ConcurrentDictionary<ulong, MusicPlayer>();
 
 
-        public MusicModule(YtService yt, SharedData shared) : base(yt, shared) { }
+        public MusicModule(YtService yt, SharedData shared) 
+            : base(yt, shared)
+        {
+            this.ModuleColor = DiscordColor.Grayple;
+        }
 
 
         #region COMMAND_CONNECT
-        [Command("connect"), Module(ModuleType.Music)]
+        [Command("connect")]
         [Description("Connect the bot to a voice channel. If the channel is not given, connects the bot to the same channel you are in.")]
         [Aliases("con", "conn", "enter")]
         [UsageExamples("!connect",
                        "!connect Music")]
         public async Task ConnectAsync(CommandContext ctx, 
-                                      [Description("Channel.")] DiscordChannel c = null)
+                                      [Description("Channel.")] DiscordChannel channel = null)
         {
-            var vnext = ctx.Client.GetVoiceNext();
+            VoiceNextExtension vnext = ctx.Client.GetVoiceNext();
             if (vnext == null)
                 throw new CommandFailedException("VNext is not enabled or configured.");
 
-            var vnc = vnext.GetConnection(ctx.Guild);
+            VoiceNextConnection vnc = vnext.GetConnection(ctx.Guild);
             if (vnc != null)
                 throw new CommandFailedException("Already connected in this guild.");
 
-            var vstat = ctx.Member?.VoiceState;
-            if ((vstat == null || vstat.Channel == null) && c == null)
+            DiscordVoiceState vstat = ctx.Member?.VoiceState;
+            if ((vstat == null || vstat.Channel == null) && channel == null)
                 throw new CommandFailedException("You are not in a voice channel.");
 
-            if (c == null)
-                c = vstat.Channel;
+            if (channel == null)
+                channel = vstat.Channel;
 
-            vnc = await vnext.ConnectAsync(c)
-                .ConfigureAwait(false);
+            vnc = await vnext.ConnectAsync(channel);
 
-            await InformAsync(ctx, StaticDiscordEmoji.Headphones, $"Connected to {Formatter.Bold(c.Name)}.")
-                .ConfigureAwait(false);
+            await InformAsync(ctx, StaticDiscordEmoji.Headphones, $"Connected to {Formatter.Bold(channel.Name)}.", important: false);
         }
         #endregion
 
         #region COMMAND_DISCONNECT
-        [Command("disconnect"), Module(ModuleType.Music)]
+        [Command("disconnect")]
         [Description("Disconnects the bot from the voice channel.")]
         [Aliases("dcon", "dconn", "discon", "disconn", "dc")]
         [UsageExamples("!disconnect")]
-        public async Task DisconnectAsync(CommandContext ctx)
+        public Task DisconnectAsync(CommandContext ctx)
         {
-            var vnext = ctx.Client.GetVoiceNext();
+            VoiceNextExtension vnext = ctx.Client.GetVoiceNext();
             if (vnext == null) 
                 throw new CommandFailedException("VNext is not enabled or configured.");
 
-            var vnc = vnext.GetConnection(ctx.Guild);
+            VoiceNextConnection vnc = vnext.GetConnection(ctx.Guild);
             if (vnc == null)
                 throw new CommandFailedException("Not connected in this guild.");
 
@@ -81,39 +82,39 @@ namespace TheGodfather.Modules.Music
                 MusicPlayers[ctx.Guild.Id].Stop();
                 MusicPlayers.TryRemove(ctx.Guild.Id, out _);
             }
-            await Task.Delay(500);
+
+            // TODO check await Task.Delay(500);
             vnc.Disconnect();
-            await InformAsync(ctx, StaticDiscordEmoji.Headphones, "Disconnected.")
-                .ConfigureAwait(false);
+
+            return InformAsync(ctx, StaticDiscordEmoji.Headphones, "Disconnected.", important: false);
         }
         #endregion
 
         #region COMMAND_SKIP
-        [Command("skip"), Module(ModuleType.Music)]
+        [Command("skip")]
         [Description("Skip current voice playback.")]
         [UsageExamples("!skip")]
-        public async Task SkipAsync(CommandContext ctx)
+        public Task SkipAsync(CommandContext ctx)
         {
             if (!MusicPlayers.ContainsKey(ctx.Guild.Id))
                 throw new CommandFailedException("Not playing in this guild");
 
             MusicPlayers[ctx.Guild.Id].Skip();
-            await Task.Delay(0);
+            return Task.CompletedTask;
         }
         #endregion
 
         #region COMMAND_STOP
-        [Command("stop"), Module(ModuleType.Music)]
+        [Command("stop")]
         [Description("Stops current voice playback.")]
         [UsageExamples("!stop")]
-        public async Task StopAsync(CommandContext ctx)
+        public Task StopAsync(CommandContext ctx)
         {
             if (!MusicPlayers.ContainsKey(ctx.Guild.Id))
                 throw new CommandFailedException("Not playing in this guild");
 
             MusicPlayers[ctx.Guild.Id].Stop();
-            await InformAsync(ctx, StaticDiscordEmoji.Headphones, "Stopped.")
-                .ConfigureAwait(false);
+            return InformAsync(ctx, StaticDiscordEmoji.Headphones, "Stopped.", important: false);
         }
         #endregion
     }

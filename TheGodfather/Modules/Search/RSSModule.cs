@@ -55,7 +55,7 @@ namespace TheGodfather.Modules.Search
         [UsageExamples("!feed list")]
         public async Task FeedListAsync(CommandContext ctx)
         {
-            var subs = await Database.GetFeedEntriesForChannelAsync(ctx.Channel.Id)
+            var subs = await this.Database.GetFeedEntriesForChannelAsync(ctx.Channel.Id)
                 .ConfigureAwait(false);
 
             await ctx.SendCollectionInPagesAsync(
@@ -87,7 +87,7 @@ namespace TheGodfather.Modules.Search
             if (!RssService.IsValidFeedURL(url))
                 throw new InvalidCommandUsageException("Given URL isn't a valid RSS feed URL.");
 
-            if (!await Database.TryAddSubscriptionAsync(ctx.Channel.Id, url, name ?? url).ConfigureAwait(false))
+            if (!await this.Database.TryAddSubscriptionAsync(ctx.Channel.Id, url, name ?? url).ConfigureAwait(false))
                 throw new CommandFailedException("You are already subscribed to this RSS feed URL!");
 
             await InformAsync(ctx, $"Subscribed to {url}!")
@@ -105,7 +105,7 @@ namespace TheGodfather.Modules.Search
         public async Task UnsubscribeAsync(CommandContext ctx,
                                           [Description("ID of the subscription.")] int id)
         {
-            await Database.RemoveSubscriptionByIdAsync(ctx.Channel.Id, id)
+            await this.Database.RemoveSubscriptionByIdAsync(ctx.Channel.Id, id)
                 .ConfigureAwait(false);
             await InformAsync(ctx, $"Unsubscribed from feed with ID {Formatter.Bold(id.ToString())}")
                 .ConfigureAwait(false);
@@ -115,7 +115,7 @@ namespace TheGodfather.Modules.Search
         public async Task UnsubscribeAsync(CommandContext ctx,
                                           [Description("Name of the subscription.")] string name)
         {
-            await Database.RemoveSubscriptionByNameAsync(ctx.Channel.Id, name)
+            await this.Database.RemoveSubscriptionByNameAsync(ctx.Channel.Id, name)
                 .ConfigureAwait(false);
             await InformAsync(ctx, $"Unsubscribed from feed with name {Formatter.Bold(name)}")
                 .ConfigureAwait(false);

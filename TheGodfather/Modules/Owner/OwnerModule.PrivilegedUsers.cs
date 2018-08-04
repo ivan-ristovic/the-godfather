@@ -58,7 +58,7 @@ namespace TheGodfather.Modules.Owner
                 var sb = new StringBuilder("Add privileged users action results:\n\n");
                 foreach (var user in users) {
                     try {
-                        await Database.AddPrivilegedUserAsync(user.Id)
+                        await this.Database.AddPrivilegedUserAsync(user.Id)
                             .ConfigureAwait(false);
                     } catch {
                         sb.AppendLine($"Warning: Failed to add {user.ToString()} to the privileged users list!");
@@ -88,11 +88,11 @@ namespace TheGodfather.Modules.Owner
                 var sb = new StringBuilder("Delete privileged users action results:\n\n");
                 foreach (var user in users) {
                     try {
-                        await Database.RemovePrivileedUserAsync(user.Id)
+                        await this.Database.RemovePrivileedUserAsync(user.Id)
                             .ConfigureAwait(false);
                     } catch (Exception e) {
                         sb.AppendLine($"Warning: Failed to remove {user.ToString()} from the database!");
-                        Shared.LogProvider.LogException(LogLevel.Warning, e);
+                        this.Shared.LogProvider.LogException(LogLevel.Warning, e);
                         continue;
                     }
                     sb.AppendLine($"Removed: {user.ToString()}!");
@@ -110,7 +110,7 @@ namespace TheGodfather.Modules.Owner
             [UsageExamples("!owner privilegedusers list")]
             public async Task ListAsync(CommandContext ctx)
             {
-                var privileged = await Database.GetAllPrivilegedUsersAsync()
+                var privileged = await this.Database.GetAllPrivilegedUsersAsync()
                     .ConfigureAwait(false);
 
                 List<DiscordUser> users = new List<DiscordUser>();
@@ -120,8 +120,8 @@ namespace TheGodfather.Modules.Owner
                             .ConfigureAwait(false);
                         users.Add(user);
                     } catch (NotFoundException) {
-                        Shared.LogProvider.LogMessage(LogLevel.Warning, $"Removed 404 privileged user with ID {uid}");
-                        await Database.RemovePrivileedUserAsync(uid)
+                        this.Shared.LogProvider.LogMessage(LogLevel.Warning, $"Removed 404 privileged user with ID {uid}");
+                        await this.Database.RemovePrivileedUserAsync(uid)
                             .ConfigureAwait(false);
                     }
                 }

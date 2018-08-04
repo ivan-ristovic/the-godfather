@@ -83,18 +83,18 @@ namespace TheGodfather.Modules.Owner
 
                 var sb = new StringBuilder("Action results:\n\n");
                 foreach (var channel in channels) {
-                    if (Shared.BlockedChannels.Contains(channel.Id)) {
+                    if (this.Shared.BlockedChannels.Contains(channel.Id)) {
                         sb.AppendLine($"Error: {channel.ToString()} is already blocked!");
                         continue;
                     }
 
-                    if (!Shared.BlockedChannels.Add(channel.Id)) {
+                    if (!this.Shared.BlockedChannels.Add(channel.Id)) {
                         sb.AppendLine($"Error: Failed to add {channel.ToString()} to blocked users list!");
                         continue;
                     }
 
                     try {
-                        await Database.AddBlockedChannelAsync(channel.Id, reason)
+                        await this.Database.AddBlockedChannelAsync(channel.Id, reason)
                             .ConfigureAwait(false);
                     } catch {
                         sb.AppendLine($"Warning: Failed to add blocked {channel.ToString()} to the database!");
@@ -130,22 +130,22 @@ namespace TheGodfather.Modules.Owner
 
                 var sb = new StringBuilder("Action results:\n\n");
                 foreach (var channel in channels) {
-                    if (!Shared.BlockedChannels.Contains(channel.Id)) {
+                    if (!this.Shared.BlockedChannels.Contains(channel.Id)) {
                         sb.AppendLine($"Warning: {channel.ToString()} is not blocked!");
                         continue;
                     }
 
-                    if (!Shared.BlockedChannels.TryRemove(channel.Id)) {
+                    if (!this.Shared.BlockedChannels.TryRemove(channel.Id)) {
                         sb.AppendLine($"Error: Failed to remove {channel.ToString()} from blocked channels list!");
                         continue;
                     }
 
                     try {
-                        await Database.RemoveBlockedChannelAsync(channel.Id)
+                        await this.Database.RemoveBlockedChannelAsync(channel.Id)
                             .ConfigureAwait(false);
                     } catch (Exception e) {
                         sb.AppendLine($"Warning: Failed to remove {channel.ToString()} from the database!");
-                        Shared.LogProvider.LogException(LogLevel.Warning, e);
+                        this.Shared.LogProvider.LogException(LogLevel.Warning, e);
                         continue;
                     }
 
@@ -164,7 +164,7 @@ namespace TheGodfather.Modules.Owner
             [UsageExamples("!owner blockedchannels list")]
             public async Task ListAsync(CommandContext ctx)
             {
-                var blocked = await Database.GetAllBlockedChannelsAsync()
+                var blocked = await this.Database.GetAllBlockedChannelsAsync()
                     .ConfigureAwait(false);
 
                 List<string> lines = new List<string>();
@@ -174,14 +174,14 @@ namespace TheGodfather.Modules.Owner
                             .ConfigureAwait(false);
                         lines.Add($"{channel.ToString()} ({Formatter.Italic(string.IsNullOrWhiteSpace(tup.Item2) ? "No reason provided." : tup.Item2)})");
                     } catch (NotFoundException) {
-                        Shared.LogProvider.LogMessage(LogLevel.Warning, $"Removed 404 blocked channel with ID {tup.Item1}");
-                        Shared.BlockedChannels.TryRemove(tup.Item1);
-                        await Database.RemoveBlockedChannelAsync(tup.Item1)
+                        this.Shared.LogProvider.LogMessage(LogLevel.Warning, $"Removed 404 blocked channel with ID {tup.Item1}");
+                        this.Shared.BlockedChannels.TryRemove(tup.Item1);
+                        await this.Database.RemoveBlockedChannelAsync(tup.Item1)
                             .ConfigureAwait(false);
                     } catch (UnauthorizedException) {
-                        Shared.LogProvider.LogMessage(LogLevel.Warning, $"Removed 403 blocked channel with ID {tup.Item1}");
-                        Shared.BlockedChannels.TryRemove(tup.Item1);
-                        await Database.RemoveBlockedChannelAsync(tup.Item1)
+                        this.Shared.LogProvider.LogMessage(LogLevel.Warning, $"Removed 403 blocked channel with ID {tup.Item1}");
+                        this.Shared.BlockedChannels.TryRemove(tup.Item1);
+                        await this.Database.RemoveBlockedChannelAsync(tup.Item1)
                             .ConfigureAwait(false);
                     }
                 }

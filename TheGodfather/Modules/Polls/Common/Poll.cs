@@ -48,8 +48,8 @@ namespace TheGodfather.Modules.Polls.Common
         #region PUBLIC_FIELDS
         public string Question { get; }
         public bool Running { get; protected set; }
-        public TimeSpan UntilEnd => _endTime != null ? _endTime - DateTime.Now : TimeSpan.Zero;
-        public int OptionCount => _options.Count;
+        public TimeSpan UntilEnd => this._endTime != null ? this._endTime - DateTime.Now : TimeSpan.Zero;
+        public int OptionCount => this._options.Count;
         #endregion
 
         #region PROTECTED_FIELDS
@@ -64,49 +64,49 @@ namespace TheGodfather.Modules.Polls.Common
 
         public Poll(InteractivityExtension interactivity, DiscordChannel channel, string question)
         {
-            _channel = channel;
-            _interactivity = interactivity;
-            Question = question;
+            this._channel = channel;
+            this._interactivity = interactivity;
+            this.Question = question;
         }
 
 
         public virtual async Task RunAsync(TimeSpan timespan)
         {
-            Running = true;
-            var msg = await _channel.SendMessageAsync(embed: EmbedPoll())
+            this.Running = true;
+            var msg = await this._channel.SendMessageAsync(embed: EmbedPoll())
                 .ConfigureAwait(false);
-            
-            _endTime = DateTime.Now + timespan;
-            while (!_cts.IsCancellationRequested) {
+
+            this._endTime = DateTime.Now + timespan;
+            while (!this._cts.IsCancellationRequested) {
                 try {
-                    if (_channel.LastMessageId != msg.Id) {
+                    if (this._channel.LastMessageId != msg.Id) {
                         await msg.DeleteAsync()
                             .ConfigureAwait(false);
-                        msg = await _channel.SendMessageAsync(embed: EmbedPoll())
+                        msg = await this._channel.SendMessageAsync(embed: EmbedPoll())
                             .ConfigureAwait(false);
                     } else {
                         await msg.ModifyAsync(embed: EmbedPoll())
                             .ConfigureAwait(false);
                     }
                 } catch {
-                    msg = await _channel.SendMessageAsync(embed: EmbedPoll())
+                    msg = await this._channel.SendMessageAsync(embed: EmbedPoll())
                         .ConfigureAwait(false);
                 }
 
-                if (UntilEnd.TotalSeconds < 1)
+                if (this.UntilEnd.TotalSeconds < 1)
                     break;
 
                 try {
-                    await Task.Delay(UntilEnd <= TimeSpan.FromSeconds(5) ? UntilEnd : TimeSpan.FromSeconds(5), _cts.Token)
+                    await Task.Delay(this.UntilEnd <= TimeSpan.FromSeconds(5) ? this.UntilEnd : TimeSpan.FromSeconds(5), this._cts.Token)
                         .ConfigureAwait(false);
                 } catch (TaskCanceledException) {
-                    await _channel.InformFailureAsync("The poll has been cancelled!")
+                    await this._channel.InformFailureAsync("The poll has been cancelled!")
                         .ConfigureAwait(false);
                 }
             }
-            Running = false;
+            this.Running = false;
 
-            await _channel.SendMessageAsync(embed: EmbedPollResults())
+            await this._channel.SendMessageAsync(embed: EmbedPollResults())
                 .ConfigureAwait(false);
         }
 
@@ -117,13 +117,13 @@ namespace TheGodfather.Modules.Polls.Common
                 Description = $"Vote by typing {Formatter.InlineCode("!vote <number>")}",
                 Color = DiscordColor.Orange
             };
-            for (int i = 0; i < _options.Count; i++)
-                if (!string.IsNullOrWhiteSpace(_options[i]))
-                    emb.AddField($"{i + 1} : {_options[i]}", $"{_votes.Count(kvp => kvp.Value == i)} vote(s)");
+            for (int i = 0; i < this._options.Count; i++)
+                if (!string.IsNullOrWhiteSpace(this._options[i]))
+                    emb.AddField($"{i + 1} : {this._options[i]}", $"{this._votes.Count(kvp => kvp.Value == i)} vote(s)");
 
-            if (_endTime != null) {
-                if (UntilEnd.TotalSeconds > 1)
-                    emb.WithFooter($"Poll ends in: {UntilEnd:hh\\:mm\\:ss}");
+            if (this._endTime != null) {
+                if (this.UntilEnd.TotalSeconds > 1)
+                    emb.WithFooter($"Poll ends in: {this.UntilEnd:hh\\:mm\\:ss}");
                 else
                     emb.WithFooter($"Poll ended.");
             }
@@ -134,44 +134,44 @@ namespace TheGodfather.Modules.Polls.Common
         public virtual DiscordEmbed EmbedPollResults()
         {
             var emb = new DiscordEmbedBuilder() {
-                Title = Question + " (results)",
+                Title = this.Question + " (results)",
                 Color = DiscordColor.Orange
             };
-            for (int i = 0; i < _options.Count; i++)
-                emb.AddField(_options[i], _votes.Count(kvp => kvp.Value == i).ToString(), inline: true);
+            for (int i = 0; i < this._options.Count; i++)
+                emb.AddField(this._options[i], this._votes.Count(kvp => kvp.Value == i).ToString(), inline: true);
 
             return emb.Build();
         }
 
         public bool CancelVote(ulong uid)
         {
-            if (!_votes.ContainsKey(uid))
+            if (!this._votes.ContainsKey(uid))
                 return true;
-            return _votes.TryRemove(uid, out _);
+            return this._votes.TryRemove(uid, out _);
         }
 
         public bool IsValidVote(int vote)
-            => vote >= 0 && vote < _options.Count;
+            => vote >= 0 && vote < this._options.Count;
 
         public string OptionWithId(int id)
-            => (id >= 0 && id < _options.Count) ? _options[id] : null;
+            => (id >= 0 && id < this._options.Count) ? this._options[id] : null;
 
         public void SetOptions(List<string> options)
         {
-            _options = options;
+            this._options = options;
         }
 
         public void Stop()
-            => _cts.Cancel();
+            => this._cts.Cancel();
 
         public bool UserVoted(ulong uid)
-            => _votes.ContainsKey(uid);
+            => this._votes.ContainsKey(uid);
 
         public bool VoteFor(ulong uid, int vote)
         {
-            if (_votes.ContainsKey(uid))
+            if (this._votes.ContainsKey(uid))
                 return false;
-            return _votes.TryAdd(uid, vote);
+            return this._votes.TryAdd(uid, vote);
         }
     }
 }

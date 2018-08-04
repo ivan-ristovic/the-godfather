@@ -35,7 +35,7 @@ namespace TheGodfather.Modules.Search
             if (string.IsNullOrWhiteSpace(query))
                 throw new InvalidCommandUsageException("You need to specify a query (city usually).");
 
-            var em = await Service.GetEmbeddedCurrentWeatherDataAsync(query)
+            var em = await this.Service.GetEmbeddedCurrentWeatherDataAsync(query)
                 .ConfigureAwait(false);
             if (em == null)
                 throw new CommandFailedException("Cannot find weather data for given query.");
@@ -65,7 +65,7 @@ namespace TheGodfather.Modules.Search
             if (amount < 1)
                 throw new InvalidCommandUsageException("Amount of days cannot be less than one.");
 
-            var ems = await Service.GetEmbeddedWeatherForecastAsync(query, amount)
+            var ems = await this.Service.GetEmbeddedWeatherForecastAsync(query, amount)
                 .ConfigureAwait(false);
             if (ems == null || !ems.Any())
                 throw new CommandFailedException("Cannot find weather data for given query.");

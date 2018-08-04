@@ -50,7 +50,7 @@ namespace TheGodfather.Modules.SWAT
 
                 var server = SwatServer.FromIP(ip, queryport, name);
 
-                await Database.AddSwatServerAsync(server)
+                await this.Database.AddSwatServerAsync(server)
                     .ConfigureAwait(false);
                 await InformAsync(ctx, "Server added. You can now query it using the name provided.")
                     .ConfigureAwait(false);
@@ -68,7 +68,7 @@ namespace TheGodfather.Modules.SWAT
                 if (string.IsNullOrWhiteSpace(name))
                     throw new InvalidCommandUsageException("Name missing.");
 
-                await Database.RemoveSwatServerAsync(name)
+                await this.Database.RemoveSwatServerAsync(name)
                     .ConfigureAwait(false);
                 await InformAsync(ctx, "Server successfully removed.")
                     .ConfigureAwait(false);
@@ -82,7 +82,7 @@ namespace TheGodfather.Modules.SWAT
             [UsageExamples("!swat servers list")]
             public async Task ListAsync(CommandContext ctx)
             {
-                var servers = await Database.GetAllSwatServersAsync()
+                var servers = await this.Database.GetAllSwatServersAsync()
                     .ConfigureAwait(false);
 
                 await ctx.SendCollectionInPagesAsync(

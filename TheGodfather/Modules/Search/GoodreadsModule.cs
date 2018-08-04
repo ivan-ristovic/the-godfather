@@ -44,7 +44,7 @@ namespace TheGodfather.Modules.Search
             if (this.Service.IsDisabled())
                 throw new ServiceDisabledException();
 
-            var res = await Service.SearchBooksAsync(query)
+            var res = await this.Service.SearchBooksAsync(query)
                 .ConfigureAwait(false);
             await ctx.Client.GetInteractivity().SendPaginatedMessage(ctx.Channel, ctx.User, res.ToPaginatedList())
                 .ConfigureAwait(false);

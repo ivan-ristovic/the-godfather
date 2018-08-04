@@ -35,7 +35,7 @@ namespace TheGodfather.Modules.Search
             if (this.Service.IsDisabled())
                 throw new ServiceDisabledException();
 
-            var em = await Service.GetEmbeddedInfoAsync(id)
+            var em = await this.Service.GetEmbeddedInfoAsync(id)
                 .ConfigureAwait(false);
 
             if (em == null) {

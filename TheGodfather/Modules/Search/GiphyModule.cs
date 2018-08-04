@@ -36,7 +36,7 @@ namespace TheGodfather.Modules.Search
             if (string.IsNullOrWhiteSpace(query))
                 throw new InvalidCommandUsageException("Missing search query.");
 
-            var res = await Service.SearchAsync(query)
+            var res = await this.Service.SearchAsync(query)
                 .ConfigureAwait(false);
 
             if (!res.Any()) {
@@ -60,7 +60,7 @@ namespace TheGodfather.Modules.Search
             if (this.Service.IsDisabled())
                 throw new ServiceDisabledException();
 
-            var res = await Service.GetRandomGifAsync()
+            var res = await this.Service.GetRandomGifAsync()
                 .ConfigureAwait(false);
             await ctx.RespondAsync(res.Url)
                 .ConfigureAwait(false);
@@ -82,7 +82,7 @@ namespace TheGodfather.Modules.Search
             if (amount < 1 || amount > 10)
                 throw new CommandFailedException("Number of results must be in range [1, 10].");
 
-            var res = await Service.GetTrendingGifsAsync(amount)
+            var res = await this.Service.GetTrendingGifsAsync(amount)
                 .ConfigureAwait(false);
 
             var emb = new DiscordEmbedBuilder() {
