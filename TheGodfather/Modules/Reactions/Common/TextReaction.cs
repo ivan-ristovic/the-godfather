@@ -8,15 +8,17 @@ namespace TheGodfather.Modules.Reactions.Common
     {
         private static readonly TimeSpan _cooldownTimeout = TimeSpan.FromMinutes(5);
 
-        private bool cooldown = false;
+        private bool cooldown;
         private DateTimeOffset resetTime;
-        private readonly object cooldownLock = new object();
+        private readonly object cooldownLock;
 
 
         public TextReaction(int id, string trigger, string response, bool regex = false)
             : base(id, trigger, response, regex)
         {
             this.resetTime = DateTimeOffset.UtcNow + _cooldownTimeout;
+            this.cooldownLock = new object();
+            this.cooldown = false;
         }
 
 

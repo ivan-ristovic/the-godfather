@@ -96,7 +96,7 @@ namespace TheGodfather.EventListeners
                 return;
 
             IEnumerable<EmojiReaction> ereactions = shard.SharedData.EmojiReactions[e.Guild.Id]
-                .Where(er => er.Matches(e.Message?.Content ?? ""));
+                .Where(er => er.IsMatch(e.Message?.Content ?? ""));
             foreach (EmojiReaction er in ereactions) {
                 try {
                     var emoji = DiscordEmoji.FromName(shard.Client, er.Response);
@@ -122,7 +122,7 @@ namespace TheGodfather.EventListeners
             if (!shard.SharedData.TextReactions.ContainsKey(e.Guild.Id))
                 return;
 
-            TextReaction tr = shard.SharedData.TextReactions[e.Guild.Id]?.FirstOrDefault(r => r.Matches(e.Message.Content));
+            TextReaction tr = shard.SharedData.TextReactions[e.Guild.Id]?.FirstOrDefault(r => r.IsMatch(e.Message.Content));
             if (tr != null && !tr.IsCooldownActive())
                 await e.Channel.SendMessageAsync(tr.Response.Replace("%user%", e.Author.Mention));
         }

@@ -3,7 +3,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-
 using TheGodfather.Common.Collections;
 #endregion
 
@@ -14,18 +13,19 @@ namespace TheGodfather.Modules.Reactions.Common
         private static string GetRegexString(string s)
             => $@"\b{s.ToLowerInvariant()}\b";
 
-        public ConcurrentHashSet<Regex> TriggerRegexes { get; protected set; } = new ConcurrentHashSet<Regex>();
+        public ConcurrentHashSet<Regex> TriggerRegexes { get; protected set; }
         public IEnumerable<string> TriggerStrings => this.TriggerRegexes.Select(rgx => rgx.ToString().Substring(2, rgx.ToString().Length - 4));
         public IEnumerable<string> OrderedTriggerStrings => this.TriggerStrings.OrderBy(s => s);
         public int Id { get; }
         public string Response { get; }
 
 
-        protected Reaction(int id, string trigger, string response, bool is_regex_trigger = false)
+        protected Reaction(int id, string trigger, string response, bool regex = false)
         {
             this.Id = id;
-            AddTrigger(trigger, is_regex_trigger);
             this.Response = response;
+            this.TriggerRegexes = new ConcurrentHashSet<Regex>();
+            AddTrigger(trigger, regex);
         }
 
 
@@ -39,15 +39,15 @@ namespace TheGodfather.Modules.Reactions.Common
 
         public bool RemoveTrigger(string trigger)
         {
-            var rstr = GetRegexString(trigger);
+            string rstr = GetRegexString(trigger);
             return this.TriggerRegexes.RemoveWhere(r => r.ToString() == rstr) > 0;
         }
 
-        public bool Matches(string str)
-            => this.TriggerRegexes.Any(rgx => rgx.IsMatch(str));
+        public bool IsMatch(string str)
+            => !string.IsNullOrWhiteSpace(str) && this.TriggerRegexes.Any(rgx => rgx.IsMatch(str));
 
         public bool ContainsTriggerPattern(string pattern)
-            => this.TriggerStrings.Any(s => pattern == s);
+            => !string.IsNullOrWhiteSpace(pattern) && this.TriggerStrings.Any(s => pattern == s);
 
         public bool HasSameResponseAs<T>(T other) where T : Reaction
             => this.Response == other.Response;
