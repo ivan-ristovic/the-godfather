@@ -16,6 +16,7 @@ using Imgur.API;
 using Imgur.API.Enums;
 using Imgur.API.Models;
 using Imgur.API.Models.Impl;
+using TheGodfather.Services.Database;
 #endregion
 
 namespace TheGodfather.Modules.Search
@@ -31,7 +32,8 @@ namespace TheGodfather.Modules.Search
     public class ImgurModule : TheGodfatherServiceModule<ImgurService>
     {
 
-        public ImgurModule(ImgurService imgur) : base(imgur) { }
+        public ImgurModule(ImgurService imgur, SharedData shared, DBService db)
+            : base(imgur, shared, db) { }
 
 
         [GroupCommand, Priority(1)]

@@ -10,7 +10,7 @@ namespace TheGodfather.Modules
         protected TService Service { get; }
 
 
-        protected TheGodfatherServiceModule(TService service, SharedData shared = null, DBService db = null)
+        protected TheGodfatherServiceModule(TService service, SharedData shared, DBService db)
             : base(shared, db)
         {
             this.Service = service;

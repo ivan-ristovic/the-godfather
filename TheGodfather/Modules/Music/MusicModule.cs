@@ -11,6 +11,7 @@ using TheGodfather.Modules.Music.Common;
 using TheGodfather.Services;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
+using TheGodfather.Services.Database;
 #endregion
 
 namespace TheGodfather.Modules.Music
@@ -26,8 +27,8 @@ namespace TheGodfather.Modules.Music
         public static ConcurrentDictionary<ulong, MusicPlayer> MusicPlayers { get; } = new ConcurrentDictionary<ulong, MusicPlayer>();
 
 
-        public MusicModule(YtService yt, SharedData shared) 
-            : base(yt, shared)
+        public MusicModule(YtService yt, SharedData shared, DBService db) 
+            : base(yt, shared, db)
         {
             this.ModuleColor = DiscordColor.Grayple;
         }

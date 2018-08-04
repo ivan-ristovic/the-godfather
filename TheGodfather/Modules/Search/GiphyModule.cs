@@ -1,29 +1,30 @@
 ﻿#region USING_DIRECTIVES
-using System.Linq;
-using System.Threading.Tasks;
-
-using TheGodfather.Common.Attributes;
-using TheGodfather.Exceptions;
-using TheGodfather.Extensions;
-using TheGodfather.Services;
-
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using System.Linq;
+using System.Threading.Tasks;
+using TheGodfather.Common.Attributes;
+using TheGodfather.Exceptions;
+using TheGodfather.Services;
+using TheGodfather.Services.Database;
 #endregion
 
 namespace TheGodfather.Modules.Search
 {
-    [Group("gif"), Module(ModuleType.Searches)]
+    [Group("gif"), Module(ModuleType.Searches), NotBlocked]
     [Description("GIPHY commands. If invoked without a subcommand, searches GIPHY with given query.")]
     [Aliases("giphy")]
     [UsageExamples("!gif wat")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    [NotBlocked]
     public class GiphyModule : TheGodfatherServiceModule<GiphyService>
     {
 
-        public GiphyModule(GiphyService giphy) : base(giphy) { }
+        public GiphyModule(GiphyService giphy, SharedData shared, DBService db) 
+            : base(giphy, shared, db)
+        {
+            this.ModuleColor = DiscordColor.Violet;
+        }
 
 
         [GroupCommand]

@@ -8,6 +8,7 @@ using TheGodfather.Services;
 
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
+using TheGodfather.Services.Database;
 #endregion
 
 namespace TheGodfather.Modules.Search
@@ -20,6 +21,13 @@ namespace TheGodfather.Modules.Search
     [NotBlocked]
     public class XkcdModule : TheGodfatherModule
     {
+
+        public XkcdModule(SharedData shared, DBService db)
+            : base(shared, db)
+        {
+
+        }
+
 
         [GroupCommand, Priority(1)]
         public Task ExecuteGroupAsync(CommandContext ctx,

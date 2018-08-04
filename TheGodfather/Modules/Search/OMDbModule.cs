@@ -9,6 +9,7 @@ using TheGodfather.Services.Common;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Interactivity;
+using TheGodfather.Services.Database;
 #endregion
 
 namespace TheGodfather.Modules.Search
@@ -22,7 +23,8 @@ namespace TheGodfather.Modules.Search
     public class OMDbModule : TheGodfatherServiceModule<OMDbService>
     {
 
-        public OMDbModule(OMDbService omdb) : base(omdb) { }
+        public OMDbModule(OMDbService omdb, SharedData shared, DBService db)
+            : base(omdb, shared, db) { }
 
 
         [GroupCommand, Priority(0)]

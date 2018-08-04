@@ -9,6 +9,7 @@ using TheGodfather.Services;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using TheGodfather.Exceptions;
+using TheGodfather.Services.Database;
 #endregion
 
 namespace TheGodfather.Modules.Search
@@ -22,7 +23,8 @@ namespace TheGodfather.Modules.Search
     public class SteamModule : TheGodfatherServiceModule<SteamService>
     {
 
-        public SteamModule(SteamService steam) : base(steam) { }
+        public SteamModule(SteamService steam, SharedData shared, DBService db)
+            : base(steam, shared, db) { }
 
 
         #region COMMAND_STEAM_PROFILE

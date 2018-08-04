@@ -11,6 +11,7 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
+using TheGodfather.Services.Database;
 #endregion
 
 namespace TheGodfather.Modules.Search
@@ -24,7 +25,8 @@ namespace TheGodfather.Modules.Search
     public class GoodreadsModule : TheGodfatherServiceModule<GoodreadsService>
     {
 
-        public GoodreadsModule(GoodreadsService goodreads) : base(goodreads) { }
+        public GoodreadsModule(GoodreadsService goodreads, SharedData shared, DBService db)
+            : base(goodreads, shared, db) { }
 
 
         [GroupCommand]

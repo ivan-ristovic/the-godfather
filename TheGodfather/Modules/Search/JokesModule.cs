@@ -12,6 +12,7 @@ using TheGodfather.Services;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
+using TheGodfather.Services.Database;
 #endregion
 
 namespace TheGodfather.Modules.Search
@@ -24,6 +25,12 @@ namespace TheGodfather.Modules.Search
     [NotBlocked]
     public class JokesModule : TheGodfatherModule
     {
+
+        public JokesModule(SharedData shared, DBService db)
+            : base(shared, db)
+        {
+                
+        }
 
         [GroupCommand]
         public async Task ExecuteGroupAsync(CommandContext ctx)

@@ -9,6 +9,7 @@ using TheGodfather.Services;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Interactivity;
+using TheGodfather.Services.Database;
 #endregion
 
 namespace TheGodfather.Modules.Search
@@ -22,7 +23,11 @@ namespace TheGodfather.Modules.Search
     public class WeatherModule : TheGodfatherServiceModule<WeatherService>
     {
 
-        public WeatherModule(WeatherService weather) : base(weather) { }
+        public WeatherModule(WeatherService weather, SharedData shared, DBService db)
+            : base(weather, shared, db)
+        {
+
+        }
 
 
         [GroupCommand]

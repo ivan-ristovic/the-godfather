@@ -8,6 +8,7 @@ using TheGodfather.Services.Common;
 
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
+using TheGodfather.Services.Database;
 #endregion
 
 namespace TheGodfather.Modules.Search
@@ -16,6 +17,12 @@ namespace TheGodfather.Modules.Search
     [NotBlocked]
     public class SearchesModule : TheGodfatherModule
     {
+        public SearchesModule(SharedData shared, DBService db)
+            : base(shared, db)
+        {
+
+        }
+
         [Command("ipstack"), Module(ModuleType.Searches)]
         [Description("Retrieve IP geolocation information.")]
         [Aliases("ip", "geolocation", "iplocation", "iptracker", "iptrack", "trackip", "iplocate")]

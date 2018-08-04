@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
+using TheGodfather.Services.Database;
 #endregion
 
 namespace TheGodfather.Modules.Administration
@@ -24,8 +25,8 @@ namespace TheGodfather.Modules.Administration
     public class EmojiModule : TheGodfatherModule
     {
 
-        public EmojiModule()
-            : base()
+        public EmojiModule(SharedData shared, DBService db)
+            : base(shared, db)
         {
             this.ModuleColor = DiscordColor.CornflowerBlue;
         }

@@ -28,7 +28,7 @@ namespace TheGodfather.Modules.Currency
         {
 
             public BlackjackModule(SharedData shared, DBService db) 
-                : base(db: db)
+                : base(shared, db)
             {
                 this.ModuleColor = DiscordColor.SapGreen;
             }

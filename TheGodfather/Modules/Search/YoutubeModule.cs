@@ -25,7 +25,7 @@ namespace TheGodfather.Modules.Search
     public class YoutubeModule : TheGodfatherServiceModule<YtService>
     {
 
-        public YoutubeModule(YtService yt, DBService db) : base(yt, db: db) { }
+        public YoutubeModule(YtService yt, SharedData shared, DBService db) : base(yt, shared, db) { }
 
 
         [GroupCommand]

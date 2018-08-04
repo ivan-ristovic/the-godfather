@@ -26,7 +26,7 @@ namespace TheGodfather.Modules.Chickens
         {
 
             public TrainModule(SharedData shared, DBService db) 
-                : base(db: db)
+                : base(shared, db)
             {
                 this.ModuleColor = DiscordColor.Yellow;
             }

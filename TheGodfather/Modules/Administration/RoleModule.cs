@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
+using TheGodfather.Services.Database;
 #endregion
 
 namespace TheGodfather.Modules.Administration
@@ -20,8 +21,8 @@ namespace TheGodfather.Modules.Administration
     public class RoleModule : TheGodfatherModule
     {
 
-        public RoleModule()
-            : base()
+        public RoleModule(SharedData shared, DBService db)
+            : base(shared, db)
         {
             this.ModuleColor = DiscordColor.Azure;
         }
