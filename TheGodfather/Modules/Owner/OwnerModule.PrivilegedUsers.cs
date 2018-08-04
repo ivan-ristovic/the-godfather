@@ -1,36 +1,37 @@
 ﻿#region USING_DIRECTIVES
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using TheGodfather.Common.Attributes;
-using TheGodfather.Exceptions;
-using TheGodfather.Extensions;
-using TheGodfather.Services.Database.Privileges;
-
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using TheGodfather.Common.Attributes;
+using TheGodfather.Exceptions;
+using TheGodfather.Extensions;
 using TheGodfather.Services.Database;
+using TheGodfather.Services.Database.Privileges;
 #endregion
 
 namespace TheGodfather.Modules.Owner
 {
     public partial class OwnerModule
     {
-        [Group("privilegedusers"), Module(ModuleType.Owner)]
+        [Group("privilegedusers")]
         [Description("Manipulate privileged users. Privileged users can invoke commands marked with RequirePrivilegedUsers permission.")]
         [Aliases("pu", "privu", "privuser", "pusers", "puser", "pusr")]
         [RequireOwner]
-        [NotBlocked]
         public class PrivilegedUsersModule : TheGodfatherModule
         {
 
-            public PrivilegedUsersModule(SharedData shared, DBService db) : base(shared, db) { }
+            public PrivilegedUsersModule(SharedData shared, DBService db) 
+                : base(shared, db)
+            {
+                this.ModuleColor = DiscordColor.NotQuiteBlack;
+            }
 
 
             [GroupCommand, Priority(1)]
@@ -44,9 +45,9 @@ namespace TheGodfather.Modules.Owner
 
 
             #region COMMAND_PRIVILEGEDUSERS_ADD
-            [Command("add"), Module(ModuleType.Owner)]
+            [Command("add")]
             [Description("Add users to privileged users list.")]
-            [Aliases("+", "a")]
+            [Aliases("+", "a", "<", "<<", "+=")]
             [UsageExamples("!owner privilegedusers add @Someone",
                            "!owner privilegedusers add @Someone @SomeoneElse")]
             public async Task AddAsync(CommandContext ctx,
@@ -55,27 +56,28 @@ namespace TheGodfather.Modules.Owner
                 if (!users.Any())
                     throw new InvalidCommandUsageException("Missing users to grant privilege to.");
 
-                var sb = new StringBuilder("Add privileged users action results:\n\n");
-                foreach (var user in users) {
+                var eb = new StringBuilder();
+                foreach (DiscordUser user in users) {
                     try {
-                        await this.Database.AddPrivilegedUserAsync(user.Id)
-                            .ConfigureAwait(false);
-                    } catch {
-                        sb.AppendLine($"Warning: Failed to add {user.ToString()} to the privileged users list!");
+                        await this.Database.AddPrivilegedUserAsync(user.Id);
+                    } catch (Exception e) {
+                        this.Shared.LogProvider.LogException(LogLevel.Warning, e);
+                        eb.AppendLine($"Warning: Failed to add {user.ToString()} to the privileged users list!");
                         continue;
                     }
-                    sb.AppendLine($"Added: {user.ToString()}!");
                 }
 
-                await InformAsync(ctx, sb.ToString())
-                    .ConfigureAwait(false);
+                if (eb.Length > 0)
+                    await InformFailureAsync(ctx, $"Action finished with warnings/errors:\n\n{eb.ToString()}");
+                else
+                    await InformAsync(ctx, "Granted privilege to all given users.", important: false);
             }
             #endregion
 
             #region COMMAND_PRIVILEGEDUSERS_DELETE
-            [Command("delete"), Module(ModuleType.Owner)]
+            [Command("delete")]
             [Description("Remove users from privileged users list..")]
-            [Aliases("-", "remove", "rm", "del")]
+            [Aliases("-", "remove", "rm", "del", ">", ">>", "-=")]
             [UsageExamples("!owner privilegedusers remove @Someone",
                            "!owner privilegedusers remove 123123123123123",
                            "!owner privilegedusers remove @Someone 123123123123123")]
@@ -85,44 +87,40 @@ namespace TheGodfather.Modules.Owner
                 if (!users.Any())
                     throw new InvalidCommandUsageException("Missing users.");
 
-                var sb = new StringBuilder("Delete privileged users action results:\n\n");
-                foreach (var user in users) {
+                var eb = new StringBuilder();
+                foreach (DiscordUser user in users) {
                     try {
-                        await this.Database.RemovePrivileedUserAsync(user.Id)
-                            .ConfigureAwait(false);
+                        await this.Database.RemovePrivileedUserAsync(user.Id);
                     } catch (Exception e) {
-                        sb.AppendLine($"Warning: Failed to remove {user.ToString()} from the database!");
+                        eb.AppendLine($"Warning: Failed to remove {user.ToString()} from the database!");
                         this.Shared.LogProvider.LogException(LogLevel.Warning, e);
                         continue;
                     }
-                    sb.AppendLine($"Removed: {user.ToString()}!");
                 }
 
-                await InformAsync(ctx, sb.ToString())
-                    .ConfigureAwait(false);
+                if (eb.Length > 0)
+                    await InformFailureAsync(ctx, $"Action finished with warnings/errors:\n\n{eb.ToString()}");
+                else
+                    await InformAsync(ctx, "Revoked privilege from all given users.", important: false);
             }
             #endregion
 
             #region COMMAND_PRIVILEGEDUSERS_LIST
-            [Command("list"), Module(ModuleType.Owner)]
+            [Command("list")]
             [Description("List all privileged users.")]
-            [Aliases("ls")]
+            [Aliases("ls", "l", "print")]
             [UsageExamples("!owner privilegedusers list")]
             public async Task ListAsync(CommandContext ctx)
             {
-                var privileged = await this.Database.GetAllPrivilegedUsersAsync()
-                    .ConfigureAwait(false);
+                IReadOnlyList<ulong> privileged = await this.Database.GetAllPrivilegedUsersAsync();
 
-                List<DiscordUser> users = new List<DiscordUser>();
-                foreach (var uid in privileged) {
+                var users = new List<DiscordUser>();
+                foreach (ulong uid in privileged) {
                     try {
-                        var user = await ctx.Client.GetUserAsync(uid)
-                            .ConfigureAwait(false);
-                        users.Add(user);
+                        users.Add(await ctx.Client.GetUserAsync(uid));
                     } catch (NotFoundException) {
-                        this.Shared.LogProvider.LogMessage(LogLevel.Warning, $"Removed 404 privileged user with ID {uid}");
-                        await this.Database.RemovePrivileedUserAsync(uid)
-                            .ConfigureAwait(false);
+                        await this.Database.RemovePrivileedUserAsync(uid);
+                        this.Shared.LogProvider.LogMessage(LogLevel.Debug, $"Removed 404 privileged user with ID {uid}");
                     }
                 }
 
@@ -130,12 +128,12 @@ namespace TheGodfather.Modules.Owner
                     throw new CommandFailedException("No privileged users registered!");
 
                 await ctx.SendCollectionInPagesAsync(
-                    "Privileged users (in database):",
+                    "Privileged users",
                     users,
                     user => user.ToString(),
-                    DiscordColor.Azure,
+                    this.ModuleColor,
                     10
-                ).ConfigureAwait(false);
+                );
             }
             #endregion
         }

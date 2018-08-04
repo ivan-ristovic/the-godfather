@@ -12,8 +12,8 @@ namespace TheGodfather.Modules
 {
     public abstract class TheGodfatherModule : BaseCommandModule
     {
-        private static readonly HttpClientHandler _handler = new HttpClientHandler { AllowAutoRedirect = false };
-        protected static readonly HttpClient _http = new HttpClient(_handler, true);
+        protected static readonly HttpClient _http;
+        private static readonly HttpClientHandler _handler;
 
         protected SharedData Shared { get; private set; }
         protected DBService Database { get; }
@@ -24,6 +24,14 @@ namespace TheGodfather.Modules
 
         private DiscordColor? moduleColor;
 
+
+        static TheGodfatherModule()
+        {
+            _handler = new HttpClientHandler {
+                AllowAutoRedirect = false
+            };
+            _http =  new HttpClient(_handler, true);
+        }
 
         protected TheGodfatherModule(SharedData shared = null, DBService db = null)
         {

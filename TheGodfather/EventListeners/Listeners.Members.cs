@@ -20,8 +20,6 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.GuildMemberAdded)]
         public static async Task MemberJoinEventHandlerAsync(TheGodfatherShard shard, GuildMemberAddEventArgs e)
         {
-            shard.Log(LogLevel.Info, $"| Member joined: {e.Member.ToString()}\n{e.Guild.ToString()}");
-
             DiscordChannel wchn = await shard.DatabaseService.GetWelcomeChannelAsync(e.Guild);
             if (wchn != null) {
                 string msg = await shard.DatabaseService.GetWelcomeMessageAsync(e.Guild.Id);
@@ -72,9 +70,7 @@ namespace TheGodfather.EventListeners
         {
             if (e.Member.Id == e.Client.CurrentUser.Id)
                 return;
-
-            shard.Log(LogLevel.Info, $"| Member left: {e.Member.ToString()}\n{e.Guild.ToString()}");
-
+            
             DiscordChannel lchn = await shard.DatabaseService.GetLeaveChannelAsync(e.Guild);
             if (lchn != null) {
                 string msg = await shard.DatabaseService.GetLeaveMessageForGuildAsync(e.Guild.Id);
