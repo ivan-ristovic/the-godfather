@@ -1,27 +1,34 @@
 ﻿#region USING_DIRECTIVES
+using DSharpPlus.CommandsNext;
+using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Entities;
+using DSharpPlus.Interactivity;
 using System;
 using System.Threading.Tasks;
-
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Polls.Common;
-
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Interactivity;
+using TheGodfather.Services.Database;
 #endregion
 
 namespace TheGodfather.Modules.Polls
 {
+    [Module(ModuleType.Polls), NotBlocked, UsesInteractivity]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    [NotBlocked, UsesInteractivity]
     public class ReactionsPollModule : TheGodfatherModule
     {
+
+        public ReactionsPollModule(SharedData shared, DBService db)
+            : base(shared, db)
+        {
+            this.ModuleColor = DiscordColor.Orange;
+        }
+
+
         #region COMMAND_REACTIONSPOLL
         [Command("reactionspoll"), Priority(1)]
-        [Module(ModuleType.Polls)]
         [Description("Starts a poll with reactions in the channel.")]
         [Aliases("rpoll", "pollr", "voter")]
         [UsageExamples("!rpoll :smile: :joy:")]
@@ -32,27 +39,26 @@ namespace TheGodfather.Modules.Polls
             if (string.IsNullOrWhiteSpace(question))
                 throw new InvalidCommandUsageException("Poll requires a question.");
 
-            if (Poll.RunningInChannel(ctx.Channel.Id))
+            if (this.Shared.IsPollRunningInChannel(ctx.Channel.Id))
                 throw new CommandFailedException("Another poll is already running in this channel.");
 
             if (timeout < TimeSpan.FromSeconds(10) || timeout >= TimeSpan.FromDays(1))
                 throw new InvalidCommandUsageException("Poll cannot run for less than 10 seconds or more than 1 day(s).");
 
             var rpoll = new ReactionsPoll(ctx.Client.GetInteractivity(), ctx.Channel, question);
-            if (!Poll.RegisterPollInChannel(rpoll, ctx.Channel.Id))
-                throw new CommandFailedException("Failed to start the poll. Please try again.");
+            if (!this.Shared.RegisterPollInChannel(rpoll, ctx.Channel.Id))
+                throw new ConcurrentOperationException("Failed to start the poll. Please try again.");
+
             try {
-                await InformAsync(ctx, StaticDiscordEmoji.Question, "And what will be the possible answers? (separate with semicolon ``;``)")
-                    .ConfigureAwait(false);
-                var options = await ctx.WaitAndParsePollOptionsAsync()
-                    .ConfigureAwait(false);
+                await InformAsync(ctx, StaticDiscordEmoji.Question, "And what will be the possible answers? (separate with a semicolon)");
+                var options = await ctx.WaitAndParsePollOptionsAsync();
                 if (options.Count < 2 || options.Count > 10)
                     throw new CommandFailedException("Poll must have minimum 2 and maximum 10 options!");
-                rpoll.SetOptions(options);
-                await rpoll.RunAsync(timeout)
-                    .ConfigureAwait(false);
+                rpoll.Options = options;
+
+                await rpoll.RunAsync(timeout);
             } finally {
-                Poll.UnregisterPollInChannel(ctx.Channel.Id);
+                this.Shared.UnregisterPollInChannel(ctx.Channel.Id);
             }
         }
 

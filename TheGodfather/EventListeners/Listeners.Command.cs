@@ -123,7 +123,7 @@ namespace TheGodfather.EventListeners
                     }
                     break;
                 case ConcurrentOperationException _:
-                    sb.Append(ex.Message);
+                    sb.Append($"A concurrency error - please report this. Details: {ex.Message}");
                     break;
                 case UnauthorizedException _:
                     sb.Append("I am not authorized to do that.");

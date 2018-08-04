@@ -1,129 +1,91 @@
 ﻿#region USING_DIRECTIVES
+using DSharpPlus;
+using DSharpPlus.Entities;
+using DSharpPlus.Interactivity;
 using System;
 using System.Linq;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-
 using TheGodfather.Extensions;
-
-using DSharpPlus;
-using DSharpPlus.Entities;
-using DSharpPlus.Interactivity;
 #endregion
 
 namespace TheGodfather.Modules.Polls.Common
 {
     public class Poll
     {
-        #region STATIC_FIELDS
-        private static ConcurrentDictionary<ulong, Poll> _polls = new ConcurrentDictionary<ulong, Poll>();
-
-        public static Poll GetPollInChannel(ulong cid)
-            => _polls.ContainsKey(cid) ? _polls[cid] : null;
-
-        public static bool RunningInChannel(ulong cid)
-            => _polls.ContainsKey(cid) && _polls[cid] != null;
-
-        public static bool RegisterPollInChannel(Poll poll, ulong cid)
-        {
-            if (_polls.ContainsKey(cid)) {
-                _polls[cid] = poll;
-                return true;
-            }
-            
-            return _polls.TryAdd(cid, poll);
-        }
-
-        public static void UnregisterPollInChannel(ulong cid)
-        {
-            if (!_polls.ContainsKey(cid))
-                return;
-            if (!_polls.TryRemove(cid, out _))
-                _polls[cid] = null;
-        }
-        #endregion
-
-        #region PUBLIC_FIELDS
         public string Question { get; }
-        public bool Running { get; protected set; }
-        public TimeSpan UntilEnd => this._endTime != null ? this._endTime - DateTime.Now : TimeSpan.Zero;
-        public int OptionCount => this._options.Count;
-        #endregion
+        public bool IsRunning { get; protected set; }
+        public List<string> Options { get; set; }
+        public TimeSpan TimeUntilEnd => this.endTime != null ? this.endTime - DateTime.Now : TimeSpan.Zero;
 
-        #region PROTECTED_FIELDS
-        protected List<string> _options = new List<string>();
-        protected ConcurrentDictionary<ulong, int> _votes = new ConcurrentDictionary<ulong, int>();
-        protected DiscordChannel _channel;
-        protected InteractivityExtension _interactivity;
-        protected DateTime _endTime;
-        protected CancellationTokenSource _cts = new CancellationTokenSource();
-        #endregion
+        protected DateTime endTime;
+        protected readonly ConcurrentDictionary<ulong, int> votes;
+        protected readonly DiscordChannel channel;
+        protected readonly InteractivityExtension interactivity;
+        protected readonly CancellationTokenSource cts;
 
 
         public Poll(InteractivityExtension interactivity, DiscordChannel channel, string question)
         {
-            this._channel = channel;
-            this._interactivity = interactivity;
             this.Question = question;
+            this.channel = channel;
+            this.interactivity = interactivity;
+            this.Options = new List<string>();
+            this.votes = new ConcurrentDictionary<ulong, int>();
+            this.cts = new CancellationTokenSource();
         }
 
 
         public virtual async Task RunAsync(TimeSpan timespan)
         {
-            this.Running = true;
-            var msg = await this._channel.SendMessageAsync(embed: EmbedPoll())
-                .ConfigureAwait(false);
+            this.IsRunning = true;
+            var msgHandle = await this.channel.SendMessageAsync(embed: ToDiscordEmbed());
 
-            this._endTime = DateTime.Now + timespan;
-            while (!this._cts.IsCancellationRequested) {
+            this.endTime = DateTime.Now + timespan;
+            while (!this.cts.IsCancellationRequested) {
                 try {
-                    if (this._channel.LastMessageId != msg.Id) {
-                        await msg.DeleteAsync()
-                            .ConfigureAwait(false);
-                        msg = await this._channel.SendMessageAsync(embed: EmbedPoll())
-                            .ConfigureAwait(false);
+                    if (this.channel.LastMessageId != msgHandle.Id) {
+                        await msgHandle.DeleteAsync();
+                        msgHandle = await this.channel.SendMessageAsync(embed: ToDiscordEmbed());
                     } else {
-                        await msg.ModifyAsync(embed: EmbedPoll())
-                            .ConfigureAwait(false);
+                        await msgHandle.ModifyAsync(embed: ToDiscordEmbed());
                     }
                 } catch {
-                    msg = await this._channel.SendMessageAsync(embed: EmbedPoll())
-                        .ConfigureAwait(false);
+                    msgHandle = await this.channel.SendMessageAsync(embed: ToDiscordEmbed());
                 }
 
-                if (this.UntilEnd.TotalSeconds < 1)
+                if (this.TimeUntilEnd.TotalSeconds < 1)
                     break;
 
                 try {
-                    await Task.Delay(this.UntilEnd <= TimeSpan.FromSeconds(5) ? this.UntilEnd : TimeSpan.FromSeconds(5), this._cts.Token)
-                        .ConfigureAwait(false);
+                    await Task.Delay(this.TimeUntilEnd <= TimeSpan.FromSeconds(5) ? this.TimeUntilEnd : TimeSpan.FromSeconds(5), this.cts.Token);
                 } catch (TaskCanceledException) {
-                    await this._channel.InformFailureAsync("The poll has been cancelled!")
-                        .ConfigureAwait(false);
+                    await this.channel.InformFailureAsync("The poll has been cancelled!");
                 }
             }
-            this.Running = false;
 
-            await this._channel.SendMessageAsync(embed: EmbedPollResults())
-                .ConfigureAwait(false);
+            this.IsRunning = false;
+
+            await this.channel.SendMessageAsync(embed: ResultsToDiscordEmbed());
         }
 
-        public virtual DiscordEmbed EmbedPoll()
+        public virtual DiscordEmbed ToDiscordEmbed()
         {
             var emb = new DiscordEmbedBuilder() {
                 Title = Question,
                 Description = $"Vote by typing {Formatter.InlineCode("!vote <number>")}",
                 Color = DiscordColor.Orange
             };
-            for (int i = 0; i < this._options.Count; i++)
-                if (!string.IsNullOrWhiteSpace(this._options[i]))
-                    emb.AddField($"{i + 1} : {this._options[i]}", $"{this._votes.Count(kvp => kvp.Value == i)} vote(s)");
 
-            if (this._endTime != null) {
-                if (this.UntilEnd.TotalSeconds > 1)
-                    emb.WithFooter($"Poll ends in: {this.UntilEnd:hh\\:mm\\:ss}");
+            for (int i = 0; i < this.Options.Count; i++)
+                if (!string.IsNullOrWhiteSpace(this.Options[i]))
+                    emb.AddField($"{i + 1} : {this.Options[i]}", $"{this.votes.Count(kvp => kvp.Value == i)} vote(s)");
+
+            if (this.endTime != null) {
+                if (this.TimeUntilEnd.TotalSeconds > 1)
+                    emb.WithFooter($"Poll ends in: {this.TimeUntilEnd:hh\\:mm\\:ss}");
                 else
                     emb.WithFooter($"Poll ended.");
             }
@@ -131,47 +93,43 @@ namespace TheGodfather.Modules.Polls.Common
             return emb.Build();
         }
 
-        public virtual DiscordEmbed EmbedPollResults()
+        public virtual DiscordEmbed ResultsToDiscordEmbed()
         {
             var emb = new DiscordEmbedBuilder() {
                 Title = this.Question + " (results)",
                 Color = DiscordColor.Orange
             };
-            for (int i = 0; i < this._options.Count; i++)
-                emb.AddField(this._options[i], this._votes.Count(kvp => kvp.Value == i).ToString(), inline: true);
+
+            for (int i = 0; i < this.Options.Count; i++)
+                emb.AddField(this.Options[i], this.votes.Count(kvp => kvp.Value == i).ToString(), inline: true);
 
             return emb.Build();
         }
 
         public bool CancelVote(ulong uid)
         {
-            if (!this._votes.ContainsKey(uid))
+            if (!this.votes.ContainsKey(uid))
                 return true;
-            return this._votes.TryRemove(uid, out _);
+            return this.votes.TryRemove(uid, out _);
         }
 
         public bool IsValidVote(int vote)
-            => vote >= 0 && vote < this._options.Count;
+            => vote >= 0 && vote < this.Options.Count;
 
         public string OptionWithId(int id)
-            => (id >= 0 && id < this._options.Count) ? this._options[id] : null;
-
-        public void SetOptions(List<string> options)
-        {
-            this._options = options;
-        }
+            => (id >= 0 && id < this.Options.Count) ? this.Options[id] : null;
 
         public void Stop()
-            => this._cts.Cancel();
+            => this.cts.Cancel();
 
         public bool UserVoted(ulong uid)
-            => this._votes.ContainsKey(uid);
+            => this.votes.ContainsKey(uid);
 
         public bool VoteFor(ulong uid, int vote)
         {
-            if (this._votes.ContainsKey(uid))
+            if (this.votes.ContainsKey(uid))
                 return false;
-            return this._votes.TryAdd(uid, vote);
+            return this.votes.TryAdd(uid, vote);
         }
     }
 }

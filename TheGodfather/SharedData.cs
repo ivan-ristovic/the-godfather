@@ -11,6 +11,7 @@ using TheGodfather.Common;
 using TheGodfather.Common.Collections;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Common;
+using TheGodfather.Modules.Polls.Common;
 using TheGodfather.Modules.Reactions.Common;
 using TheGodfather.Services.Database;
 using TheGodfather.Services.Database.Ranks;
@@ -31,6 +32,7 @@ namespace TheGodfather
         public bool ListeningStatus { get; internal set; }
         public CancellationTokenSource MainLoopCts { get; internal set; }
         public ConcurrentDictionary<ulong, ulong> MessageCount { get; internal set; }
+        public ConcurrentDictionary<ulong, Poll> Polls { get; internal set; }
         public bool StatusRotationEnabled { get; internal set; }
         public ConcurrentDictionary<int, SavedTaskExecuter> TaskExecuters { get; internal set; }
         public ConcurrentDictionary<ulong, ConcurrentHashSet<TextReaction>> TextReactions { get; internal set; }
@@ -53,6 +55,7 @@ namespace TheGodfather
             this.MainLoopCts = new CancellationTokenSource();
             this.MessageCount = new ConcurrentDictionary<ulong, ulong>();
             this.PendingResponses = new ConcurrentDictionary<ulong, ConcurrentHashSet<ulong>>();
+            this.Polls = new ConcurrentDictionary<ulong, Poll>();
             this.StatusRotationEnabled = true;
             this.TaskExecuters = new ConcurrentDictionary<int, SavedTaskExecuter>();
             this.TextReactions = new ConcurrentDictionary<ulong, ConcurrentHashSet<TextReaction>>();
@@ -174,6 +177,33 @@ namespace TheGodfather
                 this.PendingResponses.TryRemove(cid, out _);
             return success;
         }
+        #endregion
+
+        #region POLL_HELPERS
+        public Poll GetPollInChannel(ulong cid)
+            => this.Polls.ContainsKey(cid) ? this.Polls[cid] : null;
+
+        public bool IsPollRunningInChannel(ulong cid)
+            => this.Polls.ContainsKey(cid) && this.Polls[cid] != null;
+
+        public bool RegisterPollInChannel(Poll poll, ulong cid)
+        {
+            if (this.Polls.ContainsKey(cid)) {
+                this.Polls[cid] = poll;
+                return true;
+            }
+
+            return this.Polls.TryAdd(cid, poll);
+        }
+
+        public void UnregisterPollInChannel(ulong cid)
+        {
+            if (!this.Polls.ContainsKey(cid))
+                return;
+            if (!this.Polls.TryRemove(cid, out _))
+                this.Polls[cid] = null;
+        }
+
         #endregion
     }
 }

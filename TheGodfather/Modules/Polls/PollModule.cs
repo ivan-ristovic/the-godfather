@@ -1,29 +1,35 @@
 ﻿#region USING_DIRECTIVES
+using DSharpPlus;
+using DSharpPlus.CommandsNext;
+using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Entities;
+using DSharpPlus.Interactivity;
 using System;
 using System.Threading.Tasks;
-
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Polls.Common;
-
-using DSharpPlus;
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Interactivity;
+using TheGodfather.Services.Database;
 #endregion
 
 namespace TheGodfather.Modules.Polls
 {
-    [Group("poll"), Module(ModuleType.Polls)]
+    [Group("poll"), Module(ModuleType.Polls), NotBlocked, UsesInteractivity]
     [Description("Starts a new poll in the current channel. You can provide also the time for the poll to run.")]
     [UsageExamples("!poll Do you vote for User1 or User2?",
                    "!poll 5m Do you vote for User1 or User2?")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    [NotBlocked, UsesInteractivity]
     public class PollModule : TheGodfatherModule
     {
+
+        public PollModule(SharedData shared, DBService db)
+            : base(shared, db)
+        {
+            this.ModuleColor = DiscordColor.Orange;
+        }
+
 
         [GroupCommand, Priority(2)]
         public async Task ExecuteGroupAsync(CommandContext ctx,
@@ -33,27 +39,26 @@ namespace TheGodfather.Modules.Polls
             if (string.IsNullOrWhiteSpace(question))
                 throw new InvalidCommandUsageException("Poll requires a question.");
 
-            if (Poll.RunningInChannel(ctx.Channel.Id))
+            if (this.Shared.IsPollRunningInChannel(ctx.Channel.Id))
                 throw new CommandFailedException("Another poll is already running in this channel.");
 
             if (timeout < TimeSpan.FromSeconds(10) || timeout >= TimeSpan.FromDays(1))
                 throw new InvalidCommandUsageException("Poll cannot run for less than 10 seconds or more than 1 day(s).");
 
             var poll = new Poll(ctx.Client.GetInteractivity(), ctx.Channel, question);
-            if (!Poll.RegisterPollInChannel(poll, ctx.Channel.Id))
+            if (!this.Shared.RegisterPollInChannel(poll, ctx.Channel.Id))
                 throw new CommandFailedException("Failed to start the poll. Please try again.");
             try {
-                await InformAsync(ctx, StaticDiscordEmoji.Question, "And what will be the possible answers? (separate with semicolon ``;``)")
-                    .ConfigureAwait(false);
-                var options = await ctx.WaitAndParsePollOptionsAsync()
-                    .ConfigureAwait(false);
+                await InformAsync(ctx, StaticDiscordEmoji.Question, "And what will be the possible answers? (separate with a semicolon)");
+                var options = await ctx.WaitAndParsePollOptionsAsync();
                 if (options.Count < 2 || options.Count > 10)
                     throw new CommandFailedException("Poll must have minimum 2 and maximum 10 options!");
-                poll.SetOptions(options);
-                await poll.RunAsync(timeout)
-                    .ConfigureAwait(false);
+                poll.Options = options;
+
+                await poll.RunAsync(timeout);
+
             } finally {
-                Poll.UnregisterPollInChannel(ctx.Channel.Id);
+                this.Shared.UnregisterPollInChannel(ctx.Channel.Id);
             }
         }
 
@@ -70,19 +75,19 @@ namespace TheGodfather.Modules.Polls
 
 
         #region COMMAND_STOP
-        [Command("stop"), Module(ModuleType.Polls)]
+        [Command("stop")]
         [Description("Stops a running poll.")]
         [UsageExamples("!poll stop")]
         [RequireUserPermissions(Permissions.Administrator)]
-        public async Task StopAsync(CommandContext ctx)
+        public Task StopAsync(CommandContext ctx)
         {
-            await Task.Delay(0).ConfigureAwait(false);
-
-            var poll = Poll.GetPollInChannel(ctx.Channel.Id);
+            var poll = this.Shared.GetPollInChannel(ctx.Channel.Id);
             if (poll == null || poll is ReactionsPoll)
                 throw new CommandFailedException("There are no text polls running in this channel.");
 
             poll.Stop();
+
+            return Task.CompletedTask;
         }
         #endregion
     }
