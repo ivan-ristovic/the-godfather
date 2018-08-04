@@ -27,7 +27,8 @@ namespace TheGodfather.Modules.SWAT
         public class SwatBanlistModule : TheGodfatherModule
         {
 
-            public SwatBanlistModule(DBService db) : base(db: db) { }
+            public SwatBanlistModule(SharedData shared, DBService db)
+                : base(shared, db) { }
 
 
             [GroupCommand]

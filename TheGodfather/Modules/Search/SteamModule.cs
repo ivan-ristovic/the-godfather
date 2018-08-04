@@ -39,7 +39,7 @@ namespace TheGodfather.Modules.Search
                 .ConfigureAwait(false);
 
             if (em == null) {
-                await ctx.InformFailureAsync("User with such ID does not exist!")
+                await InformFailureAsync(ctx, "User with such ID does not exist!")
                     .ConfigureAwait(false);
                 return;
             }

@@ -73,12 +73,10 @@ namespace TheGodfather.EventListeners
                         emb.AddField($"{alias} ({cmd.QualifiedName})", cmd.Description);
 
                     break;
-                case InvalidCommandUsageException _:
-                    sb.Append($"Invalid usage! {ex.Message}");
-                    break;
                 case ArgumentException _:
-                    sb.AppendLine($"Argument conversion error (please check {Formatter.Bold($"help {e.Command.QualifiedName}")}).");
-                    sb.AppendLine().Append($"Details: {Formatter.Italic(ex.Message)}");
+                    sb.AppendLine("Invalid command usage! Details:").AppendLine();
+                    sb.AppendLine(Formatter.BlockCode(ex.Message));
+                    sb.AppendLine($"Type {Formatter.Bold($"help {e.Command.QualifiedName}")} for a command manual.");
                     break;
                 case CommandFailedException _:
                     sb.Append($"{ex.Message} {ex.InnerException?.Message}");

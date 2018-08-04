@@ -99,7 +99,7 @@ namespace TheGodfather.Modules.Search
             if (await Database.TryAddSubscriptionAsync(ctx.Channel.Id, feedurl, string.IsNullOrWhiteSpace(name) ? url : name).ConfigureAwait(false))
                 await InformAsync(ctx, "Subscribed!").ConfigureAwait(false);
             else
-                await ctx.InformFailureAsync("Either the channel URL you is invalid or you are already subscribed to it!").ConfigureAwait(false);
+                await InformFailureAsync(ctx, "Either the channel URL you is invalid or you are already subscribed to it!").ConfigureAwait(false);
         }
         #endregion
 
@@ -148,7 +148,7 @@ namespace TheGodfather.Modules.Search
             var pages = await Service.GetPaginatedResultsAsync(query, amount, type)
                 .ConfigureAwait(false);
             if (pages == null) {
-                await ctx.InformFailureAsync("No results found!")
+                await InformFailureAsync(ctx, "No results found!")
                     .ConfigureAwait(false);
                 return;
             }

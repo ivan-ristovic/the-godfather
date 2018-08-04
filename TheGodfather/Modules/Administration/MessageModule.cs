@@ -176,7 +176,7 @@ namespace TheGodfather.Modules.Administration
             IReadOnlyList<DiscordMessage> pinned = await ctx.Channel.GetPinnedMessagesAsync();
 
             if (!pinned.Any()) {
-                await ctx.InformFailureAsync("No pinned messages in this channel");
+                await InformFailureAsync(ctx, "No pinned messages in this channel");
                 return;
             }
 
@@ -206,7 +206,7 @@ namespace TheGodfather.Modules.Administration
 
             DiscordMessage msg = await ctx.Channel.GetMessageAsync(id);
             await msg.ModifyAsync(content);
-            await InformAsync(ctx);
+            await InformAsync(ctx, important: false);
         }
         #endregion
 
@@ -230,7 +230,7 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException("Cannot retrieve the message!");
 
             await msg.PinAsync();
-            await InformAsync(ctx, $"Added new channel pin.");
+            await InformAsync(ctx, $"Added new channel pin.", important: false);
         }
         #endregion
 
@@ -250,7 +250,7 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException($"Invalid index (must be in range [1, {pinned.Count}]!");
 
             await pinned.ElementAt(index - 1).UnpinAsync();
-            await InformAsync(ctx, $"Removed the pin.");
+            await InformAsync(ctx, $"Removed the pin.", important: false);
         }
         #endregion
 
@@ -274,9 +274,9 @@ namespace TheGodfather.Modules.Administration
             }
 
             if (failed > 0)
-                await InformAsync(ctx, $"Failed to unpin {failed} messages!", important: true);
+                await InformFailureAsync(ctx, $"Failed to unpin {failed} messages!");
             else
-                await InformAsync(ctx, "Successfully unpinned all messages in this channel");
+                await InformAsync(ctx, "Successfully unpinned all messages in this channel", important: false);
         }
         #endregion
     }

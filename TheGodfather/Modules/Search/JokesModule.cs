@@ -49,7 +49,7 @@ namespace TheGodfather.Modules.Search
                 await InformAsync(ctx, $"Results:\n\n{string.Join("\n", jokes.Take(5))}", ":joy:")
                     .ConfigureAwait(false);
             } else {
-                await ctx.InformFailureAsync("No results...")
+                await InformFailureAsync(ctx, "No results...")
                     .ConfigureAwait(false);
             }
         }

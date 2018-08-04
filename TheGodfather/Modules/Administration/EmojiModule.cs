@@ -71,7 +71,7 @@ namespace TheGodfather.Modules.Administration
                     if (stream.Length >= 256000)
                         throw new CommandFailedException("The specified emoji is too large. Maximum allowed image size is 256KB.");
                     DiscordGuildEmoji emoji = await ctx.Guild.CreateEmojiAsync(name, stream, reason: ctx.BuildReasonString());
-                    await InformAsync(ctx, $"Successfully added emoji: {emoji}");
+                    await InformAsync(ctx, $"Successfully added emoji: {emoji}", important: false);
                 }
             } catch (WebException e) {
                 throw new CommandFailedException("An error occured while fetching the image.", e);
@@ -118,7 +118,7 @@ namespace TheGodfather.Modules.Administration
                 DiscordGuildEmoji gemoji = await ctx.Guild.GetEmojiAsync(emoji.Id);
                 string name = gemoji.Name;
                 await ctx.Guild.DeleteEmojiAsync(gemoji, ctx.BuildReasonString());
-                await InformAsync(ctx, $"Successfully deleted emoji: {Formatter.Bold(name)}");
+                await InformAsync(ctx, $"Successfully deleted emoji: {Formatter.Bold(name)}", important: false);
             } catch (NotFoundException) {
                 throw new CommandFailedException("Can't find that emoji in list of emoji that I made for this guild.");
             }
@@ -183,7 +183,7 @@ namespace TheGodfather.Modules.Administration
             try {
                 DiscordGuildEmoji gemoji = await ctx.Guild.GetEmojiAsync(emoji.Id);
                 gemoji = await ctx.Guild.ModifyEmojiAsync(gemoji, name: newname, reason: ctx.BuildReasonString());
-                await InformAsync(ctx, $"Successfully modified emoji: {gemoji}");
+                await InformAsync(ctx, $"Successfully modified emoji: {gemoji}", important: false);
             } catch (NotFoundException) {
                 throw new CommandFailedException("Can't find that emoji in list of emoji that I made for this guild.");
             }

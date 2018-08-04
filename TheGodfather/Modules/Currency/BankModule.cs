@@ -28,8 +28,8 @@ namespace TheGodfather.Modules.Currency
     public class BankModule : TheGodfatherModule
     {
 
-        public BankModule(DBService db) 
-            : base(db: db)
+        public BankModule(SharedData shared, DBService db)
+            : base(shared, db)
         {
             this.ModuleColor = DiscordColor.DarkGreen;
         }
@@ -90,7 +90,7 @@ namespace TheGodfather.Modules.Currency
                 throw new CommandFailedException("Given user does not have a WM bank account!");
 
             await this.Database.IncreaseBankAccountBalanceAsync(user.Id, ctx.Guild.Id, amount);
-            await InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"{Formatter.Bold(user.Mention)} won {Formatter.Bold($"{amount:n0}")} credits on the lottery! (seems legit)", important: true);
+            await InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"{Formatter.Bold(user.Mention)} won {Formatter.Bold($"{amount:n0}")} credits on the lottery! (seems legit)");
         }
         
         [Command("grant"), Priority(0)]
@@ -111,7 +111,7 @@ namespace TheGodfather.Modules.Currency
                 throw new CommandFailedException("You already own an account in WM bank!");
 
             await this.Database.OpenBankAccountAsync(ctx.User.Id, ctx.Guild.Id);
-            await InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"Account opened for you, {ctx.User.Mention}! Since WM bank is so generous, you get 10000 credits for free.", important: true);
+            await InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"Account opened for you, {ctx.User.Mention}! Since WM bank is so generous, you get 10000 credits for free.");
         }
         #endregion
 
@@ -186,7 +186,7 @@ namespace TheGodfather.Modules.Currency
                 throw new CommandFailedException("You can't transfer funds to yourself.");
 
             await this.Database.TransferBetweenBankAccountsAsync(ctx.User.Id, user.Id, ctx.Guild.Id, amount);
-            await InformAsync(ctx);
+            await InformAsync(ctx, important: false);
         }
 
         [Command("transfer"), Priority(0)]
@@ -214,7 +214,7 @@ namespace TheGodfather.Modules.Currency
             else
                 await this.Database.CloseBankAccountAsync(user.Id, ctx.Guild.Id);
 
-            await InformAsync(ctx);
+            await InformAsync(ctx, important: false);
         }
         #endregion
     }

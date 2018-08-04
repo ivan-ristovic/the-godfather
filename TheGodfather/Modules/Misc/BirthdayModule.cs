@@ -27,7 +27,8 @@ namespace TheGodfather.Modules.Misc
     public class BirthdayModule : TheGodfatherModule
     {
 
-        public BirthdayModule(DBService db) : base(db: db) { }
+        public BirthdayModule(SharedData shared, DBService db)
+                : base(shared, db) { }
 
 
         [GroupCommand, Priority(2)]

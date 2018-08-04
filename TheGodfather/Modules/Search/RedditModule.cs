@@ -24,7 +24,8 @@ namespace TheGodfather.Modules.Search
     public class RedditModule : TheGodfatherModule
     {
 
-        public RedditModule(DBService db) : base(db: db) { }
+        public RedditModule(SharedData shared, DBService db)
+                : base(shared, db) { }
 
 
         [GroupCommand]

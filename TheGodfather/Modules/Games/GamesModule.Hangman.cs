@@ -1,35 +1,36 @@
 ﻿#region USING_DIRECTIVES
+using DSharpPlus;
+using DSharpPlus.CommandsNext;
+using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Entities;
+using DSharpPlus.Interactivity;
 using System;
 using System.Threading.Tasks;
-
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-using TheGodfather.Modules.Games.Common;
-using TheGodfather.Services;
 using TheGodfather.Services.Common;
-using TheGodfather.Services.Database.Stats;
-
-using DSharpPlus;
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Interactivity;
 using TheGodfather.Services.Database;
+using TheGodfather.Services.Database.Stats;
 #endregion
 
 namespace TheGodfather.Modules.Games
 {
-    public partial class GamesModule : TheGodfatherModule
+    public partial class GamesModule
     {
-        [Group("hangman"), Module(ModuleType.Games)]
+        [Group("hangman")]
         [Description("Starts a hangman game.")]
         [Aliases("h", "hang")]
         [UsageExamples("!game hangman")]
         public class HangmanModule : TheGodfatherModule
         {
 
-            public HangmanModule(SharedData shared, DBService db) : base(shared, db) { }
+            public HangmanModule(SharedData shared, DBService db) 
+                : base(shared, db)
+            {
+                this.ModuleColor = DiscordColor.Teal;
+            }
 
 
             [GroupCommand]
@@ -38,35 +39,29 @@ namespace TheGodfather.Modules.Games
                 if (this.Shared.IsEventRunningInChannel(ctx.Channel.Id))
                     throw new CommandFailedException("Another event is already running in the current channel!");
 
-                var dm = await ctx.Client.CreateDmChannelAsync(ctx.User.Id)
-                    .ConfigureAwait(false);
+                DiscordDmChannel dm = await ctx.Client.CreateDmChannelAsync(ctx.User.Id);
                 if (dm == null)
                     throw new CommandFailedException("Please enable direct messages, so I can ask you about the word to guess.");
-                await dm.SendMessageAsync("What is the secret word?")
-                    .ConfigureAwait(false);
-                await ctx.RespondAsync(ctx.User.Mention + ", check your DM. When you give me the word, the game will start.")
-                    .ConfigureAwait(false);
-                var mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(
+
+                await dm.EmbedAsync("What is the secret word?", StaticDiscordEmoji.Question, this.ModuleColor);
+                await InformAsync(ctx, StaticDiscordEmoji.Question, $"{ctx.User.Mention}, check your DM. When you give me the word, the game will start.");
+                MessageContext mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(
                     xm => xm.Channel == dm && xm.Author.Id == ctx.User.Id,
                     TimeSpan.FromMinutes(1)
-                ).ConfigureAwait(false);
+                );
                 if (mctx == null) {
-                    await ctx.RespondAsync("I didn't get the word, so I will abort the game.")
-                        .ConfigureAwait(false);
+                    await InformFailureAsync(ctx, "I didn't get the word, so I will abort the game.");
                     return;
                 } else {
-                    await dm.SendMessageAsync("Alright! The word is: " + Formatter.Bold(mctx.Message.Content))
-                        .ConfigureAwait(false);
+                    await dm.EmbedAsync($"Alright! The word is: {Formatter.Bold(mctx.Message.Content)}", StaticDiscordEmoji.Information, this.ModuleColor);
                 }
 
-                var hangman = new Hangman(ctx.Client.GetInteractivity(), ctx.Channel, mctx.Message.Content, mctx.User);
+                var hangman = new HangmanGame(ctx.Client.GetInteractivity(), ctx.Channel, mctx.Message.Content, mctx.User);
                 this.Shared.RegisterEventInChannel(hangman, ctx.Channel.Id);
                 try {
-                    await hangman.RunAsync()
-                        .ConfigureAwait(false);
+                    await hangman.RunAsync();
                     if (hangman.Winner != null)
-                        await Database.UpdateUserStatsAsync(hangman.Winner.Id, GameStatsType.HangmansWon)
-                            .ConfigureAwait(false);
+                        await this.Database.UpdateUserStatsAsync(hangman.Winner.Id, GameStatsType.HangmansWon);
                 } finally {
                     this.Shared.UnregisterEventInChannel(ctx.Channel.Id);
                 }
@@ -74,32 +69,29 @@ namespace TheGodfather.Modules.Games
 
 
             #region COMMAND_HANGMAN_RULES
-            [Command("rules"), Module(ModuleType.Games)]
+            [Command("rules")]
             [Description("Explain the Hangman game rules.")]
             [Aliases("help", "h", "ruling", "rule")]
             [UsageExamples("!game hangman rules")]
-            public async Task RulesAsync(CommandContext ctx)
+            public Task RulesAsync(CommandContext ctx)
             {
-                await InformAsync(ctx, 
+                return InformAsync(ctx, 
+                    StaticDiscordEmoji.Information,
                     "\nI will ask a player for the word. Once he gives me the secret word, the other players try to guess by posting letters. For each failed guess you lose a \"life\"." +
-                    " The game ends if the word is guessed or when all lives are spent.",
-                    ":book:"
-                ).ConfigureAwait(false);
+                    " The game ends if the word is guessed or when all lives are spent."
+                );
             }
             #endregion
 
             #region COMMAND_HANGMAN_STATS
-            [Command("stats"), Module(ModuleType.Games)]
+            [Command("stats")]
             [Description("Print the leaderboard for this game.")]
             [Aliases("top", "leaderboard")]
             [UsageExamples("!game hangman stats")]
             public async Task StatsAsync(CommandContext ctx)
             {
-                var top = await Database.GetTopHangmanPlayersStringAsync(ctx.Client)
-                    .ConfigureAwait(false);
-
-                await InformAsync(ctx, StaticDiscordEmoji.Trophy, $"Top players in Hangman:\n\n{top}")
-                    .ConfigureAwait(false);
+                string top = await this.Database.GetTopHangmanPlayersStringAsync(ctx.Client);
+                await InformAsync(ctx, StaticDiscordEmoji.Trophy, $"Top players in Hangman:\n\n{top}");
             }
             #endregion
         }

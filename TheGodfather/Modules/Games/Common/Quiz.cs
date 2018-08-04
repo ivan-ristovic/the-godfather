@@ -1,45 +1,44 @@
 ﻿#region USING_DIRECTIVES
+using DSharpPlus;
+using DSharpPlus.Entities;
+using DSharpPlus.Interactivity;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-
 using TheGodfather.Common;
 using TheGodfather.Common.Collections;
 using TheGodfather.Extensions;
 using TheGodfather.Services.Common;
-
-using DSharpPlus;
-using DSharpPlus.Entities;
-using DSharpPlus.Interactivity;
 #endregion
 
 namespace TheGodfather.Modules.Games.Common
 {
     public class Quiz : ChannelEvent
     {
-        private static IReadOnlyList<QuizQuestion> _questions = null;
-        public ConcurrentDictionary<DiscordUser, int> Results = new ConcurrentDictionary<DiscordUser, int>();
+        public ConcurrentDictionary<DiscordUser, int> Results { get; }
+
+        private readonly IReadOnlyList<QuizQuestion> questions;
 
 
         public Quiz(InteractivityExtension interactivity, DiscordChannel channel, IReadOnlyList<QuizQuestion> questions)
             : base(interactivity, channel)
         {
-            _questions = questions;
+            this.questions = questions;
+            this.Results = new ConcurrentDictionary<DiscordUser, int>();
         }
 
 
         public override async Task RunAsync()
         {
             int timeouts = 0;
-            int i = 0;
-            foreach (var question in _questions) {
-                i++;
+            int currentQuestionIndex = 1;
+            foreach (QuizQuestion question in this.questions) {
                 var emb = new DiscordEmbedBuilder {
-                    Title = $"Question #{i}",
+                    Title = $"Question #{currentQuestionIndex}",
                     Description = Formatter.Bold(question.Content),
-                    Color = DiscordColor.SapGreen
+                    Color = DiscordColor.Teal
                 };
                 emb.AddField("Category", question.Category, inline: false);
 
@@ -51,48 +50,47 @@ namespace TheGodfather.Modules.Games.Common
                 for (int index = 0; index < answers.Count; index++)
                     emb.AddField($"Answer #{index + 1}:", answers[index], inline: true);
 
-                await Channel.TriggerTypingAsync()
-                    .ConfigureAwait(false);
-                await Channel.SendMessageAsync(embed: emb.Build())
-                    .ConfigureAwait(false);
+                await this.Channel.TriggerTypingAsync();
+                await this.Channel.SendMessageAsync(embed: emb.Build());
 
-                bool noresponse = true;
-                MessageContext mctx;
-                ConcurrentHashSet<ulong> failed = new ConcurrentHashSet<ulong>();
-                Regex ansregex = new Regex($@"\b{question.CorrectAnswer}\b", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
-                mctx = await Interactivity.WaitForMessageAsync(
+                bool timeout = true;
+                var failed = new ConcurrentHashSet<ulong>();
+                var answerRegex = new Regex($@"\b{question.CorrectAnswer}\b", RegexOptions.CultureInvariant | RegexOptions.IgnoreCase);
+                MessageContext mctx = await this.Interactivity.WaitForMessageAsync(
                     xm => {
-                        if (xm.ChannelId != Channel.Id || xm.Author.IsBot || failed.Contains(xm.Author.Id))
+                        if (xm.ChannelId != this.Channel.Id || xm.Author.IsBot || failed.Contains(xm.Author.Id))
                             return false;
                         if (int.TryParse(xm.Content, out int index) && index > 0 && index <= answers.Count) {
-                            noresponse = false;
+                            timeout = false;
                             if (answers[index - 1] == question.CorrectAnswer)
                                 return true;
                             else
                                 failed.Add(xm.Author.Id);
                         }
                         return false;
-                    }, TimeSpan.FromSeconds(10)
-                ).ConfigureAwait(false);
+                    },
+                    TimeSpan.FromSeconds(10)
+                ); ;
                 if (mctx == null) {
-                    if (noresponse)
+                    if (timeout)
                         timeouts++;
                     else
                         timeouts = 0;
+
                     if (timeouts == 3) {
-                        IsTimeoutReached = true;
+                        this.IsTimeoutReached = true;
                         return;
                     }
-                    await Channel.SendMessageAsync($"Time is out! The correct answer was: {Formatter.Bold(question.CorrectAnswer)}")
-                        .ConfigureAwait(false);
+
+                    await this.Channel.SendMessageAsync($"Time is out! The correct answer was: {Formatter.Bold(question.CorrectAnswer)}");
                 } else {
-                    await Channel.SendMessageAsync($"GG {mctx.User.Mention}, you got it right!")
-                        .ConfigureAwait(false);
-                    Results.AddOrUpdate(mctx.User, u => 1, (u, v) => v + 1);
+                    await this.Channel.SendMessageAsync($"GG {mctx.User.Mention}, you got it right!");
+                    this.Results.AddOrUpdate(mctx.User, u => 1, (u, v) => v + 1);
                 }
 
-                await Task.Delay(TimeSpan.FromSeconds(2))
-                    .ConfigureAwait(false);
+                await Task.Delay(TimeSpan.FromSeconds(2));
+
+                currentQuestionIndex++;
             }
         }
     }

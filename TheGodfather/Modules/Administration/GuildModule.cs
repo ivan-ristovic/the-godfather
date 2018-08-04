@@ -144,7 +144,7 @@ namespace TheGodfather.Modules.Administration
 
             int count = await ctx.Guild.GetPruneCountAsync(days);
             if (count == 0) {
-                await ctx.InformFailureAsync("No members found to prune...");
+                await InformFailureAsync(ctx, "No members found to prune...");
                 return;
             }
 
@@ -152,7 +152,7 @@ namespace TheGodfather.Modules.Administration
                 return;
 
             await ctx.Guild.PruneAsync(days, ctx.BuildReasonString(reason));
-            await InformAsync(ctx, $"Pruned {Formatter.Bold(count.ToString())} members inactive for {Formatter.Bold(days.ToString())} days");
+            await InformAsync(ctx, $"Pruned {Formatter.Bold(count.ToString())} members inactive for {Formatter.Bold(days.ToString())} days", important: false);
         }
         #endregion
 
@@ -177,7 +177,7 @@ namespace TheGodfather.Modules.Administration
                 m.Name = newname;
                 m.AuditLogReason = ctx.BuildReasonString(reason);
             }));
-            await InformAsync(ctx, $"Successfully renamed the guild to {Formatter.Bold(ctx.Guild.Name)}");
+            await InformAsync(ctx, $"Successfully renamed the guild to {Formatter.Bold(ctx.Guild.Name)}", important: false);
         }
 
         [Command("rename")]
@@ -210,7 +210,7 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException("An error occured.", e);
             }
 
-            await InformAsync(ctx, "Successfully changed guild icon.");
+            await InformAsync(ctx, "Successfully changed guild icon.", important: false);
         }
         #endregion
     }

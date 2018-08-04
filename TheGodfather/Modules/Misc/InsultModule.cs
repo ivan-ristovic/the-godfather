@@ -26,7 +26,8 @@ namespace TheGodfather.Modules.Misc
     public class InsultModule : TheGodfatherModule
     {
 
-        public InsultModule(DBService db) : base(db: db) { }
+        public InsultModule(SharedData shared, DBService db)
+                : base(shared, db) { }
 
 
         [GroupCommand]

@@ -65,7 +65,7 @@ namespace TheGodfather.Services.Database.Stats
             });
         }
 
-        public static async Task<DiscordEmbed> GetStatsLeaderboardAsync(this DBService db, DiscordClient client)
+        public static async Task<DiscordEmbed> GetStatsLeaderboardEmbedAsync(this DBService db, DiscordClient client)
         {
             var emb = new DiscordEmbedBuilder {
                 Title = $"{StaticDiscordEmoji.Trophy} HALL OF FAME {StaticDiscordEmoji.Trophy}",

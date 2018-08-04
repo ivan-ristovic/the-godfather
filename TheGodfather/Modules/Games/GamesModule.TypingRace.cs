@@ -22,15 +22,18 @@ namespace TheGodfather.Modules.Games
 {
     public partial class GamesModule
     {
-        [Group("typingrace"), Module(ModuleType.Games)]
+        [Group("typingrace")]
         [Description("Start a new typing race!")]
         [Aliases("tr", "trace", "typerace", "typing", "typingr")]
         [UsageExamples("!game typingrace")]
-        [NotBlocked]
         public class TypingRaceModule : TheGodfatherModule
         {
 
-            public TypingRaceModule(SharedData shared, DBService db) : base(shared, db) { }
+            public TypingRaceModule(SharedData shared, DBService db) 
+                : base(shared, db)
+            {
+                this.ModuleColor = DiscordColor.Teal;
+            }
 
 
             [GroupCommand]
@@ -38,38 +41,28 @@ namespace TheGodfather.Modules.Games
             {
                 if (this.Shared.IsEventRunningInChannel(ctx.Channel.Id)) {
                     if (this.Shared.GetEventInChannel(ctx.Channel.Id) is TypingRace)
-                        await JoinAsync(ctx).ConfigureAwait(false);
+                        await JoinAsync(ctx);
                     else
                         throw new CommandFailedException("Another event is already running in the current channel.");
                     return;
                 }
 
-                var game = new TypingRace(ctx.Client.GetInteractivity(), ctx.Channel);
-                this.Shared.RegisterEventInChannel(game, ctx.Channel.Id);
+                var race = new TypingRace(ctx.Client.GetInteractivity(), ctx.Channel);
+                this.Shared.RegisterEventInChannel(race, ctx.Channel.Id);
                 try {
-                    await InformAsync(ctx, StaticDiscordEmoji.Clock1, $"The typing race will start in 30s or when there are 10 participants. Use command {Formatter.InlineCode("game typingrace")} to join the race.")
-                        .ConfigureAwait(false);
-                    await JoinAsync(ctx)
-                        .ConfigureAwait(false);
-                    await Task.Delay(TimeSpan.FromSeconds(30))
-                        .ConfigureAwait(false);
+                    await InformAsync(ctx, StaticDiscordEmoji.Clock1, $"The typing race will start in 30s or when there are 10 participants. Use command {Formatter.InlineCode("game typingrace")} to join the race.");
+                    await JoinAsync(ctx);
+                    await Task.Delay(TimeSpan.FromSeconds(30));
 
-                    if (game.ParticipantCount > 1) {
-                        await InformAsync(ctx, StaticDiscordEmoji.Clock1, "I will send a random quote in 10s. First one to type it correctly wins. Remember, you can try again, your best result will be remembered.")
-                            .ConfigureAwait(false);
-                        await Task.Delay(TimeSpan.FromSeconds(10))
-                            .ConfigureAwait(false);
+                    if (race.ParticipantCount > 1) {
+                        await InformAsync(ctx, StaticDiscordEmoji.Clock1, "I will send a random quote in 10s. First one to type it correctly wins. Remember, you can try again, your best result will be remembered.");
+                        await Task.Delay(TimeSpan.FromSeconds(10));
+                        await race.RunAsync();
 
-                        await game.RunAsync()
-                            .ConfigureAwait(false);
-
-                        if (game.Winner != null) {
-                            await InformAsync(ctx, StaticDiscordEmoji.Trophy, $"The winner is {game.Winner?.Mention ?? "<unknown>"}!")
-                                .ConfigureAwait(false);
-                        }
+                        if (race.Winner != null) 
+                            await InformAsync(ctx, StaticDiscordEmoji.Trophy, $"The winner is {race.Winner?.Mention ?? "<unknown>"}!");
                     } else {
-                        await InformAsync(ctx, StaticDiscordEmoji.AlarmClock, "Not enough users joined the typing race.")
-                            .ConfigureAwait(false);
+                        await InformAsync(ctx, StaticDiscordEmoji.AlarmClock, "Not enough users joined the typing race.");
                     }
                 } finally {
                     this.Shared.UnregisterEventInChannel(ctx.Channel.Id);
@@ -78,11 +71,11 @@ namespace TheGodfather.Modules.Games
 
 
             #region COMMAND_TYPINGRACE_JOIN
-            [Command("join"), Module(ModuleType.Games)]
+            [Command("join")]
             [Description("Join an existing typing race game.")]
             [Aliases("+", "compete", "enter", "j")]
             [UsageExamples("!game typingrace join")]
-            public async Task JoinAsync(CommandContext ctx)
+            public Task JoinAsync(CommandContext ctx)
             {
                 if (!(this.Shared.GetEventInChannel(ctx.Channel.Id) is TypingRace game))
                     throw new CommandFailedException("There is no typing race game running in this channel.");
@@ -96,8 +89,7 @@ namespace TheGodfather.Modules.Games
                 if (!game.AddParticipant(ctx.User))
                     throw new CommandFailedException("You are already participating in the race!");
 
-                await InformAsync(ctx, $"{ctx.User.Mention} joined the typing race.", ":bicyclist:")
-                    .ConfigureAwait(false);
+                return InformAsync(ctx, StaticDiscordEmoji.Bicyclist, $"{ctx.User.Mention} joined the typing race.");
             }
             #endregion
         }

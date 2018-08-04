@@ -1,32 +1,31 @@
 ﻿#region USING_DIRECTIVES
-using System;
-using System.Collections.Concurrent;
-using System.Linq;
-using System.Threading.Tasks;
-
-using TheGodfather.Common;
-using TheGodfather.Common.Attributes;
-using TheGodfather.Exceptions;
-using TheGodfather.Extensions;
-using TheGodfather.Modules.Games.Common;
-using TheGodfather.Services;
-using TheGodfather.Services.Common;
-using TheGodfather.Services.Database.Stats;
-
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
+using TheGodfather.Common;
+using TheGodfather.Common.Attributes;
+using TheGodfather.Exceptions;
+using TheGodfather.Modules.Games.Common;
+using TheGodfather.Services;
+using TheGodfather.Services.Common;
 using TheGodfather.Services.Database;
+using TheGodfather.Services.Database.Stats;
 #endregion
 
 namespace TheGodfather.Modules.Games
 {
     public partial class GamesModule
     {
-        [Group("quiz"), Module(ModuleType.Games)]
-        [Description("List all available quiz categories.")]
+        [Group("quiz")]
+        [Description("Play a quiz! Group call lists all available quiz categories.")]
         [Aliases("trivia", "q")]
         [UsageExamples("!game quiz",
                        "!game quiz countries",
@@ -36,11 +35,14 @@ namespace TheGodfather.Modules.Games
                        "!game quiz history hard 15",
                        "!game quiz 9 hard",
                        "!game quiz 9 hard 15")]
-        [NotBlocked]
         public class QuizModule : TheGodfatherModule
         {
 
-            public QuizModule(SharedData shared, DBService db) : base(shared, db) { }
+            public QuizModule(SharedData shared, DBService db) 
+                : base(shared, db)
+            {
+                this.ModuleColor = DiscordColor.Teal;
+            }
 
 
             [GroupCommand, Priority(4)]
@@ -53,7 +55,7 @@ namespace TheGodfather.Modules.Games
                     throw new CommandFailedException("Another event is already running in the current channel.");
 
                 if (amount < 5 || amount > 50)
-                    throw new CommandFailedException("Invalid amount of questions specified. Amount has to be in range [5-50]!");
+                    throw new CommandFailedException("Invalid amount of questions specified. Amount has to be in range [5, 50]!");
 
                 QuestionDifficulty difficulty = QuestionDifficulty.Easy;
                 switch (diff.ToLowerInvariant()) {
@@ -61,34 +63,28 @@ namespace TheGodfather.Modules.Games
                     case "hard": difficulty = QuestionDifficulty.Hard; break;
                 }
 
-                var questions = await QuizService.GetQuestionsAsync(id, amount, difficulty)
-                    .ConfigureAwait(false);
-
+                IReadOnlyList<QuizQuestion> questions = await QuizService.GetQuestionsAsync(id, amount, difficulty);
                 if (questions == null || !questions.Any())
                     throw new CommandFailedException("Either the ID is not correct or the category does not yet have enough questions for the quiz :(");
 
                 var quiz = new Quiz(ctx.Client.GetInteractivity(), ctx.Channel, questions);
                 this.Shared.RegisterEventInChannel(quiz, ctx.Channel.Id);
                 try {
-                    await InformAsync(ctx, StaticDiscordEmoji.Clock1, "Quiz will start in 10s! Get ready!")
-                        .ConfigureAwait(false);
-                    await Task.Delay(TimeSpan.FromSeconds(10))
-                        .ConfigureAwait(false);
-                    await quiz.RunAsync()
-                        .ConfigureAwait(false);
+                    await InformAsync(ctx, StaticDiscordEmoji.Clock1, "Quiz will start in 10s! Get ready!");
+                    await Task.Delay(TimeSpan.FromSeconds(10));
+                    await quiz.RunAsync();
 
                     if (quiz.IsTimeoutReached) {
-                        await InformAsync(ctx, StaticDiscordEmoji.AlarmClock, "Aborting quiz due to no replies...")
-                            .ConfigureAwait(false);
+                        await InformAsync(ctx, StaticDiscordEmoji.AlarmClock, "Aborting quiz due to no replies...");
                         return;
                     }
 
-                    await HandleQuizResultsAsync(ctx, quiz.Results)
-                        .ConfigureAwait(false);
+                    await HandleQuizResultsAsync(ctx, quiz.Results);
                 } finally {
                     this.Shared.UnregisterEventInChannel(ctx.Channel.Id);
                 }
             }
+
             [GroupCommand, Priority(3)]
             public Task ExecuteGroupAsync(CommandContext ctx,
                                          [Description("ID of the quiz category.")] int id,
@@ -102,44 +98,41 @@ namespace TheGodfather.Modules.Games
                                                [Description("Difficulty. (easy/medium/hard)")] string diff = "easy",
                                                [Description("Amount of questions.")] int amount = 10)
             {
-                int? id = await QuizService.GetCategoryIdAsync(category).ConfigureAwait(false);
+                int? id = await QuizService.GetCategoryIdAsync(category);
                 if (!id.HasValue)
                     throw new CommandFailedException("Category with that name doesn't exist!");
 
-                await ExecuteGroupAsync(ctx, id.Value, amount, diff).ConfigureAwait(false);
+                await ExecuteGroupAsync(ctx, id.Value, amount, diff);
             }
 
             [GroupCommand, Priority(1)]
             public async Task ExecuteGroupAsync(CommandContext ctx,
                                                [RemainingText, Description("Quiz category.")] string category)
             {
-                int? id = await QuizService.GetCategoryIdAsync(category).ConfigureAwait(false);
+                int? id = await QuizService.GetCategoryIdAsync(category);
                 if (!id.HasValue)
                     throw new CommandFailedException("Category with that name doesn't exist!");
 
-                await ExecuteGroupAsync(ctx, id.Value, 10)
-                    .ConfigureAwait(false);
+                await ExecuteGroupAsync(ctx, id.Value, 10);
             }
-
 
             [GroupCommand, Priority(0)]
             public async Task ExecuteGroupAsync(CommandContext ctx)
             {
-                var categories = await QuizService.GetCategoriesAsync()
-                    .ConfigureAwait(false);
+                IReadOnlyList<QuizCategory> categories = await QuizService.GetCategoriesAsync();
 
-                await InformAsync(ctx, 
+                await InformAsync(ctx,
+                    StaticDiscordEmoji.Information,
                     $"You need to specify a quiz type!\n\n{Formatter.Bold("Available quiz categories:")}\n\n" +
                     $"- Custom quiz type (command): {Formatter.Bold("Capitals")}\n" +
-                    $"- Custom quiz type (command): {Formatter.Bold("Countries")}\n" + 
-                    string.Join("\n", categories.Select(c => $"{Formatter.Bold(c.Name)} (ID: {c.Id})")),
-                    ":information_source:"
-                ).ConfigureAwait(false);
+                    $"- Custom quiz type (command): {Formatter.Bold("Countries")}\n" +
+                    string.Join("\n", categories.Select(c => $"{Formatter.Bold(c.Name)} (ID: {c.Id})"))
+                );
             }
 
 
             #region COMMAND_QUIZ_CAPITALS
-            [Command("capitals"), Module(ModuleType.Games)]
+            [Command("capitals")]
             [Description("Country capitals guessing quiz. You can also specify how many questions there will be in the quiz.")]
             [Aliases("capitaltowns")]
             [UsageExamples("!game quiz capitals",
@@ -148,35 +141,24 @@ namespace TheGodfather.Modules.Games
                                                [Description("Number of questions.")] int qnum = 10)
             {
                 if (qnum < 5 || qnum > 50)
-                    throw new InvalidCommandUsageException("Number of questions must be in range [5-50]");
+                    throw new InvalidCommandUsageException("Number of questions must be in range [5, 50]");
 
                 if (this.Shared.IsEventRunningInChannel(ctx.Channel.Id))
                     throw new CommandFailedException("Another event is already running in the current channel.");
-
-                try {
-                    QuizCapitals.LoadCapitals();
-                } catch {
-                    throw new CommandFailedException("Failed to load country capitals!");
-                }
-
-                var quiz = new QuizCapitals(ctx.Client.GetInteractivity(), ctx.Channel, qnum);
+                
+                var quiz = new CapitalsQuiz(ctx.Client.GetInteractivity(), ctx.Channel, qnum);
                 this.Shared.RegisterEventInChannel(quiz, ctx.Channel.Id);
                 try {
-                    await InformAsync(ctx, StaticDiscordEmoji.Clock1, "Quiz will start in 10s! Get ready!")
-                        .ConfigureAwait(false);
-                    await Task.Delay(TimeSpan.FromSeconds(10))
-                        .ConfigureAwait(false);
-                    await quiz.RunAsync()
-                        .ConfigureAwait(false);
+                    await InformAsync(ctx, StaticDiscordEmoji.Clock1, "Quiz will start in 10s! Get ready!");
+                    await Task.Delay(TimeSpan.FromSeconds(10));
+                    await quiz.RunAsync();
 
                     if (quiz.IsTimeoutReached) {
-                        await InformAsync(ctx, StaticDiscordEmoji.AlarmClock, "Aborting quiz due to no replies...")
-                            .ConfigureAwait(false);
+                        await InformAsync(ctx, StaticDiscordEmoji.AlarmClock, "Aborting quiz due to no replies...");
                         return;
                     }
 
-                    await HandleQuizResultsAsync(ctx, quiz.Results)
-                        .ConfigureAwait(false);
+                    await HandleQuizResultsAsync(ctx, quiz.Results);
                 } finally {
                     this.Shared.UnregisterEventInChannel(ctx.Channel.Id);
                 }
@@ -184,7 +166,7 @@ namespace TheGodfather.Modules.Games
             #endregion
 
             #region COMMAND_QUIZ_COUNTRIES
-            [Command("countries"), Module(ModuleType.Games)]
+            [Command("countries")]
             [Description("Country flags guessing quiz. You can also specify how many questions there will be in the quiz.")]
             [Aliases("flags")]
             [UsageExamples("!game quiz countries",
@@ -198,30 +180,19 @@ namespace TheGodfather.Modules.Games
                 if (this.Shared.IsEventRunningInChannel(ctx.Channel.Id))
                     throw new CommandFailedException("Another event is already running in the current channel.");
 
-                try {
-                    QuizCountries.LoadCountries();
-                } catch {
-                    throw new CommandFailedException("Failed to load country flags!");
-                }
-
-                var quiz = new QuizCountries(ctx.Client.GetInteractivity(), ctx.Channel, qnum);
+                var quiz = new CountriesQuiz(ctx.Client.GetInteractivity(), ctx.Channel, qnum);
                 this.Shared.RegisterEventInChannel(quiz, ctx.Channel.Id);
                 try {
-                    await InformAsync(ctx, StaticDiscordEmoji.Clock1, "Quiz will start in 10s! Get ready!")
-                        .ConfigureAwait(false);
-                    await Task.Delay(TimeSpan.FromSeconds(10))
-                        .ConfigureAwait(false);
-                    await quiz.RunAsync()
-                        .ConfigureAwait(false);
+                    await InformAsync(ctx, StaticDiscordEmoji.Clock1, "Quiz will start in 10s! Get ready!");
+                    await Task.Delay(TimeSpan.FromSeconds(10));
+                    await quiz.RunAsync();
 
                     if (quiz.IsTimeoutReached) {
-                        await InformAsync(ctx, StaticDiscordEmoji.AlarmClock, "Aborting quiz due to no replies...")
-                            .ConfigureAwait(false);
+                        await InformAsync(ctx, StaticDiscordEmoji.AlarmClock, "Aborting quiz due to no replies...");
                         return;
                     }
 
-                    await HandleQuizResultsAsync(ctx, quiz.Results)
-                        .ConfigureAwait(false);
+                    await HandleQuizResultsAsync(ctx, quiz.Results);
                 } finally {
                     this.Shared.UnregisterEventInChannel(ctx.Channel.Id);
                 }
@@ -229,17 +200,14 @@ namespace TheGodfather.Modules.Games
             #endregion
 
             #region COMMAND_QUIZ_STATS
-            [Command("stats"), Module(ModuleType.Games)]
+            [Command("stats")]
             [Description("Print the leaderboard for this game.")]
             [Aliases("top", "leaderboard")]
             [UsageExamples("!game quiz stats")]
             public async Task StatsAsync(CommandContext ctx)
             {
-                var top = await Database.GetTopQuizPlayersStringAsync(ctx.Client)
-                    .ConfigureAwait(false);
-
-                await InformAsync(ctx, StaticDiscordEmoji.Trophy, $"Top players in Quiz:\n\n{top}")
-                    .ConfigureAwait(false);
+                string top = await this.Database.GetTopQuizPlayersStringAsync(ctx.Client);
+                await InformAsync(ctx, StaticDiscordEmoji.Trophy, $"Top players in Quiz:\n\n{top}");
             }
             #endregion
 
@@ -248,16 +216,15 @@ namespace TheGodfather.Modules.Games
             private async Task HandleQuizResultsAsync(CommandContext ctx, ConcurrentDictionary<DiscordUser, int> results)
             {
                 if (results.Any()) {
-                    var ordered = results.OrderByDescending(kvp => kvp.Value);
+                    IOrderedEnumerable<KeyValuePair<DiscordUser, int>> ordered = results.OrderByDescending(kvp => kvp.Value);
                     await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
                         Title = "Results",
                         Description = string.Join("\n", ordered.Select(kvp => $"{kvp.Key.Mention} : {kvp.Value}")),
-                        Color = DiscordColor.Azure
-                    }.Build()).ConfigureAwait(false);
+                        Color = this.ModuleColor
+                    }.Build());
 
                     if (results.Count > 1)
-                        await Database.UpdateUserStatsAsync(ordered.First().Key.Id, GameStatsType.QuizesWon)
-                            .ConfigureAwait(false);
+                        await this.Database.UpdateUserStatsAsync(ordered.First().Key.Id, GameStatsType.QuizesWon);
                 }
             }
             #endregion

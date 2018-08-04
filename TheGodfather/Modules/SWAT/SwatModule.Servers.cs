@@ -27,7 +27,8 @@ namespace TheGodfather.Modules.SWAT
         public class SwatServersModule : TheGodfatherModule
         {
 
-            public SwatServersModule(DBService db) : base(db: db) { }
+            public SwatServersModule(SharedData shared, DBService db)
+                : base(shared, db) { }
 
 
             #region COMMAND_SERVERS_ADD

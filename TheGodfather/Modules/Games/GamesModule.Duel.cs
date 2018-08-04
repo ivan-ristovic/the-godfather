@@ -1,34 +1,35 @@
 ﻿#region USING_DIRECTIVES
-using System.Linq;
-using System.Threading.Tasks;
-
-using TheGodfather.Common;
-using TheGodfather.Common.Attributes;
-using TheGodfather.Exceptions;
-using TheGodfather.Extensions;
-using TheGodfather.Modules.Games.Common;
-using TheGodfather.Services.Common;
-using TheGodfather.Services.Database.Stats;
-
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
+using System.Linq;
+using System.Threading.Tasks;
+using TheGodfather.Common;
+using TheGodfather.Common.Attributes;
+using TheGodfather.Exceptions;
+using TheGodfather.Modules.Games.Common;
+using TheGodfather.Services.Common;
 using TheGodfather.Services.Database;
+using TheGodfather.Services.Database.Stats;
 #endregion
 
 namespace TheGodfather.Modules.Games
 {
-    public partial class GamesModule : TheGodfatherModule
+    public partial class GamesModule
     {
-        [Group("duel"), Module(ModuleType.Games)]
+        [Group("duel")]
         [Description("Starts a duel which I will commentate.")]
         [Aliases("fight", "vs", "d")]
         [UsageExamples("!game duel @Someone")]
         public class DuelModule : TheGodfatherModule
         {
 
-            public DuelModule(SharedData shared, DBService db) : base(shared, db) { }
+            public DuelModule(SharedData shared, DBService db) 
+                : base(shared, db)
+            {
+                this.ModuleColor = DiscordColor.Teal;
+            }
 
 
             [GroupCommand]
@@ -46,26 +47,21 @@ namespace TheGodfather.Modules.Games
                         $"{ctx.User.Mention} {string.Join("", Enumerable.Repeat(DiscordEmoji.FromName(ctx.Client, ":black_large_square:"), 5))} :crossed_swords: " +
                         $"{string.Join("", Enumerable.Repeat(DiscordEmoji.FromName(ctx.Client, ":white_large_square:"), 5))} {opponent.Mention}" +
                         $"\n{ctx.Client.CurrentUser.Mention} {DiscordEmoji.FromName(ctx.Client, ":zap:")} {ctx.User.Mention}"
-                    ).ConfigureAwait(false);
-                    await ctx.RespondAsync($"{ctx.Client.CurrentUser.Mention} wins!")
-                        .ConfigureAwait(false);
+                    );
+                    await InformAsync(ctx, StaticDiscordEmoji.DuelSwords, $"{ctx.Client.CurrentUser.Mention} wins!");
                     return;
                 }
 
-                var duel = new Duel(ctx.Client.GetInteractivity(), ctx.Channel, ctx.User, opponent);
+                var duel = new DuelGame(ctx.Client.GetInteractivity(), ctx.Channel, ctx.User, opponent);
                 this.Shared.RegisterEventInChannel(duel, ctx.Channel.Id);
 
                 try {
-                    await duel.RunAsync()
-                        .ConfigureAwait(false);
+                    await duel.RunAsync();
 
-                    await ctx.RespondAsync($"{duel.Winner.Username} {duel.FinishingMove ?? "wins"}!")
-                        .ConfigureAwait(false);
+                    await InformAsync(ctx, StaticDiscordEmoji.DuelSwords, $"{duel.Winner.Username} {duel.FinishingMove ?? "wins"}!");
 
-                    await Database.UpdateUserStatsAsync(duel.Winner.Id, GameStatsType.DuelsWon)
-                        .ConfigureAwait(false);
-                    await Database.UpdateUserStatsAsync(duel.Winner.Id == ctx.User.Id ? opponent.Id : ctx.User.Id, GameStatsType.DuelsLost)
-                        .ConfigureAwait(false);
+                    await this.Database.UpdateUserStatsAsync(duel.Winner.Id, GameStatsType.DuelsWon);
+                    await this.Database.UpdateUserStatsAsync(duel.Winner.Id == ctx.User.Id ? opponent.Id : ctx.User.Id, GameStatsType.DuelsLost);
                 } finally {
                     this.Shared.UnregisterEventInChannel(ctx.Channel.Id);
                 }
@@ -73,31 +69,29 @@ namespace TheGodfather.Modules.Games
 
 
             #region COMMAND_DUEL_RULES
-            [Command("rules"), Module(ModuleType.Games)]
+            [Command("rules")]
             [Description("Explain the Duel game rules.")]
             [Aliases("help", "h", "ruling", "rule")]
             [UsageExamples("!game duel rules")]
-            public async Task RulesAsync(CommandContext ctx)
+            public Task RulesAsync(CommandContext ctx)
             {
-                await InformAsync(ctx, 
-                    "\nDuel is a death battle with no rules! Rumours say that typing ``hp`` might heal give you an extra boost during the duel...",
-                    ":book:"
-                ).ConfigureAwait(false);
+                return InformAsync(ctx,
+                    StaticDiscordEmoji.Information,
+                    "\nDuel is a death battle with no rules! Rumours say that typing ``hp`` might heal give you " +
+                    "an extra boost during the duel..."
+                );
             }
             #endregion
 
             #region COMMAND_DUEL_STATS
-            [Command("stats"), Module(ModuleType.Games)]
+            [Command("stats")]
             [Description("Print the leaderboard for this game.")]
             [Aliases("top", "leaderboard")]
             [UsageExamples("!game duel stats")]
             public async Task StatsAsync(CommandContext ctx)
             {
-                var top = await Database.GetTopDuelistsStringAsync(ctx.Client)
-                    .ConfigureAwait(false);
-
-                await InformAsync(ctx, StaticDiscordEmoji.Trophy, $"Top Duelists:\n\n{top}")
-                    .ConfigureAwait(false);
+                string top = await this.Database.GetTopDuelistsStringAsync(ctx.Client);
+                await InformAsync(ctx, StaticDiscordEmoji.Trophy, $"Top Duelists:\n\n{top}");
             }
             #endregion
         }

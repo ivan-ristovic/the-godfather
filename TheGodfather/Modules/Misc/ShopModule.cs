@@ -26,7 +26,8 @@ namespace TheGodfather.Modules.Misc
     public class ShopModule : TheGodfatherModule
     {
 
-        public ShopModule(DBService db) : base(db: db) { }
+        public ShopModule(SharedData shared, DBService db)
+                : base(shared, db) { }
 
 
         [GroupCommand]

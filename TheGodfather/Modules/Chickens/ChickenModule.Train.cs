@@ -69,7 +69,7 @@ namespace TheGodfather.Modules.Chickens
                 chicken.Stats.BareVitality--;
 
                 await this.Database.ModifyChickenAsync(chicken, ctx.Guild.Id);
-                await InformAsync(ctx, StaticDiscordEmoji.Chicken, result, important: true);
+                await InformAsync(ctx, StaticDiscordEmoji.Chicken, result);
             }
             #endregion
 
@@ -105,7 +105,7 @@ namespace TheGodfather.Modules.Chickens
                 chicken.Stats.BareVitality--;
 
                 await this.Database.ModifyChickenAsync(chicken, ctx.Guild.Id);
-                await InformAsync(ctx, StaticDiscordEmoji.Chicken, result, important: true);
+                await InformAsync(ctx, StaticDiscordEmoji.Chicken, result);
             }
             #endregion
         }

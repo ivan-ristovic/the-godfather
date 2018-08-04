@@ -34,12 +34,11 @@ namespace TheGodfather.Modules
         }
 
 
-        protected Task InformAsync(CommandContext ctx, string message = null, string emoji = null, bool important = false)
+        protected Task InformAsync(CommandContext ctx, string message = null, string emoji = null, bool important = true)
             => InformAsync(ctx, (emoji == null ? StaticDiscordEmoji.CheckMarkSuccess : DiscordEmoji.FromName(ctx.Client, emoji)), message, important);
 
-        protected Task InformAsync(CommandContext ctx, DiscordEmoji emoji, string message = null, bool important = false)
+        protected Task InformAsync(CommandContext ctx, DiscordEmoji emoji, string message = null, bool important = true)
         {
-            this.Shared = this.Shared ?? ctx.Services.GetService<SharedData>();
             if (!important && this.Shared.GetGuildConfig(ctx.Guild.Id).ReactionResponse) {
                 return ctx.Message.CreateReactionAsync(StaticDiscordEmoji.CheckMarkSuccess);
             } else {
@@ -48,6 +47,14 @@ namespace TheGodfather.Modules
                     Color = this.ModuleColor
                 });
             }
+        }
+
+        protected Task InformFailureAsync(CommandContext ctx, string message)
+        {
+            return ctx.RespondAsync(embed: new DiscordEmbedBuilder {
+                Description = $"{StaticDiscordEmoji.BoardPieceX} {message}",
+                Color = DiscordColor.IndianRed
+            });
         }
 
         protected async Task<bool> IsValidImageUriAsync(Uri uri)

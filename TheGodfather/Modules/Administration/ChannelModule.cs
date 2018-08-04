@@ -24,8 +24,8 @@ namespace TheGodfather.Modules.Administration
     public class ChannelModule : TheGodfatherModule
     {
 
-        public ChannelModule(DBService db) 
-            : base(db: db)
+        public ChannelModule(SharedData shared, DBService db)
+            : base(shared, db)
         {
             this.ModuleColor = DiscordColor.Turquoise;
         }
@@ -64,7 +64,7 @@ namespace TheGodfather.Modules.Administration
                 await cloned.ModifyAsync(new Action<ChannelEditModel>(m => m.Name = name));
             }
 
-            await InformAsync(ctx, $"Successfully created clone of channel {Formatter.Bold(channel.Name)} with name {Formatter.Bold(cloned.Name)}.");
+            await InformAsync(ctx, $"Successfully created clone of channel {Formatter.Bold(channel.Name)} with name {Formatter.Bold(cloned.Name)}.", important: false);
         }
         #endregion
 
@@ -89,7 +89,7 @@ namespace TheGodfather.Modules.Administration
             }
 
             DiscordChannel c = await ctx.Guild.CreateChannelCategoryAsync(name, reason: ctx.BuildReasonString());
-            await InformAsync(ctx, $"Successfully created category: {Formatter.Bold(c.Name)}");
+            await InformAsync(ctx, $"Successfully created category: {Formatter.Bold(c.Name)}", important: false);
         }
         #endregion
 
@@ -124,7 +124,7 @@ namespace TheGodfather.Modules.Administration
             }
 
             DiscordChannel c = await ctx.Guild.CreateTextChannelAsync(name, parent, nsfw: nsfw, reason: ctx.BuildReasonString());
-            await InformAsync(ctx, $"Successfully created text channel: {Formatter.Bold(c.Name)}");
+            await InformAsync(ctx, $"Successfully created text channel: {Formatter.Bold(c.Name)}", important: false);
         }
 
         [Command("createtext"), Priority(1)]
@@ -171,7 +171,7 @@ namespace TheGodfather.Modules.Administration
             }
 
             DiscordChannel c = await ctx.Guild.CreateVoiceChannelAsync(name, parent, bitrate, userlimit, reason: ctx.BuildReasonString());
-            await InformAsync(ctx, $"Successfully created voice channel: {Formatter.Bold(c.Name)}");
+            await InformAsync(ctx, $"Successfully created voice channel: {Formatter.Bold(c.Name)}", important: false);
         }
 
 
@@ -221,7 +221,7 @@ namespace TheGodfather.Modules.Administration
             string name = Formatter.Bold(channel.Name);
             await channel.DeleteAsync(reason: ctx.BuildReasonString(reason));
             if (channel.Id != ctx.Channel.Id)
-                await InformAsync(ctx, $"Successfully deleted channel: {name}");
+                await InformAsync(ctx, $"Successfully deleted channel: {name}", important: false);
         }
 
         [Command("delete"), Priority(0)]
@@ -291,7 +291,7 @@ namespace TheGodfather.Modules.Administration
                 m.AuditLogReason = ctx.BuildReasonString(reason);
             })).ConfigureAwait(false);
 
-            await InformAsync(ctx, $"Successfully modified voice channel {Formatter.Bold(channel.Name)}:\n\nUser limit: {(limit > 0 ? limit.ToString() : "Not changed")}\nBitrate: {(bitrate > 0 ? bitrate.ToString() : "Not changed")}");
+            await InformAsync(ctx, $"Successfully modified voice channel {Formatter.Bold(channel.Name)}:\n\nUser limit: {(limit > 0 ? limit.ToString() : "Not changed")}\nBitrate: {(bitrate > 0 ? bitrate.ToString() : "Not changed")}", important: false);
         }
 
         [Command("modify"), Priority(0)]
@@ -333,7 +333,7 @@ namespace TheGodfather.Modules.Administration
                 m.AuditLogReason = ctx.BuildReasonString(reason);
             }));
 
-            await InformAsync(ctx, $"Successfully renamed channel {Formatter.Bold(name)} to {Formatter.Bold(channel.Name)}");
+            await InformAsync(ctx, $"Successfully renamed channel {Formatter.Bold(name)} to {Formatter.Bold(channel.Name)}", important: false);
         }
 
         [Command("rename"), Priority(1)]
@@ -372,7 +372,7 @@ namespace TheGodfather.Modules.Administration
                 m.AuditLogReason = ctx.BuildReasonString(reason);
             }));
 
-            await InformAsync(ctx, $"Successfully set the parent of channel {Formatter.Bold(channel.Name)} to {Formatter.Bold(parent.Name)}");
+            await InformAsync(ctx, $"Successfully set the parent of channel {Formatter.Bold(channel.Name)} to {Formatter.Bold(parent.Name)}", important: false);
         }
 
         [Command("setparent"), Priority(0)]
@@ -403,7 +403,7 @@ namespace TheGodfather.Modules.Administration
                 channel = ctx.Channel;
 
             await channel.ModifyPositionAsync(position, ctx.BuildReasonString(reason));
-            await InformAsync(ctx, $"Changed the position of channel {Formatter.Bold(channel.Name)} to {Formatter.Bold(position.ToString())}");
+            await InformAsync(ctx, $"Changed the position of channel {Formatter.Bold(channel.Name)} to {Formatter.Bold(position.ToString())}", important: false);
         }
 
         [Command("setposition"), Priority(1)]
@@ -446,7 +446,7 @@ namespace TheGodfather.Modules.Administration
                 m.AuditLogReason = ctx.BuildReasonString();
             }));
 
-            await InformAsync(ctx, $"Successfully changed the topic for channel {Formatter.Bold(channel.Name)}");
+            await InformAsync(ctx, $"Successfully changed the topic for channel {Formatter.Bold(channel.Name)}", important: false);
         }
 
         [Command("settopic"), Priority(1)]

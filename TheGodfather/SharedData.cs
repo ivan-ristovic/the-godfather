@@ -6,6 +6,7 @@ using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using TexasHoldem.Logic.Cards;
 using TheGodfather.Common;
 using TheGodfather.Common.Collections;
 using TheGodfather.Extensions;
@@ -22,12 +23,13 @@ namespace TheGodfather
         public ConcurrentHashSet<ulong> BlockedChannels { get; internal set; }
         public ConcurrentHashSet<ulong> BlockedUsers { get; internal set; }
         public BotConfig BotConfiguration { get; internal set; }
-        public CancellationTokenSource CTS { get; internal set; }
+        public ConcurrentDictionary<ulong, Deck> CardDecks { get; internal set; }
         public ConcurrentDictionary<ulong, ConcurrentHashSet<EmojiReaction>> EmojiReactions { get; internal set; }
         public ConcurrentDictionary<ulong, ConcurrentHashSet<Filter>> Filters { get; internal set; }
         public ConcurrentDictionary<ulong, CachedGuildConfig> GuildConfigurations { get; internal set; }
         public Logger LogProvider { get; internal set; }
         public bool ListeningStatus { get; internal set; }
+        public CancellationTokenSource MainLoopCts { get; internal set; }
         public ConcurrentDictionary<ulong, ulong> MessageCount { get; internal set; }
         public bool StatusRotationEnabled { get; internal set; }
         public ConcurrentDictionary<int, SavedTaskExecuter> TaskExecuters { get; internal set; }
@@ -43,11 +45,12 @@ namespace TheGodfather
             this.BlockedUsers = new ConcurrentHashSet<ulong>();
             this.BotConfiguration = BotConfig.Default;
             this.ChannelEvents = new ConcurrentDictionary<ulong, ChannelEvent>();
-            this.CTS = new CancellationTokenSource();
+            this.CardDecks = new ConcurrentDictionary<ulong, Deck>();
             this.EmojiReactions = new ConcurrentDictionary<ulong, ConcurrentHashSet<EmojiReaction>>();
             this.Filters = new ConcurrentDictionary<ulong, ConcurrentHashSet<Filter>>();
             this.GuildConfigurations = new ConcurrentDictionary<ulong, CachedGuildConfig>();
             this.ListeningStatus = true;
+            this.MainLoopCts = new CancellationTokenSource();
             this.MessageCount = new ConcurrentDictionary<ulong, ulong>();
             this.PendingResponses = new ConcurrentDictionary<ulong, ConcurrentHashSet<ulong>>();
             this.StatusRotationEnabled = true;
@@ -58,7 +61,7 @@ namespace TheGodfather
 
         public async Task DisposeAsync()
         {
-            this.CTS.Dispose();
+            this.MainLoopCts.Dispose();
             foreach ((int tid, SavedTaskExecuter texec) in this.TaskExecuters)
                 await texec.DisposeAsync();
         }

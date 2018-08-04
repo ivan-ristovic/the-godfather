@@ -72,12 +72,15 @@ namespace TheGodfather.Common
         public static DiscordEmoji Clock1 => DiscordEmoji.FromUnicode("\U0001f550");
         public static DiscordEmoji CheckMarkSuccess => DiscordEmoji.FromUnicode("\u2705");
         public static DiscordEmoji Chicken => DiscordEmoji.FromUnicode("\U0001f414");
+        public static DiscordEmoji Information => DiscordEmoji.FromUnicode("\u2139");
         public static DiscordEmoji Medal => DiscordEmoji.FromUnicode("\U0001f3c5");
         public static DiscordEmoji NoEntry => DiscordEmoji.FromUnicode("\u26d4");
         public static DiscordEmoji Question => DiscordEmoji.FromUnicode("\u2753");
+        public static DiscordEmoji UpArrow => DiscordEmoji.FromUnicode("\U0001f199");
         public static DiscordEmoji Wave => DiscordEmoji.FromUnicode("\U0001f44b");
 
         // Games emoji
+        public static DiscordEmoji Bicyclist => DiscordEmoji.FromUnicode("\U0001f6b4");
         public static DiscordEmoji Blast => DiscordEmoji.FromUnicode("\U0001f4a2");
         public static DiscordEmoji BoardPieceBlueCircle => DiscordEmoji.FromUnicode("\U0001f535");
         public static DiscordEmoji BoardPieceRedCircle => DiscordEmoji.FromUnicode("\U0001f534");

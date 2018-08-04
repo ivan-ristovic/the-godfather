@@ -28,7 +28,8 @@ namespace TheGodfather.Modules.SWAT
         public class SwatSearchModule : TheGodfatherModule
         {
 
-            public SwatSearchModule(DBService db) : base(db: db) { }
+            public SwatSearchModule(SharedData shared, DBService db)
+                : base(shared, db) { }
 
 
             [GroupCommand]

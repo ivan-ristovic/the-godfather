@@ -68,7 +68,7 @@ namespace TheGodfather.Modules.Administration
             }
 
             DiscordRole role = await ctx.Guild.CreateRoleAsync(name, null, color, hoisted, mentionable, ctx.BuildReasonString());
-            await InformAsync(ctx, $"Successfully created role: {Formatter.Bold(role.Name)}");
+            await InformAsync(ctx, $"Successfully created role: {Formatter.Bold(role.Name)}", important: false);
         }
 
         [Command("create"), Priority(1)]
@@ -96,7 +96,7 @@ namespace TheGodfather.Modules.Administration
         {
             string name = Formatter.Bold(role.Name);
             await role.DeleteAsync(ctx.BuildReasonString(reason));
-            await InformAsync(ctx, $"Successfully deleted role: {Formatter.Bold(name)}");
+            await InformAsync(ctx, $"Successfully deleted role: {Formatter.Bold(name)}", important: false);
         }
         #endregion
 
@@ -159,7 +159,7 @@ namespace TheGodfather.Modules.Administration
                                        [Description("Color.")] DiscordColor color)
         {
             await role.ModifyAsync(color: color, reason: ctx.BuildReasonString());
-            await InformAsync(ctx, $"Successfully set the color for the role {Formatter.Bold(role.Name)} to {Formatter.InlineCode(role.Color.ToString())}");
+            await InformAsync(ctx, $"Successfully set the color for the role {Formatter.Bold(role.Name)} to {Formatter.InlineCode(role.Color.ToString())}", important: false);
         }
 
         [Command("setcolor"), Priority(0)]
@@ -186,7 +186,7 @@ namespace TheGodfather.Modules.Administration
 
             string name = role.Name;
             await role.ModifyAsync(name: newname, reason: ctx.BuildReasonString());
-            await InformAsync(ctx, $"Successfully renamed role {Formatter.Bold(name)} to {Formatter.Bold(role.Name)}");
+            await InformAsync(ctx, $"Successfully renamed role {Formatter.Bold(name)} to {Formatter.Bold(role.Name)}", important: false);
         }
 
         [Command("setname"), Priority(0)]
@@ -209,7 +209,7 @@ namespace TheGodfather.Modules.Administration
                                              [Description("Mentionable?")] bool mentionable = true)
         {
             await role.ModifyAsync(mentionable: mentionable, reason: ctx.BuildReasonString());
-            await InformAsync(ctx, $"Mentionable var for role {Formatter.Bold(role.Name)} is set to {Formatter.InlineCode(mentionable.ToString())}");
+            await InformAsync(ctx, $"Mentionable var for role {Formatter.Bold(role.Name)} is set to {Formatter.InlineCode(mentionable.ToString())}", important: false);
         }
 
         [Command("setmentionable"), Priority(0)]
@@ -232,7 +232,7 @@ namespace TheGodfather.Modules.Administration
                                          [Description("Hoisted (visible in online list)?")] bool hoisted = false)
         {
             await role.ModifyAsync(hoist: hoisted, reason: ctx.BuildReasonString());
-            await InformAsync(ctx, $"Visibility (hoist) var for role {Formatter.Bold(role.Name)} is set to {Formatter.InlineCode(hoisted.ToString())}");
+            await InformAsync(ctx, $"Visibility (hoist) var for role {Formatter.Bold(role.Name)} is set to {Formatter.InlineCode(hoisted.ToString())}", important: false);
         }
 
         [Command("setvisible"), Priority(0)]

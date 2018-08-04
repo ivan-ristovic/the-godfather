@@ -40,7 +40,7 @@ namespace TheGodfather.Modules.Search
                 .ConfigureAwait(false);
 
             if (!res.Any()) {
-                await ctx.InformFailureAsync("No results...")
+                await InformFailureAsync(ctx, "No results...")
                     .ConfigureAwait(false);
                 return;
             }

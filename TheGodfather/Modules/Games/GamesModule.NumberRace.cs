@@ -1,36 +1,36 @@
 ﻿#region USING_DIRECTIVES
-using System;
-using System.Threading.Tasks;
-
-using TheGodfather.Common;
-using TheGodfather.Common.Attributes;
-using TheGodfather.Exceptions;
-using TheGodfather.Extensions;
-using TheGodfather.Modules.Games.Common;
-using TheGodfather.Services;
-using TheGodfather.Services.Common;
-using TheGodfather.Services.Database.Stats;
-
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
+using System;
+using System.Threading.Tasks;
+using TheGodfather.Common;
+using TheGodfather.Common.Attributes;
+using TheGodfather.Exceptions;
+using TheGodfather.Modules.Games.Common;
+using TheGodfather.Services.Common;
 using TheGodfather.Services.Database;
+using TheGodfather.Services.Database.Stats;
 #endregion
 
 namespace TheGodfather.Modules.Games
 {
     public partial class GamesModule
     {
-        [Group("numberrace"), Module(ModuleType.Games)]
+        [Group("numberrace")]
         [Description("Number racing game commands.")]
         [Aliases("nr", "n", "nunchi", "numbers", "numbersrace")]
         [UsageExamples("!game numberrace")]
-        [NotBlocked]
         public class NumberRaceModule : TheGodfatherModule
         {
 
-            public NumberRaceModule(SharedData shared, DBService db) : base(shared, db) { }
+            public NumberRaceModule(SharedData shared, DBService db) 
+                : base(shared, db)
+            {
+                this.ModuleColor = DiscordColor.Teal;
+            }
 
 
             [GroupCommand]
@@ -38,45 +38,35 @@ namespace TheGodfather.Modules.Games
             {
                 if (this.Shared.IsEventRunningInChannel(ctx.Channel.Id)) {
                     if (this.Shared.GetEventInChannel(ctx.Channel.Id) is NumberRace)
-                        await JoinRaceAsync(ctx).ConfigureAwait(false);
+                        await JoinRaceAsync(ctx);
                     else
                         throw new CommandFailedException("Another event is already running in the current channel.");
                     return;
                 }
 
-                var game = new NumberRace(ctx.Client.GetInteractivity(), ctx.Channel);
-                this.Shared.RegisterEventInChannel(game, ctx.Channel.Id);
+                var race = new NumberRace(ctx.Client.GetInteractivity(), ctx.Channel);
+                this.Shared.RegisterEventInChannel(race, ctx.Channel.Id);
                 try {
-                    await InformAsync(ctx, StaticDiscordEmoji.Clock1, $"The race will start in 30s or when there are 10 participants. Use command {Formatter.InlineCode("game numberrace")} to join the race.")
-                        .ConfigureAwait(false);
-                    await JoinRaceAsync(ctx)
-                        .ConfigureAwait(false);
-                    await Task.Delay(TimeSpan.FromSeconds(30))
-                        .ConfigureAwait(false);
+                    await InformAsync(ctx, StaticDiscordEmoji.Clock1, $"The race will start in 30s or when there are 10 participants. Use command {Formatter.InlineCode("game numberrace")} to join the race.");
+                    await JoinRaceAsync(ctx);
+                    await Task.Delay(TimeSpan.FromSeconds(30));
 
-                    if (game.ParticipantCount > 1) {
-                        await game.RunAsync()
-                            .ConfigureAwait(false);
+                    if (race.ParticipantCount > 1) {
+                        await race.RunAsync();
 
-                        if (game.IsTimeoutReached) {
-                            if (game.Winner != null) {
-                                await InformAsync(ctx, StaticDiscordEmoji.Trophy, $"{game.Winner.Mention} won due to no replies from other users!")
-                                    .ConfigureAwait(false);
-                            } else {
-                                await InformAsync(ctx, StaticDiscordEmoji.AlarmClock, "No replies, aborting Number Race...")
-                                        .ConfigureAwait(false);
-                            }
+                        if (race.IsTimeoutReached) {
+                            if (race.Winner != null)
+                                await InformAsync(ctx, StaticDiscordEmoji.Trophy, $"{race.Winner.Mention} won due to no replies from other users!");
+                            else
+                                await InformAsync(ctx, StaticDiscordEmoji.AlarmClock, "No replies, aborting the game...");
                         } else {
-                            await InformAsync(ctx, StaticDiscordEmoji.Trophy, "Winner: " + game.Winner.Mention)
-                                .ConfigureAwait(false);
+                            await InformAsync(ctx, StaticDiscordEmoji.Trophy, $"Winner is: {race.Winner.Mention}! GGWP!");
                         }
 
-                        if (game.Winner != null)
-                            await Database.UpdateUserStatsAsync(game.Winner.Id, GameStatsType.NumberRacesWon)
-                                .ConfigureAwait(false);
+                        if (race.Winner != null)
+                            await this.Database.UpdateUserStatsAsync(race.Winner.Id, GameStatsType.NumberRacesWon);
                     } else {
-                        await InformAsync(ctx, StaticDiscordEmoji.AlarmClock, "Not enough users joined the race.")
-                            .ConfigureAwait(false);
+                        await InformAsync(ctx, StaticDiscordEmoji.AlarmClock, "Not enough users joined the race.");
                     }
                 } finally {
                     this.Shared.UnregisterEventInChannel(ctx.Channel.Id);
@@ -85,11 +75,11 @@ namespace TheGodfather.Modules.Games
 
 
             #region COMMAND_NUMBERRACE_JOIN
-            [Command("join"), Module(ModuleType.Games)]
+            [Command("join")]
             [Description("Join an existing number race game.")]
             [Aliases("+", "compete", "j", "enter")]
             [UsageExamples("!game numberrace join")]
-            public async Task JoinRaceAsync(CommandContext ctx)
+            public Task JoinRaceAsync(CommandContext ctx)
             {
                 if (!(this.Shared.GetEventInChannel(ctx.Channel.Id) is NumberRace game))
                     throw new CommandFailedException("There is no number race game running in this channel.");
@@ -103,40 +93,36 @@ namespace TheGodfather.Modules.Games
                 if (!game.AddParticipant(ctx.User))
                     throw new CommandFailedException("You are already participating in the race!");
 
-                await InformAsync(ctx, $"{ctx.User.Mention} joined the game.", ":bicyclist:")
-                    .ConfigureAwait(false);
+                return InformAsync(ctx, StaticDiscordEmoji.Bicyclist, $"{ctx.User.Mention} joined the race.");
             }
             #endregion
 
             #region COMMAND_NUMBERRACE_RULES
-            [Command("rules"), Module(ModuleType.Games)]
+            [Command("rules")]
             [Description("Explain the number race rules.")]
             [Aliases("help", "h", "ruling", "rule")]
             [UsageExamples("!game numberrace rules")]
-            public async Task RulesAsync(CommandContext ctx)
+            public Task RulesAsync(CommandContext ctx)
             {
-                await InformAsync(ctx, 
+                return InformAsync(ctx,
+                    StaticDiscordEmoji.Information,
                     "I will start by typing a number. Users have to count up by 1 from that number. " +
                     "If someone makes a mistake (types an incorrent number, or repeats the same number) " +
                     "they are out of the game. If nobody posts a number 20s after the last number was posted, " +
-                    "then the user that posted that number wins the game. The game ends when only one user remains.",
-                    ":information_source:"
-                ).ConfigureAwait(false);
+                    "then the user that posted that number wins the game. The game ends when only one user remains."
+                );
             }
             #endregion
 
             #region COMMAND_NUMBERRACE_STATS
-            [Command("stats"), Module(ModuleType.Games)]
+            [Command("stats")]
             [Description("Print the leaderboard for this game.")]
             [Aliases("top", "leaderboard")]
             [UsageExamples("!game numberrace stats")]
             public async Task StatsAsync(CommandContext ctx)
             {
-                var top = await Database.GetTopNunchiPlayersStringAsync(ctx.Client)
-                    .ConfigureAwait(false);
-
-                await InformAsync(ctx, StaticDiscordEmoji.Trophy, $"Top players in Number Race:\n\n{top}")
-                    .ConfigureAwait(false);
+                string top = await this.Database.GetTopNunchiPlayersStringAsync(ctx.Client);
+                await InformAsync(ctx, StaticDiscordEmoji.Trophy, $"Top players in Number Race:\n\n{top}");
             }
             #endregion
         }

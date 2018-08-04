@@ -40,7 +40,7 @@ namespace TheGodfather.Modules.Administration
                     gcfg.LinkfilterEnabled = enable;
 
                     await this.Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg);
-                    await InformAsync(ctx, $"{(enable ? "Enabled" : "Disabled")} link filtering!");
+                    await InformAsync(ctx, $"{(enable ? "Enabled" : "Disabled")} link filtering!", important: false);
                     await LogConfigChangeAsync(ctx, "Linkfilter", gcfg.LinkfilterEnabled);
                 }
 
@@ -61,7 +61,7 @@ namespace TheGodfather.Modules.Administration
 
                         return ctx.RespondAsync(embed: emb.Build());
                     } else {
-                        return InformAsync(ctx, $"Link filtering for this guild is: {Formatter.Bold("disabled")}!", important: true);
+                        return InformAsync(ctx, $"Link filtering for this guild is: {Formatter.Bold("disabled")}!");
                     }
                 }
 
@@ -79,7 +79,7 @@ namespace TheGodfather.Modules.Administration
                     gcfg.BlockBooterWebsites = enable;
 
                     await this.Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg);
-                    await InformAsync(ctx, $"{(enable ? "Enabled" : "Disabled")} DDoS/Booter website filtering!");
+                    await InformAsync(ctx, $"{(enable ? "Enabled" : "Disabled")} DDoS/Booter website filtering!", important: false);
                     await LogConfigChangeAsync(ctx, "DDoS/Booter websites filtering", gcfg.BlockBooterWebsites);
                 }
 
@@ -87,7 +87,7 @@ namespace TheGodfather.Modules.Administration
                 public Task BootersAsync(CommandContext ctx)
                 {
                     CachedGuildConfig gcfg = this.Shared.GetGuildConfig(ctx.Guild.Id);
-                    return InformAsync(ctx, $"DDoS/Booter website filtering for this guild is: {Formatter.Bold(gcfg.BlockBooterWebsites ? "enabled" : "disabled")}!", important: true);
+                    return InformAsync(ctx, $"DDoS/Booter website filtering for this guild is: {Formatter.Bold(gcfg.BlockBooterWebsites ? "enabled" : "disabled")}!");
                 }
                 #endregion
 
@@ -104,7 +104,7 @@ namespace TheGodfather.Modules.Administration
                     gcfg.BlockDiscordInvites = enable;
 
                     await this.Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg);
-                    await InformAsync(ctx, $"{(enable ? "Enabled" : "Disabled")} Discord invites filtering!");
+                    await InformAsync(ctx, $"{(enable ? "Enabled" : "Disabled")} Discord invites filtering!", important: false);
                     await LogConfigChangeAsync(ctx, "Discord invites filtering", gcfg.BlockDiscordInvites);
                 }
 
@@ -112,7 +112,7 @@ namespace TheGodfather.Modules.Administration
                 public Task InvitesAsync(CommandContext ctx)
                 {
                     CachedGuildConfig gcfg = this.Shared.GetGuildConfig(ctx.Guild.Id);
-                    return InformAsync(ctx, $"Invite link filtering for this guild is: {Formatter.Bold(gcfg.BlockDiscordInvites ? "enabled" : "disabled")}!", important: true);
+                    return InformAsync(ctx, $"Invite link filtering for this guild is: {Formatter.Bold(gcfg.BlockDiscordInvites ? "enabled" : "disabled")}!");
                 }
                 #endregion
 
@@ -129,7 +129,7 @@ namespace TheGodfather.Modules.Administration
                     gcfg.BlockDisturbingWebsites = enable;
 
                     await this.Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg);
-                    await InformAsync(ctx, $"{(enable ? "Enabled" : "Disabled")} disturbing website filtering!");
+                    await InformAsync(ctx, $"{(enable ? "Enabled" : "Disabled")} disturbing website filtering!", important: false);
                     await LogConfigChangeAsync(ctx, "Disturbing websites filtering", gcfg.BlockDisturbingWebsites);
                 }
 
@@ -137,7 +137,7 @@ namespace TheGodfather.Modules.Administration
                 public Task DisturbingSitesAsync(CommandContext ctx)
                 {
                     CachedGuildConfig gcfg = this.Shared.GetGuildConfig(ctx.Guild.Id);
-                    return InformAsync(ctx, $"Shock website filtering for this guild is: {Formatter.Bold(gcfg.BlockDisturbingWebsites ? "enabled" : "disabled")}!", important: true);
+                    return InformAsync(ctx, $"Shock website filtering for this guild is: {Formatter.Bold(gcfg.BlockDisturbingWebsites ? "enabled" : "disabled")}!");
                 }
                 #endregion
 
@@ -154,7 +154,7 @@ namespace TheGodfather.Modules.Administration
                     gcfg.BlockIpLoggingWebsites = enable;
 
                     await this.Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg);
-                    await InformAsync(ctx, $"{(enable ? "Enabled" : "Disabled")} IP logging website filtering!");
+                    await InformAsync(ctx, $"{(enable ? "Enabled" : "Disabled")} IP logging website filtering!", important: false);
                     await LogConfigChangeAsync(ctx, "IP logging websites filtering", gcfg.BlockIpLoggingWebsites);
                 }
 
@@ -162,7 +162,7 @@ namespace TheGodfather.Modules.Administration
                 public Task IpLoggersAsync(CommandContext ctx)
                 {
                     CachedGuildConfig gcfg = this.Shared.GetGuildConfig(ctx.Guild.Id);
-                    return InformAsync(ctx, $"IP logging websites filtering for this guild is: {Formatter.Bold(gcfg.BlockIpLoggingWebsites ? "enabled" : "disabled")}!", important: true);
+                    return InformAsync(ctx, $"IP logging websites filtering for this guild is: {Formatter.Bold(gcfg.BlockIpLoggingWebsites ? "enabled" : "disabled")}!");
                 }
                 #endregion
 
@@ -179,7 +179,7 @@ namespace TheGodfather.Modules.Administration
                     gcfg.BlockUrlShorteners = enable;
 
                     await this.Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg);
-                    await InformAsync(ctx, $"{(enable ? "Enabled" : "Disabled")} URL shortener website filtering!");
+                    await InformAsync(ctx, $"{(enable ? "Enabled" : "Disabled")} URL shortener website filtering!", important: false);
                     await LogConfigChangeAsync(ctx, "URL shorteners filtering", gcfg.BlockUrlShorteners);
                 }
 
@@ -187,25 +187,26 @@ namespace TheGodfather.Modules.Administration
                 public Task ShortenersAsync(CommandContext ctx)
                 {
                     CachedGuildConfig gcfg = this.Shared.GetGuildConfig(ctx.Guild.Id);
-                    return InformAsync(ctx, $"URL shortening websites filtering for this guild is: {Formatter.Bold(gcfg.BlockUrlShorteners ? "enabled" : "disabled")}!", important: true);
+                    return InformAsync(ctx, $"URL shortening websites filtering for this guild is: {Formatter.Bold(gcfg.BlockUrlShorteners ? "enabled" : "disabled")}!");
                 }
                 #endregion
                 
 
                 #region HELPER_FUNCTIONS
-                protected async Task LogConfigChangeAsync(CommandContext ctx, string module, bool value)
+                protected Task LogConfigChangeAsync(CommandContext ctx, string module, bool value)
                 {
-                    var logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
+                    DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
                     if (logchn != null) {
                         var emb = new DiscordEmbedBuilder() {
                             Title = "Guild config changed",
-                            Color = DiscordColor.Brown
+                            Color = this.ModuleColor
                         };
                         emb.AddField("User responsible", ctx.User.Mention, inline: true);
                         emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
                         emb.AddField(module, value ? "on" : "off", inline: true);
-                        await logchn.SendMessageAsync(embed: emb.Build())
-                            .ConfigureAwait(false);
+                        return logchn.SendMessageAsync(embed: emb.Build());
+                    } else {
+                        return Task.CompletedTask;
                     }
                 }
                 #endregion

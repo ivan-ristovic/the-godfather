@@ -27,8 +27,8 @@ namespace TheGodfather.Modules.Chickens
         public class BuyModule : TheGodfatherModule
         {
 
-            public BuyModule(DBService db) 
-                : base(db: db)
+            public BuyModule(SharedData shared, DBService db)
+                : base(shared, db)
             {
                 this.ModuleColor = DiscordColor.Yellow;
             }
@@ -136,7 +136,7 @@ namespace TheGodfather.Modules.Chickens
 
                 await this.Database.AddChickenAsync(ctx.User.Id, ctx.Guild.Id, name, Chicken.StartingStats[type]);
 
-                await InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} bought a chicken named {Formatter.Bold(name)}", important: true);
+                await InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} bought a chicken named {Formatter.Bold(name)}");
             }
             #endregion
         }

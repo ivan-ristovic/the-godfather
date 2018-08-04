@@ -1,35 +1,39 @@
 ﻿#region USING_DIRECTIVES
+using DSharpPlus.CommandsNext;
+using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Entities;
+using DSharpPlus.Interactivity;
 using System;
 using System.Threading.Tasks;
-
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Games.Common;
-using TheGodfather.Services;
 using TheGodfather.Services.Common;
-using TheGodfather.Services.Database.Stats;
-
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Interactivity;
 using TheGodfather.Services.Database;
+using TheGodfather.Services.Database.Stats;
 #endregion
 
 namespace TheGodfather.Modules.Games
 {
-    public partial class GamesModule : TheGodfatherModule
+    public partial class GamesModule
     {
-        [Group("tictactoe"), Module(ModuleType.Games)]
-        [Description("Starts a \"Tic-Tac-Toe\" game. Play a move by writing a number from 1 to 9 corresponding to the field where you wish to play. You can also specify a time window in which player must submit their move.")]
+        [Group("tictactoe")]
+        [Description("Starts a \"Tic-Tac-Toe\" game. Play a move by writing a number from 1 to 9 corresponding " +
+                     "to the field where you wish to play. You can also specify a time window in which players " +
+                     "must submit their move.")]
         [Aliases("ttt")]
         [UsageExamples("!game tictactoe",
                        "!game tictactoe 10s")]
         public class TicTacToeModule : TheGodfatherModule
         {
 
-            public TicTacToeModule(SharedData shared, DBService db) : base(shared, db) { }
+            public TicTacToeModule(SharedData shared, DBService db) 
+                : base(shared, db)
+            {
+                this.ModuleColor = DiscordColor.Teal;
+            }
 
 
             [GroupCommand]
@@ -39,37 +43,32 @@ namespace TheGodfather.Modules.Games
                 if (this.Shared.IsEventRunningInChannel(ctx.Channel.Id))
                     throw new CommandFailedException("Another event is already running in the current channel!");
 
-                await InformAsync(ctx, StaticDiscordEmoji.Question, $"Who wants to play Tic-Tac-Toe with {ctx.User.Username}?")
-                    .ConfigureAwait(false);
-                var opponent = await ctx.WaitForGameOpponentAsync()
-                    .ConfigureAwait(false);
+                await InformAsync(ctx, StaticDiscordEmoji.Question, $"Who wants to play Tic-Tac-Toe with {ctx.User.Username}?");
+                DiscordUser opponent = await ctx.WaitForGameOpponentAsync();
                 if (opponent == null)
                     return;
 
-                if (movetime?.TotalSeconds > 120 || movetime?.TotalSeconds < 2)
+                if (movetime?.TotalSeconds < 2 || movetime?.TotalSeconds > 120)
                     throw new InvalidCommandUsageException("Move time must be in range of [2-120] seconds.");
 
-                var ttt = new TicTacToe(ctx.Client.GetInteractivity(), ctx.Channel, ctx.User, opponent, movetime);
-                this.Shared.RegisterEventInChannel(ttt, ctx.Channel.Id);
+                var game = new TicTacToeGame(ctx.Client.GetInteractivity(), ctx.Channel, ctx.User, opponent, movetime);
+                this.Shared.RegisterEventInChannel(game, ctx.Channel.Id);
                 try {
-                    await ttt.RunAsync()
-                        .ConfigureAwait(false);
+                    await game.RunAsync();
 
-                    if (ttt.Winner != null) {
-                        if (ttt.IsTimeoutReached == false)
-                            await InformAsync(ctx, StaticDiscordEmoji.Trophy, $"The winner is: {ttt.Winner.Mention}!").ConfigureAwait(false);
+                    if (game.Winner != null) {
+                        if (game.IsTimeoutReached)
+                            await InformAsync(ctx, StaticDiscordEmoji.Trophy, $"{game.Winner.Mention} won due to no replies from opponent!");
                         else
-                            await InformAsync(ctx, StaticDiscordEmoji.Trophy, $"{ttt.Winner.Mention} won due to no replies from opponent!").ConfigureAwait(false);
+                            await InformAsync(ctx, StaticDiscordEmoji.Trophy, $"The winner is: {game.Winner.Mention}!");
 
-                        await Database.UpdateUserStatsAsync(ttt.Winner.Id, GameStatsType.TicTacToesWon)
-                            .ConfigureAwait(false);
-                        if (ttt.Winner.Id == ctx.User.Id)
-                            await Database.UpdateUserStatsAsync(opponent.Id, GameStatsType.TicTacToesWon).ConfigureAwait(false);
+                        await this.Database.UpdateUserStatsAsync(game.Winner.Id, GameStatsType.TicTacToesWon);
+                        if (game.Winner.Id == ctx.User.Id)
+                            await this.Database.UpdateUserStatsAsync(opponent.Id, GameStatsType.TicTacToesWon);
                         else
-                            await Database.UpdateUserStatsAsync(ctx.User.Id, GameStatsType.TicTacToesWon).ConfigureAwait(false);
+                            await this.Database.UpdateUserStatsAsync(ctx.User.Id, GameStatsType.TicTacToesWon);
                     } else {
-                        await InformAsync(ctx, "A draw... Pathetic...", ":video_game:")
-                            .ConfigureAwait(false);
+                        await InformAsync(ctx, StaticDiscordEmoji.Joystick, "A draw... Pathetic...");
                     }
                 } finally {
                     this.Shared.UnregisterEventInChannel(ctx.Channel.Id);
@@ -78,34 +77,31 @@ namespace TheGodfather.Modules.Games
 
 
             #region COMMAND_TICTACTOE_RULES
-            [Command("rules"), Module(ModuleType.Games)]
+            [Command("rules")]
             [Description("Explain the Tic-Tac-Toe game rules.")]
             [Aliases("help", "h", "ruling", "rule")]
             [UsageExamples("!game tictactoe rules")]
-            public async Task RulesAsync(CommandContext ctx)
+            public Task RulesAsync(CommandContext ctx)
             {
-                await InformAsync(ctx, 
+                return InformAsync(ctx,
+                    StaticDiscordEmoji.Information,
                     "The object of Tic Tac Toe is to get three in a row. " +
                     "You play on a three by three game board. The first player is known as X and the second is O. " +
                     "Players alternate placing Xs and Os on the game board until either oppent has three in a row " +
-                    "or all nine squares are filled.",
-                    ":book:"
-                ).ConfigureAwait(false);
+                    "or all nine squares are filled."
+                );
             }
             #endregion
 
             #region COMMAND_TICTACTOE_STATS
-            [Command("stats"), Module(ModuleType.Games)]
+            [Command("stats")]
             [Description("Print the leaderboard for this game.")]
             [Aliases("top", "leaderboard")]
             [UsageExamples("!game tictactoe stats")]
             public async Task StatsAsync(CommandContext ctx)
             {
-                var top = await Database.GetTopTTTPlayersStringAsync(ctx.Client)
-                    .ConfigureAwait(false);
-
-                await InformAsync(ctx, StaticDiscordEmoji.Trophy, $"Top players in Tic-Tac-Toe:\n\n{top}")
-                    .ConfigureAwait(false);
+                string top = await this.Database.GetTopTTTPlayersStringAsync(ctx.Client);
+                await InformAsync(ctx, StaticDiscordEmoji.Trophy, $"Top players in Tic-Tac-Toe:\n\n{top}");
             }
             #endregion
         }

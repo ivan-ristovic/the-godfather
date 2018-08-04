@@ -120,7 +120,7 @@ namespace TheGodfather.Modules.Chickens
             short threshold = (short)GFRandom.Generator.Next(50, 100);
             await this.Database.FilterChickensByVitalityAsync(ctx.Guild.Id, threshold);
 
-            await InformAsync(ctx, StaticDiscordEmoji.Chicken, $"The deadly chicken flu killed all chickens with vitality less than or equal to {Formatter.Bold(threshold.ToString())}!", important: true);
+            await InformAsync(ctx, StaticDiscordEmoji.Chicken, $"The deadly chicken flu killed all chickens with vitality less than or equal to {Formatter.Bold(threshold.ToString())}!");
         }
         #endregion
 
@@ -142,7 +142,7 @@ namespace TheGodfather.Modules.Chickens
             chicken.Stats.BareVitality += 100;
             await this.Database.ModifyChickenAsync(chicken, ctx.Guild.Id);
 
-            await InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} healed his chicken (+100 to current HP)!", important: true);
+            await InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} healed his chicken (+100 to current HP)!");
         }
         #endregion
 
@@ -192,7 +192,7 @@ namespace TheGodfather.Modules.Chickens
 
             chicken.Name = newname;
             await this.Database.ModifyChickenAsync(chicken, ctx.Guild.Id);
-            await InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} renamed his chicken to {Formatter.Bold(newname)}", important: true);
+            await InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} renamed his chicken to {Formatter.Bold(newname)}");
         }
         #endregion
 
@@ -218,7 +218,7 @@ namespace TheGodfather.Modules.Chickens
             await this.Database.RemoveChickenAsync(ctx.User.Id, ctx.Guild.Id);
             await this.Database.IncreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, price);
 
-            await InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} sold {Formatter.Bold(chicken.Name)} for {Formatter.Bold($"{price:n0}")} credits!", important: true);
+            await InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} sold {Formatter.Bold(chicken.Name)} for {Formatter.Bold($"{price:n0}")} credits!");
         }
         #endregion
 

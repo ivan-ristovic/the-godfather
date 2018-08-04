@@ -22,8 +22,8 @@ namespace TheGodfather.Modules.Currency
     public partial class GambleModule : TheGodfatherModule
     {
 
-        public GambleModule(DBService db) 
-            : base(db: db)
+        public GambleModule(SharedData shared, DBService db)
+            : base(shared, db)
         {
             this.ModuleColor = DiscordColor.SapGreen;
         }
@@ -79,7 +79,7 @@ namespace TheGodfather.Modules.Currency
             if (rnd == guess)
                 await this.Database.IncreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, bid * 2);
 
-            await InformAsync(ctx, StaticDiscordEmoji.Dice, sb.ToString(), important: true);
+            await InformAsync(ctx, StaticDiscordEmoji.Dice, sb.ToString());
         }
 
         [Command("coinflip"), Priority(0)]
@@ -131,7 +131,7 @@ namespace TheGodfather.Modules.Currency
             sb.Append(guess_int == rnd ? $"won {Formatter.Bold((bid * 5).ToString())}" : $"lost {Formatter.Bold(bid.ToString())}");
             sb.Append(" credits!");
 
-            await InformAsync(ctx, StaticDiscordEmoji.Dice, sb.ToString(), important: true);
+            await InformAsync(ctx, StaticDiscordEmoji.Dice, sb.ToString());
 
             if (rnd == guess_int)
                 await this.Database.IncreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, bid * 6);

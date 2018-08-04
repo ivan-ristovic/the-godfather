@@ -18,14 +18,6 @@ namespace TheGodfather.Extensions
         public static string BuildReasonString(this CommandContext ctx, string reason = null)
             => $"{ctx.User.ToString()} : {reason ?? "No reason provided."} | Invoked in: {ctx.Channel.ToString()}";
 
-        public static Task<DiscordMessage> InformFailureAsync(this CommandContext ctx, string message)
-        {
-            return ctx.RespondAsync(embed: new DiscordEmbedBuilder {
-                Description = $"{StaticDiscordEmoji.BoardPieceX} {message}",
-                Color = DiscordColor.IndianRed
-            });
-        }
-
         public static Task SendCollectionInPagesAsync<T>(this CommandContext ctx, string title, 
             IEnumerable<T> collection, Func<T, string> selector, DiscordColor? color = null, int pageSize = 10)
         {

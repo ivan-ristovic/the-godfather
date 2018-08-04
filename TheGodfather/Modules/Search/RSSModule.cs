@@ -26,7 +26,8 @@ namespace TheGodfather.Modules.Search
     public class RSSModule : TheGodfatherModule
     {
 
-        public RSSModule(DBService db) : base(db: db) { }
+        public RSSModule(SharedData shared, DBService db)
+                : base(shared, db) { }
 
 
         [GroupCommand]

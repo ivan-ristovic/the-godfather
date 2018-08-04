@@ -46,7 +46,7 @@ namespace TheGodfather.Modules.Chickens
                 var war = new ChickenWar(ctx.Client.GetInteractivity(), ctx.Channel, team1, team2);
                 this.Shared.RegisterEventInChannel(war, ctx.Channel.Id);
                 try {
-                    await InformAsync(ctx, StaticDiscordEmoji.Clock1, $"The war will start in 1 minute. Use command {Formatter.InlineCode("chicken war join <teamname>")} to make your chicken join the war.", important: true);
+                    await InformAsync(ctx, StaticDiscordEmoji.Clock1, $"The war will start in 1 minute. Use command {Formatter.InlineCode("chicken war join <teamname>")} to make your chicken join the war.");
                     await Task.Delay(TimeSpan.FromMinutes(1));
 
                     if (war.Team1.Any() && war.Team2.Any()) {
@@ -73,9 +73,9 @@ namespace TheGodfather.Modules.Chickens
                             }
                         }
 
-                        await InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{Formatter.Bold(war.Team1Won ? war.Team1Name : war.Team2Name)} won the war!\n\nEach chicken owner in the won party gains 100000 credits.\n\n{sb.ToString()}", important: true);
+                        await InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{Formatter.Bold(war.Team1Won ? war.Team1Name : war.Team2Name)} won the war!\n\nEach chicken owner in the won party gains 100000 credits.\n\n{sb.ToString()}");
                     } else {
-                        await InformAsync(ctx, StaticDiscordEmoji.AlarmClock, "Not enough chickens joined the war (need atleast one in each team).", important: true);
+                        await InformAsync(ctx, StaticDiscordEmoji.AlarmClock, "Not enough chickens joined the war (need atleast one in each team).");
                     }
 
                 } finally {
@@ -115,7 +115,7 @@ namespace TheGodfather.Modules.Chickens
                         throw new CommandFailedException($"No such team exists in this war. Teams that are active are {Formatter.Bold(war.Team1Name)} and {Formatter.Bold(war.Team1Name)}.");
                 }
 
-                await InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{Formatter.Bold(chicken.Name)} joined the war team {Formatter.Bold(team == 1 ? war.Team1Name : war.Team2Name)}.", important: true);
+                await InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{Formatter.Bold(chicken.Name)} joined the war team {Formatter.Bold(team == 1 ? war.Team1Name : war.Team2Name)}.");
             }
 
             [Command("join"), Priority(0)]
@@ -145,7 +145,7 @@ namespace TheGodfather.Modules.Chickens
                 else
                     throw new CommandFailedException($"No such team exists in this war. Teams that are active are {Formatter.Bold(war.Team1Name)} and {Formatter.Bold(war.Team1Name)}.");
 
-                await InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{Formatter.Bold(chicken.Name)} joined the war team {Formatter.Bold(team)}.", important: true);
+                await InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{Formatter.Bold(chicken.Name)} joined the war team {Formatter.Bold(team)}.");
             }
             #endregion
         }

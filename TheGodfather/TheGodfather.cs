@@ -63,7 +63,7 @@ namespace TheGodfather
 
                 try {
                     // Waiting indefinitely for shutdown signal
-                    await Task.Delay(Timeout.Infinite, SharedData.CTS.Token);
+                    await Task.Delay(Timeout.Infinite, SharedData.MainLoopCts.Token);
                 } catch (TaskCanceledException) {
                     SharedData.LogProvider.ElevatedLog(LogLevel.Info, "Shutdown signal received!");
                 }
@@ -178,7 +178,7 @@ namespace TheGodfather
                 BlockedChannels = blockedchn,
                 BlockedUsers = blockedusr,
                 BotConfiguration = BotConfiguration,
-                CTS = new CancellationTokenSource(),
+                MainLoopCts = new CancellationTokenSource(),
                 EmojiReactions = gemojireactions,
                 Filters = gfilters,
                 GuildConfigurations = gcfg,
@@ -270,10 +270,10 @@ namespace TheGodfather
         private static async Task PeriodicActionExecuterAsync(TimeSpan delay, TimeSpan repeat, Func<Task> action)
         {
             try {
-                await Task.Delay(delay, SharedData.CTS.Token);
-                while (!SharedData.CTS.IsCancellationRequested) {
+                await Task.Delay(delay, SharedData.MainLoopCts.Token);
+                while (!SharedData.MainLoopCts.IsCancellationRequested) {
                     await action();
-                    await Task.Delay(repeat, SharedData.CTS.Token);
+                    await Task.Delay(repeat, SharedData.MainLoopCts.Token);
                 }
             } catch (TaskCanceledException) {
 

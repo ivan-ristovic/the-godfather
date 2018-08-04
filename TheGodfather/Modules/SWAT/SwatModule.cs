@@ -82,7 +82,7 @@ namespace TheGodfather.Modules.SWAT
             if (info != null)
                 await ctx.RespondAsync(embed: info.EmbedData()).ConfigureAwait(false);
             else
-                await ctx.InformFailureAsync("No reply from server.").ConfigureAwait(false);
+                await InformFailureAsync(ctx, "No reply from server.").ConfigureAwait(false);
         }
         #endregion
 

@@ -7,6 +7,7 @@ using DSharpPlus.Interactivity;
 using Humanizer;
 using System.Text;
 using System.Threading.Tasks;
+using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Currency.Common;
@@ -23,8 +24,8 @@ namespace TheGodfather.Modules.Currency
     public partial class CasinoModule : TheGodfatherModule
     {
 
-        public CasinoModule(DBService db) 
-            : base(db: db)
+        public CasinoModule(SharedData shared, DBService db)
+            : base(shared, db)
         {
             this.ModuleColor = DiscordColor.SapGreen;
         }
@@ -33,14 +34,13 @@ namespace TheGodfather.Modules.Currency
         [GroupCommand]
         public Task ExecuteGroupAsync(CommandContext ctx)
         {
-            var emoji = DiscordEmoji.FromName(ctx.Client, ":small_blue_diamond:");
-
             var sb = new StringBuilder();
+
             sb.AppendLine().AppendLine();
-            sb.AppendLine(emoji).AppendLine("holdem");
-            sb.AppendLine(emoji).AppendLine("lottery");
-            sb.AppendLine(emoji).AppendLine("slot");
-            sb.AppendLine(emoji).AppendLine("wheeloffortune");
+            sb.AppendLine(StaticDiscordEmoji.SmallBlueDiamond).AppendLine("holdem");
+            sb.AppendLine(StaticDiscordEmoji.SmallBlueDiamond).AppendLine("lottery");
+            sb.AppendLine(StaticDiscordEmoji.SmallBlueDiamond).AppendLine("slot");
+            sb.AppendLine(StaticDiscordEmoji.SmallBlueDiamond).AppendLine("wheeloffortune");
 
             return ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
                 Title = "Available casino games:",

@@ -95,7 +95,7 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException("You can't ban yourself.");
 
             await member.BanAsync(delete_message_days: 7, reason: ctx.BuildReasonString(reason));
-            await InformAsync(ctx, $"{Formatter.Bold(ctx.Member.Username)} BANNED {Formatter.Bold(member.ToString())}!", important: true);
+            await InformAsync(ctx, $"{Formatter.Bold(ctx.Member.Username)} BANNED {Formatter.Bold(member.ToString())}!");
         }
         #endregion
 
@@ -116,7 +116,7 @@ namespace TheGodfather.Modules.Administration
             DiscordUser u = await ctx.Client.GetUserAsync(id);
 
             await ctx.Guild.BanMemberAsync(u.Id, delete_message_days: 7, reason: ctx.BuildReasonString(reason));
-            await InformAsync(ctx, $"{Formatter.Bold(ctx.User.Username)} BANNED {Formatter.Bold(u.ToString())}!", important: true);
+            await InformAsync(ctx, $"{Formatter.Bold(ctx.User.Username)} BANNED {Formatter.Bold(u.ToString())}!");
         }
         #endregion
 
@@ -192,7 +192,7 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException("You can't kick yourself.");
 
             await member.RemoveAsync(reason: ctx.BuildReasonString(reason));
-            await InformAsync(ctx, $"{Formatter.Bold(ctx.User.Username)} kicked {Formatter.Bold(member.Username)}.", important: true);
+            await InformAsync(ctx, $"{Formatter.Bold(ctx.User.Username)} kicked {Formatter.Bold(member.Username)}.");
         }
         #endregion
 
@@ -311,7 +311,7 @@ namespace TheGodfather.Modules.Administration
 
             await member.BanAsync(delete_message_days: 7, reason: ctx.BuildReasonString("(softban) " + reason));
             await member.UnbanAsync(ctx.Guild, reason: ctx.BuildReasonString("(softban) " + reason));
-            await InformAsync(ctx, $"{Formatter.Bold(ctx.User.Username)} SOFTBANNED {Formatter.Bold(member.Username)}!", important: true);
+            await InformAsync(ctx, $"{Formatter.Bold(ctx.User.Username)} SOFTBANNED {Formatter.Bold(member.Username)}!");
         }
         #endregion
 
@@ -334,7 +334,7 @@ namespace TheGodfather.Modules.Administration
             await member.BanAsync(delete_message_days: 7, reason: ctx.BuildReasonString($"(tempban for {timespan.ToString()}) " + reason));
 
             DateTime until = DateTime.UtcNow + timespan;
-            await InformAsync(ctx, $"{Formatter.Bold(ctx.User.Username)} BANNED {Formatter.Bold(member.Username)} until {Formatter.Bold(until.ToLongTimeString())} UTC!", important: true);
+            await InformAsync(ctx, $"{Formatter.Bold(ctx.User.Username)} BANNED {Formatter.Bold(member.Username)} until {Formatter.Bold(until.ToLongTimeString())} UTC!");
 
             var task = new SavedTask() {
                 ChannelId = ctx.Channel.Id,
@@ -371,7 +371,7 @@ namespace TheGodfather.Modules.Administration
             DiscordUser u = await ctx.Client.GetUserAsync(id);
 
             await ctx.Guild.UnbanMemberAsync(id, reason: ctx.BuildReasonString(reason));
-            await InformAsync(ctx, $"{Formatter.Bold(ctx.User.Username)} removed an ID ban for {Formatter.Bold(u.ToString())}!", important: true);
+            await InformAsync(ctx, $"{Formatter.Bold(ctx.User.Username)} removed an ID ban for {Formatter.Bold(u.ToString())}!");
         }
         #endregion
 

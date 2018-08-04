@@ -294,7 +294,7 @@ namespace TheGodfather.Modules.Misc
         {
             if (string.IsNullOrWhiteSpace(prefix)) {
                 string p = Shared.GetGuildPrefix(ctx.Guild.Id);
-                await InformAsync(ctx, $"Current prefix for this guild: {Formatter.Bold(p)}", ":information_source:")
+                await InformAsync(ctx, StaticDiscordEmoji.Information, $"Current prefix for this guild: {Formatter.Bold(p)}")
                     .ConfigureAwait(false);
                 return;
             }

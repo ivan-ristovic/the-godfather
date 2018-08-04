@@ -53,7 +53,7 @@ namespace TheGodfather.Modules.Currency
                 var game = new BlackjackGame(ctx.Client.GetInteractivity(), ctx.Channel);
                 this.Shared.RegisterEventInChannel(game, ctx.Channel.Id);
                 try {
-                    await InformAsync(ctx, StaticDiscordEmoji.Clock1, $"The Blackjack game will start in 30s or when there are 5 participants. Use command {Formatter.InlineCode("casino blackjack <bid>")} to join the pool. Default bid is 5 credits.", important: true);
+                    await InformAsync(ctx, StaticDiscordEmoji.Clock1, $"The Blackjack game will start in 30s or when there are 5 participants. Use command {Formatter.InlineCode("casino blackjack <bid>")} to join the pool. Default bid is 5 credits.");
                     await JoinAsync(ctx, bid);
                     await Task.Delay(TimeSpan.FromSeconds(30));
 
@@ -61,16 +61,16 @@ namespace TheGodfather.Modules.Currency
 
                     if (game.Winners.Any()) {
                         if (game.Winner != null) {
-                            await InformAsync(ctx, StaticDiscordEmoji.CardSuits[0], $"{game.Winner.Mention} got the BlackJack!", important: true);
+                            await InformAsync(ctx, StaticDiscordEmoji.CardSuits[0], $"{game.Winner.Mention} got the BlackJack!");
                             await this.Database.IncreaseBankAccountBalanceAsync(game.Winner.Id, ctx.Guild.Id, game.Winners.First(p => p.Id == game.Winner.Id).Bid);
                         } else {
-                            await InformAsync(ctx, StaticDiscordEmoji.CardSuits[0], $"Winners:\n\n{string.Join(", ", game.Winners.Select(w => w.User.Mention))}", important: true);
+                            await InformAsync(ctx, StaticDiscordEmoji.CardSuits[0], $"Winners:\n\n{string.Join(", ", game.Winners.Select(w => w.User.Mention))}");
 
                             foreach (var winner in game.Winners)
                                 await this.Database.IncreaseBankAccountBalanceAsync(winner.Id, ctx.Guild.Id, winner.Bid * 2);
                         }
                     } else {
-                        await InformAsync(ctx, StaticDiscordEmoji.CardSuits[0], "The House always wins!", important: true);
+                        await InformAsync(ctx, StaticDiscordEmoji.CardSuits[0], "The House always wins!");
                     }
                 } finally {
                     this.Shared.UnregisterEventInChannel(ctx.Channel.Id);
@@ -102,7 +102,7 @@ namespace TheGodfather.Modules.Currency
                     throw new CommandFailedException($"You do not have enough credits! Use command {Formatter.InlineCode("bank")} to check your account status.");
 
                 game.AddParticipant(ctx.User, bid);
-                await InformAsync(ctx, StaticDiscordEmoji.CardSuits[0], $"{ctx.User.Mention} joined the Blackjack game.", important: true);
+                await InformAsync(ctx, StaticDiscordEmoji.CardSuits[0], $"{ctx.User.Mention} joined the Blackjack game.");
             }
             #endregion
 
@@ -113,13 +113,12 @@ namespace TheGodfather.Modules.Currency
             [UsageExamples("!casino blackjack rules")]
             public Task RulesAsync(CommandContext ctx)
             {
-                return InformAsync(ctx, 
+                return InformAsync(ctx,
+                    StaticDiscordEmoji.Information,
                     "Each participant attempts to beat the dealer by getting a card value sum as close to 21 as possible, without going over 21. " +
                     "It is up to each individual player if an ace is worth 1 or 11. Face cards are valued as 10 and any other card is its pip value. " +
                     "Each player is dealt two cards in the begining and in turns they decide whether to hit (get one more card dealt) or stand. " +
-                    "After all players with sums smaller or equal to 21 decide to stand, the House does the same. Whoever beats the house gets the reward.",
-                    ":information_source:"
-                    , important: true
+                    "After all players with sums smaller or equal to 21 decide to stand, the House does the same. Whoever beats the house gets the reward."
                 );
             }
             #endregion

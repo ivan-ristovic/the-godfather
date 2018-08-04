@@ -122,9 +122,9 @@ namespace TheGodfather.Modules.Administration
             }
 
             if (eb.Length > 0)
-                await ctx.InformFailureAsync($"Action finished with warnings/errors:\n\n{eb.ToString()}");
+                await InformFailureAsync(ctx, $"Action finished with warnings/errors:\n\n{eb.ToString()}");
             else
-                await InformAsync(ctx, "Successfully added all given filters!");
+                await InformAsync(ctx, "Successfully added all given filters!", important: false);
         }
         #endregion
 
@@ -171,9 +171,9 @@ namespace TheGodfather.Modules.Administration
             }
 
             if (eb.Length > 0)
-                await ctx.InformFailureAsync($"Action finished with warnings/errors:\n\n{eb.ToString()}");
+                await InformFailureAsync(ctx, $"Action finished with warnings/errors:\n\n{eb.ToString()}");
             else
-                await InformAsync(ctx, "Successfully deleted all given filters!");
+                await InformAsync(ctx, "Successfully deleted all given filters!", important: false);
         }
 
         [Command("delete"), Priority(0)]
@@ -215,7 +215,7 @@ namespace TheGodfather.Modules.Administration
             }
 
             if (eb.Length > 0)
-                await ctx.InformFailureAsync($"Action finished with warnings/errors:\n\n{eb.ToString()}");
+                await InformFailureAsync(ctx, $"Action finished with warnings/errors:\n\n{eb.ToString()}");
             else
                 await InformAsync(ctx);
         }
@@ -254,7 +254,7 @@ namespace TheGodfather.Modules.Administration
                 await logchn.SendMessageAsync(embed: emb.Build());
             }
 
-            await InformAsync(ctx, "Successfully deleted all guild filters!");
+            await InformAsync(ctx, "Successfully deleted all guild filters!", important: false);
         }
         #endregion
 

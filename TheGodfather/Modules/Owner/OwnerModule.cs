@@ -523,14 +523,14 @@ namespace TheGodfather.Modules.Owner
                                    [Description("Time until shutdown.")] TimeSpan timespan)
         {
             await Task.Delay(0).ConfigureAwait(false);
-            Shared.CTS.CancelAfter(timespan);
+            Shared.MainLoopCts.CancelAfter(timespan);
         }
 
         [Command("shutdown"), Priority(0)]
         public async Task ExitAsync(CommandContext ctx)
         {
             await Task.Delay(0).ConfigureAwait(false);
-            Shared.CTS.Cancel();
+            Shared.MainLoopCts.Cancel();
         }
         #endregion
 

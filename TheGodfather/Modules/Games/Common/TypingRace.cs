@@ -1,4 +1,8 @@
 ﻿#region USING_DIRECTIVES
+using DSharpPlus;
+using DSharpPlus.Entities;
+using DSharpPlus.Interactivity;
+using Humanizer;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -11,23 +15,18 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-
 using TheGodfather.Common;
 using TheGodfather.Extensions;
 using TheGodfather.Services;
-
-using DSharpPlus;
-using DSharpPlus.Entities;
-using DSharpPlus.Interactivity;
 #endregion
 
 namespace TheGodfather.Modules.Games.Common
 {
     public class TypingRace : ChannelEvent
     {
-        #region STATIC_FIELDS
         private static readonly Regex _whitespaceMatcher = new Regex(@"\s+", RegexOptions.Compiled);
         private static readonly ImmutableDictionary<char, char> _replacements = new Dictionary<char, char>() {
+        #region REPLACEMENTS
             {'`', '\''},
             {'’', '\''},
             {'“', '\"'},
@@ -36,32 +35,29 @@ namespace TheGodfather.Modules.Games.Common
             {'–', '-'},
             {'—', '-'},
             {'―', '-'}
+        #endregion
         }.ToImmutableDictionary();
-        #endregion
-
-        #region PUBLIC_FIELDS
+        
         public bool Started { get; private set; }
-        public int ParticipantCount => _results.Count;
-        public IEnumerable<ulong> WinnerIds { get; private set; }
-        #endregion
+        public IReadOnlyList<ulong> WinnerIds { get; private set; }
+        public int ParticipantCount => this.results.Count;
 
-        #region PRIVATE_FIELDS
-        private ConcurrentDictionary<DiscordUser, int> _results = new ConcurrentDictionary<DiscordUser, int>();
-        #endregion
+        private readonly ConcurrentDictionary<DiscordUser, int> results;
 
 
         public TypingRace(InteractivityExtension interactivity, DiscordChannel channel)
-           : base(interactivity, channel) { }
+           : base(interactivity, channel)
+        {
+            this.results = new ConcurrentDictionary<DiscordUser, int>();
+        }
 
 
         public override async Task RunAsync()
         {
-            var msg = await QuoteService.GetRandomQuoteAsync()
-                .ConfigureAwait(false);
-            if (msg == null)
+            string quote = await QuoteService.GetRandomQuoteAsync();
+            if (quote == null)
                 return;
-            if (msg.Length > 230)
-                msg = msg.Substring(0, 230) + "...";
+            quote.Truncate(230);
 
             using (var image = new Bitmap(800, 300)) {
                 using (var g = Graphics.FromImage(image)) {
@@ -69,58 +65,63 @@ namespace TheGodfather.Modules.Games.Common
                     g.SmoothingMode = SmoothingMode.HighQuality;
                     g.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
                     g.CompositingQuality = CompositingQuality.HighQuality;
-                    Rectangle layout = new Rectangle(0, 0, image.Width, image.Height);
+                    var layout = new Rectangle(0, 0, image.Width, image.Height);
                     g.FillRectangle(Brushes.White, layout);
+
                     using (var font = new Font(FontFamily.GenericSansSerif, 30)) {
-                        g.DrawString(msg, font, Brushes.Black, layout);
+                        g.DrawString(quote, font, Brushes.Black, layout);
                     }
+
                     g.Flush();
                 }
 
                 using (var ms = new MemoryStream()) {
                     image.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
                     ms.Position = 0;
-                    await Channel.SendFileAsync("typing-challenge.jpg", ms, content: "(you have 60s to to type)")
-                        .ConfigureAwait(false);
+                    await this.Channel.SendFileAsync("typing-challenge.jpg", ms, content: "(you have 60s to to type)");
                 }
             }
 
-            msg = PrepareText(msg);
-            var mctx = await Interactivity.WaitForMessageAsync(
-                m => {
-                    if (m.ChannelId != Channel.Id || m.Author.IsBot)
+            quote = PrepareText(quote);
+            MessageContext mctx = await this.Interactivity.WaitForMessageAsync(
+                msg => {
+                    if (msg.ChannelId != this.Channel.Id || msg.Author.IsBot)
                         return false;
-                    int errors = msg.LevenshteinDistance(PrepareText(m.Content));
+                    int errors = Extensions.StringExtensions.LevenshteinDistance(quote, (string)this.PrepareText((string)msg.Content));
                     if (errors > 50)
                         return false;
-                    _results.AddOrUpdate(m.Author, errors, (k, v) => Math.Min(errors, v));
+                    this.results.AddOrUpdate(msg.Author, errors, (k, v) => Math.Min(errors, v));
                     return errors == 0;
-                }, TimeSpan.FromSeconds(60)
-            ).ConfigureAwait(false);
+                },
+                TimeSpan.FromSeconds(60)
+            );
             
-            var ordered = _results.Where(kvp => kvp.Value < 100).OrderBy(kvp => kvp.Value);
+            IOrderedEnumerable<KeyValuePair<DiscordUser, int>> ordered = this.results
+                .Where(kvp => kvp.Value < 100)
+                .OrderBy(kvp => kvp.Value);
             if (ordered.Any())
-                await Channel.SendMessageAsync(embed: EmbedResults(ordered)).ConfigureAwait(false);
+                await this.Channel.SendMessageAsync(embed: EmbedResults(ordered));
             else
-                await Channel.InformFailureAsync("No results to be shown for the typing race.");
+                await this.Channel.InformFailureAsync("No results to be shown for the typing race.");
 
-            Winner = ordered.FirstOrDefault(kvp => kvp.Value == 0).Key;
+            this.Winner = ordered.First().Key;
         }
 
         public bool AddParticipant(DiscordUser user)
         {
-            if (_results.Any(kvp => kvp.Key.Id == user.Id))
+            if (this.results.Any(kvp => kvp.Key.Id == user.Id))
                 return false;
-            return _results.TryAdd(user, 100);
+            return this.results.TryAdd(user, 100);
         }
 
         public DiscordEmbed EmbedResults(IOrderedEnumerable<KeyValuePair<DiscordUser, int>> results)
         {
             var sb = new StringBuilder();
-            foreach (var kvp in results.Take(10)) {
-                sb.Append(Formatter.Bold(kvp.Key.Mention))
+
+            foreach ((DiscordUser user, int result) in results.Take(10)) {
+                sb.Append(Formatter.Bold(user.Mention))
                   .Append(" : ")
-                  .AppendLine($"{Formatter.Bold(kvp.Value.ToString())} errors");
+                  .AppendLine($"{Formatter.Bold(result.ToString())} errors");
             }
 
             return new DiscordEmbedBuilder() {
@@ -134,16 +135,7 @@ namespace TheGodfather.Modules.Games.Common
         private string PrepareText(string text)
         {
             text = _whitespaceMatcher.Replace(text, " ");
-
-            var sb = new StringBuilder();
-            foreach (var c in text) {
-                if (_replacements.TryGetValue(c, out var tmp))
-                    sb.Append(tmp);
-                else
-                    sb.Append(c);
-            }
-            text = sb.ToString();
-
+            text = new string(text.Select(c => _replacements.TryGetValue(c, out char tmp) ? tmp : c).ToArray());
             return text.ToLowerInvariant();
         }
     }

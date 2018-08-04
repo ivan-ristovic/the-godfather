@@ -28,7 +28,8 @@ namespace TheGodfather.Modules.Misc
     public partial class MemeModule : TheGodfatherModule
     {
 
-        public MemeModule(DBService db) : base(db: db) { }
+        public MemeModule(SharedData shared, DBService db)
+                : base(shared, db) { }
 
 
         [GroupCommand, Priority(1)]

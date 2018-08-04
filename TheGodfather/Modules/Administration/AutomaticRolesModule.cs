@@ -73,7 +73,7 @@ namespace TheGodfather.Modules.Administration
                 await logchn.SendMessageAsync(embed: emb.Build());
             }
 
-            await InformAsync(ctx, $"Added automatic roles:\n\n{string.Join("\n", roles.Select(r => r.ToString()))}");
+            await InformAsync(ctx, $"Added automatic roles:\n\n{string.Join("\n", roles.Select(r => r.ToString()))}", important: false);
         }
         #endregion
 
@@ -105,7 +105,7 @@ namespace TheGodfather.Modules.Administration
                 await logchn.SendMessageAsync(embed: emb.Build());
             }
 
-            await InformAsync(ctx, $"Removed automatic roles:\n\n{string.Join("\n", roles.Select(r => r.ToString()))}");
+            await InformAsync(ctx, $"Removed automatic roles:\n\n{string.Join("\n", roles.Select(r => r.ToString()))}", important: false);
         }
         #endregion=
 
@@ -134,7 +134,7 @@ namespace TheGodfather.Modules.Administration
             }
 
 
-            await InformAsync(ctx, "Removed all automatic roles for this guild!");
+            await InformAsync(ctx, "Removed all automatic roles for this guild!", important: false);
         }
         #endregion
 
