@@ -1,7 +1,6 @@
 ﻿#region USING_DIRECTIVES
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
-using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;

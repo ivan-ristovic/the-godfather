@@ -25,7 +25,7 @@ namespace TheGodfather.Modules.Games
         public CardsModule(SharedData shared) 
             : base(shared: shared)
         {
-            this.ModuleColor = DiscordColor.CornflowerBlue;
+            this.ModuleColor = DiscordColor.Teal;
         }
 
 

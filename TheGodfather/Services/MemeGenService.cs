@@ -44,7 +44,7 @@ namespace TheGodfather.Services
             return data
                 .OrderBy(kvp => kvp.Key)
                 .Where(kvp => !string.IsNullOrWhiteSpace(kvp.Key))
-                .Select(kvp => $"{Formatter.Bold(kvp.Key)} {Path.GetFileName(kvp.Value)}")
+                .Select(kvp => $"{Formatter.Bold(kvp.Key)} ({Formatter.MaskedUrl(Path.GetFileName(kvp.Value), new Uri(kvp.Value))})")
                 .ToList()
                 .AsReadOnly();
         }

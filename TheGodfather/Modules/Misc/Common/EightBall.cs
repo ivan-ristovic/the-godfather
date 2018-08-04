@@ -1,20 +1,21 @@
-﻿using System;
+﻿#region USING_DIRECTIVES
+using System.Collections.Immutable;
 using TheGodfather.Common;
+#endregion
 
 namespace TheGodfather.Modules.Misc.Common
 {
     public static class EightBall
     {
-        private static string[] _answers = {
-            "Definitely no.",
+        private static ImmutableArray<string> _answers = new string[] {
+            "Definitely NO.",
             "No.",
-            "Possibly.",
-            "Maybe.",
-            "Perhaps.",
+            "I don't think so.",
+            "I think so.",
             "Yes.",
-            "Definitely yes.",
+            "Definitely YES.",
             "More than you can imagine."
-        };
+        }.ToImmutableArray();
 
         public static string GenerateRandomAnswer => _answers[GFRandom.Generator.Next(_answers.Length)];
     }

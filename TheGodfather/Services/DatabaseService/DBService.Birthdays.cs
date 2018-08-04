@@ -67,11 +67,21 @@ namespace TheGodfather.Services.Database.Birthdays
             return birthdays.AsReadOnly();
         }
 
-        public static Task RemoveBirthdayAsync(this DBService db, ulong uid)
+        public static Task RemoveBirthdayForUserAsync(this DBService db, ulong uid)
         {
             return db.ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "DELETE FROM gf.birthdays WHERE uid = @uid;";
                 cmd.Parameters.Add(new NpgsqlParameter<long>("uid", (long)uid));
+
+                return cmd.ExecuteNonQueryAsync();
+            });
+        }
+
+        public static Task RemoveBirthdaysInChannelAsync(this DBService db, ulong cid)
+        {
+            return db.ExecuteCommandAsync(cmd => {
+                cmd.CommandText = "DELETE FROM gf.birthdays WHERE cid = @cid;";
+                cmd.Parameters.Add(new NpgsqlParameter<long>("cid", (long)cid));
 
                 return cmd.ExecuteNonQueryAsync();
             });

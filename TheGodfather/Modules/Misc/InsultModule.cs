@@ -1,33 +1,34 @@
 ﻿#region USING_DIRECTIVES
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-
-using TheGodfather.Common.Attributes;
-using TheGodfather.Exceptions;
-using TheGodfather.Extensions;
-using TheGodfather.Services.Database.Insults;
-
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using TheGodfather.Common.Attributes;
+using TheGodfather.Exceptions;
+using TheGodfather.Extensions;
 using TheGodfather.Services.Database;
+using TheGodfather.Services.Database.Insults;
 #endregion
 
 namespace TheGodfather.Modules.Misc
 {
-    [Group("insult"), Module(ModuleType.Miscellaneous)]
-    [Description("Insults manipulation. If invoked without subcommands, insults a given user.")]
+    [Group("insult"), Module(ModuleType.Miscellaneous), NotBlocked]
+    [Description("Insults manipulation. Group call insults a given user.")]
     [Aliases("burn", "insults", "ins", "roast")]
     [UsageExamples("!insult @Someone")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    [NotBlocked]
     public class InsultModule : TheGodfatherModule
     {
 
         public InsultModule(SharedData shared, DBService db)
-                : base(shared, db) { }
+            : base(shared, db)
+        {
+            this.ModuleColor = DiscordColor.Brown;
+        }
 
 
         [GroupCommand]
@@ -38,27 +39,24 @@ namespace TheGodfather.Modules.Misc
                 user = ctx.User;
 
             if (user.Id == ctx.Client.CurrentUser.Id) {
-                await InformAsync(ctx, "How original, trying to make me insult myself. Sadly it won't work.", ":middle_finger:")
-                    .ConfigureAwait(false);
+                await InformAsync(ctx, "How original, trying to make me insult myself. Sadly it won't work.", ":middle_finger:");
                 return;
             }
 
-            string insult = await Database.GetRandomInsultAsync()
-                .ConfigureAwait(false);
+            string insult = await this.Database.GetRandomInsultAsync();
             if (insult == null)
                 throw new CommandFailedException("No available insults.");
 
-            await InformAsync(ctx, insult.Replace("%user%", user.Mention), ":middle_finger:")
-                .ConfigureAwait(false);
+            await InformAsync(ctx, insult.Replace("%user%", user.Mention), ":middle_finger:");
         }
 
 
         #region COMMAND_INSULTS_ADD
-        [Command("add"), Module(ModuleType.Miscellaneous)]
+        [Command("add")]
         [Description("Add insult to list (use %user% instead of user mention).")]
-        [Aliases("+", "new", "a")]
-        [UsageExamples("!insult add You are so dumb, %user%!")]
-        [RequireOwner]
+        [Aliases("new", "a", "+", "+=", "<", "<<")]
+        [UsageExamples("!insult add %user% is lowering the IQ of the entire street!")]
+        [RequirePrivilegedUser]
         public async Task AddInsultAsync(CommandContext ctx,
                                         [RemainingText, Description("Insult (must contain ``%user%``).")] string insult)
         {
@@ -71,67 +69,57 @@ namespace TheGodfather.Modules.Misc
             if (insult.Split(new string[] { "%user%" }, StringSplitOptions.None).Count() < 2)
                 throw new InvalidCommandUsageException($"Insult not in correct format (missing {Formatter.Bold("%user%")} in the insult)!");
 
-            await Database.AddInsultAsync(insult)
-                .ConfigureAwait(false);
-
-            await InformAsync(ctx)
-                .ConfigureAwait(false);
+            await this.Database.AddInsultAsync(insult);
+            await InformAsync(ctx, $"Successfully added insult: {Formatter.Italic(insult)}", important: false);
         }
         #endregion
         
-        #region COMMAND_INSULTS_CLEAR
-        [Command("clear"), Module(ModuleType.Miscellaneous)]
+        #region COMMAND_INSULTS_DELETEALL
+        [Command("deleteall"), UsesInteractivity]
         [Description("Delete all insults.")]
-        [Aliases("da", "c", "ca", "cl", "clearall")]
+        [Aliases("clear", "da", "c", "ca", "cl", "clearall", ">>>")]
         [UsageExamples("!insults clear")]
-        [RequireOwner]
-        [UsesInteractivity]
+        [RequirePrivilegedUser]
         public async Task ClearAllInsultsAsync(CommandContext ctx)
         {
-            if (!await ctx.WaitForBoolReplyAsync("Are you sure you want to delete all insults?").ConfigureAwait(false))
+            if (!await ctx.WaitForBoolReplyAsync("Are you sure you want to delete all insults?"))
                 return;
 
-            await Database.RemoveAllInsultsAsync()
-                .ConfigureAwait(false);
-            await InformAsync(ctx, "All insults successfully removed.")
-                .ConfigureAwait(false);
+            await this.Database.RemoveAllInsultsAsync();
+            await InformAsync(ctx, "All insults successfully removed.", important: false);
         }
         #endregion
 
         #region COMMAND_INSULTS_DELETE
-        [Command("delete"), Module(ModuleType.Miscellaneous)]
+        [Command("delete")]
         [Description("Remove insult with a given index from list. (use command ``insults list`` to view insult indexes).")]
-        [Aliases("-", "remove", "del", "rm", "rem", "d")]
+        [Aliases("-", "remove", "del", "rm", "rem", "d", ">", ">>", "-=")]
         [UsageExamples("!insult delete 2")]
-        [RequireOwner]
+        [RequirePrivilegedUser]
         public async Task DeleteInsultAsync(CommandContext ctx, 
                                            [Description("Index of the insult to remove.")] int index)
         {
-            await Database.RemoveInsultAsync(index)
-                .ConfigureAwait(false);
-            await InformAsync(ctx)
-                .ConfigureAwait(false);
+            await this.Database.RemoveInsultAsync(index);
+            await InformAsync(ctx, $"Removed insult with ID: {Formatter.Bold(index.ToString())}");
         }
         #endregion
 
         #region COMMAND_INSULTS_LIST
-        [Command("list"), Module(ModuleType.Miscellaneous)]
+        [Command("list")]
         [Description("Show all insults.")]
         [Aliases("ls", "l")]
         [UsageExamples("!insult list")]
         public async Task ListInsultsAsync(CommandContext ctx)
         {
-            var insults = await Database.GetAllInsultsAsync()
-                .ConfigureAwait(false);
-
+            IReadOnlyDictionary<int, string> insults = await this.Database.GetAllInsultsAsync();
             if (insults == null || !insults.Any())
                 throw new CommandFailedException("No insults registered.");
 
             await ctx.SendCollectionInPagesAsync(
                 "Available insults",
-                insults.Values,
-                i => Formatter.Italic(i),
-                DiscordColor.Green
+                insults,
+                kvp => $"{Formatter.InlineCode($"{kvp.Key:D3}")} | {Formatter.Italic(kvp.Value)}",
+                this.ModuleColor
             ).ConfigureAwait(false);
         }
         #endregion

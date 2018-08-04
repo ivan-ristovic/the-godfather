@@ -10,7 +10,7 @@ namespace TheGodfather.Services.Database.Ranks
 {
     internal static class DBServiceRanksExtensions
     {
-        public static Task AddRankAsync(this DBService db, ulong gid, int rank, string name)
+        public static Task AddOrUpdateRankAsync(this DBService db, ulong gid, int rank, string name)
         {
             return db.ExecuteCommandAsync(cmd => {
                 cmd.CommandText = "INSERT INTO gf.ranks(gid, rank, name) VALUES (@gid, @rank, @name) ON CONFLICT (gid, rank) DO UPDATE SET name = EXCLUDED.name;";
@@ -90,6 +90,16 @@ namespace TheGodfather.Services.Database.Ranks
                 cmd.CommandText = "DELETE FROM gf.ranks WHERE gid = @gid AND rank = @rank;";
                 cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
                 cmd.Parameters.Add(new NpgsqlParameter<int>("rank", rank));
+
+                return cmd.ExecuteNonQueryAsync();
+            });
+        }
+
+        public static Task RemoveUserXpAsync(this DBService db, ulong uid)
+        {
+            return db.ExecuteCommandAsync(cmd => {
+                cmd.CommandText = "DELETE FROM gf.msgcount WHERE uid = @uid;";
+                cmd.Parameters.Add(new NpgsqlParameter<long>("uid", (long)uid));
 
                 return cmd.ExecuteNonQueryAsync();
             });
