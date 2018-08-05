@@ -128,7 +128,7 @@ namespace TheGodfather.Modules.SWAT
                 throw new CommandFailedException("No servers found in the database.");
 
             SwatServerInfo[] infos = await Task.WhenAll(servers.Select(s => SwatServerInfo.QueryIPAsync(s.Ip, s.QueryPort)));
-            foreach (SwatServerInfo info in infos.Where(i => i != null).OrderByDescending(i => i.Players))
+            foreach (SwatServerInfo info in infos.Where(i => i != null).OrderByDescending(i => int.Parse(i.Players)))
                 em.AddField(info.HostName, $"{Formatter.Bold(info.Players + " / " + info.MaxPlayers)} | {info.Ip}:{info.JoinPort}");
 
             await ctx.RespondAsync(embed: em.Build());
