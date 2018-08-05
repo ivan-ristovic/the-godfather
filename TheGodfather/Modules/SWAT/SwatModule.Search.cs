@@ -5,8 +5,10 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
@@ -46,16 +48,16 @@ namespace TheGodfather.Modules.SWAT
             [Description("Search for a given IP or range.")]
             [UsageExamples("!swat search 123.123.123.123")]
             public async Task SearchIpAsync(CommandContext ctx,
-                                           [Description("IP.")] string ip,
+                                           [Description("IP.")] CustomIpFormat ip,
                                            [Description("Number of results")] int amount = 10)
             {
                 if (amount < 1 || amount > 100)
                     throw new InvalidCommandUsageException("Amount of results to fetch is out of range [1, 100].");
 
-                IReadOnlyList<SwatDatabaseEntry> res = await this.Database.SwatDatabaseIpSearchAsync(ip, amount);
+                IReadOnlyList<SwatDatabaseEntry> res = await this.Database.SwatDatabaseIpSearchAsync(ip.Content, amount);
 
                 await ctx.SendCollectionInPagesAsync(
-                    $"Search matches for {ip}",
+                    $"Search matches for {ip.ToString()}",
                     res,
                     entry => $"{Formatter.InlineCode(entry.Ip)} | {Formatter.Bold(entry.Name)} | {Formatter.Italic(entry.AdditionalInfo ?? "(no details)")}",
                     DiscordColor.Black

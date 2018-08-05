@@ -122,6 +122,8 @@ namespace TheGodfather
             this.CNext.RegisterConverter(new CustomActivityTypeConverter());
             this.CNext.RegisterConverter(new CustomBoolConverter());
             this.CNext.RegisterConverter(new CustomTimeWindowConverter());
+            this.CNext.RegisterConverter(new CustomIPAddressConverter());
+            this.CNext.RegisterConverter(new CustomIPFormatConverter());
             // Registering my own Uri converter
             this.CNext.UnregisterConverter<Uri>();
             this.CNext.RegisterConverter(new CustomUriConverter());

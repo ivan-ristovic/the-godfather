@@ -3,6 +3,7 @@ using Npgsql;
 using NpgsqlTypes;
 using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 using TheGodfather.Modules.SWAT.Common;
 #endregion
@@ -14,7 +15,7 @@ namespace TheGodfather.Services.Database.Swat
         public static Task AddSwatIpBanAsync(this DBService db, string ip, string name, string reason = null)
         {
             return db.ExecuteCommandAsync(cmd => {
-                cmd.CommandText = "INSERT INTO gf.swat_banlist(name, ip, reason) VALUES (@ip, @name, @reason);";
+                cmd.CommandText = "INSERT INTO gf.swat_banlist(name, ip, reason) VALUES (@name, @ip, @reason);";
                 cmd.Parameters.Add(new NpgsqlParameter<string>("name", name));
                 cmd.Parameters.Add(new NpgsqlParameter<string>("ip", ip));
 
@@ -31,9 +32,9 @@ namespace TheGodfather.Services.Database.Swat
         {
             return db.ExecuteCommandAsync(cmd => {
                 if (string.IsNullOrWhiteSpace(info)) {
-                    cmd.CommandText = "INSERT INTO gf.swat_ips(name, ip, additional_info) VALUES (@ip, @name, default);";
+                    cmd.CommandText = "INSERT INTO gf.swat_ips(name, ip, additional_info) VALUES (@name, @ip, default);";
                 } else {
-                    cmd.CommandText = "INSERT INTO gf.swat_ips(name, ip, additional_info) VALUES (@ip, @name, @info);";
+                    cmd.CommandText = "INSERT INTO gf.swat_ips(name, ip, additional_info) VALUES (@name, @ip, @info);";
                     cmd.Parameters.Add(new NpgsqlParameter<string>("info", info));
                 }
                 cmd.Parameters.Add(new NpgsqlParameter<string>("name", name));
@@ -46,7 +47,7 @@ namespace TheGodfather.Services.Database.Swat
         public static Task AddSwatServerAsync(this DBService db, SwatServer server)
         {
             return db.ExecuteCommandAsync(cmd => {
-                cmd.CommandText = "INSERT INTO gf.swat_servers(ip, joinport, queryport, name) VALUES (@ip, @joinport, @queryport, @name);";
+                cmd.CommandText = "INSERT INTO gf.swat_servers(ip, joinport, queryport, name) VALUES (@ip, @joinport, @queryport, @name) ON CONFLICT(ip) DO UPDATE SET name = EXCLUDED.name;";
                 cmd.Parameters.Add(new NpgsqlParameter<string>("ip", server.Ip));
                 cmd.Parameters.Add(new NpgsqlParameter<int>("joinport", server.JoinPort));
                 cmd.Parameters.Add(new NpgsqlParameter<int>("queryport", server.QueryPort));
@@ -119,10 +120,7 @@ namespace TheGodfather.Services.Database.Swat
 
             return servers.AsReadOnly();
         }
-
-        public static async Task<SwatServer> GetSwatServerAsync(this DBService db, string ip, int queryport, string name = null)
-            => await db.GetSwatServerFromDatabaseAsync(name) ?? SwatServer.FromIP(ip, queryport, name);
-
+        
         public static async Task<SwatServer> GetSwatServerFromDatabaseAsync(this DBService db, string name)
         {
             if (name == null)

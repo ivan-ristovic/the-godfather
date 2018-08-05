@@ -4,8 +4,10 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using System.Collections.Generic;
+using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
@@ -44,15 +46,22 @@ namespace TheGodfather.Modules.SWAT
             [UsageExamples("!swat db add Name 109.70.149.158")]
             public async Task AddAsync(CommandContext ctx,
                                       [Description("Player name.")] string name,
-                                      [Description("IP.")] string ip,
+                                      [Description("IP.")] CustomIpFormat ip,
                                       [RemainingText, Description("Additional info.")] string info = null)
             {
                 if (info?.Length > 120)
                     throw new InvalidCommandUsageException("Info cannot exceed 120 characters.");
 
-                await this.Database.AddSwatIpEntryAsync(name, ip, info);
-                await InformAsync(ctx, $"Added a database entry for {Formatter.Bold(name)} ({Formatter.InlineCode(ip)})", important: false);
+                await this.Database.AddSwatIpEntryAsync(ip.Content, name, info);
+                await InformAsync(ctx, $"Added a database entry for {Formatter.Bold(name)} ({Formatter.InlineCode(ip.Content)})", important: false);
             }
+
+            [Command("add"), Priority(0)]
+            public Task AddAsync(CommandContext ctx,
+                                [Description("IP.")] CustomIpFormat ip,
+                                [Description("Player name.")] string name,
+                                [RemainingText, Description("Additional info.")] string reason = null)
+                => AddAsync(ctx, name, ip, reason);
             #endregion
 
             #region COMMAND_DATABASE_DELETE
@@ -61,10 +70,10 @@ namespace TheGodfather.Modules.SWAT
             [Aliases("-", "del", "d", "-=", ">", ">>")]
             [UsageExamples("!swat db remove 123.123.123.123")]
             public async Task DeleteAsync(CommandContext ctx,
-                                         [Description("IP.")] string ip)
+                                         [Description("IP or range.")] CustomIpFormat ip)
             {
-                await this.Database.RemoveSwatIpEntryAsync(ip);
-                await InformAsync(ctx, $"Removed {Formatter.Bold(ip)} from database.", important: false);
+                await this.Database.RemoveSwatIpEntryAsync(ip.Content);
+                await InformAsync(ctx, $"Removed {Formatter.Bold(ip.Content)} from database.", important: false);
             }
             #endregion
 

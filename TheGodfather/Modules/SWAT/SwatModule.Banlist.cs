@@ -4,8 +4,10 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using System.Collections.Generic;
+using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.SWAT.Common;
@@ -37,19 +39,26 @@ namespace TheGodfather.Modules.SWAT
 
 
             #region COMMAND_BANLIST_ADD
-            [Command("add")]
+            [Command("add"), Priority(1)]
             [Description("Add a player to banlist.")]
             [Aliases("+", "a", "+=", "<", "<<")]
             [UsageExamples("!swat banlist add Name 109.70.149.158",
                            "!swat banlist add Name 109.70.149.158 Reason for ban")]
             public async Task AddAsync(CommandContext ctx,
                                       [Description("Player name.")] string name,
-                                      [Description("IP.")] string ip,
+                                      [Description("IP.")] CustomIpFormat ip,
                                       [RemainingText, Description("Reason for ban.")] string reason = null)
             {
-                await this.Database.AddSwatIpBanAsync(name, ip, reason);
-                await InformAsync(ctx, $"Added a ban entry for {Formatter.Bold(name)} ({Formatter.InlineCode(ip)})", important: false);
+                await this.Database.AddSwatIpBanAsync(ip.Content, name, reason);
+                await InformAsync(ctx, $"Added a ban entry for {Formatter.Bold(name)} ({Formatter.InlineCode(ip.ToString())})", important: false);
             }
+
+            [Command("add"), Priority(0)]
+            public Task AddAsync(CommandContext ctx,
+                                [Description("IP.")] CustomIpFormat ip,
+                                [Description("Player name.")] string name,
+                                [RemainingText, Description("Reason for ban.")] string reason = null)
+                => AddAsync(ctx, name, ip, reason);
             #endregion
 
             #region COMMAND_BANLIST_DELETE
@@ -58,10 +67,10 @@ namespace TheGodfather.Modules.SWAT
             [Aliases("-", "del", "d", "remove", "-=", ">", ">>", "rm")]
             [UsageExamples("!swat banlist delete 123.123.123.123")]
             public async Task DeleteAsync(CommandContext ctx,
-                                         [Description("IP.")] string ip)
+                                         [Description("IP.")] CustomIpFormat ip)
             {
-                await this.Database.RemoveSwatIpBanAsync(ip);
-                await InformAsync(ctx, $"Removed an IP ban rule for {Formatter.InlineCode(ip)}.", important: false);
+                await this.Database.RemoveSwatIpBanAsync(ip.Content);
+                await InformAsync(ctx, $"Removed an IP ban rule for {Formatter.InlineCode(ip.Content)}.", important: false);
             }
             #endregion
 

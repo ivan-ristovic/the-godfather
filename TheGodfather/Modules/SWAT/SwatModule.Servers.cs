@@ -6,6 +6,7 @@ using DSharpPlus.Entities;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
@@ -39,25 +40,32 @@ namespace TheGodfather.Modules.SWAT
 
 
             #region COMMAND_SERVERS_ADD
-            [Command("add")]
+            [Command("add"), Priority(1)]
             [Description("Add a server to serverlist.")]
             [Aliases("+", "a", "+=", "<", "<<")]
             [UsageExamples("!swat servers add 4u 109.70.149.158:10480",
                            "!swat servers add 4u 109.70.149.158:10480 10481")]
             public async Task AddAsync(CommandContext ctx,
                                       [Description("Name.")] string name,
-                                      [Description("IP.")] string ip,
+                                      [Description("IP.")] CustomIpFormat ip,
                                       [Description("Query port")] int queryport = 10481)
             {
-                if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(ip))
-                    throw new InvalidCommandUsageException("Invalid name or IP.");
+                if (string.IsNullOrWhiteSpace(name))
+                    throw new InvalidCommandUsageException("Invalid name.");
 
                 if (queryport <= 0 || queryport > 65535)
                     throw new InvalidCommandUsageException("Port range invalid (must be in range [1, 65535])!");
                 
-                await this.Database.AddSwatServerAsync(SwatServer.FromIP(ip, queryport, name));
+                await this.Database.AddSwatServerAsync(SwatServer.FromIP(ip.Content, queryport, name));
                 await InformAsync(ctx, "Server added. You can now query it using the name provided.", important: false);
             }
+
+            [Command("add"), Priority(0)]
+            public Task AddAsync(CommandContext ctx,
+                                [Description("IP.")] CustomIpFormat ip,
+                                [Description("Name.")] string name,
+                                [Description("Query port")] int queryport = 10481)
+                => AddAsync(ctx, name, ip, queryport);
             #endregion
 
             #region COMMAND_SERVERS_DELETE

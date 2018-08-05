@@ -63,7 +63,7 @@ namespace TheGodfather.Services.Common
                 Title = $"IP geolocation info for {this.Ip}",
             };
             
-            if (color == null)
+            if (color != null)
                 emb.WithColor(color.Value);
 
             emb.AddField("Location", $"{this.City}, {this.RegionName} {this.RegionCode}, {this.CountryName} {this.CountryCode}");

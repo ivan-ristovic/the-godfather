@@ -55,23 +55,39 @@ namespace TheGodfather.Modules.SWAT
         #endregion
 
         #region COMMAND_QUERY
-        [Command("query")]
+        [Command("query"), Priority(1)]
         [Description("Return server information.")]
         [Aliases("q", "info", "i")]
         [UsageExamples("!s4 q 109.70.149.158",
                        "!s4 q 109.70.149.158:10480",
                        "!s4 q wm")]
         public async Task QueryAsync(CommandContext ctx,
-                                    [Description("Registered name or IP.")] string ip,
+                                    [Description("Registered name or IP.")] CustomIpFormat ip,
                                     [Description("Query port")] int queryport = 10481)
         {
-            if (string.IsNullOrWhiteSpace(ip))
-                throw new InvalidCommandUsageException("IP missing.");
-
             if (queryport <= 0 || queryport > 65535)
                 throw new InvalidCommandUsageException("Port range invalid (must be in range [1, 65535])!");
 
-            SwatServer server = await this.Database.GetSwatServerAsync(ip, queryport, name: ip.ToLowerInvariant());
+            var server = SwatServer.FromIP(ip.Content, queryport);
+            SwatServerInfo info = await SwatServerInfo.QueryIPAsync(server.Ip, server.QueryPort);
+            if (info != null)
+                await ctx.RespondAsync(embed: info.ToDiscordEmbed(this.ModuleColor));
+            else
+                await InformFailureAsync(ctx, "No reply from server.");
+        }
+
+        [Command("query"), Priority(0)]
+        public async Task QueryAsync(CommandContext ctx,
+                                    [Description("Registered name or IP.")] string name,
+                                    [Description("Query port")] int queryport = 10481)
+        {
+            if (queryport <= 0 || queryport > 65535)
+                throw new InvalidCommandUsageException("Port range invalid (must be in range [1, 65535])!");
+
+            SwatServer server = await this.Database.GetSwatServerFromDatabaseAsync(name.ToLowerInvariant());
+            if (server == null)
+                throw new CommandFailedException("Server with given name is not registered.");
+
             SwatServerInfo info = await SwatServerInfo.QueryIPAsync(server.Ip, server.QueryPort);
             if (info != null)
                 await ctx.RespondAsync(embed: info.ToDiscordEmbed(this.ModuleColor));
@@ -120,19 +136,16 @@ namespace TheGodfather.Modules.SWAT
         #endregion
 
         #region COMMAND_STARTCHECK
-        [Command("startcheck"), UsesInteractivity]
+        [Command("startcheck"), Priority(1), UsesInteractivity]
         [Description("Start listening for space on a given server and notifies you when there is space.")]
         [Aliases("checkspace", "spacecheck")]
         [UsageExamples("!s4 startcheck 109.70.149.158",
                        "!s4 startcheck 109.70.149.158:10480",
                        "!swat startcheck wm")]
         public async Task StartCheckAsync(CommandContext ctx,
-                                         [Description("Registered name or IP.")] string ip,
+                                         [Description("IP.")] CustomIpFormat ip,
                                          [Description("Query port")] int queryport = 10481)
         {
-            if (string.IsNullOrWhiteSpace(ip))
-                throw new InvalidCommandUsageException("Name/IP missing.");
-
             if (queryport <= 0 || queryport > 65535)
                 throw new InvalidCommandUsageException("Port range invalid (must be in range [1, 65535])!");
 
@@ -142,10 +155,13 @@ namespace TheGodfather.Modules.SWAT
             if (this.Shared.SpaceCheckingCTS.Count > 10)
                 throw new CommandFailedException("Maximum number of simultanous checks reached (10), please try later!");
 
-            SwatServer server = await this.Database.GetSwatServerAsync(ip, queryport, name: ip.ToLowerInvariant());
+            var server = SwatServer.FromIP(ip.Content, queryport);
+
             await InformAsync(ctx, $"Starting space listening on {server.Ip}:{server.JoinPort}...", important: false);
 
-            if (!this.Shared.SpaceCheckingCTS.TryAdd(ctx.User.Id, new CancellationTokenSource()))
+            var cts = new CancellationTokenSource();
+            cts.CancelAfter(TimeSpan.FromMinutes(10));
+            if (!this.Shared.SpaceCheckingCTS.TryAdd(ctx.User.Id, cts))
                 throw new ConcurrentOperationException("Failed to register space check task! Please try again.");
 
             try {
@@ -164,6 +180,52 @@ namespace TheGodfather.Modules.SWAT
                         await Task.Delay(TimeSpan.FromSeconds(2));
                     }
                 }, 
+                this.Shared.SpaceCheckingCTS[ctx.User.Id].Token);
+            } catch {
+                this.Shared.SpaceCheckingCTS.TryRemove(ctx.User.Id, out _);
+            }
+        }
+
+        [Command("startcheck"), Priority(0)]
+        public async Task StartCheckAsync(CommandContext ctx,
+                                         [Description("Registered name.")] string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new InvalidCommandUsageException("Name/IP missing.");
+
+            if (this.Shared.SpaceCheckingCTS.ContainsKey(ctx.User.Id))
+                throw new CommandFailedException("Already checking space for you!");
+
+            if (this.Shared.SpaceCheckingCTS.Count > 10)
+                throw new CommandFailedException("Maximum number of simultanous checks reached (10), please try later!");
+
+            SwatServer server = await this.Database.GetSwatServerFromDatabaseAsync(name.ToLowerInvariant());
+            if (server == null)
+                throw new CommandFailedException("Server with given name is not registered.");
+
+            await InformAsync(ctx, $"Starting space listening on {server.Ip}:{server.JoinPort}...", important: false);
+
+            var cts = new CancellationTokenSource();
+            cts.CancelAfter(TimeSpan.FromMinutes(10));
+            if (!this.Shared.SpaceCheckingCTS.TryAdd(ctx.User.Id, cts))
+                throw new ConcurrentOperationException("Failed to register space check task! Please try again.");
+
+            try {
+                var t = Task.Run(async () => {
+                    while (this.Shared.SpaceCheckingCTS.ContainsKey(ctx.User.Id) && !this.Shared.SpaceCheckingCTS[ctx.User.Id].IsCancellationRequested) {
+                        SwatServerInfo info = await SwatServerInfo.QueryIPAsync(server.Ip, server.QueryPort);
+                        if (info == null) {
+                            if (!await ctx.WaitForBoolReplyAsync("No reply from server. Should I try again?")) {
+                                await StopCheckAsync(ctx);
+                                throw new OperationCanceledException();
+                            }
+                        } else if (info.HasSpace) {
+                            await InformAsync(ctx, StaticDiscordEmoji.AlarmClock, $"{ctx.User.Mention}, there is space on {Formatter.Bold(info.HostName)}!");
+                        }
+
+                        await Task.Delay(TimeSpan.FromSeconds(2));
+                    }
+                },
                 this.Shared.SpaceCheckingCTS[ctx.User.Id].Token);
             } catch {
                 this.Shared.SpaceCheckingCTS.TryRemove(ctx.User.Id, out _);
