@@ -11,6 +11,7 @@ using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Music.Common;
 using TheGodfather.Services;
+using TheGodfather.Services.Database;
 #endregion
 
 namespace TheGodfather.Modules.Music
@@ -26,8 +27,8 @@ namespace TheGodfather.Modules.Music
         public class PlayModule : MusicModule
         {
 
-            public PlayModule(YtService yt, SharedData shared) 
-                : base(yt, shared)
+            public PlayModule(YtService yt, SharedData shared, DBService db) 
+                : base(yt, shared, db)
             {
                 this.ModuleColor = DiscordColor.Grayple;
             }

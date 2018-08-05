@@ -41,8 +41,8 @@ namespace TheGodfather.Services
             if (string.IsNullOrWhiteSpace(sub))
                 throw new ArgumentException("Subreddit missing!", nameof(sub));
 
-            if (amount < 1 || amount > 20)
-                throw new ArgumentException("Result amount out of range (max 20)", nameof(amount));
+            if (amount < 1 || amount > 10)
+                throw new ArgumentException("Result amount out of range (max 10)", nameof(amount));
 
             IEnumerable<IGalleryItem> images = await this.gEndpoint.GetSubredditGalleryAsync(sub, order, time).ConfigureAwait(false);
             return images.Take(amount);

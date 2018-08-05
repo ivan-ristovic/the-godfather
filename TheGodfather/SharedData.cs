@@ -33,6 +33,7 @@ namespace TheGodfather
         public CancellationTokenSource MainLoopCts { get; internal set; }
         public ConcurrentDictionary<ulong, ulong> MessageCount { get; internal set; }
         public ConcurrentDictionary<ulong, Poll> Polls { get; internal set; }
+        public ConcurrentDictionary<ulong, CancellationTokenSource> SpaceCheckingCTS { get; internal set; }
         public bool StatusRotationEnabled { get; internal set; }
         public ConcurrentDictionary<int, SavedTaskExecuter> TaskExecuters { get; internal set; }
         public ConcurrentDictionary<ulong, ConcurrentHashSet<TextReaction>> TextReactions { get; internal set; }
@@ -56,6 +57,7 @@ namespace TheGodfather
             this.MessageCount = new ConcurrentDictionary<ulong, ulong>();
             this.PendingResponses = new ConcurrentDictionary<ulong, ConcurrentHashSet<ulong>>();
             this.Polls = new ConcurrentDictionary<ulong, Poll>();
+            this.SpaceCheckingCTS = new ConcurrentDictionary<ulong, CancellationTokenSource>();
             this.StatusRotationEnabled = true;
             this.TaskExecuters = new ConcurrentDictionary<int, SavedTaskExecuter>();
             this.TextReactions = new ConcurrentDictionary<ulong, ConcurrentHashSet<TextReaction>>();

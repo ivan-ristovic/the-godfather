@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace TheGodfather.Modules.SWAT.Common
+﻿namespace TheGodfather.Modules.SWAT.Common
 {
     public sealed class SwatServer
     {
@@ -23,7 +21,7 @@ namespace TheGodfather.Modules.SWAT.Common
         {
             int joinport = 10480;
 
-            var split = ip.Split(':');
+            string[] split = ip.Split(':');
             ip = split[0];
             if (split.Length > 1) {
                 if (!int.TryParse(split[1], out joinport))

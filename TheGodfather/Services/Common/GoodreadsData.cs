@@ -37,7 +37,7 @@ namespace TheGodfather.Services.Common
                 var emb = new DiscordEmbedBuilder() {
                     Title = work.Book.Title,
                     ThumbnailUrl = work.Book.ImageUrl,
-                    Color = DiscordColor.Aquamarine
+                    Color = DiscordColor.DarkGray
                 };
 
                 emb.AddField("Author", work.Book.Author.Name, inline: true);
