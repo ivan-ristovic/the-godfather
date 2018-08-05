@@ -1,32 +1,30 @@
 ﻿#region USING_DIRECTIVES
-using System.Linq;
-using System.Threading.Tasks;
-
-using TheGodfather.Common.Attributes;
-using TheGodfather.Exceptions;
-using TheGodfather.Extensions;
-using TheGodfather.Services;
-
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
+using System.Threading.Tasks;
+using TheGodfather.Common.Attributes;
+using TheGodfather.Exceptions;
+using TheGodfather.Services;
 using TheGodfather.Services.Database;
 #endregion
 
 namespace TheGodfather.Modules.Search
 {
-    [Group("goodreads"), Module(ModuleType.Searches)]
-    [Description("Goodreads commands. If invoked without a subcommand, searches Goodreads books with given query.")]
+    [Group("goodreads"), Module(ModuleType.Searches), NotBlocked]
+    [Description("Goodreads commands. Group call searches Goodreads books with given query.")]
     [Aliases("gr")]
     [UsageExamples("!goodreads Ender's Game")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    [NotBlocked]
     public class GoodreadsModule : TheGodfatherServiceModule<GoodreadsService>
     {
 
         public GoodreadsModule(GoodreadsService goodreads, SharedData shared, DBService db)
-            : base(goodreads, shared, db) { }
+            : base(goodreads, shared, db)
+        {
+            this.ModuleColor = DiscordColor.DarkGray;
+        }
 
 
         [GroupCommand]
@@ -36,7 +34,7 @@ namespace TheGodfather.Modules.Search
 
 
         #region COMMAND_GOODREADS_BOOK
-        [Command("book"), Module(ModuleType.Searches)]
+        [Command("book")]
         [Description("Search Goodreads books by title, author, or ISBN.")]
         [Aliases("books", "b")]
         [UsageExamples("!goodreads book Ender's Game")]
@@ -46,10 +44,8 @@ namespace TheGodfather.Modules.Search
             if (this.Service.IsDisabled())
                 throw new ServiceDisabledException();
 
-            var res = await this.Service.SearchBooksAsync(query)
-                .ConfigureAwait(false);
-            await ctx.Client.GetInteractivity().SendPaginatedMessage(ctx.Channel, ctx.User, res.ToPaginatedList())
-                .ConfigureAwait(false);
+            var res = await this.Service.SearchBooksAsync(query);
+            await ctx.Client.GetInteractivity().SendPaginatedMessage(ctx.Channel, ctx.User, res.ToPaginatedList());
         }
         #endregion
     }

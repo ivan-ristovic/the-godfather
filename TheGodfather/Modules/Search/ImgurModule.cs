@@ -1,39 +1,39 @@
 ﻿#region USING_DIRECTIVES
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-using TheGodfather.Common.Attributes;
-using TheGodfather.Exceptions;
-using TheGodfather.Extensions;
-using TheGodfather.Services;
-
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-
 using Imgur.API;
 using Imgur.API.Enums;
 using Imgur.API.Models;
 using Imgur.API.Models.Impl;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using TheGodfather.Common.Attributes;
+using TheGodfather.Exceptions;
+using TheGodfather.Extensions;
+using TheGodfather.Services;
 using TheGodfather.Services.Database;
 #endregion
 
 namespace TheGodfather.Modules.Search
 {
-    [Group("imgur"), Module(ModuleType.Searches)]
-    [Description("Search imgur. Invoking without subcommand retrieves top ranked images from given subreddit.")]
+    [Group("imgur"), Module(ModuleType.Searches), NotBlocked]
+    [Description("Search imgur. Group call retrieves top ranked images from given subreddit.")]
     [Aliases("img", "im", "i")]
     [UsageExamples("!imgur aww",
                    "!imgur 10 aww",
                    "!imgur aww 10")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    [NotBlocked]
     public class ImgurModule : TheGodfatherServiceModule<ImgurService>
     {
 
         public ImgurModule(ImgurService imgur, SharedData shared, DBService db)
-            : base(imgur, shared, db) { }
+            : base(imgur, shared, db)
+        {
+
+        }
 
 
         [GroupCommand, Priority(1)]
@@ -43,11 +43,6 @@ namespace TheGodfather.Modules.Search
         {
             if (this.Service.IsDisabled())
                 throw new ServiceDisabledException();
-
-            if (string.IsNullOrWhiteSpace(sub))
-                throw new InvalidCommandUsageException("Missing search query.");
-            if (amount < 1 || amount > 10)
-                throw new CommandFailedException("Number of results must be in range [1, 10].");
 
             var res = await this.Service.GetItemsFromSubAsync(
                 sub,
@@ -69,7 +64,6 @@ namespace TheGodfather.Modules.Search
 
         #region COMMAND_IMGUR_LATEST
         [Command("latest"), Priority(1)]
-        [Module(ModuleType.Searches)]
         [Description("Return latest images from given subreddit.")]
         [Aliases("l", "new", "newest")]
         [UsageExamples("!imgur latest 5 aww",
@@ -81,20 +75,8 @@ namespace TheGodfather.Modules.Search
             if (this.Service.IsDisabled())
                 throw new ServiceDisabledException();
 
-            if (string.IsNullOrWhiteSpace(sub))
-                throw new InvalidCommandUsageException("Missing subreddit.");
-            if (amount < 1 || amount > 10)
-                throw new CommandFailedException("Number of results must be in range [1, 10].");
-
-            var res = await this.Service.GetItemsFromSubAsync(
-                sub, 
-                amount, 
-                SubredditGallerySortOrder.Time, 
-                TimeWindow.Day
-            ).ConfigureAwait(false);
-
-            await PrintImagesAsync(ctx.Channel, res, amount)
-                .ConfigureAwait(false);
+            var res = await this.Service.GetItemsFromSubAsync(sub, amount, SubredditGallerySortOrder.Time, TimeWindow.Day);
+            await PrintImagesAsync(ctx.Channel, res, amount);
         }
 
         [Command("latest"), Priority(0)]
@@ -106,7 +88,6 @@ namespace TheGodfather.Modules.Search
 
         #region COMMAND_IMGUR_TOP
         [Command("top"), Priority(3)]
-        [Module(ModuleType.Searches)]
         [Description("Return amount of top rated images in the given subreddit for given timespan.")]
         [Aliases("t")]
         [UsageExamples("!imgur top day 10 aww",
@@ -121,20 +102,8 @@ namespace TheGodfather.Modules.Search
             if (this.Service.IsDisabled())
                 throw new ServiceDisabledException();
 
-            if (string.IsNullOrWhiteSpace(sub))
-                throw new InvalidCommandUsageException("Missing subreddit.");
-            if (amount < 1 || amount > 10)
-                throw new CommandFailedException("Number of results must be in range [1, 10].");
-
-            var res = await this.Service.GetItemsFromSubAsync(
-                sub,
-                amount,
-                SubredditGallerySortOrder.Time,
-                timespan
-            ).ConfigureAwait(false);
-
-            await PrintImagesAsync(ctx.Channel, res, amount)
-                .ConfigureAwait(false);
+            var res = await this.Service.GetItemsFromSubAsync(sub, amount, SubredditGallerySortOrder.Time, timespan);
+            await PrintImagesAsync(ctx.Channel, res, amount);
         }
 
         [Command("top"), Priority(2)]
@@ -164,8 +133,7 @@ namespace TheGodfather.Modules.Search
         private async Task PrintImagesAsync(DiscordChannel channel, IEnumerable<IGalleryItem> results, int num)
         {
             if (!results.Any()) {
-                await channel.InformFailureAsync("No results...")
-                    .ConfigureAwait(false);
+                await channel.InformFailureAsync("No results...");
                 return;
             }
 
@@ -173,30 +141,27 @@ namespace TheGodfather.Modules.Search
                 foreach (var im in results) {
                     if (im.GetType().Name == "GalleryImage") {
                         var img = ((GalleryImage)im);
-                        if (img.Nsfw != null && img.Nsfw == true && !channel.IsNSFW && !channel.Name.StartsWith("nsfw", System.StringComparison.InvariantCultureIgnoreCase))
+                        if (img.Nsfw != null && img.Nsfw == true && !channel.IsNSFW && !channel.Name.StartsWith("nsfw", StringComparison.InvariantCultureIgnoreCase))
                             throw new CommandFailedException("This is not a NSFW channel!");
                         await channel.SendMessageAsync(img.Link)
                             .ConfigureAwait(false);
                     } else if (im.GetType().Name == "GalleryAlbum") {
                         var img = ((GalleryAlbum)im);
-                        if (img.Nsfw != null && img.Nsfw == true && !channel.IsNSFW && !channel.Name.StartsWith("nsfw", System.StringComparison.InvariantCultureIgnoreCase))
+                        if (img.Nsfw != null && img.Nsfw == true && !channel.IsNSFW && !channel.Name.StartsWith("nsfw", StringComparison.InvariantCultureIgnoreCase))
                             throw new CommandFailedException("This is not a NSFW channel!");
                         await channel.SendMessageAsync(img.Link)
                             .ConfigureAwait(false);
                     } else
                         throw new CommandFailedException("Imgur API error.");
 
-                    await Task.Delay(1000)
-                        .ConfigureAwait(false);
+                    await Task.Delay(TimeSpan.FromSeconds(1));
                 }
             } catch (ImgurException e) {
                 throw new CommandFailedException("Imgur API error.", e);
             }
 
-            if (results.Count() != num) {
-                await channel.InformFailureAsync("These are all of the results returned.")
-                    .ConfigureAwait(false);
-            }
+            if (results.Count() != num)
+                await channel.InformFailureAsync("These are all of the results returned.");
         }
         #endregion
     }

@@ -1,54 +1,53 @@
 ﻿#region USING_DIRECTIVES
-using System.Threading.Tasks;
-
-using TheGodfather.Common.Attributes;
-using TheGodfather.Exceptions;
-using TheGodfather.Extensions;
-using TheGodfather.Services;
-using TheGodfather.Services.Database;
-using TheGodfather.Services.Database.Feeds;
-
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Entities;
+using System.Collections.Generic;
+using System.ServiceModel.Syndication;
+using System.Threading.Tasks;
+using TheGodfather.Common.Attributes;
+using TheGodfather.Exceptions;
+using TheGodfather.Services;
+using TheGodfather.Services.Database;
+using TheGodfather.Services.Database.Feeds;
 #endregion
 
 namespace TheGodfather.Modules.Search
 {
-    [Group("reddit"), Module(ModuleType.Searches)]
-    [Description("Reddit commands.")]
+    [Group("reddit"), Module(ModuleType.Searches), NotBlocked]
+    [Description("Reddit commands. Group call prints latest posts from given sub.")]
     [Aliases("r")]
     [UsageExamples("!reddit aww")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    [NotBlocked]
     public class RedditModule : TheGodfatherModule
     {
 
         public RedditModule(SharedData shared, DBService db)
-                : base(shared, db) { }
+            : base(shared, db)
+        {
+            this.ModuleColor = DiscordColor.Orange;// new DiscordColor();
+        }
 
 
         [GroupCommand]
-        public async Task ExecuteGroupAsync(CommandContext ctx,
-                                           [Description("Subreddit.")] string sub = "all")
+        public Task ExecuteGroupAsync(CommandContext ctx,
+                                     [Description("Subreddit.")] string sub = "all")
         {
-            if (string.IsNullOrWhiteSpace(sub))
-                throw new InvalidCommandUsageException("Subreddit missing.");
-
-            var url = RssService.GetFeedURLForSubreddit(sub, out string rsub);
+            string url = RssService.GetFeedURLForSubreddit(sub, out string rsub);
             if (url == null)
                 throw new CommandFailedException("That subreddit doesn't exist.");
 
-            var res = RssService.GetFeedResults(url);
+            IReadOnlyList<SyndicationItem> res = RssService.GetFeedResults(url);
             if (res == null)
                 throw new CommandFailedException($"Failed to get the data from that subreddit ({Formatter.Bold(rsub)}).");
-            await RssService.SendFeedResultsAsync(ctx.Channel, res)
-                .ConfigureAwait(false);
+
+            return RssService.SendFeedResultsAsync(ctx.Channel, res);
         }
 
 
         #region COMMAND_RSS_REDDIT_SUBSCRIBE
-        [Command("subscribe"), Module(ModuleType.Searches)]
+        [Command("subscribe")]
         [Description("Add new feed for a subreddit.")]
         [Aliases("add", "a", "+", "sub")]
         [UsageExamples("!reddit sub aww")]
@@ -56,21 +55,19 @@ namespace TheGodfather.Modules.Search
         public async Task SubscribeAsync(CommandContext ctx,
                                         [Description("Subreddit.")] string sub)
         {
-            var url = RssService.GetFeedURLForSubreddit(sub, out string rsub);
+            string url = RssService.GetFeedURLForSubreddit(sub, out string rsub);
             if (url == null)
                 throw new CommandFailedException("That subreddit doesn't exist.");
 
-            if (!await this.Database.TryAddSubscriptionAsync(ctx.Channel.Id, url, rsub).ConfigureAwait(false))
+            if (!await this.Database.TryAddSubscriptionAsync(ctx.Channel.Id, url, rsub))
                 throw new CommandFailedException("You are already subscribed to this subreddit!");
 
-            await InformAsync(ctx, $"Subscribed to {Formatter.Bold(rsub)} !")
-                .ConfigureAwait(false);
+            await InformAsync(ctx, $"Subscribed to {Formatter.Bold(rsub)}", important: false);
         }
         #endregion
 
         #region COMMAND_RSS_REDDIT_UNSUBSCRIBE
         [Command("unsubscribe"), Priority(1)]
-        [Module(ModuleType.Searches)]
         [Description("Remove a subreddit feed using subreddit name or subscription ID (use command ``feed list`` to see IDs).")]
         [Aliases("del", "d", "rm", "-", "unsub")]
         [UsageExamples("!reddit unsub aww",
@@ -82,20 +79,16 @@ namespace TheGodfather.Modules.Search
             if (RssService.GetFeedURLForSubreddit(sub, out string rsub) == null)
                 throw new CommandFailedException("That subreddit doesn't exist.");
 
-            await this.Database.RemoveSubscriptionByNameAsync(ctx.Channel.Id, rsub)
-                .ConfigureAwait(false);
-            await InformAsync(ctx, $"Unsubscribed from {Formatter.Bold(rsub)} !")
-                .ConfigureAwait(false);
+            await this.Database.RemoveSubscriptionByNameAsync(ctx.Channel.Id, rsub);
+            await InformAsync(ctx, $"Unsubscribed from {Formatter.Bold(rsub)}", important: false);
         }
 
         [Command("unsubscribe"), Priority(0)]
         public async Task UnsubscribeAsync(CommandContext ctx,
                                           [Description("Subscription ID.")] int id)
         {
-            await this.Database.RemoveSubscriptionByIdAsync(ctx.Channel.Id, id)
-                .ConfigureAwait(false);
-            await InformAsync(ctx)
-                .ConfigureAwait(false);
+            await this.Database.RemoveSubscriptionByIdAsync(ctx.Channel.Id, id);
+            await InformAsync(ctx, $"Removed subscription with ID {Formatter.Bold(id.ToString())}", important: false);
         }
         #endregion
     }

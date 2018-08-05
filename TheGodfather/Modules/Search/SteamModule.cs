@@ -1,34 +1,34 @@
 ﻿#region USING_DIRECTIVES
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-
-using TheGodfather.Common.Attributes;
-using TheGodfather.Extensions;
-using TheGodfather.Services;
-
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Entities;
+using System.Text.RegularExpressions;
+using System.Threading.Tasks;
+using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
+using TheGodfather.Services;
 using TheGodfather.Services.Database;
 #endregion
 
 namespace TheGodfather.Modules.Search
 {
-    [Group("steam"), Module(ModuleType.Searches)]
-    [Description("Steam commands.")]
+    [Group("steam"), Module(ModuleType.Searches), NotBlocked]
+    [Description("Steam commands. Group call searches steam profiles for a given ID.")]
     [Aliases("s", "st")]
     [UsageExamples("!steam profile 123456123")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    [NotBlocked]
     public class SteamModule : TheGodfatherServiceModule<SteamService>
     {
 
         public SteamModule(SteamService steam, SharedData shared, DBService db)
-            : base(steam, shared, db) { }
+            : base(steam, shared, db)
+        {
+            this.ModuleColor = DiscordColor.Blue;
+        }
 
 
         #region COMMAND_STEAM_PROFILE
-        [Command("profile"), Module(ModuleType.Searches)]
+        [Command("profile")]
         [Description("Get Steam user information for user based on his ID.")]
         [Aliases("id", "user")]
         public async Task InfoAsync(CommandContext ctx,
@@ -37,17 +37,13 @@ namespace TheGodfather.Modules.Search
             if (this.Service.IsDisabled())
                 throw new ServiceDisabledException();
 
-            var em = await this.Service.GetEmbeddedInfoAsync(id)
-                .ConfigureAwait(false);
-
+            DiscordEmbed em = await this.Service.GetEmbeddedInfoAsync(id);
             if (em == null) {
-                await InformFailureAsync(ctx, "User with such ID does not exist!")
-                    .ConfigureAwait(false);
+                await InformFailureAsync(ctx, "User with such ID does not exist!");
                 return;
             }
 
-            await ctx.RespondAsync(embed: em)
-                .ConfigureAwait(false);
+            await ctx.RespondAsync(embed: em);
         }
         #endregion
     }

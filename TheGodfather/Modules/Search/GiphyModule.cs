@@ -34,25 +34,18 @@ namespace TheGodfather.Modules.Search
             if (this.Service.IsDisabled())
                 throw new ServiceDisabledException();
 
-            if (string.IsNullOrWhiteSpace(query))
-                throw new InvalidCommandUsageException("Missing search query.");
-
-            var res = await this.Service.SearchAsync(query)
-                .ConfigureAwait(false);
-
+            var res = await this.Service.SearchAsync(query);
             if (!res.Any()) {
-                await InformFailureAsync(ctx, "No results...")
-                    .ConfigureAwait(false);
+                await InformFailureAsync(ctx, "No results...");
                 return;
             }
 
-            await ctx.RespondAsync(res.First().Url)
-                .ConfigureAwait(false);
+            await ctx.RespondAsync(res.First().Url);
         }
 
 
         #region COMMAND_GIPHY_RANDOM
-        [Command("random"), Module(ModuleType.Searches)]
+        [Command("random")]
         [Description("Return a random GIF.")]
         [Aliases("r", "rand", "rnd")]
         [UsageExamples("!gif random")]
@@ -61,15 +54,18 @@ namespace TheGodfather.Modules.Search
             if (this.Service.IsDisabled())
                 throw new ServiceDisabledException();
 
-            var res = await this.Service.GetRandomGifAsync()
-                .ConfigureAwait(false);
-            await ctx.RespondAsync(res.Url)
-                .ConfigureAwait(false);
+            var res = await this.Service.GetRandomGifAsync();
+
+            await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
+                Title = "Random gif:",
+                ImageUrl = res.Url,
+                Color = this.ModuleColor
+            }.Build());
         }
         #endregion
 
         #region COMMAND_GIPHY_TRENDING
-        [Command("trending"), Module(ModuleType.Searches)]
+        [Command("trending")]
         [Description("Return an amount of trending GIFs.")]
         [Aliases("t", "tr", "trend")]
         [UsageExamples("!gif trending",
@@ -80,22 +76,17 @@ namespace TheGodfather.Modules.Search
             if (this.Service.IsDisabled())
                 throw new ServiceDisabledException();
 
-            if (amount < 1 || amount > 10)
-                throw new CommandFailedException("Number of results must be in range [1, 10].");
-
-            var res = await this.Service.GetTrendingGifsAsync(amount)
-                .ConfigureAwait(false);
+            var res = await this.Service.GetTrendingGifsAsync(amount);
 
             var emb = new DiscordEmbedBuilder() {
                 Title = "Trending gifs:",
-                Color = DiscordColor.Gold
+                Color = this.ModuleColor
             };
 
-            foreach (var r in res)
-                emb.AddField($"{r.Username} (rating: {r.Rating})", r.EmbedUrl);
+            foreach (var gif in res)
+                emb.AddField($"{gif.Username} (rating: {gif.Rating})", gif.EmbedUrl);
 
-            await ctx.RespondAsync(embed: emb.Build())
-                .ConfigureAwait(false);
+            await ctx.RespondAsync(embed: emb.Build());
         }
         #endregion
     }

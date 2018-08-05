@@ -1,78 +1,64 @@
 ﻿#region USING_DIRECTIVES
-using System;
-using System.Linq;
-using System.Threading.Tasks;
-
-using TheGodfather.Common;
-using TheGodfather.Common.Attributes;
-using TheGodfather.Exceptions;
-using TheGodfather.Extensions;
-using TheGodfather.Services;
-
-using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Entities;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using TheGodfather.Common.Attributes;
+using TheGodfather.Services;
 using TheGodfather.Services.Database;
 #endregion
 
 namespace TheGodfather.Modules.Search
 {
-    [Group("joke"), Module(ModuleType.Searches)]
-    [Description("Group for searching jokes. If invoked without a subcommand, returns a random joke.")]
+    [Group("joke"), Module(ModuleType.Searches), NotBlocked]
+    [Description("Group for searching jokes. Group call returns a random joke.")]
     [Aliases("jokes", "j")]
     [UsageExamples("!joke")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    [NotBlocked]
     public class JokesModule : TheGodfatherModule
     {
 
         public JokesModule(SharedData shared, DBService db)
             : base(shared, db)
         {
-                
+            this.ModuleColor = DiscordColor.PhthaloBlue;
         }
 
         [GroupCommand]
         public async Task ExecuteGroupAsync(CommandContext ctx)
         {
-            string joke = await JokesService.GetRandomJokeAsync()
-                .ConfigureAwait(false);
-            await InformAsync(ctx, joke, ":joy:")
-                .ConfigureAwait(false);
+            string joke = await JokesService.GetRandomJokeAsync();
+            await InformAsync(ctx, joke, ":joy:");
         }
 
 
         #region COMMAND_JOKE_SEARCH
-        [Command("search"), Module(ModuleType.Searches)]
+        [Command("search")]
         [Description("Search for the joke containing the given query.")]
         [Aliases("s")]
         [UsageExamples("!joke search blonde")]
         public async Task SearchAsync(CommandContext ctx,
                                      [RemainingText, Description("Query.")] string query)
         {
-            var jokes = await JokesService.SearchForJokesAsync(query)
-                .ConfigureAwait(false);
-            if (jokes != null) {
-                await InformAsync(ctx, $"Results:\n\n{string.Join("\n", jokes.Take(5))}", ":joy:")
-                    .ConfigureAwait(false);
-            } else {
-                await InformFailureAsync(ctx, "No results...")
-                    .ConfigureAwait(false);
-            }
+            IReadOnlyList<string> jokes = await JokesService.SearchForJokesAsync(query);
+            if (jokes != null)
+                await InformAsync(ctx, $"Results:\n\n{string.Join("\n", jokes.Take(5))}", ":joy:");
+            else
+                await InformFailureAsync(ctx, "No results...");
         }
         #endregion
 
         #region COMMAND_JOKE_YOURMOM
-        [Command("yourmom"), Module(ModuleType.Searches)]
+        [Command("yourmom")]
         [Description("Yo mama so...")]
         [Aliases("mama", "m", "yomomma", "yomom", "yomoma", "yomamma", "yomama")]
         [UsageExamples("!joke yourmom")]
         public async Task YomamaAsync(CommandContext ctx)
         {
-            string joke = await JokesService.GetRandomYoMommaJokeAsync()
-                .ConfigureAwait(false);
-            await InformAsync(ctx, joke, ":joy:")
-                .ConfigureAwait(false);
+            string joke = await JokesService.GetRandomYoMommaJokeAsync();
+            await InformAsync(ctx, joke, ":joy:");
         }
         #endregion
     }

@@ -1,30 +1,32 @@
 ﻿#region USING_DIRECTIVES
+using DSharpPlus.CommandsNext;
+using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Entities;
+using DSharpPlus.Interactivity;
+using System.Collections.Generic;
 using System.Threading.Tasks;
-
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Services;
 using TheGodfather.Services.Common;
-
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Interactivity;
 using TheGodfather.Services.Database;
 #endregion
 
 namespace TheGodfather.Modules.Search
 {
-    [Group("imdb"), Module(ModuleType.Searches)]
-    [Description("Search Open Movie Database.")]
+    [Group("imdb"), Module(ModuleType.Searches), NotBlocked]
+    [Description("Search Open Movie Database. Group call searches by title.")]
     [Aliases("movies", "series", "serie", "movie", "film", "cinema", "omdb")]
     [UsageExamples("!imdb Airplane")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
-    [NotBlocked]
     public class OMDbModule : TheGodfatherServiceModule<OMDbService>
     {
 
         public OMDbModule(OMDbService omdb, SharedData shared, DBService db)
-            : base(omdb, shared, db) { }
+            : base(omdb, shared, db)
+        {
+            this.ModuleColor = DiscordColor.Yellow;
+        }
 
 
         [GroupCommand, Priority(0)]
@@ -34,7 +36,7 @@ namespace TheGodfather.Modules.Search
 
 
         #region COMMAND_IMDB_SEARCH
-        [Command("search"), Module(ModuleType.Searches)]
+        [Command("search")]
         [Description("Searches IMDb for given query and returns paginated results.")]
         [Aliases("s", "find")]
         [UsageExamples("!imdb search Kill Bill")]
@@ -44,19 +46,18 @@ namespace TheGodfather.Modules.Search
             if (this.Service.IsDisabled())
                 throw new ServiceDisabledException();
 
-            var pages = await this.Service.GetPaginatedResultsAsync(query)
-                .ConfigureAwait(false);
+            IReadOnlyList<Page> pages = await this.Service.GetPaginatedResultsAsync(query);
+            if (pages == null) {
+                await InformFailureAsync(ctx, "No results found!");
+                return;
+            }
 
-            if (pages == null)
-                throw new CommandFailedException("No results found!");
-
-            await ctx.Client.GetInteractivity().SendPaginatedMessage(ctx.Channel, ctx.User, pages)
-                .ConfigureAwait(false);
+            await ctx.Client.GetInteractivity().SendPaginatedMessage(ctx.Channel, ctx.User, pages);
         }
         #endregion
 
         #region COMMAND_IMDB_TITLE
-        [Command("title"), Module(ModuleType.Searches)]
+        [Command("title")]
         [Description("Search by title.")]
         [Aliases("t", "name", "n")]
         [UsageExamples("!imdb title Airplane")]
@@ -66,7 +67,7 @@ namespace TheGodfather.Modules.Search
         #endregion
 
         #region COMMAND_IMDB_ID
-        [Command("id"), Module(ModuleType.Searches)]
+        [Command("id")]
         [Description("Search by IMDb ID.")]
         [UsageExamples("!imdb id tt4158110")]
         public Task SearchByIdAsync(CommandContext ctx,
@@ -81,14 +82,13 @@ namespace TheGodfather.Modules.Search
             if (this.Service.IsDisabled())
                 throw new ServiceDisabledException();
 
-            var info = await this.Service.GetSingleResultAsync(type, query)
-                .ConfigureAwait(false);
+            MovieInfo info = await this.Service.GetSingleResultAsync(type, query);
+            if (info == null) {
+                await InformFailureAsync(ctx, "No results found!");
+                return;
+            }
 
-            if (info == null)
-                throw new CommandFailedException("No results found!");
-
-            await ctx.RespondAsync(embed: info.ToDiscordEmbed())
-                .ConfigureAwait(false);
+            await ctx.RespondAsync(embed: info.ToDiscordEmbed());
         }
         #endregion
     }
