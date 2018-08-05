@@ -48,7 +48,7 @@ namespace TheGodfather.Extensions
                 Color = DiscordColor.Yellow
             });
 
-            if (await ctx.Client.GetInteractivity().WaitForBoolReplyAsync(ctx))
+            if (await ctx.Client.GetInteractivity().WaitForBoolReplyAsync(channel.Id, ctx.User.Id))
                 return true;
 
             if (reply)

@@ -48,13 +48,14 @@ namespace TheGodfather.Modules.Administration
                 CachedGuildConfig gcfg = this.Shared.GetGuildConfig(ctx.Guild.Id);
 
                 emb.AddField("Prefix", this.Shared.GetGuildPrefix(ctx.Guild.Id), inline: true);
+                emb.AddField("Silent replies active", gcfg.ReactionResponse.ToString(), inline: true);
                 emb.AddField("Command suggestions active", gcfg.SuggestionsEnabled.ToString(), inline: true);
                 emb.AddField("Action logging enabled", gcfg.LoggingEnabled.ToString(), inline: true);
 
-                var wchn = await this.Database.GetWelcomeChannelAsync(ctx.Guild);
+                DiscordChannel wchn = await this.Database.GetWelcomeChannelAsync(ctx.Guild);
                 emb.AddField("Welcome messages", wchn != null ? $"on @ {wchn.Mention}" : "off", inline: true);
 
-                var lchn = await this.Database.GetLeaveChannelAsync(ctx.Guild);
+                DiscordChannel lchn = await this.Database.GetLeaveChannelAsync(ctx.Guild);
                 emb.AddField("Leave messages", lchn != null ? $"on @ {lchn.Mention}" : "off", inline: true);
 
                 if (gcfg.LinkfilterEnabled) {
@@ -87,9 +88,12 @@ namespace TheGodfather.Modules.Administration
             {
                 DiscordChannel channel = ctx.Guild.Channels.FirstOrDefault(c => c.Name == "gf_setup" && c.Type == ChannelType.Text);
                 if (channel == null) {
-                    if (await ctx.WaitForBoolReplyAsync($"Before we start, if you want to move this somewhere else, would you like me to create a temporary public blank channel for the setup? Please reply with yes if you wish for me to create the channel or with no if you want us to continue here. Alternatively, if you do not want that channel to be public, let this command to timeout and create the channel yourself with name {Formatter.Bold("gf_setup")} and whatever permissions you like (just let me access it) and re-run the wizard.", reply: false)) {
+                    if (await ctx.WaitForBoolReplyAsync($"Before we start, if you want to move this to somewhere else, would you like me to create a temporary public blank channel for the setup? Please reply with yes if you wish for me to create the channel or with no if you want us to continue here. Alternatively, if you do not want that channel to be public, let this command to timeout and create the channel yourself with name {Formatter.Bold("gf_setup")} and whatever permissions you like (just let me access it) and re-run the wizard.", reply: false)) {
                         try {
                             channel = await ctx.Guild.CreateChannelAsync("gf_setup", ChannelType.Text, reason: "TheGodfather setup channel creation.");
+                            await channel.AddOverwriteAsync(ctx.Guild.EveryoneRole, deny: Permissions.AccessChannels);
+                            await channel.AddOverwriteAsync(ctx.Member, allow: Permissions.AccessChannels | Permissions.SendMessages);
+                            await channel.AddOverwriteAsync(ctx.Client.CurrentUser as DiscordMember, allow: Permissions.AccessChannels | Permissions.SendMessages);
                             await InformAsync(ctx, $"Alright, let's move the setup to {channel.Mention}");
                         } catch {
                             await InformFailureAsync(ctx, $"I have failed to create a setup channel. Could you kindly create the channel called {Formatter.Bold("gf_setup")} and then re-run the command or give me the permission to create channels? The wizard will now exit...");
@@ -130,7 +134,7 @@ namespace TheGodfather.Modules.Administration
                 ulong wcid = 0;
                 string wmessage = null;
                 if (await channel.WaitForBoolResponseAsync(ctx, "I can also send a welcome message when someone joins the guild. Do you wish to enable this feature?", reply: false)) {
-                    await channel.EmbedAsync($"I will need a channel where to send the welcome messages. Please reply with a channel mention, for example {Formatter.Bold("#general")}");
+                    await channel.EmbedAsync($"I will need a channel where to send the welcome messages. Please reply with a channel mention, for example {Formatter.Bold(ctx.Guild.GetDefaultChannel()?.Mention ?? "#general")}");
                     var mctx = await interactivity.WaitForMessageAsync(
                         m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id && m.MentionedChannels.Count == 1
                     );
@@ -153,7 +157,7 @@ namespace TheGodfather.Modules.Administration
                 ulong lcid = 0;
                 string lmessage = null;
                 if (await channel.WaitForBoolResponseAsync(ctx, "The same applies for member leave messages. Do you wish to enable this feature?", reply: false)) {
-                    await channel.EmbedAsync($"I will need a channel where to send the leave messages. Please reply with a channel mention, for example {Formatter.Bold("#general")}");
+                    await channel.EmbedAsync($"I will need a channel where to send the leave messages. Please reply with a channel mention, for example {Formatter.Bold(ctx.Guild.GetDefaultChannel()?.Mention ?? "#general")}");
                     var mctx = await interactivity.WaitForMessageAsync(
                         m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id && m.MentionedChannels.Count == 1
                     );
@@ -234,12 +238,22 @@ namespace TheGodfather.Modules.Administration
 
                 await channel.EmbedAsync($"Selected settings:\n\n{sb.ToString()}");
 
-                if (await channel.WaitForBoolResponseAsync(ctx, "We are almost done! Please review the settings above and say whether you want me to apply them. (y/n)")) {
+                if (await channel.WaitForBoolResponseAsync(ctx, "We are almost done! Please review the settings above and say whether you want me to apply them.")) {
+                    this.Shared.GuildConfigurations[ctx.Guild.Id] = gcfg;
+
                     await this.Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg);
-                    await this.Database.SetWelcomeChannelAsync(ctx.Guild.Id, wcid);
-                    await this.Database.SetWelcomeMessageAsync(ctx.Guild.Id, wmessage);
-                    await this.Database.SetLeaveChannelAsync(ctx.Guild.Id, lcid);
-                    await this.Database.SetLeaveMessageAsync(ctx.Guild.Id, lmessage);
+                    if (wcid != 0)
+                        await this.Database.SetWelcomeChannelAsync(ctx.Guild.Id, wcid);
+                    else
+                        await this.Database.RemoveWelcomeChannelAsync(ctx.Guild.Id);
+                    if (!string.IsNullOrWhiteSpace(wmessage))
+                        await this.Database.SetWelcomeMessageAsync(ctx.Guild.Id, wmessage);
+                    if (lcid != 0)
+                        await this.Database.SetLeaveChannelAsync(ctx.Guild.Id, lcid);
+                    else
+                        await this.Database.RemoveLeaveChannelAsync(ctx.Guild.Id);
+                    if (!string.IsNullOrWhiteSpace(lmessage))
+                        await this.Database.SetLeaveMessageAsync(ctx.Guild.Id, lmessage);
 
                     DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
                     if (logchn != null) {
