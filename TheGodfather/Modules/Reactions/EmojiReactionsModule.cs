@@ -31,7 +31,7 @@ namespace TheGodfather.Modules.Reactions
         public EmojiReactionsModule(SharedData shared, DBService db) 
             : base(shared, db)
         {
-            this.ModuleColor = DiscordColor.Blurple;
+            this.ModuleColor = DiscordColor.VeryDarkGray;
         }
 
 

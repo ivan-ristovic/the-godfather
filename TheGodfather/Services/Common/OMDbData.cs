@@ -88,14 +88,16 @@ namespace TheGodfather.Services.Common
         public string Year { get; set; }
 
 
-        public DiscordEmbed ToDiscordEmbed()
+        public DiscordEmbed ToDiscordEmbed(DiscordColor? color = null)
         {
             var emb = new DiscordEmbedBuilder() {
                 Title = this.Title,
                 Description = this.Plot,
                 Url = $"http://www.imdb.com/title/{ this.IMDbId }",
-                Color = DiscordColor.Yellow
             };
+
+            if (color != null)
+                emb.WithColor(color.Value);
 
             if (!string.IsNullOrWhiteSpace(this.Type))
                 emb.AddField("Type", this.Type, inline: true);
@@ -127,7 +129,7 @@ namespace TheGodfather.Services.Common
             return emb.Build();
         }
         
-        public Page ToDiscordPage()
-            => new Page() { Embed = this.ToDiscordEmbed() };
+        public Page ToDiscordPage(DiscordColor? color = null)
+            => new Page() { Embed = this.ToDiscordEmbed(color) };
     }
 }

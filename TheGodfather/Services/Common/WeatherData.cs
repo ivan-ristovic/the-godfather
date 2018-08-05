@@ -80,11 +80,12 @@ namespace TheGodfather.Services.Common
         public int Cod { get; set; }
 
 
-        public DiscordEmbed ToDiscordEmbed()
+        public DiscordEmbed ToDiscordEmbed(DiscordColor? color = null)
         {
-            var emb = new DiscordEmbedBuilder() {
-                Color = DiscordColor.Aquamarine
-            };
+            var emb = new DiscordEmbedBuilder();
+
+            if (color != null)
+                emb.WithColor(color.Value);
 
             emb.AddField($"{StaticDiscordEmoji.Globe} Location", $"[{this.Name + ", " + this.Sys.Country}](https://openweathermap.org/city/{ this.Id })", inline: true);
             emb.AddField($"{StaticDiscordEmoji.Ruler} Coordinates", $"{this.Coord.Lat}, {this.Coord.Lon}", inline: true);

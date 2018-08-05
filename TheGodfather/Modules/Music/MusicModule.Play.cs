@@ -95,7 +95,7 @@ namespace TheGodfather.Modules.Music
 
                 if (MusicPlayers.ContainsKey(ctx.Guild.Id)) {
                     MusicPlayers[ctx.Guild.Id].Enqueue(si);
-                    await ctx.RespondAsync("Added to queue:", embed: si.ToDiscordEmbed());
+                    await ctx.RespondAsync("Added to queue:", embed: si.ToDiscordEmbed(this.ModuleColor));
                 } else {
                     if (!MusicPlayers.TryAdd(ctx.Guild.Id, new MusicPlayer(ctx.Client, ctx.Channel, vnc)))
                         throw new ConcurrentOperationException("Failed to initialize music player!");
@@ -121,7 +121,7 @@ namespace TheGodfather.Modules.Music
 
                 if (MusicPlayers.ContainsKey(ctx.Guild.Id)) {
                     MusicPlayers[ctx.Guild.Id].Enqueue(si);
-                    await ctx.RespondAsync("Added to queue:", embed: si.ToDiscordEmbed());
+                    await ctx.RespondAsync("Added to queue:", embed: si.ToDiscordEmbed(this.ModuleColor));
                 } else {
                     if (!MusicPlayers.TryAdd(ctx.Guild.Id, new MusicPlayer(ctx.Client, ctx.Channel, vnc)))
                         throw new ConcurrentOperationException("Failed to initialize music player!");

@@ -74,7 +74,7 @@ namespace TheGodfather.Modules.SWAT
             SwatServer server = await this.Database.GetSwatServerAsync(ip, queryport, name: ip.ToLowerInvariant());
             SwatServerInfo info = await SwatServerInfo.QueryIPAsync(server.Ip, server.QueryPort);
             if (info != null)
-                await ctx.RespondAsync(embed: info.ToDiscordEmbed());
+                await ctx.RespondAsync(embed: info.ToDiscordEmbed(this.ModuleColor));
             else
                 await InformFailureAsync(ctx, "No reply from server.");
         }

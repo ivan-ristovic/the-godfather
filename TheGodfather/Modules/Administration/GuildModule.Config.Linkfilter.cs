@@ -28,7 +28,7 @@ namespace TheGodfather.Modules.Administration
                 public LinkfilterModule(SharedData shared, DBService db) 
                     : base(shared, db)
                 {
-                    this.ModuleColor = DiscordColor.SapGreen;
+                    this.ModuleColor = DiscordColor.DarkRed;
                 }
 
 

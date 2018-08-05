@@ -23,13 +23,16 @@ namespace TheGodfather.Services.Common
         public string Year { get; set; }
 
 
-        public DiscordEmbed ToDiscordEmbed()
+        public DiscordEmbed ToDiscordEmbed(DiscordColor? color = null)
         {
             var emb = new DiscordEmbedBuilder() {
                 Title = $"xkcd #{this.Id} : {this.Title}",
                 ImageUrl = ImageUrl,
                 Url = XkcdService.CreateUrlForComic(this.Id)
             };
+
+            if (color != null)
+                emb.WithColor(color.Value);
 
             emb.WithFooter($"Publish date: {this.Month}/{this.Year}");
 

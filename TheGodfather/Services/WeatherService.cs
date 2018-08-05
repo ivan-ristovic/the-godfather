@@ -51,7 +51,7 @@ namespace TheGodfather.Services
             try {
                 string response = await _http.GetStringAsync($"{_url}/weather?q={query}&appid={this.key}&units=metric").ConfigureAwait(false);
                 var data = JsonConvert.DeserializeObject<WeatherData>(response);
-                return data.ToDiscordEmbed();
+                return data.ToDiscordEmbed(DiscordColor.Aquamarine);
             } catch {
                 return null;
             }

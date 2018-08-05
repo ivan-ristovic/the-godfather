@@ -28,7 +28,7 @@ namespace TheGodfather.Modules.Administration
         public EmojiModule(SharedData shared, DBService db)
             : base(shared, db)
         {
-            this.ModuleColor = DiscordColor.CornflowerBlue;
+            this.ModuleColor = DiscordColor.Orange;
         }
 
 

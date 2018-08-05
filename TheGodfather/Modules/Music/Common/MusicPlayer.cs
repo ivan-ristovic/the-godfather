@@ -87,7 +87,7 @@ namespace TheGodfather.Modules.Music.Common
                     lock (this.operationLock)
                         this.playing = true;
 
-                    this.msgHandle = await this.channel.SendMessageAsync("Playing: ", embed: si.ToDiscordEmbed());
+                    this.msgHandle = await this.channel.SendMessageAsync("Playing: ", embed: si.ToDiscordEmbed(DiscordColor.Red));
                     await this.msgHandle.CreateReactionAsync(DiscordEmoji.FromUnicode("▶"));
 
                     var ffmpeg_inf = new ProcessStartInfo {

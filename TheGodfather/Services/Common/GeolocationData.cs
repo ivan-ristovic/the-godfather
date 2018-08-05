@@ -57,12 +57,14 @@ namespace TheGodfather.Services.Common
         public string Organization { get; set; }
 
 
-        public DiscordEmbed ToDiscordEmbed()
+        public DiscordEmbed ToDiscordEmbed(DiscordColor? color = null)
         {
             var emb = new DiscordEmbedBuilder() {
                 Title = $"IP geolocation info for {this.Ip}",
-                Color = DiscordColor.NotQuiteBlack
             };
+            
+            if (color == null)
+                emb.WithColor(color.Value);
 
             emb.AddField("Location", $"{this.City}, {this.RegionName} {this.RegionCode}, {this.CountryName} {this.CountryCode}");
             emb.AddField("Exact location", $"({this.Latitude}, {this.Longitude})", inline: true);

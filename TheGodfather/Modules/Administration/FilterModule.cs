@@ -31,7 +31,7 @@ namespace TheGodfather.Modules.Administration
         public FilterModule(SharedData shared, DBService db) 
             : base(shared, db)
         {
-            this.ModuleColor = DiscordColor.DarkGreen;
+            this.ModuleColor = DiscordColor.DarkRed;
         }
 
 

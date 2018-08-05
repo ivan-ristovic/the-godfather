@@ -20,7 +20,7 @@ namespace TheGodfather.Modules.Search
         public SearchesModule(SharedData shared, DBService db)
             : base(shared, db)
         {
-            this.ModuleColor = DiscordColor.Cyan;
+            this.ModuleColor = DiscordColor.MidnightBlue;
         }
 
 
@@ -37,7 +37,7 @@ namespace TheGodfather.Modules.Search
             if (!info.Success)
                 throw new CommandFailedException($"Retrieving IP geolocation info failed! Details: {info.ErrorMessage}");
 
-            await ctx.RespondAsync(embed: info.ToDiscordEmbed());
+            await ctx.RespondAsync(embed: info.ToDiscordEmbed(this.ModuleColor));
         }
         #endregion
     }

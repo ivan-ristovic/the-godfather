@@ -24,7 +24,7 @@ namespace TheGodfather.Modules.Administration
         public RoleModule(SharedData shared, DBService db)
             : base(shared, db)
         {
-            this.ModuleColor = DiscordColor.Azure;
+            this.ModuleColor = DiscordColor.Lilac;
         }
 
 
@@ -34,8 +34,8 @@ namespace TheGodfather.Modules.Administration
             return ctx.SendCollectionInPagesAsync(
                 "Roles in this guild:",
                 ctx.Guild.Roles.OrderByDescending(r => r.Position),
-                r => $"ID: {Formatter.InlineCode(r.Id.ToString())} | {Formatter.Bold(r.Name)} | {r.Color.ToString()}",
-                DiscordColor.Gold,
+                r => $"{Formatter.InlineCode(r.Id.ToString())} | {Formatter.Bold(r.Name)} | {r.Color.ToString()}",
+                this.ModuleColor,
                 10
             );
         }

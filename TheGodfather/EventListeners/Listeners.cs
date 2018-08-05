@@ -34,31 +34,30 @@ namespace TheGodfather.EventListeners
 
             switch (origin) {
                 case EventOrigin.Channel:
-                    emb.WithColor(DiscordColor.Aquamarine);
+                    emb.WithColor(DiscordColor.Turquoise);
                     break;
                 case EventOrigin.Emoji:
-                    emb.WithColor(DiscordColor.Gold);
+                    emb.WithColor(DiscordColor.Orange);
                     break;
                 case EventOrigin.Guild:
                     emb.WithColor(DiscordColor.DarkGreen);
                     break;
                 case EventOrigin.KickOrBan:
-                    emb.WithColor(DiscordColor.DarkRed);
-                    break;
-                case EventOrigin.Linkfilter:
                     emb.WithColor(DiscordColor.Red);
                     break;
+                case EventOrigin.Linkfilter:
+                    emb.WithColor(DiscordColor.DarkRed);
+                    break;
                 case EventOrigin.Member:
-                    emb.WithColor(DiscordColor.White);
+                    emb.WithColor(DiscordColor.Sienna);
                     break;
                 case EventOrigin.Message:
-                    emb.WithColor(DiscordColor.SpringGreen);
+                    emb.WithColor(DiscordColor.Azure);
                     break;
                 case EventOrigin.Role:
-                    emb.WithColor(DiscordColor.Magenta);
+                    emb.WithColor(DiscordColor.Lilac);
                     break;
                 default:
-                    emb.WithColor(DiscordColor.Black);
                     break;
             }
 

@@ -32,7 +32,7 @@ namespace TheGodfather.Modules.Search
         public ImgurModule(ImgurService imgur, SharedData shared, DBService db)
             : base(imgur, shared, db)
         {
-
+            this.ModuleColor = DiscordColor.Green;
         }
 
 
@@ -143,14 +143,18 @@ namespace TheGodfather.Modules.Search
                         var img = ((GalleryImage)im);
                         if (img.Nsfw != null && img.Nsfw == true && !channel.IsNSFW && !channel.Name.StartsWith("nsfw", StringComparison.InvariantCultureIgnoreCase))
                             throw new CommandFailedException("This is not a NSFW channel!");
-                        await channel.SendMessageAsync(img.Link)
-                            .ConfigureAwait(false);
+                        await channel.SendMessageAsync(embed: new DiscordEmbedBuilder() {
+                            Color = this.ModuleColor,
+                            ImageUrl = img.Link
+                        }.Build());
                     } else if (im.GetType().Name == "GalleryAlbum") {
                         var img = ((GalleryAlbum)im);
                         if (img.Nsfw != null && img.Nsfw == true && !channel.IsNSFW && !channel.Name.StartsWith("nsfw", StringComparison.InvariantCultureIgnoreCase))
                             throw new CommandFailedException("This is not a NSFW channel!");
-                        await channel.SendMessageAsync(img.Link)
-                            .ConfigureAwait(false);
+                        await channel.SendMessageAsync(embed: new DiscordEmbedBuilder() {
+                            Color = this.ModuleColor,
+                            ImageUrl = img.Link
+                        }.Build());
                     } else
                         throw new CommandFailedException("Imgur API error.");
 

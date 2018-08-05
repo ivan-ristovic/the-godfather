@@ -30,7 +30,7 @@ namespace TheGodfather.Modules.Administration
         public AutomaticRolesModule(SharedData shared, DBService db) 
             : base(shared, db)
         {
-            this.ModuleColor = DiscordColor.Lilac;
+            this.ModuleColor = DiscordColor.Goldenrod;
         }
 
 

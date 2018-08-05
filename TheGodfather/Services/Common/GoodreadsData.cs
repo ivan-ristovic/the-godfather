@@ -29,7 +29,7 @@ namespace TheGodfather.Services.Common
         public GoodreadsWork[] Results { get; set; }
 
 
-        public IReadOnlyList<Page> ToPaginatedList()
+        public IReadOnlyList<Page> ToDiscordPages()
         {
             var pages = new List<Page>();
 

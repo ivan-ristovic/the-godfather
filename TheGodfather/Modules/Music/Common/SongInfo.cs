@@ -18,14 +18,16 @@ namespace TheGodfather.Modules.Music.Common
         public TimeSpan TotalTime { get; set; } = TimeSpan.Zero;
 
 
-        public DiscordEmbed ToDiscordEmbed()
+        public DiscordEmbed ToDiscordEmbed(DiscordColor? color = null)
         {
             var emb = new DiscordEmbedBuilder() {
                 Title = $"{StaticDiscordEmoji.Headphones} {this.Title}",
-                Color = DiscordColor.Red,
                 ThumbnailUrl = this.Thumbnail,
                 Url = Query
             };
+            
+            if (color != null)
+                emb.WithColor(color.Value);
 
             emb.AddField("Duration", $"{this.TotalTime:hh\\:mm\\:ss}", inline: true);
             emb.AddField("Added by", this.Queuer ?? "???", inline: true);

@@ -90,14 +90,16 @@ namespace TheGodfather.Modules.SWAT.Common
         public bool HasSpace
             => int.Parse(this.Players) < int.Parse(this.MaxPlayers);
 
-        public DiscordEmbed ToDiscordEmbed()
+        public DiscordEmbed ToDiscordEmbed(DiscordColor? color = null)
         {
             var emb = new DiscordEmbedBuilder() {
                 Url = $"https://swat4stats.com/servers/{ this.Ip }:{ this.JoinPort }",
                 Title = HostName,
-                Description = $"{this.Ip}:{this.JoinPort}",
-                Color = DiscordColor.Black
+                Description = $"{this.Ip}:{this.JoinPort}"
             };
+
+            if (color != null)
+                emb.WithColor(color.Value);
 
             emb.AddField("Players", this.Players + "/" + this.MaxPlayers, inline: true);
             emb.AddField("Game", string.IsNullOrWhiteSpace(this.Game) ? Formatter.Italic("unknown") : this.Game, inline: true);

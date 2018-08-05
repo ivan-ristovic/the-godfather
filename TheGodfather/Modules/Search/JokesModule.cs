@@ -26,6 +26,7 @@ namespace TheGodfather.Modules.Search
             this.ModuleColor = DiscordColor.PhthaloBlue;
         }
 
+
         [GroupCommand]
         public async Task ExecuteGroupAsync(CommandContext ctx)
         {

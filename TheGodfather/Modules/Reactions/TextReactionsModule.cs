@@ -31,7 +31,7 @@ namespace TheGodfather.Modules.Reactions
         public TextReactionsModule(SharedData shared, DBService db)
             : base(shared, db)
         {
-            this.ModuleColor = DiscordColor.Yellow;
+            this.ModuleColor = DiscordColor.DarkGray;
         }
 
 

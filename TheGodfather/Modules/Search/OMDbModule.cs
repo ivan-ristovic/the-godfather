@@ -88,7 +88,7 @@ namespace TheGodfather.Modules.Search
                 return;
             }
 
-            await ctx.RespondAsync(embed: info.ToDiscordEmbed());
+            await ctx.RespondAsync(embed: info.ToDiscordEmbed(this.ModuleColor));
         }
         #endregion
     }
