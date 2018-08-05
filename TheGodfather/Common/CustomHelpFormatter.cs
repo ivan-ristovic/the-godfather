@@ -15,45 +15,43 @@ namespace TheGodfather.Common
 {
     internal sealed class CustomHelpFormatter : BaseHelpFormatter
     {
-        #region PROPERTIES
-        private DiscordEmbedBuilder EmbedBuilder { get; }
-        private string Name { get; set; }
-        private string Description { get; set; }
-        #endregion
+        private string name;
+        private string description;
+        private readonly DiscordEmbedBuilder emb;
 
 
         public CustomHelpFormatter(CommandContext ctx) : base(ctx)
         {
-            this.EmbedBuilder = new DiscordEmbedBuilder();
+            this.emb = new DiscordEmbedBuilder();
+            this.emb.WithFooter("Detailed documentation @ https://github.com/ivan-ristovic/the-godfather", ctx.Client.CurrentUser.AvatarUrl);
         }
 
 
         public override CommandHelpMessage Build()
         {
-            this.EmbedBuilder.WithColor(DiscordColor.SpringGreen);
+            this.emb.WithColor(DiscordColor.SpringGreen);
 
             string desc = $"Listing all commands and groups. Use {Formatter.InlineCode("!help <command>")} for detailed information.";
-            if (!string.IsNullOrWhiteSpace(this.Name)) {
-                this.EmbedBuilder.WithTitle(this.Name);
-                desc = string.IsNullOrWhiteSpace(this.Description) ? "No description provided." : this.Description;
+            if (!string.IsNullOrWhiteSpace(this.name)) {
+                this.emb.WithTitle(this.name);
+                desc = string.IsNullOrWhiteSpace(this.description) ? "No description provided." : this.description;
             } else {
-                this.EmbedBuilder.WithTitle("Help");
+                this.emb.WithTitle("Help");
             }
-            this.EmbedBuilder.WithDescription(desc);
-            this.EmbedBuilder.WithFooter("Detailed documentation @ https://github.com/ivan-ristovic/the-godfather");
+            this.emb.WithDescription(desc);
 
-            return new CommandHelpMessage(embed: this.EmbedBuilder);
+            return new CommandHelpMessage(embed: this.emb);
         }
 
         public override BaseHelpFormatter WithCommand(Command cmd)
         {
-            this.Name = cmd is CommandGroup ? $"Group: {cmd.QualifiedName}" : cmd.QualifiedName;
-            this.Description = cmd.Description;
-
-            this.EmbedBuilder.AddField("Module", ModuleAttribute.ForCommand(cmd).Module.ToString());
+            this.name = cmd is CommandGroup ? $"Group: {cmd.QualifiedName}" : cmd.QualifiedName;
+            this.description = cmd.Description;
 
             if (cmd.Aliases?.Any() ?? false)
-                this.EmbedBuilder.AddField("Aliases", string.Join(", ", cmd.Aliases.Select(a => Formatter.InlineCode(a))));
+                this.emb.AddField("Aliases", string.Join(", ", cmd.Aliases.Select(a => Formatter.InlineCode(a))), inline: true);
+
+            this.emb.AddField("Category", ModuleAttribute.ForCommand(cmd).Module.ToString(), inline: true);
 
             var allchecks = cmd.ExecutionChecks.Union(cmd.Parent?.ExecutionChecks ?? Enumerable.Empty<CheckBaseAttribute>());
             var perms = allchecks.Where(chk => chk is RequirePermissionsAttribute)
@@ -69,6 +67,8 @@ namespace TheGodfather.Common
             var pb = new StringBuilder();
             if (allchecks.Any(chk => chk is RequireOwnerAttribute))
                 pb.AppendLine(Formatter.Bold("Owner-only."));
+            if (allchecks.Any(chk => chk is RequirePrivilegedUserAttribute))
+                pb.AppendLine(Formatter.Bold("Privileged users only."));
             if (perms.Any()) 
                 pb.AppendLine(Formatter.InlineCode(string.Join(", ", perms)));
             if (uperms.Any()) 
@@ -78,7 +78,7 @@ namespace TheGodfather.Common
 
             string pstr = pb.ToString();
             if (!string.IsNullOrWhiteSpace(pstr))
-                this.EmbedBuilder.AddField("Required permissions", pstr);
+                this.emb.AddField("Required permissions", pstr);
 
             if (cmd.Overloads?.Any() ?? false) {
                 foreach (var overload in cmd.Overloads.OrderByDescending(o => o.Priority)) {
@@ -105,19 +105,12 @@ namespace TheGodfather.Common
                     }
 
                     string args = ab.ToString();
-                    this.EmbedBuilder.AddField($"{(cmd.Overloads.Count > 1 ? $"Overload #{overload.Priority}" : "Arguments")}" , string.IsNullOrWhiteSpace(args) ? "None": args, inline: true);
+                    this.emb.AddField($"{(cmd.Overloads.Count > 1 ? $"Overload #{overload.Priority}" : "Arguments")}" , string.IsNullOrWhiteSpace(args) ? "No arguments.": args, inline: true);
                 }
             }
 
-            var eb = new StringBuilder();
-            if (cmd.CustomAttributes.FirstOrDefault(chk => chk is UsageExamplesAttribute) is UsageExamplesAttribute example) {
-                eb.AppendLine("```");
-                eb.AppendLine(example.JoinExamples());
-                eb.AppendLine("```");
-            }
-            string estr = eb.ToString();
-            if (!string.IsNullOrWhiteSpace(estr))
-                this.EmbedBuilder.AddField("Examples of use", estr);
+            if (cmd.CustomAttributes.FirstOrDefault(chk => chk is UsageExamplesAttribute) is UsageExamplesAttribute example)
+                this.emb.AddField("Examples of use", Formatter.BlockCode(example.JoinExamples()));                
 
             return this;
         }
@@ -125,7 +118,7 @@ namespace TheGodfather.Common
         public override BaseHelpFormatter WithSubcommands(IEnumerable<Command> subcommands)
         {
             if (subcommands.Any())
-                this.EmbedBuilder.AddField(this.Name != null ? "Subcommands" : "Commands", string.Join(", ", subcommands.Select(c => Formatter.InlineCode(c.Name))));
+                this.emb.AddField(this.name != null ? "Subcommands" : "Commands", string.Join(", ", subcommands.Select(c => Formatter.InlineCode(c.Name))));
             return this;
         }
     }

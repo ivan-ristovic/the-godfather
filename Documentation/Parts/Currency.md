@@ -48,6 +48,8 @@
 
 *Magically increase another user's bank balance.*
 
+**Privileged users only.**
+
 **Aliases:**
 `give`
 
@@ -158,6 +160,8 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Delete an account from WM bank.*
+
+**Privileged users only.**
 
 **Aliases:**
 `ur, signout, deleteaccount, delacc, disable, deactivate`

@@ -19,6 +19,8 @@
 
 *SWAT4 banlist manipulation commands.*
 
+**Privileged users only.**
+
 **Aliases:**
 `b, blist, bans, ban`
 
@@ -30,6 +32,8 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Add a player to banlist.*
+
+**Privileged users only.**
 
 **Aliases:**
 `+, a, +=, <, <<`
@@ -65,6 +69,8 @@
 
 *Remove ban entry from database.*
 
+**Privileged users only.**
+
 **Aliases:**
 `-, del, d, remove, -=, >, >>, rm`
 
@@ -86,6 +92,8 @@
 
 *View the banlist.*
 
+**Privileged users only.**
+
 **Aliases:**
 `ls, l, print`
 
@@ -105,6 +113,8 @@
 
 *SWAT4 player IP database manipulation commands.*
 
+**Privileged users only.**
+
 **Aliases:**
 `db`
 
@@ -116,6 +126,8 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Add a player to IP database.*
+
+**Privileged users only.**
 
 **Aliases:**
 `+, a, +=, <, <<`
@@ -150,6 +162,8 @@
 
 *Remove ban entry from database.*
 
+**Privileged users only.**
+
 **Aliases:**
 `-, del, d, -=, >, >>`
 
@@ -170,6 +184,8 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *View the banlist.*
+
+**Privileged users only.**
 
 **Aliases:**
 `ls, l`
@@ -242,6 +258,8 @@
 
 *SWAT4 database search commands.*
 
+**Privileged users only.**
+
 **Aliases:**
 `s, find, lookup`
 
@@ -259,6 +277,8 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Search for a given IP or range.*
+
+**Privileged users only.**
 
 **Arguments:**
 
@@ -279,6 +299,8 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Search for a given name.*
+
+**Privileged users only.**
 
 **Aliases:**
 `player, nickname, nick`
@@ -319,6 +341,8 @@
 
 *SWAT4 serverlist manipulation commands.*
 
+**Privileged users only.**
+
 **Aliases:**
 `s, srv`
 
@@ -335,6 +359,8 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Add a server to serverlist.*
+
+**Privileged users only.**
 
 **Aliases:**
 `+, a, +=, <, <<`
@@ -370,6 +396,8 @@
 
 *Remove a server from serverlist.*
 
+**Privileged users only.**
+
 **Aliases:**
 `-, del, d, -=, >, >>`
 
@@ -390,6 +418,8 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *List all registered servers.*
+
+**Privileged users only.**
 
 **Aliases:**
 `ls, l`

@@ -20,6 +20,9 @@ namespace TheGodfather.Modules.Misc
     [Group("birthdays"), Module(ModuleType.Miscellaneous), NotBlocked]
     [Description("Birthday notifications commands. Group call either lists or adds birthday depending if argument is given.")]
     [Aliases("birthday", "bday", "bd", "bdays")]
+    [UsageExamples("!birthdays",
+                   "!birthday add @Someone #channel_to_send_message_to",
+                   "!birthday add @Someone 15.2.1990 #channel_to_send_message_to")]
     [RequireUserPermissions(Permissions.ManageGuild)]
     [Cooldown(3, 5, CooldownBucketType.Guild)]
     public class BirthdayModule : TheGodfatherModule

@@ -42,6 +42,8 @@
 
 *Manipulate blocked channels. Bot will not listen for commands in blocked channels or react (either with text or emoji) to messages inside.*
 
+**Privileged users only.**
+
 **Aliases:**
 `bc, blockedc, blockchannel, bchannels, bchannel, bchn`
 
@@ -69,6 +71,8 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Add channel to blocked channels list.*
+
+**Privileged users only.**
 
 **Aliases:**
 `+, a, block, <, <<, +=`
@@ -107,6 +111,8 @@
 
 *Remove channel from blocked channels list..*
 
+**Privileged users only.**
+
 **Aliases:**
 `-, remove, rm, del, unblock, >, >>, -=`
 
@@ -130,6 +136,8 @@
 
 *List all blocked channels.*
 
+**Privileged users only.**
+
 **Aliases:**
 `ls, l, print`
 
@@ -146,6 +154,8 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Manipulate blocked users. Bot will not allow blocked users to invoke commands and will not react (either with text or emoji) to their messages.*
+
+**Privileged users only.**
 
 **Aliases:**
 `bu, blockedu, blockuser, busers, buser, busr`
@@ -174,6 +184,8 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Add users to blocked users list.*
+
+**Privileged users only.**
 
 **Aliases:**
 `+, a, block, <, <<, +=`
@@ -212,6 +224,8 @@
 
 *Remove users from blocked users list..*
 
+**Privileged users only.**
+
 **Aliases:**
 `-, remove, rm, del, unblock, >, >>, -=`
 
@@ -234,6 +248,8 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *List all blocked users.*
+
+**Privileged users only.**
 
 **Aliases:**
 `ls, l, print`
@@ -521,6 +537,8 @@
 
 *Sends a message to a user or channel.*
 
+**Privileged users only.**
+
 **Aliases:**
 `send, s`
 
@@ -546,6 +564,8 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Triggers the dying in the vineyard scene (power off the bot).*
+
+**Privileged users only.**
 
 **Aliases:**
 `disable, poweroff, exit, quit`
@@ -710,6 +730,8 @@
 
 *Executes a command as another user.*
 
+**Privileged users only.**
+
 **Aliases:**
 `execas, as`
 
@@ -732,6 +754,8 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Toggle bot's reaction to commands.*
+
+**Privileged users only.**
 
 **Aliases:**
 `ti`

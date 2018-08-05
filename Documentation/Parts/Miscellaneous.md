@@ -27,6 +27,13 @@
 
 (optional) `[channel]` : *Channel to send a greeting message to.* (def: `None`)
 
+**Examples:**
+
+```
+!birthdays
+!birthday add @Someone #channel_to_send_message_to
+!birthday add @Someone 15.2.1990 #channel_to_send_message_to
+```
 </p></details>
 
 ---
@@ -145,6 +152,8 @@
 
 *Add insult to list (use %user% instead of user mention).*
 
+**Privileged users only.**
+
 **Aliases:**
 `new, a, +, +=, <, <<`
 
@@ -166,6 +175,8 @@
 
 *Remove insult with a given index from list. (use command ``insults list`` to view insult indexes).*
 
+**Privileged users only.**
+
 **Aliases:**
 `-, remove, del, rm, rem, d, >, >>, -=`
 
@@ -186,6 +197,8 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Delete all insults.*
+
+**Privileged users only.**
 
 **Aliases:**
 `clear, da, c, ca, cl, clearall, >>>`

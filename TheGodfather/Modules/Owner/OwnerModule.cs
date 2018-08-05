@@ -363,6 +363,8 @@ namespace TheGodfather.Modules.Owner
 
                     if (execChecks.Any(chk => chk is RequireOwnerAttribute))
                         sb.AppendLine(Formatter.Bold("Owner-only.")).AppendLine();
+                    if (execChecks.Any(chk => chk is RequirePrivilegedUserAttribute))
+                        sb.AppendLine(Formatter.Bold("Privileged users only.")).AppendLine();
                     if (perms.Any()) {
                         sb.AppendLine(Formatter.Bold("Requires permissions:"));
                         sb.AppendLine(Formatter.InlineCode(string.Join(", ", perms))).AppendLine();
