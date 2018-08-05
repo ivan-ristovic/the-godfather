@@ -124,9 +124,6 @@ namespace TheGodfather
             this.CNext.RegisterConverter(new CustomTimeWindowConverter());
             this.CNext.RegisterConverter(new CustomIPAddressConverter());
             this.CNext.RegisterConverter(new CustomIPFormatConverter());
-            // Registering my own Uri converter
-            this.CNext.UnregisterConverter<Uri>();
-            this.CNext.RegisterConverter(new CustomUriConverter());
             
             Commands = this.CNext.GetAllRegisteredCommands()
                 .Where(cmd => cmd.Parent == null)

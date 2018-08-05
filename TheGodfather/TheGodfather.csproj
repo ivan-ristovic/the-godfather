@@ -430,7 +430,6 @@
     <Compile Include="Common\Attributes\ModuleAttribute.cs" />
     <Compile Include="Common\Attributes\RequirePrivilegedUserAttribute.cs" />
     <Compile Include="Common\Attributes\UsageExamplesAttribute.cs" />
-    <Compile Include="Common\Converters\CustomUriConverter.cs" />
     <Compile Include="Common\DatabaseConfig.cs" />
     <Compile Include="Common\DiscordEventType.cs" />
     <Compile Include="Common\GFRandom.cs" />
