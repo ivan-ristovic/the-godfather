@@ -1,172 +1,5 @@
 # Module: Reactions
 
-## Group: emojireaction
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Orders a bot to react with given emoji to a message containing a trigger word inside (guild specific). If invoked without subcommands, adds a new emoji reaction to a given trigger word list. Note: Trigger words can be regular expressions (use ``emojireaction addregex`` command).*
-
-**Aliases:**
-`ereact, er, emojir, emojireactions`
-
-**Overload 1:**
-
-`[emoji]` : *Emoji to send.*
-
-`[string...]` : *Trigger word list.*
-
-**Overload 0:**
-
-`[string]` : *Trigger word (case-insensitive).*
-
-`[emoji]` : *Emoji to send.*
-
-**Examples:**
-
-```
-!emojireaction :smile: haha laughing
-```
-</p></details>
-
----
-
-### emojireaction add
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Add emoji reaction to guild reaction list.*
-
-**Requires user permissions:**
-`Manage guild`
-
-**Aliases:**
-`+, new, a`
-
-**Overload 1:**
-
-`[emoji]` : *Emoji to send.*
-
-`[string...]` : *Trigger word list (case-insensitive).*
-
-**Overload 0:**
-
-`[string]` : *Trigger word (case-insensitive).*
-
-`[emoji]` : *Emoji to send.*
-
-**Examples:**
-
-```
-!emojireaction add :smile: haha
-!emojireaction add haha :smile:
-```
-</p></details>
-
----
-
-### emojireaction addregex
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Add emoji reaction triggered by a regex to guild reaction list.*
-
-**Requires user permissions:**
-`Manage guild`
-
-**Aliases:**
-`+r, +regex, +regexp, +rgx, newregex, addrgx`
-
-**Overload 1:**
-
-`[emoji]` : *Emoji to send.*
-
-`[string...]` : *Trigger word list (case-insensitive).*
-
-**Overload 0:**
-
-`[string]` : *Trigger word (case-insensitive).*
-
-`[emoji]` : *Emoji to send.*
-
-**Examples:**
-
-```
-!emojireaction addregex :smile: (ha)+
-!emojireaction addregex (ha)+ :smile:
-```
-</p></details>
-
----
-
-### emojireaction clear
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Delete all reactions for the current guild.*
-
-**Requires user permissions:**
-`Administrator`
-
-**Aliases:**
-`da, c, ca, cl, clearall`
-
-**Examples:**
-
-```
-!emojireactions clear
-```
-</p></details>
-
----
-
-### emojireaction delete
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Remove emoji reactions for given trigger words.*
-
-**Requires user permissions:**
-`Manage guild`
-
-**Aliases:**
-`-, remove, del, rm, d`
-
-**Overload 2:**
-
-`[emoji]` : *Emoji to remove reactions for.*
-
-**Overload 1:**
-
-`[int...]` : *IDs of the reactions to remove.*
-
-**Overload 0:**
-
-`[string...]` : *Trigger words to remove.*
-
-**Examples:**
-
-```
-!emojireaction delete haha sometrigger
-!emojireaction delete 5
-!emojireaction delete 5 4
-!emojireaction delete :joy:
-```
-</p></details>
-
----
-
-### emojireaction list
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Show all emoji reactions for this guild.*
-
-**Aliases:**
-`ls, l, view`
-
-**Examples:**
-
-```
-!emojireaction list
-```
-</p></details>
-
----
-
 ## Group: textreaction
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
@@ -200,7 +33,7 @@
 `Manage guild`
 
 **Aliases:**
-`+, new, a`
+`+, new, a, +=, <, <<`
 
 **Arguments:**
 
@@ -226,7 +59,7 @@
 `Manage guild`
 
 **Aliases:**
-`+r, +regex, +regexp, +rgx, newregex, addrgx`
+`+r, +regex, +regexp, +rgx, newregex, addrgx, +=r, <r, <<r`
 
 **Arguments:**
 
@@ -243,26 +76,6 @@
 
 ---
 
-### textreaction clear
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Delete all text reactions for the current guild.*
-
-**Requires user permissions:**
-`Administrator`
-
-**Aliases:**
-`da, c, ca, cl, clearall`
-
-**Examples:**
-
-```
-!textreactions clear
-```
-</p></details>
-
----
-
 ### textreaction delete
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
@@ -272,7 +85,7 @@
 `Manage guild`
 
 **Aliases:**
-`-, remove, del, rm, d`
+`-, remove, del, rm, d, -=, >, >>`
 
 **Overload 1:**
 
@@ -293,13 +106,33 @@
 
 ---
 
+### textreaction deleteall
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Delete all text reactions for the current guild.*
+
+**Requires user permissions:**
+`Administrator`
+
+**Aliases:**
+`clear, da, c, ca, cl, clearall, >>>`
+
+**Examples:**
+
+```
+!textreactions clear
+```
+</p></details>
+
+---
+
 ### textreaction list
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Show all text reactions for the guild.*
 
 **Aliases:**
-`ls, l, view`
+`ls, l, print`
 
 **Examples:**
 

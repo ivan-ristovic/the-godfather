@@ -1,5 +1,55 @@
 # Module: Games
 
+## Group: cards
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Miscellaneous playing card commands.*
+
+**Aliases:**
+`deck`
+
+</p></details>
+
+---
+
+### cards draw
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Draw cards from the top of the deck. If amount of cards is not specified, draws one card.*
+
+**Aliases:**
+`take`
+
+**Arguments:**
+
+(optional) `[int]` : *Amount (in range [1, 10]).* (def: `1`)
+
+**Examples:**
+
+```
+!deck draw 5
+```
+</p></details>
+
+---
+
+### cards reset
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Opens a brand new card deck.*
+
+**Aliases:**
+`new, opennew, open`
+
+**Examples:**
+
+```
+!deck reset
+```
+</p></details>
+
+---
+
 ## Group: game
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
@@ -66,7 +116,7 @@
 ## Group: game caro
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Starts a "Caro" game. Play a move by writing a pair of numbers from 1 to 10 corresponding to the row and column where you wish to play. You can also specify a time window in which player must submit their move.*
+*Starts a "Caro" game. Play a move by writing a pair of numbers from 1 to 10 corresponding to the row and column where you wish to play. You can also specify a time window in which players must submit their move.*
 
 **Aliases:**
 `c, gomoku, gobang`
@@ -425,7 +475,7 @@
 ## Group: game quiz
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*List all available quiz categories.*
+*Play a quiz! Group call lists all available quiz categories.*
 
 **Aliases:**
 `trivia, q`
@@ -632,7 +682,7 @@
 ## Group: game tictactoe
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Starts a "Tic-Tac-Toe" game. Play a move by writing a number from 1 to 9 corresponding to the field where you wish to play. You can also specify a time window in which player must submit their move.*
+*Starts a "Tic-Tac-Toe" game. Play a move by writing a number from 1 to 9 corresponding to the field where you wish to play. You can also specify a time window in which players must submit their move.*
 
 **Aliases:**
 `ttt`

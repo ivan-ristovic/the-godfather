@@ -1,5 +1,4 @@
 # Command modules:
-* [Uncategorized](Parts/Uncategorized.md)
 * [Administration](Parts/Administration.md)
 * [Chickens](Parts/Chickens.md)
 * [Currency](Parts/Currency.md)
@@ -11,3 +10,4 @@
 * [Reactions](Parts/Reactions.md)
 * [Searches](Parts/Searches.md)
 * [SWAT](Parts/SWAT.md)
+* [Uncategorized](Parts/Uncategorized.md)

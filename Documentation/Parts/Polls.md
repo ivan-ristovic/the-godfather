@@ -48,37 +48,10 @@
 
 ---
 
-## reactionspoll
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Starts a poll with reactions in the channel.*
-
-**Aliases:**
-`rpoll, pollr, voter`
-
-**Overload 1:**
-
-`[time span]` : *Time for poll to run.*
-
-`[string...]` : *Question.*
-
-**Overload 0:**
-
-`[string...]` : *Question.*
-
-**Examples:**
-
-```
-!rpoll :smile: :joy:
-```
-</p></details>
-
----
-
 ## Group: vote
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Commands for voting in running polls. If invoked without subcommands, registers a vote in the current poll to the option you entered.*
+*Commands for voting in running polls. Group call registers a vote in the current poll for the option you entered.*
 
 **Aliases:**
 `votefor, vf`

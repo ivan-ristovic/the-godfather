@@ -53,8 +53,50 @@
 **Examples:**
 
 ```
-!gif trending 3
 !gif trending
+!gif trending 3
+```
+</p></details>
+
+---
+
+## Group: goodreads
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Goodreads commands. Group call searches Goodreads books with given query.*
+
+**Aliases:**
+`gr`
+
+**Arguments:**
+
+`[string...]` : *Query.*
+
+**Examples:**
+
+```
+!goodreads Ender's Game
+```
+</p></details>
+
+---
+
+### goodreads book
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Search Goodreads books by title, author, or ISBN.*
+
+**Aliases:**
+`books, b`
+
+**Arguments:**
+
+`[string...]` : *Query.*
+
+**Examples:**
+
+```
+!goodreads book Ender's Game
 ```
 </p></details>
 
@@ -63,7 +105,7 @@
 ## Group: imdb
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Search Open Movie Database.*
+*Search Open Movie Database. Group call searches by title.*
 
 **Aliases:**
 `movies, series, serie, movie, film, cinema, omdb`
@@ -144,7 +186,7 @@
 ## Group: imgur
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Search imgur. Invoking without subcommand retrieves top ranked images from given subreddit.*
+*Search imgur. Group call retrieves top ranked images from given subreddit.*
 
 **Aliases:**
 `img, im, i`
@@ -255,7 +297,7 @@
 ## Group: joke
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Group for searching jokes. If invoked without a subcommand, returns a random joke.*
+*Group for searching jokes. Group call returns a random joke.*
 
 **Aliases:**
 `jokes, j`
@@ -310,7 +352,7 @@
 ## Group: reddit
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Reddit commands.*
+*Reddit commands. Group call prints latest posts from given sub.*
 
 **Aliases:**
 `r`
@@ -384,7 +426,7 @@
 ## Group: rss
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Commands for RSS feed querying or subscribing. If invoked without subcommand, gives the latest topic from the given RSS URL.*
+*Commands for RSS feed querying or subscribing. Group call prints the latest topics from the given RSS URL.*
 
 **Aliases:**
 `feed`
@@ -491,7 +533,7 @@
 ## Group: steam
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Steam commands.*
+*Steam commands. Group call searches steam profiles for a given ID.*
 
 **Aliases:**
 `s, st`
@@ -524,7 +566,7 @@
 ## Group: urbandict
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Urban Dictionary commands. If invoked without subcommand, searches Urban Dictionary for a given query.*
+*Urban Dictionary commands. Group call searches Urban Dictionary for a given query.*
 
 **Aliases:**
 `ud, urban`
@@ -545,7 +587,7 @@
 ## Group: weather
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Weather search commands. If invoked without subcommands, returns weather information for given query.*
+*Weather search commands. Group call returns weather information for given query.*
 
 **Aliases:**
 `w`
@@ -594,7 +636,7 @@
 ## Group: xkcd
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Search xkcd. If invoked without subcommands returns random comic or, if an ID is provided, a comic with given ID.*
+*Search xkcd. Group call returns random comic or, if an ID is provided, a comic with given ID.*
 
 **Aliases:**
 `x`
@@ -647,10 +689,27 @@
 
 ---
 
+### xkcd random
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Retrieves a random comic.*
+
+**Aliases:**
+`rnd, r, rand`
+
+**Examples:**
+
+```
+!xkcd random
+```
+</p></details>
+
+---
+
 ## Group: youtube
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Youtube search commands. If invoked without subcommands, searches YouTube for given query.*
+*Youtube search commands. Group call searches YouTube for given query.*
 
 **Aliases:**
 `y, yt, ytube`
@@ -678,7 +737,7 @@
 
 **Arguments:**
 
-`[int]` : *Amount of results. [1-10]*
+`[int]` : *Amount of results. [1-20]*
 
 `[string...]` : *Search query.*
 

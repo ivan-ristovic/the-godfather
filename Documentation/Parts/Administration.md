@@ -1,12 +1,14 @@
+# Command list
+
 # Module: Administration
 
 ## Group: automaticroles
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Commands to manipulate automatically assigned roles (roles which get automatically granted to a user who enters the guild). If invoked without subcommand, either lists or adds automatic role depending if argument is given.*
+*Automatic roles management. Automatic roles are automatically granted to a new member of the guild. Group call lists all automatic roles for the guild. Group call with an arbitrary amount of roles will add those roles to the automatic roles list for this guild, effective immediately.*
 
 **Aliases:**
-`ar`
+`autoroles, automaticr, autorole, aroles, arole, arl, ar`
 
 **Overload 0:**
 
@@ -25,13 +27,13 @@
 ### automaticroles add
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Add an automatic role (or roles) for this guild.*
+*Adds an automatic role(s).*
 
 **Requires user permissions:**
 `Administrator`
 
 **Aliases:**
-`a, +`
+`a, +, +=, <<, <`
 
 **Arguments:**
 
@@ -47,40 +49,20 @@
 
 ---
 
-### automaticroles clear
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Delete all automatic roles for the current guild.*
-
-**Requires user permissions:**
-`Administrator`
-
-**Aliases:**
-`da, c, ca, cl, clearall`
-
-**Examples:**
-
-```
-!ar clear
-```
-</p></details>
-
----
-
 ### automaticroles delete
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Remove automatic role (or roles).*
+*Remove automatic role(s).*
 
 **Requires user permissions:**
 `Administrator`
 
 **Aliases:**
-`remove, del, -, d`
+`remove, rm, del, d, -, -=, >, >>`
 
 **Arguments:**
 
-`[role...]` : *Roles to delete.*
+`[role...]` : *Roles to remove.*
 
 **Examples:**
 
@@ -92,13 +74,33 @@
 
 ---
 
+### automaticroles deleteall
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Delete all automatic roles for this guild.*
+
+**Requires user permissions:**
+`Administrator`
+
+**Aliases:**
+`removeall, rmrf, rma, clearall, clear, delall, da`
+
+**Examples:**
+
+```
+!ar deleteall
+```
+</p></details>
+
+---
+
 ### automaticroles list
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*View all automatic roles in the current guild.*
+*List all current automatic roles.*
 
 **Aliases:**
-`print, show, l, p`
+`print, show, ls, l, p`
 
 **Examples:**
 
@@ -112,15 +114,47 @@
 ## Group: channel
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Miscellaneous channel control commands. If invoked without subcommands, prints out channel information.*
+*Channel administration. Group call prints channel information.*
 
 **Aliases:**
-`channels, c, chn`
+`channels, chn, ch, c`
 
 **Arguments:**
 
-(optional) `[channel]` : *Channel.* (def: `None`)
+(optional) `[channel]` : *Channel to scan.* (def: `None`)
 
+**Examples:**
+
+```
+!channel
+!channel #general
+```
+</p></details>
+
+---
+
+### channel clone
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Clone a channel.*
+
+**Requires permissions:**
+`Manage channels`
+
+**Aliases:**
+`copy, cp`
+
+**Arguments:**
+
+`[channel]` : *Channel to clone.*
+
+(optional) `[string...]` : *Name for the cloned channel.* (def: `None`)
+
+**Examples:**
+
+```
+!channel clone #general newname
+```
 </p></details>
 
 ---
@@ -134,11 +168,11 @@
 `Manage channels`
 
 **Aliases:**
-`createcat, createc, ccat, cc, +cat, +c, +category`
+`addcategory, createcat, createc, ccat, cc, +category, +cat, +c, <c, <<c`
 
 **Arguments:**
 
-`[string...]` : *Name.*
+`[string...]` : *Name for the category.*
 
 **Examples:**
 
@@ -152,17 +186,17 @@
 ### channel createtext
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Create new text channel.*
+*Create new text channel. You can also specify channel parent, user limit and bitrate.*
 
 **Requires permissions:**
 `Manage channels`
 
 **Aliases:**
-`createtxt, createt, ctxt, ct, +, +t, +txt`
+`addtext, addtxt, createtxt, createt, ctxt, ct, +, +txt, +t, <t, <<t`
 
 **Overload 2:**
 
-`[string]` : *Name.*
+`[string]` : *Name for the channel.*
 
 (optional) `[channel]` : *Parent category.* (def: `None`)
 
@@ -170,7 +204,7 @@
 
 **Overload 1:**
 
-`[string]` : *Name.*
+`[string]` : *Name for the channel.*
 
 (optional) `[boolean]` : *NSFW?* (def: `False`)
 
@@ -180,16 +214,16 @@
 
 `[channel]` : *Parent category.*
 
-`[string]` : *Name.*
+`[string]` : *Name for the channel.*
 
 (optional) `[boolean]` : *NSFW?* (def: `False`)
 
 **Examples:**
 
 ```
-!channel createtext newtextchannel ParentCategory no
-!channel createtext newtextchannel no
-!channel createtext ParentCategory newtextchannel
+!channel addtext newtextchannel ParentCategory no
+!channel addtext newtextchannel no
+!channel addtext ParentCategory newtextchannel
 ```
 </p></details>
 
@@ -198,17 +232,17 @@
 ### channel createvoice
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Create new voice channel.*
+*Create new voice channel. You can also specify channel parent, user limit and bitrate.*
 
 **Requires permissions:**
 `Manage channels`
 
 **Aliases:**
-`createv, cvoice, cv, +voice, +v`
+`addvoice, addv, createv, cvoice, cv, +voice, +v, <v, <<v`
 
 **Overload 2:**
 
-`[string]` : *Name.*
+`[string]` : *Name for the channel.*
 
 (optional) `[channel]` : *Parent category.* (def: `None`)
 
@@ -218,7 +252,7 @@
 
 **Overload 1:**
 
-`[string]` : *Name.*
+`[string]` : *Name for the channel.*
 
 (optional) `[int]` : *User limit.* (def: `None`)
 
@@ -230,7 +264,7 @@
 
 `[channel]` : *Parent category.*
 
-`[string]` : *Name.*
+`[string]` : *Name for the channel.*
 
 (optional) `[int]` : *User limit.* (def: `None`)
 
@@ -250,7 +284,7 @@
 ### channel delete
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Delete a given channel or category. If the channel isn't given, deletes the current one.*
+*Delete a given channel or category. If the channel isn't given, deletes the current one. You can also specify reason for deletion.*
 
 **Requires permissions:**
 `Manage channels`
@@ -282,10 +316,7 @@
 ### channel info
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Get information about a given channel. If the channel isn't given, uses the current one.*
-
-**Requires permissions:**
-`Read messages`
+*Print information about a given channel. If the channel is not given, uses the current one.*
 
 **Aliases:**
 `i, information`
@@ -307,7 +338,7 @@
 ### channel modify
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Modify a given voice channel. Set 0 if you wish to keep the value as it is.*
+*Modify a given voice channel. Give 0 as an argument if you wish to keep the value unchanged.*
 
 **Requires permissions:**
 `Manage channels`
@@ -345,13 +376,13 @@
 ### channel rename
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Rename channel. If the channel isn't given, uses the current one.*
+*Rename given channel. If the channel is not given, renames the current one.*
 
 **Requires permissions:**
 `Manage channels`
 
 **Aliases:**
-`r, name, setname`
+`r, name, setname, rn`
 
 **Overload 2:**
 
@@ -385,7 +416,7 @@
 ### channel setparent
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Change the parent of the given channel. If the channel isn't given, uses the current one.*
+*Change the given channel's parent. If the channel is not given, uses the current one. You can also provide a reason.*
 
 **Requires permissions:**
 `Manage channels`
@@ -420,7 +451,7 @@
 ### channel setposition
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Change the position of the given channel in the guild channel list. If the channel isn't given, uses the current one.*
+*Change the position of the given channel in the guild channel list. If the channel is not given, repositions the current one. You can also provide reason.*
 
 **Requires permissions:**
 `Manage channels`
@@ -430,9 +461,9 @@
 
 **Overload 2:**
 
-`[channel]` : *Channel to reorder.*
+`[channel]` : *Channel to reposition.*
 
-`[int]` : *Position.*
+`[int]` : *New position.*
 
 (optional) `[string...]` : *Reason.* (def: `None`)
 
@@ -464,7 +495,7 @@
 ### channel settopic
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Set channel topic. If the channel isn't given, uses the current one.*
+*Set channel topic. If the channel is not given, uses the current one.*
 
 **Requires permissions:**
 `Manage channels`
@@ -503,7 +534,10 @@
 ### channel viewperms
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*View permissions for a member or role in the given channel. If the member is not given, lists the sender's permissions. If the channel is not given, uses current one.*
+*View permissions for a member or role in the given channel. If the member is not given, lists the sender's permissions. If the channel is not given, uses the current one.*
+
+**Requires bot permissions:**
+`Administrator`
 
 **Aliases:**
 `tp, perms, permsfor, testperms, listperms`
@@ -547,7 +581,7 @@
 ## Group: emoji
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Manipulate guild emoji. Standalone call lists all guild emoji or gives information about given emoji.*
+*Manipulate guild emoji. Standalone call lists all guild emoji or prints information about given emoji.*
 
 **Aliases:**
 `emojis, e`
@@ -560,6 +594,7 @@
 
 ```
 !emoji
+!emoji :some_emoji:
 ```
 </p></details>
 
@@ -568,29 +603,29 @@
 ### emoji add
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Add emoji specified via URL or message attachment. If you have Discord Nitro, you can also pass emojis from another guild as arguments instead of their URLs.*
+*Add emoji specified via URL or as an attachment. If you have Discord Nitro, you can also pass emojis from another guild as arguments instead of their URLs.*
 
 **Requires permissions:**
 `Manage emoji`
 
 **Aliases:**
-`create, a, +, install`
+`addnew, create, install, a, +, +=, <, <<`
 
 **Overload 3:**
 
-`[string]` : *Name.*
+`[string]` : *Name for the emoji.*
 
-(optional) `[Uri]` : *URL.* (def: `None`)
+(optional) `[URL]` : *Image URL.* (def: `None`)
 
 **Overload 2:**
 
-`[Uri]` : *URL.*
+`[URL]` : *Image URL.*
 
-`[string]` : *Name.*
+`[string]` : *Name for the emoji.*
 
 **Overload 1:**
 
-`[string]` : *Name.*
+`[string]` : *Name for the emoji.*
 
 `[emoji]` : *Emoji from another server to steal.*
 
@@ -604,7 +639,7 @@
 
 ```
 !emoji add pepe http://i0.kym-cdn.com/photos/images/facebook/000/862/065/0e9.jpg
-!emoji add pepe [ATTACH IMAGE]
+!emoji add pepe [ATTACHED IMAGE]
 !emoji add pepe :pepe_from_other_server:
 ```
 </p></details>
@@ -614,13 +649,13 @@
 ### emoji delete
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Remove guild emoji. Note: bots can only delete emojis they created.*
+*Remove guild emoji. Note: Bots can only delete emojis they created!*
 
 **Requires permissions:**
 `Manage emoji`
 
 **Aliases:**
-`remove, del, -, d`
+`remove, rm, del, d, -, -=, >, >>`
 
 **Arguments:**
 
@@ -638,7 +673,7 @@
 ### emoji info
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Get information for given guild emoji.*
+*Prints information for given guild emoji.*
 
 **Aliases:**
 `details, information, i`
@@ -650,7 +685,7 @@
 **Examples:**
 
 ```
-!emoji info pepe
+!emoji info :pepe:
 ```
 </p></details>
 
@@ -659,7 +694,7 @@
 ### emoji list
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*View guild emojis.*
+*List all emojis for this guild.*
 
 **Aliases:**
 `print, show, l, p, ls`
@@ -686,15 +721,15 @@
 
 **Overload 1:**
 
-`[emoji]` : *Emoji.*
+`[emoji]` : *Emoji to rename.*
 
-`[string]` : *Name.*
+`[string]` : *New name.*
 
 **Overload 0:**
 
-`[string]` : *Name.*
+`[string]` : *New name.*
 
-`[emoji]` : *Emoji.*
+`[emoji]` : *Emoji to rename.*
 
 **Examples:**
 
@@ -709,7 +744,7 @@
 ## Group: filter
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Message filtering commands. If invoked without subcommand, either lists all filters or adds a new filter for the given word list. Words can be regular expressions.*
+*Message filtering commands. If invoked without subcommand, either lists all filters or adds a new filter for the given word list. Filters are regular expressions.*
 
 **Aliases:**
 `f, filters`
@@ -736,7 +771,7 @@
 `Manage guild`
 
 **Aliases:**
-`+, new, a`
+`addnew, create, a, +, +=, <, <<`
 
 **Arguments:**
 
@@ -751,36 +786,16 @@
 
 ---
 
-### filter clear
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Delete all filters for the current guild.*
-
-**Requires user permissions:**
-`Administrator`
-
-**Aliases:**
-`da, c, ca, cl, clearall`
-
-**Examples:**
-
-```
-!filter clear
-```
-</p></details>
-
----
-
 ### filter delete
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Remove filters from guild filter list.*
+*Removes filter either by ID or plain text.*
 
 **Requires user permissions:**
 `Manage guild`
 
 **Aliases:**
-`-, remove, del, rm, rem, d`
+`remove, rm, del, d, -, -=, >, >>`
 
 **Overload 1:**
 
@@ -794,6 +809,27 @@
 
 ```
 !filter delete fuck f+u+c+k+
+!filter delete 3 4
+```
+</p></details>
+
+---
+
+### filter deleteall
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Delete all filters for the current guild.*
+
+**Requires user permissions:**
+`Administrator`
+
+**Aliases:**
+`removeall, rmrf, rma, clearall, clear, delall, da`
+
+**Examples:**
+
+```
+!filter clear
 ```
 </p></details>
 
@@ -819,30 +855,15 @@
 ## Group: guild
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Miscellaneous guild control commands. If invoked without subcommands, prints guild information.*
+*Miscellaneous guild control commands. Group call prints guild information.*
 
 **Aliases:**
 `server, g`
 
-</p></details>
-
----
-
-### guild bans
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Get guild ban list.*
-
-**Requires permissions:**
-`View audit log`
-
-**Aliases:**
-`banlist, viewbanlist, getbanlist, getbans, viewbans`
-
 **Examples:**
 
 ```
-!guild banlist
+!guild
 ```
 </p></details>
 
@@ -857,7 +878,7 @@
 `Manage guild`
 
 **Aliases:**
-`config, cfg`
+`configuration, config, cfg`
 
 **Examples:**
 
@@ -868,7 +889,7 @@
 
 ---
 
-## Group: guild configure leave
+### guild configure leave
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Allows user leaving message configuration.*
@@ -877,109 +898,33 @@
 `Manage guild`
 
 **Aliases:**
-`exit, drop, lv, l`
+`exit, drop, lvm, lm, l`
+
+**Overload 2:**
+
+`[boolean]` : *Enable leave messages?*
+
+(optional) `[channel]` : *Channel.* (def: `None`)
+
+(optional) `[string...]` : *Leave message.* (def: `None`)
+
+**Overload 1:**
+
+`[channel]` : *Channel.*
+
+`[string...]` : *Leave message.*
+
+**Overload 0:**
+
+`[string...]` : *Leave message.*
 
 **Examples:**
 
 ```
 !guild cfg leave
-```
-</p></details>
-
----
-
-### guild configure leave channel
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Gets or sets leave message channel.*
-
-**Requires user permissions:**
-`Manage guild`
-
-**Aliases:**
-`chn, c`
-
-**Arguments:**
-
-(optional) `[channel]` : *Channel.* (def: `None`)
-
-**Examples:**
-
-```
-!guild cfg leave channel
-!guild cfg leave channel #lobby
-```
-</p></details>
-
----
-
-### guild configure leave disable
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Disables member leave messages for this guild.*
-
-**Requires user permissions:**
-`Manage guild`
-
-**Aliases:**
-`off`
-
-**Examples:**
-
-```
+!guild cfg leave on #general
+!guild cfg leave Welcome, %user%!
 !guild cfg leave off
-```
-</p></details>
-
----
-
-### guild configure leave enable
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Enables member leave messages for this guild. Provide a channel to send the messages to and optional custom leave message. Any occurances of ``%user%`` inside the message will be replaced with appropriate mention.*
-
-**Requires user permissions:**
-`Manage guild`
-
-**Aliases:**
-`on`
-
-**Arguments:**
-
-(optional) `[channel]` : *Channel.* (def: `None`)
-
-(optional) `[string...]` : *Leave message.* (def: `None`)
-
-**Examples:**
-
-```
-!guild cfg leave on
-!guild cfg leave on #lobby Welcome, %user%!
-```
-</p></details>
-
----
-
-### guild configure leave message
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Gets or sets current leave message.*
-
-**Requires user permissions:**
-`Manage guild`
-
-**Aliases:**
-`msg, m`
-
-**Arguments:**
-
-(optional) `[string...]` : *Leave message.* (def: `None`)
-
-**Examples:**
-
-```
-!guild cfg leave message
-!guild cfg leave message Bye, %user%!
 ```
 </p></details>
 
@@ -988,7 +933,7 @@
 ## Group: guild configure linkfilter
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Linkfilter configuration.*
+*Linkfilter configuration. Group call prints current configuration, or enables/disables linkfilter if specified.*
 
 **Requires user permissions:**
 `Manage guild`
@@ -996,16 +941,21 @@
 **Aliases:**
 `lf, linkf, linkremove, filterlinks`
 
+**Overload 1:**
+
+`[boolean]` : *Enable?*
+
 **Examples:**
 
 ```
 !guild cfg linkfilter
+!guild cfg linkfilter on
 ```
 </p></details>
 
 ---
 
-## Group: guild configure linkfilter booters
+### guild configure linkfilter booters
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Enable or disable DDoS/Booter website filtering.*
@@ -1016,77 +966,21 @@
 **Aliases:**
 `ddos, boot, dos`
 
+**Overload 1:**
+
+`[boolean]` : *Enable?*
+
 **Examples:**
 
 ```
 !guild cfg linkfilter booters
-!guild cfg linkfilter
-```
-</p></details>
-
----
-
-### guild configure linkfilter booters disable
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Disables DDoS/Booter website filtering for this guild.*
-
-**Requires user permissions:**
-`Manage guild`
-
-**Aliases:**
-`off`
-
-**Examples:**
-
-```
-!guild cfg linkfilter booters off
-```
-</p></details>
-
----
-
-### guild configure linkfilter booters enable
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Enables DDoS/Booter website filtering for this guild.*
-
-**Requires user permissions:**
-`Manage guild`
-
-**Aliases:**
-`on`
-
-**Examples:**
-
-```
 !guild cfg linkfilter booters on
 ```
 </p></details>
 
 ---
 
-### guild configure linkfilter disable
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Disables link filtering for this guild.*
-
-**Requires user permissions:**
-`Manage guild`
-
-**Aliases:**
-`off`
-
-**Examples:**
-
-```
-!guild cfg linkfilter off
-```
-</p></details>
-
----
-
-## Group: guild configure linkfilter disturbingsites
+### guild configure linkfilter disturbingsites
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Enable or disable shock website filtering.*
@@ -1097,77 +991,21 @@
 **Aliases:**
 `disturbing, shock, shocksites`
 
+**Overload 1:**
+
+`[boolean]` : *Enable?*
+
 **Examples:**
 
 ```
 !guild cfg linkfilter disturbing
-!guild cfg linkfilter
-```
-</p></details>
-
----
-
-### guild configure linkfilter disturbingsites disable
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Disables shock website filtering for this guild.*
-
-**Requires user permissions:**
-`Manage guild`
-
-**Aliases:**
-`off`
-
-**Examples:**
-
-```
-!guild cfg linkfilter disturbing off
-```
-</p></details>
-
----
-
-### guild configure linkfilter disturbingsites enable
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Enables shock website filtering for this guild.*
-
-**Requires user permissions:**
-`Manage guild`
-
-**Aliases:**
-`on`
-
-**Examples:**
-
-```
 !guild cfg linkfilter disturbing on
 ```
 </p></details>
 
 ---
 
-### guild configure linkfilter enable
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Enables link filtering for this guild.*
-
-**Requires user permissions:**
-`Manage guild`
-
-**Aliases:**
-`on`
-
-**Examples:**
-
-```
-!guild cfg linkfilter on
-```
-</p></details>
-
----
-
-## Group: guild configure linkfilter invites
+### guild configure linkfilter invites
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Enable or disable Discord invite filters.*
@@ -1178,57 +1016,21 @@
 **Aliases:**
 `invite, inv, i`
 
+**Overload 1:**
+
+`[boolean]` : *Enable?*
+
 **Examples:**
 
 ```
 !guild cfg linkfilter invites
-!guild cfg linkfilter
-```
-</p></details>
-
----
-
-### guild configure linkfilter invites disable
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Disables Discord invite filtering for this guild.*
-
-**Requires user permissions:**
-`Manage guild`
-
-**Aliases:**
-`off`
-
-**Examples:**
-
-```
-!guild cfg linkfilter invites off
-```
-</p></details>
-
----
-
-### guild configure linkfilter invites enable
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Enables Discord invite filtering for this guild.*
-
-**Requires user permissions:**
-`Manage guild`
-
-**Aliases:**
-`on`
-
-**Examples:**
-
-```
 !guild cfg linkfilter invites on
 ```
 </p></details>
 
 ---
 
-## Group: guild configure linkfilter iploggers
+### guild configure linkfilter iploggers
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Enable or disable filtering of IP logger websites.*
@@ -1239,57 +1041,21 @@
 **Aliases:**
 `ip, loggers, ipleech`
 
+**Overload 1:**
+
+`[boolean]` : *Enable?*
+
 **Examples:**
 
 ```
 !guild cfg linkfilter iploggers
-!guild cfg linkfilter
-```
-</p></details>
-
----
-
-### guild configure linkfilter iploggers disable
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Disables IP logging website filtering for this guild.*
-
-**Requires user permissions:**
-`Manage guild`
-
-**Aliases:**
-`off`
-
-**Examples:**
-
-```
-!guild cfg linkfilter iploggers off
-```
-</p></details>
-
----
-
-### guild configure linkfilter iploggers enable
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Enables IP logger websites filtering for this guild.*
-
-**Requires user permissions:**
-`Manage guild`
-
-**Aliases:**
-`on`
-
-**Examples:**
-
-```
 !guild cfg linkfilter iploggers on
 ```
 </p></details>
 
 ---
 
-## Group: guild configure linkfilter shorteners
+### guild configure linkfilter shorteners
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Enable or disable filtering of URL shortener websites.*
@@ -1300,57 +1066,21 @@
 **Aliases:**
 `urlshort, shortenurl, urlshorteners`
 
+**Overload 1:**
+
+`[boolean]` : *Enable?*
+
 **Examples:**
 
 ```
 !guild cfg linkfilter shorteners
-!guild cfg linkfilter
-```
-</p></details>
-
----
-
-### guild configure linkfilter shorteners disable
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Disables URL shortener website filtering for this guild.*
-
-**Requires user permissions:**
-`Manage guild`
-
-**Aliases:**
-`off`
-
-**Examples:**
-
-```
-!guild cfg linkfilter shorteners off
-```
-</p></details>
-
----
-
-### guild configure linkfilter shorteners enable
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Enables URL shortener websites filtering for this guild.*
-
-**Requires user permissions:**
-`Manage guild`
-
-**Aliases:**
-`on`
-
-**Examples:**
-
-```
 !guild cfg linkfilter shorteners on
 ```
 </p></details>
 
 ---
 
-## Group: guild configure logging
+### guild configure logging
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Command action logging configuration.*
@@ -1361,79 +1091,18 @@
 **Aliases:**
 `log, modlog`
 
+**Overload 1:**
+
+`[boolean]` : *Enable logging?*
+
+(optional) `[channel]` : *Log channel.* (def: `None`)
+
 **Examples:**
 
 ```
 !guild cfg logging
-```
-</p></details>
-
----
-
-### guild configure logging channel
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Gets or sets current action log channel.*
-
-**Requires user permissions:**
-`Manage guild`
-
-**Aliases:**
-`chn, c`
-
-**Arguments:**
-
-(optional) `[channel]` : *Channel.* (def: `None`)
-
-**Examples:**
-
-```
-!guild cfg logging channel
-!guild cfg logging channel #modlog
-```
-</p></details>
-
----
-
-### guild configure logging disable
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Disables action logging for this guild.*
-
-**Requires user permissions:**
-`Manage guild`
-
-**Aliases:**
-`off`
-
-**Examples:**
-
-```
+!guild cfg logging on #log
 !guild cfg logging off
-```
-</p></details>
-
----
-
-### guild configure logging enable
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Enables action logging for this guild in the given channel.*
-
-**Requires user permissions:**
-`Manage guild`
-
-**Aliases:**
-`on`
-
-**Arguments:**
-
-(optional) `[channel]` : *Channel.* (def: `None`)
-
-**Examples:**
-
-```
-!guild cfg logging on
 ```
 </p></details>
 
@@ -1459,7 +1128,7 @@
 
 ---
 
-## Group: guild configure suggestions
+### guild configure suggestions
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Command suggestions configuration.*
@@ -1468,58 +1137,48 @@
 `Manage guild`
 
 **Aliases:**
-`suggestion, sugg, sug, s`
+`suggestion, cmdsug, sugg, sug, cs, s`
+
+**Overload 1:**
+
+`[boolean]` : *Enable suggestions?*
 
 **Examples:**
 
 ```
 !guild cfg suggestions
-```
-</p></details>
-
----
-
-### guild configure suggestions disable
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Disables command suggestions for this guild.*
-
-**Requires user permissions:**
-`Manage guild`
-
-**Aliases:**
-`off`
-
-**Examples:**
-
-```
-!guild cfg suggestions off
-```
-</p></details>
-
----
-
-### guild configure suggestions enable
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Enables command suggestions for this guild.*
-
-**Requires user permissions:**
-`Manage guild`
-
-**Aliases:**
-`on`
-
-**Examples:**
-
-```
 !guild cfg suggestions on
 ```
 </p></details>
 
 ---
 
-## Group: guild configure welcome
+### guild configure verbose
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Configuration of bot's responding options.*
+
+**Requires user permissions:**
+`Manage guild`
+
+**Aliases:**
+`fullresponse, verbosereact, verboseresponse, v, vr`
+
+**Overload 1:**
+
+`[boolean]` : *Enable silent response?*
+
+**Examples:**
+
+```
+!guild cfg verbose
+!guild cfg verbose on
+```
+</p></details>
+
+---
+
+### guild configure welcome
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Allows user welcoming configuration.*
@@ -1528,109 +1187,53 @@
 `Manage guild`
 
 **Aliases:**
-`enter, join, wlc, w`
+`enter, join, wlc, wm, w`
+
+**Overload 2:**
+
+`[boolean]` : *Enable welcoming?*
+
+(optional) `[channel]` : *Channel.* (def: `None`)
+
+(optional) `[string...]` : *Welcome message.* (def: `None`)
+
+**Overload 1:**
+
+`[channel]` : *Channel.*
+
+(optional) `[string...]` : *Welcome message.* (def: `None`)
+
+**Overload 0:**
+
+`[string...]` : *Welcome message.*
 
 **Examples:**
 
 ```
 !guild cfg welcome
-```
-</p></details>
-
----
-
-### guild configure welcome channel
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Gets or sets welcome message channel.*
-
-**Requires user permissions:**
-`Manage guild`
-
-**Aliases:**
-`chn, c`
-
-**Arguments:**
-
-(optional) `[channel]` : *Channel.* (def: `None`)
-
-**Examples:**
-
-```
-!guild cfg welcome channel
-!guild cfg welcome channel #lobby
-```
-</p></details>
-
----
-
-### guild configure welcome disable
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Disables member welcome messages for this guild.*
-
-**Requires user permissions:**
-`Manage guild`
-
-**Aliases:**
-`off`
-
-**Examples:**
-
-```
+!guild cfg welcome on #general
+!guild cfg welcome Welcome, %user%!
 !guild cfg welcome off
 ```
 </p></details>
 
 ---
 
-### guild configure welcome enable
+### guild getbans
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Enables member welcoming for this guild. Provide a channel to send the messages to and optional custom welcome message. Any occurances of ``%user%`` inside the message will be replaced with appropriate mention.*
+*Get guild ban list.*
 
-**Requires user permissions:**
-`Manage guild`
+**Requires permissions:**
+`View audit log`
 
 **Aliases:**
-`on`
-
-**Arguments:**
-
-(optional) `[channel]` : *Channel.* (def: `None`)
-
-(optional) `[string...]` : *Welcome message.* (def: `None`)
+`banlist, viewbanlist, getbanlist, bans, viewbans`
 
 **Examples:**
 
 ```
-!guild cfg welcome on
-!guild cfg welcome on #lobby Welcome, %user%!
-```
-</p></details>
-
----
-
-### guild configure welcome message
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Gets or sets current welcome message.*
-
-**Requires user permissions:**
-`Manage guild`
-
-**Aliases:**
-`msg, m`
-
-**Arguments:**
-
-(optional) `[string...]` : *Welcome message.* (def: `None`)
-
-**Examples:**
-
-```
-!guild cfg welcome message
-!guild cfg welcome message Welcome, %user%!
+!guild banlist
 ```
 </p></details>
 
@@ -1639,7 +1242,7 @@
 ### guild info
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Get guild information.*
+*Print guild information.*
 
 **Aliases:**
 `i, information`
@@ -1653,27 +1256,10 @@
 
 ---
 
-### guild listmembers
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Get guild member list.*
-
-**Aliases:**
-`memberlist, lm, members`
-
-**Examples:**
-
-```
-!guild memberlist
-```
-</p></details>
-
----
-
 ### guild log
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Get audit logs.*
+*View guild audit logs. You can also specify an amount of entries to fetch.*
 
 **Requires permissions:**
 `View audit log`
@@ -1694,10 +1280,27 @@
 
 ---
 
+### guild memberlist
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Print the guild member list.*
+
+**Aliases:**
+`listmembers, lm, members`
+
+**Examples:**
+
+```
+!guild memberlist
+```
+</p></details>
+
+---
+
 ### guild prune
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Kick guild members who weren't active in given amount of days (1-7).*
+*Prune guild members who weren't active in the given amount of days (1-7).*
 
 **Requires permissions:**
 `Kick members`
@@ -1717,7 +1320,7 @@
 **Examples:**
 
 ```
-!guild prune 5 Kicking inactives..
+!guild prune 5
 ```
 </p></details>
 
@@ -1767,7 +1370,7 @@
 
 **Arguments:**
 
-(optional) `[Uri]` : *New icon URL.* (def: `None`)
+`[URL]` : *New icon URL.*
 
 **Examples:**
 
@@ -1793,7 +1396,7 @@
 ### message attachments
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*View all message attachments. If the message is not provided, uses the last sent message before command invocation.*
+*View all message attachments. If the message is not provided, scans the last sent message before command invocation.*
 
 **Aliases:**
 `a, files, la`
@@ -1845,22 +1448,22 @@
 ### message deletefrom
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Deletes given amount of most-recent messages from given user.*
+*Deletes messages from given user in amount of given messages.*
 
 **Requires permissions:**
 `Manage messages`
 
 **Requires user permissions:**
-`Administrator`
+`Manage messages`
 
 **Aliases:**
 `-user, -u, deluser, du, dfu, delfrom`
 
 **Overload 1:**
 
-`[user]` : *User.*
+`[user]` : *User whose messages to delete.*
 
-(optional) `[int]` : *Amount.* (def: `5`)
+(optional) `[int]` : *Message range.* (def: `5`)
 
 (optional) `[string...]` : *Reason.* (def: `None`)
 
@@ -1914,7 +1517,7 @@
 ### message deleteregex
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Deletes given amount of most-recent messages that match a given regular expression.*
+*Deletes given amount of most-recent messages that match a given regular expression withing a given message amount.*
 
 **Requires permissions:**
 `Manage messages`
@@ -1929,7 +1532,7 @@
 
 `[string]` : *Pattern (Regex).*
 
-(optional) `[int]` : *Amount.* (def: `5`)
+(optional) `[int]` : *Amount.* (def: `100`)
 
 (optional) `[string...]` : *Reason.* (def: `None`)
 
@@ -2067,7 +1670,7 @@
 ## Group: roles
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Miscellaneous role control commands.*
+*Miscellaneous role control commands. Group call lists all the roles in this guild or prints information about a given role.*
 
 **Aliases:**
 `role, rl`
@@ -2089,7 +1692,7 @@
 `Manage roles`
 
 **Aliases:**
-`new, add, +, c`
+`new, add, a, c, +, +=, <, <<`
 
 **Overload 2:**
 
@@ -2114,8 +1717,8 @@
 **Examples:**
 
 ```
+!roles create Role
 !roles create "My role" #C77B0F no no
-!roles create 
 !roles create #C77B0F My new role
 ```
 </p></details>
@@ -2131,7 +1734,7 @@
 `Manage roles`
 
 **Aliases:**
-`del, remove, d, -, rm`
+`del, remove, rm, d, -, >, >>`
 
 **Arguments:**
 
@@ -2173,19 +1776,19 @@
 
 ---
 
-### roles mentionall
+### roles mention
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Mention all users from given role.*
+*Mention the given role. This will bypass the mentionable status for the given role.*
 
-**Requires permissions:**
-`Mention everyone`
+**Requires user permissions:**
+`Administrator`
 
 **Requires bot permissions:**
 `Manage roles`
 
 **Aliases:**
-`mention, @, ma`
+`mentionall, @, ma`
 
 **Arguments:**
 
@@ -2337,10 +1940,10 @@
 ## Group: selfassignableroles
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Commands to manipulate self-assignable roles. If invoked without subcommands, lists all self-assignable roles for this guild or adds a new self-assignable role depending of argument given.*
+*Self-assignable roles management. A member can grant himself a self-assignable roleusing ``giveme`` command. Group call lists all self-assignable roles for the guild. Group call with an arbitrary amount of roles will add those roles to the self-assignable roles list for this guild, effective immediately.*
 
 **Aliases:**
-`sar`
+`sar, selfroles, selfrole`
 
 **Overload 0:**
 
@@ -2359,13 +1962,13 @@
 ### selfassignableroles add
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Add a self-assignable role (or roles) for this guild.*
+*Add a self-assignable role(s).*
 
 **Requires user permissions:**
 `Administrator`
 
 **Aliases:**
-`a, +`
+`a, +, +=, <<, <`
 
 **Arguments:**
 
@@ -2381,36 +1984,16 @@
 
 ---
 
-### selfassignableroles clear
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Delete all self-assignable roles for the current guild.*
-
-**Requires user permissions:**
-`Administrator`
-
-**Aliases:**
-`da, c, ca, cl, clearall`
-
-**Examples:**
-
-```
-!sar clear
-```
-</p></details>
-
----
-
 ### selfassignableroles delete
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Remove self-assignable role (or roles).*
+*Remove self-assignable role(s).*
 
 **Requires user permissions:**
 `Administrator`
 
 **Aliases:**
-`remove, del, -, d`
+`remove, rm, del, d, -, -=, >, >>`
 
 **Arguments:**
 
@@ -2426,13 +2009,33 @@
 
 ---
 
+### selfassignableroles deleteall
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Delete all self-assignable roles for the current guild.*
+
+**Requires user permissions:**
+`Administrator`
+
+**Aliases:**
+`removeall, rmrf, rma, clearall, clear, delall, da`
+
+**Examples:**
+
+```
+!sar clear
+```
+</p></details>
+
+---
+
 ### selfassignableroles list
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*View all self-assignable roles in the current guild.*
+*List all current self-assignable roles.*
 
 **Aliases:**
-`print, show, l, p`
+`print, show, ls, l, p`
 
 **Examples:**
 
@@ -2446,7 +2049,7 @@
 ## Group: user
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Miscellaneous user control commands. If invoked without subcommands, prints out user information.*
+*Miscellaneous user control commands. Group call prints information about given user.*
 
 **Aliases:**
 `users, u, usr`
@@ -2474,7 +2077,7 @@
 
 `[member]` : *Member.*
 
-`[role...]` : *Role to grant.*
+`[role...]` : *Roles to grant.*
 
 **Overload 0:**
 
@@ -2495,14 +2098,14 @@
 ### user avatar
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Get avatar from user.*
+*View user's avatar in full size.*
 
 **Aliases:**
 `a, pic, profilepic`
 
 **Arguments:**
 
-`[user]` : *User.*
+`[user]` : *User whose avatar to show.*
 
 **Examples:**
 
@@ -2526,7 +2129,7 @@
 
 **Arguments:**
 
-`[member]` : *Member.*
+`[member]` : *Member to ban.*
 
 (optional) `[string...]` : *Reason.* (def: `None`)
 
@@ -2543,7 +2146,7 @@
 ### user banid
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Bans the ID from the server.*
+*Bans the ID from the guild.*
 
 **Requires permissions:**
 `Ban members`
@@ -2570,24 +2173,27 @@
 ### user deafen
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Deafen a member.*
+*Deafen or undeafen a member.*
 
 **Requires permissions:**
 `Deafen voice chat members`
 
 **Aliases:**
-`deaf, d, df, deafenon`
+`deaf, d, df`
 
 **Arguments:**
 
 `[member]` : *Member.*
+
+`[boolean]` : *Deafen?*
 
 (optional) `[string...]` : *Reason.* (def: `None`)
 
 **Examples:**
 
 ```
-!user deafen @Someone
+!user deafen on @Someone
+!user deafen off @Someone
 ```
 </p></details>
 
@@ -2596,7 +2202,7 @@
 ### user info
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Print the information about the given user. If the user is not given, uses the sender.*
+*Print the information about the given user.*
 
 **Aliases:**
 `i, information`
@@ -2644,7 +2250,7 @@
 ### user mute
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Mute a member.*
+*Mute or unmute a member.*
 
 **Requires permissions:**
 `Mute voice chat members`
@@ -2654,6 +2260,8 @@
 
 **Arguments:**
 
+`[boolean]` : *Mute?*
+
 `[member]` : *Member to mute.*
 
 (optional) `[string...]` : *Reason.* (def: `None`)
@@ -2661,8 +2269,8 @@
 **Examples:**
 
 ```
-!user mute @Someone
-!user mute @Someone Trashtalk
+!user mute off @Someone
+!user mute on @Someone Trashtalk
 ```
 </p></details>
 
@@ -2752,7 +2360,7 @@
 
 `[member]` : *User.*
 
-(optional) `[string...]` : *New name.* (def: `None`)
+(optional) `[string...]` : *Nickname.* (def: `None`)
 
 **Examples:**
 
@@ -2801,7 +2409,7 @@
 **Aliases:**
 `tb, tban, tmpban, tmpb`
 
-**Overload 1:**
+**Overload 3:**
 
 `[time span]` : *Time span.*
 
@@ -2809,11 +2417,27 @@
 
 (optional) `[string...]` : *Reason.* (def: `None`)
 
-**Overload 0:**
+**Overload 2:**
 
 `[member]` : *User.*
 
 `[time span]` : *Time span.*
+
+(optional) `[string...]` : *Reason.* (def: `None`)
+
+**Overload 1:**
+
+`[user]` : *User (doesn't have to be a member).*
+
+`[time span]` : *Time span.*
+
+(optional) `[string...]` : *Reason.* (def: `None`)
+
+**Overload 0:**
+
+`[time span]` : *Time span.*
+
+`[user]` : *User (doesn't have to be a member).*
 
 (optional) `[string...]` : *Reason.* (def: `None`)
 
@@ -2849,59 +2473,6 @@
 
 ```
 !user unban 154956794490845232
-```
-</p></details>
-
----
-
-### user undeafen
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Undeafen a member.*
-
-**Requires permissions:**
-`Deafen voice chat members`
-
-**Aliases:**
-`udeaf, ud, udf, deafenoff`
-
-**Arguments:**
-
-`[member]` : *Member.*
-
-(optional) `[string...]` : *Reason.* (def: `None`)
-
-**Examples:**
-
-```
-!user undeafen @Someone
-```
-</p></details>
-
----
-
-### user unmute
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Unmute a member.*
-
-**Requires permissions:**
-`Mute voice chat members`
-
-**Aliases:**
-`um`
-
-**Arguments:**
-
-`[member]` : *Member to unmute.*
-
-(optional) `[string...]` : *Reason.* (def: `None`)
-
-**Examples:**
-
-```
-!user unmute @Someone
-!user unmute @Someone Some reason
 ```
 </p></details>
 

@@ -3,7 +3,7 @@
 ## Group: bank
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Bank account manipulation. If invoked alone, prints out your bank balance. Accounts periodically get a bonus.*
+*WM bank commands. Group call prints out given user's bank balance. Accounts periodically get an increase.*
 
 **Aliases:**
 `$, $$, $$$`
@@ -16,6 +16,7 @@
 
 ```
 !bank
+!bank @Someone
 ```
 </p></details>
 
@@ -24,7 +25,7 @@
 ### bank balance
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*View account balance for given user. If the user is not given, checks sender's balance.*
+*View someone's bank account in this guild.*
 
 **Aliases:**
 `s, status, bal, money, credits`
@@ -45,7 +46,7 @@
 ### bank grant
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Magically give funds to some user.*
+*Magically increase another user's bank balance.*
 
 **Aliases:**
 `give`
@@ -75,7 +76,7 @@
 ### bank register
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Create an account for you in WM bank.*
+*Open an account in WM bank for this guild.*
 
 **Aliases:**
 `r, signup, activate`
@@ -135,11 +136,11 @@
 
 `[user]` : *User to send credits to.*
 
-`[long]` : *Amount.*
+`[long]` : *Amount of currency to transfer.*
 
 **Overload 0:**
 
-`[long]` : *Amount.*
+`[long]` : *Amount of currency to transfer.*
 
 `[user]` : *User to send credits to.*
 
@@ -165,60 +166,12 @@
 
 `[user]` : *User whose account to delete.*
 
+(optional) `[boolean]` : *Globally delete?* (def: `False`)
+
 **Examples:**
 
 ```
 !bank unregister @Someone
-```
-</p></details>
-
----
-
-## Group: cards
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Manipulate a deck of cards.*
-
-**Aliases:**
-`deck`
-
-</p></details>
-
----
-
-### cards draw
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Draw cards from the top of the deck. If amount of cards is not specified, draws one card.*
-
-**Aliases:**
-`take`
-
-**Arguments:**
-
-(optional) `[int]` : *Amount (in range [1-10]).* (def: `1`)
-
-**Examples:**
-
-```
-!deck draw 5
-```
-</p></details>
-
----
-
-### cards reset
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Opens a brand new card deck.*
-
-**Aliases:**
-`new, opennew, open`
-
-**Examples:**
-
-```
-!deck reset
 ```
 </p></details>
 
@@ -263,7 +216,7 @@
 *Join a pending Blackjack game.*
 
 **Aliases:**
-`+, compete, enter, j`
+`+, compete, enter, j, <<, <`
 
 **Arguments:**
 
@@ -322,7 +275,7 @@
 *Join a pending Texas Hold'Em game.*
 
 **Aliases:**
-`+, compete, enter, j`
+`+, compete, enter, j, <<, <`
 
 **Examples:**
 
@@ -353,7 +306,7 @@
 ## Group: casino lottery
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Play a lottery game. The three numbers are drawn from 1 to 15 and they can't repeat.*
+*Play a lottery game. The three numbers are drawn from 1 to 15 and they can't be repeated.*
 
 **Aliases:**
 `lotto`
@@ -377,7 +330,7 @@
 *Join a pending Lottery game.*
 
 **Aliases:**
-`+, compete, enter, j`
+`+, compete, enter, j, <<, <`
 
 **Arguments:**
 

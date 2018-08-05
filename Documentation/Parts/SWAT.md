@@ -12,6 +12,177 @@
 
 ---
 
+## Group: swat banlist
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Hidden.*
+
+*SWAT4 banlist manipulation commands.*
+
+**Aliases:**
+`b, blist, bans, ban`
+
+</p></details>
+
+---
+
+### swat banlist add
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Add a player to banlist.*
+
+**Aliases:**
+`+, a, +=, <, <<`
+
+**Overload 1:**
+
+`[string]` : *Player name.*
+
+`[CustomIpFormat]` : *IP.*
+
+(optional) `[string...]` : *Reason for ban.* (def: `None`)
+
+**Overload 0:**
+
+`[CustomIpFormat]` : *IP.*
+
+`[string]` : *Player name.*
+
+(optional) `[string...]` : *Reason for ban.* (def: `None`)
+
+**Examples:**
+
+```
+!swat banlist add Name 109.70.149.158
+!swat banlist add Name 109.70.149.158 Reason for ban
+```
+</p></details>
+
+---
+
+### swat banlist delete
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Remove ban entry from database.*
+
+**Aliases:**
+`-, del, d, remove, -=, >, >>, rm`
+
+**Arguments:**
+
+`[CustomIpFormat]` : *IP.*
+
+**Examples:**
+
+```
+!swat banlist delete 123.123.123.123
+```
+</p></details>
+
+---
+
+### swat banlist list
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*View the banlist.*
+
+**Aliases:**
+`ls, l, print`
+
+**Examples:**
+
+```
+!swat banlist list
+```
+</p></details>
+
+---
+
+## Group: swat database
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Hidden.*
+
+*SWAT4 player IP database manipulation commands.*
+
+**Aliases:**
+`db`
+
+</p></details>
+
+---
+
+### swat database add
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Add a player to IP database.*
+
+**Aliases:**
+`+, a, +=, <, <<`
+
+**Overload 0:**
+
+`[string]` : *Player name.*
+
+`[CustomIpFormat]` : *IP.*
+
+(optional) `[string...]` : *Additional info.* (def: `None`)
+
+**Overload 0:**
+
+`[CustomIpFormat]` : *IP.*
+
+`[string]` : *Player name.*
+
+(optional) `[string...]` : *Additional info.* (def: `None`)
+
+**Examples:**
+
+```
+!swat db add Name 109.70.149.158
+```
+</p></details>
+
+---
+
+### swat database delete
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Remove ban entry from database.*
+
+**Aliases:**
+`-, del, d, -=, >, >>`
+
+**Arguments:**
+
+`[CustomIpFormat]` : *IP or range.*
+
+**Examples:**
+
+```
+!swat db remove 123.123.123.123
+```
+</p></details>
+
+---
+
+### swat database list
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*View the banlist.*
+
+**Aliases:**
+`ls, l`
+
+**Examples:**
+
+```
+!swat db list
+```
+</p></details>
+
+---
+
 ### swat ip
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
@@ -41,7 +212,13 @@
 **Aliases:**
 `q, info, i`
 
-**Arguments:**
+**Overload 1:**
+
+`[CustomIpFormat]` : *Registered name or IP.*
+
+(optional) `[int]` : *Query port* (def: `10481`)
+
+**Overload 0:**
 
 `[string]` : *Registered name or IP.*
 
@@ -53,6 +230,69 @@
 !s4 q 109.70.149.158
 !s4 q 109.70.149.158:10480
 !s4 q wm
+```
+</p></details>
+
+---
+
+## Group: swat search
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Hidden.*
+
+*SWAT4 database search commands.*
+
+**Aliases:**
+`s, find, lookup`
+
+**Arguments:**
+
+`[string]` : *Player name to search.*
+
+(optional) `[int]` : *Number of results* (def: `10`)
+
+</p></details>
+
+---
+
+### swat search ip
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Search for a given IP or range.*
+
+**Arguments:**
+
+`[CustomIpFormat]` : *IP.*
+
+(optional) `[int]` : *Number of results* (def: `10`)
+
+**Examples:**
+
+```
+!swat search 123.123.123.123
+```
+</p></details>
+
+---
+
+### swat search name
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Search for a given name.*
+
+**Aliases:**
+`player, nickname, nick`
+
+**Arguments:**
+
+`[string]` : *Player name.*
+
+(optional) `[int]` : *Number of results* (def: `10`)
+
+**Examples:**
+
+```
+!swat search EmoPig
 ```
 </p></details>
 
@@ -79,11 +319,14 @@
 
 *SWAT4 serverlist manipulation commands.*
 
-**Owner-only.**
-
 **Aliases:**
 `s, srv`
 
+**Examples:**
+
+```
+!swat servers
+```
 </p></details>
 
 ---
@@ -93,16 +336,22 @@
 
 *Add a server to serverlist.*
 
-**Owner-only.**
-
 **Aliases:**
-`+, a`
+`+, a, +=, <, <<`
 
-**Arguments:**
+**Overload 1:**
 
 `[string]` : *Name.*
 
-`[string]` : *IP.*
+`[CustomIpFormat]` : *IP.*
+
+(optional) `[int]` : *Query port* (def: `10481`)
+
+**Overload 0:**
+
+`[CustomIpFormat]` : *IP.*
+
+`[string]` : *Name.*
 
 (optional) `[int]` : *Query port* (def: `10481`)
 
@@ -121,10 +370,8 @@
 
 *Remove a server from serverlist.*
 
-**Owner-only.**
-
 **Aliases:**
-`-, del, d`
+`-, del, d, -=, >, >>`
 
 **Arguments:**
 
@@ -143,8 +390,6 @@
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *List all registered servers.*
-
-**Owner-only.**
 
 **Aliases:**
 `ls, l`
@@ -186,11 +431,15 @@
 **Aliases:**
 `checkspace, spacecheck`
 
-**Arguments:**
+**Overload 1:**
 
-`[string]` : *Registered name or IP.*
+`[CustomIpFormat]` : *IP.*
 
 (optional) `[int]` : *Query port* (def: `10481`)
+
+**Overload 0:**
+
+`[string]` : *Registered name.*
 
 **Examples:**
 

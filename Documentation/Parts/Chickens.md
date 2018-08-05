@@ -10,7 +10,7 @@
 
 **Arguments:**
 
-(optional) `[user]` : *User.* (def: `None`)
+(optional) `[member]` : *User.* (def: `None`)
 
 **Examples:**
 
@@ -25,14 +25,14 @@
 ## Group: chicken ambush
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Start an ambush for another user's chicken. Other users can put their chickens into your ambush and collectively attack the target chicken combining their strength.*
+*Start an ambush for another user's chicken. Other users can either help with the ambush or help the ambushed chicken.*
 
 **Aliases:**
 `gangattack`
 
 **Arguments:**
 
-(optional) `[user]` : *Whose chicken to ambush.* (def: `None`)
+`[member]` : *Whose chicken to ambush?*
 
 **Examples:**
 
@@ -66,7 +66,7 @@
 *Join a pending chicken ambush as one of the ambushers.*
 
 **Aliases:**
-`+, compete, enter, j`
+`+, compete, enter, j, <, <<`
 
 **Examples:**
 
@@ -87,7 +87,7 @@
 
 **Arguments:**
 
-(optional) `[string...]` : *Chicken name.* (def: `None`)
+`[string...]` : *Chicken name.*
 
 **Examples:**
 
@@ -108,7 +108,7 @@
 
 **Arguments:**
 
-(optional) `[string...]` : *Chicken name.* (def: `None`)
+`[string...]` : *Chicken name.*
 
 **Examples:**
 
@@ -129,7 +129,7 @@
 
 **Arguments:**
 
-(optional) `[string...]` : *Chicken name.* (def: `None`)
+`[string...]` : *Chicken name.*
 
 **Examples:**
 
@@ -167,7 +167,7 @@
 
 **Arguments:**
 
-(optional) `[string...]` : *Chicken name.* (def: `None`)
+`[string...]` : *Chicken name.*
 
 **Examples:**
 
@@ -184,11 +184,11 @@
 *Buy a trained chicken.*
 
 **Aliases:**
-`wf, fed`
+`tr, train`
 
 **Arguments:**
 
-(optional) `[string...]` : *Chicken name.* (def: `None`)
+`[string...]` : *Chicken name.*
 
 **Examples:**
 
@@ -209,7 +209,7 @@
 
 **Arguments:**
 
-(optional) `[string...]` : *Chicken name.* (def: `None`)
+`[string...]` : *Chicken name.*
 
 **Examples:**
 
@@ -230,7 +230,7 @@
 
 **Arguments:**
 
-`[user]` : *User.*
+`[member]` : *Member whose chicken to fight.*
 
 **Examples:**
 
@@ -285,7 +285,7 @@
 
 **Arguments:**
 
-(optional) `[user]` : *User.* (def: `None`)
+(optional) `[member]` : *User.* (def: `None`)
 
 **Examples:**
 
@@ -306,7 +306,7 @@
 
 **Arguments:**
 
-(optional) `[string...]` : *Chicken name.* (def: `None`)
+`[string...]` : *New chicken name.*
 
 **Examples:**
 
@@ -422,7 +422,7 @@
 ## Group: chicken upgrades
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Upgrade your chicken with items you can buy using your credits from WM bank. Invoking the group lists all upgrades available.*
+*Upgrade your chicken with items you can buy using your credits from WM bank. Group call lists all available upgrades.*
 
 **Aliases:**
 `perks, upgrade, u`

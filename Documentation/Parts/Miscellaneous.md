@@ -1,30 +1,9 @@
 # Module: Miscellaneous
 
-## 8ball
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*An almighty ball which knows the answer to any question you ask. Alright, it's random answer, so what?*
-
-**Aliases:**
-`8b`
-
-**Arguments:**
-
-`[string...]` : *A question for the almighty ball.*
-
-**Examples:**
-
-```
-!8ball Am I gay?
-```
-</p></details>
-
----
-
 ## Group: birthdays
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Birthday notifications management. If invoked without command, either lists or adds birthdays depending if argument is given.*
+*Birthday notifications commands. Group call either lists or adds birthday depending if argument is given.*
 
 **Requires user permissions:**
 `Manage guild`
@@ -36,17 +15,17 @@
 
 `[user]` : *Birthday boy/girl.*
 
-(optional) `[string]` : *Birth date.* (def: `None`)
-
 (optional) `[channel]` : *Channel to send a greeting message to.* (def: `None`)
+
+(optional) `[string]` : *Birth date.* (def: `None`)
 
 **Overload 0:**
 
 `[user]` : *Birthday boy/girl.*
 
-(optional) `[channel]` : *Channel to send a greeting message to.* (def: `None`)
-
 (optional) `[string]` : *Birth date.* (def: `None`)
+
+(optional) `[channel]` : *Channel to send a greeting message to.* (def: `None`)
 
 </p></details>
 
@@ -55,29 +34,29 @@
 ### birthdays add
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Add a birthday to the database. If date is not specified, uses the current date as a birthday date. If the channel is not specified, uses the current channel.*
+*Schedule a birthday notification. If the date is not specified, uses the current date as a birthday date. If the channel is not specified, uses the current channel.*
 
 **Requires user permissions:**
 `Manage guild`
 
 **Aliases:**
-`+, a`
+`new, +, a, +=, <, <<`
 
 **Overload 1:**
 
 `[user]` : *Birthday boy/girl.*
 
-(optional) `[string]` : *Birth date.* (def: `None`)
-
 (optional) `[channel]` : *Channel to send a greeting message to.* (def: `None`)
+
+(optional) `[string]` : *Birth date.* (def: `None`)
 
 **Overload 0:**
 
 `[user]` : *Birthday boy/girl.*
 
-(optional) `[channel]` : *Channel to send a greeting message to.* (def: `None`)
-
 (optional) `[string]` : *Birth date.* (def: `None`)
+
+(optional) `[channel]` : *Channel to send a greeting message to.* (def: `None`)
 
 **Examples:**
 
@@ -101,11 +80,15 @@
 `Manage guild`
 
 **Aliases:**
-`-, remove, rm, del`
+`-, remove, rm, del, -=, >, >>`
 
-**Arguments:**
+**Overload 1:**
 
 `[user]` : *User whose birthday to remove.*
+
+**Overload 0:**
+
+`[channel]` : *Channel for which to remove birthdays.*
 
 **Examples:**
 
@@ -136,68 +119,10 @@
 
 ---
 
-## coinflip
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Flip a coin.*
-
-**Aliases:**
-`coin, flip`
-
-**Examples:**
-
-```
-!coinflip
-```
-</p></details>
-
----
-
-## dice
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Roll a dice.*
-
-**Aliases:**
-`die, roll`
-
-**Examples:**
-
-```
-!dice
-```
-</p></details>
-
----
-
-## giveme
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Grants you a role from this guild's self-assignable roles list.*
-
-**Requires bot permissions:**
-`Manage roles`
-
-**Aliases:**
-`giverole, gimme, grantme`
-
-**Arguments:**
-
-`[role]` : *Role to grant.*
-
-**Examples:**
-
-```
-!giveme @Announcements
-```
-</p></details>
-
----
-
 ## Group: insult
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Insults manipulation. If invoked without subcommands, insults a given user.*
+*Insults manipulation. Group call insults a given user.*
 
 **Aliases:**
 `burn, insults, ins, roast`
@@ -220,10 +145,8 @@
 
 *Add insult to list (use %user% instead of user mention).*
 
-**Owner-only.**
-
 **Aliases:**
-`+, new, a`
+`new, a, +, +=, <, <<`
 
 **Arguments:**
 
@@ -232,26 +155,7 @@
 **Examples:**
 
 ```
-!insult add You are so dumb, %user%!
-```
-</p></details>
-
----
-
-### insult clear
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Delete all insults.*
-
-**Owner-only.**
-
-**Aliases:**
-`da, c, ca, cl, clearall`
-
-**Examples:**
-
-```
-!insults clear
+!insult add %user% is lowering the IQ of the entire street!
 ```
 </p></details>
 
@@ -262,10 +166,8 @@
 
 *Remove insult with a given index from list. (use command ``insults list`` to view insult indexes).*
 
-**Owner-only.**
-
 **Aliases:**
-`-, remove, del, rm, rem, d`
+`-, remove, del, rm, rem, d, >, >>, -=`
 
 **Arguments:**
 
@@ -275,6 +177,23 @@
 
 ```
 !insult delete 2
+```
+</p></details>
+
+---
+
+### insult deleteall
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Delete all insults.*
+
+**Aliases:**
+`clear, da, c, ca, cl, clearall, >>>`
+
+**Examples:**
+
+```
+!insults clear
 ```
 </p></details>
 
@@ -297,93 +216,10 @@
 
 ---
 
-## invite
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Get an instant invite link for the current guild.*
-
-**Requires permissions:**
-`Create instant invites`
-
-**Aliases:**
-`getinvite`
-
-**Examples:**
-
-```
-!invite
-```
-</p></details>
-
----
-
-## items
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*View user's purchased items (see ``bank`` and ``shop``).*
-
-**Requires permissions:**
-`Create instant invites`
-
-**Aliases:**
-`myitems, purchases`
-
-**Arguments:**
-
-(optional) `[user]` : *User.* (def: `None`)
-
-**Examples:**
-
-```
-!items
-!items @Someone
-```
-</p></details>
-
----
-
-## leave
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Makes Godfather leave the guild.*
-
-**Requires user permissions:**
-`Administrator`
-
-**Examples:**
-
-```
-!leave
-```
-</p></details>
-
----
-
-## leet
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Wr1t3s m3ss@g3 1n 1337sp34k.*
-
-**Aliases:**
-`l33t`
-
-**Arguments:**
-
-`[string...]` : *Text.*
-
-**Examples:**
-
-```
-!leet Some sentence
-```
-</p></details>
-
----
-
 ## Group: meme
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Manipulate guild memes. When invoked without subcommands, returns a meme from this guild's meme list given by name, otherwise returns random one.*
+*Manipulate guild memes. Group call returns a meme from this guild's meme list given by name or a random one if name isn't provided.*
 
 **Aliases:**
 `memes, mm`
@@ -411,17 +247,17 @@
 `Manage guild`
 
 **Aliases:**
-`+, new, a`
+`+, new, a, +=, <, <<`
 
 **Overload 1:**
 
 `[string]` : *Short name (case insensitive).*
 
-(optional) `[Uri]` : *URL.* (def: `None`)
+(optional) `[URL]` : *URL.* (def: `None`)
 
 **Overload 0:**
 
-`[Uri]` : *URL.*
+`[URL]` : *URL.*
 
 `[string]` : *Short name (case insensitive).*
 
@@ -429,26 +265,6 @@
 
 ```
 !meme add pepe http://i0.kym-cdn.com/photos/images/facebook/000/862/065/0e9.jpg
-```
-</p></details>
-
----
-
-### meme clear
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Deletes all guild memes.*
-
-**Requires user permissions:**
-`Administrator`
-
-**Aliases:**
-`da, ca, cl, clearall`
-
-**Examples:**
-
-```
-!memes clear
 ```
 </p></details>
 
@@ -491,7 +307,7 @@
 `Manage guild`
 
 **Aliases:**
-`-, del, remove, rm, d, rem`
+`-, del, remove, rm, d, rem, -=, >, >>`
 
 **Arguments:**
 
@@ -501,6 +317,26 @@
 
 ```
 !meme delete pepe
+```
+</p></details>
+
+---
+
+### meme deleteall
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Deletes all guild memes.*
+
+**Requires user permissions:**
+`Administrator`
+
+**Aliases:**
+`clear, da, ca, cl, clearall, >>>`
+
+**Examples:**
+
+```
+!memes clear
 ```
 </p></details>
 
@@ -535,129 +371,6 @@
 
 ```
 !meme templates
-```
-</p></details>
-
----
-
-## news
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Get newest world news.*
-
-**Aliases:**
-`worldnews`
-
-**Examples:**
-
-```
-!news
-```
-</p></details>
-
----
-
-## penis
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*An accurate measurement.*
-
-**Aliases:**
-`size, length, manhood, dick`
-
-**Arguments:**
-
-(optional) `[user]` : *Who to measure.* (def: `None`)
-
-**Examples:**
-
-```
-!penis @Someone
-```
-</p></details>
-
----
-
-## peniscompare
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Comparison of the results given by ``penis`` command.*
-
-**Aliases:**
-`sizecompare, comparesize, comparepenis, cmppenis, peniscmp, comppenis`
-
-**Arguments:**
-
-`[user]` : *User1.*
-
-(optional) `[user]` : *User2 (def. sender).* (def: `None`)
-
-**Examples:**
-
-```
-!peniscompare @Someone
-!peniscompare @Someone @SomeoneElse
-```
-</p></details>
-
----
-
-## ping
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Ping the bot.*
-
-**Examples:**
-
-```
-!ping
-```
-</p></details>
-
----
-
-## prefix
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Get current guild prefix, or change it.*
-
-**Requires user permissions:**
-`Administrator`
-
-**Aliases:**
-`setprefix, pref, setpref`
-
-**Arguments:**
-
-(optional) `[string]` : *Prefix to set.* (def: `None`)
-
-**Examples:**
-
-```
-!prefix
-!prefix ;
-```
-</p></details>
-
----
-
-## quoteoftheday
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Get quote of the day. You can also specify a category from the list: inspire, management, sports, life, funny, love, art, students.*
-
-**Aliases:**
-`qotd, qod, quote, q`
-
-**Arguments:**
-
-(optional) `[string]` : *Category.* (def: `None`)
-
-**Examples:**
-
-```
-!quoteoftheday
-!quoteoftheday life
 ```
 </p></details>
 
@@ -699,7 +412,7 @@
 
 **Arguments:**
 
-`[string...]` : *Option list (separated by comma).*
+`[string...]` : *Option list (comma separated).*
 
 **Examples:**
 
@@ -727,7 +440,7 @@
 ### random raffle
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Choose a user from the online members list belonging to a given role.*
+*Choose a user from the online members list optionally belonging to a given role.*
 
 **Aliases:**
 `chooseuser`
@@ -749,7 +462,7 @@
 ## Group: rank
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*User ranking commands. If invoked without subcommands, prints sender's rank.*
+*User ranking commands. Group command prints given user's rank.*
 
 **Aliases:**
 `ranks, ranking, level`
@@ -777,7 +490,7 @@
 `Manage guild`
 
 **Aliases:**
-`+, a, rename`
+`+, a, rename, rn, newname, <, <<, +=`
 
 **Arguments:**
 
@@ -824,7 +537,7 @@
 *Print all customized ranks for this guild.*
 
 **Aliases:**
-`levels`
+`levels, ls, l, print`
 
 **Examples:**
 
@@ -844,108 +557,6 @@
 
 ```
 !rank top
-```
-</p></details>
-
----
-
-## rate
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Gives a rating chart for the user. If the user is not provided, rates sender.*
-
-**Requires bot permissions:**
-`Attach files`
-
-**Aliases:**
-`score, graph`
-
-**Arguments:**
-
-(optional) `[user]` : *Who to measure.* (def: `None`)
-
-**Examples:**
-
-```
-!rate @Someone
-```
-</p></details>
-
----
-
-## remind
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Resend a message after some time.*
-
-**Requires user permissions:**
-`Administrator`
-
-**Overload 2:**
-
-`[time span]` : *Time span until reminder.*
-
-`[channel]` : *Channel to send message to.*
-
-`[string...]` : *What to send?*
-
-**Overload 1:**
-
-`[channel]` : *Channel to send message to.*
-
-`[time span]` : *Time span until reminder.*
-
-`[string...]` : *What to send?*
-
-**Overload 0:**
-
-`[time span]` : *Time span until reminder.*
-
-`[string...]` : *What to send?*
-
-**Examples:**
-
-```
-!remind 1h Drink water!
-```
-</p></details>
-
----
-
-## report
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Send a report message to owner about a bug (please don't abuse... please).*
-
-**Arguments:**
-
-`[string...]` : *Issue text.*
-
-**Examples:**
-
-```
-!report Your bot sucks!
-```
-</p></details>
-
----
-
-## say
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Echo echo echo.*
-
-**Aliases:**
-`repeat`
-
-**Arguments:**
-
-`[string...]` : *Text.*
-
-**Examples:**
-
-```
-!say I am gay.
 ```
 </p></details>
 
@@ -977,7 +588,7 @@
 `Manage guild`
 
 **Aliases:**
-`+, a`
+`+, a, +=, <, <<, additem`
 
 **Overload 1:**
 
@@ -1032,7 +643,7 @@
 `Manage guild`
 
 **Aliases:**
-`-, remove, rm, del`
+`-, remove, rm, del, -=, >, >>`
 
 **Arguments:**
 
@@ -1066,25 +677,6 @@
 
 ---
 
-### shop listall
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*List all purchasable items for all guilds.*
-
-**Owner-only.**
-
-**Aliases:**
-`la`
-
-**Examples:**
-
-```
-!shop listall
-```
-</p></details>
-
----
-
 ### shop sell
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
@@ -1101,45 +693,6 @@
 
 ```
 !shop sell 3
-```
-</p></details>
-
----
-
-## tts
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Sends a tts message.*
-
-**Arguments:**
-
-`[string...]` : *Text.*
-
-**Examples:**
-
-```
-!tts I am gay.
-```
-</p></details>
-
----
-
-## zugify
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*I don't even...*
-
-**Aliases:**
-`z`
-
-**Arguments:**
-
-`[string...]` : *Text.*
-
-**Examples:**
-
-```
-!zugify Some random text
 ```
 </p></details>
 

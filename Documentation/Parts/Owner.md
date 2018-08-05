@@ -47,17 +47,17 @@
 
 **Overload 2:**
 
-`[channel...]` : *Users to block.*
+`[channel...]` : *Channels to block.*
 
 **Overload 1:**
 
 `[string]` : *Reason (max 60 chars).*
 
-`[channel...]` : *Users to block.*
+`[channel...]` : *Channels to block.*
 
 **Overload 0:**
 
-`[channel]` : *Users to block.*
+`[channel]` : *Channels to block.*
 
 `[string...]` : *Reason (max 60 chars).*
 
@@ -71,7 +71,7 @@
 *Add channel to blocked channels list.*
 
 **Aliases:**
-`+, a`
+`+, a, block, <, <<, +=`
 
 **Overload 2:**
 
@@ -108,7 +108,7 @@
 *Remove channel from blocked channels list..*
 
 **Aliases:**
-`-, remove, rm, del`
+`-, remove, rm, del, unblock, >, >>, -=`
 
 **Arguments:**
 
@@ -131,7 +131,7 @@
 *List all blocked channels.*
 
 **Aliases:**
-`ls`
+`ls, l, print`
 
 **Examples:**
 
@@ -176,7 +176,7 @@
 *Add users to blocked users list.*
 
 **Aliases:**
-`+, a`
+`+, a, block, <, <<, +=`
 
 **Overload 2:**
 
@@ -213,7 +213,7 @@
 *Remove users from blocked users list..*
 
 **Aliases:**
-`-, remove, rm, del`
+`-, remove, rm, del, unblock, >, >>, -=`
 
 **Arguments:**
 
@@ -236,7 +236,7 @@
 *List all blocked users.*
 
 **Aliases:**
-`ls`
+`ls, l, print`
 
 **Examples:**
 
@@ -259,7 +259,7 @@
 
 **Arguments:**
 
-`[Uri]` : *URL.*
+`[URL]` : *URL.*
 
 **Examples:**
 
@@ -296,7 +296,7 @@
 ### owner clearlog
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Clear application logs.*
+*Clear bot logs.*
 
 **Owner-only.**
 
@@ -370,7 +370,7 @@
 
 **Arguments:**
 
-(optional) `[boolean]` : *True/False* (def: `True`)
+(optional) `[boolean]` : *Enable?* (def: `True`)
 
 **Examples:**
 
@@ -430,10 +430,10 @@
 
 ---
 
-## Group: owner priviledgedusers
+## Group: owner privilegedusers
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Manipulate priviledged users. Priviledged users can invoke commands marked with RequirePriviledgedUsers permission.*
+*Manipulate privileged users. Privileged users can invoke commands marked with RequirePrivilegedUsers permission.*
 
 **Owner-only.**
 
@@ -442,75 +442,75 @@
 
 **Overload 0:**
 
-`[user...]` : *Users to grant priviledge to.*
+`[user...]` : *Users to grant privilege to.*
 
 </p></details>
 
 ---
 
-### owner priviledgedusers add
+### owner privilegedusers add
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Add users to priviledged users list.*
+*Add users to privileged users list.*
 
 **Owner-only.**
 
 **Aliases:**
-`+, a`
+`+, a, <, <<, +=`
 
 **Arguments:**
 
-`[user...]` : *Users to grant priviledge to.*
+`[user...]` : *Users to grant privilege to.*
 
 **Examples:**
 
 ```
-!owner priviledgedusers add @Someone
-!owner priviledgedusers add @Someone @SomeoneElse
+!owner privilegedusers add @Someone
+!owner privilegedusers add @Someone @SomeoneElse
 ```
 </p></details>
 
 ---
 
-### owner priviledgedusers delete
+### owner privilegedusers delete
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Remove users from priviledged users list..*
+*Remove users from privileged users list..*
 
 **Owner-only.**
 
 **Aliases:**
-`-, remove, rm, del`
+`-, remove, rm, del, >, >>, -=`
 
 **Arguments:**
 
-`[user...]` : *Users to revoke priviledges from.*
+`[user...]` : *Users to revoke privileges from.*
 
 **Examples:**
 
 ```
-!owner priviledgedusers remove @Someone
-!owner priviledgedusers remove 123123123123123
-!owner priviledgedusers remove @Someone 123123123123123
+!owner privilegedusers remove @Someone
+!owner privilegedusers remove 123123123123123
+!owner privilegedusers remove @Someone 123123123123123
 ```
 </p></details>
 
 ---
 
-### owner priviledgedusers list
+### owner privilegedusers list
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*List all priviledged users.*
+*List all privileged users.*
 
 **Owner-only.**
 
 **Aliases:**
-`ls`
+`ls, l, print`
 
 **Examples:**
 
 ```
-!owner priviledgedusers list
+!owner privilegedusers list
 ```
 </p></details>
 
@@ -591,7 +591,7 @@
 **Owner-only.**
 
 **Aliases:**
-`+, a`
+`+, a, <, <<, +=`
 
 **Arguments:**
 
@@ -617,7 +617,7 @@
 **Owner-only.**
 
 **Aliases:**
-`-, remove, rm, del`
+`-, remove, rm, del, >, >>, -=`
 
 **Arguments:**
 
@@ -640,7 +640,7 @@
 **Owner-only.**
 
 **Aliases:**
-`ls`
+`ls, l, print`
 
 **Examples:**
 
@@ -693,7 +693,7 @@
 
 **Arguments:**
 
-(optional) `[boolean]` : *True/False* (def: `True`)
+(optional) `[boolean]` : *Enabled?* (def: `True`)
 
 **Examples:**
 
