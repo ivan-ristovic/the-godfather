@@ -2,6 +2,7 @@
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
+using Humanizer;
 using System.Linq;
 using System.Threading.Tasks;
 using TheGodfather.Common;
@@ -72,7 +73,7 @@ namespace TheGodfather.EventListeners
             var pinned = await e.Channel.GetPinnedMessagesAsync();
             if (pinned.Any()) {
                 string content = string.IsNullOrWhiteSpace(pinned.First().Content) ? "<embedded message>" : pinned.First().Content;
-                emb.AddField("Content", Formatter.BlockCode(Formatter.Sanitize(content)));
+                emb.AddField("Content", Formatter.BlockCode(Formatter.Sanitize(content.Truncate(1020))));
             }
             if (e.LastPinTimestamp != null)
                 emb.AddField("Last pin timestamp", e.LastPinTimestamp.Value.ToUtcTimestamp());

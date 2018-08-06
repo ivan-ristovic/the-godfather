@@ -25,7 +25,7 @@ namespace TheGodfather.EventListeners
             DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Channel.Guild);
             if (logchn == null)
                 return;
-
+            
             DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Message, $"Bulk message deletion occured ({e.Messages.Count} total)", $"In channel {e.Channel.Mention}");
             await logchn.SendMessageAsync(embed: emb.Build());
         }
@@ -75,7 +75,7 @@ namespace TheGodfather.EventListeners
             DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Message, $"Filter triggered");
             emb.AddField("User responsible", e.Message.Author.Mention);
             emb.AddField("Channel", e.Channel.Mention);
-            emb.AddField("Content", Formatter.BlockCode(Formatter.Sanitize(e.Message.Content)));
+            emb.AddField("Content", Formatter.BlockCode(Formatter.Sanitize(e.Message.Content.Truncate(1020))));
 
             await logchn.SendMessageAsync(embed: emb.Build());
         }
@@ -150,7 +150,7 @@ namespace TheGodfather.EventListeners
             }
 
             if (!string.IsNullOrWhiteSpace(e.Message.Content)) {
-                emb.AddField("Content", $"{Formatter.BlockCode(string.IsNullOrWhiteSpace(e.Message.Content) ? "<empty content>" : e.Message.Content)}");
+                emb.AddField("Content", $"{Formatter.BlockCode(string.IsNullOrWhiteSpace(e.Message.Content) ? "<empty content>" : e.Message.Content.Truncate(1020))}");
                 if (shard.SharedData.MessageContainsFilter(e.Guild.Id, e.Message.Content))
                     emb.WithDescription(Formatter.Italic("Message contained a filter."));
             }
@@ -187,8 +187,8 @@ namespace TheGodfather.EventListeners
             if (logchn == null || !e.Message.IsEdited)
                 return;
 
-            string pcontent = string.IsNullOrWhiteSpace(e.MessageBefore?.Content) ? "" : e.MessageBefore.Content.Truncate(750);
-            string acontent = string.IsNullOrWhiteSpace(e.Message?.Content) ? "" : e.Message.Content.Truncate(750);
+            string pcontent = string.IsNullOrWhiteSpace(e.MessageBefore?.Content) ? "" : e.MessageBefore.Content.Truncate(700);
+            string acontent = string.IsNullOrWhiteSpace(e.Message?.Content) ? "" : e.Message.Content.Truncate(700);
             string ctime = e.Message.CreationTimestamp != null ? e.Message.CreationTimestamp.ToUtcTimestamp() : _unknown;
             string etime = e.Message.EditedTimestamp != null ? e.Message.EditedTimestamp.Value.ToUtcTimestamp() : _unknown;
             string bextra = $"Embeds: {e.MessageBefore?.Embeds?.Count ?? 0}, Reactions: {e.MessageBefore?.Reactions?.Count ?? 0}, Attachments: {e.MessageBefore?.Attachments?.Count ?? 0}";

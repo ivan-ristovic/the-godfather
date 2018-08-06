@@ -78,30 +78,39 @@ namespace TheGodfather.EventListeners
                 return;
 
             DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Emoji, "Guild emojis updated");
-
-            DiscordAuditLogEntry entry = null;
+            
+            AuditLogActionType action;
             if (e.EmojisAfter.Count > e.EmojisBefore.Count)
-                entry = await e.Guild.GetFirstAuditLogEntryAsync(AuditLogActionType.EmojiCreate);
+                action = AuditLogActionType.EmojiCreate;
             else if (e.EmojisAfter.Count < e.EmojisBefore.Count)
-                entry = await e.Guild.GetFirstAuditLogEntryAsync(AuditLogActionType.EmojiDelete);
+                action = AuditLogActionType.EmojiDelete;
             else
-                entry = await e.Guild.GetFirstAuditLogEntryAsync(AuditLogActionType.EmojiUpdate);
+                action = AuditLogActionType.EmojiUpdate;
+            DiscordAuditLogEntry entry = await e.Guild.GetFirstAuditLogEntryAsync(action);
+
+            emb.WithTitle($"Guild emoji action occured: {action.ToString()}");
             if (entry == null || !(entry is DiscordAuditLogEmojiEntry eentry)) {
                 emb.AddField("Error", "Failed to read audit log information. Please check my permissions");
                 emb.AddField("Emojis before", e.EmojisBefore?.Count.ToString() ?? _unknown, inline: true);
                 emb.AddField("Emojis after", e.EmojisAfter?.Count.ToString() ?? _unknown, inline: true);
             } else {
-                emb.WithTitle($"Guild emoji action occured: {eentry.ActionCategory.ToString()}");
-                if (eentry.Target != null) {
-                    emb.WithDescription(eentry.Target.Id.ToString());
-                    emb.WithThumbnailUrl(eentry.Target.Url);
-                } else {
-                    emb.WithDescription(_unknown);
+                switch (action) {
+                    case AuditLogActionType.EmojiCreate:
+                        emb.WithDescription(eentry.Target.ToString() ?? _unknown);
+                        emb.WithThumbnailUrl(eentry.Target.Url);
+                        break;
+                    case AuditLogActionType.EmojiDelete:
+                        emb.WithDescription(eentry.NameChange.Before ?? _unknown);
+                        break;
+                    case AuditLogActionType.EmojiUpdate:
+                        emb.WithDescription(eentry.Target.ToString() ?? _unknown);
+                        if (eentry.NameChange != null)
+                            emb.AddField("Name changes", $"{Formatter.InlineCode(eentry.NameChange.Before ?? "None")} -> {Formatter.InlineCode(eentry.NameChange.After ?? "None")}", inline: true);
+                        break;
+                    default:
+                        break;
                 }
                 emb.AddField("User responsible", eentry.UserResponsible.Mention, inline: true);
-                if (eentry.NameChange != null) {
-                    emb.AddField("Name changes", $"{Formatter.InlineCode(eentry.NameChange.Before ?? "None")} -> {Formatter.InlineCode(eentry.NameChange.After ?? "None")}", inline: true);
-                }
                 if (!string.IsNullOrWhiteSpace(eentry.Reason))
                     emb.AddField("Reason", eentry.Reason);
                 emb.WithFooter(eentry.CreationTimestamp.ToUtcTimestamp(), eentry.UserResponsible.AvatarUrl);

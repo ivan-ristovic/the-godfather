@@ -23,6 +23,7 @@ namespace TheGodfather.EventListeners
     {
         private static readonly string _unknown = Formatter.Italic("Unknown");
 
+
         private static DiscordEmbedBuilder FormEmbedBuilder(EventOrigin origin, string title, string desc = null)
         {
             var emb = new DiscordEmbedBuilder() {
