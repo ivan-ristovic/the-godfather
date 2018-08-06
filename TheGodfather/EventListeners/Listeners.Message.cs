@@ -97,14 +97,16 @@ namespace TheGodfather.EventListeners
             if (!shard.SharedData.EmojiReactions.ContainsKey(e.Guild.Id))
                 return;
 
-            IEnumerable<EmojiReaction> ereactions = shard.SharedData.EmojiReactions[e.Guild.Id]
-                .Where(er => er.IsMatch(e.Message?.Content ?? ""));
-            foreach (EmojiReaction er in ereactions) {
+            EmojiReaction ereaction = shard.SharedData.EmojiReactions[e.Guild.Id]
+                .Where(er => er.IsMatch(e.Message?.Content ?? ""))
+                .Shuffle()
+                .FirstOrDefault();
+            if (ereaction != null) {
                 try {
-                    var emoji = DiscordEmoji.FromName(shard.Client, er.Response);
+                    var emoji = DiscordEmoji.FromName(shard.Client, ereaction.Response);
                     await e.Message.CreateReactionAsync(emoji);
                 } catch (ArgumentException) {
-                    await shard.DatabaseService.RemoveAllTriggersForEmojiReactionAsync(e.Guild.Id, er.Response);
+                    await shard.DatabaseService.RemoveAllTriggersForEmojiReactionAsync(e.Guild.Id, ereaction.Response);
                 }
             }
         }

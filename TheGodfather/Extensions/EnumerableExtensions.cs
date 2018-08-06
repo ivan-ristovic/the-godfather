@@ -11,6 +11,9 @@ namespace TheGodfather.Extensions
     {
         public static IEnumerable<T> Shuffle<T>(this IEnumerable<T> items)
         {
+            if (!items.Any())
+                return items;
+
             using (var provider = RandomNumberGenerator.Create()) {
                 var list = items.ToList();
                 int n = list.Count;
