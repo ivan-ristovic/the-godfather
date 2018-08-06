@@ -66,7 +66,7 @@ namespace TheGodfather.Modules.Currency.Common
                     ms.Position = 0;
                     return this.Channel.SendFileAsync("wof.png", ms, embed: new DiscordEmbedBuilder() {
                         Description = $"{this.user.Mention} won {Formatter.Bold(this.WonAmount.ToWords())} ({this.WonAmount:n0}) credits!",
-                        Color = DiscordColor.Cyan
+                        Color = DiscordColor.DarkGreen
                     });
                 }
             } catch (Exception e) {

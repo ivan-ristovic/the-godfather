@@ -38,7 +38,7 @@ namespace TheGodfather.Modules.Currency.Common
             var emb = new DiscordEmbedBuilder() {
                 Title = $"{StaticDiscordEmoji.LargeOrangeDiamond} SLUT MACHINE {StaticDiscordEmoji.LargeOrangeDiamond}",
                 Description = MakeStringFromResult(res),
-                Color = DiscordColor.MidnightBlue,
+                Color = DiscordColor.DarkGreen,
                 ThumbnailUrl = user.AvatarUrl
             };
 

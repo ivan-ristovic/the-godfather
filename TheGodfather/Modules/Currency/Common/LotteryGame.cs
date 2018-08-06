@@ -98,7 +98,7 @@ namespace TheGodfather.Modules.Currency.Common
             var emb = new DiscordEmbedBuilder() {
                 Title = $"{StaticDiscordEmoji.MoneyBag} LOTTERY DRAWS {StaticDiscordEmoji.MoneyBag}",
                 Description = sb.ToString(),
-                Color = DiscordColor.Gold
+                Color = DiscordColor.DarkGreen
             };
 
             return msg.ModifyAsync(embed: emb.Build());

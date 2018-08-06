@@ -162,7 +162,7 @@ namespace TheGodfather.Modules.Currency.Common
             var emb = new DiscordEmbedBuilder() {
                 Title = $"{StaticDiscordEmoji.CardSuits[0]} HOLD'EM GAME STATE {StaticDiscordEmoji.CardSuits[0]}",
                 Description = sb.ToString(),
-                Color = DiscordColor.Red
+                Color = DiscordColor.DarkGreen
             };
 
             if (!this.GameOver && tomove != null)

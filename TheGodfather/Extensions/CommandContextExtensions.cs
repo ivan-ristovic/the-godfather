@@ -71,7 +71,7 @@ namespace TheGodfather.Extensions
 
             MessageContext mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(
                 xm => {
-                    if (xm.Author.Id == ctx.User.Id || xm.Channel.Id != ctx.Channel.Id)
+                    if (xm.Author.IsBot || xm.Author.Id == ctx.User.Id || xm.Channel.Id != ctx.Channel.Id)
                         return false;
                     string[] split = xm.Content.ToLowerInvariant().Split(' ');
                     return split.Length == 1 && (split[0] == "me" || split[0] == "i");

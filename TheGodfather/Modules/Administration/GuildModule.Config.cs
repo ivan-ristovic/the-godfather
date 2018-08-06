@@ -345,7 +345,7 @@ namespace TheGodfather.Modules.Administration
                     await logchn.SendMessageAsync(embed: emb.Build());
                 }
 
-                await InformAsync(ctx, $"{Formatter.Bold(gcfg.ReactionResponse ? "Enabled" : "Disabled")} command suggestions.", important: false);
+                await InformAsync(ctx, $"{Formatter.Bold(gcfg.SuggestionsEnabled ? "Enabled" : "Disabled")} command suggestions.", important: false);
             }
 
             [Command("suggestions"), Priority(0)]
@@ -390,7 +390,7 @@ namespace TheGodfather.Modules.Administration
                     await logchn.SendMessageAsync(embed: emb.Build());
                 }
 
-                await InformAsync(ctx, $"{Formatter.Bold(gcfg.ReactionResponse ? "Enabled" : "Disabled")} action logs.", important: false);
+                await InformAsync(ctx, $"{Formatter.Bold(gcfg.LoggingEnabled ? "Enabled" : "Disabled")} action logs.", important: false);
             }
 
             [Command("logging"), Priority(0)]
