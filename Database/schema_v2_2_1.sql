@@ -359,6 +359,17 @@ ALTER SEQUENCE gf.items_id_seq OWNED BY gf.items.id;
 
 
 --
+-- Name: log_exempt; Type: TABLE; Schema: gf; Owner: -
+--
+
+CREATE TABLE gf.log_exempt (
+    id bigint NOT NULL,
+    type character(1) NOT NULL,
+    gid bigint NOT NULL
+);
+
+
+--
 -- Name: memes; Type: TABLE; Schema: gf; Owner: -
 --
 
@@ -1035,6 +1046,15 @@ ALTER TABLE gf.items CLUSTER ON items_gid_index;
 
 
 --
+-- Name: log_exempt_clustered_index; Type: INDEX; Schema: gf; Owner: -
+--
+
+CREATE INDEX log_exempt_clustered_index ON gf.log_exempt USING btree (gid, type);
+
+ALTER TABLE gf.log_exempt CLUSTER ON log_exempt_clustered_index;
+
+
+--
 -- Name: purchases_id_index; Type: INDEX; Schema: gf; Owner: -
 --
 
@@ -1111,6 +1131,14 @@ ALTER TABLE ONLY gf.filters
 
 ALTER TABLE ONLY gf.items
     ADD CONSTRAINT items_fkey FOREIGN KEY (gid) REFERENCES gf.guild_cfg(gid) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- Name: log_exempt log_exempt_gid_fkey; Type: FK CONSTRAINT; Schema: gf; Owner: -
+--
+
+ALTER TABLE ONLY gf.log_exempt
+    ADD CONSTRAINT log_exempt_gid_fkey FOREIGN KEY (gid) REFERENCES gf.guild_cfg(gid) ON UPDATE CASCADE ON DELETE CASCADE;
 
 
 --
