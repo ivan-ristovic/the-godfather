@@ -195,6 +195,7 @@ namespace TheGodfather.EventListeners
             string aextra = $"Embeds: {e.Message.Embeds.Count}, Reactions: {e.Message.Reactions.Count}, Attachments: {e.Message.Attachments.Count}";
 
             DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Message, "Message updated");
+            emb.WithDescription(Formatter.MaskedUrl("Jump to message", e.Message.JumpLink));
             emb.AddField("Location", e.Channel.Mention, inline: true);
             emb.AddField("Author", e.Message.Author?.Mention ?? _unknown, inline: true);
             emb.AddField("Before update", $"Created {ctime}\n{bextra}\nContent:{Formatter.BlockCode(Formatter.Sanitize(pcontent))}");

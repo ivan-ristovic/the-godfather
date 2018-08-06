@@ -72,6 +72,7 @@ namespace TheGodfather.EventListeners
 
             var pinned = await e.Channel.GetPinnedMessagesAsync();
             if (pinned.Any()) {
+                emb.WithDescription(Formatter.MaskedUrl("Jump to message", pinned.First().JumpLink));
                 string content = string.IsNullOrWhiteSpace(pinned.First().Content) ? "<embedded message>" : pinned.First().Content;
                 emb.AddField("Content", Formatter.BlockCode(Formatter.Sanitize(content.Truncate(1020))));
             }
