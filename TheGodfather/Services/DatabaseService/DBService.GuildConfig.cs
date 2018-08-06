@@ -5,14 +5,56 @@ using NpgsqlTypes;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading.Tasks;
 using TheGodfather.Common;
+using TheGodfather.Modules.Administration.Common;
 #endregion
 
 namespace TheGodfather.Services.Database.GuildConfig
 {
     internal static class DBServiceGuildConfigExtensions
     {
+        public static Task ExemptAsync(this DBService db, ulong gid, ulong xid, EntityType type)
+        {
+            return db.ExecuteCommandAsync(cmd => {
+                cmd.CommandText = "INSERT INTO gf.log_exempt(gid, id, type) VALUES (@gid, @xid, @type) ON CONFLICT DO NOTHING;";
+                cmd.Parameters.Add(new NpgsqlParameter<long>("xid", (long)xid));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
+                cmd.Parameters.Add(new NpgsqlParameter<char>("type", type.ToFlag()));
+
+                return cmd.ExecuteNonQueryAsync();
+            });
+        }
+
+        public static async Task<IReadOnlyList<GuildEntity>> GetAllExemptedEntitiesAsync(this DBService db, ulong gid)
+        {
+            var exempted = new List<GuildEntity>();
+
+            await db.ExecuteCommandAsync(async (cmd) => {
+                cmd.CommandText = "SELECT id, type FROM gf.log_exempt WHERE gid = @gid;";
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
+
+                using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
+                    while (await reader.ReadAsync().ConfigureAwait(false)) {
+                        EntityType t = EntityType.Channel;
+                        switch (((string)reader["type"]).First()) {
+                            case 'c': t = EntityType.Channel; break;
+                            case 'm': t = EntityType.Member; break;
+                            case 'r': t = EntityType.Role; break;
+                        }
+                        exempted.Add(new GuildEntity() {
+                            GuildId = gid,
+                            Id = (ulong)(long)reader["id"],
+                            Type = t
+                        });
+                    }
+                }
+            });
+
+            return exempted.AsReadOnly();
+        }
+
         public static async Task<IReadOnlyDictionary<ulong, CachedGuildConfig>> GetAllPartialGuildConfigurations(this DBService db)
         {
             var dict = new Dictionary<ulong, CachedGuildConfig>();
@@ -103,6 +145,24 @@ namespace TheGodfather.Services.Database.GuildConfig
             });
 
             return msg;
+        }
+
+        public static async Task<bool> IsEntityExemptedAsync(this DBService db, ulong gid, ulong xid, EntityType type)
+        {
+            bool exempted = false;
+
+            await db.ExecuteCommandAsync(async (cmd) => {
+                cmd.CommandText = "SELECT id FROM gf.log_exempt WHERE gid = @gid AND id = @xid AND type = @type LIMIT 1;";
+                cmd.Parameters.Add(new NpgsqlParameter<long>("xid", (long)xid));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
+                cmd.Parameters.Add(new NpgsqlParameter<char>("type", type.ToFlag()));
+
+                object res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
+                if (res != null && !(res is DBNull))
+                    exempted = true;
+            });
+
+            return exempted;
         }
 
         public static Task RegisterGuildAsync(this DBService db, ulong gid)
@@ -220,6 +280,18 @@ namespace TheGodfather.Services.Database.GuildConfig
                 cmd.Parameters.Add(new NpgsqlParameter<bool>("linkfilter_disturbing", cfg.BlockDisturbingWebsites));
                 cmd.Parameters.Add(new NpgsqlParameter<bool>("linkfilter_iploggers", cfg.BlockIpLoggingWebsites));
                 cmd.Parameters.Add(new NpgsqlParameter<bool>("linkfilter_shorteners", cfg.BlockUrlShorteners));
+
+                return cmd.ExecuteNonQueryAsync();
+            });
+        }
+
+        public static Task UnexemptAsync(this DBService db, ulong gid, ulong xid, EntityType type)
+        {
+            return db.ExecuteCommandAsync(cmd => {
+                cmd.CommandText = "DELETE FROM gf.log_exempt WHERE gid = @gid AND id = @xid AND type = @type;";
+                cmd.Parameters.Add(new NpgsqlParameter<long>("xid", (long)xid));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
+                cmd.Parameters.Add(new NpgsqlParameter<char>("type", type.ToFlag()));
 
                 return cmd.ExecuteNonQueryAsync();
             });

@@ -456,6 +456,7 @@
     <Compile Include="EventListeners\Listeners.Client.cs" />
     <Compile Include="Modules\Administration\AutomaticRolesModule.cs" />
     <Compile Include="Modules\Administration\Common\Filter.cs" />
+    <Compile Include="Modules\Administration\GuildModule.Config.Logging.cs" />
     <Compile Include="Modules\Administration\GuildModule.Config.Linkfilter.cs" />
     <Compile Include="Modules\Administration\GuildModule.Config.cs" />
     <Compile Include="Modules\Chickens\ChickenModule.Upgrades.cs" />
@@ -503,6 +504,7 @@
     <Compile Include="Modules\SWAT\SwatModule.Banlist.cs" />
     <Compile Include="Modules\SWAT\SwatModule.Database.cs" />
     <Compile Include="Modules\SWAT\SwatModule.Search.cs" />
+    <Compile Include="Modules\Administration\Common\GuildEntity.cs" />
     <Compile Include="Services\Common\GeolocationData.cs" />
     <Compile Include="Services\Common\GoodreadsData.cs" />
     <Compile Include="Services\Common\OMDbData.cs" />

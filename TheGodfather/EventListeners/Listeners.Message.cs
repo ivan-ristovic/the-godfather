@@ -10,7 +10,9 @@ using System.Threading.Tasks;
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Extensions;
+using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Reactions.Common;
+using TheGodfather.Services.Database.GuildConfig;
 using TheGodfather.Services.Database.Ranks;
 using TheGodfather.Services.Database.Reactions;
 #endregion
@@ -137,12 +139,22 @@ namespace TheGodfather.EventListeners
             if (logchn == null)
                 return;
 
+            if (await shard.DatabaseService.IsEntityExemptedAsync(e.Guild.Id, e.Channel.Id, EntityType.Channel))
+                return;
+
             DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Message, "Message deleted");
             emb.AddField("Location", e.Channel.Mention, inline: true);
             emb.AddField("Author", e.Message.Author?.Mention ?? _unknown, inline: true);
 
             var entry = await e.Guild.GetFirstAuditLogEntryAsync(AuditLogActionType.MessageDelete);
             if (entry != null && entry is DiscordAuditLogMessageEntry mentry) {
+                if (await shard.DatabaseService.IsEntityExemptedAsync(e.Guild.Id, mentry.UserResponsible.Id, EntityType.Member))
+                    return;
+                DiscordMember member = await e.Guild.GetMemberAsync(mentry.UserResponsible.Id);
+                foreach (DiscordRole role in member?.Roles)
+                    if (await shard.DatabaseService.IsEntityExemptedAsync(e.Guild.Id, role.Id, EntityType.Role))
+                        return;
+
                 emb.AddField("User responsible", mentry.UserResponsible.Mention, inline: true);
                 if (!string.IsNullOrWhiteSpace(mentry.Reason))
                     emb.AddField("Reason", mentry.Reason);
@@ -169,6 +181,7 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.MessageUpdated)]
         public static async Task MessageUpdateEventHandlerAsync(TheGodfatherShard shard, MessageUpdateEventArgs e)
         {
+
             if (e.Author.IsBot || e.Channel.IsPrivate || e.Author == null || e.Message == null)
                 return;
 
@@ -186,6 +199,15 @@ namespace TheGodfather.EventListeners
             DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
             if (logchn == null || !e.Message.IsEdited)
                 return;
+
+            if (await shard.DatabaseService.IsEntityExemptedAsync(e.Guild.Id, e.Channel.Id, EntityType.Channel))
+                return;
+            if (await shard.DatabaseService.IsEntityExemptedAsync(e.Guild.Id, e.Author.Id, EntityType.Member))
+                return;
+            DiscordMember member = await e.Guild.GetMemberAsync(e.Author.Id);
+            foreach (DiscordRole role in member?.Roles)
+                if (await shard.DatabaseService.IsEntityExemptedAsync(e.Guild.Id, role.Id, EntityType.Role))
+                    return;
 
             string pcontent = string.IsNullOrWhiteSpace(e.MessageBefore?.Content) ? "" : e.MessageBefore.Content.Truncate(700);
             string acontent = string.IsNullOrWhiteSpace(e.Message?.Content) ? "" : e.Message.Content.Truncate(700);

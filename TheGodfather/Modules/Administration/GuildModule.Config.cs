@@ -356,54 +356,6 @@ namespace TheGodfather.Modules.Administration
             }
             #endregion
 
-            #region COMMAND_CONFIG_LOGGING
-            [Command("logging"), Priority(1)]
-            [Description("Command action logging configuration.")]
-            [Aliases("log", "modlog")]
-            [UsageExamples("!guild cfg logging",
-                           "!guild cfg logging on #log",
-                           "!guild cfg logging off")]
-            public async Task LoggingAsync(CommandContext ctx,
-                                          [Description("Enable logging?")] bool enable,
-                                          [Description("Log channel.")] DiscordChannel channel = null)
-            {
-                if (channel == null)
-                    channel = ctx.Channel;
-
-                if (channel.Type != ChannelType.Text)
-                    throw new CommandFailedException("Action logging channel must be a text channel.");
-
-                CachedGuildConfig gcfg = this.Shared.GetGuildConfig(ctx.Guild.Id);
-                gcfg.LogChannelId = enable ? channel.Id : 0;
-
-                await this.Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg);
-
-                DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
-                if (logchn != null) {
-                    var emb = new DiscordEmbedBuilder() {
-                        Title = "Guild config changed",
-                        Color = this.ModuleColor
-                    };
-                    emb.AddField("User responsible", ctx.User.Mention, inline: true);
-                    emb.AddField("Invoked in", ctx.Channel.Mention, inline: true);
-                    emb.AddField("Logging channel set to", gcfg.LogChannelId.ToString(), inline: true);
-                    await logchn.SendMessageAsync(embed: emb.Build());
-                }
-
-                await InformAsync(ctx, $"{Formatter.Bold(gcfg.LoggingEnabled ? "Enabled" : "Disabled")} action logs.", important: false);
-            }
-
-            [Command("logging"), Priority(0)]
-            public Task LoggingAsync(CommandContext ctx)
-            {
-                CachedGuildConfig gcfg = this.Shared.GetGuildConfig(ctx.Guild.Id);
-                if (gcfg.LoggingEnabled)
-                    return InformAsync(ctx, $"Action logging for this guild is {Formatter.Bold("enabled")} at {ctx.Guild.GetChannel(gcfg.LogChannelId)?.Mention ?? "(unknown)"}!");
-                else
-                    return InformAsync(ctx, $"Action logging for this guild is {Formatter.Bold("disabled")}!");
-            }
-            #endregion
-
             #region COMMAND_CONFIG_WELCOME
             [Command("welcome"), Priority(3)]
             [Description("Allows user welcoming configuration.")]

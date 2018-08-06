@@ -50,7 +50,7 @@ namespace TheGodfather.Modules.SWAT
                                       [RemainingText, Description("Reason for ban.")] string reason = null)
             {
                 await this.Database.AddSwatIpBanAsync(ip.Content, name, reason);
-                await InformAsync(ctx, $"Added a ban entry for {Formatter.Bold(name)} ({Formatter.InlineCode(ip.ToString())})", important: false);
+                await InformAsync(ctx, $"Added a ban entry for {Formatter.Bold(name)} ({Formatter.InlineCode(ip.Content)})", important: false);
             }
 
             [Command("add"), Priority(0)]

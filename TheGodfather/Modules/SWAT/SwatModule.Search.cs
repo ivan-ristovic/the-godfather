@@ -57,7 +57,7 @@ namespace TheGodfather.Modules.SWAT
                 IReadOnlyList<SwatDatabaseEntry> res = await this.Database.SwatDatabaseIpSearchAsync(ip.Content, amount);
 
                 await ctx.SendCollectionInPagesAsync(
-                    $"Search matches for {ip.ToString()}",
+                    $"Search matches for {ip.Content}",
                     res,
                     entry => $"{Formatter.InlineCode(entry.Ip)} | {Formatter.Bold(entry.Name)} | {Formatter.Italic(entry.AdditionalInfo ?? "(no details)")}",
                     DiscordColor.Black

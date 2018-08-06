@@ -17,7 +17,7 @@ namespace TheGodfather.Modules.Administration
     {
         public partial class GuildConfigModule
         {
-            [Group("linkfilter"), Module(ModuleType.Administration)]
+            [Group("linkfilter")]
             [Description("Linkfilter configuration. Group call prints current configuration, or enables/disables linkfilter if specified.")]
             [Aliases("lf", "linkf", "linkremove", "filterlinks")]
             [UsageExamples("!guild cfg linkfilter",
