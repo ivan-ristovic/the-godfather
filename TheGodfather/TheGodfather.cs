@@ -41,10 +41,13 @@ namespace TheGodfather
         private static DBService DatabaseService { get; set; }
         private static List<TheGodfatherShard> Shards { get; set; }
         private static SharedData SharedData { get; set; }
-        private static Task BotStatusChangeTask { get; set; }
-        private static Task DbSyncTask { get; set; }
-        private static Task FeedCheckTask { get; set; }
-        private static Task MiscActionsTask { get; set; }
+
+        #region TIMERS
+        private static Timer BotStatusUpdateTimer { get; set; }
+        private static Timer DatabaseSyncTimer { get; set; }
+        private static Timer FeedCheckTimer { get; set; }
+        private static Timer MiscActionsTimer { get; set; }
+        #endregion
 
 
         internal static async Task Main(string[] args)
@@ -209,31 +212,11 @@ namespace TheGodfather
 
         private static async Task RegisterPeriodicTasksAsync()
         {
-            BotStatusChangeTask = PeriodicActionExecuterAsync(
-                TimeSpan.FromSeconds(10),
-                TimeSpan.FromMinutes(10),
-                BotActivityCallbackAsync
-            );
-
-            DbSyncTask = PeriodicActionExecuterAsync(
-                TimeSpan.FromMinutes(1),
-                TimeSpan.FromSeconds(BotConfiguration.DatabaseSyncInterval),
-                DatabaseSyncCallbackAsync
-            );
-
-            FeedCheckTask = PeriodicActionExecuterAsync(
-                TimeSpan.FromSeconds(BotConfiguration.FeedCheckStartDelay),
-                TimeSpan.FromSeconds(BotConfiguration.FeedCheckInterval),
-                FeedCheckCallbackAsync
-            );
-
-            MiscActionsTask = PeriodicActionExecuterAsync(
-                TimeSpan.FromSeconds(5),
-                TimeSpan.FromHours(12),
-                MiscellaneousActionsCallbackAsync
-            );
-
-
+            BotStatusUpdateTimer = new Timer(BotActivityCallback, Shards[0].Client, TimeSpan.FromSeconds(10), TimeSpan.FromMinutes(10));
+            DatabaseSyncTimer = new Timer(DatabaseSyncCallback, Shards[0].Client, TimeSpan.FromMinutes(1), TimeSpan.FromSeconds(BotConfiguration.DatabaseSyncInterval));
+            FeedCheckTimer = new Timer(BotActivityCallback, Shards[0].Client, TimeSpan.FromSeconds(BotConfiguration.FeedCheckStartDelay), TimeSpan.FromSeconds(BotConfiguration.FeedCheckInterval));
+            MiscActionsTimer = new Timer(BotActivityCallback, Shards[0].Client, TimeSpan.FromSeconds(5), TimeSpan.FromHours(12));
+            
             IReadOnlyDictionary<int, SavedTask> tasks_db = await DatabaseService.GetAllSavedTasksAsync();
             int registeredTasks = 0, missedTasks = 0;
             foreach ((int tid, SavedTask task) in tasks_db) {
@@ -253,10 +236,10 @@ namespace TheGodfather
         {
             SharedData.LogProvider.ElevatedLog(LogLevel.Info, "Cleaning up...");
 
-            await BotStatusChangeTask;
-            await DbSyncTask;
-            await FeedCheckTask;
-            await MiscActionsTask;
+            BotStatusUpdateTimer.Dispose();
+            DatabaseSyncTimer.Dispose();
+            FeedCheckTimer.Dispose();
+            MiscActionsTimer.Dispose();
 
             foreach (TheGodfatherShard shard in Shards)
                 await shard.DisposeAsync();
@@ -267,48 +250,56 @@ namespace TheGodfather
         #endregion
 
         #region PERIODIC_CALLBACKS
-        private static async Task PeriodicActionExecuterAsync(TimeSpan delay, TimeSpan repeat, Func<Task> action)
+        private static void BotActivityCallback(object _)
         {
-            try {
-                await Task.Delay(delay, SharedData.MainLoopCts.Token);
-                while (!SharedData.MainLoopCts.IsCancellationRequested) {
-                    await action();
-                    await Task.Delay(repeat, SharedData.MainLoopCts.Token);
-                }
-            } catch (TaskCanceledException) {
+            if (!SharedData.StatusRotationEnabled)
+                return;
 
+            var client = _ as DiscordClient;
+
+            try {
+                DiscordActivity activity = SharedData.AsyncExecutor.Execute(DatabaseService.GetRandomBotActivityAsync());
+                SharedData.AsyncExecutor.Execute(client.UpdateStatusAsync(activity));
             } catch (Exception e) {
                 SharedData.LogProvider.LogException(LogLevel.Error, e);
             }
         }
 
-        private static async Task BotActivityCallbackAsync()
+        private static void DatabaseSyncCallback(object _)
         {
-            if (!SharedData.StatusRotationEnabled)
-                return;
-
-            var activity = await DatabaseService.GetRandomBotActivityAsync();
-            await Shards[0].Client.UpdateStatusAsync(activity);
+            try {
+                SharedData.AsyncExecutor.Execute(SharedData.SyncDataWithDatabaseAsync(DatabaseService));
+            } catch (Exception e) {
+                SharedData.LogProvider.LogException(LogLevel.Error, e);
+            }
         }
 
-        private static Task DatabaseSyncCallbackAsync()
-            => SharedData.SyncDataWithDatabaseAsync(DatabaseService);
-
-        private static Task FeedCheckCallbackAsync() 
-            => RssService.CheckFeedsForChangesAsync(Shards[0].Client, DatabaseService);
-
-        private static async Task MiscellaneousActionsCallbackAsync()
+        private static void FeedCheckCallback(object _)
         {
-            IReadOnlyList<Birthday> birthdays = DatabaseService.GetTodayBirthdaysAsync()
-                .ConfigureAwait(false).GetAwaiter().GetResult();
-            foreach (Birthday birthday in birthdays) {
-                var channel = await Shards[0].Client.GetChannelAsync(birthday.ChannelId);
-                var user = await Shards[0].Client.GetUserAsync(birthday.UserId);
-                await channel.EmbedAsync($"Happy birthday, {user.Mention}!", DiscordEmoji.FromName(Shards[0].Client, ":tada:"));
-                await DatabaseService.UpdateBirthdayLastNotifiedDateAsync(birthday.UserId, channel.Id);
-            }
+            var client = _ as DiscordClient;
 
-            await DatabaseService.BulkIncreaseAllBankAccountsAsync();
+            try {
+                SharedData.AsyncExecutor.Execute(RssService.CheckFeedsForChangesAsync(client, DatabaseService));
+            } catch (Exception e) {
+                SharedData.LogProvider.LogException(LogLevel.Error, e);
+            }
+        }
+
+        private static void MiscellaneousActionsCallback(object _)
+        {
+            var client = _ as DiscordClient;
+
+            try {
+                IReadOnlyList<Birthday> birthdays = SharedData.AsyncExecutor.Execute(DatabaseService.GetTodayBirthdaysAsync());
+                foreach (Birthday birthday in birthdays) {
+                    DiscordChannel channel = SharedData.AsyncExecutor.Execute(client.GetChannelAsync(birthday.ChannelId));
+                    DiscordUser user = SharedData.AsyncExecutor.Execute(client.GetUserAsync(birthday.UserId));
+                    SharedData.AsyncExecutor.Execute(channel.EmbedAsync($"Happy birthday, {user.Mention}!", DiscordEmoji.FromName(client, ":tada:")));
+                    SharedData.AsyncExecutor.Execute(DatabaseService.UpdateBirthdayLastNotifiedDateAsync(birthday.UserId, channel.Id));
+                }
+            } catch (Exception e) {
+                SharedData.LogProvider.LogException(LogLevel.Error, e);
+            }
         }
         #endregion
     }
