@@ -4,14 +4,22 @@ Just another general-purpose Discord bot. Developed with the goal to remove all 
 
 Features:
 - Full administration of the guild, channels, users, emoji etc.
-- Offers activity logging and content filtering (custom filters, gorefilter, IP logging websites filter etc.)
-- Customizable textual or emoji reactions for each guild which can be triggered by raw text or by regular expression matching
-- Customizable guild memes, ranks, birthdays, currency items and many more!
-- Searches of online services (YouTube, Imgur, reddit, Steam, IMDb, OpenWeather etc.) and subscribing for automatic updates on the content
-- Many games to pass your time (Quizzes, Tic-Tac-Toe, Connect4, Othello, Caro etc.) as well as casino/card games and betting (Poker, BlackJack, slots etc.)
-- Interactive polls, auto-assigned roles, self-assignable roles
-- Music playback (beta)
-- SWAT4 server queries
+- Offers activity logging - will log any changes to guild / channels / members etc. It is possible to exempt things that you do no want to be logged
+- Message filtering: user-defined filters either by raw match or regex match, gorefilter, IP logging websites filter, invite filter, etc.
+- Customizable textual or emoji reactions for each guild which can be triggered by raw text or regex matching
+- Customizable guild content: memes, ranks, birthdays, currency items and many more!
+- Searches of online services: YouTube, Imgur, reddit, Steam, IMDb, OpenWeather etc.
+- RSS feed subscriptions (includes YouTube, reddit and much more) and automatic notifications on the new content release.
+- Many games to pass your time: Quizzes, Tic-Tac-Toe, Connect4, Othello, Caro etc. 
+- Currency commands and games: Poker, BlackJack, Slots etc.
+- Eases your pain with auto-assigned roles and self-assignable roles.
+- Interactive polls and reminders
+- SWAT4 server queries and player database
+
+Upcoming features:
+- Music playback (currently in beta)
+- Interactive NLP mode (currently in alpha) - explain what you want and it will be done!
+
 
 Written in C# using [DSharpPlus](https://github.com/DSharpPlus/DSharpPlus).
 
@@ -69,10 +77,13 @@ Arguments can be exactly one of the following types:
 * ``channel`` : Discord channel - given by mention, channel name or CID (Channel ID). Valid examples: ``#channel`` , ``MyChannel`` , ``123456789123456``.
 * ``role`` : Discord role - given by mention, role name or RID (Role ID). Valid examples: ``@Admins`` , ``Admins`` , ``123456789123456``.
 * ``emoji`` : Discord emoji, either in Unicode or Discord representation (using ``:``). Valid examples: ``😂`` , ``:joy:``.
-* ``Uri`` : A sequence of characters representing a URL. The protocol must be either ``HTTP`` or ``HTTPS``. Valid examples: ``http://google.com``.
+* ``Uri`` : A sequence of characters representing a URL. The protocol for most commands must be either ``HTTP`` or ``HTTPS``. Valid examples: ``http://google.com``.
 * ``id`` : ID of a Discord entity (could be a message, user, channel, role etc.).
 * ``color`` : A hexadecimal or RGB color representation. Valid examples: ``FF0000`` , ``(255, 0, 0)``.
 * ``time span`` : A time span in form ``DDd HHh MMm SSs`` Valid examples: ``3d 5m 30s`` etc. 
+* ``IPAddress`` : An IPv4 address. Valid examples: ``123.123.123.123`` etc. 
+* ``CustomIpFormat`` : Combined IPv4 range and optional endpoint port. Valid examples: ``123.123.123.123:12345`` , ``123.123.*`` etc. 
+
 
 **Note:** Discord entity IDs can only be seen in the Discord client by enabling the ``Developer appearance`` option in Discord settings.
 
