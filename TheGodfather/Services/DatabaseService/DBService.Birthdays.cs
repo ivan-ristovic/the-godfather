@@ -23,12 +23,17 @@ namespace TheGodfather.Services.Database.Birthdays
             });
         }
 
-        public static async Task<IReadOnlyList<Birthday>> GetAllBirthdaysAsync(this DBService db)
+        public static async Task<IReadOnlyList<Birthday>> GetAllBirthdaysAsync(this DBService db, ulong? cid = null)
         {
             var birthdays = new List<Birthday>();
 
             await db.ExecuteCommandAsync(async (cmd) => {
-                cmd.CommandText = "SELECT uid, cid, bday FROM gf.birthdays;";
+                if (cid.HasValue) {
+                    cmd.CommandText = "SELECT uid, cid, bday FROM gf.birthdays WHERE cid = @cid;";
+                    cmd.Parameters.Add(new NpgsqlParameter<long>("cid", (long)cid));
+                } else {
+                    cmd.CommandText = "SELECT uid, cid, bday FROM gf.birthdays;";
+                }
 
                 using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false)) {
                     while (await reader.ReadAsync().ConfigureAwait(false)) {

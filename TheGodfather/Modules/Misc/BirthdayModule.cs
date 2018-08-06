@@ -116,10 +116,49 @@ namespace TheGodfather.Modules.Misc
 
         #region COMMAND_BIRTHDAY_LIST
         [Command("list")]
-        [Description("List all registered birthdays.")]
+        [Description("List registered birthday notifications for this channel.")]
         [Aliases("ls")]
         [UsageExamples("!birthday list")]
-        public async Task ListAsync(CommandContext ctx)
+        public async Task ListAsync(CommandContext ctx,
+                                   [Description("Channel for which to list.")] DiscordChannel channel = null)
+        {
+            if (channel == null)
+                channel = ctx.Channel;
+
+            if (channel.Type != ChannelType.Text)
+                throw new CommandFailedException("Birthday notifications are only posted in text channels");
+
+            IReadOnlyList<Birthday> birthdays = await this.Database.GetAllBirthdaysAsync(channel.Id);
+            if (!birthdays.Any())
+                throw new CommandFailedException("No birthdays registered!");
+
+            var lines = new List<string>();
+            foreach (Birthday birthday in birthdays) {
+                try {
+                    DiscordUser user = await ctx.Client.GetUserAsync(birthday.UserId);
+                    lines.Add($"{Formatter.InlineCode(birthday.Date.ToShortDateString())} | {Formatter.Bold(user.Username)} | {channel.Name}");
+                } catch {
+                    await this.Database.RemoveBirthdayForUserAsync(birthday.UserId);
+                }
+            }
+
+            await ctx.SendCollectionInPagesAsync(
+                $"Birthdays registered in channel {ctx.Channel.Name}:",
+                lines,
+                line => line,
+                this.ModuleColor,
+                5
+            );
+        }
+        #endregion
+
+        #region COMMAND_BIRTHDAY_LISTALL
+        [Command("listall")]
+        [Description("List all registered birthdays.")]
+        [Aliases("lsa")]
+        [UsageExamples("!birthday listall")]
+        [RequirePrivilegedUser]
+        public async Task ListAllAsync(CommandContext ctx)
         {
             IReadOnlyList<Birthday> birthdays = await this.Database.GetAllBirthdaysAsync();
             if (!birthdays.Any())
