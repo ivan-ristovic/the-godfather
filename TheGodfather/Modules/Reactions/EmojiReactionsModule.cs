@@ -289,17 +289,27 @@ namespace TheGodfather.Modules.Reactions
         [Description("Show all emoji reactions for this guild.")]
         [Aliases("ls", "l", "print")]
         [UsageExamples("!emojireaction list")]
-        public Task ListAsync(CommandContext ctx)
+        public async Task ListAsync(CommandContext ctx)
         {
-            if (!this.Shared.EmojiReactions.ContainsKey(ctx.Guild.Id) || !this.Shared.EmojiReactions[ctx.Guild.Id].Any())
+            if (!this.Shared.EmojiReactions.ContainsKey(ctx.Guild.Id))
                 throw new CommandFailedException("No emoji reactions registered for this guild.");
 
-            // TODO remove non-existing
+            foreach (EmojiReaction reaction in this.Shared.EmojiReactions[ctx.Guild.Id]) {
+                try {
+                    var emoji = DiscordEmoji.FromName(ctx.Client, reaction.Response);
+                } catch (ArgumentException) {
+                    this.Shared.EmojiReactions[ctx.Guild.Id].RemoveWhere(er => er.Response == reaction.Response);
+                    await this.Database.RemoveAllTriggersForEmojiReactionAsync(ctx.Guild.Id, reaction.Response);
+                }
+            }
 
-            return ctx.SendCollectionInPagesAsync(
+            if (!this.Shared.EmojiReactions[ctx.Guild.Id].Any())
+                throw new CommandFailedException("No emoji reactions registered for this guild.");
+
+            await ctx.SendCollectionInPagesAsync(
                 "Emoji reactions for this guild",
-                this.Shared.EmojiReactions[ctx.Guild.Id].OrderBy(er => er.OrderedTriggerStrings.First()),
-                er => $"{Formatter.InlineCode($"{er.Id:D4}")} : {DiscordEmoji.FromName(ctx.Client, er.Response)} | Triggers: {string.Join(", ", er.TriggerStrings)}",
+                this.Shared.EmojiReactions[ctx.Guild.Id].OrderBy(er => er.Id),
+                er => $"{Formatter.InlineCode($"{er.Id:D4}")} | {DiscordEmoji.FromName(ctx.Client, er.Response)} | {string.Join(", ", er.TriggerStrings)}",
                 this.ModuleColor
             );
         }

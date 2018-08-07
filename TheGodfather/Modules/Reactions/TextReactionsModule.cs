@@ -235,8 +235,6 @@ namespace TheGodfather.Modules.Reactions
         {
             if (!this.Shared.TextReactions.ContainsKey(ctx.Guild.Id) || !this.Shared.TextReactions[ctx.Guild.Id].Any())
                 throw new CommandFailedException("This guild has no text reactions registered.");
-
-            // TODO remove missing
             
             return ctx.SendCollectionInPagesAsync(
                 "Text reactions for this guild",
