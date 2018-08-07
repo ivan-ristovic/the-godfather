@@ -226,7 +226,7 @@ namespace TheGodfather.Modules.Reactions
                 eb.AppendLine($"Warning: Failed to remove some triggers from the database.");
             }
 
-            int count = this.Shared.EmojiReactions[ctx.Guild.Id].RemoveWhere(er => er.TriggerRegexes.Count == 0);
+            int count = this.Shared.EmojiReactions[ctx.Guild.Id].RemoveWhere(er => er.RegexCount == 0);
             
             if (count > 0) {
                 DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);
@@ -323,7 +323,7 @@ namespace TheGodfather.Modules.Reactions
                     if (!this.Shared.EmojiReactions.TryAdd(ctx.Guild.Id, new ConcurrentHashSet<EmojiReaction>()))
                         throw new ConcurrentOperationException("Failed to create emoji reaction data structure");
 
-                if (!trigger.IsValidRegex()) {
+                if (regex && !trigger.IsValidRegex()) {
                     eb.AppendLine($"Error: Trigger {Formatter.Bold(trigger)} is not a valid regular expression.");
                     continue;
                 }
@@ -345,10 +345,10 @@ namespace TheGodfather.Modules.Reactions
 
                 EmojiReaction reaction = this.Shared.EmojiReactions[ctx.Guild.Id].FirstOrDefault(tr => tr.Response == ename);
                 if (reaction != null) {
-                    if (!reaction.AddTrigger(trigger, regex: regex))
+                    if (!reaction.AddTrigger(trigger, isRegex: regex))
                         throw new CommandFailedException($"Failed to add trigger {Formatter.Bold(trigger)}.");
                 } else {
-                    if (!this.Shared.EmojiReactions[ctx.Guild.Id].Add(new EmojiReaction(id, trigger, ename, regex: regex)))
+                    if (!this.Shared.EmojiReactions[ctx.Guild.Id].Add(new EmojiReaction(id, trigger, ename, isRegex: regex)))
                         throw new CommandFailedException($"Failed to add trigger {Formatter.Bold(trigger)}.");
                 }
             }

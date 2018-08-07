@@ -167,7 +167,7 @@ namespace TheGodfather.Modules.Reactions
                 eb.AppendLine($"Warning: Failed to remove some triggers from the database.");
             }
 
-            int count = this.Shared.TextReactions[ctx.Guild.Id].RemoveWhere(tr => tr.TriggerRegexes.Count == 0);
+            int count = this.Shared.TextReactions[ctx.Guild.Id].RemoveWhere(tr => tr.RegexCount == 0);
 
             if (count > 0) {
                 DiscordChannel logchn = this.Shared.GetLogChannelForGuild(ctx.Client, ctx.Guild);

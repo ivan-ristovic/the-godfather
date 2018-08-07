@@ -13,8 +13,8 @@ namespace TheGodfather.Modules.Reactions.Common
         private readonly object cooldownLock;
 
 
-        public TextReaction(int id, string trigger, string response, bool regex = false)
-            : base(id, trigger, response, regex)
+        public TextReaction(int id, string trigger, string response, bool isRegex = false)
+            : base(id, trigger, response, isRegex)
         {
             this.resetTime = DateTimeOffset.UtcNow + _cooldownTimeout;
             this.cooldownLock = new object();

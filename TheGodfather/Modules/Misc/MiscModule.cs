@@ -437,7 +437,7 @@ namespace TheGodfather.Modules.Misc
             if (this.Shared.MessageContainsFilter(ctx.Guild.Id, text))
                 throw new CommandFailedException("You can't make me say something that contains filtered content for this guild.");
 
-            return InformAsync(ctx, Formatter.Sanitize(text), ":mega:");
+            return InformAsync(ctx, Formatter.Sanitize(text), ":loudspeaker:");
         }
         #endregion
 

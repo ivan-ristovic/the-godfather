@@ -1,5 +1,6 @@
 ﻿#region USING_DIRECTIVES
 using System;
+using System.Linq;
 using System.Text.RegularExpressions;
 #endregion
 
@@ -61,10 +62,21 @@ namespace TheGodfather.Extensions
         public static bool TryParseRegex(this string pattern, out Regex result)
         {
             result = null;
-            if (!IsValidRegex(pattern))
+            if (string.IsNullOrWhiteSpace(pattern) || !IsValidRegex(pattern))
                 return false;
 
-            result = new Regex($@"\b{pattern}\b", RegexOptions.IgnoreCase);
+            string rstr = pattern.ToLowerInvariant();
+            if (Char.IsLetterOrDigit(pattern.First()))
+                rstr = $@"\b{rstr}";
+            else
+                rstr = $@"(^|\s){rstr}";
+            if (Char.IsLetterOrDigit(pattern.Last()))
+                rstr = $@"{rstr}\b";
+            else
+                rstr = $@"{rstr}($|\s)";
+
+            result = new Regex(rstr, RegexOptions.IgnoreCase);
+
             return true;
         }
     }

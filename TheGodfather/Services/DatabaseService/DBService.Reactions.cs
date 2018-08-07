@@ -80,9 +80,9 @@ namespace TheGodfather.Services.Database.Reactions
 
                         EmojiReaction conflict = ereactions[gid].FirstOrDefault(tr => tr.Response == emoji);
                         if (conflict != null) {
-                            conflict.AddTrigger(trigger, regex: true);
+                            conflict.AddTrigger(trigger, isRegex: true);
                         } else {
-                            ereactions[gid].Add(new EmojiReaction(id, trigger, emoji, regex: true));
+                            ereactions[gid].Add(new EmojiReaction(id, trigger, emoji, isRegex: true));
                         }
                     }
                 }
@@ -114,9 +114,9 @@ namespace TheGodfather.Services.Database.Reactions
 
                         TextReaction conflict = treactions[gid].FirstOrDefault(tr => tr.Response == response);
                         if (conflict != null) {
-                            conflict.AddTrigger(trigger, regex: true);
+                            conflict.AddTrigger(trigger, isRegex: true);
                         } else {
-                            treactions[gid].Add(new TextReaction(id, trigger, response, regex: true));
+                            treactions[gid].Add(new TextReaction(id, trigger, response, isRegex: true));
                         }
                     }
                 }

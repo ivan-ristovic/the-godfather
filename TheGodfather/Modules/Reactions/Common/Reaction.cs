@@ -4,47 +4,53 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using TheGodfather.Common.Collections;
+using TheGodfather.Extensions;
 #endregion
 
 namespace TheGodfather.Modules.Reactions.Common
 {
     public abstract class Reaction : IEquatable<Reaction>
     {
-        private static string GetRegexString(string s)
-            => $@"\b{s.ToLowerInvariant()}\b";
+        private static readonly Regex _wordBoundaryRegex = new Regex(@"\\b|(\(\^\|\\s\))|(\(\$\|\\s\))", RegexOptions.Compiled);
 
-        public ConcurrentHashSet<Regex> TriggerRegexes { get; protected set; }
-        public IEnumerable<string> TriggerStrings => this.TriggerRegexes.Select(rgx => rgx.ToString().Substring(2, rgx.ToString().Length - 4));
-        public IEnumerable<string> OrderedTriggerStrings => this.TriggerStrings.OrderBy(s => s);
         public int Id { get; }
         public string Response { get; }
+        public int RegexCount => this.triggerRegexes.Count;
+        public IEnumerable<string> TriggerStrings => this.triggerRegexes.Select(rgx => _wordBoundaryRegex.Replace(rgx.ToString(), ""));
+        public IEnumerable<string> OrderedTriggerStrings => this.TriggerStrings.OrderBy(s => s);
+
+        private readonly ConcurrentHashSet<Regex> triggerRegexes;
 
 
-        protected Reaction(int id, string trigger, string response, bool regex = false)
+        protected Reaction(int id, string trigger, string response, bool isRegex = false)
         {
             this.Id = id;
             this.Response = response;
-            this.TriggerRegexes = new ConcurrentHashSet<Regex>();
-            AddTrigger(trigger, regex);
+            this.triggerRegexes = new ConcurrentHashSet<Regex>();
+            AddTrigger(trigger, isRegex);
         }
 
 
-        public bool AddTrigger(string trigger, bool regex = false)
+        public bool AddTrigger(string trigger, bool isRegex = false)
         {
-            if (regex)
-                return this.TriggerRegexes.Add(new Regex(GetRegexString(trigger.ToLowerInvariant()), RegexOptions.IgnoreCase));
+            Regex regex;
+
+            if (isRegex)
+                trigger.TryParseRegex(out regex);
             else
-                return this.TriggerRegexes.Add(new Regex(GetRegexString(Regex.Escape(trigger.ToLowerInvariant())), RegexOptions.IgnoreCase));
+                Regex.Escape(trigger).TryParseRegex(out regex);
+
+            return this.triggerRegexes.Add(regex);
         }
 
         public bool RemoveTrigger(string trigger)
         {
-            string rstr = GetRegexString(trigger);
-            return this.TriggerRegexes.RemoveWhere(r => r.ToString() == rstr) > 0;
+            trigger.TryParseRegex(out Regex regex);
+            return this.triggerRegexes.RemoveWhere(r => r.ToString() == regex.ToString()) > 0;
         }
 
         public bool IsMatch(string str)
-            => !string.IsNullOrWhiteSpace(str) && this.TriggerRegexes.Any(rgx => rgx.IsMatch(str));
+            => !string.IsNullOrWhiteSpace(str) && this.triggerRegexes.Any(rgx => rgx.IsMatch(str));
 
         public bool ContainsTriggerPattern(string pattern)
             => !string.IsNullOrWhiteSpace(pattern) && this.TriggerStrings.Any(s => pattern == s);
