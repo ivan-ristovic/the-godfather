@@ -76,13 +76,13 @@ namespace TheGodfather.EventListeners
             if (await shard.DatabaseService.IsEntityExemptedAsync(e.Channel.Guild.Id, e.Channel.Id, EntityType.Channel))
                 return;
 
-            DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Channel, "Channel pin added", e.Channel.ToString());
+            DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Channel, "Channel pins updated", e.Channel.ToString());
 
             var pinned = await e.Channel.GetPinnedMessagesAsync();
             if (pinned.Any()) {
-                emb.WithDescription(Formatter.MaskedUrl("Jump to message", pinned.First().JumpLink));
+                emb.WithDescription(Formatter.MaskedUrl("Jump to top pin", pinned.First().JumpLink));
                 string content = string.IsNullOrWhiteSpace(pinned.First().Content) ? "<embedded message>" : pinned.First().Content;
-                emb.AddField("Content", Formatter.BlockCode(Formatter.Sanitize(content.Truncate(1020))));
+                emb.AddField("Top pin content", Formatter.BlockCode(Formatter.Sanitize(content.Truncate(1020))));
             }
             if (e.LastPinTimestamp != null)
                 emb.AddField("Last pin timestamp", e.LastPinTimestamp.Value.ToUtcTimestamp());

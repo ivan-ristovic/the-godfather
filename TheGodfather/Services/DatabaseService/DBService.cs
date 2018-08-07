@@ -215,6 +215,10 @@ namespace TheGodfather.Services.Database
                 cmd.CommandText = "SELECT name, ip, reason FROM gf.swat_banlist LIMIT 1;";
                 return cmd.ExecuteScalarAsync();
             });
+            await ExecuteCommandAsync(cmd => {
+                cmd.CommandText = "SELECT gid, id, type FROM gf.log_exempt LIMIT 1;";
+                return cmd.ExecuteScalarAsync();
+            });
         }
 
 

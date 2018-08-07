@@ -343,7 +343,7 @@ namespace TheGodfather.Modules.Administration
                 Type = SavedTaskType.Unban,
                 UserId = member.Id
             };
-            if (!await SavedTaskExecuter.TryScheduleAsync(ctx, task))
+            if (!await SavedTaskExecutor.TryScheduleAsync(ctx, task))
                 throw new CommandFailedException("Failed to schedule the unban task!");
         }
 
@@ -375,7 +375,7 @@ namespace TheGodfather.Modules.Administration
                 Type = SavedTaskType.Unban,
                 UserId = user.Id
             };
-            if (!await SavedTaskExecuter.TryScheduleAsync(ctx, task))
+            if (!await SavedTaskExecutor.TryScheduleAsync(ctx, task))
                 throw new CommandFailedException("Failed to schedule the unban task!");
         }
 

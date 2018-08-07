@@ -69,9 +69,9 @@ namespace TheGodfather.Common
             lock (this.writeLock) {
                 PrintTimestamp(timestamp);
                 PrintLevel(level);
-                PrintLogMessage($"| Exception occured: {e.GetType()}\n| Details: {e.Message}\n");
+                PrintLogMessage($"| Exception occured: {e.GetType()}\n| Details: {e.Message}");
                 if (e.InnerException != null)
-                    PrintLogMessage($"| Inner exception: {e.InnerException}\n");
+                    PrintLogMessage($"| Inner exception: {e.InnerException}");
                 PrintLogMessage($"| Stack trace:\n{e.StackTrace}");
                 if (filelog && this.filelog)
                     WriteToLogFile(level, e);
@@ -200,7 +200,7 @@ namespace TheGodfather.Common
         }
 
         private static void PrintLogMessage(string message)
-            => Console.WriteLine(message.Trim() + Environment.NewLine);
+            => Console.WriteLine(message.Trim());
         #endregion
     }
 }

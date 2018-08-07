@@ -421,7 +421,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Common\AsyncExecuter.cs" />
+    <Compile Include="Common\AsyncExecutor.cs" />
     <Compile Include="Common\Attributes\UsesInteractivityAttribute.cs" />
     <Compile Include="Common\Converters\CustomIPAddressConverter.cs" />
     <Compile Include="Common\Converters\CustomIpFormatConverter.cs" />
@@ -435,7 +435,7 @@
     <Compile Include="Common\DiscordEventType.cs" />
     <Compile Include="Common\GFRandom.cs" />
     <Compile Include="Common\CachedGuildConfig.cs" />
-    <Compile Include="Common\SavedTaskExecuter.cs" />
+    <Compile Include="Common\SavedTaskExecutor.cs" />
     <Compile Include="EventListeners\Listeners.Command.cs" />
     <Compile Include="EventListeners\Common\LinkfilterMatch.cs" />
     <Compile Include="EventListeners\Common\LinkfilterMatcherCollection.cs" />

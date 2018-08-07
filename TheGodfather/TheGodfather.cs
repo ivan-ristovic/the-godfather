@@ -220,12 +220,12 @@ namespace TheGodfather
             IReadOnlyDictionary<int, SavedTask> tasks_db = await DatabaseService.GetAllSavedTasksAsync();
             int registeredTasks = 0, missedTasks = 0;
             foreach ((int tid, SavedTask task) in tasks_db) {
-                var texec = new SavedTaskExecuter(tid, Shards[0].Client, task, SharedData, DatabaseService);
+                var texec = new SavedTaskExecutor(tid, Shards[0].Client, task, SharedData, DatabaseService);
                 if (texec.SavedTask.IsExecutionTimeReached) {
                     await texec.HandleMissedExecutionAsync();
                     missedTasks++;
                 } else {
-                    texec.ScheduleExecution();
+                    texec.Schedule();
                     registeredTasks++;
                 }
             }
@@ -243,7 +243,7 @@ namespace TheGodfather
 
             foreach (TheGodfatherShard shard in Shards)
                 await shard.DisposeAsync();
-            await SharedData.DisposeAsync();
+            SharedData.Dispose();
 
             SharedData.LogProvider.ElevatedLog(LogLevel.Info, "Cleanup complete! Powering off...");
         }

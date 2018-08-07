@@ -19,7 +19,7 @@ using TheGodfather.Services.Database.Ranks;
 
 namespace TheGodfather
 {
-    public sealed class SharedData
+    public sealed class SharedData : IDisposable
     {
         public AsyncExecutor AsyncExecutor { get; }
         public ConcurrentHashSet<ulong> BlockedChannels { get; internal set; }
@@ -36,7 +36,7 @@ namespace TheGodfather
         public ConcurrentDictionary<ulong, Poll> Polls { get; internal set; }
         public ConcurrentDictionary<ulong, CancellationTokenSource> SpaceCheckingCTS { get; internal set; }
         public bool StatusRotationEnabled { get; internal set; }
-        public ConcurrentDictionary<int, SavedTaskExecuter> TaskExecuters { get; internal set; }
+        public ConcurrentDictionary<int, SavedTaskExecutor> TaskExecuters { get; internal set; }
         public ConcurrentDictionary<ulong, ConcurrentHashSet<TextReaction>> TextReactions { get; internal set; }
 
         private ConcurrentDictionary<ulong, ChannelEvent> ChannelEvents { get; }
@@ -61,16 +61,16 @@ namespace TheGodfather
             this.Polls = new ConcurrentDictionary<ulong, Poll>();
             this.SpaceCheckingCTS = new ConcurrentDictionary<ulong, CancellationTokenSource>();
             this.StatusRotationEnabled = true;
-            this.TaskExecuters = new ConcurrentDictionary<int, SavedTaskExecuter>();
+            this.TaskExecuters = new ConcurrentDictionary<int, SavedTaskExecutor>();
             this.TextReactions = new ConcurrentDictionary<ulong, ConcurrentHashSet<TextReaction>>();
         }
 
 
-        public async Task DisposeAsync()
+        public void Dispose()
         {
             this.MainLoopCts.Dispose();
-            foreach ((int tid, SavedTaskExecuter texec) in this.TaskExecuters)
-                await texec.DisposeAsync();
+            foreach ((int tid, SavedTaskExecutor texec) in this.TaskExecuters)
+                texec.Dispose();
         }
 
         public async Task SyncDataWithDatabaseAsync(DBService db)
