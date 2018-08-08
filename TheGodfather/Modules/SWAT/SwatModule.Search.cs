@@ -48,7 +48,7 @@ namespace TheGodfather.Modules.SWAT
             [Description("Search for a given IP or range.")]
             [UsageExamples("!swat search 123.123.123.123")]
             public async Task SearchIpAsync(CommandContext ctx,
-                                           [Description("IP.")] CustomIpFormat ip,
+                                           [Description("IP.")] CustomIPFormat ip,
                                            [Description("Number of results")] int amount = 10)
             {
                 if (amount < 1 || amount > 100)

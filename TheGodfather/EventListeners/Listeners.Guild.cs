@@ -96,14 +96,14 @@ namespace TheGodfather.EventListeners
             } else {
                 switch (action) {
                     case AuditLogActionType.EmojiCreate:
-                        emb.WithDescription(eentry.Target.ToString() ?? _unknown);
+                        emb.WithDescription(eentry.Target.Name ?? _unknown);
                         emb.WithThumbnailUrl(eentry.Target.Url);
                         break;
                     case AuditLogActionType.EmojiDelete:
                         emb.WithDescription(eentry.NameChange.Before ?? _unknown);
                         break;
                     case AuditLogActionType.EmojiUpdate:
-                        emb.WithDescription(eentry.Target.ToString() ?? _unknown);
+                        emb.WithDescription(eentry.Target.Name ?? _unknown);
                         if (eentry.NameChange != null)
                             emb.AddField("Name changes", $"{Formatter.InlineCode(eentry.NameChange.Before ?? "None")} -> {Formatter.InlineCode(eentry.NameChange.After ?? "None")}", inline: true);
                         break;

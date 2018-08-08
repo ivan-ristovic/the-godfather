@@ -46,7 +46,7 @@ namespace TheGodfather.Modules.SWAT
             [UsageExamples("!swat db add Name 109.70.149.158")]
             public async Task AddAsync(CommandContext ctx,
                                       [Description("Player name.")] string name,
-                                      [Description("IP.")] CustomIpFormat ip,
+                                      [Description("IP.")] CustomIPFormat ip,
                                       [RemainingText, Description("Additional info.")] string info = null)
             {
                 if (info?.Length > 120)
@@ -58,7 +58,7 @@ namespace TheGodfather.Modules.SWAT
 
             [Command("add"), Priority(0)]
             public Task AddAsync(CommandContext ctx,
-                                [Description("IP.")] CustomIpFormat ip,
+                                [Description("IP.")] CustomIPFormat ip,
                                 [Description("Player name.")] string name,
                                 [RemainingText, Description("Additional info.")] string reason = null)
                 => AddAsync(ctx, name, ip, reason);
@@ -70,7 +70,7 @@ namespace TheGodfather.Modules.SWAT
             [Aliases("-", "del", "d", "-=", ">", ">>")]
             [UsageExamples("!swat db remove 123.123.123.123")]
             public async Task DeleteAsync(CommandContext ctx,
-                                         [Description("IP or range.")] CustomIpFormat ip)
+                                         [Description("IP or range.")] CustomIPFormat ip)
             {
                 await this.Database.RemoveSwatIpEntryAsync(ip.Content);
                 await InformAsync(ctx, $"Removed {Formatter.Bold(ip.Content)} from database.", important: false);

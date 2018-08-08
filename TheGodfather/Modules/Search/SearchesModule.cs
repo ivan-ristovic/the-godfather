@@ -32,7 +32,7 @@ namespace TheGodfather.Modules.Search
         [Aliases("ip", "geolocation", "iplocation", "iptracker", "iptrack", "trackip", "iplocate")]
         [UsageExamples("!ipstack 123.123.123.123")]
         public async Task ExecuteGroupAsync(CommandContext ctx,
-                                           [Description("IP.")] CustomIpFormat ip)
+                                           [Description("IP.")] CustomIPFormat ip)
         {
             IpInfo info = await IpGeolocationService.GetInfoForIpAsync(ip.Content);
 

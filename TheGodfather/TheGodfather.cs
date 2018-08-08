@@ -37,6 +37,7 @@ namespace TheGodfather
         public static readonly string ApplicationName = "TheGodfather";
         public static IReadOnlyList<TheGodfatherShard> ActiveShards
             => Shards.AsReadOnly();
+
         private static BotConfig BotConfiguration { get; set; }
         private static DBService DatabaseService { get; set; }
         private static List<TheGodfatherShard> Shards { get; set; }

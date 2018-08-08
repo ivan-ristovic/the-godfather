@@ -46,7 +46,7 @@ namespace TheGodfather.Modules.SWAT
                            "!swat banlist add Name 109.70.149.158 Reason for ban")]
             public async Task AddAsync(CommandContext ctx,
                                       [Description("Player name.")] string name,
-                                      [Description("IP.")] CustomIpFormat ip,
+                                      [Description("IP.")] CustomIPFormat ip,
                                       [RemainingText, Description("Reason for ban.")] string reason = null)
             {
                 await this.Database.AddSwatIpBanAsync(ip.Content, name, reason);
@@ -55,7 +55,7 @@ namespace TheGodfather.Modules.SWAT
 
             [Command("add"), Priority(0)]
             public Task AddAsync(CommandContext ctx,
-                                [Description("IP.")] CustomIpFormat ip,
+                                [Description("IP.")] CustomIPFormat ip,
                                 [Description("Player name.")] string name,
                                 [RemainingText, Description("Reason for ban.")] string reason = null)
                 => AddAsync(ctx, name, ip, reason);
@@ -67,7 +67,7 @@ namespace TheGodfather.Modules.SWAT
             [Aliases("-", "del", "d", "remove", "-=", ">", ">>", "rm")]
             [UsageExamples("!swat banlist delete 123.123.123.123")]
             public async Task DeleteAsync(CommandContext ctx,
-                                         [Description("IP.")] CustomIpFormat ip)
+                                         [Description("IP.")] CustomIPFormat ip)
             {
                 await this.Database.RemoveSwatIpBanAsync(ip.Content);
                 await InformAsync(ctx, $"Removed an IP ban rule for {Formatter.InlineCode(ip.Content)}.", important: false);

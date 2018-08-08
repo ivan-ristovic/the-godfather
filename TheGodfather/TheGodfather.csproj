@@ -424,8 +424,8 @@
     <Compile Include="Common\AsyncExecutor.cs" />
     <Compile Include="Common\Attributes\UsesInteractivityAttribute.cs" />
     <Compile Include="Common\Converters\CustomIPAddressConverter.cs" />
-    <Compile Include="Common\Converters\CustomIpFormatConverter.cs" />
-    <Compile Include="Common\CustomIpFormat.cs" />
+    <Compile Include="Common\Converters\CustomIPFormatConverter.cs" />
+    <Compile Include="Common\CustomIPFormat.cs" />
     <Compile Include="EventListeners\AsyncExecutionManager.cs" />
     <Compile Include="Common\Attributes\AsyncEventListenerAttribute.cs" />
     <Compile Include="Common\Attributes\ModuleAttribute.cs" />

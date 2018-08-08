@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 
 namespace TheGodfather.Common.Converters
 {
-    public class CustomIPFormatConverter : IArgumentConverter<CustomIpFormat>
+    public class CustomIPFormatConverter : IArgumentConverter<CustomIPFormat>
     {
-        public Task<Optional<CustomIpFormat>> ConvertAsync(string value, CommandContext ctx)
+        public Task<Optional<CustomIPFormat>> ConvertAsync(string value, CommandContext ctx)
         {
-            if (!CustomIpFormat.TryParse(value, out CustomIpFormat ip))
-                return Task.FromResult(new Optional<CustomIpFormat>());
-            return Task.FromResult(new Optional<CustomIpFormat>(ip));
+            if (!CustomIPFormat.TryParse(value, out CustomIPFormat ip))
+                return Task.FromResult(new Optional<CustomIPFormat>());
+            return Task.FromResult(new Optional<CustomIPFormat>(ip));
         }
     }
 }

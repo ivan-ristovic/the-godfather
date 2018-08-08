@@ -62,7 +62,7 @@ namespace TheGodfather.Modules.SWAT
                        "!s4 q 109.70.149.158:10480",
                        "!s4 q wm")]
         public async Task QueryAsync(CommandContext ctx,
-                                    [Description("Registered name or IP.")] CustomIpFormat ip,
+                                    [Description("Registered name or IP.")] CustomIPFormat ip,
                                     [Description("Query port")] int queryport = 10481)
         {
             if (queryport <= 0 || queryport > 65535)
@@ -143,7 +143,7 @@ namespace TheGodfather.Modules.SWAT
                        "!s4 startcheck 109.70.149.158:10480",
                        "!swat startcheck wm")]
         public async Task StartCheckAsync(CommandContext ctx,
-                                         [Description("IP.")] CustomIpFormat ip,
+                                         [Description("IP.")] CustomIPFormat ip,
                                          [Description("Query port")] int queryport = 10481)
         {
             if (queryport <= 0 || queryport > 65535)
