@@ -7,8 +7,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using TheGodfather.Common;
-using TheGodfather.Services;
-using TheGodfather.Services.Common;
 
 namespace TheGodfatherTests.Services
 {

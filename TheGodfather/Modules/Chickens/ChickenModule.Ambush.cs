@@ -4,17 +4,18 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
+
 using System;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
-using TheGodfather.Extensions;
 using TheGodfather.Modules.Chickens.Common;
-using TheGodfather.Services.Database;
-using TheGodfather.Services.Database.Chickens;
+using TheGodfather.Modules.Chickens.Extensions;
+using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Chickens

@@ -2,14 +2,16 @@
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+
 using System.Text;
 using System.Threading.Tasks;
+
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
-using TheGodfather.Services.Common;
-using TheGodfather.Services.Database;
-using TheGodfather.Services.Database.Stats;
+using TheGodfather.Modules.Games.Common;
+using TheGodfather.Modules.Games.Extensions;
+using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Games

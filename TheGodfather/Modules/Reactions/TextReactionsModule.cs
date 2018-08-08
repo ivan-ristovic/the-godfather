@@ -3,18 +3,20 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+
 using System;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+
 using TheGodfather.Common.Attributes;
+using TheGodfather.Common.Collections;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-using TheGodfather.Common.Collections;
 using TheGodfather.Modules.Reactions.Common;
-using TheGodfather.Services.Database;
-using TheGodfather.Services.Database.Reactions;
+using TheGodfather.Modules.Reactions.Extensions;
+using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Reactions

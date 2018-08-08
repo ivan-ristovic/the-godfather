@@ -2,7 +2,9 @@
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
+
 using Humanizer;
+
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -15,9 +17,10 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+
 using TheGodfather.Common;
 using TheGodfather.Extensions;
-using TheGodfather.Services;
+using TheGodfather.Modules.Search.Services;
 #endregion
 
 namespace TheGodfather.Modules.Games.Common
@@ -87,7 +90,7 @@ namespace TheGodfather.Modules.Games.Common
                 msg => {
                     if (msg.ChannelId != this.Channel.Id || msg.Author.IsBot)
                         return false;
-                    int errors = Extensions.StringExtensions.LevenshteinDistance(quote, (string)this.PrepareText((string)msg.Content));
+                    int errors = quote.LevenshteinDistance(this.PrepareText(msg.Content));
                     if (errors > 50)
                         return false;
                     this.results.AddOrUpdate(msg.Author, errors, (k, v) => Math.Min(errors, v));

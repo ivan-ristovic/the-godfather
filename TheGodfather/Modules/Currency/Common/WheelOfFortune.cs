@@ -2,12 +2,15 @@
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
+
 using Humanizer;
+
 using System;
 using System.Collections.Immutable;
 using System.Drawing;
 using System.IO;
 using System.Threading.Tasks;
+
 using TheGodfather.Common;
 #endregion
 

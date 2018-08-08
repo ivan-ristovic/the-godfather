@@ -1,7 +1,9 @@
 ﻿#region USING_DIRECTIVES
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
+
 using Microsoft.Extensions.DependencyInjection;
+
 using System;
 using System.Threading.Tasks;
 #endregion

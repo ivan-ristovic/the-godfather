@@ -1,4 +1,6 @@
-﻿using System;
+﻿#region USING_DIRECTIVES
+using System;
+#endregion
 
 namespace TheGodfather.Services.Common
 {

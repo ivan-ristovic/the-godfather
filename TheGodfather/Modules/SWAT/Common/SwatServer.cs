@@ -1,4 +1,4 @@
-﻿namespace TheGodfather.Modules.SWAT.Common
+﻿namespace TheGodfather.Modules.Swat.Common
 {
     public sealed class SwatServer
     {

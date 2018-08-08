@@ -3,17 +3,19 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+
 using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel.Syndication;
 using System.Threading.Tasks;
+
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
+using TheGodfather.Modules.Search.Common;
+using TheGodfather.Modules.Search.Extensions;
+using TheGodfather.Modules.Search.Services;
 using TheGodfather.Services;
-using TheGodfather.Services.Common;
-using TheGodfather.Services.Database;
-using TheGodfather.Services.Database.Feeds;
 #endregion
 
 namespace TheGodfather.Modules.Search

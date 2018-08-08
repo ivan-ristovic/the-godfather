@@ -1,17 +1,17 @@
 ﻿#region USING_DIRECTIVES
+using DSharpPlus;
+using DSharpPlus.CommandsNext;
+using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.Entities;
+
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-using TheGodfather.Services.Database.Statuses;
-
-using DSharpPlus;
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
-using TheGodfather.Services.Database;
-using System.Collections.Generic;
+using TheGodfather.Modules.Owner.Extensions;
+using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Owner

@@ -1,5 +1,6 @@
 ﻿#region USING_DIRECTIVES
 using Npgsql;
+
 using System;
 #endregion
 

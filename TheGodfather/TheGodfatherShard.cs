@@ -3,22 +3,24 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
-using DSharpPlus.Lavalink;
 using DSharpPlus.Net.WebSocket;
 using DSharpPlus.VoiceNext;
+
 using Microsoft.Extensions.DependencyInjection;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
+
 using TheGodfather.Common;
 using TheGodfather.Common.Converters;
 using TheGodfather.EventListeners;
 using TheGodfather.Extensions;
+using TheGodfather.Modules.Search.Services;
 using TheGodfather.Services;
-using TheGodfather.Services.Database;
 #endregion
 
 namespace TheGodfather

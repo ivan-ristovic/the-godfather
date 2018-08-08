@@ -3,14 +3,16 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+
 using System.Collections.Generic;
 using System.ServiceModel.Syndication;
 using System.Threading.Tasks;
+
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
+using TheGodfather.Modules.Search.Extensions;
+using TheGodfather.Modules.Search.Services;
 using TheGodfather.Services;
-using TheGodfather.Services.Database;
-using TheGodfather.Services.Database.Feeds;
 #endregion
 
 namespace TheGodfather.Modules.Search
@@ -26,7 +28,7 @@ namespace TheGodfather.Modules.Search
         public RedditModule(SharedData shared, DBService db)
             : base(shared, db)
         {
-            this.ModuleColor = DiscordColor.Orange;// new DiscordColor();
+            this.ModuleColor = DiscordColor.Orange;
         }
 
 

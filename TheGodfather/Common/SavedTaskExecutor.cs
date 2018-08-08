@@ -2,15 +2,17 @@
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
+
 using Microsoft.Extensions.DependencyInjection;
+
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
+using TheGodfather.Services;
 using TheGodfather.Services.Common;
-using TheGodfather.Services.Database;
-using TheGodfather.Services.Database.SavedTasks;
 #endregion
 
 namespace TheGodfather.Common

@@ -2,15 +2,16 @@
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
+
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+
 using TheGodfather.Common;
 using TheGodfather.Common.Collections;
 using TheGodfather.Extensions;
-using TheGodfather.Services.Common;
 #endregion
 
 namespace TheGodfather.Modules.Games.Common

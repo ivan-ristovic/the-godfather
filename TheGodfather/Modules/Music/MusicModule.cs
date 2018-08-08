@@ -2,16 +2,18 @@
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.VoiceNext;
 using DSharpPlus.Entities;
+using DSharpPlus.VoiceNext;
+
+using System.Collections.Concurrent;
+using System.Threading.Tasks;
+
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Music.Common;
+using TheGodfather.Modules.Search.Services;
 using TheGodfather.Services;
-using System.Collections.Concurrent;
-using System.Threading.Tasks;
-using TheGodfather.Services.Database;
 #endregion
 
 namespace TheGodfather.Modules.Music

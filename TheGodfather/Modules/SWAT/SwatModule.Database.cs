@@ -3,20 +3,21 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+
 using System.Collections.Generic;
-using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
-using TheGodfather.Modules.SWAT.Common;
-using TheGodfather.Services.Database;
-using TheGodfather.Services.Database.Swat;
+using TheGodfather.Modules.Swat.Common;
+using TheGodfather.Modules.Swat.Extensions;
+using TheGodfather.Services;
 #endregion
 
-namespace TheGodfather.Modules.SWAT
+namespace TheGodfather.Modules.Swat
 {
     public partial class SwatModule
     {

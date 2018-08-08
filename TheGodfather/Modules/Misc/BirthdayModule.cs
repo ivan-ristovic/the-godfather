@@ -3,16 +3,18 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Misc.Common;
-using TheGodfather.Services.Database;
-using TheGodfather.Services.Database.Birthdays;
+using TheGodfather.Modules.Misc.Extensions;
+using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Misc

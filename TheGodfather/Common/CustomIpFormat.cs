@@ -7,11 +7,8 @@ namespace TheGodfather.Common
     public class CustomIPFormat
     {
         private static readonly Regex _parseRegex = new Regex(@"^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|\*)((\.|$)(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|\*)){0,3}(:[0-9]{4,5})?$", RegexOptions.Compiled);
-        //private static readonly Regex _parseRegex = new Regex(@"^((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|\*)(\.|:|$)){1,4}([0-9]{4,5})?$", RegexOptions.Compiled);
-
 
         public string Content { get; set; }
-
 
         public static bool TryParse(string str, out CustomIPFormat res)
         {

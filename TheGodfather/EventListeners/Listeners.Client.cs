@@ -1,12 +1,13 @@
 ﻿#region USING_DIRECTIVES
 using DSharpPlus;
-using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
+
 using System.Threading.Tasks;
+
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Extensions;
-using TheGodfather.Services.Database.GuildConfig;
+using TheGodfather.Modules.Administration.Extensions;
 #endregion
 
 namespace TheGodfather.EventListeners

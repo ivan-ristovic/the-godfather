@@ -3,11 +3,13 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+
 using System.Threading.Tasks;
+
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Polls.Common;
-using TheGodfather.Services.Database;
+using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Polls

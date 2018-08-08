@@ -1,9 +1,9 @@
 ﻿#region USING_DIRECTIVES
 using DSharpPlus;
+
 using System;
 using System.Reflection;
 using System.Threading.Tasks;
-using TheGodfather.Services.Database.GuildConfig;
 #endregion
 
 namespace TheGodfather.Common.Attributes

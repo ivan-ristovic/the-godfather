@@ -3,13 +3,16 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+
 using Humanizer;
+
 using System.Threading.Tasks;
+
 using TheGodfather.Common.Attributes;
 using TheGodfather.Extensions;
+using TheGodfather.Modules.Search.Common;
+using TheGodfather.Modules.Search.Services;
 using TheGodfather.Services;
-using TheGodfather.Services.Common;
-using TheGodfather.Services.Database;
 #endregion
 
 namespace TheGodfather.Modules.Search

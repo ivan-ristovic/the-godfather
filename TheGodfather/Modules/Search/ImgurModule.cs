@@ -2,19 +2,22 @@
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+
 using Imgur.API;
 using Imgur.API.Enums;
 using Imgur.API.Models;
 using Imgur.API.Models.Impl;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
+using TheGodfather.Modules.Search.Services;
 using TheGodfather.Services;
-using TheGodfather.Services.Database;
 #endregion
 
 namespace TheGodfather.Modules.Search

@@ -1,5 +1,6 @@
 ﻿#region USING_DIRECTIVES
 using DSharpPlus;
+
 using System.Collections.Generic;
 using System.Linq;
 #endregion

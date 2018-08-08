@@ -3,17 +3,19 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-using TheGodfather.Services.Database;
-using System.Threading.Tasks;
-using TheGodfather.Common;
-using TheGodfather.Common.Attributes;
-using TheGodfather.Extensions;
-using TheGodfather.Services.Database.GuildConfig;
-using TheGodfather.Exceptions;
-using System.Text;
-using TheGodfather.Modules.Administration.Common;
+
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+using TheGodfather.Common;
+using TheGodfather.Common.Attributes;
+using TheGodfather.Exceptions;
+using TheGodfather.Extensions;
+using TheGodfather.Modules.Administration.Common;
+using TheGodfather.Modules.Administration.Extensions;
+using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules.Administration
@@ -74,9 +76,9 @@ namespace TheGodfather.Modules.Administration
                 {
                     CachedGuildConfig gcfg = this.Shared.GetGuildConfig(ctx.Guild.Id);
                     if (gcfg.LoggingEnabled) {
-                        IReadOnlyList<GuildEntity> exempted = await this.Database.GetAllExemptedEntitiesAsync(ctx.Guild.Id);
+                        IReadOnlyList<ExemptedEntity> exempted = await this.Database.GetAllExemptedEntitiesAsync(ctx.Guild.Id);
                         var sb = new StringBuilder();
-                        foreach (GuildEntity exempt in exempted.OrderBy(e => e.Type))
+                        foreach (ExemptedEntity exempt in exempted.OrderBy(e => e.Type))
                             sb.AppendLine($"{exempt.Type.ToUserFriendlyString()} exempted: {exempt.Id}");
 
                         await InformAsync(ctx, $"Action logging for this guild is {Formatter.Bold("enabled")} at {ctx.Guild.GetChannel(gcfg.LogChannelId)?.Mention ?? "(unknown)"}!\n{sb.ToString()}");

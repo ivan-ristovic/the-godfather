@@ -1,5 +1,6 @@
 ﻿#region USING_DIRECTIVES
 using System.Collections.Immutable;
+
 using TheGodfather.Common;
 #endregion
 

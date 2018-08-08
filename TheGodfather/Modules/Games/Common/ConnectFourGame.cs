@@ -2,10 +2,12 @@
 using DSharpPlus.Entities;
 using DSharpPlus.Exceptions;
 using DSharpPlus.Interactivity;
+
 using System;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 using TheGodfather.Common;
 using TheGodfather.Extensions;
 #endregion

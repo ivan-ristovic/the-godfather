@@ -1,16 +1,18 @@
 ﻿#region USING_DIRECTIVES
 using DSharpPlus;
 using DSharpPlus.Entities;
+
 using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+
 using TheGodfather.Exceptions;
 #endregion
 
-namespace TheGodfather.Modules.SWAT.Common
+namespace TheGodfather.Modules.Swat.Common
 {
     public class SwatServerInfo
     {

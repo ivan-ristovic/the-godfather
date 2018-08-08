@@ -3,26 +3,26 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+
 using Humanizer;
+
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.ServiceModel.Syndication;
 using System.Text;
 using System.Threading.Tasks;
+
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
+using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Modules.Misc.Common;
+using TheGodfather.Modules.Misc.Extensions;
 using TheGodfather.Services;
 using TheGodfather.Services.Common;
-using TheGodfather.Services.Database;
-using TheGodfather.Services.Database.GuildConfig;
-using TheGodfather.Services.Database.Shop;
-using TheGodfather.Services.Database.SpecialRoles;
 #endregion
 
 namespace TheGodfather.Modules.Misc
@@ -182,21 +182,6 @@ namespace TheGodfather.Modules.Misc
         }
         #endregion
 
-        #region COMMAND_NEWS
-        [Command("news")]
-        [Description("Get newest world news.")]
-        [Aliases("worldnews")]
-        [UsageExamples("!news")]
-        public Task NewsRssAsync(CommandContext ctx)
-        {
-            IReadOnlyList<SyndicationItem> res = RssService.GetFeedResults("https://news.google.com/news/rss/headlines/section/topic/WORLD?ned=us&hl=en");
-            if (res == null)
-                throw new CommandFailedException("Error getting world news.");
-
-            return RssService.SendFeedResultsAsync(ctx.Channel, res);
-        }
-        #endregion
-
         #region COMMAND_PENIS
         [Command("penis")]
         [Description("An accurate measurement.")]
@@ -283,31 +268,14 @@ namespace TheGodfather.Modules.Misc
         }
         #endregion
 
-        #region COMMAND_QUOTEOFTHEDAY
-        [Command("quoteoftheday")]
-        [Description("Get quote of the day. You can also specify a category from the list: inspire, management, sports, life, funny, love, art, students.")]
-        [Aliases("qotd", "qod", "quote", "q")]
-        [UsageExamples("!quoteoftheday",
-                       "!quoteoftheday life")]
-        public async Task QotdAsync(CommandContext ctx,
-                                   [Description("Category.")] string category = null)
-        {
-            Quote quote = await QuoteService.GetQuoteOfTheDayAsync(category);
-            if (quote == null)
-                throw new CommandFailedException("Failed to retrieve quote! Possibly the given quote category does not exist.");
-
-            await ctx.RespondAsync(embed: quote.ToDiscordEmbed($"Quote of the day{(string.IsNullOrWhiteSpace(category) ? "" : $" in category {category}")}"));
-        }
-        #endregion
-
         #region COMMAND_RATE
         [Command("rate")]
         [Description("Gives a rating chart for the user. If the user is not provided, rates sender.")]
         [Aliases("score", "graph", "rating")]
         [UsageExamples("!rate @Someone")]
         [RequireBotPermissions(Permissions.AttachFiles)]
-        public Task RateAsync(CommandContext ctx,
-                             [Description("Who to measure.")] DiscordUser user = null)
+        public async Task RateAsync(CommandContext ctx,
+                                   [Description("Who to measure.")] DiscordUser user = null)
         {
             if (user == null)
                 user = ctx.User;
@@ -329,7 +297,7 @@ namespace TheGodfather.Modules.Misc
                     using (var ms = new MemoryStream()) {
                         chart.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
                         ms.Position = 0;
-                        return ctx.RespondWithFileAsync("Rating.jpg", ms, embed: new DiscordEmbedBuilder() {
+                        await ctx.RespondWithFileAsync("Rating.jpg", ms, embed: new DiscordEmbedBuilder() {
                             Description = Formatter.Bold($"{user.Mention}'s rating"),
                             Color = this.ModuleColor
                         });

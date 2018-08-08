@@ -1,8 +1,9 @@
 ﻿#region USING_DIRECTIVES
 using System.Collections.Generic;
-using TheGodfather.Common;
 
 using TexasHoldem.Logic.Cards;
+
+using TheGodfather.Common;
 #endregion
 
 namespace TheGodfather.Extensions

@@ -2,19 +2,21 @@
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
+
 using Humanizer;
+
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Common;
+using TheGodfather.Modules.Administration.Extensions;
+using TheGodfather.Modules.Misc.Extensions;
 using TheGodfather.Modules.Reactions.Common;
-using TheGodfather.Services.Database.GuildConfig;
-using TheGodfather.Services.Database.Ranks;
-using TheGodfather.Services.Database.Reactions;
+using TheGodfather.Modules.Reactions.Extensions;
 #endregion
 
 namespace TheGodfather.EventListeners

@@ -1,7 +1,9 @@
 ﻿#region USING_DIRECTIVES
 using DSharpPlus;
 using DSharpPlus.Entities;
+
 using Newtonsoft.Json;
+
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -10,24 +12,20 @@ using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+
 using TheGodfather.Common;
 using TheGodfather.Common.Collections;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Common;
+using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Modules.Misc.Common;
+using TheGodfather.Modules.Misc.Extensions;
+using TheGodfather.Modules.Owner.Extensions;
 using TheGodfather.Modules.Reactions.Common;
+using TheGodfather.Modules.Reactions.Extensions;
+using TheGodfather.Modules.Search.Services;
 using TheGodfather.Services;
 using TheGodfather.Services.Common;
-using TheGodfather.Services.Database;
-using TheGodfather.Services.Database.Bank;
-using TheGodfather.Services.Database.Birthdays;
-using TheGodfather.Services.Database.Blocked;
-using TheGodfather.Services.Database.Filters;
-using TheGodfather.Services.Database.GuildConfig;
-using TheGodfather.Services.Database.Ranks;
-using TheGodfather.Services.Database.Reactions;
-using TheGodfather.Services.Database.SavedTasks;
-using TheGodfather.Services.Database.Statuses;
 #endregion
 
 namespace TheGodfather

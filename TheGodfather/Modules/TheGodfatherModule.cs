@@ -1,11 +1,13 @@
 ﻿#region USING_DIRECTIVES
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
+
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
+
 using TheGodfather.Common;
-using TheGodfather.Services.Database;
+using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather.Modules

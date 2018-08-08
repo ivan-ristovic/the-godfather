@@ -1,20 +1,23 @@
 ﻿#region USING_DIRECTIVES
 using DSharpPlus;
 using DSharpPlus.Entities;
+
 using System;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+
 using TexasHoldem.Logic.Cards;
+
 using TheGodfather.Common;
 using TheGodfather.Common.Collections;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Common;
+using TheGodfather.Modules.Misc.Extensions;
 using TheGodfather.Modules.Polls.Common;
 using TheGodfather.Modules.Reactions.Common;
-using TheGodfather.Services.Database;
-using TheGodfather.Services.Database.Ranks;
+using TheGodfather.Services;
 #endregion
 
 namespace TheGodfather
@@ -33,7 +36,7 @@ namespace TheGodfather
         public bool ListeningStatus { get; internal set; }
         public CancellationTokenSource MainLoopCts { get; internal set; }
         public ConcurrentDictionary<ulong, ulong> MessageCount { get; internal set; }
-        public ConcurrentDictionary<ulong, Poll> Polls { get; internal set; }
+        public ConcurrentDictionary<ulong, Poll> RunningPolls { get; internal set; }
         public ConcurrentDictionary<ulong, CancellationTokenSource> SpaceCheckingCTS { get; internal set; }
         public bool StatusRotationEnabled { get; internal set; }
         public ConcurrentDictionary<int, SavedTaskExecutor> TaskExecuters { get; internal set; }
@@ -58,7 +61,7 @@ namespace TheGodfather
             this.MainLoopCts = new CancellationTokenSource();
             this.MessageCount = new ConcurrentDictionary<ulong, ulong>();
             this.PendingResponses = new ConcurrentDictionary<ulong, ConcurrentHashSet<ulong>>();
-            this.Polls = new ConcurrentDictionary<ulong, Poll>();
+            this.RunningPolls = new ConcurrentDictionary<ulong, Poll>();
             this.SpaceCheckingCTS = new ConcurrentDictionary<ulong, CancellationTokenSource>();
             this.StatusRotationEnabled = true;
             this.TaskExecuters = new ConcurrentDictionary<int, SavedTaskExecutor>();
@@ -185,27 +188,27 @@ namespace TheGodfather
 
         #region POLL_HELPERS
         public Poll GetPollInChannel(ulong cid)
-            => this.Polls.ContainsKey(cid) ? this.Polls[cid] : null;
+            => this.RunningPolls.ContainsKey(cid) ? this.RunningPolls[cid] : null;
 
         public bool IsPollRunningInChannel(ulong cid)
-            => this.Polls.ContainsKey(cid) && this.Polls[cid] != null;
+            => this.RunningPolls.ContainsKey(cid) && this.RunningPolls[cid] != null;
 
         public bool RegisterPollInChannel(Poll poll, ulong cid)
         {
-            if (this.Polls.ContainsKey(cid)) {
-                this.Polls[cid] = poll;
+            if (this.RunningPolls.ContainsKey(cid)) {
+                this.RunningPolls[cid] = poll;
                 return true;
             }
 
-            return this.Polls.TryAdd(cid, poll);
+            return this.RunningPolls.TryAdd(cid, poll);
         }
 
         public void UnregisterPollInChannel(ulong cid)
         {
-            if (!this.Polls.ContainsKey(cid))
+            if (!this.RunningPolls.ContainsKey(cid))
                 return;
-            if (!this.Polls.TryRemove(cid, out _))
-                this.Polls[cid] = null;
+            if (!this.RunningPolls.TryRemove(cid, out _))
+                this.RunningPolls[cid] = null;
         }
 
         #endregion

@@ -3,13 +3,11 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
-using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
+
 using System.Linq;
 using System.Threading.Tasks;
+
 using TheGodfather.Common;
-using TheGodfather.Common.Converters;
 #endregion
 
 namespace TheGodfather.Extensions

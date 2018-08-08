@@ -1,5 +1,6 @@
 ﻿#region USING_DIRECTIVES
 using DSharpPlus.CommandsNext;
+
 using System;
 using System.Linq;
 #endregion

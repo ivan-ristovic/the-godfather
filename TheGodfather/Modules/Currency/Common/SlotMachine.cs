@@ -1,9 +1,12 @@
 ﻿#region USING_DIRECTIVES
 using DSharpPlus;
 using DSharpPlus.Entities;
+
 using Humanizer;
-using System.Text;
+
 using System.Collections.Immutable;
+using System.Text;
+
 using TheGodfather.Common;
 #endregion
 

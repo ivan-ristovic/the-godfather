@@ -2,15 +2,18 @@
 using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
+
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+
 using TexasHoldem.Logic;
 using TexasHoldem.Logic.Cards;
 using TexasHoldem.Logic.Helpers;
+
 using TheGodfather.Common;
 using TheGodfather.Extensions;
 #endregion

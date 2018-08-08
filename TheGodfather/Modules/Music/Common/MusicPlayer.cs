@@ -1,8 +1,9 @@
 ﻿#region USING_DIRECTIVES
 using DSharpPlus;
 using DSharpPlus.Entities;
-using DSharpPlus.VoiceNext;
 using DSharpPlus.EventArgs;
+using DSharpPlus.VoiceNext;
+
 using System;
 using System.Collections.Concurrent;
 using System.Diagnostics;

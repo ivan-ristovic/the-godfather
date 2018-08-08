@@ -1,9 +1,11 @@
 ﻿#region USING_DIRECTIVES
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
+
 using System;
 using System.Text;
 using System.Threading.Tasks;
+
 using TheGodfather.Common;
 #endregion
 

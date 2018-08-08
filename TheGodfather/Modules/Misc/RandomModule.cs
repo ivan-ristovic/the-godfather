@@ -2,14 +2,15 @@
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
+
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Services;
-using TheGodfather.Services.Database;
 #endregion
 
 namespace TheGodfather.Modules.Misc
@@ -27,42 +28,6 @@ namespace TheGodfather.Modules.Misc
             this.ModuleColor = DiscordColor.HotPink;
         }
 
-
-        #region COMMAND_CAT
-        [Command("cat")]
-        [Description("Get a random cat image.")]
-        [UsageExamples("!random cat")]
-        public async Task RandomCatAsync(CommandContext ctx)
-        {
-            string url = await PetImagesService.GetRandomCatImageAsync();
-            if (url == null)
-                throw new CommandFailedException("Connection to random.cat failed!");
-
-            await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
-                Description = DiscordEmoji.FromName(ctx.Client, ":cat:"),
-                ImageUrl = url,
-                Color = this.ModuleColor
-            });
-        }
-        #endregion
-
-        #region COMMAND_DOG
-        [Command("dog")]
-        [Description("Get a random dog image.")]
-        [UsageExamples("!random dog")]
-        public async Task RandomDogAsync(CommandContext ctx)
-        {
-            string url = await PetImagesService.GetRandomDogImageAsync();
-            if (url == null)
-                throw new CommandFailedException("Connection to random.dog failed!");
-
-            await ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
-                Description = DiscordEmoji.FromName(ctx.Client, ":dog:"),
-                ImageUrl = url,
-                Color = this.ModuleColor
-            });
-        }
-        #endregion
 
         #region COMMAND_CHOOSE
         [Command("choose")]

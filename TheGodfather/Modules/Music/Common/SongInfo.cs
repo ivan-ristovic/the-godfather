@@ -1,6 +1,8 @@
 ﻿#region USING_DIRECTIVES
 using DSharpPlus.Entities;
+
 using System;
+
 using TheGodfather.Common;
 #endregion
 

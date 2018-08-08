@@ -2,7 +2,9 @@
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Converters;
 using DSharpPlus.Entities;
+
 using Imgur.API.Enums;
+
 using System.Threading.Tasks;
 #endregion
 
