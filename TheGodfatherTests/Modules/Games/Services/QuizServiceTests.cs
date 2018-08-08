@@ -1,10 +1,16 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿#region USING_DIRECTIVES
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace TheGodfatherTests.Services
+using TheGodfather.Modules.Games.Common;
+using TheGodfather.Modules.Games.Services;
+#endregion
+
+namespace TheGodfatherTests.Modules.Games.Services
 {
     [TestClass]
     public class QuizServiceTests

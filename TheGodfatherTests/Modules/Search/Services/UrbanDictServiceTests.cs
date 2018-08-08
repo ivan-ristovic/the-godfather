@@ -1,8 +1,13 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿#region USING_DIRECTIVES
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
 using System;
 using System.Threading.Tasks;
 
-namespace TheGodfatherTests.Services
+using TheGodfather.Modules.Search.Services;
+#endregion
+
+namespace TheGodfatherTests.Modules.Search.Services
 {
     [TestClass]
     public class UrbanDictServiceTests

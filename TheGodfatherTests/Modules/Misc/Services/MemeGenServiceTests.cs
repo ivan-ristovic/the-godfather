@@ -1,9 +1,14 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿#region USING_DIRECTIVES
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace TheGodfatherTests.Services
+using TheGodfather.Modules.Misc.Services;
+#endregion
+
+namespace TheGodfatherTests.Modules.Misc.Services
 {
     [TestClass]
     public class MemeGenServiceTests

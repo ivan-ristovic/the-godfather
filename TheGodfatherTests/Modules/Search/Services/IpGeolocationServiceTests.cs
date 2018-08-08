@@ -1,8 +1,11 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿#region USING_DIRECTIVES
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
 using System;
 using System.Threading.Tasks;
+#endregion
 
-namespace TheGodfatherTests.Services
+namespace TheGodfatherTests.Modules.Search.Services
 {
     [TestClass]
     public class IpGeolocationServiceTests

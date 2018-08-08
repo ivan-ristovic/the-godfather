@@ -1,13 +1,20 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿#region USING_DIRECTIVES
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
 using Newtonsoft.Json;
-using TheGodfather.Common;
+
 using System;
 using System.IO;
 using System.Threading.Tasks;
+
+using TheGodfather.Common;
+using TheGodfather.Modules.Search.Services;
+
 using ImageData = GiphyDotNet.Model.GiphyImage.Data;
 using RandomImageData = GiphyDotNet.Model.GiphyRandomImage.Data;
+#endregion
 
-namespace TheGodfatherTests.Services
+namespace TheGodfatherTests.Modules.Search.Services
 {
     [TestClass]
     public class GiphyServiceTests

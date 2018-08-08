@@ -1,14 +1,21 @@
-﻿using DSharpPlus.Interactivity;
+﻿#region USING_DIRECTIVES
+using DSharpPlus.Interactivity;
+
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+
 using Newtonsoft.Json;
+
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using TheGodfather.Common;
 
-namespace TheGodfatherTests.Services
+using TheGodfather.Common;
+using TheGodfather.Modules.Search.Services;
+#endregion
+
+namespace TheGodfatherTests.Modules.Search.Services
 {
     [TestClass]
     public class OMDbServiceTests

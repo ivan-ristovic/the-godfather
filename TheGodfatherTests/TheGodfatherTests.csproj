@@ -119,20 +119,20 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\GiphyServiceTests.cs" />
-    <Compile Include="Services\ImgurServiceTests.cs" />
-    <Compile Include="Services\IpGeolocationServiceTests.cs" />
-    <Compile Include="Services\MemeGenServiceTests.cs" />
-    <Compile Include="Services\JokesServiceTests.cs" />
-    <Compile Include="Services\OMDbServiceTests.cs" />
-    <Compile Include="Services\PetImagesServiceTests.cs" />
-    <Compile Include="Services\QuizServiceTests.cs" />
-    <Compile Include="Services\QuoteServiceTests.cs" />
-    <Compile Include="Services\RSSServiceTests.cs" />
-    <Compile Include="Services\XkcdServiceTests.cs" />
-    <Compile Include="Services\UrbanDictServiceTests.cs" />
-    <Compile Include="Services\WeatherServiceTests.cs" />
-    <Compile Include="Services\YtServiceTests.cs" />
+    <Compile Include="Modules\Search\Services\GiphyServiceTests.cs" />
+    <Compile Include="Modules\Search\Services\ImgurServiceTests.cs" />
+    <Compile Include="Modules\Search\Services\IpGeolocationServiceTests.cs" />
+    <Compile Include="Modules\Misc\Services\MemeGenServiceTests.cs" />
+    <Compile Include="Modules\Search\Services\JokesServiceTests.cs" />
+    <Compile Include="Modules\Search\Services\OMDbServiceTests.cs" />
+    <Compile Include="Modules\Search\Services\PetImagesServiceTests.cs" />
+    <Compile Include="Modules\Games\Services\QuizServiceTests.cs" />
+    <Compile Include="Modules\Search\Services\QuoteServiceTests.cs" />
+    <Compile Include="Modules\Search\Services\RSSServiceTests.cs" />
+    <Compile Include="Modules\Search\Services\XkcdServiceTests.cs" />
+    <Compile Include="Modules\Search\Services\UrbanDictServiceTests.cs" />
+    <Compile Include="Modules\Search\Services\WeatherServiceTests.cs" />
+    <Compile Include="Modules\Search\Services\YtServiceTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TheGodfather\TheGodfather.csproj">
@@ -144,6 +144,7 @@
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
       <ItemGroup>
