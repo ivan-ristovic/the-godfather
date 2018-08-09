@@ -7,11 +7,13 @@
         public bool BlockDisturbingWebsites { get; set; }
         public bool BlockIpLoggingWebsites { get; set; }
         public bool BlockUrlShorteners { get; set; }
+        public string Currency { get; set; }
         public bool LinkfilterEnabled { get; set; }
         public ulong LogChannelId { get; set; }
         public string Prefix { get; set; }
         public bool ReactionResponse { get; set; }
         public bool SuggestionsEnabled { get; set; }
+
 
         public bool LoggingEnabled
             => this.LogChannelId != 0;

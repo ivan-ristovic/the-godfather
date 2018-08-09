@@ -13,10 +13,9 @@ using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Modules.Administration.Common;
-using TheGodfather.Services;
 #endregion
 
-namespace TheGodfather.Modules.Administration.Extensions
+namespace TheGodfather.Services
 {
     internal static class DBServiceGuildConfigExtensions
     {

@@ -54,14 +54,14 @@ namespace TheGodfather.Common
         [JsonProperty("key-steam")]
         public string SteamKey { get; private set; }
 
-        [JsonProperty("token")]
-        public string Token { get; private set; }
-
         [JsonProperty("key-weather")]
         public string WeatherKey { get; private set; }
 
         [JsonProperty("key-youtube")]
         public string YouTubeKey { get; private set; }
+
+        [JsonProperty("token")]
+        public string Token { get; private set; }
 
 
         public static BotConfig Load()

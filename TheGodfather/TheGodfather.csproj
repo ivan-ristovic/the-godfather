@@ -626,7 +626,7 @@
     <Compile Include="Services\DBService.cs" />
     <Compile Include="Modules\Search\Extensions\DBService.Feeds.cs" />
     <Compile Include="Modules\Administration\Extensions\DBService.Filters.cs" />
-    <Compile Include="Modules\Administration\Extensions\DBService.GuildConfig.cs" />
+    <Compile Include="Services\DBService.GuildConfig.cs" />
     <Compile Include="Modules\Misc\Extensions\DBService.Insults.cs" />
     <Compile Include="Modules\Misc\Extensions\DBService.Memes.cs" />
     <Compile Include="Modules\Reactions\Extensions\DBService.Reactions.cs" />
