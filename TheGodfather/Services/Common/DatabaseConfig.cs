@@ -2,7 +2,7 @@
 using Newtonsoft.Json;
 #endregion
 
-namespace TheGodfather.Common
+namespace TheGodfather.Services.Common
 {
     public sealed class DatabaseConfig
     {
@@ -20,6 +20,7 @@ namespace TheGodfather.Common
 
         [JsonProperty("username")]
         public string Username { get; private set; }
+
 
         [JsonIgnore]
         public static DatabaseConfig Default => new DatabaseConfig {

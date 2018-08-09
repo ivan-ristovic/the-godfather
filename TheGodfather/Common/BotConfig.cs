@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 
 using System;
 using System.IO;
+using TheGodfather.Services.Common;
 #endregion
 
 namespace TheGodfather.Common
@@ -75,6 +76,7 @@ namespace TheGodfather.Common
                 return null;
             }
         }
+
 
         [JsonIgnore]
         public static BotConfig Default => new BotConfig {
