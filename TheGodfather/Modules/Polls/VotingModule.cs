@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Polls.Common;
+using TheGodfather.Modules.Polls.Services;
 using TheGodfather.Services;
 #endregion
 
@@ -33,7 +34,7 @@ namespace TheGodfather.Modules.Polls
         public async Task ExecuteGroupAsync(CommandContext ctx,
                                            [Description("Option to vote for.")] int option)
         {
-            Poll poll = this.Shared.GetPollInChannel(ctx.Channel.Id);
+            Poll poll = PollService.GetPollInChannel(ctx.Channel.Id);
             if (poll == null || !poll.IsRunning || poll is ReactionsPoll)
                 throw new CommandFailedException("There are no polls running in this channel.");
 
@@ -57,7 +58,7 @@ namespace TheGodfather.Modules.Polls
         [UsageExamples("!vote cancel")]
         public Task CancelAsync(CommandContext ctx)
         {
-            Poll poll = this.Shared.GetPollInChannel(ctx.Channel.Id);
+            Poll poll = PollService.GetPollInChannel(ctx.Channel.Id);
             if (poll == null || !poll.IsRunning || poll is ReactionsPoll)
                 throw new CommandFailedException("There are no polls running in this channel.");
             

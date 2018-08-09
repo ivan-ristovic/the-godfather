@@ -13,6 +13,7 @@ using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Polls.Common;
+using TheGodfather.Modules.Polls.Services;
 using TheGodfather.Services;
 #endregion
 
@@ -41,14 +42,14 @@ namespace TheGodfather.Modules.Polls
             if (string.IsNullOrWhiteSpace(question))
                 throw new InvalidCommandUsageException("Poll requires a question.");
 
-            if (this.Shared.IsPollRunningInChannel(ctx.Channel.Id))
+            if (PollService.IsPollRunningInChannel(ctx.Channel.Id))
                 throw new CommandFailedException("Another poll is already running in this channel.");
 
             if (timeout < TimeSpan.FromSeconds(10) || timeout >= TimeSpan.FromDays(1))
                 throw new InvalidCommandUsageException("Poll cannot run for less than 10 seconds or more than 1 day(s).");
 
             var poll = new Poll(ctx.Client.GetInteractivity(), ctx.Channel, question);
-            if (!this.Shared.RegisterPollInChannel(poll, ctx.Channel.Id))
+            if (!PollService.RegisterPollInChannel(poll, ctx.Channel.Id))
                 throw new CommandFailedException("Failed to start the poll. Please try again.");
             try {
                 await InformAsync(ctx, StaticDiscordEmoji.Question, "And what will be the possible answers? (separate with a semicolon)");
@@ -60,7 +61,7 @@ namespace TheGodfather.Modules.Polls
                 await poll.RunAsync(timeout);
 
             } finally {
-                this.Shared.UnregisterPollInChannel(ctx.Channel.Id);
+                PollService.UnregisterPollInChannel(ctx.Channel.Id);
             }
         }
 
@@ -83,7 +84,7 @@ namespace TheGodfather.Modules.Polls
         [RequireUserPermissions(Permissions.Administrator)]
         public Task StopAsync(CommandContext ctx)
         {
-            var poll = this.Shared.GetPollInChannel(ctx.Channel.Id);
+            var poll = PollService.GetPollInChannel(ctx.Channel.Id);
             if (poll == null || poll is ReactionsPoll)
                 throw new CommandFailedException("There are no text polls running in this channel.");
 

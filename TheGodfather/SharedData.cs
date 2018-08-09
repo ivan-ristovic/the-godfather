@@ -36,7 +36,6 @@ namespace TheGodfather
         public bool ListeningStatus { get; internal set; }
         public CancellationTokenSource MainLoopCts { get; internal set; }
         public ConcurrentDictionary<ulong, ulong> MessageCount { get; internal set; }
-        public ConcurrentDictionary<ulong, Poll> RunningPolls { get; internal set; }
         public ConcurrentDictionary<ulong, CancellationTokenSource> SpaceCheckingCTS { get; internal set; }
         public bool StatusRotationEnabled { get; internal set; }
         public ConcurrentDictionary<int, SavedTaskExecutor> TaskExecuters { get; internal set; }
@@ -61,7 +60,6 @@ namespace TheGodfather
             this.MainLoopCts = new CancellationTokenSource();
             this.MessageCount = new ConcurrentDictionary<ulong, ulong>();
             this.PendingResponses = new ConcurrentDictionary<ulong, ConcurrentHashSet<ulong>>();
-            this.RunningPolls = new ConcurrentDictionary<ulong, Poll>();
             this.SpaceCheckingCTS = new ConcurrentDictionary<ulong, CancellationTokenSource>();
             this.StatusRotationEnabled = true;
             this.TaskExecuters = new ConcurrentDictionary<int, SavedTaskExecutor>();
@@ -184,33 +182,6 @@ namespace TheGodfather
                 this.PendingResponses.TryRemove(cid, out _);
             return success;
         }
-        #endregion
-
-        #region POLL_HELPERS
-        public Poll GetPollInChannel(ulong cid)
-            => this.RunningPolls.ContainsKey(cid) ? this.RunningPolls[cid] : null;
-
-        public bool IsPollRunningInChannel(ulong cid)
-            => this.RunningPolls.ContainsKey(cid) && this.RunningPolls[cid] != null;
-
-        public bool RegisterPollInChannel(Poll poll, ulong cid)
-        {
-            if (this.RunningPolls.ContainsKey(cid)) {
-                this.RunningPolls[cid] = poll;
-                return true;
-            }
-
-            return this.RunningPolls.TryAdd(cid, poll);
-        }
-
-        public void UnregisterPollInChannel(ulong cid)
-        {
-            if (!this.RunningPolls.ContainsKey(cid))
-                return;
-            if (!this.RunningPolls.TryRemove(cid, out _))
-                this.RunningPolls[cid] = null;
-        }
-
         #endregion
     }
 }
