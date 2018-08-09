@@ -22,6 +22,8 @@ namespace TheGodfather.Modules.Currency
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public partial class GambleModule : TheGodfatherModule
     {
+        private static readonly long _maxBet = 5_000_000_000;
+
 
         public GambleModule(SharedData shared, DBService db)
             : base(shared, db)
@@ -40,7 +42,7 @@ namespace TheGodfather.Modules.Currency
                                        [Description("Bid.")] long bid,
                                        [Description("Heads/Tails (h/t).")] string bet)
         {
-            if (bid <= 0 || bid > _maxBetL)
+            if (bid <= 0 || bid > _maxBet)
                 throw new InvalidCommandUsageException($"Invalid bid amount! Needs to be in range [1, {_maxBet:n0}]");
 
             if (string.IsNullOrWhiteSpace(bet))
@@ -100,7 +102,7 @@ namespace TheGodfather.Modules.Currency
                                        [Description("Bid.")] long bid,
                                        [Description("Number guess (has to be a word one-six).")] string guess)
         {
-            if (bid <= 0 || bid > _maxBetL)
+            if (bid <= 0 || bid > _maxBet)
                 throw new InvalidCommandUsageException($"Invalid bid amount! Needs to be in range [1, {_maxBet:n0}]");
 
             if (string.IsNullOrWhiteSpace(guess))

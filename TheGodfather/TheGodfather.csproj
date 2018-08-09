@@ -422,6 +422,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Common\AsyncExecutor.cs" />
+    <Compile Include="Common\Attributes\RequireOwnerOrPermissionsAttribute.cs" />
     <Compile Include="Common\Attributes\UsesInteractivityAttribute.cs" />
     <Compile Include="Common\Converters\CustomIPAddressConverter.cs" />
     <Compile Include="Common\Converters\CustomIPFormatConverter.cs" />

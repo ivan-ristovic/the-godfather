@@ -55,21 +55,27 @@ namespace TheGodfather.Common
 
             this.emb.AddField("Category", ModuleAttribute.ForCommand(cmd).Module.ToString(), inline: true);
 
-            var allchecks = cmd.ExecutionChecks.Union(cmd.Parent?.ExecutionChecks ?? Enumerable.Empty<CheckBaseAttribute>());
-            var perms = allchecks.Where(chk => chk is RequirePermissionsAttribute)
-                                 .Select(chk => chk as RequirePermissionsAttribute)
-                                 .Select(chk => chk.Permissions.ToPermissionString());
-            var uperms = allchecks.Where(chk => chk is RequireUserPermissionsAttribute)
+            var checks = cmd.ExecutionChecks.Union(cmd.Parent?.ExecutionChecks ?? Enumerable.Empty<CheckBaseAttribute>());
+            var perms = checks
+                .Where(chk => chk is RequirePermissionsAttribute)
+                .Select(chk => chk as RequirePermissionsAttribute)
+                .Select(chk => chk.Permissions.ToPermissionString())
+                .Union(checks
+                    .Where(chk => chk is RequireOwnerOrPermissionsAttribute)
+                    .Select(chk => chk as RequireOwnerOrPermissionsAttribute)
+                    .Select(chk => chk.Permissions.ToPermissionString())
+                );
+            var uperms = checks.Where(chk => chk is RequireUserPermissionsAttribute)
                                   .Select(chk => chk as RequireUserPermissionsAttribute)
                                   .Select(chk => chk.Permissions.ToPermissionString());
-            var bperms = allchecks.Where(chk => chk is RequireBotPermissionsAttribute)
+            var bperms = checks.Where(chk => chk is RequireBotPermissionsAttribute)
                                   .Select(chk => chk as RequireBotPermissionsAttribute)
                                   .Select(chk => chk.Permissions.ToPermissionString());
 
             var pb = new StringBuilder();
-            if (allchecks.Any(chk => chk is RequireOwnerAttribute))
+            if (checks.Any(chk => chk is RequireOwnerAttribute))
                 pb.AppendLine(Formatter.Bold("Owner-only."));
-            if (allchecks.Any(chk => chk is RequirePrivilegedUserAttribute))
+            if (checks.Any(chk => chk is RequirePrivilegedUserAttribute))
                 pb.AppendLine(Formatter.Bold("Privileged users only."));
             if (perms.Any()) 
                 pb.AppendLine(Formatter.InlineCode(string.Join(", ", perms)));

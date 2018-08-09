@@ -105,6 +105,9 @@ namespace TheGodfather.EventListeners
                                     case RequireUserPermissionsAttribute uperms:
                                         sb.AppendLine($"- You do not have sufficient permissions ({uperms.Permissions.ToPermissionString()})!");
                                         break;
+                                    case RequireOwnerOrPermissionsAttribute operms:
+                                        sb.AppendLine($"- You do not have sufficient permissions ({operms.Permissions.ToPermissionString()})!");
+                                        break;
                                     case RequireBotPermissionsAttribute bperms:
                                         sb.AppendLine($"- I do not have sufficient permissions ({bperms.Permissions.ToPermissionString()})!");
                                         break;

@@ -137,7 +137,7 @@ namespace TheGodfather.Modules.Misc
         [Command("leave"), UsesInteractivity]
         [Description("Makes Godfather leave the guild.")]
         [UsageExamples("!leave")]
-        [RequireUserPermissions(Permissions.Administrator)]
+        [RequireOwnerOrPermissions(Permissions.Administrator)]
         public async Task LeaveAsync(CommandContext ctx)
         {
             if (await ctx.WaitForBoolReplyAsync("Are you sure you want me to leave this guild?")) {
@@ -244,7 +244,7 @@ namespace TheGodfather.Modules.Misc
         [Aliases("setprefix", "pref", "setpref")]
         [UsageExamples("!prefix",
                        "!prefix ;")]
-        [RequireUserPermissions(Permissions.Administrator)]
+        [RequireOwnerOrPermissions(Permissions.Administrator)]
         public async Task GetOrSetPrefixAsync(CommandContext ctx,
                                              [Description("Prefix to set.")] string prefix = null)
         {
@@ -313,7 +313,7 @@ namespace TheGodfather.Modules.Misc
         [Command("remind"), Priority(2)]
         [Description("Resend a message after some time.")]
         [UsageExamples("!remind 1h Drink water!")]
-        [RequireUserPermissions(Permissions.Administrator)]
+        [RequireOwnerOrPermissions(Permissions.Administrator)]
         public async Task RemindAsync(CommandContext ctx,
                                      [Description("Time span until reminder.")] TimeSpan timespan,
                                      [Description("Channel to send message to.")] DiscordChannel channel,

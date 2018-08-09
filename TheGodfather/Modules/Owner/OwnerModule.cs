@@ -323,7 +323,7 @@ namespace TheGodfather.Modules.Owner
             sb.AppendLine();
 
             IReadOnlyList<Command> commands = ctx.CommandsNext.GetAllRegisteredCommands();
-            Dictionary<ModuleAttribute, List<Command>> modules = commands
+            var modules = commands
                 .GroupBy(c => ModuleAttribute.ForCommand(c))
                 .OrderBy(g => g.Key.Module)
                 .ToDictionary(g => g.Key, g => g.OrderBy(c => c.QualifiedName).ToList());
@@ -354,7 +354,12 @@ namespace TheGodfather.Modules.Owner
                     IEnumerable<string> perms = execChecks
                         .Where(chk => chk is RequirePermissionsAttribute)
                         .Select(chk => chk as RequirePermissionsAttribute)
-                        .Select(chk => chk.Permissions.ToPermissionString());
+                        .Select(chk => chk.Permissions.ToPermissionString())
+                        .Union(execChecks
+                            .Where(chk => chk is RequireOwnerOrPermissionsAttribute)
+                            .Select(chk => chk as RequireOwnerOrPermissionsAttribute)
+                            .Select(chk => chk.Permissions.ToPermissionString())
+                        );
                     IEnumerable<string> uperms = execChecks
                         .Where(chk => chk is RequireUserPermissionsAttribute)
                         .Select(chk => chk as RequireUserPermissionsAttribute)
@@ -368,6 +373,7 @@ namespace TheGodfather.Modules.Owner
                         sb.AppendLine(Formatter.Bold("Owner-only.")).AppendLine();
                     if (execChecks.Any(chk => chk is RequirePrivilegedUserAttribute))
                         sb.AppendLine(Formatter.Bold("Privileged users only.")).AppendLine();
+
                     if (perms.Any()) {
                         sb.AppendLine(Formatter.Bold("Requires permissions:"));
                         sb.AppendLine(Formatter.InlineCode(string.Join(", ", perms))).AppendLine();
