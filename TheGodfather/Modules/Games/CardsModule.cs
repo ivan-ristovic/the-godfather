@@ -14,6 +14,7 @@ using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
+using TheGodfather.Modules.Games.Services;
 #endregion
 
 namespace TheGodfather.Modules.Games
@@ -45,10 +46,9 @@ namespace TheGodfather.Modules.Games
         public Task DrawAsync(CommandContext ctx,
                                    [Description("Amount (in range [1, 10]).")] int amount = 1)
         {
-            if (!this.Shared.CardDecks.ContainsKey(ctx.Channel.Id) || this.Shared.CardDecks[ctx.Channel.Id] == null)
+            Deck deck = CardDecksService.GetDeckInChannel(ctx.Channel.Id);
+            if (deck == null)
                 throw new CommandFailedException($"No deck to deal from. Use command {Formatter.InlineCode("deck")} to open a new deck.");
-
-            Deck deck = this.Shared.CardDecks[ctx.Channel.Id];
             
             if (amount < 1|| amount > 10)
                 throw new InvalidCommandUsageException("Amount of cards to draw must be in range [1, 10].");
@@ -68,8 +68,8 @@ namespace TheGodfather.Modules.Games
         [UsageExamples("!deck reset")]
         public Task ResetDeckAsync(CommandContext ctx)
         {
-            this.Shared.CardDecks.AddOrUpdate(ctx.Channel.Id, new Deck(), (cid, deck) => new Deck());
-            return InformAsync(ctx, StaticDiscordEmoji.CardSuits[0], "A new shuffled deck is opened in this channel!");
+            CardDecksService.ResetDeckInChannel(ctx.Channel.Id);
+            return InformAsync(ctx, StaticDiscordEmoji.CardSuits[0], "A new shuffled deck is opened in this channel!", important: false);
         }
         #endregion
     }

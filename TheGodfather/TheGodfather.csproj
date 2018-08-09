@@ -485,6 +485,7 @@
     <Compile Include="Modules\Games\GamesModule.Duel.cs" />
     <Compile Include="Modules\Games\GamesModule.Hangman.cs" />
     <Compile Include="Modules\Games\GamesModule.TypingRace.cs" />
+    <Compile Include="Modules\Games\Services\CardDecksService.cs" />
     <Compile Include="Modules\Misc\ShopModule.cs" />
     <Compile Include="Modules\Music\Common\MusicPlayer.cs" />
     <Compile Include="Modules\Misc\BirthdayModule.cs" />

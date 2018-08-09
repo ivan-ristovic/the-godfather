@@ -28,7 +28,6 @@ namespace TheGodfather
         public ConcurrentHashSet<ulong> BlockedChannels { get; internal set; }
         public ConcurrentHashSet<ulong> BlockedUsers { get; internal set; }
         public BotConfig BotConfiguration { get; internal set; }
-        public ConcurrentDictionary<ulong, Deck> CardDecks { get; internal set; }
         public ConcurrentDictionary<ulong, ConcurrentHashSet<EmojiReaction>> EmojiReactions { get; internal set; }
         public ConcurrentDictionary<ulong, ConcurrentHashSet<Filter>> Filters { get; internal set; }
         public ConcurrentDictionary<ulong, CachedGuildConfig> GuildConfigurations { get; internal set; }
@@ -52,7 +51,6 @@ namespace TheGodfather
             this.BlockedUsers = new ConcurrentHashSet<ulong>();
             this.BotConfiguration = BotConfig.Default;
             this.ChannelEvents = new ConcurrentDictionary<ulong, ChannelEvent>();
-            this.CardDecks = new ConcurrentDictionary<ulong, Deck>();
             this.EmojiReactions = new ConcurrentDictionary<ulong, ConcurrentHashSet<EmojiReaction>>();
             this.Filters = new ConcurrentDictionary<ulong, ConcurrentHashSet<Filter>>();
             this.GuildConfigurations = new ConcurrentDictionary<ulong, CachedGuildConfig>();
