@@ -248,7 +248,13 @@ namespace TheGodfather.Services
         public static Task UpdateGuildSettingsAsync(this DBService db, ulong gid, CachedGuildConfig cfg)
         {
             return db.ExecuteCommandAsync(cmd => {
-                cmd.CommandText = "UPDATE gf.guild_cfg SET (prefix, silent_respond, suggestions_enabled, log_cid, linkfilter_enabled, linkfilter_invites, linkfilter_booters, linkfilter_disturbing, linkfilter_iploggers, linkfilter_shorteners) = (@prefix, @silent_respond, @suggestions_enabled, @log_cid, @linkfilter_enabled, @linkfilter_invites, @linkfilter_booters, @linkfilter_disturbing, @linkfilter_iploggers, @linkfilter_shorteners) WHERE gid = @gid;";
+                cmd.CommandText = "UPDATE gf.guild_cfg SET " +
+                    "(prefix, silent_respond, suggestions_enabled, log_cid, linkfilter_enabled, " +
+                    "linkfilter_invites, linkfilter_booters, linkfilter_disturbing, linkfilter_iploggers, " +
+                    "linkfilter_shorteners, currency) = " +
+                    "(@prefix, @silent_respond, @suggestions_enabled, @log_cid, @linkfilter_enabled, " +
+                    "@linkfilter_invites, @linkfilter_booters, @linkfilter_disturbing, @linkfilter_iploggers, " +
+                    "@linkfilter_shorteners, @currency) WHERE gid = @gid;";
                 cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
                 if (string.IsNullOrWhiteSpace(cfg.Prefix))
                     cmd.Parameters.AddWithValue("prefix", NpgsqlDbType.Varchar, DBNull.Value);
@@ -263,6 +269,10 @@ namespace TheGodfather.Services
                 cmd.Parameters.Add(new NpgsqlParameter<bool>("linkfilter_disturbing", cfg.BlockDisturbingWebsites));
                 cmd.Parameters.Add(new NpgsqlParameter<bool>("linkfilter_iploggers", cfg.BlockIpLoggingWebsites));
                 cmd.Parameters.Add(new NpgsqlParameter<bool>("linkfilter_shorteners", cfg.BlockUrlShorteners));
+                if (string.IsNullOrWhiteSpace(cfg.Currency))
+                    cmd.Parameters.AddWithValue("currency", NpgsqlDbType.Varchar, DBNull.Value);
+                else
+                    cmd.Parameters.Add(new NpgsqlParameter<string>("currency", cfg.Currency));
 
                 return cmd.ExecuteNonQueryAsync();
             });

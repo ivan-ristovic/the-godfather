@@ -201,7 +201,10 @@ namespace TheGodfather.Common
         }
 
         private static void PrintLogMessage(string message)
-            => Console.WriteLine(message.Trim());
+        {
+            Console.WriteLine(message.Trim());
+            Console.WriteLine();
+        }
         #endregion
     }
 }
