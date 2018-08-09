@@ -8,14 +8,11 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
-using TexasHoldem.Logic.Cards;
-
 using TheGodfather.Common;
 using TheGodfather.Common.Collections;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Misc.Extensions;
-using TheGodfather.Modules.Polls.Common;
 using TheGodfather.Modules.Reactions.Common;
 using TheGodfather.Services;
 #endregion

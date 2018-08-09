@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 
-using TheGodfather.Services.Common;
+using TheGodfather.Common;
 #endregion
 
 namespace TheGodfather.Services

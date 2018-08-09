@@ -2,7 +2,7 @@
 using System;
 #endregion
 
-namespace TheGodfather.Services.Common
+namespace TheGodfather.Common
 {
     public enum SavedTaskType
     {
