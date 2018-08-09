@@ -186,7 +186,9 @@ namespace TheGodfather.Modules.Administration
             var pages = pinned.Select(m => new Page() {
                 Content = $"Author: {Formatter.Bold(m.Author.Username)} {m.CreationTimestamp.ToUtcTimestamp()}",
                 Embed = m.Embeds.FirstOrDefault() ?? new DiscordEmbedBuilder() {
-                    Description = m.Content ?? Formatter.Italic("Empty message.")
+                    Title = "Jump to",
+                    Description = m.Content ?? Formatter.Italic("Empty message."),
+                    Url = m.JumpLink.ToString()
                 }.Build()
             }).ToList();
 

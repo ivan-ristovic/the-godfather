@@ -1,4 +1,7 @@
-﻿namespace TheGodfather.Modules.Swat.Common
+﻿using System;
+using System.Collections.Generic;
+
+namespace TheGodfather.Modules.Swat.Common
 {
     public sealed class SwatServer
     {
@@ -32,5 +35,15 @@
 
             return new SwatServer(name, ip, joinport, queryport);
         }
+
+    }
+
+    public sealed class SwatServerComparer : IEqualityComparer<SwatServer>
+    {
+        public bool Equals(SwatServer x, SwatServer y)
+            => x.Ip == y.Ip && x.JoinPort == y.JoinPort && x.QueryPort == y.QueryPort;
+
+        public int GetHashCode(SwatServer obj)
+            => $"{obj.Ip}:{obj.JoinPort}:{obj.QueryPort}".GetHashCode();
     }
 }

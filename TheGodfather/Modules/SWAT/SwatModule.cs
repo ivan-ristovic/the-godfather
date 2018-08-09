@@ -17,6 +17,7 @@ using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Swat.Common;
 using TheGodfather.Modules.Swat.Extensions;
+using TheGodfather.Modules.Swat.Services;
 using TheGodfather.Services;
 #endregion
 
@@ -150,41 +151,14 @@ namespace TheGodfather.Modules.Swat
             if (queryport <= 0 || queryport > 65535)
                 throw new InvalidCommandUsageException("Port range invalid (must be in range [1, 65535])!");
 
-            if (this.Shared.SpaceCheckingCTS.ContainsKey(ctx.User.Id))
-                throw new CommandFailedException("Already checking space for you!");
-
-            if (this.Shared.SpaceCheckingCTS.Count > 10)
-                throw new CommandFailedException("Maximum number of simultanous checks reached (10), please try later!");
-
+            if (SwatSpaceCheckService.IsListening(ctx.Channel))
+                throw new CommandFailedException("Already checking space in this channel!");
+            
             var server = SwatServer.FromIP(ip.Content, queryport);
+            SwatSpaceCheckService.AddListener(server, ctx.Channel);
 
-            await InformAsync(ctx, $"Starting space listening on {server.Ip}:{server.JoinPort}...", important: false);
+            await InformAsync(ctx, $"Starting space listening on {server.Ip}:{server.JoinPort}... Use command {Formatter.Bold("swat stopcheck")} to stop the check.", important: false);
 
-            var cts = new CancellationTokenSource();
-            cts.CancelAfter(TimeSpan.FromMinutes(10));
-            if (!this.Shared.SpaceCheckingCTS.TryAdd(ctx.User.Id, cts))
-                throw new ConcurrentOperationException("Failed to register space check task! Please try again.");
-
-            try {
-                var t = Task.Run(async () => {
-                    while (this.Shared.SpaceCheckingCTS.ContainsKey(ctx.User.Id) && !this.Shared.SpaceCheckingCTS[ctx.User.Id].IsCancellationRequested) {
-                        SwatServerInfo info = await SwatServerInfo.QueryIPAsync(server.Ip, server.QueryPort);
-                        if (info == null) {
-                            if (!await ctx.WaitForBoolReplyAsync("No reply from server. Should I try again?")) {
-                                await StopCheckAsync(ctx);
-                                throw new OperationCanceledException();
-                            }
-                        } else if (info.HasSpace) {
-                            await InformAsync(ctx, StaticDiscordEmoji.AlarmClock, $"{ctx.User.Mention}, there is space on {Formatter.Bold(info.HostName)}!");
-                        }
-
-                        await Task.Delay(TimeSpan.FromSeconds(2));
-                    }
-                }, 
-                this.Shared.SpaceCheckingCTS[ctx.User.Id].Token);
-            } catch {
-                this.Shared.SpaceCheckingCTS.TryRemove(ctx.User.Id, out _);
-            }
         }
 
         [Command("startcheck"), Priority(0)]
@@ -194,43 +168,16 @@ namespace TheGodfather.Modules.Swat
             if (string.IsNullOrWhiteSpace(name))
                 throw new InvalidCommandUsageException("Name/IP missing.");
 
-            if (this.Shared.SpaceCheckingCTS.ContainsKey(ctx.User.Id))
-                throw new CommandFailedException("Already checking space for you!");
-
-            if (this.Shared.SpaceCheckingCTS.Count > 10)
-                throw new CommandFailedException("Maximum number of simultanous checks reached (10), please try later!");
-
+            if (SwatSpaceCheckService.IsListening(ctx.Channel))
+                throw new CommandFailedException("Already checking space in this channel!");
+            
             SwatServer server = await this.Database.GetSwatServerFromDatabaseAsync(name.ToLowerInvariant());
             if (server == null)
                 throw new CommandFailedException("Server with given name is not registered.");
 
-            await InformAsync(ctx, $"Starting space listening on {server.Ip}:{server.JoinPort}...", important: false);
+            SwatSpaceCheckService.AddListener(server, ctx.Channel);
 
-            var cts = new CancellationTokenSource();
-            cts.CancelAfter(TimeSpan.FromMinutes(10));
-            if (!this.Shared.SpaceCheckingCTS.TryAdd(ctx.User.Id, cts))
-                throw new ConcurrentOperationException("Failed to register space check task! Please try again.");
-
-            try {
-                var t = Task.Run(async () => {
-                    while (this.Shared.SpaceCheckingCTS.ContainsKey(ctx.User.Id) && !this.Shared.SpaceCheckingCTS[ctx.User.Id].IsCancellationRequested) {
-                        SwatServerInfo info = await SwatServerInfo.QueryIPAsync(server.Ip, server.QueryPort);
-                        if (info == null) {
-                            if (!await ctx.WaitForBoolReplyAsync("No reply from server. Should I try again?")) {
-                                await StopCheckAsync(ctx);
-                                throw new OperationCanceledException();
-                            }
-                        } else if (info.HasSpace) {
-                            await InformAsync(ctx, StaticDiscordEmoji.AlarmClock, $"{ctx.User.Mention}, there is space on {Formatter.Bold(info.HostName)}!");
-                        }
-
-                        await Task.Delay(TimeSpan.FromSeconds(2));
-                    }
-                },
-                this.Shared.SpaceCheckingCTS[ctx.User.Id].Token);
-            } catch {
-                this.Shared.SpaceCheckingCTS.TryRemove(ctx.User.Id, out _);
-            }
+            await InformAsync(ctx, $"Starting space listening on {server.Ip}:{server.JoinPort}... Use command {Formatter.Bold("swat stopcheck")} to stop the check.", important: false);
         }
         #endregion
 
@@ -241,12 +188,10 @@ namespace TheGodfather.Modules.Swat
         [UsageExamples("!swat stopcheck")]
         public Task StopCheckAsync(CommandContext ctx)
         {
-            if (!this.Shared.SpaceCheckingCTS.ContainsKey(ctx.User.Id))
-                throw new CommandFailedException("You haven't started any space listeners.");
+            if (!SwatSpaceCheckService.IsListening(ctx.Channel))
+                throw new CommandFailedException("No checks were started in this channel.");
 
-            this.Shared.SpaceCheckingCTS[ctx.User.Id].Cancel();
-            this.Shared.SpaceCheckingCTS[ctx.User.Id].Dispose();
-            this.Shared.SpaceCheckingCTS.TryRemove(ctx.User.Id, out _);
+            SwatSpaceCheckService.RemoveListener(ctx.Channel);
 
             return InformAsync(ctx, "Checking stopped.", important: false);
         }
