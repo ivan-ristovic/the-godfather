@@ -58,7 +58,7 @@ namespace TheGodfather.Modules.Misc
             if (name.Length >= 60)
                 throw new InvalidCommandUsageException("Item name cannot exceed 60 characters");
 
-            if (price <1  || price > 100000000000L)
+            if (price <1  || price > _maxBet00L)
                 throw new InvalidCommandUsageException("Item price must be positive and cannot exceed 100 billion credits.");
 
             await this.Database.AddPurchasableItemAsync(ctx.Guild.Id, name, price);

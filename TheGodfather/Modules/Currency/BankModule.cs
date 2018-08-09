@@ -84,8 +84,8 @@ namespace TheGodfather.Modules.Currency
                                     [Description("User.")] DiscordUser user,
                                     [Description("Amount.")] long amount)
         {
-            if (amount < 0 || amount > 10000000000L)
-                throw new InvalidCommandUsageException($"Invalid amount! Needs to be in range [1, {1000000000:n0}]");
+            if (amount < 0 || amount > 1_000_000_000_000)
+                throw new InvalidCommandUsageException($"Invalid amount! Needs to be in range [1, {1_000_000_000_000:n0}]");
 
             if (!await this.Database.HasBankAccountAsync(user.Id, ctx.Guild.Id))
                 throw new CommandFailedException("Given user does not have a WM bank account!");

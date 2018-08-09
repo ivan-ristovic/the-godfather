@@ -26,6 +26,8 @@ namespace TheGodfather.Modules.Currency
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public partial class CasinoModule : TheGodfatherModule
     {
+        private static readonly long _maxBet = 5_000_000_000;
+
 
         public CasinoModule(SharedData shared, DBService db)
             : base(shared, db)
@@ -61,8 +63,8 @@ namespace TheGodfather.Modules.Currency
         public async Task SlotAsync(CommandContext ctx,
                                    [Description("Bid.")] long bid = 5)
         {
-            if (bid <= 0 || bid > 1000000000L)
-                throw new InvalidCommandUsageException($"Invalid bid amount! Needs to be in range [1, {1000000000:n0}]");
+            if (bid <= 0 || bid > _maxBet)
+                throw new InvalidCommandUsageException($"Invalid bid amount! Needs to be in range [1, {_maxBet:n0}]");
 
             if (!await this.Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, bid))
                 throw new CommandFailedException($"You do not have enough credits! Use command {Formatter.InlineCode("bank")} to check your account status.");
@@ -97,8 +99,8 @@ namespace TheGodfather.Modules.Currency
         public async Task WheelOfFortuneAsync(CommandContext ctx,
                                              [Description("Bid.")] long bid = 5)
         {
-            if (bid <= 0 || bid > 1000000000L)
-                throw new InvalidCommandUsageException($"Invalid bid amount! Needs to be in range [1, {1000000000:n0}]");
+            if (bid <= 0 || bid > _maxBet)
+                throw new InvalidCommandUsageException($"Invalid bid amount! Needs to be in range [1, {_maxBet:n0}]");
 
             if (!await this.Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, bid))
                 throw new CommandFailedException($"You do not have enough credits! Use command {Formatter.InlineCode("bank")} to check your account status.");
