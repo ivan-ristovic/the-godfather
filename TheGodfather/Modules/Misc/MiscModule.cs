@@ -256,12 +256,13 @@ namespace TheGodfather.Modules.Misc
 
             if (prefix.Length > 12)
                 throw new CommandFailedException("Prefix cannot be longer than 12 characters.");
-
-            this.Shared.GuildConfigurations[ctx.Guild.Id].Prefix = prefix;
+            
             if (prefix == this.Shared.BotConfiguration.DefaultPrefix)
-                await this.Database.ResetPrefixAsync(ctx.Guild.Id);
+                this.Shared.GuildConfigurations[ctx.Guild.Id].Prefix = null;
             else
-                await this.Database.SetPrefixAsync(ctx.Guild.Id, prefix);
+                this.Shared.GuildConfigurations[ctx.Guild.Id].Prefix = prefix;
+
+            await this.Database.UpdateGuildSettingsAsync(ctx.Guild.Id, this.Shared.GuildConfigurations[ctx.Guild.Id]);
 
             await InformAsync(ctx, $"Successfully changed the prefix for this guild to: {Formatter.Bold(prefix)}", important: false);
         }

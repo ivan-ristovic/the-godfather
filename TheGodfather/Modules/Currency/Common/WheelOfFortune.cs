@@ -28,6 +28,7 @@ namespace TheGodfather.Modules.Currency.Common
 
         private readonly long bid;
         private readonly int index;
+        private readonly string currency;
         private readonly DiscordUser user;
 
 
@@ -44,11 +45,12 @@ namespace TheGodfather.Modules.Currency.Common
         }
 
 
-        public WheelOfFortune(InteractivityExtension interactivity, DiscordChannel channel, DiscordUser user, long bid)
+        public WheelOfFortune(InteractivityExtension interactivity, DiscordChannel channel, DiscordUser user, long bid, string currency)
             : base(interactivity, channel)
         {
             this.user = user;
             this.bid = bid;
+            this.currency = currency;
             this.index = GFRandom.Generator.Next(_multipliers.Length);
             if (_wheel == null) {
                 try {
@@ -68,7 +70,7 @@ namespace TheGodfather.Modules.Currency.Common
                     wof.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
                     ms.Position = 0;
                     return this.Channel.SendFileAsync("wof.png", ms, embed: new DiscordEmbedBuilder() {
-                        Description = $"{this.user.Mention} won {Formatter.Bold(this.WonAmount.ToWords())} ({this.WonAmount:n0}) credits!",
+                        Description = $"{this.user.Mention} won {Formatter.Bold(this.WonAmount.ToWords())} ({this.WonAmount:n0}) {currency}!",
                         Color = DiscordColor.DarkGreen
                     });
                 }

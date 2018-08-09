@@ -45,7 +45,7 @@ namespace TheGodfather.Modules.Chickens
 
                 Chicken chicken = await this.Database.GetChickenAsync(ctx.User.Id, ctx.Guild.Id);
                 if (chicken == null)
-                    throw new CommandFailedException($"You do not own a chicken in this guild! Use command {Formatter.InlineCode("chicken buy")} to buy a chicken (requires atleast 1000 credits).");
+                    throw new CommandFailedException($"You do not own a chicken in this guild! Use command {Formatter.InlineCode("chicken buy")} to buy a chicken (requires atleast 1000 {this.Shared.GuildConfigurations[ctx.Guild.Id].Currency ?? "credits"}).");
 
                 if (chicken.Stats.Upgrades.Any(u => u.Id == id))
                     throw new CommandFailedException("Your chicken already has that upgrade!");
@@ -54,11 +54,11 @@ namespace TheGodfather.Modules.Chickens
                 if (upgrade == null)
                     throw new CommandFailedException($"An upgrade with ID {Formatter.InlineCode(id.ToString())} does not exist! Use command {Formatter.InlineCode("chicken upgrades")} to view all available upgrades.");
 
-                if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to buy {Formatter.Bold(upgrade.Name)} for {Formatter.Bold($"{upgrade.Price:n0}")} credits?"))
+                if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to buy {Formatter.Bold(upgrade.Name)} for {Formatter.Bold($"{upgrade.Price:n0}")} {this.Shared.GuildConfigurations[ctx.Guild.Id].Currency ?? "credits"}?"))
                     return;
 
                 if (!await this.Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, upgrade.Price))
-                    throw new CommandFailedException($"You do not have enought credits to buy that upgrade!");
+                    throw new CommandFailedException($"You do not have enought {this.Shared.GuildConfigurations[ctx.Guild.Id].Currency ?? "credits"} to buy that upgrade!");
 
                 await this.Database.AddChickenUpgradeAsync(ctx.User.Id, ctx.Guild.Id, upgrade);
                 await InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} bought upgraded his chicken with {Formatter.Bold(upgrade.Name)} (+{upgrade.Modifier}) {upgrade.UpgradesStat.ToShortString()}!");

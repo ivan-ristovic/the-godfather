@@ -49,7 +49,7 @@ namespace TheGodfather.Modules.Currency
 
                 long? balance = await this.Database.GetBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id);
                 if (!balance.HasValue || balance < LotteryGame.TicketPrice)
-                    throw new CommandFailedException($"You do not have enough credits to buy a lottery ticket! Use command {Formatter.InlineCode("bank")} to check your account status. The lottery ticket costs {LotteryGame.TicketPrice} credits!");
+                    throw new CommandFailedException($"You do not have enough {this.Shared.GuildConfigurations[ctx.Guild.Id].Currency ?? "credits"} to buy a lottery ticket! Use command {Formatter.InlineCode("bank")} to check your account status. The lottery ticket costs {LotteryGame.TicketPrice} {this.Shared.GuildConfigurations[ctx.Guild.Id].Currency ?? "credits"}!");
 
                 var game = new LotteryGame(ctx.Client.GetInteractivity(), ctx.Channel);
                 this.Shared.RegisterEventInChannel(game, ctx.Channel.Id);
@@ -101,7 +101,7 @@ namespace TheGodfather.Modules.Currency
                     throw new CommandFailedException("You are already participating in the Lottery game!");
 
                 if (!await this.Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, LotteryGame.TicketPrice))
-                    throw new CommandFailedException($"You do not have enough credits to buy a lottery ticket! Use command {Formatter.InlineCode("bank")} to check your account status. The lottery ticket costs {LotteryGame.TicketPrice} credits!");
+                    throw new CommandFailedException($"You do not have enough {this.Shared.GuildConfigurations[ctx.Guild.Id].Currency ?? "credits"} to buy a lottery ticket! Use command {Formatter.InlineCode("bank")} to check your account status. The lottery ticket costs {LotteryGame.TicketPrice} {this.Shared.GuildConfigurations[ctx.Guild.Id].Currency ?? "credits"}!");
 
                 game.AddParticipant(ctx.User, numbers);
                 await InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"{ctx.User.Mention} joined the Lottery game.");

@@ -49,12 +49,12 @@ namespace TheGodfather.Modules.Currency
 
                 long? balance = await this.Database.GetBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id);
                 if (!balance.HasValue || balance < bid)
-                    throw new CommandFailedException($"You do not have enough credits! Use command {Formatter.InlineCode("bank")} to check your account status.");
+                    throw new CommandFailedException($"You do not have enough {this.Shared.GuildConfigurations[ctx.Guild.Id].Currency ?? "credits"}! Use command {Formatter.InlineCode("bank")} to check your account status.");
 
                 var game = new BlackjackGame(ctx.Client.GetInteractivity(), ctx.Channel);
                 this.Shared.RegisterEventInChannel(game, ctx.Channel.Id);
                 try {
-                    await InformAsync(ctx, StaticDiscordEmoji.Clock1, $"The Blackjack game will start in 30s or when there are 5 participants. Use command {Formatter.InlineCode("casino blackjack <bid>")} to join the pool. Default bid is 5 credits.");
+                    await InformAsync(ctx, StaticDiscordEmoji.Clock1, $"The Blackjack game will start in 30s or when there are 5 participants. Use command {Formatter.InlineCode("casino blackjack <bid>")} to join the pool. Default bid is 5 {this.Shared.GuildConfigurations[ctx.Guild.Id].Currency ?? "credits"}.");
                     await JoinAsync(ctx, bid);
                     await Task.Delay(TimeSpan.FromSeconds(30));
 
@@ -100,7 +100,7 @@ namespace TheGodfather.Modules.Currency
                     throw new CommandFailedException("You are already participating in the Blackjack game!");
 
                 if (bid <= 0 || !await this.Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, bid))
-                    throw new CommandFailedException($"You do not have enough credits! Use command {Formatter.InlineCode("bank")} to check your account status.");
+                    throw new CommandFailedException($"You do not have enough {this.Shared.GuildConfigurations[ctx.Guild.Id].Currency ?? "credits"}! Use command {Formatter.InlineCode("bank")} to check your account status.");
 
                 game.AddParticipant(ctx.User, bid);
                 await InformAsync(ctx, StaticDiscordEmoji.CardSuits[0], $"{ctx.User.Mention} joined the Blackjack game.");

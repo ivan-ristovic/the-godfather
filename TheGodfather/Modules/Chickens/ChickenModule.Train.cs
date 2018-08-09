@@ -57,11 +57,11 @@ namespace TheGodfather.Modules.Chickens
                     throw new CommandFailedException($"{ctx.User.Mention}, your chicken is too weak for that action! Heal it using {Formatter.BlockCode("chicken heal")} command.");
 
                 long price = chicken.TrainStrengthPrice;
-                if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to train your chicken for {Formatter.Bold($"{price:n0}")} credits?\n\nNote: This action will also weaken the vitality of your chicken by 1."))
+                if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to train your chicken for {Formatter.Bold($"{price:n0}")} {this.Shared.GuildConfigurations[ctx.Guild.Id].Currency ?? "credits"}?\n\nNote: This action will also weaken the vitality of your chicken by 1."))
                     return;
 
                 if (!await this.Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, price))
-                    throw new CommandFailedException($"You do not have enought credits to train a chicken ({price:n0} needed)!");
+                    throw new CommandFailedException($"You do not have enought {this.Shared.GuildConfigurations[ctx.Guild.Id].Currency ?? "credits"} to train a chicken ({price:n0} needed)!");
 
                 string result;
                 if (chicken.TrainStrength())
@@ -93,11 +93,11 @@ namespace TheGodfather.Modules.Chickens
                     throw new CommandFailedException($"{ctx.User.Mention}, your chicken is too weak for that action! Heal it using {Formatter.BlockCode("chicken heal")} command.");
 
                 long price = chicken.TrainVitalityPrice;
-                if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to train your chicken for {Formatter.Bold($"{price:n0}")} credits?\n\nNote: This action will also weaken the vitality of your chicken by 1."))
+                if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to train your chicken for {Formatter.Bold($"{price:n0}")} {this.Shared.GuildConfigurations[ctx.Guild.Id].Currency ?? "credits"}?\n\nNote: This action will also weaken the vitality of your chicken by 1."))
                     return;
 
                 if (!await this.Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, price))
-                    throw new CommandFailedException($"You do not have enought credits to train a chicken ({price:n0} needed)!");
+                    throw new CommandFailedException($"You do not have enought {this.Shared.GuildConfigurations[ctx.Guild.Id].Currency ?? "credits"} to train a chicken ({price:n0} needed)!");
 
                 string result;
                 if (chicken.TrainVitality())

@@ -45,7 +45,7 @@ namespace TheGodfather.Modules.Currency
         #region COMMAND_BANK_BALANCE
         [Command("balance")]
         [Description("View someone's bank account in this guild.")]
-        [Aliases("s", "status", "bal", "money", "credits")]
+        [Aliases("s", "status", "bal", "money")]
         [UsageExamples("!bank balance @Someone")]
         public async Task GetBalanceAsync(CommandContext ctx,
                                          [Description("User.")] DiscordUser user = null)
@@ -62,7 +62,7 @@ namespace TheGodfather.Modules.Currency
             };
 
             if (balance.HasValue) {
-                emb.WithDescription($"Credit amount: {Formatter.Bold(balance.Value.ToWords())}");
+                emb.WithDescription($"Account value: {Formatter.Bold(balance.Value.ToWords())} {this.Shared.GuildConfigurations[ctx.Guild.Id].Currency ?? "credits"}");
                 emb.AddField("Numeric value", $"{balance.Value:n0}");
             } else {
                 emb.WithDescription($"No existing account! Use command {Formatter.InlineCode("bank register")} to open an account.");
@@ -70,6 +70,29 @@ namespace TheGodfather.Modules.Currency
             emb.WithFooter("\"Your money is safe in our hands.\" - WM Bank");
 
             await ctx.RespondAsync(embed: emb.Build());
+        }
+        #endregion
+
+        #region COMMAND_BANK_CURRENCY
+        [Command("currency")]
+        [Description("Set currency for this guild. Currency can be either emoji or text.")]
+        [Aliases("sc", "setcurrency")]
+        [UsageExamples("!bank currency :euro:",
+                       "!bank currency My Custom Currency Name")]
+        public async Task GetOrSetCurrencyAsync(CommandContext ctx,
+                                               [RemainingText, Description("New currency.")] string currency = null)
+        {
+            if (string.IsNullOrWhiteSpace(currency)) {
+                await InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"Currency for this guild: {this.Shared.GuildConfigurations[ctx.Guild.Id].Currency ?? "credit"}");
+            } else {
+                if (currency.Length > 30)
+                    throw new CommandFailedException("Currency name cannot be longer than 30 characters!");
+
+                this.Shared.GuildConfigurations[ctx.Guild.Id].Currency = currency;
+                await this.Database.UpdateGuildSettingsAsync(ctx.Guild.Id, this.Shared.GuildConfigurations[ctx.Guild.Id]);
+
+                await InformAsync(ctx, $"Changed the currency to: {currency}", important: false);
+            }
         }
         #endregion
 
@@ -91,7 +114,7 @@ namespace TheGodfather.Modules.Currency
                 throw new CommandFailedException("Given user does not have a WM bank account!");
 
             await this.Database.IncreaseBankAccountBalanceAsync(user.Id, ctx.Guild.Id, amount);
-            await InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"{Formatter.Bold(user.Mention)} won {Formatter.Bold($"{amount:n0}")} credits on the lottery! (seems legit)");
+            await InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"{Formatter.Bold(user.Mention)} won {Formatter.Bold($"{amount:n0}")} {this.Shared.GuildConfigurations[ctx.Guild.Id].Currency ?? "credits"} on the lottery! (seems legit)");
         }
         
         [Command("grant"), Priority(0)]
@@ -112,7 +135,7 @@ namespace TheGodfather.Modules.Currency
                 throw new CommandFailedException("You already own an account in WM bank!");
 
             await this.Database.OpenBankAccountAsync(ctx.User.Id, ctx.Guild.Id);
-            await InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"Account opened for you, {ctx.User.Mention}! Since WM bank is so generous, you get 10000 credits for free.");
+            await InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"Account opened for you, {ctx.User.Mention}! Since WM bank is so generous, you get 10000 {this.Shared.GuildConfigurations[ctx.Guild.Id].Currency ?? "credits"} for free.");
         }
         #endregion
 

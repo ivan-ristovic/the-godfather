@@ -139,7 +139,7 @@ namespace TheGodfather.Services
                 cmd.CommandText = @"SELECT gid, welcome_cid, leave_cid, welcome_msg, leave_msg, prefix, 
                    suggestions_enabled, log_cid, linkfilter_enabled, linkfilter_invites, 
                    linkfilter_booters, linkfilter_disturbing, linkfilter_iploggers, 
-                   linkfilter_shorteners, silent_respond FROM gf.guild_cfg LIMIT 1;";
+                   linkfilter_shorteners, silent_respond, currency FROM gf.guild_cfg LIMIT 1;";
                 return cmd.ExecuteScalarAsync();
             });
             await ExecuteCommandAsync(cmd => {

@@ -97,7 +97,7 @@ namespace TheGodfather.Modules.Chickens
                 $"{StaticDiscordEmoji.Trophy} Winner: {Formatter.Bold(winner.Name)}\n\n" +
                 $"{Formatter.Bold(winner.Name)} gained {Formatter.Bold(gain.ToString())} strength!\n" +
                 (loser.Stats.TotalVitality > 0 ? $"{Formatter.Bold(loser.Name)} lost {Formatter.Bold("50")} HP!" : $"{Formatter.Bold(loser.Name)} died in the battle!") +
-                $"\n\n{winner.Owner.Mention} won {gain * 200} credits."
+                $"\n\n{winner.Owner.Mention} won {gain * 200} {this.Shared.GuildConfigurations[ctx.Guild.Id].Currency ?? "credits"}."
                 , important: true
             );
         }
@@ -113,11 +113,11 @@ namespace TheGodfather.Modules.Chickens
             if (this.Shared.GetEventInChannel(ctx.Channel.Id) is ChickenWar ambush)
                 throw new CommandFailedException("There is a chicken war running in this channel. No actions are allowed before the war finishes.");
 
-            if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to pay {Formatter.Bold("1,000,000")} credits to create a disease?"))
+            if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to pay {Formatter.Bold("1,000,000")} {this.Shared.GuildConfigurations[ctx.Guild.Id].Currency ?? "credits"} to create a disease?"))
                 return;
 
             if (!await this.Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, 1000000))
-                throw new CommandFailedException($"You do not have enought credits to pay for the disease creation!");
+                throw new CommandFailedException($"You do not have enought {this.Shared.GuildConfigurations[ctx.Guild.Id].Currency ?? "credits"} to pay for the disease creation!");
 
             short threshold = (short)GFRandom.Generator.Next(50, 100);
             await this.Database.FilterChickensByVitalityAsync(ctx.Guild.Id, threshold);
@@ -162,7 +162,7 @@ namespace TheGodfather.Modules.Chickens
             Chicken chicken = await this.Database.GetChickenAsync(member.Id, ctx.Guild.Id)
                 .ConfigureAwait(false);
             if (chicken == null)
-                throw new CommandFailedException($"User {member.Mention} does not own a chicken in this guild! Use command {Formatter.InlineCode("chicken buy")} to buy a chicken (1000 credits).");
+                throw new CommandFailedException($"User {member.Mention} does not own a chicken in this guild! Use command {Formatter.InlineCode("chicken buy")} to buy a chicken (1000 {this.Shared.GuildConfigurations[ctx.Guild.Id].Currency ?? "credits"}).");
 
             await ctx.RespondAsync(embed: chicken.ToDiscordEmbed(member));
         }
@@ -214,13 +214,13 @@ namespace TheGodfather.Modules.Chickens
                 throw new CommandFailedException("There is a chicken war running in this channel. No sells are allowed before the war finishes.");
 
             long price = chicken.SellPrice;
-            if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to sell your chicken for {Formatter.Bold($"{price:n0}")} credits?"))
+            if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to sell your chicken for {Formatter.Bold($"{price:n0}")} {this.Shared.GuildConfigurations[ctx.Guild.Id].Currency ?? "credits"}?"))
                 return;
 
             await this.Database.RemoveChickenAsync(ctx.User.Id, ctx.Guild.Id);
             await this.Database.IncreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, price);
 
-            await InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} sold {Formatter.Bold(chicken.Name)} for {Formatter.Bold($"{price:n0}")} credits!");
+            await InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} sold {Formatter.Bold(chicken.Name)} for {Formatter.Bold($"{price:n0}")} {this.Shared.GuildConfigurations[ctx.Guild.Id].Currency ?? "credits"}!");
         }
         #endregion
 

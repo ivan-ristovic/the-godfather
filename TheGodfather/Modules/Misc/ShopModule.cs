@@ -59,10 +59,10 @@ namespace TheGodfather.Modules.Misc
                 throw new InvalidCommandUsageException("Item name cannot exceed 60 characters");
 
             if (price <1  || price > 100_000_000_000)
-                throw new InvalidCommandUsageException("Item price must be positive and cannot exceed 100 billion credits.");
+                throw new InvalidCommandUsageException($"Item price must be positive and cannot exceed 100 billion {this.Shared.GuildConfigurations[ctx.Guild.Id].Currency ?? "credits"}.");
 
             await this.Database.AddPurchasableItemAsync(ctx.Guild.Id, name, price);
-            await InformAsync(ctx, $"Item {Formatter.Bold(name)} ({Formatter.Bold(price.ToString())} credits) successfully added to this guild's shop.", important: false);
+            await InformAsync(ctx, $"Item {Formatter.Bold(name)} ({Formatter.Bold(price.ToString())} {this.Shared.GuildConfigurations[ctx.Guild.Id].Currency ?? "credits"}) successfully added to this guild's shop.", important: false);
         }
 
         [Command("add"), Priority(0)]
@@ -87,14 +87,14 @@ namespace TheGodfather.Modules.Misc
             if (await this.Database.UserHasPurchasedItemAsync(ctx.User.Id, item.Id))
                 throw new CommandFailedException("You have already purchased this item!");
 
-            if (!await ctx.WaitForBoolReplyAsync($"Are you sure you want to buy a {Formatter.Bold(item.Name)} for {Formatter.Bold(item.Price.ToString())} credits?"))
+            if (!await ctx.WaitForBoolReplyAsync($"Are you sure you want to buy a {Formatter.Bold(item.Name)} for {Formatter.Bold(item.Price.ToString())} {this.Shared.GuildConfigurations[ctx.Guild.Id].Currency ?? "credits"}?"))
                 return;
 
             if (!await this.Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, item.Price))
                 throw new CommandFailedException("You do not have enough money to purchase that item!");
 
             await this.Database.AddPurchaseAsync(ctx.User.Id, item.Id);
-            await InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"{ctx.User.Mention} bought a {Formatter.Bold(item.Name)} for {Formatter.Bold(item.Price.ToString())} credits!", important: false);
+            await InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"{ctx.User.Mention} bought a {Formatter.Bold(item.Name)} for {Formatter.Bold(item.Price.ToString())} {this.Shared.GuildConfigurations[ctx.Guild.Id].Currency ?? "credits"}!", important: false);
         }
         #endregion
         
@@ -115,12 +115,12 @@ namespace TheGodfather.Modules.Misc
                 throw new CommandFailedException("You did not purchase this item!");
 
             long retval = item.Price / 2;
-            if (!await ctx.WaitForBoolReplyAsync($"Are you sure you want to sell a {Formatter.Bold(item.Name)} for {Formatter.Bold(retval.ToString())} credits?"))
+            if (!await ctx.WaitForBoolReplyAsync($"Are you sure you want to sell a {Formatter.Bold(item.Name)} for {Formatter.Bold(retval.ToString())} {this.Shared.GuildConfigurations[ctx.Guild.Id].Currency ?? "credits"}?"))
                 return;
 
             await this.Database.IncreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, retval);
             await this.Database.RemovePurchaseAsync(ctx.User.Id, item.Id);
-            await InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"{ctx.User.Mention} sold a {Formatter.Bold(item.Name)} for {Formatter.Bold(retval.ToString())} credits!", important: false);
+            await InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"{ctx.User.Mention} sold a {Formatter.Bold(item.Name)} for {Formatter.Bold(retval.ToString())} {this.Shared.GuildConfigurations[ctx.Guild.Id].Currency ?? "credits"}!", important: false);
         }
         #endregion
 
@@ -157,7 +157,7 @@ namespace TheGodfather.Modules.Misc
             await ctx.SendCollectionInPagesAsync(
                 $"Items for guild {ctx.Guild.Name}",
                 items.OrderBy(item => item.Price),
-                item => $"{Formatter.InlineCode($"{item.Id:D4}")} | {Formatter.Bold(item.Name)} : {Formatter.Bold(item.Price.ToString())} credits",
+                item => $"{Formatter.InlineCode($"{item.Id:D4}")} | {Formatter.Bold(item.Name)} : {Formatter.Bold(item.Price.ToString())} {this.Shared.GuildConfigurations[ctx.Guild.Id].Currency ?? "credits"}",
                 this.ModuleColor,
                 5
             ).ConfigureAwait(false);

@@ -33,7 +33,7 @@ namespace TheGodfather.Modules.Currency.Common
         }.ToImmutableArray();
 
 
-        public static DiscordEmbed RollToDiscordEmbed(DiscordUser user, long bid, out long won)
+        public static DiscordEmbed RollToDiscordEmbed(DiscordUser user, long bid, string currency, out long won)
         {
             int[,] res = Roll();
             won = EvaluateSlotResult(res, bid);
@@ -50,7 +50,7 @@ namespace TheGodfather.Modules.Currency.Common
                 sb.Append(_emoji[i]).Append(Formatter.InlineCode($" x{_multipliers[i]}")).Append(" ");
 
             emb.AddField("Multipliers", sb.ToString());
-            emb.AddField("Result", $"{user.Mention} won {Formatter.Bold(won.ToWords())} ({won:n0}) credits!");
+            emb.AddField("Result", $"{user.Mention} won {Formatter.Bold(won.ToWords())} ({won:n0}) {currency}");
 
             return emb.Build();
         }

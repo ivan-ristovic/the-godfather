@@ -190,17 +190,7 @@ namespace TheGodfather.Services
 
         public static Task RemoveLeaveMessageAsync(this DBService db, ulong gid)
             => db.SetLeaveMessageAsync(gid, null);
-
-        public static Task ResetPrefixAsync(this DBService db, ulong gid)
-        {
-            return db.ExecuteCommandAsync(cmd => {
-                cmd.CommandText = "UPDATE gf.guild_cfg SET prefix = NULL WHERE gid = @gid;";
-                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
-
-                return cmd.ExecuteNonQueryAsync();
-            });
-        }
-
+        
         public static Task SetLeaveChannelAsync(this DBService db, ulong gid, ulong cid)
         {
             return db.ExecuteCommandAsync(cmd => {
@@ -222,18 +212,7 @@ namespace TheGodfather.Services
                 return cmd.ExecuteNonQueryAsync();
             });
         }
-
-        public static Task SetPrefixAsync(this DBService db, ulong gid, string prefix)
-        {
-            return db.ExecuteCommandAsync(cmd => {
-                cmd.CommandText = "UPDATE gf.guild_cfg SET prefix = @prefix WHERE gid = @gid;";
-                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
-                cmd.Parameters.Add(new NpgsqlParameter<string>("prefix", prefix));
-
-                return cmd.ExecuteNonQueryAsync();
-            });
-        }
-
+        
         public static Task SetWelcomeChannelAsync(this DBService db, ulong gid, ulong cid)
         {
             return db.ExecuteCommandAsync(cmd => {
