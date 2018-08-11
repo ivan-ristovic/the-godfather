@@ -22,7 +22,7 @@ namespace TheGodfather.Common
         
         public bool RatelimitEnabled { get; set; }
         public PunishmentActionType RatelimitAction { get; set; }
-        public int RatelimitSensitivity { get; set; }
+        public short RatelimitSensitivity { get; set; }
 
 
         public bool LoggingEnabled

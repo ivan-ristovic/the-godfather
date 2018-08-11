@@ -64,13 +64,14 @@ namespace TheGodfather.EventListeners
             if (e.Author.IsBot || e.Channel.IsPrivate || string.IsNullOrWhiteSpace(e.Message?.Content))
                 return;
 
-            if (shard.SharedData.BlockedChannels.Contains(e.Channel.Id) || shard.SharedData.BlockedUsers.Contains(e.Author.Id))
+            if (shard.SharedData.BlockedChannels.Contains(e.Channel.Id))
                 return;
 
-            if (shard.SharedData.GuildConfigurations[e.Guild.Id].RatelimitEnabled) {
+            CachedGuildConfig gcfg = shard.SharedData.GetGuildConfig(e.Guild.Id);
+            if (gcfg.RatelimitEnabled) {
                 var rlService = shard.CNext.Services.GetService<RatelimitService>();
-                if (!rlService.HandleNewMessage(e.Guild.Id, e.Author.Id, shard.SharedData.GuildConfigurations[e.Guild.Id].RatelimitSensitivity))
-                    await rlService.PunishUserAsync(shard, e.Guild, e.Author as DiscordMember, shard.SharedData.GuildConfigurations[e.Guild.Id].RatelimitAction, "Ratelimit triggered");
+                if (!rlService.HandleNewMessage(e.Guild.Id, e.Author.Id, gcfg.RatelimitSensitivity))
+                    await rlService.PunishUserAsync(shard, e.Guild, e.Author as DiscordMember, gcfg.RatelimitAction, "Ratelimit triggered");
             }
         }
 

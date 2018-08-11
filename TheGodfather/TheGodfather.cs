@@ -142,7 +142,7 @@ namespace TheGodfather
                 blockedchn.Add(cid);
 
             // Guild config
-            IReadOnlyDictionary<ulong, CachedGuildConfig> gcfg_db = await DatabaseService.GetAllPartialGuildConfigurations();
+            IReadOnlyDictionary<ulong, CachedGuildConfig> gcfg_db = await DatabaseService.GetAllCachedGuildConfigurationsAsync();
             var gcfg = new ConcurrentDictionary<ulong, CachedGuildConfig>();
             foreach ((ulong gid, CachedGuildConfig cfg) in gcfg_db)
                 gcfg.TryAdd(gid, cfg);

@@ -40,7 +40,7 @@ namespace TheGodfather.Modules.Currency
                                                [Description("Amount of money required to enter.")] int amount = 1000)
             {
                 if (amount < 5)
-                    throw new InvalidCommandUsageException($"Entering balance cannot be lower than 5 {this.Shared.GuildConfigurations[ctx.Guild.Id].Currency ?? "credits"}");
+                    throw new InvalidCommandUsageException($"Entering balance cannot be lower than 5 {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}");
 
                 if (this.Shared.IsEventRunningInChannel(ctx.Channel.Id)) {
                     if (this.Shared.GetEventInChannel(ctx.Channel.Id) is HoldemGame)
@@ -52,12 +52,12 @@ namespace TheGodfather.Modules.Currency
 
                 long? total = await this.Database.GetBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id);
                 if (!total.HasValue || total < amount)
-                    throw new CommandFailedException($"You do not have that many {this.Shared.GuildConfigurations[ctx.Guild.Id].Currency ?? "credits"} on your account! Specify a smaller entering amount.");
+                    throw new CommandFailedException($"You do not have that many {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"} on your account! Specify a smaller entering amount.");
 
                 var game = new HoldemGame(ctx.Client.GetInteractivity(), ctx.Channel, amount);
                 this.Shared.RegisterEventInChannel(game, ctx.Channel.Id);
                 try {
-                    await InformAsync(ctx, StaticDiscordEmoji.Clock1, $"The Hold'Em game will start in 30s or when there are 7 participants. Use command {Formatter.InlineCode("casino holdem <entering sum>")} to join the pool. Entering sum is set to {game.MoneyNeeded} {this.Shared.GuildConfigurations[ctx.Guild.Id].Currency ?? "credits"}.");
+                    await InformAsync(ctx, StaticDiscordEmoji.Clock1, $"The Hold'Em game will start in 30s or when there are 7 participants. Use command {Formatter.InlineCode("casino holdem <entering sum>")} to join the pool. Entering sum is set to {game.MoneyNeeded} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}.");
                     await JoinAsync(ctx);
                     await Task.Delay(TimeSpan.FromSeconds(30));
 
@@ -108,7 +108,7 @@ namespace TheGodfather.Modules.Currency
                 }
 
                 if (!await this.Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, game.MoneyNeeded))
-                    throw new CommandFailedException($"You do not have enough {this.Shared.GuildConfigurations[ctx.Guild.Id].Currency ?? "credits"}! Use command {Formatter.InlineCode("bank")} to check your account status.");
+                    throw new CommandFailedException($"You do not have enough {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}! Use command {Formatter.InlineCode("bank")} to check your account status.");
 
                 game.AddParticipant(ctx.User, handle);
                 await InformAsync(ctx, StaticDiscordEmoji.CardSuits[0], $"{ctx.User.Mention} joined the Hold'Em game.");

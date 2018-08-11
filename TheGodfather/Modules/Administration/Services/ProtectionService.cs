@@ -64,7 +64,7 @@ namespace TheGodfather.Modules.Administration.Services
                     Color = DiscordColor.Red
                 };
                 emb.AddField("User", member.ToString(), inline: true);
-                emb.AddField("Reason", reason, inline: true);
+                emb.AddField("Reason", reason, inline: false);
                 await logchn.SendMessageAsync(embed: emb.Build());
             }
         }

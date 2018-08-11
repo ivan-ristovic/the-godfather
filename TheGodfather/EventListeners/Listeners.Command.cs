@@ -64,7 +64,7 @@ namespace TheGodfather.EventListeners
 
             switch (ex) {
                 case CommandNotFoundException cne:
-                    if (!shard.SharedData.GuildConfigurations[e.Context.Guild.Id].SuggestionsEnabled)
+                    if (!shard.SharedData.GetGuildConfig(e.Context.Guild.Id).SuggestionsEnabled)
                         return;
 
                     sb.Clear();

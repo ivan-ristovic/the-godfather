@@ -75,7 +75,7 @@ namespace TheGodfather.Modules.Chickens
                             }
                         }
 
-                        await InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{Formatter.Bold(war.Team1Won ? war.Team1Name : war.Team2Name)} won the war!\n\nEach chicken owner in the won party gains 100000 {this.Shared.GuildConfigurations[ctx.Guild.Id].Currency ?? "credits"}.\n\n{sb.ToString()}");
+                        await InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{Formatter.Bold(war.Team1Won ? war.Team1Name : war.Team2Name)} won the war!\n\nEach chicken owner in the won party gains 100000 {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}.\n\n{sb.ToString()}");
                     } else {
                         await InformAsync(ctx, StaticDiscordEmoji.AlarmClock, "Not enough chickens joined the war (need atleast one in each team).");
                     }

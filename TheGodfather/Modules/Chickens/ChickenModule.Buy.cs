@@ -104,11 +104,11 @@ namespace TheGodfather.Modules.Chickens
                     Color = this.ModuleColor
                 };
 
-                emb.AddField($"Default ({Chicken.Price(ChickenType.Default)} {this.Shared.GuildConfigurations[ctx.Guild.Id].Currency ?? "credits"})", Chicken.StartingStats[ChickenType.Default].ToString());
-                emb.AddField($"Well-Fed ({Chicken.Price(ChickenType.WellFed)} {this.Shared.GuildConfigurations[ctx.Guild.Id].Currency ?? "credits"})", Chicken.StartingStats[ChickenType.WellFed].ToString());
-                emb.AddField($"Trained ({Chicken.Price(ChickenType.Trained)} {this.Shared.GuildConfigurations[ctx.Guild.Id].Currency ?? "credits"})", Chicken.StartingStats[ChickenType.Trained].ToString());
-                emb.AddField($"Steroid Empowered ({Chicken.Price(ChickenType.SteroidEmpowered)} {this.Shared.GuildConfigurations[ctx.Guild.Id].Currency ?? "credits"})", Chicken.StartingStats[ChickenType.SteroidEmpowered].ToString());
-                emb.AddField($"Alien ({Chicken.Price(ChickenType.Alien)} {this.Shared.GuildConfigurations[ctx.Guild.Id].Currency ?? "credits"})", Chicken.StartingStats[ChickenType.Alien].ToString());
+                emb.AddField($"Default ({Chicken.Price(ChickenType.Default)} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"})", Chicken.StartingStats[ChickenType.Default].ToString());
+                emb.AddField($"Well-Fed ({Chicken.Price(ChickenType.WellFed)} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"})", Chicken.StartingStats[ChickenType.WellFed].ToString());
+                emb.AddField($"Trained ({Chicken.Price(ChickenType.Trained)} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"})", Chicken.StartingStats[ChickenType.Trained].ToString());
+                emb.AddField($"Steroid Empowered ({Chicken.Price(ChickenType.SteroidEmpowered)} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"})", Chicken.StartingStats[ChickenType.SteroidEmpowered].ToString());
+                emb.AddField($"Alien ({Chicken.Price(ChickenType.Alien)} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"})", Chicken.StartingStats[ChickenType.Alien].ToString());
 
                 return ctx.RespondAsync(embed: emb.Build());
             }
@@ -130,11 +130,11 @@ namespace TheGodfather.Modules.Chickens
                 if (await this.Database.GetChickenAsync(ctx.User.Id, ctx.Guild.Id) != null)
                     throw new CommandFailedException("You already own a chicken!");
 
-                if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to buy a chicken for {Formatter.Bold(Chicken.Price(type).ToString())} {this.Shared.GuildConfigurations[ctx.Guild.Id].Currency ?? "credits"}?"))
+                if (!await ctx.WaitForBoolReplyAsync($"{ctx.User.Mention}, are you sure you want to buy a chicken for {Formatter.Bold(Chicken.Price(type).ToString())} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}?"))
                     return;
 
                 if (!await this.Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, Chicken.Price(type)))
-                    throw new CommandFailedException($"You do not have enough {this.Shared.GuildConfigurations[ctx.Guild.Id].Currency ?? "credits"} to buy a chicken ({Chicken.Price(type)} needed)!");
+                    throw new CommandFailedException($"You do not have enough {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"} to buy a chicken ({Chicken.Price(type)} needed)!");
 
                 await this.Database.AddChickenAsync(ctx.User.Id, ctx.Guild.Id, name, Chicken.StartingStats[type]);
 

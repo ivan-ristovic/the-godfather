@@ -66,7 +66,7 @@ namespace TheGodfather.Modules.Currency
             }
 
             if (!await this.Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, bid))
-                throw new CommandFailedException($"You do not have enough {this.Shared.GuildConfigurations[ctx.Guild.Id].Currency ?? "credits"}! Use command {Formatter.InlineCode("bank")} to check your account status.");
+                throw new CommandFailedException($"You do not have enough {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}! Use command {Formatter.InlineCode("bank")} to check your account status.");
 
             bool rnd = GFRandom.Generator.GetBool();
 
@@ -77,7 +77,7 @@ namespace TheGodfather.Modules.Currency
             sb.Append(" and ");
             sb.Append(guess == rnd ? "won " : "lost ");
             sb.Append(Formatter.Bold(bid.ToString()));
-            sb.Append(this.Shared.GuildConfigurations[ctx.Guild.Id].Currency ?? "credits");
+            sb.Append(this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits");
 
             if (rnd == guess)
                 await this.Database.IncreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, bid * 2);
@@ -122,7 +122,7 @@ namespace TheGodfather.Modules.Currency
             }
 
             if (!await this.Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, bid))
-                throw new CommandFailedException($"You do not have enough {this.Shared.GuildConfigurations[ctx.Guild.Id].Currency ?? "credits"}! Use command {Formatter.InlineCode("bank")} to check your account status.");
+                throw new CommandFailedException($"You do not have enough {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}! Use command {Formatter.InlineCode("bank")} to check your account status.");
 
             int rnd = GFRandom.Generator.Next(1, 7);
 
@@ -132,7 +132,7 @@ namespace TheGodfather.Modules.Currency
             sb.Append(Formatter.Bold(rnd.ToString()));
             sb.Append(" and ");
             sb.Append(guess_int == rnd ? $"won {Formatter.Bold((bid * 5).ToString())}" : $"lost {Formatter.Bold(bid.ToString())}");
-            sb.Append(this.Shared.GuildConfigurations[ctx.Guild.Id].Currency ?? "credits");
+            sb.Append(this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits");
 
             await InformAsync(ctx, StaticDiscordEmoji.Dice, sb.ToString());
 

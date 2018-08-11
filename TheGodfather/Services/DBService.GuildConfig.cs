@@ -59,7 +59,7 @@ namespace TheGodfather.Services
             return exempted.AsReadOnly();
         }
 
-        public static async Task<IReadOnlyDictionary<ulong, CachedGuildConfig>> GetAllPartialGuildConfigurations(this DBService db)
+        public static async Task<IReadOnlyDictionary<ulong, CachedGuildConfig>> GetAllCachedGuildConfigurationsAsync(this DBService db)
         {
             var dict = new Dictionary<ulong, CachedGuildConfig>();
 
@@ -77,6 +77,9 @@ namespace TheGodfather.Services
                             LinkfilterEnabled = (bool)reader["linkfilter_enabled"],
                             LogChannelId = (ulong)(long)reader["log_cid"],
                             Prefix = reader["prefix"] is DBNull ? null : (string)reader["prefix"],
+                            RatelimitEnabled = (bool)reader["ratelimit_enabled"],
+                            RatelimitAction = (PunishmentActionType)(short)reader["ratelimit_action"],
+                            RatelimitSensitivity = (short)reader["ratelimit_sens"],
                             ReactionResponse = (bool)reader["silent_respond"],
                             SuggestionsEnabled = (bool)reader["suggestions_enabled"],
                         });
@@ -251,10 +254,11 @@ namespace TheGodfather.Services
                 cmd.CommandText = "UPDATE gf.guild_cfg SET " +
                     "(prefix, silent_respond, suggestions_enabled, log_cid, linkfilter_enabled, " +
                     "linkfilter_invites, linkfilter_booters, linkfilter_disturbing, linkfilter_iploggers, " +
-                    "linkfilter_shorteners, currency) = " +
+                    "linkfilter_shorteners, currency, ratelimit_enabled, ratelimit_action, ratelimit_sens) = " +
                     "(@prefix, @silent_respond, @suggestions_enabled, @log_cid, @linkfilter_enabled, " +
                     "@linkfilter_invites, @linkfilter_booters, @linkfilter_disturbing, @linkfilter_iploggers, " +
-                    "@linkfilter_shorteners, @currency) WHERE gid = @gid;";
+                    "@linkfilter_shorteners, @currency, @ratelimit_enabled, @ratelimit_action, @ratelimit_sens) " +
+                    "WHERE gid = @gid;";
                 cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
                 if (string.IsNullOrWhiteSpace(cfg.Prefix))
                     cmd.Parameters.AddWithValue("prefix", NpgsqlDbType.Varchar, DBNull.Value);
@@ -273,6 +277,9 @@ namespace TheGodfather.Services
                     cmd.Parameters.AddWithValue("currency", NpgsqlDbType.Varchar, DBNull.Value);
                 else
                     cmd.Parameters.Add(new NpgsqlParameter<string>("currency", cfg.Currency));
+                cmd.Parameters.Add(new NpgsqlParameter<bool>("ratelimit_enabled", cfg.RatelimitEnabled));
+                cmd.Parameters.Add(new NpgsqlParameter<short>("ratelimit_action", (short)cfg.RatelimitAction));
+                cmd.Parameters.Add(new NpgsqlParameter<short>("ratelimit_sens", cfg.RatelimitSensitivity));
 
                 return cmd.ExecuteNonQueryAsync();
             });

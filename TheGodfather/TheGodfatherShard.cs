@@ -128,7 +128,8 @@ namespace TheGodfather
             this.CNext.RegisterConverter(new CustomTimeWindowConverter());
             this.CNext.RegisterConverter(new CustomIPAddressConverter());
             this.CNext.RegisterConverter(new CustomIPFormatConverter());
-            
+            this.CNext.RegisterConverter(new CustomPunishmentActionTypeConverter());
+
             Commands = this.CNext.GetAllRegisteredCommands()
                 .Where(cmd => cmd.Parent == null)
                 .SelectMany(cmd => cmd.Aliases.Select(alias => (alias, cmd)).Concat(new[] { (cmd.Name, cmd) }))

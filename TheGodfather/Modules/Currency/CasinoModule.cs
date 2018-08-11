@@ -67,9 +67,9 @@ namespace TheGodfather.Modules.Currency
                 throw new InvalidCommandUsageException($"Invalid bid amount! Needs to be in range [1, {_maxBet:n0}]");
 
             if (!await this.Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, bid))
-                throw new CommandFailedException($"You do not have enough {this.Shared.GuildConfigurations[ctx.Guild.Id].Currency ?? "credits"}! Use command {Formatter.InlineCode("bank")} to check your account status.");
+                throw new CommandFailedException($"You do not have enough {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}! Use command {Formatter.InlineCode("bank")} to check your account status.");
 
-            await ctx.RespondAsync(embed: SlotMachine.RollToDiscordEmbed(ctx.User, bid, this.Shared.GuildConfigurations[ctx.Guild.Id].Currency ?? "credits", out long won));
+            await ctx.RespondAsync(embed: SlotMachine.RollToDiscordEmbed(ctx.User, bid, this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits", out long won));
 
             if (won > 0)
                 await this.Database.IncreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, won);
@@ -103,9 +103,9 @@ namespace TheGodfather.Modules.Currency
                 throw new InvalidCommandUsageException($"Invalid bid amount! Needs to be in range [1, {_maxBet:n0}]");
 
             if (!await this.Database.DecreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, bid))
-                throw new CommandFailedException($"You do not have enough {this.Shared.GuildConfigurations[ctx.Guild.Id].Currency ?? "credits"}! Use command {Formatter.InlineCode("bank")} to check your account status.");
+                throw new CommandFailedException($"You do not have enough {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}! Use command {Formatter.InlineCode("bank")} to check your account status.");
 
-            var wof = new WheelOfFortune(ctx.Client.GetInteractivity(), ctx.Channel, ctx.User, bid, this.Shared.GuildConfigurations[ctx.Guild.Id].Currency ?? "credits");
+            var wof = new WheelOfFortune(ctx.Client.GetInteractivity(), ctx.Channel, ctx.User, bid, this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits");
             await wof.RunAsync();
 
             if (wof.WonAmount > 0)

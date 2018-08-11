@@ -14,6 +14,7 @@ using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
+using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Services;
 #endregion
 
@@ -75,6 +76,11 @@ namespace TheGodfather.Modules.Administration
                 } else {
                     emb.AddField("Linkfilter", "off", inline: true);
                 }
+
+                if (gcfg.RatelimitEnabled)
+                    emb.AddField("Ratelimit watch", $"Sensitivity: {gcfg.RatelimitSensitivity} msgs per 5s\nAction: {gcfg.RatelimitAction.ToTypeString()}", inline: true);
+                else
+                    emb.AddField("Ratelimit watch", "off", inline: true);
 
                 await ctx.RespondAsync(embed: emb.Build());
             }

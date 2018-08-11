@@ -421,6 +421,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\Converters\CustomPunishmentActionTypeConverter.cs" />
     <Compile Include="Modules\Administration\Common\PunishmentActionType.cs" />
     <Compile Include="Common\AsyncExecutor.cs" />
     <Compile Include="Common\Attributes\RequireOwnerOrPermissionsAttribute.cs" />

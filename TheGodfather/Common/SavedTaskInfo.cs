@@ -83,7 +83,7 @@ namespace TheGodfather.Common
             if (when.HasValue)
                 this.ExecutionTime = when.Value;
             else
-                this.ExecutionTime = DateTime.UtcNow + TimeSpan.FromDays(1);
+                this.ExecutionTime = DateTime.UtcNow + TimeSpan.FromHours(1);
         }
     }
 }
