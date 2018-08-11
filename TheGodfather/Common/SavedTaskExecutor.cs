@@ -26,15 +26,13 @@ namespace TheGodfather.Common
         private readonly DBService db;
         private Timer timer;
 
-
-        public static async Task<bool> TryScheduleAsync(CommandContext ctx, SavedTask task)
+        
+        public static async Task<bool> TryScheduleAsync(SharedData shared, DBService db, DiscordClient client, SavedTask task)
         {
-            var shared = ctx.Services.GetService<SharedData>();
-            var db = ctx.Services.GetService<DBService>();
             SavedTaskExecutor texec = null;
             try {
                 int id = await db.AddSavedTaskAsync(task);
-                texec = new SavedTaskExecutor(id, ctx.Client, task, shared, db);
+                texec = new SavedTaskExecutor(id, client, task, shared, db);
                 texec.Schedule();
             } catch (Exception e) {
                 shared.LogProvider.LogException(LogLevel.Warning, e);

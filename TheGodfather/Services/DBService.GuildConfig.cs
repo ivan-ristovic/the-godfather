@@ -212,7 +212,7 @@ namespace TheGodfather.Services
                 return cmd.ExecuteNonQueryAsync();
             });
         }
-        
+
         public static Task SetWelcomeChannelAsync(this DBService db, ulong gid, ulong cid)
         {
             return db.ExecuteCommandAsync(cmd => {

@@ -70,7 +70,7 @@ namespace TheGodfather.EventListeners
             if (shard.SharedData.GuildConfigurations[e.Guild.Id].RatelimitEnabled) {
                 var rlService = shard.CNext.Services.GetService<RatelimitService>();
                 if (!rlService.HandleNewMessage(e.Guild.Id, e.Author.Id, shard.SharedData.GuildConfigurations[e.Guild.Id].RatelimitMaxMessages))
-                    await rlService.PunishUserAsync(shard, e.Guild.Id, e.Author.Id);
+                    await rlService.PunishUserAsync(shard, e.Guild.Id, e.Author.Id, "Ratelimit triggered");
             }
         }
 

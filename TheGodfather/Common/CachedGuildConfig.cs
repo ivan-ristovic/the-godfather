@@ -1,4 +1,6 @@
-﻿namespace TheGodfather.Common
+﻿using TheGodfather.Modules.Administration.Common;
+
+namespace TheGodfather.Common
 {
     public sealed class CachedGuildConfig
     {
@@ -17,6 +19,7 @@
         // TODO
         public bool RatelimitEnabled { get; set; } = true;
         public int RatelimitMaxMessages { get; set; } = 5;
+        public PunishmentActionType RatelimitHitAction { get; set; } = PunishmentActionType.Mute;
 
 
         public bool LoggingEnabled

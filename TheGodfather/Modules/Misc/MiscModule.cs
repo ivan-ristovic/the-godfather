@@ -342,7 +342,7 @@ namespace TheGodfather.Modules.Misc
                 Type = SavedTaskType.SendMessage,
                 UserId = ctx.User.Id
             };
-            if (!await SavedTaskExecutor.TryScheduleAsync(ctx, task))
+            if (!await SavedTaskExecutor.TryScheduleAsync(this.Shared, this.Database, ctx.Client, task))
                 throw new CommandFailedException("Failed to schedule saved task!");
 
             await InformAsync(ctx, StaticDiscordEmoji.AlarmClock, $"I will remind {channel.Mention} in {Formatter.Bold(timespan.Humanize(5))} ({when.ToUtcTimestamp()}) to:\n\n{Formatter.Italic(message)}", important: false);
