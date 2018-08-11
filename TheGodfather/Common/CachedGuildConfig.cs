@@ -14,6 +14,10 @@
         public bool ReactionResponse { get; set; }
         public bool SuggestionsEnabled { get; set; }
 
+        // TODO
+        public bool RatelimitEnabled { get; set; } = true;
+        public int RatelimitMaxMessages { get; set; } = 5;
+
 
         public bool LoggingEnabled
             => this.LogChannelId != 0;

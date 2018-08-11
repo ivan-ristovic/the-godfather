@@ -22,7 +22,7 @@ using TheGodfather.Services;
 
 namespace TheGodfather.Modules.Reactions
 {
-    [Group("emojireaction"), NotBlocked]
+    [Group("emojireaction"), Module(ModuleType.Reactions), NotBlocked]
     [Description("Orders a bot to react with given emoji to a message containing a trigger word inside (guild specific). If invoked without subcommands, adds a new emoji reaction to a given trigger word list. Note: Trigger words can be regular expressions (use ``emojireaction addregex`` command).")]
     [Aliases("ereact", "er", "emojir", "emojireactions")]
     [UsageExamples("!emojireaction :smile: haha laughing")]

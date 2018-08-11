@@ -5,6 +5,8 @@ using DSharpPlus.EventArgs;
 
 using Humanizer;
 
+using Microsoft.Extensions.DependencyInjection;
+
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,6 +15,7 @@ using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Common;
+using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Modules.Misc.Extensions;
 using TheGodfather.Modules.Reactions.Common;
 using TheGodfather.Modules.Reactions.Extensions;
@@ -52,6 +55,22 @@ namespace TheGodfather.EventListeners
                     string rankname = await shard.DatabaseService.GetRankAsync(e.Guild.Id, rank);
                     await e.Channel.EmbedAsync($"GG {e.Author.Mention}! You have advanced to level {Formatter.Bold(rank.ToString())} {(string.IsNullOrWhiteSpace(rankname) ? "" : $": {Formatter.Italic(rankname)}")} !", StaticDiscordEmoji.Medal);
                 }
+            }
+        }
+
+        [AsyncEventListener(DiscordEventType.MessageCreated)]
+        public static async Task MessageCreateProtectionHandlerAsync(TheGodfatherShard shard, MessageCreateEventArgs e)
+        {
+            if (e.Author.IsBot || e.Channel.IsPrivate || string.IsNullOrWhiteSpace(e.Message?.Content))
+                return;
+
+            if (shard.SharedData.BlockedChannels.Contains(e.Channel.Id) || shard.SharedData.BlockedUsers.Contains(e.Author.Id))
+                return;
+
+            if (shard.SharedData.GuildConfigurations[e.Guild.Id].RatelimitEnabled) {
+                var rlService = shard.CNext.Services.GetService<RatelimitService>();
+                if (!rlService.HandleNewMessage(e.Guild.Id, e.Author.Id, shard.SharedData.GuildConfigurations[e.Guild.Id].RatelimitMaxMessages))
+                    await rlService.PunishUserAsync(shard, e.Guild.Id, e.Author.Id);
             }
         }
 

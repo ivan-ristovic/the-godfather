@@ -80,6 +80,7 @@ namespace TheGodfather.EventListeners
                 return;
 
             DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Channel, "Channel pins updated", e.Channel.ToString());
+            emb.AddField("Channel", e.Channel.Mention, inline: true);
 
             var pinned = await e.Channel.GetPinnedMessagesAsync();
             if (pinned.Any()) {
@@ -88,7 +89,7 @@ namespace TheGodfather.EventListeners
                 emb.AddField("Top pin content", Formatter.BlockCode(Formatter.Sanitize(content.Truncate(1020))));
             }
             if (e.LastPinTimestamp != null)
-                emb.AddField("Last pin timestamp", e.LastPinTimestamp.Value.ToUtcTimestamp());
+                emb.AddField("Last pin timestamp", e.LastPinTimestamp.Value.ToUtcTimestamp(), inline: true);
 
             await logchn.SendMessageAsync(embed: emb.Build());
         }

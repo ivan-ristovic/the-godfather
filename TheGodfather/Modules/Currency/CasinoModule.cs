@@ -83,7 +83,7 @@ namespace TheGodfather.Modules.Currency
                 throw new InvalidCommandUsageException("Bid missing.");
             
             try {
-                int bid = (int)bidstr.FromMetric();
+                long bid = (long)bidstr.FromMetric();
                 return SlotAsync(ctx, bid);
             } catch {
                 throw new InvalidCommandUsageException("Given string does not correspond to a valid metric number.");
@@ -120,7 +120,7 @@ namespace TheGodfather.Modules.Currency
                 throw new InvalidCommandUsageException("Bid missing.");
 
             try {
-                int bid = (int)bidstr.FromMetric();
+                long bid = (long)bidstr.FromMetric();
                 return WheelOfFortuneAsync(ctx, bid);
             } catch {
                 throw new InvalidCommandUsageException("Given string does not correspond to a valid metric number.");

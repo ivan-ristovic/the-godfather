@@ -19,6 +19,7 @@ using TheGodfather.Common;
 using TheGodfather.Common.Converters;
 using TheGodfather.EventListeners;
 using TheGodfather.Extensions;
+using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Modules.Search.Services;
 using TheGodfather.Services;
 #endregion
@@ -114,6 +115,7 @@ namespace TheGodfather
                     .AddSingleton(new GoodreadsService(this.SharedData.BotConfiguration.GoodreadsKey))
                     .AddSingleton(new ImgurService(this.SharedData.BotConfiguration.ImgurKey))
                     .AddSingleton(new OMDbService(this.SharedData.BotConfiguration.OMDbKey))
+                    .AddSingleton(new RatelimitService())
                     .AddSingleton(new SteamService(this.SharedData.BotConfiguration.SteamKey))
                     .AddSingleton(new WeatherService(this.SharedData.BotConfiguration.WeatherKey))
                     .AddSingleton(new YtService(this.SharedData.BotConfiguration.YouTubeKey))

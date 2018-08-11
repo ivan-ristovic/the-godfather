@@ -16,7 +16,7 @@ namespace TheGodfather.EventListeners
     internal static partial class Listeners
     {
         [AsyncEventListener(DiscordEventType.MessageCreated)]
-        public static async Task Client_MessageCreatedLinkfilter(TheGodfatherShard shard, MessageCreateEventArgs e)
+        public static async Task MessageCreateLinkfilterHandlerAsync(TheGodfatherShard shard, MessageCreateEventArgs e)
         {
             if (e.Author.IsBot || e.Channel.IsPrivate || shard.SharedData.BlockedChannels.Contains(e.Channel.Id))
                 return;
