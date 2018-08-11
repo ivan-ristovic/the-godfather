@@ -85,10 +85,9 @@ namespace TheGodfather.Modules.Currency.Extensions
                         while (await reader.ReadAsync().ConfigureAwait(false))
                             res.Add(((ulong)(long)reader["uid"], (long)reader["balance"]));
                 });
-
             } else {
                 await db.ExecuteCommandAsync(async (cmd) => {
-                    cmd.CommandText = $"SELECT uid, SUM(balance) AS total_balance FROM gf.accounts GROUP BY uid ORDER BY total_balance DESC LIMIT 10";
+                    cmd.CommandText = $"SELECT uid, COALESCE(SUM(balance), 0)::bigint AS total_balance FROM gf.accounts GROUP BY uid ORDER BY total_balance DESC LIMIT 10";
 
                     using (var reader = await cmd.ExecuteReaderAsync().ConfigureAwait(false))
                         while (await reader.ReadAsync().ConfigureAwait(false))
