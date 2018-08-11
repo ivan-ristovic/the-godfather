@@ -215,11 +215,11 @@ namespace TheGodfather
             FeedCheckTimer = new Timer(FeedCheckCallback, Shards[0].Client, TimeSpan.FromSeconds(BotConfiguration.FeedCheckStartDelay), TimeSpan.FromSeconds(BotConfiguration.FeedCheckInterval));
             MiscActionsTimer = new Timer(MiscellaneousActionsCallback, Shards[0].Client, TimeSpan.FromSeconds(5), TimeSpan.FromHours(12));
             
-            IReadOnlyDictionary<int, SavedTask> tasks_db = await DatabaseService.GetAllSavedTasksAsync();
+            IReadOnlyDictionary<int, SavedTaskInfo> tasks_db = await DatabaseService.GetAllSavedTasksAsync();
             int registeredTasks = 0, missedTasks = 0;
-            foreach ((int tid, SavedTask task) in tasks_db) {
+            foreach ((int tid, SavedTaskInfo task) in tasks_db) {
                 var texec = new SavedTaskExecutor(tid, Shards[0].Client, task, SharedData, DatabaseService);
-                if (texec.SavedTask.IsExecutionTimeReached) {
+                if (texec.TaskInfo.IsExecutionTimeReached) {
                     await texec.HandleMissedExecutionAsync();
                     missedTasks++;
                 } else {

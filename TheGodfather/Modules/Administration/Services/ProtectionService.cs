@@ -1,12 +1,15 @@
-﻿using DSharpPlus;
+﻿#region USING_DIRECTIVES
+using DSharpPlus;
 using DSharpPlus.Entities;
-using System;
+
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+
 using TheGodfather.Common;
 using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Services;
+#endregion
 
 namespace TheGodfather.Modules.Administration.Services
 {
@@ -23,7 +26,7 @@ namespace TheGodfather.Modules.Administration.Services
         internal async Task PunishUserAsync(TheGodfatherShard shard, DiscordGuild guild, DiscordMember member, PunishmentActionType type, string reason)
         {
             DiscordRole muteRole;
-            SavedTask task;
+            SavedTaskInfo task;
 
             bool failed = false;
             try {
@@ -40,23 +43,13 @@ namespace TheGodfather.Modules.Administration.Services
                         break;
                     case PunishmentActionType.TemporaryBan:
                         await member.BanAsync(0, reason: this.reason);
-                        task = new SavedTask() {
-                            ExecutionTime = DateTime.UtcNow + TimeSpan.FromDays(1),
-                            GuildId = guild.Id,
-                            Type = SavedTaskType.Unban,
-                            UserId = member.Id
-                        };
+                        task = new UnbanTaskInfo(guild.Id, member.Id);
                         await SavedTaskExecutor.TryScheduleAsync(shard.SharedData, shard.DatabaseService, shard.Client, task);
                         break;
                     case PunishmentActionType.TemporaryMute:
                         muteRole = await GetOrCreateMuteRoleAsync(guild);
                         await member.GrantRoleAsync(muteRole, this.reason);
-                        task = new SavedTask() {
-                            ExecutionTime = DateTime.UtcNow + TimeSpan.FromDays(1),
-                            GuildId = guild.Id,
-                            Type = SavedTaskType.Unmute,
-                            UserId = member.Id
-                        };
+                        task = new UnmuteTaskInfo(guild.Id, member.Id, muteRole.Id);
                         await SavedTaskExecutor.TryScheduleAsync(shard.SharedData, shard.DatabaseService, shard.Client, task);
                         break;
                 }

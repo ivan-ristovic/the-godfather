@@ -332,16 +332,9 @@ namespace TheGodfather.Modules.Misc
             if (timespan.TotalMinutes < 1 || timespan.TotalDays > 31)
                 throw new InvalidCommandUsageException("Time span cannot be less than 1 minute or greater than 31 days.");
 
-            DateTime when = DateTime.UtcNow + timespan;
+            DateTimeOffset when = DateTimeOffset.Now + timespan;
 
-            var task = new SavedTask() {
-                ChannelId = ctx.Channel.Id,
-                Comment = message,
-                ExecutionTime = when,
-                GuildId = ctx.Guild.Id,
-                Type = SavedTaskType.SendMessage,
-                UserId = ctx.User.Id
-            };
+            var task = new SendMessageTaskInfo(ctx.Channel.Id, ctx.User.Id, message, when);
             if (!await SavedTaskExecutor.TryScheduleAsync(this.Shared, this.Database, ctx.Client, task))
                 throw new CommandFailedException("Failed to schedule saved task!");
 

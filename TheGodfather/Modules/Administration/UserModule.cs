@@ -334,16 +334,10 @@ namespace TheGodfather.Modules.Administration
 
             await member.BanAsync(delete_message_days: 0, reason: ctx.BuildReasonString($"(tempban for {timespan.ToString()}) " + reason));
 
-            DateTime until = DateTime.UtcNow + timespan;
-            await InformAsync(ctx, $"{Formatter.Bold(ctx.User.Username)} BANNED {Formatter.Bold(member.Username)} until {Formatter.Bold(until.ToLongTimeString())} UTC!");
+            DateTimeOffset until = DateTimeOffset.Now + timespan;
+            await InformAsync(ctx, $"{Formatter.Bold(ctx.User.Username)} BANNED {Formatter.Bold(member.Username)} until {Formatter.Bold(until.ToString())} UTC!");
 
-            var task = new SavedTask() {
-                ChannelId = ctx.Channel.Id,
-                ExecutionTime = until,
-                GuildId = ctx.Guild.Id,
-                Type = SavedTaskType.Unban,
-                UserId = member.Id
-            };
+            var task = new UnbanTaskInfo(ctx.Guild.Id, member.Id, until);
             if (!await SavedTaskExecutor.TryScheduleAsync(this.Shared, this.Database, ctx.Client, task))
                 throw new CommandFailedException("Failed to schedule the unban task!");
         }
@@ -369,13 +363,7 @@ namespace TheGodfather.Modules.Administration
             DateTime until = DateTime.UtcNow + timespan;
             await InformAsync(ctx, $"{Formatter.Bold(ctx.User.Username)} BANNED {Formatter.Bold(user.ToString())} until {Formatter.Bold(until.ToLongTimeString())} UTC!");
 
-            var task = new SavedTask() {
-                ChannelId = ctx.Channel.Id,
-                ExecutionTime = until,
-                GuildId = ctx.Guild.Id,
-                Type = SavedTaskType.Unban,
-                UserId = user.Id
-            };
+            var task = new UnbanTaskInfo(ctx.Guild.Id, user.Id, until);
             if (!await SavedTaskExecutor.TryScheduleAsync(this.Shared, this.Database, ctx.Client, task))
                 throw new CommandFailedException("Failed to schedule the unban task!");
         }

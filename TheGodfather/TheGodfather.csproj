@@ -520,7 +520,7 @@
     <Compile Include="Modules\Misc\Common\PurchasableItem.cs" />
     <Compile Include="Modules\Games\Common\QuizData.cs" />
     <Compile Include="Modules\Search\Common\QuoteData.cs" />
-    <Compile Include="Common\SavedTask.cs" />
+    <Compile Include="Common\SavedTaskInfo.cs" />
     <Compile Include="Extensions\DiscordChannelExtensions.cs" />
     <Compile Include="Modules\Owner\OwnerModule.BlockedUsers.cs" />
     <Compile Include="Modules\Owner\OwnerModule.BlockedChannels.cs" />
