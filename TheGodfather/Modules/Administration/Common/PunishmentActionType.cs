@@ -5,6 +5,7 @@
         Kick,
         Mute,
         PermanentBan,
-        TemporaryBan
+        TemporaryBan,
+        TemporaryMute
     }
 }

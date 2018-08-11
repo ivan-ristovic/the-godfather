@@ -7,7 +7,8 @@ namespace TheGodfather.Common
     public enum SavedTaskType
     {
         SendMessage = 0,
-        Unban = 1
+        Unban = 1,
+        Unmute = 2
     }
 
     public static class SavedTaskTypeExtensions
@@ -17,6 +18,7 @@ namespace TheGodfather.Common
             switch (type) {
                 case SavedTaskType.SendMessage: return "Send Message";
                 case SavedTaskType.Unban: return "Unban";
+                case SavedTaskType.Unmute: return "Unmute";
                 default: return "Unknown";
             }
         }

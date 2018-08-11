@@ -1,25 +1,28 @@
-﻿using TheGodfather.Modules.Administration.Common;
+﻿#region USING_DIRECTIVES
+using TheGodfather.Modules.Administration.Common;
+#endregion
 
 namespace TheGodfather.Common
 {
     public sealed class CachedGuildConfig
     {
+        public string Currency { get; set; }
+        public string Prefix { get; set; }
+        public ulong LogChannelId { get; set; }
+
+        public bool SuggestionsEnabled { get; set; }
+        public bool ReactionResponse { get; set; }
+
+        public bool LinkfilterEnabled { get; set; }
         public bool BlockBooterWebsites { get; set; }
         public bool BlockDiscordInvites { get; set; }
         public bool BlockDisturbingWebsites { get; set; }
         public bool BlockIpLoggingWebsites { get; set; }
         public bool BlockUrlShorteners { get; set; }
-        public string Currency { get; set; }
-        public bool LinkfilterEnabled { get; set; }
-        public ulong LogChannelId { get; set; }
-        public string Prefix { get; set; }
-        public bool ReactionResponse { get; set; }
-        public bool SuggestionsEnabled { get; set; }
-
-        // TODO
-        public bool RatelimitEnabled { get; set; } = true;
-        public int RatelimitMaxMessages { get; set; } = 5;
-        public PunishmentActionType RatelimitHitAction { get; set; } = PunishmentActionType.Mute;
+        
+        public bool RatelimitEnabled { get; set; }
+        public PunishmentActionType RatelimitAction { get; set; }
+        public int RatelimitSensitivity { get; set; }
 
 
         public bool LoggingEnabled
@@ -32,9 +35,13 @@ namespace TheGodfather.Common
             BlockDisturbingWebsites = true,
             BlockIpLoggingWebsites = true,
             BlockUrlShorteners = true,
+            Currency = null,
             LinkfilterEnabled = false,
             LogChannelId = 0,
             Prefix = null,
+            RatelimitAction = PunishmentActionType.Mute,
+            RatelimitEnabled = false,
+            RatelimitSensitivity = 5,
             ReactionResponse = false,
             SuggestionsEnabled = false
         };

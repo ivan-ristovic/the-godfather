@@ -67,6 +67,9 @@ namespace TheGodfather.Common
                 case SavedTaskType.Unban:
                     this.timer = new Timer(this.UnbanUserCallback, null, this.SavedTask.TimeUntilExecution, TimeSpan.FromMilliseconds(-1));
                     break;
+                case SavedTaskType.Unmute:
+                    // TODO
+                    break;
             }
 
             this.shared.TaskExecuters.TryAdd(this.Id, this);

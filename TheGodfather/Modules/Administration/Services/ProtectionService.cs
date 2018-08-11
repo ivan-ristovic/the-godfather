@@ -12,41 +12,49 @@ namespace TheGodfather.Modules.Administration.Services
 {
     public abstract class ProtectionService : ITheGodfatherService
     {
-        protected string reason;
         protected SemaphoreSlim csem = new SemaphoreSlim(1, 1);
+        protected string reason;
 
 
         public bool IsDisabled()
             => false;
 
 
-        internal async Task PunishUserAsync(TheGodfatherShard shard, ulong gid, ulong uid, string reason)
+        internal async Task PunishUserAsync(TheGodfatherShard shard, DiscordGuild guild, DiscordMember member, PunishmentActionType type, string reason)
         {
-            DiscordGuild guild = await shard.Client.GetGuildAsync(gid);
-            DiscordMember member = await guild.GetMemberAsync(uid);
+            DiscordRole muteRole;
+            SavedTask task;
 
             bool failed = false;
             try {
-                switch (shard.SharedData.GuildConfigurations[gid].RatelimitHitAction) {
+                switch (type) {
                     case PunishmentActionType.Kick:
                         await member.RemoveAsync(this.reason);
                         break;
                     case PunishmentActionType.Mute:
-                        DiscordRole muteRole = await GetOrCreateMuteRoleAsync(guild);
+                        muteRole = await GetOrCreateMuteRoleAsync(guild);
                         await member.GrantRoleAsync(muteRole, this.reason);
                         break;
-
-                    // TODO tempmute
-
                     case PunishmentActionType.PermanentBan:
                         await member.BanAsync(1, reason: this.reason);
                         break;
                     case PunishmentActionType.TemporaryBan:
                         await member.BanAsync(0, reason: this.reason);
-                        var task = new SavedTask() {
+                        task = new SavedTask() {
                             ExecutionTime = DateTime.UtcNow + TimeSpan.FromDays(1),
-                            GuildId = gid,
+                            GuildId = guild.Id,
                             Type = SavedTaskType.Unban,
+                            UserId = member.Id
+                        };
+                        await SavedTaskExecutor.TryScheduleAsync(shard.SharedData, shard.DatabaseService, shard.Client, task);
+                        break;
+                    case PunishmentActionType.TemporaryMute:
+                        muteRole = await GetOrCreateMuteRoleAsync(guild);
+                        await member.GrantRoleAsync(muteRole, this.reason);
+                        task = new SavedTask() {
+                            ExecutionTime = DateTime.UtcNow + TimeSpan.FromDays(1),
+                            GuildId = guild.Id,
+                            Type = SavedTaskType.Unmute,
                             UserId = member.Id
                         };
                         await SavedTaskExecutor.TryScheduleAsync(shard.SharedData, shard.DatabaseService, shard.Client, task);
@@ -59,10 +67,10 @@ namespace TheGodfather.Modules.Administration.Services
             DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, guild);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
-                    Title = failed ? "User punish attempt failed" : "User punished",
+                    Title = failed ? "User punish attempt failed! Check my permissions" : "User punished",
                     Color = DiscordColor.Red
                 };
-                emb.AddField("ID", uid.ToString(), inline: true);
+                emb.AddField("User", member.ToString(), inline: true);
                 emb.AddField("Reason", reason, inline: true);
                 await logchn.SendMessageAsync(embed: emb.Build());
             }
