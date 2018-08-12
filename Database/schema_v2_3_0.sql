@@ -294,7 +294,11 @@ CREATE TABLE gf.guild_cfg (
     linkfilter_disturbing boolean DEFAULT true NOT NULL,
     linkfilter_iploggers boolean DEFAULT true NOT NULL,
     linkfilter_shorteners boolean DEFAULT true NOT NULL,
-    silent_respond boolean DEFAULT true NOT NULL
+    silent_respond boolean DEFAULT true NOT NULL,
+    currency character varying(32) DEFAULT NULL::character varying,
+    ratelimit_enabled boolean DEFAULT false NOT NULL,
+    ratelimit_action smallint DEFAULT 0 NOT NULL,
+    ratelimit_sens smallint DEFAULT 5 NOT NULL
 );
 
 
@@ -446,11 +450,12 @@ CREATE TABLE gf.ranks (
 CREATE TABLE gf.saved_tasks (
     id integer NOT NULL,
     type smallint NOT NULL,
-    uid bigint NOT NULL,
-    cid bigint NOT NULL,
-    gid bigint NOT NULL,
+    uid bigint,
+    cid bigint,
+    gid bigint,
     comment character varying(128),
-    execution_time timestamp(0) without time zone NOT NULL
+    execution_time timestamp with time zone NOT NULL,
+    rid bigint DEFAULT 0
 );
 
 
