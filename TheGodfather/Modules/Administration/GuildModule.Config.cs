@@ -86,6 +86,7 @@ namespace TheGodfather.Modules.Administration
             }
 
 
+            // TODO add ratelimit to wizard
             #region COMMAND_CONFIG_WIZARD
             [Command("setup"), UsesInteractivity]
             [Description("Starts an interactive wizard for configuring the guild settings.")]
@@ -537,6 +538,8 @@ namespace TheGodfather.Modules.Administration
                 await InformAsync(ctx, $"Leave message set to:\n{Formatter.Bold(message ?? "Default message")}.", important: false);
             }
             #endregion
+
+            // TODO setup muterole?
         }
     }
 }

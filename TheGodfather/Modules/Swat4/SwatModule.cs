@@ -60,7 +60,7 @@ namespace TheGodfather.Modules.Swat
                        "!s4 q 109.70.149.158:10480",
                        "!s4 q wm")]
         public async Task QueryAsync(CommandContext ctx,
-                                    [Description("Registered name or IP.")] CustomIPFormat ip,
+                                    [Description("Server IP.")] CustomIPFormat ip,
                                     [Description("Query port")] int queryport = 10481)
         {
             if (queryport <= 0 || queryport > 65535)
