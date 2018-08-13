@@ -15,15 +15,21 @@ namespace TheGodfather.Modules.Administration.Services
 {
     public abstract class ProtectionService : ITheGodfatherService
     {
+        protected TheGodfatherShard shard;
         protected SemaphoreSlim csem = new SemaphoreSlim(1, 1);
         protected string reason;
+
+
+        protected ProtectionService(TheGodfatherShard shard)
+        {
+            this.shard = shard;
+        }
 
 
         public bool IsDisabled()
             => false;
 
-
-        internal async Task PunishUserAsync(TheGodfatherShard shard, DiscordGuild guild, DiscordMember member, PunishmentActionType type, string reason)
+        public async Task PunishMemberAsync(DiscordGuild guild, DiscordMember member, PunishmentActionType type)
         {
             DiscordRole muteRole;
             SavedTaskInfo task;
@@ -36,6 +42,8 @@ namespace TheGodfather.Modules.Administration.Services
                         break;
                     case PunishmentActionType.Mute:
                         muteRole = await GetOrCreateMuteRoleAsync(guild);
+                        if (member.Roles.Contains(muteRole))
+                            return;
                         await member.GrantRoleAsync(muteRole, this.reason);
                         break;
                     case PunishmentActionType.PermanentBan:
@@ -44,33 +52,34 @@ namespace TheGodfather.Modules.Administration.Services
                     case PunishmentActionType.TemporaryBan:
                         await member.BanAsync(0, reason: this.reason);
                         task = new UnbanTaskInfo(guild.Id, member.Id);
-                        await SavedTaskExecutor.TryScheduleAsync(shard.SharedData, shard.DatabaseService, shard.Client, task);
+                        await SavedTaskExecutor.TryScheduleAsync(this.shard.SharedData, this.shard.DatabaseService, this.shard.Client, task);
                         break;
                     case PunishmentActionType.TemporaryMute:
                         muteRole = await GetOrCreateMuteRoleAsync(guild);
+                        if (member.Roles.Contains(muteRole))
+                            return;
                         await member.GrantRoleAsync(muteRole, this.reason);
                         task = new UnmuteTaskInfo(guild.Id, member.Id, muteRole.Id);
-                        await SavedTaskExecutor.TryScheduleAsync(shard.SharedData, shard.DatabaseService, shard.Client, task);
+                        await SavedTaskExecutor.TryScheduleAsync(this.shard.SharedData, this.shard.DatabaseService, this.shard.Client, task);
                         break;
                 }
             } catch {
                 failed = true;
             }
 
-            DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, guild);
+            DiscordChannel logchn = this.shard.SharedData.GetLogChannelForGuild(this.shard.Client, guild);
             if (logchn != null) {
                 var emb = new DiscordEmbedBuilder() {
                     Title = failed ? "User punish attempt failed! Check my permissions" : "User punished",
                     Color = DiscordColor.Red
                 };
-                emb.AddField("User", member.ToString(), inline: true);
-                emb.AddField("Reason", reason, inline: false);
+                emb.AddField("User", member?.ToString() ?? "unknown", inline: true);
+                emb.AddField("Reason", this.reason, inline: false);
                 await logchn.SendMessageAsync(embed: emb.Build());
             }
         }
 
-
-        private async Task<DiscordRole> GetOrCreateMuteRoleAsync(DiscordGuild guild)
+        public async Task<DiscordRole> GetOrCreateMuteRoleAsync(DiscordGuild guild)
         {
             DiscordRole muteRole = null;
 
@@ -90,5 +99,9 @@ namespace TheGodfather.Modules.Administration.Services
 
             return muteRole;
         }
+
+
+        public abstract bool TryAddGuildToWatch(ulong gid);
+        public abstract bool TryRemoveGuildFromWatch(ulong gid);
     }
 }

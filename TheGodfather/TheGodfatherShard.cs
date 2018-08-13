@@ -26,7 +26,7 @@ using TheGodfather.Services;
 
 namespace TheGodfather
 {
-    internal sealed class TheGodfatherShard
+    public sealed class TheGodfatherShard
     {
         public static IReadOnlyList<(string, Command)> Commands;
 
@@ -50,7 +50,7 @@ namespace TheGodfather
 
 
         public async Task StartAsync()
-            => await this.Client.ConnectAsync().ConfigureAwait(false);
+            => await this.Client.ConnectAsync();
 
         public async Task DisposeAsync()
         {
@@ -111,11 +111,12 @@ namespace TheGodfather
                     .AddSingleton(this)
                     .AddSingleton(this.SharedData)
                     .AddSingleton(this.DatabaseService)
+                    .AddSingleton(new AntifloodService(this))
                     .AddSingleton(new GiphyService(this.SharedData.BotConfiguration.GiphyKey))
                     .AddSingleton(new GoodreadsService(this.SharedData.BotConfiguration.GoodreadsKey))
                     .AddSingleton(new ImgurService(this.SharedData.BotConfiguration.ImgurKey))
                     .AddSingleton(new OMDbService(this.SharedData.BotConfiguration.OMDbKey))
-                    .AddSingleton(new RatelimitService())
+                    .AddSingleton(new RatelimitService(this))
                     .AddSingleton(new SteamService(this.SharedData.BotConfiguration.SteamKey))
                     .AddSingleton(new WeatherService(this.SharedData.BotConfiguration.WeatherKey))
                     .AddSingleton(new YtService(this.SharedData.BotConfiguration.YouTubeKey))

@@ -436,6 +436,7 @@
     <Compile Include="Common\Attributes\UsageExamplesAttribute.cs" />
     <Compile Include="Modules\Administration\Common\UserRatelimitInfo.cs" />
     <Compile Include="Modules\Administration\GuildModule.Config.Ratelimit.cs" />
+    <Compile Include="Modules\Administration\Services\AntifloodService.cs" />
     <Compile Include="Modules\Administration\Services\ProtectionService.cs" />
     <Compile Include="Modules\Administration\Services\RatelimitService.cs" />
     <Compile Include="Services\Common\DatabaseConfig.cs" />

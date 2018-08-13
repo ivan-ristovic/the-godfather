@@ -3,6 +3,8 @@ using DSharpPlus;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 
+using Microsoft.Extensions.DependencyInjection;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +14,7 @@ using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Extensions;
+using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Services;
 #endregion
 
@@ -67,12 +70,23 @@ namespace TheGodfather.EventListeners
             await logchn.SendMessageAsync(embed: emb.Build());
         }
 
+        [AsyncEventListener(DiscordEventType.GuildMemberAdded)]
+        public static async Task MemberJoinProtectionEventHandlerAsync(TheGodfatherShard shard, GuildMemberAddEventArgs e)
+        {
+            if (e.Member == null /*|| e.Member.IsBot*/)
+                return;
+
+            CachedGuildConfig gcfg = shard.SharedData.GetGuildConfig(e.Guild.Id);
+            if (gcfg.AntifloodEnabled)
+                await shard.CNext.Services.GetService<AntifloodService>().HandleMemberJoinAsync(e.Guild, e.Member);
+        }
+
         [AsyncEventListener(DiscordEventType.GuildMemberRemoved)]
         public static async Task MemberRemoveEventHandlerAsync(TheGodfatherShard shard, GuildMemberRemoveEventArgs e)
         {
-            if (e.Member.Id == e.Client.CurrentUser.Id)
+            if (e.Member.IsCurrent)
                 return;
-            
+
             DiscordChannel lchn = await shard.DatabaseService.GetLeaveChannelAsync(e.Guild);
             if (lchn != null) {
                 string msg = await shard.DatabaseService.GetLeaveMessageForGuildAsync(e.Guild.Id);
@@ -104,7 +118,7 @@ namespace TheGodfather.EventListeners
 
             DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Member, "Member updated", e.Member.ToString());
             emb.WithThumbnailUrl(e.Member.AvatarUrl);
-            
+
             DiscordAuditLogEntry entry = null;
             if (e.RolesBefore.Count == e.RolesAfter.Count)
                 entry = await e.Guild.GetFirstAuditLogEntryAsync(AuditLogActionType.MemberUpdate);

@@ -68,11 +68,9 @@ namespace TheGodfather.EventListeners
                 return;
 
             CachedGuildConfig gcfg = shard.SharedData.GetGuildConfig(e.Guild.Id);
-            if (gcfg.RatelimitEnabled) {
-                var rlService = shard.CNext.Services.GetService<RatelimitService>();
-                if (!rlService.HandleNewMessage(e.Guild.Id, e.Author.Id, gcfg.RatelimitSensitivity))
-                    await rlService.PunishUserAsync(shard, e.Guild, e.Author as DiscordMember, gcfg.RatelimitAction, "Ratelimit triggered");
-            }
+
+            if (gcfg.RatelimitEnabled)
+                await shard.CNext.Services.GetService<RatelimitService>().HandleNewMessageAsync(e.Guild, e.Author);
         }
 
         [AsyncEventListener(DiscordEventType.MessageCreated)]
