@@ -123,9 +123,7 @@ namespace TheGodfather.Modules.Administration
 
                 if (await channel.WaitForBoolResponseAsync(ctx, "Do you wish to change the prefix for the bot?", reply: false)) {
                     await channel.EmbedAsync("What will the new prefix be?");
-                    MessageContext mctx = await interactivity.WaitForMessageAsync(
-                        m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id
-                    );
+                    MessageContext mctx = await channel.WaitForMessageAsync(ctx.User, m => true);
                     gcfg.Prefix = mctx?.Message.Content;
                 }
 
@@ -133,7 +131,7 @@ namespace TheGodfather.Modules.Administration
 
                 if (await channel.WaitForBoolResponseAsync(ctx, "I can log the actions that happen in the guild (such as message deletion, channel updates etc.), so you always know what is going on in the guild. Do you wish to enable the action log?", reply: false)) {
                     await channel.EmbedAsync($"Alright, cool. In order for the action logs to work you will need to tell me where to send the log messages. Please reply with a channel mention, for example {Formatter.Bold("#logs")}");
-                    var mctx = await interactivity.WaitForMessageAsync(
+                    MessageContext mctx = await interactivity.WaitForMessageAsync(
                         m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id && m.MentionedChannels.Count == 1
                     );
                     gcfg.LogChannelId = mctx.MentionedChannels.FirstOrDefault()?.Id ?? 0;
@@ -143,7 +141,7 @@ namespace TheGodfather.Modules.Administration
                 string wmessage = null;
                 if (await channel.WaitForBoolResponseAsync(ctx, "I can also send a welcome message when someone joins the guild. Do you wish to enable this feature?", reply: false)) {
                     await channel.EmbedAsync($"I will need a channel where to send the welcome messages. Please reply with a channel mention, for example {Formatter.Bold(ctx.Guild.GetDefaultChannel()?.Mention ?? "#general")}");
-                    var mctx = await interactivity.WaitForMessageAsync(
+                    MessageContext mctx = await interactivity.WaitForMessageAsync(
                         m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id && m.MentionedChannels.Count == 1
                     );
 
@@ -155,9 +153,7 @@ namespace TheGodfather.Modules.Administration
 
                     if (await channel.WaitForBoolResponseAsync(ctx, "You can also customize the welcome message. Do you want to do that now?", reply: false)) {
                         await channel.EmbedAsync($"Tell me what message you want me to send when someone joins the guild. Note that you can use the wildcard {Formatter.Bold("%user%")} and I will replace it with the mention for the member who joined.");
-                        mctx = await interactivity.WaitForMessageAsync(
-                            m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id
-                        );
+                        mctx = await channel.WaitForMessageAsync(ctx.User, m => true);
                         wmessage = mctx?.Message?.Content;
                     }
                 }
@@ -166,7 +162,7 @@ namespace TheGodfather.Modules.Administration
                 string lmessage = null;
                 if (await channel.WaitForBoolResponseAsync(ctx, "The same applies for member leave messages. Do you wish to enable this feature?", reply: false)) {
                     await channel.EmbedAsync($"I will need a channel where to send the leave messages. Please reply with a channel mention, for example {Formatter.Bold(ctx.Guild.GetDefaultChannel()?.Mention ?? "#general")}");
-                    var mctx = await interactivity.WaitForMessageAsync(
+                    MessageContext mctx = await interactivity.WaitForMessageAsync(
                         m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id && m.MentionedChannels.Count == 1
                     );
 
@@ -178,9 +174,7 @@ namespace TheGodfather.Modules.Administration
 
                     if (await channel.WaitForBoolResponseAsync(ctx, "You can also customize the leave message. Do you want to do that now?", reply: false)) {
                         await channel.EmbedAsync($"Tell me what message you want me to send when someone leaves the guild. Note that you can use the wildcard {Formatter.Bold("%user%")} and I will replace it with the mention for the member who left.");
-                        mctx = await interactivity.WaitForMessageAsync(
-                            m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id
-                        );
+                        mctx = await channel.WaitForMessageAsync(ctx.User, m => true);
                         lmessage = mctx?.Message?.Content;
                     }
                 }

@@ -206,7 +206,7 @@ namespace TheGodfather.EventListeners
         public static async Task MessageUpdateEventHandlerAsync(TheGodfatherShard shard, MessageUpdateEventArgs e)
         {
 
-            if (e.Author.IsBot || e.Channel.IsPrivate || e.Author == null || e.Message == null)
+            if (e.Author == null || e.Author.IsBot || e.Channel == null || e.Channel.IsPrivate || e.Message == null)
                 return;
 
             if (shard.SharedData.BlockedChannels.Contains(e.Channel.Id))

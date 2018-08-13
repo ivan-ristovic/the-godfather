@@ -179,8 +179,7 @@ namespace TheGodfather.EventListeners
                         emb.AddField("Reason", owentry.Reason);
                     emb.WithFooter(owentry.CreationTimestamp.ToUtcTimestamp(), owentry.UserResponsible.AvatarUrl);
                 } else {
-                    emb.AddField("Error", "Failed to read audit log information. Please check my permissions");
-                    emb.AddField("Channel", e.ChannelBefore?.ToString() ?? _unknown);
+                    return;
                 }
             }
 
