@@ -87,10 +87,10 @@ namespace TheGodfather.Common
                         await channel.InformFailureAsync($"I have been asleep and failed to remind {user.Mention} to:\n\n{Formatter.Italic(smi.Message)}\n\n {smi.ExecutionTime.ToUtcTimestamp()}");
                         break;
                     case UnbanTaskInfo _:
-                        UnbanUserCallback(null);
+                        UnbanUserCallback(this.TaskInfo);
                         break;
                     case UnmuteTaskInfo _:
-                        UnmuteUserCallback(null);
+                        UnmuteUserCallback(this.TaskInfo);
                         break;
                 }
                 this.shared.LogProvider.LogMessage(LogLevel.Warning, $"| Executed missed task: {this.TaskInfo.GetType().ToString()}");
