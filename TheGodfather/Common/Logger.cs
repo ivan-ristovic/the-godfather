@@ -9,7 +9,7 @@ using System.Text;
 
 namespace TheGodfather.Common
 {
-    public class Logger
+    public sealed class Logger
     {
         public int BufferSize { get; set; }
         public LogLevel LogLevel { get; set; }

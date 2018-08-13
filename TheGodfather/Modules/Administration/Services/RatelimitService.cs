@@ -1,9 +1,11 @@
 ﻿#region USING_DIRECTIVES
+using DSharpPlus.Entities;
 using System;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading;
-
+using System.Threading.Tasks;
+using TheGodfather.Common;
 using TheGodfather.Exceptions;
 using TheGodfather.Modules.Administration.Common;
 #endregion
@@ -32,7 +34,8 @@ namespace TheGodfather.Modules.Administration.Services
         }
 
 
-        public RatelimitService()
+        public RatelimitService(TheGodfatherShard shard)
+            : base(shard)
         {
             this.guildSpamInfo = new ConcurrentDictionary<ulong, ConcurrentDictionary<ulong, UserRatelimitInfo>>();
             this.refreshTimer = new Timer(RefreshCallback, this, TimeSpan.FromSeconds(20), TimeSpan.FromSeconds(20));
@@ -40,24 +43,28 @@ namespace TheGodfather.Modules.Administration.Services
         }
 
 
-        public bool TryAddGuildToWatch(ulong gid)
+        public override bool TryAddGuildToWatch(ulong gid)
             => this.guildSpamInfo.TryAdd(gid, new ConcurrentDictionary<ulong, UserRatelimitInfo>());
 
-        public bool HandleNewMessage(ulong gid, ulong uid, int maxAllowed)
-        {
-            if (!this.guildSpamInfo.ContainsKey(gid) && !TryAddGuildToWatch(gid))
-                throw new ConcurrentOperationException("Failed to add guild to watch list!");
+        public override bool TryRemoveGuildFromWatch(ulong gid)
+            => this.guildSpamInfo.TryRemove(gid, out _);
 
-            if (!this.guildSpamInfo[gid].ContainsKey(uid)) {
-                if (!this.guildSpamInfo[gid].TryAdd(uid, new UserRatelimitInfo(maxAllowed - 1)))
-                    throw new ConcurrentOperationException("Failed to add guild to watch list!");
-                return true;
+
+        public async Task HandleNewMessageAsync(DiscordGuild guild, DiscordUser member)
+        {
+            if (!this.guildSpamInfo.ContainsKey(guild.Id) && !TryAddGuildToWatch(guild.Id))
+                throw new ConcurrentOperationException("Failed to add guild to ratelimit watch list!");
+
+            CachedGuildConfig gcfg = this.shard.SharedData.GetGuildConfig(guild.Id);
+
+            if (!this.guildSpamInfo[guild.Id].ContainsKey(member.Id)) {
+                if (!this.guildSpamInfo[guild.Id].TryAdd(member.Id, new UserRatelimitInfo(gcfg.RatelimitSensitivity - 1)))
+                    throw new ConcurrentOperationException("Failed to add member to ratelimit watch list!");
+                return;
             }
 
-            return this.guildSpamInfo[gid][uid].TryDecrementAllowedMessageCount();
+            if (this.guildSpamInfo[guild.Id][member.Id].TryDecrementAllowedMessageCount())
+                await PunishMemberAsync(guild, member as DiscordMember, gcfg.RatelimitAction);
         }
-
-        public bool TryRemoveGuildFromWatch(ulong gid)
-            => true;
     }
 }

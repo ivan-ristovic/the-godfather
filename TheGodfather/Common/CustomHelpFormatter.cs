@@ -15,7 +15,7 @@ using TheGodfather.Common.Attributes;
 
 namespace TheGodfather.Common
 {
-    internal sealed class CustomHelpFormatter : BaseHelpFormatter
+    public sealed class CustomHelpFormatter : BaseHelpFormatter
     {
         private string name;
         private string description;

@@ -24,12 +24,20 @@ namespace TheGodfather.Common
         public PunishmentActionType RatelimitAction { get; set; }
         public short RatelimitSensitivity { get; set; }
 
+        public bool AntifloodEnabled { get; set; }
+        public PunishmentActionType AntifloodAction { get; set; }
+        public short AntifloodCooldown { get; set; }
+        public short AntifloodSensitivity { get; set; }
 
         public bool LoggingEnabled
             => this.LogChannelId != 0;
 
 
         public static CachedGuildConfig Default => new CachedGuildConfig {
+            AntifloodAction = PunishmentActionType.PermanentBan,
+            AntifloodCooldown = 10,
+            AntifloodEnabled = false,
+            AntifloodSensitivity = 3,
             BlockBooterWebsites = true,
             BlockDiscordInvites = false,
             BlockDisturbingWebsites = true,
