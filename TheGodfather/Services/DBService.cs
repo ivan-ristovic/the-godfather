@@ -140,7 +140,8 @@ namespace TheGodfather.Services
                    suggestions_enabled, log_cid, linkfilter_enabled, linkfilter_invites, 
                    linkfilter_booters, linkfilter_disturbing, linkfilter_iploggers, 
                    linkfilter_shorteners, silent_respond, currency, ratelimit_enabled, ratelimit_action, 
-                   ratelimit_sens FROM gf.guild_cfg LIMIT 1;";
+                   ratelimit_sens, antiflood_enabled, antiflood_sens, antiflood_action, antiflood_cooldown
+                   FROM gf.guild_cfg LIMIT 1;";
                 return cmd.ExecuteScalarAsync();
             });
             await ExecuteCommandAsync(cmd => {

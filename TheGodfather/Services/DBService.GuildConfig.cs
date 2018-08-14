@@ -254,10 +254,12 @@ namespace TheGodfather.Services
                 cmd.CommandText = "UPDATE gf.guild_cfg SET " +
                     "(prefix, silent_respond, suggestions_enabled, log_cid, linkfilter_enabled, " +
                     "linkfilter_invites, linkfilter_booters, linkfilter_disturbing, linkfilter_iploggers, " +
-                    "linkfilter_shorteners, currency, ratelimit_enabled, ratelimit_action, ratelimit_sens) = " +
+                    "linkfilter_shorteners, currency, ratelimit_enabled, ratelimit_action, ratelimit_sens," +
+                    "antiflood_enabled, antiflood_sens, antiflood_action, antiflood_cooldown) = " +
                     "(@prefix, @silent_respond, @suggestions_enabled, @log_cid, @linkfilter_enabled, " +
                     "@linkfilter_invites, @linkfilter_booters, @linkfilter_disturbing, @linkfilter_iploggers, " +
-                    "@linkfilter_shorteners, @currency, @ratelimit_enabled, @ratelimit_action, @ratelimit_sens) " +
+                    "@linkfilter_shorteners, @currency, @ratelimit_enabled, @ratelimit_action, @ratelimit_sens," +
+                    "@antiflood_enabled, @antiflood_sens, @antiflood_action, @antiflood_cooldown) " +
                     "WHERE gid = @gid;";
                 cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
                 if (string.IsNullOrWhiteSpace(cfg.Prefix))
@@ -280,6 +282,10 @@ namespace TheGodfather.Services
                 cmd.Parameters.Add(new NpgsqlParameter<bool>("ratelimit_enabled", cfg.RatelimitEnabled));
                 cmd.Parameters.Add(new NpgsqlParameter<short>("ratelimit_action", (short)cfg.RatelimitAction));
                 cmd.Parameters.Add(new NpgsqlParameter<short>("ratelimit_sens", cfg.RatelimitSensitivity));
+                cmd.Parameters.Add(new NpgsqlParameter<bool>("antiflood_enabled", cfg.AntifloodEnabled));
+                cmd.Parameters.Add(new NpgsqlParameter<short>("antiflood_action", (short)cfg.AntifloodAction));
+                cmd.Parameters.Add(new NpgsqlParameter<short>("antiflood_sens", cfg.AntifloodSensitivity));
+                cmd.Parameters.Add(new NpgsqlParameter<short>("antiflood_cooldown", cfg.AntifloodCooldown));
 
                 return cmd.ExecuteNonQueryAsync();
             });

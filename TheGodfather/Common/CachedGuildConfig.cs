@@ -37,7 +37,7 @@ namespace TheGodfather.Common
             AntifloodAction = PunishmentActionType.Kick,
             AntifloodCooldown = 10,
             AntifloodEnabled = false,
-            AntifloodSensitivity = 3,
+            AntifloodSensitivity = 5,
             BlockBooterWebsites = true,
             BlockDiscordInvites = false,
             BlockDisturbingWebsites = true,
