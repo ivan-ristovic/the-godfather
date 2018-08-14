@@ -435,6 +435,7 @@
     <Compile Include="Common\Attributes\RequirePrivilegedUserAttribute.cs" />
     <Compile Include="Common\Attributes\UsageExamplesAttribute.cs" />
     <Compile Include="Modules\Administration\Common\UserRatelimitInfo.cs" />
+    <Compile Include="Modules\Administration\GuildModule.Config.Antiflood.cs" />
     <Compile Include="Modules\Administration\GuildModule.Config.Ratelimit.cs" />
     <Compile Include="Modules\Administration\Services\AntifloodService.cs" />
     <Compile Include="Modules\Administration\Services\ProtectionService.cs" />

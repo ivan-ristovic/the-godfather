@@ -43,8 +43,7 @@ namespace TheGodfather.Modules.Administration
                 var emb = new DiscordEmbedBuilder() {
                     Title = "Guild configuration",
                     Description = ctx.Guild.ToString(),
-                    Color = this.ModuleColor,
-                    ThumbnailUrl = ctx.Guild.IconUrl
+                    Color = this.ModuleColor
                 };
 
                 CachedGuildConfig gcfg = this.Shared.GetGuildConfig(ctx.Guild.Id);
@@ -59,6 +58,16 @@ namespace TheGodfather.Modules.Administration
 
                 DiscordChannel lchn = await this.Database.GetLeaveChannelAsync(ctx.Guild);
                 emb.AddField("Leave messages", lchn != null ? $"on @ {lchn.Mention}" : "off", inline: true);
+
+                if (gcfg.RatelimitEnabled)
+                    emb.AddField("Ratelimit watch", $"Sensitivity: {gcfg.RatelimitSensitivity} msgs per 5s\nAction: {gcfg.RatelimitAction.ToTypeString()}", inline: true);
+                else
+                    emb.AddField("Ratelimit watch", "off", inline: true);
+
+                if (gcfg.AntifloodEnabled)
+                    emb.AddField("Antiflood watch", $"Sensitivity: {gcfg.AntifloodSensitivity} users per {gcfg.AntifloodCooldown}s\nAction: {gcfg.AntifloodAction.ToTypeString()}", inline: true);
+                else
+                    emb.AddField("Antiflood watch", "off", inline: true);
 
                 if (gcfg.LinkfilterEnabled) {
                     var sb = new StringBuilder();
@@ -77,16 +86,11 @@ namespace TheGodfather.Modules.Administration
                     emb.AddField("Linkfilter", "off", inline: true);
                 }
 
-                if (gcfg.RatelimitEnabled)
-                    emb.AddField("Ratelimit watch", $"Sensitivity: {gcfg.RatelimitSensitivity} msgs per 5s\nAction: {gcfg.RatelimitAction.ToTypeString()}", inline: true);
-                else
-                    emb.AddField("Ratelimit watch", "off", inline: true);
-
                 await ctx.RespondAsync(embed: emb.Build());
             }
 
 
-            // TODO add ratelimit to wizard
+            // TODO add ratelimit and antiflood to wizard
             #region COMMAND_CONFIG_WIZARD
             [Command("setup"), UsesInteractivity]
             [Description("Starts an interactive wizard for configuring the guild settings.")]

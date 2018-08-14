@@ -62,14 +62,14 @@ namespace TheGodfather.Modules.Currency.Common
         }
 
 
-        public override Task RunAsync()
+        public override async Task RunAsync()
         {
             try {
                 using (Bitmap wof = RotateWheel(_wheel, this.index * -45))
                 using (var ms = new MemoryStream()) {
                     wof.Save(ms, System.Drawing.Imaging.ImageFormat.Png);
                     ms.Position = 0;
-                    return this.Channel.SendFileAsync("wof.png", ms, embed: new DiscordEmbedBuilder() {
+                    await this.Channel.SendFileAsync("wof.png", ms, embed: new DiscordEmbedBuilder() {
                         Description = $"{this.user.Mention} won {Formatter.Bold(this.WonAmount.ToWords())} ({this.WonAmount:n0}) {currency}!",
                         Color = DiscordColor.DarkGreen
                     });

@@ -34,7 +34,7 @@ namespace TheGodfather.Common
 
 
         public static CachedGuildConfig Default => new CachedGuildConfig {
-            AntifloodAction = PunishmentActionType.PermanentBan,
+            AntifloodAction = PunishmentActionType.Kick,
             AntifloodCooldown = 10,
             AntifloodEnabled = false,
             AntifloodSensitivity = 3,

@@ -63,7 +63,7 @@ namespace TheGodfather.Modules.Administration.Services
                 return;
             }
 
-            if (this.guildSpamInfo[guild.Id][member.Id].TryDecrementAllowedMessageCount())
+            if (!this.guildSpamInfo[guild.Id][member.Id].TryDecrementAllowedMessageCount())
                 await PunishMemberAsync(guild, member as DiscordMember, gcfg.RatelimitAction);
         }
     }

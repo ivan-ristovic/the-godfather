@@ -73,7 +73,7 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.GuildMemberAdded)]
         public static async Task MemberJoinProtectionEventHandlerAsync(TheGodfatherShard shard, GuildMemberAddEventArgs e)
         {
-            if (e.Member == null /*|| e.Member.IsBot*/)
+            if (e.Member == null || e.Member.IsBot)
                 return;
 
             CachedGuildConfig gcfg = shard.SharedData.GetGuildConfig(e.Guild.Id);

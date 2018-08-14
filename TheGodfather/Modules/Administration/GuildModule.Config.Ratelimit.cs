@@ -44,11 +44,8 @@ namespace TheGodfather.Modules.Administration
                                                    [Description("Sensitivity (messages per 5s to trigger action).")] short sensitivity,
                                                    [Description("Action type.")] PunishmentActionType action = PunishmentActionType.Mute)
                 {
-                    if (sensitivity < 4)
-                        throw new CommandFailedException("The sensitivity is too high. Note that lower the value, the less messages people are allowed to send. The value you entered is too low. Valid range: [4, 10]");
-
-                    if (sensitivity > 10)
-                        sensitivity = 10;
+                    if (sensitivity < 4 || sensitivity > 10)
+                        throw new CommandFailedException("The sensitivity is not in the valid range ([4, 10]).");
 
                     CachedGuildConfig gcfg = this.Shared.GetGuildConfig(ctx.Guild.Id);
                     gcfg.RatelimitEnabled = enable;
@@ -73,7 +70,7 @@ namespace TheGodfather.Modules.Administration
                         await logchn.SendMessageAsync(embed: emb.Build());
                     }
 
-                    await InformAsync(ctx, $"{Formatter.Bold(gcfg.LoggingEnabled ? "Enabled" : "Disabled")} ratelimit actions.", important: false);
+                    await InformAsync(ctx, $"{Formatter.Bold(gcfg.RatelimitEnabled ? "Enabled" : "Disabled")} ratelimit actions.", important: false);
                 }
 
                 [GroupCommand, Priority(2)]
@@ -92,7 +89,7 @@ namespace TheGodfather.Modules.Administration
                 public Task ExecuteGroupAsync(CommandContext ctx)
                 {
                     CachedGuildConfig gcfg = this.Shared.GetGuildConfig(ctx.Guild.Id);
-                    return InformAsync(ctx, $"Ratelimit watch for this guild is {Formatter.Bold(gcfg.RatelimitEnabled ? "enabled" : "disabled")}", important: false);
+                    return InformAsync(ctx, $"Ratelimit watch for this guild is {Formatter.Bold(gcfg.RatelimitEnabled ? "enabled" : "disabled")}");
                 }
 
 
@@ -128,12 +125,15 @@ namespace TheGodfather.Modules.Administration
 
                 #region COMMAND_RATELIMIT_SENSITIVITY
                 [Command("sensitivity")]
-                [Description("Set the ratelimit sensitivity Ratelimit will be hit if member sends more messages in 5 seconds than given sensitivity number.")]
+                [Description("Set the ratelimit sensitivity. Ratelimit will be hit if member sends more messages in 5 seconds than given sensitivity number.")]
                 [Aliases("setsensitivity", "setsens", "sens", "s")]
                 [UsageExamples("!guild cfg ratelimit sensitivity 9")]
                 public async Task SetSensitivityAsync(CommandContext ctx,
                                                      [Description("Action type.")] short sensitivity)
                 {
+                    if (sensitivity < 4 || sensitivity > 10)
+                        throw new CommandFailedException("The sensitivity is not in the valid range ([4, 10]).");
+
                     CachedGuildConfig gcfg = this.Shared.GetGuildConfig(ctx.Guild.Id);
                     gcfg.RatelimitSensitivity = sensitivity;
 
