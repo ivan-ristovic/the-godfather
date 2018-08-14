@@ -18,6 +18,7 @@ using TheGodfather.Common.Converters;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Common;
+using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Services;
 #endregion
 
@@ -71,6 +72,12 @@ namespace TheGodfather.Modules.Administration
                     emb.AddField("Antiflood watch", $"Sensitivity: {gcfg.AntifloodSensitivity} users per {gcfg.AntifloodCooldown}s\nAction: {gcfg.AntifloodAction.ToTypeString()}", inline: true);
                 else
                     emb.AddField("Antiflood watch", "off", inline: true);
+
+                DiscordRole muteRole = await this.Database.GetMuteRoleAsync(ctx.Guild);
+                if (muteRole == null)
+                    muteRole = ctx.Guild.Roles.FirstOrDefault(r => r.Name.ToLowerInvariant() == "gf_mute");
+                if (muteRole != null)
+                    emb.AddField("Mute role", muteRole.Name, inline: true);
 
                 if (gcfg.LinkfilterEnabled) {
                     var sb = new StringBuilder();
@@ -209,6 +216,19 @@ namespace TheGodfather.Modules.Administration
                         gcfg.BlockUrlShorteners = false;
                 }
 
+                DiscordRole muteRole = null;
+                if (await channel.WaitForBoolResponseAsync(ctx, "Do you wish to manually set the mute role for this guild?", reply: false)) {
+                    await channel.EmbedAsync("Which role will it be?");
+                    MessageContext mctx = await interactivity.WaitForMessageAsync(
+                        m => m.ChannelId == channel.Id && m.Author.Id == ctx.User.Id && m.MentionedChannels.Count == 1
+                    );
+                    if (mctx != null)
+                        muteRole = mctx.MentionedRoles.First();
+                }
+
+                if (muteRole == null)
+                    await ctx.Services.GetService<RatelimitService>().GetOrCreateMuteRoleAsync(ctx.Guild);
+
                 if (await channel.WaitForBoolResponseAsync(ctx, "Ratelimit watch is a feature that automatically punishes users that post more than specified amount of messages in a 5s timespan. Do you wish to enable ratelimit watch?", reply: false)) {
                     gcfg.RatelimitEnabled = true;
 
@@ -273,6 +293,8 @@ namespace TheGodfather.Modules.Administration
                 sb.Append("Prefix: ").AppendLine(Formatter.Bold(gcfg.Prefix ?? this.Shared.BotConfiguration.DefaultPrefix));
                 sb.Append("Currency: ").AppendLine(Formatter.Bold(gcfg.Currency ?? "default"));
                 sb.Append("Command suggestions: ").AppendLine(Formatter.Bold((gcfg.SuggestionsEnabled ? "on" : "off")));
+                sb.Append("Mute role: ").AppendLine(Formatter.Bold(muteRole.Name));
+
                 sb.Append("Action logging: ");
                 if (gcfg.LoggingEnabled)
                     sb.Append(Formatter.Bold("on")).Append(" in channel ").AppendLine(ctx.Guild.GetChannel(gcfg.LogChannelId).Mention);
@@ -328,6 +350,7 @@ namespace TheGodfather.Modules.Administration
                     this.Shared.GuildConfigurations[ctx.Guild.Id] = gcfg;
 
                     await this.Database.UpdateGuildSettingsAsync(ctx.Guild.Id, gcfg);
+                    await this.Database.SetMuteRoleAsync(ctx.Guild.Id, muteRole.Id);
                     if (wcid != 0)
                         await this.Database.SetWelcomeChannelAsync(ctx.Guild.Id, wcid);
                     else
@@ -616,24 +639,24 @@ namespace TheGodfather.Modules.Administration
                 await InformAsync(ctx, $"Leave message set to:\n{Formatter.Bold(message ?? "Default message")}.", important: false);
             }
             #endregion
-            /*
-            #region COMMAND_CONFIG_LEAVE
-            [Command("leave"), Priority(3)]
-            [Description("Allows user leaving message configuration.")]
-            [Aliases("exit", "drop", "lvm", "lm", "l")]
+
+            #region COMMAND_CONFIG_MUTEROLE
+            [Command("setmuterole")]
+            [Description("Gets or sets mute role for this guild.")]
+            [Aliases("muterole", "mr", "muterl", "mrl")]
             [UsageExamples("!guild cfg muterole",
                            "!guild cfg muterole MuteRoleName")]
             public async Task GetOrSetMuteRoleAsync(CommandContext ctx,
                                                    [Description("New mute role.")] DiscordRole muteRole = null)
             {
                 if (muteRole != null) {
-
+                    await this.Database.SetMuteRoleAsync(ctx.Guild.Id, muteRole.Id);
                 } else {
-
+                    muteRole = await this.Database.GetMuteRoleAsync(ctx.Guild);
+                    await InformAsync(ctx, $"Mute role for this guild: {Formatter.Bold(muteRole.Name)}");
                 }
             }
             #endregion
-            */
         }
     }
 }

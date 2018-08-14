@@ -85,9 +85,12 @@ namespace TheGodfather.Modules.Administration.Services
 
             await this.csem.WaitAsync();
             try {
-                muteRole = guild.Roles.FirstOrDefault(r => r.Name.ToLowerInvariant() == "gf_mute");
+                muteRole = await this.shard.DatabaseService.GetMuteRoleAsync(guild);
+                if (muteRole == null)
+                    muteRole = guild.Roles.FirstOrDefault(r => r.Name.ToLowerInvariant() == "gf_mute");
                 if (muteRole == null) {
                     muteRole = await guild.CreateRoleAsync("gf_mute", hoist: false, mentionable: false);
+                    await this.shard.DatabaseService.SetMuteRoleAsync(guild.Id, muteRole.Id);
                     foreach (DiscordChannel channel in guild.Channels.Where(c => c.Type == ChannelType.Text)) {
                         await channel.AddOverwriteAsync(muteRole, deny: Permissions.SendMessages | Permissions.SendTtsMessages | Permissions.AddReactions);
                         await Task.Delay(200);

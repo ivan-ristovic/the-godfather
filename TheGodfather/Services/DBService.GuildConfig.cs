@@ -90,6 +90,12 @@ namespace TheGodfather.Services
             return new ReadOnlyDictionary<ulong, CachedGuildConfig>(dict);
         }
 
+        public static async Task<DiscordRole> GetMuteRoleAsync(this DBService db, DiscordGuild guild)
+        {
+            ulong rid = await db.GetEntityIdInternalAsync("mute_rid", guild.Id);
+            return rid != 0 ? guild.GetRole(rid) : null;
+        }
+
         public static async Task<DiscordChannel> GetLeaveChannelAsync(this DBService db, DiscordGuild guild)
         {
             ulong cid = await db.GetEntityIdInternalAsync("leave_cid", guild.Id);
@@ -173,7 +179,10 @@ namespace TheGodfather.Services
 
         public static Task RemoveLeaveMessageAsync(this DBService db, ulong gid)
             => db.SetLeaveMessageAsync(gid, null);
-        
+
+        public static Task SetMuteRoleAsync(this DBService db, ulong gid, ulong rid)
+            => db.SetEntityIdInternalAsync("mute_rid", gid, rid);
+
         public static Task SetLeaveChannelAsync(this DBService db, ulong gid, ulong cid)
             => db.SetEntityIdInternalAsync("leave_cid", gid, cid);
 
