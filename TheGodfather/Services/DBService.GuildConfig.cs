@@ -92,17 +92,7 @@ namespace TheGodfather.Services
 
         public static async Task<DiscordChannel> GetLeaveChannelAsync(this DBService db, DiscordGuild guild)
         {
-            ulong cid = 0;
-
-            await db.ExecuteCommandAsync(async (cmd) => {
-                cmd.CommandText = "SELECT leave_cid FROM gf.guild_cfg WHERE gid = @gid LIMIT 1;";
-                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)guild.Id));
-
-                object res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
-                if (res != null && !(res is DBNull))
-                    cid = (ulong)(long)res;
-            });
-
+            ulong cid = await db.GetEntityIdInternalAsync("leave_cid", guild.Id);
             return cid != 0 ? guild.GetChannel(cid) : null;
         }
 
@@ -124,17 +114,7 @@ namespace TheGodfather.Services
 
         public static async Task<DiscordChannel> GetWelcomeChannelAsync(this DBService db, DiscordGuild guild)
         {
-            ulong cid = 0;
-
-            await db.ExecuteCommandAsync(async (cmd) => {
-                cmd.CommandText = "SELECT welcome_cid FROM gf.guild_cfg WHERE gid = @gid LIMIT 1;";
-                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)guild.Id));
-
-                object res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
-                if (res != null && !(res is DBNull))
-                    cid = (ulong)(long)res;
-            });
-
+            ulong cid = await db.GetEntityIdInternalAsync("welcome_cid", guild.Id);
             return cid != 0 ? guild.GetChannel(cid) : null;
         }
 
@@ -183,27 +163,19 @@ namespace TheGodfather.Services
         }
 
         public static Task RemoveWelcomeChannelAsync(this DBService db, ulong gid)
-            => db.SetWelcomeChannelAsync(gid, 0);
+            => db.SetEntityIdInternalAsync("welcome_cid", gid, 0);
 
         public static Task RemoveWelcomeMessageAsync(this DBService db, ulong gid)
             => db.SetWelcomeMessageAsync(gid, null);
 
         public static Task RemoveLeaveChannelAsync(this DBService db, ulong gid)
-            => db.SetLeaveChannelAsync(gid, 0);
+            => db.SetEntityIdInternalAsync("leave_cid", gid, 0);
 
         public static Task RemoveLeaveMessageAsync(this DBService db, ulong gid)
             => db.SetLeaveMessageAsync(gid, null);
         
         public static Task SetLeaveChannelAsync(this DBService db, ulong gid, ulong cid)
-        {
-            return db.ExecuteCommandAsync(cmd => {
-                cmd.CommandText = "UPDATE gf.guild_cfg SET leave_cid = @cid WHERE gid = @gid;";
-                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
-                cmd.Parameters.Add(new NpgsqlParameter<long>("cid", (long)cid));
-
-                return cmd.ExecuteNonQueryAsync();
-            });
-        }
+            => db.SetEntityIdInternalAsync("leave_cid", gid, cid);
 
         public static Task SetLeaveMessageAsync(this DBService db, ulong gid, string message)
         {
@@ -217,15 +189,7 @@ namespace TheGodfather.Services
         }
 
         public static Task SetWelcomeChannelAsync(this DBService db, ulong gid, ulong cid)
-        {
-            return db.ExecuteCommandAsync(cmd => {
-                cmd.CommandText = "UPDATE gf.guild_cfg SET welcome_cid = @cid WHERE gid = @gid;";
-                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
-                cmd.Parameters.Add(new NpgsqlParameter<long>("cid", (long)cid));
-
-                return cmd.ExecuteNonQueryAsync();
-            });
-        }
+            => db.SetEntityIdInternalAsync("welcome_cid", gid, cid);
 
         public static Task SetWelcomeMessageAsync(this DBService db, ulong gid, string message)
         {
@@ -298,6 +262,34 @@ namespace TheGodfather.Services
                 cmd.Parameters.Add(new NpgsqlParameter<long>("xid", (long)xid));
                 cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
                 cmd.Parameters.Add(new NpgsqlParameter<char>("type", type.ToFlag()));
+
+                return cmd.ExecuteNonQueryAsync();
+            });
+        }
+
+
+        private static async Task<ulong> GetEntityIdInternalAsync(this DBService db, string col, ulong gid)
+        {
+            ulong id = 0;
+
+            await  db.ExecuteCommandAsync(async (cmd) => {
+                cmd.CommandText = $"SELECT {col} FROM gf.guild_cfg WHERE gid = @gid LIMIT 1;";
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
+
+                object res = await cmd.ExecuteScalarAsync().ConfigureAwait(false);
+                if (res != null && !(res is DBNull))
+                    id = (ulong)(long)res;
+            });
+
+            return id;
+        }
+
+        private static Task SetEntityIdInternalAsync(this DBService db, string col, ulong gid, ulong value)
+        {
+            return db.ExecuteCommandAsync(cmd => {
+                cmd.CommandText = $"UPDATE gf.guild_cfg SET {col} = @id WHERE gid = @gid;";
+                cmd.Parameters.Add(new NpgsqlParameter<long>("gid", (long)gid));
+                cmd.Parameters.Add(new NpgsqlParameter<long>("id", (long)value));
 
                 return cmd.ExecuteNonQueryAsync();
             });

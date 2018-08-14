@@ -616,8 +616,24 @@ namespace TheGodfather.Modules.Administration
                 await InformAsync(ctx, $"Leave message set to:\n{Formatter.Bold(message ?? "Default message")}.", important: false);
             }
             #endregion
+            /*
+            #region COMMAND_CONFIG_LEAVE
+            [Command("leave"), Priority(3)]
+            [Description("Allows user leaving message configuration.")]
+            [Aliases("exit", "drop", "lvm", "lm", "l")]
+            [UsageExamples("!guild cfg muterole",
+                           "!guild cfg muterole MuteRoleName")]
+            public async Task GetOrSetMuteRoleAsync(CommandContext ctx,
+                                                   [Description("New mute role.")] DiscordRole muteRole = null)
+            {
+                if (muteRole != null) {
 
-            // TODO setup muterole?
+                } else {
+
+                }
+            }
+            #endregion
+            */
         }
     }
 }
