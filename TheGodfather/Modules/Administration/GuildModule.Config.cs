@@ -5,6 +5,8 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
 
+using Microsoft.Extensions.DependencyInjection;
+
 using System;
 using System.Linq;
 using System.Text;
@@ -12,6 +14,7 @@ using System.Threading.Tasks;
 
 using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
+using TheGodfather.Common.Converters;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Common;
@@ -90,7 +93,6 @@ namespace TheGodfather.Modules.Administration
             }
 
 
-            // TODO add ratelimit and antiflood to wizard
             #region COMMAND_CONFIG_WIZARD
             [Command("setup"), UsesInteractivity]
             [Description("Starts an interactive wizard for configuring the guild settings.")]
@@ -120,7 +122,7 @@ namespace TheGodfather.Modules.Administration
                 await channel.EmbedAsync("Welcome to the guild configuration wizard!\n\nI will guide you through the configuration. You can always re-run this setup or manually change the settings so do not worry if you don't do everything like you wanted.\n\nThat being said, let's start the fun! Note that the changes will apply after the wizard finishes.");
                 await Task.Delay(TimeSpan.FromSeconds(10));
 
-                if (await channel.WaitForBoolResponseAsync(ctx, "By default I am sending verbose messages whenever a command is executed. However, I can also silently react. Should I continue with the verbose replies?"))
+                if (await channel.WaitForBoolResponseAsync(ctx, "By default I am sending verbose messages whenever a command is executed. However, I can also silently react. Should I continue with the verbose replies?", reply: false))
                     gcfg.ReactionResponse = false;
 
                 InteractivityExtension interactivity = ctx.Client.GetInteractivity();
@@ -207,8 +209,69 @@ namespace TheGodfather.Modules.Administration
                         gcfg.BlockUrlShorteners = false;
                 }
 
-                var sb = new StringBuilder();
+                if (await channel.WaitForBoolResponseAsync(ctx, "Ratelimit watch is a feature that automatically punishes users that post more than specified amount of messages in a 5s timespan. Do you wish to enable ratelimit watch?", reply: false)) {
+                    gcfg.RatelimitEnabled = true;
+
+                    if (await channel.WaitForBoolResponseAsync(ctx, $"Do you wish to change the default ratelimit action ({gcfg.RatelimitAction.ToTypeString()})?", reply: false)) {
+                        await channel.EmbedAsync("Please specify the action. Possible values: Mute, TempMute, Kick, Ban, TempBan");
+                        MessageContext mctx = await channel.WaitForMessageAsync(ctx.User,
+                            m => CustomPunishmentActionTypeConverter.TryConvert(m).HasValue
+                        );
+                        if (mctx != null)
+                            gcfg.RatelimitAction = CustomPunishmentActionTypeConverter.TryConvert(mctx.Message.Content).Value;
+                    }
+
+                    if (await channel.WaitForBoolResponseAsync(ctx, $"Do you wish to change the default ratelimit sensitivity aka number of messages in 5s window before the action is triggered ({gcfg.RatelimitSensitivity})?", reply: false)) {
+                        await channel.EmbedAsync("Please specify the sensitivity. Valid range: [4, 10]");
+                        MessageContext mctx = await channel.WaitForMessageAsync(ctx.User,
+                            m => short.TryParse(m, out short sens) && sens >= 4 && sens <= 10
+                        );
+                        if (mctx != null)
+                            gcfg.RatelimitSensitivity = short.Parse(mctx.Message.Content);
+                    }
+                }
+
+                if (await channel.WaitForBoolResponseAsync(ctx, "Antiflood watch is a feature that automatically punishes users that flood the guild. Do you wish to enable antiflood watch?", reply: false)) {
+                    gcfg.AntifloodEnabled = true;
+
+                    if (await channel.WaitForBoolResponseAsync(ctx, $"Do you wish to change the default antiflood action ({gcfg.RatelimitAction.ToTypeString()})?", reply: false)) {
+                        await channel.EmbedAsync("Please specify the action. Possible values: Mute, TempMute, Kick, Ban, TempBan");
+                        MessageContext mctx = await channel.WaitForMessageAsync(ctx.User,
+                            m => CustomPunishmentActionTypeConverter.TryConvert(m).HasValue
+                        );
+                        if (mctx != null)
+                            gcfg.AntifloodAction = CustomPunishmentActionTypeConverter.TryConvert(mctx.Message.Content).Value;
+                    }
+
+                    if (await channel.WaitForBoolResponseAsync(ctx, $"Do you wish to change the default antiflood user quota after which the action will be applied ({gcfg.AntifloodSensitivity})?", reply: false)) {
+                        await channel.EmbedAsync("Please specify the sensitivity. Valid range: [2, 20]");
+                        MessageContext mctx = await channel.WaitForMessageAsync(ctx.User,
+                            m => short.TryParse(m, out short sens) && sens >= 2 && sens <= 20
+                        );
+                        if (mctx != null)
+                            gcfg.AntifloodSensitivity = short.Parse(mctx.Message.Content);
+                    }
+
+                    if (await channel.WaitForBoolResponseAsync(ctx, $"Do you wish to change the default cooldown time ({gcfg.AntifloodSensitivity})?", reply: false)) {
+                        await channel.EmbedAsync("Please specify the cooldown as a number of seconds. Valid range: [5, 60]");
+                        MessageContext mctx = await channel.WaitForMessageAsync(ctx.User,
+                            m => short.TryParse(m, out short cooldown) && cooldown >= 5 && cooldown <= 60
+                        );
+                        if (mctx != null)
+                            gcfg.AntifloodCooldown = short.Parse(mctx.Message.Content);
+                    }
+                }
+
+                if (await channel.WaitForBoolResponseAsync(ctx, "Do you wish to change the currency for this guild (default: credit)?", reply: false)) {
+                    await channel.EmbedAsync("Please specify the new currency (can also be an emoji). Note: Currency name cannot be longer than 30 characters.");
+                    MessageContext mctx = await channel.WaitForMessageAsync(ctx.User, m => m.Length < 30);
+                    if (mctx != null)
+                        gcfg.Currency = mctx.Message.Content;
+                }
+
+                var sb = new StringBuilder("Selected settings:").AppendLine().AppendLine();
                 sb.Append("Prefix: ").AppendLine(Formatter.Bold(gcfg.Prefix ?? this.Shared.BotConfiguration.DefaultPrefix));
+                sb.Append("Currency: ").AppendLine(Formatter.Bold(gcfg.Currency ?? "default"));
                 sb.Append("Command suggestions: ").AppendLine(Formatter.Bold((gcfg.SuggestionsEnabled ? "on" : "off")));
                 sb.Append("Action logging: ");
                 if (gcfg.LoggingEnabled)
@@ -216,20 +279,37 @@ namespace TheGodfather.Modules.Administration
                 else
                     sb.AppendLine(Formatter.Bold("off"));
 
+                sb.AppendLine().Append("Welcome messages: ");
                 if (wcid != 0) {
-                    sb.AppendLine($"Welcome messages {Formatter.Bold("enabled")} in {ctx.Guild.GetChannel(wcid).Mention}");
-                    sb.AppendLine($"Welcome message: {Formatter.BlockCode(wmessage ?? "default")}");
+                    sb.Append(Formatter.Bold("enabled")).Append(" in ").AppendLine(ctx.Guild.GetChannel(wcid).Mention);
+                    sb.Append("Message: ").AppendLine(Formatter.BlockCode(wmessage ?? "default"));
                 } else {
-                    sb.AppendLine($"Welcome messages: {Formatter.Bold("disabled")}");
-                }
-                if (lcid != 0) {
-                    sb.AppendLine($"Leave messages {Formatter.Bold("enabled")} in {ctx.Guild.GetChannel(lcid).Mention}");
-                    sb.AppendLine($"Leave message: {Formatter.BlockCode(lmessage ?? "default")}");
-                } else {
-                    sb.AppendLine($"Leave messages: {Formatter.Bold("disabled")}");
+                    sb.AppendLine(Formatter.Bold("disabled"));
                 }
 
-                sb.Append("Linkfilter ");
+                sb.AppendLine().Append("Leave messages: ");
+                if (lcid != 0) {
+                    sb.Append(Formatter.Bold("enabled")).Append(" in ").AppendLine(ctx.Guild.GetChannel(lcid).Mention);
+                    sb.Append("Message: ").AppendLine(Formatter.BlockCode(lmessage ?? "default"));
+                } else {
+                    sb.AppendLine(Formatter.Bold("disabled"));
+                }
+
+                sb.AppendLine().Append("Ratelimit watch: ");
+                if (gcfg.RatelimitEnabled) {
+                    sb.AppendLine(Formatter.Bold("enabled"));
+                    sb.Append("- Sensitivity: ").Append(gcfg.RatelimitSensitivity).AppendLine(" msgs per 5s.");
+                    sb.Append("- Action: ").AppendLine(gcfg.RatelimitAction.ToTypeString());
+                }
+
+                sb.AppendLine().Append("Antiflood watch: ");
+                if (gcfg.AntifloodEnabled) {
+                    sb.AppendLine(Formatter.Bold("enabled"));
+                    sb.Append("- Sensitivity: ").Append(gcfg.AntifloodSensitivity).Append(" users per ").Append(gcfg.AntifloodCooldown).AppendLine("s");
+                    sb.Append("- Action: ").AppendLine(gcfg.RatelimitAction.ToTypeString());
+                }
+
+                sb.AppendLine().Append("Linkfilter ");
                 if (gcfg.LinkfilterEnabled) {
                     sb.AppendLine(Formatter.Bold("enabled"));
                     sb.Append(" - Discord invites blocker: ").AppendLine(gcfg.BlockDiscordInvites ? "on" : "off");
@@ -242,7 +322,7 @@ namespace TheGodfather.Modules.Administration
                     sb.AppendLine(Formatter.Bold("disabled"));
                 }
 
-                await channel.EmbedAsync($"Selected settings:\n\n{sb.ToString()}");
+                await channel.EmbedAsync(sb.ToString());
 
                 if (await channel.WaitForBoolResponseAsync(ctx, "We are almost done! Please review the settings above and say whether you want me to apply them.")) {
                     this.Shared.GuildConfigurations[ctx.Guild.Id] = gcfg;

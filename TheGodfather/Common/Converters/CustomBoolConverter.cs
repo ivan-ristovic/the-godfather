@@ -44,6 +44,7 @@ namespace TheGodfather.Common.Converters
                     parses = bool.TryParse(value, out result);
                     break;
             }
+
             if (parses)
                 return result;
             else

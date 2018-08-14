@@ -12,7 +12,7 @@ namespace TheGodfather.Common.Converters
 {
     public class CustomPunishmentActionTypeConverter : IArgumentConverter<PunishmentActionType>
     {
-        public Task<Optional<PunishmentActionType>> ConvertAsync(string value, CommandContext ctx)
+        public static PunishmentActionType? TryConvert(string value)
         {
             PunishmentActionType result = PunishmentActionType.Kick;
             bool parses = true;
@@ -46,7 +46,17 @@ namespace TheGodfather.Common.Converters
             }
 
             if (parses)
-                return Task.FromResult(new Optional<PunishmentActionType>(result));
+                return result;
+            else
+                return null;
+        }
+
+
+        public Task<Optional<PunishmentActionType>> ConvertAsync(string value, CommandContext ctx)
+        {
+            PunishmentActionType? b = TryConvert(value);
+            if (b.HasValue)
+                return Task.FromResult(new Optional<PunishmentActionType>(b.Value));
             else
                 return Task.FromResult(new Optional<PunishmentActionType>());
         }
