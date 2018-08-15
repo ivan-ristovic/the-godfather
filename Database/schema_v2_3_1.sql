@@ -298,7 +298,11 @@ CREATE TABLE gf.guild_cfg (
     currency character varying(32) DEFAULT NULL::character varying,
     ratelimit_enabled boolean DEFAULT false NOT NULL,
     ratelimit_action smallint DEFAULT 0 NOT NULL,
-    ratelimit_sens smallint DEFAULT 5 NOT NULL
+    ratelimit_sens smallint DEFAULT 5 NOT NULL,
+    antiflood_enabled boolean DEFAULT false NOT NULL,
+    antiflood_sens smallint DEFAULT 5 NOT NULL,
+    antiflood_cooldown smallint DEFAULT 10 NOT NULL,
+    antiflood_action smallint DEFAULT 2 NOT NULL
 );
 
 
