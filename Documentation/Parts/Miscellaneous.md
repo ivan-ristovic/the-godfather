@@ -109,7 +109,7 @@
 ### birthdays list
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*List all registered birthdays.*
+*List registered birthday notifications for this channel.*
 
 **Requires user permissions:**
 `Manage guild`
@@ -117,10 +117,36 @@
 **Aliases:**
 `ls`
 
+**Arguments:**
+
+(optional) `[channel]` : *Channel for which to list.* (def: `None`)
+
 **Examples:**
 
 ```
 !birthday list
+```
+</p></details>
+
+---
+
+### birthdays listall
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*List all registered birthdays.*
+
+**Privileged users only.**
+
+**Requires user permissions:**
+`Manage guild`
+
+**Aliases:**
+`lsa`
+
+**Examples:**
+
+```
+!birthday listall
 ```
 </p></details>
 
@@ -401,20 +427,6 @@
 
 ---
 
-### random cat
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Get a random cat image.*
-
-**Examples:**
-
-```
-!random cat
-```
-</p></details>
-
----
-
 ### random choose
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
@@ -431,20 +443,6 @@
 
 ```
 !random choose option 1, option 2, option 3...
-```
-</p></details>
-
----
-
-### random dog
-<details><summary markdown='span'>Expand for additional information</summary><p>
-
-*Get a random dog image.*
-
-**Examples:**
-
-```
-!random dog
 ```
 </p></details>
 

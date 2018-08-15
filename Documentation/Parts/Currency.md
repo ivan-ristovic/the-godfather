@@ -28,7 +28,7 @@
 *View someone's bank account in this guild.*
 
 **Aliases:**
-`s, status, bal, money, credits`
+`s, status, bal, money`
 
 **Arguments:**
 
@@ -38,6 +38,28 @@
 
 ```
 !bank balance @Someone
+```
+</p></details>
+
+---
+
+### bank currency
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Set currency for this guild. Currency can be either emoji or text.*
+
+**Aliases:**
+`sc, setcurrency`
+
+**Arguments:**
+
+(optional) `[string...]` : *New currency.* (def: `None`)
+
+**Examples:**
+
+```
+!bank currency :euro:
+!bank currency My Custom Currency Name
 ```
 </p></details>
 

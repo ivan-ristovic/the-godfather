@@ -42,13 +42,13 @@
 
 `[string]` : *Player name.*
 
-`[CustomIpFormat]` : *IP.*
+`[CustomIPFormat]` : *IP.*
 
 (optional) `[string...]` : *Reason for ban.* (def: `None`)
 
 **Overload 0:**
 
-`[CustomIpFormat]` : *IP.*
+`[CustomIPFormat]` : *IP.*
 
 `[string]` : *Player name.*
 
@@ -76,7 +76,7 @@
 
 **Arguments:**
 
-`[CustomIpFormat]` : *IP.*
+`[CustomIPFormat]` : *IP.*
 
 **Examples:**
 
@@ -136,13 +136,13 @@
 
 `[string]` : *Player name.*
 
-`[CustomIpFormat]` : *IP.*
+`[CustomIPFormat]` : *IP.*
 
 (optional) `[string...]` : *Additional info.* (def: `None`)
 
 **Overload 0:**
 
-`[CustomIpFormat]` : *IP.*
+`[CustomIPFormat]` : *IP.*
 
 `[string]` : *Player name.*
 
@@ -169,7 +169,7 @@
 
 **Arguments:**
 
-`[CustomIpFormat]` : *IP or range.*
+`[CustomIPFormat]` : *IP or range.*
 
 **Examples:**
 
@@ -230,7 +230,7 @@
 
 **Overload 1:**
 
-`[CustomIpFormat]` : *Registered name or IP.*
+`[CustomIPFormat]` : *Server IP.*
 
 (optional) `[int]` : *Query port* (def: `10481`)
 
@@ -282,7 +282,7 @@
 
 **Arguments:**
 
-`[CustomIpFormat]` : *IP.*
+`[CustomIPFormat]` : *IP.*
 
 (optional) `[int]` : *Number of results* (def: `10`)
 
@@ -369,13 +369,13 @@
 
 `[string]` : *Name.*
 
-`[CustomIpFormat]` : *IP.*
+`[CustomIPFormat]` : *IP.*
 
 (optional) `[int]` : *Query port* (def: `10481`)
 
 **Overload 0:**
 
-`[CustomIpFormat]` : *IP.*
+`[CustomIPFormat]` : *IP.*
 
 `[string]` : *Name.*
 
@@ -463,7 +463,7 @@
 
 **Overload 1:**
 
-`[CustomIpFormat]` : *IP.*
+`[CustomIPFormat]` : *IP.*
 
 (optional) `[int]` : *Query port* (def: `10481`)
 

@@ -889,6 +889,145 @@
 
 ---
 
+## Group: guild configure antiflood
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Prevents guild raids (groups of users purposely flooding the guild). You can specify the action, sensitivity (number of users allowed to join before the action is performed) as well as the cooldown (timespan after which the user is removed from the watch. For example, an active watch with sensitivity 5 and cooldown of 10s will execute action if 5 or more users join the guild in period of 10s. The action is applied to all of the users that are currently under watch.*
+
+**Requires user permissions:**
+`Manage guild`
+
+**Aliases:**
+`antiraid, ar, af`
+
+**Overload 5:**
+
+`[boolean]` : *Enable?*
+
+`[short]` : *Sensitivity (number of users allowed to join within a given timespan).*
+
+(optional) `[PunishmentActionType]` : *Action type.* (def: `Kick`)
+
+(optional) `[time span]` : *Cooldown.* (def: `None`)
+
+**Overload 4:**
+
+`[boolean]` : *Enable?*
+
+`[PunishmentActionType]` : *Action type.*
+
+(optional) `[short]` : *Sensitivity (number of users allowed to join within a given timespan).* (def: `5`)
+
+(optional) `[time span]` : *Cooldown.* (def: `None`)
+
+**Overload 3:**
+
+`[boolean]` : *Enable?*
+
+`[PunishmentActionType]` : *Action type.*
+
+(optional) `[time span]` : *Cooldown.* (def: `None`)
+
+(optional) `[short]` : *Sensitivity (number of users allowed to join within a given timespan).* (def: `5`)
+
+**Overload 2:**
+
+`[boolean]` : *Enable?*
+
+`[time span]` : *Cooldown.*
+
+(optional) `[PunishmentActionType]` : *Action type.* (def: `Kick`)
+
+(optional) `[short]` : *Sensitivity (number of users allowed to join within a given timespan).* (def: `5`)
+
+**Overload 1:**
+
+`[boolean]` : *Enable?*
+
+**Examples:**
+
+```
+!guild cfg antiflood
+!guild cfg antiflood on
+!guild cfg antiflood on kick 5s
+```
+</p></details>
+
+---
+
+### guild configure antiflood action
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Set the action to execute on the users when they flood/raid the guild.*
+
+**Requires user permissions:**
+`Manage guild`
+
+**Aliases:**
+`setaction, a`
+
+**Arguments:**
+
+`[PunishmentActionType]` : *Action type.*
+
+**Examples:**
+
+```
+!guild cfg antiflood action mute
+!guild cfg antiflood action temporaryban
+```
+</p></details>
+
+---
+
+### guild configure antiflood cooldown
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Set the antiflood sensitivity. Antiflood action will be executed if the specified amount of users join the guild in the given cooldown period.*
+
+**Requires user permissions:**
+`Manage guild`
+
+**Aliases:**
+`setcooldown, setcool, cool, c`
+
+**Arguments:**
+
+`[time span]` : *Cooldown.*
+
+**Examples:**
+
+```
+!guild cfg antiflood sensitivity 9
+```
+</p></details>
+
+---
+
+### guild configure antiflood sensitivity
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Set the antiflood sensitivity. Antiflood action will be executed if the specified amount of users join the guild in the given cooldown period.*
+
+**Requires user permissions:**
+`Manage guild`
+
+**Aliases:**
+`setsensitivity, setsens, sens, s`
+
+**Arguments:**
+
+`[short]` : *Action type.*
+
+**Examples:**
+
+```
+!guild cfg antiflood sensitivity 9
+```
+</p></details>
+
+---
+
 ### guild configure leave
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
@@ -1080,10 +1219,10 @@
 
 ---
 
-### guild configure logging
+## Group: guild configure logging
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Command action logging configuration.*
+*Action logging configuration.*
 
 **Requires user permissions:**
 `Manage guild`
@@ -1093,7 +1232,7 @@
 
 **Overload 1:**
 
-`[boolean]` : *Enable logging?*
+`[boolean]` : *Enable?*
 
 (optional) `[channel]` : *Log channel.* (def: `None`)
 
@@ -1103,6 +1242,192 @@
 !guild cfg logging
 !guild cfg logging on #log
 !guild cfg logging off
+```
+</p></details>
+
+---
+
+### guild configure logging exempt
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Disable the logs for some entities (users, channels, etc).*
+
+**Requires user permissions:**
+`Manage guild`
+
+**Aliases:**
+`ex, exc`
+
+**Overload 2:**
+
+`[user]` : *User to exempt.*
+
+**Overload 1:**
+
+`[role]` : *Role to exempt.*
+
+**Overload 0:**
+
+(optional) `[channel]` : *Channel to exempt.* (def: `None`)
+
+**Examples:**
+
+```
+!guild cfg exempt @Someone
+!guild cfg exempt #spam
+!guild cfg exempt Category
+```
+</p></details>
+
+---
+
+### guild configure logging unexempt
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Remove an exempted entity and allow logging for actions regarding that entity.*
+
+**Requires user permissions:**
+`Manage guild`
+
+**Aliases:**
+`unex, uex`
+
+**Overload 2:**
+
+`[user]` : *User to unexempt.*
+
+**Overload 1:**
+
+`[role]` : *Role to unexempt.*
+
+**Overload 0:**
+
+(optional) `[channel]` : *Channel to unexempt.* (def: `None`)
+
+**Examples:**
+
+```
+!guild cfg unexempt @Someone
+!guild cfg unexempt #spam
+!guild cfg unexempt Category
+```
+</p></details>
+
+---
+
+## Group: guild configure ratelimit
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Prevents users from posting more than specified messages in short period of time.*
+
+**Requires user permissions:**
+`Manage guild`
+
+**Aliases:**
+`rl, rate`
+
+**Overload 3:**
+
+`[boolean]` : *Enable?*
+
+`[short]` : *Sensitivity (messages per 5s to trigger action).*
+
+(optional) `[PunishmentActionType]` : *Action type.* (def: `Mute`)
+
+**Overload 2:**
+
+`[boolean]` : *Enable?*
+
+`[PunishmentActionType]` : *Action type.*
+
+(optional) `[short]` : *Sensitivity (messages per 5s to trigger action).* (def: `5`)
+
+**Overload 1:**
+
+`[boolean]` : *Enable?*
+
+**Examples:**
+
+```
+!guild cfg ratelimit
+!guild cfg ratelimit on
+!guild cfg ratelimit on mute
+!guild cfg ratelimit on 5
+!guild cfg ratelimit on 6 kick
+```
+</p></details>
+
+---
+
+### guild configure ratelimit action
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Set the action to execute when the ratelimit is hit.*
+
+**Requires user permissions:**
+`Manage guild`
+
+**Aliases:**
+`setaction, a`
+
+**Arguments:**
+
+`[PunishmentActionType]` : *Action type.*
+
+**Examples:**
+
+```
+!guild cfg ratelimit action mute
+!guild cfg ratelimit action temporaryban
+```
+</p></details>
+
+---
+
+### guild configure ratelimit sensitivity
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Set the ratelimit sensitivity. Ratelimit will be hit if member sends more messages in 5 seconds than given sensitivity number.*
+
+**Requires user permissions:**
+`Manage guild`
+
+**Aliases:**
+`setsensitivity, setsens, sens, s`
+
+**Arguments:**
+
+`[short]` : *Action type.*
+
+**Examples:**
+
+```
+!guild cfg ratelimit sensitivity 9
+```
+</p></details>
+
+---
+
+### guild configure setmuterole
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Gets or sets mute role for this guild.*
+
+**Requires user permissions:**
+`Manage guild`
+
+**Aliases:**
+`muterole, mr, muterl, mrl`
+
+**Arguments:**
+
+(optional) `[role]` : *New mute role.* (def: `None`)
+
+**Examples:**
+
+```
+!guild cfg muterole
+!guild cfg muterole MuteRoleName
 ```
 </p></details>
 
@@ -2483,7 +2808,7 @@
 
 *Warn a member in private message by sending a given warning text.*
 
-**Requires user permissions:**
+**Requires permissions:**
 `Kick members`
 
 **Aliases:**
