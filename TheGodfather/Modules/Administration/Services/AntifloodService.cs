@@ -34,7 +34,7 @@ namespace TheGodfather.Modules.Administration.Services
 
         public async Task HandleMemberJoinAsync(DiscordGuild guild, DiscordMember member)
         {
-            if (!this.guildFloodUsers.ContainsKey(guild.Id) && !TryAddGuildToWatch(guild.Id))
+            if (!this.guildFloodUsers.ContainsKey(guild.Id) && !this.TryAddGuildToWatch(guild.Id))
                 throw new ConcurrentOperationException("Failed to add guild to antiflood watch list!");
 
             if (!this.guildFloodUsers[guild.Id].Add(member))
@@ -44,7 +44,7 @@ namespace TheGodfather.Modules.Administration.Services
 
             if (this.guildFloodUsers[guild.Id].Count >= gcfg.AntifloodSensitivity) {
                 foreach (DiscordMember m in this.guildFloodUsers[guild.Id]) {
-                    await PunishMemberAsync(guild, m, gcfg.AntifloodAction);
+                    await this.PunishMemberAsync(guild, m, gcfg.AntifloodAction);
                     await Task.Delay(TimeSpan.FromMilliseconds(500));
                 }
                 this.guildFloodUsers[guild.Id].Clear();

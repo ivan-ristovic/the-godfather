@@ -39,21 +39,21 @@ namespace TheGodfather.Modules.Reactions
 
         [GroupCommand, Priority(2)]
         public Task ExecuteGroupAsync(CommandContext ctx)
-            => ListAsync(ctx);
+            => this.ListAsync(ctx);
 
         [GroupCommand, Priority(1)]
         [RequirePermissions(Permissions.ManageGuild)]
         public Task ExecuteGroupAsync(CommandContext ctx,
                                      [Description("Emoji to send.")] DiscordEmoji emoji,
                                      [RemainingText, Description("Trigger word list.")] params string[] triggers)
-            => AddEmojiReactionAsync(ctx, emoji, false, triggers);
+            => this.AddEmojiReactionAsync(ctx, emoji, false, triggers);
 
         [GroupCommand, Priority(0)]
         [RequirePermissions(Permissions.ManageGuild)]
         public Task ExecuteGroupAsync(CommandContext ctx,
                                      [Description("Trigger word (case-insensitive).")] string trigger,
                                      [Description("Emoji to send.")] DiscordEmoji emoji)
-            => AddEmojiReactionAsync(ctx, emoji, false, trigger);
+            => this.AddEmojiReactionAsync(ctx, emoji, false, trigger);
 
 
         #region COMMAND_EMOJI_REACTIONS_ADD
@@ -66,13 +66,13 @@ namespace TheGodfather.Modules.Reactions
         public Task AddAsync(CommandContext ctx,
                             [Description("Emoji to send.")] DiscordEmoji emoji,
                             [RemainingText, Description("Trigger word list (case-insensitive).")] params string[] triggers)
-            => AddEmojiReactionAsync(ctx, emoji, false, triggers);
+            => this.AddEmojiReactionAsync(ctx, emoji, false, triggers);
 
         [Command("add"), Priority(0)]
         public Task AddAsync(CommandContext ctx,
                             [Description("Trigger word (case-insensitive).")] string trigger,
                             [Description("Emoji to send.")] DiscordEmoji emoji)
-            => AddEmojiReactionAsync(ctx, emoji, false, trigger);
+            => this.AddEmojiReactionAsync(ctx, emoji, false, trigger);
         #endregion
 
         #region COMMAND_EMOJI_REACTIONS_ADDREGEX
@@ -85,13 +85,13 @@ namespace TheGodfather.Modules.Reactions
         public Task AddRegexAsync(CommandContext ctx,
                                  [Description("Emoji to send.")] DiscordEmoji emoji,
                                  [RemainingText, Description("Trigger word list (case-insensitive).")] params string[] triggers)
-            => AddEmojiReactionAsync(ctx, emoji, true, triggers);
+            => this.AddEmojiReactionAsync(ctx, emoji, true, triggers);
 
         [Command("addregex"), Priority(0)]
         public Task AddRegexAsync(CommandContext ctx,
                                  [Description("Trigger word (case-insensitive).")] string trigger,
                                  [Description("Emoji to send.")] DiscordEmoji emoji)
-            => AddEmojiReactionAsync(ctx, emoji, true, trigger);
+            => this.AddEmojiReactionAsync(ctx, emoji, true, trigger);
         #endregion
 
         #region COMMAND_EMOJI_REACTIONS_DELETE
@@ -136,9 +136,9 @@ namespace TheGodfather.Modules.Reactions
             }
 
             if (eb.Length > 0)
-                await InformFailureAsync(ctx, $"Action finished with following warnings:\n\n{eb.ToString()}");
+                await this.InformFailureAsync(ctx, $"Action finished with following warnings:\n\n{eb.ToString()}");
             else
-                await InformAsync(ctx, $"Removed reactions that contain emoji: {emoji}", important: false);
+                await this.InformAsync(ctx, $"Removed reactions that contain emoji: {emoji}", important: false);
         }
 
         [Command("delete"), Priority(1)]
@@ -184,9 +184,9 @@ namespace TheGodfather.Modules.Reactions
             }
 
             if (eb.Length > 0)
-                await InformFailureAsync(ctx, $"Action finished with following notes/warnings:\n\n{eb.ToString()}");
+                await this.InformFailureAsync(ctx, $"Action finished with following notes/warnings:\n\n{eb.ToString()}");
             else
-                await InformAsync(ctx, $"Removed {count} reactions matching given IDs.", important: false);
+                await this.InformAsync(ctx, $"Removed {count} reactions matching given IDs.", important: false);
         }
 
         [Command("delete"), Priority(0)]
@@ -248,9 +248,9 @@ namespace TheGodfather.Modules.Reactions
             }
 
             if (eb.Length > 0)
-                await InformFailureAsync(ctx, $"Action finished with following warnings/errors:\n\n{eb.ToString()}");
+                await this.InformFailureAsync(ctx, $"Action finished with following warnings/errors:\n\n{eb.ToString()}");
             else
-                await InformAsync(ctx, $"Removed {count} reactions matching given triggers.", important: false);
+                await this.InformAsync(ctx, $"Removed {count} reactions matching given triggers.", important: false);
         }
         #endregion
 
@@ -282,7 +282,7 @@ namespace TheGodfather.Modules.Reactions
                 await logchn.SendMessageAsync(embed: emb.Build());
             }
 
-            await InformAsync(ctx, "Removed all emoji reactions!", important: false);
+            await this.InformAsync(ctx, "Removed all emoji reactions!", important: false);
         }
         #endregion
 
@@ -381,9 +381,9 @@ namespace TheGodfather.Modules.Reactions
             }
 
             if (eb.Length > 0)
-                await InformFailureAsync(ctx, $"Action finished with following warnings/errors:\n\n{eb.ToString()}");
+                await this.InformFailureAsync(ctx, $"Action finished with following warnings/errors:\n\n{eb.ToString()}");
             else
-                await InformAsync(ctx, "Successfully added all given emoji reactions.", important: false);
+                await this.InformAsync(ctx, "Successfully added all given emoji reactions.", important: false);
         }
         #endregion
     }

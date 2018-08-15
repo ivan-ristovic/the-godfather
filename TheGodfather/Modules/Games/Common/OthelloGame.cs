@@ -47,7 +47,7 @@ namespace TheGodfather.Modules.Games.Common
                     int posX = col + x;
                     int posY = row + y;
                     bool found = false;
-                    int current = BoardElementAt(posY, posX);
+                    int current = this.BoardElementAt(posY, posX);
                     
                     if (current == -1 || current == 0 || current == val)
                         continue;
@@ -55,14 +55,14 @@ namespace TheGodfather.Modules.Games.Common
                     while (!found) {
                         posX += x;
                         posY += y;
-                        current = BoardElementAt(posY, posX);
+                        current = this.BoardElementAt(posY, posX);
 
                         if (current == val) {
                             found = true;
                             legal = true;
                             posX -= x;
                             posY -= y;
-                            current = BoardElementAt(posY, posX);
+                            current = this.BoardElementAt(posY, posX);
 
                             while (current != 0) {
                                 this.board[posY, posX] = val;

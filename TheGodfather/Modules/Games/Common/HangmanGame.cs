@@ -40,10 +40,10 @@ namespace TheGodfather.Modules.Games
         {
             this.msgHandle = await this.Channel.EmbedAsync("Game starts!", StaticDiscordEmoji.Joystick);
 
-            await UpdateHangmanAsync();
+            await this.UpdateHangmanAsync();
 
             while (!this.gameOver && this.lives > 0)
-                await AdvanceAsync();
+                await this.AdvanceAsync();
 
             if (this.IsTimeoutReached) {
                 this.Winner = null;
@@ -94,7 +94,7 @@ namespace TheGodfather.Modules.Games
                 this.guesses.Add(guess);
             }
 
-            await UpdateHangmanAsync();
+            await this.UpdateHangmanAsync();
         }
 
         private Task UpdateHangmanAsync()

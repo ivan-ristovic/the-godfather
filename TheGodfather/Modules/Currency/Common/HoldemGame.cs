@@ -87,7 +87,7 @@ namespace TheGodfather.Modules.Currency.Common
 
                 while (this.ActiveParticipants.Any(p => p.Bet != bet)) {
                     foreach (HoldemParticipant participant in this.ActiveParticipants) {
-                        await PrintGameAsync(msg, bet, participant);
+                        await this.PrintGameAsync(msg, bet, participant);
 
                         if (await this.Interactivity.WaitForBoolReplyAsync(this.Channel.Id, participant.Id)) {
                             await this.Channel.SendMessageAsync($"Do you wish to raise the current bet? If yes, reply yes and then reply raise amount in new message, otherwise say no. Max: {participant.Balance - bet}");
@@ -113,7 +113,7 @@ namespace TheGodfather.Modules.Currency.Common
             }
 
             this.GameOver = true;
-            await PrintGameAsync(msg, bet, showhands: true);
+            await this.PrintGameAsync(msg, bet, showhands: true);
 
             foreach (HoldemParticipant p in this.ActiveParticipants)
                 p.HandRank = _evaluator.GetBestHand(new List<Card>(this.drawn) { p.Card1, p.Card2 }).RankType;
@@ -127,7 +127,7 @@ namespace TheGodfather.Modules.Currency.Common
 
         public void AddParticipant(DiscordUser user, DiscordMessage dm)
         {
-            if (IsParticipating(user))
+            if (this.IsParticipating(user))
                 return;
 
             this.Participants.Enqueue(new HoldemParticipant {

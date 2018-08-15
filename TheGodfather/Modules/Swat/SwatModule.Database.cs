@@ -37,7 +37,7 @@ namespace TheGodfather.Modules.Swat
 
             [GroupCommand]
             public Task ExecuteGroupAsync(CommandContext ctx)
-                => ListAsync(ctx);
+                => this.ListAsync(ctx);
 
 
             #region COMMAND_DATABASE_ADD
@@ -54,7 +54,7 @@ namespace TheGodfather.Modules.Swat
                     throw new InvalidCommandUsageException("Info cannot exceed 120 characters.");
 
                 await this.Database.AddSwatIpEntryAsync(ip.Content, name, info);
-                await InformAsync(ctx, $"Added a database entry for {Formatter.Bold(name)} ({Formatter.InlineCode(ip.Content)})", important: false);
+                await this.InformAsync(ctx, $"Added a database entry for {Formatter.Bold(name)} ({Formatter.InlineCode(ip.Content)})", important: false);
             }
 
             [Command("add"), Priority(0)]
@@ -62,7 +62,7 @@ namespace TheGodfather.Modules.Swat
                                 [Description("IP.")] CustomIPFormat ip,
                                 [Description("Player name.")] string name,
                                 [RemainingText, Description("Additional info.")] string reason = null)
-                => AddAsync(ctx, name, ip, reason);
+                => this.AddAsync(ctx, name, ip, reason);
             #endregion
 
             #region COMMAND_DATABASE_DELETE
@@ -74,7 +74,7 @@ namespace TheGodfather.Modules.Swat
                                          [Description("IP or range.")] CustomIPFormat ip)
             {
                 await this.Database.RemoveSwatIpEntryAsync(ip.Content);
-                await InformAsync(ctx, $"Removed {Formatter.Bold(ip.Content)} from database.", important: false);
+                await this.InformAsync(ctx, $"Removed {Formatter.Bold(ip.Content)} from database.", important: false);
             }
             #endregion
 

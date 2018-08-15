@@ -49,7 +49,7 @@ namespace TheGodfather.Modules.Games
                         $"{string.Join("", Enumerable.Repeat(DiscordEmoji.FromName(ctx.Client, ":white_large_square:"), 5))} {opponent.Mention}" +
                         $"\n{ctx.Client.CurrentUser.Mention} {DiscordEmoji.FromName(ctx.Client, ":zap:")} {ctx.User.Mention}"
                     );
-                    await InformAsync(ctx, StaticDiscordEmoji.DuelSwords, $"{ctx.Client.CurrentUser.Mention} wins!");
+                    await this.InformAsync(ctx, StaticDiscordEmoji.DuelSwords, $"{ctx.Client.CurrentUser.Mention} wins!");
                     return;
                 }
 
@@ -59,7 +59,7 @@ namespace TheGodfather.Modules.Games
                 try {
                     await duel.RunAsync();
 
-                    await InformAsync(ctx, StaticDiscordEmoji.DuelSwords, $"{duel.Winner.Username} {duel.FinishingMove ?? "wins"}!");
+                    await this.InformAsync(ctx, StaticDiscordEmoji.DuelSwords, $"{duel.Winner.Username} {duel.FinishingMove ?? "wins"}!");
 
                     await this.Database.UpdateUserStatsAsync(duel.Winner.Id, GameStatsType.DuelsWon);
                     await this.Database.UpdateUserStatsAsync(duel.Winner.Id == ctx.User.Id ? opponent.Id : ctx.User.Id, GameStatsType.DuelsLost);
@@ -76,7 +76,7 @@ namespace TheGodfather.Modules.Games
             [UsageExamples("!game duel rules")]
             public Task RulesAsync(CommandContext ctx)
             {
-                return InformAsync(ctx,
+                return this.InformAsync(ctx,
                     StaticDiscordEmoji.Information,
                     "\nDuel is a death battle with no rules! Rumours say that typing ``hp`` might heal give you " +
                     "an extra boost during the duel..."
@@ -92,7 +92,7 @@ namespace TheGodfather.Modules.Games
             public async Task StatsAsync(CommandContext ctx)
             {
                 string top = await this.Database.GetTopDuelistsStringAsync(ctx.Client);
-                await InformAsync(ctx, StaticDiscordEmoji.Trophy, $"Top Duelists:\n\n{top}");
+                await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"Top Duelists:\n\n{top}");
             }
             #endregion
         }

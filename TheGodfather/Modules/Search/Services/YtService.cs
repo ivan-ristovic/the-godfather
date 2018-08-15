@@ -97,7 +97,7 @@ namespace TheGodfather.Modules.Search.Services
             if (string.IsNullOrWhiteSpace(query))
                 throw new ArgumentException("Query missing!", nameof(query));
 
-            var res = await SearchAsync(query, 1, "video");
+            var res = await this.SearchAsync(query, 1, "video");
             if (!res.Any())
                 return null;
 
@@ -115,7 +115,7 @@ namespace TheGodfather.Modules.Search.Services
             if (amount < 1 || amount > 20)
                 throw new ArgumentException("Result amount out of range (max 20)", nameof(amount));
 
-            IReadOnlyList<SearchResult> results = await SearchAsync(query, amount, type);
+            IReadOnlyList<SearchResult> results = await this.SearchAsync(query, amount, type);
             if (results == null || !results.Any())
                 return null;
 
@@ -159,7 +159,7 @@ namespace TheGodfather.Modules.Search.Services
             if (string.IsNullOrWhiteSpace(url))
                 throw new ArgumentException("URL missing!", nameof(url));
 
-            return await GetSongInfoViaYtExplodeAsync(url) ?? await GetSongInfoViaYtDlAsync(url);
+            return await this.GetSongInfoViaYtExplodeAsync(url) ?? await this.GetSongInfoViaYtDlAsync(url);
         }
 
 

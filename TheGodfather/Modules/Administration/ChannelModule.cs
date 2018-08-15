@@ -36,7 +36,7 @@ namespace TheGodfather.Modules.Administration
         [GroupCommand]
         public Task ExecuteGroupAsync(CommandContext ctx,
                                      [Description("Channel to scan.")] DiscordChannel channel = null)
-            => InfoAsync(ctx, channel);
+            => this.InfoAsync(ctx, channel);
 
 
         #region COMMAND_CHANNEL_CLONE
@@ -66,7 +66,7 @@ namespace TheGodfather.Modules.Administration
                 await cloned.ModifyAsync(new Action<ChannelEditModel>(m => m.Name = name));
             }
 
-            await InformAsync(ctx, $"Successfully created clone of channel {Formatter.Bold(channel.Name)} with name {Formatter.Bold(cloned.Name)}.", important: false);
+            await this.InformAsync(ctx, $"Successfully created clone of channel {Formatter.Bold(channel.Name)} with name {Formatter.Bold(cloned.Name)}.", important: false);
         }
         #endregion
 
@@ -91,7 +91,7 @@ namespace TheGodfather.Modules.Administration
             }
 
             DiscordChannel c = await ctx.Guild.CreateChannelCategoryAsync(name, reason: ctx.BuildReasonString());
-            await InformAsync(ctx, $"Successfully created category: {Formatter.Bold(c.Name)}", important: false);
+            await this.InformAsync(ctx, $"Successfully created category: {Formatter.Bold(c.Name)}", important: false);
         }
         #endregion
 
@@ -126,7 +126,7 @@ namespace TheGodfather.Modules.Administration
             }
 
             DiscordChannel c = await ctx.Guild.CreateTextChannelAsync(name, parent, nsfw: nsfw, reason: ctx.BuildReasonString());
-            await InformAsync(ctx, $"Successfully created text channel: {Formatter.Bold(c.Name)}", important: false);
+            await this.InformAsync(ctx, $"Successfully created text channel: {Formatter.Bold(c.Name)}", important: false);
         }
 
         [Command("createtext"), Priority(1)]
@@ -134,14 +134,14 @@ namespace TheGodfather.Modules.Administration
                                           [Description("Name for the channel.")] string name,
                                           [Description("NSFW?")] bool nsfw = false,
                                           [Description("Parent category.")] DiscordChannel parent = null)
-           => CreateTextChannelAsync(ctx, name, parent, nsfw);
+           => this.CreateTextChannelAsync(ctx, name, parent, nsfw);
 
         [Command("createtext"), Priority(0)]
         public Task CreateTextChannelAsync(CommandContext ctx,
                                           [Description("Parent category.")] DiscordChannel parent,
                                           [Description("Name for the channel.")] string name,
                                           [Description("NSFW?")] bool nsfw = false)
-           => CreateTextChannelAsync(ctx, name, parent, nsfw);
+           => this.CreateTextChannelAsync(ctx, name, parent, nsfw);
         #endregion
 
         #region COMMAND_CHANNEL_CREATEVOICE
@@ -173,7 +173,7 @@ namespace TheGodfather.Modules.Administration
             }
 
             DiscordChannel c = await ctx.Guild.CreateVoiceChannelAsync(name, parent, bitrate, userlimit, reason: ctx.BuildReasonString());
-            await InformAsync(ctx, $"Successfully created voice channel: {Formatter.Bold(c.Name)}", important: false);
+            await this.InformAsync(ctx, $"Successfully created voice channel: {Formatter.Bold(c.Name)}", important: false);
         }
 
 
@@ -183,7 +183,7 @@ namespace TheGodfather.Modules.Administration
                                            [Description("User limit.")] int? userlimit = null,
                                            [Description("Bitrate.")] int? bitrate = null,
                                            [Description("Parent category.")] DiscordChannel parent = null)
-            => CreateVoiceChannelAsync(ctx, name, parent, userlimit, bitrate);
+            => this.CreateVoiceChannelAsync(ctx, name, parent, userlimit, bitrate);
 
         [Command("createvoice"), Priority(0)]
         public Task CreateVoiceChannelAsync(CommandContext ctx,
@@ -191,7 +191,7 @@ namespace TheGodfather.Modules.Administration
                                            [Description("Name for the channel.")] string name,
                                            [Description("User limit.")] int? userlimit = null,
                                            [Description("Bitrate.")] int? bitrate = null)
-            => CreateVoiceChannelAsync(ctx, name, parent, userlimit, bitrate);
+            => this.CreateVoiceChannelAsync(ctx, name, parent, userlimit, bitrate);
         #endregion
 
         #region COMMAND_CHANNEL_DELETE
@@ -223,13 +223,13 @@ namespace TheGodfather.Modules.Administration
             string name = Formatter.Bold(channel.Name);
             await channel.DeleteAsync(reason: ctx.BuildReasonString(reason));
             if (channel.Id != ctx.Channel.Id)
-                await InformAsync(ctx, $"Successfully deleted channel: {name}", important: false);
+                await this.InformAsync(ctx, $"Successfully deleted channel: {name}", important: false);
         }
 
         [Command("delete"), Priority(0)]
         public Task DeleteAsync(CommandContext ctx,
                                [RemainingText, Description("Reason.")] string reason)
-            => DeleteAsync(ctx, null, reason);
+            => this.DeleteAsync(ctx, null, reason);
         #endregion
 
         #region COMMAND_CHANNEL_INFO
@@ -293,7 +293,7 @@ namespace TheGodfather.Modules.Administration
                 m.AuditLogReason = ctx.BuildReasonString(reason);
             })).ConfigureAwait(false);
 
-            await InformAsync(ctx, $"Successfully modified voice channel {Formatter.Bold(channel.Name)}:\n\nUser limit: {(limit > 0 ? limit.ToString() : "Not changed")}\nBitrate: {(bitrate > 0 ? bitrate.ToString() : "Not changed")}", important: false);
+            await this.InformAsync(ctx, $"Successfully modified voice channel {Formatter.Bold(channel.Name)}:\n\nUser limit: {(limit > 0 ? limit.ToString() : "Not changed")}\nBitrate: {(bitrate > 0 ? bitrate.ToString() : "Not changed")}", important: false);
         }
 
         [Command("modify"), Priority(0)]
@@ -301,7 +301,7 @@ namespace TheGodfather.Modules.Administration
                                [Description("User limit.")] int limit = 0,
                                [Description("Bitrate.")] int bitrate = 0,
                                [RemainingText, Description("Reason.")] string reason = null)
-            => ModifyAsync(ctx, null, limit, bitrate, reason);
+            => this.ModifyAsync(ctx, null, limit, bitrate, reason);
         #endregion
 
         #region COMMAND_CHANNEL_RENAME
@@ -335,19 +335,19 @@ namespace TheGodfather.Modules.Administration
                 m.AuditLogReason = ctx.BuildReasonString(reason);
             }));
 
-            await InformAsync(ctx, $"Successfully renamed channel {Formatter.Bold(name)} to {Formatter.Bold(channel.Name)}", important: false);
+            await this.InformAsync(ctx, $"Successfully renamed channel {Formatter.Bold(name)} to {Formatter.Bold(channel.Name)}", important: false);
         }
 
         [Command("rename"), Priority(1)]
         public Task RenameAsync(CommandContext ctx,
                                [Description("Channel to rename.")] DiscordChannel channel,
                                [RemainingText, Description("New name.")] string newname)
-            => RenameAsync(ctx, null, channel, newname);
+            => this.RenameAsync(ctx, null, channel, newname);
 
         [Command("rename"), Priority(0)]
         public Task RenameAsync(CommandContext ctx,
                                [RemainingText, Description("New name.")] string newname)
-            => RenameAsync(ctx, null, null, newname);
+            => this.RenameAsync(ctx, null, null, newname);
         #endregion
 
         #region COMMAND_CHANNEL_SETPARENT
@@ -374,14 +374,14 @@ namespace TheGodfather.Modules.Administration
                 m.AuditLogReason = ctx.BuildReasonString(reason);
             }));
 
-            await InformAsync(ctx, $"Successfully set the parent of channel {Formatter.Bold(channel.Name)} to {Formatter.Bold(parent.Name)}", important: false);
+            await this.InformAsync(ctx, $"Successfully set the parent of channel {Formatter.Bold(channel.Name)} to {Formatter.Bold(parent.Name)}", important: false);
         }
 
         [Command("setparent"), Priority(0)]
         public Task ChangeParentAsync(CommandContext ctx,
                                      [Description("Parent category.")] DiscordChannel parent,
                                      [RemainingText, Description("Reason.")] string reason = null)
-            => ChangeParentAsync(ctx, null, parent, reason);
+            => this.ChangeParentAsync(ctx, null, parent, reason);
         #endregion
 
         #region COMMAND_CHANNEL_SETPOSITION
@@ -405,7 +405,7 @@ namespace TheGodfather.Modules.Administration
                 channel = ctx.Channel;
 
             await channel.ModifyPositionAsync(position, ctx.BuildReasonString(reason));
-            await InformAsync(ctx, $"Changed the position of channel {Formatter.Bold(channel.Name)} to {Formatter.Bold(position.ToString())}", important: false);
+            await this.InformAsync(ctx, $"Changed the position of channel {Formatter.Bold(channel.Name)} to {Formatter.Bold(position.ToString())}", important: false);
         }
 
         [Command("setposition"), Priority(1)]
@@ -413,13 +413,13 @@ namespace TheGodfather.Modules.Administration
                                        [Description("Position.")] int position,
                                        [Description("Channel to reorder.")] DiscordChannel channel,
                                        [RemainingText, Description("Reason.")] string reason = null)
-            => ReorderChannelAsync(ctx, channel, position, reason);
+            => this.ReorderChannelAsync(ctx, channel, position, reason);
 
         [Command("setposition"), Priority(0)]
         public Task ReorderChannelAsync(CommandContext ctx,
                                        [Description("Position.")] int position,
                                        [RemainingText, Description("Reason.")] string reason = null)
-            => ReorderChannelAsync(ctx, null, position, reason);
+            => this.ReorderChannelAsync(ctx, null, position, reason);
         #endregion
 
         #region COMMAND_CHANNEL_SETTOPIC
@@ -448,19 +448,19 @@ namespace TheGodfather.Modules.Administration
                 m.AuditLogReason = ctx.BuildReasonString();
             }));
 
-            await InformAsync(ctx, $"Successfully changed the topic for channel {Formatter.Bold(channel.Name)}", important: false);
+            await this.InformAsync(ctx, $"Successfully changed the topic for channel {Formatter.Bold(channel.Name)}", important: false);
         }
 
         [Command("settopic"), Priority(1)]
         public Task SetChannelTopicAsync(CommandContext ctx,
                                         [Description("Channel.")] DiscordChannel channel,
                                         [RemainingText, Description("New Topic.")] string topic)
-            => SetChannelTopicAsync(ctx, null, channel, topic);
+            => this.SetChannelTopicAsync(ctx, null, channel, topic);
 
         [Command("settopic"), Priority(0)]
         public Task SetChannelTopicAsync(CommandContext ctx,
                                         [RemainingText, Description("New Topic.")] string topic)
-            => SetChannelTopicAsync(ctx, null, null, topic);
+            => this.SetChannelTopicAsync(ctx, null, null, topic);
         #endregion
 
         #region COMMAND_CHANNEL_VIEWPERMS
@@ -498,7 +498,7 @@ namespace TheGodfather.Modules.Administration
         public Task PrintPermsAsync(CommandContext ctx,
                                    [Description("Channel.")] DiscordChannel channel,
                                    [Description("Member.")] DiscordMember member = null)
-            => PrintPermsAsync(ctx, member, channel);
+            => this.PrintPermsAsync(ctx, member, channel);
 
         [Command("viewperms"), Priority(1)]
         public async Task PrintPermsAsync(CommandContext ctx,
@@ -539,7 +539,7 @@ namespace TheGodfather.Modules.Administration
         public Task PrintPermsAsync(CommandContext ctx,
                                    [Description("Channel.")] DiscordChannel channel,
                                    [Description("Role.")] DiscordRole role)
-            => PrintPermsAsync(ctx, role, channel);
+            => this.PrintPermsAsync(ctx, role, channel);
         #endregion
     }
 }

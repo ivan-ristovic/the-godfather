@@ -38,7 +38,7 @@ namespace TheGodfather.Modules.Swat
 
             [GroupCommand]
             public Task ExecuteGroupAsync(CommandContext ctx)
-                => ListAsync(ctx);
+                => this.ListAsync(ctx);
 
 
             #region COMMAND_SERVERS_ADD
@@ -59,7 +59,7 @@ namespace TheGodfather.Modules.Swat
                     throw new InvalidCommandUsageException("Port range invalid (must be in range [1, 65535])!");
                 
                 await this.Database.AddSwatServerAsync(SwatServer.FromIP(ip.Content, queryport, name));
-                await InformAsync(ctx, "Server added. You can now query it using the name provided.", important: false);
+                await this.InformAsync(ctx, "Server added. You can now query it using the name provided.", important: false);
             }
 
             [Command("add"), Priority(0)]
@@ -67,7 +67,7 @@ namespace TheGodfather.Modules.Swat
                                 [Description("IP.")] CustomIPFormat ip,
                                 [Description("Name.")] string name,
                                 [Description("Query port")] int queryport = 10481)
-                => AddAsync(ctx, name, ip, queryport);
+                => this.AddAsync(ctx, name, ip, queryport);
             #endregion
 
             #region COMMAND_SERVERS_DELETE
@@ -82,7 +82,7 @@ namespace TheGodfather.Modules.Swat
                     throw new InvalidCommandUsageException("Name missing.");
 
                 await this.Database.RemoveSwatServerAsync(name);
-                await InformAsync(ctx, "Server successfully removed.", important: false);
+                await this.InformAsync(ctx, "Server successfully removed.", important: false);
             }
             #endregion
 

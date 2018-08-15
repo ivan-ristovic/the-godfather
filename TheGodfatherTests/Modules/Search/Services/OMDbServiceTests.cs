@@ -12,6 +12,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 using TheGodfather.Common;
+using TheGodfather.Modules.Search.Common;
 using TheGodfather.Modules.Search.Services;
 #endregion
 

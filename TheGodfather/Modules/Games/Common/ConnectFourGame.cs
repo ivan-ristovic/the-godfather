@@ -46,7 +46,7 @@ namespace TheGodfather.Modules.Games.Common
                 return;
             }
 
-            if (TryPlayMove(player1plays ? 1 : 2, 1, column - 1)) {
+            if (this.TryPlayMove(player1plays ? 1 : 2, 1, column - 1)) {
                 this.move++;
                 if (!this.deleteErrored) {
                     try {

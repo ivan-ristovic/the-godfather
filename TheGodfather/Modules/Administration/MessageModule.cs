@@ -111,7 +111,7 @@ namespace TheGodfather.Modules.Administration
                                                [Description("Amount.")] int amount,
                                                [Description("User.")] DiscordUser user,
                                                [RemainingText, Description("Reason.")] string reason = null)
-            => DeleteMessagesFromUserAsync(ctx, user, amount, reason);
+            => this.DeleteMessagesFromUserAsync(ctx, user, amount, reason);
         #endregion
 
         #region COMMAND_MESSAGES_DELETE_REACTIONS
@@ -134,7 +134,7 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException("Cannot find the specified message.");
 
             await msg.DeleteAllReactionsAsync(ctx.BuildReasonString(reason));
-            await InformAsync(ctx);
+            await this.InformAsync(ctx);
         }
         #endregion
 
@@ -166,7 +166,7 @@ namespace TheGodfather.Modules.Administration
                                                 [Description("Amount.")] int amount,
                                                 [Description("Pattern (Regex).")] string pattern,
                                                 [RemainingText, Description("Reason.")] string reason = null)
-            => DeleteMessagesFromRegexAsync(ctx, pattern, amount, reason);
+            => this.DeleteMessagesFromRegexAsync(ctx, pattern, amount, reason);
         #endregion
 
         #region COMMAND_MESSAGES_LISTPINNED
@@ -179,7 +179,7 @@ namespace TheGodfather.Modules.Administration
             IReadOnlyList<DiscordMessage> pinned = await ctx.Channel.GetPinnedMessagesAsync();
 
             if (!pinned.Any()) {
-                await InformFailureAsync(ctx, "No pinned messages in this channel");
+                await this.InformFailureAsync(ctx, "No pinned messages in this channel");
                 return;
             }
 
@@ -211,7 +211,7 @@ namespace TheGodfather.Modules.Administration
 
             DiscordMessage msg = await ctx.Channel.GetMessageAsync(id);
             await msg.ModifyAsync(content);
-            await InformAsync(ctx, important: false);
+            await this.InformAsync(ctx, important: false);
         }
         #endregion
 
@@ -235,7 +235,7 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException("Cannot retrieve the message!");
 
             await msg.PinAsync();
-            await InformAsync(ctx, $"Added new channel pin.", important: false);
+            await this.InformAsync(ctx, $"Added new channel pin.", important: false);
         }
         #endregion
 
@@ -255,7 +255,7 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException($"Invalid index (must be in range [1, {pinned.Count}]!");
 
             await pinned.ElementAt(index - 1).UnpinAsync();
-            await InformAsync(ctx, $"Removed the pin.", important: false);
+            await this.InformAsync(ctx, $"Removed the pin.", important: false);
         }
         #endregion
 
@@ -279,9 +279,9 @@ namespace TheGodfather.Modules.Administration
             }
 
             if (failed > 0)
-                await InformFailureAsync(ctx, $"Failed to unpin {failed} messages!");
+                await this.InformFailureAsync(ctx, $"Failed to unpin {failed} messages!");
             else
-                await InformAsync(ctx, "Successfully unpinned all messages in this channel", important: false);
+                await this.InformAsync(ctx, "Successfully unpinned all messages in this channel", important: false);
         }
         #endregion
     }

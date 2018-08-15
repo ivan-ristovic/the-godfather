@@ -32,11 +32,11 @@ namespace TheGodfather.Modules.Search
         [GroupCommand, Priority(1)]
         public Task ExecuteGroupAsync(CommandContext ctx,
                                      [Description("Comic ID.")] int id)
-            => ByIdAsync(ctx, id);
+            => this.ByIdAsync(ctx, id);
 
         [GroupCommand, Priority(0)]
         public Task ExecuteGroupAsync(CommandContext ctx)
-            => RandomAsync(ctx);
+            => this.RandomAsync(ctx);
 
 
         #region COMMAND_XKCD_ID
@@ -60,7 +60,7 @@ namespace TheGodfather.Modules.Search
         [Aliases("fresh", "newest", "l")]
         [UsageExamples("!xkcd latest")]
         public Task LatestAsync(CommandContext ctx)
-            => ByIdAsync(ctx);
+            => this.ByIdAsync(ctx);
         #endregion
 
         #region COMMAND_XKCD_RANDOM

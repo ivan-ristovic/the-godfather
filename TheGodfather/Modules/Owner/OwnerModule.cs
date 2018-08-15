@@ -71,9 +71,9 @@ namespace TheGodfather.Modules.Owner
             }
 
             if (eb.Length > 0)
-                await InformFailureAsync(ctx, $"Action finished with following errors:\n\n{eb.ToString()}");
+                await this.InformFailureAsync(ctx, $"Action finished with following errors:\n\n{eb.ToString()}");
             else
-                await InformAsync(ctx, StaticDiscordEmoji.Information, "Sent the message to all guilds!", important: false);
+                await this.InformAsync(ctx, StaticDiscordEmoji.Information, "Sent the message to all guilds!", important: false);
         }
         #endregion
 
@@ -86,7 +86,7 @@ namespace TheGodfather.Modules.Owner
         public async Task SetBotAvatarAsync(CommandContext ctx,
                                            [Description("URL.")] Uri url)
         {
-            if (!await IsValidImageUriAsync(url))
+            if (!await this.IsValidImageUriAsync(url))
                 throw new CommandFailedException("URL must point to an image and use http or https protocols.");
 
             try {
@@ -99,7 +99,7 @@ namespace TheGodfather.Modules.Owner
                 throw new CommandFailedException("Web exception thrown while fetching the image.", e);
             }
 
-            await InformAsync(ctx, "Successfully changed the bot avatar!", important: false);
+            await this.InformAsync(ctx, "Successfully changed the bot avatar!", important: false);
         }
         #endregion
 
@@ -116,7 +116,7 @@ namespace TheGodfather.Modules.Owner
                 throw new InvalidCommandUsageException("Name missing.");
 
             await ctx.Client.UpdateCurrentUserAsync(username: name);
-            await InformAsync(ctx, $"Renamed the current bot user to {Formatter.Bold(ctx.Client.CurrentUser.Username)}");
+            await this.InformAsync(ctx, $"Renamed the current bot user to {Formatter.Bold(ctx.Client.CurrentUser.Username)}");
         }
         #endregion
 
@@ -134,7 +134,7 @@ namespace TheGodfather.Modules.Owner
             if (!this.Shared.LogProvider.Clear())
                 throw new CommandFailedException("Failed to delete log file!");
 
-            await InformAsync(ctx, $"Logs cleared!", important: false);
+            await this.InformAsync(ctx, $"Logs cleared!", important: false);
         }
         #endregion
 
@@ -152,7 +152,7 @@ namespace TheGodfather.Modules.Owner
 
             IReadOnlyList<IReadOnlyDictionary<string, string>> res = await this.Database.ExecuteRawQueryAsync(query);
             if (!res.Any() || !res.First().Any()) {
-                await InformAsync(ctx, StaticDiscordEmoji.Information, "No results returned (this is alright if your query wasn't a SELECT query).");
+                await this.InformAsync(ctx, StaticDiscordEmoji.Information, "No results returned (this is alright if your query wasn't a SELECT query).");
                 return;
             }
 
@@ -290,7 +290,7 @@ namespace TheGodfather.Modules.Owner
                                 [Description("Enable?")] bool enable = true)
         {
             this.Shared.LogProvider.LogToFile = enable;
-            return InformAsync(ctx, $"File logging {(enable ? "enabled" : "disabled")}", important: false);
+            return this.InformAsync(ctx, $"File logging {(enable ? "enabled" : "disabled")}", important: false);
         }
         #endregion
 
@@ -446,7 +446,7 @@ namespace TheGodfather.Modules.Owner
                 throw new CommandFailedException($"IO Exception occured while saving the main file!", e);
             }
 
-            await InformAsync(ctx, $"Command list created at: {Formatter.InlineCode(current.FullName)}!", important: false);
+            await this.InformAsync(ctx, $"Command list created at: {Formatter.InlineCode(current.FullName)}!", important: false);
         }
         #endregion
 
@@ -477,9 +477,9 @@ namespace TheGodfather.Modules.Owner
 
             if (gids.All(gid => gid != ctx.Guild.Id)) {
                 if (eb.Length > 0)
-                    await InformFailureAsync(ctx, $"Action finished with following errors:\n\n{eb.ToString()}");
+                    await this.InformFailureAsync(ctx, $"Action finished with following errors:\n\n{eb.ToString()}");
                 else
-                    await InformAsync(ctx, StaticDiscordEmoji.Information, "Successfully left all given guilds!", important: false);
+                    await this.InformAsync(ctx, StaticDiscordEmoji.Information, "Successfully left all given guilds!", important: false);
             }
         }
         #endregion
@@ -511,7 +511,7 @@ namespace TheGodfather.Modules.Owner
                 throw new InvalidCommandUsageException("Descriptor can only be 'u' or 'c'.");
             }
 
-            await InformAsync(ctx, $"Successfully sent the given message!", important: false);
+            await this.InformAsync(ctx, $"Successfully sent the given message!", important: false);
         }
         #endregion
 
@@ -562,7 +562,7 @@ namespace TheGodfather.Modules.Owner
         public Task ToggleIgnoreAsync(CommandContext ctx)
         {
             this.Shared.ListeningStatus = !this.Shared.ListeningStatus;
-            return InformAsync(ctx, $"Listening status set to: {Formatter.Bold(this.Shared.ListeningStatus.ToString())}", important: false);
+            return this.InformAsync(ctx, $"Listening status set to: {Formatter.Bold(this.Shared.ListeningStatus.ToString())}", important: false);
         }
         #endregion
     }

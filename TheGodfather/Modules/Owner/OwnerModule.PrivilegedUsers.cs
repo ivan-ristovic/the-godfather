@@ -38,12 +38,12 @@ namespace TheGodfather.Modules.Owner
 
             [GroupCommand, Priority(1)]
             public Task ExecuteGroupAsync(CommandContext ctx)
-                => ListAsync(ctx);
+                => this.ListAsync(ctx);
 
             [GroupCommand, Priority(0)]
             public Task ExecuteGroupAsync(CommandContext ctx,
                                          [Description("Users to grant privilege to.")] params DiscordUser[] users)
-                => AddAsync(ctx, users);
+                => this.AddAsync(ctx, users);
 
 
             #region COMMAND_PRIVILEGEDUSERS_ADD
@@ -70,9 +70,9 @@ namespace TheGodfather.Modules.Owner
                 }
 
                 if (eb.Length > 0)
-                    await InformFailureAsync(ctx, $"Action finished with warnings/errors:\n\n{eb.ToString()}");
+                    await this.InformFailureAsync(ctx, $"Action finished with warnings/errors:\n\n{eb.ToString()}");
                 else
-                    await InformAsync(ctx, "Granted privilege to all given users.", important: false);
+                    await this.InformAsync(ctx, "Granted privilege to all given users.", important: false);
             }
             #endregion
 
@@ -101,9 +101,9 @@ namespace TheGodfather.Modules.Owner
                 }
 
                 if (eb.Length > 0)
-                    await InformFailureAsync(ctx, $"Action finished with warnings/errors:\n\n{eb.ToString()}");
+                    await this.InformFailureAsync(ctx, $"Action finished with warnings/errors:\n\n{eb.ToString()}");
                 else
-                    await InformAsync(ctx, "Revoked privilege from all given users.", important: false);
+                    await this.InformAsync(ctx, "Revoked privilege from all given users.", important: false);
             }
             #endregion
 

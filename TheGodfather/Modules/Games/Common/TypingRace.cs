@@ -85,7 +85,7 @@ namespace TheGodfather.Modules.Games.Common
                 }
             }
 
-            quote = PrepareText(quote);
+            quote = this.PrepareText(quote);
             MessageContext mctx = await this.Interactivity.WaitForMessageAsync(
                 msg => {
                     if (msg.ChannelId != this.Channel.Id || msg.Author.IsBot)
@@ -103,7 +103,7 @@ namespace TheGodfather.Modules.Games.Common
                 .Where(kvp => kvp.Value < 100)
                 .OrderBy(kvp => kvp.Value);
             if (ordered.Any())
-                await this.Channel.SendMessageAsync(embed: EmbedResults(ordered));
+                await this.Channel.SendMessageAsync(embed: this.EmbedResults(ordered));
             else
                 await this.Channel.InformFailureAsync("No results to be shown for the typing race.");
 

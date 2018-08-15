@@ -115,9 +115,9 @@ namespace TheGodfather.Modules.Administration
                             await channel.AddOverwriteAsync(await ctx.Guild.GetMemberAsync(ctx.Client.CurrentUser.Id), allow: Permissions.AccessChannels | Permissions.SendMessages, deny: Permissions.None);
                             await channel.AddOverwriteAsync(ctx.Guild.EveryoneRole, allow: Permissions.None, deny: Permissions.AccessChannels | Permissions.SendMessages);
                             await channel.AddOverwriteAsync(ctx.Member, allow: Permissions.AccessChannels | Permissions.SendMessages, deny: Permissions.None);
-                            await InformAsync(ctx, $"Alright, let's move the setup to {channel.Mention}");
+                            await this.InformAsync(ctx, $"Alright, let's move the setup to {channel.Mention}");
                         } catch {
-                            await InformFailureAsync(ctx, $"I have failed to create a setup channel. Could you kindly create the channel called {Formatter.Bold("gf_setup")} and then re-run the command or give me the permission to create channels? The wizard will now exit...");
+                            await this.InformFailureAsync(ctx, $"I have failed to create a setup channel. Could you kindly create the channel called {Formatter.Bold("gf_setup")} and then re-run the command or give me the permission to create channels? The wizard will now exit...");
                             return;
                         }
                     } else {
@@ -417,14 +417,14 @@ namespace TheGodfather.Modules.Administration
                     await logchn.SendMessageAsync(embed: emb.Build());
                 }
 
-                await InformAsync(ctx, $"{Formatter.Bold(gcfg.ReactionResponse ? "Disabled" : "Enabled")} verbose responses.", important: false);
+                await this.InformAsync(ctx, $"{Formatter.Bold(gcfg.ReactionResponse ? "Disabled" : "Enabled")} verbose responses.", important: false);
             }
 
             [Command("verbose"), Priority(0)]
             public Task SilentResponseAsync(CommandContext ctx)
             {
                 CachedGuildConfig gcfg = this.Shared.GetGuildConfig(ctx.Guild.Id);
-                return InformAsync(ctx, $"Verbose responses for this guild are {Formatter.Bold(gcfg.ReactionResponse ? "disabled" : "enabled")}!");
+                return this.InformAsync(ctx, $"Verbose responses for this guild are {Formatter.Bold(gcfg.ReactionResponse ? "disabled" : "enabled")}!");
             }
             #endregion
 
@@ -454,14 +454,14 @@ namespace TheGodfather.Modules.Administration
                     await logchn.SendMessageAsync(embed: emb.Build());
                 }
 
-                await InformAsync(ctx, $"{Formatter.Bold(gcfg.SuggestionsEnabled ? "Enabled" : "Disabled")} command suggestions.", important: false);
+                await this.InformAsync(ctx, $"{Formatter.Bold(gcfg.SuggestionsEnabled ? "Enabled" : "Disabled")} command suggestions.", important: false);
             }
 
             [Command("suggestions"), Priority(0)]
             public Task SuggestionsAsync(CommandContext ctx)
             {
                 CachedGuildConfig gcfg = this.Shared.GetGuildConfig(ctx.Guild.Id);
-                return InformAsync(ctx, $"Command suggestions for this guild are {Formatter.Bold(gcfg.SuggestionsEnabled ? "enabled" : "disabled")}!");
+                return this.InformAsync(ctx, $"Command suggestions for this guild are {Formatter.Bold(gcfg.SuggestionsEnabled ? "enabled" : "disabled")}!");
             }
             #endregion
 
@@ -476,7 +476,7 @@ namespace TheGodfather.Modules.Administration
             public async Task WelcomeAsync(CommandContext ctx)
             {
                 DiscordChannel wchn = await this.Database.GetWelcomeChannelAsync(ctx.Guild);
-                await InformAsync(ctx, $"Member welcome messages for this guild are: {Formatter.Bold(wchn != null ? $"enabled @ {wchn.Mention}" : "disabled")}!");
+                await this.InformAsync(ctx, $"Member welcome messages for this guild are: {Formatter.Bold(wchn != null ? $"enabled @ {wchn.Mention}" : "disabled")}!");
             }
 
             [Command("welcome"), Priority(2)]
@@ -516,16 +516,16 @@ namespace TheGodfather.Modules.Administration
                 }
 
                 if (enable)
-                    await InformAsync(ctx, $"Welcome message channel set to {Formatter.Bold(wchn.Name)} with message: {Formatter.Bold(string.IsNullOrWhiteSpace(message) ? "<previously set>" : message)}.", important: false);
+                    await this.InformAsync(ctx, $"Welcome message channel set to {Formatter.Bold(wchn.Name)} with message: {Formatter.Bold(string.IsNullOrWhiteSpace(message) ? "<previously set>" : message)}.", important: false);
                 else
-                    await InformAsync(ctx, $"Welcome messages are now disabled.", important: false);
+                    await this.InformAsync(ctx, $"Welcome messages are now disabled.", important: false);
             }
 
             [Command("welcome"), Priority(1)]
             public Task WelcomeAsync(CommandContext ctx,
                                     [Description("Channel.")] DiscordChannel channel,
                                     [RemainingText, Description("Welcome message.")] string message = null)
-                => WelcomeAsync(ctx, true, channel, message);
+                => this.WelcomeAsync(ctx, true, channel, message);
 
             [Command("welcome"), Priority(0)]
             public async Task WelcomeAsync(CommandContext ctx,
@@ -548,7 +548,7 @@ namespace TheGodfather.Modules.Administration
                     await logchn.SendMessageAsync(embed: emb.Build());
                 }
 
-                await InformAsync(ctx, $"Welcome message set to:\n{Formatter.Bold(message ?? "Default message")}.", important: false);
+                await this.InformAsync(ctx, $"Welcome message set to:\n{Formatter.Bold(message ?? "Default message")}.", important: false);
             }
 
             #endregion
@@ -564,7 +564,7 @@ namespace TheGodfather.Modules.Administration
             public async Task LeaveAsync(CommandContext ctx)
             {
                 DiscordChannel lchn = await this.Database.GetLeaveChannelAsync(ctx.Guild);
-                await InformAsync(ctx, $"Member leave messages for this guild are: {Formatter.Bold(lchn != null ? $"enabled @ {lchn.Mention}" : "disabled")}!");
+                await this.InformAsync(ctx, $"Member leave messages for this guild are: {Formatter.Bold(lchn != null ? $"enabled @ {lchn.Mention}" : "disabled")}!");
             }
 
             [Command("leave"), Priority(2)]
@@ -604,16 +604,16 @@ namespace TheGodfather.Modules.Administration
                 }
 
                 if (enable)
-                    await InformAsync(ctx, $"Welcome message channel set to {Formatter.Bold(lchn.Name)} with message: {Formatter.Bold(string.IsNullOrWhiteSpace(message) ? "<previously set>" : message)}.", important: false);
+                    await this.InformAsync(ctx, $"Welcome message channel set to {Formatter.Bold(lchn.Name)} with message: {Formatter.Bold(string.IsNullOrWhiteSpace(message) ? "<previously set>" : message)}.", important: false);
                 else
-                    await InformAsync(ctx, $"Welcome messages are now disabled.", important: false);
+                    await this.InformAsync(ctx, $"Welcome messages are now disabled.", important: false);
             }
 
             [Command("leave"), Priority(1)]
             public Task LeaveAsync(CommandContext ctx,
                                   [Description("Channel.")] DiscordChannel channel,
                                   [RemainingText, Description("Leave message.")] string message)
-                => LeaveAsync(ctx, true, channel, message);
+                => this.LeaveAsync(ctx, true, channel, message);
 
             [Command("leave"), Priority(0)]
             public async Task LeaveAsync(CommandContext ctx,
@@ -636,7 +636,7 @@ namespace TheGodfather.Modules.Administration
                     await logchn.SendMessageAsync(embed: emb.Build());
                 }
 
-                await InformAsync(ctx, $"Leave message set to:\n{Formatter.Bold(message ?? "Default message")}.", important: false);
+                await this.InformAsync(ctx, $"Leave message set to:\n{Formatter.Bold(message ?? "Default message")}.", important: false);
             }
             #endregion
 
@@ -653,7 +653,7 @@ namespace TheGodfather.Modules.Administration
                     await this.Database.SetMuteRoleAsync(ctx.Guild.Id, muteRole.Id);
                 } else {
                     muteRole = await this.Database.GetMuteRoleAsync(ctx.Guild);
-                    await InformAsync(ctx, $"Mute role for this guild: {Formatter.Bold(muteRole.Name)}");
+                    await this.InformAsync(ctx, $"Mute role for this guild: {Formatter.Bold(muteRole.Name)}");
                 }
             }
             #endregion

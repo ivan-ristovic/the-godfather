@@ -38,7 +38,7 @@ namespace TheGodfather.Modules.Search
 
             var res = await this.Service.SearchAsync(query);
             if (!res.Any()) {
-                await InformFailureAsync(ctx, "No results...");
+                await this.InformFailureAsync(ctx, "No results...");
                 return;
             }
 

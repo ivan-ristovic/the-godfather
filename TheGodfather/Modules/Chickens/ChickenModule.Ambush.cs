@@ -42,7 +42,7 @@ namespace TheGodfather.Modules.Chickens
             {
                 if (this.Shared.IsEventRunningInChannel(ctx.Channel.Id)) {
                     if (this.Shared.GetEventInChannel(ctx.Channel.Id) is ChickenWar)
-                        await JoinAsync(ctx);
+                        await this.JoinAsync(ctx);
                     else
                         throw new CommandFailedException("Another event is already running in the current channel.");
                     return;
@@ -63,8 +63,8 @@ namespace TheGodfather.Modules.Chickens
                 this.Shared.RegisterEventInChannel(ambush, ctx.Channel.Id);
                 try {
                     ambush.AddParticipant(ambushed, member, team1: true);
-                    await JoinAsync(ctx);
-                    await InformAsync(ctx, StaticDiscordEmoji.Clock1, $"The ambush will start in 1 minute. Use command {Formatter.InlineCode("chicken ambush")} to make your chicken join the ambush, or {Formatter.InlineCode("chicken ambush help")} to help the ambushed chicken.");
+                    await this.JoinAsync(ctx);
+                    await this.InformAsync(ctx, StaticDiscordEmoji.Clock1, $"The ambush will start in 1 minute. Use command {Formatter.InlineCode("chicken ambush")} to make your chicken join the ambush, or {Formatter.InlineCode("chicken ambush help")} to help the ambushed chicken.");
                     await Task.Delay(TimeSpan.FromMinutes(1));
 
                     if (ambush.Team2.Any()) {
@@ -90,7 +90,7 @@ namespace TheGodfather.Modules.Chickens
                             }
                         }
 
-                        await InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{Formatter.Bold(ambush.Team1Won ? ambush.Team1Name : ambush.Team2Name)} won!\n\n{sb.ToString()}");
+                        await this.InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{Formatter.Bold(ambush.Team1Won ? ambush.Team1Name : ambush.Team2Name)} won!\n\n{sb.ToString()}");
                     }
                 } finally {
                     this.Shared.UnregisterEventInChannel(ctx.Channel.Id);
@@ -105,8 +105,8 @@ namespace TheGodfather.Modules.Chickens
             [UsageExamples("!chicken ambush join")]
             public async Task JoinAsync(CommandContext ctx)
             {
-                Chicken chicken = await TryJoinInternalAsync(ctx, team2: true);
-                await InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{Formatter.Bold(chicken.Name)} has joined the ambushers.");
+                Chicken chicken = await this.TryJoinInternalAsync(ctx, team2: true);
+                await this.InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{Formatter.Bold(chicken.Name)} has joined the ambushers.");
             }
             #endregion
 
@@ -117,8 +117,8 @@ namespace TheGodfather.Modules.Chickens
             [UsageExamples("!chicken ambush help")]
             public async Task HelpAsync(CommandContext ctx)
             {
-                Chicken chicken = await TryJoinInternalAsync(ctx, team2: false);
-                await InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{Formatter.Bold(chicken.Name)} has joined the ambushed party.");
+                Chicken chicken = await this.TryJoinInternalAsync(ctx, team2: false);
+                await this.InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{Formatter.Bold(chicken.Name)} has joined the ambushed party.");
             }
             #endregion
 

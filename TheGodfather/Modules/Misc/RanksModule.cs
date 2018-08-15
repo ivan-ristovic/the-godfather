@@ -79,7 +79,7 @@ namespace TheGodfather.Modules.Misc
                 throw new CommandFailedException("Rank name cannot be longer than 30 characters!");
 
             await this.Database.AddOrUpdateRankAsync(ctx.Guild.Id, rank, name);
-            await InformAsync(ctx, $"Successfully added rank {Formatter.Bold(name)} as an alias for rank {Formatter.Bold(rank.ToString())}.", important: false);
+            await this.InformAsync(ctx, $"Successfully added rank {Formatter.Bold(name)} as an alias for rank {Formatter.Bold(rank.ToString())}.", important: false);
         }
         #endregion
 
@@ -93,7 +93,7 @@ namespace TheGodfather.Modules.Misc
                                      [Description("Rank.")] int rank)
         {
             await this.Database.RemoveRankAsync(ctx.Guild.Id, rank);
-            await InformAsync(ctx, $"Removed an alias for rank {Formatter.Bold(rank.ToString())}", important: false);
+            await this.InformAsync(ctx, $"Removed an alias for rank {Formatter.Bold(rank.ToString())}", important: false);
         }
         #endregion
 

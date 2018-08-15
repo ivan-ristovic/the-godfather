@@ -102,7 +102,7 @@ namespace TheGodfather.Modules.Games
                     gfPick = DiscordEmoji.FromName(ctx.Client, ":scissors:");
                     break;
             }
-            await InformAsync(ctx, StaticDiscordEmoji.Joystick, $"{ctx.User.Mention} {userPick} {gfPick} {ctx.Client.CurrentUser.Mention}");
+            await this.InformAsync(ctx, StaticDiscordEmoji.Joystick, $"{ctx.User.Mention} {userPick} {gfPick} {ctx.Client.CurrentUser.Mention}");
         }
         #endregion
 

@@ -64,7 +64,7 @@ namespace TheGodfather.Modules.Search
             if (!await this.Database.TryAddSubscriptionAsync(ctx.Channel.Id, url, rsub))
                 throw new CommandFailedException("You are already subscribed to this subreddit!");
 
-            await InformAsync(ctx, $"Subscribed to {Formatter.Bold(rsub)}", important: false);
+            await this.InformAsync(ctx, $"Subscribed to {Formatter.Bold(rsub)}", important: false);
         }
         #endregion
 
@@ -82,7 +82,7 @@ namespace TheGodfather.Modules.Search
                 throw new CommandFailedException("That subreddit doesn't exist.");
 
             await this.Database.RemoveSubscriptionByNameAsync(ctx.Channel.Id, rsub);
-            await InformAsync(ctx, $"Unsubscribed from {Formatter.Bold(rsub)}", important: false);
+            await this.InformAsync(ctx, $"Unsubscribed from {Formatter.Bold(rsub)}", important: false);
         }
 
         [Command("unsubscribe"), Priority(0)]
@@ -90,7 +90,7 @@ namespace TheGodfather.Modules.Search
                                           [Description("Subscription ID.")] int id)
         {
             await this.Database.RemoveSubscriptionByIdAsync(ctx.Channel.Id, id);
-            await InformAsync(ctx, $"Removed subscription with ID {Formatter.Bold(id.ToString())}", important: false);
+            await this.InformAsync(ctx, $"Removed subscription with ID {Formatter.Bold(id.ToString())}", important: false);
         }
         #endregion
     }

@@ -33,7 +33,7 @@ namespace TheGodfather.Modules.Search
         public async Task ExecuteGroupAsync(CommandContext ctx)
         {
             string joke = await JokesService.GetRandomJokeAsync();
-            await InformAsync(ctx, joke, ":joy:");
+            await this.InformAsync(ctx, joke, ":joy:");
         }
 
 
@@ -47,9 +47,9 @@ namespace TheGodfather.Modules.Search
         {
             IReadOnlyList<string> jokes = await JokesService.SearchForJokesAsync(query);
             if (jokes != null)
-                await InformAsync(ctx, $"Results:\n\n{string.Join("\n", jokes.Take(5))}", ":joy:");
+                await this.InformAsync(ctx, $"Results:\n\n{string.Join("\n", jokes.Take(5))}", ":joy:");
             else
-                await InformFailureAsync(ctx, "No results...");
+                await this.InformFailureAsync(ctx, "No results...");
         }
         #endregion
 
@@ -61,7 +61,7 @@ namespace TheGodfather.Modules.Search
         public async Task YomamaAsync(CommandContext ctx)
         {
             string joke = await JokesService.GetRandomYoMommaJokeAsync();
-            await InformAsync(ctx, joke, ":joy:");
+            await this.InformAsync(ctx, joke, ":joy:");
         }
         #endregion
     }

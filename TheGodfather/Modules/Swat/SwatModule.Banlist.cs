@@ -36,7 +36,7 @@ namespace TheGodfather.Modules.Swat
 
             [GroupCommand]
             public Task ExecuteGroupAsync(CommandContext ctx)
-                => ListAsync(ctx);
+                => this.ListAsync(ctx);
 
 
             #region COMMAND_BANLIST_ADD
@@ -51,7 +51,7 @@ namespace TheGodfather.Modules.Swat
                                       [RemainingText, Description("Reason for ban.")] string reason = null)
             {
                 await this.Database.AddSwatIpBanAsync(ip.Content, name, reason);
-                await InformAsync(ctx, $"Added a ban entry for {Formatter.Bold(name)} ({Formatter.InlineCode(ip.Content)})", important: false);
+                await this.InformAsync(ctx, $"Added a ban entry for {Formatter.Bold(name)} ({Formatter.InlineCode(ip.Content)})", important: false);
             }
 
             [Command("add"), Priority(0)]
@@ -59,7 +59,7 @@ namespace TheGodfather.Modules.Swat
                                 [Description("IP.")] CustomIPFormat ip,
                                 [Description("Player name.")] string name,
                                 [RemainingText, Description("Reason for ban.")] string reason = null)
-                => AddAsync(ctx, name, ip, reason);
+                => this.AddAsync(ctx, name, ip, reason);
             #endregion
 
             #region COMMAND_BANLIST_DELETE
@@ -71,7 +71,7 @@ namespace TheGodfather.Modules.Swat
                                          [Description("IP.")] CustomIPFormat ip)
             {
                 await this.Database.RemoveSwatIpBanAsync(ip.Content);
-                await InformAsync(ctx, $"Removed an IP ban rule for {Formatter.InlineCode(ip.Content)}.", important: false);
+                await this.InformAsync(ctx, $"Removed an IP ban rule for {Formatter.InlineCode(ip.Content)}.", important: false);
             }
             #endregion
 

@@ -39,21 +39,21 @@ namespace TheGodfather.Modules.Misc
 
         [GroupCommand, Priority(2)]
         public Task ExecuteGroupAsync(CommandContext ctx)
-            => ListAsync(ctx);
+            => this.ListAsync(ctx);
 
         [GroupCommand, Priority(1)]
         public Task ExecuteGroupAsync(CommandContext ctx,
                                      [Description("Birthday boy/girl.")] DiscordUser user,
                                      [Description("Channel to send a greeting message to.")] DiscordChannel channel = null,
                                      [Description("Birth date.")] string date = null)
-            => AddAsync(ctx, user, date, channel);
+            => this.AddAsync(ctx, user, date, channel);
 
         [GroupCommand, Priority(0)]
         public Task ExecuteGroupAsync(CommandContext ctx,
                                      [Description("Birthday boy/girl.")] DiscordUser user,
                                      [Description("Birth date.")] string date = null,
                                      [Description("Channel to send a greeting message to.")] DiscordChannel channel = null)
-            => AddAsync(ctx, user, date, channel);
+            => this.AddAsync(ctx, user, date, channel);
 
 
         #region COMMAND_BIRTHDAY_ADD
@@ -81,7 +81,7 @@ namespace TheGodfather.Modules.Misc
                 throw new CommandFailedException("I can only send birthday notifications in a text channel.");
 
             await this.Database.AddBirthdayAsync(user.Id, channel.Id, date);
-            await InformAsync(ctx, $"Added a new birthday in channel {Formatter.Bold(channel.Name)} for {Formatter.Bold(user.Username)}", important: false);
+            await this.InformAsync(ctx, $"Added a new birthday in channel {Formatter.Bold(channel.Name)} for {Formatter.Bold(user.Username)}", important: false);
         }
 
         [Command("add"), Priority(1)]
@@ -89,7 +89,7 @@ namespace TheGodfather.Modules.Misc
                             [Description("Birthday boy/girl.")] DiscordUser user,
                             [Description("Channel to send a greeting message to.")] DiscordChannel channel = null,
                             [Description("Birth date.")] string date_str = null)
-            => AddAsync(ctx, user, date_str, channel);
+            => this.AddAsync(ctx, user, date_str, channel);
         #endregion
 
         #region COMMAND_BIRTHDAY_DELETE
@@ -101,7 +101,7 @@ namespace TheGodfather.Modules.Misc
                                      [Description("User whose birthday to remove.")] DiscordUser user)
         {
             await this.Database.RemoveBirthdayForUserAsync(user.Id);
-            await InformAsync(ctx, $"Removed birthday for {Formatter.Bold(user.Username)}", important: false);
+            await this.InformAsync(ctx, $"Removed birthday for {Formatter.Bold(user.Username)}", important: false);
         }
 
         [Command("delete"), Priority(0)]
@@ -112,7 +112,7 @@ namespace TheGodfather.Modules.Misc
                 return;
 
             await this.Database.RemoveBirthdaysInChannelAsync(channel.Id);
-            await InformAsync(ctx, $"Removed birthday notifications in channel {Formatter.Bold(channel.Mention)}", important: false);
+            await this.InformAsync(ctx, $"Removed birthday notifications in channel {Formatter.Bold(channel.Mention)}", important: false);
         }
         #endregion
 

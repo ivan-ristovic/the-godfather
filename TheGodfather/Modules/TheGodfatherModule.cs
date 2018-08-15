@@ -44,7 +44,7 @@ namespace TheGodfather.Modules
 
 
         protected Task InformAsync(CommandContext ctx, string message = null, string emoji = null, bool important = true)
-            => InformAsync(ctx, (emoji == null ? StaticDiscordEmoji.CheckMarkSuccess : DiscordEmoji.FromName(ctx.Client, emoji)), message, important);
+            => this.InformAsync(ctx, (emoji == null ? StaticDiscordEmoji.CheckMarkSuccess : DiscordEmoji.FromName(ctx.Client, emoji)), message, important);
 
         protected Task InformAsync(CommandContext ctx, DiscordEmoji emoji, string message = null, bool important = true)
         {

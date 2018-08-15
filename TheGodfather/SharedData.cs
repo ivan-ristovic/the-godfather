@@ -98,7 +98,7 @@ namespace TheGodfather
             => (ushort)Math.Floor(Math.Sqrt(msgcount / 10));
 
         public ushort CalculateRankForUser(ulong uid)
-            => this.MessageCount.ContainsKey(uid) ? CalculateRankForMessageCount(this.MessageCount[uid]) : (ushort)0;
+            => this.MessageCount.ContainsKey(uid) ? this.CalculateRankForMessageCount(this.MessageCount[uid]) : (ushort)0;
 
         public uint CalculateXpNeededForRank(ushort index)
             => (uint)(index * index * 10);
@@ -114,8 +114,8 @@ namespace TheGodfather
                 return 0;
             }
 
-            ushort prev = CalculateRankForMessageCount(this.MessageCount[uid] - 1);
-            ushort curr = CalculateRankForMessageCount(this.MessageCount[uid]);
+            ushort prev = this.CalculateRankForMessageCount(this.MessageCount[uid] - 1);
+            ushort curr = this.CalculateRankForMessageCount(this.MessageCount[uid]);
 
             return curr != prev ? curr : (ushort)0;
         }
@@ -135,7 +135,7 @@ namespace TheGodfather
 
         public DiscordChannel GetLogChannelForGuild(DiscordClient client, DiscordGuild guild)
         {
-            var gcfg = GetGuildConfig(guild.Id);
+            var gcfg = this.GetGuildConfig(guild.Id);
             return gcfg.LoggingEnabled ? guild.GetChannel(gcfg.LogChannelId) : null;
         }
 

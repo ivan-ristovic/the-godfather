@@ -36,7 +36,7 @@ namespace TheGodfather.Modules.Administration
 
         [GroupCommand]
         public Task ExecuteGroupAsync(CommandContext ctx)
-            => GuildInfoAsync(ctx);
+            => this.GuildInfoAsync(ctx);
 
 
         #region COMMAND_GUILD_GETBANS
@@ -146,7 +146,7 @@ namespace TheGodfather.Modules.Administration
 
             int count = await ctx.Guild.GetPruneCountAsync(days);
             if (count == 0) {
-                await InformFailureAsync(ctx, "No members found to prune...");
+                await this.InformFailureAsync(ctx, "No members found to prune...");
                 return;
             }
 
@@ -154,7 +154,7 @@ namespace TheGodfather.Modules.Administration
                 return;
 
             await ctx.Guild.PruneAsync(days, ctx.BuildReasonString(reason));
-            await InformAsync(ctx, $"Pruned {Formatter.Bold(count.ToString())} members inactive for {Formatter.Bold(days.ToString())} days", important: false);
+            await this.InformAsync(ctx, $"Pruned {Formatter.Bold(count.ToString())} members inactive for {Formatter.Bold(days.ToString())} days", important: false);
         }
         #endregion
 
@@ -179,13 +179,13 @@ namespace TheGodfather.Modules.Administration
                 m.Name = newname;
                 m.AuditLogReason = ctx.BuildReasonString(reason);
             }));
-            await InformAsync(ctx, $"Successfully renamed the guild to {Formatter.Bold(ctx.Guild.Name)}", important: false);
+            await this.InformAsync(ctx, $"Successfully renamed the guild to {Formatter.Bold(ctx.Guild.Name)}", important: false);
         }
 
         [Command("rename")]
         public Task RenameGuildAsync(CommandContext ctx,
                                     [RemainingText, Description("New name.")] string newname)
-            => RenameGuildAsync(ctx, null, newname);
+            => this.RenameGuildAsync(ctx, null, newname);
         #endregion
 
         #region COMMAND_GUILD_SETICON
@@ -200,7 +200,7 @@ namespace TheGodfather.Modules.Administration
             if (url == null)
                 throw new InvalidCommandUsageException("URL missing.");
 
-            if (!await IsValidImageUriAsync(url))
+            if (!await this.IsValidImageUriAsync(url))
                 throw new CommandFailedException("URL must point to an image and use HTTP or HTTPS protocols.");
 
             try {
@@ -212,7 +212,7 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException("An error occured.", e);
             }
 
-            await InformAsync(ctx, "Successfully changed guild icon.", important: false);
+            await this.InformAsync(ctx, "Successfully changed guild icon.", important: false);
         }
         #endregion
     }

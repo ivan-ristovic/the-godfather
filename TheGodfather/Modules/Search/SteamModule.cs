@@ -41,7 +41,7 @@ namespace TheGodfather.Modules.Search
 
             DiscordEmbed em = await this.Service.GetEmbeddedInfoAsync(id);
             if (em == null) {
-                await InformFailureAsync(ctx, "User with such ID does not exist!");
+                await this.InformFailureAsync(ctx, "User with such ID does not exist!");
                 return;
             }
 

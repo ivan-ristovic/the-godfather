@@ -61,7 +61,7 @@ namespace TheGodfather.Modules.Currency.Common
 
             for (int i = 0; i < DrawCount; i++) {
                 await Task.Delay(TimeSpan.FromSeconds(5));
-                await PrintGameAsync(msg, drawn, i + 1);
+                await this.PrintGameAsync(msg, drawn, i + 1);
             }
 
             foreach (LotteryParticipant participant in this.participants) {
@@ -72,7 +72,7 @@ namespace TheGodfather.Modules.Currency.Common
 
         public void AddParticipant(DiscordUser user, int[] numbers)
         {
-            if (IsParticipating(user))
+            if (this.IsParticipating(user))
                 return;
 
             this.participants.Enqueue(new LotteryParticipant {

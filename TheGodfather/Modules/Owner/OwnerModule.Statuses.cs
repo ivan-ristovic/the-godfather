@@ -34,13 +34,13 @@ namespace TheGodfather.Modules.Owner
 
             [GroupCommand, Priority(1)]
             public Task ExecuteGroupAsync(CommandContext ctx)
-                => ListAsync(ctx);
+                => this.ListAsync(ctx);
 
             [GroupCommand, Priority(0)]
             public Task ExecuteGroupAsync(CommandContext ctx,
                                          [Description("Activity type (Playing/Watching/Streaming/ListeningTo).")] ActivityType activity,
                                          [RemainingText, Description("Status.")] string status)
-                => AddAsync(ctx, activity, status);
+                => this.AddAsync(ctx, activity, status);
 
 
             #region COMMAND_STATUS_ADD
@@ -60,7 +60,7 @@ namespace TheGodfather.Modules.Owner
                     throw new CommandFailedException("Status length cannot be greater than 60 characters.");
 
                 await this.Database.AddBotStatusAsync(status, activity);
-                await InformAsync(ctx, $"Added new status: {Formatter.InlineCode(status)}", important: false);
+                await this.InformAsync(ctx, $"Added new status: {Formatter.InlineCode(status)}", important: false);
             }
             #endregion
 
@@ -73,7 +73,7 @@ namespace TheGodfather.Modules.Owner
                                          [Description("Status ID.")] int id)
             {
                 await this.Database.RemoveBotStatusAsync(id);
-                await InformAsync(ctx, $"Removed status with ID {Formatter.Bold(id.ToString())}", important: false);
+                await this.InformAsync(ctx, $"Removed status with ID {Formatter.Bold(id.ToString())}", important: false);
             }
             #endregion
 
@@ -105,7 +105,7 @@ namespace TheGodfather.Modules.Owner
                                         [Description("Enabled?")] bool enable = true)
             {
                 this.Shared.StatusRotationEnabled = enable;
-                return InformAsync(ctx, $"Status rotation {(enable ? "enabled" : "disabled")}");
+                return this.InformAsync(ctx, $"Status rotation {(enable ? "enabled" : "disabled")}");
             }
             #endregion
 
@@ -129,7 +129,7 @@ namespace TheGodfather.Modules.Owner
 
                 this.Shared.StatusRotationEnabled = false;
                 await ctx.Client.UpdateStatusAsync(activity);
-                await InformAsync(ctx, $"Successfully switched current status to: {activity.ToString()}", important: false);
+                await this.InformAsync(ctx, $"Successfully switched current status to: {activity.ToString()}", important: false);
             }
 
             [Command("set"), Priority(0)]
@@ -144,7 +144,7 @@ namespace TheGodfather.Modules.Owner
 
                 this.Shared.StatusRotationEnabled = false;
                 await ctx.Client.UpdateStatusAsync(activity);
-                await InformAsync(ctx, $"Successfully switched current status to: {activity.ToString()}", important: false);
+                await this.InformAsync(ctx, $"Successfully switched current status to: {activity.ToString()}", important: false);
             }
             #endregion
         }

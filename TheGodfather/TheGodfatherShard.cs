@@ -65,10 +65,10 @@ namespace TheGodfather
         #region SETUP_FUNCTIONS
         public void Initialize()
         {
-            SetupClient();
-            SetupCommands();
-            SetupInteractivity();
-            SetupVoice();
+            this.SetupClient();
+            this.SetupCommands();
+            this.SetupInteractivity();
+            this.SetupVoice();
 
             AsyncExecutionManager.RegisterEventListeners(this.Client, this);
         }
@@ -87,7 +87,7 @@ namespace TheGodfather
             };
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows) && Environment.OSVersion.Version <= new Version(6, 1, 7601, 65536))
-                cfg.WebSocketClientFactory = WebSocket4NetClient.CreateNew;
+                cfg.WebSocketClientFactory = WebSocket4NetCoreClient.CreateNew;
 
             this.Client = new DiscordClient(cfg);
 

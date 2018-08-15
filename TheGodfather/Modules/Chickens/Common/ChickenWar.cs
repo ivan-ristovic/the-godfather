@@ -71,7 +71,7 @@ namespace TheGodfather.Modules.Chickens.Common
 
         public bool AddParticipant(Chicken chicken, DiscordUser owner, bool team1 = false, bool team2 = false)
         {
-            if (IsParticipating(owner))
+            if (this.IsParticipating(owner))
                 return false;
 
             chicken.Owner = owner;

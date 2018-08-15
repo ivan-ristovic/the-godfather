@@ -34,7 +34,7 @@ namespace TheGodfather.Modules.Search
         [GroupCommand, Priority(0)]
         public Task ExecuteGroupAsync(CommandContext ctx,
                                      [RemainingText, Description("Title.")] string title)
-            => SearchByTitleAsync(ctx, title);
+            => this.SearchByTitleAsync(ctx, title);
 
 
         #region COMMAND_IMDB_SEARCH
@@ -50,7 +50,7 @@ namespace TheGodfather.Modules.Search
 
             IReadOnlyList<Page> pages = await this.Service.GetPaginatedResultsAsync(query);
             if (pages == null) {
-                await InformFailureAsync(ctx, "No results found!");
+                await this.InformFailureAsync(ctx, "No results found!");
                 return;
             }
 
@@ -65,7 +65,7 @@ namespace TheGodfather.Modules.Search
         [UsageExamples("!imdb title Airplane")]
         public Task SearchByTitleAsync(CommandContext ctx,
                                       [RemainingText, Description("Title.")] string title)
-            => SearchAndSendResultAsync(ctx, OMDbQueryType.Title, title);
+            => this.SearchAndSendResultAsync(ctx, OMDbQueryType.Title, title);
         #endregion
 
         #region COMMAND_IMDB_ID
@@ -74,7 +74,7 @@ namespace TheGodfather.Modules.Search
         [UsageExamples("!imdb id tt4158110")]
         public Task SearchByIdAsync(CommandContext ctx,
                                    [Description("ID.")] string id)
-            => SearchAndSendResultAsync(ctx, OMDbQueryType.Id, id);
+            => this.SearchAndSendResultAsync(ctx, OMDbQueryType.Id, id);
         #endregion
 
 
@@ -86,7 +86,7 @@ namespace TheGodfather.Modules.Search
 
             MovieInfo info = await this.Service.GetSingleResultAsync(type, query);
             if (info == null) {
-                await InformFailureAsync(ctx, "No results found!");
+                await this.InformFailureAsync(ctx, "No results found!");
                 return;
             }
 

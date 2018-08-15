@@ -44,6 +44,6 @@ namespace TheGodfather.EventListeners.Common
         }
 
         public LinkfilterMatch Check(DiscordMessage message)
-            => new LinkfilterMatch(Match(message.Content));
+            => new LinkfilterMatch(this.Match(message.Content));
     }
 }

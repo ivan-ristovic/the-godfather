@@ -37,7 +37,7 @@ namespace TheGodfather.Modules.Misc
 
         [GroupCommand]
         public Task ExecuteGroupAsync(CommandContext ctx)
-            => ListAsync(ctx);
+            => this.ListAsync(ctx);
 
 
         #region COMMAND_SHOP_ADD
@@ -62,14 +62,14 @@ namespace TheGodfather.Modules.Misc
                 throw new InvalidCommandUsageException($"Item price must be positive and cannot exceed 100 billion {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}.");
 
             await this.Database.AddPurchasableItemAsync(ctx.Guild.Id, name, price);
-            await InformAsync(ctx, $"Item {Formatter.Bold(name)} ({Formatter.Bold(price.ToString())} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}) successfully added to this guild's shop.", important: false);
+            await this.InformAsync(ctx, $"Item {Formatter.Bold(name)} ({Formatter.Bold(price.ToString())} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}) successfully added to this guild's shop.", important: false);
         }
 
         [Command("add"), Priority(0)]
         public Task AddAsync(CommandContext ctx,
                             [Description("Item name.")] string name,
                             [Description("Item price.")] long price)
-            => AddAsync(ctx, price, name);
+            => this.AddAsync(ctx, price, name);
         #endregion
 
         #region COMMAND_SHOP_BUY
@@ -94,7 +94,7 @@ namespace TheGodfather.Modules.Misc
                 throw new CommandFailedException("You do not have enough money to purchase that item!");
 
             await this.Database.AddPurchaseAsync(ctx.User.Id, item.Id);
-            await InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"{ctx.User.Mention} bought a {Formatter.Bold(item.Name)} for {Formatter.Bold(item.Price.ToString())} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}!", important: false);
+            await this.InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"{ctx.User.Mention} bought a {Formatter.Bold(item.Name)} for {Formatter.Bold(item.Price.ToString())} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}!", important: false);
         }
         #endregion
         
@@ -120,7 +120,7 @@ namespace TheGodfather.Modules.Misc
 
             await this.Database.IncreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, retval);
             await this.Database.RemovePurchaseAsync(ctx.User.Id, item.Id);
-            await InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"{ctx.User.Mention} sold a {Formatter.Bold(item.Name)} for {Formatter.Bold(retval.ToString())} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}!", important: false);
+            await this.InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"{ctx.User.Mention} sold a {Formatter.Bold(item.Name)} for {Formatter.Bold(retval.ToString())} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}!", important: false);
         }
         #endregion
 
@@ -139,7 +139,7 @@ namespace TheGodfather.Modules.Misc
                 throw new InvalidCommandUsageException("Missing item IDs.");
 
             await this.Database.RemovePurchasableItemsAsync(ctx.Guild.Id, ids);
-            await InformAsync(ctx, $"Removed items with the following IDs: {string.Join(", ", ids)}", important: false);
+            await this.InformAsync(ctx, $"Removed items with the following IDs: {string.Join(", ", ids)}", important: false);
         }
         #endregion
 

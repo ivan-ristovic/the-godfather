@@ -50,7 +50,7 @@ namespace TheGodfather.Modules.Games.Common
 
             DiscordMessage msg = await this.Channel.EmbedAsync("Race starting...");
             while (this.participants.All(p => p.Progress < _TrackSize)) {
-                await PrintRaceAsync(msg);
+                await this.PrintRaceAsync(msg);
 
                 foreach (AnimalRaceParticipant participant in this.participants) {
                     participant.Progress += GFRandom.Generator.Next(2, 7);
@@ -61,7 +61,7 @@ namespace TheGodfather.Modules.Games.Common
                 await Task.Delay(TimeSpan.FromSeconds(2));
             }
 
-            await PrintRaceAsync(msg);
+            await this.PrintRaceAsync(msg);
 
             this.WinnerIds = this.participants
                 .Where(p => p.Progress >= _TrackSize)

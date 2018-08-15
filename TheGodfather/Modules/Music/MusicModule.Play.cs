@@ -45,7 +45,7 @@ namespace TheGodfather.Modules.Music
                     throw new CommandFailedException("Failed to retrieve song information for that URL.");
                 si.Queuer = ctx.User.Mention;
 
-                await ConnectAndAddToQueueAsync(ctx, si);
+                await this.ConnectAndAddToQueueAsync(ctx, si);
             }
 
             [GroupCommand, Priority(0)]
@@ -62,7 +62,7 @@ namespace TheGodfather.Modules.Music
 
                 si.Queuer = ctx.User.Mention;
 
-                await ConnectAndAddToQueueAsync(ctx, si);
+                await this.ConnectAndAddToQueueAsync(ctx, si);
             }
 
 
@@ -80,7 +80,7 @@ namespace TheGodfather.Modules.Music
 
                 VoiceNextConnection vnc = vnext.GetConnection(ctx.Guild);
                 if (vnc == null) {
-                    await ConnectAsync(ctx);
+                    await this.ConnectAsync(ctx);
                     vnc = vnext.GetConnection(ctx.Guild);
                 }
 
@@ -117,7 +117,7 @@ namespace TheGodfather.Modules.Music
 
                 VoiceNextConnection vnc = vnext.GetConnection(ctx.Guild);
                 if (vnc == null) {
-                    await ConnectAsync(ctx);
+                    await this.ConnectAsync(ctx);
                     vnc = vnext.GetConnection(ctx.Guild);
                 }
 

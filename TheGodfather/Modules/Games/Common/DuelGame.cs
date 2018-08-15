@@ -44,24 +44,24 @@ namespace TheGodfather.Modules.Games.Common
 
         public override async Task RunAsync()
         {
-            UpdateHpBars();
+            this.UpdateHpBars();
 
             this.messageHandle = await this.Channel.EmbedAsync($"{this.player1.Mention} {this.hp1str} {StaticDiscordEmoji.DuelSwords} {this.hp2str} {this.player2.Mention}");
 
             while (this.hp1 > 0 && this.hp2 > 0)
-                await AdvanceAsync();
+                await this.AdvanceAsync();
 
             this.Winner = this.hp1 > 0 ? this.player1 : this.player2;
 
             await this.Channel.EmbedAsync($"{StaticDiscordEmoji.DuelSwords} {this.Winner.Mention}, FINISH HIM! {StaticDiscordEmoji.DuelSwords}");
-            this.FinishingMove = await WaitForFinishingMoveAsync();
+            this.FinishingMove = await this.WaitForFinishingMoveAsync();
         }
 
         private async Task AdvanceAsync()
         {
-            DealDamage();
-            await WaitForPotionUseAsync();
-            UpdateHpBars();
+            this.DealDamage();
+            await this.WaitForPotionUseAsync();
+            this.UpdateHpBars();
 
             this.messageHandle = await this.messageHandle.ModifyAsync($"{this.player1.Mention} {this.hp1str} {StaticDiscordEmoji.DuelSwords} {this.hp2str} {this.player2.Mention}", embed: new DiscordEmbedBuilder() {
                 Title = "ITS TIME TO DUDUDUDU... DUEL!",

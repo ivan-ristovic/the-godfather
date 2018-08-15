@@ -43,7 +43,7 @@ namespace TheGodfather.Common
                 try {
                     File.Delete(this.path);
                 } catch (Exception e) {
-                    LogException(LogLevel.Error, e);
+                    this.LogException(LogLevel.Error, e);
                     return false;
                 }
             }
@@ -58,7 +58,7 @@ namespace TheGodfather.Common
                 PrintLevel(level);
                 PrintLogMessage(message);
                 if (filelog && this.filelog)
-                    WriteToLogFile(level, message, timestamp);
+                    this.WriteToLogFile(level, message, timestamp);
             }
         }
 
@@ -75,7 +75,7 @@ namespace TheGodfather.Common
                     PrintLogMessage($"| Inner exception: {e.InnerException}");
                 PrintLogMessage($"| Stack trace:\n{e.StackTrace}");
                 if (filelog && this.filelog)
-                    WriteToLogFile(level, e);
+                    this.WriteToLogFile(level, e);
             }
         }
 
@@ -90,7 +90,7 @@ namespace TheGodfather.Common
                 PrintLevel(e.Level);
                 PrintLogMessage(e.Message);
                 if (filelog && this.filelog)
-                    WriteToLogFile(shard, e);
+                    this.WriteToLogFile(shard, e);
             }
         }
 
@@ -99,7 +99,7 @@ namespace TheGodfather.Common
             if (level > this.LogLevel)
                 return;
 
-            ElevatedLog(level, message, shard, timestamp, filelog);
+            this.ElevatedLog(level, message, shard, timestamp, filelog);
         }
 
 
@@ -114,7 +114,7 @@ namespace TheGodfather.Common
                     sw.Flush();
                 }
             } catch (Exception e) {
-                LogException(LogLevel.Error, e, filelog: false);
+                this.LogException(LogLevel.Error, e, filelog: false);
             }
         }
 
@@ -128,7 +128,7 @@ namespace TheGodfather.Common
                     sw.Flush();
                 }
             } catch (Exception exc) {
-                LogException(LogLevel.Error, exc, filelog: false);
+                this.LogException(LogLevel.Error, exc, filelog: false);
             }
         }
 
@@ -146,7 +146,7 @@ namespace TheGodfather.Common
                     sw.Flush();
                 }
             } catch (Exception exc) {
-                LogException(LogLevel.Error, exc, filelog: false);
+                this.LogException(LogLevel.Error, exc, filelog: false);
             }
         }
         #endregion

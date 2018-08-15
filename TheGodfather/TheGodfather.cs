@@ -53,7 +53,7 @@ namespace TheGodfather
             try {
 
                 // Since some of the services require these protocols to be used, setting them up here
-                ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3 | SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
 
                 await LoadBotConfigAsync();
                 await InitializeDatabaseServiceAsync();

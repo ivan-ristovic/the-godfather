@@ -41,7 +41,7 @@ namespace TheGodfather.Modules.Misc
                 user = ctx.User;
 
             if (user.Id == ctx.Client.CurrentUser.Id) {
-                await InformAsync(ctx, "How original, trying to make me insult myself. Sadly it won't work.", ":middle_finger:");
+                await this.InformAsync(ctx, "How original, trying to make me insult myself. Sadly it won't work.", ":middle_finger:");
                 return;
             }
 
@@ -49,7 +49,7 @@ namespace TheGodfather.Modules.Misc
             if (insult == null)
                 throw new CommandFailedException("No available insults.");
 
-            await InformAsync(ctx, insult.Replace("%user%", user.Mention), ":middle_finger:");
+            await this.InformAsync(ctx, insult.Replace("%user%", user.Mention), ":middle_finger:");
         }
 
 
@@ -72,7 +72,7 @@ namespace TheGodfather.Modules.Misc
                 throw new InvalidCommandUsageException($"Insult not in correct format (missing {Formatter.Bold("%user%")} in the insult)!");
 
             await this.Database.AddInsultAsync(insult);
-            await InformAsync(ctx, $"Successfully added insult: {Formatter.Italic(insult)}", important: false);
+            await this.InformAsync(ctx, $"Successfully added insult: {Formatter.Italic(insult)}", important: false);
         }
         #endregion
         
@@ -88,7 +88,7 @@ namespace TheGodfather.Modules.Misc
                 return;
 
             await this.Database.RemoveAllInsultsAsync();
-            await InformAsync(ctx, "All insults successfully removed.", important: false);
+            await this.InformAsync(ctx, "All insults successfully removed.", important: false);
         }
         #endregion
 
@@ -102,7 +102,7 @@ namespace TheGodfather.Modules.Misc
                                            [Description("Index of the insult to remove.")] int index)
         {
             await this.Database.RemoveInsultAsync(index);
-            await InformAsync(ctx, $"Removed insult with ID: {Formatter.Bold(index.ToString())}");
+            await this.InformAsync(ctx, $"Removed insult with ID: {Formatter.Bold(index.ToString())}");
         }
         #endregion
 

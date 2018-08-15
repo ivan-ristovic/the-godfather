@@ -86,21 +86,21 @@ namespace TheGodfather.Modules.Misc
                     throw new InvalidCommandUsageException("Please specify a name and a URL pointing to a meme image or attach it manually.");
             }
 
-            if (!await IsValidImageUriAsync(url))
+            if (!await this.IsValidImageUriAsync(url))
                 throw new InvalidCommandUsageException("URL must point to an image.");
 
             if (name.Length > 30 || url.OriginalString.Length > 120)
                 throw new CommandFailedException("Name/URL is too long. Name must be shorter than 30 characters, and URL must be shorter than 120 characters.");
 
             await this.Database.AddMemeAsync(ctx.Guild.Id, name, url.AbsoluteUri);
-            await InformAsync(ctx, $"Meme {Formatter.Bold(name)} successfully added!", important: false);
+            await this.InformAsync(ctx, $"Meme {Formatter.Bold(name)} successfully added!", important: false);
         }
 
         [Command("add"), Priority(0)]
         public Task AddMemeAsync(CommandContext ctx,
                                 [Description("URL.")] Uri url,
                                 [Description("Short name (case insensitive).")] string name)
-            => AddMemeAsync(ctx, name, url);
+            => this.AddMemeAsync(ctx, name, url);
         #endregion
 
         #region COMMAND_MEME_CREATE
@@ -137,7 +137,7 @@ namespace TheGodfather.Modules.Misc
                 throw new InvalidCommandUsageException("Meme name is missing.");
 
             await this.Database.RemoveMemeAsync(ctx.Guild.Id, name);
-            await InformAsync(ctx, $"Meme {Formatter.Bold(name)} successfully removed!", important: false);
+            await this.InformAsync(ctx, $"Meme {Formatter.Bold(name)} successfully removed!", important: false);
         }
         #endregion
 
@@ -153,7 +153,7 @@ namespace TheGodfather.Modules.Misc
                 return;
 
             await this.Database.RemoveAllMemesForGuildAsync(ctx.Guild.Id);
-            await InformAsync(ctx, "Removed all guild memes!", important: false);
+            await this.InformAsync(ctx, "Removed all guild memes!", important: false);
         }
         #endregion
 

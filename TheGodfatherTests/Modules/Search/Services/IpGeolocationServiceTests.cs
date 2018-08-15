@@ -3,6 +3,9 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 using System;
 using System.Threading.Tasks;
+
+using TheGodfather.Modules.Search.Common;
+using TheGodfather.Modules.Search.Services;
 #endregion
 
 namespace TheGodfatherTests.Modules.Search.Services

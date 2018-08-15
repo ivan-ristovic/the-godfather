@@ -40,7 +40,7 @@ namespace TheGodfather.Modules.Chickens
         [GroupCommand]
         public Task ExecuteGroupAsync(CommandContext ctx,
                                      [Description("User.")] DiscordMember member = null)
-            => InfoAsync(ctx, member);
+            => this.InfoAsync(ctx, member);
 
 
         #region COMMAND_CHICKEN_FIGHT
@@ -92,7 +92,7 @@ namespace TheGodfather.Modules.Chickens
 
             await this.Database.IncreaseBankAccountBalanceAsync(winner.OwnerId, ctx.Guild.Id, gain * 2000);
 
-            await InformAsync(ctx, StaticDiscordEmoji.Chicken,
+            await this.InformAsync(ctx, StaticDiscordEmoji.Chicken,
                 header +
                 $"{StaticDiscordEmoji.Trophy} Winner: {Formatter.Bold(winner.Name)}\n\n" +
                 $"{Formatter.Bold(winner.Name)} gained {Formatter.Bold(gain.ToString())} strength!\n" +
@@ -122,7 +122,7 @@ namespace TheGodfather.Modules.Chickens
             short threshold = (short)GFRandom.Generator.Next(50, 100);
             await this.Database.FilterChickensByVitalityAsync(ctx.Guild.Id, threshold);
 
-            await InformAsync(ctx, StaticDiscordEmoji.Chicken, $"The deadly chicken flu killed all chickens with vitality less than or equal to {Formatter.Bold(threshold.ToString())}!");
+            await this.InformAsync(ctx, StaticDiscordEmoji.Chicken, $"The deadly chicken flu killed all chickens with vitality less than or equal to {Formatter.Bold(threshold.ToString())}!");
         }
         #endregion
 
@@ -144,7 +144,7 @@ namespace TheGodfather.Modules.Chickens
             chicken.Stats.BareVitality += 100;
             await this.Database.ModifyChickenAsync(chicken, ctx.Guild.Id);
 
-            await InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} healed his chicken (+100 to current HP)!");
+            await this.InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} healed his chicken (+100 to current HP)!");
         }
         #endregion
 
@@ -194,7 +194,7 @@ namespace TheGodfather.Modules.Chickens
 
             chicken.Name = newname;
             await this.Database.ModifyChickenAsync(chicken, ctx.Guild.Id);
-            await InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} renamed his chicken to {Formatter.Bold(newname)}");
+            await this.InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} renamed his chicken to {Formatter.Bold(newname)}");
         }
         #endregion
 
@@ -220,7 +220,7 @@ namespace TheGodfather.Modules.Chickens
             await this.Database.RemoveChickenAsync(ctx.User.Id, ctx.Guild.Id);
             await this.Database.IncreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, price);
 
-            await InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} sold {Formatter.Bold(chicken.Name)} for {Formatter.Bold($"{price:n0}")} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}!");
+            await this.InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} sold {Formatter.Bold(chicken.Name)} for {Formatter.Bold($"{price:n0}")} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}!");
         }
         #endregion
 

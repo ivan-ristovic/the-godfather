@@ -39,7 +39,7 @@ namespace TheGodfather.Modules.Currency
         [GroupCommand]
         public Task ExecuteGroupAsync(CommandContext ctx,
                                      [Description("User.")] DiscordUser user = null)
-            => GetBalanceAsync(ctx, user);
+            => this.GetBalanceAsync(ctx, user);
 
 
         #region COMMAND_BANK_BALANCE
@@ -83,7 +83,7 @@ namespace TheGodfather.Modules.Currency
                                                [RemainingText, Description("New currency.")] string currency = null)
         {
             if (string.IsNullOrWhiteSpace(currency)) {
-                await InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"Currency for this guild: {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credit"}");
+                await this.InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"Currency for this guild: {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credit"}");
             } else {
                 if (currency.Length > 30)
                     throw new CommandFailedException("Currency name cannot be longer than 30 characters!");
@@ -91,7 +91,7 @@ namespace TheGodfather.Modules.Currency
                 this.Shared.GetGuildConfig(ctx.Guild.Id).Currency = currency;
                 await this.Database.UpdateGuildSettingsAsync(ctx.Guild.Id, this.Shared.GetGuildConfig(ctx.Guild.Id));
 
-                await InformAsync(ctx, $"Changed the currency to: {currency}", important: false);
+                await this.InformAsync(ctx, $"Changed the currency to: {currency}", important: false);
             }
         }
         #endregion
@@ -114,14 +114,14 @@ namespace TheGodfather.Modules.Currency
                 throw new CommandFailedException("Given user does not have a WM bank account!");
 
             await this.Database.IncreaseBankAccountBalanceAsync(user.Id, ctx.Guild.Id, amount);
-            await InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"{Formatter.Bold(user.Mention)} won {Formatter.Bold($"{amount:n0}")} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"} on the lottery! (seems legit)");
+            await this.InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"{Formatter.Bold(user.Mention)} won {Formatter.Bold($"{amount:n0}")} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"} on the lottery! (seems legit)");
         }
         
         [Command("grant"), Priority(0)]
         public Task GrantAsync(CommandContext ctx,
                               [Description("Amount.")] long amount,
                               [Description("User.")] DiscordUser user)
-            => GrantAsync(ctx, user, amount);
+            => this.GrantAsync(ctx, user, amount);
         #endregion
 
         #region COMMAND_BANK_REGISTER
@@ -135,7 +135,7 @@ namespace TheGodfather.Modules.Currency
                 throw new CommandFailedException("You already own an account in WM bank!");
 
             await this.Database.OpenBankAccountAsync(ctx.User.Id, ctx.Guild.Id);
-            await InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"Account opened for you, {ctx.User.Mention}! Since WM bank is so generous, you get 10000 {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"} for free.");
+            await this.InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"Account opened for you, {ctx.User.Mention}! Since WM bank is so generous, you get 10000 {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"} for free.");
         }
         #endregion
 
@@ -210,14 +210,14 @@ namespace TheGodfather.Modules.Currency
                 throw new CommandFailedException("You can't transfer funds to yourself.");
 
             await this.Database.TransferBetweenBankAccountsAsync(ctx.User.Id, user.Id, ctx.Guild.Id, amount);
-            await InformAsync(ctx, important: false);
+            await this.InformAsync(ctx, important: false);
         }
 
         [Command("transfer"), Priority(0)]
         public Task TransferCreditsAsync(CommandContext ctx,
                                         [Description("Amount of currency to transfer.")] long amount,
                                         [Description("User to send credits to.")] DiscordUser user)
-            => TransferCreditsAsync(ctx, user, amount);
+            => this.TransferCreditsAsync(ctx, user, amount);
         #endregion
 
         #region COMMAND_BANK_UNREGISTER
@@ -238,7 +238,7 @@ namespace TheGodfather.Modules.Currency
             else
                 await this.Database.CloseBankAccountAsync(user.Id, ctx.Guild.Id);
 
-            await InformAsync(ctx, important: false);
+            await this.InformAsync(ctx, important: false);
         }
         #endregion
     }

@@ -46,13 +46,13 @@ namespace TheGodfather.Modules.Games
                     throw new CommandFailedException("Please enable direct messages, so I can ask you about the word to guess.");
 
                 await dm.EmbedAsync("What is the secret word?", StaticDiscordEmoji.Question, this.ModuleColor);
-                await InformAsync(ctx, StaticDiscordEmoji.Question, $"{ctx.User.Mention}, check your DM. When you give me the word, the game will start.");
+                await this.InformAsync(ctx, StaticDiscordEmoji.Question, $"{ctx.User.Mention}, check your DM. When you give me the word, the game will start.");
                 MessageContext mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(
                     xm => xm.Channel == dm && xm.Author.Id == ctx.User.Id,
                     TimeSpan.FromMinutes(1)
                 );
                 if (mctx == null) {
-                    await InformFailureAsync(ctx, "I didn't get the word, so I will abort the game.");
+                    await this.InformFailureAsync(ctx, "I didn't get the word, so I will abort the game.");
                     return;
                 } else {
                     await dm.EmbedAsync($"Alright! The word is: {Formatter.Bold(mctx.Message.Content)}", StaticDiscordEmoji.Information, this.ModuleColor);
@@ -77,7 +77,7 @@ namespace TheGodfather.Modules.Games
             [UsageExamples("!game hangman rules")]
             public Task RulesAsync(CommandContext ctx)
             {
-                return InformAsync(ctx, 
+                return this.InformAsync(ctx, 
                     StaticDiscordEmoji.Information,
                     "\nI will ask a player for the word. Once he gives me the secret word, the other players try to guess by posting letters. For each failed guess you lose a \"life\"." +
                     " The game ends if the word is guessed or when all lives are spent."
@@ -93,7 +93,7 @@ namespace TheGodfather.Modules.Games
             public async Task StatsAsync(CommandContext ctx)
             {
                 string top = await this.Database.GetTopHangmanPlayersStringAsync(ctx.Client);
-                await InformAsync(ctx, StaticDiscordEmoji.Trophy, $"Top players in Hangman:\n\n{top}");
+                await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"Top players in Hangman:\n\n{top}");
             }
             #endregion
         }

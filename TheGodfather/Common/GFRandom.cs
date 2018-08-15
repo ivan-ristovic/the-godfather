@@ -31,7 +31,7 @@ namespace TheGodfather.Common
 
 
         public bool GetBool()
-            => Next(2) == 0;
+            => this.Next(2) == 0;
 
         public byte[] GetBytes(int count)
         {
@@ -53,34 +53,34 @@ namespace TheGodfather.Common
         }
 
         public byte GetU8()
-            => GetBytes(1)[0];
+            => this.GetBytes(1)[0];
 
         public sbyte GetS8()
-            => (sbyte)GetBytes(1)[0];
+            => (sbyte)this.GetBytes(1)[0];
 
         public ushort GetU16()
-            => BitConverter.ToUInt16(GetBytes(2), 0);
+            => BitConverter.ToUInt16(this.GetBytes(2), 0);
 
         public short GetS16()
-            => BitConverter.ToInt16(GetBytes(2), 0);
+            => BitConverter.ToInt16(this.GetBytes(2), 0);
 
         public uint GetU32()
-            => BitConverter.ToUInt32(GetBytes(4), 0);
+            => BitConverter.ToUInt32(this.GetBytes(4), 0);
 
         public int GetS32()
-            => BitConverter.ToInt32(GetBytes(4), 0);
+            => BitConverter.ToInt32(this.GetBytes(4), 0);
 
         public ulong GetU64()
-            => BitConverter.ToUInt64(GetBytes(8), 0);
+            => BitConverter.ToUInt64(this.GetBytes(8), 0);
 
         public long GetS64()
-            => BitConverter.ToInt64(GetBytes(8), 0);
+            => BitConverter.ToInt64(this.GetBytes(8), 0);
 
         public int Next()
-            => Next(0, int.MaxValue);
+            => this.Next(0, int.MaxValue);
 
         public int Next(int max)
-            => Next(0, max);
+            => this.Next(0, max);
 
         public int Next(int min, int max)
         {
@@ -94,7 +94,7 @@ namespace TheGodfather.Common
             min += offset;
             max += offset;
 
-            return Math.Abs(GetS32()) % (max - min) + min - offset;
+            return Math.Abs(this.GetS32()) % (max - min) + min - offset;
         }
     }
 }

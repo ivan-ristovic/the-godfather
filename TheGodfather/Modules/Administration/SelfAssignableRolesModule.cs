@@ -38,13 +38,13 @@ namespace TheGodfather.Modules.Administration
 
         [GroupCommand, Priority(1)]
         public Task ExecuteGroupAsync(CommandContext ctx)
-            => ListAsync(ctx);
+            => this.ListAsync(ctx);
 
         [GroupCommand, Priority(0)]
         [RequireUserPermissions(Permissions.Administrator)]
         public Task ExecuteGroupAsync(CommandContext ctx,
                                      [Description("Roles to add.")] params DiscordRole[] roles)
-            => AddAsync(ctx, roles);
+            => this.AddAsync(ctx, roles);
 
 
         #region COMMAND_SAR_ADD
@@ -75,7 +75,7 @@ namespace TheGodfather.Modules.Administration
                 await logchn.SendMessageAsync(embed: emb.Build());
             }
 
-            await InformAsync(ctx, $"Added self-assignable roles:\n\n{string.Join("\n", roles.Select(r => r.ToString()))}", important: false);
+            await this.InformAsync(ctx, $"Added self-assignable roles:\n\n{string.Join("\n", roles.Select(r => r.ToString()))}", important: false);
         }
         #endregion
 
@@ -107,7 +107,7 @@ namespace TheGodfather.Modules.Administration
                 await logchn.SendMessageAsync(embed: emb.Build());
             }
 
-            await InformAsync(ctx, $"Removed self-assignable roles:\n\n{string.Join("\n", roles.Select(r => r.ToString()))}", important: false);
+            await this.InformAsync(ctx, $"Removed self-assignable roles:\n\n{string.Join("\n", roles.Select(r => r.ToString()))}", important: false);
         }
         #endregion
 
@@ -135,7 +135,7 @@ namespace TheGodfather.Modules.Administration
                 await logchn.SendMessageAsync(embed: emb.Build());
             }
 
-            await InformAsync(ctx, "Removed all self-assignable roles for this guild!", important: false);
+            await this.InformAsync(ctx, "Removed all self-assignable roles for this guild!", important: false);
         }
         #endregion
 

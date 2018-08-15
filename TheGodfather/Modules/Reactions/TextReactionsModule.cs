@@ -39,14 +39,14 @@ namespace TheGodfather.Modules.Reactions
 
         [GroupCommand, Priority(1)]
         public Task ExecuteGroupAsync(CommandContext ctx)
-            => ListAsync(ctx);
+            => this.ListAsync(ctx);
 
         [GroupCommand, Priority(0)]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public Task ExecuteGroupAsync(CommandContext ctx,
                                      [Description("Trigger string (case insensitive).")] string trigger,
                                      [RemainingText, Description("Response.")] string response)
-            => AddAsync(ctx, trigger, response);
+            => this.AddAsync(ctx, trigger, response);
 
 
         #region COMMAND_TEXT_REACTIONS_ADD
@@ -58,7 +58,7 @@ namespace TheGodfather.Modules.Reactions
         public Task AddAsync(CommandContext ctx,
                             [Description("Trigger string (case insensitive).")] string trigger,
                             [RemainingText, Description("Response.")] string response)
-            => AddTextReactionAsync(ctx, trigger, response, false);
+            => this.AddTextReactionAsync(ctx, trigger, response, false);
         #endregion
 
         #region COMMAND_TEXT_REACTIONS_ADDREGEX
@@ -70,7 +70,7 @@ namespace TheGodfather.Modules.Reactions
         public Task AddRegexAsync(CommandContext ctx,
                                  [Description("Regex (case insensitive).")] string trigger,
                                  [RemainingText, Description("Response.")] string response)
-            => AddTextReactionAsync(ctx, trigger, response, true);
+            => this.AddTextReactionAsync(ctx, trigger, response, true);
         #endregion
 
         #region COMMAND_TEXT_REACTIONS_DELETE
@@ -122,9 +122,9 @@ namespace TheGodfather.Modules.Reactions
             }
 
             if (eb.Length > 0)
-                await InformFailureAsync(ctx, $"Action finished with following notes/warnings:\n\n{eb.ToString()}");
+                await this.InformFailureAsync(ctx, $"Action finished with following notes/warnings:\n\n{eb.ToString()}");
             else
-                await InformAsync(ctx, $"Removed {count} reactions matching given IDs.", important: false);
+                await this.InformAsync(ctx, $"Removed {count} reactions matching given IDs.", important: false);
         }
 
         [Command("delete"), Priority(0)]
@@ -190,9 +190,9 @@ namespace TheGodfather.Modules.Reactions
             }
 
             if (eb.Length > 0)
-                await InformFailureAsync(ctx, $"Action finished with following warnings/errors:\n\n{eb.ToString()}");
+                await this.InformFailureAsync(ctx, $"Action finished with following warnings/errors:\n\n{eb.ToString()}");
             else
-                await InformAsync(ctx, $"Removed {count} reactions matching given triggers.", important: false);
+                await this.InformAsync(ctx, $"Removed {count} reactions matching given triggers.", important: false);
         }
         #endregion
 
@@ -224,7 +224,7 @@ namespace TheGodfather.Modules.Reactions
                 await logchn.SendMessageAsync(embed: emb.Build());
             }
 
-            await InformAsync(ctx, "Removed all text reactions!", important: false);
+            await this.InformAsync(ctx, "Removed all text reactions!", important: false);
         }
         #endregion
 
@@ -306,9 +306,9 @@ namespace TheGodfather.Modules.Reactions
             }
             
             if (eb.Length > 0)
-                await InformFailureAsync(ctx, eb.ToString());
+                await this.InformFailureAsync(ctx, eb.ToString());
             else
-                await InformAsync(ctx, "Successfully added given text reaction.", important: false);
+                await this.InformAsync(ctx, "Successfully added given text reaction.", important: false);
         }
         #endregion
     }

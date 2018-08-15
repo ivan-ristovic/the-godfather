@@ -46,11 +46,11 @@ namespace TheGodfather.Modules.Polls.Common
             this.endTime = DateTime.Now + timespan;
             this.IsRunning = true;
 
-            this.msgHandle = await this.channel.SendMessageAsync(embed: ToDiscordEmbed());
+            this.msgHandle = await this.channel.SendMessageAsync(embed: this.ToDiscordEmbed());
 
             this.rctx = await this.interactivity.CreatePollAsync(this.msgHandle, StaticDiscordEmoji.Numbers.Take(this.Options.Count), timespan);
 
-            await this.channel.SendMessageAsync(embed: ResultsToDiscordEmbed());
+            await this.channel.SendMessageAsync(embed: this.ResultsToDiscordEmbed());
 
             this.IsRunning = false;
         }

@@ -75,7 +75,7 @@ namespace TheGodfather.Modules.Search
         [Command("forecast"), Priority(0)]
         public Task ForecastAsync(CommandContext ctx,
                                  [RemainingText, Description("Query.")] string query)
-            => ForecastAsync(ctx, 7, query);
+            => this.ForecastAsync(ctx, 7, query);
         #endregion
     }
 }

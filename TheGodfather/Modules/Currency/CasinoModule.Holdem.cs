@@ -44,7 +44,7 @@ namespace TheGodfather.Modules.Currency
 
                 if (this.Shared.IsEventRunningInChannel(ctx.Channel.Id)) {
                     if (this.Shared.GetEventInChannel(ctx.Channel.Id) is HoldemGame)
-                        await JoinAsync(ctx);
+                        await this.JoinAsync(ctx);
                     else
                         throw new CommandFailedException("Another event is already running in the current channel.");
                     return;
@@ -57,22 +57,22 @@ namespace TheGodfather.Modules.Currency
                 var game = new HoldemGame(ctx.Client.GetInteractivity(), ctx.Channel, amount);
                 this.Shared.RegisterEventInChannel(game, ctx.Channel.Id);
                 try {
-                    await InformAsync(ctx, StaticDiscordEmoji.Clock1, $"The Hold'Em game will start in 30s or when there are 7 participants. Use command {Formatter.InlineCode("casino holdem <entering sum>")} to join the pool. Entering sum is set to {game.MoneyNeeded} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}.");
-                    await JoinAsync(ctx);
+                    await this.InformAsync(ctx, StaticDiscordEmoji.Clock1, $"The Hold'Em game will start in 30s or when there are 7 participants. Use command {Formatter.InlineCode("casino holdem <entering sum>")} to join the pool. Entering sum is set to {game.MoneyNeeded} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}.");
+                    await this.JoinAsync(ctx);
                     await Task.Delay(TimeSpan.FromSeconds(30));
 
                     if (game.Participants.Count > 1) {
                         await game.RunAsync();
 
                         if (game.Winner != null)
-                            await InformAsync(ctx, StaticDiscordEmoji.Trophy, $"Winner: {game.Winner.Mention}");
+                            await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"Winner: {game.Winner.Mention}");
 
                         foreach (HoldemParticipant participant in game.Participants)
                             await this.Database.IncreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, participant.Balance);
 
                     } else {
                         await this.Database.IncreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, game.MoneyNeeded);
-                        await InformAsync(ctx, StaticDiscordEmoji.AlarmClock, "Not enough users joined the Hold'Em game.");
+                        await this.InformAsync(ctx, StaticDiscordEmoji.AlarmClock, "Not enough users joined the Hold'Em game.");
                     }
                 } finally {
                     this.Shared.UnregisterEventInChannel(ctx.Channel.Id);
@@ -111,7 +111,7 @@ namespace TheGodfather.Modules.Currency
                     throw new CommandFailedException($"You do not have enough {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}! Use command {Formatter.InlineCode("bank")} to check your account status.");
 
                 game.AddParticipant(ctx.User, handle);
-                await InformAsync(ctx, StaticDiscordEmoji.CardSuits[0], $"{ctx.User.Mention} joined the Hold'Em game.");
+                await this.InformAsync(ctx, StaticDiscordEmoji.CardSuits[0], $"{ctx.User.Mention} joined the Hold'Em game.");
             }
             #endregion
 
@@ -122,7 +122,7 @@ namespace TheGodfather.Modules.Currency
             [UsageExamples("!casino holdem rules")]
             public Task RulesAsync(CommandContext ctx)
             {
-                return InformAsync(ctx,
+                return this.InformAsync(ctx,
                     StaticDiscordEmoji.Information,
                     "Texas hold 'em (also known as Texas holdem, hold 'em, and holdem) is a variation of " +
                     "the card game of poker. Two cards, known as the hole cards, are dealt face down to " +

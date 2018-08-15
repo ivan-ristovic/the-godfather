@@ -63,15 +63,15 @@ namespace TheGodfather.Modules.Games.Common
             var emb = new DiscordEmbedBuilder() {
                 Color = DiscordColor.Chartreuse
             };
-            emb.AddField("Duel stats", DuelStatsString())
-               .AddField("Tic-Tac-Toe stats", TTTStatsString())
-               .AddField("Connect4 stats", Chain4StatsString())
-               .AddField("Caro stats", CaroStatsString())
-               .AddField("Othello stats", OthelloStatsString())
-               .AddField("Nunchi stats", NunchiStatsString(), inline: true)
-               .AddField("Quiz stats", QuizStatsString(), inline: true)
-               .AddField("Race stats", RaceStatsString(), inline: true)
-               .AddField("Hangman stats", HangmanStatsString(), inline: true);
+            emb.AddField("Duel stats", this.DuelStatsString())
+               .AddField("Tic-Tac-Toe stats", this.TTTStatsString())
+               .AddField("Connect4 stats", this.Chain4StatsString())
+               .AddField("Caro stats", this.CaroStatsString())
+               .AddField("Othello stats", this.OthelloStatsString())
+               .AddField("Nunchi stats", this.NunchiStatsString(), inline: true)
+               .AddField("Quiz stats", this.QuizStatsString(), inline: true)
+               .AddField("Race stats", this.RaceStatsString(), inline: true)
+               .AddField("Hangman stats", this.HangmanStatsString(), inline: true);
             return emb;
         }
 
@@ -95,16 +95,16 @@ namespace TheGodfather.Modules.Games.Common
         }
 
         public string DuelStatsString()
-            => $"W: {this.stats["duels_won"]} L: {this.stats["duels_lost"]} ({Formatter.Bold($"{CalculateWinPercentage(this.stats["duels_won"], this.stats["duels_lost"])}")}%)";
+            => $"W: {this.stats["duels_won"]} L: {this.stats["duels_lost"]} ({Formatter.Bold($"{this.CalculateWinPercentage(this.stats["duels_won"], this.stats["duels_lost"])}")}%)";
 
         public string TTTStatsString()
-            => $"W: {this.stats["ttt_won"]} L: {this.stats["ttt_lost"]} ({Formatter.Bold($"{CalculateWinPercentage(this.stats["ttt_won"], this.stats["ttt_lost"])}")}%)";
+            => $"W: {this.stats["ttt_won"]} L: {this.stats["ttt_lost"]} ({Formatter.Bold($"{this.CalculateWinPercentage(this.stats["ttt_won"], this.stats["ttt_lost"])}")}%)";
 
         public string Chain4StatsString()
-            => $"W: {this.stats["chain4_won"]} L: {this.stats["chain4_lost"]} ({Formatter.Bold($"{CalculateWinPercentage(this.stats["chain4_won"], this.stats["chain4_lost"])}")}%)";
+            => $"W: {this.stats["chain4_won"]} L: {this.stats["chain4_lost"]} ({Formatter.Bold($"{this.CalculateWinPercentage(this.stats["chain4_won"], this.stats["chain4_lost"])}")}%)";
 
         public string CaroStatsString()
-            => $"W: {this.stats["caro_won"]} L: {this.stats["caro_lost"]} ({Formatter.Bold($"{CalculateWinPercentage(this.stats["caro_won"], this.stats["caro_lost"])}")}%)";
+            => $"W: {this.stats["caro_won"]} L: {this.stats["caro_lost"]} ({Formatter.Bold($"{this.CalculateWinPercentage(this.stats["caro_won"], this.stats["caro_lost"])}")}%)";
 
         public string NunchiStatsString()
             => $"W: {this.stats["numraces_won"]}";
@@ -119,6 +119,6 @@ namespace TheGodfather.Modules.Games.Common
             => $"W: {this.stats["hangman_won"]}";
 
         public string OthelloStatsString()
-            => $"W: {this.stats["othello_won"]} L: {this.stats["othello_lost"]} ({Formatter.Bold($"{CalculateWinPercentage(this.stats["othello_won"], this.stats["othello_lost"])}")}%)";
+            => $"W: {this.stats["othello_won"]} L: {this.stats["othello_lost"]} ({Formatter.Bold($"{this.CalculateWinPercentage(this.stats["othello_won"], this.stats["othello_lost"])}")}%)";
     }
 }

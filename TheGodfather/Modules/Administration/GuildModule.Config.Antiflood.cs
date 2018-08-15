@@ -80,7 +80,7 @@ namespace TheGodfather.Modules.Administration
                         await logchn.SendMessageAsync(embed: emb.Build());
                     }
 
-                    await InformAsync(ctx, $"{Formatter.Bold(gcfg.AntifloodEnabled ? "Enabled" : "Disabled")} antiflood actions.", important: false);
+                    await this.InformAsync(ctx, $"{Formatter.Bold(gcfg.AntifloodEnabled ? "Enabled" : "Disabled")} antiflood actions.", important: false);
                 }
 
                 [GroupCommand, Priority(4)]
@@ -89,7 +89,7 @@ namespace TheGodfather.Modules.Administration
                                              [Description("Action type.")] PunishmentActionType action,
                                              [Description("Sensitivity (number of users allowed to join within a given timespan).")] short sensitivity = 5,
                                              [Description("Cooldown.")] TimeSpan? cooldown = null)
-                    => ExecuteGroupAsync(ctx, enable, sensitivity, action, cooldown);
+                    => this.ExecuteGroupAsync(ctx, enable, sensitivity, action, cooldown);
 
                 [GroupCommand, Priority(3)]
                 public Task ExecuteGroupAsync(CommandContext ctx,
@@ -97,7 +97,7 @@ namespace TheGodfather.Modules.Administration
                                              [Description("Action type.")] PunishmentActionType action,
                                              [Description("Cooldown.")] TimeSpan? cooldown = null,
                                              [Description("Sensitivity (number of users allowed to join within a given timespan).")] short sensitivity = 5)
-                    => ExecuteGroupAsync(ctx, enable, sensitivity, action, cooldown);
+                    => this.ExecuteGroupAsync(ctx, enable, sensitivity, action, cooldown);
 
                 [GroupCommand, Priority(2)]
                 public Task ExecuteGroupAsync(CommandContext ctx,
@@ -105,18 +105,18 @@ namespace TheGodfather.Modules.Administration
                                              [Description("Cooldown.")] TimeSpan? cooldown,
                                              [Description("Action type.")] PunishmentActionType action = PunishmentActionType.Kick,
                                              [Description("Sensitivity (number of users allowed to join within a given timespan).")] short sensitivity = 5)
-                    => ExecuteGroupAsync(ctx, enable, sensitivity, action, cooldown);
+                    => this.ExecuteGroupAsync(ctx, enable, sensitivity, action, cooldown);
 
                 [GroupCommand, Priority(1)]
                 public Task ExecuteGroupAsync(CommandContext ctx,
                                              [Description("Enable?")] bool enable)
-                    => ExecuteGroupAsync(ctx, enable, 5, PunishmentActionType.Kick, null);
+                    => this.ExecuteGroupAsync(ctx, enable, 5, PunishmentActionType.Kick, null);
 
                 [GroupCommand, Priority(0)]
                 public Task ExecuteGroupAsync(CommandContext ctx)
                 {
                     CachedGuildConfig gcfg = this.Shared.GetGuildConfig(ctx.Guild.Id);
-                    return InformAsync(ctx, $"Antiflood watch for this guild is {Formatter.Bold(gcfg.AntifloodEnabled ? "enabled" : "disabled")}");
+                    return this.InformAsync(ctx, $"Antiflood watch for this guild is {Formatter.Bold(gcfg.AntifloodEnabled ? "enabled" : "disabled")}");
                 }
 
 
@@ -146,7 +146,7 @@ namespace TheGodfather.Modules.Administration
                         await logchn.SendMessageAsync(embed: emb.Build());
                     }
 
-                    await InformAsync(ctx, $"Antiflood action for this guild has been changed to {Formatter.Bold(gcfg.RatelimitAction.ToTypeString())}", important: false);
+                    await this.InformAsync(ctx, $"Antiflood action for this guild has been changed to {Formatter.Bold(gcfg.RatelimitAction.ToTypeString())}", important: false);
                 }
                 #endregion
 
@@ -179,7 +179,7 @@ namespace TheGodfather.Modules.Administration
                         await logchn.SendMessageAsync(embed: emb.Build());
                     }
 
-                    await InformAsync(ctx, $"Antiflood sensitivity for this guild has been changed to {Formatter.Bold(gcfg.RatelimitSensitivity.ToString())} users per {gcfg.AntifloodCooldown}s", important: false);
+                    await this.InformAsync(ctx, $"Antiflood sensitivity for this guild has been changed to {Formatter.Bold(gcfg.RatelimitSensitivity.ToString())} users per {gcfg.AntifloodCooldown}s", important: false);
                 }
                 #endregion
 
@@ -212,7 +212,7 @@ namespace TheGodfather.Modules.Administration
                         await logchn.SendMessageAsync(embed: emb.Build());
                     }
 
-                    await InformAsync(ctx, $"Antiflood sensitivity for this guild has been changed to {Formatter.Bold(gcfg.RatelimitSensitivity.ToString())} users per {gcfg.AntifloodCooldown}", important: false);
+                    await this.InformAsync(ctx, $"Antiflood sensitivity for this guild has been changed to {Formatter.Bold(gcfg.RatelimitSensitivity.ToString())} users per {gcfg.AntifloodCooldown}", important: false);
                 }
                 #endregion
             }

@@ -41,7 +41,7 @@ namespace TheGodfather.Modules.Currency
             {
                 if (this.Shared.IsEventRunningInChannel(ctx.Channel.Id)) {
                     if (this.Shared.GetEventInChannel(ctx.Channel.Id) is LotteryGame)
-                        await JoinAsync(ctx, numbers);
+                        await this.JoinAsync(ctx, numbers);
                     else
                         throw new CommandFailedException("Another event is already running in the current channel.");
                     return;
@@ -54,19 +54,19 @@ namespace TheGodfather.Modules.Currency
                 var game = new LotteryGame(ctx.Client.GetInteractivity(), ctx.Channel);
                 this.Shared.RegisterEventInChannel(game, ctx.Channel.Id);
                 try {
-                    await InformAsync(ctx, StaticDiscordEmoji.Clock1, $"The Lottery game will start in 30s or when there are 10 participants. Use command {Formatter.InlineCode("casino lottery")} to join the pool.");
-                    await JoinAsync(ctx, numbers);
+                    await this.InformAsync(ctx, StaticDiscordEmoji.Clock1, $"The Lottery game will start in 30s or when there are 10 participants. Use command {Formatter.InlineCode("casino lottery")} to join the pool.");
+                    await this.JoinAsync(ctx, numbers);
                     await Task.Delay(TimeSpan.FromSeconds(30));
 
                     await game.RunAsync();
 
                     if (game.Winners.Any()) {
-                        await InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"Winnings:\n\n{string.Join(", ", game.Winners.Select(w => $"{w.User.Mention} : {w.WinAmount}"))}");
+                        await this.InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"Winnings:\n\n{string.Join(", ", game.Winners.Select(w => $"{w.User.Mention} : {w.WinAmount}"))}");
 
                         foreach (var winner in game.Winners)
                             await this.Database.IncreaseBankAccountBalanceAsync(winner.Id, ctx.Guild.Id, winner.WinAmount);
                     } else {
-                        await InformAsync(ctx, StaticDiscordEmoji.MoneyBag, "Better luck next time!");
+                        await this.InformAsync(ctx, StaticDiscordEmoji.MoneyBag, "Better luck next time!");
                     }
                 } finally {
                     this.Shared.UnregisterEventInChannel(ctx.Channel.Id);
@@ -104,7 +104,7 @@ namespace TheGodfather.Modules.Currency
                     throw new CommandFailedException($"You do not have enough {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"} to buy a lottery ticket! Use command {Formatter.InlineCode("bank")} to check your account status. The lottery ticket costs {LotteryGame.TicketPrice} {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"}!");
 
                 game.AddParticipant(ctx.User, numbers);
-                await InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"{ctx.User.Mention} joined the Lottery game.");
+                await this.InformAsync(ctx, StaticDiscordEmoji.MoneyBag, $"{ctx.User.Mention} joined the Lottery game.");
             }
             #endregion
 
@@ -115,7 +115,7 @@ namespace TheGodfather.Modules.Currency
             [UsageExamples("!casino lottery rules")]
             public Task RulesAsync(CommandContext ctx)
             {
-                return InformAsync(ctx,
+                return this.InformAsync(ctx,
                     StaticDiscordEmoji.Information,
                     "Three numbers will be drawn, and rewards will be given to participants depending on " +
                     "the number of correct guesses."

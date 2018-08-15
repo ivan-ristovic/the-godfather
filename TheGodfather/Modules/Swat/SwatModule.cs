@@ -48,7 +48,7 @@ namespace TheGodfather.Modules.Swat
             if (server == null)
                 throw new CommandFailedException("Server with such name isn't found in the database.");
 
-            await InformAsync(ctx, $"IP: {Formatter.Bold($"{server.Ip}:{server.JoinPort}")}");
+            await this.InformAsync(ctx, $"IP: {Formatter.Bold($"{server.Ip}:{server.JoinPort}")}");
         }
         #endregion
 
@@ -71,7 +71,7 @@ namespace TheGodfather.Modules.Swat
             if (info != null)
                 await ctx.RespondAsync(embed: info.ToDiscordEmbed(this.ModuleColor));
             else
-                await InformFailureAsync(ctx, "No reply from server.");
+                await this.InformFailureAsync(ctx, "No reply from server.");
         }
 
         [Command("query"), Priority(0)]
@@ -90,7 +90,7 @@ namespace TheGodfather.Modules.Swat
             if (info != null)
                 await ctx.RespondAsync(embed: info.ToDiscordEmbed(this.ModuleColor));
             else
-                await InformFailureAsync(ctx, "No reply from server.");
+                await this.InformFailureAsync(ctx, "No reply from server.");
         }
         #endregion
 
@@ -106,7 +106,7 @@ namespace TheGodfather.Modules.Swat
                 throw new InvalidCommandUsageException("Timeout not in valid range [100-1000] ms.");
 
             SwatServerInfo.CheckTimeout = timeout;
-            return InformAsync(ctx, $"Timeout changed to: {Formatter.Bold(timeout.ToString())}", important: false);
+            return this.InformAsync(ctx, $"Timeout changed to: {Formatter.Bold(timeout.ToString())}", important: false);
         }
         #endregion
 
@@ -153,7 +153,7 @@ namespace TheGodfather.Modules.Swat
             var server = SwatServer.FromIP(ip.Content, queryport);
             SwatSpaceCheckService.AddListener(server, ctx.Channel);
 
-            await InformAsync(ctx, $"Starting space listening on {server.Ip}:{server.JoinPort}... Use command {Formatter.Bold("swat stopcheck")} to stop the check.", important: false);
+            await this.InformAsync(ctx, $"Starting space listening on {server.Ip}:{server.JoinPort}... Use command {Formatter.Bold("swat stopcheck")} to stop the check.", important: false);
 
         }
 
@@ -173,7 +173,7 @@ namespace TheGodfather.Modules.Swat
 
             SwatSpaceCheckService.AddListener(server, ctx.Channel);
 
-            await InformAsync(ctx, $"Starting space listening on {server.Ip}:{server.JoinPort}... Use command {Formatter.Bold("swat stopcheck")} to stop the check.", important: false);
+            await this.InformAsync(ctx, $"Starting space listening on {server.Ip}:{server.JoinPort}... Use command {Formatter.Bold("swat stopcheck")} to stop the check.", important: false);
         }
         #endregion
 
@@ -189,7 +189,7 @@ namespace TheGodfather.Modules.Swat
 
             SwatSpaceCheckService.RemoveListener(ctx.Channel);
 
-            return InformAsync(ctx, "Checking stopped.", important: false);
+            return this.InformAsync(ctx, "Checking stopped.", important: false);
         }
         #endregion
     }

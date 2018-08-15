@@ -54,7 +54,7 @@ namespace TheGodfather.Modules.Search
                 TimeWindow.Day
             ).ConfigureAwait(false);
 
-            await PrintImagesAsync(ctx.Channel, res, amount)
+            await this.PrintImagesAsync(ctx.Channel, res, amount)
                 .ConfigureAwait(false);
         }
 
@@ -62,7 +62,7 @@ namespace TheGodfather.Modules.Search
         public Task ExecuteGroupAsync(CommandContext ctx,
                                      [Description("Subreddit.")] string sub,
                                      [Description("Number of images to print [1-10].")] int n = 1)
-            => ExecuteGroupAsync(ctx, n, sub);
+            => this.ExecuteGroupAsync(ctx, n, sub);
 
 
         #region COMMAND_IMGUR_LATEST
@@ -79,14 +79,14 @@ namespace TheGodfather.Modules.Search
                 throw new ServiceDisabledException();
 
             var res = await this.Service.GetItemsFromSubAsync(sub, amount, SubredditGallerySortOrder.Time, TimeWindow.Day);
-            await PrintImagesAsync(ctx.Channel, res, amount);
+            await this.PrintImagesAsync(ctx.Channel, res, amount);
         }
 
         [Command("latest"), Priority(0)]
         public Task LatestAsync(CommandContext ctx,
                                [Description("Subreddit.")] string sub,
                                [Description("Number of images to print [1-10].")] int n)
-            => LatestAsync(ctx, n, sub);
+            => this.LatestAsync(ctx, n, sub);
         #endregion
 
         #region COMMAND_IMGUR_TOP
@@ -106,7 +106,7 @@ namespace TheGodfather.Modules.Search
                 throw new ServiceDisabledException();
 
             var res = await this.Service.GetItemsFromSubAsync(sub, amount, SubredditGallerySortOrder.Time, timespan);
-            await PrintImagesAsync(ctx.Channel, res, amount);
+            await this.PrintImagesAsync(ctx.Channel, res, amount);
         }
 
         [Command("top"), Priority(2)]
@@ -114,20 +114,20 @@ namespace TheGodfather.Modules.Search
                             [Description("Timespan in which to search (day/week/month/year/all).")] TimeWindow timespan,
                             [Description("Subreddit.")] string sub,
                             [Description("Number of images to print [1-10].")] int amount = 1)
-            => TopAsync(ctx, timespan, amount, sub);
+            => this.TopAsync(ctx, timespan, amount, sub);
 
         [Command("top"), Priority(1)]
         public Task TopAsync(CommandContext ctx,
                             [Description("Number of images to print [1-10].")] int amount,
                             [Description("Timespan in which to search (day/week/month/year/all).")] TimeWindow timespan,
                             [RemainingText, Description("Subreddit.")] string sub)
-            => TopAsync(ctx, timespan, amount, sub);
+            => this.TopAsync(ctx, timespan, amount, sub);
 
         [Command("top"), Priority(0)]
         public Task TopAsync(CommandContext ctx,
                             [Description("Number of images to print [1-10].")] int amount,
                             [RemainingText, Description("Subreddit.")] string sub)
-            => TopAsync(ctx, TimeWindow.Day, amount, sub);
+            => this.TopAsync(ctx, TimeWindow.Day, amount, sub);
 
         #endregion
 

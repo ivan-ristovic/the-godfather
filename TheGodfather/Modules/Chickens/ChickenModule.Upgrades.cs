@@ -61,12 +61,12 @@ namespace TheGodfather.Modules.Chickens
                     throw new CommandFailedException($"You do not have enought {this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits"} to buy that upgrade!");
 
                 await this.Database.AddChickenUpgradeAsync(ctx.User.Id, ctx.Guild.Id, upgrade);
-                await InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} bought upgraded his chicken with {Formatter.Bold(upgrade.Name)} (+{upgrade.Modifier}) {upgrade.UpgradesStat.ToShortString()}!");
+                await this.InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} bought upgraded his chicken with {Formatter.Bold(upgrade.Name)} (+{upgrade.Modifier}) {upgrade.UpgradesStat.ToShortString()}!");
             }
 
             [GroupCommand, Priority(0)]
             public Task ExecuteGroupAsync(CommandContext ctx)
-                => ListAsync(ctx);
+                => this.ListAsync(ctx);
 
 
             #region COMMAND_CHICKEN_UPGRADE_LIST

@@ -43,19 +43,19 @@ namespace TheGodfather.Modules.Polls.Common
         public virtual async Task RunAsync(TimeSpan timespan)
         {
             this.IsRunning = true;
-            var msgHandle = await this.channel.SendMessageAsync(embed: ToDiscordEmbed());
+            var msgHandle = await this.channel.SendMessageAsync(embed: this.ToDiscordEmbed());
 
             this.endTime = DateTime.Now + timespan;
             while (!this.cts.IsCancellationRequested) {
                 try {
                     if (this.channel.LastMessageId != msgHandle.Id) {
                         await msgHandle.DeleteAsync();
-                        msgHandle = await this.channel.SendMessageAsync(embed: ToDiscordEmbed());
+                        msgHandle = await this.channel.SendMessageAsync(embed: this.ToDiscordEmbed());
                     } else {
-                        await msgHandle.ModifyAsync(embed: ToDiscordEmbed());
+                        await msgHandle.ModifyAsync(embed: this.ToDiscordEmbed());
                     }
                 } catch {
-                    msgHandle = await this.channel.SendMessageAsync(embed: ToDiscordEmbed());
+                    msgHandle = await this.channel.SendMessageAsync(embed: this.ToDiscordEmbed());
                 }
 
                 if (this.TimeUntilEnd.TotalSeconds < 1)
@@ -70,7 +70,7 @@ namespace TheGodfather.Modules.Polls.Common
 
             this.IsRunning = false;
 
-            await this.channel.SendMessageAsync(embed: ResultsToDiscordEmbed());
+            await this.channel.SendMessageAsync(embed: this.ResultsToDiscordEmbed());
         }
 
         public virtual DiscordEmbed ToDiscordEmbed()

@@ -101,7 +101,7 @@ namespace TheGodfather.Modules.Search.Services
             if (profile == null || summary == null || summary.Data == null)
                 return null;
 
-            return EmbedSteamResult(profile, summary.Data);
+            return this.EmbedSteamResult(profile, summary.Data);
         }
     }
 }

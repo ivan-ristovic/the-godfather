@@ -36,7 +36,7 @@ namespace TheGodfather.Modules.Chickens
 
             [GroupCommand]
             public Task ExecuteGroupAsync(CommandContext ctx)
-                => StrengthAsync(ctx);
+                => this.StrengthAsync(ctx);
 
 
             #region COMMAND_CHICKEN_TRAIN_STRENGTH
@@ -71,7 +71,7 @@ namespace TheGodfather.Modules.Chickens
                 chicken.Stats.BareVitality--;
 
                 await this.Database.ModifyChickenAsync(chicken, ctx.Guild.Id);
-                await InformAsync(ctx, StaticDiscordEmoji.Chicken, result);
+                await this.InformAsync(ctx, StaticDiscordEmoji.Chicken, result);
             }
             #endregion
 
@@ -107,7 +107,7 @@ namespace TheGodfather.Modules.Chickens
                 chicken.Stats.BareVitality--;
 
                 await this.Database.ModifyChickenAsync(chicken, ctx.Guild.Id);
-                await InformAsync(ctx, StaticDiscordEmoji.Chicken, result);
+                await this.InformAsync(ctx, StaticDiscordEmoji.Chicken, result);
             }
             #endregion
         }

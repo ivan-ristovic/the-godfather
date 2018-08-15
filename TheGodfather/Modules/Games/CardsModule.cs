@@ -35,7 +35,7 @@ namespace TheGodfather.Modules.Games
 
         [GroupCommand]
         public Task ExecuteGroupAsync(CommandContext ctx)
-            => ResetDeckAsync(ctx);
+            => this.ResetDeckAsync(ctx);
 
 
         #region COMMAND_DECK_DRAW
@@ -57,7 +57,7 @@ namespace TheGodfather.Modules.Games
             if (!drawn.Any())
                 throw new CommandFailedException($"Current deck doesn't have enough cards. Use command {Formatter.InlineCode("deck reset")} to open a new deck.");
 
-            return InformAsync(ctx, $"{ctx.User.Mention} drew {string.Join(" ", drawn)}", ":ticket:");
+            return this.InformAsync(ctx, $"{ctx.User.Mention} drew {string.Join(" ", drawn)}", ":ticket:");
         }
         #endregion
 
@@ -69,7 +69,7 @@ namespace TheGodfather.Modules.Games
         public Task ResetDeckAsync(CommandContext ctx)
         {
             CardDecksService.ResetDeckInChannel(ctx.Channel.Id);
-            return InformAsync(ctx, StaticDiscordEmoji.CardSuits[0], "A new shuffled deck is opened in this channel!", important: false);
+            return this.InformAsync(ctx, StaticDiscordEmoji.CardSuits[0], "A new shuffled deck is opened in this channel!", important: false);
         }
         #endregion
     }

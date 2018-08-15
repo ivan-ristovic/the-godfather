@@ -47,13 +47,13 @@ namespace TheGodfather.Common.Collections
                 var count = 0;
                 var acquiredLocks = 0;
                 try {
-                    AcquireAllLocks(ref acquiredLocks);
+                    this.AcquireAllLocks(ref acquiredLocks);
 
                     for (var i = 0; i < this._tables.CountPerLock.Length; i++) {
                         count += this._tables.CountPerLock[i];
                     }
                 } finally {
-                    ReleaseLocks(0, acquiredLocks);
+                    this.ReleaseLocks(0, acquiredLocks);
                 }
 
                 return count;
@@ -70,7 +70,7 @@ namespace TheGodfather.Common.Collections
             get {
                 var acquiredLocks = 0;
                 try {
-                    AcquireAllLocks(ref acquiredLocks);
+                    this.AcquireAllLocks(ref acquiredLocks);
 
                     for (var i = 0; i < this._tables.CountPerLock.Length; i++) {
                         if (this._tables.CountPerLock[i] != 0) {
@@ -78,7 +78,7 @@ namespace TheGodfather.Common.Collections
                         }
                     }
                 } finally {
-                    ReleaseLocks(0, acquiredLocks);
+                    this.ReleaseLocks(0, acquiredLocks);
                 }
 
                 return true;
@@ -167,7 +167,7 @@ namespace TheGodfather.Common.Collections
         {
             if (collection == null) throw new ArgumentNullException(nameof(collection));
 
-            InitializeFromCollection(collection);
+            this.InitializeFromCollection(collection);
         }
 
 
@@ -197,7 +197,7 @@ namespace TheGodfather.Common.Collections
             if (collection == null) throw new ArgumentNullException(nameof(collection));
             if (comparer == null) throw new ArgumentNullException(nameof(comparer));
 
-            InitializeFromCollection(collection);
+            this.InitializeFromCollection(collection);
         }
 
         /// <summary>
@@ -257,7 +257,7 @@ namespace TheGodfather.Common.Collections
         /// <exception cref="T:System.OverflowException">The <see cref="ConcurrentHashSet{T}"/>
         /// contains too many items.</exception>
         public bool Add(T item) =>
-            AddInternal(item, this._comparer.GetHashCode(item), true);
+            this.AddInternal(item, this._comparer.GetHashCode(item), true);
 
         /// <summary>
         /// Removes all items from the <see cref="ConcurrentHashSet{T}"/>.
@@ -266,13 +266,13 @@ namespace TheGodfather.Common.Collections
         {
             var locksAcquired = 0;
             try {
-                AcquireAllLocks(ref locksAcquired);
+                this.AcquireAllLocks(ref locksAcquired);
 
                 var newTables = new Tables(new Node[DefaultCapacity], this._tables.Locks, new int[this._tables.CountPerLock.Length]);
                 this._tables = newTables;
                 this._budget = Math.Max(1, newTables.Buckets.Length / newTables.Locks.Length);
             } finally {
-                ReleaseLocks(0, locksAcquired);
+                this.ReleaseLocks(0, locksAcquired);
             }
         }
 
@@ -348,7 +348,7 @@ namespace TheGodfather.Common.Collections
             }
         }
 
-        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+        IEnumerator IEnumerable.GetEnumerator() => this.GetEnumerator();
 
         /// <summary>Returns an enumerator that iterates through the <see
         /// cref="ConcurrentHashSet{T}"/>.</summary>
@@ -374,7 +374,7 @@ namespace TheGodfather.Common.Collections
             }
         }
 
-        void ICollection<T>.Add(T item) => Add(item);
+        void ICollection<T>.Add(T item) => this.Add(item);
 
         bool ICollection<T>.IsReadOnly => false;
 
@@ -385,7 +385,7 @@ namespace TheGodfather.Common.Collections
 
             var locksAcquired = 0;
             try {
-                AcquireAllLocks(ref locksAcquired);
+                this.AcquireAllLocks(ref locksAcquired);
 
                 var count = 0;
 
@@ -398,18 +398,18 @@ namespace TheGodfather.Common.Collections
                     throw new ArgumentException("The index is equal to or greater than the length of the array, or the number of elements in the set is greater than the available space from index to the end of the destination array.");
                 }
 
-                CopyToItems(array, arrayIndex);
+                this.CopyToItems(array, arrayIndex);
             } finally {
-                ReleaseLocks(0, locksAcquired);
+                this.ReleaseLocks(0, locksAcquired);
             }
         }
 
-        bool ICollection<T>.Remove(T item) => TryRemove(item);
+        bool ICollection<T>.Remove(T item) => this.TryRemove(item);
 
         private void InitializeFromCollection(IEnumerable<T> collection)
         {
             foreach (var item in collection) {
-                AddInternal(item, this._comparer.GetHashCode(item), false);
+                this.AddInternal(item, this._comparer.GetHashCode(item), false);
             }
 
             if (this._budget == 0) {
@@ -475,7 +475,7 @@ namespace TheGodfather.Common.Collections
                 //   and then verify that the table we passed to it as the argument is still the current table.
                 //
                 if (resizeDesired) {
-                    GrowTable(tables);
+                    this.GrowTable(tables);
                 }
 
                 return true;
@@ -504,7 +504,7 @@ namespace TheGodfather.Common.Collections
             var locksAcquired = 0;
             try {
                 // The thread that first obtains _locks[0] will be the one doing the resize operation
-                AcquireLocks(0, 1, ref locksAcquired);
+                this.AcquireLocks(0, 1, ref locksAcquired);
 
                 // Make sure nobody resized the table while we were waiting for lock 0:
                 if (tables != this._tables) {
@@ -568,7 +568,7 @@ namespace TheGodfather.Common.Collections
                 }
 
                 // Now acquire all other locks for the table
-                AcquireLocks(1, tables.Locks.Length, ref locksAcquired);
+                this.AcquireLocks(1, tables.Locks.Length, ref locksAcquired);
 
                 var newLocks = tables.Locks;
 
@@ -609,7 +609,7 @@ namespace TheGodfather.Common.Collections
                 this._tables = new Tables(newBuckets, newLocks, newCountPerLock);
             } finally {
                 // Release all locks that we took earlier
-                ReleaseLocks(0, locksAcquired);
+                this.ReleaseLocks(0, locksAcquired);
             }
         }
 
@@ -627,11 +627,11 @@ namespace TheGodfather.Common.Collections
         private void AcquireAllLocks(ref int locksAcquired)
         {
             // First, acquire lock 0
-            AcquireLocks(0, 1, ref locksAcquired);
+            this.AcquireLocks(0, 1, ref locksAcquired);
 
             // Now that we have lock 0, the _locks array will not change (i.e., grow),
             // and so we can safely read _locks.Length.
-            AcquireLocks(1, this._tables.Locks.Length, ref locksAcquired);
+            this.AcquireLocks(1, this._tables.Locks.Length, ref locksAcquired);
             Debug.Assert(locksAcquired == this._tables.Locks.Length);
         }
 

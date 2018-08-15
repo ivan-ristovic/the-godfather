@@ -36,12 +36,12 @@ namespace TheGodfather.Modules.Administration
 
         [GroupCommand, Priority(1)]
         public Task ExecuteGroupAsync(CommandContext ctx)
-            => ListAsync(ctx);
+            => this.ListAsync(ctx);
 
         [GroupCommand, Priority(0)]
         public Task ExecuteGroupAsync(CommandContext ctx,
                                      [Description("Emoji to print information about.")] DiscordEmoji emoji)
-            => InfoAsync(ctx, emoji);
+            => this.InfoAsync(ctx, emoji);
 
 
         #region COMMAND_EMOJI_ADD
@@ -65,7 +65,7 @@ namespace TheGodfather.Modules.Administration
                     throw new InvalidCommandUsageException("Please specify a name and URL pointing to an emoji image or attach an image.");
             }
 
-            if (!await IsValidImageUriAsync(url))
+            if (!await this.IsValidImageUriAsync(url))
                 throw new InvalidCommandUsageException("URL must point to an image and use HTTP or HTTPS protocols.");
 
             try {
@@ -74,7 +74,7 @@ namespace TheGodfather.Modules.Administration
                     if (stream.Length >= 256000)
                         throw new CommandFailedException("The specified emoji is too large. Maximum allowed image size is 256KB.");
                     DiscordGuildEmoji emoji = await ctx.Guild.CreateEmojiAsync(name, stream, reason: ctx.BuildReasonString());
-                    await InformAsync(ctx, $"Successfully added emoji: {emoji}", important: false);
+                    await this.InformAsync(ctx, $"Successfully added emoji: {emoji}", important: false);
                 }
             } catch (WebException e) {
                 throw new CommandFailedException("An error occured while fetching the image.", e);
@@ -88,7 +88,7 @@ namespace TheGodfather.Modules.Administration
         public Task AddAsync(CommandContext ctx,
                             [Description("Image URL.")] Uri url,
                             [Description("Name for the emoji.")] string name)
-            => AddAsync(ctx, name, url);
+            => this.AddAsync(ctx, name, url);
 
         [Command("add"), Priority(1)]
         public Task AddAsync(CommandContext ctx,
@@ -98,14 +98,14 @@ namespace TheGodfather.Modules.Administration
             if (emoji.Id == 0)
                 throw new InvalidCommandUsageException("Cannot add a unicode emoji.");
 
-            return AddAsync(ctx, name, new Uri(emoji.Url));
+            return this.AddAsync(ctx, name, new Uri(emoji.Url));
         }
 
         [Command("add"), Priority(0)]
         public Task AddAsync(CommandContext ctx,
                             [Description("Emoji from another server to steal.")] DiscordEmoji emoji,
                             [Description("Name.")] string name)
-            => AddAsync(ctx, name, emoji);
+            => this.AddAsync(ctx, name, emoji);
         #endregion
 
         #region COMMAND_EMOJI_DELETE
@@ -121,7 +121,7 @@ namespace TheGodfather.Modules.Administration
                 DiscordGuildEmoji gemoji = await ctx.Guild.GetEmojiAsync(emoji.Id);
                 string name = gemoji.Name;
                 await ctx.Guild.DeleteEmojiAsync(gemoji, ctx.BuildReasonString());
-                await InformAsync(ctx, $"Successfully deleted emoji: {Formatter.Bold(name)}", important: false);
+                await this.InformAsync(ctx, $"Successfully deleted emoji: {Formatter.Bold(name)}", important: false);
             } catch (NotFoundException) {
                 throw new CommandFailedException("Can't find that emoji in list of emoji that I made for this guild.");
             }
@@ -186,7 +186,7 @@ namespace TheGodfather.Modules.Administration
             try {
                 DiscordGuildEmoji gemoji = await ctx.Guild.GetEmojiAsync(emoji.Id);
                 gemoji = await ctx.Guild.ModifyEmojiAsync(gemoji, name: newname, reason: ctx.BuildReasonString());
-                await InformAsync(ctx, $"Successfully modified emoji: {gemoji}", important: false);
+                await this.InformAsync(ctx, $"Successfully modified emoji: {gemoji}", important: false);
             } catch (NotFoundException) {
                 throw new CommandFailedException("Can't find that emoji in list of emoji that I made for this guild.");
             }
@@ -196,7 +196,7 @@ namespace TheGodfather.Modules.Administration
         public Task ModifyAsync(CommandContext ctx,
                                [Description("New name.")] string newname,
                                [Description("Emoji to rename.")] DiscordEmoji emoji)
-            => ModifyAsync(ctx, emoji, newname);
+            => this.ModifyAsync(ctx, emoji, newname);
         #endregion
     }
 }

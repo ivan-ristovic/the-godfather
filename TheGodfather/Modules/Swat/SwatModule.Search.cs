@@ -40,7 +40,7 @@ namespace TheGodfather.Modules.Swat
             public Task ExecuteGroupAsync(CommandContext ctx,
                                          [Description("Player name to search.")] string name,
                                          [Description("Number of results")] int amount = 10)
-                 => SearchNameAsync(ctx, name, amount);
+                 => this.SearchNameAsync(ctx, name, amount);
 
 
             #region COMMAND_SEARCH_IP

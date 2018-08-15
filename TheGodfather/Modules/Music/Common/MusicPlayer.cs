@@ -58,7 +58,7 @@ namespace TheGodfather.Modules.Music.Common
             lock (this.operationLock) {
                 if (this.stopped) {
                     this.stopped = false;
-                    var t = Task.Run(() => StartAsync());
+                    var t = Task.Run(() => this.StartAsync());
                 }
             }
         }
@@ -141,7 +141,7 @@ namespace TheGodfather.Modules.Music.Common
 
             switch (e.Emoji.Name) {
                 case "▶":
-                    Skip();
+                    this.Skip();
                     break;
                 default:
                     break;

@@ -70,7 +70,7 @@ namespace TheGodfather.Modules.Administration
                         await logchn.SendMessageAsync(embed: emb.Build());
                     }
 
-                    await InformAsync(ctx, $"{Formatter.Bold(gcfg.RatelimitEnabled ? "Enabled" : "Disabled")} ratelimit actions.", important: false);
+                    await this.InformAsync(ctx, $"{Formatter.Bold(gcfg.RatelimitEnabled ? "Enabled" : "Disabled")} ratelimit actions.", important: false);
                 }
 
                 [GroupCommand, Priority(2)]
@@ -78,18 +78,18 @@ namespace TheGodfather.Modules.Administration
                                              [Description("Enable?")] bool enable,
                                              [Description("Action type.")] PunishmentActionType action,
                                              [Description("Sensitivity (messages per 5s to trigger action).")] short sensitivity = 5)
-                    => ExecuteGroupAsync(ctx, enable, sensitivity, action);
+                    => this.ExecuteGroupAsync(ctx, enable, sensitivity, action);
 
                 [GroupCommand, Priority(1)]
                 public Task ExecuteGroupAsync(CommandContext ctx,
                                              [Description("Enable?")] bool enable)
-                    => ExecuteGroupAsync(ctx, enable, 5, PunishmentActionType.Mute);
+                    => this.ExecuteGroupAsync(ctx, enable, 5, PunishmentActionType.Mute);
 
                 [GroupCommand, Priority(0)]
                 public Task ExecuteGroupAsync(CommandContext ctx)
                 {
                     CachedGuildConfig gcfg = this.Shared.GetGuildConfig(ctx.Guild.Id);
-                    return InformAsync(ctx, $"Ratelimit watch for this guild is {Formatter.Bold(gcfg.RatelimitEnabled ? "enabled" : "disabled")}");
+                    return this.InformAsync(ctx, $"Ratelimit watch for this guild is {Formatter.Bold(gcfg.RatelimitEnabled ? "enabled" : "disabled")}");
                 }
 
 
@@ -119,7 +119,7 @@ namespace TheGodfather.Modules.Administration
                         await logchn.SendMessageAsync(embed: emb.Build());
                     }
 
-                    await InformAsync(ctx, $"Ratelimit action for this guild has been changed to {Formatter.Bold(gcfg.RatelimitAction.ToTypeString())}", important: false);
+                    await this.InformAsync(ctx, $"Ratelimit action for this guild has been changed to {Formatter.Bold(gcfg.RatelimitAction.ToTypeString())}", important: false);
                 }
                 #endregion
 
@@ -151,7 +151,7 @@ namespace TheGodfather.Modules.Administration
                         await logchn.SendMessageAsync(embed: emb.Build());
                     }
 
-                    await InformAsync(ctx, $"Ratelimit sensitivity for this guild has been changed to {Formatter.Bold(gcfg.RatelimitSensitivity.ToString())} msgs per 5s", important: false);
+                    await this.InformAsync(ctx, $"Ratelimit sensitivity for this guild has been changed to {Formatter.Bold(gcfg.RatelimitSensitivity.ToString())} msgs per 5s", important: false);
                 }
                 #endregion
             }

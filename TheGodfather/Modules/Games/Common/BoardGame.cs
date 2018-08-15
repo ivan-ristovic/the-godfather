@@ -50,15 +50,15 @@ namespace TheGodfather.Modules.Games.Common
         {
             this.msgHandle = await this.Channel.SendMessageAsync($"{this.player1.Mention} vs {this.player2.Mention}");
 
-            while (!this.IsTimeoutReached && this.move < this.SizeY * this.SizeX && !IsGameOver()) {
-                await UpdateBoardAsync();
-                await AdvanceAsync();
+            while (!this.IsTimeoutReached && this.move < this.SizeY * this.SizeX && !this.IsGameOver()) {
+                await this.UpdateBoardAsync();
+                await this.AdvanceAsync();
             }
 
-            if (IsGameOver())
-                ResolveGameWinner();
+            if (this.IsGameOver())
+                this.ResolveGameWinner();
 
-            await UpdateBoardAsync();
+            await this.UpdateBoardAsync();
         }
 
 
@@ -93,7 +93,7 @@ namespace TheGodfather.Modules.Games.Common
                 return;
             }
 
-            if (TryPlayMove(player1plays ? 1 : 2, row - 1, col - 1)) {
+            if (this.TryPlayMove(player1plays ? 1 : 2, row - 1, col - 1)) {
                 this.move++;
                 if (!this.deleteErrored) {
                     try {

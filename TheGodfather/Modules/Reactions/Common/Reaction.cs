@@ -28,7 +28,7 @@ namespace TheGodfather.Modules.Reactions.Common
             this.Id = id;
             this.Response = response;
             this.triggerRegexes = new ConcurrentHashSet<Regex>();
-            AddTrigger(trigger, isRegex);
+            this.AddTrigger(trigger, isRegex);
         }
 
 
@@ -60,6 +60,6 @@ namespace TheGodfather.Modules.Reactions.Common
             => this.Response == other.Response;
 
         public bool Equals(Reaction other)
-            => HasSameResponseAs(other);
+            => this.HasSameResponseAs(other);
     }
 }

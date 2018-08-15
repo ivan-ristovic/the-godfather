@@ -39,7 +39,7 @@ namespace TheGodfather.Modules.Chickens
             [GroupCommand]
             public Task ExecuteGroupAsync(CommandContext ctx,
                                          [RemainingText, Description("Chicken name.")] string name)
-                => TryBuyInternalAsync(ctx, ChickenType.Default, name);
+                => this.TryBuyInternalAsync(ctx, ChickenType.Default, name);
 
 
             #region COMMAND_CHICKEN_BUY_DEFAULT
@@ -49,7 +49,7 @@ namespace TheGodfather.Modules.Chickens
             [UsageExamples("!chicken buy default My Chicken Name")]
             public Task DefaultAsync(CommandContext ctx,
                                     [RemainingText, Description("Chicken name.")] string name)
-                => TryBuyInternalAsync(ctx, ChickenType.Default, name);
+                => this.TryBuyInternalAsync(ctx, ChickenType.Default, name);
             #endregion
 
             #region COMMAND_CHICKEN_BUY_WELLFED
@@ -59,7 +59,7 @@ namespace TheGodfather.Modules.Chickens
             [UsageExamples("!chicken buy wellfed My Chicken Name")]
             public Task WellFedAsync(CommandContext ctx,
                                     [RemainingText, Description("Chicken name.")] string name)
-                => TryBuyInternalAsync(ctx, ChickenType.WellFed, name);
+                => this.TryBuyInternalAsync(ctx, ChickenType.WellFed, name);
             #endregion
 
             #region COMMAND_CHICKEN_BUY_TRAINED
@@ -69,7 +69,7 @@ namespace TheGodfather.Modules.Chickens
             [UsageExamples("!chicken buy trained My Chicken Name")]
             public Task TrainedAsync(CommandContext ctx,
                                     [RemainingText, Description("Chicken name.")] string name)
-                => TryBuyInternalAsync(ctx, ChickenType.Trained, name);
+                => this.TryBuyInternalAsync(ctx, ChickenType.Trained, name);
             #endregion
 
             #region COMMAND_CHICKEN_BUY_EMPOWERED
@@ -79,7 +79,7 @@ namespace TheGodfather.Modules.Chickens
             [UsageExamples("!chicken buy steroidempowered My Chicken Name")]
             public Task EmpoweredAsync(CommandContext ctx,
                                       [RemainingText, Description("Chicken name.")] string name)
-                => TryBuyInternalAsync(ctx, ChickenType.SteroidEmpowered, name);
+                => this.TryBuyInternalAsync(ctx, ChickenType.SteroidEmpowered, name);
             #endregion
 
             #region COMMAND_CHICKEN_BUY_ALIEN
@@ -89,7 +89,7 @@ namespace TheGodfather.Modules.Chickens
             [UsageExamples("!chicken buy alien My Chicken Name")]
             public Task AlienAsync(CommandContext ctx,
                                   [RemainingText, Description("Chicken name.")] string name)
-                => TryBuyInternalAsync(ctx, ChickenType.Alien, name);
+                => this.TryBuyInternalAsync(ctx, ChickenType.Alien, name);
             #endregion
 
             #region COMMAND_CHICKEN_BUY_LIST
@@ -138,7 +138,7 @@ namespace TheGodfather.Modules.Chickens
 
                 await this.Database.AddChickenAsync(ctx.User.Id, ctx.Guild.Id, name, Chicken.StartingStats[type]);
 
-                await InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} bought a chicken named {Formatter.Bold(name)}");
+                await this.InformAsync(ctx, StaticDiscordEmoji.Chicken, $"{ctx.User.Mention} bought a chicken named {Formatter.Bold(name)}");
             }
             #endregion
         }

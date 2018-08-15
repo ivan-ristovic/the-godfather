@@ -41,7 +41,7 @@ namespace TheGodfather.Modules.Administration.Services
                         await member.RemoveAsync(this.reason);
                         break;
                     case PunishmentActionType.Mute:
-                        muteRole = await GetOrCreateMuteRoleAsync(guild);
+                        muteRole = await this.GetOrCreateMuteRoleAsync(guild);
                         if (member.Roles.Contains(muteRole))
                             return;
                         await member.GrantRoleAsync(muteRole, this.reason);
@@ -55,7 +55,7 @@ namespace TheGodfather.Modules.Administration.Services
                         await SavedTaskExecutor.TryScheduleAsync(this.shard.SharedData, this.shard.DatabaseService, this.shard.Client, task);
                         break;
                     case PunishmentActionType.TemporaryMute:
-                        muteRole = await GetOrCreateMuteRoleAsync(guild);
+                        muteRole = await this.GetOrCreateMuteRoleAsync(guild);
                         if (member.Roles.Contains(muteRole))
                             return;
                         await member.GrantRoleAsync(muteRole, this.reason);

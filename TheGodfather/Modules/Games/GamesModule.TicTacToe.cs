@@ -44,7 +44,7 @@ namespace TheGodfather.Modules.Games
                 if (this.Shared.IsEventRunningInChannel(ctx.Channel.Id))
                     throw new CommandFailedException("Another event is already running in the current channel!");
 
-                await InformAsync(ctx, StaticDiscordEmoji.Question, $"Who wants to play Tic-Tac-Toe with {ctx.User.Username}?");
+                await this.InformAsync(ctx, StaticDiscordEmoji.Question, $"Who wants to play Tic-Tac-Toe with {ctx.User.Username}?");
                 DiscordUser opponent = await ctx.WaitForGameOpponentAsync();
                 if (opponent == null)
                     return;
@@ -59,9 +59,9 @@ namespace TheGodfather.Modules.Games
 
                     if (game.Winner != null) {
                         if (game.IsTimeoutReached)
-                            await InformAsync(ctx, StaticDiscordEmoji.Trophy, $"{game.Winner.Mention} won due to no replies from opponent!");
+                            await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"{game.Winner.Mention} won due to no replies from opponent!");
                         else
-                            await InformAsync(ctx, StaticDiscordEmoji.Trophy, $"The winner is: {game.Winner.Mention}!");
+                            await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"The winner is: {game.Winner.Mention}!");
 
                         await this.Database.UpdateUserStatsAsync(game.Winner.Id, GameStatsType.TicTacToesWon);
                         if (game.Winner.Id == ctx.User.Id)
@@ -69,7 +69,7 @@ namespace TheGodfather.Modules.Games
                         else
                             await this.Database.UpdateUserStatsAsync(ctx.User.Id, GameStatsType.TicTacToesWon);
                     } else {
-                        await InformAsync(ctx, StaticDiscordEmoji.Joystick, "A draw... Pathetic...");
+                        await this.InformAsync(ctx, StaticDiscordEmoji.Joystick, "A draw... Pathetic...");
                     }
                 } finally {
                     this.Shared.UnregisterEventInChannel(ctx.Channel.Id);
@@ -84,7 +84,7 @@ namespace TheGodfather.Modules.Games
             [UsageExamples("!game tictactoe rules")]
             public Task RulesAsync(CommandContext ctx)
             {
-                return InformAsync(ctx,
+                return this.InformAsync(ctx,
                     StaticDiscordEmoji.Information,
                     "The object of Tic Tac Toe is to get three in a row. " +
                     "You play on a three by three game board. The first player is known as X and the second is O. " +
@@ -102,7 +102,7 @@ namespace TheGodfather.Modules.Games
             public async Task StatsAsync(CommandContext ctx)
             {
                 string top = await this.Database.GetTopTTTPlayersStringAsync(ctx.Client);
-                await InformAsync(ctx, StaticDiscordEmoji.Trophy, $"Top players in Tic-Tac-Toe:\n\n{top}");
+                await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"Top players in Tic-Tac-Toe:\n\n{top}");
             }
             #endregion
         }

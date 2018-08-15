@@ -34,11 +34,11 @@ namespace TheGodfather.Modules.Currency.Common
         public IReadOnlyList<BlackjackParticipant> Winners
         {
             get {
-                int hvalue = HandValue(this.hand);
+                int hvalue = this.HandValue(this.hand);
                 if (hvalue > 21)
-                    return this.participants.Where(p => HandValue(p.Hand) <= 21).ToList().AsReadOnly();
+                    return this.participants.Where(p => this.HandValue(p.Hand) <= 21).ToList().AsReadOnly();
                 return this.participants.Where(p => {
-                    int value = HandValue(p.Hand);
+                    int value = this.HandValue(p.Hand);
                     if (value > 21)
                         return false;
                     return value > hvalue;
@@ -72,7 +72,7 @@ namespace TheGodfather.Modules.Currency.Common
             foreach (BlackjackParticipant participant in this.participants) {
                 participant.Hand.Add(this.deck.GetNextCard());
                 participant.Hand.Add(this.deck.GetNextCard());
-                if (HandValue(participant.Hand) == 21) {
+                if (this.HandValue(participant.Hand) == 21) {
                     this.GameOver = true;
                     this.Winner = participant.User;
                     break;
@@ -80,7 +80,7 @@ namespace TheGodfather.Modules.Currency.Common
             }
 
             if (this.GameOver) {
-                await PrintGameAsync(msg);
+                await this.PrintGameAsync(msg);
                 return;
             }
             
@@ -89,34 +89,34 @@ namespace TheGodfather.Modules.Currency.Common
                     if (participant.Standing)
                         continue;
 
-                    await PrintGameAsync(msg, participant);
+                    await this.PrintGameAsync(msg, participant);
 
                     if (await this.Interactivity.WaitForBoolReplyAsync(this.Channel.Id, participant.Id)) 
                         participant.Hand.Add(this.deck.GetNextCard());
                     else 
                         participant.Standing = true;
 
-                    if (HandValue(participant.Hand) > 21)
+                    if (this.HandValue(participant.Hand) > 21)
                         participant.Standing = true;
                 }
             }
 
-            await PrintGameAsync(msg);
+            await this.PrintGameAsync(msg);
             await Task.Delay(TimeSpan.FromSeconds(5));
 
-            while (HandValue(this.hand) <= 17)
+            while (this.HandValue(this.hand) <= 17)
                 this.hand.Add(this.deck.GetNextCard());
 
-            if (this.hand.Count == 2 && HandValue(this.hand) == 21)
+            if (this.hand.Count == 2 && this.HandValue(this.hand) == 21)
                 await this.Channel.EmbedAsync("BLACKJACK!");
 
             this.GameOver = true;
-            await PrintGameAsync(msg);
+            await this.PrintGameAsync(msg);
         }
 
         public void AddParticipant(DiscordUser user, int bid)
         {
-            if (IsParticipating(user))
+            if (this.IsParticipating(user))
                 return;
 
             this.participants.Enqueue(new BlackjackParticipant {
@@ -153,7 +153,7 @@ namespace TheGodfather.Modules.Currency.Common
         {
             var sb = new StringBuilder();
 
-            sb.AppendLine(Formatter.Bold($"House hand: (value: {HandValue(this.hand)})")).AppendLine();
+            sb.AppendLine(Formatter.Bold($"House hand: (value: {this.HandValue(this.hand)})")).AppendLine();
             if (this.hand.Any())
                 sb.AppendLine(string.Join(" | ", this.hand)).AppendLine();
             else
@@ -162,7 +162,7 @@ namespace TheGodfather.Modules.Currency.Common
             foreach (BlackjackParticipant participant in this.participants) {
                 sb.Append(participant.User.Mention);
                 sb.Append(" (value: ");
-                sb.Append(Formatter.Bold(HandValue(participant.Hand).ToString()));
+                sb.Append(Formatter.Bold(this.HandValue(participant.Hand).ToString()));
                 sb.AppendLine(")").AppendLine();
                 sb.AppendLine(string.Join(" | ", participant.Hand));
                 sb.AppendLine();

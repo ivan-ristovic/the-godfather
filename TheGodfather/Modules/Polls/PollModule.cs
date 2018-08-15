@@ -52,7 +52,7 @@ namespace TheGodfather.Modules.Polls
             if (!PollService.RegisterPollInChannel(poll, ctx.Channel.Id))
                 throw new CommandFailedException("Failed to start the poll. Please try again.");
             try {
-                await InformAsync(ctx, StaticDiscordEmoji.Question, "And what will be the possible answers? (separate with a semicolon)");
+                await this.InformAsync(ctx, StaticDiscordEmoji.Question, "And what will be the possible answers? (separate with a semicolon)");
                 var options = await ctx.WaitAndParsePollOptionsAsync();
                 if (options.Count < 2 || options.Count > 10)
                     throw new CommandFailedException("Poll must have minimum 2 and maximum 10 options!");
@@ -69,12 +69,12 @@ namespace TheGodfather.Modules.Polls
         public Task ExecuteGroupAsync(CommandContext ctx,
                                      [Description("Question.")] string question,
                                      [Description("Time for poll to run.")] TimeSpan timeout)
-            => ExecuteGroupAsync(ctx, timeout, question);
+            => this.ExecuteGroupAsync(ctx, timeout, question);
 
         [GroupCommand, Priority(0)]
         public Task ExecuteGroupAsync(CommandContext ctx,
                                      [RemainingText, Description("Question.")] string question)
-            => ExecuteGroupAsync(ctx, TimeSpan.FromMinutes(1), question);
+            => this.ExecuteGroupAsync(ctx, TimeSpan.FromMinutes(1), question);
 
 
         #region COMMAND_STOP

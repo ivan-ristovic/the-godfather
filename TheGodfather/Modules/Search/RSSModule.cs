@@ -90,7 +90,7 @@ namespace TheGodfather.Modules.Search
             if (!await this.Database.TryAddSubscriptionAsync(ctx.Channel.Id, url, name ?? url))
                 throw new CommandFailedException("You are already subscribed to this RSS feed URL!");
 
-            await InformAsync(ctx, $"Subscribed to {url}!", important: false);
+            await this.InformAsync(ctx, $"Subscribed to {url}!", important: false);
         }
         #endregion
 
@@ -104,7 +104,7 @@ namespace TheGodfather.Modules.Search
                                           [Description("ID of the subscription.")] int id)
         {
             await this.Database.RemoveSubscriptionByIdAsync(ctx.Channel.Id, id);
-            await InformAsync(ctx, $"Unsubscribed from feed with ID {Formatter.Bold(id.ToString())}", important: false);
+            await this.InformAsync(ctx, $"Unsubscribed from feed with ID {Formatter.Bold(id.ToString())}", important: false);
         }
 
         [Command("unsubscribe"), Priority(0)]
@@ -112,7 +112,7 @@ namespace TheGodfather.Modules.Search
                                           [Description("Name of the subscription.")] string name)
         {
             await this.Database.RemoveSubscriptionByNameAsync(ctx.Channel.Id, name);
-            await InformAsync(ctx, $"Unsubscribed from feed with name {Formatter.Bold(name)}", important: false);
+            await this.InformAsync(ctx, $"Unsubscribed from feed with name {Formatter.Bold(name)}", important: false);
         }
         #endregion
 

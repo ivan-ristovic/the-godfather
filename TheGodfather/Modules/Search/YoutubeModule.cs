@@ -35,7 +35,7 @@ namespace TheGodfather.Modules.Search
         [GroupCommand]
         public Task ExecuteGroupAsync(CommandContext ctx,
                                      [RemainingText, Description("Search query.")] string query)
-            => SearchAndSendResultsAsync(ctx, 5, query);
+            => this.SearchAndSendResultsAsync(ctx, 5, query);
 
 
         #region COMMAND_YOUTUBE_SEARCH
@@ -46,7 +46,7 @@ namespace TheGodfather.Modules.Search
         public Task AdvancedSearchAsync(CommandContext ctx,
                                        [Description("Amount of results. [1-20]")] int amount,
                                        [RemainingText, Description("Search query.")] string query)
-            => SearchAndSendResultsAsync(ctx, amount, query);
+            => this.SearchAndSendResultsAsync(ctx, amount, query);
         #endregion
 
         #region COMMAND_YOUTUBE_SEARCHVIDEO
@@ -56,7 +56,7 @@ namespace TheGodfather.Modules.Search
         [UsageExamples("!youtube searchvideo 5 rick astley")]
         public Task SearchVideoAsync(CommandContext ctx,
                                     [RemainingText, Description("Search query.")] string query)
-            => SearchAndSendResultsAsync(ctx, 5, query, "video");
+            => this.SearchAndSendResultsAsync(ctx, 5, query, "video");
         #endregion
 
         #region COMMAND_YOUTUBE_SEARCHCHANNEL
@@ -66,7 +66,7 @@ namespace TheGodfather.Modules.Search
         [UsageExamples("!youtube searchchannel 5 rick astley")]
         public Task SearchChannelAsync(CommandContext ctx,
                                       [RemainingText, Description("Search query.")] string query)
-            => SearchAndSendResultsAsync(ctx, 5, query, "channel");
+            => this.SearchAndSendResultsAsync(ctx, 5, query, "channel");
         #endregion
 
         #region COMMAND_YOUTUBE_SEARCHPLAYLIST
@@ -76,7 +76,7 @@ namespace TheGodfather.Modules.Search
         [UsageExamples("!youtube searchplaylist 5 rick astley")]
         public Task SearchPlaylistAsync(CommandContext ctx,
                                        [RemainingText, Description("Search query.")] string query)
-            => SearchAndSendResultsAsync(ctx, 5, query, "playlist");
+            => this.SearchAndSendResultsAsync(ctx, 5, query, "playlist");
         #endregion
 
         #region COMMAND_YOUTUBE_SUBSCRIBE
@@ -96,9 +96,9 @@ namespace TheGodfather.Modules.Search
 
             string feedurl = YtService.GetRssUrlForChannel(chid);
             if (await this.Database.TryAddSubscriptionAsync(ctx.Channel.Id, feedurl, string.IsNullOrWhiteSpace(name) ? url : name))
-                await InformAsync(ctx, "Subscribed!", important: false);
+                await this.InformAsync(ctx, "Subscribed!", important: false);
             else
-                await InformFailureAsync(ctx, "Either the channel URL you is invalid or you are already subscribed to it!");
+                await this.InformFailureAsync(ctx, "Either the channel URL you is invalid or you are already subscribed to it!");
         }
         #endregion
 
@@ -123,7 +123,7 @@ namespace TheGodfather.Modules.Search
                 await this.Database.RemoveSubscriptionByUrlAsync(ctx.Channel.Id, feedurl);
             }
 
-            await InformAsync(ctx, "Unsubscribed!", important: false);
+            await this.InformAsync(ctx, "Unsubscribed!", important: false);
         }
         #endregion
 
@@ -139,7 +139,7 @@ namespace TheGodfather.Modules.Search
 
             IReadOnlyList<Page> pages = await this.Service.GetPaginatedResultsAsync(query, amount, type);
             if (pages == null) {
-                await InformFailureAsync(ctx, "No results found!");
+                await this.InformFailureAsync(ctx, "No results found!");
                 return;
             }
 

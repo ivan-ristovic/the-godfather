@@ -47,7 +47,7 @@ namespace TheGodfather.Modules.Polls
 
             poll.VoteFor(ctx.User.Id, option);
 
-            await InformAsync(ctx, $"{ctx.User.Mention} voted for: {Formatter.Bold(poll.OptionWithId(option))} in poll: {Formatter.Italic($"\"{poll.Question}\"")}", important: false);
+            await this.InformAsync(ctx, $"{ctx.User.Mention} voted for: {Formatter.Bold(poll.OptionWithId(option))} in poll: {Formatter.Italic($"\"{poll.Question}\"")}", important: false);
         }
 
 
@@ -68,7 +68,7 @@ namespace TheGodfather.Modules.Polls
             if (!poll.CancelVote(ctx.User.Id))
                 throw new CommandFailedException("Failed to cancel your vote!");
 
-            return InformAsync(ctx, "Your vote has been cancelled!", important: false);
+            return this.InformAsync(ctx, "Your vote has been cancelled!", important: false);
         }
         #endregion
     }

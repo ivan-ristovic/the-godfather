@@ -87,17 +87,17 @@ namespace TheGodfather.Common
                         await channel.InformFailureAsync($"I have been asleep and failed to remind {user.Mention} to:\n\n{Formatter.Italic(smi.Message)}\n\n {smi.ExecutionTime.ToUtcTimestamp()}");
                         break;
                     case UnbanTaskInfo _:
-                        UnbanUserCallback(this.TaskInfo);
+                        this.UnbanUserCallback(this.TaskInfo);
                         break;
                     case UnmuteTaskInfo _:
-                        UnmuteUserCallback(this.TaskInfo);
+                        this.UnmuteUserCallback(this.TaskInfo);
                         break;
                 }
                 this.shared.LogProvider.LogMessage(LogLevel.Warning, $"| Executed missed task: {this.TaskInfo.GetType().ToString()}");
             } catch (Exception e) {
                 this.shared.LogProvider.LogException(LogLevel.Warning, e);
             } finally {
-                await UnscheduleAsync();
+                await this.UnscheduleAsync();
             }
         }
 
@@ -118,13 +118,13 @@ namespace TheGodfather.Common
             var info = _ as SendMessageTaskInfo;
 
             try {
-                DiscordChannel channel = Execute(this.client.GetChannelAsync(info.ChannelId));
-                DiscordUser user = Execute(this.client.GetUserAsync(info.InitiatorId));
-                Execute(channel.EmbedAsync($"{user.Mention}'s reminder:\n\n{Formatter.Italic(info.Message)}", StaticDiscordEmoji.AlarmClock));
+                DiscordChannel channel = this.Execute(this.client.GetChannelAsync(info.ChannelId));
+                DiscordUser user = this.Execute(this.client.GetUserAsync(info.InitiatorId));
+                this.Execute(channel.EmbedAsync($"{user.Mention}'s reminder:\n\n{Formatter.Italic(info.Message)}", StaticDiscordEmoji.AlarmClock));
             } catch (Exception e) {
                 this.shared.LogProvider.LogException(LogLevel.Warning, e);
             } finally {
-                Execute(UnscheduleAsync());
+                this.Execute(this.UnscheduleAsync());
             }
         }
 
@@ -133,12 +133,12 @@ namespace TheGodfather.Common
             var info = _ as UnbanTaskInfo;
 
             try { 
-                DiscordGuild guild = Execute(this.client.GetGuildAsync(info.GuildId));
-                Execute(guild.UnbanMemberAsync(info.UnbanId, $"Temporary ban time expired"));
+                DiscordGuild guild = this.Execute(this.client.GetGuildAsync(info.GuildId));
+                this.Execute(guild.UnbanMemberAsync(info.UnbanId, $"Temporary ban time expired"));
             } catch (Exception e) {
                 this.shared.LogProvider.LogException(LogLevel.Warning, e);
             } finally {
-                Execute(UnscheduleAsync());
+                this.Execute(this.UnscheduleAsync());
             }
         }
 
@@ -147,16 +147,16 @@ namespace TheGodfather.Common
             var info = _ as UnmuteTaskInfo;
 
             try {
-                DiscordGuild guild = Execute(this.client.GetGuildAsync(info.GuildId));
+                DiscordGuild guild = this.Execute(this.client.GetGuildAsync(info.GuildId));
                 DiscordRole role = guild.GetRole(info.MuteRoleId);
-                DiscordMember member = Execute(guild.GetMemberAsync(info.UserId));
+                DiscordMember member = this.Execute(guild.GetMemberAsync(info.UserId));
                 if (role == null)
                     return;
-                Execute(member.RevokeRoleAsync(role, $"Temporary mute time expired"));
+                this.Execute(member.RevokeRoleAsync(role, $"Temporary mute time expired"));
             } catch (Exception e) {
                 this.shared.LogProvider.LogException(LogLevel.Warning, e);
             } finally {
-                Execute(UnscheduleAsync());
+                this.Execute(this.UnscheduleAsync());
             }
         }
         #endregion

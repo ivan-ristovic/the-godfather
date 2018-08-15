@@ -32,7 +32,7 @@ namespace TheGodfather.Modules.Search
         [GroupCommand]
         public Task ExecuteGroupAsync(CommandContext ctx,
                                      [RemainingText, Description("Query.")] string query)
-            => SearchBookAsync(ctx, query);
+            => this.SearchBookAsync(ctx, query);
 
 
         #region COMMAND_GOODREADS_BOOK

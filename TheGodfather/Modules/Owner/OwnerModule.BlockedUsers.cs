@@ -39,24 +39,24 @@ namespace TheGodfather.Modules.Owner
 
             [GroupCommand, Priority(3)]
             public Task ExecuteGroupAsync(CommandContext ctx)
-                => ListAsync(ctx);
+                => this.ListAsync(ctx);
 
             [GroupCommand, Priority(2)]
             public Task ExecuteGroupAsync(CommandContext ctx,
                                          [Description("Users to block.")] params DiscordUser[] users)
-                => AddAsync(ctx, null, users);
+                => this.AddAsync(ctx, null, users);
 
             [GroupCommand, Priority(1)]
             public Task ExecuteGroupAsync(CommandContext ctx,
                                          [Description("Reason (max 60 chars).")] string reason,
                                          [Description("Users to block.")] params DiscordUser[] users)
-                => AddAsync(ctx, reason, users);
+                => this.AddAsync(ctx, reason, users);
 
             [GroupCommand, Priority(0)]
             public Task ExecuteGroupAsync(CommandContext ctx,
                                          [Description("Users to block.")] DiscordUser user,
                                          [RemainingText, Description("Reason (max 60 chars).")] string reason)
-                => AddAsync(ctx, reason, user);
+                => this.AddAsync(ctx, reason, user);
 
 
             #region COMMAND_BLOCKEDUSERS_ADD
@@ -70,7 +70,7 @@ namespace TheGodfather.Modules.Owner
                            "!owner blockedusers add \"This is some reason\" @Someone 123123123123123")]
             public Task AddAsync(CommandContext ctx,
                                 [Description("Users to block.")] params DiscordUser[] users)
-                => AddAsync(ctx, null, users);
+                => this.AddAsync(ctx, null, users);
 
             [Command("add"), Priority(1)]
             public async Task AddAsync(CommandContext ctx,
@@ -105,16 +105,16 @@ namespace TheGodfather.Modules.Owner
                 }
 
                 if (eb.Length > 0)
-                    await InformFailureAsync(ctx, $"Action finished with warnings/errors:\n\n{eb.ToString()}");
+                    await this.InformFailureAsync(ctx, $"Action finished with warnings/errors:\n\n{eb.ToString()}");
                 else
-                    await InformAsync(ctx, $"Blocked all given users.", important: false);
+                    await this.InformAsync(ctx, $"Blocked all given users.", important: false);
             }
 
             [Command("add"), Priority(0)]
             public Task AddAsync(CommandContext ctx,
                                 [Description("Users to block.")] DiscordUser user,
                                 [RemainingText, Description("Reason (max 60 chars).")] string reason)
-                => AddAsync(ctx, reason, user);
+                => this.AddAsync(ctx, reason, user);
             #endregion
 
             #region COMMAND_BLOCKEDUSERS_DELETE
@@ -152,9 +152,9 @@ namespace TheGodfather.Modules.Owner
                 }
 
                 if (eb.Length > 0)
-                    await InformFailureAsync(ctx, $"Action finished with warnings/errors:\n\n{eb.ToString()}");
+                    await this.InformFailureAsync(ctx, $"Action finished with warnings/errors:\n\n{eb.ToString()}");
                 else
-                    await InformAsync(ctx, $"Unlocked all given users.", important: false);
+                    await this.InformAsync(ctx, $"Unlocked all given users.", important: false);
             }
             #endregion
 

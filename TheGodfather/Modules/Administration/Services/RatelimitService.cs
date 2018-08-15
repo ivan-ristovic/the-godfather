@@ -52,7 +52,7 @@ namespace TheGodfather.Modules.Administration.Services
 
         public async Task HandleNewMessageAsync(DiscordGuild guild, DiscordUser member)
         {
-            if (!this.guildSpamInfo.ContainsKey(guild.Id) && !TryAddGuildToWatch(guild.Id))
+            if (!this.guildSpamInfo.ContainsKey(guild.Id) && !this.TryAddGuildToWatch(guild.Id))
                 throw new ConcurrentOperationException("Failed to add guild to ratelimit watch list!");
 
             CachedGuildConfig gcfg = this.shard.SharedData.GetGuildConfig(guild.Id);
@@ -64,7 +64,7 @@ namespace TheGodfather.Modules.Administration.Services
             }
 
             if (!this.guildSpamInfo[guild.Id][member.Id].TryDecrementAllowedMessageCount())
-                await PunishMemberAsync(guild, member as DiscordMember, gcfg.RatelimitAction);
+                await this.PunishMemberAsync(guild, member as DiscordMember, gcfg.RatelimitAction);
         }
     }
 }

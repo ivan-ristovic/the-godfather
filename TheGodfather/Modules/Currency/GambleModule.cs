@@ -82,14 +82,14 @@ namespace TheGodfather.Modules.Currency
             if (rnd == guess)
                 await this.Database.IncreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, bid * 2);
 
-            await InformAsync(ctx, StaticDiscordEmoji.Dice, sb.ToString());
+            await this.InformAsync(ctx, StaticDiscordEmoji.Dice, sb.ToString());
         }
 
         [Command("coinflip"), Priority(0)]
         public Task CoinflipAsync(CommandContext ctx,
                                  [Description("Heads/Tails (h/t).")] string bet,
                                  [Description("Bid.")] long bid)
-            => CoinflipAsync(ctx, bid, bet);
+            => this.CoinflipAsync(ctx, bid, bet);
         #endregion
 
         #region COMMAND_GAMBLE_DICE
@@ -134,7 +134,7 @@ namespace TheGodfather.Modules.Currency
             sb.Append(guess_int == rnd ? $"won {Formatter.Bold((bid * 5).ToString())}" : $"lost {Formatter.Bold(bid.ToString())}");
             sb.Append(this.Shared.GetGuildConfig(ctx.Guild.Id).Currency ?? "credits");
 
-            await InformAsync(ctx, StaticDiscordEmoji.Dice, sb.ToString());
+            await this.InformAsync(ctx, StaticDiscordEmoji.Dice, sb.ToString());
 
             if (rnd == guess_int)
                 await this.Database.IncreaseBankAccountBalanceAsync(ctx.User.Id, ctx.Guild.Id, bid * 6);
@@ -144,7 +144,7 @@ namespace TheGodfather.Modules.Currency
         public Task RollDiceAsync(CommandContext ctx,
                                  [Description("Number guess (has to be a word one-six).")] string guess,
                                  [Description("Bid.")] long bid)
-            => RollDiceAsync(ctx, bid, guess);
+            => this.RollDiceAsync(ctx, bid, guess);
         #endregion
     }
 }

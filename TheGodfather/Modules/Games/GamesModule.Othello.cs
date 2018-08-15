@@ -42,7 +42,7 @@ namespace TheGodfather.Modules.Games
                 if (this.Shared.IsEventRunningInChannel(ctx.Channel.Id))
                     throw new CommandFailedException("Another event is already running in the current channel!");
 
-                await InformAsync(ctx, StaticDiscordEmoji.Question, $"Who wants to play Othello against {ctx.User.Username}?");
+                await this.InformAsync(ctx, StaticDiscordEmoji.Question, $"Who wants to play Othello against {ctx.User.Username}?");
                 DiscordUser opponent = await ctx.WaitForGameOpponentAsync();
                 if (opponent == null)
                     return;
@@ -57,9 +57,9 @@ namespace TheGodfather.Modules.Games
                     
                     if (game.Winner != null) {
                         if (game.IsTimeoutReached)
-                            await InformAsync(ctx, StaticDiscordEmoji.Trophy, $"{game.Winner.Mention} won due to no replies from opponent!");
+                            await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"{game.Winner.Mention} won due to no replies from opponent!");
                         else
-                            await InformAsync(ctx, StaticDiscordEmoji.Trophy, $"The winner is: {game.Winner.Mention}!");
+                            await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"The winner is: {game.Winner.Mention}!");
 
                         await this.Database.UpdateUserStatsAsync(game.Winner.Id, GameStatsType.OthellosWon);
                         if (game.Winner.Id == ctx.User.Id)
@@ -67,7 +67,7 @@ namespace TheGodfather.Modules.Games
                         else
                             await this.Database.UpdateUserStatsAsync(ctx.User.Id, GameStatsType.OthellosLost);
                     } else {
-                        await InformAsync(ctx, StaticDiscordEmoji.Joystick, "A draw... Pathetic...");
+                        await this.InformAsync(ctx, StaticDiscordEmoji.Joystick, "A draw... Pathetic...");
                     }
                 } finally {
                     this.Shared.UnregisterEventInChannel(ctx.Channel.Id);
@@ -82,7 +82,7 @@ namespace TheGodfather.Modules.Games
             [UsageExamples("!game othello rules")]
             public Task RulesAsync(CommandContext ctx)
             {
-                return InformAsync(ctx, 
+                return this.InformAsync(ctx, 
                     StaticDiscordEmoji.Information,
                     "Othello (or ``Reversi``) is a strategy board game for two players, played on an 8×8 " +
                     "uncheckered board. There are sixty-four identical game pieces called disks (often spelled " +
@@ -104,7 +104,7 @@ namespace TheGodfather.Modules.Games
             public async Task StatsAsync(CommandContext ctx)
             {
                 string top = await this.Database.GetTopOthelloPlayersStringAsync(ctx.Client);
-                await InformAsync(ctx, StaticDiscordEmoji.Trophy, $"Top players in Othello:\n\n{top}");
+                await this.InformAsync(ctx, StaticDiscordEmoji.Trophy, $"Top players in Othello:\n\n{top}");
             }
             #endregion
         }

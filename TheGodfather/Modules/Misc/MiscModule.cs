@@ -48,7 +48,7 @@ namespace TheGodfather.Modules.Misc
             if (string.IsNullOrWhiteSpace(question))
                 throw new InvalidCommandUsageException("The almighty ball requires a question.");
 
-            return InformAsync(ctx, $"{ctx.User.Mention}: {EightBall.GenerateRandomAnswer}", ":8ball:");
+            return this.InformAsync(ctx, $"{ctx.User.Mention}: {EightBall.GenerateRandomAnswer}", ":8ball:");
         }
         #endregion
 
@@ -58,7 +58,7 @@ namespace TheGodfather.Modules.Misc
         [Aliases("coin", "flip")]
         [UsageExamples("!coinflip")]
         public Task CoinflipAsync(CommandContext ctx)
-            => InformAsync(ctx, $"{ctx.User.Mention} flipped {Formatter.Bold(GFRandom.Generator.GetBool() ? "Heads" : "Tails")}", ":full_moon_with_face:");
+            => this.InformAsync(ctx, $"{ctx.User.Mention} flipped {Formatter.Bold(GFRandom.Generator.GetBool() ? "Heads" : "Tails")}", ":full_moon_with_face:");
         #endregion
 
         #region COMMAND_DICE
@@ -67,7 +67,7 @@ namespace TheGodfather.Modules.Misc
         [Aliases("die", "roll")]
         [UsageExamples("!dice")]
         public Task DiceAsync(CommandContext ctx)
-            => InformAsync(ctx, StaticDiscordEmoji.Dice, $"{ctx.User.Mention} rolled a {Formatter.Bold(GFRandom.Generator.Next(1, 7).ToString())}");
+            => this.InformAsync(ctx, StaticDiscordEmoji.Dice, $"{ctx.User.Mention} rolled a {Formatter.Bold(GFRandom.Generator.Next(1, 7).ToString())}");
         #endregion
 
         #region COMMAND_GIVEME
@@ -83,7 +83,7 @@ namespace TheGodfather.Modules.Misc
                 throw new CommandFailedException("That role is not in this guild's self-assignable roles list.");
 
             await ctx.Member.GrantRoleAsync(role, ctx.BuildReasonString("Granted self-assignable role."));
-            await InformAsync(ctx, "Successfully granted the required roles.", important: false);
+            await this.InformAsync(ctx, "Successfully granted the required roles.", important: false);
         }
         #endregion
 
@@ -141,10 +141,10 @@ namespace TheGodfather.Modules.Misc
         public async Task LeaveAsync(CommandContext ctx)
         {
             if (await ctx.WaitForBoolReplyAsync("Are you sure you want me to leave this guild?")) {
-                await InformAsync(ctx, StaticDiscordEmoji.Wave, "Go find a new bot, since this one is leaving!");
+                await this.InformAsync(ctx, StaticDiscordEmoji.Wave, "Go find a new bot, since this one is leaving!");
                 await ctx.Guild.LeaveAsync();
             } else {
-                await InformAsync(ctx, "Guess I'll stay then.", ":no_mouth:");
+                await this.InformAsync(ctx, "Guess I'll stay then.", ":no_mouth:");
             }
         }
         #endregion
@@ -177,7 +177,7 @@ namespace TheGodfather.Modules.Misc
                 sb.Append(GFRandom.Generator.GetBool() ? Char.ToUpperInvariant(add) : Char.ToLowerInvariant(add));
             }
 
-            return InformAsync(ctx, StaticDiscordEmoji.Information, sb.ToString());
+            return this.InformAsync(ctx, StaticDiscordEmoji.Information, sb.ToString());
         }
         #endregion
 
@@ -197,12 +197,12 @@ namespace TheGodfather.Modules.Misc
             if (user.IsCurrent) {
                 sb.AppendLine(Formatter.Bold($"8{new string('=', 45)}"));
                 sb.Append(Formatter.Italic("(Please plug in a second monitor for the entire display)"));
-                return InformAsync(ctx, StaticDiscordEmoji.Ruler, sb.ToString());
+                return this.InformAsync(ctx, StaticDiscordEmoji.Ruler, sb.ToString());
             }
 
             sb.Append(Formatter.Bold($"8{new string('=', (int)(user.Id % 40))}D"));
 
-            return InformAsync(ctx, StaticDiscordEmoji.Ruler, sb.ToString());
+            return this.InformAsync(ctx, StaticDiscordEmoji.Ruler, sb.ToString());
         }
         #endregion
 
@@ -220,13 +220,13 @@ namespace TheGodfather.Modules.Misc
                 user2 = ctx.User;
 
             if (user1.Id == ctx.Client.CurrentUser.Id || user2.Id == ctx.Client.CurrentUser.Id)
-                return InformAsync(ctx, StaticDiscordEmoji.Ruler, "Please, I do not want to make everyone laugh at you...");
+                return this.InformAsync(ctx, StaticDiscordEmoji.Ruler, "Please, I do not want to make everyone laugh at you...");
 
             var sb = new StringBuilder();
             sb.Append('8').Append('=', (int)(user1.Id % 40)).Append("D ").AppendLine(user1.Mention);
             sb.Append('8').Append('=', (int)(user2.Id % 40)).Append("D ").AppendLine(user2.Mention);
 
-            return InformAsync(ctx, StaticDiscordEmoji.Ruler, $"Comparing...\n\n{Formatter.Bold(sb.ToString())}");
+            return this.InformAsync(ctx, StaticDiscordEmoji.Ruler, $"Comparing...\n\n{Formatter.Bold(sb.ToString())}");
         }
         #endregion
 
@@ -235,7 +235,7 @@ namespace TheGodfather.Modules.Misc
         [Description("Ping the bot.")]
         [UsageExamples("!ping")]
         public Task PingAsync(CommandContext ctx)
-            => InformAsync(ctx, $"Pong! {ctx.Client.Ping}ms", ":heartbeat:");
+            => this.InformAsync(ctx, $"Pong! {ctx.Client.Ping}ms", ":heartbeat:");
         #endregion
 
         #region COMMAND_PREFIX
@@ -250,7 +250,7 @@ namespace TheGodfather.Modules.Misc
         {
             if (string.IsNullOrWhiteSpace(prefix)) {
                 string p = this.Shared.GetGuildPrefix(ctx.Guild.Id);
-                await InformAsync(ctx, StaticDiscordEmoji.Information, $"Current prefix for this guild: {Formatter.Bold(p)}");
+                await this.InformAsync(ctx, StaticDiscordEmoji.Information, $"Current prefix for this guild: {Formatter.Bold(p)}");
                 return;
             }
 
@@ -264,7 +264,7 @@ namespace TheGodfather.Modules.Misc
 
             await this.Database.UpdateGuildSettingsAsync(ctx.Guild.Id, this.Shared.GetGuildConfig(ctx.Guild.Id));
 
-            await InformAsync(ctx, $"Successfully changed the prefix for this guild to: {Formatter.Bold(prefix)}", important: false);
+            await this.InformAsync(ctx, $"Successfully changed the prefix for this guild to: {Formatter.Bold(prefix)}", important: false);
         }
         #endregion
 
@@ -338,7 +338,7 @@ namespace TheGodfather.Modules.Misc
             if (!await SavedTaskExecutor.TryScheduleAsync(this.Shared, this.Database, ctx.Client, task))
                 throw new CommandFailedException("Failed to schedule saved task!");
 
-            await InformAsync(ctx, StaticDiscordEmoji.AlarmClock, $"I will remind {channel.Mention} in {Formatter.Bold(timespan.Humanize(5))} ({when.ToUtcTimestamp()}) to:\n\n{Formatter.Italic(message)}", important: false);
+            await this.InformAsync(ctx, StaticDiscordEmoji.AlarmClock, $"I will remind {channel.Mention} in {Formatter.Bold(timespan.Humanize(5))} ({when.ToUtcTimestamp()}) to:\n\n{Formatter.Italic(message)}", important: false);
         }
 
         [Command("remind"), Priority(1)]
@@ -346,13 +346,13 @@ namespace TheGodfather.Modules.Misc
                                [Description("Channel to send message to.")] DiscordChannel channel,
                                [Description("Time span until reminder.")] TimeSpan timespan,
                                [RemainingText, Description("What to send?")] string message)
-            => RemindAsync(ctx, timespan, channel, message);
+            => this.RemindAsync(ctx, timespan, channel, message);
 
         [Command("remind"), Priority(0)]
         public Task RemindAsync(CommandContext ctx,
                                [Description("Time span until reminder.")] TimeSpan timespan,
                                [RemainingText, Description("What to send?")] string message)
-            => RemindAsync(ctx, timespan, null, message);
+            => this.RemindAsync(ctx, timespan, null, message);
         #endregion
 
         #region COMMAND_REPORT
@@ -379,7 +379,7 @@ namespace TheGodfather.Modules.Misc
                 emb.AddField("Guild", $"{ctx.Guild.ToString()} owned by {ctx.Guild.Owner.ToString()}");
 
                 await dm.SendMessageAsync("A new issue has been reported!", embed: emb.Build());
-                await InformAsync(ctx, "Your issue has been reported.", important: false);
+                await this.InformAsync(ctx, "Your issue has been reported.", important: false);
             }
         }
         #endregion
@@ -398,7 +398,7 @@ namespace TheGodfather.Modules.Misc
             if (this.Shared.MessageContainsFilter(ctx.Guild.Id, text))
                 throw new CommandFailedException("You can't make me say something that contains filtered content for this guild.");
 
-            return InformAsync(ctx, Formatter.Sanitize(text), ":loudspeaker:");
+            return this.InformAsync(ctx, Formatter.Sanitize(text), ":loudspeaker:");
         }
         #endregion
 
