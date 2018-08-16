@@ -22,7 +22,7 @@ namespace TheGodfather.Modules.Owner
 {
     public partial class OwnerModule
     {
-        [Group("privilegedusers")]
+        [Group("privilegedusers"), NotBlocked]
         [Description("Manipulate privileged users. Privileged users can invoke commands marked with RequirePrivilegedUsers permission.")]
         [Aliases("pu", "privu", "privuser", "pusers", "puser", "pusr")]
         [RequireOwner]
@@ -78,7 +78,7 @@ namespace TheGodfather.Modules.Owner
 
             #region COMMAND_PRIVILEGEDUSERS_DELETE
             [Command("delete")]
-            [Description("Remove users from privileged users list..")]
+            [Description("Remove users from privileged users list.")]
             [Aliases("-", "remove", "rm", "del", ">", ">>", "-=")]
             [UsageExamples("!owner privilegedusers remove @Someone",
                            "!owner privilegedusers remove 123123123123123",

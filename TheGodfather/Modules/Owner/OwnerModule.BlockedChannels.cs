@@ -22,7 +22,7 @@ namespace TheGodfather.Modules.Owner
 {
     public partial class OwnerModule
     {
-        [Group("blockedchannels"), Module(ModuleType.Owner), NotBlocked]
+        [Group("blockedchannels"), NotBlocked]
         [Description("Manipulate blocked channels. Bot will not listen for commands in blocked channels or react (either with text or emoji) to messages inside.")]
         [Aliases("bc", "blockedc", "blockchannel", "bchannels", "bchannel", "bchn")]
         [RequirePrivilegedUser]
@@ -118,7 +118,7 @@ namespace TheGodfather.Modules.Owner
 
             #region COMMAND_BLOCKEDCHANNELS_DELETE
             [Command("delete")]
-            [Description("Remove channel from blocked channels list..")]
+            [Description("Remove channel from blocked channels list.")]
             [Aliases("-", "remove", "rm", "del", "unblock", ">", ">>", "-=")]
             [UsageExamples("!owner blockedchannels remove #channel",
                            "!owner blockedchannels remove 123123123123123",

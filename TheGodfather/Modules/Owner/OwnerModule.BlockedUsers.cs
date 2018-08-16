@@ -22,11 +22,10 @@ namespace TheGodfather.Modules.Owner
 {
     public partial class OwnerModule
     {
-        [Group("blockedusers")]
+        [Group("blockedusers"), NotBlocked]
         [Description("Manipulate blocked users. Bot will not allow blocked users to invoke commands and will not react (either with text or emoji) to their messages.")]
         [Aliases("bu", "blockedu", "blockuser", "busers", "buser", "busr")]
         [RequirePrivilegedUser]
-        [NotBlocked]
         public class BlockedUsersModule : TheGodfatherModule
         {
 
@@ -119,7 +118,7 @@ namespace TheGodfather.Modules.Owner
 
             #region COMMAND_BLOCKEDUSERS_DELETE
             [Command("delete")]
-            [Description("Remove users from blocked users list..")]
+            [Description("Remove users from blocked users list.")]
             [Aliases("-", "remove", "rm", "del", "unblock", ">", ">>", "-=")]
             [UsageExamples("!owner blockedusers remove @Someone",
                            "!owner blockedusers remove 123123123123123",
