@@ -549,7 +549,9 @@ namespace TheGodfather.Modules.Owner
             if (string.IsNullOrWhiteSpace(command))
                 throw new InvalidCommandUsageException("Missing command to execute.");
 
-            return ctx.Client.GetCommandsNext().SudoAsync(member, ctx.Channel, command);
+            Command cmd = ctx.CommandsNext.FindCommand(command, out string args);
+            CommandContext fctx = ctx.CommandsNext.CreateFakeContext(member, ctx.Channel, command, ctx.Prefix, cmd, args);
+            return cmd == null ? Task.CompletedTask : ctx.CommandsNext.ExecuteCommandAsync(fctx);
         }
         #endregion
 
