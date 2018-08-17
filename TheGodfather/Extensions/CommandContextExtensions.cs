@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 using TheGodfather.Common;
@@ -19,7 +20,12 @@ namespace TheGodfather.Extensions
     internal static class CommandContextExtensions
     {
         public static string BuildReasonString(this CommandContext ctx, string reason = null)
-            => $"{ctx.User.ToString()} : {reason ?? "No reason provided."} | Invoked in: {ctx.Channel.ToString()}";
+        {
+            string ustr = Uri.EscapeDataString(ctx.User.ToString());
+            string cstr = Uri.EscapeDataString(ctx.Channel.ToString());
+            string rstr = Uri.EscapeDataString(reason ?? "No reason provided.");
+            return $"{ustr} : {rstr} | Invoked in: {cstr}";
+        }
 
         public static Task SendCollectionInPagesAsync<T>(this CommandContext ctx, string title, 
             IEnumerable<T> collection, Func<T, string> selector, DiscordColor? color = null, int pageSize = 10)
