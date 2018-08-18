@@ -82,7 +82,7 @@ Arguments can be exactly one of the following types:
 * ``color`` : A hexadecimal or RGB color representation. Valid examples: ``FF0000`` , ``(255, 0, 0)``.
 * ``time span`` : A time span in form ``DDd HHh MMm SSs`` Valid examples: ``3d 5m 30s`` etc. 
 * ``IPAddress`` : An IPv4 address. Valid examples: ``123.123.123.123`` etc. 
-* ``CustomIpFormat`` : Combined IPv4 range and optional endpoint port. Valid examples: ``123.123.123.123:12345`` , ``123.123.*`` etc. 
+* ``CustomIPFormat`` : Combined IPv4 range and optional endpoint port. Valid examples: ``123.123.123.123:12345`` , ``123.123.*`` etc. 
 * ``PunishmentActionType`` : One of the following values: Kick, Ban, Mute, TemporaryBan, TemporaryMute. 
 
 
