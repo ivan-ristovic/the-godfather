@@ -102,6 +102,7 @@ namespace TheGodfather.Modules.Search
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task UnsubscribeAsync(CommandContext ctx,
                                           [Description("ID of the subscription.")] int id)
+            // TODO params int[]
         {
             await this.Database.RemoveSubscriptionByIdAsync(ctx.Channel.Id, id);
             await this.InformAsync(ctx, $"Unsubscribed from feed with ID {Formatter.Bold(id.ToString())}", important: false);
@@ -129,5 +130,9 @@ namespace TheGodfather.Modules.Search
             return RssService.SendFeedResultsAsync(ctx.Channel, res);
         }
         #endregion
+
+        // todo unsub all
+
+        // todo better sub/unsub system ... 
     }
 }

@@ -60,7 +60,7 @@ namespace TheGodfather.Modules.Search.Services
                             var emb = new DiscordEmbedBuilder() {
                                 Title = latest.Title.Text,
                                 Url = url,
-                                Timestamp = latest.LastUpdatedTime,
+                                Timestamp = latest.LastUpdatedTime > latest.PublishDate ? latest.LastUpdatedTime : latest.PublishDate,
                                 Color = DiscordColor.White,
                             };
 

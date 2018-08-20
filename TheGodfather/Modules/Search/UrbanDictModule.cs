@@ -47,7 +47,7 @@ namespace TheGodfather.Modules.Search
                 $"Urban Dictionary definitions for \"{query}\"",
                 data.List,
                 res => $"Definition by {Formatter.Bold(res.Author)}:\n\n" +
-                       $"{Formatter.Italic(res.Definition.Trim().Truncate(1000))}\n\n" +
+                       $"{Formatter.BlockCode(res.Definition.Trim().Truncate(1000))}\n\n" +
                        $"{res.Permalink}",
                 this.ModuleColor,
                 1
