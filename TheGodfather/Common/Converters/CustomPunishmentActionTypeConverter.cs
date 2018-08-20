@@ -31,6 +31,7 @@ namespace TheGodfather.Common.Converters
                 case "b":
                     result = PunishmentActionType.PermanentBan;
                     break;
+                case "temporaryban":
                 case "tempban":
                 case "tb":
                     result = PunishmentActionType.TemporaryBan;
