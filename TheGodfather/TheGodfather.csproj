@@ -18,18 +18,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="DSharpPlus" Version="4.0.0-beta-00508" />
-    <PackageReference Include="DSharpPlus.CommandsNext" Version="4.0.0-beta-00508" />
-    <PackageReference Include="DSharpPlus.Interactivity" Version="4.0.0-beta-00508" />
-    <PackageReference Include="DSharpPlus.Lavalink" Version="4.0.0-beta-00508" />
-    <PackageReference Include="DSharpPlus.VoiceNext" Version="4.0.0-beta-00508" />
-    <PackageReference Include="DSharpPlus.WebSocket.WebSocket4NetCore" Version="4.0.0-beta-00508" />
+    <PackageReference Include="DSharpPlus" Version="4.0.0-beta-00513" />
+    <PackageReference Include="DSharpPlus.CommandsNext" Version="4.0.0-beta-00513" />
+    <PackageReference Include="DSharpPlus.Interactivity" Version="4.0.0-beta-00513" />
+    <PackageReference Include="DSharpPlus.Lavalink" Version="4.0.0-beta-00513" />
+    <PackageReference Include="DSharpPlus.VoiceNext" Version="4.0.0-beta-00513" />
+    <PackageReference Include="DSharpPlus.WebSocket.WebSocket4NetCore" Version="4.0.0-beta-00513" />
     <PackageReference Include="GiphyDotNet" Version="1.0.0" />
     <PackageReference Include="Google.Apis.YouTube.v3" Version="1.35.1.1226" />
     <PackageReference Include="Humanizer.Core" Version="2.4.2" />
     <PackageReference Include="Imgur.API" Version="5.0.0-beta1" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="2.8.2" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="2.8.2" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="2.9.0" />
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="2.9.0" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="Npgsql" Version="4.0.2" />
     <PackageReference Include="RedditSharp" Version="2.0.0-CI00065" />
