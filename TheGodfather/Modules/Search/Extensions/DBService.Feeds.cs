@@ -128,12 +128,12 @@ namespace TheGodfather.Modules.Search.Extensions
             });
         }
 
-        public static Task RemoveSubscriptionByIdAsync(this DBService db, ulong cid, int id)
+        public static Task RemoveSubscriptionByIdAsync(this DBService db, ulong cid, params int[] ids)
         {
             return db.ExecuteCommandAsync(cmd => {
-                cmd.CommandText = "DELETE FROM gf.subscriptions WHERE cid = @cid AND id = @id;";
+                cmd.CommandText = "DELETE FROM gf.subscriptions WHERE cid = @cid AND id = ANY(:ids);";
                 cmd.Parameters.Add(new NpgsqlParameter<long>("cid", (long)cid));
-                cmd.Parameters.Add(new NpgsqlParameter<int>("id", id));
+                cmd.Parameters.Add("ids", NpgsqlDbType.Array | NpgsqlDbType.Integer).Value = ids;
 
                 return cmd.ExecuteNonQueryAsync();
             });

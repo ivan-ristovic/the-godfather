@@ -3,7 +3,7 @@ using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
-
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel.Syndication;
@@ -21,7 +21,8 @@ using TheGodfather.Services;
 namespace TheGodfather.Modules.Search
 {
     [Group("rss"), Module(ModuleType.Searches), NotBlocked]
-    [Description("Commands for RSS feed querying or subscribing. Group call prints the latest topics from the given RSS URL.")]
+    [Description("Commands for RSS feed querying or subscribing. Group call prints the latest " +
+                 "topics from the given RSS URL or prints the subscriptions for the given channel.")]
     [Aliases("feed")]
     [UsageExamples("!rss https://news.google.com/news/rss/")]
     [Cooldown(3, 5, CooldownBucketType.Channel)]
@@ -35,14 +36,18 @@ namespace TheGodfather.Modules.Search
         }
 
 
-        [GroupCommand]
+        [GroupCommand, Priority(0)]
+        public Task ExecuteGroupAsync(CommandContext ctx)
+            => this.ListAsync(ctx);
+
+        [GroupCommand, Priority(1)]
         public Task ExecuteGroupAsync(CommandContext ctx, 
-                                     [RemainingText, Description("RSS URL.")] string url)
+                                     [Description("RSS URL.")] Uri url)
         {
-            if (!RssService.IsValidFeedURL(url))
+            if (!RssService.IsValidFeedURL(url.AbsoluteUri))
                 throw new InvalidCommandUsageException("No results found for given URL (maybe forbidden?).");
 
-            IReadOnlyList<SyndicationItem> res = RssService.GetFeedResults(url);
+            IReadOnlyList<SyndicationItem> res = RssService.GetFeedResults(url.AbsoluteUri);
             if (res == null)
                 throw new CommandFailedException("Error getting feed from given URL.");
 
@@ -55,7 +60,7 @@ namespace TheGodfather.Modules.Search
         [Description("Get feed list for the current channel.")]
         [Aliases("ls", "listsubs", "listfeeds")]
         [UsageExamples("!feed list")]
-        public async Task FeedListAsync(CommandContext ctx)
+        public async Task ListAsync(CommandContext ctx)
         {
             IReadOnlyList<FeedEntry> subs = await this.Database.GetFeedEntriesForChannelAsync(ctx.Channel.Id);
             if (!subs.Any())
@@ -81,13 +86,13 @@ namespace TheGodfather.Modules.Search
                        "!rss subscribe https://news.google.com/news/rss/ news")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task AddUrlFeedAsync(CommandContext ctx,
-                                         [Description("URL.")] string url,
-                                         [Description("Friendly name.")] string name = null)
+                                         [Description("URL.")] Uri url,
+                                         [RemainingText, Description("Friendly name.")] string name = null)
         {
-            if (!RssService.IsValidFeedURL(url))
+            if (!RssService.IsValidFeedURL(url.AbsoluteUri))
                 throw new InvalidCommandUsageException("Given URL isn't a valid RSS feed URL.");
 
-            if (!await this.Database.TryAddSubscriptionAsync(ctx.Channel.Id, url, name ?? url))
+            if (!await this.Database.TryAddSubscriptionAsync(ctx.Channel.Id, url.AbsoluteUri, name ?? url.AbsoluteUri))
                 throw new CommandFailedException("You are already subscribed to this RSS feed URL!");
 
             await this.InformAsync(ctx, $"Subscribed to {url}!", important: false);
@@ -101,16 +106,18 @@ namespace TheGodfather.Modules.Search
         [UsageExamples("!rss unsubscribe 1")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task UnsubscribeAsync(CommandContext ctx,
-                                          [Description("ID of the subscription.")] int id)
-            // TODO params int[]
+                                          [Description("ID of the subscriptions to remove.")] params int[] ids)
         {
-            await this.Database.RemoveSubscriptionByIdAsync(ctx.Channel.Id, id);
-            await this.InformAsync(ctx, $"Unsubscribed from feed with ID {Formatter.Bold(id.ToString())}", important: false);
+            if (!ids.Any())
+                throw new CommandFailedException("Missing IDs of the subscriptions to remove!");
+
+            await this.Database.RemoveSubscriptionByIdAsync(ctx.Channel.Id, ids);
+            await this.InformAsync(ctx, $"Unsubscribed from feed with IDs {Formatter.Bold(string.Join(", ", ids))}", important: false);
         }
 
         [Command("unsubscribe"), Priority(0)]
         public async Task UnsubscribeAsync(CommandContext ctx,
-                                          [Description("Name of the subscription.")] string name)
+                                          [RemainingText, Description("Name of the subscription.")] string name)
         {
             await this.Database.RemoveSubscriptionByNameAsync(ctx.Channel.Id, name);
             await this.InformAsync(ctx, $"Unsubscribed from feed with name {Formatter.Bold(name)}", important: false);
