@@ -79,7 +79,7 @@ namespace TheGodfather.EventListeners
                 case ArgumentException _:
                     sb.AppendLine("Invalid command usage! Details:").AppendLine();
                     sb.AppendLine(Formatter.BlockCode(ex.Message));
-                    sb.AppendLine($"Type {Formatter.Bold($"help {e.Command.QualifiedName}")} for a command manual.");
+                    sb.AppendLine($"Type {Formatter.Bold($"{shard.SharedData.GetGuildPrefix(e.Context.Guild.Id)}help {e.Command.QualifiedName}")} for a command manual.");
                     break;
                 case CommandFailedException _:
                     sb.Append($"{ex.Message} {ex.InnerException?.Message}");
