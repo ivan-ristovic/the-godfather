@@ -375,7 +375,7 @@ namespace TheGodfather.Modules.Misc
                     Title = "Issue",
                     Description = issue
                 };
-                emb.WithAuthor(ctx.User.ToString(), icon_url: ctx.User.AvatarUrl ?? ctx.User.DefaultAvatarUrl);
+                emb.WithAuthor(ctx.User.ToString(), iconUrl: ctx.User.AvatarUrl ?? ctx.User.DefaultAvatarUrl);
                 emb.AddField("Guild", $"{ctx.Guild.ToString()} owned by {ctx.Guild.Owner.ToString()}");
 
                 await dm.SendMessageAsync("A new issue has been reported!", embed: emb.Build());

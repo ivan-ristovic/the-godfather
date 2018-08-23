@@ -229,13 +229,13 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.GuildUpdated)]
         public static async Task GuildUpdateEventHandlerAsync(TheGodfatherShard shard, GuildUpdateEventArgs e)
         {
-            DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.Guild);
+            DiscordChannel logchn = shard.SharedData.GetLogChannelForGuild(shard.Client, e.GuildAfter);
             if (logchn == null)
                 return;
 
             DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Role, "Guild settings updated");
 
-            var entry = await e.Guild.GetFirstAuditLogEntryAsync(AuditLogActionType.GuildUpdate);
+            var entry = await e.GuildAfter.GetFirstAuditLogEntryAsync(AuditLogActionType.GuildUpdate);
             if (entry != null && entry is DiscordAuditLogGuildEntry gentry) {
                 emb.AddField("User responsible", gentry.UserResponsible.Mention, inline: true);
                 if (gentry.NameChange != null)
