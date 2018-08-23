@@ -74,6 +74,7 @@ namespace TheGodfather.Services
                             BlockDisturbingWebsites = (bool)reader["linkfilter_disturbing"],
                             BlockIpLoggingWebsites = (bool)reader["linkfilter_iploggers"],
                             BlockUrlShorteners = (bool)reader["linkfilter_shorteners"],
+                            Currency = reader["currency"] is DBNull ? null : (string)reader["currency"],
                             LinkfilterEnabled = (bool)reader["linkfilter_enabled"],
                             LogChannelId = (ulong)(long)reader["log_cid"],
                             Prefix = reader["prefix"] is DBNull ? null : (string)reader["prefix"],
