@@ -82,7 +82,7 @@ namespace TheGodfather.Modules.Misc
             if (!await this.Database.IsSelfAssignableRoleAsync(ctx.Guild.Id, role.Id))
                 throw new CommandFailedException("That role is not in this guild's self-assignable roles list.");
 
-            await ctx.Member.GrantRoleAsync(role, ctx.BuildReasonString("Granted self-assignable role."));
+            await ctx.Member.GrantRoleAsync(role, ctx.BuildInvocationDetailsString("Granted self-assignable role."));
             await this.InformAsync(ctx, "Successfully granted the required roles.", important: false);
         }
         #endregion
@@ -100,7 +100,7 @@ namespace TheGodfather.Modules.Misc
             if (permanent.Any()) {
                 await ctx.RespondAsync(permanent.First().ToString());
             } else {
-                DiscordInvite invite = await ctx.Channel.CreateInviteAsync(max_age: 3600, temporary: true, reason: ctx.BuildReasonString());
+                DiscordInvite invite = await ctx.Channel.CreateInviteAsync(max_age: 3600, temporary: true, reason: ctx.BuildInvocationDetailsString());
                 await ctx.RespondAsync($"{invite} {Formatter.Italic("(This invite will expire in one hour!)")}");
             }
         }

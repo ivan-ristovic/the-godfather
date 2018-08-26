@@ -51,7 +51,7 @@ namespace TheGodfather.Modules.Administration
                 if (!msgs.Any())
                     throw new CommandFailedException("None of the messages in the given range match your description.");
 
-                await ctx.Channel.DeleteMessagesAsync(msgs, ctx.BuildReasonString(reason));
+                await ctx.Channel.DeleteMessagesAsync(msgs, ctx.BuildInvocationDetailsString(reason));
             }
             
 
@@ -72,7 +72,7 @@ namespace TheGodfather.Modules.Administration
 
                 IReadOnlyList<DiscordMessage> msgs = await ctx.Channel.GetMessagesAsync(amount);
 
-                await ctx.Channel.DeleteMessagesAsync(msgs.Where(m => m.Author.Id == member.Id), ctx.BuildReasonString(reason));
+                await ctx.Channel.DeleteMessagesAsync(msgs.Where(m => m.Author.Id == member.Id), ctx.BuildInvocationDetailsString(reason));
             }
 
             [Command("from"), Priority(0)]
@@ -102,7 +102,7 @@ namespace TheGodfather.Modules.Administration
                 if (msg == null)
                     throw new CommandFailedException("Cannot find the specified message.");
 
-                await msg.DeleteAllReactionsAsync(ctx.BuildReasonString(reason));
+                await msg.DeleteAllReactionsAsync(ctx.BuildInvocationDetailsString(reason));
                 await this.InformAsync(ctx);
             }
             #endregion
@@ -127,7 +127,7 @@ namespace TheGodfather.Modules.Administration
 
                 IReadOnlyList<DiscordMessage> msgs = await ctx.Channel.GetMessagesBeforeAsync(ctx.Channel.LastMessageId, amount);
 
-                await ctx.Channel.DeleteMessagesAsync(msgs.Where(m => !string.IsNullOrWhiteSpace(m.Content) && regex.IsMatch(m.Content)), ctx.BuildReasonString(reason));
+                await ctx.Channel.DeleteMessagesAsync(msgs.Where(m => !string.IsNullOrWhiteSpace(m.Content) && regex.IsMatch(m.Content)), ctx.BuildInvocationDetailsString(reason));
             }
 
             [Command("regex"), Priority(0)]

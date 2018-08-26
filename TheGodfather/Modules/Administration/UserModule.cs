@@ -53,7 +53,7 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException("You are not authorised to grant some of these roles.");
 
             foreach (DiscordRole role in roles)
-                await member.GrantRoleAsync(role, reason: ctx.BuildReasonString());
+                await member.GrantRoleAsync(role, reason: ctx.BuildInvocationDetailsString());
 
             await this.InformAsync(ctx, $"Successfully updated member {Formatter.Bold(member.DisplayName)} by granting roles:\n\n{string.Join("\n", roles.Select(r => r.ToString()))}");
         }
@@ -95,7 +95,7 @@ namespace TheGodfather.Modules.Administration
             if (member.Id == ctx.User.Id)
                 throw new CommandFailedException("You can't ban yourself.");
 
-            await member.BanAsync(delete_message_days: 7, reason: ctx.BuildReasonString(reason));
+            await member.BanAsync(delete_message_days: 7, reason: ctx.BuildInvocationDetailsString(reason));
             await this.InformAsync(ctx, $"{Formatter.Bold(ctx.Member.Username)} BANNED {Formatter.Bold(member.ToString())}!");
         }
         #endregion
@@ -116,7 +116,7 @@ namespace TheGodfather.Modules.Administration
 
             DiscordUser u = await ctx.Client.GetUserAsync(id);
 
-            await ctx.Guild.BanMemberAsync(u.Id, delete_message_days: 7, reason: ctx.BuildReasonString(reason));
+            await ctx.Guild.BanMemberAsync(u.Id, delete_message_days: 7, reason: ctx.BuildInvocationDetailsString(reason));
             await this.InformAsync(ctx, $"{Formatter.Bold(ctx.User.Username)} BANNED {Formatter.Bold(u.ToString())}!");
         }
         #endregion
@@ -133,7 +133,7 @@ namespace TheGodfather.Modules.Administration
                                      [Description("Deafen?")] bool deafen,
                                      [RemainingText, Description("Reason.")] string reason = null)
         {
-            await member.SetDeafAsync(deafen, reason: ctx.BuildReasonString(reason));
+            await member.SetDeafAsync(deafen, reason: ctx.BuildInvocationDetailsString(reason));
             await this.InformAsync(ctx, $"Successfully {Formatter.Bold(deafen ? "deafened" : "undeafened")} member {Formatter.Bold(member.DisplayName)}");
         }
         #endregion
@@ -192,7 +192,7 @@ namespace TheGodfather.Modules.Administration
             if (member.Id == ctx.User.Id)
                 throw new CommandFailedException("You can't kick yourself.");
 
-            await member.RemoveAsync(reason: ctx.BuildReasonString(reason));
+            await member.RemoveAsync(reason: ctx.BuildInvocationDetailsString(reason));
             await this.InformAsync(ctx, $"{Formatter.Bold(ctx.User.Username)} kicked {Formatter.Bold(member.Username)}.");
         }
         #endregion
@@ -209,7 +209,7 @@ namespace TheGodfather.Modules.Administration
                                    [Description("Member to mute.")] DiscordMember member,
                                    [RemainingText, Description("Reason.")] string reason = null)
         {
-            await member.SetMuteAsync(mute, reason: ctx.BuildReasonString(reason));
+            await member.SetMuteAsync(mute, reason: ctx.BuildInvocationDetailsString(reason));
             await this.InformAsync(ctx, $"Successfully {Formatter.Bold(mute ? "muted" : "unmuted")} member {Formatter.Bold(member.DisplayName)}");
         }
         #endregion
@@ -229,7 +229,7 @@ namespace TheGodfather.Modules.Administration
             if (role.Position >= ctx.Member.Hierarchy)
                 throw new CommandFailedException("You cannot revoke that role.");
 
-            await member.RevokeRoleAsync(role, reason: ctx.BuildReasonString(reason));
+            await member.RevokeRoleAsync(role, reason: ctx.BuildInvocationDetailsString(reason));
             await this.InformAsync(ctx, $"Successfully revoked role {Formatter.Bold(role.Name)} from member {Formatter.Bold(member.DisplayName)}");
         }
 
@@ -249,7 +249,7 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException("You cannot revoke some of the given roles.");
 
             foreach (DiscordRole role in roles)
-                await member.RevokeRoleAsync(role, reason: ctx.BuildReasonString());
+                await member.RevokeRoleAsync(role, reason: ctx.BuildInvocationDetailsString());
 
             await this.InformAsync(ctx, $"Successfully updated member {Formatter.Bold(member.DisplayName)} by revoking roles:\n\n{string.Join("\n", roles.Select(r => r.ToString()))}");
         }
@@ -268,7 +268,7 @@ namespace TheGodfather.Modules.Administration
             if (member.Hierarchy >= ctx.Member.Hierarchy)
                 throw new CommandFailedException("You are not authorised to remove roles from this user.");
 
-            await member.ReplaceRolesAsync(Enumerable.Empty<DiscordRole>(), reason: ctx.BuildReasonString(reason));
+            await member.ReplaceRolesAsync(Enumerable.Empty<DiscordRole>(), reason: ctx.BuildInvocationDetailsString(reason));
             await this.InformAsync(ctx, $"Revoked all roles from member {Formatter.Bold(member.DisplayName)}");
         }
         #endregion
@@ -289,7 +289,7 @@ namespace TheGodfather.Modules.Administration
             string name = Formatter.Bold(member.DisplayName);
             await member.ModifyAsync(new Action<MemberEditModel>(m => {
                 m.Nickname = nickname;
-                m.AuditLogReason = ctx.BuildReasonString();
+                m.AuditLogReason = ctx.BuildInvocationDetailsString();
             }));
 
             await this.InformAsync(ctx, $"Renamed member {name} to {Formatter.Bold(member.DisplayName)}");
@@ -310,8 +310,8 @@ namespace TheGodfather.Modules.Administration
             if (member.Id == ctx.User.Id)
                 throw new CommandFailedException("You can't ban yourself.");
 
-            await member.BanAsync(delete_message_days: 7, reason: ctx.BuildReasonString("(softban) " + reason));
-            await member.UnbanAsync(ctx.Guild, reason: ctx.BuildReasonString("(softban) " + reason));
+            await member.BanAsync(delete_message_days: 7, reason: ctx.BuildInvocationDetailsString("(softban) " + reason));
+            await member.UnbanAsync(ctx.Guild, reason: ctx.BuildInvocationDetailsString("(softban) " + reason));
             await this.InformAsync(ctx, $"{Formatter.Bold(ctx.User.Username)} SOFTBANNED {Formatter.Bold(member.Username)}!");
         }
         #endregion
@@ -332,7 +332,7 @@ namespace TheGodfather.Modules.Administration
             if (member.Id == ctx.User.Id)
                 throw new CommandFailedException("You can't ban yourself.");
 
-            await member.BanAsync(delete_message_days: 0, reason: ctx.BuildReasonString($"(tempban for {timespan.ToString()}) " + reason));
+            await member.BanAsync(delete_message_days: 0, reason: ctx.BuildInvocationDetailsString($"(tempban for {timespan.ToString()}) " + reason));
 
             DateTimeOffset until = DateTimeOffset.Now + timespan;
             await this.InformAsync(ctx, $"{Formatter.Bold(ctx.User.Username)} BANNED {Formatter.Bold(member.Username)} until {Formatter.Bold(until.ToString())} UTC!");
@@ -358,7 +358,7 @@ namespace TheGodfather.Modules.Administration
             if (user.Id == ctx.User.Id)
                 throw new CommandFailedException("You can't ban yourself.");
 
-            await ctx.Guild.BanMemberAsync(user.Id, 0, ctx.BuildReasonString(reason));
+            await ctx.Guild.BanMemberAsync(user.Id, 0, ctx.BuildInvocationDetailsString(reason));
 
             DateTime until = DateTime.UtcNow + timespan;
             await this.InformAsync(ctx, $"{Formatter.Bold(ctx.User.Username)} BANNED {Formatter.Bold(user.ToString())} until {Formatter.Bold(until.ToLongTimeString())} UTC!");
@@ -391,7 +391,7 @@ namespace TheGodfather.Modules.Administration
 
             DiscordUser u = await ctx.Client.GetUserAsync(id);
 
-            await ctx.Guild.UnbanMemberAsync(id, reason: ctx.BuildReasonString(reason));
+            await ctx.Guild.UnbanMemberAsync(id, reason: ctx.BuildInvocationDetailsString(reason));
             await this.InformAsync(ctx, $"{Formatter.Bold(ctx.User.Username)} removed an ID ban for {Formatter.Bold(u.ToString())}!");
         }
         #endregion

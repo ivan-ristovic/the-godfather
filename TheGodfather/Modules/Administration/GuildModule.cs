@@ -153,7 +153,7 @@ namespace TheGodfather.Modules.Administration
             if (!await ctx.WaitForBoolReplyAsync($"Pruning will remove {Formatter.Bold(count.ToString())} member(s). Continue?"))
                 return;
 
-            await ctx.Guild.PruneAsync(days, ctx.BuildReasonString(reason));
+            await ctx.Guild.PruneAsync(days, ctx.BuildInvocationDetailsString(reason));
             await this.InformAsync(ctx, $"Pruned {Formatter.Bold(count.ToString())} members inactive for {Formatter.Bold(days.ToString())} days", important: false);
         }
         #endregion
@@ -177,7 +177,7 @@ namespace TheGodfather.Modules.Administration
 
             await ctx.Guild.ModifyAsync(new Action<GuildEditModel>(m => {
                 m.Name = newname;
-                m.AuditLogReason = ctx.BuildReasonString(reason);
+                m.AuditLogReason = ctx.BuildInvocationDetailsString(reason);
             }));
             await this.InformAsync(ctx, $"Successfully renamed the guild to {Formatter.Bold(ctx.Guild.Name)}", important: false);
         }

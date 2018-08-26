@@ -19,11 +19,13 @@ namespace TheGodfather.Extensions
 {
     internal static class CommandContextExtensions
     {
-        public static string BuildReasonString(this CommandContext ctx, string reason = null)
+        public static string BuildInvocationDetailsString(this CommandContext ctx, string reason = null)
         {
-            string ustr = Uri.EscapeDataString(ctx.User.ToString());
-            string cstr = Uri.EscapeDataString(ctx.Channel.ToString());
-            string rstr = Uri.EscapeDataString(reason ?? "No reason provided.");
+            var utf8 = Encoding.UTF8;
+            var ascii = Encoding.ASCII;            
+            string ustr = ascii.GetString(Encoding.Convert(utf8, ascii, utf8.GetBytes(ctx.User.ToString())));
+            string cstr = ascii.GetString(Encoding.Convert(utf8, ascii, utf8.GetBytes(ctx.Channel.ToString())));
+            string rstr = ascii.GetString(Encoding.Convert(utf8, ascii, utf8.GetBytes(reason ?? "No reason provided.")));
             return $"{ustr} : {rstr} | Invoked in: {cstr}";
         }
 

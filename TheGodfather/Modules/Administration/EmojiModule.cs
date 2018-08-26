@@ -73,7 +73,7 @@ namespace TheGodfather.Modules.Administration
                 using (var stream = await response.Content.ReadAsStreamAsync()) {
                     if (stream.Length >= 256000)
                         throw new CommandFailedException("The specified emoji is too large. Maximum allowed image size is 256KB.");
-                    DiscordGuildEmoji emoji = await ctx.Guild.CreateEmojiAsync(name, stream, reason: ctx.BuildReasonString());
+                    DiscordGuildEmoji emoji = await ctx.Guild.CreateEmojiAsync(name, stream, reason: ctx.BuildInvocationDetailsString());
                     await this.InformAsync(ctx, $"Successfully added emoji: {emoji}", important: false);
                 }
             } catch (WebException e) {
@@ -120,7 +120,7 @@ namespace TheGodfather.Modules.Administration
             try {
                 DiscordGuildEmoji gemoji = await ctx.Guild.GetEmojiAsync(emoji.Id);
                 string name = gemoji.Name;
-                await ctx.Guild.DeleteEmojiAsync(gemoji, ctx.BuildReasonString());
+                await ctx.Guild.DeleteEmojiAsync(gemoji, ctx.BuildInvocationDetailsString());
                 await this.InformAsync(ctx, $"Successfully deleted emoji: {Formatter.Bold(name)}", important: false);
             } catch (NotFoundException) {
                 throw new CommandFailedException("Can't find that emoji in list of emoji that I made for this guild.");
@@ -185,7 +185,7 @@ namespace TheGodfather.Modules.Administration
 
             try {
                 DiscordGuildEmoji gemoji = await ctx.Guild.GetEmojiAsync(emoji.Id);
-                gemoji = await ctx.Guild.ModifyEmojiAsync(gemoji, name: newname, reason: ctx.BuildReasonString());
+                gemoji = await ctx.Guild.ModifyEmojiAsync(gemoji, name: newname, reason: ctx.BuildInvocationDetailsString());
                 await this.InformAsync(ctx, $"Successfully modified emoji: {gemoji}", important: false);
             } catch (NotFoundException) {
                 throw new CommandFailedException("Can't find that emoji in list of emoji that I made for this guild.");
