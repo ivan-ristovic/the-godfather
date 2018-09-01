@@ -117,7 +117,6 @@ namespace TheGodfather.Modules.Misc
             string url = MemeGenService.GenerateMeme(template, topText, bottomText);
             return ctx.RespondAsync(embed: new DiscordEmbedBuilder() {
                 Title = "The meme you asked me to generate",
-                Description = url,
                 Url = url,
                 ImageUrl = url
             }.WithFooter("Powered by memegen.link").Build());

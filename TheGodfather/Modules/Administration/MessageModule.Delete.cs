@@ -4,7 +4,7 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 using DSharpPlus.Interactivity;
-
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -53,7 +53,43 @@ namespace TheGodfather.Modules.Administration
 
                 await ctx.Channel.DeleteMessagesAsync(msgs, ctx.BuildInvocationDetailsString(reason));
             }
-            
+
+
+            #region COMMAND_MESSAGES_DELETE_AFTER
+            [Command("after")]
+            [Description("Deletes given amount messages after a specified message ID.")]
+            [Aliases("aft", "af")]
+            [UsageExamples("!messages delete before 123456789132 20 Cleaning spam")]
+            public async Task DeleteMessagesAfterAsync(CommandContext ctx,
+                                                      [Description("Message after which to delete.")] DiscordMessage message,
+                                                      [Description("Amount.")] int amount = 5,
+                                                      [RemainingText, Description("Reason.")] string reason = null)
+            {
+                if (amount < 1 || amount > 100)
+                    throw new CommandFailedException("Cannot delete less than 1 and more than 100 messages at a time.");
+
+                IReadOnlyList<DiscordMessage> msgs = await ctx.Channel.GetMessagesAfterAsync(message.Id, amount);
+                await ctx.Channel.DeleteMessagesAsync(msgs, ctx.BuildInvocationDetailsString(reason));
+            }
+            #endregion
+
+            #region COMMAND_MESSAGES_DELETE_BEFORE
+            [Command("before")]
+            [Description("Deletes given amount messages before a specified message ID.")]
+            [Aliases("bef", "bf")]
+            [UsageExamples("!messages delete before 123456789132 20 Cleaning spam")]
+            public async Task DeleteMessagesBeforeAsync(CommandContext ctx,
+                                                       [Description("Message before which to delete.")] DiscordMessage message,
+                                                       [Description("Amount.")] int amount = 5,
+                                                       [RemainingText, Description("Reason.")] string reason = null)
+            {
+                if (amount < 1 || amount > 100)
+                    throw new CommandFailedException("Cannot delete less than 1 and more than 100 messages at a time.");
+
+                IReadOnlyList<DiscordMessage> msgs = await ctx.Channel.GetMessagesBeforeAsync(message.Id, amount);
+                await ctx.Channel.DeleteMessagesAsync(msgs, ctx.BuildInvocationDetailsString(reason));
+            }
+            #endregion
 
             #region COMMAND_MESSAGES_DELETE_FROM
             [Command("from"), Priority(1)]
@@ -61,7 +97,6 @@ namespace TheGodfather.Modules.Administration
             [Aliases("f", "frm")]
             [UsageExamples("!messages delete from @Someone 10 Cleaning spam",
                            "!messages delete from 10 @Someone Cleaning spam")]
-            [RequirePermissions(Permissions.ManageMessages), RequireUserPermissions(Permissions.ManageMessages)]
             public async Task DeleteMessagesFromUserAsync(CommandContext ctx,
                                                          [Description("User whose messages to delete.")] DiscordMember member,
                                                          [Description("Message range.")] int amount = 5,
@@ -88,7 +123,6 @@ namespace TheGodfather.Modules.Administration
             [Description("Deletes all reactions from the given message.")]
             [Aliases("react", "re")]
             [UsageExamples("!messages delete reactions 408226948855234561")]
-            [RequirePermissions(Permissions.ManageMessages), RequireUserPermissions(Permissions.Administrator)]
             public async Task DeleteReactionsAsync(CommandContext ctx,
                                                   [Description("ID.")] ulong id = 0,
                                                   [RemainingText, Description("Reason.")] string reason = null)
@@ -103,7 +137,7 @@ namespace TheGodfather.Modules.Administration
                     throw new CommandFailedException("Cannot find the specified message.");
 
                 await msg.DeleteAllReactionsAsync(ctx.BuildInvocationDetailsString(reason));
-                await this.InformAsync(ctx);
+                await this.InformAsync(ctx, important: false);
             }
             #endregion
 
@@ -113,7 +147,6 @@ namespace TheGodfather.Modules.Administration
             [Aliases("r", "rgx", "regexp", "reg")]
             [UsageExamples("!messages delete regex s+p+a+m+ 10 Cleaning spam",
                            "!messages delete regex 10 s+p+a+m+ Cleaning spam")]
-            [RequirePermissions(Permissions.ManageMessages), RequireUserPermissions(Permissions.Administrator)]
             public async Task DeleteMessagesFromRegexAsync(CommandContext ctx,
                                                           [Description("Pattern (Regex).")] string pattern,
                                                           [Description("Amount.")] int amount = 100,
