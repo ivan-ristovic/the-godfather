@@ -39,22 +39,18 @@ namespace TheGodfather.Modules.Administration
         [UsageExamples("!message attachments",
                        "!message attachments 408226948855234561")]
         public async Task ListAttachmentsAsync(CommandContext ctx,
-                                              [Description("Message ID.")] ulong id = 0)
+                                              [Description("Message.")] DiscordMessage message = null)
         {
-            DiscordMessage msg;
-            if (id != 0) 
-                msg = await ctx.Channel.GetMessageAsync(id);
-             else 
-                msg = (await ctx.Channel.GetMessagesBeforeAsync(ctx.Channel.LastMessageId, 1))?.FirstOrDefault();
+            message = message ?? (await ctx.Channel.GetMessagesBeforeAsync(ctx.Channel.LastMessageId, 1))?.FirstOrDefault();
 
-            if (msg == null)
+            if (message == null)
                 throw new CommandFailedException("Cannot retrieve the message!");
 
             var emb = new DiscordEmbedBuilder() {
                 Title = "Attachments:",
                 Color = this.ModuleColor
             };
-            foreach (DiscordAttachment attachment in msg.Attachments) 
+            foreach (DiscordAttachment attachment in message.Attachments) 
                 emb.AddField($"{attachment.FileName} ({attachment.FileSize} bytes)", attachment.Url);
 
             await ctx.RespondAsync(embed: emb.Build());
@@ -95,14 +91,13 @@ namespace TheGodfather.Modules.Administration
         [UsageExamples("!messages modify 408226948855234561 modified text")]
         [RequirePermissions(Permissions.ManageMessages)]
         public async Task ModifyMessageAsync(CommandContext ctx,
-                                            [Description("Message ID.")] ulong id,
+                                            [Description("Message.")] DiscordMessage message,
                                             [RemainingText, Description("New content.")] string content)
         {
             if (string.IsNullOrWhiteSpace(content))
                 throw new CommandFailedException("Missing new message content!");
-
-            DiscordMessage msg = await ctx.Channel.GetMessageAsync(id);
-            await msg.ModifyAsync(content);
+            
+            await message.ModifyAsync(content);
             await this.InformAsync(ctx, important: false);
         }
         #endregion
@@ -115,29 +110,32 @@ namespace TheGodfather.Modules.Administration
                        "!messages pin 408226948855234561")]
         [RequirePermissions(Permissions.ManageMessages)]
         public async Task PinMessageAsync(CommandContext ctx,
-                                         [Description("ID.")] ulong id = 0)
+                                         [Description("Message.")] DiscordMessage message = null)
         {
-            DiscordMessage msg;
-            if (id != 0)
-                msg = await ctx.Channel.GetMessageAsync(id);
-            else
-                msg = (await ctx.Channel.GetMessagesBeforeAsync(ctx.Channel.LastMessageId, 1))?.FirstOrDefault();
+            message = message ?? (await ctx.Channel.GetMessagesBeforeAsync(ctx.Channel.LastMessageId, 1))?.FirstOrDefault();
 
-            if (msg == null)
+            if (message == null)
                 throw new CommandFailedException("Cannot retrieve the message!");
 
-            await msg.PinAsync();
-            await this.InformAsync(ctx, $"Added new channel pin.", important: false);
+            await message.PinAsync();
         }
         #endregion
 
         #region COMMAND_MESSAGES_UNPIN
-        [Command("unpin")]
-        [Description("Unpins the message at given index (starting from 1). If the index is not given, unpins the most recent one.")]
+        [Command("unpin"), Priority(1)]
+        [Description("Unpins the message at given index (starting from 1) or message ID. If the index is not given, unpins the most recent one.")]
         [Aliases("up")]
-        [UsageExamples("!messages unpin",
+        [UsageExamples("!messages unpin 12345645687955",
                        "!messages unpin 10")]
         [RequirePermissions(Permissions.ManageMessages)]
+        public async Task UnpinMessageAsync(CommandContext ctx,
+                                           [Description("Message.")] DiscordMessage message)
+        {
+            await message.UnpinAsync();
+            await this.InformAsync(ctx, "Removed the specified pin.", important: false);
+        }
+
+        [Command("unpin"), Priority(0)]
         public async Task UnpinMessageAsync(CommandContext ctx,
                                            [Description("Index (starting from 1).")] int index = 1)
         {
@@ -147,7 +145,7 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException($"Invalid index (must be in range [1, {pinned.Count}]!");
 
             await pinned.ElementAt(index - 1).UnpinAsync();
-            await this.InformAsync(ctx, $"Removed the pin.", important: false);
+            await this.InformAsync(ctx, "Removed the specified pin.", important: false);
         }
         #endregion
 

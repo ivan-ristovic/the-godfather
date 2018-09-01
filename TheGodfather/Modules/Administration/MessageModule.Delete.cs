@@ -124,19 +124,14 @@ namespace TheGodfather.Modules.Administration
             [Aliases("react", "re")]
             [UsageExamples("!messages delete reactions 408226948855234561")]
             public async Task DeleteReactionsAsync(CommandContext ctx,
-                                                  [Description("ID.")] ulong id = 0,
+                                                  [Description("Message.")] DiscordMessage message = null,
                                                   [RemainingText, Description("Reason.")] string reason = null)
             {
-                DiscordMessage msg;
-                if (id != 0)
-                    msg = await ctx.Channel.GetMessageAsync(id);
-                else
-                    msg = (await ctx.Channel.GetMessagesBeforeAsync(ctx.Channel.LastMessageId, 1)).FirstOrDefault();
-
-                if (msg == null)
+                message = message ?? (await ctx.Channel.GetMessagesBeforeAsync(ctx.Channel.LastMessageId, 1)).FirstOrDefault();
+                if (message == null)
                     throw new CommandFailedException("Cannot find the specified message.");
 
-                await msg.DeleteAllReactionsAsync(ctx.BuildInvocationDetailsString(reason));
+                await message.DeleteAllReactionsAsync(ctx.BuildInvocationDetailsString(reason));
                 await this.InformAsync(ctx, important: false);
             }
             #endregion

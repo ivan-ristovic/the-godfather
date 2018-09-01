@@ -81,6 +81,9 @@ namespace TheGodfather.EventListeners
                     sb.AppendLine(Formatter.BlockCode(ex.Message));
                     sb.AppendLine($"Type {Formatter.Bold($"{shard.SharedData.GetGuildPrefix(e.Context.Guild.Id)}help {e.Command.QualifiedName}")} for a command manual.");
                     break;
+                case BadRequestException brex:
+                    sb.Append(brex.JsonMessage);
+                    break;
                 case CommandFailedException _:
                     sb.Append($"{ex.Message} {ex.InnerException?.Message}");
                     break;
