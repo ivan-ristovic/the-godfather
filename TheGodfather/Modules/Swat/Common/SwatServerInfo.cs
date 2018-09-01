@@ -17,7 +17,7 @@ namespace TheGodfather.Modules.Swat.Common
     public class SwatServerInfo
     {
         public static int CheckTimeout { get; set; } = 150;
-        public static readonly int RetryAttempts = 3;
+        public static readonly int RetryAttempts = 2;
 
         private static readonly Regex _bbCodeRegex = new Regex(@"(\[\\*c=?([0-9a-f])*\])|(\[\\*[bicu]\])|(\?)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
@@ -43,7 +43,7 @@ namespace TheGodfather.Modules.Swat.Common
         {
             byte[] receivedData = null;
 
-            for (int i = 0; receivedData == null && i < RetryAttempts; i++) {
+            for (int i = 1; receivedData == null && i < RetryAttempts; i++) {
                 try {
                     using (var client = new UdpClient()) {
                         var ep = new IPEndPoint(IPAddress.Parse(ip), port);

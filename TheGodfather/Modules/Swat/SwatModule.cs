@@ -113,6 +113,7 @@ namespace TheGodfather.Modules.Swat
         #region COMMAND_SERVERLIST
         [Command("serverlist")]
         [Description("Print the serverlist with current player numbers.")]
+        [Aliases("sl", "list")]
         [UsageExamples("!swat serverlist")]
         public async Task ServerlistAsync(CommandContext ctx)
         {

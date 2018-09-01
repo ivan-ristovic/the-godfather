@@ -74,6 +74,7 @@ Arguments can be exactly one of the following types:
 * ``string...`` : Unicode characrer sequence, can include spaces. Since this is a very general argument type, it will always come last in argument queue. Valid examples: ``This is a text so I do not need quotes``.
 * ``boolean`` : A truth value, either ``true`` or ``false`` (can also be converted from ``yes`` or ``no`` in various forms, see: [CustomBoolConverter](TheGodfather/Common/Converters/CustomBoolConverter.cs)). Valid examples: ``true`` , ``yes`` , ``no`` , ``0``.
 * ``user`` : Discord user - given by mention, username or UID (User ID). Valid examples: ``@Someone`` , ``Someone`` , ``123456789123456``.
+* ``message`` : Discord message ID. Valid examples: ``123456789123456``.
 * ``channel`` : Discord channel - given by mention, channel name or CID (Channel ID). Valid examples: ``#channel`` , ``MyChannel`` , ``123456789123456``.
 * ``role`` : Discord role - given by mention, role name or RID (Role ID). Valid examples: ``@Admins`` , ``Admins`` , ``123456789123456``.
 * ``emoji`` : Discord emoji, either in Unicode or Discord representation (using ``:``). Valid examples: ``😂`` , ``:joy:``.
