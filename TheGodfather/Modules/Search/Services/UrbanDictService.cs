@@ -31,6 +31,12 @@ namespace TheGodfather.Modules.Search.Services
             if (data.ResultType == "no_results" || !data.List.Any())
                 return null;
 
+            foreach (UrbanDictList res in data.List) {
+                res.Definition = new string(res.Definition.ToCharArray().Where(c => c != ']' && c != '[').ToArray());
+                if (!string.IsNullOrWhiteSpace(res.Example))
+                    res.Example = new string(res.Example.ToCharArray().Where(c => c != ']' && c != '[').ToArray());
+            }
+
             return data;
         }
     }

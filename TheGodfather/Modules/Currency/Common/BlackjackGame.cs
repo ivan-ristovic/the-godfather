@@ -155,7 +155,7 @@ namespace TheGodfather.Modules.Currency.Common
 
             sb.AppendLine(Formatter.Bold($"House hand: (value: {this.HandValue(this.hand)})")).AppendLine();
             if (this.hand.Any())
-                sb.AppendLine(string.Join(" | ", this.hand)).AppendLine();
+                sb.AppendJoin(" | ", this.hand).AppendLine();
             else
                 sb.AppendLine(StaticDiscordEmoji.Question).AppendLine();
 
@@ -164,7 +164,7 @@ namespace TheGodfather.Modules.Currency.Common
                 sb.Append(" (value: ");
                 sb.Append(Formatter.Bold(this.HandValue(participant.Hand).ToString()));
                 sb.AppendLine(")").AppendLine();
-                sb.AppendLine(string.Join(" | ", participant.Hand));
+                sb.AppendJoin(" | ", participant.Hand);
                 sb.AppendLine();
             }
 

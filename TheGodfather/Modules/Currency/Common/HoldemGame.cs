@@ -144,7 +144,7 @@ namespace TheGodfather.Modules.Currency.Common
         {
             var sb = new StringBuilder();
 
-            sb.AppendLine(string.Join(" ", this.drawn)).AppendLine();
+            sb.AppendJoin(' ', this.drawn).AppendLine();
             sb.Append("Current pot: ").AppendLine(Formatter.Bold(this.Pot.ToString())).AppendLine();
             sb.Append("Call value: ").AppendLine(Formatter.Bold(bet.ToString())).AppendLine();
 
