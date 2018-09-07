@@ -350,6 +350,46 @@ namespace TheGodfather.Modules.Administration
             => this.RenameAsync(ctx, null, null, newname);
         #endregion
 
+        #region COMMAND_CHANNEL_SETNSFW
+        [Command("setnsfw"), Priority(2)]
+        [Description("Set whether this channel is NSFW or not. You can also provide a reason for the change.")]
+        [Aliases("nsfw")]
+        [UsageExamples("!channel setnsfw #general",
+                       "!channel setnsfw false #general")]
+        [RequirePermissions(Permissions.ManageChannels)]
+        public async Task ChangeNsfwAsync(CommandContext ctx,
+                                         [Description("Set NSFW?")] bool nsfw,
+                                         [Description("Channel.")] DiscordChannel channel = null,
+                                         [RemainingText, Description("Reason.")] string reason = null)
+        {
+            if (channel == null)
+                channel = ctx.Channel;
+
+            if (channel.Type != ChannelType.Text)
+                throw new CommandFailedException("Only text channels can be flagged as NSFW.");
+
+            await channel.ModifyAsync(new Action<ChannelEditModel>(m => {
+                m.Nsfw = nsfw;
+                m.AuditLogReason = ctx.BuildInvocationDetailsString(reason);
+            }));
+
+            await this.InformAsync(ctx, $"Successfully set the NSFW var of channel {Formatter.Bold(channel.Name)} to {Formatter.Bold(nsfw.ToString())}", important: false);
+        }
+
+        [Command("setnsfw"), Priority(1)]
+        public Task ChangeNsfwAsync(CommandContext ctx,
+                                   [Description("Channel.")] DiscordChannel channel,
+                                   [Description("Set NSFW?")] bool nsfw,
+                                   [RemainingText, Description("Reason.")] string reason = null)
+            => this.ChangeNsfwAsync(ctx, nsfw, channel, reason);
+
+        [Command("setnsfw"), Priority(0)]
+        public Task ChangeNsfwAsync(CommandContext ctx,
+                                     [Description("Channel.")] DiscordChannel channel = null,
+                                     [RemainingText, Description("Reason.")] string reason = null)
+            => this.ChangeNsfwAsync(ctx, true, channel, reason);
+        #endregion
+
         #region COMMAND_CHANNEL_SETPARENT
         [Command("setparent"), Priority(1)]
         [Description("Change the given channel's parent. If the channel is not given, uses the current one. " +

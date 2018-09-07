@@ -22,12 +22,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="DSharpPlus" Version="4.0.0-beta-00513" />
-    <PackageReference Include="DSharpPlus.CommandsNext" Version="4.0.0-beta-00513" />
-    <PackageReference Include="DSharpPlus.Interactivity" Version="4.0.0-beta-00513" />
-    <PackageReference Include="DSharpPlus.Lavalink" Version="4.0.0-beta-00513" />
-    <PackageReference Include="DSharpPlus.VoiceNext" Version="4.0.0-beta-00513" />
-    <PackageReference Include="DSharpPlus.WebSocket.WebSocket4NetCore" Version="4.0.0-beta-00513" />
+    <PackageReference Include="DSharpPlus" Version="4.0.0-nightly-00522" />
+    <PackageReference Include="DSharpPlus.CommandsNext" Version="4.0.0-nightly-00522" />
+    <PackageReference Include="DSharpPlus.Interactivity" Version="4.0.0-nightly-00522" />
+    <PackageReference Include="DSharpPlus.Lavalink" Version="4.0.0-nightly-00522" />
+    <PackageReference Include="DSharpPlus.VoiceNext" Version="4.0.0-nightly-00522" />
+    <PackageReference Include="DSharpPlus.WebSocket.WebSocket4NetCore" Version="4.0.0-nightly-00522" />
     <PackageReference Include="GiphyDotNet" Version="1.0.0" />
     <PackageReference Include="Google.Apis.YouTube.v3" Version="1.35.1.1226" />
     <PackageReference Include="Humanizer.Core" Version="2.4.2" />
@@ -43,7 +43,7 @@
     <PackageReference Include="System.ServiceModel.Syndication" Version="4.5.0" />
     <PackageReference Include="System.Text.RegularExpressions" Version="4.3.0" />
     <PackageReference Include="TexasHoldemGameEngine" Version="1.1.0" />
-    <PackageReference Include="YoutubeExplode" Version="4.3.0" />
+    <PackageReference Include="YoutubeExplode" Version="4.3.1" />
   </ItemGroup>
 
 </Project>
