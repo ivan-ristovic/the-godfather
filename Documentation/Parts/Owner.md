@@ -109,7 +109,7 @@
 ### owner blockedchannels delete
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Remove channel from blocked channels list..*
+*Remove channel from blocked channels list.*
 
 **Privileged users only.**
 
@@ -222,7 +222,7 @@
 ### owner blockedusers delete
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Remove users from blocked users list..*
+*Remove users from blocked users list.*
 
 **Privileged users only.**
 
@@ -323,6 +323,85 @@
 
 ```
 !owner clearlog
+```
+</p></details>
+
+---
+
+## Group: owner commands
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Manipulate bot commands in runtime.*
+
+**Owner-only.**
+
+**Aliases:**
+`cmds, cmd`
+
+</p></details>
+
+---
+
+### owner commands add
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Add a new command.*
+
+**Owner-only.**
+
+**Aliases:**
+`+, a, <, <<, +=`
+
+**Arguments:**
+
+`[string...]` : *Code to evaluate.*
+
+**Examples:**
+
+```
+!o cmd + ```[Command("test")] public Task TestAsync(CommandContext ctx) => ctx.RespondAsync("Hello world!");```
+```
+</p></details>
+
+---
+
+### owner commands delete
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Remove an existing command.*
+
+**Owner-only.**
+
+**Aliases:**
+`-, remove, rm, del, >, >>, -=`
+
+**Arguments:**
+
+`[string...]` : *Command to remove.*
+
+**Examples:**
+
+```
+!owner command remove say
+```
+</p></details>
+
+---
+
+### owner commands list
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*List all privileged users.*
+
+**Owner-only.**
+
+**Aliases:**
+`ls, l, print`
+
+**Examples:**
+
+```
+!owner command list
 ```
 </p></details>
 
@@ -491,7 +570,7 @@
 ### owner privilegedusers delete
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Remove users from privileged users list..*
+*Remove users from privileged users list.*
 
 **Owner-only.**
 

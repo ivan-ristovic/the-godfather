@@ -325,6 +325,9 @@
 
 *Print the serverlist with current player numbers.*
 
+**Aliases:**
+`sl, list`
+
 **Examples:**
 
 ```
@@ -344,7 +347,7 @@
 **Privileged users only.**
 
 **Aliases:**
-`s, srv`
+`serv, srv`
 
 **Examples:**
 

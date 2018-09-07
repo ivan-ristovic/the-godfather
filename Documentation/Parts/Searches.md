@@ -426,14 +426,14 @@
 ## Group: rss
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Commands for RSS feed querying or subscribing. Group call prints the latest topics from the given RSS URL.*
+*Commands for RSS feed querying or subscribing. Group call prints the latest topics from the given RSS URL or prints the subscriptions for the given channel.*
 
 **Aliases:**
 `feed`
 
-**Arguments:**
+**Overload 1:**
 
-`[string...]` : *RSS URL.*
+`[URL]` : *RSS URL.*
 
 **Examples:**
 
@@ -474,9 +474,9 @@
 
 **Arguments:**
 
-`[string]` : *URL.*
+`[URL]` : *URL.*
 
-(optional) `[string]` : *Friendly name.* (def: `None`)
+(optional) `[string...]` : *Friendly name.* (def: `None`)
 
 **Examples:**
 
@@ -501,11 +501,11 @@
 
 **Overload 1:**
 
-`[int]` : *ID of the subscription.*
+`[int...]` : *ID of the subscriptions to remove.*
 
 **Overload 0:**
 
-`[string]` : *Name of the subscription.*
+`[string...]` : *Name of the subscription.*
 
 **Examples:**
 

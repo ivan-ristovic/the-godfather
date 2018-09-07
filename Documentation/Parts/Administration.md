@@ -1728,7 +1728,7 @@
 
 **Arguments:**
 
-(optional) `[unsigned long]` : *Message ID.* (def: `0`)
+(optional) `[message]` : *Message.* (def: `None`)
 
 **Examples:**
 
@@ -1740,10 +1740,10 @@
 
 ---
 
-### message delete
+## Group: message delete
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Deletes the specified amount of most-recent messages from the channel.*
+*Deletes messages from the current channel. Group call deletes given amount of most recent messages.*
 
 **Requires permissions:**
 `Manage messages`
@@ -1770,23 +1770,85 @@
 
 ---
 
-### message deletefrom
+### message delete after
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Deletes messages from given user in amount of given messages.*
+*Deletes given amount messages after a specified message ID.*
 
 **Requires permissions:**
 `Manage messages`
 
 **Requires user permissions:**
-`Manage messages`
+`Administrator`
 
 **Aliases:**
-`-user, -u, deluser, du, dfu, delfrom`
+`aft, af`
+
+**Arguments:**
+
+`[message]` : *Message after which to delete.*
+
+(optional) `[int]` : *Amount.* (def: `5`)
+
+(optional) `[string...]` : *Reason.* (def: `None`)
+
+**Examples:**
+
+```
+!messages delete before 123456789132 20 Cleaning spam
+```
+</p></details>
+
+---
+
+### message delete before
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Deletes given amount messages before a specified message ID.*
+
+**Requires permissions:**
+`Manage messages`
+
+**Requires user permissions:**
+`Administrator`
+
+**Aliases:**
+`bef, bf`
+
+**Arguments:**
+
+`[message]` : *Message before which to delete.*
+
+(optional) `[int]` : *Amount.* (def: `5`)
+
+(optional) `[string...]` : *Reason.* (def: `None`)
+
+**Examples:**
+
+```
+!messages delete before 123456789132 20 Cleaning spam
+```
+</p></details>
+
+---
+
+### message delete from
+<details><summary markdown='span'>Expand for additional information</summary><p>
+
+*Deletes given amount of most recent messages from the given member.*
+
+**Requires permissions:**
+`Manage messages`
+
+**Requires user permissions:**
+`Administrator`
+
+**Aliases:**
+`f, frm`
 
 **Overload 1:**
 
-`[user]` : *User whose messages to delete.*
+`[member]` : *User whose messages to delete.*
 
 (optional) `[int]` : *Message range.* (def: `5`)
 
@@ -1796,21 +1858,21 @@
 
 `[int]` : *Amount.*
 
-`[user]` : *User.*
+`[member]` : *User.*
 
 (optional) `[string...]` : *Reason.* (def: `None`)
 
 **Examples:**
 
 ```
-!messages deletefrom @Someone 10 Cleaning spam
-!messages deletefrom 10 @Someone Cleaning spam
+!messages delete from @Someone 10 Cleaning spam
+!messages delete from 10 @Someone Cleaning spam
 ```
 </p></details>
 
 ---
 
-### message deletereactions
+### message delete reactions
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Deletes all reactions from the given message.*
@@ -1822,24 +1884,24 @@
 `Administrator`
 
 **Aliases:**
-`-reactions, -r, delreactions, dr`
+`react, re`
 
 **Arguments:**
 
-(optional) `[unsigned long]` : *ID.* (def: `0`)
+(optional) `[message]` : *Message.* (def: `None`)
 
 (optional) `[string...]` : *Reason.* (def: `None`)
 
 **Examples:**
 
 ```
-!messages deletereactions 408226948855234561
+!messages delete reactions 408226948855234561
 ```
 </p></details>
 
 ---
 
-### message deleteregex
+### message delete regex
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
 *Deletes given amount of most-recent messages that match a given regular expression withing a given message amount.*
@@ -1851,7 +1913,7 @@
 `Administrator`
 
 **Aliases:**
-`-regex, -rx, delregex, drx`
+`r, rgx, regexp, reg`
 
 **Overload 1:**
 
@@ -1872,8 +1934,8 @@
 **Examples:**
 
 ```
-!messages deletefrom s+p+a+m+ 10 Cleaning spam
-!messages deletefrom 10 s+p+a+m+ Cleaning spam
+!messages delete regex s+p+a+m+ 10 Cleaning spam
+!messages delete regex 10 s+p+a+m+ Cleaning spam
 ```
 </p></details>
 
@@ -1909,7 +1971,7 @@
 
 **Arguments:**
 
-`[unsigned long]` : *Message ID.*
+`[message]` : *Message.*
 
 `[string...]` : *New content.*
 
@@ -1935,7 +1997,7 @@
 
 **Arguments:**
 
-(optional) `[unsigned long]` : *ID.* (def: `0`)
+(optional) `[message]` : *Message.* (def: `None`)
 
 **Examples:**
 
@@ -1950,7 +2012,7 @@
 ### message unpin
 <details><summary markdown='span'>Expand for additional information</summary><p>
 
-*Unpins the message at given index (starting from 1). If the index is not given, unpins the most recent one.*
+*Unpins the message at given index (starting from 1) or message ID. If the index is not given, unpins the most recent one.*
 
 **Requires permissions:**
 `Manage messages`
@@ -1958,14 +2020,18 @@
 **Aliases:**
 `up`
 
-**Arguments:**
+**Overload 1:**
+
+`[message]` : *Message.*
+
+**Overload 0:**
 
 (optional) `[int]` : *Index (starting from 1).* (def: `1`)
 
 **Examples:**
 
 ```
-!messages unpin
+!messages unpin 12345645687955
 !messages unpin 10
 ```
 </p></details>
