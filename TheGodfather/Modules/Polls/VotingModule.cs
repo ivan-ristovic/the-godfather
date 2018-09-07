@@ -53,7 +53,7 @@ namespace TheGodfather.Modules.Polls
 
         #region COMMAND_CANCEL
         [Command("cancel")]
-        [Description("Vote for an option in the current running poll.")]
+        [Description("Cancel your vote in the current poll.")]
         [Aliases("c", "reset")]
         [UsageExamples("!vote cancel")]
         public Task CancelAsync(CommandContext ctx)
