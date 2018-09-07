@@ -86,7 +86,7 @@ namespace TheGodfather.EventListeners
             if (pinned.Any()) {
                 emb.WithDescription(Formatter.MaskedUrl("Jump to top pin", pinned.First().JumpLink));
                 string content = string.IsNullOrWhiteSpace(pinned.First().Content) ? "<embedded message>" : pinned.First().Content;
-                emb.AddField("Top pin content", Formatter.BlockCode(Formatter.Sanitize(content.Truncate(1020))));
+                emb.AddField("Top pin content", Formatter.BlockCode(Formatter.Sanitize(content.Truncate(1000))));
             }
             if (e.LastPinTimestamp != null)
                 emb.AddField("Last pin timestamp", e.LastPinTimestamp.Value.ToUtcTimestamp(), inline: true);

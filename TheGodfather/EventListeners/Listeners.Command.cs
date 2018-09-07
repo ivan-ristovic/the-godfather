@@ -53,8 +53,8 @@ namespace TheGodfather.EventListeners
                 $"| {e.Context.User.ToString()}\n" +
                 $"| {e.Context.Guild.ToString()}; {e.Context.Channel.ToString()}\n" +
                 $"| Exception: {ex.GetType()}\n" +
-                (ex.InnerException != null ? $"| Inner exception: {ex.InnerException.GetType()}\n" : "") +
-                $"| Message: {ex.Message ?? "<no message provided>"}\n"
+                $"| Message: {ex.Message ?? "<no message provided>"}\n" +
+                (ex.InnerException != null ? $"| Inner exception: {ex.InnerException.GetType()}\n| Inner exception message: {ex.InnerException.Message}" : "")
             );
 
             var emb = new DiscordEmbedBuilder {

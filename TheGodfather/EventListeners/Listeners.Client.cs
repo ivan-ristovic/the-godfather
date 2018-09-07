@@ -1,7 +1,7 @@
 ﻿#region USING_DIRECTIVES
 using DSharpPlus;
 using DSharpPlus.EventArgs;
-
+using System;
 using System.Threading.Tasks;
 
 using TheGodfather.Common;
@@ -17,7 +17,17 @@ namespace TheGodfather.EventListeners
         [AsyncEventListener(DiscordEventType.ClientErrored)]
         public static Task ClientErrorEventHandlerAsync(TheGodfatherShard shard, ClientErrorEventArgs e)
         {
-            shard.Log(LogLevel.Critical, $"| Client errored: {e.Exception.GetType()}: {e.Exception.Message}");
+            var ex = e.Exception;
+            while (ex is AggregateException)
+                ex = ex.InnerException;
+
+            shard.Log(
+                LogLevel.Critical, 
+                $"| Client errored with exception: {ex.GetType()}\n" +
+                $"| Message: {ex.Message}" +
+                (ex.InnerException != null ? $"| Inner exception: {ex.InnerException.GetType()}\n| Inner exception message: {ex.InnerException.Message}" : "")
+            );
+
             return Task.CompletedTask;
         }
 
