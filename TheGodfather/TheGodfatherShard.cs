@@ -141,7 +141,7 @@ namespace TheGodfather
         private void SetupInteractivity()
         {
             this.Interactivity = this.Client.UseInteractivity(new InteractivityConfiguration() {
-                PaginationBehavior = TimeoutBehaviour.DeleteReactions,
+                PaginationBehavior = TimeoutBehaviour.Ignore,
                 PaginationTimeout = TimeSpan.FromMinutes(1),
                 Timeout = TimeSpan.FromMinutes(1)
             });
