@@ -9,6 +9,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Reflection;
 using System.Text;
@@ -202,23 +203,21 @@ namespace TheGodfather
             };
         }
 
-        private static async Task CreateAndBootShardsAsync()
+        private static Task CreateAndBootShardsAsync()
         {
-            Console.Write($"\r[4/5] Creating {BotConfiguration.ShardCount} shards...");
+            Console.Write($"\r[4/5] Creating {BotConfiguration.ShardCount} shards...                  ");
 
             Shards = new List<TheGodfatherShard>();
             for (int i = 0; i < BotConfiguration.ShardCount; i++) {
                 var shard = new TheGodfatherShard(i, DatabaseService, SharedData);
+                shard.Initialize();
                 Shards.Add(shard);
             }
 
             Console.WriteLine("\r[5/5] Booting the shards...                   ");
             Console.WriteLine();
 
-            foreach (TheGodfatherShard shard in Shards) {
-                shard.Initialize();
-                await shard.StartAsync();
-            }
+            return Task.WhenAll(Shards.Select(shard => shard.StartAsync()));
         }
 
         private static async Task RegisterPeriodicTasksAsync()
