@@ -27,7 +27,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="BuildDate.txt" />
     <None Remove="Modules\Administration\MessageModule.cs~RF1881da7.TMP" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="BuildDate.txt" />
   </ItemGroup>
 
   <ItemGroup>

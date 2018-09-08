@@ -54,7 +54,7 @@ namespace TheGodfather
         internal static async Task Main(string[] args)
         {
             try {
-                PrintBuildInformationAsync();
+                PrintBuildInformation();
 
                 // Since some of the services require these protocols to be used, setting them up here
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
@@ -85,7 +85,7 @@ namespace TheGodfather
 
 
         #region SETUP_FUNCTIONS
-        private static void PrintBuildInformationAsync()
+        private static void PrintBuildInformation()
         {
             var assembly = Assembly.GetExecutingAssembly();
             var fileVersionInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
