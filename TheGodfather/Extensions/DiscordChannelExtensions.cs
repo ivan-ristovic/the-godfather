@@ -14,15 +14,6 @@ namespace TheGodfather.Extensions
 {
     internal static class DiscordChannelExtensions
     {
-        public static Task<DiscordDmChannel> CreateDmChannelAsync(this DiscordClient client, ulong uid)
-        {
-            DiscordMember member = client.Guilds.Values
-                .SelectMany(e => e.Members)
-                .FirstOrDefault(e => e.Id == uid);
-
-            return member?.CreateDmChannelAsync();
-        }
-
         public static Task<DiscordMessage> EmbedAsync(this DiscordChannel channel, string message, DiscordEmoji icon = null, DiscordColor? color = null)
         {
             return channel.SendMessageAsync(embed: new DiscordEmbedBuilder {
