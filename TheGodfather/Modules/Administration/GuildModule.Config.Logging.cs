@@ -44,8 +44,7 @@ namespace TheGodfather.Modules.Administration
                                                    [Description("Enable?")] bool enable,
                                                    [Description("Log channel.")] DiscordChannel channel = null)
                 {
-                    if (channel == null)
-                        channel = ctx.Channel;
+                    channel = channel ?? ctx.Channel;
 
                     if (channel.Type != ChannelType.Text)
                         throw new CommandFailedException("Action logging channel must be a text channel.");
@@ -113,9 +112,7 @@ namespace TheGodfather.Modules.Administration
                 public async Task ExemptAsync(CommandContext ctx,
                                              [Description("Channel to exempt.")] DiscordChannel channel = null)
                 {
-                    if (channel == null)
-                        channel = ctx.Channel;
-
+                    channel = channel ?? ctx.Channel;
                     await this.Database.ExemptAsync(ctx.Guild.Id, channel.Id, EntityType.Channel);
                     await this.InformAsync(ctx, $"Successfully exempted channel {Formatter.Bold(channel.Name)}", important: false);
                 }
@@ -147,9 +144,7 @@ namespace TheGodfather.Modules.Administration
                 public async Task UnxemptAsync(CommandContext ctx,
                                               [Description("Channel to unexempt.")] DiscordChannel channel = null)
                 {
-                    if (channel == null)
-                        channel = ctx.Channel;
-
+                    channel = channel ?? ctx.Channel;
                     await this.Database.UnexemptAsync(ctx.Guild.Id, channel.Id, EntityType.Channel);
                     await this.InformAsync(ctx, $"Successfully unexempted channel {Formatter.Bold(channel.Name)}", important: false);
                 }

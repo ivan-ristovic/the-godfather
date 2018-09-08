@@ -57,8 +57,7 @@ namespace TheGodfather.Extensions
 
         public static async Task<bool> WaitForBoolReplyAsync(this CommandContext ctx, string question, DiscordChannel channel = null, bool reply = true)
         {
-            if (channel == null)
-                channel = ctx.Channel;
+            channel = channel ?? ctx.Channel;
 
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder {
                 Description = $"{StaticDiscordEmoji.Question} {question} (y/n)",

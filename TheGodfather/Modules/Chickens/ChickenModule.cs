@@ -156,8 +156,7 @@ namespace TheGodfather.Modules.Chickens
         public async Task InfoAsync(CommandContext ctx,
                                    [Description("User.")] DiscordMember member = null)
         {
-            if (member == null)
-                member = ctx.Member;
+            member = member ?? ctx.Member;
 
             Chicken chicken = await this.Database.GetChickenAsync(member.Id, ctx.Guild.Id)
                 .ConfigureAwait(false);

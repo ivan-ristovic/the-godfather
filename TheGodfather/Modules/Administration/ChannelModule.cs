@@ -207,8 +207,7 @@ namespace TheGodfather.Modules.Administration
                                      [Description("Channel to delete.")] DiscordChannel channel = null,
                                      [RemainingText, Description("Reason.")] string reason = null)
         {
-            if (channel == null)
-                channel = ctx.Channel;
+            channel = channel ?? ctx.Channel;
 
             if (channel.Type == ChannelType.Category && channel.Children.Any()) {
                 if (await ctx.WaitForBoolReplyAsync("The channel specified is a non-empty category and deleting it will delete child channels as well. Continue?")) {
@@ -241,9 +240,8 @@ namespace TheGodfather.Modules.Administration
         public Task InfoAsync(CommandContext ctx,
                              [Description("Channel.")] DiscordChannel channel = null)
         {
-            if (channel == null)
-                channel = ctx.Channel;
-            
+            channel = channel ?? ctx.Channel;
+
             if (!ctx.Member.PermissionsIn(channel).HasPermission(Permissions.AccessChannels))
                 throw new CommandFailedException("You are not allowed to see this channel! (You thought you are smart, right?)");
 
@@ -323,8 +321,7 @@ namespace TheGodfather.Modules.Administration
             if (newname.Length < 2 || newname.Length > 100)
                 throw new InvalidCommandUsageException("Channel name must be longer than 2 and shorter than 100 characters.");
 
-            if (channel == null)
-                channel = ctx.Channel;
+            channel = channel ?? ctx.Channel;
 
             if (channel.Type == ChannelType.Text && newname.Contains(' '))
                 throw new InvalidCommandUsageException("Text channel name cannot contain spaces.");
@@ -362,8 +359,7 @@ namespace TheGodfather.Modules.Administration
                                          [Description("Channel.")] DiscordChannel channel = null,
                                          [RemainingText, Description("Reason.")] string reason = null)
         {
-            if (channel == null)
-                channel = ctx.Channel;
+            channel = channel ?? ctx.Channel;
 
             if (channel.Type != ChannelType.Text)
                 throw new CommandFailedException("Only text channels can be flagged as NSFW.");
@@ -406,8 +402,7 @@ namespace TheGodfather.Modules.Administration
             if (parent.Type != ChannelType.Category)
                 throw new CommandFailedException("Parent must be a category.");
 
-            if (channel == null)
-                channel = ctx.Channel;
+            channel = channel ?? ctx.Channel;
 
             await channel.ModifyAsync(new Action<ChannelEditModel>(m => {
                 m.Parent = parent;
@@ -441,8 +436,7 @@ namespace TheGodfather.Modules.Administration
             if (position < 0)
                 throw new ArgumentException("Position cannot be negative.", nameof(position));
 
-            if (channel == null)
-                channel = ctx.Channel;
+            channel = channel ?? ctx.Channel;
 
             await channel.ModifyPositionAsync(position, ctx.BuildInvocationDetailsString(reason));
             await this.InformAsync(ctx, $"Changed the position of channel {Formatter.Bold(channel.Name)} to {Formatter.Bold(position.ToString())}", important: false);
@@ -480,8 +474,7 @@ namespace TheGodfather.Modules.Administration
             if (topic.Length > 1024)
                 throw new InvalidCommandUsageException("Topic cannot exceed 1024 characters!");
 
-            if (channel == null)
-                channel = ctx.Channel;
+            channel = channel ?? ctx.Channel;
 
             await channel.ModifyAsync(new Action<ChannelEditModel>(m => {
                 m.Topic = topic;
@@ -517,11 +510,8 @@ namespace TheGodfather.Modules.Administration
                                          [Description("Member.")] DiscordMember member = null,
                                          [Description("Channel.")] DiscordChannel channel = null)
         {
-            if (member == null)
-                member = ctx.Member;
-
-            if (channel == null)
-                channel = ctx.Channel;
+            member = member ?? ctx.Member;
+            channel = channel ?? ctx.Channel;
 
             string perms = $"{Formatter.Bold(member.DisplayName)} cannot access channel {Formatter.Bold(channel.Name)}.";
             if (member.PermissionsIn(channel).HasPermission(Permissions.AccessChannels))
@@ -548,8 +538,7 @@ namespace TheGodfather.Modules.Administration
             if (role.Position > ctx.Member.Hierarchy)
                 throw new CommandFailedException("You cannot view permissions for roles which have position above your highest role position.");
 
-            if (channel == null)
-                channel = ctx.Channel;
+            channel = channel ?? ctx.Channel;
 
             DiscordOverwrite overwrite = null;
             foreach (DiscordOverwrite o in channel.PermissionOverwrites.Where(o => o.Type == OverwriteType.Role)) {

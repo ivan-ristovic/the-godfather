@@ -195,7 +195,7 @@ namespace TheGodfather.Common
             Console.Write(shard.HasValue ? $"[#{shard.Value}] " : "[Main] ");
             Console.ForegroundColor = ConsoleColor.White;
             if (string.IsNullOrWhiteSpace(application))
-                Console.Write("[TheGodfather] ");
+                Console.Write($"[{TheGodfather.ApplicationName}] ");
             else
                 Console.Write($"[{application}] ");
         }

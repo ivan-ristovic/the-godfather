@@ -37,8 +37,7 @@ namespace TheGodfather.Modules.Misc
         public async Task ExecuteGroupAsync(CommandContext ctx, 
                                            [Description("User to insult.")] DiscordUser user = null)
         {
-            if (user == null)
-                user = ctx.User;
+            user = user ?? ctx.User;
 
             if (user.Id == ctx.Client.CurrentUser.Id) {
                 await this.InformAsync(ctx, "How original, trying to make me insult myself. Sadly it won't work.", ":middle_finger:");

@@ -115,8 +115,7 @@ namespace TheGodfather.Modules.Games
         public async Task StatsAsync(CommandContext ctx,
                                     [Description("User.")] DiscordUser user = null)
         {
-            if (user == null)
-                user = ctx.User;
+            user = user ?? ctx.User;
 
             GameStats stats = await this.Database.GetGameStatsForUserAsync(user.Id);
             if (stats == null) {

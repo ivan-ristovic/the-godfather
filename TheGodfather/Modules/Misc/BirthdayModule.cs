@@ -74,8 +74,7 @@ namespace TheGodfather.Modules.Misc
             if (!string.IsNullOrWhiteSpace(date_str))
                 DateTime.TryParse(date_str, out date);
 
-            if (channel == null)
-                channel = ctx.Channel;
+            channel = channel ?? ctx.Channel;
 
             if (channel.Type != ChannelType.Text)
                 throw new CommandFailedException("I can only send birthday notifications in a text channel.");
@@ -124,8 +123,7 @@ namespace TheGodfather.Modules.Misc
         public async Task ListAsync(CommandContext ctx,
                                    [Description("Channel for which to list.")] DiscordChannel channel = null)
         {
-            if (channel == null)
-                channel = ctx.Channel;
+            channel = channel ?? ctx.Channel;
 
             if (channel.Type != ChannelType.Text)
                 throw new CommandFailedException("Birthday notifications are only posted in text channels");

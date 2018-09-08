@@ -39,8 +39,7 @@ namespace TheGodfather.Modules.Misc
         public async Task ExecuteGroupAsync(CommandContext ctx,
                                            [Description("User.")] DiscordUser user = null)
         {
-            if (user == null)
-                user = ctx.User;
+            user = user ?? ctx.User;
 
             ushort rank = this.Shared.CalculateRankForUser(user.Id);
             ulong msgcount = this.Shared.GetMessageCountForUser(user.Id);

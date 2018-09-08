@@ -50,8 +50,7 @@ namespace TheGodfather.Modules.Currency
         public async Task GetBalanceAsync(CommandContext ctx,
                                          [Description("User.")] DiscordUser user = null)
         {
-            if (user == null)
-                user = ctx.User;
+            user = user ?? ctx.User;
 
             long? balance = await this.Database.GetBankAccountBalanceAsync(user.Id, ctx.Guild.Id);
 

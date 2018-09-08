@@ -116,8 +116,7 @@ namespace TheGodfather.Modules.Misc
         public async Task GetPurchasedItemsAsync(CommandContext ctx,
                                                 [Description("User.")] DiscordUser user = null)
         {
-            if (user == null)
-                user = ctx.User;
+            user = user ?? ctx.User;
 
             IReadOnlyList<PurchasableItem> items = await this.Database.GetPurchasedItemsAsync(user.Id);
             if (!items.Any())
@@ -189,8 +188,7 @@ namespace TheGodfather.Modules.Misc
         public Task PenisAsync(CommandContext ctx,
                               [Description("Who to measure.")] DiscordUser user = null)
         {
-            if (user == null)
-                user = ctx.User;
+            user = user ?? ctx.User;
 
             var sb = new StringBuilder($"{user.Mention}'s size:").AppendLine().AppendLine();
 
@@ -277,8 +275,7 @@ namespace TheGodfather.Modules.Misc
         public async Task RateAsync(CommandContext ctx,
                                    [Description("Who to measure.")] DiscordUser user = null)
         {
-            if (user == null)
-                user = ctx.User;
+            user = user ?? ctx.User;
 
             try {
                 using (var chart = new Bitmap("Resources/graph.png"))
@@ -326,8 +323,7 @@ namespace TheGodfather.Modules.Misc
             if (message.Length > 120)
                 throw new InvalidCommandUsageException("Message must be shorter than 120 characters.");
 
-            if (channel == null)
-                channel = ctx.Channel;
+            channel = channel ?? ctx.Channel;
 
             if (timespan.TotalMinutes < 1 || timespan.TotalDays > 31)
                 throw new InvalidCommandUsageException("Time span cannot be less than 1 minute or greater than 31 days.");

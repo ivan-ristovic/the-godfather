@@ -146,8 +146,7 @@ namespace TheGodfather.Modules.Administration
         public Task InfoAsync(CommandContext ctx,
                              [Description("User.")] DiscordUser user = null)
         {
-            if (user == null)
-                user = ctx.User;
+            user = user ?? ctx.User;
 
             var emb = new DiscordEmbedBuilder() {
                 Title = $"User: {Formatter.Bold(user.Username)}",

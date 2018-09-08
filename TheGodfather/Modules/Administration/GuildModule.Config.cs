@@ -226,8 +226,7 @@ namespace TheGodfather.Modules.Administration
                         muteRole = mctx.MentionedRoles.First();
                 }
 
-                if (muteRole == null)
-                    await ctx.Services.GetService<RatelimitService>().GetOrCreateMuteRoleAsync(ctx.Guild);
+                muteRole = muteRole ?? await ctx.Services.GetService<RatelimitService>().GetOrCreateMuteRoleAsync(ctx.Guild);
 
                 if (await channel.WaitForBoolResponseAsync(ctx, "Ratelimit watch is a feature that automatically punishes users that post more than specified amount of messages in a 5s timespan. Do you wish to enable ratelimit watch?", reply: false)) {
                     gcfg.RatelimitEnabled = true;
@@ -485,8 +484,7 @@ namespace TheGodfather.Modules.Administration
                                           [Description("Channel.")] DiscordChannel wchn = null,
                                           [RemainingText, Description("Welcome message.")] string message = null)
             {
-                if (wchn == null)
-                    wchn = ctx.Channel;
+                wchn = wchn ?? ctx.Channel;
 
                 if (wchn.Type != ChannelType.Text)
                     throw new CommandFailedException("Welcome channel must be a text channel.");
@@ -573,8 +571,7 @@ namespace TheGodfather.Modules.Administration
                                         [Description("Channel.")] DiscordChannel lchn = null,
                                         [RemainingText, Description("Leave message.")] string message = null)
             {
-                if (lchn == null)
-                    lchn = ctx.Channel;
+                lchn = lchn ?? ctx.Channel;
 
                 if (lchn.Type != ChannelType.Text)
                     throw new CommandFailedException("Leave channel must be a text channel.");
