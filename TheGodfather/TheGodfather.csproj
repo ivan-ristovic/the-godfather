@@ -7,9 +7,9 @@
     <ApplicationIcon>icon.ico</ApplicationIcon>
     <Platforms>AnyCPU;x64</Platforms>
     <LangVersion>latest</LangVersion>
-    <AssemblyVersion>2.5.0.*</AssemblyVersion>
-    <FileVersion>2.5.0</FileVersion>
-    <Version>2.5.0.23</Version>
+    <AssemblyVersion>2.5.0.1</AssemblyVersion>
+    <FileVersion>2.5.0.1</FileVersion>
+    <Version>2.5.4</Version>
     <StartupObject />
     <RepositoryUrl>https://github.com/ivan-ristovic/the-godfather</RepositoryUrl>
     <PackageLicenseUrl>https://github.com/ivan-ristovic/the-godfather/blob/master/LICENSE</PackageLicenseUrl>
@@ -43,12 +43,8 @@
     <PackageReference Include="Imgur.API" Version="5.0.0-beta1" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="2.9.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="2.9.0" />
-    <PackageReference Include="MSBump" Version="2.3.2">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-    </PackageReference>
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
-    <PackageReference Include="Npgsql" Version="4.0.2" />
+    <PackageReference Include="Npgsql" Version="4.0.3" />
     <PackageReference Include="RedditSharp" Version="2.0.0-CI00065" />
     <PackageReference Include="SteamWebAPI2" Version="4.0.8" />
     <PackageReference Include="System.Drawing.Common" Version="4.5.0" />
