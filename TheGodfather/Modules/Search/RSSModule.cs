@@ -138,8 +138,8 @@ namespace TheGodfather.Modules.Search
         }
         #endregion
 
-        // todo unsub all
+        // TODO unsub all
 
-        // todo better sub/unsub system ... 
+        // TODO better sub/unsub system ... 
     }
 }

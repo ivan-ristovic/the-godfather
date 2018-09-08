@@ -1,3 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
@@ -6,7 +7,15 @@
     <ApplicationIcon>icon.ico</ApplicationIcon>
     <Platforms>AnyCPU;x64</Platforms>
     <LangVersion>latest</LangVersion>
+    <AssemblyVersion>2.5.0</AssemblyVersion>
+    <FileVersion>2.5.0</FileVersion>
+    <Version>2.5.0.19</Version>
     <StartupObject />
+    <RepositoryUrl>https://github.com/ivan-ristovic/the-godfather</RepositoryUrl>
+    <PackageLicenseUrl>https://github.com/ivan-ristovic/the-godfather/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/ivan-ristovic/the-godfather</PackageProjectUrl>
+    <PackageIconUrl>https://raw.githubusercontent.com/ivan-ristovic/the-godfather/master/TheGodfather/icon.ico</PackageIconUrl>
+    <Copyright />
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -34,6 +43,10 @@
     <PackageReference Include="Imgur.API" Version="5.0.0-beta1" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="2.9.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="2.9.0" />
+    <PackageReference Include="MSBump" Version="2.3.2">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="Npgsql" Version="4.0.2" />
     <PackageReference Include="RedditSharp" Version="2.0.0-CI00065" />
@@ -45,5 +58,24 @@
     <PackageReference Include="TexasHoldemGameEngine" Version="1.1.0" />
     <PackageReference Include="YoutubeExplode" Version="4.3.1" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
+    <Exec Command="powershell -Command &quot;((Get-Date).ToUniversalTime()).ToString(\&quot;dd MMMM yyyy\&quot;) | Out-File '$(ProjectDir)BuildDate.txt'&quot;" />
+  </Target>
 
 </Project>

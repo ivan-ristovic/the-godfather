@@ -7,8 +7,10 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Net;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -51,6 +53,7 @@ namespace TheGodfather
         internal static async Task Main(string[] args)
         {
             try {
+                PrintBuildInformationAsync();
 
                 // Since some of the services require these protocols to be used, setting them up here
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
@@ -81,6 +84,16 @@ namespace TheGodfather
 
 
         #region SETUP_FUNCTIONS
+        private static void PrintBuildInformationAsync()
+        {
+            var assembly = Assembly.GetExecutingAssembly();
+            var fileVersionInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
+            string buildDate = Properties.Resources.BuildDate?.Trim();
+
+            Console.WriteLine($"{ApplicationName} v{fileVersionInfo.ProductVersion} ({buildDate ?? "unknown date"})");
+            Console.WriteLine();
+        }
+
         private static async Task LoadBotConfigAsync()
         {
             Console.Write("\r[1/5] Loading configuration...                    ");
