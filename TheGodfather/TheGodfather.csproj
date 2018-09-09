@@ -7,8 +7,8 @@
     <ApplicationIcon>icon.ico</ApplicationIcon>
     <Platforms>AnyCPU;x64</Platforms>
     <LangVersion>latest</LangVersion>
-    <AssemblyVersion>2.5.0.1</AssemblyVersion>
-    <FileVersion>2.5.0.1</FileVersion>
+    <AssemblyVersion>2.5.1.0</AssemblyVersion>
+    <FileVersion>2.5.1.0</FileVersion>
     <Version>2.5.4</Version>
     <StartupObject />
     <RepositoryUrl>https://github.com/ivan-ristovic/the-godfather</RepositoryUrl>
@@ -27,12 +27,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="BuildDate.txt" />
     <None Remove="Modules\Administration\MessageModule.cs~RF1881da7.TMP" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Include="BuildDate.txt" />
   </ItemGroup>
 
   <ItemGroup>
