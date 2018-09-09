@@ -386,7 +386,7 @@ namespace TheGodfather.Modules.Misc
             var sb = new StringBuilder();
             foreach (char c in text) {
                 char add = char.ToLowerInvariant(c);
-                switch (c) {
+                switch (add) {
                     case '1': add = 'i'; break;
                     case '@': add = 'a'; break;
                     case '4': add = 'a'; break;
@@ -394,7 +394,7 @@ namespace TheGodfather.Modules.Misc
                     case '5': add = 's'; break;
                     case '7': add = 't'; break;
                     case '0': add = 'o'; break;
-                    default: add = c; break;
+                    default: break;
                 }
                 sb.Append(add);
             }
