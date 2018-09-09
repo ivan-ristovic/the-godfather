@@ -2,9 +2,18 @@ image: Visual Studio 2017
 branches:
   only:
   - master
+version: 3.0.{build}
 init:
   # Good practise, because Windows line endings are different from Unix/Linux ones
   - cmd: git config --global core.autocrlf true
+dotnet_csproj:
+  patch: true
+  file: '**\*.csproj'
+  version: '{version}.{build}'
+  package_version: '{version}.{build}'
+  assembly_version: '{version}.{build}'
+  file_version: '{version}.{build}'
+  informational_version: '{version}.{build}'
 install:
   # Install repo specific stuff here
 before_build:
