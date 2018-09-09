@@ -1,13 +1,25 @@
-version: 1.0.{build}
+version: 3.0.{build}
+
 shallow_clone: true
+
 dotnet_csproj:
+
   patch: true
+
   file: '**\*.csproj'
-  version: '{version}'
-  package_version: '{version}'
-  assembly_version: '{version}'
-  file_version: '{version}'
-  informational_version: '{version}'
-build:
-  project: /TheGodfather.sln
-  verbosity: minimal
+
+  version: '{version}.{build}'
+
+  package_version: '{version}.{build}'
+
+  assembly_version: '{version}.{build}'
+
+  file_version: '{version}.{build}'
+
+  informational_version: '{version}.{build}'
+
+build_script:
+
+- cmd: dotnet build
+
+test: off
