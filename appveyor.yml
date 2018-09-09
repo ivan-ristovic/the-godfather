@@ -21,10 +21,9 @@ before_build:
   - cmd: dotnet --version
   # Display minimal restore text
   - cmd: dotnet restore ./TheGodfather/TheGodfather.csproj --verbosity m
-
 build_script:
   # output will be in ./TheGodfather/bin/debug/netcoreapp1.1/publish
-  - cmd: dotnet publish ./TheGodfather/TheGodfather.csproj /p:Version=$Env:APPVEYOR_BUILD_VERSION
+  - cmd: dotnet publish ./TheGodfather/TheGodfather.csproj /p:Version=%APPVEYOR_BUILD_VERSION%
 after_build:
   # For once the build has completed
 clone_depth: 1
