@@ -6,14 +6,6 @@ version: 3.0.{build}
 init:
   # Good practise, because Windows line endings are different from Unix/Linux ones
   - cmd: git config --global core.autocrlf true
-  
-assembly_info:
-  patch: true
-  file: '**\AssemblyInfo.*'
-  assembly_version: '{version}'
-  assembly_file_version: '{version}'
-  assembly_informational_version: '{version}'
-
 dotnet_csproj:
   patch: true
   file: '**\*.csproj'
@@ -29,6 +21,13 @@ before_build:
   - cmd: dotnet --version
   # Display minimal restore text
   - cmd: dotnet restore ./TheGodfather/TheGodfather.csproj --verbosity m
+  # Update versions in .csproj
+  - ps: >-
+    $path = (Get-Item .\TheGodfather\TheGodfather.csproj).FullName
+    $csproj = [xml](Get-Content $path)
+    $csproj.Project.PropertyGroup.Version = $Env:APPVEYOR_BUILD_VERSION
+    $csproj.Save($path)
+
 build_script:
   # output will be in ./TheGodfather/bin/debug/netcoreapp1.1/publish
   - cmd: dotnet publish ./TheGodfather/TheGodfather.csproj
