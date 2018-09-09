@@ -66,7 +66,7 @@ namespace TheGodfather.Modules.Games
                 if (xm.Author.Id == this.initiator.Id) return false;
                 if (xm.Content.ToLowerInvariant() == this.word) return true;
                 if (xm.Content.Length != 1 || !Char.IsLetterOrDigit(xm.Content[0])) return false;
-                if (!this.guesses.Contains(Char.ToLowerInvariant(xm.Content[0]))) return true;
+                if (!this.guesses.Contains(char.ToLowerInvariant(xm.Content[0]))) return true;
                 return false;
             });
             if (mctx == null) {
@@ -80,11 +80,11 @@ namespace TheGodfather.Modules.Games
                 this.gameOver = true;
             }
 
-            char guess = Char.ToLowerInvariant(mctx.Message.Content[0]);
+            char guess = char.ToLowerInvariant(mctx.Message.Content[0]);
             if (this.word.IndexOf(guess) != -1) {
                 for (int i = 0; i < this.word.Length; i++)
                     if (this.word[i] == guess)
-                        this.hidden[i] = Char.ToUpper(this.word[i]);
+                        this.hidden[i] = char.ToUpper(this.word[i]);
                 if (Array.IndexOf(this.hidden, '?') == -1) {
                     this.Winner = mctx.User;
                     this.gameOver = true;

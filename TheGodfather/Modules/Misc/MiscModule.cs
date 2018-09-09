@@ -173,7 +173,7 @@ namespace TheGodfather.Modules.Misc
                     case 's': add = r ? 's' : '5'; break;
                     default: add = c; break;
                 }
-                sb.Append(GFRandom.Generator.GetBool() ? Char.ToUpperInvariant(add) : Char.ToLowerInvariant(add));
+                sb.Append(GFRandom.Generator.GetBool() ? char.ToUpperInvariant(add) : char.ToLowerInvariant(add));
             }
 
             return this.InformAsync(ctx, StaticDiscordEmoji.Information, sb.ToString());
@@ -413,6 +413,37 @@ namespace TheGodfather.Modules.Misc
                 throw new CommandFailedException("You can't make me say something that contains filtered content for this guild.");
 
             return ctx.RespondAsync(Formatter.BlockCode(Formatter.Sanitize(text)), isTTS: true);
+        }
+        #endregion
+
+        #region COMMAND_UNLEET
+        [Command("unleet")]
+        [Description("Translates a message from leetspeak (expecting only letters in translated output).")]
+        [Aliases("unl33t")]
+        [UsageExamples("!unleet w0W 5uCh C0oL")]
+        public Task Unl33tAsync(CommandContext ctx,
+                               [RemainingText, Description("Text to unleet.")] string text)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+                throw new InvalidCommandUsageException("Y0u d1dn'7 g1v3 m3 @ny 73x7...");
+
+            var sb = new StringBuilder();
+            foreach (char c in text) {
+                char add = char.ToLowerInvariant(c);
+                switch (c) {
+                    case '1': add = 'i'; break;
+                    case '@': add = 'a'; break;
+                    case '4': add = 'a'; break;
+                    case '3': add = 'e'; break;
+                    case '5': add = 's'; break;
+                    case '7': add = 't'; break;
+                    case '0': add = 'o'; break;
+                    default: add = c; break;
+                }
+                sb.Append(add);
+            }
+
+            return this.InformAsync(ctx, StaticDiscordEmoji.Information, sb.ToString());
         }
         #endregion
 
