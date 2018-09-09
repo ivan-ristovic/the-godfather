@@ -8,7 +8,7 @@ Just another general-purpose Discord bot. Developed with the goal to remove all 
 Features:
 - Full administration of the guild, channels, users, emoji etc.
 - Protection commands: antispam, antiraid and many more!
-- Offers activity logging - will log any changes to guild / channels / members etc. It is possible to exempt things that you do no want to be logged
+- Offers activity logging - will log any changes to guild / channels / members etc. It is possible to exempt entities (channels, users) that you do not want to be logged
 - Message filtering: user-defined filters either by raw match or regex match, gorefilter, IP logging websites filter, invite filter, etc.
 - Customizable textual or emoji reactions for each guild which can be triggered by raw text or regex matching
 - Customizable guild content: memes, ranks, birthdays, currency items and many more!

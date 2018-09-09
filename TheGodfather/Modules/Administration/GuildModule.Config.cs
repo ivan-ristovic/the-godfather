@@ -321,6 +321,8 @@ namespace TheGodfather.Modules.Administration
                     sb.AppendLine(Formatter.Bold("enabled"));
                     sb.Append("- Sensitivity: ").Append(gcfg.RatelimitSensitivity).AppendLine(" msgs per 5s.");
                     sb.Append("- Action: ").AppendLine(gcfg.RatelimitAction.ToTypeString());
+                } else {
+                    sb.AppendLine(Formatter.Bold("disabled"));
                 }
 
                 sb.AppendLine().Append("Antiflood watch: ");
@@ -328,11 +330,13 @@ namespace TheGodfather.Modules.Administration
                     sb.AppendLine(Formatter.Bold("enabled"));
                     sb.Append("- Sensitivity: ").Append(gcfg.AntifloodSensitivity).Append(" users per ").Append(gcfg.AntifloodCooldown).AppendLine("s");
                     sb.Append("- Action: ").AppendLine(gcfg.RatelimitAction.ToTypeString());
+                } else {
+                    sb.AppendLine(Formatter.Bold("disabled"));
                 }
 
                 sb.AppendLine().Append("Linkfilter ");
                 if (gcfg.LinkfilterEnabled) {
-                    sb.AppendLine(Formatter.Bold("enabled"));
+                    sb.Append(Formatter.Bold("enabled")).AppendLine(" with module settings:");
                     sb.Append(" - Discord invites blocker: ").AppendLine(gcfg.BlockDiscordInvites ? "on" : "off");
                     sb.Append(" - DDoS/Booter websites blocker: ").AppendLine(gcfg.BlockBooterWebsites ? "on" : "off");
                     sb.Append(" - IP logging websites blocker: ").AppendLine(gcfg.BlockIpLoggingWebsites ? "on" : "off");
