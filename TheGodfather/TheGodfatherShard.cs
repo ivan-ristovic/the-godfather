@@ -30,6 +30,15 @@ namespace TheGodfather
     {
         public static IReadOnlyList<(string, Command)> Commands;
 
+        public static void UpdateCommandList(CommandsNextExtension cnext)
+        {
+            Commands = cnext.GetAllRegisteredCommands()
+                .Where(cmd => cmd.Parent == null)
+                .SelectMany(cmd => cmd.Aliases.Select(alias => (alias, cmd)).Concat(new[] { (cmd.Name, cmd) }))
+                .ToList()
+                .AsReadOnly();
+        }
+
         public int Id { get; }
         public DiscordClient Client { get; private set; }
         public CommandsNextExtension CNext { get; private set; }
@@ -131,11 +140,7 @@ namespace TheGodfather
             this.CNext.RegisterConverter(new CustomIPFormatConverter());
             this.CNext.RegisterConverter(new CustomPunishmentActionTypeConverter());
 
-            Commands = this.CNext.GetAllRegisteredCommands()
-                .Where(cmd => cmd.Parent == null)
-                .SelectMany(cmd => cmd.Aliases.Select(alias => (alias, cmd)).Concat(new[] { (cmd.Name, cmd) }))
-                .ToList()
-                .AsReadOnly();
+            UpdateCommandList(this.CNext);
         }
 
         private void SetupInteractivity()

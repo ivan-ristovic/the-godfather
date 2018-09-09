@@ -101,6 +101,8 @@ public sealed class DynamicCommands : BaseCommandModule
 
                     ctx.CommandsNext.RegisterCommands(moduleType);
 
+                    TheGodfatherShard.UpdateCommandList(ctx.CommandsNext);
+
                     await this.InformAsync(ctx, StaticDiscordEmoji.Information, "Compilation successful! Commands successfully added!");
                 } catch (Exception ex) {
                     await this.InformFailureAsync(ctx, $"Compilation failed!\n\n{Formatter.Bold(ex.GetType().ToString())}: {ex.Message}");
@@ -118,6 +120,7 @@ public sealed class DynamicCommands : BaseCommandModule
             {
                 Command cmd = ctx.CommandsNext.FindCommand(command, out _);
                 ctx.CommandsNext.UnregisterCommands(cmd);
+                TheGodfatherShard.UpdateCommandList(ctx.CommandsNext);
                 return this.InformAsync(ctx, $"Removed command {Formatter.Bold(cmd.QualifiedName)}.", important: false);
             }
             #endregion
