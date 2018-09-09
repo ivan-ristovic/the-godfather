@@ -20,7 +20,7 @@ dotnet_csproj:
   version: '{version}'
   package_version: '{version}'
   assembly_version: '{version}'
-  file_version:'{version}'
+  file_version: '{version}'
   informational_version: '{version}'
 install:
   # Install repo specific stuff here
