@@ -1,5 +1,8 @@
 ﻿# the-godfather
 
+[![Build Status](https://ci.appveyor.com/api/projects/status/axn087nlq6ha783x?svg=true)](https://ci.appveyor.com/project/ivan-ristovic/the-godfather)
+[![Discord Server](https://img.shields.io/discord/379378609942560770.svg?label=discord)](https://discord.me/worldmafia)
+
 Just another general-purpose Discord bot. Developed with the goal to remove all other bots from the guild and create one that will do everything.
 
 Features:
