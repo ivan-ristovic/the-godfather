@@ -2,18 +2,18 @@ image: Visual Studio 2017
 branches:
   only:
   - master
-version: 3.0.{build}
+version: $(appveyor_build_version)
 init:
   # Good practise, because Windows line endings are different from Unix/Linux ones
   - cmd: git config --global core.autocrlf true
 dotnet_csproj:
   patch: true
   file: '**\*.csproj'
-  version: '{version}.{build}'
-  package_version: '{version}.{build}'
-  assembly_version: '{version}.{build}'
-  file_version: '{version}.{build}'
-  informational_version: '{version}.{build}'
+  version: $(appveyor_build_version)
+  package_version: $(appveyor_build_version)
+  assembly_version: $(appveyor_build_version)
+  file_version: $(appveyor_build_version)
+  informational_version: $(appveyor_build_version)
 install:
   # Install repo specific stuff here
 before_build:
