@@ -33,7 +33,7 @@ namespace TheGodfather.EventListeners
                 emb.AddField("Error", "Failed to read audit log information. Please check my permissions");
             } else {
                 emb.AddField("User responsible", centry.UserResponsible?.Mention ?? _unknown, inline: true);
-                emb.AddField("Channel type", centry.Target?.Type.ToString() ?? _unknown, inline: true);
+                emb.AddField("Channel type", centry.Target.Type.ToString(), inline: true);
                 if (!string.IsNullOrWhiteSpace(centry.Reason))
                     emb.AddField("Reason", centry.Reason);
                 emb.WithFooter(centry.CreationTimestamp.ToUtcTimestamp(), centry.UserResponsible.AvatarUrl);
@@ -54,7 +54,7 @@ namespace TheGodfather.EventListeners
 
             DiscordEmbedBuilder emb = FormEmbedBuilder(EventOrigin.Channel, "Channel deleted", e.Channel.ToString());
 
-            emb.AddField("Channel type", e.Channel.Type.ToString() ?? _unknown, inline: true);
+            emb.AddField("Channel type", e.Channel?.Type.ToString() ?? _unknown, inline: true);
 
             var entry = await e.Guild.GetFirstAuditLogEntryAsync(AuditLogActionType.ChannelDelete);
             if (entry == null || !(entry is DiscordAuditLogChannelEntry centry)) {
@@ -155,24 +155,19 @@ namespace TheGodfather.EventListeners
                     DiscordUser member = null;
                     DiscordRole role = null;
 
-                    if (owentry.Target != null) {
-                        try {
-                            bool isMemberUpdated = owentry.Target.Type.HasFlag(OverwriteType.Member);
-                            if (isMemberUpdated)
-                                member = await e.Client.GetUserAsync(owentry.Target.Id).ConfigureAwait(false);
-                            else
-                                role = e.Guild.GetRole(owentry.Target.Id);
-                            emb.AddField("Target", isMemberUpdated ? member.ToString() : role.ToString(), inline: true);
-                            if (owentry.AllowChange != null)
-                                emb.AddField("Allowed", $"{owentry.Target.Allowed.ToPermissionString() ?? _unknown}", inline: true);
-                            if (owentry.DenyChange != null)
-                                emb.AddField("Denied", $"{owentry.Target.Denied.ToPermissionString() ?? _unknown}", inline: true);
-                        } catch {
-
-                        }
-                    } else {
-                        if (owentry.TargetIdChange?.After != null)
-                            emb.AddField("Target ID", owentry.TargetIdChange?.After?.ToString() ?? _unknown, inline: true);
+                    try {
+                        bool isMemberUpdated = owentry.Target.Type.HasFlag(OverwriteType.Member);
+                        if (isMemberUpdated)
+                            member = await e.Client.GetUserAsync(owentry.Target.Id);
+                        else
+                            role = e.Guild.GetRole(owentry.Target.Id);
+                        emb.AddField("Target", isMemberUpdated ? member.ToString() : role.ToString(), inline: true);
+                        if (owentry.AllowChange != null)
+                            emb.AddField("Allowed", $"{owentry.Target.Allowed.ToPermissionString() ?? _unknown}", inline: true);
+                        if (owentry.DenyChange != null)
+                            emb.AddField("Denied", $"{owentry.Target.Denied.ToPermissionString() ?? _unknown}", inline: true);
+                    } catch {
+                        emb.AddField("Target ID", owentry.Target.Id.ToString(), inline: true);
                     }
 
                     if (!string.IsNullOrWhiteSpace(owentry.Reason))

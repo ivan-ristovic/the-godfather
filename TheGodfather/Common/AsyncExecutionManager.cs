@@ -8,7 +8,7 @@ using System.Reflection;
 using TheGodfather.Common.Attributes;
 #endregion
 
-namespace TheGodfather.EventListeners
+namespace TheGodfather.Common
 {
     internal static class AsyncExecutionManager
     {
