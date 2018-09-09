@@ -1,7 +1,7 @@
 ﻿#region USING_DIRECTIVES
 using DSharpPlus.Interactivity;
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 using Newtonsoft.Json;
 
@@ -18,68 +18,73 @@ using TheGodfather.Modules.Search.Services;
 
 namespace TheGodfatherTests.Modules.Search.Services
 {
-    [TestClass]
+    [TestFixture]
     public class OMDbServiceTests
     {
-        private static OMDbService _service;
+        private OMDbService omdb;
 
 
-        [ClassInitialize]
-        public static async Task Init(TestContext ctx)
+        [OneTimeSetUp]
+        public async Task Init()
         {
             try {
                 string json;
                 using (var sr = new StreamReader("Resources/config.json"))
                     json = await sr.ReadToEndAsync();
                 var cfg = JsonConvert.DeserializeObject<BotConfig>(json);
-                _service = new OMDbService(cfg.OMDbKey);
+                this.omdb = new OMDbService(cfg.OMDbKey);
             } catch {
-                Assert.Fail("Config file not found or OMDb key isn't valid.");
+                Assert.Warn("Config file not found or OMDb key isn't valid (service disabled).");
+                this.omdb = new OMDbService(null);
             }
         }
 
 
-        [TestMethod]
+        [Test]
         public async Task SearchAsyncTest()
         {
+            if (this.omdb.IsDisabled())
+                Assert.Inconclusive("Service has not been properly initialized.");
+
             IReadOnlyList<Page> results;
-            List<Page> resultList;
 
-            results = await _service.GetPaginatedResultsAsync("Rocky");
-            resultList = results.ToList();
-            CollectionAssert.AllItemsAreNotNull(resultList);
-            CollectionAssert.AllItemsAreUnique(resultList);
+            results = await this.omdb.GetPaginatedResultsAsync("Rocky");
+            CollectionAssert.AllItemsAreNotNull(results);
+            CollectionAssert.AllItemsAreUnique(results);
 
-            results = await _service.GetPaginatedResultsAsync("FOOOOOASDJSADBNKSANDKAS");
+            results = await this.omdb.GetPaginatedResultsAsync("FOOOOOASDJSADBNKSANDKAS");
             Assert.IsNull(results);
 
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetPaginatedResultsAsync(null));
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetPaginatedResultsAsync(""));
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetPaginatedResultsAsync(" "));
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetPaginatedResultsAsync("\n"));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => this.omdb.GetPaginatedResultsAsync(null));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => this.omdb.GetPaginatedResultsAsync(""));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => this.omdb.GetPaginatedResultsAsync(" "));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => this.omdb.GetPaginatedResultsAsync("\n"));
         }
 
-        [TestMethod]
+        [Test]
         public async Task GetSingleResultAsyncTest()
         {
+            if (this.omdb.IsDisabled())
+                Assert.Inconclusive("Service has not been properly initialized.");
+
             MovieInfo result;
 
-            result = await _service.GetSingleResultAsync(OMDbQueryType.Title, "Rocky");
+            result = await this.omdb.GetSingleResultAsync(OMDbQueryType.Title, "Rocky");
             Assert.IsNotNull(result);
             
-            result = await _service.GetSingleResultAsync(OMDbQueryType.Id, "tt0475784");
+            result = await this.omdb.GetSingleResultAsync(OMDbQueryType.Id, "tt0475784");
             Assert.IsNotNull(result);
 
-            result = await _service.GetSingleResultAsync(OMDbQueryType.Title, "FASODFSOADOSADNOSADNA");
+            result = await this.omdb.GetSingleResultAsync(OMDbQueryType.Title, "FASODFSOADOSADNOSADNA");
             Assert.IsNull(result);
 
-            result = await _service.GetSingleResultAsync(OMDbQueryType.Id, "FASODFSOADOSADNOSADNA");
+            result = await this.omdb.GetSingleResultAsync(OMDbQueryType.Id, "FASODFSOADOSADNOSADNA");
             Assert.IsNull(result);
 
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetSingleResultAsync(OMDbQueryType.Id, null));
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetSingleResultAsync(OMDbQueryType.Id, ""));
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetSingleResultAsync(OMDbQueryType.Id, " "));
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetSingleResultAsync(OMDbQueryType.Id, "\n"));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => this.omdb.GetSingleResultAsync(OMDbQueryType.Id, null));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => this.omdb.GetSingleResultAsync(OMDbQueryType.Id, ""));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => this.omdb.GetSingleResultAsync(OMDbQueryType.Id, " "));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => this.omdb.GetSingleResultAsync(OMDbQueryType.Id, "\n"));
         }
     }
 }

@@ -39,6 +39,7 @@ namespace TheGodfather
                 .AsReadOnly();
         }
 
+
         public int Id { get; }
         public DiscordClient Client { get; private set; }
         public CommandsNextExtension CNext { get; private set; }

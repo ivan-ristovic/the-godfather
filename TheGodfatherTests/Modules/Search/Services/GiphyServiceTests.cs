@@ -1,5 +1,5 @@
 ﻿#region USING_DIRECTIVES
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 using Newtonsoft.Json;
 
@@ -16,89 +16,94 @@ using RandomImageData = GiphyDotNet.Model.GiphyRandomImage.Data;
 
 namespace TheGodfatherTests.Modules.Search.Services
 {
-    [TestClass]
+    [TestFixture]
     public class GiphyServiceTests
     {
-        private static GiphyService _service;
+        private GiphyService giphy;
+        
 
-
-        [ClassInitialize]
-        public static async Task Init(TestContext ctx)
+        [OneTimeSetUp]
+        public async Task InitAsync()
         {
             try {
                 string json;
                 using (var sr = new StreamReader("Resources/config.json"))
                     json = await sr.ReadToEndAsync();
                 var cfg = JsonConvert.DeserializeObject<BotConfig>(json);
-                _service = new GiphyService(cfg.GiphyKey);
+                this.giphy = new GiphyService(cfg.GiphyKey);
             } catch {
-                Assert.Fail("Config file not found or GIPHY key isn't valid.");
+                Assert.Warn("Config file not found or GIPHY key isn't valid (service disabled).");
+                this.giphy = new GiphyService(null);
             }
         }
 
 
-        [TestMethod]
+        [Test]
         public async Task SearchAsyncTest()
         {
+            if (this.giphy.IsDisabled())
+                Assert.Inconclusive("Service has not been properly initialized.");
+
             ImageData[] results;
 
-            results = await _service.SearchAsync("test");
+            results = await this.giphy.SearchAsync("test");
             Assert.IsNotNull(results);
             Assert.AreEqual(1, results.Length);
-            Assert.IsNotNull(results[0]);
-            Assert.IsNotNull(results[0].Url);
+            Assert.IsNotNull(results[0]?.Url);
 
-            results = await _service.SearchAsync("test", 5);
+            results = await this.giphy.SearchAsync("test", 5);
             Assert.IsNotNull(results);
             Assert.AreEqual(5, results.Length);
             CollectionAssert.AllItemsAreNotNull(results);
 
-            results = await _service.SearchAsync("test", 15);
+            results = await this.giphy.SearchAsync("test", 15);
             Assert.IsNotNull(results);
             Assert.AreEqual(15, results.Length);
             CollectionAssert.AllItemsAreNotNull(results);
 
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.SearchAsync("test", 0));
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.SearchAsync("test", -5));
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.SearchAsync("test", 100));
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.SearchAsync("test", 21));
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.SearchAsync(null));
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.SearchAsync(""));
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.SearchAsync(" "));
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.SearchAsync("\n"));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => this.giphy.SearchAsync("test", 0));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => this.giphy.SearchAsync("test", -5));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => this.giphy.SearchAsync("test", 100));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => this.giphy.SearchAsync("test", 21));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => this.giphy.SearchAsync(null));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => this.giphy.SearchAsync(""));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => this.giphy.SearchAsync(" "));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => this.giphy.SearchAsync("\n"));
         }
 
-        [TestMethod]
+        [Test]
         public async Task GetRandomGifAsyncTest()
         {
-            RandomImageData data = await _service.GetRandomGifAsync();
-            Assert.IsNotNull(data);
-            Assert.IsNotNull(data.Url);
+            if (this.giphy.IsDisabled())
+                Assert.Inconclusive("Service has not been properly initialized.");
+
+            RandomImageData data = await this.giphy.GetRandomGifAsync();
+            Assert.IsNotNull(data?.Url);
         }
 
-        [TestMethod]
+        [Test]
         public async Task GetTrendingGifsAsyncTest()
         {
+            if (this.giphy.IsDisabled())
+                Assert.Inconclusive("Service has not been properly initialized.");
+
             ImageData[] results;
 
-            results = await _service.GetTrendingGifsAsync();
+            results = await this.giphy.GetTrendingGifsAsync();
             Assert.IsNotNull(results);
             Assert.AreEqual(1, results.Length);
-            Assert.IsNotNull(results[0]);
-            Assert.IsNotNull(results[0].Url);
+            Assert.IsNotNull(results[0]?.Url);
 
-            results = await _service.GetTrendingGifsAsync(5);
+            results = await this.giphy.GetTrendingGifsAsync(5);
             Assert.IsNotNull(results);
             Assert.AreEqual(5, results.Length);
-            foreach (ImageData result in results) {
-                Assert.IsNotNull(result);
-                Assert.IsNotNull(result.Url);
-            }
+            foreach (ImageData result in results)
+                Assert.IsNotNull(result?.Url);
 
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetTrendingGifsAsync(0));
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetTrendingGifsAsync(-1));
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetTrendingGifsAsync(100));
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetTrendingGifsAsync(21));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => this.giphy.GetTrendingGifsAsync(0));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => this.giphy.GetTrendingGifsAsync(-1));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => this.giphy.GetTrendingGifsAsync(100));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => this.giphy.GetTrendingGifsAsync(21));
         }
     }
 }

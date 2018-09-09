@@ -1,7 +1,7 @@
 ﻿#region USING_DIRECTIVES
 using DSharpPlus.Entities;
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 using Newtonsoft.Json;
 
@@ -17,77 +17,84 @@ using TheGodfather.Modules.Search.Services;
 
 namespace TheGodfatherTests.Modules.Search.Services
 {
-    [TestClass]
+    [TestFixture]
     public class WeatherServiceTests
     {
-        private static WeatherService _service;
+        private WeatherService weather;
 
 
-        [ClassInitialize]
-        public static async Task Init(TestContext ctx)
+        [OneTimeSetUp]
+        public async Task InitAsync()
         {
             try {
                 string json;
                 using (var sr = new StreamReader("Resources/config.json"))
                     json = await sr.ReadToEndAsync();
                 var cfg = JsonConvert.DeserializeObject<BotConfig>(json);
-                _service = new WeatherService(cfg.WeatherKey);
+                this.weather = new WeatherService(cfg.WeatherKey);
             } catch {
-                Assert.Fail("Config file not found or OpenWeatherAPI key isn't valid.");
+                Assert.Warn("Config file not found or OpenWeather key isn't valid (service disabled).");
+                this.weather = new WeatherService(null);
             }
         }
 
 
-        [TestMethod]
+        [Test]
         public async Task GetEmbeddedCurrentWeatherDataAsyncTest()
         {
-            Assert.IsNotNull(await _service.GetEmbeddedCurrentWeatherDataAsync("belgrade"));
-            Assert.IsNotNull(await _service.GetEmbeddedCurrentWeatherDataAsync("london"));
-            Assert.IsNotNull(await _service.GetEmbeddedCurrentWeatherDataAsync("berlin, de"));
+            if (this.weather.IsDisabled())
+                Assert.Inconclusive("Service has not been properly initialized.");
 
-            Assert.IsNull(await _service.GetEmbeddedCurrentWeatherDataAsync("NOT EXISTING LOCATION"));
+            Assert.IsNotNull(await this.weather.GetEmbeddedCurrentWeatherDataAsync("belgrade"));
+            Assert.IsNotNull(await this.weather.GetEmbeddedCurrentWeatherDataAsync("london"));
+            Assert.IsNotNull(await this.weather.GetEmbeddedCurrentWeatherDataAsync("berlin, de"));
 
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetEmbeddedCurrentWeatherDataAsync(null));
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetEmbeddedCurrentWeatherDataAsync(""));
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetEmbeddedCurrentWeatherDataAsync(" "));
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetEmbeddedCurrentWeatherDataAsync("\n"));
+            Assert.IsNull(await this.weather.GetEmbeddedCurrentWeatherDataAsync("NOT EXISTING LOCATION"));
+
+            Assert.ThrowsAsync(typeof(ArgumentException), () => this.weather.GetEmbeddedCurrentWeatherDataAsync(null));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => this.weather.GetEmbeddedCurrentWeatherDataAsync(""));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => this.weather.GetEmbeddedCurrentWeatherDataAsync(" "));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => this.weather.GetEmbeddedCurrentWeatherDataAsync("\n"));
         }
 
-        [TestMethod]
+        [Test]
         public async Task GetEmbeddedWeatherForecastAsyncTest()
         {
+            if (this.weather.IsDisabled())
+                Assert.Inconclusive("Service has not been properly initialized.");
+
             IReadOnlyList<DiscordEmbed> results;
 
-            results = await _service.GetEmbeddedWeatherForecastAsync("belgrade");
+            results = await this.weather.GetEmbeddedWeatherForecastAsync("belgrade");
             Assert.IsNotNull(results);
             Assert.AreEqual(7, results.Count);
-            CollectionAssert.AllItemsAreNotNull(results.ToList());
+            CollectionAssert.AllItemsAreNotNull(results);
 
-            results = await _service.GetEmbeddedWeatherForecastAsync("belgrade", 15);
+            results = await this.weather.GetEmbeddedWeatherForecastAsync("belgrade", 15);
             Assert.IsNotNull(results);
             Assert.AreEqual(15, results.Count);
-            CollectionAssert.AllItemsAreNotNull(results.ToList());
+            CollectionAssert.AllItemsAreNotNull(results);
 
-            results = await _service.GetEmbeddedWeatherForecastAsync("london");
+            results = await this.weather.GetEmbeddedWeatherForecastAsync("london");
             Assert.IsNotNull(results);
             Assert.AreEqual(7, results.Count);
-            CollectionAssert.AllItemsAreNotNull(results.ToList());
+            CollectionAssert.AllItemsAreNotNull(results);
 
-            results = await _service.GetEmbeddedWeatherForecastAsync("berlin, de");
+            results = await this.weather.GetEmbeddedWeatherForecastAsync("berlin, de");
             Assert.IsNotNull(results);
             Assert.AreEqual(7, results.Count);
-            CollectionAssert.AllItemsAreNotNull(results.ToList());
+            CollectionAssert.AllItemsAreNotNull(results);
 
-            Assert.IsNull(await _service.GetEmbeddedWeatherForecastAsync("NOT EXISTING LOCATION"));
+            Assert.IsNull(await this.weather.GetEmbeddedWeatherForecastAsync("NOT EXISTING LOCATION"));
 
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetEmbeddedWeatherForecastAsync(null));
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetEmbeddedWeatherForecastAsync(""));
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetEmbeddedWeatherForecastAsync(" "));
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetEmbeddedWeatherForecastAsync("\n"));
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetEmbeddedWeatherForecastAsync("belgrade", -1));
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetEmbeddedWeatherForecastAsync("belgrade", 0));
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetEmbeddedWeatherForecastAsync("belgrade", 100));
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetEmbeddedWeatherForecastAsync("belgrade", 21));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => this.weather.GetEmbeddedWeatherForecastAsync(null));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => this.weather.GetEmbeddedWeatherForecastAsync(""));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => this.weather.GetEmbeddedWeatherForecastAsync(" "));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => this.weather.GetEmbeddedWeatherForecastAsync("\n"));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => this.weather.GetEmbeddedWeatherForecastAsync("belgrade", -1));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => this.weather.GetEmbeddedWeatherForecastAsync("belgrade", 0));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => this.weather.GetEmbeddedWeatherForecastAsync("belgrade", 100));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => this.weather.GetEmbeddedWeatherForecastAsync("belgrade", 21));
         }
     }
 }

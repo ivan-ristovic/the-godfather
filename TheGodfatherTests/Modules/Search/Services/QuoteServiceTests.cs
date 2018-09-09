@@ -1,5 +1,5 @@
 ﻿#region USING_DIRECTIVES
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 using System.Threading.Tasks;
 
@@ -8,40 +8,21 @@ using TheGodfather.Modules.Search.Services;
 
 namespace TheGodfatherTests.Modules.Search.Services
 {
-    [TestClass]
+    [TestFixture]
     public class QuoteServiceTests
     {
-        [TestMethod]
+        [Test]
         public async Task GetQuoteOfTheDayAsync()
         {
             Assert.IsNotNull(await QuoteService.GetQuoteOfTheDayAsync());
-            await Task.Delay(100);
-            Assert.IsNotNull(await QuoteService.GetQuoteOfTheDayAsync(null));
-            await Task.Delay(100);
-            Assert.IsNotNull(await QuoteService.GetQuoteOfTheDayAsync(""));
-            await Task.Delay(100);
-            Assert.IsNotNull(await QuoteService.GetQuoteOfTheDayAsync(" "));
-            await Task.Delay(100);
-            Assert.IsNotNull(await QuoteService.GetQuoteOfTheDayAsync("\n"));
-            await Task.Delay(100);
-
             Assert.IsNotNull(await QuoteService.GetQuoteOfTheDayAsync("art"));
-            await Task.Delay(100);
-            Assert.IsNotNull(await QuoteService.GetQuoteOfTheDayAsync("sports"));
-            await Task.Delay(100);
-            Assert.IsNotNull(await QuoteService.GetQuoteOfTheDayAsync("life"));
-            await Task.Delay(100);
-            Assert.IsNotNull(await QuoteService.GetQuoteOfTheDayAsync("funny"));
-            await Task.Delay(100);
-
             Assert.IsNull(await QuoteService.GetQuoteOfTheDayAsync("FOOasdnsajdnsjadnj"));
         }
 
-        [TestMethod]
+        [Test]
         public async Task GetRandomQuoteAsync()
         {
-            for (int i = 0; i < 10; i++)
-                Assert.IsNotNull(await QuoteService.GetRandomQuoteAsync());
+            Assert.IsNotNull(await QuoteService.GetRandomQuoteAsync());
         }
     }
 }

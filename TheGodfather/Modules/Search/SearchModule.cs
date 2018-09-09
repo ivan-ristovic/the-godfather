@@ -4,6 +4,7 @@ using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.Entities;
 
 using System.Collections.Generic;
+using System.Net;
 using System.ServiceModel.Syndication;
 using System.Threading.Tasks;
 
@@ -74,9 +75,9 @@ namespace TheGodfather.Modules.Search
         [Aliases("ip", "geolocation", "iplocation", "iptracker", "iptrack", "trackip", "iplocate")]
         [UsageExamples("!ipstack 123.123.123.123")]
         public async Task ExecuteGroupAsync(CommandContext ctx,
-                                           [Description("IP.")] CustomIPFormat ip)
+                                           [Description("IP.")] IPAddress ip)
         {
-            IpInfo info = await IpGeolocationService.GetInfoForIpAsync(ip.Content);
+            IpInfo info = await IpGeolocationService.GetInfoForIpAsync(ip);
 
             if (!info.Success)
                 throw new CommandFailedException($"Retrieving IP geolocation info failed! Details: {info.ErrorMessage}");

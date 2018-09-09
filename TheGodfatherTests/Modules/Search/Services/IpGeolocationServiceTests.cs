@@ -1,7 +1,8 @@
 ﻿#region USING_DIRECTIVES
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 using System;
+using System.Net;
 using System.Threading.Tasks;
 
 using TheGodfather.Modules.Search.Common;
@@ -10,10 +11,10 @@ using TheGodfather.Modules.Search.Services;
 
 namespace TheGodfatherTests.Modules.Search.Services
 {
-    [TestClass]
+    [TestFixture]
     public class IpGeolocationServiceTests
     {
-        [TestMethod]
+        [Test]
         public async Task GetInfoForIpAsyncTest()
         {
             IpInfo info;
@@ -22,32 +23,24 @@ namespace TheGodfatherTests.Modules.Search.Services
             Assert.IsNotNull(info);
             Assert.IsTrue(info.Success);
             Assert.AreEqual("US", info.CountryCode);
-            Assert.AreEqual("San Francisco", info.City);
+            Assert.That(info.City.StartsWith("San Francisco"));
             Assert.AreEqual("94105", info.ZipCode);
-            
-            info = await IpGeolocationService.GetInfoForIpAsync("208.80.152.999");
+
+            info = await IpGeolocationService.GetInfoForIpAsync(IPAddress.Parse("208.80.152.201"));
             Assert.IsNotNull(info);
-            Assert.IsFalse(info.Success);
+            Assert.IsTrue(info.Success);
+            Assert.AreEqual("US", info.CountryCode);
+            Assert.That(info.City.StartsWith("San Francisco"));
+            Assert.AreEqual("94105", info.ZipCode);
 
-            await Assert.ThrowsExceptionAsync<ArgumentException>(
-                () => IpGeolocationService.GetInfoForIpAsync(null)
-            );
-            await Assert.ThrowsExceptionAsync<ArgumentException>(
-                () => IpGeolocationService.GetInfoForIpAsync("")
-            );
-            await Assert.ThrowsExceptionAsync<ArgumentException>(
-                () => IpGeolocationService.GetInfoForIpAsync(" ")
-            );
-            await Assert.ThrowsExceptionAsync<ArgumentException>(
-                () => IpGeolocationService.GetInfoForIpAsync("\n")
-            );
-
-            // TODO
-            /*
-            await Assert.ThrowsExceptionAsync<ArgumentException>(
-                () => IpGeolocationService.GetInfoForIpAsync("asdsada")
-            );
-            */
+            Assert.ThrowsAsync(typeof(ArgumentException), () => IpGeolocationService.GetInfoForIpAsync((string)null));
+            Assert.ThrowsAsync(typeof(ArgumentNullException), () => IpGeolocationService.GetInfoForIpAsync((IPAddress)null));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => IpGeolocationService.GetInfoForIpAsync(""));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => IpGeolocationService.GetInfoForIpAsync(" "));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => IpGeolocationService.GetInfoForIpAsync("\n"));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => IpGeolocationService.GetInfoForIpAsync("asd"));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => IpGeolocationService.GetInfoForIpAsync("asd"));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => IpGeolocationService.GetInfoForIpAsync("555.123.123.123"));
         }
     }
 }

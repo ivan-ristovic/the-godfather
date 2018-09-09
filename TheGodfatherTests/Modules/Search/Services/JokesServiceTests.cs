@@ -1,5 +1,5 @@
 ﻿#region USING_DIRECTIVES
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 using System;
 using System.Threading.Tasks;
@@ -9,33 +9,31 @@ using TheGodfather.Modules.Search.Services;
 
 namespace TheGodfatherTests.Modules.Search.Services
 {
-    [TestClass]
+    [TestFixture]
     public class JokesServiceTests
     {
-        [TestMethod]
+        [Test]
         public async Task GetRandomJokeAsyncTest()
         {
-            for (int i = 0; i < 10; i++)
-                Assert.IsNotNull(await JokesService.GetRandomJokeAsync());
+            Assert.IsNotNull(await JokesService.GetRandomJokeAsync());
         }
 
-        [TestMethod]
+        [Test]
         public async Task GetRandomYoMommaJokeAsync()
         {
-            for (int i = 0; i < 10; i++)
-                Assert.IsNotNull(await JokesService.GetRandomYoMommaJokeAsync());
+            Assert.IsNotNull(await JokesService.GetRandomYoMommaJokeAsync());
         }
 
-        [TestMethod]
+        [Test]
         public async Task SearchForJokesAsyncTest()
         {
             Assert.IsNotNull(await JokesService.SearchForJokesAsync("dad joke"));
             Assert.IsNull(await JokesService.SearchForJokesAsync("FOOOOOOOOOOOOO1231231313123"));
 
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => JokesService.SearchForJokesAsync(null));
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => JokesService.SearchForJokesAsync(""));
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => JokesService.SearchForJokesAsync(" "));
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => JokesService.SearchForJokesAsync("\n"));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => JokesService.SearchForJokesAsync(null));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => JokesService.SearchForJokesAsync(""));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => JokesService.SearchForJokesAsync(" "));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => JokesService.SearchForJokesAsync("\n"));
         }
     }
 }

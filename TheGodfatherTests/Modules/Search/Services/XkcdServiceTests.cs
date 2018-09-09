@@ -1,5 +1,5 @@
 ﻿#region USING_DIRECTIVES
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 using System;
 using System.Threading.Tasks;
@@ -9,10 +9,10 @@ using TheGodfather.Modules.Search.Services;
 
 namespace TheGodfatherTests.Modules.Search.Services
 {
-    [TestClass]
+    [TestFixture]
     public class XkcdServiceTests
     {
-        [TestMethod]
+        [Test]
         public async Task GetComicAsyncTest()
         {
             Assert.IsNotNull(await XkcdService.GetComicAsync());
@@ -24,16 +24,16 @@ namespace TheGodfatherTests.Modules.Search.Services
             Assert.IsNotNull(await XkcdService.GetComicAsync(1000));
             Assert.IsNotNull(await XkcdService.GetComicAsync(2000));
 
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => XkcdService.GetComicAsync(-1));
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => XkcdService.GetComicAsync(0));
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => XkcdService.GetComicAsync(100000));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => XkcdService.GetComicAsync(-1));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => XkcdService.GetComicAsync(0));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => XkcdService.GetComicAsync(100000));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => XkcdService.GetComicAsync(XkcdService.TotalComics + 1));
         }
 
-        [TestMethod]
+        [Test]
         public async Task GetRandomComicAsyncTest()
         {
-            for (int i = 0; i < 10; i++)
-                Assert.IsNotNull(await XkcdService.GetRandomComicAsync());
+            Assert.IsNotNull(await XkcdService.GetRandomComicAsync());
         }
     }
 }

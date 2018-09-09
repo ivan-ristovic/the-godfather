@@ -1,5 +1,5 @@
 ﻿#region USING_DIRECTIVES
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 using System;
 using System.Threading.Tasks;
@@ -9,10 +9,10 @@ using TheGodfather.Modules.Search.Services;
 
 namespace TheGodfatherTests.Modules.Search.Services
 {
-    [TestClass]
+    [TestFixture]
     public class UrbanDictServiceTests
     {
-        [TestMethod]
+        [Test]
         public async Task GetDefinitionForTermAsyncTest()
         {
             Assert.IsNotNull(await UrbanDictService.GetDefinitionForTermAsync("umbrella"));
@@ -22,10 +22,10 @@ namespace TheGodfatherTests.Modules.Search.Services
 
             Assert.IsNull(await UrbanDictService.GetDefinitionForTermAsync("SDSANDJKSANDkJSANDKJSANDKAJND"));
 
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => UrbanDictService.GetDefinitionForTermAsync(null));
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => UrbanDictService.GetDefinitionForTermAsync(""));
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => UrbanDictService.GetDefinitionForTermAsync(" "));
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => UrbanDictService.GetDefinitionForTermAsync("\n"));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => UrbanDictService.GetDefinitionForTermAsync(null));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => UrbanDictService.GetDefinitionForTermAsync(""));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => UrbanDictService.GetDefinitionForTermAsync(" "));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => UrbanDictService.GetDefinitionForTermAsync("\n"));
         }
     }
 }

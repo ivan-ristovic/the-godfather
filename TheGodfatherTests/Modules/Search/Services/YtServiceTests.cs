@@ -1,7 +1,7 @@
 ﻿#region USING_DIRECTIVES
 using DSharpPlus.Interactivity;
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 using Newtonsoft.Json;
 
@@ -18,139 +18,169 @@ using TheGodfather.Modules.Search.Services;
 
 namespace TheGodfatherTests.Modules.Search.Services
 {
-    [TestClass]
+    [TestFixture]
     public class YtServiceTests
     {
-        private static YtService _service;
+        private YtService yt;
 
 
-        [ClassInitialize]
-        public static async Task Init(TestContext ctx)
+        [OneTimeSetUp]
+        public async Task InitAsync()
         {
             try {
                 string json;
                 using (var sr = new StreamReader("Resources/config.json"))
                     json = await sr.ReadToEndAsync();
                 var cfg = JsonConvert.DeserializeObject<BotConfig>(json);
-                _service = new YtService(cfg.YouTubeKey);
+                this.yt = new YtService(cfg.YouTubeKey);
             } catch {
-                Assert.Fail("Config file not found or YouTube API key isn't valid.");
+                Assert.Warn("Config file not found or YouTube key isn't valid (service disabled).");
+                this.yt = new YtService(null);
             }
         }
 
 
-        [TestMethod]
+        [Test]
         public void GetRssUrlForChannelTest()
         {
+            if (this.yt.IsDisabled())
+                Assert.Inconclusive("Service has not been properly initialized.");
+
             Assert.IsNotNull(YtService.GetRssUrlForChannel("UCuAXFkgsw1L7xaCfnd5JJOw"));
 
-            Assert.ThrowsException<ArgumentException>(() => YtService.GetRssUrlForChannel(null));
-            Assert.ThrowsException<ArgumentException>(() => YtService.GetRssUrlForChannel(""));
-            Assert.ThrowsException<ArgumentException>(() => YtService.GetRssUrlForChannel(" "));
-            Assert.ThrowsException<ArgumentException>(() => YtService.GetRssUrlForChannel("\n"));
-            Assert.ThrowsException<ArgumentException>(() => YtService.GetRssUrlForChannel("/"));
-            Assert.ThrowsException<ArgumentException>(() => YtService.GetRssUrlForChannel("test|"));
-            Assert.ThrowsException<ArgumentException>(() => YtService.GetRssUrlForChannel("@4"));
-            Assert.ThrowsException<ArgumentException>(() => YtService.GetRssUrlForChannel("user/123"));
+            Assert.Throws<ArgumentException>(() => YtService.GetRssUrlForChannel(null));
+            Assert.Throws<ArgumentException>(() => YtService.GetRssUrlForChannel(""));
+            Assert.Throws<ArgumentException>(() => YtService.GetRssUrlForChannel(" "));
+            Assert.Throws<ArgumentException>(() => YtService.GetRssUrlForChannel("\n"));
+            Assert.Throws<ArgumentException>(() => YtService.GetRssUrlForChannel("/"));
+            Assert.Throws<ArgumentException>(() => YtService.GetRssUrlForChannel("test|"));
+            Assert.Throws<ArgumentException>(() => YtService.GetRssUrlForChannel("@4"));
+            Assert.Throws<ArgumentException>(() => YtService.GetRssUrlForChannel("user/123"));
+            Assert.Throws<ArgumentException>(() => YtService.GetRssUrlForChannel("*user"));
+            Assert.Throws<ArgumentException>(() => YtService.GetRssUrlForChannel("* user"));
         }
 
-        [TestMethod]
+        [Test]
         public async Task ExtractChannelIdAsyncTest()
         {
-            Assert.AreEqual("UCLNd5EtH77IyN1frExzwPRQ", await _service.ExtractChannelIdAsync("https://www.youtube.com/channel/UCLNd5EtH77IyN1frExzwPRQ"));
-            Assert.AreEqual("UCuAXFkgsw1L7xaCfnd5JJOw", await _service.ExtractChannelIdAsync("https://www.youtube.com/channel/UCuAXFkgsw1L7xaCfnd5JJOw"));
-            Assert.AreEqual("UCHnyfMqiRRG1u-2MsSQLbXA", await _service.ExtractChannelIdAsync("https://www.youtube.com/channel/UCHnyfMqiRRG1u-2MsSQLbXA"));
-            Assert.AreEqual("UCHnyfMqiRRG1u-2MsSQLbXA", await _service.ExtractChannelIdAsync("https://www.youtube.com/user/1veritasium/"));
+            if (this.yt.IsDisabled())
+                Assert.Inconclusive("Service has not been properly initialized.");
 
-            Assert.IsNull(await _service.ExtractChannelIdAsync("https://www.youtube.com/watch?v=dQw4w9WgXcQ"));
-            Assert.IsNull(await _service.ExtractChannelIdAsync("https://www.google.com/watch?v=dQw4w9WgXcQ"));
-            Assert.IsNull(await _service.ExtractChannelIdAsync("aaa"));
+            Assert.AreEqual(
+                "UCLNd5EtH77IyN1frExzwPRQ", 
+                await this.yt.ExtractChannelIdAsync("https://www.youtube.com/channel/UCLNd5EtH77IyN1frExzwPRQ")
+            );
+            Assert.AreEqual(
+                "UCuAXFkgsw1L7xaCfnd5JJOw", 
+                await this.yt.ExtractChannelIdAsync("https://www.youtube.com/channel/UCuAXFkgsw1L7xaCfnd5JJOw")
+            );
+            Assert.AreEqual(
+                "UCHnyfMqiRRG1u-2MsSQLbXA", 
+                await this.yt.ExtractChannelIdAsync("https://www.youtube.com/channel/UCHnyfMqiRRG1u-2MsSQLbXA")
+            );
+            Assert.AreEqual(
+                "UCHnyfMqiRRG1u-2MsSQLbXA", 
+                await this.yt.ExtractChannelIdAsync("https://www.youtube.com/user/1veritasium/")
+            );
 
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.ExtractChannelIdAsync(null));
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.ExtractChannelIdAsync(""));
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.ExtractChannelIdAsync(" "));
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.ExtractChannelIdAsync("\n"));
+            Assert.IsNull(await this.yt.ExtractChannelIdAsync("https://www.youtube.com/watch?v=dQw4w9WgXcQ"));
+            Assert.IsNull(await this.yt.ExtractChannelIdAsync("https://www.google.com/watch?v=dQw4w9WgXcQ"));
+            Assert.IsNull(await this.yt.ExtractChannelIdAsync("aaa"));
+
+            Assert.ThrowsAsync(typeof(ArgumentException), () => this.yt.ExtractChannelIdAsync(null));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => this.yt.ExtractChannelIdAsync(""));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => this.yt.ExtractChannelIdAsync(" "));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => this.yt.ExtractChannelIdAsync("\n"));
         }
 
-        [TestMethod]
+        [Test]
         public async Task GetFirstVideoResultAsyncTest()
         {
-            Assert.IsNotNull(await _service.GetFirstVideoResultAsync("numberphile"));
-            Assert.IsNotNull(await _service.GetFirstVideoResultAsync("rick astley"));
-            Assert.IsNotNull(await _service.GetFirstVideoResultAsync("|WM|"));
-            Assert.IsNotNull(await _service.GetFirstVideoResultAsync("#triggered"));
+            if (this.yt.IsDisabled())
+                Assert.Inconclusive("Service has not been properly initialized.");
 
-            Assert.IsNull(await _service.GetFirstVideoResultAsync("nsakjdnkjsandjksandjksadkansdjksadsksandjkada"));
+            Assert.IsNotNull(await this.yt.GetFirstVideoResultAsync("numberphile"));
+            Assert.IsNotNull(await this.yt.GetFirstVideoResultAsync("rick astley"));
+            Assert.IsNotNull(await this.yt.GetFirstVideoResultAsync("|WM|"));
+            Assert.IsNotNull(await this.yt.GetFirstVideoResultAsync("#triggered"));
 
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetFirstVideoResultAsync(null));
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetFirstVideoResultAsync(""));
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetFirstVideoResultAsync(" "));
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetFirstVideoResultAsync("\n"));
+            Assert.IsNull(await this.yt.GetFirstVideoResultAsync("nsakjdnkjsandjksandjksadkansdjks45"));
+
+            Assert.ThrowsAsync(typeof(ArgumentException), () => this.yt.GetFirstVideoResultAsync(null));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => this.yt.GetFirstVideoResultAsync(""));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => this.yt.GetFirstVideoResultAsync(" "));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => this.yt.GetFirstVideoResultAsync("\n"));
         }
 
-        [TestMethod]
+        [Test]
         public async Task GetPaginatedResultsAsyncTest()
         {
+            if (this.yt.IsDisabled())
+                Assert.Inconclusive("Service has not been properly initialized.");
+
             IReadOnlyList<Page> results;
 
-            results = await _service.GetPaginatedResultsAsync("rick astley");
+            results = await this.yt.GetPaginatedResultsAsync("rick astley");
             Assert.IsNotNull(results);
             Assert.AreEqual(1, results.Count);
-            CollectionAssert.AllItemsAreNotNull(results.ToList());
+            CollectionAssert.AllItemsAreNotNull(results);
 
-            results = await _service.GetPaginatedResultsAsync("rick astley", 5);
+            results = await this.yt.GetPaginatedResultsAsync("rick astley", 5);
             Assert.IsNotNull(results);
             Assert.AreEqual(5, results.Count);
-            CollectionAssert.AllItemsAreNotNull(results.ToList());
+            CollectionAssert.AllItemsAreNotNull(results);
 
-            results = await _service.GetPaginatedResultsAsync("rick astley", 5, "video");
+            results = await this.yt.GetPaginatedResultsAsync("rick astley", 5, "video");
             Assert.IsNotNull(results);
             Assert.AreEqual(5, results.Count);
-            CollectionAssert.AllItemsAreNotNull(results.ToList());
+            CollectionAssert.AllItemsAreNotNull(results);
             foreach (Page page in results)
                 Assert.IsTrue(page.Embed.Url.OriginalString.Contains("/watch"));
 
-            results = await _service.GetPaginatedResultsAsync("rick astley", 2, "channel");
+            results = await this.yt.GetPaginatedResultsAsync("rick astley", 2, "channel");
             Assert.IsNotNull(results);
             Assert.AreEqual(2, results.Count);
-            CollectionAssert.AllItemsAreNotNull(results.ToList());
+            CollectionAssert.AllItemsAreNotNull(results);
             foreach (Page page in results)
                 Assert.IsTrue(page.Embed.Description.Contains("/channel/"));
 
-            Assert.IsNull(await _service.GetFirstVideoResultAsync("nsakjdnkjsandjksandjksadkansdjksadsksandjkada"));
+            Assert.IsNull(await this.yt.GetFirstVideoResultAsync("nsakjdnkjsandjksandjksadkanksadsksandjkada"));
 
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetPaginatedResultsAsync(null));
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetPaginatedResultsAsync(""));
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetPaginatedResultsAsync(" "));
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetPaginatedResultsAsync("\n"));
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetPaginatedResultsAsync("rick astley", -1));
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetPaginatedResultsAsync("rick astley", 0));
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetPaginatedResultsAsync("rick astley", 100));
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetPaginatedResultsAsync("rick astley", 21));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => this.yt.GetPaginatedResultsAsync(null));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => this.yt.GetPaginatedResultsAsync(""));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => this.yt.GetPaginatedResultsAsync(" "));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => this.yt.GetPaginatedResultsAsync("\n"));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => this.yt.GetPaginatedResultsAsync("rick astley", -1));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => this.yt.GetPaginatedResultsAsync("rick astley", 0));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => this.yt.GetPaginatedResultsAsync("rick astley", 100));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => this.yt.GetPaginatedResultsAsync("rick astley", 21));
         }
 
-        [TestMethod]
+        [Test]
         public async Task GetSongInfoAsyncTest()
         {
+            if (this.yt.IsDisabled())
+                Assert.Inconclusive("Service has not been properly initialized.");
+
             SongInfo info;
 
-            info = await _service.GetSongInfoAsync("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
-            Assert.IsNotNull(info);
-            Assert.IsNotNull(info.Uri);
-            Assert.AreEqual("Rick Astley - Never Gonna Give You Up (Video)", info.Title);
+            /* FIXME https://trello.com/c/8xaerKqs/235-ytexplode-bugfix
+            info = await this.yt.GetSongInfoAsync("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
+            Assert.IsNotNull(info?.Uri);
+            Assert.That(info.Title.Contains("Rick Astley - Never Gonna Give You Up"));
 
-            info = await _service.GetSongInfoAsync("https://www.youtube.com/watch?v=RB-RcX5DS5A");
-            Assert.IsNotNull(info);
-            Assert.IsNotNull(info.Uri);
-            Assert.AreEqual("Coldplay - The Scientist", info.Title);
+            info = await this.yt.GetSongInfoAsync("https://www.youtube.com/watch?v=RB-RcX5DS5A");
+            Assert.IsNotNull(info?.Uri);
+            Assert.That(info.Title.Contains("Coldplay - The Scientist"));
+            */
 
-            Assert.IsNull(await _service.GetSongInfoAsync("aaaaa"));
-            Assert.IsNull(await _service.GetSongInfoAsync("http://google.com"));
+            Assert.IsNull(await this.yt.GetSongInfoAsync("aaaaa"));
+            Assert.IsNull(await this.yt.GetSongInfoAsync("http://google.com"));
 
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetSongInfoAsync(null));
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetSongInfoAsync(""));
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetSongInfoAsync(" "));
-            await Assert.ThrowsExceptionAsync<ArgumentException>(() => _service.GetSongInfoAsync("\n"));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => this.yt.GetSongInfoAsync(null));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => this.yt.GetSongInfoAsync(""));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => this.yt.GetSongInfoAsync(" "));
+            Assert.ThrowsAsync(typeof(ArgumentException), () => this.yt.GetSongInfoAsync("\n"));
         }
     }
 }

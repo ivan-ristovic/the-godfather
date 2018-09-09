@@ -2,7 +2,7 @@
 using Imgur.API.Enums;
 using Imgur.API.Models;
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 using Newtonsoft.Json;
 
@@ -18,65 +18,69 @@ using TheGodfather.Modules.Search.Services;
 
 namespace TheGodfatherTests.Modules.Search.Services
 {
-    [TestClass]
+    [TestFixture]
     public class ImgurServiceTests
     {
-        private static ImgurService _service;
+        private ImgurService imgur;
 
 
-        [ClassInitialize]
-        public static async Task Init(TestContext ctx)
+        [OneTimeSetUp]
+        public async Task InitAsync()
         {
             try {
                 string json;
                 using (var sr = new StreamReader("Resources/config.json"))
                     json = await sr.ReadToEndAsync();
                 var cfg = JsonConvert.DeserializeObject<BotConfig>(json);
-                _service = new ImgurService(cfg.ImgurKey);
+                this.imgur = new ImgurService(cfg.ImgurKey);
             } catch {
-                Assert.Fail("Config file not found or Imgur key isn't valid.");
+                Assert.Warn("Config file not found or Imgur key isn't valid (service disabled).");
+                this.imgur = new ImgurService(null);
             }
         }
 
 
-        [TestMethod]
+        [Test]
         public async Task GetItemsFromSubAsyncTest()
         {
+            if (this.imgur.IsDisabled())
+                Assert.Inconclusive("Service has not been properly initialized.");
+
             IEnumerable<IGalleryItem> results;
 
-            results = await _service.GetItemsFromSubAsync("test", 1, SubredditGallerySortOrder.Top, TimeWindow.All);
+            results = await this.imgur.GetItemsFromSubAsync("test", 1, SubredditGallerySortOrder.Top, TimeWindow.All);
             Assert.IsNotNull(results);
             Assert.AreEqual(1, results.Count());
             Assert.IsNotNull(results.FirstOrDefault());
 
-            results = await _service.GetItemsFromSubAsync("test", 5, SubredditGallerySortOrder.Top, TimeWindow.All);
+            results = await this.imgur.GetItemsFromSubAsync("test", 5, SubredditGallerySortOrder.Top, TimeWindow.All);
             Assert.IsNotNull(results);
             Assert.AreEqual(5, results.Count());
             CollectionAssert.AllItemsAreNotNull(results.ToList());
 
-            await Assert.ThrowsExceptionAsync<ArgumentException>(
-                () => _service.GetItemsFromSubAsync("test", 0, SubredditGallerySortOrder.Top, TimeWindow.All)
+            Assert.ThrowsAsync(typeof(ArgumentException),
+                () => this.imgur.GetItemsFromSubAsync("test", 0, SubredditGallerySortOrder.Top, TimeWindow.All)
             );
-            await Assert.ThrowsExceptionAsync<ArgumentException>(
-                () => _service.GetItemsFromSubAsync("test", -1, SubredditGallerySortOrder.Top, TimeWindow.All)
+            Assert.ThrowsAsync(typeof(ArgumentException),
+                () => this.imgur.GetItemsFromSubAsync("test", -1, SubredditGallerySortOrder.Top, TimeWindow.All)
             );
-            await Assert.ThrowsExceptionAsync<ArgumentException>(
-                () => _service.GetItemsFromSubAsync("test", 100, SubredditGallerySortOrder.Top, TimeWindow.All)
+            Assert.ThrowsAsync(typeof(ArgumentException),
+                () => this.imgur.GetItemsFromSubAsync("test", 100, SubredditGallerySortOrder.Top, TimeWindow.All)
             );
-            await Assert.ThrowsExceptionAsync<ArgumentException>(
-                () => _service.GetItemsFromSubAsync("test", 21, SubredditGallerySortOrder.Top, TimeWindow.All)
+            Assert.ThrowsAsync(typeof(ArgumentException),
+                () => this.imgur.GetItemsFromSubAsync("test", 21, SubredditGallerySortOrder.Top, TimeWindow.All)
             );
-            await Assert.ThrowsExceptionAsync<ArgumentException>(
-                () => _service.GetItemsFromSubAsync(null, 5, SubredditGallerySortOrder.Top, TimeWindow.All)
+            Assert.ThrowsAsync(typeof(ArgumentException),
+                () => this.imgur.GetItemsFromSubAsync(null, 5, SubredditGallerySortOrder.Top, TimeWindow.All)
             );
-            await Assert.ThrowsExceptionAsync<ArgumentException>(
-                () => _service.GetItemsFromSubAsync("", 5, SubredditGallerySortOrder.Top, TimeWindow.All)
+            Assert.ThrowsAsync(typeof(ArgumentException),
+                () => this.imgur.GetItemsFromSubAsync("", 5, SubredditGallerySortOrder.Top, TimeWindow.All)
             );
-            await Assert.ThrowsExceptionAsync<ArgumentException>(
-                () => _service.GetItemsFromSubAsync(" ", 5, SubredditGallerySortOrder.Top, TimeWindow.All)
+            Assert.ThrowsAsync(typeof(ArgumentException),
+                () => this.imgur.GetItemsFromSubAsync(" ", 5, SubredditGallerySortOrder.Top, TimeWindow.All)
             );
-            await Assert.ThrowsExceptionAsync<ArgumentException>(
-                () => _service.GetItemsFromSubAsync("\n", 5, SubredditGallerySortOrder.Top, TimeWindow.All)
+            Assert.ThrowsAsync(typeof(ArgumentException),
+                () => this.imgur.GetItemsFromSubAsync("\n", 5, SubredditGallerySortOrder.Top, TimeWindow.All)
             );
         }
     }

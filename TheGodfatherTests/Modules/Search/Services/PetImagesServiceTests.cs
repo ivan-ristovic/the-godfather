@@ -1,5 +1,5 @@
 ﻿#region USING_DIRECTIVES
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 using System.Threading.Tasks;
 
@@ -8,21 +8,19 @@ using TheGodfather.Modules.Search.Services;
 
 namespace TheGodfatherTests.Modules.Search.Services
 {
-    [TestClass]
+    [TestFixture]
     public class PetImagesServiceTests
     {
-        [TestMethod]
+        [Test]
         public async Task GetRandomCatImageAsyncTest()
         {
-            for (int i = 0; i < 10; i++)
-                Assert.IsNotNull(await PetImagesService.GetRandomCatImageAsync());
+            Assert.IsNotNull(await PetImagesService.GetRandomCatImageAsync());
         }
 
-        [TestMethod]
+        [Test]
         public async Task GetRandomDogImageAsync()
         {
-            for (int i = 0; i < 10; i++)
-                Assert.IsNotNull(await PetImagesService.GetRandomDogImageAsync());
+            Assert.IsNotNull(await PetImagesService.GetRandomDogImageAsync());
         }
     }
 }

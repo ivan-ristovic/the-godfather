@@ -27,7 +27,7 @@ namespace TheGodfather.Modules.Search.Services
 
         public static async Task<string> GetRandomYoMommaJokeAsync()
         {
-            string data = await _http.GetStringAsync("http://api.yomomma.info/").ConfigureAwait(false);
+            string data = await _http.GetStringAsync("https://api.yomomma.info/").ConfigureAwait(false);
             return JObject.Parse(data)["joke"].ToString();
         }
 

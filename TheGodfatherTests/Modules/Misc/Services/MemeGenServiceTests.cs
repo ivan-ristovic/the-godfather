@@ -1,5 +1,5 @@
 ﻿#region USING_DIRECTIVES
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 using System.Collections.Generic;
 using System.Linq;
@@ -10,10 +10,10 @@ using TheGodfather.Modules.Misc.Services;
 
 namespace TheGodfatherTests.Modules.Misc.Services
 {
-    [TestClass]
+    [TestFixture]
     public class MemeGenServiceTests
     {
-        [TestMethod]
+        [Test]
         public void GenerateMemeTest()
         {
             Assert.AreEqual(
@@ -114,16 +114,14 @@ namespace TheGodfatherTests.Modules.Misc.Services
             );
         }
 
-        [TestMethod]
+        [Test]
         public async Task GetMemeTemplatesAsync()
         {
             IReadOnlyList<string> templates = await MemeGenService.GetMemeTemplatesAsync();
             Assert.IsNotNull(templates);
-
-            var templateList = templates.ToList();
-            CollectionAssert.AllItemsAreNotNull(templateList);
-            CollectionAssert.AllItemsAreUnique(templateList);
-            CollectionAssert.AreEqual(templates.OrderBy(s => s).ToList(), templateList);
+            CollectionAssert.AllItemsAreNotNull(templates);
+            CollectionAssert.AllItemsAreUnique(templates);
+            CollectionAssert.IsOrdered(templates);
         }
     }
 }

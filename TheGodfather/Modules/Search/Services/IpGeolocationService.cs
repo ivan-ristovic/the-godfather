@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 
 using System;
+using System.Net;
 using System.Threading.Tasks;
 
 using TheGodfather.Modules.Search.Common;
@@ -19,12 +20,23 @@ namespace TheGodfather.Modules.Search.Services
             => false;
 
 
-        public static async Task<IpInfo> GetInfoForIpAsync(string ip)
+        public static Task<IpInfo> GetInfoForIpAsync(string ipstr)
         {
-            if (string.IsNullOrWhiteSpace(ip))
-                throw new ArgumentException("IP missing!", nameof(ip));
+            if (string.IsNullOrWhiteSpace(ipstr))
+                throw new ArgumentException("IP missing!", nameof(ipstr));
 
-            string response = await _http.GetStringAsync($"{_url}/{ip}").ConfigureAwait(false);
+            if (!IPAddress.TryParse(ipstr, out IPAddress ip))
+                throw new ArgumentException("Given string does not map to a IPv4 address.");
+
+            return GetInfoForIpAsync(ip);
+        }
+
+        public static async Task<IpInfo> GetInfoForIpAsync(IPAddress ip)
+        {
+            if (ip == null)
+                throw new ArgumentNullException(nameof(ip));
+
+            string response = await _http.GetStringAsync($"{_url}/{ip.ToString()}").ConfigureAwait(false);
             var data = JsonConvert.DeserializeObject<IpInfo>(response);
             return data;
         }
