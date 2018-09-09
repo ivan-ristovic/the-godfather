@@ -1,5 +1,6 @@
 ﻿#region USING_DIRECTIVES
 using DSharpPlus;
+using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using System;
 using System.Threading.Tasks;
@@ -45,8 +46,13 @@ namespace TheGodfather.EventListeners
 
             await shard.DatabaseService.RegisterGuildAsync(e.Guild.Id);
             shard.SharedData.GuildConfigurations.TryAdd(e.Guild.Id, CachedGuildConfig.Default);
-            
-            await e.Guild.GetDefaultChannel().EmbedAsync(
+
+            DiscordChannel defChannel = e.Guild.GetDefaultChannel();
+
+            if (!defChannel.PermissionsFor(e.Guild.CurrentMember).HasPermission(Permissions.SendMessages))
+                return;
+
+            await defChannel.EmbedAsync(
                 $"{Formatter.Bold("Thank you for adding me!")}\n\n" +
                 $"{StaticDiscordEmoji.SmallBlueDiamond} The default prefix for commands is {Formatter.Bold(shard.SharedData.BotConfiguration.DefaultPrefix)}, but it can be changed using {Formatter.Bold("prefix")} command.\n" +
                 $"{StaticDiscordEmoji.SmallBlueDiamond} I advise you to run the configuration wizard for this guild in order to quickly configure functions like logging, notifications etc. The wizard can be invoked using {Formatter.Bold("guild config setup")} command.\n" +
