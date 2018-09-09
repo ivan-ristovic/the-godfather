@@ -2,7 +2,7 @@ image: Visual Studio 2017
 branches:
   only:
   - master
-version: $(appveyor_build_version)
+version: 3.0.{build}
 init:
   # Good practise, because Windows line endings are different from Unix/Linux ones
   - cmd: git config --global core.autocrlf true
