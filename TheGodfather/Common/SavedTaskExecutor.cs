@@ -120,7 +120,10 @@ namespace TheGodfather.Common
             try {
                 DiscordChannel channel = this.Execute(this.client.GetChannelAsync(info.ChannelId));
                 DiscordUser user = this.Execute(this.client.GetUserAsync(info.InitiatorId));
-                this.Execute(channel.EmbedAsync($"{user.Mention}'s reminder:\n\n{Formatter.Italic(info.Message)}", StaticDiscordEmoji.AlarmClock));
+                this.Execute(channel.SendMessageAsync($"{user.Mention}'s reminder:", embed: new DiscordEmbedBuilder() {
+                    Description = $"{StaticDiscordEmoji.AlarmClock} {Formatter.Italic(Formatter.Sanitize(info.Message))}",
+                    Color = DiscordColor.Orange
+                }));
             } catch (Exception e) {
                 this.shared.LogProvider.LogException(LogLevel.Warning, e);
             } finally {

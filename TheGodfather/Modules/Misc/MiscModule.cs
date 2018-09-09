@@ -307,50 +307,6 @@ namespace TheGodfather.Modules.Misc
         }
         #endregion
 
-        #region COMMAND_REMIND
-        [Command("remind"), Priority(2)]
-        [Description("Resend a message after some time.")]
-        [UsageExamples("!remind 1h Drink water!")]
-        [RequireOwnerOrPermissions(Permissions.Administrator)]
-        public async Task RemindAsync(CommandContext ctx,
-                                     [Description("Time span until reminder.")] TimeSpan timespan,
-                                     [Description("Channel to send message to.")] DiscordChannel channel,
-                                     [RemainingText, Description("What to send?")] string message)
-        {
-            if (string.IsNullOrWhiteSpace(message))
-                throw new InvalidCommandUsageException("Missing time or repeat string.");
-
-            if (message.Length > 120)
-                throw new InvalidCommandUsageException("Message must be shorter than 120 characters.");
-
-            channel = channel ?? ctx.Channel;
-
-            if (timespan.TotalMinutes < 1 || timespan.TotalDays > 31)
-                throw new InvalidCommandUsageException("Time span cannot be less than 1 minute or greater than 31 days.");
-
-            DateTimeOffset when = DateTimeOffset.Now + timespan;
-
-            var task = new SendMessageTaskInfo(ctx.Channel.Id, ctx.User.Id, message, when);
-            if (!await SavedTaskExecutor.TryScheduleAsync(this.Shared, this.Database, ctx.Client, task))
-                throw new CommandFailedException("Failed to schedule saved task!");
-
-            await this.InformAsync(ctx, StaticDiscordEmoji.AlarmClock, $"I will remind {channel.Mention} in {Formatter.Bold(timespan.Humanize(5))} ({when.ToUtcTimestamp()}) to:\n\n{Formatter.Italic(message)}", important: false);
-        }
-
-        [Command("remind"), Priority(1)]
-        public Task RemindAsync(CommandContext ctx,
-                               [Description("Channel to send message to.")] DiscordChannel channel,
-                               [Description("Time span until reminder.")] TimeSpan timespan,
-                               [RemainingText, Description("What to send?")] string message)
-            => this.RemindAsync(ctx, timespan, channel, message);
-
-        [Command("remind"), Priority(0)]
-        public Task RemindAsync(CommandContext ctx,
-                               [Description("Time span until reminder.")] TimeSpan timespan,
-                               [RemainingText, Description("What to send?")] string message)
-            => this.RemindAsync(ctx, timespan, null, message);
-        #endregion
-
         #region COMMAND_REPORT
         [Command("report")]
         [Description("Send a report message to owner about a bug (please don't abuse... please).")]
