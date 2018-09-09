@@ -20,10 +20,10 @@ after_build:
 clone_depth: 1
 test_script:
   # restore packages for our unit tests
-  - cmd: dotnet restore ./tests/tests.csproj --verbosity m
+  #- cmd: dotnet restore ./TheGodfatherTests/TheGodfatherTests.csproj --verbosity m
   # run the unit tests (requires changing into the test directory)
-  - cmd: cd TheGodfatherTests
-  - cmd: dotnet xunit
+  #- cmd: cd TheGodfatherTests
+  #- cmd: dotnet xunit
 on_finish :
   # any cleanup in here
 deploy: off
