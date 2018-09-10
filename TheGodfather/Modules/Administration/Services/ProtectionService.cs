@@ -52,7 +52,7 @@ namespace TheGodfather.Modules.Administration.Services
                     case PunishmentActionType.TemporaryBan:
                         await member.BanAsync(0, reason: this.reason);
                         task = new UnbanTaskInfo(guild.Id, member.Id);
-                        await SavedTaskExecutor.TryScheduleAsync(this.shard.SharedData, this.shard.DatabaseService, this.shard.Client, task);
+                        await SavedTaskExecutor.ScheduleAsync(this.shard.SharedData, this.shard.DatabaseService, this.shard.Client, task);
                         break;
                     case PunishmentActionType.TemporaryMute:
                         muteRole = await this.GetOrCreateMuteRoleAsync(guild);
@@ -60,7 +60,7 @@ namespace TheGodfather.Modules.Administration.Services
                             return;
                         await member.GrantRoleAsync(muteRole, this.reason);
                         task = new UnmuteTaskInfo(guild.Id, member.Id, muteRole.Id);
-                        await SavedTaskExecutor.TryScheduleAsync(this.shard.SharedData, this.shard.DatabaseService, this.shard.Client, task);
+                        await SavedTaskExecutor.ScheduleAsync(this.shard.SharedData, this.shard.DatabaseService, this.shard.Client, task);
                         break;
                 }
             } catch {

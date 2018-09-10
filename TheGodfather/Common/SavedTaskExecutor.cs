@@ -27,7 +27,7 @@ namespace TheGodfather.Common
         private Timer timer;
 
         
-        public static async Task<bool> TryScheduleAsync(SharedData shared, DBService db, DiscordClient client, SavedTaskInfo task)
+        public static async Task ScheduleAsync(SharedData shared, DBService db, DiscordClient client, SavedTaskInfo task)
         {
             SavedTaskExecutor texec = null;
             try {
@@ -35,12 +35,14 @@ namespace TheGodfather.Common
                 texec = new SavedTaskExecutor(id, client, task, shared, db);
                 texec.Schedule();
             } catch (Exception e) {
-                shared.LogProvider.LogException(LogLevel.Warning, e);
                 await texec?.UnscheduleAsync();
-                return false;
+                shared.LogProvider.LogException(LogLevel.Warning, e);
+                throw;
             }
-            return true;
         }
+
+        public static Task UnscheduleAsync(SharedData shared, int id)
+            => shared.TaskExecuters.ContainsKey(id) ? shared.TaskExecuters[id].UnscheduleAsync() : Task.CompletedTask;
 
 
         public SavedTaskExecutor(int id, DiscordClient client, SavedTaskInfo task, SharedData data, DBService db)
@@ -74,7 +76,8 @@ namespace TheGodfather.Common
                     throw new ArgumentException("Unknown saved task info type!", nameof(this.TaskInfo));
             }
 
-            this.shared.TaskExecuters.TryAdd(this.Id, this);
+            if (!this.shared.TaskExecuters.TryAdd(this.Id, this))
+                throw new ConcurrentOperationException("Failed to schedule the task.");
         }
 
         public async Task HandleMissedExecutionAsync()
