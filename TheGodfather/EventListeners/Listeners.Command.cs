@@ -65,7 +65,7 @@ namespace TheGodfather.EventListeners
             switch (ex) {
                 case CommandNotFoundException cne:
                     if (!shard.SharedData.GetGuildConfig(e.Context.Guild.Id).SuggestionsEnabled) {
-                        await e.Context.Message.CreateReactionAsync(StaticDiscordEmoji.NoEntry);
+                        await e.Context.Message.CreateReactionAsync(StaticDiscordEmoji.Question);
                         return;
                     }
 

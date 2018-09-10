@@ -304,7 +304,10 @@ namespace TheGodfather
                 foreach (Birthday birthday in birthdays) {
                     DiscordChannel channel = SharedData.AsyncExecutor.Execute(client.GetChannelAsync(birthday.ChannelId));
                     DiscordUser user = SharedData.AsyncExecutor.Execute(client.GetUserAsync(birthday.UserId));
-                    SharedData.AsyncExecutor.Execute(channel.EmbedAsync($"Happy birthday, {user.Mention}!", DiscordEmoji.FromName(client, ":tada:")));
+                    SharedData.AsyncExecutor.Execute(channel.SendMessageAsync(user.Mention, embed: new DiscordEmbedBuilder() {
+                        Description = $"{StaticDiscordEmoji.Tada} Happy birthday, {user.Mention}! {StaticDiscordEmoji.Cake}",
+                        Color = DiscordColor.Aquamarine
+                    }));
                     SharedData.AsyncExecutor.Execute(DatabaseService.UpdateBirthdayLastNotifiedDateAsync(birthday.UserId, channel.Id));
                 }
             } catch (Exception e) {
