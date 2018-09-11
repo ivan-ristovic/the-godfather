@@ -163,8 +163,7 @@ namespace TheGodfatherTests.Modules.Search.Services
                 Assert.Inconclusive("Service has not been properly initialized.");
 
             SongInfo info;
-
-            /* FIXME https://trello.com/c/8xaerKqs/235-ytexplode-bugfix
+            
             info = await this.yt.GetSongInfoAsync("https://www.youtube.com/watch?v=dQw4w9WgXcQ");
             Assert.IsNotNull(info?.Uri);
             Assert.That(info.Title.Contains("Rick Astley - Never Gonna Give You Up"));
@@ -172,7 +171,6 @@ namespace TheGodfatherTests.Modules.Search.Services
             info = await this.yt.GetSongInfoAsync("https://www.youtube.com/watch?v=RB-RcX5DS5A");
             Assert.IsNotNull(info?.Uri);
             Assert.That(info.Title.Contains("Coldplay - The Scientist"));
-            */
 
             Assert.IsNull(await this.yt.GetSongInfoAsync("aaaaa"));
             Assert.IsNull(await this.yt.GetSongInfoAsync("http://google.com"));
