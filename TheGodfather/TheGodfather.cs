@@ -35,6 +35,7 @@ namespace TheGodfather
     internal static class TheGodfather
     {
         public static readonly string ApplicationName = "TheGodfather";
+        public static readonly string ApplicationVersion = "v3.0";
         public static IReadOnlyList<TheGodfatherShard> ActiveShards
             => Shards.AsReadOnly();
 
@@ -89,9 +90,8 @@ namespace TheGodfather
         {
             var assembly = Assembly.GetExecutingAssembly();
             var fileVersionInfo = FileVersionInfo.GetVersionInfo(assembly.Location);
-            string buildDate = Properties.Resources.BuildDate?.Trim();
 
-            Console.WriteLine($"{ApplicationName} v{fileVersionInfo.ProductVersion} ({buildDate ?? "unknown date"})");
+            Console.WriteLine($"{ApplicationName} {ApplicationVersion} ({fileVersionInfo.FileVersion})");
             Console.WriteLine();
         }
 

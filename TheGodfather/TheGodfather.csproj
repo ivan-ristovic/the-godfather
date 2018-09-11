@@ -73,8 +73,4 @@
     </EmbeddedResource>
   </ItemGroup>
 
-  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="powershell -Command &quot;((Get-Date).ToUniversalTime()).ToString(\&quot;dd MMMM yyyy\&quot;) | Out-File '$(ProjectDir)BuildDate.txt'&quot;" />
-  </Target>
-
 </Project>
