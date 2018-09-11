@@ -29,7 +29,7 @@
     <PackageReference Include="System.ServiceModel.Syndication" Version="4.5.0" />
     <PackageReference Include="System.Text.RegularExpressions" Version="4.3.0" />
     <PackageReference Include="TexasHoldemGameEngine" Version="1.1.0" />
-    <PackageReference Include="YoutubeExplode" Version="4.3.1" />
+    <PackageReference Include="YoutubeExplode" Version="4.3.2" />
   </ItemGroup>
 
   <ItemGroup>
