@@ -59,15 +59,5 @@ namespace TheGodfather.Properties {
                 resourceCulture = value;
             }
         }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to 08 September 2018
-        ///.
-        /// </summary>
-        public static string BuildDate {
-            get {
-                return ResourceManager.GetString("BuildDate", resourceCulture);
-            }
-        }
     }
 }
