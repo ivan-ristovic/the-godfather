@@ -130,7 +130,7 @@ namespace TheGodfather.Modules.Search
         [UsageExamples("!rss wm")]
         public Task WmRssAsync(CommandContext ctx)
         {
-            IReadOnlyList<SyndicationItem> res = RssService.GetFeedResults("http://worldmafia.net/forum/forums/-/index.rss");
+            IReadOnlyList<SyndicationItem> res = RssService.GetFeedResults("http://worldmafia.net/forums/-/index.rss");
             if (res == null)
                 throw new CommandFailedException("An error occured while reaching WM forum. Possibly Pakistani didn't pay this month?");
 
