@@ -132,8 +132,8 @@ namespace TheGodfather.Modules.Administration
 
         #region COMMAND_GUILD_PRUNE
         [Command("prune"), UsesInteractivity]
-        [Description("Prune guild members who weren't active in the given amount of days (1-7).")]
-        [Aliases("p", "clean")]
+        [Description("Prune guild members who weren't active in the given amount of days [1-30].")]
+        [Aliases("p", "clean", "purge")]
         [UsageExamples("!guild prune 5")]
         [RequirePermissions(Permissions.KickMembers)]
         [RequireUserPermissions(Permissions.Administrator)]
@@ -141,8 +141,8 @@ namespace TheGodfather.Modules.Administration
                                            [Description("Days.")] int days = 7,
                                            [RemainingText, Description("Reason.")] string reason = null)
         {
-            if (days < 1 || days > 7)
-                throw new InvalidCommandUsageException("Number of days is not in valid range (max. 7).");
+            if (days < 1 || days > 30)
+                throw new InvalidCommandUsageException("Number of days is not in valid range (max. 30).");
 
             int count = await ctx.Guild.GetPruneCountAsync(days);
             if (count == 0) {
