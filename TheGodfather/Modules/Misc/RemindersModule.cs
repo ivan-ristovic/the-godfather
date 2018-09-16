@@ -23,7 +23,7 @@ namespace TheGodfather.Modules.Misc
 {
     [Group("remind")]
     [Description("Manage reminders. Group call resends a message after given time span.")]
-    [Aliases("reminders", "reminder")]
+    [Aliases("reminders", "reminder", "todo")]
     [UsageExamples("!remind 1h Drink water!")]
     [RequireOwnerOrPermissions(Permissions.Administrator)]
     [Cooldown(3, 5, CooldownBucketType.Channel), NotBlocked]
@@ -150,7 +150,8 @@ namespace TheGodfather.Modules.Misc
             IEnumerable<(int Id, SendMessageTaskInfo TExec)> remindTasks = this.Shared.TaskExecuters.Values
                 .Where(t => t.TaskInfo is SendMessageTaskInfo)
                 .Select(t => (t.Id, t.TaskInfo as SendMessageTaskInfo))
-                .Where(t => t.Item2.InitiatorId == ctx.User.Id && t.Item2.ChannelId == ctx.Channel.Id);
+                .Where(t => t.Item2.InitiatorId == ctx.User.Id && t.Item2.ChannelId == ctx.Channel.Id)
+                .OrderBy(t => t.Item2.TimeUntilExecution);
 
             if (!remindTasks.Any())
                 throw new CommandFailedException("No reminders meet the speficied criteria.");
@@ -179,7 +180,8 @@ namespace TheGodfather.Modules.Misc
             IEnumerable<(int Id, SendMessageTaskInfo TExec)> remindTasks = this.Shared.TaskExecuters.Values
                 .Where(t => t.TaskInfo is SendMessageTaskInfo)
                 .Select(t => (t.Id, t.TaskInfo as SendMessageTaskInfo))
-                .Where(t => t.Item2.ChannelId == ctx.Channel.Id);
+                .Where(t => t.Item2.ChannelId == ctx.Channel.Id)
+                .OrderBy(t => t.Item2.TimeUntilExecution);
 
             if (!remindTasks.Any())
                 throw new CommandFailedException("No reminders meet the speficied criteria.");

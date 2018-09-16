@@ -28,7 +28,6 @@ namespace TheGodfather.Modules.Search
     [Cooldown(3, 5, CooldownBucketType.Channel)]
     public class RSSModule : TheGodfatherModule
     {
-
         public RSSModule(SharedData shared, DBService db)
             : base(shared, db)
         {
