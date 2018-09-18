@@ -87,7 +87,7 @@ namespace TheGodfather.Common
                     case SendMessageTaskInfo smi:
                         DiscordChannel channel = await this.client.GetChannelAsync(smi.ChannelId);
                         DiscordUser user = await this.client.GetUserAsync(smi.InitiatorId);
-                        await channel.InformFailureAsync($"I have been asleep and failed to remind {user.Mention} to:\n\n{Formatter.Italic(smi.Message)}\n\n {smi.ExecutionTime.ToUtcTimestamp()}");
+                        await channel.InformFailureAsync($"I have been asleep and failed to remind {user.Mention} to:\n\n{smi.Message}\n\n{smi.ExecutionTime.ToUtcTimestamp()}");
                         break;
                     case UnbanTaskInfo _:
                         this.UnbanUserCallback(this.TaskInfo);
@@ -124,7 +124,7 @@ namespace TheGodfather.Common
                 DiscordChannel channel = this.Execute(this.client.GetChannelAsync(info.ChannelId));
                 DiscordUser user = this.Execute(this.client.GetUserAsync(info.InitiatorId));
                 this.Execute(channel.SendMessageAsync($"{user.Mention}'s reminder:", embed: new DiscordEmbedBuilder() {
-                    Description = $"{StaticDiscordEmoji.AlarmClock} {Formatter.Italic(Formatter.Sanitize(info.Message))}",
+                    Description = $"{StaticDiscordEmoji.AlarmClock} {info.Message}",
                     Color = DiscordColor.Orange
                 }));
             } catch (Exception e) {
