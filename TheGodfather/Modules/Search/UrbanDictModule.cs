@@ -51,7 +51,7 @@ namespace TheGodfather.Modules.Search
                     var sb = new StringBuilder("Definition by ");
                     sb.Append(Formatter.Bold(res.Author)).AppendLine().AppendLine();
                     sb.Append(Formatter.Bold(res.Word)).Append(" :");
-                    sb.AppendLine(Formatter.BlockCode(res.Definition).Trim().Truncate(1000));
+                    sb.AppendLine(Formatter.BlockCode(res.Definition.Trim().Truncate(1000)));
                     if (!string.IsNullOrWhiteSpace(res.Example))
                         sb.Append("Examples:").AppendLine(Formatter.BlockCode(res.Example.Trim().Truncate(250)));
                     sb.Append(res.Permalink);

@@ -420,7 +420,7 @@ namespace TheGodfather.Modules.Administration
                 throw new CommandFailedException("I can't talk to that user...");
             }
 
-            await this.InformAsync(ctx, $"Successfully warned member {Formatter.Bold(member.DisplayName)} with message: {Formatter.BlockCode(msg)}");
+            await this.InformAsync(ctx, $"Successfully warned member {Formatter.Bold(member.DisplayName)} with message: {Formatter.BlockCode(msg)}", important: false);
         }
         #endregion
     }
