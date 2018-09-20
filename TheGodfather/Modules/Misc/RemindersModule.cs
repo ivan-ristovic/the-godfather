@@ -25,7 +25,6 @@ namespace TheGodfather.Modules.Misc
     [Description("Manage reminders. Group call resends a message after given time span.")]
     [Aliases("reminders", "reminder", "todo")]
     [UsageExamples("!remind 1h Drink water!")]
-    [RequireOwnerOrPermissions(Permissions.Administrator)]
     [Cooldown(3, 5, CooldownBucketType.Channel), NotBlocked]
     public class RemindersModule : TheGodfatherModule
     {
@@ -84,12 +83,20 @@ namespace TheGodfather.Modules.Misc
             if (timespan.TotalMinutes < 1 || timespan.TotalDays > 31)
                 throw new InvalidCommandUsageException("Time span cannot be less than 1 minute or greater than 31 days.");
 
+            int reminderCount = this.Shared.TaskExecuters.Values
+                .Where(t => t.TaskInfo is SendMessageTaskInfo)
+                .Select(t => (t.Id, t.TaskInfo as SendMessageTaskInfo))
+                .Where(t => t.Item2.InitiatorId == ctx.User.Id)
+                .Count();
+            if (reminderCount >= 20)
+                throw new CommandFailedException("You cannot have more than 20 reminders scheduled!");
+
             DateTimeOffset when = DateTimeOffset.Now + timespan;
 
             var task = new SendMessageTaskInfo(ctx.Channel.Id, ctx.User.Id, message, when);
             await SavedTaskExecutor.ScheduleAsync(this.Shared, this.Database, ctx.Client, task);
 
-            await this.InformAsync(ctx, StaticDiscordEmoji.AlarmClock, $"I will remind {channel.Mention} in {Formatter.Bold(timespan.Humanize(5))} ({when.ToUtcTimestamp()}) to:\n\n{Formatter.Italic(message)}", important: false);
+            await this.InformAsync(ctx, StaticDiscordEmoji.AlarmClock, $"I will remind {channel.Mention} in {Formatter.Bold(timespan.Humanize(5))} ({when.ToUtcTimestamp()}) to:\n\n{message}", important: false);
         }
 
         [Command("add"), Priority(1)]
