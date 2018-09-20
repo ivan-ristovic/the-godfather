@@ -16,6 +16,7 @@ using TheGodfather.Common;
 using TheGodfather.Common.Attributes;
 using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
+using TheGodfather.Modules.Owner.Extensions;
 using TheGodfather.Services;
 #endregion
 
@@ -132,7 +133,7 @@ namespace TheGodfather.Modules.Misc
                 }
 
                 var ti = this.Shared.TaskExecuters[id].TaskInfo as SendMessageTaskInfo;
-                if (ti.InitiatorId != ctx.User.Id) {
+                if (!await this.Database.IsPrivilegedUserAsync(ctx.User.Id) && ti.InitiatorId != ctx.User.Id) {
                     eb.AppendLine($"You didn't create reminder with ID {Formatter.Bold(id.ToString())}!");
                     continue;
                 }

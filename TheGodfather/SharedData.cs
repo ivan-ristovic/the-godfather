@@ -123,7 +123,7 @@ namespace TheGodfather
 
         #region GUILD_DATA_HELPERS
         public CachedGuildConfig GetGuildConfig(ulong gid)
-            => this.GuildConfigurations.ContainsKey(gid) ? this.GuildConfigurations[gid] : CachedGuildConfig.Default;
+            => this.GuildConfigurations.GetOrAdd(gid, CachedGuildConfig.Default);
 
         public string GetGuildPrefix(ulong gid)
         {

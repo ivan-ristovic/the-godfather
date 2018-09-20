@@ -84,10 +84,10 @@ namespace TheGodfather.EventListeners
                     sb.AppendLine($"Type {Formatter.Bold($"{shard.SharedData.GetGuildPrefix(e.Context.Guild.Id)}help {e.Command.QualifiedName}")} for a command manual.");
                     break;
                 case BadRequestException brex:
-                    sb.Append($"Bad request!\n{brex.JsonMessage}");
+                    sb.Append($"Bad request! Details: {brex.JsonMessage}");
                     break;
                 case NotFoundException nfe:
-                    sb.Append($"404: Not found!\n{nfe.JsonMessage}");
+                    sb.Append($"404: Not found! Details: {nfe.JsonMessage}");
                     break;
                 case CommandFailedException _:
                     sb.Append($"{ex.Message} {ex.InnerException?.Message}");
