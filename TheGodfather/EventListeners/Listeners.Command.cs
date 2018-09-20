@@ -84,7 +84,10 @@ namespace TheGodfather.EventListeners
                     sb.AppendLine($"Type {Formatter.Bold($"{shard.SharedData.GetGuildPrefix(e.Context.Guild.Id)}help {e.Command.QualifiedName}")} for a command manual.");
                     break;
                 case BadRequestException brex:
-                    sb.Append(brex.JsonMessage);
+                    sb.Append($"Bad request!\n{brex.JsonMessage}");
+                    break;
+                case NotFoundException nfe:
+                    sb.Append($"404: Not found!\n{nfe.JsonMessage}");
                     break;
                 case CommandFailedException _:
                     sb.Append($"{ex.Message} {ex.InnerException?.Message}");
@@ -95,7 +98,6 @@ namespace TheGodfather.EventListeners
                 case ChecksFailedException cfex:
                     switch (cfex.FailedChecks.First()) {
                         case CooldownAttribute _:
-                            // await e.Context.Message.CreateReactionAsync(StaticDiscordEmoji.NoEntry);
                             return;
                         case UsesInteractivityAttribute _:
                             sb.Append($"I am waiting for your answer and you cannot execute commands until you either answer, or the timeout is reached.");
